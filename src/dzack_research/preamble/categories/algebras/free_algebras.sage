@@ -11,12 +11,18 @@ class FreeAlgebras(Category_over_base_ring):
         return "free algebras"
 
     def super_categories(self) -> list:
-        return [Algebras(self.base_ring()), FreeModules(self.base_ring())]
+        # Free *commutative* algebra: the monomials come from the free
+        # abelian monoid, so xy = yx holds by construction and the axiom is
+        # a declaration, not a claim to be checked.
+        return [
+            Algebras(self.base_ring()).Commutative(),
+            FreeModules(self.base_ring()),
+        ]
 
     class SubcategoryMethods:
-        def on(self, generating_set):
-            r"""Return the free algebra on ``generating_set``."""
-            return FreeAlgebraOn(self.base_ring(), generating_set)
+        def on(self, algebra_generating_set):
+            r"""Return the free algebra on ``algebra_generating_set``."""
+            return FreeAlgebraOn(self.base_ring(), algebra_generating_set)
 
     class ParentMethods:
         def is_free(self) -> bool:

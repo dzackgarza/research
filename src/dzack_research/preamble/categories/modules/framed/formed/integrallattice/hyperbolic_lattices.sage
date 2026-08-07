@@ -9,13 +9,13 @@ EXAMPLES::
 
     sage: from dzack_research.preamble import catalogue
     sage: from dzack_research.preamble.categories import HyperbolicLattices
-    sage: L = Lattices.U.direct_sum(Lattices.E8)  # E10, signature (1, 9)
+    sage: L = Lattices.U.direct_sum([Lattices.E8])  # E10, signature (1, 9)
     sage: refine(L, HyperbolicLattices())
     sage: L in HyperbolicLattices()
     True
 """
 
-from typing import Any
+from typing import Any, Self
 
 from sage.categories.category import Category
 
@@ -38,14 +38,14 @@ class HyperbolicLattices(Category):
         r"""Methods available on hyperbolic lattices refined into this category."""
 
         def vinberg_algorithm(
-            self: Any,
-            v0: Any = None,
+            self: Self,
+            v0: "Element" = None,
             use_coxiter: bool = False,
-            output: Any = None,
+            output: "Element" = None,
             max_roots: int | None = None,
             max_decompositions: int | None = None,
             verbose: bool = False,
-        ) -> Any:
+        ) -> "Element":
             r"""Enumerate roots using the vendored Vinberg algorithm.
 
             Requires the ``vinal`` clone in ``computations/vendor/``.
@@ -83,7 +83,7 @@ class HyperbolicLattices(Category):
                     source = self.twist(-1)
                     negate_roots = True
                 case _:
-                    raise ValueError(
+                    assert False, (
                     f"Vinberg's algorithm needs signature (1, n) or (n, 1); "
                     f"this lattice has ({pos}, {neg})"
                     )

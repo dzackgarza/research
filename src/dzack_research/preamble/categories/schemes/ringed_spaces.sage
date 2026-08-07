@@ -65,11 +65,11 @@ class RingedSpaces(Category):
 
         def structure_sheaf(self):
             r"""Return O_X, the sheaf of rings."""
-            raise NotImplementedError("structure_sheaf must be implemented by concrete RingedSpace")
+            assert False, "structure_sheaf must be implemented by concrete RingedSpace"
 
         def underlying_space(self):
             r"""Return the underlying topological space X."""
-            raise NotImplementedError("underlying_space must be implemented by concrete RingedSpace")
+            assert False, "underlying_space must be implemented by concrete RingedSpace"
 
     class ElementMethods:
         r"""Ringed space element methods."""
@@ -110,7 +110,7 @@ class LocallyRingedSpaces(Category):
 
         def stalk(self, point):
             r"""Return O_{X, x}, the stalk at point x (a local ring)."""
-            raise NotImplementedError("stalk must be implemented by concrete LocallyRingedSpace")
+            assert False, "stalk must be implemented by concrete LocallyRingedSpace"
 
     class ElementMethods:
         r"""Locally ringed space element methods."""

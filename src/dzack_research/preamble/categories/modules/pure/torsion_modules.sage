@@ -4,7 +4,7 @@ Defines ``TorsionModules`` as the category of torsion modules over a base ring $
 with no finite presentation or finite generation hypothesis.
 """
 
-from typing import Any
+from typing import Self
 
 from sage.categories.category_types import Category_over_base_ring
 from sage.categories.modules import Modules
@@ -21,6 +21,6 @@ class TorsionModules(Category_over_base_ring):
         return [Modules(self.base_ring())]
 
     class ParentMethods:
-        def is_torsion(self: Any) -> bool:
+        def is_torsion(self: Self) -> bool:
             r"""Return whether this module is torsion."""
             return True

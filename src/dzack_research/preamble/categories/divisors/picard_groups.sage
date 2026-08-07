@@ -1,11 +1,9 @@
 r"""Picard groups."""
 
-from typing import Any
-
 from sage.categories.category import Category
 
 
-def PicardGroup(module: Any) -> Any:
+def PicardGroup(module: "Module") -> "Module":
     r"""Refine the specified framed quotient module as \(\operatorname{Pic}(X)\)."""
     assert module in Modules(ZZ).Framed(), (
         "a Picard group must declare its quotient framing at construction"

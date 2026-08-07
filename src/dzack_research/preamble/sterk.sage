@@ -15,9 +15,16 @@ EXAMPLES::
     {'Sterk_1': 12, 'Sterk_2': 10, 'Sterk_3': 12, 'Sterk_4': 11, 'Sterk_5': 14}
 """
 
-from typing import Any
+from typing import Any, TYPE_CHECKING
 
 from sage.rings.rational_field import QQ
+
+if TYPE_CHECKING:
+    # The ordered-set noun is type-only: the preamble loads into one
+    # shared namespace and nothing named OrderedSet may bind there.
+    from sage_lattice_category_spike.lexicon import OrderedSet
+
+
 NOT_PORTED: tuple[str, ...] = ()
 
 __all__ = [
@@ -99,17 +106,17 @@ _STERK_DIAGRAM_LAYOUTS: dict[str, dict[int, list[float]]] = {
 }
 
 
-def _named_module_generators(lattice: Any) -> dict[str, Any]:
+def _named_module_generators(lattice: "Lattice") -> dict[str, "ModuleElement"]:
     return dict(
         zip(lattice.variable_names(), lattice.module_generators(), strict=True)
     )
 
 
-def _in_dual(lattice: Any) -> Any:
+def _in_dual(lattice: "Lattice") -> "Module":
     r"""Return $c: L\to L^\vee$, for writing a vector the way the literature does.
 
-    Sterk's vectors are written as sums of module_generating sets and
-    dual module_generating sets --
+    Sterk's vectors are written as sums of generators and
+    dual generators --
     $e'+f'+w_1+\tilde w_8$ -- which is arithmetic in $L\otimes\mathbb Q$ with
     $L\subseteq L^\vee$ left understood.  Here that inclusion is $c$: the sum
     happens in $L^\vee$, with the module_generating vectors carried over by $c$, and
@@ -214,14 +221,16 @@ class Sterk:
         v = Sterk.roots_18_2_0()
         w = Sterk.roots_18_0_0()
 
-        def reflect(x: Any) -> Any:
+        def reflect(x: "ModuleElement") -> "ModuleElement":
             # The coefficient is $b(v_{22},x)/2$, and it has to be an integer
             # for the result to be in the lattice at all -- which it is
-            # because $v_{22}$ has even pairings, and this checks it is integral.
-            half = v["v22"].b(x) / 2
+            # because $v_{22}$ has even pairings.  Taken in $\mathbb Z$, so
+            # that a lattice element is scaled by a scalar of its own ring and
+            # a pairing that ever came out odd says so here.
+            half = ZZ(v["v22"].b(x) / 2)
             return x + half * v["v22"]
 
-        def involute(x: Any) -> Any:
+        def involute(x: "ModuleElement") -> "ModuleElement":
             return x + reflect(x)
 
         configurations: dict[str, tuple[Any, ...]] = {
@@ -332,7 +341,7 @@ class Sterk:
         return vectors
 
     @staticmethod
-    def diagonal_embedding() -> Any:
+    def diagonal_embedding() -> "ModuleMorphism":
         r"""Return $E_8(2)\hookrightarrow T_{\mathrm{dP}}$ (AEGS diagonal).
 
         Alias of :attr:`Embeddings.E8_2_into_TdP`.
@@ -342,7 +351,7 @@ class Sterk:
     @staticmethod
     def sterk5_in_U_E8_2() -> tuple[Any, tuple[Any, ...]]:
         r"""Return Sterk $5$'s $14$ roots inside $U\oplus E_8(2)$."""
-        lattice = Lattices.U.direct_sum(Lattices.E8_2)
+        lattice = Lattices.U.direct_sum([Lattices.E8_2])
         module_generators = list(lattice.module_generators())
         e, f = module_generators[0], module_generators[1]
         a = {i: module_generators[i + 1] for i in range(1, 9)}
@@ -412,7 +421,7 @@ class Sterk:
         return {"s4_12": s}
 
 
-def _sterk_diagram(name: str, roots: tuple[Any, ...]) -> Any:
+def _sterk_diagram(name: str, roots: "OrderedSet") -> "Graph":
     r"""Construct one named Sterk diagram from actual roots in ``Lattices.TdP``."""
     # The roots are elements of TdP already: they were built from its
     # module_generators.  Reading them as coordinates was a recast that only made

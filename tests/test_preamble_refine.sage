@@ -25,19 +25,19 @@ def _ensure_preamble() -> None:
     Lattices.install(globals())
 
 
-def _hyperbolic_lattice() -> FreeQuadraticModule_integer_symmetric:
+def _hyperbolic_lattice() -> "Lattice":
+    r"""Return $U$, built by the preamble's own constructor.
+
+    Not a Sage lattice refined afterwards.  An owned object is *constructed*,
+    and constructing it is what places it in the owned categories -- so there
+    is nothing left for a caller to refine, and no Sage parent left holding
+    methods that want data it never stored.
+    """
+    _ensure_preamble()
     from sage.matrix.constructor import matrix
-    from sage.modules.free_quadratic_module_integer_symmetric import IntegralLattice, FreeQuadraticModule_integer_symmetric
     from sage.rings.integer_ring import ZZ
 
     return IntegralLattice(matrix(ZZ, [[0, 1], [1, 0]]))
-
-
-def _refined_lattice() -> FreeQuadraticModule_integer_symmetric:
-    _ensure_preamble()
-    lattice = _hyperbolic_lattice()
-    refine(lattice, IntegralLattices())
-    return lattice
 
 
 def _sentinel_morphisms() -> Category:
@@ -63,20 +63,20 @@ def _sentinel_morphisms() -> Category:
 
 
 def test_parent_methods_come_from_refined_category() -> None:
-    lattice = _refined_lattice()
+    lattice = _hyperbolic_lattice()
     assert type(lattice).q.__qualname__ == "IntegralLattices.ParentMethods.q"
     assert type(lattice).direct_sum.__qualname__ == "IntegralLattices.ParentMethods.direct_sum"
     assert type(lattice).twist.__qualname__ == "IntegralLattices.ParentMethods.twist"
     assert type(lattice).delta.__qualname__ == "IntegralLattices.ParentMethods.delta"
     assert type(lattice).is_elliptic.__qualname__ == "IntegralLattices.ParentMethods.is_elliptic"
-    assert lattice.q(lattice.gens()[0]) == 0
+    assert lattice.q(lattice.module_generators()[0]) == 0
     assert lattice.delta() in (0, 1)
     assert not lattice.is_elliptic()
 
 
 def test_element_methods_come_from_refined_category() -> None:
-    lattice = _refined_lattice()
-    element = lattice.gens()[0]
+    lattice = _hyperbolic_lattice()
+    element = lattice.module_generators()[0]
     assert type(element).q.__qualname__ == "IntegralLattices.ElementMethods.q"
     assert type(element).__pow__.__qualname__ == "IntegralLattices.ElementMethods.__pow__"
     # v * w is the pairing in every fibre of U, so it is sited on the form
@@ -88,7 +88,7 @@ def test_element_methods_come_from_refined_category() -> None:
     assert element ** 2 == 0
     assert (-element) + element == lattice.zero()
     assert {element: 1}[element] == 1
-    identity = lattice.Aut()({g: g for g in lattice.gens()})
+    identity = lattice.Aut()({g: g for g in lattice.module_generators()})
     assert identity.is_identity()
     assert identity(element) == element
 
@@ -101,11 +101,11 @@ def test_refined_element_compares_without_coercion_recursion() -> None:
     unwrapping.  It still has to terminate, and it still has to tell distinct
     elements apart rather than collapsing them.
     """
-    lattice = _refined_lattice()
-    element = lattice.gens()[0]
+    lattice = _hyperbolic_lattice()
+    element = lattice.module_generators()[0]
     assert element == element
-    assert element == lattice.gens()[0]
-    assert element != lattice.gens()[1]
+    assert element == lattice.module_generators()[0]
+    assert element != lattice.module_generators()[1]
     assert element != lattice.zero()
 
 
@@ -114,12 +114,12 @@ def test_unequal_rank_hom_from_generator_images() -> None:
     _ensure_preamble()
     E = Lattices.E8_2
     TdP = Lattices.TdP
-    generators = TdP.gens()
+    generators = TdP.module_generators()
     images = [generators[4 + i] + generators[12 + i] for i in range(8)]
     phi = E.Hom(TdP)(images)
     assert phi.matrix().dimensions() == (8, 20)
-    assert phi(E.gens()[0]) == images[0]
-    assert phi(E.gens()[3]) == images[3]
+    assert phi(E.module_generators()[0]) == images[0]
+    assert phi(E.module_generators()[3]) == images[3]
 
 
 # Parked: refining Cython morphisms.
@@ -183,5 +183,5 @@ def test_install_hooks_refine_parents_and_elements() -> None:
     _ensure_preamble()
     lattice = Lattices.U
     assert type(lattice).direct_sum.__qualname__ == "IntegralLattices.ParentMethods.direct_sum"
-    element = lattice.gens()[0]
+    element = lattice.module_generators()[0]
     assert type(element).__mul__.__qualname__ == "FormModules.ElementMethods.__mul__"

@@ -18,7 +18,6 @@ Callers that also want the named specimens continue with ``utilities.py``,
 """
 
 import dzack_research as _dzack_research
-
 _preamble_cache = getattr(_dzack_research, "_preamble_namespace", None)
 
 if _preamble_cache is not None:
@@ -86,6 +85,8 @@ else:
     load(str(_PREAMBLE / "categories/forms/gram_matrices.sage"))
     load(str(_PREAMBLE / "categories/sets/sets.sage"))
     load(str(_PREAMBLE / "categories/abstract_categories/slice_categories.sage"))
+    load(str(_PREAMBLE / "categories/abstract_categories/arrow_categories.sage"))
+    load(str(_PREAMBLE / "categories/abstract_categories/products.sage"))
     load(str(_PREAMBLE / "categories/modules/pure/finitely_generated/finitely_generated_modules.sage"))
     load(str(_PREAMBLE / "categories/modules/pure/free_modules.sage"))
     load(str(_PREAMBLE / "categories/modules/framed/framed_modules.sage"))
@@ -95,6 +96,7 @@ else:
 
     load(str(_PREAMBLE / "categories/modules/direct_sum_objects.sage"))
     load(str(_PREAMBLE / "categories/modules/module_morphisms/module_morphisms.sage"))
+    load(str(_PREAMBLE / "categories/modules/scalar_actions.sage"))
     load(str(_PREAMBLE / "categories/modules/framed/formed/form_modules.sage"))
     load(str(_PREAMBLE / "categories/modules/pure/torsion_modules.sage"))
     load(str(_PREAMBLE / "categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage"))
@@ -102,9 +104,13 @@ else:
     load(str(_PREAMBLE / "categories/forms/forms.sage"))
     load(str(_PREAMBLE / "categories/group/groups.sage"))
     load(str(_PREAMBLE / "categories/group/finitely_presented_groups.sage"))
+    load(str(_PREAMBLE / "categories/group/predicate_subgroups.sage"))
     load(str(_PREAMBLE / "categories/modules/framed/formed/integrallattice/integral_lattices.sage"))
     load(str(_PREAMBLE / "categories/modules/framed/formed/integrallattice/subobjects.sage"))
     load(str(_PREAMBLE / "categories/modules/group_modules/group_lattices.sage"))
+    load(str(_PREAMBLE / "categories/modules/fractional_ideals.sage"))
+    load(str(_PREAMBLE / "categories/modules/functors/free_forgetful_adjunction.sage"))
+    load(str(_PREAMBLE / "categories/modules/functors/base_change_adjunction.sage"))
     load(str(_PREAMBLE / "categories/modules/framed/formed/integrallattice/lattice_homomorphisms.sage"))
     load(str(_PREAMBLE / "categories/modules/framed/formed/integrallattice/lattice_isometries.sage"))
     load(str(_PREAMBLE / "categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage"))
@@ -185,39 +191,15 @@ else:
     install_subschemes()
     install_varieties()
 
-    # Sage's ``R^n`` syntax is implemented by the parent class of ``Rings``.
-    # Install this after the preamble's own catalogue has loaded, since Sage's
-    # internal construction work still needs its native free modules while the
-    # layer is being initialized.
-    from sage.categories.rings import Rings as _SageRings
+    # ``R^n`` is the preamble's free module.  The caret is research notation
+    # the preparser lowers; Sage's own algorithms write Python's ``R**n`` and
+    # keep their native free modules.  Registered after the catalogue has
+    # loaded, since the layer needs those native modules to initialize.
+    from dzack_research.preamble.preparser import register_ring_power
 
-    _preamble_ring_pow = _SageRings.ParentMethods.__pow__
-    if not getattr(_preamble_ring_pow, "_preamble_routed", False):
-        import types as _types
+    register_ring_power(BasedFreeModule)
 
-        _preamble_original_ring_pow = _types.FunctionType(
-            _preamble_ring_pow.__code__,
-            _preamble_ring_pow.__globals__,
-            name="_preamble_original_ring_pow",
-        )
-        _preamble_ring_pow.__globals__["_preamble_original_ring_pow"] = (
-            _preamble_original_ring_pow
-        )
-        _preamble_ring_pow.__globals__["_PreambleSageInteger"] = SageInteger
-        _preamble_ring_pow.__globals__["_PreambleBasedFreeModule"] = BasedFreeModule
-
-        def _route_ring_pow(self, exponent):
-            match exponent:
-                case int() | _PreambleSageInteger() if exponent >= int():
-                    return _PreambleBasedFreeModule(self, exponent)
-                case _:
-                    return _preamble_original_ring_pow(self, exponent)
-
-        _preamble_ring_pow.__code__ = _route_ring_pow.__code__
-        _preamble_ring_pow._preamble_routed = True
-
-    # Only what the scripts added: re-exporting the caller's own names would
-    # overwrite a later module's helpers with this one's.
+    # Loading twice re-exports the *same* objects rather than re-running the scripts.
     _preamble_namespace = {
         _name: _value
         for _name, _value in globals().items()

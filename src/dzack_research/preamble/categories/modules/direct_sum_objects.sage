@@ -1,21 +1,27 @@
 r"""Objects equipped with a chosen ordered direct-sum decomposition."""
 
 from collections.abc import Iterable
-from typing import Any
+from typing import Self, TYPE_CHECKING
 
 from sage.categories.category import Category
 from sage.structure.parent import Parent
 
 from sage_lattice_category_spike.objects.sets import Sets
 
+if TYPE_CHECKING:
+    # The ordered-set noun is type-only: the preamble loads into one
+    # shared namespace and nothing named OrderedSet may bind there.
+    from sage_lattice_category_spike.lexicon import OrderedSet
 
-def _is_subobject(source: Any) -> bool:
-    """Return whether ``source`` is a stored subobject of its codomain."""
-    try:
-        structure_morphism = source.structure_morphism()
-    except AttributeError:
-        return False
-    return source in source.category().SubObject(structure_morphism.codomain())
+
+def _is_subobject(source: "Module") -> bool:
+    r"""Return whether ``source`` is a module carrying a chosen embedding.
+
+    ``source`` is also called with elements and with lists of images.  An
+    element's category is ``Elements(P)``, never \(P\)'s own, and a list has
+    no category at all, so both answer no.
+    """
+    return source in Subobjects()
 
 
 class DirectSumObjects(Category):
@@ -29,29 +35,25 @@ class DirectSumObjects(Category):
         return [Sets()]
 
     class ParentMethods:
-        def underlying_object(self: Any) -> Any:
-            return self._underlying_object
+        # No ``underlying_object``/``module_generating_set``/``rank``/
+        # ``group`` here.  ``group_modules`` refines a module *in place* into
+        # this category, and on that object those names must keep answering
+        # from the module's own category; a delegation through
+        # ``_underlying_object`` would shadow them with an attribute only the
+        # ``DirectSumObject`` wrapper has.  A decomposition contributes the
+        # summands and nothing else.
 
-        def summands(self: Any) -> tuple:
+        def summands(self: Self) -> tuple:
             return self._summands
 
-        def summand_index_set(self: Any) -> Any:
+        def summand_index_set(self: Self) -> "OrderedSet":
             return self._summand_index_set
 
-        def summand(self: Any, label: Any) -> Any:
+        def summand(self: Self, label: "Element") -> "Module":
             assert label in self._summand_index_set, (
                 f"{label!r} is not a summand label"
             )
             return self._summands[self._summand_index_set.index(label)]
-
-        def generating_set(self: Any) -> Any:
-            return self._underlying_object.generating_set()
-
-        def rank(self: Any) -> Any:
-            return self._underlying_object.rank()
-
-        def group(self: Any) -> Any:
-            return self._underlying_object.group()
 
 
 class DirectSumObject(Parent):
@@ -59,9 +61,9 @@ class DirectSumObject(Parent):
 
     def __init__(
         self,
-        underlying_object: Any,
-        summands: Any,
-        summand_index_set: Any,
+        underlying_object: "Module",
+        summands: "OrderedSet",
+        summand_index_set: "OrderedSet",
     ) -> None:
         self._underlying_object = underlying_object
         self._summands = tuple(summands)
@@ -78,11 +80,21 @@ class DirectSumObject(Parent):
         )
 
 
-def DirectSum(
-    underlying_object: Any,
-    summands: Any,
-    summand_index_set: Any = None,
+def DirectSumDecomposition(
+    underlying_object: "Module",
+    summands: "OrderedSet",
+    summand_index_set: "OrderedSet" = None,
 ) -> DirectSumObject:
+    r"""Return the decomposition \(M=\bigoplus_i M_i\) of an object already in hand.
+
+    This asserts of \(M\) that the given family decomposes it; it does not
+    build \(\bigoplus_i M_i\) out of anything.  ``DirectSum`` is the
+    construction --- the biproduct of the summands, read off its projections
+    and injections --- and lives in ``products.sage``.  The two are different
+    operations even though in \(R\)-**Mod** they name the same object: one
+    starts from the structure morphisms and produces the apex, the other
+    starts from the apex and records a chosen splitting of it.
+    """
     summands = tuple(summands)
     match summand_index_set:
         case None:
@@ -92,7 +104,7 @@ def DirectSum(
                 summand_index_set
             )
         case _:
-            raise TypeError(
+            assert False, (
                 "a summand index set is a finite set or finite iterable"
             )
     return DirectSumObject(
@@ -102,20 +114,24 @@ def DirectSum(
     )
 
 
-def _direct_sum_assignment_pairs(source: Any, target: Any) -> tuple:
+def _direct_sum_assignment_pairs(source: "Module", target: "Module") -> tuple:
     r"""Expand one declared summand assignment into generator-image pairs."""
     source_is_subobject = _is_subobject(source)
     target_is_subobject = _is_subobject(target)
 
+    # ``embedded_module_generators`` is an ordered set, not a sequence: it
+    # answers ``cardinality`` and has no ``len``.  Pairing source generators
+    # with target images is positional, so the order is read out into a tuple
+    # here, at the one boundary where position is what is wanted.
     match source_is_subobject, target_is_subobject, target:
         case True, True, _:
-            source_images = source.embedded_elements()
-            target_images = target.embedded_elements()
+            source_images = tuple(source.embedded_module_generators())
+            target_images = tuple(target.embedded_module_generators())
         case True, False, list() | tuple():
-            source_images = source.embedded_elements()
+            source_images = tuple(source.embedded_module_generators())
             target_images = tuple(target)
         case True, False, _:
-            source_images = source.embedded_elements()
+            source_images = tuple(source.embedded_module_generators())
             assert len(source_images) == 1, (
                 "one target element requires a rank-one source"
             )
@@ -124,9 +140,9 @@ def _direct_sum_assignment_pairs(source: Any, target: Any) -> tuple:
             assert target.rank() == 1, (
                 "a target subobject must have rank one"
             )
-            return ((source, target.embedded_elements()[0]),)
+            return ((source, tuple(target.embedded_module_generators())[0]),)
         case False, False, list() | tuple():
-            raise TypeError(
+            assert False, (
                 "a list of target images requires a source subobject"
             )
         case False, False, _:
@@ -138,11 +154,14 @@ def _direct_sum_assignment_pairs(source: Any, target: Any) -> tuple:
     return tuple(zip(source_images, target_images, strict=True))
 
 
-def _expand_direct_sum_hom_dict(domain: Any, mapping: dict) -> list:
-    r"""Expand a summand-level assignment to the domain's framing labels."""
+def _expand_direct_sum_hom_dict(domain: "Module", mapping: dict) -> list:
+    r"""Expand a summand-level assignment to one image per domain generator."""
     images = dict(
         pair
         for source, target in mapping.items()
         for pair in _direct_sum_assignment_pairs(source, target)
     )
-    return [images[generator] for generator in domain.generating_set()]
+    # Keyed by the summands' embedded generators, which are elements of the
+    # domain -- not by the framing labels, which for an iterated direct sum
+    # are nested index tuples and name no element.
+    return [images[generator] for generator in domain.module_generators()]

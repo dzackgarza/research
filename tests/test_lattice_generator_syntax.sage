@@ -57,22 +57,23 @@ def test_set_literal_preparser_preserves_sage_generator_declarations() -> None:
     assert namespace["alpha1"] == lattice.module_generators()[0]
     assert namespace["alpha2"] == lattice.module_generators()[1]
     expected_roots = Set([namespace["alpha1"], namespace["alpha2"]])
-    assert namespace["simple_roots"].equal_as_sets(expected_roots)
+    # Two sets are equal when they have the same elements, which is what ``==``
+    # asks of them.  A separate ``equal_as_sets`` would be a second name for
+    # that one question.
+    assert namespace["simple_roots"] == expected_roots
     assert namespace["weight"] == 3 * namespace["alpha1"] + 2 * namespace["alpha2"]
 
 
-def _lattice_constructor() -> (
-    Callable[_LatticeConstructorParams, FreeQuadraticModule_integer_symmetric]
-):
-    from sage.all import IntegralLattice
-    from sage.modules.free_quadratic_module_integer_symmetric import (
-        FreeQuadraticModule_integer_symmetric,
-    )
+def _lattice_constructor() -> Callable[_LatticeConstructorParams, "Lattice"]:
+    r"""Return the preamble's lattice constructor.
 
-    return cast(
-        Callable[_LatticeConstructorParams, FreeQuadraticModule_integer_symmetric],
-        IntegralLattice,
-    )
+    Not ``sage.all``'s function of this name.  The preamble installs its own
+    over that name, and only that one takes ``names=`` -- which is what the
+    sugar passes -- and builds a parent inside the owned categories, where
+    ``module_generators`` and ``with_names`` live.  Sage's returns a submodule
+    of a base-changed module over $\mathbb Q$, which answers to none of them.
+    """
+    return IntegralLattice
 
 
 def test_explicit_generator_form_preparses_to_names_keyword() -> None:
@@ -92,10 +93,10 @@ def test_ellipsis_form_expands_the_range() -> None:
     IntegralLattice = _lattice_constructor()
     L.<a1,...,a8> = IntegralLattice("E8")
     assert L.variable_names() == tuple(f"a{i}" for i in range(1, 9)), L.variable_names()
-    assert len(L.gens()) == 8
+    assert len(L.module_generators()) == 8
     # The crux: a8 is the EIGHTH generator, not the third slot of the raw spec.
-    assert a1 == L.gens()[0], a1
-    assert a8 == L.gens()[7], a8
+    assert a1 == L.module_generators()[0], a1
+    assert a8 == L.module_generators()[7], a8
 
 
 def test_explicit_generator_form_binds_names() -> None:
@@ -103,7 +104,7 @@ def test_explicit_generator_form_binds_names() -> None:
     IntegralLattice = _lattice_constructor()
     L.<e,f> = IntegralLattice("H")
     assert L.variable_names() == ("e", "f")
-    assert e == L.gens()[0] and f == L.gens()[1]
+    assert e == L.module_generators()[0] and f == L.module_generators()[1]
 
 
 def test_generator_count_must_match_the_rank() -> None:
@@ -123,7 +124,7 @@ def test_assign_names_then_inject_works() -> None:
     names = tuple(f"a{i}" for i in range(1, 9))
     lattice._assign_names(names)
     assert lattice.variable_names() == names
-    assert len(lattice.gens()) == 8
+    assert len(lattice.module_generators()) == 8
     first_two = lattice._first_ngens(2)
     assert len(first_two) == 2
 
@@ -161,7 +162,7 @@ def test_named_lattice_helper_gives_the_intended_sugar() -> None:
     lattice = _lattice_constructor()("E8")
     named = lattice.with_names("a1..a8")
     assert named.variable_names() == tuple(f"a{i}" for i in range(1, 9))
-    assert len(named.gens()) == 8
+    assert len(named.module_generators()) == 8
 
     explicit = _lattice_constructor()("H").with_names("e, f")
     assert explicit.variable_names() == ("e", "f")

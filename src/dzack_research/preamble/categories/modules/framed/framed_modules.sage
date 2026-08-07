@@ -11,7 +11,7 @@ datum.  No finiteness, countability, or orderability hypothesis is imposed on
 \(S\).
 """
 
-from typing import Any
+from typing import Any, Self, TYPE_CHECKING
 
 import sage.categories.category_with_axiom as cwa
 from sage.categories.category_types import Category_module
@@ -21,36 +21,48 @@ from sage.misc.abstract_method import abstract_method
 from sage.misc.cachefunc import cached_method
 from sage.sets.image_set import ImageSubobject
 
+if TYPE_CHECKING:
+    # The ordered-set noun is type-only: the preamble loads into one
+    # shared namespace and nothing named OrderedSet may bind there.
+    from sage_lattice_category_spike.lexicon import OrderedSet
+
+
+if TYPE_CHECKING:
+    # The mathematical ``Set`` noun must not bind at runtime: these files
+    # load into one shared namespace where Sage's ``Set()`` constructor
+    # lives under the same name.
+    from sage_lattice_category_spike.lexicon import Set
+
 
 if "Framed" not in cwa.all_axioms:
     cwa.all_axioms.add("Framed")
 
 
-def _finite_coefficient_function(module: Any, coefficients: Any) -> dict:
+def _finite_coefficient_function(module: "Module", coefficients: dict) -> dict:
     r"""Pair a coordinate vector with the module's ordered generating set."""
     coefficients = tuple(coefficients)
-    assert len(coefficients) == module.ngens(), (
-        f"{module} has {module.ngens()} generators, got "
+    assert len(coefficients) == module.number_of_module_generators(), (
+        f"{module} has {module.number_of_module_generators()} generators, got "
         f"{len(coefficients)} coefficients"
     )
     return dict(
         zip(
-            module.generating_set(),
+            module.module_generating_set(),
             coefficients,
             strict=True,
         )
     )
 
 
-def _finite_generator_assignment(
-    module: Any,
+def _finite_module_generator_assignment(
+    module: "Module",
     images: list | tuple,
-    codomain: Any,
+    codomain: "Module",
 ) -> tuple[Any, dict]:
     r"""Return the codomain and finite generator assignment."""
     images = tuple(images)
-    assert len(images) == module.ngens(), (
-        f"{module} has {module.ngens()} generators, got {len(images)} images"
+    assert len(images) == module.number_of_module_generators(), (
+        f"{module} has {module.number_of_module_generators()} generators, got {len(images)} images"
     )
     match images:
         case (first, *_):
@@ -62,7 +74,7 @@ def _finite_generator_assignment(
             target = codomain
     return target, dict(
         zip(
-            module.generating_set(),
+            module.module_generating_set(),
             images,
             strict=True,
         )
@@ -75,13 +87,21 @@ class FramedModules(CategoryWithAxiom_over_base_ring):
     _base_category_class_and_axiom = (Modules, "Framed")
 
     class ParentMethods:
+
         @abstract_method
         def framing_morphism(self) -> "FramingMorphism":
             r"""Return the framing morphism \(F_R(S)\to M\)."""
 
         @cached_method
-        def generator_morphism(self):
-            r"""Return the set morphism \(S\to U(M)\) supplied by the framing."""
+        def module_generator_morphism(self) -> "SetMorphism":
+            r"""Return the set morphism \(S\to U(M)\) that frames \(M\) as a module.
+
+            For a module the framing is the module framing, so this reads the
+            framing morphism itself.  An object framed twice -- a free algebra,
+            framed as an algebra by \(S\) and as a module by
+            \(\operatorname{Mon}(S)\) -- says which one is the module framing
+            by overriding this.
+            """
             framing = self.framing_morphism()
             assert isinstance(framing, FramingMorphism), (
                 "the Framed axiom is witnessed by a declared epimorphism"
@@ -96,33 +116,29 @@ class FramedModules(CategoryWithAxiom_over_base_ring):
             assert framing.parent() is module_homset(source, self), (
                 "the framing morphism belongs to a noncanonical homset"
             )
-            return framing.generator_morphism()
+            return framing.module_generator_morphism()
 
-        def module_generating_set(self):
+        def module_generating_set(self) -> "OrderedSet":
             r"""Return the domain \(S\) of the distinguished module-generator morphism."""
-            return self.generator_morphism().domain()
+            return self.module_generator_morphism().domain()
 
-        generating_set = module_generating_set
-        framing_set = module_generating_set
 
-        def module_generator(self, element_of_S: Any):
+        def module_generator(self, element_of_S: "Element") -> "ModuleElement":
             r"""Return the distinguished module generator associated to \(s\in S\)."""
-            return self.generator_morphism()._call_(element_of_S)
+            return self.module_generator_morphism()._call_(element_of_S)
 
-        generator = module_generator
+        def module_generators(self) -> "Set":
+            r"""Return the framed generators as a mathematical set.
 
-        def module_generators(self) -> tuple:
-            r"""Return the framed generators as an iterable set.
-
-            For general framed modules this may be infinite, so the result is not
-            coerced to a tuple.
+            For general framed modules this may be infinite, so the result is
+            Sage's ``ImageSubobject`` set, not a coerced tuple.
             """
             return ImageSubobject(
-                self.generator_morphism(),
-                self.generating_set(),
-            )
+                    self.module_generator_morphism(),
+                    self.module_generating_set(),
+                )
 
-        def linear_combination(self: Any, coefficients: dict) -> Any:
+        def linear_combination(self: Self, coefficients: dict) -> "ModuleElement":
             r"""Return the specified finite \(R\)-linear combination."""
             assert isinstance(coefficients, dict), (
                 "a finite linear combination is specified by its coefficient "
@@ -137,24 +153,18 @@ class FramedModules(CategoryWithAxiom_over_base_ring):
                 self.zero(),
             )
 
-        @cached_method
-        def gens(self):
-            r"""Return the image of \(S\to U(M)\) without enumerating \(S\)."""
-            morphism = self.generator_morphism()
-            return ImageSubobject(morphism, morphism.domain())
-
-        def Hom(self, codomain: Any, *args: Any, **kwargs: Any):
+        def Hom(self, codomain: "Module", category: "Category" = None) -> "Homset":
             r"""Return the canonical homset from this module to ``codomain``."""
-            if hasattr(codomain, "base_ring") and getattr(codomain, "base_ring")() == self.base_ring():
+            if codomain in Modules(self.base_ring()).Framed():
                 return module_homset(self, codomain)
-            return Parent.Hom(self, codomain, *args, **kwargs)
+            return Parent.Hom(self, codomain, category)
 
-        def is_framed(self: Any) -> bool:
+        def is_framed(self: Self) -> bool:
             return True
 
 
 @cached_method
-def _framed_subcategory(self):
+def _framed_subcategory(self: Self) -> "Category":
     return self._with_axiom("Framed")
 
 

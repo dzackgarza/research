@@ -13,16 +13,15 @@ subcategory inclusion (a forgetful functor is faithful, not monic).
 from __future__ import annotations
 
 from collections.abc import Iterable, Iterator
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING
 
 from ..lexicon import SageParent, SageUniqueRepresentation
+from .cardinals import Cardinal
 from .sets import Sets
 
 if TYPE_CHECKING:
     from sage.categories.morphism import SetMorphism
     from sage.structure.element import Element
-
-    from .cardinals import Cardinal
 
 _SET_AXIOM_NAMES = ("Finite", "Infinite", "Countable", "Uncountable", "TotallyOrdered")
 
@@ -48,7 +47,31 @@ def _translated_placement(structured: SageParent) -> Sets:
 
 class UnderlyingSet(SageUniqueRepresentation, SageParent):
     r"""The underlying set ``U(X)`` of a structured parent: same elements,
-    structure forgotten."""
+    structure forgotten.
+
+    ``U`` is the object half of the forgetful functor right adjoint to the
+    free functor, so it must be well defined on objects: ``U(X)`` has to
+    *be* the codomain of ``U(f)`` for every ``f`` out of ``X``, not merely
+    an equal copy.  ``UniqueRepresentation`` keys on ``X``, and refining
+    ``X`` into a subcategory changes that key while leaving the object --
+    and its elements -- the same.  The answer is therefore kept on ``X``
+    itself, where no refinement can reach it.
+    """
+
+    @staticmethod
+    def __classcall__(cls, structured: SageParent) -> "UnderlyingSet":
+        stored = getattr(structured, "_underlying_set", None)
+        if stored is not None:
+            return stored
+        underlying = super(UnderlyingSet, cls).__classcall__(cls, structured)
+        try:
+            structured._underlying_set = underlying
+        except AttributeError:
+            # A Cython parent carries no instance dictionary and so cannot
+            # hold the answer; it also cannot be refined, which is the only
+            # thing that moves the key, so its key is already fixed.
+            pass
+        return underlying
 
     if TYPE_CHECKING:
         # The generic set surface is injected by the owned Sets() axiom
@@ -66,13 +89,24 @@ class UnderlyingSet(SageUniqueRepresentation, SageParent):
         SageParent.__init__(self, facade=structured, category=_translated_placement(structured).Facade())
 
     def cardinality(self) -> Cardinal:
-        if hasattr(self._structured, "cardinality"):
-            return Cardinal(self._structured.cardinality())
-        if hasattr(self._structured, "module_generating_set"):
-            return Cardinal(self._structured.module_generating_set().cardinality())
-        if hasattr(self._structured, "generating_set"):
-            return Cardinal(self._structured.generating_set().cardinality())
-        raise NotImplementedError(f"{self} has no known cardinality")
+        r"""Return $|U(X)|$.
+
+        Cardinality is total on sets, so the structured parent answers it.
+        The former fallbacks read a generating set instead -- which counts
+        generators, not elements, and answers a different question.
+        """
+        return Cardinal(self._structured.cardinality())
+
+    def is_finite(self) -> bool:
+        r"""Return whether $U(X)$ is finite.
+
+        Concrete for the same reason as :meth:`cardinality`: the axiom
+        categories inject this surface only when the facade placement carries
+        the axiom, so a set whose placement does not is left unable to answer
+        a question every set has an answer to. Forgetting structure does not
+        change the elements, so the structured parent decides it.
+        """
+        return bool(self.cardinality().is_finite())
 
     def _repr_(self) -> str:
         return f"Underlying set of {self._structured}"
@@ -91,7 +125,7 @@ class UnderlyingSet(SageUniqueRepresentation, SageParent):
     def __iter__(self) -> Iterator[object]:
         # The structured parent's enumeration is its witness data, supplied
         # dynamically; the static Parent surface cannot see it.
-        return iter(cast(Iterable[object], self._structured))
+        return iter(self._structured)
 
     def __contains__(self, x: object) -> bool:
         return x in self._structured
@@ -108,7 +142,7 @@ class ViaUnderlyingSet:
         obligation everything else rolls up through."""
         # Runtime Sage copies these methods onto structured parent classes,
         # so ``self`` is a Parent there.
-        return UnderlyingSet(cast("SageParent", self))
+        return UnderlyingSet(self)
 
     def cardinality(self) -> Cardinal:
         return self.underlying_set().cardinality()

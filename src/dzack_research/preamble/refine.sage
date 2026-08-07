@@ -35,9 +35,12 @@ EXAMPLES::
     0
 """
 
-from typing import Any, Callable
+from typing import Any, Callable, Self
 
+from sage.categories.category import Category
 from sage.categories.morphism import Morphism
+from sage.structure.parent import Parent
+from sage.structure.sage_object import SageObject
 from sage.cpython.type import can_assign_class
 from sage.misc.abstract_method import AbstractMethod
 from sage.structure.category_object import CategoryObject
@@ -88,7 +91,7 @@ def _implemented_mixin(mixin: type) -> type:
     _IMPLEMENTED_MIXINS[mixin] = filtered
     return filtered
 
-def _concrete_base(obj: Any) -> type:
+def _concrete_base(obj: "SageObject") -> type:
     """Return the non-dynamic concrete class Sage would use as ``__base__``."""
     cls = type(obj)
     cached = getattr(cls, "_preamble_concrete", None)
@@ -115,6 +118,31 @@ def _concrete_base(obj: Any) -> type:
 
 _OWNED_CATEGORY_NAMES = frozenset(
     (
+        # The parameterized abstract categories.  They must be listed for the
+        # same reason every other owned category is: once a refine target has
+        # *any* owned category among its super categories, ``_preamble_mixins``
+        # stops being empty and the ``type(category)`` fallback in
+        # ``_method_mixins`` never runs -- so an unlisted category's methods
+        # are silently dropped.  Refining a lattice into ``TensorProduct``
+        # installed no ``cartesian_source`` for exactly this reason.
+        "ArrowCategory",
+        "IsoArrowCategory",
+        "DiagramCategory",
+        "DirectedSystem",
+        "InverseSystem",
+        "ConeCategory",
+        "CoconeCategory",
+        "ProductCategory",
+        "CoproductCategory",
+        "BiproductCategory",
+        "TensorProductCategory",
+        # The two slice categories a subobject is refined into.  A subobject
+        # is its embedding's domain, so ``structure_morphism`` and
+        # ``embedding`` reach it only if these are listed; they no longer
+        # compete with ``Subobjects``, which declares neither.  The rest of
+        # the slice family stays absent until something refines into it.
+        "SliceOverCategory",
+        "SubobjectCategory",
         "IntegralLattices",
         "DirectSumObjects",
         "HyperbolicLattices",
@@ -122,6 +150,9 @@ _OWNED_CATEGORY_NAMES = frozenset(
         "LatticeIsometries",
         "OwnedGroups",
         "OwnedFiniteGroups",
+        "OwnedFinitelyGeneratedGroups",
+        "OwnedFinitelyPresentedGroups",
+        "OwnedAbelianGroups",
         "FinitelyGeneratedModules",
         "FramedModules",
         "FinitelyPresentedModules",
@@ -178,7 +209,7 @@ _OWNED_CATEGORY_NAMES = frozenset(
 )
 
 
-def _preamble_mixins(category: Any, attr: str) -> tuple[type, ...]:
+def _preamble_mixins(category: "Category", attr: str) -> tuple[type, ...]:
     """Collect preamble ``ParentMethods`` / ``ElementMethods`` / ``MorphismMethods``."""
     mixins: list[type] = []
     for cat in category.all_super_categories(proper=False):
@@ -201,7 +232,7 @@ def _preamble_mixins(category: Any, attr: str) -> tuple[type, ...]:
             mixins.append(implemented)
     return tuple(mixins)
 
-def _method_mixins(category: Any, attr: str) -> tuple[type, ...]:
+def _method_mixins(category: "Category", attr: str) -> tuple[type, ...]:
     """Preamble mixins if present; otherwise the category's own nested methods class."""
     mixins = _preamble_mixins(category, attr)
     if mixins:
@@ -211,16 +242,16 @@ def _method_mixins(category: Any, attr: str) -> tuple[type, ...]:
         return (nested,)
     return ()
 
-def _is_homset(obj: Any) -> bool:
+def _is_homset(obj: "SageObject") -> bool:
     from sage.categories.homset import Homset
 
     return isinstance(obj, Homset)
 
-def _is_morphism(obj: Any) -> bool:
+def _is_morphism(obj: "SageObject") -> bool:
     r"""Return whether ``obj`` is a Sage morphism."""
     return isinstance(obj, Morphism)
 
-def _rebuild_parent_class(obj: Any, category: Any) -> None:
+def _rebuild_parent_class(obj: "Parent", category: "Category") -> None:
     # Only preamble/category ParentMethods mixins precede the concrete class —
     # never the full Sage parent_class (which would hoist Modules.basis etc.).
     mixins = _method_mixins(category, "ParentMethods")
@@ -239,7 +270,7 @@ def _rebuild_parent_class(obj: Any, category: Any) -> None:
     new_cls._preamble_concrete = concrete
     obj.__class__ = new_cls
 
-def _rebuild_element_class(parent: Any, category: Any) -> None:
+def _rebuild_element_class(parent: "Parent", category: "Category") -> None:
     """Install ``element_class = (*ElementMethods, native)``.
 
     Only called for element-bearing parents (:func:`refine` routes homsets
@@ -250,7 +281,8 @@ def _rebuild_element_class(parent: Any, category: Any) -> None:
 
     Elements the parent constructed *before* refinement (its stored basis)
     keep the plain native type; parents hand out ``element_class`` instances
-    at their output boundary (``gens`` in the owning ``ParentMethods``).
+    at their output boundary (``module_generators`` in the owning
+    ``ParentMethods``).
     """
     mixins = _method_mixins(category, "ElementMethods")
     if not mixins:
@@ -267,7 +299,7 @@ def _rebuild_element_class(parent: Any, category: Any) -> None:
         doccls=native,
     )
 
-def _refine_morphism(obj: Any, category: Any) -> Any:
+def _refine_morphism(obj: "Morphism", category: "Category") -> "Morphism":
     """Reassign a morphism's class so ``MorphismMethods`` precede it."""
     mixins = _method_mixins(category, "MorphismMethods")
     if not mixins:
@@ -287,7 +319,7 @@ def _refine_morphism(obj: Any, category: Any) -> Any:
     obj.__class__ = new_cls
     return obj
 
-def refine(obj: Any, category: Any) -> Any:
+def refine(obj: "SageObject", category: "Category") -> "SageObject":
     r"""Refine ``obj`` so ``category``'s methods precede concrete class methods.
 
     Joins ``category`` into ``obj.category()`` as Sage does, then rebuilds
@@ -324,7 +356,7 @@ def refine(obj: Any, category: Any) -> Any:
 
 def hook_post_init(
     cls: type,
-    category: Any,
+    category: "Category",
     *,
     predicate: Callable[[Any], bool] | None = None,
     before: Callable[[Any], None] | None = None,
@@ -350,7 +382,7 @@ def hook_post_init(
     if cls not in _ORIGINAL_INIT:
         _ORIGINAL_INIT[cls] = cls.__init__
 
-        def _init(self: Any, *args: Any, **kwargs: Any) -> None:
+        def _init(self: Self, *args: Any, **kwargs: Any) -> None:
             _ORIGINAL_INIT[cls](self, *args, **kwargs)
             for hook in _BEFORE.get(cls, ()):
                 hook(self)

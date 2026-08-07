@@ -1,20 +1,32 @@
-r"""Subobjects represented by monomorphisms.
+r"""The module-level subobject category.
 
-A subobject is the pair \((A,\iota:A\hookrightarrow B)\).  The construction
-does not mutate \(A\): the same object may occur in several slice objects
-through different monomorphisms.
+A subobject of \(B\) is a module \(S\) carrying a chosen monomorphism
+\(\iota:S\hookrightarrow B\).  It is not a wrapper around \(S\), and \(S\) is
+not a subset of \(B\): \(S\) is an object of the ambient category like any
+other, and this category *mixes in* what the arrow gives it.  Generators,
+rank, zero, form, Gram matrix, group, and action are answered by the ambient
+category and are never re-declared here.
+
+The abstract ``SubobjectCategory`` (``slice_categories.sage``) supplies
+``embedding()`` for a subobject in any \(\mathbf{C}\).  What this file adds
+needs cosets, hence an abelian ambient category -- see
+:meth:`Subobjects.ParentMethods.index`.
 """
 
-from typing import Any
+from typing import Self, TYPE_CHECKING
 
 from sage.categories.category import Category
-from sage.structure.parent import Parent
 
 from sage_lattice_category_spike.objects.sets import Sets
 
+if TYPE_CHECKING:
+    # The ordered-set noun is type-only: the preamble loads into one
+    # shared namespace and nothing named OrderedSet may bind there.
+    from sage_lattice_category_spike.lexicon import OrderedSet
+
 
 class Subobjects(Category):
-    r"""Objects of a slice category represented by a chosen monomorphism."""
+    r"""Modules carrying a chosen monomorphism into an ambient module."""
 
     @classmethod
     def _repr_object_names(cls) -> str:
@@ -24,71 +36,76 @@ class Subobjects(Category):
         return [Sets()]
 
     class ParentMethods:
-        def underlying_object(self: Any) -> Any:
-            return self._underlying_object
+        def index(self: Self) -> "Integer":
+            r"""Return $[B:S]$, the cardinality of $\operatorname{coker}(\iota)$.
 
-        def embedding(self: Any) -> Any:
-            return self._embedding
+            Sited here and not on the abstract subobject category: an index
+            counts the cosets $x+S$, and $x+S=y+S$ is only a statement once
+            $x-y\in S$ is one.  That needs the ambient object to be an
+            abelian group under the subobject -- an abelian ambient
+            category, of which modules are the case this file is about.  A
+            subobject of a bare set, of a monoid, or of a scheme has no
+            index, which is why the slice category declares none.
 
-        def embedding_codomain(self: Any) -> Any:
-            return self._embedding.codomain()
+            The computation belongs to the arrow: ``ModuleMorphism.index``.
+            """
+            return self.embedding().index()
 
-        def index(self: Any) -> Any:
-            return self._embedding.index()
+        def is_primitive(self: Self) -> bool:
+            r"""Return whether this subobject is primitive (saturated) in its codomain.
 
-        def gens(self: Any) -> Any:
-            return self._underlying_object.gens()
+            The definition, and the single place it is computed: $S\subseteq M$
+            is primitive exactly when $M/S$ is torsion free.  Every other
+            statement of primitivity in the repo -- an element's, a
+            sublattice's -- routes here rather than restating a numerical
+            equivalent that happens to hold over $\mathbb Z$ in some
+            generating set.
 
-        def generating_set(self: Any) -> Any:
-            return self._underlying_object.generating_set()
+            Torsion free is not free: over a general $R$ the two differ, and
+            the definition is the former.
+            """
+            return self.embedding().cokernel().is_torsion_free()
 
-        def generator_morphism(self: Any) -> Any:
-            return self._underlying_object.generator_morphism()
+        is_saturated = is_primitive
 
-        def generator(self: Any, element_of_S: Any) -> Any:
-            return self.generator_morphism()(element_of_S)
+        def saturation(self: Self) -> "Subobject":
+            r"""Return the primitive closure $S^{\mathrm{sat}}\subseteq M$.
 
-        def rank(self: Any) -> Any:
-            return self._underlying_object.rank()
+            $S^{\mathrm{sat}}/S=\operatorname{tors}(M/S)$, so
+            $S^{\mathrm{sat}}$ is the kernel of
+            $M\twoheadrightarrow M/S\twoheadrightarrow(M/S)/\mathrm{tors}$.
+            That composite is built from morphisms that already exist and its
+            kernel is taken by the morphism, so no call site clears
+            denominators or saturates a row lattice by hand.
+            """
+            inclusion = self.embedding()
+            ambient = inclusion.codomain()
+            quotient = inclusion.cokernel()
+            projection = quotient.torsion_free_quotient()
+            return ambient.hom(
+                {
+                    label: projection(quotient.module_generator(label))
+                    for label in ambient.module_generating_set()
+                }
+            ).kernel()
 
-        def module_generators(self: Any) -> Any:
-            return self._underlying_object.module_generators()
+        def embedded_module_generators(self: Self) -> "OrderedSet":
+            r"""Return the images $\iota(e_i)$ of this subobject's generators.
 
-        def zero(self: Any) -> Any:
-            return self._underlying_object.zero()
-
-        def is_zero(self: Any) -> bool:
-            return self._underlying_object.is_zero()
-
-        def linear_combination(self: Any, coefficients: Any) -> Any:
-            return self._underlying_object.linear_combination(coefficients)
-
-        def gram_matrix(self: Any) -> Any:
-            return self._underlying_object.gram_matrix()
-
-        def form(self: Any) -> Any:
-            return self._underlying_object.form()
-
-        def forget_form(self: Any) -> Any:
-            return self._underlying_object.forget_form()
-
-        def group(self: Any) -> Any:
-            return self._underlying_object.group()
-
-        def action(self: Any) -> Any:
-            return self._underlying_object.action()
-
-        def embedded_gens(self: Any) -> Any:
+            Not ``module_generators``: those are the abstract $e_i$ this
+            module has as an object of the ambient category, and their
+            coordinates have length ``rank``.  These are their images in the
+            embedding's codomain, whose coordinates have that module's rank.
+            """
             return finite_ordered_set(
                 tuple(
-                    self._embedding(generator)
-                    for generator in self._underlying_object.gens()
+                    self.embedding()(generator)
+                    for generator in self.module_generators()
                 )
             )
 
-        embedded_elements = embedded_gens
-
-        def isotropic_reduction(self: Any) -> Any:
+        def isotropic_reduction(self: Self) -> "Module":
+            r"""Return $S^{\perp}/S$ for an isotropic subobject of a formed module."""
             assert self.gram_matrix().is_zero(), (
                 "isotropic reduction requires the form to vanish on the subobject"
             )
@@ -101,12 +118,16 @@ class Subobjects(Category):
                     _coordinate_vector(
                         inclusion.lift(image)
                     )
-                    for image in self.embedded_gens()
+                    for image in self.embedded_module_generators()
                 ],
             )
             lifts = _free_quotient_lifts(perpendicular.rank(), relations)
             generators = tuple(
-                perpendicular.linear_combination(lift)
+                zipsum(
+                    lift,
+                    perpendicular.module_generators(),
+                    perpendicular.zero(),
+                )
                 for lift in lifts
             )
             gram = matrix(
@@ -125,29 +146,7 @@ class Subobjects(Category):
             )
 
 
-class SubobjectObject(Parent):
-    r"""The slice object \((A,\iota:A\hookrightarrow B)\)."""
-
-    def __init__(self, embedding: Any) -> None:
-        self._underlying_object = embedding.domain()
-        self._embedding = embedding
-        Parent.__init__(
-            self,
-            base=self._underlying_object.base_ring(),
-            category=Subobjects(),
-        )
-
-    def __contains__(self, element: Any) -> bool:
-        return element in self._underlying_object
-
-    def _repr_(self) -> str:
-        return (
-            f"Subobject ({self._underlying_object}, "
-            f"{self._embedding}) of {self._embedding.codomain()}"
-        )
-
-
-def _free_quotient_lifts(rank: Any, relations: Matrix) -> list:
+def _free_quotient_lifts(rank: "Integer", relations: "MorphismMatrix") -> list:
     from sage.modules.free_module import FreeModule as _sage_free_module
 
     free = _sage_free_module(ZZ, rank)
@@ -155,12 +154,22 @@ def _free_quotient_lifts(rank: Any, relations: Matrix) -> list:
     return [generator.lift() for generator in quotient.gens()]
 
 
-def Subobject(embedding: Any) -> SubobjectObject:
-    r"""Construct the slice object represented by ``embedding``."""
+def Subobject(embedding: "ModuleMorphism") -> "Module":
+    r"""Return $\iota$'s domain, refined into the subobject categories.
+
+    The subobject *is* the domain.  ``Slice`` stores the arrow on it and
+    refines it into ``SubObject(codomain)``, the ambient-parameterized slice
+    category; the module-level ``Subobjects`` is joined on top for the
+    coset-dependent methods.  Nothing wraps the module, so it keeps every
+    method its own category gives it.
+
+    The second refine is passed the object's *whole* category and not
+    ``Subobjects()`` alone: ``refine`` rebuilds the class from the category
+    it is handed, so handing it the leaf alone would drop the module's own
+    methods.
+    """
     assert isinstance(embedding, (ModuleMorphism, FormMorphism)), (
         "a module subobject is represented by a module or form morphism"
     )
-    assert embedding.is_injective(), (
-        "the structure morphism of a subobject must be a monomorphism"
-    )
-    return SubobjectObject(embedding)
+    subobject = Slice(embedding, is_mono=True)
+    return refine(subobject, [subobject.category(), Subobjects()])

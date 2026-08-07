@@ -20,7 +20,7 @@ that gives each class a canonical representative to print and hash.
 """
 
 from collections.abc import Iterable
-from typing import Any
+from typing import Self, TYPE_CHECKING
 
 from sage.matrix.matrix0 import Matrix
 from sage.categories.category import Category
@@ -30,10 +30,17 @@ from sage.categories.modules import Modules
 from sage.matrix.special import diagonal_matrix
 from sage.structure.parent import Parent
 
+from sage_lattice_category_spike.lexicon import MorphismMatrix
 from sage_lattice_category_spike.objects.sets import Sets
 
+if TYPE_CHECKING:
+    from sage.rings.ideal import Ideal_pid
+    # The ordered-set noun is type-only: the preamble loads into one
+    # shared namespace and nothing named OrderedSet may bind there.
+    from sage_lattice_category_spike.lexicon import OrderedSet
 
-def _is_additive(group: Any) -> bool:
+
+def _is_additive(group: "Group") -> bool:
     r"""Return whether ``group`` is written additively, asked of its category."""
     from sage.categories.commutative_additive_groups import CommutativeAdditiveGroups
 
@@ -51,7 +58,7 @@ class FinitelyPresentedTorsionModules(Category_over_base_ring):
             case _ if base_ring is ZZ:
                 return super().__classcall__(cls, ZZ)
             case _:
-                raise TypeError(
+                assert False, (
                     "this finite-presentation implementation is over ZZ"
                 )
 
@@ -65,7 +72,7 @@ class FinitelyPresentedTorsionModules(Category_over_base_ring):
             FinitelyPresentedModules(self.base_ring()),
         ]
 
-    def direct_sum_of_cyclics(self, orders: Any) -> "TorsionModule":
+    def direct_sum_of_cyclics(self, orders: "OrderedSet") -> "TorsionModule":
         r"""Return $\bigoplus_i\mathbb Z/d_i$ on one generator per summand.
 
         The orders are taken as given and not normalized: $[2,3]$ builds a
@@ -77,9 +84,9 @@ class FinitelyPresentedTorsionModules(Category_over_base_ring):
         assert all(d > 1 for d in orders), (
             f"each summand needs an order greater than 1, got {orders}"
         )
-        return self.from_relations(diagonal_matrix(ZZ, orders))
+        return self.from_relations(MorphismMatrix(diagonal_matrix(ZZ, orders)))
 
-    def from_abelian_group(self, group: Any) -> "TorsionModule":
+    def from_abelian_group(self, group: "Group") -> "TorsionModule":
         r"""Return ``group`` as an object of this category, on its own generators.
 
         The generating set is the one the group already has.  Nothing is
@@ -107,7 +114,7 @@ class FinitelyPresentedTorsionModules(Category_over_base_ring):
         generators = tuple(group.group_generators())
         if not generators:
             return self.from_relations(
-                matrix(ZZ, 0, 0),
+                MorphismMatrix(matrix(ZZ, 0, 0)),
                 Sets.Δ[-1],
             )
         orders = [generator.order() for generator in generators]
@@ -126,16 +133,16 @@ class FinitelyPresentedTorsionModules(Category_over_base_ring):
             for exponents in cartesian_product_iterator([range(d) for d in orders])
             if combine(generators, exponents) == identity
         ]
-        relations = matrix(ZZ, found).stack(diagonal_matrix(ZZ, orders))
+        relations = MorphismMatrix(matrix(ZZ, found).stack(diagonal_matrix(ZZ, orders)))
         # Square again: the relation lattice has full rank, so its Hermite form
         # has one nonzero row per generator and the rest are padding.
-        reduced = relations.hermite_form()
+        reduced = relations.normal_form(include_zero_rows=True)
         return self.from_relations(
             reduced[: len(orders), :],
             finite_ordered_set(generators),
         )
 
-    def _group_arithmetic(self, group: Any) -> tuple:
+    def _group_arithmetic(self, group: "Group") -> tuple:
         r"""Return how to form $\sum a_ig_i$ in ``group``, and its identity.
 
         Sage writes finite abelian groups both ways -- ``AbelianGroup``
@@ -165,8 +172,8 @@ class FinitelyPresentedTorsionModules(Category_over_base_ring):
 
     def from_relations(
         self,
-        relations: Any,
-        generating_set: Any = None,
+        relations: "MorphismMatrix",
+        module_generating_set: "OrderedSet" = None,
     ) -> "TorsionModule":
         r"""Return the module presented by ``relations``, as a morphism.
 
@@ -174,28 +181,28 @@ class FinitelyPresentedTorsionModules(Category_over_base_ring):
         that is what a presentation is; nothing downstream sees the matrix
         except the linear algebra.
         """
-        relations = matrix(ZZ, relations)
+        relations = MorphismMatrix(relations, ZZ)
         domain = BasedFreeModule(ZZ, Sets.Δ[relations.nrows() - 1])
-        match generating_set:
+        match module_generating_set:
             case None:
-                generating_set = Sets.Δ[relations.ncols() - 1]
+                module_generating_set = Sets.Δ[relations.ncols() - 1]
             case Parent() | Iterable():
-                generating_set = finite_ordered_set(generating_set)
-                assert generating_set.cardinality() == relations.ncols(), (
+                module_generating_set = finite_ordered_set(module_generating_set)
+                assert module_generating_set.cardinality() == relations.ncols(), (
                     "the generating set and presentation have different widths"
                 )
             case _:
-                raise TypeError(
+                assert False, (
                     "a generating set is a finite set or finite iterable"
                 )
-        codomain = BasedFreeModule(ZZ, generating_set)
+        codomain = BasedFreeModule(ZZ, module_generating_set)
         return TorsionModule(
             _module_morphism(
                 domain,
                 codomain,
                 dict(
                     zip(
-                        domain.generating_set(),
+                        domain.module_generating_set(),
                         (codomain._from_coordinates(row) for row in relations.rows()),
                     )
                 )
@@ -222,7 +229,7 @@ class FinitelyPresentedTorsionModules(Category_over_base_ring):
         nonzero ideal, so it has a generator.
         """
 
-        def order(self: Any) -> Any:
+        def order(self: Self) -> "Integer":
             r"""Return the generator of $\operatorname{Ann}(a)\subseteq\mathbb Z$.
 
             The least $k\ge 1$ with $ka=0$, which exists because this module is
@@ -239,36 +246,33 @@ class FinitelyPresentedTorsionModules(Category_over_base_ring):
                 if (multiple * self).is_zero():
                     return multiple
                 multiple += 1
-            raise AssertionError(
+            assert False, (
                 "an element of a finite torsion module has finite order"
             )
 
     class ParentMethods:
         r"""What a torsion module is asked, none of which involves a form."""
 
-        def abelian_group(self: Any) -> Any:
+        def abelian_group(self: Self) -> "Group":
             r"""Return this module as a Sage finite abelian group."""
             from sage.groups.abelian_gps.abelian_group import AbelianGroup
 
-            return refine(
-                own_group_types(AbelianGroup(list(self.invariants()))),
-                OwnedFiniteGroups(),
-            )
+            return own_group(AbelianGroup(list(self.invariants())))
 
-        def permutation_group(self: Any) -> Any:
-            r"""Return a permutation representation of this module."""
-            return self.abelian_group().permutation_group()
+        def is_p_elementary(self: Self, p: "Integer") -> bool:
+            r"""Return whether $pA=0$, so that $A$ is a vector space over $\mathbb F_p$.
 
-        def is_p_elementary(self: Any, p: Any) -> bool:
-            r"""Return whether this module is elementary abelian of exponent $p$."""
-            p = p
+            The definition, asked of the module: $p$ kills $A$ exactly when it
+            lies in $\operatorname{Ann}(A)$, and the annihilator is an ideal
+            this module already has.  The route through an abelian group and
+            then a permutation representation of it put two questions to a
+            proxy twice removed -- and being killed by $p$ is not a statement
+            about a permutation representation.
+            """
             assert p.is_prime(), f"p must be prime, got {p}"
-            group = self.permutation_group()
-            if not group.is_elementary_abelian():
-                return False
-            return group.order() == 1 or group.exponent() == p
+            return p in self.annihilator()
 
-        def primary_decomposition(self: Any) -> dict:
+        def primary_decomposition(self: Self) -> dict:
             r"""Return the primary decomposition as $\{p: \text{orders}\}$.
 
             An invariant of the isomorphism class, read off the invariant
@@ -288,7 +292,7 @@ class FinitelyPresentedTorsionModules(Category_over_base_ring):
                 for prime in sorted({prime for prime, _ in prime_powers})
             }
 
-        def as_finitely_presented_group(self: Any) -> Any:
+        def as_finitely_presented_group(self: Self) -> "Group":
             r"""Return this module as a finitely presented abelian group."""
             from sage.groups.free_group import FreeGroup
             from sage.misc.misc_c import prod
@@ -296,10 +300,13 @@ class FinitelyPresentedTorsionModules(Category_over_base_ring):
             relations = self.relation_matrix()
             size = relations.ncols()
             if size == 0:
-                return FreeGroup(0, "e").quotient([])
+                return own_group(FreeGroup(0, "e").quotient([]))
 
             free = FreeGroup([f"e{i + 1}" for i in range(size)])
-            generators = free.module_generators()
+            # A free *group*, so its generators are group generators.  The
+            # module noun asks it for data it does not have -- the words
+            # below are products in the group law, not linear combinations.
+            generators = free.gens()
             words = [
                 generators[i]
                 * generators[j]
@@ -317,38 +324,40 @@ class FinitelyPresentedTorsionModules(Category_over_base_ring):
                 )
                 for row in relations.rows()
             )
-            return free.quotient(words)
+            return own_group(free.quotient(words))
 
-        def __iter__(self: Any):
+        def __iter__(self: Self):
             from sage.misc.mrange import cartesian_product_iterator
 
-            hermite = self.relation_matrix().hermite_form(
-                include_zero_rows=False
-            )
-            bounds = [hermite[i, i] for i in range(self.ngens())]
+            reduced = self.relation_matrix().normal_form()
+            bounds = [reduced[i, i] for i in range(self.number_of_module_generators())]
             for point in cartesian_product_iterator(
                 [range(bound) for bound in bounds]
             ):
                 yield self._from_coordinates(point)
 
-        def annihilator(self: Any) -> Any:
-            r"""Return the ideal generated by the module exponent."""
+        def annihilator(self: Self) -> "Ideal_pid":
+            r"""Return the annihilator ideal \(\operatorname{Ann}(M)\subseteq R\).
+
+            An ideal, not the exponent generating it: the consumer at
+            ``torsion_modules_with_form`` asks it for ``.gen()``.
+            """
             return ZZ.ideal(self.exponent())
 
-        def smith_form_gens(self: Any) -> Any:
+        def smith_form_module_generators(self: Self) -> "OrderedSet":
             r"""Return generators realizing the invariant-factor decomposition."""
             smith, _, right = self.relation_matrix().smith_form()
-            inverse = right.inverse().change_ring(ZZ)
+            coordinates = right.inverse().change_ring(ZZ).rows()
             return finite_ordered_set(
                 tuple(
-                    self._from_coordinates(inverse.row(i))
-                    for i, entry in enumerate(smith.diagonal())
-                    if entry != 1
+                    self._from_coordinates(coordinates[i])
+                    for i in range(self.number_of_module_generators())
+                    if smith[i, i] != 1
                 )
             )
 
 
-def TorsionModule(presentation: Any) -> FinitelyPresentedModule:
+def TorsionModule(presentation: "ModuleMorphism") -> FinitelyPresentedModule:
     r"""Return the cokernel of ``presentation``, refined as torsion."""
     module = FinitelyPresentedModule(presentation)
     assert module in FinitelyPresentedTorsionModules(module.base_ring()), (

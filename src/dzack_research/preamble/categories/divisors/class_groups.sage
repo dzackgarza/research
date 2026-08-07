@@ -1,11 +1,9 @@
 r"""Weil divisor class groups."""
 
-from typing import Any
-
 from sage.categories.category import Category
 
 
-def ClassGroup(module: Any) -> Any:
+def ClassGroup(module: "Module") -> "Module":
     r"""Refine the specified framed quotient module as \(\operatorname{Cl}(X)\)."""
     assert module in Modules(ZZ).Framed(), (
         "a class group must declare its quotient framing at construction"

@@ -1,12 +1,10 @@
 r"""Shared Gram-matrix operations."""
 
 from itertools import accumulate
-from typing import Any
-
 import networkx as nx
 
 
-def _matrix_connected_component_cuts(G: Any) -> list[int]:
+def _matrix_connected_component_cuts(G: "GramMatrix") -> list[int]:
     r"""Return the cuts between consecutive connected diagonal blocks of \(G\)."""
     n = G.nrows()
     if n <= 1:

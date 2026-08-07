@@ -1,11 +1,9 @@
 r"""Weil divisor groups."""
 
-from typing import Any
-
 from sage.categories.category import Category
 
 
-def WeilDivisorGroup(module: Any) -> Any:
+def WeilDivisorGroup(module: "Module") -> "Module":
     r"""Refine the free module on the actual codimension-one subvarieties."""
     assert module in FramedFreeModules(ZZ), (
         "WeilDiv(X) is free on its specified set of prime divisors"

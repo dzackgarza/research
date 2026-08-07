@@ -29,13 +29,13 @@ class FinitelyGeneratedModules(CategoryWithAxiom_over_base_ring):
     class ParentMethods:
         def module_generators(self):
             r"""Return the finite framed generators as a tuple."""
-            generating_set = self.generating_set()
-            assert generating_set in Sets().Finite(), (
+            module_generating_set = self.module_generating_set()
+            assert module_generating_set in Sets().Finite(), (
                 "module_generators() is defined only for finitely generated modules"
             )
             return tuple(
-                self.generator(element_of_S)
-                for element_of_S in generating_set
+                self.module_generator(element_of_S)
+                for element_of_S in module_generating_set
             )
 
         def is_finitely_generated(self) -> bool:

@@ -8,6 +8,7 @@ Hierarchy:
           └── ToricVariety
 """
 
+from sage.rings.rational_field import QQ
 from sage.categories.category_types import Category_over_base_ring
 from sage.categories.category_with_axiom import (
     all_axioms,
@@ -16,6 +17,14 @@ from sage.categories.category_with_axiom import (
 import sage.schemes.curves.constructor as _sage_curve_const
 import sage.schemes.toric.variety as _sage_toric
 from sage.rings.integer_ring import ZZ
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    # The ordered-set noun is type-only: the preamble loads into one
+    # shared namespace and nothing named OrderedSet may bind there.
+    from sage_lattice_category_spike.lexicon import Integer, OrderedSet
+
 
 _NativeToricVariety = _sage_toric.ToricVariety
 _NativeCurve = _sage_curve_const.Curve
@@ -76,9 +85,18 @@ class Varieties(Category_over_base_ring):
 # ---------------------------------------------------------------------------
 
 
-def ToricVariety(*args, **kwargs):
-    r"""Construct a toric variety shadowing native Sage ToricVariety, placing it in Varieties(R)."""
-    obj = _NativeToricVariety(*args, **kwargs)
+def ToricVariety(
+    fan: "Parent",
+    coordinate_names: "OrderedSet" = None,
+    names: "OrderedSet" = None,
+    coordinate_indices: "OrderedSet" = None,
+    base_ring: "Ring" = QQ,
+    base_field: "Field" = None,
+) -> "Parent":
+    r"""Construct the toric variety of ``fan``, placing it in ``Varieties(R)``."""
+    obj = _NativeToricVariety(
+        fan, coordinate_names, names, coordinate_indices, base_ring, base_field
+    )
     return refine(obj, Varieties(obj.base_ring()))
 
 
@@ -87,9 +105,9 @@ def ToricVariety(*args, **kwargs):
 # ---------------------------------------------------------------------------
 
 
-def Curve(*args, **kwargs):
-    r"""Construct an algebraic curve shadowing native Sage Curve, placing it in Curves(R)."""
-    obj = _NativeCurve(*args, **kwargs)
+def Curve(F: "Parent", A: "Parent" = None) -> "Parent":
+    r"""Construct the curve cut out by ``F``, placing it in ``Curves(R)``."""
+    obj = _NativeCurve(F, A)
     return refine(obj, Curves(obj.base_ring()))
 
 
@@ -106,7 +124,7 @@ class Curves(Category_over_base_ring):
     class ParentMethods:
         r"""Curve parent methods."""
 
-        def dimension(self) -> int:
+        def dimension(self) -> "Integer":
             r"""Return 1."""
             return 1
 
@@ -140,7 +158,7 @@ class Surface(Variety):
         Variety.__init__(self, base_ring=base_ring)
         refine(self, Surfaces(base_ring))
 
-    def dimension(self) -> int:
+    def dimension(self) -> "Integer":
         r"""Return 2, the dimension of a surface."""
         return 2
 
@@ -158,7 +176,7 @@ class Surfaces(Category_over_base_ring):
     class ParentMethods:
         r"""Surface parent methods."""
 
-        def dimension(self) -> int:
+        def dimension(self) -> "Integer":
             r"""Return 2."""
             return 2
 

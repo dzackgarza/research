@@ -13,7 +13,6 @@ from pathlib import Path
 from sage.categories.homset import Hom
 from sage.categories.morphism import Morphism, SetMorphism
 from typing import cast
-from sage.rings.ideal import Ideal_pid
 from sage.structure.element import Element
 from sage.structure.parent import Parent
 import pytest
@@ -29,13 +28,20 @@ def _ensure_preamble() -> None:
 
 
 def _assert_algebra_membership(base: Parent, algebra: Parent, structure_map: Morphism) -> None:
-    assert algebra in Algebras(base), (
+    # A Sage ring is not asked owned questions: an R-algebra is the ring map
+    # R -> A, and own_algebra constructs the object that answers them.
+    owned = own_algebra(structure_map)
+    assert owned in Algebras(base), (
         f"{algebra} is not an explicit object of Algebras({base})"
     )
-    assert algebra.algebra_structure_map() is structure_map
+    assert owned.algebra_structure_map() is structure_map
 
 
-def _assert_fractional_ideal_generators(ideal: Ideal_pid, ring: Parent, expected_gens: tuple) -> None:
+def _assert_fractional_ideal_generators(
+    ideal: "FractionalIdeal",
+    ring: Parent,
+    expected_gens: "OrderedSet",
+) -> None:
     """Check that ideal generators and module generators are the same generating family."""
     module_category = Modules(ring)
     assert ideal in module_category, (
@@ -57,14 +63,19 @@ def test_free_algebra_on_delta_records_the_generating_set() -> None:
 
     assert A.base_ring() == QQ
     assert A.algebra_generating_set() == S
-    assert A.generating_set() == S
+    # The module framing is Mon(S), not S: the degree-two monomial x_0 x_1 is a
+    # module generator, and the module generator it names is the product of the
+    # two algebra generators.
+    monomials = A.monomial_monoid()
+    assert A.module_generator(monomials.gen(0) * monomials.gen(1)) == (
+        A.algebra_generator(0) * A.algebra_generator(1)
+    )
     assert A.algebra_generator_morphism().domain() == S
     assert tuple(A.algebra_generators()) == tuple(A.algebra_generator(s) for s in S)
     assert A.algebra_generator(0) in A
-    assert A.generator(0) == A.algebra_generator(0)
     assert A.algebra_generator_morphism()(S.an_element()) in A
-    assert A.algebra_gens() == S.cardinality()
-    assert A.module_gens() == A.module_generating_set().cardinality()
+    assert A.number_of_algebra_generators() == S.cardinality()
+    assert A.number_of_module_generators() == A.module_generating_set().cardinality()
 
 
 def test_free_algebra_delta_constructor_matches_algebras_free_category() -> None:
@@ -76,7 +87,7 @@ def test_free_algebra_delta_constructor_matches_algebras_free_category() -> None
 
     assert A == B
     assert A.algebra_generating_set() == S
-    assert A.generator(S.an_element()) == B.generator(S.an_element())
+    assert A.algebra_generator(S.an_element()) == B.algebra_generator(S.an_element())
 
 
 def test_delta_countable_alias_for_aleph_zero() -> None:
@@ -97,7 +108,7 @@ def test_aleph_index_two_is_undefined() -> None:
     """`ℵ[n]` is only defined for `n=0` and `n=1`."""
     _ensure_preamble()
 
-    with pytest.raises(ValueError):
+    with pytest.raises(AssertionError):
         _ = Sets.ℵ[2]
 
 
@@ -109,10 +120,8 @@ def test_free_algebra_on_delta_aleph_zero_is_free_algebra_on_naturals() -> None:
     assert A.algebra_generating_set() == NN
     assert A.algebra_generator(0) in A
     assert A.algebra_generator(7) in A
-    assert A.generator(0) == A.algebra_generator(0)
-    assert A.generator(7) == A.algebra_generator(7)
-    assert A.algebra_gens() == NN.cardinality()
-    assert A.module_gens() == A.module_generating_set().cardinality()
+    assert A.number_of_algebra_generators() == NN.cardinality()
+    assert A.number_of_module_generators() == A.module_generating_set().cardinality()
 
     shift = SetMorphism(
         Hom(NN, NN, Sets()),
@@ -145,12 +154,10 @@ def test_free_algebra_on_natural_numbers_has_countable_generators() -> None:
     assert A.algebra_generating_set() == NN
     assert A.algebra_generator(0) in A
     assert A.algebra_generator(7) in A
-    assert A.generator(0) == A.algebra_generator(0)
-    assert A.generator(7) == A.algebra_generator(7)
-    assert A.generator(0).underlying_set_element() == 0
-    assert A.generator(7).underlying_set_element() == 7
-    assert A.algebra_gens() == NN.cardinality()
-    assert A.module_gens() == A.module_generating_set().cardinality()
+    assert A.algebra_generator(0).underlying_set_element() == 0
+    assert A.algebra_generator(7).underlying_set_element() == 7
+    assert A.number_of_algebra_generators() == NN.cardinality()
+    assert A.number_of_module_generators() == A.module_generating_set().cardinality()
 
 
 def test_free_algebra_does_not_treat_lists_or_tuples_as_elements() -> None:
@@ -188,22 +195,20 @@ def test_finitely_generated_free_algebra_hom_from_generator_images() -> None:
     source = FreeAlgebraOn(QQ, Sets.Δ[3])
     target = FreeAlgebraOn(QQ, Sets.Δ[3])
 
-    def image_of_monomial(monomial: Element) -> Element:
-        exponent_profile = monomial.dict()
-        assert len(exponent_profile) == 1
-        generator_label, exponent = next(iter(exponent_profile.items()))
-        assert exponent == 1
-        match generator_label:
+    def image_of_generator(label: Element) -> Element:
+        match label:
             case 0:
                 return cast("Element", target.algebra_generator(2))
             case 1:
                 return cast("Element", target.algebra_generator(1))
             case 2:
                 return cast("Element", target.algebra_generator(0))
+            case 3:
+                return cast("Element", target.algebra_generator(3))
             case _:
-                raise ValueError(f"unexpected generator label {generator_label!r}")
+                assert False, f"unexpected generator label {label!r}"
 
-    hom = source.hom(image_of_monomial, target)
+    hom = source.hom(image_of_generator, target)
 
     assert hom(source.algebra_generator(0)) == target.algebra_generator(2)
     assert hom(source.algebra_generator(1)) == target.algebra_generator(1)
@@ -218,12 +223,21 @@ def test_free_algebra_morphism_composition_and_identity() -> None:
     target = FreeAlgebraOn(QQ, Sets.Δ[2])
     terminal = FreeAlgebraOn(QQ, Sets.Δ[1])
 
-    forward = source.hom({0: bridge.algebra_generator(1), 1: bridge.algebra_generator(2)})
+    # An assignment names where *every* generator goes: a map on $S$ is the
+    # whole of an algebra map's data, so a partial one names nothing.
+    forward = source.hom(
+        {
+            0: bridge.algebra_generator(1),
+            1: bridge.algebra_generator(2),
+            2: bridge.algebra_generator(0),
+        }
+    )
     backward = bridge.hom(
         {
             0: target.algebra_generator(0),
             1: target.algebra_generator(1),
             2: target.algebra_generator(1),
+            3: target.algebra_generator(2),
         },
         target,
     )
@@ -231,6 +245,7 @@ def test_free_algebra_morphism_composition_and_identity() -> None:
         {
             0: terminal.algebra_generator(0),
             1: terminal.algebra_generator(0),
+            2: terminal.algebra_generator(1),
         },
         terminal,
     )
@@ -271,9 +286,11 @@ def test_free_algebra_morphism_composition_and_identity() -> None:
         source.algebra_generator(0)
     )
 
-    identity_target = target.Hom(target).identity()
-    assert forward(source.algebra_generator(0)) == forward.then(identity_target)(source.algebra_generator(0))
-    assert forward(source.algebra_generator(1)) == forward.then(identity_target)(source.algebra_generator(1))
+    # $f$ composes with the identity on *its own* codomain, which is the
+    # bridge; $\mathrm{id}_{target}$ is not composable with $f$ at all.
+    identity_bridge = bridge.Hom(bridge).identity()
+    assert forward(source.algebra_generator(0)) == forward.then(identity_bridge)(source.algebra_generator(0))
+    assert forward(source.algebra_generator(1)) == forward.then(identity_bridge)(source.algebra_generator(1))
 
 
 def test_finitely_presented_algebra_remembers_presentation_data() -> None:
@@ -289,9 +306,12 @@ def test_finitely_presented_algebra_remembers_presentation_data() -> None:
     assert presented.presentation_ideal()
     assert presented.algebra_generator_morphism().domain() == source.algebra_generating_set()
     assert presented.algebra_generating_set() == source.algebra_generating_set()
+    # $\Delta[2]=\{0,1,2\}$: three generators, and the quotient keeps all of
+    # them -- a relation removes elements, not generators.
     assert tuple(presented.algebra_generators()) == (
         presented.algebra_generator(0),
         presented.algebra_generator(1),
+        presented.algebra_generator(2),
     )
     assert presented.algebra_framing_morphism() is presented.algebra_presentation_morphism()
     assert presented.algebra_presentation_morphism()(relation) == presented.zero()
@@ -343,10 +363,12 @@ def test_finitely_presented_algebra_base_change_is_explicit() -> None:
     assert changed.base_ring() is ComplexField()
     assert changed.algebra_generating_set() == source.algebra_generating_set()
     assert changed.algebra_generator(0) in changed
-    assert changed.algebra_presentation_morphism()(changed.algebra_generator(0) * changed.algebra_generator(1)) == changed.zero()
-    assert changed.presentation_ideal().contains(
-        changed.algebra_generator(0) * changed.algebra_generator(1)
-    )
+    # $\pi$ and the ideal both live over the presentation ring; the
+    # quotient's generators are their images, not their arguments.
+    free = changed.presentation_ring()
+    changed_relation = free.algebra_generator(0) * free.algebra_generator(1)
+    assert changed.algebra_presentation_morphism()(changed_relation) == changed.zero()
+    assert changed_relation in changed.presentation_ideal()
 
 
 def test_finitely_presented_algebra_base_change_transports_coefficients() -> None:
@@ -361,14 +383,17 @@ def test_finitely_presented_algebra_base_change_transports_coefficients() -> Non
         raise AssertionError("expected ZZ-to-ComplexField coerce map")
     changed = presented.base_change(ring_hom)
 
-    mapped_relation = ComplexField(2) * changed.algebra_generator(0)
-    assert changed.presentation_ideal().contains(mapped_relation)
+    # ``ComplexField(2)`` is the field with 2 bits of precision, not the
+    # number 2; the transported coefficient is $2\in\mathbb C$.
+    free = changed.presentation_ring()
+    mapped_relation = ComplexField()(2) * free.algebra_generator(0)
+    assert mapped_relation in changed.presentation_ideal()
 
 
 def test_algebra_parent_base_change_rejects_invalid_map() -> None:
     """`Algebra.base_change` requires a morphism from the declared base ring."""
     _ensure_preamble()
-    A = PolynomialRing(QQ, "t")
+    A = own_algebra(PolynomialRing(QQ, "t").coerce_map_from(QQ))
     invalid_map = RealField().coerce_map_from(ZZ)
     if invalid_map is None:
         raise AssertionError("expected invalid-map precondition to produce a map")
@@ -382,7 +407,7 @@ def test_free_algebra_linear_combination_is_not_front_door() -> None:
     _ensure_preamble()
     A = FreeAlgebraOn(QQ, Sets.Δ[1])
 
-    with pytest.raises(NotImplementedError):
+    with pytest.raises(AssertionError):
         A.linear_combination({0: A.algebra_generator(0)})
 
 
@@ -390,17 +415,12 @@ def test_polynomial_ring_standard_syntax_and_isomorphism() -> None:
     """`R.<x,y> = PolynomialRing(QQ, 2)` drives explicit free-algebra maps."""
     _ensure_preamble()
     R.<x, y> = PolynomialRing(QQ, 2)
-    source = FreeAlgebraOn(QQ, Sets.Δ[2])
-    images = {0: x, 1: y}
+    # $\Delta[1]=\{0,1\}$: two generators, matching $x$ and $y$.  The
+    # isomorphism is a statement about the two generating sets having the
+    # same cardinality, so it does not survive a mismatch.
+    source = FreeAlgebraOn(QQ, Sets.Δ[1])
 
-    def monomial_to_polynomial(monomial: Element) -> Element:
-        polynomial = R.one()
-        for generator_label, exponent in monomial.dict().items():
-            assert generator_label in images
-            polynomial *= images[generator_label] ** exponent
-        return polynomial
-
-    to_polynomial = source.hom(monomial_to_polynomial, R)
+    to_polynomial = source.hom({0: x, 1: y}, R)
     from_polynomial = R.hom([source.algebra_generator(0), source.algebra_generator(1)], source)
 
     element = source.algebra_generator(0)^2 + source.algebra_generator(1)
@@ -555,8 +575,12 @@ def test_standard_ring_has_distinct_base_maps() -> None:
     algebra = QQ
     map_zz_to_qq = algebra.coerce_map_from(ZZ)
     map_qq_to_qq = algebra.coerce_map_from(QQ)
-    assert algebra in Algebras(ZZ), f"{algebra} is not an object of Algebras(ZZ)"
-    assert algebra in Algebras(QQ), f"{algebra} is not an object of Algebras(QQ)"
+    assert own_algebra(map_zz_to_qq) in Algebras(ZZ), (
+        f"{algebra} is not an object of Algebras(ZZ)"
+    )
+    assert own_algebra(map_qq_to_qq) in Algebras(QQ), (
+        f"{algebra} is not an object of Algebras(QQ)"
+    )
     assert map_zz_to_qq.domain() is ZZ
     assert map_qq_to_qq.domain() is QQ
     assert map_zz_to_qq(ZZ(3)) == algebra(3)
@@ -581,16 +605,16 @@ def test_constructed_rings_are_explicit_objects_of_expected_algebra_categories()
     structure_map = algebra.coerce_map_from(base)
     _assert_algebra_membership(base, algebra, structure_map)
 
-    algebra = MatrixAlgebra(QQ, 3)
+    algebra = MatrixSpace(QQ, 3)
     structure_map = algebra.coerce_map_from(base)
     _assert_algebra_membership(base, algebra, structure_map)
 
     base = ZZ
-    algebra = PolynomialRing(QQ, 2)
+    algebra = PolynomialRing(QQ, 2, "x")
     structure_map = algebra.coerce_map_from(base)
     _assert_algebra_membership(base, algebra, structure_map)
 
-    algebra = MatrixAlgebra(ZZ, 2)
+    algebra = MatrixSpace(ZZ, 2)
     structure_map = algebra.coerce_map_from(base)
     _assert_algebra_membership(base, algebra, structure_map)
 
@@ -600,15 +624,15 @@ def test_integral_and_fractional_Z_ideals_are_explicit_modules() -> None:
     _ensure_preamble()
     R = ZZ
     principal = R.ideal(12)
-    principal_inverse = principal.inverse()
-    second = R.ideal(7).inverse()
+    principal_inverse = own_ideal(principal).inverse()
+    second = own_ideal(R.ideal(7)).inverse()
 
-    _assert_fractional_ideal_generators(principal, R, (R(12),))
+    _assert_fractional_ideal_generators(own_ideal(principal), R, (R(12),))
     _assert_fractional_ideal_generators(
-        principal_inverse, R, (QQ(1, 12),)
+        principal_inverse, R, (QQ(1)/12,)
     )
     _assert_fractional_ideal_generators(
-        second, R, (QQ(1, 7),)
+        second, R, (QQ(1)/7,)
     )
 
 
@@ -618,16 +642,23 @@ def test_fractional_ideals_in_quadratic_integer_rings_are_explicit_modules() -> 
     K.<a> = QuadraticField(2, "a")
     R = K.ring_of_integers()
 
-    principal = R.ideal(2)
-    principal_inverse = principal.inverse()
-    mixed = R.ideal(2, a)
-    shifted = R.ideal(3, a + 1)
+    # An ideal does not remember the family it was built from: the order
+    # hands back a module basis, $(2)$ as $(2, 2a)$.  What is invariant is
+    # that the family it does report is one family read two ways, and that
+    # $2$ divides it -- which is what $(2)$ being principal means.
+    principal = own_ideal(R.ideal(2))
+    assert principal.is_principal()
+    assert principal.principal_generator() == R(2)
+    _assert_fractional_ideal_generators(principal, R, principal.gens())
 
-    _assert_fractional_ideal_generators(principal, R, (R(2),))
-    _assert_fractional_ideal_generators(principal_inverse, R, (K(1) / 2,))
     _assert_fractional_ideal_generators(
-        mixed, R, (R(2), R(a))
+        principal.inverse(), R, (K(1) / 2,)
     )
-    _assert_fractional_ideal_generators(
-        shifted, R, (R(3), R(a + 1))
-    )
+
+    mixed = own_ideal(R.ideal([2, a]))
+    _assert_fractional_ideal_generators(mixed, R, (R(2), R(a)))
+
+    # $N(a+1) = -1$, so $a+1$ is a unit and $(3, a+1)$ is all of $R$.
+    unit_ideal = own_ideal(R.ideal([3, a + 1]))
+    assert unit_ideal.is_principal()
+    assert unit_ideal.principal_generator().is_unit()

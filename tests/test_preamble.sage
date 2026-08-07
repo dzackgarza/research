@@ -528,7 +528,7 @@ def test_discriminant_bilinear_form_elements_pair() -> None:
     A = catalogue.Lattices.root_lattice("A", 2).discriminant_bilinear_form()
 
     assert A.invariants() == (3,)
-    gens = A.gens()
+    gens = A.module_generators()
     assert len(gens) == 2, "one generator per generator of L, not per invariant factor"
 
     x, y = gens
@@ -651,15 +651,18 @@ def test_embedding_chain_TCo_TEn_TdP_LK3() -> None:
     assert E.TCo_into_TEn.codomain() is L.TEn
     assert E.TEn_into_TdP.domain() is L.TEn
     assert E.TEn_into_TdP.codomain() is L.TdP
-    assert E.TdP_into_LK3.structure_morphism().codomain() is L.LK3
-    assert E.TEn_into_LK3.structure_morphism().codomain() is L.LK3
+    # $T=(L^G)^\perp$ is a subobject in $\mathrm{Lat}_G$: asking $\Lambda_{K3}$
+    # for it equips $\Lambda_{K3}$ with $\iota$ first, and the ambient of the
+    # answer is that $G$-lattice.  It is $\Lambda_{K3}$ once $G$ is forgotten.
+    assert E.TdP_into_LK3.structure_morphism().codomain().forget_action() is L.LK3
+    assert E.TEn_into_LK3.structure_morphism().codomain().forget_action() is L.LK3
     assert E.TCo_into_TEn.matrix().dimensions() == (11, 12)
     assert E.TEn_into_TdP.matrix().dimensions() == (12, 20)
     assert E.TdP_into_LK3.structure_morphism().matrix().dimensions() == (20, 22)
     assert E.E8_2_into_TdP.matrix().dimensions() == (8, 20)
     # Diagonal piece of TEn→TdP agrees with E8(2)↪TdP on the E8(2) summand.
-    ten = list(L.TEn.gens())
-    for i, gen in enumerate(L.E8_2.gens()):
+    ten = list(L.TEn.module_generators())
+    for i, gen in enumerate(L.E8_2.module_generators()):
         assert E.TEn_into_TdP(ten[4 + i]) == E.E8_2_into_TdP(gen)
 
 
@@ -673,15 +676,15 @@ def test_block_hom_Z2_U2_into_U_U2() -> None:
     codomain = Lcat.U + Lcat.U_2
     z1, z2 = domain.summands()
     w1, w2 = codomain.summands()
-    w1_gens = w1.embedded_elements()
+    w1_gens = w1.embedded_module_generators()
     phi = domain.Hom(codomain)({z1: w1_gens[0] + w1_gens[1], z2: w2})
     assert phi.matrix().dimensions() == (3, 4)
-    e, f = codomain.gens()[0], codomain.gens()[1]
-    assert phi(domain.gens()[0]) == e + f
+    e, f = codomain.module_generators()[0], codomain.module_generators()[1]
+    assert phi(domain.module_generators()[0]) == e + f
     for i in range(2):
-        assert phi(domain.gens()[1 + i]) == codomain.gens()[2 + i]
+        assert phi(domain.module_generators()[1 + i]) == codomain.module_generators()[2 + i]
     # Same matrix as the flat generator-image spelling.
-    flat = domain.Hom(codomain)([e + f] + list(codomain.gens()[2:]))
+    flat = domain.Hom(codomain)([e + f] + list(codomain.module_generators()[2:]))
     assert phi.matrix() == flat.matrix()
 
 
@@ -695,11 +698,11 @@ def test_block_hom_sum_of_blocks_diagonal() -> None:
     codomain = Lcat.U + Lcat.U + Lcat.U
     a1, a2 = domain.summands()
     b1, b2, b3 = codomain.summands()
-    a1_gens, a2_gens = a1.embedded_elements(), a2.embedded_elements()
+    a1_gens, a2_gens = a1.embedded_module_generators(), a2.embedded_module_generators()
     b1_gens, b2_gens, b3_gens = (
-        b1.embedded_elements(),
-        b2.embedded_elements(),
-        b3.embedded_elements(),
+        b1.embedded_module_generators(),
+        b2.embedded_module_generators(),
+        b3.embedded_module_generators(),
     )
     diagonal = [b2_gens[i] + b3_gens[i] for i in range(2)]
     phi = domain.Hom(codomain)({a1: b1, a2: diagonal})
@@ -707,8 +710,8 @@ def test_block_hom_sum_of_blocks_diagonal() -> None:
     for i in range(2):
         assert phi(a1_gens[i]) == b1_gens[i]
         assert phi(a2_gens[i]) == diagonal[i]
-    for x in domain.gens():
-        for y in domain.gens():
+    for x in domain.module_generators():
+        for y in domain.module_generators():
             assert domain.b(x, y) == codomain.b(phi(x), phi(y))
     # Same as an explicit gen-wise diagonal sequence.
     flat = domain.Hom(codomain)(list(b1_gens) + diagonal)
@@ -730,23 +733,56 @@ def test_involutions_are_involutions_and_isometries() -> None:
     for name, morphism in named.items():
         assert morphism.is_involution(), name
         assert morphism.domain() is catalogue.Lattices.LK3, name
-        assert catalogue.Lattices.LK3.invariant_lattice(morphism).rank() == (
-            morphism.invariant_lattice().rank()
-        ), name
+        assert morphism.parent() is catalogue.Lattices.LK3.Aut(), name
+
+
+def test_with_action_receives_a_homomorphism_the_caller_constructed() -> None:
+    """The only way to act: build $G$, build $\\rho\\in\\mathrm{Hom}(G,O(L))$, hand it over.
+
+    The lattice is given a morphism and equips itself with it; it does not
+    assemble one from a group and a list of images.  Constructing $\\rho$ is
+    the group homset's business, and the relations of $G$ are checked there.
+    Both routes to a $G$-lattice end at this one-argument method, so the
+    invariants agree with the involution's own.
+    """
+    catalogue = _preamble()[0]
+    LK3 = catalogue.Lattices.LK3
+    involution = catalogue.Involutions.I_En
+    acting_group = involution.cyclic_subgroup()
+    rho = group_action_homset(acting_group, LK3)(
+        [
+            LK3.Aut()(
+                {
+                    label: generator(LK3.module_generator(label))
+                    for label in LK3.module_generating_set()
+                }
+            )
+            for generator in acting_group.group_generators()
+        ]
+    )
+    acted = LK3.with_action(rho)
+    assert acted.group() is acting_group
+    invariants, coinvariants = acted.invariant_lattice(), acted.coinvariant_lattice()
+    assert invariants.is_isometric(catalogue.Lattices.SEn)
+    assert invariants.rank() + coinvariants.rank() == 22
+    # The subgroup names the same $\rho$ by itself, so the lattice-level
+    # methods -- which take $\rho$ and nothing weaker -- agree with it.
+    assert LK3.invariant_lattice(
+        acting_group.inclusion()
+    ).rank() == invariants.rank()
 
 
 def test_coinvariant_lattice_returns_subobject() -> None:
     catalogue = _preamble()[0]
     L = catalogue.Lattices
     for name in ("I_dP", "I_En", "I_Nik"):
-        action = getattr(catalogue.Involutions, name)
-        expected = L.LK3.coinvariant_lattice(action)
-        actual = L.LK3.coinvariant_lattice(action)
-        assert actual is expected, name
-        assert actual.structure_morphism().is_injective(), name
+        involution = getattr(catalogue.Involutions, name)
+        acted = L.LK3.with_action(involution.cyclic_subgroup().inclusion())
+        assert acted.coinvariant_lattice() is acted.coinvariant_lattice(), name
+        assert acted.coinvariant_lattice().structure_morphism().is_injective(), name
 
 
-def test_eigenlattices_reproduce_the_named_lattices() -> None:
+def test_invariant_and_coinvariant_lattices_reproduce_the_named_lattices() -> None:
     """Two independent constructions agreeing: direct sums versus signed basis images."""
     catalogue, _, _ = _preamble()
     L = catalogue.Lattices
@@ -758,20 +794,21 @@ def test_eigenlattices_reproduce_the_named_lattices() -> None:
         (I.I_Nik, "+", L.LpNik),
         (I.I_Nik, "-", L.LmNik),
     ]
-    for action, sign, expected in pairs:
+    for involution, sign, expected in pairs:
+        action = involution.cyclic_subgroup().inclusion()
         lattice = (
             L.LK3.invariant_lattice(action)
             if sign == "+"
             else L.LK3.coinvariant_lattice(action)
         )
-        assert lattice.is_isometric(expected), f"{action} L{sign}"
+        assert lattice.is_isometric(expected), f"{involution} L{sign}"
 
 
-def test_eigenlattice_ranks_sum_to_22() -> None:
+def test_invariant_and_coinvariant_ranks_sum_to_22() -> None:
     catalogue = _preamble()[0]
     L = catalogue.Lattices
     for name in ("I_dP", "I_En", "I_Nik"):
-        action = getattr(catalogue.Involutions, name)
+        action = getattr(catalogue.Involutions, name).cyclic_subgroup().inclusion()
         plus = L.LK3.invariant_lattice(action)
         minus = L.LK3.coinvariant_lattice(action)
         assert plus.rank() + minus.rank() == 22, name
@@ -787,7 +824,7 @@ def test_source_claim_block_holds() -> None:
     catalogue, _, _ = _preamble()
     TEn = catalogue.Lattices.TEn
     TE = catalogue.TwoElementary
-    basis, dual = TEn.basis(), TEn.dual_basis()
+    basis, dual = TEn.module_generators(), TEn.dual_basis()
     e, f, ep = basis[0], basis[1], basis[2]
     w1 = dual[4]
 
@@ -797,7 +834,7 @@ def test_source_claim_block_holds() -> None:
 
     assert TEn.div(ep) == 2 and TEn.q(ep) == 0
     assert ep.e_perp_mod_e().is_isometric(
-        catalogue.Lattices.U.direct_sum(catalogue.Lattices.E8_2)
+        catalogue.Lattices.U.direct_sum((catalogue.Lattices.E8_2,))
     )
     assert ep.e_perp_mod_e().is_isometric(TE[10, 8, 0])
 
@@ -814,7 +851,7 @@ def test_the_8_6_0_lattice_has_its_recorded_invariants() -> None:
     """The entry recovered from the claim block; an index-2 overlattice of A1^8."""
     catalogue, _, _ = _preamble()
     TEn = catalogue.Lattices.TEn
-    basis, dual = TEn.basis(), TEn.dual_basis()
+    basis, dual = TEn.module_generators(), TEn.dual_basis()
     c = TEn.correlation()
     quotient = TEn.I_perp_mod_I([
         basis[2],
@@ -892,7 +929,7 @@ def test_sterks1_and_sterks3_use_different_dual_scalings() -> None:
     catalogue, _, sterk = _preamble()
     TEn = catalogue.Lattices.TEn
     dual = TEn.dual_basis()
-    ep, fp = TEn.gens()[2], TEn.gens()[3]
+    ep, fp = TEn.module_generators()[2], TEn.module_generators()[3]
     configs = sterk.sterks_in_ten()
     c = TEn.correlation()
     # index 9 of sterks1 is 2*ep+ad2[8] with ad2 = 2*dual
@@ -913,10 +950,10 @@ def test_nothing_from_the_sterk_section_is_unported() -> None:
 
 def test_to_lin_comb_generators_labels_elements() -> None:
     catalogue, _, _ = _preamble()
-    lattice = catalogue.Lattices.U.direct_sum(catalogue.Lattices.E8).with_names("e, f, a1..a8")
-    generators = lattice.gens()
-    assert lattice.to_lin_comb_generators(generators[0]) == "e"
-    label = lattice.to_lin_comb_generators(2 * generators[0] - generators[3])
+    lattice = catalogue.Lattices.U.direct_sum((catalogue.Lattices.E8,)).with_names("e, f, a1..a8")
+    generators = lattice.module_generators()
+    assert lattice.to_lin_comb_module_generators(generators[0]) == "e"
+    label = lattice.to_lin_comb_module_generators(2 * generators[0] - generators[3])
     assert "2*e" in label and "a2" in label, label
 
 
@@ -1023,7 +1060,7 @@ def test_standard_lattice_show_pattern_renders_correctly_in_mathjax() -> None:
 
 def test_direct_sum_subdivides_gram_matrix() -> None:
     catalogue, _, _ = _preamble()
-    direct_sum_lattice = catalogue.Lattices.U.direct_sum(catalogue.Lattices.E8)
+    direct_sum_lattice = catalogue.Lattices.U.direct_sum((catalogue.Lattices.E8,))
     assert direct_sum_lattice.gram_matrix().subdivisions() == ([2], [2])
     assert catalogue.Lattices.LK3.gram_matrix().subdivisions() == ([2, 4, 6, 14], [2, 4, 6, 14])
     assert catalogue.Lattices.LK3_2d(3).gram_matrix().subdivisions() == ([1, 3, 5, 13], [1, 3, 5, 13])
@@ -1032,7 +1069,7 @@ def test_direct_sum_subdivides_gram_matrix() -> None:
 def test_lattice_element_multiplication_and_exponentiation() -> None:
     catalogue, _, _ = _preamble()
     a2 = catalogue.Lattices.root_lattice("A", 2)
-    alpha1, alpha2 = a2.gens()
+    alpha1, alpha2 = a2.module_generators()
     assert alpha1 * alpha1 == -2
     assert alpha1 * alpha2 == 1
     assert alpha1 ** 2 == -2
@@ -1049,10 +1086,10 @@ def test_vinberg_algorithm_negates_roots_when_it_twists() -> None:
     # D4 is already negative definite here, so U + D4 is (1, 5) -- the repo's
     # own convention, and the signature that makes the twist branch fire.
     d4 = catalogue.Lattices.root_lattice("D", 4)
-    lattice = catalogue.Lattices.U.direct_sum(d4).with_names("e, f, a1..a4")
+    lattice = catalogue.Lattices.U.direct_sum((d4,)).with_names("e, f, a1..a4")
     refine(lattice, HyperbolicLattices())
     roots = lattice.vinberg_algorithm()
-    root_names = [lattice.to_lin_comb_generators(root) for root in roots]
+    root_names = [lattice.to_lin_comb_module_generators(root) for root in roots]
     assert len(roots) == 6, len(roots)
     # Twisting happened, so the roots come back negated -- the branch the typo
     # made unreachable.
@@ -1064,71 +1101,74 @@ def test_get_isotropic_type_classifies() -> None:
     import pytest
 
     catalogue, _, _ = _preamble()
-    odd = catalogue.Lattices.U.direct_sum(catalogue.Lattices.U)
+    odd = catalogue.Lattices.U.direct_sum((catalogue.Lattices.U,))
     refine(odd, IntegralLattices())
-    assert odd.get_isotropic_type(odd.gens()[0]) == "Odd"
+    assert odd.get_isotropic_type(odd.module_generators()[0]) == "Odd"
     with pytest.raises(AssertionError):
         odd.get_isotropic_type(vector(ZZ, [1, 0, 0, 0]))
 
     ordinary = catalogue.Lattices.U_2
     refine(ordinary, IntegralLattices())
-    ordinary_class = ordinary.project_to_discriminant_group(
-        ordinary.dual_lattice_element((1 / 2, 0))
+    # $e/2$, which is $e/\operatorname{div}(e)$ since $\operatorname{div}(e)=2$
+    # in $U(2)$ -- built by dividing $c(e)$ rather than from a coordinate row,
+    # which the projection refuses and which names no element of $L^\vee$.
+    ordinary_class = ordinary.divided_discriminant_class(
+        ordinary.module_generators()[0]
     )
     assert not ordinary_class.is_characteristic()
-    assert ordinary.get_isotropic_type(ordinary.gens()[0]) == "Even ordinary"
+    assert ordinary.get_isotropic_type(ordinary.module_generators()[0]) == "Even ordinary"
 
     characteristic = catalogue.Lattices.IPQ(1, 1).twist(2)
     refine(characteristic, IntegralLattices())
-    characteristic_class = characteristic.project_to_discriminant_group(
-        characteristic.dual_lattice_element((1 / 2, 1 / 2))
+    # $(e+f)/2$, and $\operatorname{div}(e+f)=\gcd(2,-2)=2$ on $\langle2\rangle
+    # \oplus\langle-2\rangle$, so this is the same class the isotropic type
+    # below is read from.
+    characteristic_class = characteristic.divided_discriminant_class(
+        characteristic.module_generators()[0]
+        + characteristic.module_generators()[1]
     )
     assert characteristic_class.is_characteristic()
     assert characteristic.get_isotropic_type(
-        characteristic.gens()[0] + characteristic.gens()[1]
+        characteristic.module_generators()[0] + characteristic.module_generators()[1]
     ) == "Even characteristic"
 
 
 def test_install_hooks_are_idempotent() -> None:
     _ensure_preamble()
-    install_integral_lattices()
+    # The hooks ``install.sage`` itself calls.  Integral lattices had one and
+    # no longer do: the category is installed by loading its file, so there is
+    # no second call to be idempotent about.
     install_finitely_presented_groups()
+    install_algebras()
     assert Lattices.U.rank() == 2
 
 
 def test_lattices_install_binds_specimens_and_lk3_generators() -> None:
-    from sage_lattice_category_spike.algebra.domain_algebra import (
-        Lattice,
-        LatticeElement,
-        LatticeMorphism,
-    )
-
+    # What ``install`` binds is asked of the objects, not of their type.
+    # An ``isinstance`` against the spike's protocol classes says only that a
+    # name was declared somewhere; that a bound element lies in LK3 and a
+    # bound morphism starts there is what the binding is *for*.
     _ensure_preamble()
-    ns: dict[str, Lattice | LatticeElement | LatticeMorphism] = {}
+    ns: dict = {}
     Lattices.install(ns)
     assert ns["U"] is Lattices.U
     assert ns["LK3"] is Lattices.LK3
 
     v1 = ns["v1"]
-    assert isinstance(v1, LatticeElement)
     assert v1.parent() is Lattices.LK3
 
     i_en = ns["I_En"]
-    assert isinstance(i_en, LatticeMorphism)
     assert i_en.domain() is Lattices.LK3
 
     a2 = ns["A2"]
-    assert isinstance(a2, Lattice)
     assert a2.signature_pair() == (0, 2)
 
     d4 = ns["D4"]
-    assert isinstance(d4, Lattice)
     assert d4.rank() == 4
 
     assert ns["TdP"] is Lattices.TdP
 
     e = ns["e"]
-    assert isinstance(e, LatticeElement)
     assert e.parent() is Lattices.TdP
 
 

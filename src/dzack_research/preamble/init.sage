@@ -21,6 +21,7 @@
 # Only the text/latex slot is touched. text/plain is still emitted alongside, so
 # nothing is lost; print(), tracebacks, plots and images are untouched.
 
+from sage.structure.sage_object import SageObject
 from pathlib import Path
 import os
 
@@ -58,7 +59,7 @@ julia.eval("using Oscar")
 ## Implicit typesetting #######################################################
 
 def _typesettable(obj):
-    if hasattr(obj, "_latex_"):
+    if isinstance(obj, SageObject):
         return True
     if isinstance(obj, (list, tuple, set, frozenset)):
         return bool(obj) and all(_typesettable(v) for v in obj)

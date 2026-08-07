@@ -14,13 +14,57 @@ Symmetric parameterized abstract categories over an ambient \(\mathbf{C}\):
 
 Each slice object carries its ``structure_morphism()``; each coslice object
 carries its ``costructure_morphism()``.
+
+A slice object *is* the domain of its structure morphism, refined into the
+slice category -- never a wrapper around it.  ``A`` keeps every method
+\(\mathbf{C}\) gives it and gains only the arrow.  The module-level
+``Subobject`` constructor (``subobjects.sage``) is the ``is_mono`` entry
+point into this file's ``Slice``.
 """
 
-from typing import Any
 
 from sage.categories.category import Category
 from sage.categories.morphism import Morphism
 from sage.structure.parent import Parent
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    # The ordered-set noun is type-only: the preamble loads into one
+    # shared namespace and nothing named OrderedSet may bind there.
+    from sage_lattice_category_spike.lexicon import OrderedSet
+
+
+def sole_structure_generators(obj: Parent) -> "OrderedSet":
+    r"""Return the generating family of the one structure ``obj`` is framed by.
+
+    Which families an object has is settled by the categories it lives in -- a
+    module has module generators, a group has group generators, an algebra has
+    algebra generators -- so the categories are asked, not the instance.  An
+    object framed twice, such as a free algebra framed as an algebra by $S$ and
+    as a module by $\operatorname{Mon}(S)$, has no sole family: which one is
+    meant is the caller's to say, so this refuses rather than pick one.
+    """
+    families = {
+        "module": obj in Modules(obj.base_ring()),
+        "group": obj in Groups(),
+        "algebra": obj in Algebras(obj.base_ring()),
+    }
+    named = tuple(name for name, present in families.items() if present)
+    assert named, (
+        f"{obj} is in no category with a distinguished generating family"
+    )
+    assert len(named) == 1, (
+        f"{obj} is framed by more than one structure ({', '.join(named)}); "
+        "ask it for the family you mean by name"
+    )
+    match named[0]:
+        case "module":
+            return tuple(obj.module_generators())
+        case "group":
+            return tuple(obj.group_generators())
+        case "algebra":
+            return tuple(obj.algebra_generators())
 
 
 class SliceOverCategory(Category):
@@ -79,59 +123,25 @@ class SubobjectCategory(SliceOverCategory):
         return [SliceOverCategory(self._ambient_category, self._target_object)]
 
     class ParentMethods:
-        def _embedded_source_elements(self) -> tuple[Any, ...]:
-            source = self.structure_morphism().domain()
-            if hasattr(source, "module_generators"):
-                return tuple(source.module_generators())
-            if hasattr(source, "group_generators"):
-                return tuple(source.group_generators())
-            if hasattr(source, "algebra_generators"):
-                return tuple(source.algebra_generators())
-            raise NotImplementedError(
-                "embedded_elements requires a source object with one of: "
-                "module_generators(), group_generators(), or algebra_generators()"
-            )
+        r"""What being a subobject gives \(A\), and nothing more.
 
-        def embedded_elements(self) -> Any:
-            r"""Return the images of this subobject's source elements under its structure map."""
-            return tuple(
-                self.structure_morphism()(source_element)
-                for source_element in self._embedded_source_elements()
-            )
+        \(A\) is an object of \(\mathbf{C}\) already, so its generators,
+        rank, form, and action are answered by \(\mathbf{C}\).  Being a
+        subobject adds one thing: the monomorphism.
+        """
 
-        def generator_matrix(self) -> Any:
-            r"""Return the matrix whose rows are the coordinates of this subobject's generators in its ambient parent."""
-            elems = self.embedded_elements()
-            if not elems:
-                return matrix(self.base_ring(), 0, 0)
-            target = self.structure_morphism().codomain()
-            def _coords(v):
-                if hasattr(v, "_coordinates_"):
-                    return list(v._coordinates_)
-                if hasattr(target, "coordinate_vector"):
-                    return list(target.coordinate_vector(v))
-                return list(v)
-            return matrix(self.base_ring(), [_coords(v) for v in elems])
+        def embedding(self) -> Morphism:
+            r"""Return the monomorphism \(A\hookrightarrow X\) representing this subobject.
 
-        def index(self) -> Any:
-            r"""Return the index \([X:A]\) as the cardinality of the cokernel of \(A\hookrightarrow X\)."""
-            return self.structure_morphism().index()
-
-        def isotropic_reduction(self) -> Any:
-            r"""For an isotropic subobject \(A\hookrightarrow B\) of a formed module, return \(B/A^{\perp}\).
-
-            Requires the structure morphism to carry ``orthogonal_complement``
-            (i.e. the codomain is a formed module) and ``cokernel``.  The
-            reduction is
-            \(\operatorname{coker}(A^{\perp}\hookrightarrow B)\), computed as
-            ``self.structure_morphism().orthogonal_complement().structure_morphism().cokernel()``.
+            The slice category calls this arrow ``structure_morphism``; in a
+            subobject category the arrow is a mono, and ``embedding`` is the
+            name it earns there.
             """
-            return (
-                self.structure_morphism()
-                .orthogonal_complement()
-                .structure_morphism()
-                .cokernel()
-            )
+            return self.structure_morphism()
+
+        def embedding_codomain(self) -> Parent:
+            r"""Return the ambient object \(X\) this subobject embeds into."""
+            return self.embedding().codomain()
 
 
 class SuperobjectCategory(CosliceUnderCategory):
@@ -242,11 +252,6 @@ def Coslice(costructure_morphism: Morphism, is_mono: bool = False, is_epi: bool 
     else:
         refine(codomain, cat.CosliceUnder(source))
     return codomain
-
-
-def Subobject(structure_morphism: Morphism) -> Parent:
-    r"""Construct the subobject represented by a monomorphism \(A\hookrightarrow X\)."""
-    return Slice(structure_morphism, is_mono=True)
 
 
 def Superobject(costructure_morphism: Morphism) -> Parent:

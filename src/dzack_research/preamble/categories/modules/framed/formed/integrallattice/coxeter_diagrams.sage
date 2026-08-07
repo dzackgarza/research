@@ -28,7 +28,14 @@ from sage.structure.category_object import normalize_names
 from sage.structure.element_wrapper import ElementWrapper
 from sage.structure.parent import Parent
 
+from sage_lattice_category_spike.objects.cardinals import Cardinal
 from sage_lattice_category_spike.objects.sets import Sets
+
+if TYPE_CHECKING:
+    # The ordered-set noun is type-only: the preamble loads into one
+    # shared namespace and nothing named OrderedSet may bind there.
+    from sage_lattice_category_spike.lexicon import OrderedSet
+
 
 COXETER_NEGATIVE_FOUR_NODE_COLOR = "#F8F9FE"
 COXETER_NEGATIVE_TWO_NODE_COLOR = "#BFC9CA"
@@ -131,7 +138,7 @@ class CoxeterDiagrams(Category):
 
     def from_cartan_type(
         self,
-        cartan_type: Any,
+        cartan_type: "CartanType",
         names: Sequence[str] | str | None = None,
     ) -> FiniteCoxeterDiagram:
         r"""Construct the diagram of a crystallographic Cartan type."""
@@ -142,7 +149,7 @@ class CoxeterVertex(ElementWrapper):
     r"""A vertex of a finite Coxeter diagram."""
 
     def _repr_(self) -> str:
-        parent = cast(FiniteCoxeterDiagram, self.parent())
+        parent = self.parent()
         return parent.variable_names()[parent.index_set().index(self.value)]
 
 
@@ -191,7 +198,7 @@ class FiniteCoxeterDiagram(CoxeterDiagramParent):
         self._index_set = finite_ordered_set(
             tuple(self._coxeter_matrix.index_set())
         )
-        rank = len(self._index_set)
+        rank = self._index_set.cardinality()
         if names is None:
             names = tuple(f"s_{i}" for i in self._index_set)
         if root_morphism is not None:
@@ -210,7 +217,7 @@ class FiniteCoxeterDiagram(CoxeterDiagramParent):
     @classmethod
     def from_cartan_type(
         cls,
-        cartan_type: Any,
+        cartan_type: "CartanType",
         names: Sequence[str] | str | None = None,
     ) -> FiniteCoxeterDiagram:
         r"""Construct the diagram of a crystallographic Cartan type."""
@@ -240,7 +247,7 @@ class FiniteCoxeterDiagram(CoxeterDiagramParent):
             case Parent():
                 index_set = finite_ordered_set(index_set)
             case _:
-                raise TypeError(
+                assert False, (
                     "a Coxeter index set is a finite set or finite sequence"
                 )
         assert index_set.cardinality() == rank, f"index set must have one entry per root; index_set={index_set!r}, roots={rank}"
@@ -256,7 +263,7 @@ class FiniteCoxeterDiagram(CoxeterDiagramParent):
         root_module = _integral_lattice_with_names(
             gram,
             names=normalized_names,
-            generating_set=finite_ordered_set(roots),
+            module_generating_set=finite_ordered_set(roots),
         )
         homset = root_module.Hom(realization)
         root_morphism = homset({root: root for root in roots})
@@ -291,7 +298,7 @@ class FiniteCoxeterDiagram(CoxeterDiagramParent):
         codomain: FiniteCoxeterDiagram,
     ) -> CoxeterDiagramMorphism:
         r"""Construct the Coxeter-matrix-preserving map with the given images."""
-        return cast(CoxeterDiagramMorphism, self._Hom_(codomain)(images))
+        return self._Hom_(codomain)(images)
 
     def _repr_(self) -> str:
         return f"Finite Coxeter diagram on {self.cardinality()} vertices"
@@ -332,8 +339,9 @@ class FiniteCoxeterDiagram(CoxeterDiagramParent):
     def __iter__(self) -> Iterator[CoxeterVertex]:
         return (self(vertex) for vertex in self._index_set)
 
-    def cardinality(self) -> Integer:
-        return len(self._index_set)
+    def cardinality(self) -> "Cardinal":
+        r"""Return the number of vertices of this diagram."""
+        return Cardinal(self._index_set.cardinality())
 
     def vertex(self, index: int) -> CoxeterVertex:
         return self(self._index_set[index])
@@ -341,7 +349,7 @@ class FiniteCoxeterDiagram(CoxeterDiagramParent):
     def vertices(self) -> tuple[CoxeterVertex, ...]:
         return tuple(self)
 
-    def index_set(self) -> Any:
+    def index_set(self) -> "OrderedSet":
         return self._index_set
 
     def coxeter_matrix(self) -> CoxeterMatrix:
@@ -350,12 +358,9 @@ class FiniteCoxeterDiagram(CoxeterDiagramParent):
     def graph(self) -> Graph:
         return self._coxeter_matrix.coxeter_graph()
 
-    def Aut(self) -> Any:
+    def Aut(self) -> "ModuleAutomorphismGroup":
         r"""Return the finite group of Coxeter-diagram automorphisms."""
-        return refine(
-            self.graph().automorphism_group(edge_labels=True),
-            OwnedFiniteGroups(),
-        )
+        return own_group(self.graph().automorphism_group(edge_labels=True))
 
     def drawing_conventions(self) -> dict[str, str]:
         r"""Return the node, edge, and self-loop drawing conventions.
@@ -374,30 +379,30 @@ class FiniteCoxeterDiagram(CoxeterDiagramParent):
         )
         return self._root_morphism
 
-    def root_lattice(self) -> Any:
+    def root_lattice(self) -> "Lattice":
         r"""Return the abstract lattice generated by the diagram roots."""
         return self.root_morphism().domain()
 
-    def root_realization(self) -> Any:
+    def root_realization(self) -> "Lattice":
         r"""Return the lattice in which the diagram roots are realized."""
         return self.root_morphism().codomain()
 
-    def roots(self) -> Any:
+    def roots(self) -> "OrderedSet":
         r"""Return the roots realizing the diagram vertices."""
         morphism = self.root_morphism()
         return finite_ordered_set(
             tuple(
-                morphism(morphism.domain().generator(label))
-                for label in morphism.domain().generating_set()
+                morphism(morphism.domain().module_generator(label))
+                for label in morphism.domain().module_generating_set()
             )
         )
 
-    def root(self, vertex: Hashable) -> Any:
+    def root(self, vertex: Hashable) -> "ModuleElement":
         r"""Return the root element attached to ``vertex``."""
         vertex = self._element_constructor_(vertex).value
         return self.roots()[self._index_set.index(vertex)]
 
-    def root_intersection_matrix(self) -> Any:
+    def root_intersection_matrix(self) -> "GramMatrix":
         r"""Return the Gram matrix of the abstract root lattice."""
         return self.root_lattice().gram_matrix()
 
@@ -410,7 +415,7 @@ class FiniteCoxeterDiagram(CoxeterDiagramParent):
         """
         intersections = self.root_intersection_matrix()
         graph = Graph(loops=True)
-        graph_add = cast(Any, graph)
+        graph_add = graph
         graph_add.add_vertices(self._index_set)
         graph_add.add_edges(
             [
@@ -428,7 +433,7 @@ class FiniteCoxeterDiagram(CoxeterDiagramParent):
                     intersections[i, j],
                 )
                 for i, left in enumerate(self._index_set)
-                for j in range(i + 1, len(self._index_set))
+                for j in range(i + 1, self._index_set.cardinality())
                 if intersections[i, j] != 0
             ]
         )
@@ -439,7 +444,7 @@ class FiniteCoxeterDiagram(CoxeterDiagramParent):
         if self._preferred_positions is not None:
             return dict(self._preferred_positions)
         if self._computed_positions is None:
-            layout = cast(Any, self.graph()).layout()
+            layout = self.graph().layout()
             self._computed_positions = {vertex: (coordinates[0], coordinates[1]) for vertex, coordinates in layout.items()}
         return dict(self._computed_positions)
 
@@ -512,7 +517,7 @@ class FiniteCoxeterDiagram(CoxeterDiagramParent):
             r"\tikzset{coxeter divergent/.style={dashed}}",
         ]
 
-        def edge(i: int, left: Any, j: int) -> str:
+        def edge(i: int, left: "Element", j: int) -> str:
             right = self._index_set[j]
             return (
                 rf"\draw[{_tikz_edge_style(intersections[i, i], intersections[j, j], intersections[i, j])}] "
@@ -522,11 +527,11 @@ class FiniteCoxeterDiagram(CoxeterDiagramParent):
         edge_lines = [
             edge(i, left, j)
             for i, left in enumerate(self._index_set)
-            for j in range(i + 1, len(self._index_set))
+            for j in range(i + 1, self._index_set.cardinality())
             if intersections[i, j] != 0
         ]
 
-        def node(i: int, vertex: Any) -> str:
+        def node(i: int, vertex: "Element") -> str:
             x, y = selected_positions[vertex]
             norm = intersections[i, i]
             fill = _tikz_node_color(norm)
@@ -637,7 +642,7 @@ class CoxeterDiagramHomset(Homset):
     ) -> CoxeterDiagramMorphism:
         return CoxeterDiagramMorphism(self, images)
 
-    def __contains__(self, morphism: Any) -> bool:
+    def __contains__(self, morphism: "Morphism") -> bool:
         return (
             isinstance(morphism, CoxeterDiagramMorphism)
             and morphism.parent() is self
@@ -657,8 +662,8 @@ class CoxeterDiagramMorphism(Morphism):
         images: Mapping[Hashable, Hashable] | Sequence[Hashable],
     ) -> None:
         Morphism.__init__(self, parent)
-        domain = cast(FiniteCoxeterDiagram, parent.domain())
-        codomain = cast(FiniteCoxeterDiagram, parent.codomain())
+        domain = parent.domain()
+        codomain = parent.codomain()
         match images:
             case Mapping():
                 image_map = dict(images)
@@ -669,7 +674,7 @@ class CoxeterDiagramMorphism(Morphism):
                 assert len(images) == domain.cardinality(), f"a diagram morphism needs one image for every vertex; expected={domain.cardinality()}, found={len(images)}"
                 image_map = dict(zip(domain.index_set(), images, strict=True))
             case _:
-                raise TypeError(
+                assert False, (
                     "a diagram morphism is specified by a vertex map or an "
                     "ordered sequence of images"
                 )
@@ -684,8 +689,8 @@ class CoxeterDiagramMorphism(Morphism):
         self._images = image_map
 
     def _call_(self, vertex: CoxeterVertex) -> CoxeterVertex:
-        domain = cast(FiniteCoxeterDiagram, self.domain())
-        codomain = cast(FiniteCoxeterDiagram, self.codomain())
+        domain = self.domain()
+        codomain = self.codomain()
         vertex = domain(vertex)
         return codomain(self._images[vertex.value])
 
@@ -693,14 +698,14 @@ class CoxeterDiagramMorphism(Morphism):
         return self._call_(vertex)
 
     def images(self) -> tuple[CoxeterVertex, ...]:
-        domain = cast(FiniteCoxeterDiagram, self.domain())
+        domain = self.domain()
         return tuple(self(domain.vertex(i)) for i in range(domain.cardinality()))
 
     def __mul__(self, other: object) -> CoxeterDiagramMorphism:
         assert isinstance(other, CoxeterDiagramMorphism), f"morphism composition needs a CoxeterDiagramMorphism; found={type(other)}"
         assert other.codomain() is self.domain(), "morphisms compose only when the inner codomain is the outer domain"
-        domain = cast(FiniteCoxeterDiagram, other.domain())
-        codomain = cast(FiniteCoxeterDiagram, self.codomain())
+        domain = other.domain()
+        codomain = self.codomain()
         return domain.hom(
             [self(other(domain.vertex(i))).value for i in range(domain.cardinality())],
             codomain=codomain,

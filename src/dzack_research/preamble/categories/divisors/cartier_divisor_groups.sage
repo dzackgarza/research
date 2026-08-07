@@ -1,11 +1,9 @@
 r"""Cartier divisor groups."""
 
-from typing import Any
-
 from sage.categories.category import Category
 
 
-def CartierDivisorGroup(module: Any) -> Any:
+def CartierDivisorGroup(module: "Module") -> "Module":
     r"""Refine the supplied framed module of Cartier divisors."""
     assert module in Modules(ZZ).Framed(), (
         "a Cartier divisor group must declare its framing at construction"

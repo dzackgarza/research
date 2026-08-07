@@ -1,10 +1,15 @@
 r"""Discriminant bilinear modules."""
 
-from typing import Any
+from typing import Self, TYPE_CHECKING
 
 from sage.categories.category import Category
 from sage.groups.additive_abelian.qmodnz import QmodnZ
 from sage.matrix.matrix0 import Matrix
+
+if TYPE_CHECKING:
+    # The ordered-set noun is type-only: the preamble loads into one
+    # shared namespace and nothing named OrderedSet may bind there.
+    from sage_lattice_category_spike.lexicon import OrderedSet
 
 
 class DiscriminantBilinearModules(Category):
@@ -25,7 +30,7 @@ class DiscriminantBilinearModules(Category):
             SymmetricBilinearFormModules(),
         ]
 
-    def from_module(self, module: Any, gram: Matrix) -> "FormModule":
+    def from_module(self, module: "Module", gram: Matrix) -> "FormModule":
         r"""Return the torsion form on ``module`` with Gram matrix ``gram``.
 
         The construction the category is for: a finitely presented torsion
@@ -40,7 +45,7 @@ class DiscriminantBilinearModules(Category):
         assert gram.is_symmetric(), (
             "a discriminant bilinear form is symmetric"
         )
-        relations = matrix(ZZ, module.relation_matrix())
+        relations = module.relation_matrix()._sage_matrix().change_ring(ZZ)
         assert all(entry in ZZ for entry in (relations * gram).list()), (
             "b is not defined on the classes: some relation does not pair "
             "integrally with the module_generators"
@@ -67,7 +72,7 @@ class DiscriminantBilinearModules(Category):
         module = FinitelyPresentedTorsionModules().from_relations(relations)
         return self.from_module(module, gram)
 
-    def cokernel(self, morphism: Any) -> "FormModule":
+    def cokernel(self, morphism: "Morphism") -> "FormModule":
         r"""Return $\operatorname{coker} f$ for $f$ of finite index, as an object here.
 
         No second morphism appears: $f$ *is* the presentation, so it is handed
@@ -91,7 +96,7 @@ class DiscriminantBilinearModules(Category):
     class ParentMethods:
         r"""Methods available on discriminant bilinear modules."""
 
-        def regenerate(self: Any, module_generators: Any) -> "FormModule":
+        def regenerate(self: Self, module_generators: "OrderedSet") -> "FormModule":
             r"""Return this form on the generating set ``module_generators``.
 
             A different generating set is a different object of this category,
@@ -106,7 +111,7 @@ class DiscriminantBilinearModules(Category):
             )
             return DiscriminantBilinearModules().from_module(module, gram)
 
-        def associated_quadratic_form(self: Any) -> Any:
+        def associated_quadratic_form(self: Self) -> "QuadraticFormMorphism":
             r"""Return the discriminant quadratic form on the same group.
 
             $b$ does not determine $q$: the refinement
@@ -122,11 +127,11 @@ class DiscriminantBilinearModules(Category):
                 self.form().polar_form().gram_matrix(),
             )
 
-        def _form_matrix_latex_label(self: Any) -> str:
+        def _form_matrix_latex_label(self: Self) -> str:
             r"""Return the LaTeX label for the bilinear Gram matrix."""
             return "G_{b_{A_L}}"
 
-        def invariant_factor_form(self: Any) -> "FormModule":
+        def invariant_factor_form(self: Self) -> "FormModule":
             r"""Return $b$ on module_generators from the invariant factor decomposition.
 
             The same cokernel of the same $c$, so the same $b$; what changes is the
@@ -135,9 +140,9 @@ class DiscriminantBilinearModules(Category):
             $\mathbb Z/12$ rather than on two as $\mathbb Z/3\oplus\mathbb Z/4$ --
             so no decomposition of $L$ survives it.
             """
-            return self.regenerate(self.smith_form_generators())
+            return self.regenerate(self.smith_form_module_generators())
 
-        def normal_form(self: Any) -> "FormModule":
+        def normal_form(self: Self) -> "FormModule":
             r"""Return $b$ on $p$-adic Jordan module_generators -- again a different object.
 
             The module_generators are the Jordan ones prime by prime, cutting out their own
@@ -152,7 +157,7 @@ class DiscriminantBilinearModules(Category):
             which are defined from $q$ and have no $b$ analogue.  So this is *a*
             normal form, not *the* one.
             """
-            return self.regenerate(p_adic_jordan_generators(self))
+            return self.regenerate(p_adic_jordan_module_generators(self))
 
 
     class ElementMethods:

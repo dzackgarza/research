@@ -1,34 +1,38 @@
 r"""Finite-group representations on finitely generated free modules."""
 
-from typing import Any
+from typing import Self, TYPE_CHECKING
 
 from sage.categories.category import Category
 from sage.categories.homset import Hom
 from sage.categories.morphism import SetMorphism
-from sage.matrix.matrix0 import Matrix
-from sage.rings.integer_ring import ZZ
-from sage.rings.rational_field import QQ
 from sage.structure.element import ModuleElement
 from sage.structure.parent import Parent
 from sage.structure.richcmp import richcmp
 
+from sage_lattice_category_spike.objects.cardinals import Cardinal
+from sage_lattice_category_spike.lexicon import Character, MorphismMatrix
 from sage_lattice_category_spike.objects.sets import Sets
 from sage_lattice_category_spike.objects.underlying_sets import UnderlyingSet
+
+if TYPE_CHECKING:
+    # The ordered-set noun is type-only: the preamble loads into one
+    # shared namespace and nothing named OrderedSet may bind there.
+    from sage_lattice_category_spike.lexicon import OrderedSet
 
 
 class GroupModules(Category):
     r"""The category of \(R[G]\)-modules for the specified \(R\) and \(G\)."""
 
-    def __init__(self, base_ring: Any, group: Any) -> None:
+    def __init__(self, base_ring: "Ring", group: "Group") -> None:
         assert group.is_finite(), "this category currently requires a finite group"
         self._base_ring = base_ring
         self._group = group
         Category.__init__(self)
 
-    def base_ring(self) -> Any:
+    def base_ring(self) -> "Ring":
         return self._base_ring
 
-    def acting_group(self) -> Any:
+    def acting_group(self) -> "Group":
         return self._group
 
     def _repr_object_names(self) -> str:
@@ -37,40 +41,143 @@ class GroupModules(Category):
     def super_categories(self) -> list:
         return [FinitelyGeneratedFreeModules(self._base_ring)]
 
+    def is_semisimple(self) -> bool:
+        r"""Return whether \(R[G]\)-Mod is semisimple.
+
+        Maschke's theorem: this holds exactly when \(|G|\) is invertible in
+        \(R\).  Stating it on the category is what makes it a theorem the
+        code can consult; buried in a method as ``base_ring is ZZ`` it is an
+        unnamed hypothesis that happens to be checked in one place.
+
+        \(\mathbb Z[G]\) is *not* semisimple for any nontrivial \(G\), which
+        is why an isotypic decomposition over \(\mathbb Z\) is an inclusion
+        of finite index and not an isomorphism.
+
+        This is Maschke's theorem and not the statement that \(R\) splits
+        \(G\): semisimplicity says the components exhaust \(M\), and says
+        nothing about whether the simple factors are absolutely irreducible.
+        \(\mathbb Q[G]\) is semisimple and splits almost no \(G\).  That
+        second statement is :meth:`is_split`.
+        """
+        base_ring = self.base_ring()
+        if not base_ring.is_field():
+            return False
+        characteristic = base_ring.characteristic()
+        return characteristic == 0 or self._group.order() % characteristic != 0
+
+    def splitting_field(self) -> "Field":
+        r"""Return \(K=\mathbb Q(\zeta_n)\), a field that *splits* \(G\).
+
+        Not the fraction field.  A character takes its values in the \(n\)th
+        cyclotomic field for \(n\) the exponent of \(G\), so a field omitting
+        those values is one over which the absolutely irreducible characters
+        are not even functions.  Over \(\mathbb Z\) the fraction field
+        \(\mathbb Q\) is such a field for every \(G\) of exponent above 2.
+
+        Two theorems are in play and only one of them is Maschke's.  \(K[G]\)
+        is semisimple for *any* field of characteristic zero, which is what
+        :meth:`is_semisimple` reports.  That its simple factors are matrix
+        algebras -- that the absolutely irreducible characters are the
+        characters of \(K\)-representations -- is the extra demand that \(K\)
+        be a splitting field, and Brauer's theorem says \(\mathbb Q(\zeta_n)\)
+        is one.
+
+        The exponent divides the order, and \(\mathbb Q(\zeta_{|G|})\)
+        contains \(\mathbb Q(\zeta_n)\), so the order is a number the group
+        states and \(\mathbb Q(\zeta_{|G|})\) splits \(G\) either way.
+        """
+        order = self._group.order()
+        fraction_field = self.base_ring().fraction_field()
+        # Q(zeta_1) and Q(zeta_2) *are* Q, presented as degree-one number
+        # fields; naming the fraction field itself keeps the rational case in
+        # the ring the module already has, and covers a base ring whose
+        # fraction field is larger than Q.
+        field = fraction_field if order <= 2 else CyclotomicField(order)
+        assert field.has_coerce_map_from(fraction_field), (
+            f"{field} does not contain {fraction_field}: the field splitting "
+            "G over this base ring is their composite, which is not formed here"
+        )
+        return field
+
+    def is_split(self) -> bool:
+        r"""Return whether \(R\) splits \(G\), so that \(R[G]\) is split.
+
+        Brauer's theorem names one splitting field, ``splitting_field()``;
+        \(R\) splits \(G\) when its fraction field already contains that one.
+        The consequence is which characters index a decomposition: over a
+        splitting field the absolutely irreducible characters do, and over a
+        field that is not -- \(\mathbb Q\), for every \(G\) of exponent above
+        2 -- the \(F\)-irreducible ones do, and the absolutely irreducible
+        ones index components that have no \(R\)-form.
+        """
+        return self.base_ring().fraction_field().has_coerce_map_from(
+            self.splitting_field()
+        )
+
     class ParentMethods:
-        def forget_action(self: Any) -> Any:
+        def forget_action(self: Self) -> "Module":
             return self._module
 
-        def action(self: Any) -> GroupAction:
+        def action(self: Self) -> GroupAction:
             return self._action
 
-        def group(self: Any) -> Any:
-            return self._action.domain()
+        def group(self: Self) -> "Group":
+            return self.action().domain()
 
-        def action_of(self: Any, element: Any) -> ModuleAutomorphism:
-            return self._action(element)
+        def action_of(self: Self, element: "Element") -> ModuleAutomorphism:
+            return self._acting_automorphisms(element)
 
-        def action_matrix(self: Any, element: Any) -> Matrix:
+        def action_matrix(self: Self, element: "Element") -> MorphismMatrix:
             return self.action_of(element).matrix()
 
-        def Hom(self: Any, codomain: Any, *args: Any, **kwargs: Any) -> Any:
-            if hasattr(codomain, "base_ring") and getattr(codomain, "base_ring")() == self.base_ring() and hasattr(codomain, "group"):
-                return group_module_homset(self, codomain)
-            return Parent.Hom(self, codomain, *args, **kwargs)
+        def character(self: Self) -> Character:
+            r"""Return \(\chi_\rho:g\mapsto\operatorname{tr}\rho(g)\).
 
-        def act(self: Any, element: Any, vector_: Any) -> Any:
+            The character *of the representation*, and the only place the
+            module enters character theory: ``group().irreducible_characters()``
+            asks \(G\) alone, from the group and nothing else, and this asks
+            the composite.  It is a class function because the trace is a
+            conjugation invariant, so its values on class representatives
+            determine it.
+
+            \(\rho\) need not be faithful.  When it has a kernel, \(\chi_\rho\)
+            is inflated from a character of the proper quotient \(\rho(G)\) and
+            its inner products are taken over \(|G|\) -- which is precisely the
+            statement lost when the acting group is recovered from the action
+            matrices instead of being named.
+            """
+            group = self.group()
+            class_function = group.character(
+                [
+                    self.action_matrix(element).trace()
+                    for element in group.conjugacy_classes_representatives()
+                ]
+            )
+            assert self.rank() == class_function.degree(), (
+                f"chi_rho(1) is {class_function.degree()} and the module has "
+                f"rank {self.rank()}: the traces were written against the "
+                "wrong conjugacy classes"
+            )
+            return Character(class_function)
+
+        def Hom(self: Self, codomain: "Module", category: "Category" = None) -> "Homset":
+            if codomain in GroupModules(self.base_ring(), self.group()):
+                return group_module_homset(self, codomain)
+            return Parent.Hom(self, codomain, category)
+
+        def act(self: Self, element: "Element", vector_: "ModuleElement") -> "ModuleElement":
             return self.action_of(element)(vector_)
 
-        def is_invariant(self: Any, vector_: Any) -> bool:
+        def is_invariant(self: Self, vector_: "ModuleElement") -> bool:
             return all(
                 self.act(element, vector_) == vector_
                 for element in self.group()
             )
 
-        def subobject_on(self: Any, generators: Any) -> Any:
-            return _group_subobject(self, generators)
+        def subobject_on(self: Self, module_generators: "OrderedSet") -> "Subobject":
+            return _group_subobject(self, module_generators)
 
-        def hom(self: Any, images: Any, codomain: Any = None) -> Any:
+        def hom(self: Self, images: dict, codomain: "Module" = None) -> "ModuleMorphism":
             match images:
                 case SetMorphism():
                     assert isinstance(images.codomain(), UnderlyingSet), (
@@ -89,13 +196,13 @@ class GroupModules(Category):
                     target = codomain
                     assignment = images
                 case list() | tuple():
-                    target, assignment = _finite_generator_assignment(
+                    target, assignment = _finite_module_generator_assignment(
                         self,
                         images,
                         codomain,
                     )
                 case _:
-                    raise TypeError(
+                    assert False, (
                         "an equivariant homomorphism is specified by a "
                         "generator morphism, a finite assignment, or an "
                         "ordered list of images"
@@ -106,34 +213,31 @@ class GroupModules(Category):
             return self.Hom(target)(assignment)
 
         @cached_method
-        def isotypic_decomposition(self: Any) -> Any:
+        def isotypic_decomposition(self: Self) -> "Subobject":
             return _isotypic_decomposition(self)
 
-        def isotypic_component(self: Any, character: Any) -> Any:
+        def isotypic_component(self: Self, character: Character) -> "Subobject":
             return self.isotypic_decomposition().summand(character)
 
-        def multiplicity_space(self: Any, character: Any) -> Any:
-            component = self.isotypic_component(character)
-            degree = character(self.group().one())
-            assert component.rank() % degree == 0, (
-                "the component rank is not divisible by the character degree"
-            )
-            return BasedFreeModule(
-                _isotypic_field(self),
-                Sets.Δ[component.rank() // degree - 1],
-            )
+        def module_invariants(self: Self) -> "Subobject":
+            r"""Return \(M^G=\{v:gv=v\}\hookrightarrow M\).
 
-        def invariants(self: Any) -> Any:
+            Named beside ``module_coinvariants`` for the same reason that one
+            is: the unqualified ``invariants`` already names the invariant
+            factors of a finitely presented module, a different object
+            entirely, and the qualifier is how the two are told apart in one
+            namespace.
+            """
             return _group_subobject(self, _invariant_generators(self))
 
-        def module_coinvariants(self: Any) -> Any:
+        def module_coinvariants(self: Self) -> "Module":
             return _module_coinvariants(self)
 
 
 class GroupModuleHomset(ModuleHomset):
     r"""The homset of equivariant maps between two modules for one \(G\)."""
 
-    def __init__(self, domain: Any, codomain: Any) -> None:
+    def __init__(self, domain: "Module", codomain: "Module") -> None:
         assert codomain in GroupModules(domain.base_ring(), domain.group()), (
             "the codomain is not a module for the stated ring and group"
         )
@@ -147,7 +251,7 @@ class GroupModuleHomset(ModuleHomset):
             GroupModules(domain.base_ring(), domain.group()),
         )
 
-    def _element_constructor_(self, images: Any) -> ModuleMorphism:
+    def _element_constructor_(self, images: dict) -> ModuleMorphism:
         match images:
             case ModuleMorphism():
                 assert images.parent() is self, (
@@ -157,7 +261,7 @@ class GroupModuleHomset(ModuleHomset):
             case SetMorphism() | dict():
                 morphism = ModuleMorphism(self, images)
             case _:
-                raise TypeError(
+                assert False, (
                     "an equivariant morphism is specified by its generator "
                     "morphism or finite generator assignment"
                 )
@@ -165,15 +269,15 @@ class GroupModuleHomset(ModuleHomset):
             morphism(
                 self.domain().act(
                     group_element,
-                    self.domain().generator(element_of_S),
+                    self.domain().module_generator(element_of_S),
                 )
             )
             == self.codomain().act(
                 group_element,
-                morphism(self.domain().generator(element_of_S)),
+                morphism(self.domain().module_generator(element_of_S)),
             )
             for group_element in self.domain().group()
-            for element_of_S in self.domain().generating_set()
+            for element_of_S in self.domain().module_generating_set()
         ), "the proposed map is not equivariant"
         return morphism
 
@@ -184,7 +288,7 @@ class GroupModuleHomset(ModuleHomset):
         )
 
 
-def group_module_homset(domain: Any, codomain: Any) -> GroupModuleHomset:
+def group_module_homset(domain: "Module", codomain: "Module") -> GroupModuleHomset:
     r"""Return the canonical equivariant homset of two \(G\)-modules."""
     cache = domain.__dict__.setdefault("_group_module_homsets", {})
     homset = cache.get(codomain)
@@ -197,41 +301,41 @@ def group_module_homset(domain: Any, codomain: Any) -> GroupModuleHomset:
 class GroupModuleElement(ModuleElement):
     r"""An element of an \(R[G]\)-module and its image after forgetting \(G\)."""
 
-    def __init__(self, parent: Any, element: Any) -> None:
+    def __init__(self, parent: "Parent", element: "Element") -> None:
         ModuleElement.__init__(self, parent)
         assert element.parent() is parent.forget_action(), (
             f"{element} is not an element of {parent.forget_action()}"
         )
         self._underlying = element
 
-    def forget_action(self) -> Any:
+    def forget_action(self) -> "Module":
         return self._underlying
 
     def coefficients(self) -> dict:
         return _coefficients(self._underlying)
 
-    def underlying_set_element(self) -> Any:
+    def underlying_set_element(self) -> "Element":
         r"""Recover the element of \(S\) defining a canonical generator."""
         return self._underlying.underlying_set_element()
 
-    def _coordinates(self) -> Any:
+    def _coordinates(self) -> "Vector":
         return _coordinate_vector(self._underlying)
 
-    def _add_(self, other: Any) -> "GroupModuleElement":
+    def _add_(self, other: object) -> "GroupModuleElement":
         return self.parent()._over(self._underlying + other._underlying)
 
-    def _sub_(self, other: Any) -> "GroupModuleElement":
+    def _sub_(self, other: object) -> "GroupModuleElement":
         return self.parent()._over(self._underlying - other._underlying)
 
     def _neg_(self) -> "GroupModuleElement":
         return self.parent()._over(-self._underlying)
 
-    def _lmul_(self, factor: Any) -> "GroupModuleElement":
+    def _lmul_(self, factor: "RingElement") -> "GroupModuleElement":
         return self.parent()._over(factor * self._underlying)
 
     _rmul_ = _lmul_
 
-    def _richcmp_(self, other: Any, op: int) -> bool:
+    def _richcmp_(self, other: object, op: int) -> bool:
         return richcmp(self._underlying, other._underlying, op)
 
     def __hash__(self) -> int:
@@ -246,14 +350,20 @@ class GroupModule(Parent):
 
     Element = GroupModuleElement
 
-    def __init__(self, module: Any, action: GroupAction) -> None:
+    def __init__(self, module: "Module", action: GroupAction) -> None:
         assert module in FinitelyGeneratedFreeModules(module.base_ring()), (
             "an R[G]-module is constructed from an actual finite framed free module"
         )
         assert isinstance(action, GroupAction) and action.module() is module, (
             "the action must be a morphism into the supplied module's Aut homset"
         )
+        # A group module IS the pair \((M,\rho)\), and both halves arrive as
+        # constructor arguments.  They are stored before anything else so that
+        # identity -- hash, equality, repr -- is answerable from the first
+        # moment the object exists, including while ``__init__`` is still
+        # running and Sage's caches hash it.
         self._module = module
+        self._action = action
         Parent.__init__(
             self,
             base=module.base_ring(),
@@ -261,22 +371,22 @@ class GroupModule(Parent):
         )
         refine(self, GroupModules(module.base_ring(), action.domain()))
         source = module.framing_morphism().domain()
-        underlying_generator_morphism = module.generator_morphism()
-        group_generator_morphism = SetMorphism(
+        underlying_module_generator_morphism = module.module_generator_morphism()
+        lifted_module_generator_morphism = SetMorphism(
             Hom(
-                underlying_generator_morphism.domain(),
+                underlying_module_generator_morphism.domain(),
                 UnderlyingSet(self),
                 Sets(),
             ),
             lambda element_of_S: self._over(
-                underlying_generator_morphism(element_of_S)
+                underlying_module_generator_morphism(element_of_S)
             ),
         )
-        self._free_generator_morphism = group_generator_morphism
+        self._free_module_generator_morphism = lifted_module_generator_morphism
         self._framing_morphism = framing_morphism(
             source,
             self,
-            group_generator_morphism,
+            lifted_module_generator_morphism,
         )
         automorphisms = self.Aut()
         values = {
@@ -284,71 +394,112 @@ class GroupModule(Parent):
                 {
                     element_of_S: self._over(
                         action(element)(
-                            underlying_generator_morphism(element_of_S)
+                            underlying_module_generator_morphism(element_of_S)
                         )
                     )
-                    for element_of_S in module.generating_set()
+                    for element_of_S in module.module_generating_set()
                 }
             )
             for element in action.domain()
         }
-        self._action = group_action_homset(action.domain(), self)(values)
+        # \(\rho\) lands in \(Aut(M)\), whose automorphisms move elements of
+        # \(M\).  This module's elements wrap those, so the same \(\rho\) is
+        # also recorded through the wrapping, to act on them.  Derived, under
+        # its own name: ``_action`` is the constructor's \(\rho\) and never
+        # changes, because the hash is taken from it.
+        self._acting_automorphisms = group_action_homset(action.domain(), self)(values)
 
     def framing_morphism(self) -> FramingMorphism:
         return self._framing_morphism
 
-    def forget_action(self) -> Any:
+    def forget_action(self) -> "Module":
         return self._module
 
-    def rank(self) -> Any:
+    def rank(self) -> "Cardinal":
         return self._module.rank()
 
     def zero(self) -> GroupModuleElement:
         return self._over(self._module.zero())
 
-    def _over(self, element: Any) -> GroupModuleElement:
+    def _over(self, element: "Element") -> GroupModuleElement:
         return self.element_class(self, element)
 
-    def _element_constructor_(self, element: Any) -> GroupModuleElement:
+    def _element_constructor_(self, element: "Element") -> GroupModuleElement:
         assert isinstance(element, GroupModuleElement) and element.parent() is self, (
             f"{element} is not an element of {self}"
         )
         return element
 
-    def __contains__(self, element: Any) -> bool:
+    def __contains__(self, element: "Element") -> bool:
         return (
             isinstance(element, GroupModuleElement)
             and element.parent() is self
+        )
+
+    def __hash__(self) -> int:
+        return hash((type(self), self._module, self._action))
+
+    def __eq__(self, other: object) -> bool:
+        return (
+            type(other) is type(self)
+            and self._module == other._module
+            and self._action == other._action
         )
 
     def _repr_(self) -> str:
         return f"{self._module} with an action of {self.group()}"
 
 
-def _invariant_generators(module: Any) -> list:
-    constraints = matrix(
-        module.base_ring(),
-        [
-            row
-            for element in module.group()
-            for row in (
-                module.action_matrix(element)
-                - identity_matrix(module.base_ring(), module.rank())
-            ).rows()
-        ],
+def _invariant_generators(module: "Module") -> list:
+    r"""Return generators of \(M^G=\{v:gv=v\ \forall g\}\) written in \(M\).
+
+    A morphism's matrix has the images of the generators as its rows, so a
+    coefficient row \(v\) is carried to \(v\rho(g)\) and invariance is the
+    *left* condition \(v(\rho(g)-1)=0\).  The conditions for the several \(g\)
+    hold at once exactly on the left kernel of the blocks written side by
+    side, which is the right kernel of the transposed blocks stacked -- the
+    shape in which the seam offers a nullspace.  Reading the right kernel of
+    the untransposed blocks instead answers for the dual representation, whose
+    invariants have the same rank and are different vectors.
+
+    The subtraction happens on the underlying matrices.  A difference of two
+    morphism matrices is the matrix of a difference of morphisms, since
+    \(\operatorname{End}(M)\) is an abelian group; a difference of a morphism
+    matrix and a bare array is not, and the identity here is a bare array.
+    """
+    assert module.group() in Sets().Finite(), (
+        "computing invariants imposes one condition per group element, so "
+        f"it requires a finite group; {module.group()} is not known to be one"
     )
-    return [
+    identity = identity_matrix(module.base_ring(), module.rank())
+    constraints = MorphismMatrix(
+        matrix(
+            module.base_ring(),
+            [
+                row
+                for element in module.group()
+                for row in (
+                    module.action_matrix(element)._sage_matrix() - identity
+                ).transpose().rows()
+            ],
+        )
+    )
+    generators = [
         zipsum(
             row,
             module.module_generators(),
             module.zero(),
         )
-        for row in constraints.right_kernel().basis()
+        for row in constraints._right_kernel_matrix().rows()
     ]
+    assert all(module.is_invariant(generator) for generator in generators), (
+        "the solved constraint system produced a vector the group moves"
+    )
+    return generators
 
 
-def _module_coinvariants(module: Any) -> Any:
-    relations = _independent_generators(
+def _module_coinvariants(module: "Module") -> "Module":
+    relations = _independent_module_generators(
         module,
         [
         module.act(group_element, generator) - generator
@@ -362,7 +513,7 @@ def _module_coinvariants(module: Any) -> Any:
     )
     presentation = (
         relation_module.Hom(module)(
-            {relation: relation for relation in relation_module.generating_set()}
+            {relation: relation for relation in relation_module.module_generating_set()}
         )
         if relations
         else relation_module.Hom(module).zero()
@@ -370,63 +521,222 @@ def _module_coinvariants(module: Any) -> Any:
     return FinitelyPresentedModule(presentation)
 
 
-def _isotypic_field(module: Any) -> Any:
-    return QQ if module.base_ring() is ZZ else module.base_ring()
+def _fraction_base_change(module: "Module") -> "Module":
+    r"""Return \(M\otimes_RF\) for \(F\) the fraction field of \(R\).
+
+    The projectors do not exist over \(\mathbb Z\): they carry \(1/|G|\).
+    They exist over \(F\).  Passing to \(F\) is a functor, so the passage is
+    applied as one -- the alternative is to build rational matrices in place
+    and clear their denominators later, which performs the same base change
+    without saying so.
+
+    It is the *left* adjoint \(-\otimes_RF\) that is applied.  Its value is an
+    \(F\)-module, which is what an endomorphism with denominators can be an
+    endomorphism of; the unit \(\eta_M:M\to G(F(M))\) lands in a module over
+    \(R\) again, where such an endomorphism has no entries.
+
+    \(F\) and not the splitting field \(K\).  What a projector asks of its
+    coefficient field is that its coefficients lie there, and the coefficient
+    of \(\rho(g)\) in \(p_\chi\) is a value of the *indexing* character.
+    ``_index_characters`` chooses characters whose values lie in \(F\), so
+    \(K\) is where the character table is read and never where the projector
+    is written.
+    """
+    base_ring = module.base_ring()
+    return BaseChangeFunctor(
+        Hom(base_ring, base_ring.fraction_field()).natural_map()
+    )(module)
 
 
-def _isotypic_generators(module: Any, character: Any) -> list:
-    group = module.group()
-    field = _isotypic_field(module)
-    degree = field(character(group.one()))
-    terms = [
-        field(character(element.inverse()))
-        * matrix(field, module.action_matrix(element))
-        for element in group
-    ]
-    projector = (degree / field(group.order())) * sum(
-        terms,
-        matrix(field, module.rank(), module.rank()),
-    )
-    assert projector * projector == projector, (
-        "the chosen coefficient field does not split this representation exactly"
-    )
-    rows = projector.image().basis_matrix()
-    if rows.nrows() == 0:
-        return []
-    if module.base_ring() is ZZ:
-        rows = matrix(ZZ, rows * rows.denominator()).saturation()
-    return [
-        zipsum(
-            row,
-            module.module_generators(),
-            module.zero(),
+def _base_field_automorphisms(category: "Category") -> tuple:
+    r"""Return \(\operatorname{Gal}(K/F)\) for \(F\) the fraction field of \(R\).
+
+    The absolutely irreducible characters are permuted by the automorphisms of
+    the splitting field that fix the field \(M\)'s coefficients are written
+    over, which is to say the automorphisms fixing \(F\) pointwise, which is
+    to say fixing its generators.  Taking all of
+    \(\operatorname{Gal}(K/\mathbb Q)\) instead would merge orbits that \(F\)
+    already separates whenever \(F\) is larger than \(\mathbb Q\).
+    """
+    field = category.splitting_field()
+    base_field = category.base_ring().fraction_field()
+    return tuple(
+        automorphism
+        for automorphism in field.galois_group()
+        if all(
+            automorphism(field(generator)) == field(generator)
+            for generator in base_field.gens()
         )
-        for row in rows.rows()
-    ]
+    )
+
+
+def _index_characters(module: "Module") -> tuple:
+    r"""Return the characters indexing the isotypic decomposition of \(M\).
+
+    Over a base ring that splits \(G\) these are the absolutely irreducible
+    characters.  Over one that does not -- \(\mathbb Z\), for every \(G\) of
+    exponent above 2 -- they are the \(F\)-irreducible characters: the sums
+    over the orbits of \(\operatorname{Gal}(K/F)\) acting on the absolutely
+    irreducible ones.
+
+    Which set indexes the decomposition is a statement about \(M_\chi\) and
+    not a presentation choice.  \(M_\chi=M\cap(M\otimes K)_\chi\) is nonzero
+    only when the \(\chi\)-component has an \(R\)-form, and an absolutely
+    irreducible \(\chi\) with irrational values has none: its component is
+    defined over \(K\) and moved by \(\operatorname{Gal}(K/F)\), so it meets
+    \(M\) in \(0\).  The orbit sum is the character that group fixes, and its
+    component is the one that is nonzero whenever \(\chi\) occurs, saturated
+    in \(M\), and whose sum over the index set has finite index in \(M\) --
+    which is the statement the decomposition makes.  Indexing by the
+    absolutely irreducible characters instead leaves every component but the
+    rational ones zero and the sum far from \(M\).
+
+    A Galois orbit is read off the values, which are what a character is: two
+    absolutely irreducible characters are conjugate exactly when the sets of
+    value families of their orbits agree, so that set is the key the orbits
+    are collected under.  GAP supplies the character table and Sage the
+    automorphisms of \(K\); neither the table nor the action is written here.
+    """
+    characters = tuple(
+        Character(class_function)
+        for class_function in module.group().irreducible_characters()
+    )
+    category = module.category()
+    if category.is_split():
+        return characters
+    field = category.splitting_field()
+    automorphisms = _base_field_automorphisms(category)
+    orbits = {}
+    for character in characters:
+        orbit = frozenset(
+            tuple(
+                automorphism(field(value))
+                for value in character.class_values()
+            )
+            for automorphism in automorphisms
+        )
+        orbits.setdefault(orbit, []).append(character)
+    return tuple(
+        sum(conjugates[1:], conjugates[0]) for conjugates in orbits.values()
+    )
+
+
+def _isotypic_projector(module: "Module", character: Character) -> "ModuleMorphism":
+    r"""Return \(p_\chi=\frac{\deg\psi}{|G|}\sum_g\chi(g^{-1})\rho(g)\).
+
+    An idempotent endomorphism of \(M\otimes F\) -- and an endomorphism is a
+    morphism, so it is returned as one.  Its matrix is the private means of
+    writing it down: a caller holding the matrix has to know which of its row
+    and column spaces is the image, and the morphism knows.  Over \(R\) itself
+    the projector need not have entries, which is the whole reason for the
+    base change.
+
+    \(\psi\) is an absolutely irreducible constituent of \(\chi\).  For an
+    absolutely irreducible \(\chi\) that is \(\chi\) and this is the classical
+    formula.  For an \(F\)-irreducible \(\chi\) the constituents are one
+    Galois orbit, all of one degree, and \(p_\chi\) is the sum of their
+    projectors: the sum over the orbit is therefore taken on the
+    *coefficients*, where it is \(\chi(g^{-1})\) itself, and not on the
+    matrices, where each term separately would ask \(F\) for a value it does
+    not have.
+
+    This one routine is not delegated, and the divergence is deliberate.
+    Sage's ``invariant.py`` writes the same operator transposed and with
+    \(\chi(g)\) where \(\chi(g^{-1})\) belongs; the two departures cancel for
+    a permutation action and do not cancel in general.  Upstream also leaves
+    the \(1/|G|\) to surface as a bare type error over a ring where it does
+    not exist, instead of stating the hypothesis.  Everything the projector
+    consumes -- the character table, the degrees, the values -- is still
+    GAP's.
+    """
+    extended = _fraction_base_change(module)
+    field = extended.base_ring()
+    group = module.group()
+    constituents = character.irreducible_constituents()
+    assert constituents, "the zero class function affords no representation"
+    assert all(value in field for value in character.class_values()), (
+        f"{character} takes values outside {field}, so the component it names "
+        f"has no {module.base_ring()}-form and does not index a decomposition "
+        "over this ring"
+    )
+    # Galois conjugates share a degree, so any one constituent states it.
+    degree = constituents[0].degree()
+    entries = (field(degree) / field(group.order())) * sum(
+        field(character(element.inverse()))
+        * module.action_matrix(element).change_ring(field)._sage_matrix()
+        for element in group
+    )
+    assert entries * entries == entries, (
+        "the projector for this character is not idempotent: its constituents "
+        "are not a single Galois orbit of absolutely irreducible characters"
+    )
+    return extended.hom(
+        [
+            zipsum(row, extended.module_generators(), extended.zero())
+            for row in entries.rows()
+        ],
+        extended,
+    )
+
+
+def _isotypic_component(module: "Module", character: Character) -> "Subobject":
+    r"""Return \(M_\chi=M\cap(M\otimes F)_\chi\hookrightarrow M\).
+
+    The *kernel* of \(N(p_\chi-1)\), for \(N\) clearing the denominators of
+    \(p_\chi\).  A vector of \(M\) lies in the \(\chi\)-part of \(M\otimes F\)
+    exactly when \(p_\chi\) fixes it, which is exactly when \(N(p_\chi-1)\)
+    kills it; \(N\ne0\) changes no solution, and it is what makes the
+    endomorphism one of \(M\) rather than of \(M\otimes F\).
+
+    Taking a kernel is what makes the component saturated, and for free: over
+    a PID \(kv\) is killed exactly when \(v\) is.  So no call site here clears
+    a denominator on a generator or saturates a span afterwards.
+    ``Subobjects.saturation`` is still the definition of the primitive closure
+    and is simply not what computes this one.
+
+    \(N(p_\chi-1)\) is equivariant: \(p_\chi\) is the action of a *central*
+    element of \(F[G]\) and commutes with every \(\rho(g)\).  That is what the
+    equivariant homset checks on construction, and it is why the kernel is a
+    submodule for \(G\) and not merely for \(R\).  A character that does not
+    occur in \(M\) gives the zero submodule rather than a failure.
+    """
+    projector = _isotypic_projector(module, character).matrix()
+    difference = projector._sage_matrix() - identity_matrix(
+        projector.base_ring(), module.rank()
+    )
+    scale = lcm([entry.denominator() for entry in difference.list()])
+    integral = (scale * difference).change_ring(module.base_ring())
+    return module.hom(
+        [
+            zipsum(row, module.module_generators(), module.zero())
+            for row in integral.rows()
+        ],
+        module,
+    ).kernel()
 
 
 def _restricted_action_automorphisms(
-    module: Any,
-    submodule: Any,
-    generators: list,
+    module: "Module",
+    submodule: "Module",
+    module_generators: list,
 ) -> list:
-    if not generators:
+    if not module_generators:
         return [submodule.Aut().one() for _ in module.group().group_generators()]
-    field = (
-        module.base_ring().fraction_field()
-        if module.base_ring() is ZZ
-        else module.base_ring()
-    )
+    # The linear system is solved over a field, and which field that is, is a
+    # fact about the base ring rather than about which base ring it happens to
+    # be: a field is its own fraction field, so naming the fraction field says
+    # it once for every R.  The solution is asserted back into R below.
+    field = module.base_ring().fraction_field()
     inclusion_matrix = matrix(
         field,
-        [_coordinate_vector(generator) for generator in generators],
+        [_coordinate_vector(generator) for generator in module_generators],
     )
-    def restricted_automorphism(group_element: Any) -> Any:
+    def restricted_automorphism(group_element: "GroupElement") -> "ModuleAutomorphism":
         images = matrix(
             field,
             [
                 _coordinate_vector(module.act(group_element, generator))
-                for generator in generators
+                for generator in module_generators
             ],
         )
         coefficients = (
@@ -440,6 +750,7 @@ def _restricted_action_automorphisms(
         assert all(
             entry in submodule.base_ring() for entry in coefficients.list()
         ), "the restricted action is not defined over the base ring"
+        coefficients = coefficients.change_ring(submodule.base_ring())
         return submodule.Aut()(
             {
                 label: zipsum(
@@ -448,7 +759,7 @@ def _restricted_action_automorphisms(
             submodule.zero(),
         )
                 for label, row in zip(
-                    submodule.generating_set(),
+                    submodule.module_generating_set(),
                     coefficients.rows(),
                 )
             }
@@ -460,42 +771,42 @@ def _restricted_action_automorphisms(
     ]
 
 
-def _equivariant_hom(domain: Any, codomain: Any, images: Any) -> Any:
+def _equivariant_hom(domain: "Module", codomain: "Module", images: dict) -> "ModuleMorphism":
     match images:
         case dict():
             assignment = images
         case list() | tuple():
-            assert len(images) == domain.ngens(), (
+            assert len(images) == domain.number_of_module_generators(), (
                 "the number of images does not match the generating set"
             )
             assignment = dict(
                 zip(
-                    domain.generating_set(),
+                    domain.module_generating_set(),
                     images,
                     strict=True,
                 )
             )
         case _:
-            raise TypeError(
+            assert False, (
                 "an equivariant homomorphism is specified by a finite "
                 "assignment or an ordered list of images"
             )
     return domain.Hom(codomain)(assignment)
 
 
-def _group_subobject(module: Any, generators: Any) -> Any:
-    generators = tuple(generators)
-    assert all(generator.parent() is module for generator in generators), (
+def _group_subobject(module: "Module", module_generators: "OrderedSet") -> "Subobject":
+    module_generators = tuple(module_generators)
+    assert all(generator.parent() is module for generator in module_generators), (
         "a subobject is generated by elements of this group module"
     )
-    generators = _independent_generators(module, generators)
-    labels = finite_ordered_set(tuple(generators))
+    module_generators = _independent_module_generators(module, module_generators)
+    labels = finite_ordered_set(tuple(module_generators))
     free = BasedFreeModule(
         module.base_ring(),
         labels,
     )
-    restricted = _restricted_action_automorphisms(module, free, generators)
-    action = GroupAction.from_generators(module.group(), free, restricted)
+    restricted = _restricted_action_automorphisms(module, free, module_generators)
+    action = group_action_homset(module.group(), free)(restricted)
     submodule = GroupModule(free, action)
     return Subobject(
         _equivariant_hom(
@@ -506,29 +817,73 @@ def _group_subobject(module: Any, generators: Any) -> Any:
     )
 
 
-def _isotypic_decomposition(module: Any) -> Any:
-    group = module.group()
-    characteristic = module.base_ring().characteristic()
-    assert characteristic == 0 or group.order() % characteristic != 0, (
-        "Maschke's hypothesis fails for this coefficient ring"
-    )
-    characters = tuple(group.irreducible_characters())
-    component_generators = tuple(
-        tuple(_isotypic_generators(module, character))
-        for character in characters
-    )
+def _isotypic_sum(
+    summed: "Subobject",
+    components: "OrderedSet",
+    characters: "OrderedSet",
+) -> "Subobject":
+    r"""Return \(\bigoplus_\chi M_\chi\hookrightarrow M\), decomposed.
+
+    One object answers both of the questions a caller has, because they are
+    one statement.  As a subobject it carries the inclusion into \(M\), and
+    with it ``index()``; as a direct sum it carries the summands indexed by
+    the characters, so ``summand(chi)`` is the \(\chi\)-component.  The two
+    are structure on the same object and not two objects.
+
+    The summands and their index set are the data ``DirectSumObjects``
+    declares -- the same two names its own constructor sets -- and not a
+    private ledger: the inclusion is the subobject's morphism, and the index
+    is computed from it rather than stored.
+    """
+    summed._summands = tuple(components)
+    summed._summand_index_set = characters
+    # Both categories are named: ``refine`` installs the methods of the
+    # category it is given, so refining into the direct-sum structure alone
+    # would take the inclusion and the index away with it.
+    # refine rebuilds the class from the categories named here, so the
+    # object's own category must be one of them or its module methods go.
+    return refine(summed, [summed.category(), DirectSumObjects()])
+
+
+def _isotypic_decomposition(module: "Module") -> "Subobject":
+    r"""Return \(\bigoplus_\chi M_\chi\) together with how it sits in \(M\).
+
+    One statement at two strengths, and so one object.  The sum of the
+    isotypic components is a submodule of \(M\) of finite index, indexed by
+    the characters ``_index_characters`` names; when \(R[G]\) is semisimple
+    that index is 1 and the inclusion is an isomorphism.  Maschke's theorem is
+    therefore an assertion *about* this object, not a second kind of object: a
+    caller asking for the \(\chi\)-component asks the same way in either case,
+    and reads ``index()`` when it wants to know which case it is in.
+
+    The index set is where the base ring is heard from.  Over a splitting
+    field it is the absolutely irreducible characters; over \(\mathbb Z\) it
+    is the \(\mathbb Q\)-irreducible ones, and the finite-index statement
+    above is true of that index set and false of the other.
+
+    The coproduct is not the object to return.  Its coapex would be \(M\) --
+    the shared codomain of the components' inclusions -- so refining it would
+    declare \(M\) to *be* \(\bigoplus_\chi M_\chi\), which is exactly the
+    isomorphism that fails over \(\mathbb Z\), and would leave the inclusion
+    of the sum with nowhere to live but a private field.
+    """
+    characters = _index_characters(module)
     components = tuple(
-        _group_subobject(module, generators)
-        for generators in component_generators
+        _isotypic_component(module, character) for character in characters
     )
-    all_generators = [
-        generator
-        for generators in component_generators
-        for generator in generators
-    ]
-    included_sum = _group_subobject(module, all_generators)
-    return DirectSum(
-        included_sum,
-        components,
-        finite_ordered_set(characters),
+    summed = _group_subobject(
+        module,
+        [
+            generator
+            for component in components
+            for generator in component.embedded_module_generators()
+        ],
     )
+    if module.category().is_semisimple():
+        # Maschke, asserted of the object it is about: the components exhaust
+        # M, which is the index being 1 and nothing else.
+        assert summed.index() == 1, (
+            "over a semisimple group algebra the isotypic components must "
+            f"exhaust the module, but their sum has index {summed.index()}"
+        )
+    return _isotypic_sum(summed, components, finite_ordered_set(characters))

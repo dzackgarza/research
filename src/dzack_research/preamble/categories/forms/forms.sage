@@ -1,20 +1,27 @@
 r"""Bilinear and quadratic forms as native Sage morphisms."""
 
-from typing import Any
 
 from sage.rings.integer import Integer
 from sage.categories.homset import Homset
 from sage.categories.morphism import Morphism
 from sage.matrix.matrix0 import Matrix
 from sage.structure.parent import Parent
+from sage_lattice_category_spike.lexicon import GramMatrix
 from sage_lattice_category_spike.objects.cardinals import Cardinal
 from sage.rings.integer_ring import ZZ
 
 from sage_lattice_category_spike.objects.sets import Sets
 
+from typing import TYPE_CHECKING
 
-def _framing_rank(generating_set: Any) -> Integer:
-    size = generating_set.cardinality()
+if TYPE_CHECKING:
+    # The ordered-set noun is type-only: the preamble loads into one
+    # shared namespace and nothing named OrderedSet may bind there.
+    from sage_lattice_category_spike.lexicon import OrderedSet
+
+
+def _framing_rank(module_generating_set: "OrderedSet") -> Integer:
+    size = module_generating_set.cardinality()
     if isinstance(size, Cardinal):
         assert size.is_finite(), "a Gram matrix requires a finite framing set"
         return size.finite_value()
@@ -25,14 +32,14 @@ def _framing_rank(generating_set: Any) -> Integer:
 class TensorSquare(Parent):
     r"""The formal tensor square \(M\otimes_R M\), as a morphism domain."""
 
-    def __init__(self, module: Any) -> None:
+    def __init__(self, module: "Module") -> None:
         self._module = module
         Parent.__init__(self, category=Sets())
 
-    def module(self) -> Any:
+    def module(self) -> "Module":
         return self._module
 
-    def __eq__(self, other: Any) -> bool:
+    def __eq__(self, other: object) -> bool:
         return isinstance(other, TensorSquare) and self._module is other._module
 
     def __hash__(self) -> int:
@@ -45,7 +52,7 @@ class TensorSquare(Parent):
 class BilinearFormHomset(Homset):
     r"""The homset of bilinear forms \(M\otimes_RM\to W\)."""
 
-    def __init__(self, module: Any, value_module: Any) -> None:
+    def __init__(self, module: "Module", value_module: "Module") -> None:
         self._module = module
         Homset.__init__(
             self,
@@ -55,13 +62,13 @@ class BilinearFormHomset(Homset):
             check=False,
         )
 
-    def module(self) -> Any:
+    def module(self) -> "Module":
         return self._module
 
-    def _element_constructor_(self, gram: Any) -> "BilinearFormMorphism":
+    def _element_constructor_(self, gram: "GramMatrix") -> "BilinearFormMorphism":
         return BilinearFormMorphism(self, gram)
 
-    def __contains__(self, form: Any) -> bool:
+    def __contains__(self, form: "FormMorphism") -> bool:
         return (
             isinstance(form, BilinearFormMorphism)
             and form.parent() is self
@@ -77,7 +84,7 @@ class BilinearFormHomset(Homset):
 class QuadraticFormHomset(Homset):
     r"""The homset of quadratic forms \(M\to W\)."""
 
-    def __init__(self, module: Any, value_module: Any) -> None:
+    def __init__(self, module: "Module", value_module: "Module") -> None:
         Homset.__init__(
             self,
             module,
@@ -86,13 +93,13 @@ class QuadraticFormHomset(Homset):
             check=False,
         )
 
-    def module(self) -> Any:
+    def module(self) -> "Module":
         return self.domain()
 
-    def _element_constructor_(self, gram: Any) -> "QuadraticFormMorphism":
+    def _element_constructor_(self, gram: "GramMatrix") -> "QuadraticFormMorphism":
         return QuadraticFormMorphism(self, gram)
 
-    def __contains__(self, form: Any) -> bool:
+    def __contains__(self, form: "FormMorphism") -> bool:
         return (
             isinstance(form, QuadraticFormMorphism)
             and form.parent() is self
@@ -105,11 +112,11 @@ class QuadraticFormHomset(Homset):
         )
 
 
-def _form_homset_cache(module: Any) -> dict:
+def _form_homset_cache(module: "Module") -> dict:
     return module.__dict__.setdefault("_form_homsets", {})
 
 
-def BilinearForms(module: Any, value_module: Any) -> BilinearFormHomset:
+def BilinearForms(module: "Module", value_module: "Module") -> BilinearFormHomset:
     r"""Return the canonical homset of bilinear forms on ``module``."""
     key = ("bilinear", value_module)
     cache = _form_homset_cache(module)
@@ -118,7 +125,7 @@ def BilinearForms(module: Any, value_module: Any) -> BilinearFormHomset:
     return cache[key]
 
 
-def QuadraticForms(module: Any, value_module: Any) -> QuadraticFormHomset:
+def QuadraticForms(module: "Module", value_module: "Module") -> QuadraticFormHomset:
     r"""Return the canonical homset of quadratic forms on ``module``."""
     key = ("quadratic", value_module)
     cache = _form_homset_cache(module)
@@ -127,24 +134,24 @@ def QuadraticForms(module: Any, value_module: Any) -> QuadraticFormHomset:
     return cache[key]
 
 
-def _forget_form_element(element: Any) -> Any:
+def _forget_form_element(element: "Element") -> "Element":
     match element:
         case FormModuleElement():
             return element.forget_form()
         case Element():
             return element
         case _:
-            raise TypeError(f"{element!r} is not a module element")
+            assert False, f"{element!r} is not a module element"
 
 
 class BilinearFormMorphism(Morphism):
     r"""A morphism \(M\otimes_RM\to W\), recorded on a finite framing."""
 
-    def __init__(self, parent: BilinearFormHomset, gram: Any) -> None:
+    def __init__(self, parent: BilinearFormHomset, gram: "GramMatrix") -> None:
         Morphism.__init__(self, parent)
         gram = gram if isinstance(gram, Matrix) else matrix(gram)
         module = parent.module()
-        size = _framing_rank(module.generating_set())
+        size = _framing_rank(module.module_generating_set())
         assert gram.nrows() == size and gram.ncols() == size, (
             f"the Gram matrix is {gram.nrows()}x{gram.ncols()} but the "
             f"framing set has cardinality {size}"
@@ -154,16 +161,16 @@ class BilinearFormMorphism(Morphism):
         )
         self._gram_matrix = gram
 
-    def module(self) -> Any:
+    def module(self) -> "Module":
         return self.parent().module()
 
-    def value_module(self) -> Any:
+    def value_module(self) -> "Module":
         return self.codomain()
 
-    def gram_matrix(self) -> Matrix:
-        return self._gram_matrix
+    def gram_matrix(self) -> GramMatrix:
+        return GramMatrix(self._gram_matrix)
 
-    def __call__(self, left: Any, right: Any) -> Any:
+    def __call__(self, left: "Element", right: "Element") -> "Element":
         assert all(
             element.parent() is self.module()
             for element in (left, right)
@@ -174,40 +181,42 @@ class BilinearFormMorphism(Morphism):
             * _coordinate_vector(right)
         )
 
-    def b(self, left: Any, right: Any) -> Any:
+    def b(self, left: "Element", right: "Element") -> "Element":
         return self(left, right)
 
-    def norm(self, element: Any) -> Any:
+    def norm(self, element: "Element") -> "Element":
         return self(element, element)
 
     def polar_form(self) -> "BilinearFormMorphism":
         return self
 
-    def on_module(self, module: Any) -> "BilinearFormMorphism":
+    def on_module(self, module: "Module") -> "BilinearFormMorphism":
         return BilinearForms(module, self.codomain())(self._gram_matrix)
 
-    def reduced(self, value_module: Any) -> "BilinearFormMorphism":
+    def reduced(self, value_module: "Module") -> "BilinearFormMorphism":
         return BilinearForms(self.module(), value_module)(self._gram_matrix)
 
-    def pullback(self, morphism: Any) -> "BilinearFormMorphism":
-        matrix_of_map = morphism.matrix()
+    def pullback(self, morphism: "Morphism") -> "BilinearFormMorphism":
+        matrix_of_map = morphism.matrix()._sage_matrix()
         domain = _underlying_module(morphism.domain())
         return BilinearForms(domain, self.codomain())(
-            matrix_of_map
-            * self._gram_matrix
-            * matrix_of_map.transpose()
+            GramMatrix(
+                matrix_of_map
+                * self._gram_matrix
+                * matrix_of_map.transpose()
+            )
         )
 
-    def descends_along(self, morphism: Any) -> bool:
+    def descends_along(self, morphism: "Morphism") -> bool:
         return all(
             self(
-                _forget_form_element(morphism(domain.generator(label))),
-                _forget_form_element(codomain.generator(target_label)),
+                _forget_form_element(morphism(domain.module_generator(label))),
+                _forget_form_element(codomain.module_generator(target_label)),
             )
             in ZZ
             for domain, codomain in [(morphism.domain(), morphism.codomain())]
-            for label in domain.generating_set()
-            for target_label in codomain.generating_set()
+            for label in domain.module_generating_set()
+            for target_label in codomain.module_generating_set()
         )
 
     def values_matrix(self) -> tuple:
@@ -216,7 +225,7 @@ class BilinearFormMorphism(Morphism):
             for row in self._gram_matrix.rows()
         )
 
-    def __eq__(self, other: Any) -> bool:
+    def __eq__(self, other: object) -> bool:
         return (
             isinstance(other, BilinearFormMorphism)
             and self.parent() is other.parent()
@@ -236,10 +245,10 @@ class BilinearFormMorphism(Morphism):
 class QuadraticFormMorphism(Morphism):
     r"""A quadratic morphism \(q:M\to W\), recorded by its diagonal lift."""
 
-    def __init__(self, parent: QuadraticFormHomset, gram: Any) -> None:
+    def __init__(self, parent: QuadraticFormHomset, gram: "GramMatrix") -> None:
         Morphism.__init__(self, parent)
         gram = gram if isinstance(gram, Matrix) else matrix(gram)
-        size = _framing_rank(parent.domain().generating_set())
+        size = _framing_rank(parent.domain().module_generating_set())
         assert gram.is_symmetric(), (
             "the diagonal lift of a quadratic form is symmetric"
         )
@@ -252,13 +261,13 @@ class QuadraticFormMorphism(Morphism):
         )
         self._lift_matrix = gram
 
-    def module(self) -> Any:
+    def module(self) -> "Module":
         return self.domain()
 
-    def value_module(self) -> Any:
+    def value_module(self) -> "Module":
         return self.codomain()
 
-    def __call__(self, element: Any) -> Any:
+    def __call__(self, element: "Element") -> "Element":
         assert element.parent() is self.domain(), (
             f"{element} is not an element of {self.domain()}"
         )
@@ -267,13 +276,13 @@ class QuadraticFormMorphism(Morphism):
             coordinates * self._lift_matrix * coordinates
         )
 
-    def norm(self, element: Any) -> Any:
+    def norm(self, element: "Element") -> "Element":
         return self(element)
 
     def lift_form(self) -> BilinearFormMorphism:
         return BilinearForms(self.domain(), QQ)(self._lift_matrix)
 
-    def _polar_value_module(self) -> Any:
+    def _polar_value_module(self) -> "Module":
         from sage.groups.additive_abelian.qmodnz import QmodnZ
 
         assert isinstance(self.codomain(), QmodnZ), (
@@ -287,10 +296,10 @@ class QuadraticFormMorphism(Morphism):
             self._polar_value_module(),
         )(self._lift_matrix)
 
-    def b(self, left: Any, right: Any) -> Any:
+    def b(self, left: "Element", right: "Element") -> "Element":
         return self.polar_form()(left, right)
 
-    def gram_matrix(self) -> Matrix:
+    def gram_matrix(self) -> GramMatrix:
         size = self._lift_matrix.nrows()
         upper = matrix(
             self._lift_matrix.base_ring(),
@@ -307,13 +316,13 @@ class QuadraticFormMorphism(Morphism):
             ],
         )
         upper.subdivide(*self._lift_matrix.subdivisions())
-        return upper
+        return GramMatrix(upper)
 
-    def on_module(self, module: Any) -> "QuadraticFormMorphism":
+    def on_module(self, module: "Module") -> "QuadraticFormMorphism":
         return QuadraticForms(module, self.codomain())(self._lift_matrix)
 
-    def pullback(self, morphism: Any) -> "QuadraticFormMorphism":
-        matrix_of_map = morphism.matrix()
+    def pullback(self, morphism: "Morphism") -> "QuadraticFormMorphism":
+        matrix_of_map = morphism.matrix()._sage_matrix()
         domain = _underlying_module(morphism.domain())
         return QuadraticForms(domain, self.codomain())(
             matrix_of_map
@@ -321,13 +330,13 @@ class QuadraticFormMorphism(Morphism):
             * matrix_of_map.transpose()
         )
 
-    def descends_along(self, morphism: Any) -> bool:
+    def descends_along(self, morphism: "Morphism") -> bool:
         if not self.lift_form().descends_along(morphism):
             return False
         return all(
-            self(_forget_form_element(morphism(morphism.domain().generator(label))))
+            self(_forget_form_element(morphism(morphism.domain().module_generator(label))))
             == self.codomain().zero()
-            for label in morphism.domain().generating_set()
+            for label in morphism.domain().module_generating_set()
         )
 
     def values_matrix(self) -> tuple:
@@ -336,7 +345,7 @@ class QuadraticFormMorphism(Morphism):
             for row in self.gram_matrix().rows()
         )
 
-    def __eq__(self, other: Any) -> bool:
+    def __eq__(self, other: object) -> bool:
         return (
             isinstance(other, QuadraticFormMorphism)
             and self.parent() is other.parent()
@@ -353,11 +362,11 @@ class QuadraticFormMorphism(Morphism):
         return repr(self.gram_matrix())
 
 
-def BilinearForm(module: Any, value_module: Any, gram_matrix: Any) -> Any:
+def BilinearForm(module: "Module", value_module: "Module", gram_matrix: "GramMatrix") -> "BilinearFormMorphism":
     r"""Construct the formed module classified by a bilinear form."""
     return FormModule(BilinearForms(module, value_module)(gram_matrix))
 
 
-def QuadraticForm(module: Any, value_module: Any, gram_matrix: Any) -> Any:
+def QuadraticForm(module: "Module", value_module: "Module", gram_matrix: "GramMatrix") -> "QuadraticFormMorphism":
     r"""Construct the formed module classified by a quadratic form."""
     return FormModule(QuadraticForms(module, value_module)(gram_matrix))

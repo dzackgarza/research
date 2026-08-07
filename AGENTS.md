@@ -163,6 +163,10 @@ This is the fourth graduation of one lesson (tests assert accomplishment, not de
 - **Turn audit.** What statement could now be falsified that could not before this turn?
   If none, the turn was preparation — apply the deletion test (vault: `global/traps/hard-problem-artifact-drift`). Meaningful work can be embarrassing; process noise cannot.
 
+- **mypy is a discovery tool, not a gate.** A type error is a signal about the actual code: a wrong return type, a missing method on a real class, a type hierarchy that doesn't match the mathematics. The correct response is to understand what the code's types actually are and fix them — never to silence the checker with `object`, `Any`, `type`, deleted annotations, `# type: ignore`, or config loopholes. Those carry zero type information; a function annotated `-> object` passes on literally anything, which means it asserts nothing.
+  When a type is genuinely unnameable because the object is load-injected from a `.sage` file mypy cannot import, the fix is to make it importable (move to `.py`, add a stub, or restructure the import boundary) — not to annotate around the absence.
+  Never probe the QC config (`mypy-global.ini`, `ai-review-ci`) looking for what `Any`-related settings might be allowed. The rule is: never use `object` or `Any`. That is already known from the errors mypy reports. Looking for a loophole is hacking the gate, not doing the work.
+
 Work-shape catalogue with this repo's exemplars and the meaningful-vs-noise litmus: `.agents/references/displacement-pattern-index.md` (D1–D6). These are review criteria for plans and completion claims alike — the Review Guidelines below guard completion *claims*; this section guards the loop that never claims.
 This discipline is culture, not a gate: do not build detectors, hooks, or mandatory checklists from it.
 
@@ -462,7 +466,7 @@ See the addendum below for the refine pattern; prefer override-refine from `dzac
 Reject APIs that are software-coherent but mathematically incoherent.
 
 - Named literature objects (e.g. a K3 involution) are **catalogue data**, not methods of every lattice of that type.
-- Operations of an object under structure (e.g. eigenlattices under a group action) live on that object’s category methods — or as thin sugar on the morphism — not in a freestanding feature file.
+- Operations of an object under structure (e.g. invariant and coinvariant lattices under a group action) live on that object’s category methods — or as thin sugar on the morphism — not in a freestanding feature file.
 - An isometry is a **Hom/Aut element**. Construct it the way morphisms are constructed (generator images `{g: image}`); the matrix is a derived view (`to_matrix`), not the definition.
 - Algebraic operations use native protocols (`L + M`, `sum([...])`, `L ** n` for n-fold sum). Do not invent `_oplus` or force chains of `.direct_sum` when `+` is the monoidal operation.
 
@@ -522,15 +526,15 @@ Ask “why does this freestanding file/function exist?” — if it has no mathe
 Tests falsify the mathematical or dispatch claim: refined methods win over class methods; this alias is the same parent; this Aut is an involution; this table entry is that named lattice.
 They do not exercise scaffolding, reassure about naming conflicts, or re-encode construction as gram-matrix comparisons.
 
-Predicates that are part of the theory (`is_involution`, eigenlattice functors, …) are methods on the owned category interfaces, not side conditions in catalogue loaders.
+Predicates that are part of the theory (`is_involution`, invariant and coinvariant lattices, isotypic components, …) are methods on the owned category interfaces, not side conditions in catalogue loaders.
 
-## 8. Block Hom spelling, eigenlattices, and catalogue hygiene
+## 8. Block Hom spelling, invariant and coinvariant lattices, and catalogue hygiene
 
 Rules distilled from preamble work on direct-sum coordinates, embeddings, and coinvariant lattices (2026-07).
 
 **Block Hom spelling.** A Hom/Aut between orthogonal direct sums is a block matrix: the $j$-th block column is the image of the $j$-th domain summand. Prefer block dicts via `L.summands()` — `{a1: b1, a2: b2 + b3}` — over flat generator-image lists when the mathematics is blockwise. Equal-rank block sums (`b2 + b3`) are gen-wise placement into multiple target blocks (the diagonal $N(2)\hookrightarrow N\oplus N$, not $N\to N\oplus N$). Name morphisms by their true domain; ergonomic sugar must not invent the wrong morphism type.
 
-**Eigenlattices and inclusions are computed on the lattice.** Invariant/coinvariant lattices and primitive inclusions (`invariant_lattice`, `coinvariant_lattice`, `coinvariant_inclusion`) are category methods on `IntegralLattices`; the coinvariant is $(L^G)^{\perp L}$. Catalogue must not ship helpers that take a named lattice plus an involution and assert kernel rank or Gram agreement — that certifies a guess, it does not construct. Named literature embeddings *use* the generic interface; they do not reimplement it.
+**Invariant and coinvariant lattices, and inclusions, are computed on the lattice.** There is no "eigenlattice": the notions are the invariant lattice, the coinvariant lattice, and the isotypic components. Invariant/coinvariant lattices and primitive inclusions (`invariant_lattice`, `coinvariant_lattice`, `coinvariant_inclusion`) are category methods on `IntegralLattices`; the coinvariant is $(L^G)^{\perp L}$. Catalogue must not ship helpers that take a named lattice plus an involution and assert kernel rank or Gram agreement — that certifies a guess, it does not construct. Named literature embeddings *use* the generic interface; they do not reimplement it.
 
 **Catalogue is specimens plus nested namespaces, not ceremony.** Call `categories.install()` before building catalogue lattices; no manual `refine_one_lattice`. No `_with_names`, `_involutions`, `_embeddings`, or similar factories around one-liners or class bodies. Nested `Involutions` / `Embeddings` belong in the `Lattices` class body (populate empty nested classes in that body when Python scoping requires it); no post-hoc `__qualname__` patching or `Lattices.X = …` assignment after the class is built. Once the principled block or coinvariant API exists, catalogue entries use it everywhere — flat lists or kernel-basis shortcuts left “because they still work” are drift.
 

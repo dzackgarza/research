@@ -1,11 +1,22 @@
 r"""Finite torsion modules equipped with a bilinear or quadratic form."""
 
-from typing import Any
+from typing import Any, Self, TYPE_CHECKING
+
+from sage_lattice_category_spike.objects.cardinals import Cardinal
+from sage_lattice_category_spike.lexicon import GramMatrix, MorphismMatrix
 
 from sage.arith.misc import factor
 from sage.categories.category_types import Category_over_base_ring
-from sage.matrix.matrix0 import Matrix
 from sage.misc.latex import latex as _latex_fn
+
+if TYPE_CHECKING:
+    # The ordered-set noun is type-only: the preamble loads into one
+    # shared namespace and nothing named OrderedSet may bind there.
+    from sage_lattice_category_spike.lexicon import Matrix, OrderedSet
+
+    # An ideal of ZZ, which is what an annihilator is. No lexicon noun names
+    # it yet, so the stub tree's own class is what the signatures below say.
+    from sage.rings.ideal import Ideal_pid
 
 
 class TorsionModulesWithForm(Category_over_base_ring):
@@ -19,7 +30,7 @@ class TorsionModulesWithForm(Category_over_base_ring):
             case _ if base_ring is ZZ:
                 return super().__classcall__(cls, ZZ)
             case _:
-                raise TypeError(
+                assert False, (
                     "finite torsion-form algorithms here are over ZZ"
                 )
 
@@ -49,7 +60,7 @@ class TorsionModulesWithForm(Category_over_base_ring):
     class ParentMethods:
         r"""Methods shared by bilinear and quadratic discriminant modules."""
 
-        def gram_matrix(self: Any) -> Matrix:
+        def gram_matrix(self: Self) -> GramMatrix:
             r"""Return the form's matrix with its entries read in the value module.
 
             The form stores representatives -- rationals -- because $\mathbb
@@ -62,21 +73,21 @@ class TorsionModulesWithForm(Category_over_base_ring):
             """
             form = self.form()
             target = form.value_module()
-            reduced = matrix(
+            reduced = GramMatrix(matrix(
                 QQ,
                 [
                     [target(entry).lift() for entry in row]
                     for row in form.gram_matrix().rows()
                 ],
-            )
+            ))
             reduced.subdivide(*form.gram_matrix().subdivisions())
             return reduced
 
-        def relation_matrix(self: Any) -> Matrix:
+        def relation_matrix(self: Self) -> MorphismMatrix:
             r"""Return :meth:`presentation`'s matrix, one row per relation."""
             return self.forget_form().relation_matrix()
 
-        def presentation(self: Any) -> Any:
+        def presentation(self: Self) -> "ModuleMorphism":
             r"""Return $p$, the morphism this object is the cokernel of.
 
             Every object here has one, because every finitely presented module
@@ -87,19 +98,22 @@ class TorsionModulesWithForm(Category_over_base_ring):
             """
             return self.forget_form().presentation()
 
-        def invariants(self: Any) -> tuple:
+        def invariants(self: Self) -> tuple:
             r"""Return the invariant factors of the underlying module."""
             return tuple(self.forget_form().invariants())
 
-        def cardinality(self: Any) -> Any:
-            r"""Return how many elements there are, which is finitely many."""
+        def cardinality(self: Self) -> "Cardinal":
+            r"""Return \(|A|\), which a form does not change."""
             return self.forget_form().cardinality()
 
-        def annihilator(self: Any) -> Any:
-            r"""Return $\operatorname{Ann}(A)\subseteq\mathbb Z$, which is nonzero here."""
+        def annihilator(self: Self) -> "Ideal_pid":
+            r"""Return $\operatorname{Ann}(A)\subseteq\mathbb Z$, which is nonzero here.
+
+            The ideal, not its generator: callers ask it for ``gen()``.
+            """
             return self.forget_form().annihilator()
 
-        def smith_form_gens(self: Any) -> Any:
+        def smith_form_module_generators(self: Self) -> "OrderedSet":
             r"""Return generators realizing the invariant factor decomposition.
 
             The form is not written in them -- they are a different generating
@@ -109,16 +123,16 @@ class TorsionModulesWithForm(Category_over_base_ring):
             return finite_ordered_set(
                 tuple(
                     self._over(generator)
-                    for generator in self.forget_form().smith_form_gens()
+                    for generator in self.forget_form().smith_form_module_generators()
                 )
             )
 
-        def __iter__(self: Any):
+        def __iter__(self: Self):
             r"""Iterate over the elements, of which there are finitely many."""
             return map(self._over, self.forget_form())
 
 
-        def primary_part(self: Any, p: Any) -> Subobject:
+        def primary_part(self: Self, p: "Integer") -> Subobject:
             r"""Return $A_p\hookrightarrow A$ as a subobject: the inclusion is the data.
 
             A presentation does not say which combinations of its generators
@@ -139,7 +153,7 @@ class TorsionModulesWithForm(Category_over_base_ring):
             decomposition standing apart from it.
             """
 
-            def primary_generator(generator: Any) -> tuple:
+            def primary_generator(generator: "ModuleElement") -> tuple:
                 order = generator.order()
                 primary = p ** order.valuation(p)
                 assert primary >= 1
@@ -151,7 +165,7 @@ class TorsionModulesWithForm(Category_over_base_ring):
 
             generators = tuple(
                 primary_element
-                for generator in self.smith_form_gens()
+                for generator in self.smith_form_module_generators()
                 for primary_element in primary_generator(generator)
             )
             regenerated = self.regenerate(generators)
@@ -159,12 +173,12 @@ class TorsionModulesWithForm(Category_over_base_ring):
                 regenerated.Hom(self)(
                     {
                         label: label
-                        for label in regenerated.generating_set()
+                        for label in regenerated.module_generating_set()
                     }
                 )
             )
 
-        def abelian_group(self: Any) -> Any:
+        def abelian_group(self: Self) -> "Group":
             r"""Return the underlying group, asked of the underlying group.
 
             $(G,b)$ is not determined by $G$, and this method is about $G$
@@ -174,15 +188,15 @@ class TorsionModulesWithForm(Category_over_base_ring):
             """
             return self.forget_form().abelian_group()
 
-        def is_p_elementary(self: Any, p: Any) -> bool:
+        def is_p_elementary(self: Self, p: "Integer") -> bool:
             r"""Return whether the underlying group is elementary abelian of exponent $p$."""
             return self.forget_form().is_p_elementary(p)
 
-        def primary_decomposition(self: Any) -> dict:
+        def primary_decomposition(self: Self) -> dict:
             r"""Return the underlying group's primary decomposition."""
             return self.forget_form().primary_decomposition()
 
-        def _latex_(self: Any) -> str:
+        def _latex_(self: Self) -> str:
             r"""Return multi-line LaTeX for the torsion module and its form."""
             invs = self.invariants()
             n = self.gram_matrix().nrows()
@@ -216,11 +230,11 @@ class TorsionModulesWithForm(Category_over_base_ring):
                 + "\n\\end{gathered}"
             )
 
-        def _form_matrix_latex_label(self: Any) -> str:
+        def _form_matrix_latex_label(self: Self) -> str:
             r"""Return the LaTeX label for this form's Gram matrix."""
             return "G_{A_L}"
 
-        def _form_matrix_latex_codomain(self: Any) -> str:
+        def _form_matrix_latex_codomain(self: Self) -> str:
             r"""Return the LaTeX codomain for this form's Gram matrix entries."""
             return "\\mathbb{Q}/\\mathbb{Z}"
 
@@ -238,7 +252,7 @@ class TorsionModulesWithForm(Category_over_base_ring):
         module, which is why it is stated here and not above.
         """
 
-        def order(self: Any) -> Any:
+        def order(self: Self) -> "Integer":
             r"""Return the generator of $\operatorname{Ann}(a)$, asked of $U(a)$.
 
             A module question, and one the form has no part in, so it is put to
@@ -282,11 +296,11 @@ class CokernelForms(Category):
         already is; nothing below computes with a form.
         """
 
-        def cover(self: Any) -> Any:
+        def cover(self: Self) -> "Module":
             r"""Return $M=\operatorname{codom} f$, whose classes these are."""
             return self.presentation().codomain()
 
-        def projection(self: Any) -> Any:
+        def projection(self: Self) -> "FormMorphism":
             r"""Return $\pi:M\to G$, sending $M$'s $i$-th generator to this object's.
 
             Available because there is a cover to project from.  A torsion form
@@ -298,8 +312,8 @@ class CokernelForms(Category):
                 cover,
                 self,
                 {
-                    label: self.generator(label)
-                    for label in cover.generating_set()
+                    label: self.module_generator(label)
+                    for label in cover.module_generating_set()
                 },
             )
 
@@ -332,20 +346,16 @@ class DiscriminantForms(Category):
     class ParentMethods:
         r"""Methods available on the discriminant form of a lattice."""
 
-        def correlation(self: Any) -> Any:
+        def correlation(self: Self) -> "FormMorphism":
             r"""Return $c: L\to L^\vee$: the presentation, under its own name."""
             return self.presentation()
 
-        def source_lattice(self: Any) -> Any:
+        def source_lattice(self: Self) -> "Lattice":
             r"""Return the lattice $L$ this is the discriminant form of."""
             return self.presentation().domain()
 
-        def dual(self: Any) -> Any:
-            r"""Return $L^\vee$, which is what a correlation lands in."""
-            return self.cover()
 
-
-def cokernel_categories(morphism: Any) -> list:
+def cokernel_categories(morphism: "Morphism") -> list:
     r"""Return the refinements ``morphism`` earns for its cokernel.
 
     Two independent questions, asked in order.  Is this the cokernel of a
@@ -364,27 +374,31 @@ def cokernel_categories(morphism: Any) -> list:
 
 
 
-def _coordinates_in_generators(
-    element: Any,
-    generating_set: Any,
-) -> tuple[Any, ...]:
-    r"""Return this element's coordinates in the requested generating set."""
-    if hasattr(element, "coefficients"):
-        coefficients = element.coefficients()
-        return tuple(
-            coefficients.get(generator, 0) for generator in generating_set
-        )
-    if hasattr(element, "_lift"):
-        return tuple(element._lift())
-    raise TypeError(
-        f"{element} has no coordinate extraction compatible with the generating set"
+def _coordinates_in_module_generators(
+    element: "Element",
+    module_generating_set: "OrderedSet",
+) -> "OrderedSet":
+    r"""Return this element's coordinates in the requested generating set.
+
+    One branch: an element answers what its coefficients are, and a presented
+    module answers it as a free one does.  The case that read the private
+    coordinate vector of a presented element instead returned coordinates in
+    *that* element's own generating set, never the requested one, and agreed
+    only when the two happened to coincide.
+    """
+    assert isinstance(element, Element), (
+        f"{element} is not an element, so it has no coordinates"
+    )
+    coefficients = element.coefficients()
+    return tuple(
+        coefficients.get(generator, 0) for generator in module_generating_set
     )
 
 
 # ---- shared construction: a torsion form is a cokernel ----
 
-def regenerating_data(form: Any, generators: Any) -> tuple:
-    r"""Return the relations and Gram matrix of ``form`` on ``generators``.
+def regenerating_data(form: "FormMorphism", module_generators: "OrderedSet") -> tuple:
+    r"""Return the relations and Gram matrix of ``form`` on ``module_generators``.
 
     The data of a torsion form, which is all a torsion form is: a presentation
     of the group on the new generating set, and the matrix of the form with
@@ -393,49 +407,54 @@ def regenerating_data(form: Any, generators: Any) -> tuple:
     anyone's cokernel is a separate question with, here, the answer no.
 
     Both are read off this object's own data.  Its Gram matrix is part of what
-    it is -- the form *with respect to its chosen generators* -- so the new one
-    is $RGR^{\mathsf T}$ for $R$ the new generators' coordinates, which is a
+    it is -- the form *with respect to its chosen module_generators* -- so the new one
+    is $RGR^{\mathsf T}$ for $R$ the new module_generators' coordinates, which is a
     change of generating set and not a pairing computed behind the form's back.
     """
-    generators = list(generators)
-    assert all(generator.parent() is form for generator in generators), (
+    module_generators = list(module_generators)
+    assert all(generator.parent() is form for generator in module_generators), (
         "a generating set for this object is made of its own elements; "
         "elements of another module reach it through a morphism"
     )
-    underlying_set = tuple(form.forget_form().generating_set())
+    underlying_set = tuple(form.forget_form().module_generating_set())
     rows = matrix(
         QQ,
         [
-            list(_coordinates_in_generators(generator, underlying_set))
-            for generator in generators
+            list(_coordinates_in_module_generators(generator, underlying_set))
+            for generator in module_generators
         ],
     )
     # The symmetric matrix the object is built on, whichever form it carries:
     # for a bilinear one its own, for a quadratic one its polarization's lift.
     gram = form.form().polar_form().gram_matrix()
-    return relations_among(form, generators), rows * gram * rows.transpose()
+    return relations_among(form, module_generators), rows * gram * rows.transpose()
 
 
-def relations_among(form: Any, generators: Any) -> Matrix:
-    r"""Return the relations among ``generators``: the kernel of $\mathbb Z^m\to A$."""
-    generators = list(generators)
+def relations_among(form: "FormMorphism", module_generators: "OrderedSet") -> "Matrix":
+    r"""Return the relations among ``module_generators``: the kernel of $\mathbb Z^m\to A$.
+
+    A column slice of a morphism matrix is a raw array again -- reading entries
+    is where the wrapper stops -- so what comes back is one, and the consumer
+    (``from_relations``) wraps it into the presentation it is the matrix of.
+    """
+    module_generators = list(module_generators)
     known = form.forget_form().relation_matrix()
     width = known.ncols()
-    underlying_set = tuple(form.forget_form().generating_set())
+    underlying_set = tuple(form.forget_form().module_generating_set())
     lifts = matrix(
         ZZ,
-        len(generators),
+        len(module_generators),
         width,
         [
-            list(_coordinates_in_generators(generator, underlying_set))
-            for generator in generators
+            list(_coordinates_in_module_generators(generator, underlying_set))
+            for generator in module_generators
         ],
     )
-    kernel = lifts.stack(known).left_kernel().generator_matrix()
+    kernel = MorphismMatrix(lifts).stack(known)._left_kernel_matrix()
     return kernel[:, : lifts.nrows()]
 
 
-def p_adic_jordan_generators(form: Any) -> list[Any]:
+def p_adic_jordan_module_generators(form: "FormMorphism") -> list[Any]:
     r"""Return lifts of generators putting ``form`` in $p$-adic Jordan normal form.
 
     Sage's reduction is the engine and works on a realization, so one is built
@@ -457,7 +476,7 @@ def p_adic_jordan_generators(form: Any) -> list[Any]:
         # The primary decomposition is where the reduction can run: it is one
         # generator per $p$-primary cyclic factor, so the form written on it
         # has the rank the group has.
-        embedding = form.primary_part(p).structure_morphism()
+        embedding = form.primary_part(p).embedding()
         component = embedding.domain()
         engine = _p_adic_engine_matrix(component)
 
@@ -491,7 +510,12 @@ def p_adic_jordan_generators(form: Any) -> list[Any]:
             _normalize(scaled.change_ring(padics), normal_odd=False)[1].change_ring(ZZ)
             * transform
         )
-        transform = (transform * nondegenerate).stack(degenerate)
+        # Over $\mathbb Z$ before a row of it is read as coordinates: the
+        # splitting is carried in the engine's rational matrix space, and a
+        # coordinate vector in a torsion $\mathbb Z$-module is integral.  The
+        # entries are integers already, so this asks for them as such and
+        # fails loudly if the reduction ever produced otherwise.
+        transform = (transform * nondegenerate).stack(degenerate).change_ring(ZZ)
 
         # A row of the transformation is a combination of the component's
         # generators, so it is that element's coordinate vector; the embedding
@@ -509,8 +533,13 @@ def p_adic_jordan_generators(form: Any) -> list[Any]:
     return generators
 
 
-def _p_adic_engine_matrix(form: Any) -> Matrix:
+def _p_adic_engine_matrix(form: "FormMorphism") -> "Matrix":
     r"""Return the matrix of representatives the $p$-adic reduction reads.
+
+    A raw array, and no morphism's matrix either: it is scratch input for
+    Sage's reduction, which reads it with the raw surface -- denominators,
+    a matrix space, a Hermite transformation -- and hands back a rational
+    matrix of its own.
 
     Not a Gram matrix of anything: the reduction wants rational numbers, and
     these are chosen representatives of the form's values, scaled by the
@@ -520,13 +549,13 @@ def _p_adic_engine_matrix(form: Any) -> Matrix:
     $2\mathbb Z$ before scaling and $b(x,x)$ modulo $\mathbb Z$.
     """
     generators = tuple(
-        form.generator(label)
-        for label in form.generating_set()
+        form.module_generator(label)
+        for label in form.module_generating_set()
     )
     size = len(generators)
     modulus = form.value_module().n
 
-    def entry(i: int, left: Any, j: int, right: Any) -> Any:
+    def entry(i: int, left: "Element", j: int, right: "Element") -> "Element":
         match i == j:
             case True:
                 return left.norm().lift() / modulus
@@ -585,7 +614,7 @@ def _format_primary_decomp_latex(invariants: tuple[int, ...]) -> str:
     )
 
 
-def _form_gram_matrix_latex(module: Any) -> str:
+def _form_gram_matrix_latex(module: "Module") -> str:
     r"""Return LaTeX for a form Gram matrix."""
     import re
 
@@ -598,7 +627,7 @@ def _form_gram_matrix_latex(module: Any) -> str:
     return gram_str
 
 
-def subdivide_form_gram_matrix(module: Any) -> None:
+def subdivide_form_gram_matrix(module: "Module") -> None:
     r"""Partition ``module``'s Gram matrix once and replace ``gram_matrix``."""
     raw = module.gram_matrix()
     cuts = _form_gram_matrix_cuts(module, raw)
@@ -611,7 +640,7 @@ def subdivide_form_gram_matrix(module: Any) -> None:
     module.gram_matrix = lambda: G
 
 
-def _form_gram_matrix_cuts(module: Any, raw: Any) -> list[int]:
+def _form_gram_matrix_cuts(module: "Module", raw: "GramMatrix") -> list[int]:
     r"""Return the block cuts of ``module``'s form Gram matrix.
 
     The discriminant functor carries $L=\bigoplus L_i$ to $A=\bigoplus A_{L_i}$,

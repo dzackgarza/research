@@ -1,6 +1,7 @@
 """Reusable helpers for the Sage preamble."""
 
 from collections.abc import Callable, Iterable
+
 from typing import Any
 
 __all__ = ["lmap", "lzip", "to_var_names", "zipsum"]
@@ -21,20 +22,25 @@ def to_var_names(s: str) -> list[str]:
     return [x.replace(" ", "").strip() for x in s.split(",")]
 
 
-def zipsum(
-    coefficients: Iterable[Any],
-    generators: Iterable[Any],
-    zero: Any,
+def zipsum[C, G, T](
+    coefficients: Iterable[C],
+    elements: Iterable[G],
+    zero: T,
     *,
-    term: Callable[[Any, Any], Any] | None = None,
-) -> Any:
-    """Sum a zipped pairwise product of coefficients and generators."""
+    term: Callable[[C, G], T] | None = None,
+) -> T:
+    """Sum a zipped pairwise product of coefficients and elements.
+
+    General in all three: the summand type is whatever ``term`` produces and
+    ``zero`` is a unit for, which the module cases instantiate but do not
+    define.
+    """
     if term is None:
-        term = lambda coefficient, generator: coefficient * generator
+        term = lambda coefficient, element: coefficient * element
     return sum(
         (
-            term(coefficient, generator)
-            for coefficient, generator in zip(coefficients, generators, strict=True)
+            term(coefficient, element)
+            for coefficient, element in zip(coefficients, elements, strict=True)
         ),
         zero,
     )

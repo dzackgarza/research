@@ -7,7 +7,7 @@ lattice element by itself. Build an element only by extracting
 ``module_generators()`` and summing ``coefficient * generator``.
 
 Requires category installation first (``install_integral_lattices``), so that
-generator sugar ``L.<module_generators> = ...`` works for the lattices that use it.
+generator sugar ``L.<generators> = ...`` works for the lattices that use it.
 
 Call :meth:`Lattices.install` (``init.sage`` does this) to bind specimens and
 the $\Lambda_{K3}$ module_generators into the session namespace.
@@ -21,9 +21,14 @@ negative-definite quotient's own $(r,a,\delta)$ invariants.
 
 from sage.matrix.constructor import matrix
 from sage.matrix.special import diagonal_matrix
-# The preamble's own constructor, installed over Sage's name.
-from sage.modules.free_quadratic_module_integer_symmetric import IntegralLattice
 from sage.rings.integer_ring import ZZ
+
+# The preamble's own constructor, installed over Sage's name.  Sage's function
+# of this name returns a submodule of a base-changed module over $\mathbb Q$,
+# which is outside the owned categories -- so a lattice built through it
+# answers Sage's ``discriminant_group`` rather than this preamble's, and takes
+# no ``names=``, which is what the ``L.<e,f> = ...`` sugar passes.
+IntegralLattice = _integral_lattice_with_names
 
 __all__ = [
     "Embeddings",
@@ -38,9 +43,9 @@ class Lattices:
     r"""Catalogue of named integral lattices.
 
     Most specimens are plain lattice objects.  Lattices that the session treats
-    as named module_generating sets ($\Lambda_{K3}$, $T_{\mathrm{En}}$, $T_{\mathrm{dP}}$) use
-    ``L.<module_generators> = ...``.  :meth:`install` binds every specimen attribute into the
-    notebook namespace and injects the named module_generators.
+    as named generating sets ($\Lambda_{K3}$, $T_{\mathrm{En}}$, $T_{\mathrm{dP}}$) use
+    ``L.<generators> = ...``.  :meth:`install` binds every specimen attribute into the
+    notebook namespace and injects the named generators.
     """
 
     Zero = _integral_lattice_with_names(matrix(ZZ, 0, 0, []))
@@ -114,16 +119,16 @@ class Lattices:
     LK3_4 = Z.twist(-4) + U^2 + E8^2
 
     # Named bases — matching the old init.sage session.
-    LK3.<v1, v2, u1, u2, up1, up2, e1, ..., e8, ep1, ..., ep8> = (U^3).direct_sum(E8^2)
-    TEn.<e, f, ep, fp, a1, ..., a8> = U.direct_sum(E10_2)
-    TdP.<e, f, ep, fp, a1, ..., a8, a1t, ..., a8t> = U.direct_sum(U_2, E8, E8)
+    LK3.<v1, v2, u1, u2, up1, up2, e1, ..., e8, ep1, ..., ep8> = (U^3).direct_sum([E8^2])
+    TEn.<e, f, ep, fp, a1, ..., a8> = U.direct_sum([E10_2])
+    TdP.<e, f, ep, fp, a1, ..., a8, a1t, ..., a8t> = U.direct_sum([U_2, E8, E8])
     L_20_2_0 = TdP
 
     @staticmethod
     def root_lattice(kind, rank, names=None):
         """Return the negative-definite root lattice of the given type.
 
-        With ``names`` (the ``L.<module_generators> = ...`` sugar) a fresh lattice is
+        With ``names`` (the ``L.<generators> = ...`` sugar) a fresh lattice is
         constructed and named — naming must never rename the shared
         catalogue specimen.
         """
@@ -160,7 +165,7 @@ class Lattices:
 
     @classmethod
     def install(cls, scope):
-        r"""Bind catalogue specimens and named module_generators into *scope*."""
+        r"""Bind catalogue specimens and named generators into *scope*."""
         for name, obj in vars(cls).items():
             if obj in IntegralLattices():
                 scope[name] = obj
@@ -171,10 +176,16 @@ class Lattices:
             I_Nik=Involutions.I_Nik,
         )
 
-        # Shared short names: inject TdP after TEn so session ``e`` is TdP's.
-        cls.TEn.inject_variables(scope)
-        cls.TdP.inject_variables(scope)
-        cls.LK3.inject_variables(scope)
+        # Shared short names: bind TdP after TEn so session ``e`` is TdP's.
+        #
+        # Not ``inject_variables``, which reads ``gens`` -- a name a
+        # form-bearing module does not answer to, its generators being
+        # ``module_generators``.  Said in the preamble's own nouns it is the
+        # same act, and it is one the object supports.
+        for lattice in (cls.TEn, cls.TdP, cls.LK3):
+            scope.update(
+                zip(lattice.variable_names(), lattice.module_generators())
+            )
 
         ed, fd, epd, fpd, w1, w2, w3, w4, w5, w6, w7, w8 = (
             cls.TEn.dual_lattice().module_generators()
@@ -690,16 +701,16 @@ class Involutions:
 
     I_dP = Lattices.LK3.Aut()(
         {
-            v: tuple(-image for image in v.embedded_elements()),
+            v: tuple(-image for image in v.embedded_module_generators()),
             uu: up,
             up: uu,
-            ea: tuple(-image for image in ea.embedded_elements()),
-            ep: tuple(-image for image in ep.embedded_elements()),
+            ea: tuple(-image for image in ea.embedded_module_generators()),
+            ep: tuple(-image for image in ep.embedded_module_generators()),
         }
     )
     I_En = Lattices.LK3.Aut()(
         {
-            v: tuple(-image for image in v.embedded_elements()),
+            v: tuple(-image for image in v.embedded_module_generators()),
             uu: up,
             up: uu,
             ea: ep,
@@ -711,8 +722,8 @@ class Involutions:
             v: v,
             uu: uu,
             up: up,
-            ea: tuple(-image for image in ep.embedded_elements()),
-            ep: tuple(-image for image in ea.embedded_elements()),
+            ea: tuple(-image for image in ep.embedded_module_generators()),
+            ep: tuple(-image for image in ea.embedded_module_generators()),
         }
     )
 
@@ -729,12 +740,12 @@ class Embeddings:
     E8_2_into_TdP = Lattices.E8_2.Hom(Lattices.TdP)(
         tuple(
             left + right
-            for left, right in zip(d3.embedded_elements(), d4.embedded_elements())
+            for left, right in zip(d3.embedded_module_generators(), d4.embedded_module_generators())
         )
     )
     TCo_into_TEn = Lattices.Tco.Hom(Lattices.TEn)(
         {
-            c1: e1.embedded_elements()[0] + e1.embedded_elements()[1],
+            c1: e1.embedded_module_generators()[0] + e1.embedded_module_generators()[1],
             c2: e2,
             c3: e3,
         }
@@ -745,9 +756,14 @@ class Embeddings:
             e2: d2,
             e3: tuple(
                 left + right
-                for left, right in zip(d3.embedded_elements(), d4.embedded_elements())
+                for left, right in zip(d3.embedded_module_generators(), d4.embedded_module_generators())
             ),
         }
     )
-    TEn_into_LK3 = Lattices.LK3.coinvariant_lattice(Involutions.I_En)
-    TdP_into_LK3 = Lattices.LK3.coinvariant_lattice(Involutions.I_dP)
+    # $T=(L^G)^{\perp}$ for $G=\langle\iota\rangle$ acting by its inclusion.
+    TEn_into_LK3 = Lattices.LK3.coinvariant_lattice(
+        Involutions.I_En.cyclic_subgroup().inclusion()
+    )
+    TdP_into_LK3 = Lattices.LK3.coinvariant_lattice(
+        Involutions.I_dP.cyclic_subgroup().inclusion()
+    )

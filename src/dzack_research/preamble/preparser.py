@@ -10,17 +10,24 @@ the core compiler.
 
 from __future__ import annotations
 
+import builtins
 import re
 
+from sage.categories.rings import Rings
 from sage.repl import interpreter as sage_interpreter
 from sage.repl import preparse as sage_preparse
 from sage.repl.load import load_wrap
+from sage.rings.integer import Integer
+from sage.structure.parent import Parent
 
 from sagepython import (  # noqa: F401  (re-exports)
+    Context,
     LoweredSource,
+    Node,
     Segment,
     SourceMap,
     lower,
+    lower_node,
 )
 from sagepython.research import EXTENSION as _RESEARCH_NOTATION
 
@@ -30,6 +37,64 @@ _native_preparse_file = sage_preparse.preparse_file
 
 _TIME_STATEMENT = re.compile(r"^(\s*)time +(\S[^\n]*)$", re.MULTILINE)
 _LOAD_ATTACH = re.compile(r"^(\s*)(load|attach) ([^(].*)$", re.MULTILINE)
+
+
+# ---------------------------------------------------------------------------
+# ``R^n``: the caret is research notation, ``**`` is Python's operator
+# ---------------------------------------------------------------------------
+
+_ring_power = None
+
+
+def register_ring_power(constructor) -> None:
+    r"""Name the free module ``R^n`` builds for a ring ``R``.
+
+    The preamble calls this once its own free module exists.  Until then
+    -- and for every ring Sage builds inside its own algorithms, which
+    write ``R**n`` in ordinary Python -- ``R^n`` is Sage's native power.
+    """
+    global _ring_power
+    _ring_power = constructor
+
+
+def research_pow(base, exponent):
+    r"""Evaluate ``base ^ exponent`` as written in research source.
+
+    Only a ring parent raised to a cardinality is the preamble's noun;
+    everything else -- ring elements, group elements, symbolic
+    expressions, non-ring parents -- is Python's ``**`` unchanged.
+    """
+    if (
+        _ring_power is not None
+        and isinstance(exponent, (int, Integer))
+        and exponent >= 0
+        and isinstance(base, Parent)
+        and base in Rings()
+    ):
+        return _ring_power(base, exponent)
+    return base**exponent
+
+
+def _lower_caret(node: Node, context: Context) -> str | None:
+    r"""Lower ``a ^ b`` to the research power and ``a ^^ b`` to Python's xor."""
+    operator = node.child_by_field_name("operator")
+    left = node.child_by_field_name("left")
+    right = node.child_by_field_name("right")
+    if operator is None or left is None or right is None:
+        return None
+    match operator.text:
+        case b"^":
+            return (
+                f"research_pow({lower_node(left, context)}, "
+                f"{lower_node(right, context)})"
+            )
+        case b"^^":
+            return f"({lower_node(left, context)}) ^ ({lower_node(right, context)})"
+        case _:
+            return None
+
+
+_CARET_NOTATION = {"binary_operator": _lower_caret}
 
 
 def _strip_prompts(line: str) -> str:
@@ -81,7 +146,7 @@ def preparse(
     return lower(
         line,
         numbers="wrapped" if numeric_literals else "raw",
-        extensions=(_RESEARCH_NOTATION,),
+        extensions=(_RESEARCH_NOTATION, _CARET_NOTATION),
     ).python
 
 
@@ -116,6 +181,10 @@ def preparse_file(
 
 def install_preparser() -> None:
     r"""Install the research preparser into Sage's preprocessing surfaces."""
+    # Lowered source names this at every caret, including inside the
+    # preamble's own scripts, so it is a builtin rather than a global of
+    # any one namespace.
+    builtins.research_pow = research_pow
     if (
         sage_preparse.preparse is preparse
         and sage_interpreter.preparse is preparse

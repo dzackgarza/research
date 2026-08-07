@@ -1,6 +1,6 @@
 r"""Finitely presented groups."""
 
-from typing import Any
+from typing import Any, Self
 
 from sage.categories.category import Category
 from sage.groups.finitely_presented import (
@@ -33,7 +33,7 @@ class OwnedFinitelyPresentedGroup(FinitelyPresentedGroup):
     Element = OwnedFinitelyPresentedGroupElement
 
 
-def _own_fp_group_types(group: Any) -> None:
+def _own_fp_group_types(group: "Group") -> None:
     r"""Claim the owned parent and element types before refine reads them."""
     from sage.cpython.type import can_assign_class
 
@@ -55,11 +55,11 @@ class FinitelyPresentedGroups(Category):
         return [OwnedGroups()]
 
     class ParentMethods:
-        def _latex_(self: Any) -> str:
+        def _latex_(self: Self) -> str:
             return _fp_format_finite_presentation_latex(self)
 
 
-def _fp_group_generator_names(group: Any) -> tuple[str, ...]:
+def _fp_group_generator_names(group: "Group") -> tuple[str, ...]:
     return tuple(str(name) for name in group.variable_names())
 
 
@@ -73,7 +73,7 @@ def _fp_format_generator_name(name: str) -> str:
     return name.replace("_", "\\_")
 
 
-def _fp_relation_syllables(group: Any, word: Any) -> tuple[tuple[int, int], ...]:
+def _fp_relation_syllables(group: "Group", word: "Element") -> tuple[tuple[int, int], ...]:
     names = _fp_group_generator_names(group)
     nc = len(names)
     raw = word.Tietze()
@@ -96,7 +96,7 @@ def _fp_relation_syllables(group: Any, word: Any) -> tuple[tuple[int, int], ...]
     return tuple(syl)
 
 
-def _fp_format_word_latex(group: Any, word: Any) -> str:
+def _fp_format_word_latex(group: "Group", word: "Element") -> str:
     gnames = tuple(_fp_format_generator_name(n) for n in _fp_group_generator_names(group))
     if not gnames:
         return "1"
@@ -124,7 +124,7 @@ def _fp_format_word_latex(group: Any, word: Any) -> str:
     return "".join(syllable(idx, exponent) for idx, exponent in syl)
 
 
-def _fp_relation_word_rows(group: Any, rels: tuple[Any, ...]) -> tuple[str, ...]:
+def _fp_relation_word_rows(group: "Group", rels: tuple[Any, ...]) -> tuple[str, ...]:
     return tuple(_fp_format_word_latex(group, r) for r in rels)
 
 
@@ -166,7 +166,7 @@ def _fp_relation_table_latex(rows: tuple[str, ...]) -> str:
     return f"\\begin{{array}}{{{colspec}}}\n" + "\\\\\n".join(rendered) + "\n\\end{array}"
 
 
-def _fp_format_finite_presentation_latex(group: Any) -> str:
+def _fp_format_finite_presentation_latex(group: "Group") -> str:
     r"""Render a ``FinitelyPresentedGroup`` as compact LaTeX."""
     gens = tuple(_fp_format_generator_name(n) for n in _fp_group_generator_names(group))
     rels = tuple(group.relations())

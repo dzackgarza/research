@@ -11,12 +11,17 @@ membership in :class:`DiscriminantQuadraticModules`.  Sage's
 this category.
 """
 
-from typing import Any
+from typing import Self, TYPE_CHECKING
 
 from sage.categories.category import Category
 from sage.groups.additive_abelian.qmodnz import QmodnZ
 from sage.matrix.matrix0 import Matrix
 from sage.rings.rational_field import QQ
+
+if TYPE_CHECKING:
+    # The ordered-set noun is type-only: the preamble loads into one
+    # shared namespace and nothing named OrderedSet may bind there.
+    from sage_lattice_category_spike.lexicon import OrderedSet
 
 
 class DiscriminantQuadraticModules(Category):
@@ -35,7 +40,7 @@ class DiscriminantQuadraticModules(Category):
     def super_categories(self) -> list:
         return [TorsionModulesWithForm(), QuadraticFormModules()]
 
-    def from_module(self, module: Any, gram: Matrix) -> "FormModule":
+    def from_module(self, module: "Module", gram: Matrix) -> "FormModule":
         r"""Return the torsion form on ``module`` with Gram matrix ``gram``.
 
         The construction the category is for: a finitely presented torsion
@@ -47,7 +52,7 @@ class DiscriminantQuadraticModules(Category):
         assert module in FinitelyPresentedTorsionModules(), (
             "a discriminant form requires a finitely presented torsion module"
         )
-        relations = matrix(ZZ, module.relation_matrix())
+        relations = module.relation_matrix()._sage_matrix().change_ring(ZZ)
         assert all(entry in ZZ for entry in (relations * gram).list()), (
             "the polarization is not defined on the classes: some relation "
             "does not pair integrally with the module_generators"
@@ -79,7 +84,7 @@ class DiscriminantQuadraticModules(Category):
         module = FinitelyPresentedTorsionModules().from_relations(relations)
         return self.from_module(module, gram)
 
-    def cokernel(self, morphism: Any) -> "FormModule":
+    def cokernel(self, morphism: "Morphism") -> "FormModule":
         r"""Return $\operatorname{coker} f$ for $f$ of finite index, as an object here.
 
         No second morphism appears: $f$ *is* the presentation, so it is handed
@@ -109,7 +114,7 @@ class DiscriminantQuadraticModules(Category):
     class ParentMethods:
         r"""Methods available on discriminant quadratic modules."""
 
-        def regenerate(self: Any, module_generators: Any) -> "FormModule":
+        def regenerate(self: Self, module_generators: "OrderedSet") -> "FormModule":
             r"""Return this form on the generating set ``module_generators``.
 
             A different generating set is a different object of this category,
@@ -124,11 +129,11 @@ class DiscriminantQuadraticModules(Category):
             )
             return DiscriminantQuadraticModules().from_module(module, gram)
 
-        def associated_quadratic_form(self: Any) -> Any:
+        def associated_quadratic_form(self: Self) -> "QuadraticFormMorphism":
             r"""Return this form: it is already the quadratic one."""
             return self
 
-        def associated_bilinear_form(self: Any) -> Any:
+        def associated_bilinear_form(self: Self) -> "BilinearFormMorphism":
             r"""Return $b_q$, the polarization -- an object of the sibling category.
 
             Always defined, and it forgets: distinct $q$ on the same group can
@@ -139,15 +144,15 @@ class DiscriminantQuadraticModules(Category):
                 self.form().polar_form().gram_matrix(),
             )
 
-        def _form_matrix_latex_label(self: Any) -> str:
+        def _form_matrix_latex_label(self: Self) -> str:
             r"""Return the LaTeX label for the quadratic Gram matrix."""
             return "G_{q_{A_L}}"
 
-        def _form_matrix_latex_codomain(self: Any) -> str:
+        def _form_matrix_latex_codomain(self: Self) -> str:
             r"""Return the LaTeX codomain for the quadratic Gram matrix entries."""
             return "\\mathbb{Q}/2\\mathbb{Z}"
 
-        def invariant_factor_form(self: Any) -> "FormModule":
+        def invariant_factor_form(self: Self) -> "FormModule":
             r"""Return $q$ on module_generators from the invariant factor decomposition.
 
             The change merges factors across summands -- $A_{A_2\oplus A_3}$ lands
@@ -155,22 +160,22 @@ class DiscriminantQuadraticModules(Category):
             $\mathbb Z/3\oplus\mathbb Z/4$ -- so no decomposition of $L$ survives
             it, which is why it cannot be :meth:`discriminant_group`.
             """
-            return self.regenerate(self.smith_form_generators())
+            return self.regenerate(self.smith_form_module_generators())
 
-        def normal_form(self: Any) -> "FormModule":
+        def normal_form(self: Self) -> "FormModule":
             r"""Return $q$ on $p$-adic Jordan module_generators -- a different object.
 
             For $p$ odd the blocks are those of Peters--Sterk Prop. 9.4.1; at $p=2$
             the reduced normal form of Cor. C.3.2 applies, which is where the
             quadratic side has a uniqueness statement the bilinear side lacks.
             """
-            return self.regenerate(p_adic_jordan_generators(self))
+            return self.regenerate(p_adic_jordan_module_generators(self))
 
 
     class ElementMethods:
         r"""Methods available on elements of discriminant quadratic modules."""
 
-        def q(self: Any) -> Any:
+        def q(self: Self) -> "Element":
             r"""Return $q(\bar x)\in\mathbb Q/2\mathbb Z$.
 
             The same pairing the bilinear form reads modulo $\mathbb Z$, read
@@ -179,12 +184,12 @@ class DiscriminantQuadraticModules(Category):
             """
             return self.parent().form()(self.forget_form())
 
-        def __pow__(self: Any, exponent: Any, modulus: Any = None) -> Any:
+        def __pow__(self: Self, exponent: "Integer", modulus: "Integer" = None) -> "Element":
             r"""``x ^ 2`` -> $q(x)$."""
             assert exponent == 2, f"exponent {exponent} not supported"
             return self.q()
 
-        def is_characteristic(self: Any) -> bool:
+        def is_characteristic(self: Self) -> bool:
             r"""Return whether $q(x)=b(x,v^*)$ modulo $\mathbb Z$ for every $x$."""
             return all(
                 x.q().lift() - x.b(self).lift() in ZZ

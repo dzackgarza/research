@@ -204,12 +204,18 @@ def test_correlation_is_the_gram_matrix_into_the_dual() -> None:
 
     $c(e_i)=\sum_j G_{ij}e_j^\vee$ is what makes $c$ the map $v\mapsto b(v,-)$
     rather than an inclusion of coordinate vectors.
+
+    The claim is that the two *arrays* agree, so it is asserted on the arrays.
+    The matrix of a morphism and the Gram matrix of a form are different
+    objects and never compare equal as objects.
     """
     _ensure_preamble()
     for name in ("A2", "D4", "E8", "U_2"):
         L = getattr(Lattices, name)
-        assert L.correlation().matrix() == L.gram_matrix(), f"{name}: c is not G"
-        assert L.dual().gram_matrix() == L.gram_matrix().inverse(), (
+        assert L.correlation().matrix()._sage_matrix() == L.gram_matrix(), (
+            f"{name}: c is not G"
+        )
+        assert L.dual_lattice().gram_matrix() == L.gram_matrix().inverse(), (
             f"{name}: L^v does not carry G^-1"
         )
 

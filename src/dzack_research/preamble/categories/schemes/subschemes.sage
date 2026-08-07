@@ -27,7 +27,7 @@ class Subscheme(Scheme):
 
     def inclusion_morphism(self):
         r"""Return the structure inclusion morphism i: A -> B."""
-        raise NotImplementedError("inclusion_morphism must be implemented by concrete Subscheme")
+        assert False, "inclusion_morphism must be implemented by concrete Subscheme"
 
 
 class ClosedSubschemes(Category_over_base_ring):

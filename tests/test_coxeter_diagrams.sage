@@ -22,7 +22,11 @@ def test_cartan_type_constructs_its_diagram_as_a_sage_parent() -> None:
         (2, 3, 3),
         (3, 4, 3),
     ]
-    TestSuite(diagram).run(raise_on_failure=True)
+    # ``cardinality`` is skipped: Sage's generic test demands a Sage integer
+    # or infinity, and this repo answers with a ``Cardinal`` on purpose --
+    # so the owned answer is asserted here instead of Sage's contract.
+    assert diagram.cardinality() == 4
+    TestSuite(diagram).run(skip=["_test_cardinality"], raise_on_failure=True)
 
 
 def test_induced_subdiagram_recovers_the_standard_a3_diagram() -> None:
@@ -47,7 +51,7 @@ def test_parent_constructs_a_diagram_from_its_coxeter_matrix() -> None:
 def test_rooted_diagram_records_roots_intersections_layout_and_tikz() -> None:
     r"""A rooted diagram stores the lattice roots behind a non-simply-laced edge."""
     lattice = IntegralLattice(matrix(ZZ, [[-4, 2], [2, -2]]), names=("r", "s"))
-    r, s = lattice.gens()
+    r, s = lattice.module_generators()
 
     diagram = FiniteCoxeterDiagram.from_roots(
         (r, s),
@@ -55,10 +59,10 @@ def test_rooted_diagram_records_roots_intersections_layout_and_tikz() -> None:
         positions={0: (0, 0), 1: (2, 0)},
     )
 
-    assert diagram.embedding_codomain() is lattice
+    assert diagram.root_realization() is lattice
     assert diagram.root_lattice().gram_matrix() == lattice.gram_matrix()
-    assert diagram.root_embedding()(diagram.root_lattice().module_generators()[0]) == r
-    assert diagram.roots() == (r, s)
+    assert diagram.root_morphism()(diagram.root_lattice().module_generators()[0]) == r
+    assert tuple(diagram.roots()) == (r, s)
     assert diagram.root_intersection_matrix() == matrix(ZZ, [[-4, 2], [2, -2]])
     assert diagram.coxeter_matrix() == CoxeterMatrix([[1, 4], [4, 1]], index_set=(0, 1))
     assert list(diagram.root_intersection_graph().edges(sort=True)) == [
@@ -82,8 +86,8 @@ def test_rooted_diagram_records_roots_intersections_layout_and_tikz() -> None:
     assert "(v1) -- (v1)" not in tikz
 
     subdiagram = diagram.subdiagram([diagram.vertex(1)])
-    assert subdiagram.embedding_codomain() is lattice
-    assert subdiagram.roots() == (s,)
+    assert subdiagram.root_realization() is lattice
+    assert tuple(subdiagram.roots()) == (s,)
     assert subdiagram.root_intersection_matrix() == matrix(ZZ, [[-2]])
     assert subdiagram.preferred_positions() == {1: (2, 0)}
 
@@ -108,7 +112,7 @@ def test_morphisms_preserve_the_full_coxeter_matrix_and_compose() -> None:
         for left in a2.index_set()
         for right in a2.index_set()
     )
-    identity = a2.hom(a2.index_set(), codomain=a2)
+    identity = a2.hom(tuple(a2.index_set()), codomain=a2)
     assert tuple(vertex.value for vertex in (inclusion_23 * identity).images()) == (
         2,
         3,
