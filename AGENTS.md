@@ -160,6 +160,8 @@ This is the fourth graduation of one lesson (tests assert accomplishment, not de
 
 - **A correction that removes machinery halts artifact production.** The rebuild's first act is the specimen, not the re-filed card; two machinery-removals on one proposal invalidate the frame (vault: `global/advice/corrections-update-the-model-not-the-artifact`).
 
+- **Mathematical correction reset.** If a correction changes an object's type, an arrow's direction, a quotient level, or a hypothesis, discard all dependent derivations. Re-derive them from the corrected definitions. A rename, sign change, wrapper change, or local prose edit does not integrate such a correction.
+
 - **Turn audit.** What statement could now be falsified that could not before this turn?
   If none, the turn was preparation — apply the deletion test (vault: `global/traps/hard-problem-artifact-drift`). Meaningful work can be embarrassing; process noise cannot.
 
