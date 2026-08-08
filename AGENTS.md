@@ -160,20 +160,6 @@ This is the fourth graduation of one lesson (tests assert accomplishment, not de
 
 - **A correction that removes machinery halts artifact production.** The rebuild's first act is the specimen, not the re-filed card; two machinery-removals on one proposal invalidate the frame (vault: `global/advice/corrections-update-the-model-not-the-artifact`).
 
-- **Mathematical correction reset.** If a correction changes an object's type, an arrow's direction, a quotient level, or a hypothesis, discard all dependent derivations. Re-derive them from the corrected definitions. A rename, sign change, wrapper change, or local prose edit does not integrate such a correction.
-
-- **Matrix-role specimen.** Use type `B_2` before you merge Gram, Cartan, Coxeter, or diagram data. Reject a rename or sign change that preserves a rejected predicate.
-
-- **Quotient specimen.** State whether a comparison uses presentations, object equality, isomorphism, or category equivalence. Matching generators and relation words does not prove group equality.
-
-- **Definition specimen.** Separate a source definition from each criterion or theorem. A norm or divisibility equation cannot become a root definition by naming.
-
-- **Group specimen.** Test general group APIs on an infinite group and on a group with expensive generator computation.
-
-- **Functor specimen.** State source, target, object action, and morphism action. A constructor alone is not a functor.
-
-- **Geometric-image specimen.** Do not define geometric monodromy by an arithmetic stabilizer. Equality with an arithmetic bound needs a theorem.
-
 - **Turn audit.** What statement could now be falsified that could not before this turn?
   If none, the turn was preparation — apply the deletion test (vault: `global/traps/hard-problem-artifact-drift`). Meaningful work can be embarrassing; process noise cannot.
 
