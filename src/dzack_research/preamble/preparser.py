@@ -75,8 +75,45 @@ def research_pow(base, exponent):
     return base**exponent
 
 
+def _is_caret(node: Node) -> bool:
+    operator = node.child_by_field_name("operator")
+    return (
+        node.type == "binary_operator"
+        and operator is not None
+        and operator.text == b"^"
+    )
+
+
+def _factors(node: Node, context: Context) -> list[str]:
+    r"""Return ``node`` as the list of factors of a product.
+
+    A list rather than one string because the caller may need only the first
+    or last factor: in ``x^2 y``, the exponent is ``2`` and ``y`` multiplies
+    the result, so an outer caret has to be able to take them apart.
+    """
+    left = node.child_by_field_name("left")
+    right = node.child_by_field_name("right")
+    if node.type == "sage_implicit_product" and left is not None and right is not None:
+        return _factors(left, context) + _factors(right, context)
+    if _is_caret(node) and left is not None and right is not None:
+        base = _factors(left, context)
+        exponent = _factors(right, context)
+        powered = f"research_pow({base[-1]}, {exponent[0]})"
+        return base[:-1] + [powered] + exponent[1:]
+    return [lower_node(node, context)]
+
+
 def _lower_caret(node: Node, context: Context) -> str | None:
-    r"""Lower ``a ^ b`` to the research power and ``a ^^ b`` to Python's xor."""
+    r"""Lower ``a ^ b`` to the research power and ``a ^^ b`` to Python's xor.
+
+    ``^`` binds tighter than implicit multiplication -- ``3x^2`` is
+    \(3x^2\), not \((3x)^2\), and ``x^2 y`` is \(x^2y\), not \(x^{2y}\) --
+    which the tree does not show: an implicit product is a single node, so
+    the caret's operand there is the whole product.  Substituting ``**`` for
+    ``^`` in place used to hide this, because Python re-parsed the result and
+    supplied the precedence; a call fixes the grouping, so the precedence has
+    to be applied here.
+    """
     operator = node.child_by_field_name("operator")
     left = node.child_by_field_name("left")
     right = node.child_by_field_name("right")
@@ -84,10 +121,7 @@ def _lower_caret(node: Node, context: Context) -> str | None:
         return None
     match operator.text:
         case b"^":
-            return (
-                f"research_pow({lower_node(left, context)}, "
-                f"{lower_node(right, context)})"
-            )
+            return "*".join(_factors(node, context))
         case b"^^":
             return f"({lower_node(left, context)}) ^ ({lower_node(right, context)})"
         case _:
