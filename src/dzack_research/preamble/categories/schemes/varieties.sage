@@ -8,6 +8,13 @@ Hierarchy:
           └── ToricVariety
 """
 
+from typing import TYPE_CHECKING
+from dzack_research.preamble.categories.schemes.schemes import Schemes
+from dzack_research.preamble.refine import refine
+if TYPE_CHECKING:
+    from sage.rings.ring import Field
+    from sage.rings.ring import Ring
+
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
 from dzack_research.preamble.categories.schemes.schemes import SchemeElement
 from sage.categories.morphism import Morphism
@@ -22,7 +29,6 @@ import sage.schemes.curves.constructor as _sage_curve_const
 import sage.schemes.toric.variety as _sage_toric
 from sage.rings.integer_ring import ZZ as SageZZ
 
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     # The ordered-set noun is type-only: the preamble loads into one
@@ -194,3 +200,6 @@ class Surfaces(OwnedCategoryOverBaseRing):
 def install_varieties() -> None:
     r"""Register post-init hooks and installation for varieties, curves, surfaces, and toric varieties."""
     pass
+
+
+install_varieties()

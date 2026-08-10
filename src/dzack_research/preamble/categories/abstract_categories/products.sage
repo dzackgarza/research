@@ -11,6 +11,8 @@ Each cone object carries ``structure_morphisms()`` (the projections);
 each cocone object carries ``costructure_morphisms()`` (the injections).
 """
 
+from sage.categories.sets_cat import Sets
+from dzack_research.preamble.refine import refine
 from typing import Any, Self, TYPE_CHECKING
 
 from sage.categories.category import Category

@@ -1,5 +1,27 @@
 r"""Finite-group representations on finitely generated free modules."""
 
+from typing import TYPE_CHECKING
+from sage_lattice_category_spike.lexicon import Element
+if TYPE_CHECKING:
+    from sage_lattice_category_spike.lexicon import Group
+    from sage_lattice_category_spike.lexicon import GroupElement
+    from sage_lattice_category_spike.lexicon import Module
+    from sage_lattice_category_spike.lexicon import Vector
+
+from sage.rings.number_field.number_field import CyclotomicField
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import FramingMorphism
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import GroupAction
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleAutomorphism
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
+from sage.matrix.special import identity_matrix
+from sage.arith.functions import lcm
+if TYPE_CHECKING:
+    from dzack_research.preamble.categories.modules.framed.formed.integrallattice.subobjects import Subobject
+    from sage.rings.ring import Field
+    from sage.categories.homset import Homset
+    from sage.rings.ring import Ring
+    from sage.structure.element import RingElement
+
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleHomset
 from typing import Self, TYPE_CHECKING
 
@@ -31,6 +53,9 @@ class GroupModules(Category):
         # its base: callers reach here both from a module and from the
         # engine's own \(\ZZ\), and those two must not name two categories
         # with disjoint memberships.
+        # Local: a module-level import would close a cycle; the module is built by the time this runs.
+        from dzack_research.preamble.categories.rings.rings import owned_ring_view
+
         return Category.__classcall__(cls, owned_ring_view(base_ring), group)
 
     def __init__(self, base_ring: "Ring", group: "Group") -> None:
@@ -52,6 +77,9 @@ class GroupModules(Category):
         return f"{self._base_ring}[{self._group}]-modules"
 
     def super_categories(self) -> list:
+        # Local: a module-level import would close a cycle; the module is built by the time this runs.
+        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import FinitelyGeneratedFreeModules
+
         return [FinitelyGeneratedFreeModules(self._base_ring)]
 
     def is_semisimple(self) -> bool:
@@ -189,6 +217,9 @@ class GroupModules(Category):
             generating set.  Ranging over \(G\) needs it finite and does
             more work when it is.
             """
+            # Local: a module-level import would close a cycle; the module is built by the time this runs.
+            from dzack_research.preamble.categories.group.groups import refine_group
+
             return all(
                 self.act(generator, vector_) == vector_
                 for generator in refine_group(self.group()).group_generators()
@@ -198,6 +229,9 @@ class GroupModules(Category):
             return _group_subobject(self, module_generators)
 
         def hom(self: Self, images: dict, codomain: "Module" = None) -> "ModuleMorphism":
+            # Local: a module-level import would close a cycle; the module is built by the time this runs.
+            from dzack_research.preamble.categories.modules.framed.framed_modules import _finite_module_generator_assignment
+
             match images:
                 case SetMorphism():
                     assert isinstance(images.codomain(), UnderlyingSet), (
@@ -332,6 +366,9 @@ class GroupModuleElement(ModuleElement):
         return self._underlying
 
     def coefficients(self) -> dict:
+        # Local: a module-level import would close a cycle; the module is built by the time this runs.
+        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _coefficients
+
         return _coefficients(self._underlying)
 
     def underlying_set_element(self) -> "Element":
@@ -339,6 +376,9 @@ class GroupModuleElement(ModuleElement):
         return self._underlying.underlying_set_element()
 
     def _coordinates(self) -> "Vector":
+        # Local: a module-level import would close a cycle; the module is built by the time this runs.
+        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _coordinate_vector
+
         return _coordinate_vector(self._underlying)
 
     def _add_(self, other: object) -> "GroupModuleElement":
@@ -371,6 +411,12 @@ class GroupModule(Parent):
     Element = GroupModuleElement
 
     def __init__(self, module: "Module", action: GroupAction) -> None:
+        # Local: a module-level import would close a cycle; the module is built by the time this runs.
+        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import FinitelyGeneratedFreeModules
+        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import framing_morphism
+        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import group_action_homset
+        from dzack_research.preamble.refine import refine
+
         assert module in FinitelyGeneratedFreeModules(module.base_ring()), (
             "an R[G]-module is constructed from an actual finite framed free module"
         )
@@ -490,6 +536,9 @@ def _invariant_generators(module: "Module") -> list:
     \(\operatorname{End}(M)\) is an abelian group; a difference of a morphism
     matrix and a bare array is not, and the identity here is a bare array.
     """
+    # Local: a module-level import would close a cycle; the module is built by the time this runs.
+    from dzack_research.preamble.categories.rings.rings import engine_ring
+
     assert module.group() in Sets().Finite(), (
         "computing invariants imposes one condition per group element, so "
         f"it requires a finite group; {module.group()} is not known to be one"
@@ -518,6 +567,12 @@ def _invariant_generators(module: "Module") -> list:
 
 
 def _module_coinvariants(module: "Module") -> "Module":
+    # Local: a module-level import would close a cycle; the module is built by the time this runs.
+    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import BasedFreeModule
+    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModule
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _independent_module_generators
+    from dzack_research.preamble.categories.sets.sets import finite_ordered_set
+
     relations = _independent_module_generators(
         module,
         [
@@ -550,6 +605,9 @@ def _base_field_automorphisms(category: "Category") -> tuple:
     \(\operatorname{Gal}(K/\mathbb Q)\) instead would merge orbits that \(F\)
     already separates whenever \(F\) is larger than \(\mathbb Q\).
     """
+    # Local: a module-level import would close a cycle; the module is built by the time this runs.
+    from dzack_research.preamble.categories.rings.rings import own_ring
+
     field = category.splitting_field()
     base_field = category.base_ring().fraction_field()
     return tuple(
@@ -696,6 +754,9 @@ def _isotypic_component(module: "Module", character: Character) -> "Subobject":
     submodule for \(G\) and not merely for \(R\).  A character that does not
     occur in \(M\) gives the zero submodule rather than a failure.
     """
+    # Local: a module-level import would close a cycle; the module is built by the time this runs.
+    from dzack_research.preamble.categories.rings.rings import engine_ring
+
     projector = _isotypic_projector(module, character).matrix()
     difference = projector._sage_matrix() - identity_matrix(
         projector.base_ring(), module.rank()
@@ -713,6 +774,10 @@ def _restricted_action_automorphisms(
     submodule: "Module",
     module_generators: list,
 ) -> list:
+    # Local: a module-level import would close a cycle; the module is built by the time this runs.
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _coordinate_vector
+    from dzack_research.preamble.categories.rings.rings import engine_ring
+
     if not module_generators:
         return [submodule.Aut().one() for _ in module.group().group_generators()]
     # The linear system is solved over a field, and which field that is, is a
@@ -784,6 +849,13 @@ def _equivariant_hom(domain: "Module", codomain: "Module", images: dict) -> "Mod
 
 
 def _group_subobject(module: "Module", module_generators: "OrderedSet") -> "Subobject":
+    # Local: a module-level import would close a cycle; the module is built by the time this runs.
+    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import BasedFreeModule
+    from dzack_research.preamble.categories.modules.framed.formed.integrallattice.subobjects import Subobject
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _independent_module_generators
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import group_action_homset
+    from dzack_research.preamble.categories.sets.sets import finite_ordered_set
+
     module_generators = tuple(module_generators)
     assert all(generator.parent() is module for generator in module_generators), (
         "a subobject is generated by elements of this group module"
@@ -824,6 +896,10 @@ def _isotypic_sum(
     private ledger: the inclusion is the subobject's morphism, and the index
     is computed from it rather than stored.
     """
+    # Local: a module-level import would close a cycle; the module is built by the time this runs.
+    from dzack_research.preamble.categories.modules.direct_sum_objects import DirectSumObjects
+    from dzack_research.preamble.refine import refine
+
     summed._summands = tuple(components)
     summed._summand_index_set = characters
     # Both categories are named: ``refine`` installs the methods of the
@@ -856,6 +932,9 @@ def _isotypic_decomposition(module: "Module") -> "Subobject":
     isomorphism that fails over \(\mathbb Z\), and would leave the inclusion
     of the sum with nowhere to live but a private field.
     """
+    # Local: a module-level import would close a cycle; the module is built by the time this runs.
+    from dzack_research.preamble.categories.sets.sets import finite_ordered_set
+
     characters = _index_characters(module)
     components = tuple(
         _isotypic_component(module, character) for character in characters

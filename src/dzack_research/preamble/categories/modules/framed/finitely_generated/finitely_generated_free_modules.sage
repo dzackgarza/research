@@ -1,5 +1,19 @@
 r"""Free modules on finite totally ordered sets."""
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from sage_lattice_category_spike.lexicon import Module
+    from sage_lattice_category_spike.lexicon import Vector
+
+from sage.rings.integer_ring import ZZ as SageZZ
+from dzack_research.preamble.categories.sets.sets import _as_set
+from dzack_research.preamble.categories.sets.sets import finite_ordered_set
+if TYPE_CHECKING:
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleAutomorphismGroup
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
+    from dzack_research.preamble.categories.modules.framed.formed.integrallattice.subobjects import Subobject
+    from sage.rings.ring import Ring
+    from sage.structure.element import RingElement
 
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreeModuleOnSet
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
@@ -41,6 +55,11 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
         return "finitely generated framed free modules"
 
     def super_categories(self: Self) -> list:
+        # Local: at module level these close an import cycle; both categories
+        # are built by the time supercategories are asked for.
+        from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules
+        from dzack_research.preamble.categories.modules.pure.finitely_generated.finitely_generated_modules import FinitelyGeneratedModules
+
         return [
             FramedFreeModules(self.base_ring()),
             FinitelyGeneratedModules(self.base_ring()),
@@ -73,6 +92,10 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
             module -- a resolution, a normal form -- needs the matrix and
             gets it here rather than rebuilding it from the empty Set.
             """
+            # Local: at module level this closes an import cycle; the ring
+            # module is built by the time a relation matrix is asked for.
+            from dzack_research.preamble.categories.rings.rings import engine_ring
+
             return MorphismMatrix(
                 matrix(
                     engine_ring(self.base_ring()),
@@ -88,6 +111,10 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
             return bool(self.is_zero())
 
         def Aut(self: Self) -> "ModuleAutomorphismGroup":
+            # Local: at module level this closes an import cycle; the morphism
+            # module is built by the time automorphisms are asked for.
+            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleAutomorphismGroup
+
             cached = self.__dict__.get("_preamble_Aut")
             if cached is None:
                 cached = ModuleAutomorphismGroup(self)
@@ -95,6 +122,12 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
             return cached
 
         def subobject_on(self: Self, module_generators: "OrderedSet") -> "Subobject":
+            # Local: at module level these close an import cycle; the subobject
+            # and morphism modules are built by the time one is constructed.
+            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.subobjects import Subobject
+            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _independent_module_generators
+            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
+
             module_generators = tuple(
                 generator if isinstance(generator, Element)
                 and generator.parent() is self
@@ -123,6 +156,10 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
 
         def hom(self: Self, images: dict, codomain: "Module" = None) -> "ModuleMorphism":
             r"""Construct the map specified on the finite generating set."""
+            # Local: at module level this closes an import cycle; the framed
+            # module is built by the time a homomorphism is constructed.
+            from dzack_research.preamble.categories.modules.framed.framed_modules import _finite_module_generator_assignment
+
             match images:
                 case SetMorphism():
                     assert isinstance(images.codomain(), UnderlyingSet), (
@@ -276,6 +313,10 @@ class BasedFreeModule(FreeModuleOnSet):
         A standard basis vector and the zero vector are this module's own,
         and it decides what counts as a coordinate assignment.
         """
+        # Local: at module level this closes an import cycle; the ring module
+        # is built by the time coordinates are asked for.
+        from dzack_research.preamble.categories.rings.rings import engine_ring
+
         cached = self.__dict__.get("_coordinate_module_")
         if cached is None:
             cached = engine_ring(self.base_ring()) ** self.number_of_module_generators()
@@ -354,4 +395,8 @@ class BasedFreeModule(FreeModuleOnSet):
 
 def Free_ZZ(module_generating_set: "OrderedSet") -> FreeModuleOnSet:
     r"""Construct the free \(\mathbb Z\)-module on ``module_generating_set``."""
+    # Local: at module level this closes an import cycle; the general free
+    # module is built by the time one is constructed over ZZ.
+    from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreeModuleOn
+
     return FreeModuleOn(SageZZ, module_generating_set)

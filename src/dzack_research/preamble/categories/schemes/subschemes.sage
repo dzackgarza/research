@@ -42,6 +42,9 @@ class ClosedSubschemes(OwnedCategoryOverBaseRing):
 
     def super_categories(self) -> list:
         r"""Return [Schemes(S)]."""
+        # Local: a module-level import would close a cycle; the module is built by the time this runs.
+        from dzack_research.preamble.categories.schemes.schemes import Schemes
+
         return [Schemes(self.base_ring())]
 
     class ParentMethods:
@@ -61,6 +64,9 @@ class OpenSubschemes(OwnedCategoryOverBaseRing):
 
     def super_categories(self) -> list:
         r"""Return [Schemes(S)]."""
+        # Local: a module-level import would close a cycle; the module is built by the time this runs.
+        from dzack_research.preamble.categories.schemes.schemes import Schemes
+
         return [Schemes(self.base_ring())]
 
 
@@ -71,6 +77,9 @@ class OpenSubscheme(Subscheme):
 
     def __init__(self, ambient, base_ring=SageZZ) -> None:
         r"""Initialize the open subscheme and refine into OpenSubschemes(base_ring)."""
+        # Local: a module-level import would close a cycle; the module is built by the time this runs.
+        from dzack_research.preamble.refine import refine
+
         Subscheme.__init__(self, ambient=ambient, base_ring=base_ring)
         refine(self, OpenSubschemes(base_ring))
 
@@ -82,6 +91,9 @@ class ClosedSubscheme(Subscheme):
 
     def __init__(self, ambient, base_ring=SageZZ) -> None:
         r"""Initialize the closed subscheme and refine into ClosedSubschemes(base_ring)."""
+        # Local: a module-level import would close a cycle; the module is built by the time this runs.
+        from dzack_research.preamble.refine import refine
+
         Subscheme.__init__(self, ambient=ambient, base_ring=base_ring)
         refine(self, ClosedSubschemes(base_ring))
 
@@ -99,3 +111,6 @@ class QuasiScheme(Scheme):
 def install_subschemes() -> None:
     r"""Register post-init hooks and installation for subschemes."""
     pass
+
+
+install_subschemes()

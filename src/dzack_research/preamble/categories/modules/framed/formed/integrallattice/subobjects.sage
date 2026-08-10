@@ -13,6 +13,14 @@ needs cosets, hence an abelian ambient category -- see
 :meth:`Subobjects.ParentMethods.index`.
 """
 
+from sage.rings.integer_ring import ZZ as SageZZ
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from sage_lattice_category_spike.lexicon import Module
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
+    from sage_lattice_category_spike.lexicon import MorphismMatrix
+
+from sage.misc.misc_c import prod
 from typing import Self, TYPE_CHECKING
 
 from sage.categories.category import Category
@@ -85,6 +93,9 @@ class Subobjects(Category):
             preserve.  The kernel comes back as combinations of $M$'s own
             generators, on which $M$ re-imposes its structure.
             """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _coordinate_vector
+            from dzack_research.preamble.utilities import zipsum
             inclusion = self.embedding()
             ambient = inclusion.codomain()
             quotient = inclusion.cokernel()
@@ -135,6 +146,8 @@ class Subobjects(Category):
             coordinates have length ``rank``.  These are their images in the
             embedding's codomain, whose coordinates have that module's rank.
             """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.sets.sets import finite_ordered_set
             return finite_ordered_set(
                 tuple(
                     self.embedding()(generator)
@@ -144,6 +157,10 @@ class Subobjects(Category):
 
         def isotropic_reduction(self: Self) -> "Module":
             r"""Return $S^{\perp}/S$ for an isotropic subobject of a formed module."""
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _coordinate_vector
+            from dzack_research.preamble.categories.sets.sets import finite_ordered_set
+            from dzack_research.preamble.utilities import zipsum
             assert self.gram_matrix().is_zero(), (
                 "isotropic reduction requires the form to vanish on the subobject"
             )
@@ -194,6 +211,10 @@ def _free_quotient_lifts(module: "Module", relations: "MorphismMatrix") -> list:
     is the generator's coordinate vector, and no separate lifting map is
     needed.
     """
+    # Local: a module-level import here would close a cycle; by call time this module is built.
+    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import BasedFreeModule
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _coordinate_vector
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
     rows = matrix(SageZZ, relations).rows()
     free = BasedFreeModule(SageZZ, module.module_generating_set())
     domain = BasedFreeModule(SageZZ, len(rows))
@@ -225,6 +246,11 @@ def Subobject(embedding: "ModuleMorphism") -> "Module":
     it is handed, so handing it the leaf alone would drop the module's own
     methods.
     """
+    # Local: a module-level import here would close a cycle; by call time this module is built.
+    from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormMorphism
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
+    from dzack_research.preamble.categories.abstract_categories.slice_categories import Slice
+    from dzack_research.preamble.refine import refine
     assert isinstance(embedding, (ModuleMorphism, FormMorphism)), (
         "a module subobject is represented by a module or form morphism"
     )

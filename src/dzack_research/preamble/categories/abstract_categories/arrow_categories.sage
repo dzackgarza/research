@@ -22,6 +22,11 @@ the whole reason this construction is worth having: a normal form can be
 track \(M'\) separately.
 """
 
+from sage.categories.sets_cat import Sets
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from sage.categories.homset import Homset
+
 from sage.categories.category import Category
 from sage.categories.morphism import Morphism
 from sage.categories.objects import Objects
@@ -77,6 +82,10 @@ class ArrowCategory(Category):
             generators -- and not by building a formal composite whose
             equality nothing defines.
             """
+            # Local: slice_categories reaches the algebra node, so a
+            # module-level import would close that cycle.
+            from dzack_research.preamble.categories.abstract_categories.slice_categories import sole_structure_generators
+
             assert (
                 left.domain() is self.source()
                 and left.codomain() is other.source()
@@ -190,6 +199,11 @@ def Isomorphism(forward: Morphism, backward: Morphism) -> Morphism:
     what makes the declaration falsifiable: a wrong transformation matrix
     fails here rather than silently naming an unrelated object.
     """
+    # Local: slice_categories reaches the algebra node, so module-level
+    # imports would close that cycle; both are built by call time.
+    from dzack_research.preamble.categories.abstract_categories.slice_categories import sole_structure_generators
+    from dzack_research.preamble.refine import refine
+
     assert isinstance(forward, Morphism) and isinstance(backward, Morphism), (
         "an isomorphism is declared by an arrow and its inverse"
     )

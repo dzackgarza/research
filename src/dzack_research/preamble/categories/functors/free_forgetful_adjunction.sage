@@ -16,6 +16,17 @@ And the triangle identities (zigzag equations):
     2) \varepsilon_{F_R(S)} \circ F_R(\eta_S) = id_{F_R(S)}  \in End_{Mod_R}(F_R(S))
 """
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from sage_lattice_category_spike.lexicon import Group
+    from sage_lattice_category_spike.lexicon import Module
+
+if TYPE_CHECKING:
+    from dzack_research.preamble.categories.sets.sets import Set
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
+    from sage.categories.morphism import Morphism
+    from sage.rings.ring import Ring
+
 from sage.misc.cachefunc import cached_method
 from sage.categories.functor import Functor
 from sage.categories.homset import Hom
@@ -31,6 +42,10 @@ class FreeModuleFunctorClass(Functor):
     r"""The free module functor F_R: Set -> Mod_R."""
 
     def __init__(self, base_ring: "Ring"):
+        # Local: importing the ring node here would close a cycle, and the
+        # module is built by the time this constructor runs.
+        from dzack_research.preamble.categories.rings.rings import owned_ring_view
+
         # Intake, as for any construction over a ring: the codomain named
         # below is a category over this ring, and Sage checks membership in
         # it on every application -- by base-ring identity, so the name here
@@ -49,6 +64,10 @@ class FreeModuleFunctorClass(Functor):
         the domain of \(F(f)\), not merely be isomorphic to it -- so the
         result is cached here.
         """
+        # Local: the free-module node imports this module, so a module-level
+        # import would close that cycle; it is built by call time.
+        from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreeModuleOnSet
+
         return FreeModuleOnSet(self._base_ring, set_object)
 
     def _apply_functor_to_morphism(self, set_morphism: SetMorphism) -> "Morphism":
@@ -104,6 +123,10 @@ class GroupRingFunctor(Functor):
         from sage.categories.groups import Groups
         from sage.categories.rings import Rings
 
+        # Local: importing the ring node here would close a cycle, and the
+        # module is built by the time this constructor runs.
+        from dzack_research.preamble.categories.rings.rings import owned_ring_view
+
         base_ring = owned_ring_view(base_ring)
         self._base_ring = base_ring
         super().__init__(Groups(), Rings())
@@ -114,6 +137,11 @@ class GroupRingFunctor(Functor):
     @cached_method
     def _apply_functor(self, group: "Group") -> "Ring":
         from sage.algebras.group_algebra import GroupAlgebra
+
+        # Local: the algebra and ring nodes import this module, so
+        # module-level imports would close those cycles.
+        from dzack_research.preamble.categories.algebras.algebras import own_algebra
+        from dzack_research.preamble.categories.rings.rings import engine_ring
 
         # Sage's group algebra is the engine's construction: it is built over
         # the ring the engine computes in, not over the session's name.  What
@@ -145,6 +173,10 @@ class FreeModuleOnGroupFunctor(Functor):
     def __init__(self, base_ring: "Ring") -> None:
         from sage.categories.groups import Groups
 
+        # Local: importing the ring node here would close a cycle, and the
+        # module is built by the time this constructor runs.
+        from dzack_research.preamble.categories.rings.rings import owned_ring_view
+
         base_ring = owned_ring_view(base_ring)
         self._base_ring = base_ring
         self._free_on_sets = FreeModuleFunctorClass(base_ring)
@@ -167,6 +199,10 @@ class ForgetfulFunctorClass(Functor):
     r"""The forgetful functor U: Mod_R -> Set."""
 
     def __init__(self, base_ring: "Ring"):
+        # Local: importing the ring node here would close a cycle, and the
+        # module is built by the time this constructor runs.
+        from dzack_research.preamble.categories.rings.rings import owned_ring_view
+
         base_ring = owned_ring_view(base_ring)
         self._base_ring = base_ring
         super().__init__(Modules(base_ring), Sets())
@@ -223,6 +259,10 @@ class FreeForgetfulAdjunction(Adjunction):
     r"""The free/forgetful adjunction F_R \dashv U between Set and R-Mod."""
 
     def __init__(self, base_ring: "Ring"):
+        # Local: importing the ring node here would close a cycle, and the
+        # module is built by the time this constructor runs.
+        from dzack_research.preamble.categories.rings.rings import owned_ring_view
+
         base_ring = owned_ring_view(base_ring)
         self._base_ring = base_ring
         super().__init__(

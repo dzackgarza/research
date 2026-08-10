@@ -1,6 +1,26 @@
 r"""Modules equipped with a bilinear or quadratic form."""
 
 
+from sage.rings.integer_ring import ZZ as SageZZ
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from sage_lattice_category_spike.lexicon import Lattice
+    from sage_lattice_category_spike.lexicon import Module
+    from sage_lattice_category_spike.lexicon import Vector
+
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import FramingMorphism
+from sage.categories.groups import Groups
+from sage.matrix.constructor import Matrix
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
+from sage.categories.modules import Modules
+if TYPE_CHECKING:
+    from sage.categories.category import Category
+    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModule
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleAutomorphismGroup
+    from dzack_research.preamble.categories.modules.framed.formed.integrallattice.subobjects import Subobject
+    from sage.rings.ring import Ring
+    from sage.structure.element import RingElement
+
 from dzack_research.preamble.categories.rings.rings import OwnedBaseRing
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
 from typing import Any, Self, TYPE_CHECKING
@@ -37,6 +57,8 @@ class FormModules(OwnedCategoryOverBaseRing):
 
     @staticmethod
     def __classcall_private__(cls: type, base_ring: "Ring" = None) -> "FormModules":
+        # Local: a module-level import here would close a cycle; by call time this module is built.
+        from dzack_research.preamble.categories.rings.rings import engine_ring
         return super().__classcall__(
             cls, SageZZ if base_ring is None else engine_ring(base_ring)
         )
@@ -111,9 +133,13 @@ class FormModules(OwnedCategoryOverBaseRing):
     class ElementMethods:
 
         def _coordinates(self: Self) -> "Vector":
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _coordinate_vector
             return _coordinate_vector(self.forget_form())
 
         def b(self: Self, other: "Element") -> "Element":
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.forms.forms import _forget_form_element
             assert other.parent() is self.parent(), (
                 "a form pairs two elements of one formed module"
             )
@@ -123,6 +149,8 @@ class FormModules(OwnedCategoryOverBaseRing):
             )
 
         def norm(self: Self) -> "Element":
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.forms.forms import _forget_form_element
             return self.parent().form().norm(
                 _forget_form_element(self)
             )
@@ -148,6 +176,8 @@ class FormModules(OwnedCategoryOverBaseRing):
                     )
 
         def __truediv__(self: Self, divisor: "RingElement") -> "Element":
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.utilities import zipsum
             assert not self.parent().is_torsion(), (
                 "division is not single-valued in a torsion module"
             )
@@ -168,6 +198,8 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
 
     @staticmethod
     def __classcall_private__(cls: type, base_ring: "Ring" = None) -> "BilinearFormModules":
+        # Local: a module-level import here would close a cycle; by call time this module is built.
+        from dzack_research.preamble.categories.rings.rings import engine_ring
         return super().__classcall__(
             cls, SageZZ if base_ring is None else engine_ring(base_ring)
         )
@@ -185,6 +217,8 @@ class SymmetricBilinearFormModules(OwnedCategoryOverBaseRing):
 
     @staticmethod
     def __classcall_private__(cls: type, base_ring: "Ring" = None) -> "SymmetricBilinearFormModules":
+        # Local: a module-level import here would close a cycle; by call time this module is built.
+        from dzack_research.preamble.categories.rings.rings import engine_ring
         return super().__classcall__(
             cls, SageZZ if base_ring is None else engine_ring(base_ring)
         )
@@ -202,6 +236,8 @@ class QuadraticFormModules(OwnedCategoryOverBaseRing):
 
     @staticmethod
     def __classcall_private__(cls: type, base_ring: "Ring" = None) -> "QuadraticFormModules":
+        # Local: a module-level import here would close a cycle; by call time this module is built.
+        from dzack_research.preamble.categories.rings.rings import engine_ring
         return super().__classcall__(
             cls, SageZZ if base_ring is None else engine_ring(base_ring)
         )
@@ -219,6 +255,8 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
 
     @staticmethod
     def __classcall_private__(cls: type, base_ring: "Ring" = None) -> "FreeFormModules":
+        # Local: a module-level import here would close a cycle; by call time this module is built.
+        from dzack_research.preamble.categories.rings.rings import engine_ring
         return super().__classcall__(
             cls, SageZZ if base_ring is None else engine_ring(base_ring)
         )
@@ -228,6 +266,8 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
         return "free form modules"
 
     def super_categories(self) -> list:
+        # Local: a module-level import here would close a cycle; by call time this module is built.
+        from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules
         return [
             FormModules(self.base_ring()),
             FramedFreeModules(self.base_ring()),
@@ -239,6 +279,10 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
             return self.forget_form().rank()
 
         def subobject_on(self: Self, module_generators: "OrderedSet") -> "Subobject":
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.subobjects import Subobject
+            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _independent_module_generators
+            from dzack_research.preamble.categories.sets.sets import finite_ordered_set
             module_generators = tuple(module_generators)
             assert all(generator.parent() is self for generator in module_generators), (
                 "a subobject is generated by elements of this formed module"
@@ -257,6 +301,9 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
             gram: Matrix,
             module_generating_set: "OrderedSet",
         ) -> "FormMorphism":
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import BasedFreeModule
+            from dzack_research.preamble.categories.forms.forms import BilinearForm
             module = BasedFreeModule(
                 self.base_ring(),
                 module_generating_set,
@@ -274,6 +321,8 @@ class FinitelyGeneratedFormModules(OwnedCategoryOverBaseRing):
 
     @staticmethod
     def __classcall_private__(cls: type, base_ring: "Ring" = None) -> "FinitelyGeneratedFormModules":
+        # Local: a module-level import here would close a cycle; by call time this module is built.
+        from dzack_research.preamble.categories.rings.rings import engine_ring
         return super().__classcall__(
             cls, SageZZ if base_ring is None else engine_ring(base_ring)
         )
@@ -283,6 +332,8 @@ class FinitelyGeneratedFormModules(OwnedCategoryOverBaseRing):
         return "finitely generated form modules"
 
     def super_categories(self) -> list:
+        # Local: a module-level import here would close a cycle; by call time this module is built.
+        from dzack_research.preamble.categories.modules.pure.finitely_generated.finitely_generated_modules import FinitelyGeneratedModules
         return [
             FormModules(self.base_ring()),
             FinitelyGeneratedModules(self.base_ring()),
@@ -294,6 +345,8 @@ class FinitelyGeneratedFormModules(OwnedCategoryOverBaseRing):
             return _finite_rank(self.module_generating_set())
 
         def hom(self: Self, images: dict, codomain: "Module" = None) -> "FormMorphism":
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.framed.framed_modules import _finite_module_generator_assignment
             match images:
                 case dict():
                     return FormModules.ParentMethods.hom(
@@ -320,6 +373,8 @@ class FinitelyGeneratedFreeFormModules(OwnedCategoryOverBaseRing):
 
     @staticmethod
     def __classcall_private__(cls: type, base_ring: "Ring" = None) -> "FinitelyGeneratedFreeFormModules":
+        # Local: a module-level import here would close a cycle; by call time this module is built.
+        from dzack_research.preamble.categories.rings.rings import engine_ring
         return super().__classcall__(
             cls, SageZZ if base_ring is None else engine_ring(base_ring)
         )
@@ -329,6 +384,8 @@ class FinitelyGeneratedFreeFormModules(OwnedCategoryOverBaseRing):
         return "finitely generated free form modules"
 
     def super_categories(self) -> list:
+        # Local: a module-level import here would close a cycle; by call time this module is built.
+        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import FinitelyGeneratedFreeModules
         return [
             FreeFormModules(self.base_ring()),
             FinitelyGeneratedFormModules(self.base_ring()),
@@ -400,6 +457,10 @@ class FormModule(OwnedBaseRing, Parent):
     Element = FormModuleElement
 
     def __init__(self, form: "FormMorphism") -> None:
+        # Local: a module-level import here would close a cycle; by call time this module is built.
+        from dzack_research.preamble.categories.forms.forms import BilinearFormMorphism
+        from dzack_research.preamble.categories.forms.forms import QuadraticFormMorphism
+        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import framing_morphism
         match form:
             case BilinearFormMorphism() | QuadraticFormMorphism():
                 pass
@@ -436,6 +497,22 @@ class FormModule(OwnedBaseRing, Parent):
         self._refine_from_form()
 
     def _refine_from_form(self) -> None:
+        # Local: a module-level import here would close a cycle; by call time this module is built.
+        from dzack_research.preamble.categories.forms.forms import BilinearFormMorphism
+        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import FinitelyGeneratedFreeModules
+        from dzack_research.preamble.categories.modules.pure.finitely_generated.finitely_generated_modules import FinitelyGeneratedModules
+        from dzack_research.preamble.categories.modules.pure.free_modules import FreeModules
+        from dzack_research.preamble.categories.modules.group_modules.group_lattices import GroupLattices
+        from dzack_research.preamble.categories.modules.group_modules.group_modules import GroupModule
+        from dzack_research.preamble.categories.forms.forms import QuadraticFormMorphism
+        from dzack_research.preamble.categories.modules.pure.torsion_modules import TorsionModules
+        from dzack_research.preamble.categories.modules.framed.formed.torsionform.torsion_modules_with_form import TorsionModulesWithForm
+        from dzack_research.preamble.categories.modules.group_modules.group_lattices import _action_preserves_form
+        from dzack_research.preamble.categories.modules.framed.formed.integrallattice.integral_lattices import _decompose_lattice
+        from dzack_research.preamble.categories.modules.group_modules.group_lattices import _install_group_lattice_structure
+        from dzack_research.preamble.categories.rings.rings import engine_ring
+        from dzack_research.preamble.refine import refine
+        from dzack_research.preamble.categories.modules.framed.formed.integrallattice.integral_lattices import refine_one_lattice
         module = self._module
         base_ring = module.base_ring()
         free = module in FreeModules(base_ring)
@@ -600,6 +677,8 @@ class FormHomset(Homset):
     r"""The homset of form-preserving morphisms between formed modules."""
 
     def __init__(self, domain: "Module", codomain: "Module", category: "Category") -> None:
+        # Local: a module-level import here would close a cycle; by call time this module is built.
+        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
         assert domain.base_ring() == codomain.base_ring(), (
             "form morphisms require the same module base ring"
         )
@@ -748,6 +827,8 @@ class FormAutomorphismGroup(FormHomset):
     r"""The invertible form-preserving endomorphisms of a finite free object."""
 
     def __init__(self, formed_module: "Module") -> None:
+        # Local: a module-level import here would close a cycle; by call time this module is built.
+        from dzack_research.preamble.refine import refine
         assert formed_module in FinitelyGeneratedFreeFormModules(
             formed_module.base_ring()
         ), "form automorphisms here require a finite free module"
@@ -787,6 +868,8 @@ class FormAutomorphismGroup(FormHomset):
 
 def correlation_of(lattice: "Lattice") -> FormMorphism:
     r"""Return \(c:L\to L^\vee\), \(v\mapsto b(v,-)\)."""
+    # Local: a module-level import here would close a cycle; by call time this module is built.
+    from dzack_research.preamble.utilities import zipsum
     dual = lattice.dual_lattice()
     return lattice.Hom(dual)(
             {

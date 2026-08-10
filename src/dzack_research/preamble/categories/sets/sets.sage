@@ -7,6 +7,12 @@ transports the order of a finite enumeration.  An arbitrary parent is not
 declared ordered merely because it can be iterated.
 """
 
+from typing import TYPE_CHECKING
+from sage.rings.semirings.non_negative_integer_semiring import NN
+from dzack_research.preamble.refine import refine
+if TYPE_CHECKING:
+    from sage.categories.morphism import Morphism
+
 from collections.abc import Iterable, Sequence
 from typing import TYPE_CHECKING, TypeVar
 

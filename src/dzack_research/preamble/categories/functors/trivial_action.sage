@@ -20,6 +20,19 @@ value of the right adjoint, and
 of a trivial \(G\)-lattice lands in it.
 """
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from sage_lattice_category_spike.lexicon import Element
+    from sage_lattice_category_spike.lexicon import Group
+    from sage_lattice_category_spike.lexicon import Lattice
+
+from dzack_research.preamble.categories.modules.group_modules.group_lattices import GroupLattices
+from dzack_research.preamble.categories.modules.framed.formed.integrallattice.integral_lattices import IntegralLattices
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import group_action_homset
+from dzack_research.preamble.categories.modules.group_modules.group_lattices import group_lattice
+if TYPE_CHECKING:
+    from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormMorphism
+
 from sage.misc.cachefunc import cached_function
 from sage.misc.cachefunc import cached_method
 from sage.categories.functor import Functor

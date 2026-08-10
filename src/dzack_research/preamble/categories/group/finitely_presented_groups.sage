@@ -1,5 +1,12 @@
 r"""Finitely presented groups."""
 
+from sage_lattice_category_spike.lexicon import Element
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from sage_lattice_category_spike.lexicon import Group
+
+from dzack_research.preamble.categories.group.groups import OwnedGroups
+from dzack_research.preamble.refine import hook_post_init
 from typing import Any, Self
 
 from sage.categories.category import Category
@@ -227,3 +234,6 @@ def install_finitely_presented_groups() -> None:
         before=_own_fp_group_types,
     )
     _FINITELY_PRESENTED_GROUPS_INSTALLED = True
+
+
+install_finitely_presented_groups()

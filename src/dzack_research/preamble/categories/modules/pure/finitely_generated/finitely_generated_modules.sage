@@ -4,6 +4,15 @@ Defines the ``FinitelyGenerated`` axiom for ``Modules(R)`` via Sage's ``Category
 framework, enabling ``Modules(R).FinitelyGenerated()`` and ``FinitelyGeneratedModules(R)``.
 """
 
+from typing import TYPE_CHECKING
+from dzack_research.preamble.utilities import zipsum
+if TYPE_CHECKING:
+    from sage_lattice_category_spike.lexicon import Module
+
+if TYPE_CHECKING:
+    from sage.matrix.constructor import Matrix
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
+
 import sage.categories.category_with_axiom as cwa
 from sage.categories.category_types import Category_module
 from sage.categories.category_with_axiom import CategoryWithAxiom_over_base_ring
@@ -32,6 +41,10 @@ class FreeResolution(SageObject):
     """
 
     def __init__(self, module: "Module") -> None:
+        # Local: at module level this closes an import cycle; the ring module
+        # is built by the time a resolution is asked for.
+        from dzack_research.preamble.categories.rings.rings import engine_ring
+
         base_ring = engine_ring(module.base_ring())
         assert base_ring in PrincipalIdealDomains(), (
             "a submodule of a free module is free over a principal ideal "
@@ -98,6 +111,13 @@ def _relation_inclusion(free_on_generators: "Module", columns: list) -> tuple:
     """
     if not columns:
         return ()
+    # Imported here and not at the top: the framed free module is a
+    # specialization of this one, so naming it at import time would close a
+    # cycle.  By the time a resolution is asked for, it is built.
+    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import BasedFreeModule
+    # Local for the same reason: the homset module names this one.
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
+
     relation_module = BasedFreeModule(
         free_on_generators.base_ring(), Sets.Δ[len(columns) - 1]
     )
@@ -128,6 +148,10 @@ class FinitelyGeneratedModules(CategoryWithAxiom_over_base_ring):
 
     def extra_super_categories(self) -> list:
         r"""Require the chosen finite generating morphism used by this preamble."""
+        # Imported for its registration of the Framed axiom on Modules, which
+        # is what makes ``.Framed()`` below an attribute at all.
+        from dzack_research.preamble.categories.modules.framed.framed_modules import FramedModules  # noqa: F401
+
         return [Modules(self.base_ring()).Framed()]
 
     class ParentMethods:

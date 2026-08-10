@@ -47,3 +47,6 @@ class SchemePoint(SchemeMorphism):
 def install_scheme_points() -> None:
     r"""Register post-init hooks and installation for scheme points."""
     pass
+
+
+install_scheme_points()

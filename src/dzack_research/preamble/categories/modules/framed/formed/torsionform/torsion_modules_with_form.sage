@@ -1,6 +1,22 @@
 r"""Finite torsion modules equipped with a bilinear or quadratic form."""
 
 
+from sage.rings.rational_field import QQ as SageQQ
+from sage.rings.integer_ring import ZZ as SageZZ
+from typing import TYPE_CHECKING
+from sage_lattice_category_spike.lexicon import Element
+if TYPE_CHECKING:
+    from sage_lattice_category_spike.lexicon import Group
+    from sage_lattice_category_spike.lexicon import Lattice
+    from sage_lattice_category_spike.lexicon import Module
+    from sage_lattice_category_spike.lexicon import ModuleElement
+
+from dzack_research.preamble.categories.modules.framed.formed.integrallattice.subobjects import Subobject
+if TYPE_CHECKING:
+    from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormMorphism
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
+    from sage.categories.morphism import Morphism
+
 from sage.categories.category import Category
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
 from typing import Any, Self, TYPE_CHECKING
@@ -30,6 +46,8 @@ class TorsionModulesWithForm(OwnedCategoryOverBaseRing):
         # category carry: the owned ring is the session's name for it, and a
         # category built over one while its objects carry the other has no
         # members at all.
+        # Local: a module-level import here would close a cycle; by call time this module is built.
+        from dzack_research.preamble.categories.rings.rings import engine_ring
         match base_ring:
             case None:
                 return super().__classcall__(cls, SageZZ)
@@ -58,6 +76,9 @@ class TorsionModulesWithForm(OwnedCategoryOverBaseRing):
         is what being *torsion* adds, which is finiteness and everything that
         follows from it.
         """
+        # Local: a module-level import here would close a cycle; by call time this module is built.
+        from dzack_research.preamble.categories.modules.framed.formed.form_modules import FinitelyGeneratedFormModules
+        from dzack_research.preamble.categories.modules.pure.torsion_modules import TorsionModules
         return [
             FinitelyGeneratedFormModules(self.base_ring()),
             TorsionModules(self.base_ring()),
@@ -126,6 +147,8 @@ class TorsionModulesWithForm(OwnedCategoryOverBaseRing):
             set, and a form written in one is a different object from the same
             form written in another, which is what ``regenerate`` builds.
             """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.sets.sets import finite_ordered_set
             return finite_ordered_set(
                 tuple(
                     self._over(generator)
@@ -400,6 +423,8 @@ class CokernelForms(Category):
             built from a group and a matrix has no such morphism, which is the
             point of the refinement.
             """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _module_morphism
             cover = self.cover()
             return _module_morphism(
                 cover,
@@ -458,6 +483,8 @@ def cokernel_categories(morphism: "Morphism") -> list:
     what makes the cokernel a discriminant form rather than one of the many
     other torsion forms a finite-index $f:L\to M$ produces?
     """
+    # Local: a module-level import here would close a cycle; by call time this module is built.
+    from dzack_research.preamble.categories.modules.framed.formed.integrallattice.integral_lattices import IntegralLattices
     domain = morphism.domain()
     if domain not in IntegralLattices():
         return []
@@ -582,6 +609,8 @@ def p_adic_jordan_module_generators(form: "FormMorphism") -> list[Any]:
     normal forms for symmetric and quadratic torsion forms on the same group in
     bijection, and $b_q$ is the polarization on the same generators.
     """
+    # Local: a module-level import here would close a cycle; by call time this module is built.
+    from dzack_research.preamble.utilities import zipsum
     from sage.quadratic_forms.genera.normal_form import _normalize, p_adic_normal_form
     from sage.rings.padics.factory import Zp
 
@@ -765,6 +794,8 @@ def _form_gram_matrix_cuts(module: "Module", raw: "GramMatrix") -> list[int]:
     split into singletons.  A form on other generators has a synthesized domain
     carrying no decomposition, and there the matrix is all there is.
     """
+    # Local: a module-level import here would close a cycle; by call time this module is built.
+    from dzack_research.preamble.categories.forms.gram_matrices import _matrix_connected_component_cuts
     if raw.nrows() == 0:
         return []
     # Only a cokernel of a lattice morphism has a decomposition to transport:

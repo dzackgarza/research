@@ -1,6 +1,15 @@
 r"""Bilinear and quadratic forms as native Sage morphisms."""
 
 
+from sage.rings.rational_field import QQ as SageQQ
+from typing import TYPE_CHECKING
+from sage_lattice_category_spike.lexicon import Element
+if TYPE_CHECKING:
+    from sage_lattice_category_spike.lexicon import Module
+
+if TYPE_CHECKING:
+    from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormMorphism
+
 from sage.rings.integer import Integer
 from sage.categories.homset import Homset
 from sage.categories.morphism import Morphism
@@ -12,7 +21,6 @@ from sage.rings.integer_ring import ZZ as SageZZ
 
 from sage_lattice_category_spike.objects.sets import Sets
 
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     # The ordered-set noun is type-only: the preamble loads into one
@@ -135,6 +143,10 @@ def QuadraticForms(module: "Module", value_module: "Module") -> QuadraticFormHom
 
 
 def _forget_form_element(element: "Element") -> "Element":
+    # Local: form_modules imports this module, so a module-level import here
+    # would close that cycle; it is built by the time this function runs.
+    from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModuleElement
+
     match element:
         case FormModuleElement():
             return element.forget_form()
@@ -171,6 +183,10 @@ class BilinearFormMorphism(Morphism):
         return GramMatrix(self._gram_matrix)
 
     def __call__(self, left: "Element", right: "Element") -> "Element":
+        # Local: the morphism node imports this module, so a module-level
+        # import would close that cycle; it is built by call time.
+        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _coordinate_vector
+
         assert all(
             element.parent() is self.module()
             for element in (left, right)
@@ -204,12 +220,20 @@ class BilinearFormMorphism(Morphism):
         they are read in, which is the ring the pairings of \(M\otimes_RS\)
         take their values in.
         """
+        # Local: importing the ring node here would close a cycle, and the
+        # module is built by the time this method runs.
+        from dzack_research.preamble.categories.rings.rings import engine_ring
+
         value_ring = module.base_ring()
         return BilinearForms(module, value_ring)(
             self._gram_matrix.change_ring(engine_ring(value_ring))
         )
 
     def pullback(self, morphism: "Morphism") -> "BilinearFormMorphism":
+        # Local: the morphism node imports this module, so a module-level
+        # import would close that cycle; it is built by call time.
+        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _underlying_module
+
         matrix_of_map = morphism.matrix()._sage_matrix()
         domain = _underlying_module(morphism.domain())
         return BilinearForms(domain, self.codomain())(
@@ -281,6 +305,10 @@ class QuadraticFormMorphism(Morphism):
         return self.codomain()
 
     def __call__(self, element: "Element") -> "Element":
+        # Local: the morphism node imports this module, so a module-level
+        # import would close that cycle; it is built by call time.
+        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _coordinate_vector
+
         assert element.parent() is self.domain(), (
             f"{element} is not an element of {self.domain()}"
         )
@@ -340,12 +368,20 @@ class QuadraticFormMorphism(Morphism):
         A quadratic form is transported by its lift, which is the matrix that
         records it, so the transport is the bilinear one on that matrix.
         """
+        # Local: importing the ring node here would close a cycle, and the
+        # module is built by the time this method runs.
+        from dzack_research.preamble.categories.rings.rings import engine_ring
+
         value_ring = module.base_ring()
         return QuadraticForms(module, value_ring)(
             self._lift_matrix.change_ring(engine_ring(value_ring))
         )
 
     def pullback(self, morphism: "Morphism") -> "QuadraticFormMorphism":
+        # Local: the morphism node imports this module, so a module-level
+        # import would close that cycle; it is built by call time.
+        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _underlying_module
+
         matrix_of_map = morphism.matrix()._sage_matrix()
         domain = _underlying_module(morphism.domain())
         return QuadraticForms(domain, self.codomain())(
@@ -388,9 +424,17 @@ class QuadraticFormMorphism(Morphism):
 
 def BilinearForm(module: "Module", value_module: "Module", gram_matrix: "GramMatrix") -> "BilinearFormMorphism":
     r"""Construct the formed module classified by a bilinear form."""
+    # Local: form_modules imports this module, so a module-level import here
+    # would close that cycle; it is built by the time this function runs.
+    from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModule
+
     return FormModule(BilinearForms(module, value_module)(gram_matrix))
 
 
 def QuadraticForm(module: "Module", value_module: "Module", gram_matrix: "GramMatrix") -> "QuadraticFormMorphism":
     r"""Construct the formed module classified by a quadratic form."""
+    # Local: form_modules imports this module, so a module-level import here
+    # would close that cycle; it is built by the time this function runs.
+    from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModule
+
     return FormModule(QuadraticForms(module, value_module)(gram_matrix))

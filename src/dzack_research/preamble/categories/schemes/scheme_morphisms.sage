@@ -57,3 +57,6 @@ class SchemeMorphism(Morphism):
 def install_scheme_morphisms() -> None:
     r"""Register post-init hooks and installation for scheme morphisms."""
     pass
+
+
+install_scheme_morphisms()

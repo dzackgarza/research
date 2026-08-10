@@ -10,6 +10,19 @@ The generating family is the ideal's own -- ``gens`` and
 this object exists so that reading is a fact rather than a coincidence.
 """
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from sage_lattice_category_spike.lexicon import Element
+    from sage_lattice_category_spike.lexicon import Module
+    from sage_lattice_category_spike.lexicon import OrderedSet
+
+from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import BasedFreeModule
+from sage.categories.modules import Modules
+from sage.categories.sets_cat import Sets
+from dzack_research.preamble.categories.rings.rings import engine_ring
+if TYPE_CHECKING:
+    from sage.rings.ring import Ring
+    from dzack_research.preamble.categories.modules.framed.formed.integrallattice.subobjects import Subobject
 
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
 from dzack_research.preamble.categories.rings.rings import OwnedBaseRing

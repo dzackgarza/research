@@ -22,9 +22,18 @@ a lattice back requires choosing one inside its rational span, which is what
 saturation does.
 """
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from sage_lattice_category_spike.lexicon import Module
+
+from sage.categories.modules import Modules
+if TYPE_CHECKING:
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
+    from sage.categories.morphism import Morphism
+    from sage.rings.ring import Ring
+
 from dzack_research.preamble.categories.functors.free_forgetful_adjunction import Adjunction
 from sage.categories.functor import Functor
-from sage.structure.sage_object import SageObject
 
 
 class BaseChangeFunctor(Functor):
@@ -48,6 +57,13 @@ class BaseChangeFunctor(Functor):
         two generators is the entry \(f\) carries into \(S\), so the Gram
         matrix is the same matrix read there.
         """
+        # Local: the module nodes import this module, so module-level imports
+        # here would close those cycles; they are built by call time.
+        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import BasedFreeModule
+        from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModule
+        from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModules
+        from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules
+
         base_ring = module.base_ring()
         formed = module in FormModules(base_ring)
         underlying = module.forget_form() if formed else module
@@ -66,6 +82,11 @@ class BaseChangeFunctor(Functor):
 
     def _apply_functor_to_morphism(self, morphism: "ModuleMorphism") -> "ModuleMorphism":
         r"""Return \(f\otimes S\), the same matrix read over \(S\)."""
+        # Local: the morphism node imports this module, so a module-level
+        # import would close that cycle; it is built by call time.
+        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
+        from dzack_research.preamble.utilities import zipsum
+
         source, target = self(morphism.domain()), self(morphism.codomain())
         return module_homset(source, target)(
             {
@@ -97,6 +118,11 @@ def fraction_field_base_change(base_ring: "Ring") -> BaseChangeFunctor:
     without the hypothesis there is no field of fractions to embed in, and
     "the vector space of \(M\)" names nothing.
     """
+    # Local: importing the ring node here would close a cycle, and the module
+    # is built by the time this function runs.
+    from dzack_research.preamble.categories.rings.rings import engine_ring
+    from dzack_research.preamble.categories.rings.rings import own_ring
+
     ring = own_ring(engine_ring(base_ring))
     assert ring.is_integral_domain(), (
         f"{ring} is not an integral domain, so it has no field of fractions "
@@ -119,6 +145,10 @@ class RestrictionOfScalarsFunctor(Functor):
         return self._ring_map
 
     def _apply_functor(self, module: "Module") -> "Module":
+        # Local: the module node imports this module, so a module-level import
+        # would close that cycle; it is built by call time.
+        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import BasedFreeModule
+
         return BasedFreeModule(
             self._ring_map.domain(), module.module_generating_set()
         )
@@ -146,6 +176,10 @@ class BaseChangeAdjunction(Adjunction):
         and \(M\otimes_RS\) is an \(S\)-module, and a map between them belongs
         to no single category.
         """
+        # Local: the morphism node imports this module, so a module-level
+        # import would close that cycle; it is built by call time.
+        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
+
         restricted = self._right_adjoint(self._left_adjoint(module))
         return module_homset(module, restricted)(
             {
@@ -156,6 +190,10 @@ class BaseChangeAdjunction(Adjunction):
 
     def counit(self, module: "Module") -> "ModuleMorphism":
         r"""Return \(\varepsilon_N:F(G(N))\to N\) in \(\mathbf{Mod}(S)\)."""
+        # Local: the morphism node imports this module, so a module-level
+        # import would close that cycle; it is built by call time.
+        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
+
         extended = self._left_adjoint(self._right_adjoint(module))
         return module_homset(extended, module)(
             {

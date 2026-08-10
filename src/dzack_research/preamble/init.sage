@@ -21,6 +21,12 @@
 # Only the text/latex slot is touched. text/plain is still emitted alongside, so
 # nothing is lost; print(), tracebacks, plots and images are untouched.
 
+from sage.rings.cc import CC
+from dzack_research.preamble.catalogue import Lattices
+from sage.rings.rational_field import QQ
+from sage.categories.category import RR
+from sage.categories.category import ZZ
+from sage.misc.latex import latex
 from sage.misc.misc_c import prod
 from sage.structure.sage_object import SageObject
 from pathlib import Path

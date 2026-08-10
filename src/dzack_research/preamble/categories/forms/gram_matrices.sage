@@ -1,5 +1,9 @@
 r"""Shared Gram-matrix operations."""
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from sage_lattice_category_spike.lexicon import GramMatrix
+
 from itertools import accumulate
 import networkx as nx
 

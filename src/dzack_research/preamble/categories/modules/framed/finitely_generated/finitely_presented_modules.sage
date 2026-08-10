@@ -6,6 +6,22 @@ declaring ``FinitelyGeneratedModules(R)`` in its supercategories.
 
 
 
+from typing import TYPE_CHECKING
+from dzack_research.preamble.utilities import zipsum
+if TYPE_CHECKING:
+    from sage_lattice_category_spike.lexicon import Module
+    from sage_lattice_category_spike.lexicon import ModuleElement
+    from sage_lattice_category_spike.lexicon import OrderedSet
+    from sage_lattice_category_spike.lexicon import Vector
+
+from dzack_research.preamble.categories.sets.sets import finite_ordered_set
+from dzack_research.preamble.refine import refine
+if TYPE_CHECKING:
+    from dzack_research.preamble.categories.abstract_categories.arrow_categories import Isomorphism
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import FramingMorphism
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
+    from sage.structure.element import RingElement
+
 from dzack_research.preamble.categories.rings.rings import OwnedBaseRing
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
 from typing import Self
@@ -36,6 +52,11 @@ def _presented_on(module: "Module", relations: MorphismMatrix) -> "FinitelyPrese
     is the matrix of; the generating set is ``module``'s own, because a normal
     form of $M$ is written on labels $M$ already names.
     """
+    # Local: at module level these close an import cycle; the free module and
+    # morphism modules are built by the time a presentation is written.
+    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import BasedFreeModule
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _module_morphism
+
     base_ring = module.base_ring()
     codomain = BasedFreeModule(base_ring, module.module_generating_set())
     domain = BasedFreeModule(base_ring, Sets.Δ[relations.nrows() - 1])
@@ -65,6 +86,10 @@ def _change_of_module_generators(
     which checks that every relation of ``source`` is killed -- so a wrong
     transformation matrix is rejected here and not carried onwards.
     """
+    # Local: at module level this closes an import cycle; the homset module is
+    # built by the time a change of generators is written.
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
+
     return module_homset(source, target)(
         dict(
             zip(
@@ -83,6 +108,10 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
         return "finitely presented modules"
 
     def super_categories(self) -> list:
+        # Local: at module level this closes an import cycle; the category is
+        # built by the time supercategories are asked for.
+        from dzack_research.preamble.categories.modules.pure.finitely_generated.finitely_generated_modules import FinitelyGeneratedModules
+
         return [FinitelyGeneratedModules(self.base_ring())]
 
     class ParentMethods:
@@ -109,6 +138,11 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
             them.  That is the content, not a degeneracy: reducing rows
             changes the presentation and nothing else, and this says so.
             """
+            # Local: at module level these close an import cycle; the arrow and
+            # ring modules are built by the time a normal form is asked for.
+            from dzack_research.preamble.categories.abstract_categories.arrow_categories import Isomorphism
+            from dzack_research.preamble.categories.rings.rings import engine_ring
+
             target = _presented_on(self, self.relation_matrix().normal_form())
             unchanged = identity_matrix(
                 engine_ring(self.base_ring()), self.number_of_module_generators()
@@ -130,6 +164,10 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
             which is the whole reason this is a different generating set from
             the presented one and not a change of basis of it.
             """
+            # Local: at module level this closes an import cycle; the ring
+            # module is built by the time generators are asked for.
+            from dzack_research.preamble.categories.rings.rings import engine_ring
+
             smith, _, right = self._smith()
             coordinates = right.inverse().change_ring(engine_ring(self.base_ring())).rows()
             invariants = list(smith.diagonal())
@@ -166,6 +204,11 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
             silently receives the other, because the second is reached only by
             naming this arrow.
             """
+            # Local: at module level these close an import cycle; the arrow and
+            # ring modules are built by the time a normal form is asked for.
+            from dzack_research.preamble.categories.abstract_categories.arrow_categories import Isomorphism
+            from dzack_research.preamble.categories.rings.rings import engine_ring
+
             smith, _, right = self._smith()
             target = _presented_on(self, MorphismMatrix(smith))
             return Isomorphism(
@@ -242,6 +285,16 @@ class FinitelyPresentedModule(OwnedBaseRing, Parent):
     Element = FinitelyPresentedModuleElement
 
     def __init__(self, presentation: "ModuleMorphism") -> None:
+        # Local: at module level these close an import cycle; the morphism,
+        # form and torsion modules are built by the time one is presented.
+        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_torsion_modules import FinitelyPresentedTorsionModules
+        from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormMorphism
+        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
+        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _coordinate_vector
+        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _underlying_module
+        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import framing_morphism
+        from dzack_research.preamble.categories.rings.rings import engine_ring
+
         assert isinstance(presentation, (ModuleMorphism, FormMorphism)), (
             "a presentation is a morphism of framed modules"
         )
@@ -305,6 +358,10 @@ class FinitelyPresentedModule(OwnedBaseRing, Parent):
         return self.number_of_module_generators() - self._relations.rank()
 
     def is_torsion(self) -> bool:
+        # Local: at module level this closes an import cycle; the ring module
+        # is built by the time a module answers about its torsion.
+        from dzack_research.preamble.categories.rings.rings import engine_ring
+
         return engine_ring(self.base_ring()) is SageZZ and self.rank() == 0
 
     @cached_method
@@ -329,6 +386,10 @@ class FinitelyPresentedModule(OwnedBaseRing, Parent):
         question routes through it rather than restating it as a matrix
         normal form at the call site.
         """
+        # Local: at module level this closes an import cycle; the free module
+        # is built by the time a quotient is projected onto.
+        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import BasedFreeModule
+
         smith, _, right = self._smith()
         diagonal = list(smith.diagonal())
         free_columns = [
@@ -348,6 +409,10 @@ class FinitelyPresentedModule(OwnedBaseRing, Parent):
         )
 
     def is_torsion_free(self) -> bool:
+        # Local: at module level this closes an import cycle; the ring module
+        # is built by the time a module answers about its torsion.
+        from dzack_research.preamble.categories.rings.rings import engine_ring
+
         if engine_ring(self.base_ring()) is not SageZZ:
             return True
         smith = self._smith()[0]
@@ -357,6 +422,10 @@ class FinitelyPresentedModule(OwnedBaseRing, Parent):
         return all(generator == self.zero() for generator in self.module_generators())
 
     def invariants(self) -> tuple:
+        # Local: at module level this closes an import cycle; the ring module
+        # is built by the time invariants are asked for.
+        from dzack_research.preamble.categories.rings.rings import engine_ring
+
         assert engine_ring(self.base_ring()) is SageZZ, "invariants are defined here over ZZ"
         smith = self._smith()[0]
         return tuple(
@@ -383,6 +452,10 @@ class FinitelyPresentedModule(OwnedBaseRing, Parent):
         )
 
     def _reduce(self, coordinates: "Vector") -> "Vector":
+        # Local: at module level this closes an import cycle; the ring module
+        # is built by the time an element is reduced.
+        from dzack_research.preamble.categories.rings.rings import engine_ring
+
         result = vector(engine_ring(self.base_ring()), list(coordinates))
         assert len(result) == self.number_of_module_generators(), (
             f"this module has {self.number_of_module_generators()} coordinates, got {len(result)}"

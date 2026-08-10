@@ -11,6 +11,21 @@ EXAMPLES::
     [2 3 1]
 """
 
+from typing import TYPE_CHECKING
+from sage_lattice_category_spike.lexicon import Element
+if TYPE_CHECKING:
+    from sage_lattice_category_spike.lexicon import GramMatrix
+    from sage_lattice_category_spike.lexicon import Lattice
+    from sage_lattice_category_spike.lexicon import ModuleElement
+
+from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormMorphism
+from dzack_research.preamble.categories.modules.framed.formed.integrallattice.integral_lattices import _integral_lattice_with_names
+from dzack_research.preamble.categories.sets.sets import finite_ordered_set
+from dzack_research.preamble.categories.group.groups import own_group
+if TYPE_CHECKING:
+    from sage.combinat.root_system.cartan_type import CartanType
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleAutomorphismGroup
+
 from collections.abc import Hashable, Iterable, Iterator, Mapping, Sequence
 from typing import TYPE_CHECKING, Any, ClassVar, cast
 

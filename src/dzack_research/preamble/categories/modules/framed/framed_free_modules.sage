@@ -12,6 +12,21 @@ ordered.  Finite ordered free modules are the specialization implemented by
 """
 
 
+from typing import TYPE_CHECKING
+from sage_lattice_category_spike.lexicon import Element
+if TYPE_CHECKING:
+    from sage_lattice_category_spike.lexicon import Module
+
+from sage.categories.modules import Modules
+from dzack_research.preamble.categories.sets.sets import _as_set
+from dzack_research.preamble.refine import refine
+if TYPE_CHECKING:
+    from sage.categories.category import Category
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import FramingMorphism
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
+    from sage.rings.ring import Ring
+    from sage.structure.element import RingElement
+
 from dzack_research.preamble.categories.rings.rings import OwnedBaseRing
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
 from typing import Self, TYPE_CHECKING
@@ -39,6 +54,13 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
         return "framed free modules"
 
     def super_categories(self) -> list:
+        # Local: at module level this closes an import cycle; the free-module
+        # category is built by the time supercategories are asked for.
+        from dzack_research.preamble.categories.modules.pure.free_modules import FreeModules
+        # Imported for its registration of the Framed axiom on Modules, which
+        # is what makes ``.Framed()`` below an attribute at all.
+        from dzack_research.preamble.categories.modules.framed.framed_modules import FramedModules  # noqa: F401
+
         return [FreeModules(self.base_ring()), Modules(self.base_ring()).Framed()]
 
     class ParentMethods:
@@ -191,6 +213,12 @@ class FreeModuleOnSet(OwnedBaseRing, Parent):
         Sage installs a parent's structural surface -- the coercion from the
         base ring among it -- from the category ``Parent.__init__`` is given.
         """
+        # Local: at module level these close an import cycle; the ring, finite
+        # free and morphism modules are built by the time one is constructed.
+        from dzack_research.preamble.categories.rings.rings import engine_ring
+        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import FinitelyGeneratedFreeModules
+        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import framing_morphism
+
         # Intake: the module is built over the ring the engine computes in,
         # whichever of the two names for it arrived.  A module over the owned
         # view would carry a base its category, its matrices and its Smith
@@ -253,6 +281,10 @@ class FreeModuleOnSet(OwnedBaseRing, Parent):
 
 def FreeModuleOn(base_ring: "Ring", module_generating_set: "OrderedSet") -> FreeModuleOnSet:
     r"""Construct \(F_R(S)\) on the supplied set \(S\)."""
+    # Local: at module level this closes an import cycle; the finite ordered
+    # specialization is built by the time a free module is constructed.
+    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import BasedFreeModule
+
     module_generating_set = _as_set(module_generating_set)
     set_category = module_generating_set.category()
     match (

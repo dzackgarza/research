@@ -61,6 +61,9 @@ class Scheme(LocallyRingedSpace):
 
     def __init__(self, base_ring=SageZZ) -> None:
         r"""Initialize the scheme and refine into Schemes(S)."""
+        # Local: a module-level import would close a cycle; the module is built by the time this runs.
+        from dzack_research.preamble.refine import refine
+
         LocallyRingedSpace.__init__(self, base_ring=base_ring)
         refine(self, Schemes(base_ring))
 
@@ -77,6 +80,9 @@ class Schemes(OwnedCategoryOverBaseRing):
 
     def super_categories(self) -> list:
         r"""Return LocallyRingedSpaces(), of which schemes are a subcategory."""
+        # Local: a module-level import would close a cycle; the module is built by the time this runs.
+        from dzack_research.preamble.categories.schemes.ringed_spaces import LocallyRingedSpaces
+
         return [LocallyRingedSpaces()]
 
     class SubcategoryMethods:
@@ -126,21 +132,37 @@ class AffineSpaces(OwnedCategoryOverBaseRing):
         @cached_method
         def picard_group(self):
             r"""Return \(\operatorname{Pic}(\mathbb A^n)=0\)."""
+            # Local: a module-level import would close a cycle; the module is built by the time this runs.
+            from dzack_research.preamble.categories.divisors.picard_groups import PicardGroup
+            from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import Free_ZZ
+
             return PicardGroup(Free_ZZ(Sets.Δ[-1]))
 
         @cached_method
         def class_group(self):
             r"""Return \(\operatorname{Cl}(\mathbb A^n)=0\)."""
+            # Local: a module-level import would close a cycle; the module is built by the time this runs.
+            from dzack_research.preamble.categories.divisors.class_groups import ClassGroup
+            from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import Free_ZZ
+
             return ClassGroup(Free_ZZ(Sets.Δ[-1]))
 
         def closed_subscheme(self, *equations):
             r"""Return V(f1,...,fk) subset AA^n refined into ClosedSubschemes(R)."""
+            # Local: a module-level import would close a cycle; the module is built by the time this runs.
+            from dzack_research.preamble.categories.schemes.subschemes import ClosedSubschemes
+            from dzack_research.preamble.refine import refine
+
             eqs = equations[0] if len(equations) == 1 and isinstance(equations[0], (list, tuple)) else list(equations)
             sub = self.subscheme(eqs)
             return refine(sub, ClosedSubschemes(self.base_ring()))
 
         def basic_open(self, f):
             r"""Return D(f) = AA^n \ V(f) as an OpenSubschemes(R)."""
+            # Local: a module-level import would close a cycle; the module is built by the time this runs.
+            from dzack_research.preamble.categories.schemes.subschemes import OpenSubschemes
+            from dzack_research.preamble.refine import refine
+
             sub = self.subscheme([], principal_open=f)
             return refine(sub, OpenSubschemes(self.base_ring()))
 
@@ -165,26 +187,46 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
         @cached_method
         def picard_group(self):
             r"""Return \(\operatorname{Pic}(\mathbb P^n)\cong\mathbb Z\)."""
+            # Local: a module-level import would close a cycle; the module is built by the time this runs.
+            from dzack_research.preamble.categories.divisors.picard_groups import PicardGroup
+            from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import Free_ZZ
+
             return PicardGroup(Free_ZZ(Sets.Δ[0]))
 
         @cached_method
         def class_group(self):
             r"""Return \(\operatorname{Cl}(\mathbb P^n)\cong\mathbb Z\)."""
+            # Local: a module-level import would close a cycle; the module is built by the time this runs.
+            from dzack_research.preamble.categories.divisors.class_groups import ClassGroup
+            from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import Free_ZZ
+
             return ClassGroup(Free_ZZ(Sets.Δ[0]))
 
         def hyperplane(self, i=0):
             r"""Return the hyperplane H_i = (x_i = 0) subset PP^n as a ClosedSubschemes(R)."""
+            # Local: a module-level import would close a cycle; the module is built by the time this runs.
+            from dzack_research.preamble.categories.schemes.subschemes import ClosedSubschemes
+            from dzack_research.preamble.refine import refine
+
             sub = self.subscheme([self.gen(i)])
             return refine(sub, ClosedSubschemes(self.base_ring()))
 
         def closed_subscheme(self, *equations):
             r"""Return V(f1,...,fk) subset PP^n refined into ClosedSubschemes(R)."""
+            # Local: a module-level import would close a cycle; the module is built by the time this runs.
+            from dzack_research.preamble.categories.schemes.subschemes import ClosedSubschemes
+            from dzack_research.preamble.refine import refine
+
             eqs = equations[0] if len(equations) == 1 and isinstance(equations[0], (list, tuple)) else list(equations)
             sub = self.subscheme(eqs)
             return refine(sub, ClosedSubschemes(self.base_ring()))
 
         def basic_open(self, f):
             r"""Return D(f) = PP^n \ V(f) as an OpenSubschemes(R)."""
+            # Local: a module-level import would close a cycle; the module is built by the time this runs.
+            from dzack_research.preamble.categories.schemes.subschemes import OpenSubschemes
+            from dzack_research.preamble.refine import refine
+
             sub = self.subscheme([], principal_open=f)
             return refine(sub, OpenSubschemes(self.base_ring()))
 
@@ -192,3 +234,6 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
 def install_schemes() -> None:
     r"""Register post-init hooks and installation for schemes."""
     pass
+
+
+install_schemes()

@@ -20,6 +20,9 @@ choice-independent invariants are first-class *projections* of the
 concrete objects, not the only interface.
 """
 
+from sage.rings.integer_ring import ZZ as SageZZ
+from sage_lattice_category_spike.lexicon import Element
+from sage.arith.misc import next_prime
 from dzack_research.preamble.categories.group.profinite.absolute_galois_group_element import AbsoluteGaloisGroupElement
 from sage.categories.fields import Fields as SageFields
 from sage.categories.homset import Hom
@@ -91,6 +94,10 @@ class AbsoluteGaloisGroup(UniqueRepresentation, Parent):
         embedding=None,
         choice_policy=None,
     ) -> None:
+        # Local: a module-level import would close a cycle; the module is built by the time this runs.
+        from dzack_research.preamble.categories.group.profinite.absolute_galois_groups import AbsoluteGaloisGroups
+        from dzack_research.preamble.categories.group.profinite.galois_choice_policy import default_choice_policy
+
         self._field = field
 
         # Choose the algebraic closure

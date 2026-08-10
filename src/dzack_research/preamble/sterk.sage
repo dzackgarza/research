@@ -15,6 +15,19 @@ EXAMPLES::
     {'Sterk_1': 12, 'Sterk_2': 10, 'Sterk_3': 12, 'Sterk_4': 11, 'Sterk_5': 14}
 """
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from sage_lattice_category_spike.lexicon import Lattice
+    from sage_lattice_category_spike.lexicon import Module
+    from sage_lattice_category_spike.lexicon import ModuleElement
+
+from sage.rings.integer_ring import ZZ as SageZZ
+from dzack_research.preamble.catalogue import Embeddings
+from dzack_research.preamble.categories.modules.framed.formed.integrallattice.coxeter_diagrams import FiniteCoxeterDiagram
+if TYPE_CHECKING:
+    from sage.graphs.graph import Graph
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
+
 from dzack_research.preamble.categories.modules.framed.formed.integrallattice.integral_lattices import _integral_lattice_with_names
 from dzack_research.preamble.catalogue import Lattices
 from typing import Any, TYPE_CHECKING

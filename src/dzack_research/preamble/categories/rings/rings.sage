@@ -27,6 +27,16 @@ preamble's shared load namespace it sends Sage's axiom deduction hunting for a
 base category class by name, where it finds the preamble's groups node.
 """
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from sage_lattice_category_spike.lexicon import Element
+    from sage_lattice_category_spike.lexicon import Group
+    from sage_lattice_category_spike.lexicon import Module
+    from sage_lattice_category_spike.lexicon import OrderedSet
+
+if TYPE_CHECKING:
+    from sage.rings.ring import Ring
+
 from sage.misc.cachefunc import cached_method
 from sage.categories.category import Category
 from sage.categories.category_types import Category_over_base_ring
@@ -91,6 +101,9 @@ class OwnedRings(Category):
                 sage: (ZZ^3).number_of_module_generators()
                 3
             """
+            # Local: a module-level import would close a cycle; the module is built by the time this runs.
+            from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import BasedFreeModule
+
             if isinstance(exponent, Cardinal):
                 # The rank of a free module *is* a cardinal, and the modules
                 # here answer their rank with one -- so a rank read off one
@@ -141,6 +154,9 @@ class OwnedFields(Category):
             has its methods hoisted by ``refine`` at the moment an object
             joins it, and the owned rings join at construction.
             """
+            # Local: a module-level import would close a cycle; the module is built by the time this runs.
+            from dzack_research.preamble.categories.group.profinite.absolute_galois_groups import absolute_galois_group_factory
+
             return absolute_galois_group_factory(self)
 
         def algebra_generators(self) -> tuple:
@@ -249,7 +265,7 @@ SESSION_ENGINE_CONSTRUCTORS = (
 SESSION_OWNED_ENGINE_CONSTRUCTORS = ("MatrixSpace",)
 
 
-def install_rings(namespace: dict) -> None:
+def install_rings(namespace: dict) -> dict:
     r"""Put every ring a session can name into the owned hierarchy.
 
     Three routes, because a ring reaches the preamble three ways and no one
@@ -268,6 +284,9 @@ def install_rings(namespace: dict) -> None:
     subscript of an owned ring is answered here; a session names owned rings,
     so that is the route it takes.
     """
+    # Local: a module-level import would close a cycle; the module is built by the time this runs.
+    from dzack_research.preamble.categories.algebras.framed_free_algebras import polynomial_ring
+
     # The owned rings are *not* bound here.  This namespace is the preamble's
     # own, and it is still loading: a script that has not run yet will write
     # ``matrix(ZZ, ...)`` at load time and must get the engine's matrix.  The
@@ -278,6 +297,7 @@ def install_rings(namespace: dict) -> None:
     # A polynomial ring is delivered as what it is: the free commutative
     # algebra on its variables.  Sage's own polynomial rings stay behind the
     # boundary, where the algorithms run; a notebook never receives one.
+    installed = {"PolynomialRing": polynomial_ring}
     namespace["PolynomialRing"] = polynomial_ring
     # ``RR`` and ``CC`` are session names already, bound to the owned view by
     # :func:`install_session_rings`.  A constructor that spells the same ring
@@ -297,6 +317,12 @@ def install_rings(namespace: dict) -> None:
         constructor = namespace.get(name)
         if constructor is not None:
             namespace[name] = _owning(constructor)
+            installed[name] = namespace[name]
+    # What a session must receive to keep naming these rings.  A constructor
+    # wrapped here lives in the scope it was installed into and in no module,
+    # so a caller that copies the preamble's module contents would miss it and
+    # silently hold Sage's ``GF`` again.
+    return installed
 
 
 class OwnedRing(Parent):
@@ -385,6 +411,9 @@ class OwnedRing(Parent):
         category never sees the call.  This class is the preamble's own, so
         the subscript means here what the preamble says it means.
         """
+        # Local: a module-level import would close a cycle; the module is built by the time this runs.
+        from dzack_research.preamble.categories.algebras.framed_free_algebras import polynomial_ring
+
         return polynomial_ring(self, names)
 
     def __iter__(self):
@@ -648,7 +677,14 @@ class OwnedBaseRing:
 # :func:`owned_ring_view`, and that answer has to be the same at the first
 # construction and the last.  A view made later would put the objects built
 # before it in one category and the objects built after it in another.
+#
+# The rings are read off ``sage.all`` and not off this module's globals: this
+# file is imported, so its globals hold what it imports and not the session
+# names.  ``sage.all`` is where a session's ``ZZ`` comes from, so the object
+# owned here is the object :func:`install_session_rings` will later rebind.
+import sage.all as _sage_all
+
 for _session_ring_name in SESSION_RING_NAMES:
-    _session_ring = globals().get(_session_ring_name)
+    _session_ring = getattr(_sage_all, _session_ring_name, None)
     if isinstance(_session_ring, Parent) and _session_ring in SageRings():
         own_ring(_session_ring)

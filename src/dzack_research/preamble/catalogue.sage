@@ -19,6 +19,11 @@ lattices of signature $(1,r-1)$, keyed by $(r,a,\delta)$.
 negative-definite quotient's own $(r,a,\delta)$ invariants.
 """
 
+from dzack_research.preamble.utilities import zipsum
+from dzack_research.preamble.categories.modules.framed.formed.integrallattice.integral_lattices import IntegralLattices
+from dzack_research.preamble.categories.modules.framed.formed.integrallattice.integral_lattices import _apply_names
+from dzack_research.preamble.categories.rings.rings import install_session_rings
+from dzack_research.preamble.categories.modules.framed.formed.integrallattice.integral_lattices import register_indecomposable
 from dzack_research.preamble.categories.modules.framed.formed.integrallattice.integral_lattices import _integral_lattice_with_names
 from sage.matrix.constructor import matrix
 from sage.matrix.special import diagonal_matrix

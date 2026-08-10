@@ -1,5 +1,11 @@
 r"""Objects equipped with a chosen ordered direct-sum decomposition."""
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from sage_lattice_category_spike.lexicon import Element
+    from sage_lattice_category_spike.lexicon import Module
+
+from dzack_research.preamble.categories.sets.sets import finite_ordered_set
 from collections.abc import Iterable
 from typing import Self, TYPE_CHECKING
 
@@ -21,6 +27,10 @@ def _is_subobject(source: "Module") -> bool:
     element's category is ``Elements(P)``, never \(P\)'s own, and a list has
     no category at all, so both answer no.
     """
+    # Local: at module level this closes an import cycle; the subobject module
+    # is built by the time a decomposition is asked about one.
+    from dzack_research.preamble.categories.modules.framed.formed.integrallattice.subobjects import Subobjects
+
     return source in Subobjects()
 
 

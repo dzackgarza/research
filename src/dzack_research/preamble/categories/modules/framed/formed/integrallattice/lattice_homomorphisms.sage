@@ -1,5 +1,13 @@
 r"""Form-preserving homomorphisms of integral lattices."""
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from sage_lattice_category_spike.lexicon import Module
+
+from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormHomset
+if TYPE_CHECKING:
+    from sage.categories.morphism import Morphism
+
 from typing import Self
 
 from sage.categories.category import Category
@@ -19,6 +27,10 @@ class LatticeHomomorphisms(Category):
 
     class ParentMethods:
         def __call__(self: Self, images: dict) -> "Morphism":
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormMorphism
+            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.subobjects import Subobjects
+            from dzack_research.preamble.categories.modules.direct_sum_objects import _expand_direct_sum_hom_dict
             match images:
                 case FormMorphism():
                     assert images.parent() is self, (
@@ -58,5 +70,8 @@ class LatticeHomomorphisms(Category):
 
 def lattice_homset(domain: "Module", codomain: "Module") -> FormHomset:
     r"""Return the canonical lattice homset for ``domain`` and ``codomain``."""
+    # Local: a module-level import here would close a cycle; by call time this module is built.
+    from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModules
+    from dzack_research.preamble.refine import refine
     homset = FormModules.ParentMethods.Hom(domain, codomain)
     return refine(homset, LatticeHomomorphisms())

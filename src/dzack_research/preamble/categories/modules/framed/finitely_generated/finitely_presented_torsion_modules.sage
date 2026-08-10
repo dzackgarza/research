@@ -20,6 +20,19 @@ that gives each class a canonical representative to print and hash.
 """
 
 
+from sage.rings.integer_ring import ZZ as SageZZ
+from typing import TYPE_CHECKING
+from dzack_research.preamble.utilities import zipsum
+if TYPE_CHECKING:
+    from sage_lattice_category_spike.lexicon import Group
+
+from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModule
+from dzack_research.preamble.categories.sets.sets import finite_ordered_set
+from sage.misc.misc_c import prod
+from sage.modules.free_module_element import vector
+if TYPE_CHECKING:
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
+
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
 from collections.abc import Iterable
 from typing import Self, TYPE_CHECKING
@@ -53,6 +66,10 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
 
     @staticmethod
     def __classcall_private__(cls, base_ring=None):
+        # Local: at module level this closes an import cycle; the ring module
+        # is built by the time this category is constructed.
+        from dzack_research.preamble.categories.rings.rings import engine_ring
+
         # Over the engine's integers, which is what the modules of this
         # category carry: the owned ring is the session's name for it, and a
         # category built over one while its objects carry the other has no
@@ -72,6 +89,11 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
         return "finitely presented torsion modules"
 
     def super_categories(self) -> list:
+        # Local: at module level these close an import cycle; both categories
+        # are built by the time supercategories are asked for.
+        from dzack_research.preamble.categories.modules.pure.torsion_modules import TorsionModules
+        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModules
+
         return [
             TorsionModules(self.base_ring()),
             FinitelyPresentedModules(self.base_ring()),
@@ -186,6 +208,11 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
         that is what a presentation is; nothing downstream sees the matrix
         except the linear algebra.
         """
+        # Local: at module level these close an import cycle; the free module
+        # and morphism modules are built by the time one is presented.
+        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import BasedFreeModule
+        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _module_morphism
+
         relations = MorphismMatrix(relations, SageZZ)
         domain = BasedFreeModule(SageZZ, Sets.Δ[relations.nrows() - 1])
         match module_generating_set:
@@ -261,6 +288,9 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
         def abelian_group(self: Self) -> "Group":
             r"""Return this module as a Sage finite abelian group."""
             from sage.groups.abelian_gps.abelian_group import AbelianGroup
+            # Local: at module level this closes an import cycle; the group
+            # module is built by the time a group is asked for.
+            from dzack_research.preamble.categories.group.groups import own_group
 
             return own_group(AbelianGroup(list(self.invariants())))
 
@@ -301,6 +331,9 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
             r"""Return this module as a finitely presented abelian group."""
             from sage.groups.free_group import FreeGroup
             from sage.misc.misc_c import prod
+            # Local: at module level this closes an import cycle; the group
+            # module is built by the time a group is asked for.
+            from dzack_research.preamble.categories.group.groups import own_group
 
             relations = self.relation_matrix()
             size = relations.ncols()

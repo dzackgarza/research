@@ -34,6 +34,33 @@ EXAMPLES::
     0
 """
 
+from typing import TYPE_CHECKING
+from sage_lattice_category_spike.lexicon import MorphismMatrix
+if TYPE_CHECKING:
+    from sage_lattice_category_spike.lexicon import Element
+    from sage_lattice_category_spike.lexicon import Lattice
+    from sage_lattice_category_spike.lexicon import LatticeName
+    from sage_lattice_category_spike.lexicon import Module
+    from sage_lattice_category_spike.lexicon import ModuleElement
+
+from sage.quadratic_forms.genera.genus import Genus
+from sage.categories.homset import Hom
+from sage.structure.parent import Parent
+from dzack_research.preamble.categories.modules.framed.formed.integrallattice.subobjects import Subobject
+from sage.matrix.special import block_diagonal_matrix
+from sage.modules.free_module_element import vector
+if TYPE_CHECKING:
+    from dzack_research.preamble.categories.modules.direct_sum_objects import DirectSumObject
+    from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModule
+    from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormMorphism
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import GroupAction
+    from sage.categories.homset import Homset
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleAutomorphismGroup
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
+    from dzack_research.preamble.categories.forms.forms import QuadraticFormMorphism
+    from sage.structure.element import RingElement
+    from dzack_research.preamble.categories.sets.sets import Set
+
 from sage.matrix.matrix0 import Matrix
 import re
 from collections.abc import Iterable
@@ -84,6 +111,9 @@ class IntegralLattices(Category):
         pairing, the norm, the rank, the basis, $v*w$ -- it has from there, and
         this category is only what integrality adds.
         """
+        # Local: a module-level import here would close a cycle; by call time this module is built.
+        from dzack_research.preamble.categories.modules.framed.formed.form_modules import FinitelyGeneratedFreeFormModules
+        from dzack_research.preamble.categories.modules.framed.formed.form_modules import SymmetricBilinearFormModules
         return [
             FinitelyGeneratedFreeFormModules(),
             SymmetricBilinearFormModules(),
@@ -213,6 +243,8 @@ class IntegralLattices(Category):
             construct elements of $L^\vee$ with :meth:`correlation` applied to an
             element of $L$.
             """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModuleElement
             projection = self.discriminant_projection()
             assert (
                 isinstance(element, FormModuleElement)
@@ -248,6 +280,8 @@ class IntegralLattices(Category):
             original lattice.  Catalogue entries should construct elements of
             $L^\vee$ and project them to $A_L$ before calling this method.
             """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.sets.sets import finite_ordered_set
             rank = self.rank()
             rational_rows = [
                 [1 if i == j else 0 for j in range(rank)]
@@ -311,6 +345,8 @@ class IntegralLattices(Category):
             unique and need not glue to isometric lattices, so a maximal
             overlattice is what this is, not the maximal one.
             """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.utilities import zipsum
             inclusion = next(
                 self.discriminant_group().maximal_isotropic_subobjects()
             ).embedding()
@@ -391,6 +427,8 @@ class IntegralLattices(Category):
             with no condition on the form.  It carries no form -- the one on
             $L^\vee$ is $G^{-1}$, and that is where nondegeneracy is needed.
             """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import BasedFreeModule
             return BasedFreeModule(SageZZ, self.module_generating_set())
 
         @cached_method
@@ -403,6 +441,9 @@ class IntegralLattices(Category):
             same map with $\operatorname{Hom}(L,\mathbb Z)$ carrying the form
             that makes it $L^\vee$, which exists only when $c$ is injective.
             """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
+            from dzack_research.preamble.utilities import zipsum
             dual_module = self.dual_module()
             assignment = dict(
                 zip(
@@ -561,6 +602,9 @@ class IntegralLattices(Category):
             made elements of this lattice before they leave, so no caller
             reads a row.
             """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.sets.sets import finite_ordered_set
+            from dzack_research.preamble.utilities import zipsum
             positive, negative = self.signature_pair()
             assert negative == 0 and positive + negative == self.rank(), (
                 f"{self} is not positive definite, so the vectors of norm at "
@@ -594,6 +638,9 @@ class IntegralLattices(Category):
             and the form look like a property of the common realization in
             $L\otimes\mathbb Q$.
             """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import BasedFreeModule
+            from dzack_research.preamble.categories.forms.forms import BilinearForm
             assert self.is_nondegenerate(), (
                 f"{self} is degenerate, so it has no $L^\\vee$: the form on the "
                 "dual is $G^{-1}$, and $c$ is not injective here. The dual as a "
@@ -614,6 +661,8 @@ class IntegralLattices(Category):
             Nondegeneracy is injectivity of $c$, unimodularity is $c$ being an
             isomorphism, and $A_L=\operatorname{coker} c$.
             """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.framed.formed.form_modules import correlation_of
             # Cached because $L^\vee$ is an object, not a value: two calls have
             # to return the same one or its elements would have different
             # parents and nothing could be composed with $c$.
@@ -626,6 +675,8 @@ class IntegralLattices(Category):
             beyond nondegeneracy, whereas $q$ needs $L$ even.  It is the
             cokernel of :meth:`correlation`.
             """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.framed.formed.torsionform.discriminant_bilinear_modules import DiscriminantBilinearModules
             return DiscriminantBilinearModules().cokernel(self.correlation())
 
         def discriminant_quadratic_form(self: Self) -> "QuadraticFormMorphism":
@@ -636,6 +687,8 @@ class IntegralLattices(Category):
             $2\mathbb Z$ exactly when $L$ is even.  For an odd $L$ there is no
             such $q$, and :meth:`discriminant_bilinear_form` is all there is.
             """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.framed.formed.torsionform.discriminant_quadratic_modules import DiscriminantQuadraticModules
             return DiscriminantQuadraticModules().cokernel(self.correlation())
 
         def discriminant_group(
@@ -671,6 +724,9 @@ class IntegralLattices(Category):
             of $L^\vee$ with :meth:`correlation` first, and only then
             projected.
             """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.framed.formed.torsionform.discriminant_bilinear_modules import DiscriminantBilinearModules
+            from dzack_research.preamble.categories.modules.framed.formed.torsionform.discriminant_quadratic_modules import DiscriminantQuadraticModules
             cache = f"_preamble_discriminant_group_{bool(reduce_trivial)}"
             cached = self.__dict__.get(cache)
             if s == 0 and cached is not None:
@@ -829,6 +885,8 @@ class IntegralLattices(Category):
             alone, so the twist splits exactly where ``self`` does; its own
             construction finds that, and each summand comes back twisted.
             """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.forms.forms import BilinearForm
             result = BilinearForm(
                 self.forget_form(),
                 SageZZ,
@@ -843,6 +901,9 @@ class IntegralLattices(Category):
         # ---- morphisms / automorphisms ----
 
         def Hom(self: Self, codomain: "Module", category: "Category" = None) -> "Homset":
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModules
+            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.lattice_homomorphisms import lattice_homset
             if codomain in FormModules(self.base_ring()):
                 return lattice_homset(self, codomain)
             return Parent.Hom(self, codomain, category)
@@ -881,6 +942,12 @@ class IntegralLattices(Category):
             claimed, because it is false for most indefinite $L$ and expensive
             to decide; it is a question the group answers when asked.
             """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormAutomorphismGroup
+            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.lattice_homomorphisms import LatticeHomomorphisms
+            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.lattice_isometries import LatticeIsometries
+            from dzack_research.preamble.categories.group.groups import OwnedFinitelyPresentedGroups
+            from dzack_research.preamble.refine import refine
             cached = self.__dict__.get("_preamble_Aut")
             if cached is not None:
                 return cached
@@ -924,6 +991,9 @@ class IntegralLattices(Category):
             asked of the group, since $G$'s elements decide that $\rho$ by
             themselves.  It ends here too.
             """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import GroupAction
+            from dzack_research.preamble.categories.modules.group_modules.group_lattices import group_lattice
             assert isinstance(action, GroupAction) and action.codomain() is self.Aut(), (
                 "the action must be an already-constructed homomorphism into O(L) "
                 "for this L; construct it in Hom(G, self.Aut())"
@@ -957,6 +1027,9 @@ class IntegralLattices(Category):
 
         def _induced_lattice(self: Self, coordinate_basis: "MorphismMatrix") -> "Lattice":
             """Return the integral lattice with Gram form induced on ``coordinate_basis``."""
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.sets.sets import finite_ordered_set
+            from dzack_research.preamble.utilities import zipsum
             basis = list(coordinate_basis)
             if not basis:
                 return None
@@ -1021,6 +1094,9 @@ class IntegralLattices(Category):
             structure map is the bilinear \(\otimes\); see
             ``TensorProductCategory``.
             """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.sets.sets import finite_ordered_set
+            from dzack_research.preamble.refine import refine
             gram = matrix(SageZZ, self.gram_matrix()).tensor_product(
                 matrix(SageZZ, other.gram_matrix())
             )
@@ -1046,6 +1122,8 @@ class IntegralLattices(Category):
 
         def _pure_tensor(self: Self, left: "ModuleElement", right: "ModuleElement") -> "ModuleElement":
             r"""Return \(x\otimes y\) in the generators laid out in pairs."""
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.utilities import zipsum
             return zipsum(
                 [
                     a * b
@@ -1201,6 +1279,10 @@ def _lattice_with_gram(
     an induced form on a sublattice, a quotient, an overlattice -- comes
     through here, so there is one place where a lattice is born.
     """
+    # Local: a module-level import here would close a cycle; by call time this module is built.
+    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import BasedFreeModule
+    from dzack_research.preamble.categories.forms.forms import BilinearForm
+    from dzack_research.preamble.categories.sets.sets import finite_ordered_set
     gram = GramMatrix(matrix(SageZZ, gram))
     match module_generating_set:
         case None:
@@ -1227,6 +1309,8 @@ def _lattice_with_gram(
 
 def _direct_sum_framing_set(left: "Element", right: "Element") -> "OrderedSet":
     r"""Return the ordered coproduct of two finite framing sets."""
+    # Local: a module-level import here would close a cycle; by call time this module is built.
+    from dzack_research.preamble.categories.sets.sets import finite_ordered_set
     labels = tuple(
         (0, label) for label in left.module_generating_set()
     ) + tuple(
@@ -1251,6 +1335,8 @@ def _discriminant_lift_row(element: "Element", rank: int) -> list[Any]:
     every class of an $A_1^n$, for one -- reads as a vector of $L$, and
     ``glue`` returns $L$ back for an honest gluing datum.
     """
+    # Local: a module-level import here would close a cycle; by call time this module is built.
+    from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModuleElement
     assert isinstance(element, FormModuleElement), (
         f"glue is defined on classes in A_L, and this is {element!r}. Build an "
         "element of L^\\vee with correlation(), then project it with "
@@ -1368,6 +1454,10 @@ def _decompose_lattice(L: "Lattice") -> None:
     The direct-sum structure is a separate object.  It is not grafted onto
     \(L\), so another decomposition may coexist with this one.
     """
+    # Local: a module-level import here would close a cycle; by call time this module is built.
+    from dzack_research.preamble.categories.modules.direct_sum_objects import DirectSumDecomposition
+    from dzack_research.preamble.categories.forms.gram_matrices import _matrix_connected_component_cuts
+    from dzack_research.preamble.categories.sets.sets import finite_ordered_set
     gram = L.gram_matrix()
     cuts = _matrix_connected_component_cuts(gram)
     if not cuts:
@@ -1496,6 +1586,9 @@ def refine_one_lattice(lattice: "Lattice") -> None:
     Always refines into ``IntegralLattices``.  If signature is ``(n, 1)``,
     also joins ``HyperbolicLattices``.
     """
+    # Local: a module-level import here would close a cycle; by call time this module is built.
+    from dzack_research.preamble.categories.modules.framed.formed.integrallattice.hyperbolic_lattices import HyperbolicLattices
+    from dzack_research.preamble.refine import refine
     refine(lattice, IntegralLattices())
     pos, neg = lattice.signature_pair()
     if pos > 0 and neg > 0 and min(pos, neg) == 1:

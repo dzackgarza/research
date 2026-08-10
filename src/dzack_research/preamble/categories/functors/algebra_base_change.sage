@@ -13,6 +13,11 @@ nothing, because a method call is not an arrow and cannot be composed,
 compared, or asked for its domain.
 """
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from sage.categories.morphism import Morphism
+    from sage.structure.parent import Parent
+
 from sage.categories.functor import Functor
 
 
@@ -20,6 +25,10 @@ class AlgebraBaseChangeFunctor(Functor):
     r"""\(-\otimes_RS:\mathbf{Alg}(R)\to\mathbf{Alg}(S)\) along \(f:R\to S\)."""
 
     def __init__(self, ring_map: "Morphism") -> None:
+        # Local: the algebra node reaches this module through number fields, so
+        # a module-level import would close that cycle.
+        from dzack_research.preamble.categories.algebras.algebras import Algebras
+
         self._ring_map = ring_map
         Functor.__init__(
             self,
@@ -39,6 +48,10 @@ class AlgebraBaseChangeFunctor(Functor):
         makes the value of this functor a *presented* algebra rather than a
         tensor product one still has to identify.
         """
+        # Local: importing the ring node here would close a cycle, and the
+        # module is built by the time this method runs.
+        from dzack_research.preamble.categories.rings.rings import engine_ring
+
         # Both sides cross to the engine: a session names owned rings, so the
         # map it obtained starts at one, and only the engine's name for a ring
         # is common to both spellings.

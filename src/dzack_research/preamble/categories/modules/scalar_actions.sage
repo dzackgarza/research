@@ -16,6 +16,11 @@ condition on \(\rho\), not a different endomorphism ring.
 """
 
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from sage_lattice_category_spike.lexicon import Element
+    from sage_lattice_category_spike.lexicon import Module
+
 from dzack_research.preamble.categories.rings.rings import OwnedBaseRing
 from sage.categories.modules import Modules
 from sage.categories.rings import Rings
@@ -26,6 +31,10 @@ class ModuleOverRing(OwnedBaseRing, Parent):
     r"""The \(S\)-module determined by \(\rho:S\to\operatorname{End}(M)\)."""
 
     def __init__(self, action: "RingMorphism") -> None:
+        # Local: at module level this closes an import cycle; the ring module
+        # is built by the time an action is constructed.
+        from dzack_research.preamble.categories.rings.rings import engine_ring
+
         endomorphisms = action.codomain()
         assert endomorphisms in Rings(), (
             "the action of a ring lands in an endomorphism *ring*; "

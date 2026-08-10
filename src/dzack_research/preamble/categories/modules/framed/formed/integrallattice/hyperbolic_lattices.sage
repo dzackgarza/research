@@ -15,6 +15,10 @@ EXAMPLES::
     True
 """
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from sage_lattice_category_spike.lexicon import Element
+
 from typing import Any, Self
 
 from sage.categories.category import Category
@@ -32,6 +36,8 @@ class HyperbolicLattices(Category):
         return "hyperbolic integral lattices"
 
     def super_categories(self) -> list:
+        # Local: a module-level import here would close a cycle; by call time this module is built.
+        from dzack_research.preamble.categories.modules.framed.formed.integrallattice.integral_lattices import IntegralLattices
         return [IntegralLattices()]
 
     class ParentMethods:
@@ -70,6 +76,8 @@ class HyperbolicLattices(Category):
             list
                 The enumerated roots, as elements of this lattice.
             """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.utilities import zipsum
             # ``vinal`` diagonalizes and asserts exactly one negative entry, so
             # it wants signature (n, 1).  This repo's convention is negative
             # definite, making its hyperbolic lattices (1, n) -- those are the

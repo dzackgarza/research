@@ -17,12 +17,15 @@ Callers that also want the named specimens continue with ``utilities.py``,
 ``catalogue.sage``, ``sterk.sage``, and ``Lattices.install(globals())``.
 """
 
-import dzack_research as _dzack_research
-
 # The preamble's files import each other by module path.  ``.sage`` is an
 # importable source format only once this finder is installed, so it goes in
 # before anything below loads a file that imports a sibling.
 import sageparse.preparser.importer  # noqa: F401
+from sage.categories.sets_cat import Sets
+from dzack_research.preamble.categories.rings.rings import install_rings
+from dzack_research.preamble.categories.rings.rings import install_session_rings
+import dzack_research as _dzack_research
+
 
 _preamble_cache = getattr(_dzack_research, "_preamble_namespace", None)
 
@@ -34,8 +37,6 @@ if _preamble_cache is not None:
     # into it.  So the session's names are bound here as well.
     install_session_rings(globals())
 else:
-    _exported_before = set(globals())
-
     import sys as _sys
     from pathlib import Path as _Path
 
@@ -73,160 +74,116 @@ else:
         if _vendor_entry not in _sys.path:
             _sys.path.append(_vendor_entry)
 
-    load(str(_PREAMBLE / "refine.sage"))
-    # Load the Sage-only implementation of ``refine``, but expose it as a
-    # standard importable module path so category scripts that use normal
-    # Python imports keep working during bootstrap.
-    import types as _types
+    # The files, in dependency order.  Python derives the order from the
+    # import graph, so this sequence no longer carries it -- what it carries
+    # is *export* order: a name defined in two files resolves to the later
+    # one, which is what sharing a namespace used to mean.
+    #
+    # Imported rather than loaded, and that is the whole point: ``load`` runs
+    # a file's text into this namespace, so loading a file that another file
+    # imports builds its classes twice.  Two ``FormModules`` are two
+    # categories, an object refined into one fails an identity check against
+    # the other, and the failure surfaces far away as a coercion that cannot
+    # find a common parent.
+    import importlib as _importlib
 
-    if "dzack_research.preamble.refine" not in _sys.modules:
-        _pre_refine_module = _types.ModuleType("dzack_research.preamble.refine")
-        _pre_refine_module.__file__ = str(_PREAMBLE / "refine.sage")
-        _pre_refine_module.__package__ = "dzack_research.preamble"
-        _sys.modules["dzack_research.preamble.refine"] = _pre_refine_module
-    else:
-        _pre_refine_module = _sys.modules["dzack_research.preamble.refine"]
+    _MODULES = (
+        "refine",
+        "utilities",
+        "categories.forms.gram_matrices",
+        "categories.sets.sets",
+        "categories.rings.rings",
+        "categories.abstract_categories.slice_categories",
+        "categories.abstract_categories.arrow_categories",
+        "categories.abstract_categories.products",
+        "categories.modules.pure.finitely_generated.finitely_generated_modules",
+        "categories.modules.pure.free_modules",
+        "categories.modules.framed.framed_modules",
+        "categories.modules.framed.finitely_generated.finitely_presented_modules",
+        "categories.modules.framed.framed_free_modules",
+        "categories.modules.framed.finitely_generated.finitely_generated_free_modules",
+        "categories.modules.direct_sum_objects",
+        "categories.modules.module_morphisms.module_morphisms",
+        "categories.modules.scalar_actions",
+        "categories.modules.framed.formed.form_modules",
+        "categories.modules.pure.torsion_modules",
+        "categories.modules.framed.finitely_generated.finitely_presented_torsion_modules",
+        "categories.modules.group_modules.group_modules",
+        "categories.forms.forms",
+        "categories.group.groups",
+        "categories.group.profinite.profinite_groups",
+        "categories.group.profinite.galois_choice_policy",
+        "categories.group.profinite.absolute_galois_groups",
+        "categories.group.profinite.absolute_galois_group_element",
+        "categories.group.profinite.absolute_galois_group",
+        "categories.group.profinite.absolute_galois_group_subgroup",
+        "categories.group.profinite.galois_quotient",
+        "categories.group.profinite.galois_characters",
+        "categories.group.profinite.galois_decomposition",
+        "categories.group.finitely_presented_groups",
+        "categories.group.predicate_subgroups",
+        "categories.modules.framed.formed.integrallattice.integral_lattices",
+        "categories.modules.framed.formed.integrallattice.subobjects",
+        "categories.modules.group_modules.group_lattices",
+        "categories.modules.fractional_ideals",
+        "categories.functors.trivial_action",
+        "categories.functors.free_forgetful_adjunction",
+        "categories.functors.base_change_adjunction",
+        "categories.modules.framed.formed.integrallattice.lattice_homomorphisms",
+        "categories.modules.framed.formed.integrallattice.lattice_isometries",
+        "categories.modules.framed.formed.integrallattice.coxeter_diagrams",
+        "categories.modules.framed.formed.integrallattice.hyperbolic_lattices",
+        "categories.modules.framed.formed.torsionform.torsion_modules_with_form",
+        "categories.modules.framed.formed.torsionform.discriminant_bilinear_modules",
+        "categories.modules.framed.formed.torsionform.discriminant_quadratic_modules",
+        "categories.divisors.divisor_groups",
+        "categories.divisors.weil_divisor_groups",
+        "categories.divisors.cartier_divisor_groups",
+        "categories.divisors.class_groups",
+        "categories.divisors.picard_groups",
+        "categories.algebras.free_algebras",
+        "categories.algebras.algebras",
+        "categories.algebras.framed_free_algebras",
+        "categories.algebras.finitely_presented_algebras",
+        "categories.functors.algebra_base_change",
+        "categories.algebras.number_fields",
+        "categories.schemes.ringed_spaces",
+        "categories.schemes.schemes",
+        "categories.schemes.scheme_morphisms",
+        "categories.schemes.scheme_points",
+        "categories.schemes.ambient_spaces",
+        "categories.schemes.subschemes",
+        "categories.schemes.varieties",
+        "catalogue",
+    )
 
-    for _export in ("hook_post_init", "hooked_classes", "refine"):
-        _pre_refine_module.__dict__.setdefault(_export, globals()[_export])
-
-    load(str(_PREAMBLE / "utilities.py"))
-    load(str(_PREAMBLE / "categories/forms/gram_matrices.sage"))
-    load(str(_PREAMBLE / "categories/sets/sets.sage"))
-    load(str(_PREAMBLE / "categories/rings/rings.sage"))
-    load(str(_PREAMBLE / "categories/abstract_categories/slice_categories.sage"))
-    load(str(_PREAMBLE / "categories/abstract_categories/arrow_categories.sage"))
-    load(str(_PREAMBLE / "categories/abstract_categories/products.sage"))
-    load(str(_PREAMBLE / "categories/modules/pure/finitely_generated/finitely_generated_modules.sage"))
-    load(str(_PREAMBLE / "categories/modules/pure/free_modules.sage"))
-    load(str(_PREAMBLE / "categories/modules/framed/framed_modules.sage"))
-    load(str(_PREAMBLE / "categories/modules/framed/finitely_generated/finitely_presented_modules.sage"))
-    load(str(_PREAMBLE / "categories/modules/framed/framed_free_modules.sage"))
-    load(str(_PREAMBLE / "categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage"))
-
-    load(str(_PREAMBLE / "categories/modules/direct_sum_objects.sage"))
-    load(str(_PREAMBLE / "categories/modules/module_morphisms/module_morphisms.sage"))
-    load(str(_PREAMBLE / "categories/modules/scalar_actions.sage"))
-    load(str(_PREAMBLE / "categories/modules/framed/formed/form_modules.sage"))
-    load(str(_PREAMBLE / "categories/modules/pure/torsion_modules.sage"))
-    load(str(_PREAMBLE / "categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage"))
-    load(str(_PREAMBLE / "categories/modules/group_modules/group_modules.sage"))
-    load(str(_PREAMBLE / "categories/forms/forms.sage"))
-    load(str(_PREAMBLE / "categories/group/groups.sage"))
-    load(str(_PREAMBLE / "categories/group/profinite/profinite_groups.sage"))
-    load(str(_PREAMBLE / "categories/group/profinite/galois_choice_policy.sage"))
-    load(str(_PREAMBLE / "categories/group/profinite/absolute_galois_groups.sage"))
-    # The element class first: the group names it as its ``Element`` in the
-    # class body, which runs at load time.
-    load(str(_PREAMBLE / "categories/group/profinite/absolute_galois_group_element.sage"))
-    load(str(_PREAMBLE / "categories/group/profinite/absolute_galois_group.sage"))
-    load(str(_PREAMBLE / "categories/group/profinite/absolute_galois_group_subgroup.sage"))
-    load(str(_PREAMBLE / "categories/group/profinite/galois_quotient.sage"))
-    load(str(_PREAMBLE / "categories/group/profinite/galois_characters.sage"))
-    load(str(_PREAMBLE / "categories/group/profinite/galois_decomposition.sage"))
-    load(str(_PREAMBLE / "categories/group/finitely_presented_groups.sage"))
-    load(str(_PREAMBLE / "categories/group/predicate_subgroups.sage"))
-    load(str(_PREAMBLE / "categories/modules/framed/formed/integrallattice/integral_lattices.sage"))
-    load(str(_PREAMBLE / "categories/modules/framed/formed/integrallattice/subobjects.sage"))
-    load(str(_PREAMBLE / "categories/modules/group_modules/group_lattices.sage"))
-    load(str(_PREAMBLE / "categories/modules/fractional_ideals.sage"))
-    load(str(_PREAMBLE / "categories/functors/trivial_action.sage"))
-    load(str(_PREAMBLE / "categories/functors/free_forgetful_adjunction.sage"))
-    load(str(_PREAMBLE / "categories/functors/base_change_adjunction.sage"))
-    load(str(_PREAMBLE / "categories/modules/framed/formed/integrallattice/lattice_homomorphisms.sage"))
-    load(str(_PREAMBLE / "categories/modules/framed/formed/integrallattice/lattice_isometries.sage"))
-    load(str(_PREAMBLE / "categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage"))
-    load(str(_PREAMBLE / "categories/modules/framed/formed/integrallattice/hyperbolic_lattices.sage"))
-    load(str(_PREAMBLE / "categories/modules/framed/formed/torsionform/torsion_modules_with_form.sage"))
-    load(str(_PREAMBLE / "categories/modules/framed/formed/torsionform/discriminant_bilinear_modules.sage"))
-    load(str(_PREAMBLE / "categories/modules/framed/formed/torsionform/discriminant_quadratic_modules.sage"))
-    load(str(_PREAMBLE / "categories/divisors/divisor_groups.sage"))
-    load(str(_PREAMBLE / "categories/divisors/weil_divisor_groups.sage"))
-    load(str(_PREAMBLE / "categories/divisors/cartier_divisor_groups.sage"))
-    load(str(_PREAMBLE / "categories/divisors/class_groups.sage"))
-    load(str(_PREAMBLE / "categories/divisors/picard_groups.sage"))
-    load(str(_PREAMBLE / "categories/algebras/free_algebras.sage"))
-    load(str(_PREAMBLE / "categories/algebras/algebras.sage"))
-    # Make ``from dzack_research.preamble.categories.algebras.algebras``
-    # importable during bootstrap even though the implementation is a ``.sage``
-    # file loaded via ``load()``.
-    if "dzack_research.preamble.categories" not in _sys.modules:
-        _pre_categories_module = _types.ModuleType(
-            "dzack_research.preamble.categories",
+    _exports = {}
+    for _module_name in _MODULES:
+        _module = _importlib.import_module("dzack_research.preamble." + _module_name)
+        _exports.update(
+            {
+                _key: _value
+                for _key, _value in vars(_module).items()
+                if not _key.startswith("_")
+            }
         )
-        _pre_categories_module.__file__ = str(_PREAMBLE / "categories")
-        _pre_categories_module.__path__ = [str(_PREAMBLE / "categories")]
-        _pre_categories_module.__package__ = "dzack_research.preamble"
-        _sys.modules["dzack_research.preamble.categories"] = _pre_categories_module
-    else:
-        _pre_categories_module = _sys.modules["dzack_research.preamble.categories"]
-
-    if "dzack_research.preamble.categories.algebras" not in _sys.modules:
-        _pre_algebras_pkg = _types.ModuleType(
-            "dzack_research.preamble.categories.algebras",
-        )
-        _pre_algebras_pkg.__file__ = str(_PREAMBLE / "categories" / "algebras")
-        _pre_algebras_pkg.__path__ = [str(_PREAMBLE / "categories" / "algebras")]
-        _pre_algebras_pkg.__package__ = "dzack_research.preamble.categories"
-        _pre_algebras_pkg.__parent__ = _pre_categories_module
-        _sys.modules["dzack_research.preamble.categories.algebras"] = _pre_algebras_pkg
-    else:
-        _pre_algebras_pkg = _sys.modules["dzack_research.preamble.categories.algebras"]
-
-    _pre_algebras_module = _types.ModuleType(
-        "dzack_research.preamble.categories.algebras.algebras",
-    )
-    _pre_algebras_module.__file__ = str(_PREAMBLE / "categories" / "algebras" / "algebras.sage")
-    _pre_algebras_module.__package__ = "dzack_research.preamble.categories.algebras"
-    for _export in ("FramedAlgebras", "Algebras"):
-        _pre_algebras_module.__dict__.setdefault(_export, globals()[_export])
-    _sys.modules["dzack_research.preamble.categories.algebras.algebras"] = (
-        _pre_algebras_module
-    )
-    _pre_algebras_pkg.__dict__.setdefault(
-        "algebras",
-        _pre_algebras_module,
-    )
-    _pre_categories_module.__dict__.setdefault(
-        "algebras",
-        _pre_algebras_pkg,
-    )
-
-    load(str(_PREAMBLE / "categories/algebras/framed_free_algebras.sage"))
-    load(str(_PREAMBLE / "categories/algebras/finitely_presented_algebras.sage"))
-    load(str(_PREAMBLE / "categories/functors/algebra_base_change.sage"))
-    load(str(_PREAMBLE / "categories/algebras/number_fields.sage"))
-    load(str(_PREAMBLE / "categories/schemes/ringed_spaces.sage"))
-    load(str(_PREAMBLE / "categories/schemes/schemes.sage"))
-    load(str(_PREAMBLE / "categories/schemes/scheme_morphisms.sage"))
-    load(str(_PREAMBLE / "categories/schemes/scheme_points.sage"))
-    load(str(_PREAMBLE / "categories/schemes/ambient_spaces.sage"))
-    load(str(_PREAMBLE / "categories/schemes/subschemes.sage"))
-    load(str(_PREAMBLE / "categories/schemes/varieties.sage"))
-    load(str(_PREAMBLE / "catalogue.sage"))
-    install_groups()
-    install_finitely_presented_groups()
-    install_finitely_presented_algebras()
-    install_algebras()
-    install_ringed_spaces()
-    install_schemes()
-    install_scheme_morphisms()
-    install_scheme_points()
-    install_ambient_spaces()
-    install_subschemes()
-    install_varieties()
+    globals().update(_exports)
 
     # ``R^n`` is the preamble's free module.  These are the rings a notebook
     # names before it has built anything; every other ring is refined on
     # intake, or by the constructor that builds it.
-    install_rings(globals())
+    _installed_rings = install_rings(globals())
 
     # Loading twice re-exports the *same* objects rather than re-running the scripts.
-    _preamble_namespace = {
-        _name: _value
-        for _name, _value in globals().items()
-        if _name not in _exported_before and not _name.startswith("__")
-    }
+    #
+    # What the preamble exports is what its modules define, read off the
+    # modules.  Diffing this file's namespace against the names it started
+    # with cannot say that: a scope that already held Sage's
+    # ``IntegralLattice`` -- any scope that has imported ``sage.all`` --
+    # makes the preamble's own constructor look pre-existing, and the
+    # session silently keeps Sage's, whose lattices have no ``Aut``.
+    _preamble_namespace = dict(_exports)
+    _preamble_namespace.update(_installed_rings)
     _preamble_namespace.update(
         {
             "ConditionSet": ConditionSet,

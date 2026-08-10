@@ -37,6 +37,9 @@ class ProfiniteGroups(Category_singleton):
         return "profinite groups"
 
     def super_categories(self) -> list:
+        # Local: a module-level import would close a cycle; the module is built by the time this runs.
+        from dzack_research.preamble.categories.group.groups import OwnedGroups
+
         return [OwnedGroups(), SageGroups().Topological()]
 
     class ParentMethods:

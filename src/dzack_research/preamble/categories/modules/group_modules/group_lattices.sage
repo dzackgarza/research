@@ -1,5 +1,26 @@
 r"""Integral lattices equipped with a group action by isometries."""
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from sage_lattice_category_spike.lexicon import Character
+    from sage_lattice_category_spike.lexicon import Element
+    from sage_lattice_category_spike.lexicon import Group
+    from sage_lattice_category_spike.lexicon import Lattice
+    from sage_lattice_category_spike.lexicon import Module
+    from sage_lattice_category_spike.lexicon import ModuleElement
+    from sage_lattice_category_spike.lexicon import MorphismMatrix
+
+from sage.rings.integer_ring import ZZ as SageZZ
+from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModule
+from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormMorphism
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import GroupAction
+from sage.structure.parent import Parent
+if TYPE_CHECKING:
+    from dzack_research.preamble.categories.modules.direct_sum_objects import DirectSumObject
+    from dzack_research.preamble.categories.modules.framed.formed.integrallattice.subobjects import Subobject
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
+    from sage.categories.homset import Homset
+
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormHomset
 import logging
 from typing import Self, TYPE_CHECKING
@@ -33,6 +54,10 @@ class GroupLattices(Category):
         return f"integral lattices with an action of {self._group}"
 
     def super_categories(self) -> list:
+        # Local: a module-level import would close a cycle; the module is built by the time this runs.
+        from dzack_research.preamble.categories.modules.framed.formed.integrallattice.integral_lattices import IntegralLattices
+        from dzack_research.preamble.categories.modules.group_modules.group_modules import GroupModules
+
         return [
             GroupModules(SageZZ, self._group),
             IntegralLattices(),
@@ -40,11 +65,17 @@ class GroupLattices(Category):
 
     class ParentMethods:
         def Hom(self: Self, codomain: "Module", category: "Category" = None) -> "Homset":
+            # Local: a module-level import would close a cycle; the module is built by the time this runs.
+            from dzack_research.preamble.categories.modules.group_modules.group_modules import GroupModules
+
             if codomain in GroupModules(self.base_ring(), self.group()):
                 return group_lattice_homset(self, codomain)
             return Parent.Hom(self, codomain, category)
 
         def hom(self: Self, images: dict, codomain: "Module" = None) -> "ModuleMorphism":
+            # Local: a module-level import would close a cycle; the module is built by the time this runs.
+            from dzack_research.preamble.categories.modules.framed.formed.form_modules import FinitelyGeneratedFormModules
+
             return FinitelyGeneratedFormModules.ParentMethods.hom(
                 self,
                 images,
@@ -88,6 +119,9 @@ class GroupLattices(Category):
             subgroup, so it contains \(G\) as soon as it contains a
             generating set.
             """
+            # Local: a module-level import would close a cycle; the module is built by the time this runs.
+            from dzack_research.preamble.categories.group.groups import refine_group
+
             return all(
                 self.act(generator, vector_) == vector_
                 for generator in refine_group(self.group()).group_generators()
@@ -173,6 +207,9 @@ class GroupLatticeHomset(FormHomset):
         homset: one homset serves many morphisms, and whether a given one was
         checked is a fact about that morphism.
         """
+        # Local: a module-level import would close a cycle; the module is built by the time this runs.
+        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
+
         match images:
             case FormMorphism():
                 assert images.parent() is self, (
@@ -215,6 +252,9 @@ class GroupLatticeHomset(FormHomset):
         - no generators at all: ask anyway when forced, and let the group
           fail however it chooses.
         """
+        # Local: a module-level import would close a cycle; the module is built by the time this runs.
+        from dzack_research.preamble.categories.group.groups import refine_group
+
         group = refine_group(self.domain().group())
         morphism._equivariance_checked = False
 
@@ -287,6 +327,9 @@ def _action_preserves_form(formed_module: "Module") -> bool:
 
 def _install_group_lattice_structure(formed_module: "Module") -> None:
     r"""Install the action on a formed \(G\)-module after invariance is known."""
+    # Local: a module-level import would close a cycle; the module is built by the time this runs.
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import group_action_homset
+
     module = formed_module.forget_form()
     group = module.group()
     isometries = formed_module.Aut()
@@ -312,6 +355,9 @@ def _formed_group_subobject(
     representation_subobject: "Subobject",
 ) -> "Subobject":
     r"""Equip a \(G\)-submodule with the pulled-back form and its inclusion."""
+    # Local: a module-level import would close a cycle; the module is built by the time this runs.
+    from dzack_research.preamble.categories.modules.framed.formed.integrallattice.subobjects import Subobject
+
     module_embedding = representation_subobject.embedding()
     representation = module_embedding.domain()
     restricted = FormModule(
@@ -333,6 +379,11 @@ def _formed_group_subobject(
 
 def group_lattice(lattice: "Lattice", action: GroupAction) -> FormModule:
     r"""Equip ``lattice`` with the specified action by isometries."""
+    # Local: a module-level import would close a cycle; the module is built by the time this runs.
+    from dzack_research.preamble.categories.modules.framed.formed.integrallattice.integral_lattices import IntegralLattices
+    from dzack_research.preamble.categories.modules.group_modules.group_modules import GroupModule
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import group_action_homset
+
     assert lattice in IntegralLattices(), (
         "a group lattice is constructed from an actual integral lattice"
     )

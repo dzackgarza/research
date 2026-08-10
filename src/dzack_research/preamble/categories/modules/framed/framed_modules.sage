@@ -11,6 +11,18 @@ datum.  No finiteness, countability, or orderability hypothesis is imposed on
 \(S\).
 """
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from sage_lattice_category_spike.lexicon import Element
+    from sage_lattice_category_spike.lexicon import Module
+    from sage_lattice_category_spike.lexicon import ModuleElement
+
+from sage.structure.parent import Parent
+if TYPE_CHECKING:
+    from sage.categories.category import Category
+    from sage.categories.homset import Homset
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import FramingMorphism
+
 from typing import Any, Self, TYPE_CHECKING
 
 import sage.categories.category_with_axiom as cwa
@@ -102,6 +114,12 @@ class FramedModules(CategoryWithAxiom_over_base_ring):
             \(\operatorname{Mon}(S)\) -- says which one is the module framing
             by overriding this.
             """
+            # Local: at module level these close an import cycle; both modules
+            # are built by the time a framed module is asked for its framing.
+            from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules
+            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import FramingMorphism
+            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
+
             framing = self.framing_morphism()
             assert isinstance(framing, FramingMorphism), (
                 "the Framed axiom is witnessed by a declared epimorphism"
@@ -155,6 +173,10 @@ class FramedModules(CategoryWithAxiom_over_base_ring):
 
         def Hom(self, codomain: "Module", category: "Category" = None) -> "Homset":
             r"""Return the canonical homset from this module to ``codomain``."""
+            # Local: at module level this closes an import cycle; the homset
+            # module is built by the time a homset is asked for.
+            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
+
             if codomain in Modules(self.base_ring()).Framed():
                 return module_homset(self, codomain)
             return Parent.Hom(self, codomain, category)
@@ -172,6 +194,10 @@ class FramedModules(CategoryWithAxiom_over_base_ring):
             ring map, so a lattice becomes the quadratic space over
             \(\operatorname{Frac}(R)\) spanned by it.
             """
+            # Local: at module level this closes an import cycle; the base
+            # change functor is built by the time a module is rationalized.
+            from dzack_research.preamble.categories.functors.base_change_adjunction import fraction_field_base_change
+
             return fraction_field_base_change(self.base_ring())(self)
 
 

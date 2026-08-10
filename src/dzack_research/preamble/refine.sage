@@ -117,11 +117,11 @@ def _concrete_base(obj: "SageObject") -> type:
     assert False, f"cannot find concrete base for {cls!r}"  # noqa: B011
 
 # Ownership is provenance, which the class hierarchy already records: a
-# category is this project's when its class was defined here.  Every
-# ``.sage`` category file is ``load``ed into the namespace this module is
-# ``load``ed into, so a preamble category's ``__module__`` is that namespace;
-# the lattice spike is an ordinary package.  Sage's own categories are never
-# owned, so their ``ParentMethods`` are never hoisted over a concrete class.
+# category is this project's when its class was defined here.  The preamble
+# and the lattice spike are both ordinary packages, so a category is owned
+# when its ``__module__`` sits inside one of them.  Sage's own categories are
+# never owned, so their ``ParentMethods`` are never hoisted over a concrete
+# class.
 #
 # A name registry stood here instead, and an unlisted category's methods were
 # silently dropped: once a refine target has *any* owned category among its
@@ -129,9 +129,9 @@ def _concrete_base(obj: "SageObject") -> type:
 # ``_method_mixins`` never runs.  Refining a lattice into ``TensorProduct``
 # installed no ``cartesian_source`` for exactly this reason.  Provenance
 # admits every owned category by construction, so there is nothing to omit.
-_PREAMBLE_NAMESPACE = globals().get("__name__")
-assert isinstance(_PREAMBLE_NAMESPACE, str), (
-    "refine.sage must be loaded into a namespace that declares __name__"
+_PREAMBLE_PACKAGE = __name__.rpartition(".")[0] + "."
+assert _PREAMBLE_PACKAGE != ".", (
+    "refine.sage must be imported as a module of the preamble package"
 )
 _SPIKE_PACKAGE = "sage_lattice_category_spike."
 _MIXIN_CACHE: dict[tuple[Any, str], tuple[type, ...]] = {}
@@ -140,7 +140,7 @@ _MIXIN_CACHE: dict[tuple[Any, str], tuple[type, ...]] = {}
 def _is_owned_category(category_type: type) -> bool:
     """Whether ``category_type`` was defined by this project."""
     module = category_type.__module__
-    return module == _PREAMBLE_NAMESPACE or module.startswith(_SPIKE_PACKAGE)
+    return module.startswith(_PREAMBLE_PACKAGE) or module.startswith(_SPIKE_PACKAGE)
 
 
 def _preamble_mixins(category: "Category", attr: str) -> tuple[type, ...]:

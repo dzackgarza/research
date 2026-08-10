@@ -16,6 +16,19 @@ degree of \(f\) is the degree \([K:\QQ]\) of the field, and the degree of an
 it.  The field answers the first; its elements answer the second.
 """
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from sage_lattice_category_spike.lexicon import Element
+    from sage_lattice_category_spike.lexicon import Functor
+    from sage_lattice_category_spike.lexicon import Group
+    from sage_lattice_category_spike.lexicon import Vector
+
+from sage.rings.rational_field import QQ as SageQQ
+if TYPE_CHECKING:
+    from sage.matrix.constructor import Matrix
+    from sage.structure.parent import Parent
+    from sage.rings.ring import Ring
+    from sage.structure.sequence import Sequence
 
 from dzack_research.preamble.categories.rings.rings import SageZZ
 from typing import Self
@@ -39,6 +52,11 @@ class OwnedNumberFields(Category):
         return "number fields"
 
     def super_categories(self) -> list:
+        # Local: both nodes reach this module, so module-level imports would
+        # close those cycles; they are built by the time this runs.
+        from dzack_research.preamble.categories.algebras.finitely_presented_algebras import FinitelyPresentedAlgebras
+        from dzack_research.preamble.categories.rings.rings import OwnedFields
+
         return [FinitelyPresentedAlgebras(SageQQ), OwnedFields()]
 
     class ParentMethods:
@@ -173,6 +191,10 @@ class OwnedNumberFields(Category):
             is the one the presentation already made.  A maximal one is a
             different choice and a different object.
             """
+            # Local: finitely_presented_algebras reaches this module, so a
+            # module-level import would close that cycle.
+            from dzack_research.preamble.categories.algebras.finitely_presented_algebras import FGAlgebra
+
             defining_polynomial = self.defining_polynomial()
             assert all(
                 coefficient in base_ring
@@ -200,6 +222,10 @@ class OwnedNumberFields(Category):
             which can be applied to the maps between algebras as well as to
             the algebras.
             """
+            # Local: the base-change functor reaches this module through the
+            # algebra node, so a module-level import would close that cycle.
+            from dzack_research.preamble.categories.functors.algebra_base_change import algebra_base_change
+
             return algebra_base_change(self.base_ring().coerce_map_from(base_ring))
 
         def integral_basis(self, base_ring: "Ring" = SageZZ) -> tuple:
@@ -244,6 +270,10 @@ class OwnedNumberFields(Category):
             conflated, and the caller is told which it asked for by
             :meth:`is_galois`.
             """
+            # Local: the group node reaches this module, so a module-level
+            # import would close that cycle; it is built by call time.
+            from dzack_research.preamble.categories.group.groups import own_group
+
             return own_group(self._engine_field().galois_group())
 
         def embedding_images(self, ring: "Ring") -> tuple:
@@ -381,6 +411,12 @@ def own_number_field(defining_polynomial: "Element") -> "Parent":
     quotient that is a ring and not a field, and it would fail later at a
     division instead of here at the claim.
     """
+    # Local: these modules reach this one, so module-level imports would close
+    # those cycles; all are built by the time this function runs.
+    from dzack_research.preamble.categories.algebras.finitely_presented_algebras import FinitelyPresentedAlgebra
+    from dzack_research.preamble.categories.rings.rings import OwnedRing
+    from dzack_research.preamble.refine import refine
+
     presentation_ring = defining_polynomial.parent()
     base_ring = presentation_ring.base_ring()
     engine_base_ring = (

@@ -11,6 +11,18 @@ membership in :class:`DiscriminantQuadraticModules`.  Sage's
 this category.
 """
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from sage_lattice_category_spike.lexicon import Element
+    from sage_lattice_category_spike.lexicon import Module
+
+from sage.rings.integer_ring import ZZ as SageZZ
+if TYPE_CHECKING:
+    from dzack_research.preamble.categories.forms.forms import BilinearFormMorphism
+    from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModule
+    from sage.categories.morphism import Morphism
+    from dzack_research.preamble.categories.forms.forms import QuadraticFormMorphism
+
 from typing import Self, TYPE_CHECKING
 
 from sage.categories.category import Category
@@ -38,6 +50,9 @@ class DiscriminantQuadraticModules(Category):
         return "discriminant quadratic modules"
 
     def super_categories(self) -> list:
+        # Local: a module-level import here would close a cycle; by call time this module is built.
+        from dzack_research.preamble.categories.modules.framed.formed.form_modules import QuadraticFormModules
+        from dzack_research.preamble.categories.modules.framed.formed.torsionform.torsion_modules_with_form import TorsionModulesWithForm
         return [TorsionModulesWithForm(), QuadraticFormModules()]
 
     def from_module(self, module: "Module", gram: Matrix) -> "FormModule":
@@ -49,6 +64,11 @@ class DiscriminantQuadraticModules(Category):
         respect to that generating set.  Nothing else is needed and nothing
         else is consulted.
         """
+        # Local: a module-level import here would close a cycle; by call time this module is built.
+        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_torsion_modules import FinitelyPresentedTorsionModules
+        from dzack_research.preamble.categories.forms.forms import QuadraticForm
+        from dzack_research.preamble.refine import refine
+        from dzack_research.preamble.categories.modules.framed.formed.torsionform.torsion_modules_with_form import subdivide_form_gram_matrix
         assert module in FinitelyPresentedTorsionModules(), (
             "a discriminant form requires a finitely presented torsion module"
         )
@@ -81,6 +101,8 @@ class DiscriminantQuadraticModules(Category):
         relation has to have even norm, which is what a $q$ into $\\mathbb
         Q/2\\mathbb Z$ asks of the presentation.
         """
+        # Local: a module-level import here would close a cycle; by call time this module is built.
+        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_torsion_modules import FinitelyPresentedTorsionModules
         module = FinitelyPresentedTorsionModules().from_relations(relations)
         return self.from_module(module, gram)
 
@@ -92,6 +114,14 @@ class DiscriminantQuadraticModules(Category):
         to be -- a map of lattices, or a correlation -- rather than about extra
         data being carried alongside.
         """
+        # Local: a module-level import here would close a cycle; by call time this module is built.
+        from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormMorphism
+        from dzack_research.preamble.categories.forms.forms import QuadraticForm
+        from dzack_research.preamble.categories.forms.forms import QuadraticForms
+        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_torsion_modules import TorsionModule
+        from dzack_research.preamble.categories.modules.framed.formed.torsionform.torsion_modules_with_form import cokernel_categories
+        from dzack_research.preamble.refine import refine
+        from dzack_research.preamble.categories.modules.framed.formed.torsionform.torsion_modules_with_form import subdivide_form_gram_matrix
         assert isinstance(morphism, FormMorphism), (
             "a cokernel form is constructed from a form morphism"
         )
@@ -121,6 +151,10 @@ class DiscriminantQuadraticModules(Category):
             so this is a construction and not a view: the same pairings, read
             on a new set, presented by the morphism that set induces.
             """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_torsion_modules import FinitelyPresentedTorsionModules
+            from dzack_research.preamble.categories.sets.sets import finite_ordered_set
+            from dzack_research.preamble.categories.modules.framed.formed.torsionform.torsion_modules_with_form import regenerating_data
             module_generators = tuple(module_generators)
             relations, gram = regenerating_data(self, module_generators)
             module = FinitelyPresentedTorsionModules().from_relations(
@@ -151,6 +185,8 @@ class DiscriminantQuadraticModules(Category):
             Always defined, and it forgets: distinct $q$ on the same group can
             polarize to isometric $b$ (Peters--Sterk Sec. 12.5).
             """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.framed.formed.torsionform.discriminant_bilinear_modules import DiscriminantBilinearModules
             return DiscriminantBilinearModules().from_module(
                 self.forget_form(),
                 self.form().polar_form().gram_matrix(),
@@ -181,6 +217,8 @@ class DiscriminantQuadraticModules(Category):
             the reduced normal form of Cor. C.3.2 applies, which is where the
             quadratic side has a uniqueness statement the bilinear side lacks.
             """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.framed.formed.torsionform.torsion_modules_with_form import p_adic_jordan_module_generators
             return self.regenerate(p_adic_jordan_module_generators(self))
 
 

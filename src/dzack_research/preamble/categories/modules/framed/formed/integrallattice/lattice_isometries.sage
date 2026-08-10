@@ -1,5 +1,24 @@
 r"""Isometries of integral lattices."""
 
+from sage.rings.integer_ring import ZZ as SageZZ
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import Iterable
+
+from sage_lattice_category_spike.lexicon import MorphismMatrix
+if TYPE_CHECKING:
+    from sage_lattice_category_spike.lexicon import Element
+    from sage_lattice_category_spike.lexicon import Group
+    from sage_lattice_category_spike.lexicon import Lattice
+
+if TYPE_CHECKING:
+    from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormMorphism
+    from sage.groups.matrix_gps.finitely_generated import MatrixGroup
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleAutomorphism
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleAutomorphismGroup
+    from sage.categories.morphism import Morphism
+    from dzack_research.preamble.categories.sets.sets import Set
+
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormAutomorphismGroup
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import FiniteAutomorphismSubgroup
 from typing import Self, TYPE_CHECKING
@@ -95,10 +114,17 @@ class LatticeIsometries(Category):
         declares as a super category is a category this one's methods
         precede.
         """
+        # Local: a module-level import here would close a cycle; by call time this module is built.
+        from dzack_research.preamble.categories.modules.framed.formed.integrallattice.lattice_homomorphisms import LatticeHomomorphisms
+        from dzack_research.preamble.categories.group.groups import OwnedFinitelyGeneratedGroups
         return [LatticeHomomorphisms(), OwnedFinitelyGeneratedGroups()]
 
     class ParentMethods:
         def __call__(self: Self, images: "dict | FormMorphism") -> "Morphism":
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormMorphism
+            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.lattice_homomorphisms import LatticeHomomorphisms
+            from dzack_research.preamble.refine import refine
             if isinstance(images, FormMorphism):
                 # A homset is a parent and its morphisms are its elements, so
                 # being handed one is a parent constructing an element it
@@ -152,6 +178,8 @@ class LatticeIsometries(Category):
             engine is a morphism of this lattice and never a matrix a caller
             would have to interpret.
             """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.utilities import zipsum
             lattice = self.domain()
             return self(
                 {
@@ -169,6 +197,8 @@ class LatticeIsometries(Category):
             matrix -- and once computed they are held the same way, which is
             what makes ``has_computed_group_generators`` true of both.
             """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.sets.sets import finite_ordered_set
             stored = self.__dict__.get("_group_generators")
             if stored is None:
                 stored = finite_ordered_set(
@@ -254,6 +284,8 @@ class LatticeIsometries(Category):
             return (self * self).is_identity()
 
         def __mul__(self: Self, other: object) -> "Element":
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormMorphism
             assert (
                 isinstance(other, FormMorphism)
                 and other.parent() is self.parent()
@@ -266,6 +298,8 @@ class LatticeIsometries(Category):
             )
 
         def inverse(self: Self) -> "ModuleAutomorphism":
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.utilities import zipsum
             inverse_matrix = self.matrix().inverse().change_ring(SageZZ)
             return self.parent()(
                 {
@@ -319,6 +353,10 @@ class LatticeIsometrySubgroup(FiniteAutomorphismSubgroup, FormAutomorphismGroup)
     """
 
     def __init__(self, supergroup: "Group", group_generators: "Set") -> None:
+        # Local: a module-level import here would close a cycle; by call time this module is built.
+        from dzack_research.preamble.categories.modules.framed.formed.integrallattice.lattice_homomorphisms import LatticeHomomorphisms
+        from dzack_research.preamble.categories.sets.sets import finite_ordered_set
+        from dzack_research.preamble.refine import refine
         lattice = supergroup.domain()
         assert supergroup.codomain() is lattice, (
             "an isometry group is an endomorphism homset"
@@ -365,6 +403,8 @@ class LatticeIsometrySubgroup(FiniteAutomorphismSubgroup, FormAutomorphismGroup)
         out of \(GL_n(R)\) by a condition, so it is decided directly rather
         than by searching an enumeration.
         """
+        # Local: a module-level import here would close a cycle; by call time this module is built.
+        from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormMorphism
         return (
             isinstance(element, FormMorphism)
             and element.domain() is self.domain()

@@ -5,6 +5,15 @@ a set S, exactly as a framed R-module is equipped with a surjection from a free
 R-module on S.
 """
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from sage_lattice_category_spike.lexicon import Element
+    from sage_lattice_category_spike.lexicon import Module
+
+from sage.categories.morphism import Morphism
+if TYPE_CHECKING:
+    from sage.rings.ring import Ring
+
 from dzack_research.preamble.categories.rings.rings import OwnedBaseRing
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
 from sage.categories.algebras import Algebras as SageAlgebras
@@ -34,6 +43,10 @@ class Algebras(OwnedCategoryOverBaseRing):
         return bool(algebra.coerce_map_from(self.base_ring()))
 
     def super_categories(self) -> list:
+        # Local: importing the ring node here would close a cycle, and the
+        # module is built by the time this method runs.
+        from dzack_research.preamble.categories.rings.rings import OwnedRings
+
         # An associative unital algebra is a ring, and it joins the owned
         # hierarchy at that node like any other: this is what makes
         # \(R[x]^n\) the preamble's free module rather than Sage's.  Sage's
@@ -49,6 +62,10 @@ class Algebras(OwnedCategoryOverBaseRing):
             from the ring this parent was constructed over, and the session's
             name for it is a different parent with no map of its own.
             """
+            # Local: importing the ring node here would close a cycle, and the
+            # module is built by the time this method runs.
+            from dzack_research.preamble.categories.rings.rings import engine_ring
+
             witness = self.coerce_map_from(engine_ring(self.base_ring()))
             if not witness:
                 assert False, f"{self} has no structure map from {self.base_ring()}"
@@ -56,6 +73,10 @@ class Algebras(OwnedCategoryOverBaseRing):
 
         def base_change(self, ring_hom: "Morphism") -> "Module":
             r"""Base change this algebra along a ring morphism."""
+            # Local: importing the ring node here would close a cycle, and the
+            # module is built by the time this method runs.
+            from dzack_research.preamble.categories.rings.rings import engine_ring
+
             # A coercion is a ring map that Sage spells as a ``Map`` and not
             # as a ``Morphism`` -- ``QQ -> CC`` arrives as a composite -- and
             # base change is along a ring map however it was obtained.
@@ -79,6 +100,10 @@ class Algebras(OwnedCategoryOverBaseRing):
     class SubcategoryMethods:
         def Free(self):
             r"""Return the free-algebra subcategory over this base ring."""
+            # Local: free_algebras imports this module, so a module-level
+            # import here would close that cycle.
+            from dzack_research.preamble.categories.algebras.free_algebras import FreeAlgebras
+
             return FreeAlgebras(self.base_ring())
 
         def FinitelyPresented(self):
@@ -95,6 +120,10 @@ class FramedAlgebras(OwnedCategoryOverBaseRing):
         return "framed algebras"
 
     def super_categories(self) -> list:
+        # Local: importing the framed-module node here would close a cycle,
+        # and the module is built by the time this method runs.
+        from dzack_research.preamble.categories.modules.framed.framed_modules import FramedModules
+
         return [Algebras(self.base_ring()), FramedModules(self.base_ring())]
 
     class ParentMethods:
@@ -119,6 +148,10 @@ class OwnedAlgebra(OwnedBaseRing, Parent):
     """
 
     def __init__(self, structure_map: "Map") -> None:
+        # Local: importing the ring node here would close a cycle, and the
+        # module is built by the time this constructor runs.
+        from dzack_research.preamble.categories.rings.rings import engine_ring
+
         assert isinstance(structure_map, Map), (
             "an algebra is presented by a ring map into it"
         )
@@ -187,3 +220,6 @@ def install_algebras() -> None:
         return
 
     _ALGEBRAS_INSTALLED = True
+
+
+install_algebras()

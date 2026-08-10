@@ -30,6 +30,7 @@ The constructor is installed on every field via
     Category of absolute Galois groups
 """
 
+from sage.rings.finite_rings.integer_mod_ring import Integers
 from sage.categories.category_singleton import Category_singleton
 from sage.categories.fields import Fields as SageFields
 from sage.categories.groups import Groups as SageGroups
@@ -49,6 +50,9 @@ class AbsoluteGaloisGroups(Category_singleton):
     """
 
     def super_categories(self) -> list:
+        # Local: a module-level import would close a cycle; the module is built by the time this runs.
+        from dzack_research.preamble.categories.group.profinite.profinite_groups import ProfiniteGroups
+
         return [ProfiniteGroups()]
 
     class ParentMethods:
@@ -104,6 +108,9 @@ class AbsoluteGaloisGroups(Category_singleton):
 
         def restriction_map(self, L):
             r"""Return the continuous surjection \(G_K\twoheadrightarrow\operatorname{Gal}(L/K)\)."""
+            # Local: a module-level import would close a cycle; the module is built by the time this runs.
+            from dzack_research.preamble.categories.group.profinite.galois_quotient import GaloisRestrictionMap
+
             quotient = self.finite_quotient(L)
             return GaloisRestrictionMap(self, quotient, L)
 
@@ -115,6 +122,9 @@ class AbsoluteGaloisGroups(Category_singleton):
             \(H=\operatorname{Gal}(\bar K/E)\) is an actual subgroup of
             the realized \(G_K\).
             """
+            # Local: a module-level import would close a cycle; the module is built by the time this runs.
+            from dzack_research.preamble.categories.group.profinite.absolute_galois_group_subgroup import OpenAbsoluteGaloisSubgroup
+
             return OpenAbsoluteGaloisSubgroup(self, E, embedding)
 
         def open_subgroup_class(self, E):
@@ -124,10 +134,16 @@ class AbsoluteGaloisGroups(Category_singleton):
             conjugacy class.  Available as ``G.open_subgroup(E).conjugacy_class()``
             or directly here.
             """
+            # Local: a module-level import would close a cycle; the module is built by the time this runs.
+            from dzack_research.preamble.categories.group.profinite.absolute_galois_group_subgroup import OpenGaloisSubgroupConjugacyClass
+
             return OpenGaloisSubgroupConjugacyClass(self, E)
 
         def cyclotomic_character(self, n):
             r"""Return the cyclotomic character \(\chi_n:G_K\to(\mathbb Z/n\mathbb Z)^\times\)."""
+            # Local: a module-level import would close a cycle; the module is built by the time this runs.
+            from dzack_research.preamble.categories.group.profinite.galois_characters import CyclotomicCharacter
+
             K = self.base_field()
             L = K.cyclotomic_extension(n)
             pi = self.restriction_map(L)
@@ -136,6 +152,9 @@ class AbsoluteGaloisGroups(Category_singleton):
 
         def quadratic_character(self, a):
             r"""Return the quadratic character attached to \(K(\sqrt a)/K\)."""
+            # Local: a module-level import would close a cycle; the module is built by the time this runs.
+            from dzack_research.preamble.categories.group.profinite.galois_characters import QuadraticCharacter
+
             K = self.base_field()
             L = K.extension(K.gen()**2 - a, "sqrt_a")
             pi = self.restriction_map(L)
@@ -143,35 +162,59 @@ class AbsoluteGaloisGroups(Category_singleton):
 
         def decomposition_group(self, prime):
             r"""Return \(D_{\bar v}\subseteq G_K\) at a chosen prolongation of ``prime``."""
+            # Local: a module-level import would close a cycle; the module is built by the time this runs.
+            from dzack_research.preamble.categories.group.profinite.galois_decomposition import AbsoluteDecompositionGroup
+
             return AbsoluteDecompositionGroup(self, prime)
 
         def decomposition_group_class(self, prime):
             r"""Return the conjugacy class of decomposition groups at ``prime``."""
+            # Local: a module-level import would close a cycle; the module is built by the time this runs.
+            from dzack_research.preamble.categories.group.profinite.galois_decomposition import DecompositionGroupConjugacyClass
+
             return DecompositionGroupConjugacyClass(self, prime)
 
         def inertia_group(self, prime):
             r"""Return \(I_{\bar v}\subseteq G_K\) at a chosen prolongation of ``prime``."""
+            # Local: a module-level import would close a cycle; the module is built by the time this runs.
+            from dzack_research.preamble.categories.group.profinite.galois_decomposition import AbsoluteInertiaGroup
+
             return AbsoluteInertiaGroup(self, prime)
 
         def inertia_group_class(self, prime):
             r"""Return the conjugacy class of inertia groups at ``prime``."""
+            # Local: a module-level import would close a cycle; the module is built by the time this runs.
+            from dzack_research.preamble.categories.group.profinite.galois_decomposition import InertiaGroupConjugacyClass
+
             return InertiaGroupConjugacyClass(self, prime)
 
         def frobenius(self, prime):
             r"""Return the Frobenius conjugacy class at ``prime`` (choices made)."""
+            # Local: a module-level import would close a cycle; the module is built by the time this runs.
+            from dzack_research.preamble.categories.group.profinite.galois_decomposition import FrobeniusConjugacyClass
+
             return FrobeniusConjugacyClass(self, prime)
 
         def frobenius_class(self, prime):
             r"""Return the canonical Frobenius conjugacy class at ``prime``."""
+            # Local: a module-level import would close a cycle; the module is built by the time this runs.
+            from dzack_research.preamble.categories.group.profinite.galois_decomposition import FrobeniusConjugacyClass
+
             return FrobeniusConjugacyClass(self, prime)
 
         def lift(self, sigma):
             r"""Lift \(\sigma\in\operatorname{Gal}(L/K)\) to a lazy element of \(G_K\)."""
+            # Local: a module-level import would close a cycle; the module is built by the time this runs.
+            from dzack_research.preamble.categories.group.profinite.absolute_galois_group_element import AbsoluteGaloisGroupElement
+
             L = sigma.parent().domain() if hasattr(sigma, "parent") else None
             return AbsoluteGaloisGroupElement(self, L, sigma)
 
         def lifts(self, sigma):
             r"""Return the open coset \(g\cdot G_L\) of all lifts of \(\sigma\)."""
+            # Local: a module-level import would close a cycle; the module is built by the time this runs.
+            from dzack_research.preamble.categories.group.profinite.absolute_galois_group import LiftCoset
+
             L = sigma.parent().domain() if hasattr(sigma, "parent") else None
             return LiftCoset(self, sigma, L)
 
@@ -198,6 +241,10 @@ class AbsoluteGaloisGroups(Category_singleton):
 def absolute_galois_group_factory(field, **kwargs):
     r"""Dispatch to the right :class:`AbsoluteGaloisGroup` subclass for ``field``."""
     from sage.rings.finite_rings.finite_field_base import FiniteField
+
+    # Local: a module-level import would close a cycle; the module is built by the time this runs.
+    from dzack_research.preamble.categories.group.profinite.absolute_galois_group import AbsoluteGaloisGroup
+    from dzack_research.preamble.categories.group.profinite.absolute_galois_group import AbsoluteGaloisGroup_finite_field
 
     if isinstance(field, FiniteField):
         return AbsoluteGaloisGroup_finite_field(field, **kwargs)

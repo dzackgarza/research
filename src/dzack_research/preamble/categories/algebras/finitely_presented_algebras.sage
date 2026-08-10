@@ -1,5 +1,15 @@
 r"""Finitely presented algebras as framed free-algebra quotients."""
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from sage_lattice_category_spike.lexicon import Element
+    from sage_lattice_category_spike.lexicon import Module
+    from sage_lattice_category_spike.lexicon import MorphismMatrix
+
+if TYPE_CHECKING:
+    from sage.categories.morphism import Morphism
+    from sage.rings.ring import Ring
+
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
 from collections.abc import Iterable
 from typing import Any, TYPE_CHECKING
@@ -10,8 +20,6 @@ from sage.categories.map import Map
 from sage.rings.ideal import Ideal_generic
 from sage.structure.parent import Parent
 
-from dzack_research.preamble.refine import refine
-from dzack_research.preamble.categories.algebras.algebras import FramedAlgebras
 from sage_lattice_category_spike.objects.sets import Sets
 from sage_lattice_category_spike.objects.underlying_sets import UnderlyingSet
 
@@ -69,6 +77,11 @@ class FinitelyPresentedAlgebras(OwnedCategoryOverBaseRing):
 
         def base_change(self, ring_hom: "Morphism") -> "Module":
             """Transport this finitely presented algebra along a base-ring map."""
+            # Local: both modules import this one, so module-level imports
+            # here would close those cycles; they are built by call time.
+            from dzack_research.preamble.categories.algebras.framed_free_algebras import FreeAlgebraOn
+            from dzack_research.preamble.categories.rings.rings import engine_ring
+
             assert isinstance(ring_hom, Map), (
                 "base_change requires a ring map from the algebra base ring"
             )
@@ -125,6 +138,10 @@ class FramedFGAlgebras(OwnedCategoryOverBaseRing):
     """
 
     def super_categories(self) -> list:
+        # Local: algebras imports this module, so a module-level import here
+        # would close that cycle; it is built by the time this runs.
+        from dzack_research.preamble.categories.algebras.algebras import FramedAlgebras
+
         return [FramedAlgebras(self.base_ring())]
 
 
@@ -154,6 +171,11 @@ def _relations_to_ideal(presentation_ring: "Parent", relations: "MorphismMatrix"
 
 def FinitelyPresentedAlgebra(presentation_ring: "Parent", relations: "MorphismMatrix") -> "Parent":
     """Present an algebra as ``presentation_ring/relations`` and expose the data."""
+    # Local: free_algebras imports this module, so a module-level import here
+    # would close that cycle; both are built by the time this runs.
+    from dzack_research.preamble.categories.algebras.free_algebras import FreeAlgebras
+    from dzack_research.preamble.refine import refine
+
     assert isinstance(presentation_ring, Parent), (
         "a finitely presented algebra starts from a parent"
     )
@@ -194,6 +216,10 @@ def FinitelyPresentedAlgebra(presentation_ring: "Parent", relations: "MorphismMa
 
 def FGAlgebra(base_ring: "Ring", algebra_generating_set: "OrderedSet", relations: "MorphismMatrix") -> "Parent":
     """Construct ``FreeAlgebraOn(base_ring, algebra_generating_set) / (relations)``."""
+    # Local: framed_free_algebras imports this module, so a module-level
+    # import here would close that cycle.
+    from dzack_research.preamble.categories.algebras.framed_free_algebras import FreeAlgebraOn
+
     free = FreeAlgebraOn(base_ring, algebra_generating_set)
     return FinitelyPresentedAlgebra(free, relations)
 
@@ -205,3 +231,6 @@ def install_finitely_presented_algebras() -> None:
         return
 
     _FINITELY_PRESENTED_ALGEBRAS_INSTALLED = True
+
+
+install_finitely_presented_algebras()

@@ -1,5 +1,15 @@
 r"""Discriminant bilinear modules."""
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from sage_lattice_category_spike.lexicon import Module
+
+from sage.rings.integer_ring import ZZ as SageZZ
+if TYPE_CHECKING:
+    from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModule
+    from sage.categories.morphism import Morphism
+    from dzack_research.preamble.categories.forms.forms import QuadraticFormMorphism
+
 from typing import Self, TYPE_CHECKING
 
 from sage.categories.category import Category
@@ -25,6 +35,9 @@ class DiscriminantBilinearModules(Category):
         return "discriminant bilinear modules"
 
     def super_categories(self) -> list:
+        # Local: a module-level import here would close a cycle; by call time this module is built.
+        from dzack_research.preamble.categories.modules.framed.formed.form_modules import SymmetricBilinearFormModules
+        from dzack_research.preamble.categories.modules.framed.formed.torsionform.torsion_modules_with_form import TorsionModulesWithForm
         return [
             TorsionModulesWithForm(),
             SymmetricBilinearFormModules(),
@@ -39,6 +52,11 @@ class DiscriminantBilinearModules(Category):
         respect to that generating set.  Nothing else is needed and nothing
         else is consulted.
         """
+        # Local: a module-level import here would close a cycle; by call time this module is built.
+        from dzack_research.preamble.categories.forms.forms import BilinearForm
+        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_torsion_modules import FinitelyPresentedTorsionModules
+        from dzack_research.preamble.refine import refine
+        from dzack_research.preamble.categories.modules.framed.formed.torsionform.torsion_modules_with_form import subdivide_form_gram_matrix
         assert module in FinitelyPresentedTorsionModules(), (
             "a discriminant form requires a finitely presented torsion module"
         )
@@ -69,6 +87,8 @@ class DiscriminantBilinearModules(Category):
         The assertions are the category's axioms, read on the relations: $b$ descends to the
         classes exactly when a relation pairs integrally with every generator.
         """
+        # Local: a module-level import here would close a cycle; by call time this module is built.
+        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_torsion_modules import FinitelyPresentedTorsionModules
         module = FinitelyPresentedTorsionModules().from_relations(relations)
         return self.from_module(module, gram)
 
@@ -80,6 +100,13 @@ class DiscriminantBilinearModules(Category):
         to be -- a map of lattices, or a correlation -- rather than about extra
         data being carried alongside.
         """
+        # Local: a module-level import here would close a cycle; by call time this module is built.
+        from dzack_research.preamble.categories.forms.forms import BilinearForm
+        from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormMorphism
+        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_torsion_modules import TorsionModule
+        from dzack_research.preamble.categories.modules.framed.formed.torsionform.torsion_modules_with_form import cokernel_categories
+        from dzack_research.preamble.refine import refine
+        from dzack_research.preamble.categories.modules.framed.formed.torsionform.torsion_modules_with_form import subdivide_form_gram_matrix
         assert isinstance(morphism, FormMorphism), (
             "a cokernel form is constructed from a form morphism"
         )
@@ -103,6 +130,10 @@ class DiscriminantBilinearModules(Category):
             so this is a construction and not a view: the same pairings, read
             on a new set, presented by the morphism that set induces.
             """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_torsion_modules import FinitelyPresentedTorsionModules
+            from dzack_research.preamble.categories.sets.sets import finite_ordered_set
+            from dzack_research.preamble.categories.modules.framed.formed.torsionform.torsion_modules_with_form import regenerating_data
             module_generators = tuple(module_generators)
             relations, gram = regenerating_data(self, module_generators)
             module = FinitelyPresentedTorsionModules().from_relations(
@@ -137,6 +168,8 @@ class DiscriminantBilinearModules(Category):
             :meth:`~DiscriminantQuadraticModules.ParentMethods.associated_bilinear_form`,
             which polarizes $q$ and needs nothing else.
             """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.framed.formed.torsionform.discriminant_quadratic_modules import DiscriminantQuadraticModules
             return DiscriminantQuadraticModules().from_module(
                 self.forget_form(),
                 self.form().polar_form().gram_matrix(),
@@ -172,6 +205,8 @@ class DiscriminantBilinearModules(Category):
             which are defined from $q$ and have no $b$ analogue.  So this is *a*
             normal form, not *the* one.
             """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.framed.formed.torsionform.torsion_modules_with_form import p_adic_jordan_module_generators
             return self.regenerate(p_adic_jordan_module_generators(self))
 
 

@@ -17,6 +17,14 @@ as are normalizers, stabilizers of a sublattice, and the kernel of
 \(O(L)\to O(A_L)\).
 """
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import Callable
+
+if TYPE_CHECKING:
+    from sage_lattice_category_spike.lexicon import Element
+    from sage_lattice_category_spike.lexicon import Group
+
 from sage.categories.groups import Groups
 from sage.categories.homset import Hom
 from sage.categories.morphism import SetMorphism

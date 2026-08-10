@@ -23,6 +23,8 @@ point into this file's ``Slice``.
 """
 
 
+from sage.categories.groups import Groups
+from sage.categories.modules import Modules
 from sage.categories.category import Category
 from sage.categories.morphism import Morphism
 from sage.structure.parent import Parent
@@ -45,6 +47,10 @@ def sole_structure_generators(obj: Parent) -> "OrderedSet":
     as a module by $\operatorname{Mon}(S)$, has no sole family: which one is
     meant is the caller's to say, so this refuses rather than pick one.
     """
+    # Local: the algebra node reaches this module, so a module-level import
+    # would close that cycle; it is built by the time this function runs.
+    from dzack_research.preamble.categories.algebras.algebras import Algebras
+
     families = {
         "module": obj in Modules(obj.base_ring()),
         "group": obj in Groups(),
@@ -211,6 +217,10 @@ def Slice(structure_morphism: Morphism, is_mono: bool = False, is_epi: bool = Fa
     into ``SliceOver(X)`` by default, ``SubObject(X)`` when ``is_mono``, or
     ``CoveringObject(X)`` when ``is_epi``.
     """
+    # Local: refine is imported here rather than at module level, where it
+    # would close a cycle; it is built by the time this function runs.
+    from dzack_research.preamble.refine import refine
+
     assert isinstance(structure_morphism, Morphism), (
         "the structure morphism of a slice object must be a Morphism"
     )
@@ -238,6 +248,10 @@ def Coslice(costructure_morphism: Morphism, is_mono: bool = False, is_epi: bool 
     refined into ``CosliceUnder(X)`` by default, ``SuperObject(X)`` when
     ``is_mono``, or ``CoveredObject(X)`` when ``is_epi``.
     """
+    # Local: refine is imported here rather than at module level, where it
+    # would close a cycle; it is built by the time this function runs.
+    from dzack_research.preamble.refine import refine
+
     assert isinstance(costructure_morphism, Morphism), (
         "the costructure morphism of a coslice object must be a Morphism"
     )

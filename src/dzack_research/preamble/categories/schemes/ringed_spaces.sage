@@ -6,6 +6,8 @@ Hierarchy:
     └── LocallyRingedSpaces() = RingedSpaces().LocallyRinged()
 """
 
+from dzack_research.preamble.categories.rings.rings import engine_ring
+from dzack_research.preamble.refine import refine
 from sage.categories.morphism import Morphism
 from sage.structure.parent import Parent
 from dzack_research.preamble.categories.rings.rings import OwnedBaseRing
@@ -132,3 +134,6 @@ class LocallyRingedSpaces(Category):
 def install_ringed_spaces() -> None:
     r"""Register post-init hooks and installation for ringed spaces."""
     pass
+
+
+install_ringed_spaces()
