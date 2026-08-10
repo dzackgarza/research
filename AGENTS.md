@@ -197,6 +197,60 @@ recurring shapes (memory: `relay-translation-not-forwarding`, 2026-08-09):
   sentences, the message that needed those two sentences and didn't lead
   with them failed, regardless of how much correct detail it carried.
 
+# Performance claims (always-on)
+
+**Never report a call count as an efficiency metric.** Not "2,502 constructions",
+not "~3 million calls to `coordinate_ring`", not "it runs 484 times". A count is
+not a cost: a million cheap calls can be free and four hundred expensive ones can
+be the whole run, so the number carries no information about what to fix and
+invites optimising the wrong thing.
+
+Report **wall time as a function of \(n\)** — how the cost grows with rank,
+order, number of generators, size of the input — or report nothing. A single wall
+time for one specimen is a data point, not a claim about efficiency; it becomes
+one only when a second size shows the shape. Where a profile is the evidence,
+quote its *time* columns, never its `ncalls`.
+
+Call counts remain legitimate as **diagnosis**: they locate a recursion, name the
+function that repeats, and prove a cascade exists. Use them to say what is
+happening, never to say how expensive it is.
+
+# What optimization is for (always-on)
+
+The dominating concerns are legibility, auditability by a mathematician,
+elegance, cohesion with the preamble's style, and doing the mathematically
+principled thing rather than raw numerics. If that costs performance, so be it.
+
+Never take apart code that reads as the correct mathematical sequence of steps in
+order to make it faster. A method whose body a mathematician can check against the
+definition is worth more than a fast one they cannot.
+
+Optimize **waste**, which is a different thing entirely:
+
+- needless recomputation — the same value derived again because nothing carried it;
+- needless enumeration — ranging over an object where generators, a presentation,
+  or a matrix identity answers (see the enumeration rule);
+- needless verification — re-deriving a theorem, a definition, or a fact the
+  caller already established;
+- a general algorithm applied where the object's own structure has a better one —
+  the fix there is to give the structure its own category and let placement pick
+  the algorithm, never to special-case inside a general method.
+
+Removing waste usually makes the code *more* legible, because what remains is the
+mathematics. That is the tell that it was waste.
+
+Genuine hot paths may later need `case`/`match` dispatch or caching. That is a
+design change: propose it and discuss it explicitly first. Reaching for a cache,
+or for a literature constant in place of a computation, before finding out *why*
+something is slow, is not optimization — it is hiding the defect.
+
+**Test specimens are small by default.** A proof of correctness for invariants,
+coinvariants, or \(O(L)\) does not need \(E_8\), a K3 lattice, or an Enriques
+lattice. \(U\) has the swap involution; powers of \(U\) already give interesting
+combinations; their orthogonal groups are finite and their invariants and
+coinvariants are quick. Reach for a large specimen only when the claim is about
+that specimen.
+
 # Repository layout
 
 Top-level directories (this is a navigational map; each tree owns its own README/AGENTS.md):

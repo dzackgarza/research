@@ -131,6 +131,7 @@ else:
         "categories.functors.base_change_adjunction",
         "categories.modules.framed.formed.integrallattice.lattice_homomorphisms",
         "categories.modules.framed.formed.integrallattice.lattice_isometries",
+        "categories.modules.framed.formed.integrallattice.root_lattices",
         "categories.modules.framed.formed.integrallattice.coxeter_diagrams",
         "categories.modules.framed.formed.integrallattice.hyperbolic_lattices",
         "categories.modules.framed.formed.torsionform.torsion_modules_with_form",

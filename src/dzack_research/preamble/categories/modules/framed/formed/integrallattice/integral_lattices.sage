@@ -57,6 +57,7 @@ if TYPE_CHECKING:
     from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormMorphism
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import GroupAction
     from sage.categories.homset import Homset
+    from sage.combinat.root_system.cartan_type import CartanType
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleAutomorphismGroup
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
     from dzack_research.preamble.categories.forms.forms import QuadraticFormMorphism
@@ -891,6 +892,17 @@ class IntegralLattices(Category):
                     "direct sum disagrees with its summands: "
                     f"{_gram_component_ranks(result.gram_matrix())} != {expected}"
                 )
+                # The sum draws its own block lines.  They used to appear as a
+                # side effect of the decomposition search, which now waits to be
+                # asked -- but a direct sum knows where its blocks end without
+                # searching, so it says so here.
+                boundaries = []
+                position = 0
+                for size in expected[:-1]:
+                    position += size
+                    boundaries.append(position)
+                if boundaries:
+                    _subdivide_gram(result, boundaries, boundaries)
                 return result
 
             result = reduce(orthogonal_sum, tuple(summands), self)
@@ -1634,31 +1646,44 @@ _NAMED_GRAM_MATRICES: dict[str, Any] = {
 }
 
 
-def _gram_from_name(name: str) -> GramMatrix:
-    r"""Return the Gram matrix a lattice name stands for.
+def _cartan_type_of_name(name: str) -> "CartanType | None":
+    r"""Return the root system a lattice name names, or ``None`` for $U$.
 
-    A name is not a lattice: ``"A5"`` names a matrix, and which matrix is what
-    the Cartan matrix of the root system says.  So this reads the name and
-    hands back the matrix, and the lattice is built from it here like every
-    other one.
-
-    The convention is the root system's -- $A_n$ comes out positive definite,
-    with $2$ on the diagonal -- and the catalogue twists by $-1$ where this
-    project wants the negative definite one.
+    A name is not a lattice: ``"A5"`` names a root system, and the lattice is
+    that system's root lattice.  Reading the name is the only place the
+    correspondence is written down, and what it hands back is the type rather
+    than the matrix -- the matrix is one thing the type says, and the Weyl
+    group and the Dynkin diagram are others.
     """
-    known = _NAMED_GRAM_MATRICES.get(name)
-    if known is not None:
-        return known
-
+    if name in _NAMED_GRAM_MATRICES:
+        return None
     match = re.fullmatch(r"([ADE])(\d+)", name)
     assert match, (
         f"{name!r} does not name a lattice here. The names are U and H for "
         "the hyperbolic plane and An, Dn, En for the root lattices; anything "
         "else is given by its Gram matrix."
     )
+    from sage.combinat.root_system.cartan_type import CartanType
+
+    return CartanType([match.group(1), int(match.group(2))])
+
+
+def _gram_from_name(name: str) -> GramMatrix:
+    r"""Return the Gram matrix a lattice name stands for.
+
+    The Cartan matrix of the root system the name names, and the lattice is
+    built from it here like every other one.
+
+    The convention is the root system's -- $A_n$ comes out positive definite,
+    with $2$ on the diagonal -- and the catalogue twists by $-1$ where this
+    project wants the negative definite one.
+    """
+    cartan_type = _cartan_type_of_name(name)
+    if cartan_type is None:
+        return _NAMED_GRAM_MATRICES[name]
     from sage.combinat.root_system.cartan_matrix import CartanMatrix
 
-    return matrix(SageZZ, CartanMatrix([match.group(1), int(match.group(2))]))
+    return matrix(SageZZ, CartanMatrix(cartan_type))
 
 
 def _integral_lattice_with_names(
@@ -1674,12 +1699,19 @@ def _integral_lattice_with_names(
     is part of what a lattice is here -- a Coxeter root span with an
     $m=\infty$ bond is degenerate and is still one.
     """
+    # Local: a module-level import here would close a cycle; by call time this module is built.
+    from dzack_research.preamble.categories.modules.framed.formed.integrallattice.root_lattices import refine_root_lattice
+    cartan_type = None
     match described:
         case Matrix():
             gram = described
         case _:
+            cartan_type = _cartan_type_of_name(described)
             gram = _gram_from_name(described)
     lattice = _lattice_with_gram(gram, module_generating_set)
+    if cartan_type is not None:
+        # Where the root system is known, which is here and nowhere later.
+        refine_root_lattice(lattice, cartan_type)
     if names is not None:
         lattice = _apply_names(lattice, names)
     return lattice

@@ -1,5 +1,13 @@
 # Preamble: replacing the load list with imports
 
+> **Done, 2026-08-10** (`e2ad547`, `4aa41a8`). `install.sage` imports its files
+> instead of loading them, registration happens in the module body that owns it,
+> and the two `sys.modules` shims are gone. 65 of 69 files import standalone; the
+> import graph has no cycles. The per-file tables below are the record of that
+> work and are now history, not a plan — the counts predate it.
+>
+> Open work lives under **Open** at the end of this file.
+
 `install.sage` carries 55 ordered `load()` calls. That list is the
 preamble's dependency graph, written by hand because `.sage` files could not be
 modules. They can now. This file records what changed upstream, what the
@@ -713,3 +721,50 @@ move inside functions.
 
 - `categories/schemes/schemes.sage`
 - `categories/schemes/subschemes.sage`
+
+* * *
+
+# Open
+
+## The discriminant form has no general target
+
+`discriminant_group()` builds its form over `QmodnZ(1)` and `QmodnZ(2)`. The
+mathematics is more general: for an $R$-lattice $L$ with fraction field $K$, the
+discriminant group $A_L=L^\vee/L$ carries an induced $K/R$-valued bilinear form,
+and a $K/2R$-valued quadratic form when $L$ is even.
+
+The gap is not that the general case is unimplemented. It is that **the preamble
+has no object for $K/R$**, so the theorem it implements cannot be stated in its
+own vocabulary. Every method downstream of `discriminant_group` therefore
+specializes to $\ZZ$ silently — there is no name whose absence is felt.
+
+Decide before implementing: what is the general target object, and does it belong
+to the forms layer (a value module built from a base ring and its fraction field)
+or to the rings layer (a quotient the ring itself can name)? `QmodnZ(n)` becomes
+the $R=\ZZ$ instance of whatever that is.
+
+## Equivariance is checked by enumerating a group
+
+`group_lattices.sage:171-184` ranges over every element of the acting group. That
+is what forces `assert group.is_finite()` at `group_lattices.sage:18` and
+`group_modules.sage:27`, which excludes infinite-order isometries — the generic
+case for indefinite lattices.
+
+The design was settled in an earlier session and never implemented: probe
+predicates answering `True | False | Unknown` (`is_finitely_generated`,
+`generators_are_computable`, `has_computed_generators`), the check run **on
+generators** where they are available, a flag on morphism construction that forces
+the computation, and a recorded flag saying whether equivariance was actually
+checked rather than pretending it was.
+
+The same defect in `descends_along` is fixed (`ace125f`); this one is the original.
+
+## Form evaluation re-derives coordinates
+
+Each form evaluation re-enters Sage's coordinate machinery
+(`free_module.coordinate_ring`) instead of multiplying by a presentation the form
+already holds, so evaluation cost grows with the rank of the module rather than
+staying flat in it. Measure it that way before changing anything: wall time of a
+fixed number of evaluations at ranks 2, 8, 22, and check whether the curve is
+flat. This is the suspected floor under the remaining slow tests, including the
+90s `test_catalogue_latex_fits_mathjax_and_has_balanced_environments`.

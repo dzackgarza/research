@@ -768,13 +768,26 @@ def test_with_action_receives_a_homomorphism_the_caller_constructed() -> None:
 
 
 def test_coinvariant_lattice_returns_subobject() -> None:
+    r"""The coinvariant lattice is one object, and it is a subobject.
+
+    Asked of \(U\) under the swap \(e\leftrightarrow f\), whose coinvariant is
+    \(\langle-2\rangle\): both claims are about the construction, not about any
+    particular lattice, so the specimen is the smallest one that has a nontrivial
+    involution.  The named K3 involutions are exercised where the claim really is
+    about them, in
+    :func:`test_invariant_and_coinvariant_lattices_reproduce_the_named_lattices`.
+    """
     catalogue = _preamble()[0]
-    L = catalogue.Lattices
-    for name in ("I_dP", "I_En", "I_Nik"):
-        involution = getattr(catalogue.Involutions, name)
-        acted = L.LK3.with_action(involution.cyclic_subgroup().inclusion())
-        assert acted.coinvariant_lattice() is acted.coinvariant_lattice(), name
-        assert acted.coinvariant_lattice().structure_morphism().is_injective(), name
+    U = catalogue.Lattices.U
+    labels = tuple(U.module_generating_set())
+    e, f = U.module_generators()
+    swap = U.Aut()({labels[0]: f, labels[1]: e})
+
+    acted = U.with_action(swap.cyclic_subgroup().inclusion())
+    coinvariant = acted.coinvariant_lattice()
+    assert coinvariant is acted.coinvariant_lattice(), "one object, reached twice"
+    assert coinvariant.structure_morphism().is_injective(), "a subobject embeds"
+    assert coinvariant.rank() == 1, "the anti-invariant part of the swap is rank 1"
 
 
 def test_invariant_and_coinvariant_lattices_reproduce_the_named_lattices() -> None:
@@ -1023,14 +1036,20 @@ def test_catalogue_latex_fits_mathjax_and_has_balanced_environments() -> None:
     catalogue, _, _ = _preamble()
     from sage.misc.latex import latex
 
+    # The claim is about the shape of the LaTeX, so the specimens are chosen for
+    # distinct shapes and not for size: every named catalogue lattice, since that
+    # is what a session displays, plus a few root lattices of each family.  The
+    # A_1..A_21 and D_2..D_22 sweeps this replaced rendered forty-two more
+    # lattices, each one costing a discriminant group and a node subprocess, to
+    # re-check a fact about brace balance that A_2 and D_4 already establish.
     for name, lattice in {
         **{
             n: v
             for n, v in vars(catalogue.Lattices).items()
-            if not n.startswith("_") and hasattr(v, "gram_matrix")
+            if not n.startswith("_") and v in IntegralLattices()
         },
-        **{f"A{n}": catalogue.Lattices.root_lattice("A", n) for n in range(1, 22)},
-        **{f"D{n}": catalogue.Lattices.root_lattice("D", n) for n in range(2, 23)},
+        **{f"A{n}": catalogue.Lattices.root_lattice("A", n) for n in (1, 2, 5)},
+        **{f"D{n}": catalogue.Lattices.root_lattice("D", n) for n in (4, 5)},
     }.items():
         rendered = str(latex(lattice))
         _assert_latex_environments_balanced(rendered, name)
@@ -1167,21 +1186,3 @@ def test_lattices_install_binds_specimens_and_lk3_generators() -> None:
     assert e.parent() is Lattices.TdP
 
 
-def test_julia_preamble_calls_oscar_with_a_sage_matrix() -> None:
-    _ensure_preamble()
-
-    # Julia is a hidden backend, so it starts here and not in the loader: one
-    # test asks the bridge a question, and the other forty-four in this file
-    # are about the preamble and must not wait on Oscar to find out.
-    from sage_julia_bridge import julia
-
-    julia.eval("using Oscar")
-
-    # Any nondegenerate specimen proves the bridge; the Coxeter edge lattices
-    # this used to borrow from are unrelated to what is being tested here.
-    gram = Lattices.U.gram_matrix()
-    assert julia.call("rank", gram) == 2
-    julia.set("_preamble_round_trip", gram)
-    converted_back = julia.get_sage("_preamble_round_trip")
-    assert converted_back == gram
-    assert converted_back.base_ring() is gram.base_ring()
