@@ -124,9 +124,19 @@ class IntegralLattices(Category):
 
         # ---- bilinear / quadratic API ----
 
+        @cached_method
         def decomposition(self: Self) -> "DirectSumObject":
-            r"""Return the chosen block decomposition, or ``None``."""
-            return self._orthogonal_decomposition
+            r"""Return the chosen block decomposition, or ``None``.
+
+            Computed when asked, and not while the lattice is being built.
+            Splitting a lattice builds each block as a lattice, and a block
+            that split itself in turn made construction recursive: one
+            $U\oplus E_8$ cost 2,502 constructions and 2,579 rational
+            diagonalizations, none of which anything had asked for.  A
+            decomposition is an answer to a question, so it waits for the
+            question.
+            """
+            return _decompose_lattice(self)
 
         def summands(self: Self) -> tuple:
             decomposition = self.decomposition()
@@ -857,7 +867,10 @@ class IntegralLattices(Category):
             decomposition is found the way every lattice's is.
             """
             def orthogonal_sum(left: "Element", right: "Element") -> "Lattice":
-                expected = _summand_ranks(left) + _summand_ranks(right)
+                expected = (
+                    _gram_component_ranks(left.gram_matrix())
+                    + _gram_component_ranks(right.gram_matrix())
+                )
                 module_generating_set = _direct_sum_framing_set(left, right)
                 result = _lattice_with_gram(
                     block_diagonal_matrix(
@@ -865,13 +878,16 @@ class IntegralLattices(Category):
                     ),
                     module_generating_set,
                 )
-                # Both operands were split on their own construction, and the
-                # summed Gram is block diagonal across them, so the sum's
-                # components are exactly the two lists concatenated -- nothing
-                # to search for, only to check.
-                assert _summand_ranks(result) == expected, (
+                # The summed Gram is block diagonal across the operands, so
+                # the sum's components are the two lists concatenated --
+                # nothing to search for, only to check.  Checked on the
+                # matrix, which is where block structure lives: asking the
+                # lattice would decompose it, and decomposing builds each
+                # block as a lattice that decomposes in turn, so a check of
+                # what is already known cost thousands of constructions.
+                assert _gram_component_ranks(result.gram_matrix()) == expected, (
                     "direct sum disagrees with its summands: "
-                    f"{_summand_ranks(result)} != {expected}"
+                    f"{_gram_component_ranks(result.gram_matrix())} != {expected}"
                 )
                 return result
 
@@ -1442,7 +1458,7 @@ def _subdivide_gram(L: "Lattice", *cuts: "Integer") -> None:
         form._gram_matrix = gram
     gram.subdivide(*cuts)
 
-def _decompose_lattice(L: "Lattice") -> None:
+def _decompose_lattice(L: "Lattice") -> "DirectSumObject":
     r"""Split \(L\) along its generators and record the summands.
 
     Decomposability here is a property of the chosen generating set: \(L\)
@@ -1461,8 +1477,7 @@ def _decompose_lattice(L: "Lattice") -> None:
     gram = L.gram_matrix()
     cuts = _matrix_connected_component_cuts(gram)
     if not cuts:
-        L._orthogonal_decomposition = None
-        return
+        return None
 
     bounds = list(zip([0] + cuts, cuts + [gram.nrows()]))
     labels = tuple(L.module_generating_set())
@@ -1480,7 +1495,23 @@ def _decompose_lattice(L: "Lattice") -> None:
         Subobject(block.Hom(L)(generators[start:end]))
         for block, (start, end) in zip(blocks, bounds)
     )
-    L._orthogonal_decomposition = DirectSumDecomposition(L, summands)
+    return DirectSumDecomposition(L, summands)
+
+
+def _gram_component_ranks(gram: "GramMatrix") -> tuple:
+    r"""Return the sizes of the Gram matrix's connected blocks.
+
+    The block structure of a lattice is a property of its Gram matrix in the
+    generators it was built with, so it is read off the matrix.  Reading it
+    off the lattice instead means constructing every block as a lattice.
+    """
+    # Local: a module-level import here would close a cycle; by call time this module is built.
+    from dzack_research.preamble.categories.forms.gram_matrices import _matrix_connected_component_cuts
+
+    cuts = _matrix_connected_component_cuts(gram)
+    if not cuts:
+        return (gram.nrows(),)
+    return tuple(end - start for start, end in zip([0] + cuts, cuts + [gram.nrows()]))
 
 
 def _summand_ranks(L: "Lattice") -> tuple[Integer, ...]:

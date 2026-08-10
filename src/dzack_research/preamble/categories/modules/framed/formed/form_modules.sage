@@ -630,7 +630,6 @@ class FormModule(OwnedBaseRing, Parent):
             and engine_ring(self._form.value_module()) is SageZZ
         ):
             refine_one_lattice(self)
-            _decompose_lattice(self)
             if (
                 isinstance(module, GroupModule)
                 and _action_preserves_form(self)

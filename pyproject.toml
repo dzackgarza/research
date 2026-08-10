@@ -31,7 +31,20 @@ members = [
 ]
 
 [tool.pytest.ini_options]
-# Every run reports where it spent its time and leaves a machine-readable
-# record of it.  Both are pytest's own: --durations ranks the phases of each
-# test, and the JUnit report carries per-test times for comparing runs.
-addopts = "--durations=25 --durations-min=0.5 --junit-xml=tests/.report/junit.xml"
+# Every run says where its wall time went and leaves a machine-readable record.
+#
+# --timeout is the important one: a suite that blocks -- on a subprocess, a
+# lock, a network call -- burns wall clock at low CPU and reports nothing at
+# all when it is killed.  On timeout pytest-timeout dumps the stack of every
+# thread, which names the blocking call instead of leaving it to bisection.
+# --durations ranks test phases, pytest-durations aggregates them by file, and
+# the report log plus JUnit xml make runs comparable to each other.
+addopts = """
+  --timeout=90 --timeout-method=thread
+  --durations=0 --durations-min=0
+  --junit-xml=tests/.report/junit.xml
+  --report-log=tests/.report/run.jsonl
+"""
+log_cli = false
+log_file = "tests/.report/pytest.log"
+log_file_level = "DEBUG"
