@@ -120,6 +120,14 @@ class RootLatticeIsometries(Category):
             numbers the root system knows, and neither of them is asked of the
             Gram matrix.
 
+            **Simply laced only**, which is what this category ever holds: the
+            lattice constructor names root systems by ``([ADE])(\d+)``.  The
+            identity is false in general, because a root system and its root
+            lattice come apart once there are two root lengths -- $Q(F_4)$ *is*
+            the $D_4$ lattice, so $|O(Q(F_4))|=1152$, while
+            $|W(F_4)|\cdot|\Gamma(F_4)|=1152\cdot2=2304$.  A lattice does not
+            see which of its isometries the diagram called a length swap.
+
             The general $O(L)$ is cut out of $GL_n(\mathbb Z)$ by $MGM^t=G$ and
             found by searching short vectors, which is what
             ``group_generators`` still does here and everywhere else.  Nothing
