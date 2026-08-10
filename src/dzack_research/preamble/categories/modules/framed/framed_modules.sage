@@ -162,6 +162,18 @@ class FramedModules(CategoryWithAxiom_over_base_ring):
         def is_framed(self: Self) -> bool:
             return True
 
+        def vector_space(self: Self) -> "Module":
+            r"""Return \(M\otimes_R\operatorname{Frac}(R)\).
+
+            The vector space of a module is its rationalization, and the
+            rationalization is base change along
+            \(R\hookrightarrow\operatorname{Frac}(R)\).  A module carrying a
+            form arrives carrying it: the form is transported by the same
+            ring map, so a lattice becomes the quadratic space over
+            \(\operatorname{Frac}(R)\) spanned by it.
+            """
+            return fraction_field_base_change(self.base_ring())(self)
+
 
 @cached_method
 def _framed_subcategory(self: Self) -> "Category":

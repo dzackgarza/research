@@ -34,6 +34,7 @@ EXAMPLES::
     0
 """
 
+from sage.matrix.matrix0 import Matrix
 import re
 from collections.abc import Iterable
 from functools import reduce
@@ -41,14 +42,15 @@ from typing import Any, Self, TYPE_CHECKING, assert_never
 
 from sage.arith.misc import gcd
 from sage.categories.category import Category
+from sage.categories.groups import Groups as SageGroups
 from sage.misc.cachefunc import cached_method
 from sage.categories.modules import Modules
 from sage.matrix.constructor import matrix
 from sage.matrix.special import identity_matrix
 from sage.misc.latex import latex as _latex_fn
 from sage.rings.integer import Integer
-from sage.rings.integer_ring import ZZ
-from sage.rings.rational_field import QQ
+from sage.rings.integer_ring import ZZ as SageZZ
+from sage.rings.rational_field import QQ as SageQQ
 
 from sage_lattice_category_spike.lexicon import GramMatrix
 from sage_lattice_category_spike.objects.sets import Sets
@@ -122,7 +124,7 @@ class IntegralLattices(Category):
         def gram_of(self: Self, vectors: "OrderedSet") -> GramMatrix:
             r"""Return the Gram matrix $[b(x_i, x_j)]$ of a finite family of vectors."""
             vectors = tuple(vectors)
-            return GramMatrix(matrix(ZZ, [[self.b(x, y) for y in vectors] for x in vectors]))
+            return GramMatrix(matrix(SageZZ, [[self.b(x, y) for y in vectors] for x in vectors]))
 
         def get_isotropic_type(self: Self, isotropic_element: "ModuleElement") -> str:
             r"""Classify a primitive isotropic element by its cusp type.
@@ -268,7 +270,7 @@ class IntegralLattices(Category):
             )
 
             scaled = matrix(
-                ZZ,
+                SageZZ,
                 [
                     [denominator * coordinate for coordinate in row]
                     for row in rational_rows
@@ -279,15 +281,59 @@ class IntegralLattices(Category):
                 for row in MorphismMatrix(scaled).normal_form(include_zero_rows=True).rows()
                 if any(coordinate != 0 for coordinate in row)
             ]
-            basis = matrix(QQ, hermite_rows[:rank]) / denominator
+            basis = matrix(SageQQ, hermite_rows[:rank]) / denominator
             gram = basis * self.gram_matrix() * basis.transpose()
             module_generating_set = finite_ordered_set(
                 tuple(tuple(row) for row in basis.rows())
             )
             return _lattice_with_gram(
-                matrix(ZZ, gram),
+                matrix(SageZZ, gram),
                 module_generating_set,
             )
+
+        def maximal_overlattice(self: Self) -> "FormMorphism":
+            r"""Return $L\hookrightarrow L'$ for an overlattice admitting no other.
+
+            Nikulin Prop. 1.4.1: the overlattices of $L$ on which the form
+            stays integral are in bijection with the isotropic subgroups of
+            the discriminant form, an overlattice being maximal exactly when
+            its subgroup is.  So nothing here searches for a lattice.  The
+            search runs on $A_L$, where it is a finite one, and
+            :meth:`glue` turns the classes it returns back into the lattice
+            they name.
+
+            Which form has to vanish is $A_L$'s business and follows $L$:
+            an even $L$ has a $q$ and its overlattices are the even ones,
+            while an odd $L$ has only $b$ and the integral ones is what the
+            bijection then covers.
+
+            *An* overlattice.  Maximal isotropic subgroups need not be
+            unique and need not glue to isometric lattices, so a maximal
+            overlattice is what this is, not the maximal one.
+            """
+            inclusion = next(
+                self.discriminant_group().maximal_isotropic_subobjects()
+            ).embedding()
+            overlattice = self.glue(*(
+                inclusion(generator)
+                for generator in inclusion.domain().module_generators()
+            ))
+            # The generating set glue chose is its rows in L's own framing, so
+            # inverting them writes L's generators in the overlattice's -- the
+            # matrix of the inclusion, which is integral exactly because L
+            # sits inside what was glued from it.
+            coordinates = matrix(
+                SageQQ,
+                [list(row) for row in overlattice.module_generating_set()],
+            ).inverse()
+            assert all(entry in SageZZ for entry in coordinates.list()), (
+                f"{overlattice} was glued from {self} and does not contain it"
+            )
+            coordinates = coordinates.change_ring(SageZZ)
+            return self.Hom(overlattice)([
+                zipsum(row, overlattice.module_generators(), overlattice.zero())
+                for row in coordinates.rows()
+            ])
 
         # ---- isometry ----
 
@@ -345,7 +391,7 @@ class IntegralLattices(Category):
             with no condition on the form.  It carries no form -- the one on
             $L^\vee$ is $G^{-1}$, and that is where nondegeneracy is needed.
             """
-            return BasedFreeModule(ZZ, self.module_generating_set())
+            return BasedFreeModule(SageZZ, self.module_generating_set())
 
         @cached_method
         def correlation_morphism(self: Self) -> "FormMorphism":
@@ -418,7 +464,7 @@ class IntegralLattices(Category):
             from sage.quadratic_forms.quadratic_form import QuadraticForm
 
             positive, negative, _radical = QuadraticForm(
-                QQ, matrix(QQ, self.gram_matrix())
+                SageQQ, matrix(SageQQ, self.gram_matrix())
             ).signature_vector()
             return (positive, negative)
 
@@ -441,13 +487,94 @@ class IntegralLattices(Category):
             """
             from sage.quadratic_forms.genera.genus import Genus
 
-            gram = matrix(ZZ, self.gram_matrix())
+            gram = matrix(SageZZ, self.gram_matrix())
             assert gram.det() != 0, (
                 f"{self} is degenerate, and a genus is the data of a "
                 "nondegenerate form at each place. A degenerate form has a "
                 "radical, and the question is probably about the quotient by it."
             )
             return Genus(gram)
+
+        def discriminant(self: Self) -> "RingElement":
+            r"""Return $d_\pm(b)=(-1)^{n(n-1)/2}\det G$, the signed determinant.
+
+            An invariant of $L$, which is what makes it the discriminant and
+            $\det G$ -- the number read off one framing -- the imprecise word
+            for it.  A change of framing is by $U\in GL_n(\ZZ)$ and replaces
+            $G$ by $UGU^t$, whose determinant is $\det(U)^2\det G=\det G$.
+
+            The sign is not decoration.  $d_\pm$ is the invariant of the Witt
+            class -- Lam, *Introduction to Quadratic Forms over Fields*, I.2 --
+            and the unsigned determinant is not one: the sign is exactly the
+            correction that makes the discriminant of an orthogonal sum
+            behave, and it is why $A_2$ has discriminant $-3$ while its Gram
+            determinant is $3$.
+            """
+            gram = matrix(SageZZ, self.gram_matrix())
+            rank = gram.nrows()
+            return (-1) ** (rank * (rank - 1) // 2) * gram.det()
+
+        def minimum(self: Self) -> "RingElement":
+            r"""Return $\min\{b(x,x): 0\neq x\in L\}$, the minimal norm.
+
+            A minimum, and therefore a claim that the set has one: $b(x,x)$
+            takes arbitrarily negative values as soon as some $b(x,x)<0$, and
+            takes the value $0$ on a nonzero vector as soon as $L$ is
+            degenerate.  Positive definiteness is what rules both out, so it
+            is a hypothesis here and not a preference -- an indefinite lattice
+            is not a lattice whose minimum is hard to compute, it is one that
+            has none.
+
+            The negative definite case is the same question about $L(-1)$,
+            which the caller has :meth:`twist` for; answering it here would
+            mean returning the minimum of a different lattice under this
+            lattice's name.
+
+            Fincke--Pohst, reached through PARI's ``qfminim``.  An algorithm,
+            and a matrix is all it takes.
+            """
+            positive, negative = self.signature_pair()
+            assert negative == 0 and positive + negative == self.rank(), (
+                f"{self} is not positive definite, so $b(x,x)$ is unbounded "
+                "below or vanishes on a nonzero vector, and the set of its "
+                "values on $L\\setminus\\{0\\}$ has no minimum. For a negative "
+                "definite lattice ask this of twist(-1)."
+            )
+            gram = matrix(SageZZ, self.gram_matrix())
+            return SageZZ(gram.__pari__().qfminim(None, 0)[1])
+
+        def enumerate_short_vectors(self: Self, bound: "RingElement") -> "Set":
+            r"""Return $\{x\in L: 0<b(x,x)\le\text{bound}\}$ modulo sign, a finite Set.
+
+            Finite, which is the whole reason the bound is an argument and not
+            an option: without one the set is all of $L$, and Sage answers
+            with an endless iterator that no caller can hold.  Positive
+            definiteness is what makes a bounded set finite -- in an
+            indefinite lattice the vectors of norm $0$ alone are infinite --
+            so it is the same hypothesis :meth:`minimum` states.
+
+            Modulo sign because $b(-x,-x)=b(x,x)$: the two differ by an
+            isometry of $L$, so counting both would count one vector twice.
+
+            Fincke--Pohst, reached through PARI's ``qfminim``.  The vectors
+            come back as coordinates against the module generators and are
+            made elements of this lattice before they leave, so no caller
+            reads a row.
+            """
+            positive, negative = self.signature_pair()
+            assert negative == 0 and positive + negative == self.rank(), (
+                f"{self} is not positive definite, so the vectors of norm at "
+                "most any bound are infinite in number. For a negative "
+                "definite lattice ask this of twist(-1)."
+            )
+            gram = matrix(SageZZ, self.gram_matrix())
+            _count, _largest, coordinates = gram.__pari__().qfminim(bound, None)
+            return finite_ordered_set(
+                tuple(
+                    zipsum(column, self.module_generators(), self.zero())
+                    for column in matrix(SageZZ, coordinates).columns()
+                )
+            )
 
         # ---- Nikulin / signature predicates ----
 
@@ -475,8 +602,8 @@ class IntegralLattices(Category):
             )
             gram = self.gram_matrix().inverse()
             return BilinearForm(
-                BasedFreeModule(ZZ, self.module_generating_set()),
-                QQ,
+                BasedFreeModule(SageZZ, self.module_generating_set()),
+                SageQQ,
                 gram,
             )
 
@@ -678,7 +805,7 @@ class IntegralLattices(Category):
                 module_generating_set = _direct_sum_framing_set(left, right)
                 result = _lattice_with_gram(
                     block_diagonal_matrix(
-                        [matrix(ZZ, left.gram_matrix()), matrix(ZZ, right.gram_matrix())]
+                        [matrix(SageZZ, left.gram_matrix()), matrix(SageZZ, right.gram_matrix())]
                     ),
                     module_generating_set,
                 )
@@ -704,8 +831,8 @@ class IntegralLattices(Category):
             """
             result = BilinearForm(
                 self.forget_form(),
-                ZZ,
-                scale * matrix(ZZ, self.gram_matrix()),
+                SageZZ,
+                scale * matrix(SageZZ, self.gram_matrix()),
             )
             assert _summand_ranks(result) == _summand_ranks(self), (
                 "twisting changed the decomposition: "
@@ -720,10 +847,39 @@ class IntegralLattices(Category):
                 return lattice_homset(self, codomain)
             return Parent.Hom(self, codomain, category)
 
+        def End(self: Self) -> "Homset":
+            r"""Return $\mathrm{End}(L)=\mathrm{Hom}(L,L)$.
+
+            The endset, which is where $O(L)$ comes from: an isometry of $L$
+            is an invertible endomorphism, so the group is the units of this
+            monoid.  Sited here and not built here -- an endset is the homset
+            whose two objects coincide, and asking for it any other way would
+            produce a second object with the same elements.
+            """
+            return self.Hom(self)
+
         def Aut(self: Self) -> "ModuleAutomorphismGroup":
-            r"""Return $\mathrm{Aut}(L)=O(L)$ as an endomorphism Homset.
+            r"""Return $\mathrm{Aut}(L)=O(L)$, the units of $\mathrm{End}(L)$.
+
+            One object, reached one way.  ``orthogonal_group`` and
+            ``automorphisms`` are this method under other names: the
+            automorphisms of a lattice *are* its isometries, so two accessors
+            answering with two objects would say there are two groups.
 
             Elements are constructed by their images on the framing labels.
+
+            The placement is the point.  $O(L)$ is a group, so it goes in the
+            isometry node -- which is a group node -- and the words a group
+            answers follow from that rather than from anything written here.
+            Finitely *presented* is claimed outright, indefinite $L$ included:
+            $O(L)$ is an arithmetic group, and Borel and Harish-Chandra prove
+            every arithmetic group has a finite presentation, whether or not
+            this session can produce one.  The axiom is claimed on this object
+            and not on the isometry category, because that category holds the
+            subgroups too, and a finitely generated subgroup of a finitely
+            presented group need not be finitely presented.  Finiteness is not
+            claimed, because it is false for most indefinite $L$ and expensive
+            to decide; it is a question the group answers when asked.
             """
             cached = self.__dict__.get("_preamble_Aut")
             if cached is not None:
@@ -733,10 +889,17 @@ class IntegralLattices(Category):
             # refined once more.
             refined = refine(
                 FormAutomorphismGroup(self),
-                [LatticeHomomorphisms(), LatticeIsometries()],
+                [
+                    LatticeHomomorphisms(),
+                    LatticeIsometries(),
+                    OwnedFinitelyPresentedGroups(),
+                ],
             )
             self._preamble_Aut = refined
             return refined
+
+        orthogonal_group = Aut
+        automorphisms = Aut
 
         def with_action(self: Self, action: "GroupAction") -> "Module":
             r"""Return $L$ carrying the already-constructed $\rho:G\to O(L)$.
@@ -799,7 +962,7 @@ class IntegralLattices(Category):
                 return None
             gram = self.gram_matrix()
             induced = matrix(
-                ZZ,
+                SageZZ,
                 [[u * gram * v for v in basis] for u in basis],
             )
             assert induced.is_symmetric(), (
@@ -858,8 +1021,8 @@ class IntegralLattices(Category):
             structure map is the bilinear \(\otimes\); see
             ``TensorProductCategory``.
             """
-            gram = matrix(ZZ, self.gram_matrix()).tensor_product(
-                matrix(ZZ, other.gram_matrix())
+            gram = matrix(SageZZ, self.gram_matrix()).tensor_product(
+                matrix(SageZZ, other.gram_matrix())
             )
             labels = finite_ordered_set(
                 [
@@ -1038,7 +1201,7 @@ def _lattice_with_gram(
     an induced form on a sublattice, a quotient, an overlattice -- comes
     through here, so there is one place where a lattice is born.
     """
-    gram = GramMatrix(matrix(ZZ, gram))
+    gram = GramMatrix(matrix(SageZZ, gram))
     match module_generating_set:
         case None:
             module_generating_set = Sets.Δ[gram.nrows() - 1]
@@ -1053,10 +1216,10 @@ def _lattice_with_gram(
             )
     lattice = BilinearForm(
         BasedFreeModule(
-            ZZ,
+            SageZZ,
             module_generating_set,
         ),
-        ZZ,
+        SageZZ,
         gram,
     )
     return lattice
@@ -1072,9 +1235,21 @@ def _direct_sum_framing_set(left: "Element", right: "Element") -> "OrderedSet":
     return finite_ordered_set(labels)
 
 def _discriminant_lift_row(element: "Element", rank: int) -> list[Any]:
-    r"""Return a representative row in $L^\vee$ for a discriminant form element.
+    r"""Return a representative of a discriminant class, in $L$'s framing.
 
     The target is quadratic for even lattices and bilinear otherwise.
+
+    Two framings meet here and the row has to leave in the caller's.  A lift
+    is an element of $L^\vee$ and answers with its coefficients on the dual
+    generators; ``glue`` stacks the row on $L$'s own generators, where the
+    lift is a rational combination.  The two are related by $G^{-1}$, since
+    $e_i^\vee$ is the solution of $b(e_i^\vee,e_j)=\delta_{ij}$ -- which is
+    the Gram matrix $L^\vee$ carries, so the dual's own form is the change of
+    framing and nothing has to invert anything to find it.
+
+    Without the change, a class whose lift has integral dual coordinates --
+    every class of an $A_1^n$, for one -- reads as a vector of $L$, and
+    ``glue`` returns $L$ back for an honest gluing datum.
     """
     assert isinstance(element, FormModuleElement), (
         f"glue is defined on classes in A_L, and this is {element!r}. Build an "
@@ -1084,9 +1259,14 @@ def _discriminant_lift_row(element: "Element", rank: int) -> list[Any]:
         "it names."
     )
     lift = element.parent().projection().lift(element)
+    dual = lift.parent()
     coefficients = lift.coefficients()
-    basis = tuple(lift.parent().module_generating_set())
-    row = [coefficients.get(generator, 0) for generator in basis]
+    basis = tuple(dual.module_generating_set())
+    dual_coordinates = vector(
+        SageQQ,
+        [coefficients.get(generator, 0) for generator in basis],
+    )
+    row = list(dual_coordinates * dual.gram_matrix())
     assert len(row) == rank, (
         f"discriminant element lift has rank {len(row)}, expected {rank}"
     )
@@ -1266,7 +1446,7 @@ def _summand_name(block: "GramMatrix") -> str | None:
             if scale not in (0, 1, -1)
             if (
                 untwisted := _INDECOMPOSABLE_NAMES.get(
-                    _gram_key((gram / scale).change_ring(ZZ))
+                    _gram_key((gram / scale).change_ring(SageZZ))
                 )
             )
             is not None
@@ -1323,8 +1503,8 @@ def refine_one_lattice(lattice: "Lattice") -> None:
 
 _NAMED_GRAM_MATRICES: dict[str, Any] = {
     # The two names for the hyperbolic plane; the ADE names are read below.
-    "U": matrix(ZZ, [[0, 1], [1, 0]]),
-    "H": matrix(ZZ, [[0, 1], [1, 0]]),
+    "U": matrix(SageZZ, [[0, 1], [1, 0]]),
+    "H": matrix(SageZZ, [[0, 1], [1, 0]]),
 }
 
 
@@ -1352,7 +1532,7 @@ def _gram_from_name(name: str) -> GramMatrix:
     )
     from sage.combinat.root_system.cartan_matrix import CartanMatrix
 
-    return matrix(ZZ, CartanMatrix([match.group(1), int(match.group(2))]))
+    return matrix(SageZZ, CartanMatrix([match.group(1), int(match.group(2))]))
 
 
 def _integral_lattice_with_names(

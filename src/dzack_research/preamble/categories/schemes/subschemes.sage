@@ -7,8 +7,12 @@ Hierarchy:
     └── QuasiScheme(Scheme)       ──> QuasiAffine / QuasiProjective (V(I) \ V(J))
 """
 
-from sage.categories.category_types import Category_over_base_ring
-from sage.rings.integer_ring import ZZ
+from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
+from dzack_research.preamble.categories.schemes.schemes import SchemeElement
+from sage.categories.morphism import Morphism
+from sage.structure.parent import Parent
+from dzack_research.preamble.categories.schemes.schemes import Scheme
+from sage.rings.integer_ring import ZZ as SageZZ
 
 
 class Subscheme(Scheme):
@@ -16,7 +20,7 @@ class Subscheme(Scheme):
 
     Element = SchemeElement
 
-    def __init__(self, ambient, base_ring=ZZ) -> None:
+    def __init__(self, ambient, base_ring=SageZZ) -> None:
         r"""Initialize the subscheme and record its ambient scheme B."""
         Scheme.__init__(self, base_ring=base_ring)
         self._ambient = ambient
@@ -30,7 +34,7 @@ class Subscheme(Scheme):
         assert False, "inclusion_morphism must be implemented by concrete Subscheme"
 
 
-class ClosedSubschemes(Category_over_base_ring):
+class ClosedSubschemes(OwnedCategoryOverBaseRing):
     r"""Category of closed subschemes V -> X."""
 
     def _repr_object_names(self) -> str:
@@ -49,7 +53,7 @@ class ClosedSubschemes(Category_over_base_ring):
             dim_amb = amb.dimension_relative()
             return dim_amb - self.dimension()
 
-class OpenSubschemes(Category_over_base_ring):
+class OpenSubschemes(OwnedCategoryOverBaseRing):
     r"""Category of open subschemes U -> X."""
 
     def _repr_object_names(self) -> str:
@@ -65,7 +69,7 @@ class OpenSubscheme(Subscheme):
 
     Element = SchemeElement
 
-    def __init__(self, ambient, base_ring=ZZ) -> None:
+    def __init__(self, ambient, base_ring=SageZZ) -> None:
         r"""Initialize the open subscheme and refine into OpenSubschemes(base_ring)."""
         Subscheme.__init__(self, ambient=ambient, base_ring=base_ring)
         refine(self, OpenSubschemes(base_ring))
@@ -76,7 +80,7 @@ class ClosedSubscheme(Subscheme):
 
     Element = SchemeElement
 
-    def __init__(self, ambient, base_ring=ZZ) -> None:
+    def __init__(self, ambient, base_ring=SageZZ) -> None:
         r"""Initialize the closed subscheme and refine into ClosedSubschemes(base_ring)."""
         Subscheme.__init__(self, ambient=ambient, base_ring=base_ring)
         refine(self, ClosedSubschemes(base_ring))
@@ -87,7 +91,7 @@ class QuasiScheme(Scheme):
 
     Element = SchemeElement
 
-    def __init__(self, base_ring=ZZ) -> None:
+    def __init__(self, base_ring=SageZZ) -> None:
         r"""Initialize the quasi-scheme."""
         Scheme.__init__(self, base_ring=base_ring)
 

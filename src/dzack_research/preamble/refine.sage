@@ -67,6 +67,9 @@ def _implemented_mixin(mixin: type) -> type:
     Sage abstract methods are category obligations.  They must not precede
     the concrete parent methods that satisfy them when override-refining.
     """
+    cached = _IMPLEMENTED_MIXINS.get(mixin)
+    if cached is not None:
+        return cached
     abstract_names = _PY_SET(
         name
         for name, value in vars(mixin).items()
@@ -74,9 +77,6 @@ def _implemented_mixin(mixin: type) -> type:
     )
     if not abstract_names:
         return mixin
-    cached = _IMPLEMENTED_MIXINS.get(mixin)
-    if cached is not None:
-        return cached
     implemented = {
         name: value
         for name, value in vars(mixin).items()
@@ -116,97 +116,31 @@ def _concrete_base(obj: "SageObject") -> type:
         return candidate
     assert False, f"cannot find concrete base for {cls!r}"  # noqa: B011
 
-_OWNED_CATEGORY_NAMES = frozenset(
-    (
-        # The parameterized abstract categories.  They must be listed for the
-        # same reason every other owned category is: once a refine target has
-        # *any* owned category among its super categories, ``_preamble_mixins``
-        # stops being empty and the ``type(category)`` fallback in
-        # ``_method_mixins`` never runs -- so an unlisted category's methods
-        # are silently dropped.  Refining a lattice into ``TensorProduct``
-        # installed no ``cartesian_source`` for exactly this reason.
-        "ArrowCategory",
-        "IsoArrowCategory",
-        "DiagramCategory",
-        "DirectedSystem",
-        "InverseSystem",
-        "ConeCategory",
-        "CoconeCategory",
-        "ProductCategory",
-        "CoproductCategory",
-        "BiproductCategory",
-        "TensorProductCategory",
-        # The two slice categories a subobject is refined into.  A subobject
-        # is its embedding's domain, so ``structure_morphism`` and
-        # ``embedding`` reach it only if these are listed; they no longer
-        # compete with ``Subobjects``, which declares neither.  The rest of
-        # the slice family stays absent until something refines into it.
-        "SliceOverCategory",
-        "SubobjectCategory",
-        "IntegralLattices",
-        "DirectSumObjects",
-        "HyperbolicLattices",
-        "LatticeHomomorphisms",
-        "LatticeIsometries",
-        "OwnedGroups",
-        "OwnedFiniteGroups",
-        "OwnedFinitelyGeneratedGroups",
-        "OwnedFinitelyPresentedGroups",
-        "OwnedAbelianGroups",
-        "FinitelyGeneratedModules",
-        "FramedModules",
-        "FinitelyPresentedModules",
-        "FreeModules",
-        "FramedFreeModules",
-        "FinitelyGeneratedFreeModules",
-        "TorsionModules",
-        "FinitelyPresentedTorsionModules",
-        "GroupModules",
-        "GroupLattices",
-        "FormModules",
-        "BilinearFormModules",
-        "SymmetricBilinearFormModules",
-        "QuadraticFormModules",
-        "Subobjects",
-        "FreeFormModules",
-        "FinitelyGeneratedFormModules",
-        "FinitelyGeneratedFreeFormModules",
-        "TorsionModulesWithForm",
-        "DiscriminantBilinearModules",
-        "DiscriminantQuadraticModules",
-        "FinitelyPresentedGroups",
-        "FinitelyPresentedAlgebras",
-        "FramedFGAlgebras",
-        "PicardGroups",
-        "DivisorGroups",
-        "ClassGroups",
-        "WeilDivisorGroups",
-        "CartierDivisorGroups",
-        "Algebras",
-        "FramedAlgebras",
-        "FreeAlgebras",
-        "FramedFreeAlgebras",
-        "RingedSpaces",
-        "LocallyRingedSpaces",
-        "Schemes",
-        "AffineSpaces",
-        "ProjectiveSpaces",
-        "ClosedSubschemes",
-        "OpenSubschemes",
-        "Varieties",
-        "Curves",
-        "Surfaces",
-        "AffineSpace",
-        "ProjectiveSpace",
-        "Subscheme",
-        "OpenSubscheme",
-        "ClosedSubscheme",
-        "QuasiScheme",
-        "ToricVariety",
-        "Curve",
-        "Surface",
-    )
+# Ownership is provenance, which the class hierarchy already records: a
+# category is this project's when its class was defined here.  Every
+# ``.sage`` category file is ``load``ed into the namespace this module is
+# ``load``ed into, so a preamble category's ``__module__`` is that namespace;
+# the lattice spike is an ordinary package.  Sage's own categories are never
+# owned, so their ``ParentMethods`` are never hoisted over a concrete class.
+#
+# A name registry stood here instead, and an unlisted category's methods were
+# silently dropped: once a refine target has *any* owned category among its
+# super categories, ``_preamble_mixins`` stops being empty and the fallback in
+# ``_method_mixins`` never runs.  Refining a lattice into ``TensorProduct``
+# installed no ``cartesian_source`` for exactly this reason.  Provenance
+# admits every owned category by construction, so there is nothing to omit.
+_PREAMBLE_NAMESPACE = globals().get("__name__")
+assert isinstance(_PREAMBLE_NAMESPACE, str), (
+    "refine.sage must be loaded into a namespace that declares __name__"
 )
+_SPIKE_PACKAGE = "sage_lattice_category_spike."
+_MIXIN_CACHE: dict[tuple[Any, str], tuple[type, ...]] = {}
+
+
+def _is_owned_category(category_type: type) -> bool:
+    """Whether ``category_type`` was defined by this project."""
+    module = category_type.__module__
+    return module == _PREAMBLE_NAMESPACE or module.startswith(_SPIKE_PACKAGE)
 
 
 def _preamble_mixins(category: "Category", attr: str) -> tuple[type, ...]:
@@ -214,15 +148,7 @@ def _preamble_mixins(category: "Category", attr: str) -> tuple[type, ...]:
     mixins: list[type] = []
     for cat in category.all_super_categories(proper=False):
         category_type = type(cat)
-        name = category_type.__name__
-        owned_spike_category = category_type.__module__.startswith(
-            "sage_lattice_category_spike."
-        )
-        owned_preamble_category = any(
-            name == owned or name.startswith(owned + "_")
-            for owned in _OWNED_CATEGORY_NAMES
-        )
-        if not owned_spike_category and not owned_preamble_category:
+        if not _is_owned_category(category_type):
             continue
         nested = getattr(category_type, attr, None)
         if nested is None:
@@ -233,14 +159,22 @@ def _preamble_mixins(category: "Category", attr: str) -> tuple[type, ...]:
     return tuple(mixins)
 
 def _method_mixins(category: "Category", attr: str) -> tuple[type, ...]:
-    """Preamble mixins if present; otherwise the category's own nested methods class."""
+    """Preamble mixins if present; otherwise the category's own nested methods class.
+
+    Cached per ``(category, attr)`` the way Sage caches ``parent_class``: the
+    answer is a fact about the category, and refinement asks for it once per
+    constructed object.
+    """
+    key = (category, attr)
+    cached = _MIXIN_CACHE.get(key)
+    if cached is not None:
+        return cached
     mixins = _preamble_mixins(category, attr)
-    if mixins:
-        return mixins
-    nested = getattr(type(category), attr, None)
-    if nested is not None:
-        return (nested,)
-    return ()
+    if not mixins:
+        nested = getattr(type(category), attr, None)
+        mixins = (nested,) if nested is not None else ()
+    _MIXIN_CACHE[key] = mixins
+    return mixins
 
 def _is_homset(obj: "SageObject") -> bool:
     from sage.categories.homset import Homset

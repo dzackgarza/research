@@ -20,6 +20,8 @@ value of the right adjoint, and
 of a trivial \(G\)-lattice lands in it.
 """
 
+from sage.misc.cachefunc import cached_function
+from sage.misc.cachefunc import cached_method
 from sage.categories.functor import Functor
 
 

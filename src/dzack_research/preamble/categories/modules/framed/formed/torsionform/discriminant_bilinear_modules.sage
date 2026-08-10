@@ -45,8 +45,8 @@ class DiscriminantBilinearModules(Category):
         assert gram.is_symmetric(), (
             "a discriminant bilinear form is symmetric"
         )
-        relations = module.relation_matrix()._sage_matrix().change_ring(ZZ)
-        assert all(entry in ZZ for entry in (relations * gram).list()), (
+        relations = module.relation_matrix()._sage_matrix().change_ring(SageZZ)
+        assert all(entry in SageZZ for entry in (relations * gram).list()), (
             "b is not defined on the classes: some relation does not pair "
             "integrally with the module_generators"
         )
@@ -110,6 +110,21 @@ class DiscriminantBilinearModules(Category):
                 finite_ordered_set(module_generators),
             )
             return DiscriminantBilinearModules().from_module(module, gram)
+
+        def form_vanishes_on(self: Self, elements: "OrderedSet") -> bool:
+            r"""Return whether $b$ is zero on every pair drawn from ``elements``.
+
+            A pairing takes two arguments, so vanishing is a statement about
+            pairs and not about norms: $b(x,x)=0$ for every $x$ in a subgroup
+            leaves $b(x,y)$ two-torsion rather than zero, and
+            $(\mathbb Z/2)^2$ with $b(x,y)=1/2$ off the diagonal is a group
+            where every element is its own zero and the form does not vanish.
+            """
+            return all(
+                left.b(right) == 0
+                for left in elements
+                for right in elements
+            )
 
         def associated_quadratic_form(self: Self) -> "QuadraticFormMorphism":
             r"""Return the discriminant quadratic form on the same group.

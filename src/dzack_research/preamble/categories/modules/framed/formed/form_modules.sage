@@ -1,13 +1,15 @@
 r"""Modules equipped with a bilinear or quadratic form."""
 
+
+from dzack_research.preamble.categories.rings.rings import OwnedBaseRing
+from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
 from typing import Any, Self, TYPE_CHECKING
 
-from sage.categories.category_types import Category_over_base_ring
 from sage.categories.homset import Hom, Homset
 from sage.categories.morphism import Morphism, SetMorphism
 from sage.rings.integer import Integer
 from sage.sets.totally_ordered_finite_set import TotallyOrderedFiniteSet
-from sage.structure.element import Element
+from sage.structure.element import Element, ModuleElement
 from sage.structure.parent import Parent
 from sage.structure.richcmp import richcmp
 from sage_lattice_category_spike.lexicon import GramMatrix, MorphismMatrix
@@ -30,12 +32,14 @@ def _finite_rank(module_generating_set: TotallyOrderedFiniteSet) -> Integer:
     return Integer(size)
 
 
-class FormModules(Category_over_base_ring):
+class FormModules(OwnedCategoryOverBaseRing):
     r"""Modules over \(R\) equipped with a form."""
 
     @staticmethod
     def __classcall_private__(cls: type, base_ring: "Ring" = None) -> "FormModules":
-        return super().__classcall__(cls, ZZ if base_ring is None else base_ring)
+        return super().__classcall__(
+            cls, SageZZ if base_ring is None else engine_ring(base_ring)
+        )
 
     @classmethod
     def _repr_object_names(cls) -> str:
@@ -159,12 +163,14 @@ class FormModules(Category_over_base_ring):
             )
 
 
-class BilinearFormModules(Category_over_base_ring):
+class BilinearFormModules(OwnedCategoryOverBaseRing):
     r"""Modules whose form is bilinear."""
 
     @staticmethod
     def __classcall_private__(cls: type, base_ring: "Ring" = None) -> "BilinearFormModules":
-        return super().__classcall__(cls, ZZ if base_ring is None else base_ring)
+        return super().__classcall__(
+            cls, SageZZ if base_ring is None else engine_ring(base_ring)
+        )
 
     @classmethod
     def _repr_object_names(cls) -> str:
@@ -174,12 +180,14 @@ class BilinearFormModules(Category_over_base_ring):
         return [FormModules(self.base_ring())]
 
 
-class SymmetricBilinearFormModules(Category_over_base_ring):
+class SymmetricBilinearFormModules(OwnedCategoryOverBaseRing):
     r"""Modules equipped with a symmetric bilinear form."""
 
     @staticmethod
     def __classcall_private__(cls: type, base_ring: "Ring" = None) -> "SymmetricBilinearFormModules":
-        return super().__classcall__(cls, ZZ if base_ring is None else base_ring)
+        return super().__classcall__(
+            cls, SageZZ if base_ring is None else engine_ring(base_ring)
+        )
 
     @classmethod
     def _repr_object_names(cls) -> str:
@@ -189,12 +197,14 @@ class SymmetricBilinearFormModules(Category_over_base_ring):
         return [BilinearFormModules(self.base_ring())]
 
 
-class QuadraticFormModules(Category_over_base_ring):
+class QuadraticFormModules(OwnedCategoryOverBaseRing):
     r"""Modules whose form is quadratic."""
 
     @staticmethod
     def __classcall_private__(cls: type, base_ring: "Ring" = None) -> "QuadraticFormModules":
-        return super().__classcall__(cls, ZZ if base_ring is None else base_ring)
+        return super().__classcall__(
+            cls, SageZZ if base_ring is None else engine_ring(base_ring)
+        )
 
     @classmethod
     def _repr_object_names(cls) -> str:
@@ -204,12 +214,14 @@ class QuadraticFormModules(Category_over_base_ring):
         return [FormModules(self.base_ring())]
 
 
-class FreeFormModules(Category_over_base_ring):
+class FreeFormModules(OwnedCategoryOverBaseRing):
     r"""Form modules whose image after forgetting the form is free."""
 
     @staticmethod
     def __classcall_private__(cls: type, base_ring: "Ring" = None) -> "FreeFormModules":
-        return super().__classcall__(cls, ZZ if base_ring is None else base_ring)
+        return super().__classcall__(
+            cls, SageZZ if base_ring is None else engine_ring(base_ring)
+        )
 
     @classmethod
     def _repr_object_names(cls) -> str:
@@ -257,12 +269,14 @@ class FreeFormModules(Category_over_base_ring):
             return self.forget_form().underlying_set_element()
 
 
-class FinitelyGeneratedFormModules(Category_over_base_ring):
+class FinitelyGeneratedFormModules(OwnedCategoryOverBaseRing):
     r"""Form modules whose chosen framing set is finite."""
 
     @staticmethod
     def __classcall_private__(cls: type, base_ring: "Ring" = None) -> "FinitelyGeneratedFormModules":
-        return super().__classcall__(cls, ZZ if base_ring is None else base_ring)
+        return super().__classcall__(
+            cls, SageZZ if base_ring is None else engine_ring(base_ring)
+        )
 
     @classmethod
     def _repr_object_names(cls) -> str:
@@ -301,12 +315,14 @@ class FinitelyGeneratedFormModules(Category_over_base_ring):
                     )
 
 
-class FinitelyGeneratedFreeFormModules(Category_over_base_ring):
+class FinitelyGeneratedFreeFormModules(OwnedCategoryOverBaseRing):
     r"""Finite free modules equipped with a form."""
 
     @staticmethod
     def __classcall_private__(cls: type, base_ring: "Ring" = None) -> "FinitelyGeneratedFreeFormModules":
-        return super().__classcall__(cls, ZZ if base_ring is None else base_ring)
+        return super().__classcall__(
+            cls, SageZZ if base_ring is None else engine_ring(base_ring)
+        )
 
     @classmethod
     def _repr_object_names(cls) -> str:
@@ -328,12 +344,12 @@ class FinitelyGeneratedFreeFormModules(Category_over_base_ring):
             return cached
 
 
-class FormModuleElement(Element):
+class FormModuleElement(ModuleElement):
     r"""An element of a formed module and its image after forgetting the form."""
 
 
     def __init__(self, parent: "Parent", element: "Element") -> None:
-        Element.__init__(self, parent)
+        ModuleElement.__init__(self, parent)
         assert element.parent() is parent.forget_form(), (
             f"{element} is not an element of {parent.forget_form()}"
         )
@@ -378,7 +394,7 @@ def _formed_element_representation(element: "Element") -> "Element":
             assert False, f"{element} is not an element of a formed module"
 
 
-class FormModule(Parent):
+class FormModule(OwnedBaseRing, Parent):
     r"""The formed object classified by one form morphism."""
 
     Element = FormModuleElement
@@ -430,7 +446,7 @@ class FormModule(Parent):
             or zero
         )
         finite_torsion = torsion and finitely_generated
-        owned_finite_torsion = finite_torsion and base_ring is ZZ
+        owned_finite_torsion = finite_torsion and engine_ring(base_ring) is SageZZ
         bilinear = isinstance(self._form, BilinearFormMorphism)
         quadratic = isinstance(self._form, QuadraticFormMorphism)
         symmetric_bilinear = (
@@ -532,9 +548,9 @@ class FormModule(Parent):
                 )
         if (
             symmetric_bilinear
-            and base_ring is ZZ
+            and engine_ring(base_ring) is SageZZ
             and free
-            and self._form.value_module() is ZZ
+            and engine_ring(self._form.value_module()) is SageZZ
         ):
             refine_one_lattice(self)
             _decompose_lattice(self)

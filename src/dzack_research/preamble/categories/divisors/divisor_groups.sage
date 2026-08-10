@@ -5,7 +5,7 @@ from sage.categories.category import Category
 
 def DivisorGroup(module: "Module") -> "Module":
     r"""Refine the declared free module of divisors."""
-    assert module in FramedFreeModules(ZZ), (
+    assert module in FramedFreeModules(SageZZ), (
         "a divisor group is constructed from its actual set of prime divisors"
     )
     return refine(module, DivisorGroups())
@@ -19,4 +19,4 @@ class DivisorGroups(Category):
         return "divisor groups"
 
     def super_categories(self) -> list:
-        return [FramedFreeModules(ZZ)]
+        return [FramedFreeModules(SageZZ)]

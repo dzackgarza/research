@@ -1,10 +1,16 @@
 r"""Isometries of integral lattices."""
 
+from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormAutomorphismGroup
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import FiniteAutomorphismSubgroup
 from typing import Self, TYPE_CHECKING
+
+from sage.misc.cachefunc import cached_method
 
 from sage_lattice_category_spike.objects.cardinals import Cardinal
 from sage_lattice_category_spike.objects.morphism_matrices import matrix_group
 from sage.categories.category import Category
+from sage.categories.groups import Groups as SageGroups
+from sage.quadratic_forms.quadratic_form import QuadraticForm as SageQuadraticForm
 from sage.sets.totally_ordered_finite_set import TotallyOrderedFiniteSet
 
 if TYPE_CHECKING:
@@ -13,15 +19,83 @@ if TYPE_CHECKING:
     from sage_lattice_category_spike.lexicon import OrderedSet
 
 
+def _definite_isometry_group_generator_matrices(lattice: "Lattice") -> tuple:
+    r"""Return matrices generating \(O(L)\), for a definite \(L\).
+
+    \(O(L)=\{M:MGM^t=G\}\) is a condition on the Gram matrix and on nothing
+    else, so this is a call to the engine's algorithm with a matrix -- the way
+    :meth:`IntegralLattices.ParentMethods.genus` is -- and not a passage into
+    the engine's lattice objects.  The algorithm is Plesken--Souvignier, which
+    the engine reaches through the quadratic form \(2G\); the doubling is the
+    passage from the bilinear form to the quadratic one, and the sign is the
+    lattice's, since \(O(L)=O(L(-1))\) and the algorithm wants the positive
+    definite representative.
+
+    A row of each matrix is the image of a framing label, which is the
+    convention the whole preamble reads a morphism matrix in.  The engine's
+    quadratic forms act on columns, hence the transpose -- and nothing rests
+    on getting that right silently: a morphism is built from these matrices
+    below, and its constructor rejects a map that does not preserve the form.
+
+    Definite is the hypothesis and not a preference.  For an indefinite
+    lattice no generating set is in hand: the engine has no algorithm, and
+    :mod:`predicate_subgroups` exists because computing one for a common
+    indefinite lattice runs for days.  That \(O(L)\) is nevertheless finitely
+    generated is Borel and Harish-Chandra's theorem, which is why the group is
+    placed in the finitely generated node without being asked to exhibit
+    anything.
+    """
+    positive, negative = lattice.signature_pair()
+    assert positive + negative == lattice.rank() and 0 in (positive, negative), (
+        f"{lattice} is not definite, so no generating set of O(L) is in hand. "
+        "Name a subgroup by its generators, or cut one out by a membership "
+        "predicate"
+    )
+    gram = matrix(SageZZ, lattice.gram_matrix())
+    quadratic_form = SageQuadraticForm(SageZZ, -2 * gram if positive == 0 else 2 * gram)
+    # Over the integers, which the engine's quadratic forms do not say: an
+    # isometry of an integral lattice permutes the lattice, so its matrix in
+    # an integral framing has integral entries, and reading it over the
+    # rationals would make the images rational combinations of generators.
+    return tuple(
+        generator.matrix().transpose().change_ring(SageZZ)
+        for generator in quadratic_form.automorphism_group().gens()
+    )
+
+
 class LatticeIsometries(Category):
-    r"""Invertible lattice homomorphisms."""
+    r"""Invertible lattice homomorphisms.
+
+    A group, as an object: the parents here are \(O(L)\) and its subgroups --
+    an isometry homset is an endset, and composition of isometries is the
+    group law.  So the owned group node is a super category rather than a
+    declaration made again at each construction, and the words a group
+    answers -- ``number_of_group_generators``, ``is_finitely_generated`` --
+    reach these objects because they are groups and not because anything was
+    written on them here.
+    """
 
     @classmethod
     def _repr_object_names(cls) -> str:
         return "lattice isometries"
 
     def super_categories(self) -> list:
-        return [LatticeHomomorphisms()]
+        r"""Return the homomorphism node and the finitely generated group node.
+
+        Finitely generated and not merely a group: every object here has a
+        finite generating set.  A subgroup was named by one, and \(O(L)\) has
+        one by Borel and Harish-Chandra.  Not finitely *presented*, which
+        \(O(L)\) itself carries and its subgroups do not: a finitely generated
+        subgroup of a finitely presented group need not be finitely presented.
+
+        Stating it here is also what orders the methods.  The finitely
+        generated node answers ``group_generators`` by reading Sage's
+        ``gens``, which these groups do not have -- they compute their
+        generators from the Gram matrix -- and a category that this one
+        declares as a super category is a category this one's methods
+        precede.
+        """
+        return [LatticeHomomorphisms(), OwnedFinitelyGeneratedGroups()]
 
     class ParentMethods:
         def __call__(self: Self, images: "dict | FormMorphism") -> "Morphism":
@@ -70,6 +144,105 @@ class LatticeIsometries(Category):
             )
             return LatticeIsometrySubgroup(self, group_generators)
 
+        def _isometry_on_rows(self: Self, rows: "Iterable") -> "ModuleAutomorphism":
+            r"""Return the isometry sending each framing label to a row's combination.
+
+            The one place a matrix becomes an element of this group.  A row is
+            read against the module generators, so what crosses back from the
+            engine is a morphism of this lattice and never a matrix a caller
+            would have to interpret.
+            """
+            lattice = self.domain()
+            return self(
+                {
+                    label: zipsum(row, lattice.module_generators(), lattice.zero())
+                    for label, row in zip(lattice.module_generating_set(), rows)
+                }
+            )
+
+        def group_generators(self: Self) -> TotallyOrderedFiniteSet:
+            r"""Return \(S\) with \(\langle S\rangle\) this group.
+
+            One question with two sources and one answer.  A subgroup was
+            named by its generators and holds them; the full \(O(L)\) was not,
+            so its generators are the ones the engine computes from the Gram
+            matrix -- and once computed they are held the same way, which is
+            what makes ``has_computed_group_generators`` true of both.
+            """
+            stored = self.__dict__.get("_group_generators")
+            if stored is None:
+                stored = finite_ordered_set(
+                    tuple(
+                        self._isometry_on_rows(entries.rows())
+                        for entries in
+                        _definite_isometry_group_generator_matrices(self.domain())
+                    )
+                )
+                self._group_generators = stored
+            return stored
+
+        @cached_method
+        def _matrix_group(self: Self) -> "MatrixGroup":
+            r"""Return this group as a GAP-backed matrix group.  The private model.
+
+            \(O(L)\) is cut out of \(GL_n(R)\) by \(MGM^t=G\), so it and every
+            subgroup of it is a matrix group on its generators' matrices.
+            Deciding order, finiteness and enumeration from generators is
+            Schreier--Sims and coset enumeration -- mature algorithms this
+            repo calls and never restates.  Every method below defers here and
+            translates the answers back into this group's own elements.
+            """
+            return matrix_group(
+                generator.matrix() for generator in self.group_generators()
+            )
+
+        @cached_method
+        def presented_group(self: Self) -> "FinitelyPresentedGroup":
+            r"""Return this group as generators and relations.
+
+            The finitely presented node's obligation, answered here: the words
+            read off it -- ``presenting_free_group``, ``defining_relations``
+            -- are that node's and are not restated here.
+
+            A presentation is what coset enumeration produces, and the
+            algorithm wants a permutation action to enumerate over, so the
+            matrix group is realised as one first.  Both steps are the
+            engine's.  Producing one at all needs the group enumerated, which
+            is the definite case -- the same hypothesis
+            :func:`_definite_isometry_group_generator_matrices` states, and
+            for the same reason.  That \(O(L)\) *has* a finite presentation
+            regardless is Borel and Harish-Chandra's theorem.
+
+            Cached on the group and not on the lattice: a presentation is this
+            group's own fact, and the lattice whose isometries it is is not
+            where its computations belong.
+            """
+            return (
+                self._matrix_group()
+                .as_permutation_group()
+                .as_finitely_presented_group()
+            )
+
+        def is_finite(self: Self) -> bool:
+            r"""Return whether this group is finite, as decided by GAP."""
+            return bool(self._matrix_group().is_finite())
+
+        def cardinality(self: Self) -> "Cardinal":
+            r"""Return \(|G|\), as computed by GAP."""
+            return Cardinal(self._matrix_group().order())
+
+        def order(self: Self) -> "Cardinal":
+            r"""Return \(|G|\).  The order of a group is its cardinality."""
+            return self.cardinality()
+
+        def __iter__(self: Self):
+            r"""Enumerate this group's elements, which a finite group has."""
+            assert self.is_finite(), (
+                f"{self} is infinite, so it cannot be enumerated"
+            )
+            for element in self._matrix_group():
+                yield self._isometry_on_rows(element.matrix().rows())
+
     class MorphismMethods:
         def to_matrix(self: Self) -> "MorphismMatrix":
             return self.matrix()
@@ -93,7 +266,7 @@ class LatticeIsometries(Category):
             )
 
         def inverse(self: Self) -> "ModuleAutomorphism":
-            inverse_matrix = self.matrix().inverse().change_ring(ZZ)
+            inverse_matrix = self.matrix().inverse().change_ring(SageZZ)
             return self.parent()(
                 {
                     label: zipsum(
@@ -156,7 +329,19 @@ class LatticeIsometrySubgroup(FiniteAutomorphismSubgroup, FormAutomorphismGroup)
         # asserts a theorem, and one that is generally hard -- it needs
         # \(O(L)\) computed, or a definiteness hypothesis.  Cardinality is
         # not a reason to reach for it, being total on sets already.
-        refine(self, [LatticeHomomorphisms(), LatticeIsometries(), Groups()])
+        #
+        # Finitely generated is the one axiom the constructor does witness:
+        # the generating set is the argument.  The isometry node carries the
+        # group vocabulary and the engine's own node carries the axiom, so
+        # the placement is what makes this object answer as a group.
+        refine(
+            self,
+            [
+                LatticeHomomorphisms(),
+                LatticeIsometries(),
+                SageGroups().FinitelyGenerated(),
+            ],
+        )
         assert group_generators, "a generated subgroup needs a generator"
         assert all(
             generator.parent() is supergroup for generator in group_generators
@@ -172,57 +357,6 @@ class LatticeIsometrySubgroup(FiniteAutomorphismSubgroup, FormAutomorphismGroup)
                 for generator in group_generators
             ]
         )
-
-    def group_generators(self) -> TotallyOrderedFiniteSet:
-        return self._group_generators
-
-    @cached_method
-    def _matrix_group(self) -> "MatrixGroup":
-        r"""Return this subgroup as a GAP-backed matrix group.
-
-        \(O(L)=\{M\in GL_n(R):M^tG_LM=G_L\}\) is cut out of a matrix group by
-        a condition, so a subgroup of it is a matrix group on the generators'
-        matrices.  Everything below defers here.
-
-        Deciding finiteness and order of a subgroup given by generators is
-        Schreier--Sims and coset enumeration -- mature algorithms this repo
-        must call, never restate.  The spike reached the same delegation in
-        ``morphisms/isometry_groups.py``.
-        """
-        return matrix_group(
-            generator.matrix() for generator in self._group_generators
-        )
-
-    def is_finite(self) -> bool:
-        r"""Return whether this subgroup is finite, as decided by GAP."""
-        return bool(self._matrix_group().is_finite())
-
-    def cardinality(self) -> "Cardinal":
-        r"""Return \(|G|\), as computed by GAP."""
-        return Cardinal(self._matrix_group().order())
-
-    def order(self) -> "Cardinal":
-        r"""Return \(|G|\).  The order of a group is its cardinality."""
-        return self.cardinality()
-
-    def __iter__(self):
-        assert self.is_finite(), (
-            f"{self} is infinite, so it cannot be enumerated"
-        )
-        lattice = self.domain()
-        for element in self._matrix_group():
-            yield self(
-                {
-                    label: zipsum(
-                        element.matrix().row(index),
-                        lattice.module_generators(),
-                        lattice.zero(),
-                    )
-                    for index, label in enumerate(
-                        lattice.module_generating_set()
-                    )
-                }
-            )
 
     def __contains__(self, element: "Element") -> bool:
         r"""Return whether ``element`` lies in this subgroup.

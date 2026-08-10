@@ -19,9 +19,10 @@ lattices of signature $(1,r-1)$, keyed by $(r,a,\delta)$.
 negative-definite quotient's own $(r,a,\delta)$ invariants.
 """
 
+from dzack_research.preamble.categories.modules.framed.formed.integrallattice.integral_lattices import _integral_lattice_with_names
 from sage.matrix.constructor import matrix
 from sage.matrix.special import diagonal_matrix
-from sage.rings.integer_ring import ZZ
+from sage.rings.integer_ring import ZZ as SageZZ
 
 # The preamble's own constructor, installed over Sage's name.  Sage's function
 # of this name returns a submodule of a base-changed module over $\mathbb Q$,
@@ -48,8 +49,8 @@ class Lattices:
     notebook namespace and injects the named generators.
     """
 
-    Zero = _integral_lattice_with_names(matrix(ZZ, 0, 0, []))
-    Z = _integral_lattice_with_names(matrix(ZZ, [1]))
+    Zero = _integral_lattice_with_names(matrix(SageZZ, 0, 0, []))
+    Z = _integral_lattice_with_names(matrix(SageZZ, [1]))
     Z_2 = Z.twist(2)
 
     H = _integral_lattice_with_names("H")
@@ -141,7 +142,7 @@ class Lattices:
     def IPQ(p, q):
         r"""Return the odd unimodular lattice $I_{p,q}$."""
         assert p >= 0 and q >= 0 and p + q > 0, f"empty signature ({p}, {q})"
-        return _integral_lattice_with_names(diagonal_matrix(ZZ, [1] * p + [-1] * q))
+        return _integral_lattice_with_names(diagonal_matrix(SageZZ, [1] * p + [-1] * q))
 
     @staticmethod
     def LK3_2d(degree):
@@ -165,7 +166,14 @@ class Lattices:
 
     @classmethod
     def install(cls, scope):
-        r"""Bind catalogue specimens and named generators into *scope*."""
+        r"""Bind catalogue specimens and named generators into *scope*.
+
+        The owned rings are settled here too, and settled *last*.  Loading a
+        further preamble script re-imports Sage's namespace into the same
+        scope, which rebinds ``ZZ`` and ``QQ`` to the engine's rings behind
+        the session's back -- so a notebook would find ``ZZ^3`` meaning one
+        thing before the catalogue and another after it.
+        """
         for name, obj in vars(cls).items():
             if obj in IntegralLattices():
                 scope[name] = obj
@@ -206,6 +214,9 @@ class Lattices:
             w1t=w1t, w2t=w2t, w3t=w3t, w4t=w4t,
             w5t=w5t, w6t=w6t, w7t=w7t, w8t=w8t,
         )
+
+        install_session_rings(scope)
+
 
 
 # Names for the blocks a decomposition can actually produce.  Matching is Gram
@@ -346,7 +357,7 @@ TwoElementary = {
 # below are one representative choice from that single isometry class; they
 # are not parsed from the AE labels.
 NegativeDefTwoElementary = {
-        (0, 0, 0): [_integral_lattice_with_names(matrix(ZZ, 0, 0, []))],
+        (0, 0, 0): [_integral_lattice_with_names(matrix(SageZZ, 0, 0, []))],
         (1, 1, 1): [Lattices.A1],
         (2, 2, 1): [Lattices.A1^2],
         (3, 3, 1): [Lattices.A1^3],

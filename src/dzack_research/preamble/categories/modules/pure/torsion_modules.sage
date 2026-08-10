@@ -4,13 +4,14 @@ Defines ``TorsionModules`` as the category of torsion modules over a base ring $
 with no finite presentation or finite generation hypothesis.
 """
 
+
+from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
 from typing import Self
 
-from sage.categories.category_types import Category_over_base_ring
 from sage.categories.modules import Modules
 
 
-class TorsionModules(Category_over_base_ring):
+class TorsionModules(OwnedCategoryOverBaseRing):
     r"""Category of torsion modules over a base ring."""
 
     @classmethod

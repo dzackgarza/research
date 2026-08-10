@@ -5,7 +5,7 @@ from sage.categories.category import Category
 
 def ClassGroup(module: "Module") -> "Module":
     r"""Refine the specified framed quotient module as \(\operatorname{Cl}(X)\)."""
-    assert module in Modules(ZZ).Framed(), (
+    assert module in Modules(SageZZ).Framed(), (
         "a class group must declare its quotient framing at construction"
     )
     return refine(module, ClassGroups())
@@ -19,4 +19,4 @@ class ClassGroups(Category):
         return "class groups"
 
     def super_categories(self) -> list:
-        return [Modules(ZZ).Framed()]
+        return [Modules(SageZZ).Framed()]

@@ -20,8 +20,8 @@ from sage.categories.morphism import Morphism
 from sage.matrix.constructor import matrix
 from sage.rings.infinity import infinity
 from sage.rings.integer import Integer
-from sage.rings.integer_ring import ZZ
-from sage.rings.rational_field import QQ
+from sage.rings.integer_ring import ZZ as SageZZ
+from sage.rings.rational_field import QQ as SageQQ
 from sage.combinat.root_system.coxeter_matrix import CoxeterMatrix
 from sage.graphs.graph import Graph
 from sage.structure.category_object import normalize_names
@@ -107,23 +107,23 @@ class CoxeterDiagrams(Category):
         """
         return {
             "orthogonal": _integral_lattice_with_names(
-                matrix(ZZ, 2, [-2, 0, 0, -2]),
+                matrix(SageZZ, 2, [-2, 0, 0, -2]),
                 names=("r1", "r2"),
             ),
             "single": _integral_lattice_with_names(
-                matrix(ZZ, 2, [-2, 1, 1, -2]),
+                matrix(SageZZ, 2, [-2, 1, 1, -2]),
                 names=("r1", "r2"),
             ),
             "double": _integral_lattice_with_names(
-                matrix(ZZ, 2, [-2, 2, 2, -4]),
+                matrix(SageZZ, 2, [-2, 2, 2, -4]),
                 names=("r1", "r2"),
             ),
             "parallel": _integral_lattice_with_names(
-                matrix(ZZ, 2, [-2, 2, 2, -2]),
+                matrix(SageZZ, 2, [-2, 2, 2, -2]),
                 names=("r1", "r2"),
             ),
             "ultraparallel": _integral_lattice_with_names(
-                matrix(ZZ, 2, [-2, 3, 3, -2]),
+                matrix(SageZZ, 2, [-2, 3, 3, -2]),
                 names=("r1", "r2"),
             ),
         }

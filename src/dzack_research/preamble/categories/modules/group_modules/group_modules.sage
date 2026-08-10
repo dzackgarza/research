@@ -1,7 +1,9 @@
 r"""Finite-group representations on finitely generated free modules."""
 
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleHomset
 from typing import Self, TYPE_CHECKING
 
+from sage.misc.cachefunc import cached_method
 from sage.categories.category import Category
 from sage.categories.homset import Hom
 from sage.categories.morphism import SetMorphism
@@ -23,8 +25,19 @@ if TYPE_CHECKING:
 class GroupModules(Category):
     r"""The category of \(R[G]\)-modules for the specified \(R\) and \(G\)."""
 
+    @staticmethod
+    def __classcall__(cls, base_ring: "Ring", group: "Group"):
+        # One category per ring and group, named the way a module reports
+        # its base: callers reach here both from a module and from the
+        # engine's own \(\ZZ\), and those two must not name two categories
+        # with disjoint memberships.
+        return Category.__classcall__(cls, owned_ring_view(base_ring), group)
+
     def __init__(self, base_ring: "Ring", group: "Group") -> None:
-        assert group.is_finite(), "this category currently requires a finite group"
+        # No finiteness requirement.  R[G]-Mod is defined for every group;
+        # what the preamble can *check* about a morphism depends on whether
+        # G produces generators, and that is recorded per morphism rather
+        # than shutting the category itself against infinite groups.
         self._base_ring = base_ring
         self._group = group
         Category.__init__(self)
@@ -169,9 +182,16 @@ class GroupModules(Category):
             return self.action_of(element)(vector_)
 
         def is_invariant(self: Self, vector_: "ModuleElement") -> bool:
+            r"""Return whether \(g\cdot v=v\) for every \(g\in G\).
+
+            Decided on generators: the elements fixing \(v\) form a
+            subgroup, so it contains \(G\) as soon as it contains a
+            generating set.  Ranging over \(G\) needs it finite and does
+            more work when it is.
+            """
             return all(
-                self.act(element, vector_) == vector_
-                for element in self.group()
+                self.act(generator, vector_) == vector_
+                for generator in refine_group(self.group()).group_generators()
             )
 
         def subobject_on(self: Self, module_generators: "OrderedSet") -> "Subobject":
@@ -207,7 +227,7 @@ class GroupModules(Category):
                         "generator morphism, a finite assignment, or an "
                         "ordered list of images"
                     )
-            assert target.group() is self.group(), (
+            assert target.group() == self.group(), (
                 "an equivariant map uses the same acting group on both sides"
             )
             return self.Hom(target)(assignment)
@@ -241,7 +261,7 @@ class GroupModuleHomset(ModuleHomset):
         assert codomain in GroupModules(domain.base_ring(), domain.group()), (
             "the codomain is not a module for the stated ring and group"
         )
-        assert domain.group() is codomain.group(), (
+        assert domain.group() == codomain.group(), (
             "an equivariant homset has one specified acting group"
         )
         ModuleHomset.__init__(
@@ -424,6 +444,9 @@ class GroupModule(Parent):
     def _over(self, element: "Element") -> GroupModuleElement:
         return self.element_class(self, element)
 
+    def _from_coordinates(self, coordinates: "Vector") -> GroupModuleElement:
+        return self._over(self._module._from_coordinates(coordinates))
+
     def _element_constructor_(self, element: "Element") -> GroupModuleElement:
         assert isinstance(element, GroupModuleElement) and element.parent() is self, (
             f"{element} is not an element of {self}"
@@ -471,10 +494,10 @@ def _invariant_generators(module: "Module") -> list:
         "computing invariants imposes one condition per group element, so "
         f"it requires a finite group; {module.group()} is not known to be one"
     )
-    identity = identity_matrix(module.base_ring(), module.rank())
+    identity = identity_matrix(engine_ring(module.base_ring()), module.rank())
     constraints = MorphismMatrix(
         matrix(
-            module.base_ring(),
+            engine_ring(module.base_ring()),
             [
                 row
                 for element in module.group()
@@ -485,11 +508,7 @@ def _invariant_generators(module: "Module") -> list:
         )
     )
     generators = [
-        zipsum(
-            row,
-            module.module_generators(),
-            module.zero(),
-        )
+        module._from_coordinates(row)
         for row in constraints._right_kernel_matrix().rows()
     ]
     assert all(module.is_invariant(generator) for generator in generators), (
@@ -521,33 +540,6 @@ def _module_coinvariants(module: "Module") -> "Module":
     return FinitelyPresentedModule(presentation)
 
 
-def _fraction_base_change(module: "Module") -> "Module":
-    r"""Return \(M\otimes_RF\) for \(F\) the fraction field of \(R\).
-
-    The projectors do not exist over \(\mathbb Z\): they carry \(1/|G|\).
-    They exist over \(F\).  Passing to \(F\) is a functor, so the passage is
-    applied as one -- the alternative is to build rational matrices in place
-    and clear their denominators later, which performs the same base change
-    without saying so.
-
-    It is the *left* adjoint \(-\otimes_RF\) that is applied.  Its value is an
-    \(F\)-module, which is what an endomorphism with denominators can be an
-    endomorphism of; the unit \(\eta_M:M\to G(F(M))\) lands in a module over
-    \(R\) again, where such an endomorphism has no entries.
-
-    \(F\) and not the splitting field \(K\).  What a projector asks of its
-    coefficient field is that its coefficients lie there, and the coefficient
-    of \(\rho(g)\) in \(p_\chi\) is a value of the *indexing* character.
-    ``_index_characters`` chooses characters whose values lie in \(F\), so
-    \(K\) is where the character table is read and never where the projector
-    is written.
-    """
-    base_ring = module.base_ring()
-    return BaseChangeFunctor(
-        Hom(base_ring, base_ring.fraction_field()).natural_map()
-    )(module)
-
-
 def _base_field_automorphisms(category: "Category") -> tuple:
     r"""Return \(\operatorname{Gal}(K/F)\) for \(F\) the fraction field of \(R\).
 
@@ -565,7 +557,7 @@ def _base_field_automorphisms(category: "Category") -> tuple:
         for automorphism in field.galois_group()
         if all(
             automorphism(field(generator)) == field(generator)
-            for generator in base_field.gens()
+            for generator in own_ring(base_field).algebra_generators()
         )
     )
 
@@ -648,8 +640,15 @@ def _isotypic_projector(module: "Module", character: Character) -> "ModuleMorphi
     not exist, instead of stating the hypothesis.  Everything the projector
     consumes -- the character table, the degrees, the values -- is still
     GAP's.
+
+    \(F=\operatorname{Frac}(R)\) and not the splitting field \(K\).  What a
+    projector asks of its coefficient field is that its coefficients lie
+    there, and the coefficient of \(\rho(g)\) in \(p_\chi\) is a value of the
+    *indexing* character.  ``_index_characters`` chooses characters whose
+    values lie in \(F\), so \(K\) is where the character table is read and
+    never where the projector is written.
     """
-    extended = _fraction_base_change(module)
+    extended = module.vector_space()
     field = extended.base_ring()
     group = module.group()
     constituents = character.irreducible_constituents()
@@ -671,10 +670,7 @@ def _isotypic_projector(module: "Module", character: Character) -> "ModuleMorphi
         "are not a single Galois orbit of absolutely irreducible characters"
     )
     return extended.hom(
-        [
-            zipsum(row, extended.module_generators(), extended.zero())
-            for row in entries.rows()
-        ],
+        [extended._from_coordinates(row) for row in entries.rows()],
         extended,
     )
 
@@ -705,12 +701,9 @@ def _isotypic_component(module: "Module", character: Character) -> "Subobject":
         projector.base_ring(), module.rank()
     )
     scale = lcm([entry.denominator() for entry in difference.list()])
-    integral = (scale * difference).change_ring(module.base_ring())
+    integral = (scale * difference).change_ring(engine_ring(module.base_ring()))
     return module.hom(
-        [
-            zipsum(row, module.module_generators(), module.zero())
-            for row in integral.rows()
-        ],
+        [module._from_coordinates(row) for row in integral.rows()],
         module,
     ).kernel()
 
@@ -750,14 +743,10 @@ def _restricted_action_automorphisms(
         assert all(
             entry in submodule.base_ring() for entry in coefficients.list()
         ), "the restricted action is not defined over the base ring"
-        coefficients = coefficients.change_ring(submodule.base_ring())
+        coefficients = coefficients.change_ring(engine_ring(submodule.base_ring()))
         return submodule.Aut()(
             {
-                label: zipsum(
-            row,
-            submodule.module_generators(),
-            submodule.zero(),
-        )
+                label: submodule._from_coordinates(row)
                 for label, row in zip(
                     submodule.module_generating_set(),
                     coefficients.rows(),

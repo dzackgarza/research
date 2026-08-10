@@ -15,12 +15,14 @@ image lies in \(\operatorname{Aut}\) of the form-bearing category.  That is a
 condition on \(\rho\), not a different endomorphism ring.
 """
 
+
+from dzack_research.preamble.categories.rings.rings import OwnedBaseRing
 from sage.categories.modules import Modules
 from sage.categories.rings import Rings
 from sage.structure.parent import Parent
 
 
-class ModuleOverRing(Parent):
+class ModuleOverRing(OwnedBaseRing, Parent):
     r"""The \(S\)-module determined by \(\rho:S\to\operatorname{End}(M)\)."""
 
     def __init__(self, action: "RingMorphism") -> None:
@@ -41,10 +43,14 @@ class ModuleOverRing(Parent):
         # Sage's caches hash it during construction.
         self._underlying = underlying
         self._action = action
+        # Intake: the module is built over the ring the engine computes in,
+        # whichever of the two names for it \(\rho\) was written with.
+        # ``base_ring`` reports the name back.
+        scalars = engine_ring(action.domain())
         Parent.__init__(
             self,
-            base=action.domain(),
-            category=Modules(action.domain()),
+            base=scalars,
+            category=Modules(scalars),
         )
 
     def underlying_module(self) -> "Module":

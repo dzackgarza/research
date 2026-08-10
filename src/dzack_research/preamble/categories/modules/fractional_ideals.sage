@@ -10,35 +10,67 @@ The generating family is the ideal's own -- ``gens`` and
 this object exists so that reading is a fact rather than a coincidence.
 """
 
+
+from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
+from dzack_research.preamble.categories.rings.rings import OwnedBaseRing
 from sage.rings.ideal import Ideal_generic
 from sage.structure.parent import Parent
 
 
-class FractionalIdeal(Parent):
+_RING_AS_MODULE: dict = {}
+
+
+def ring_as_module(ring: "Ring") -> "Module":
+    r"""Return \(R\) as a module over itself: free of rank one on \(\{1\}\).
+
+    One object per ring, and that is the point rather than an optimisation.
+    A framed free module carries value equality, so two separately built
+    copies of \(R\) compare equal while being distinct -- and a morphism
+    checks that its images belong to *its* codomain, which the copy is not.
+    Every submodule of \(R\) is taken inside this one.
+    """
+    # One object per ring means per ring, not per name for it: the owned view
+    # and the engine's copy are the same \(R\), and keying them apart would
+    # build the second copy this function exists to prevent.
+    ring = engine_ring(ring)
+    module = _RING_AS_MODULE.get(ring)
+    if module is None:
+        module = BasedFreeModule(ring, Sets.Δ[0])
+        _RING_AS_MODULE[ring] = module
+    return module
+
+
+class FractionalIdeal(OwnedBaseRing, Parent):
     r"""The \(R\)-submodule of \(\operatorname{Frac}(R)\) on a finite family."""
 
     def __init__(self, ring: "Ring", generators: "OrderedSet") -> None:
+        ring = engine_ring(ring)
         self._ring = ring
         self._ambient = ring.fraction_field()
-        # The generating family is kept as given.  An integral ideal's
-        # generators are elements of R and a fractional ideal's are not;
-        # moving them all into Frac(R) would replace the ideal's own family
-        # with a copy of it, which is the one thing this object must not do.
-        self._generators = finite_ordered_set(generators)
-        Parent.__init__(self, base=ring, category=Modules(ring))
+        # The generating family is kept as given, and kept as a tuple.  An
+        # integral ideal's generators are elements of R and a fractional
+        # ideal's are not; moving them all into Frac(R) would replace the
+        # ideal's own family with a copy of it, which is the one thing this
+        # object must not do -- and an ordered *set* does exactly that, since
+        # its parent is cached by the values it holds, so \(1\in R\) is served
+        # back as whichever equal \(1\) built that set first.  A family of
+        # ring elements is carried by the ring, not by a set of numbers.
+        self._generators = tuple(generators)
+        # Placed as what it is: a submodule of R, so the category says
+        # module and the object answers ``as_submodule`` with the
+        # inclusion that carries it.
+        Parent.__init__(self, base=ring, category=OwnedIdeals(ring))
 
     def ring(self) -> "Ring":
         r"""Return \(R\), the ring this is an ideal of."""
         return self._ring
 
-    def gens(self) -> "OrderedSet":
-        return self._generators
-
-    def module_generators(self) -> "OrderedSet":
+    def module_generators(self) -> tuple:
         r"""Return the generating family, read as module generators.
 
         An ideal's generators generate it as an \(R\)-module: the two words
-        name one family, and that is the content here.
+        name one family, and that is the content here.  The family is the
+        one supplied, its members still elements of \(R\).
         """
         return self._generators
 
@@ -53,23 +85,21 @@ class FractionalIdeal(Parent):
         assert not generator.is_zero(), "the zero ideal is not invertible"
         return FractionalIdeal(self._ring, (~self._ambient(generator),))
 
-    def _dividing_generator(self) -> "OrderedSet":
+    def _dividing_generator(self) -> tuple:
         r"""Return the generators that divide the whole family.
 
         A supplied family need not be minimal -- an order hands back a module
         basis of \((2)\), not the single ideal generator -- so a generator
         dividing the whole family generates the ideal by itself.
         """
-        return finite_ordered_set(
-            [
-                candidate
-                for candidate in self._generators
-                if not candidate.is_zero()
-                and all(
-                    (generator / candidate) in self._ring
-                    for generator in self._generators
-                )
-            ]
+        return tuple(
+            candidate
+            for candidate in self._generators
+            if not candidate.is_zero()
+            and all(
+                (generator / candidate) in self._ring
+                for generator in self._generators
+            )
         )
 
     def is_principal(self) -> bool:
@@ -106,8 +136,56 @@ class FractionalIdeal(Parent):
         return f"Fractional ideal ({listed}) of {self._ring}"
 
 
+class OwnedIdeals(OwnedCategoryOverBaseRing):
+    r"""Ideals of \(R\), which are the \(R\)-submodules of \(R\).
+
+    Not a resemblance: \(I\subseteq R\) is closed under addition and under
+    multiplication by \(R\), and those two conditions *are* the submodule
+    conditions, so an ideal is a submodule and its generating family is one
+    family under one word.  (Over a Dedekind domain a nonzero ideal is
+    moreover rank-1 projective; that is a theorem about this category, not
+    what places a method on it.)
+    """
+
+    @classmethod
+    def _repr_object_names(cls) -> str:
+        return "ideals"
+
+    def super_categories(self) -> list:
+        return [Modules(self.base_ring())]
+
+    class ParentMethods:
+        def as_submodule(self) -> "Subobject":
+            r"""Return \(I\hookrightarrow R\), the submodule with its inclusion.
+
+            \(R\) as a module over itself is free of rank one on the framing
+            \(\{1\}\), and this ideal is the submodule its generators span
+            there -- carried, as every subobject is, by the inclusion rather
+            than by membership.
+
+            Integral only: a fractional ideal is an \(R\)-submodule of
+            \(\operatorname{Frac}(R)\), and \(\operatorname{Frac}(R)\) is not a
+            finitely generated \(R\)-module, so it has no framing here to be a
+            subobject of.
+            """
+            ring = self.ring()
+            generators = self.module_generators()
+            assert all(generator in ring for generator in generators), (
+                "a fractional ideal is a submodule of Frac(R), not of R; "
+                "clear its denominator to ask this"
+            )
+            return ring_as_module(ring).subobject_on(
+                [[ring(generator)] for generator in generators]
+            )
+
+
 def own_ideal(ideal: "Ideal_generic") -> FractionalIdeal:
-    r"""Return the owned fractional ideal a Sage ideal presents."""
+    r"""Return the owned ideal a Sage ideal presents.
+
+    The Sage ideal crosses the boundary once, here, and is asked in its own
+    word: it is not a ``Parent`` and cannot be refined into a category, so
+    what is owned is the object built from its generators.
+    """
     assert isinstance(ideal, Ideal_generic), (
         "an owned ideal is constructed from an actual ideal"
     )

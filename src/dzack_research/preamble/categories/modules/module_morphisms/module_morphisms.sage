@@ -9,13 +9,14 @@ presented domain, so membership in a homset is parenthood and nothing else.
 from collections.abc import Iterator
 from typing import Any, TYPE_CHECKING
 
+from sage.misc.cachefunc import cached_method
 from sage.categories.homset import Hom, Homset
 from sage.categories.morphism import Morphism, SetMorphism
 from sage.categories.rings import Rings
 from sage.matrix.constructor import matrix
 from sage.matrix.matrix0 import Matrix
 from sage.modules.free_module_element import FreeModuleElement, vector
-from sage.rings.integer_ring import ZZ
+from sage.rings.integer_ring import ZZ as SageZZ
 from sage.sets.totally_ordered_finite_set import TotallyOrderedFiniteSet
 from sage.structure.element import Element
 from sage.structure.parent import Parent
@@ -182,7 +183,10 @@ def _independent_module_generators(module: "Module", module_generators: "Ordered
     module_generators = list(module_generators)
     if not module_generators:
         return []
-    rows = matrix(module.base_ring(), [_coordinate_vector(g) for g in module_generators])
+    rows = matrix(
+        engine_ring(module.base_ring()),
+        [_coordinate_vector(g) for g in module_generators],
+    )
     independent = MorphismMatrix(rows).normal_form().rows()
     return [
         zipsum(
@@ -285,7 +289,7 @@ class ModuleMorphism(Morphism):
                 )
                 values = _expand_subobject_dict(parent, images)
                 assert all(
-                    image.parent() is parent.codomain()
+                    image.parent() == parent.codomain()
                     for image in values.values()
                 ), "every specified generator image must belong to the codomain"
                 module_generator_morphism = SetMorphism(
@@ -537,12 +541,12 @@ class ModuleMorphism(Morphism):
         width = len(tuple(codomain.module_generating_set()))
 
         if not isinstance(codomain, FinitelyPresentedModule) and (
-            codomain.base_ring() is not ZZ
+            engine_ring(codomain.base_ring()) is not SageZZ
         ):
             assert image.rank() == width, (
                 "the image does not have finite index in the codomain"
             )
-            return ZZ.one()
+            return SageZZ.one()
 
         spanning = image
         if isinstance(codomain, FinitelyPresentedModule):
@@ -582,7 +586,7 @@ class ModuleMorphism(Morphism):
                 # other -- one declared return type, true on both branches.
                 return MorphismMatrix(
                     matrix(
-                        ZZ,
+                        SageZZ,
                         0,
                         len(tuple(self.codomain().module_generating_set())),
                     )
@@ -679,7 +683,7 @@ class ModuleAutomorphism(ModuleMorphism):
             )
 
     def inverse(self) -> "ModuleAutomorphism":
-        inverse_matrix = self.matrix().inverse().change_ring(ZZ)
+        inverse_matrix = self.matrix().inverse().change_ring(SageZZ)
         images = [
             zipsum(
             row,
@@ -1114,7 +1118,7 @@ def _solve_left_integrally(system: MorphismMatrix, target: "Vector") -> "Vector"
     coordinate vector of the element to hit, not the module it lies in.
     """
     smith, left, right = system.transpose().smith_form()
-    shifted = left * vector(ZZ, target)
+    shifted = left * vector(SageZZ, target)
     width = smith.ncols()
     solution = [0] * width
     for index, value in enumerate(shifted):
@@ -1127,4 +1131,4 @@ def _solve_left_integrally(system: MorphismMatrix, target: "Vector") -> "Vector"
                 f"no integral solution: row {index} asks for {value}/{divisor}"
             )
             solution[index] = value // divisor
-    return right * vector(ZZ, solution)
+    return right * vector(SageZZ, solution)

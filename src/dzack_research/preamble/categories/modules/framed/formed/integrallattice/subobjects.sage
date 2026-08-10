@@ -77,17 +77,55 @@ class Subobjects(Category):
             That composite is built from morphisms that already exist and its
             kernel is taken by the morphism, so no call site clears
             denominators or saturates a row lattice by hand.
+
+            Taken in the underlying module.  Torsion is a module property and
+            the form takes no part in deciding it, so the composite is a map
+            of modules -- asking $M$ itself for it would look for a
+            form-preserving map, and $(M/S)/\mathrm{tors}$ carries no form to
+            preserve.  The kernel comes back as combinations of $M$'s own
+            generators, on which $M$ re-imposes its structure.
             """
             inclusion = self.embedding()
             ambient = inclusion.codomain()
             quotient = inclusion.cokernel()
             projection = quotient.torsion_free_quotient()
-            return ambient.hom(
+            torsion_free = ambient.forget_form().hom(
                 {
                     label: projection(quotient.module_generator(label))
                     for label in ambient.module_generating_set()
                 }
-            ).kernel()
+            )
+            return ambient.subobject_on(
+                [
+                    zipsum(
+                        _coordinate_vector(generator),
+                        ambient.module_generators(),
+                        ambient.zero(),
+                    )
+                    for generator
+                    in torsion_free.kernel().embedded_module_generators()
+                ]
+            )
+
+        def index_in_saturation(self: Self) -> "Integer":
+            r"""Return $[S^{\mathrm{sat}}:S]$, an index every subobject has.
+
+            $S^{\mathrm{sat}}/S=\operatorname{tors}(M/S)$ -- the identity
+            :meth:`saturation` is built from -- and a finitely generated
+            torsion module is finite.  So this is a number for every $S$,
+            unlike $[M:S]$, which is infinite as soon as $S$ has smaller rank
+            than $M$; the two are the same only when $S$ is already of finite
+            index.
+
+            The torsion of $M/S$ is what the invariant factors of $M/S$ that
+            are not zero multiply to.  That decomposition is the presented
+            module's own, asked of it, and not a normal form computed here.
+            """
+            return prod(
+                invariant
+                for invariant in self.embedding().cokernel().invariants()
+                if invariant != 0
+            )
 
         def embedded_module_generators(self: Self) -> "OrderedSet":
             r"""Return the images $\iota(e_i)$ of this subobject's generators.
@@ -113,7 +151,7 @@ class Subobjects(Category):
             perpendicular = self.embedding().orthogonal_complement()
             inclusion = perpendicular.embedding()
             relations = matrix(
-                ZZ,
+                SageZZ,
                 [
                     _coordinate_vector(
                         inclusion.lift(image)
@@ -121,7 +159,7 @@ class Subobjects(Category):
                     for image in self.embedded_module_generators()
                 ],
             )
-            lifts = _free_quotient_lifts(perpendicular.rank(), relations)
+            lifts = _free_quotient_lifts(perpendicular, relations)
             generators = tuple(
                 zipsum(
                     lift,
@@ -131,7 +169,7 @@ class Subobjects(Category):
                 for lift in lifts
             )
             gram = matrix(
-                ZZ,
+                SageZZ,
                 [
                     [
                         left.b(right)
@@ -146,12 +184,31 @@ class Subobjects(Category):
             )
 
 
-def _free_quotient_lifts(rank: "Integer", relations: "MorphismMatrix") -> list:
-    from sage.modules.free_module import FreeModule as _sage_free_module
+def _free_quotient_lifts(module: "Module", relations: "MorphismMatrix") -> list:
+    r"""Return coordinates in ``module``'s framing of its quotient's generators.
 
-    free = _sage_free_module(ZZ, rank)
-    quotient = free / free.submodule(matrix(ZZ, relations).rows())
-    return [generator.lift() for generator in quotient.gens()]
+    The quotient by the submodule the rows of ``relations`` generate is the
+    cokernel of the morphism they are the matrix of, and its invariant-factor
+    generators are already written in ``module``'s coordinates -- the
+    presented module carries the free module's generating set.  So the lift
+    is the generator's coordinate vector, and no separate lifting map is
+    needed.
+    """
+    rows = matrix(SageZZ, relations).rows()
+    free = BasedFreeModule(SageZZ, module.module_generating_set())
+    domain = BasedFreeModule(SageZZ, len(rows))
+    presentation = module_homset(domain, free)(
+        dict(
+            zip(
+                domain.module_generating_set(),
+                (free._from_coordinates(row) for row in rows),
+            )
+        )
+    )
+    return [
+        _coordinate_vector(generator)
+        for generator in presentation.cokernel().smith_form_module_generators()
+    ]
 
 
 def Subobject(embedding: "ModuleMorphism") -> "Module":

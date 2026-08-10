@@ -22,6 +22,7 @@ a lattice back requires choosing one inside its rational span, which is what
 saturation does.
 """
 
+from dzack_research.preamble.categories.functors.free_forgetful_adjunction import Adjunction
 from sage.categories.functor import Functor
 from sage.structure.sage_object import SageObject
 
@@ -43,11 +44,25 @@ class BaseChangeFunctor(Functor):
 
         A free module base-changes to the free module on the same framing
         set: the generators do not move, only the ring they are combined
-        over does.
+        over does.  A form module base-changes with its form: the pairing of
+        two generators is the entry \(f\) carries into \(S\), so the Gram
+        matrix is the same matrix read there.
         """
-        return BasedFreeModule(
+        base_ring = module.base_ring()
+        formed = module in FormModules(base_ring)
+        underlying = module.forget_form() if formed else module
+        assert underlying in FramedFreeModules(base_ring), (
+            f"{module} is not free on its framing, and base change is "
+            "computed here by carrying that framing over to S. A module "
+            "with relations base-changes to the cokernel of its relations "
+            "read over S, which this does not compute."
+        )
+        changed = BasedFreeModule(
             self._ring_map.codomain(), module.module_generating_set()
         )
+        if not formed:
+            return changed
+        return FormModule(module.form().base_changed(changed))
 
     def _apply_functor_to_morphism(self, morphism: "ModuleMorphism") -> "ModuleMorphism":
         r"""Return \(f\otimes S\), the same matrix read over \(S\)."""
@@ -66,6 +81,29 @@ class BaseChangeFunctor(Functor):
 
     def _repr_(self) -> str:
         return f"Base change along {self._ring_map}"
+
+
+def fraction_field_base_change(base_ring: "Ring") -> BaseChangeFunctor:
+    r"""Return \(-\otimes_R\operatorname{Frac}(R)\), the rationalization functor.
+
+    Rationalizing an \(R\)-module is base change and nothing else, so it is
+    built as base change: the ring map is the inclusion
+    \(R\hookrightarrow\operatorname{Frac}(R)\), an actual morphism of the two
+    rings a session names, and the functor is the one this file already
+    defines along it.
+
+    The hypothesis is the one that makes the inclusion an inclusion.  An
+    integral domain embeds in its field of fractions by \(r\mapsto r/1\);
+    without the hypothesis there is no field of fractions to embed in, and
+    "the vector space of \(M\)" names nothing.
+    """
+    ring = own_ring(engine_ring(base_ring))
+    assert ring.is_integral_domain(), (
+        f"{ring} is not an integral domain, so it has no field of fractions "
+        "and no module over it has a rationalization"
+    )
+    fraction_field = ring.fraction_field()
+    return BaseChangeFunctor(fraction_field.coerce_map_from(ring))
 
 
 class RestrictionOfScalarsFunctor(Functor):

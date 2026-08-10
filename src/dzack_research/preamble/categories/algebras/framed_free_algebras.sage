@@ -14,12 +14,20 @@ The exposed *algebra* generating set is ``S``; the module generators are
 ``Mon(S)``.
 """
 
-from typing import Any, TYPE_CHECKING
+from collections.abc import Iterable as _Iterable
+from typing import Any, Self, TYPE_CHECKING
 
-from sage.categories.category_types import Category_over_base_ring
 from sage.categories.homset import Hom
 from sage.categories.morphism import SetMorphism
 from sage.monoids.free_abelian_monoid import FreeAbelianMonoid
+from sage.rings.abc import AlgebraicRealField as _AlgebraicRealFieldType
+from sage.rings.abc import RealIntervalField as _RealIntervalFieldType
+from sage.rings.infinity import Infinity as _Infinity
+from sage.rings.integer import Integer as _SageIntegerType
+from sage.rings.qqbar import QQbar as _AlgebraicNumbers
+from sage.rings.polynomial.polynomial_ring_constructor import (
+    PolynomialRing as _SagePolynomialRing,
+)
 from sage.rings.ideal import Ideal_generic
 from sage.sets.image_set import ImageSubobject
 from sage.structure.parent import Parent
@@ -58,7 +66,7 @@ assert "module_homset" in globals(), (
 )
 
 
-class FramedFreeAlgebras(Category_over_base_ring):
+class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
     r"""Free R-algebras equipped with the canonical map \(S \to U(\operatorname{FreeAlg}_R(S))\)."""
 
     @classmethod
@@ -141,6 +149,63 @@ class FramedFreeAlgebras(Category_over_base_ring):
                 codomain,
             )
 
+        def _an_element_(self) -> "Element":
+            r"""Return \(1+s\) for a generator \(s\), or \(1\) if there are none.
+
+            Named rather than left to be guessed: Sage's default looks for an
+            element by *converting a string*, and this algebra's constructor
+            rejects one -- so a parent built over this algebra would fail while
+            asking it for an example of itself.
+            """
+            generators = self.algebra_generating_set()
+            if generators.cardinality() == 0:
+                return self.one()
+            return self.one() + self.algebra_generator(
+                next(iter(generators))
+            )
+
+        def characteristic(self) -> "Integer":
+            r"""Return the characteristic, which is the base ring's.
+
+            Adjoining indeterminates adds no additive relation, so nothing
+            here can change it.
+            """
+            return self.base_ring().characteristic()
+
+        def is_field(self) -> bool:
+            r"""Return whether this algebra is a field.
+
+            A generator is never invertible -- there is no monomial of
+            negative degree -- so this is a field exactly when there are no
+            generators and the base ring is one.
+            """
+            if self.number_of_algebra_generators() > 0:
+                return False
+            return bool(self.base_ring().is_field())
+
+        def is_integral_domain(self) -> bool:
+            r"""Return whether this algebra has no zero divisors.
+
+            The degree is additive on products, so a product of nonzero
+            elements has the sum of their degrees and cannot vanish -- for
+            exactly as long as the base ring has no zero divisors either.
+            """
+            return bool(self.base_ring().is_integral_domain())
+
+        def krull_dimension(self) -> "Integer":
+            r"""Return \(\dim R+|S|\), for \(R\) Noetherian.
+
+            Adjoining one indeterminate raises the dimension by one, which is
+            the statement that makes the polynomial ring over a field of
+            dimension \(n\) the coordinate ring of \(n\)-space.
+            """
+            rank = self.number_of_algebra_generators()
+            assert rank.is_finite(), (
+                "the dimension of an algebra on infinitely many generators is "
+                "infinite, and is not read off a finite sum"
+            )
+            return self.base_ring().krull_dimension() + rank.finite_value()
+
         def linear_combination(self, coefficients: dict) -> "Element":
             r"""Refuse: an algebra element is built from the algebra generators.
 
@@ -154,6 +219,382 @@ class FramedFreeAlgebras(Category_over_base_ring):
                 "generators by ring operations, not by linear combination "
                 "of the generating set"
             )
+
+    class ElementMethods:
+        def degree(self: Self) -> "Integer":
+            r"""Return \(\deg\) of this element: the total degree.
+
+            \(\operatorname{FreeAlg}_R(S)\) is graded by
+            \(\operatorname{Mon}(S)\to\NN\), the sum of exponents, at every
+            rank and for \(S\) infinite as well -- an element is a *finitely*
+            supported function on the monomials, so the maximum over its
+            support exists whatever \(S\) is.  Read off the framing, not asked
+            of an engine.  The zero element has degree \(-\infty\), which is
+            what makes the degree additive on products.
+            """
+            monomials = self.coefficients()
+            if not monomials:
+                return -_Infinity
+            return max(
+                sum(monomial.dict().values()) for monomial in monomials
+            )
+
+        def multidegree(self: Self) -> dict:
+            r"""Return \(s\mapsto\deg_s\), the degree in each generator.
+
+            Also canonical at every rank, and for a different reason than a
+            leading monomial: no order on \(\operatorname{Mon}(S)\) is chosen
+            here.  \(\deg_s\) is the largest exponent of \(s\) over the
+            support, so the answer is a function on \(S\) -- given as the part
+            that is nonzero, since a generator absent from the support has
+            degree zero and there may be infinitely many of those.
+            """
+            degrees: dict = {}
+            for monomial in self.coefficients():
+                for label, exponent in monomial.dict().items():
+                    if exponent > degrees.get(label, 0):
+                        degrees[label] = exponent
+            return degrees
+
+        # ---------------------------------------------------------------
+        # Coefficients, read off the framing.  An element *is* a finitely
+        # supported function on Mon(S), so these are lookups and not
+        # questions for an engine.
+        # ---------------------------------------------------------------
+
+        def coefficient(self: Self, monomial: "Element") -> "Element":
+            r"""Return the coefficient of ``monomial``, zero when absent."""
+            return self.coefficients().get(
+                monomial, self.parent().base_ring().zero()
+            )
+
+        def constant_coefficient(self: Self) -> "Element":
+            r"""Return the coefficient of \(1\): this element's value at zero."""
+            return self.coefficient(self.parent().monomial_monoid().one())
+
+        def leading_coefficient(self: Self) -> "Element":
+            r"""Return the coefficient of the top-degree part, at rank one.
+
+            Above rank one 'leading' is a choice of monomial order, which this
+            algebra does not make -- see :meth:`multidegree`, which needs none.
+            """
+            parent = self.parent()
+            assert parent.number_of_algebra_generators() == 1, (
+                "a leading coefficient at higher rank names a monomial order, "
+                "and none is chosen here"
+            )
+            top = self.degree()
+            if top == -_Infinity:
+                return parent.base_ring().zero()
+            return next(
+                coefficient
+                for monomial, coefficient in self.coefficients().items()
+                if sum(monomial.dict().values()) == top
+            )
+
+        def is_monic(self: Self) -> bool:
+            r"""Return whether the leading coefficient is \(1\)."""
+            return self.leading_coefficient() == self.parent().base_ring().one()
+
+        def monic(self: Self) -> "Element":
+            r"""Return this element scaled to leading coefficient \(1\)."""
+            leading = self.leading_coefficient()
+            assert leading.is_unit(), (
+                "scaling to a monic element requires a unit leading "
+                "coefficient"
+            )
+            return self.parent().base_ring()(leading**-1) * self
+
+        # ---------------------------------------------------------------
+        # Division, factorisation and roots.  Each is an algorithm rather
+        # than a definition, so each crosses to the engine at the algebra's
+        # own presentation -- once -- and comes back as algebra elements.
+        # ---------------------------------------------------------------
+
+        def _delegate(self: Self, name: str, *arguments: object) -> object:
+            r"""Return the engine's answer to ``name`` at the presentation."""
+            parent = self.parent()
+            presented = [parent._as_polynomial(self)]
+            for argument in arguments:
+                presented.append(
+                    parent._as_polynomial(argument)
+                    if isinstance(argument, FreeAlgebraOnSetElement)
+                    else argument
+                )
+            return getattr(presented[0], name)(*presented[1:])
+
+        def derivative(self: Self, label: "Element" = None) -> "Element":
+            r"""Return \(\partial/\partial s\) for the generator \(s\).
+
+            A derivation of the algebra, determined by where it sends the
+            generators -- so it is asked with a generator's label, and only
+            an algebra of rank one may leave that open.
+            """
+            parent = self.parent()
+            if label is None:
+                assert parent.number_of_algebra_generators() == 1, (
+                    "which generator to differentiate in is only obvious at "
+                    "rank one"
+                )
+                label = tuple(parent.algebra_generating_set())[0]
+            variable = parent._polynomial_variables()[label]
+            return parent._from_polynomial(
+                parent._as_polynomial(self).derivative(variable)
+            )
+
+        def quo_rem(self: Self, other: "Element") -> tuple:
+            r"""Return \((q,r)\) with ``self`` \(=q\cdot\)``other``\(+r\)."""
+            quotient, remainder = self._delegate("quo_rem", other)
+            parent = self.parent()
+            return (
+                parent._from_polynomial(quotient),
+                parent._from_polynomial(remainder),
+            )
+
+        def gcd(self: Self, other: "Element") -> "Element":
+            r"""Return a greatest common divisor of the two."""
+            return self.parent()._from_polynomial(self._delegate("gcd", other))
+
+        def lcm(self: Self, other: "Element") -> "Element":
+            r"""Return a least common multiple of the two."""
+            return self.parent()._from_polynomial(self._delegate("lcm", other))
+
+        def xgcd(self: Self, other: "Element") -> tuple:
+            r"""Return \((g,a,b)\) with \(g=a\cdot\)``self``\(+b\cdot\)``other``."""
+            parent = self.parent()
+            return tuple(
+                parent._from_polynomial(entry)
+                for entry in self._delegate("xgcd", other)
+            )
+
+        def is_irreducible(self: Self) -> bool:
+            r"""Return whether this element is irreducible in the algebra."""
+            return bool(self._delegate("is_irreducible"))
+
+        def irreducible_factors(self: Self) -> tuple:
+            r"""Return the irreducible factors with their multiplicities.
+
+            The unit is not among them: over a field it is
+            :meth:`leading_coefficient`, and reporting it as a factor would
+            make a unit look like an irreducible.
+            """
+            parent = self.parent()
+            return tuple(
+                (parent._from_polynomial(factor), multiplicity)
+                for factor, multiplicity in self._delegate("factor")
+            )
+
+        def resultant(self: Self, other: "Element") -> "Element":
+            r"""Return \(\operatorname{Res}\) of the two, at rank one.
+
+            An element of the base ring: it vanishes exactly when the two have
+            a common root in an extension, which is what makes it the tool it
+            is.
+            """
+            assert self.parent().number_of_algebra_generators() == 1, (
+                "the resultant eliminates one variable, and which one is only "
+                "obvious at rank one"
+            )
+            return self._delegate("resultant", other)
+
+        def discriminant(self: Self) -> "Element":
+            r"""Return \(\operatorname{disc}\), zero exactly on a repeated root."""
+            assert self.parent().number_of_algebra_generators() == 1, (
+                "the discriminant is the resultant with the derivative, and "
+                "that names a variable"
+            )
+            return self._delegate("discriminant")
+
+        def roots(self: Self, ring: "Ring" = None, multiplicities: bool = True):
+            r"""Return the roots of this element, with multiplicities.
+
+            ``ring`` left open means the base ring, as it does everywhere.
+            """
+            assert self.parent().number_of_algebra_generators() == 1, (
+                "roots are the zeros of an element of an algebra of rank one; "
+                "of higher rank the zero locus is a variety"
+            )
+            presented = self.parent()._as_polynomial(self)
+            if ring is None:
+                return presented.roots(multiplicities=multiplicities)
+            if isinstance(ring, (_AlgebraicRealFieldType, _RealIntervalFieldType)):
+                # The engine isolates real roots in the Bernstein basis
+                # through a mutable ZZ^{n+1} buffer, which a module element is
+                # not.  The real roots are the algebraic numbers of zero
+                # imaginary part, so the algebraic closure answers the same
+                # question and is isolated without one.
+                over_the_closure = presented.roots(
+                    ring=_AlgebraicNumbers, multiplicities=True
+                )
+                real_roots = sorted(
+                    (
+                        (ring(root), multiplicity)
+                        for root, multiplicity in over_the_closure
+                        if root.imag().is_zero()
+                    ),
+                    key=lambda pair: pair[0],
+                )
+                if multiplicities:
+                    return real_roots
+                return [root for root, _ in real_roots]
+            return presented.roots(ring=ring, multiplicities=multiplicities)
+
+        def any_root(self: Self, ring: "Ring" = None) -> "Element":
+            r"""Return one root, in ``ring`` when given."""
+            roots = self.roots(ring=ring, multiplicities=False)
+            assert roots, "this element has no root in that ring"
+            return roots[0]
+
+        def monomials(self: Self) -> tuple:
+            r"""Return the monomials this element is supported on."""
+            return tuple(self.coefficients())
+
+        def is_constant(self: Self) -> bool:
+            r"""Return whether this element lies in the base ring."""
+            return self.degree() <= 0
+
+        def is_homogeneous(self: Self) -> bool:
+            r"""Return whether every monomial in the support has one degree.
+
+            The grading is the algebra's own, so this is a question about the
+            support and holds at every rank.  The zero element is homogeneous,
+            vacuously and usefully: it belongs to every graded piece.
+            """
+            degrees = {
+                sum(monomial.dict().values()) for monomial in self.coefficients()
+            }
+            return len(degrees) <= 1
+
+        def homogeneous_components(self: Self) -> dict:
+            r"""Return \(d\mapsto\) the degree-\(d\) part, over the support.
+
+            The decomposition \(A=\bigoplus_d A_d\), read off the grading:
+            their sum is this element, which is what makes it a decomposition
+            rather than a filtration.
+            """
+            parent = self.parent()
+            components: dict = {}
+            for monomial, coefficient in self.coefficients().items():
+                degree = sum(monomial.dict().values())
+                part = components.get(degree, parent.zero())
+                components[degree] = part + coefficient * parent.module_generator(
+                    monomial
+                )
+            return components
+
+        def truncate(self: Self, degree: "Integer") -> "Element":
+            r"""Return the part of degree below ``degree``.
+
+            The image in \(A/A_{\geq d}\), lifted back: the terms it drops are
+            exactly those the quotient kills.
+            """
+            parent = self.parent()
+            kept = parent.zero()
+            for monomial, coefficient in self.coefficients().items():
+                if sum(monomial.dict().values()) < degree:
+                    kept = kept + coefficient * parent.module_generator(monomial)
+            return kept
+
+        def is_squarefree(self: Self) -> bool:
+            r"""Return whether no irreducible divides this element twice.
+
+            Decided by \(\gcd(f,f')\), which is a unit exactly then -- so it
+            needs no factorisation, and the derivative it needs is this
+            algebra's own.
+            """
+            assert self.parent().number_of_algebra_generators() == 1, (
+                "the criterion by the derivative names a variable; at higher "
+                "rank squarefreeness is decided by factorisation"
+            )
+            if self == self.parent().zero():
+                return False
+            return self.gcd(self.derivative()).degree() == 0
+
+        def complex_roots(self: Self) -> tuple:
+            r"""Return the roots in \(\overline{\QQ}\), where there are \(\deg\) of them.
+
+            The algebraically closed answer, which is the one the degree
+            counts: over the base ring there may be fewer.
+            """
+            return tuple(self.roots(ring=_AlgebraicNumbers, multiplicities=True))
+
+        def content(self: Self) -> "Element":
+            r"""Return the gcd of the coefficients.
+
+            A statement about the coefficients, so it is read off the framing:
+            the element is primitive exactly when this is a unit, and Gauss's
+            lemma is what makes that multiplicative.
+            """
+            coefficients = tuple(self.coefficients().values())
+            if not coefficients:
+                return self.base_ring().zero()
+            content = coefficients[0]
+            for coefficient in coefficients[1:]:
+                content = content.gcd(coefficient)
+            return content
+
+        def denominator(self: Self) -> "Element":
+            r"""Return the least common denominator of the coefficients."""
+            denominator = self.base_ring().one()
+            for coefficient in self.coefficients().values():
+                denominator = denominator.lcm(coefficient.denominator())
+            return denominator
+
+        def numerator(self: Self) -> "Element":
+            r"""Return this element cleared of denominators.
+
+            The same element scaled by :meth:`denominator`, so its
+            coefficients are integral -- which is what lets a factorisation
+            over \(\ZZ\) speak about a rational polynomial.
+            """
+            return self.denominator() * self
+
+        def change_ring(self: Self, ring: "Ring") -> "Element":
+            r"""Return this element with its coefficients moved to ``ring``.
+
+            The image under \(\operatorname{FreeAlg}_R(S)\to
+            \operatorname{FreeAlg}_{R'}(S)\), the free construction applied to
+            a map of base rings: the generating set is untouched, which is
+            what makes the two algebras comparable at all.
+            """
+            target = FreeAlgebraOn(ring, self.parent().algebra_generating_set())
+            image = target.zero()
+            for monomial, coefficient in self.coefficients().items():
+                term = ring(coefficient) * target.one()
+                for label, exponent in monomial.dict().items():
+                    term = term * target.algebra_generator(label) ** exponent
+                image = image + term
+            return image
+
+        def subs(self: Self, values: dict) -> "Element":
+            r"""Return the value of this element at ``values``, keyed by label.
+
+            Evaluation is the universal property, so it is the algebra map out
+            of a free algebra determined by where the generators go -- and a
+            partial assignment leaves the rest of them alone.
+            """
+            parent = self.parent()
+            zero = parent.base_ring().zero()
+            total = zero
+            for monomial, coefficient in self.coefficients().items():
+                term = coefficient
+                for label, exponent in monomial.dict().items():
+                    if label in values:
+                        term = term * values[label] ** exponent
+                    else:
+                        term = term * parent.algebra_generator(label) ** exponent
+                total = total + term
+            return total
+
+        def __call__(self: Self, *values: object) -> "Element":
+            r"""Evaluate at the generators in their framing's order."""
+            labels = tuple(self.parent().algebra_generating_set())
+            assert len(values) == len(labels), (
+                f"this algebra has {len(labels)} generators, got {len(values)} "
+                "values"
+            )
+            return self.subs(dict(zip(labels, values)))
+
 
 
 class FreeAlgebraMorphism(ModuleMorphism):
@@ -284,6 +725,10 @@ class FreeAlgebraOnSet(FreeModuleOnSet):
     Element = FreeAlgebraOnSetElement
 
     def __init__(self, base_ring: "Ring", algebra_generating_set: "OrderedSet") -> None:
+        # Intake, before the category is named: an algebra over the owned view
+        # of a ring whose underlying module is over the engine's is not one
+        # object, and the framing morphism is where that shows.
+        base_ring = engine_ring(base_ring)
         if isinstance(algebra_generating_set, Parent):
             self._algebra_generating_set = algebra_generating_set
         else:
@@ -328,6 +773,49 @@ class FreeAlgebraOnSet(FreeModuleOnSet):
         )
         return self.base_ring()(value) * self.one()
 
+    def _engine_base_ring(self) -> Parent:
+        r"""Return the base ring as the engine knows how to compute in it.
+
+        A base ring the preamble presents as a quotient -- a number field --
+        is a ring Sage will build polynomials over and then decline to factor
+        in, because the algorithms are written for its own number fields.  So
+        the crossing translates the coefficients too, and this says where they
+        go.  Every other base ring is its own answer.
+        """
+        base_ring = self.base_ring()
+        if base_ring.category().is_subcategory(OwnedNumberFields()):
+            return base_ring._engine_field()
+        # A ring the session names is reported in the session's word; Singular
+        # is not told about that word, so the crossing unwraps it here.
+        return engine_ring(base_ring)
+
+    def _as_engine_coefficient(self, coefficient: "Element") -> "Element":
+        r"""Return ``coefficient`` in :meth:`_engine_base_ring`."""
+        base_ring = self.base_ring()
+        if not base_ring.category().is_subcategory(OwnedNumberFields()):
+            # Only a number field's coefficients are written in a basis the
+            # engine spells differently; a wrapped ring's elements are the
+            # engine's already.
+            return coefficient
+        # The power basis of the primitive element is what the quotient
+        # reduces to, and the engine's generator satisfies the same
+        # polynomial, so the coordinates carry over unchanged.
+        engine = self._engine_base_ring()
+        generator = engine.gen()
+        total = engine.zero()
+        power = engine.one()
+        for entry in coefficient._power_basis_coordinates():
+            total += entry * power
+            power *= generator
+        return total
+
+    def _from_engine_coefficient(self, value: "Element") -> "Element":
+        r"""Return ``value`` back in the base ring."""
+        base_ring = self.base_ring()
+        if not base_ring.category().is_subcategory(OwnedNumberFields()):
+            return value
+        return base_ring._from_engine_element(value)
+
     @cached_method
     def _polynomial_ring(self) -> Parent:
         r"""Return \(R[x_s:s\in S]\), which this algebra *is* for finite \(S\).
@@ -337,16 +825,26 @@ class FreeAlgebraOnSet(FreeModuleOnSet):
         both.  The bijection \(S\leftrightarrow\{x_s\}\) is chosen here, once,
         and stays private: what leaves is :meth:`divides`, a word about this
         algebra.
+
+        At rank one the presentation is a ring in one variable and not a ring
+        in a family of size one.  They are isomorphic and their *algorithms*
+        are not: division with remainder, gcd, root finding and factorisation
+        into linear factors are written for one variable, and the engine
+        offers them only there.
         """
         assert self._algebra_generating_set in Sets().Finite(), (
             "the polynomial presentation names one variable per generator, "
             "so it exists for finitely generated free algebras"
         )
-        return PolynomialRing(
-            self.base_ring(),
-            self.number_of_algebra_generators().finite_value(),
-            "x",
-        )
+        rank = self.number_of_algebra_generators().finite_value()
+        engine_base_ring = self._engine_base_ring()
+        if rank == 1:
+            # Sage's constructor by its private name: the shared namespace
+            # binds ``PolynomialRing`` to the delivery, which returns a free
+            # algebra -- and this is the crossing *into* the engine, where a
+            # free algebra is what we already have.
+            return _SagePolynomialRing(engine_base_ring, "x")
+        return _SagePolynomialRing(engine_base_ring, rank, "x")
 
     @cached_method
     def _polynomial_variables(self) -> dict:
@@ -355,16 +853,28 @@ class FreeAlgebraOnSet(FreeModuleOnSet):
         )
 
     def _as_polynomial(self, element: "Element") -> "Element":
-        r"""Transport ``element`` along the polynomial presentation."""
+        r"""Transport ``element`` along the polynomial presentation.
+
+        Built by handing the ring its coefficients, not by multiplying its
+        variables together.  The two agree as elements, and only the first is
+        the ring *constructing* one: a ring whose elements carry more than
+        their own class -- a category refinement, say -- gives that to what it
+        constructs, and Cython arithmetic does not.
+        """
         ring = self._polynomial_ring()
-        variables = self._polynomial_variables()
-        total = ring.zero()
+        labels = tuple(self._algebra_generating_set)
+        position_of = {label: position for position, label in enumerate(labels)}
+        zero = self.base_ring().zero()
+        terms: dict = {}
         for monomial, coefficient in element.coefficients().items():
-            term = ring.one()
+            exponents = [0] * len(labels)
             for label, exponent in monomial.dict().items():
-                term *= variables[label] ** exponent
-            total += coefficient * term
-        return total
+                exponents[position_of[label]] = exponent
+            key = exponents[0] if len(labels) == 1 else tuple(exponents)
+            terms[key] = terms.get(key, zero) + coefficient
+        return ring(
+            {key: self._as_engine_coefficient(value) for key, value in terms.items()}
+        )
 
     def ideal(self, generators: "OrderedSet") -> FreeAlgebraIdeal:
         r"""Return the ideal generated by ``generators``, with its normal form."""
@@ -374,15 +884,30 @@ class FreeAlgebraOnSet(FreeModuleOnSet):
         )
 
     def _from_polynomial(self, polynomial: "Element") -> "Element":
-        r"""Transport ``polynomial`` back along the polynomial presentation."""
+        r"""Transport ``polynomial`` back along the polynomial presentation.
+
+        A polynomial in one variable indexes its coefficients by an exponent
+        and one in several by a tuple of them; both are the same statement
+        about \(\operatorname{Mon}(S)\), read here in whichever form the
+        presentation used.
+        """
         monoid = self.monomial_monoid()
         labels = tuple(self._algebra_generating_set)
         result = self.zero()
         for exponents, coefficient in polynomial.dict().items():
+            # One variable indexes by an exponent, several by a sequence of
+            # them -- and the engine's sequence is its own type, not a tuple.
+            exponents = (
+                tuple(exponents)
+                if isinstance(exponents, _Iterable)
+                else (exponents,)
+            )
             monomial = monoid.one()
             for label, exponent in zip(labels, exponents):
                 monomial *= monoid.gen(label) ** exponent
-            result += coefficient * self.module_generator(monomial)
+            result += self._from_engine_coefficient(coefficient) * (
+                self.module_generator(monomial)
+            )
         return result
 
     def monomial_monoid(self) -> Parent:
@@ -543,11 +1068,35 @@ class FreeAlgebraOnSet(FreeModuleOnSet):
         r"""Return the multiplicative identity: the empty monomial."""
         return self.module_generator(self.monomial_monoid().one())
 
+    def _first_ngens(self, count: int) -> tuple:
+        r"""Return the first ``count`` generators, for the ``R.<x, y> =`` sugar.
+
+        The preparser expands that binding into a call and this reader; both
+        are Sage's spelling of what this class already answers with
+        :meth:`algebra_generators`.
+        """
+        return tuple(self.algebra_generators())[:count]
+
+    def __getitem__(self, names: "OrderedSet | str | int") -> "FreeAlgebraOnSet":
+        r"""Return \(A[y]\), the free algebra over this one on ``names``.
+
+        The subscript is this class's own.  Nothing here inherits a meaning
+        for it, so it can carry the one a polynomial ring's subscript carries:
+        adjoining variables is the free construction applied again, now over
+        \(A\).
+        """
+        return polynomial_ring(self, names)
+
     def _repr_(self) -> str:
         return f"Free {self.base_ring()}-algebra on {self._algebra_generating_set}"
 
 
-@cached_function
+@cached_function(
+    key=lambda base_ring, algebra_generating_set: (
+        engine_ring(base_ring),
+        algebra_generating_set,
+    )
+)
 def FreeAlgebraOn(base_ring: "Ring", algebra_generating_set: "OrderedSet") -> FreeAlgebraOnSet:
     r"""Return ``\operatorname{FreeAlg}_R(S)``, the same object on every call.
 
@@ -555,5 +1104,56 @@ def FreeAlgebraOn(base_ring: "Ring", algebra_generating_set: "OrderedSet") -> Fr
     it twice would yield two parents with no map between them and no
     comparable elements.  \(\operatorname{FreeAlg}_R(-)\) is a functor, and a
     functor must be well defined on objects, so \((R,S)\) names one algebra.
+
+    A ring and the owned view of it are one ring, so they key the same
+    algebra: the object is built over the engine either way, and two
+    entries here would be the two incomparable parents this cache exists
+    to prevent.
     """
     return FreeAlgebraOnSet(base_ring, algebra_generating_set)
+
+
+def polynomial_ring(
+    base_ring: "Ring",
+    *arguments: object,
+    **keywords: object,
+) -> FreeAlgebraOnSet:
+    r"""Return \(R[x_s:s\in S]\) as the free \(R\)-algebra on \(S\).
+
+    A polynomial ring is not a separate construction: it *is* the free
+    commutative algebra on its variables, and a notebook that asks for one
+    receives that object.  Sage's own polynomial rings stay behind the
+    boundary as the engine the algorithms run in; nothing here hands one out.
+
+    The variables may be named -- ``"x"``, ``"x, y"``, a family of labels --
+    or counted, which names them \(x_0,\dots\).  Both at once is how
+    ``R.<x, y> = PolynomialRing(QQ, 2)`` reaches here, and the names win: the
+    count is the length they already have.
+    """
+    names = keywords.pop("names", None)
+    counted = None
+    for argument in arguments:
+        if isinstance(argument, (int, _SageIntegerType)):
+            counted = argument
+        elif names is None:
+            names = argument
+    if names is None:
+        assert counted is not None, (
+            "a polynomial ring needs its variables named or counted"
+        )
+        names = tuple(f"x{index}" for index in range(counted))
+    match names:
+        case str():
+            labels = tuple(
+                part.strip() for part in names.split(",") if part.strip()
+            )
+            if counted is not None and len(labels) == 1 and counted != 1:
+                # A count and one name is a *prefix*: n variables called
+                # x0, ..., x(n-1), which is how Sage spells it.
+                labels = tuple(f"{labels[0]}{index}" for index in range(counted))
+        case _:
+            labels = tuple(names)
+    assert counted is None or len(labels) == counted, (
+        f"{counted} variables were asked for and {len(labels)} were named"
+    )
+    return FreeAlgebraOn(base_ring, finite_ordered_set(labels))

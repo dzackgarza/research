@@ -16,7 +16,7 @@ from typing import Self, TYPE_CHECKING
 from sage.categories.category import Category
 from sage.groups.additive_abelian.qmodnz import QmodnZ
 from sage.matrix.matrix0 import Matrix
-from sage.rings.rational_field import QQ
+from sage.rings.rational_field import QQ as SageQQ
 
 if TYPE_CHECKING:
     # The ordered-set noun is type-only: the preamble loads into one
@@ -52,13 +52,13 @@ class DiscriminantQuadraticModules(Category):
         assert module in FinitelyPresentedTorsionModules(), (
             "a discriminant form requires a finitely presented torsion module"
         )
-        relations = module.relation_matrix()._sage_matrix().change_ring(ZZ)
-        assert all(entry in ZZ for entry in (relations * gram).list()), (
+        relations = module.relation_matrix()._sage_matrix().change_ring(SageZZ)
+        assert all(entry in SageZZ for entry in (relations * gram).list()), (
             "the polarization is not defined on the classes: some relation "
             "does not pair integrally with the module_generators"
         )
         assert all(
-            (norm := row * gram * row) in ZZ and norm % 2 == 0
+            (norm := row * gram * row) in SageZZ and norm % 2 == 0
             for row in relations.rows()
         ), "q is not defined on the classes: some relation has norm outside 2Z"
         form = QuadraticForm(module, QmodnZ(2), gram)
@@ -129,6 +129,18 @@ class DiscriminantQuadraticModules(Category):
             )
             return DiscriminantQuadraticModules().from_module(module, gram)
 
+        def form_vanishes_on(self: Self, elements: "OrderedSet") -> bool:
+            r"""Return whether $q$ is zero on every element of ``elements``.
+
+            The quadratic condition, and it is the stronger one: $q(x)=0$
+            throughout a subgroup forces $b_q$ to vanish on it too, since
+            $q(x+y)=q(x)+q(y)+2b_q(x,y)$ leaves $2b_q(x,y)=0$ in
+            $\mathbb Q/2\mathbb Z$ and so $b_q(x,y)=0$ in
+            $\mathbb Q/\mathbb Z$.  The converse fails, which is why the
+            sibling category answers this for itself.
+            """
+            return all(element.q() == 0 for element in elements)
+
         def associated_quadratic_form(self: Self) -> "QuadraticFormMorphism":
             r"""Return this form: it is already the quadratic one."""
             return self
@@ -192,6 +204,6 @@ class DiscriminantQuadraticModules(Category):
         def is_characteristic(self: Self) -> bool:
             r"""Return whether $q(x)=b(x,v^*)$ modulo $\mathbb Z$ for every $x$."""
             return all(
-                x.q().lift() - x.b(self).lift() in ZZ
+                x.q().lift() - x.b(self).lift() in SageZZ
                 for x in self.parent()
             )

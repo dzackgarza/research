@@ -8,13 +8,117 @@ import sage.categories.category_with_axiom as cwa
 from sage.categories.category_types import Category_module
 from sage.categories.category_with_axiom import CategoryWithAxiom_over_base_ring
 from sage.categories.modules import Modules
+from sage.categories.principal_ideal_domains import PrincipalIdealDomains
+from sage.matrix.constructor import matrix
 from sage.misc.cachefunc import cached_method
+from sage.structure.sage_object import SageObject
 
 from sage_lattice_category_spike.objects.sets import Sets
 
 # Register FinitelyGenerated axiom string if not present in Sage's axiom container
 if "FinitelyGenerated" not in cwa.all_axioms:
     cwa.all_axioms.add("FinitelyGenerated")
+
+
+class FreeResolution(SageObject):
+    r"""The complex $0\leftarrow M\leftarrow F_0\leftarrow F_1\leftarrow 0$.
+
+    The differentials are numbered along the complex as it is written, so
+    $d_1$ is the framing epimorphism $F_0\twoheadrightarrow M$ and $d_2$,
+    when there is one, is the inclusion of the relation module into $F_0$.
+    Numbering the augmentation is what makes a free module the specialization
+    it is rather than a separate answer: a free module has no relations, the
+    complex stops after $d_1$, and that one differential is an isomorphism.
+    """
+
+    def __init__(self, module: "Module") -> None:
+        base_ring = engine_ring(module.base_ring())
+        assert base_ring in PrincipalIdealDomains(), (
+            "a submodule of a free module is free over a principal ideal "
+            "domain, which is what stops this resolution at one relation step"
+        )
+        augmentation = module.framing_morphism()
+        free_on_generators = augmentation.domain()
+        relations = module.relation_matrix()._sage_matrix()
+        # Sage resolves $F/N$ for a submodule $N\subseteq F$, so handing it
+        # the relation module is handing it this module.  What comes back is
+        # a basis of the relations as the columns of the first differential:
+        # the reduction over the PID, done by the engine and not restated
+        # here.  A free module hands over the zero submodule and the basis
+        # has no columns, which is how that case is the same construction.
+        relation_basis = (
+            (base_ring ** relations.ncols())
+            .submodule(relations.rows())
+            .free_resolution()
+            .matrix(1)
+        )
+        self._module = module
+        self._differentials = (augmentation,) + _relation_inclusion(
+            free_on_generators, relation_basis.columns()
+        )
+
+    def module(self) -> "Module":
+        r"""Return the module this is a resolution of."""
+        return self._module
+
+    def length(self) -> int:
+        r"""Return the number of differentials."""
+        return len(self._differentials)
+
+    def differential(self, index: int) -> "ModuleMorphism":
+        r"""Return the ``index``-th differential, counted from $M$."""
+        assert 1 <= index <= self.length(), (
+            f"this resolution has differentials 1 to {self.length()}"
+        )
+        return self._differentials[index - 1]
+
+    def matrix(self, index: int) -> "Matrix":
+        r"""Return the matrix of the ``index``-th differential.
+
+        A morphism's matrix here is read in the two framings with its
+        domain's generators indexing the rows, so the relations of $d_2$ are
+        its rows.
+        """
+        return matrix(self.differential(index).matrix())
+
+    def _repr_(self) -> str:
+        stages = " <-- ".join(
+            f"R^{differential.domain().number_of_module_generators()}"
+            for differential in self._differentials
+        )
+        return f"0 <-- {self._module} <-- {stages} <-- 0"
+
+
+def _relation_inclusion(free_on_generators: "Module", columns: list) -> tuple:
+    r"""Return the inclusion $F_1\hookrightarrow F_0$ of the relation module.
+
+    Each column is a relation written in the generators of $F_0$.  With no
+    columns there is no such morphism to return, and the resolution is one
+    differential long.
+    """
+    if not columns:
+        return ()
+    relation_module = BasedFreeModule(
+        free_on_generators.base_ring(), Sets.Δ[len(columns) - 1]
+    )
+    module_generators = free_on_generators.module_generators()
+    return (
+        module_homset(relation_module, free_on_generators)(
+            dict(
+                zip(
+                    relation_module.module_generating_set(),
+                    (
+                        zipsum(
+                            column,
+                            module_generators,
+                            free_on_generators.zero(),
+                        )
+                        for column in columns
+                    ),
+                )
+            )
+        ),
+    )
 
 
 class FinitelyGeneratedModules(CategoryWithAxiom_over_base_ring):
@@ -29,14 +133,36 @@ class FinitelyGeneratedModules(CategoryWithAxiom_over_base_ring):
     class ParentMethods:
         def module_generators(self):
             r"""Return the finite framed generators as a tuple."""
-            module_generating_set = self.module_generating_set()
-            assert module_generating_set in Sets().Finite(), (
-                "module_generators() is defined only for finitely generated modules"
-            )
-            return tuple(
-                self.module_generator(element_of_S)
-                for element_of_S in module_generating_set
-            )
+            cached = self.__dict__.get("_preamble_module_generators")
+            if cached is None:
+                module_generating_set = self.module_generating_set()
+                assert module_generating_set in Sets().Finite(), (
+                    "module_generators() is defined only for finitely generated modules"
+                )
+                cached = tuple(
+                    self.module_generator(element_of_S)
+                    for element_of_S in module_generating_set
+                )
+                self._preamble_module_generators = cached
+            return cached
+
+        def free_resolution(self) -> FreeResolution:
+            r"""Return the free resolution of this module.
+
+            A resolution writes $M$ in free modules: $F_0$ on this module's
+            generating set, $F_1$ on a basis of the relations among them, and
+            $0\leftarrow M\leftarrow F_0\leftarrow F_1\leftarrow 0$ exact.
+            Over a principal ideal domain the relation module is free, so
+            there is nothing left to resolve after $F_1$ and the complex is
+            finite -- which is the hypothesis the construction asserts.
+
+            A free module has no relations, so $F_1$ is absent and the
+            resolution is its framing isomorphism alone: a free module
+            resolves in one step by the identity.  Nothing is special-cased
+            to say so; the relation module is zero and the same construction
+            returns one differential instead of two.
+            """
+            return FreeResolution(self)
 
         def is_finitely_generated(self) -> bool:
             r"""Return whether this module is finitely generated.

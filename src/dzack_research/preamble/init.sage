@@ -21,6 +21,7 @@
 # Only the text/latex slot is touched. text/plain is still emitted alongside, so
 # nothing is lost; print(), tracebacks, plots and images are untouched.
 
+from sage.misc.misc_c import prod
 from sage.structure.sage_object import SageObject
 from pathlib import Path
 import os
@@ -30,11 +31,6 @@ from sage.libs.gap.libgap import libgap
 
 Σ = sum
 Π = prod
-
-ℤ = ZZ
-ℚ = QQ
-ℝ = RR
-ℂ = CC
 
 # This file *is* the startup file (via symlink). Sibling scripts live next to it.
 _PREAMBLE = Path(os.environ["SAGE_STARTUP_FILE"]).resolve().parent
@@ -51,6 +47,14 @@ load(str(_PREAMBLE / "catalogue.sage"))
 load(str(_PREAMBLE / "sterk.sage"))
 
 Lattices.install(globals())
+
+# After the install, which is where ``ZZ`` becomes the session's name for the
+# ring: these are the same names written the way a paper writes them, so they
+# must name the same objects.
+ℤ = ZZ
+ℚ = QQ
+ℝ = RR
+ℂ = CC
 
 from sage_julia_bridge import JuliaHandle, julia
 
@@ -80,6 +84,4 @@ get_ipython().display_formatter.formatters["text/latex"].for_type(
 
 # Sage routes ``load(...)`` through its active preparser, so the interactive
 # extension is installed only after every authored preamble file has loaded.
-from dzack_research.preamble.preparser import install_preparser
-
-install_preparser()
+import sageparse.preparser.research  # noqa: F401

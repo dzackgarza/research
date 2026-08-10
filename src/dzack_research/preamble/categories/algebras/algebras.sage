@@ -5,14 +5,15 @@ a set S, exactly as a framed R-module is equipped with a surjection from a free
 R-module on S.
 """
 
-from sage.categories.category_types import Category_over_base_ring
+from dzack_research.preamble.categories.rings.rings import OwnedBaseRing
+from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
 from sage.categories.algebras import Algebras as SageAlgebras
 from sage.categories.map import Map
 from sage.misc.abstract_method import abstract_method
 from sage.structure.parent import Parent
 
 
-class Algebras(Category_over_base_ring):
+class Algebras(OwnedCategoryOverBaseRing):
     r"""Associative unital algebras over a base ring (R)."""
 
     @classmethod
@@ -33,12 +34,22 @@ class Algebras(Category_over_base_ring):
         return bool(algebra.coerce_map_from(self.base_ring()))
 
     def super_categories(self) -> list:
-        return [SageAlgebras(self.base_ring())]
+        # An associative unital algebra is a ring, and it joins the owned
+        # hierarchy at that node like any other: this is what makes
+        # \(R[x]^n\) the preamble's free module rather than Sage's.  Sage's
+        # own algebra node says the same thing to Sage; saying it here is
+        # what puts the owned ``__pow__`` ahead of the inherited one.
+        return [SageAlgebras(self.base_ring()), OwnedRings()]
 
     class ParentMethods:
         def algebra_structure_map(self) -> "Morphism":
-            """Return the explicit structure map from the base ring."""
-            witness = self.coerce_map_from(self.base_ring())
+            """Return the explicit structure map from the base ring.
+
+            Asked of the engine's copy of the ring: a coercion is registered
+            from the ring this parent was constructed over, and the session's
+            name for it is a different parent with no map of its own.
+            """
+            witness = self.coerce_map_from(engine_ring(self.base_ring()))
             if not witness:
                 assert False, f"{self} has no structure map from {self.base_ring()}"
             return witness
@@ -51,10 +62,13 @@ class Algebras(Category_over_base_ring):
             assert isinstance(ring_hom, Map), (
                 "base_change requires a ring map"
             )
-            assert ring_hom.domain() == self.base_ring(), (
+            # Both ends of the map cross to the engine to be compared: a
+            # session names owned rings, so the map it obtained runs between
+            # them, and only the engine's name is common to both spellings.
+            assert engine_ring(ring_hom.domain()) == engine_ring(self.base_ring()), (
                 "the map must have this algebra's base ring as domain"
             )
-            if ring_hom.codomain() == self.base_ring():
+            if engine_ring(ring_hom.codomain()) == engine_ring(self.base_ring()):
                 return self
             return self.change_ring(ring_hom.codomain())
 
@@ -73,7 +87,7 @@ class Algebras(Category_over_base_ring):
             )
             return FinitelyPresentedAlgebras(self.base_ring())
 
-class FramedAlgebras(Category_over_base_ring):
+class FramedAlgebras(OwnedCategoryOverBaseRing):
     r"""R-algebras carrying a specified surjection \(\operatorname{FreeAlg}_R(S) \to A\)."""
 
     @classmethod
@@ -90,7 +104,7 @@ class FramedAlgebras(Category_over_base_ring):
             r"""Return the product of algebra_generators labelled by s and t in S."""
 
 
-class OwnedAlgebra(Parent):
+class OwnedAlgebra(OwnedBaseRing, Parent):
     r"""The \(R\)-algebra a ring map \(R\to A\) presents, as an owned object.
 
     An \(R\)-algebra *is* that map, so it is the constructor's argument: one
@@ -108,9 +122,12 @@ class OwnedAlgebra(Parent):
         assert isinstance(structure_map, Map), (
             "an algebra is presented by a ring map into it"
         )
-        base_ring = structure_map.domain()
+        # Intake: both ends of the presenting map cross to the engine.  The
+        # map may be an owned one, whose ends are the rings a session named;
+        # what is computed in is the ring the engine holds.
+        base_ring = engine_ring(structure_map.domain())
         self._structure_map = structure_map
-        self._engine = structure_map.codomain()
+        self._engine = engine_ring(structure_map.codomain())
         Parent.__init__(self, base=base_ring, category=Algebras(base_ring))
 
     def algebra_structure_map(self) -> "Map":
@@ -127,6 +144,13 @@ class OwnedAlgebra(Parent):
 
     def one(self) -> "Element":
         return self._engine.one()
+
+    def rank(self) -> "Integer":
+        r"""Return the rank of \(A\) as a free module over its base ring."""
+        return self._engine.rank()
+
+    def is_commutative(self) -> bool:
+        return self._engine.is_commutative()
 
     def zero(self) -> "Element":
         return self._engine.zero()

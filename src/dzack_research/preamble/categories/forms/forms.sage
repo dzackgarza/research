@@ -8,7 +8,7 @@ from sage.matrix.matrix0 import Matrix
 from sage.structure.parent import Parent
 from sage_lattice_category_spike.lexicon import GramMatrix
 from sage_lattice_category_spike.objects.cardinals import Cardinal
-from sage.rings.integer_ring import ZZ
+from sage.rings.integer_ring import ZZ as SageZZ
 
 from sage_lattice_category_spike.objects.sets import Sets
 
@@ -25,8 +25,8 @@ def _framing_rank(module_generating_set: "OrderedSet") -> Integer:
     if isinstance(size, Cardinal):
         assert size.is_finite(), "a Gram matrix requires a finite framing set"
         return size.finite_value()
-    assert size in ZZ, "a Gram matrix requires a finite framing set"
-    return ZZ(size)
+    assert size in SageZZ, "a Gram matrix requires a finite framing set"
+    return SageZZ(size)
 
 
 class TensorSquare(Parent):
@@ -196,6 +196,19 @@ class BilinearFormMorphism(Morphism):
     def reduced(self, value_module: "Module") -> "BilinearFormMorphism":
         return BilinearForms(self.module(), value_module)(self._gram_matrix)
 
+    def base_changed(self, module: "Module") -> "BilinearFormMorphism":
+        r"""Return this form on ``module``, valued in ``module``'s base ring.
+
+        The transport of a form along a ring map \(f:R\to S\).  The entries do
+        not change -- they are carried by \(f\) -- and what changes is the ring
+        they are read in, which is the ring the pairings of \(M\otimes_RS\)
+        take their values in.
+        """
+        value_ring = module.base_ring()
+        return BilinearForms(module, value_ring)(
+            self._gram_matrix.change_ring(engine_ring(value_ring))
+        )
+
     def pullback(self, morphism: "Morphism") -> "BilinearFormMorphism":
         matrix_of_map = morphism.matrix()._sage_matrix()
         domain = _underlying_module(morphism.domain())
@@ -213,7 +226,7 @@ class BilinearFormMorphism(Morphism):
                 _forget_form_element(morphism(domain.module_generator(label))),
                 _forget_form_element(codomain.module_generator(target_label)),
             )
-            in ZZ
+            in SageZZ
             for domain, codomain in [(morphism.domain(), morphism.codomain())]
             for label in domain.module_generating_set()
             for target_label in codomain.module_generating_set()
@@ -280,7 +293,7 @@ class QuadraticFormMorphism(Morphism):
         return self(element)
 
     def lift_form(self) -> BilinearFormMorphism:
-        return BilinearForms(self.domain(), QQ)(self._lift_matrix)
+        return BilinearForms(self.domain(), SageQQ)(self._lift_matrix)
 
     def _polar_value_module(self) -> "Module":
         from sage.groups.additive_abelian.qmodnz import QmodnZ
@@ -320,6 +333,17 @@ class QuadraticFormMorphism(Morphism):
 
     def on_module(self, module: "Module") -> "QuadraticFormMorphism":
         return QuadraticForms(module, self.codomain())(self._lift_matrix)
+
+    def base_changed(self, module: "Module") -> "QuadraticFormMorphism":
+        r"""Return this form on ``module``, valued in ``module``'s base ring.
+
+        A quadratic form is transported by its lift, which is the matrix that
+        records it, so the transport is the bilinear one on that matrix.
+        """
+        value_ring = module.base_ring()
+        return QuadraticForms(module, value_ring)(
+            self._lift_matrix.change_ring(engine_ring(value_ring))
+        )
 
     def pullback(self, morphism: "Morphism") -> "QuadraticFormMorphism":
         matrix_of_map = morphism.matrix()._sage_matrix()

@@ -1,18 +1,22 @@
 r"""Free modules on finite totally ordered sets."""
 
-from collections.abc import Iterable, Iterator
+
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreeModuleOnSet
+from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
+from collections.abc import Iterable, Iterator, Sequence
 from typing import Any, Self, TYPE_CHECKING
 
 from sage.rings.integer import Integer
-from sage.categories.category_types import Category_over_base_ring
 from sage.categories.morphism import SetMorphism
-from sage.modules.free_module_element import vector
+from sage.matrix.constructor import matrix
+from sage.modules.free_module_element import FreeModuleElement, vector
 from sage.rings.integer import Integer as SageInteger
 from sage.structure.element import Element, ModuleElement
 from sage.structure.parent import Parent
 from sage.structure.richcmp import richcmp
 from sage_lattice_category_spike.objects.cardinals import Cardinal
 
+from sage_lattice_category_spike.lexicon import MorphismMatrix
 from sage_lattice_category_spike.objects.sets import Sets
 
 if TYPE_CHECKING:
@@ -29,7 +33,7 @@ def _finite_rank(module_generating_set: "OrderedSet") -> int:
     return int(size)
 
 
-class FinitelyGeneratedFreeModules(Category_over_base_ring):
+class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
     r"""Finite free modules whose framing set has a chosen total order."""
 
     @classmethod
@@ -47,6 +51,35 @@ class FinitelyGeneratedFreeModules(Category_over_base_ring):
         def rank(self: Self) -> "Cardinal":
             r"""Return the cardinality of the finite generating set."""
             return self.module_generating_set().cardinality()
+
+        def relations(self: Self) -> "OrderedSet":
+            r"""Return the relations among the module generators: none.
+
+            A free module is presented by its generating set and nothing else
+            -- that is what free means -- so the Set is empty.  Empty is not
+            the same as absent: a presentation with no relations is still a
+            presentation, and a caller who asks a finitely presented module
+            for its relations must get an answer when the module happens to
+            be free.
+            """
+            return finite_ordered_set(())
+
+        def relation_matrix(self: Self) -> "MorphismMatrix":
+            r"""Return the relations as the matrix a presentation asks for.
+
+            The same answer as ``relations``, written the way a presentation
+            reads it: $n$ columns for the generators and no rows, because
+            there is nothing to impose on them.  A caller that presents this
+            module -- a resolution, a normal form -- needs the matrix and
+            gets it here rather than rebuilding it from the empty Set.
+            """
+            return MorphismMatrix(
+                matrix(
+                    engine_ring(self.base_ring()),
+                    0,
+                    _finite_rank(self.module_generating_set()),
+                )
+            )
 
         def number_of_module_generators(self: Self) -> "Integer":
             return self.module_generating_set().cardinality()
@@ -126,10 +159,15 @@ class BasedFreeModuleElement(ModuleElement):
 
     def __init__(self, parent: "Parent", coordinates: "Vector") -> None:
         ModuleElement.__init__(self, parent)
-        self._coordinates_ = vector(parent.base_ring(), list(coordinates))
-        assert len(self._coordinates_) == parent.number_of_module_generators(), (
-            f"{parent} has rank {parent.number_of_module_generators()}, got "
-            f"{len(self._coordinates_)} coordinates"
+        coordinate_module = parent._coordinate_module()
+        # Coordinate arithmetic already lands in the coordinate module, so a
+        # sum, difference, negation or scaling arrives here as its own answer.
+        # The module rejects a wrong-length assignment itself.
+        self._coordinates_ = (
+            coordinates
+            if isinstance(coordinates, FreeModuleElement)
+            and coordinates.parent() is coordinate_module
+            else coordinate_module(coordinates)
         )
 
     def _coordinates(self) -> "Vector":
@@ -227,15 +265,25 @@ class BasedFreeModule(FreeModuleOnSet):
             f"{element_of_S!r} is not in {module_generating_set}"
         )
         index = module_generating_set.index(element_of_S)
-        return self._from_coordinates(
-            [self.base_ring()(position == index) for position in range(self.number_of_module_generators())]
-        )
+        return self._from_coordinates(self._coordinate_module().gen(index))
 
     def number_of_module_generators(self) -> int:
         return _finite_rank(self.module_generating_set())
 
+    def _coordinate_module(self) -> "Parent":
+        r"""The engine's \(R^n\), where this module's coordinate vectors live.
+
+        A standard basis vector and the zero vector are this module's own,
+        and it decides what counts as a coordinate assignment.
+        """
+        cached = self.__dict__.get("_coordinate_module_")
+        if cached is None:
+            cached = engine_ring(self.base_ring()) ** self.number_of_module_generators()
+            self._coordinate_module_ = cached
+        return cached
+
     def zero(self) -> BasedFreeModuleElement:
-        return self._from_coordinates([self.base_ring().zero()] * self.number_of_module_generators())
+        return self._from_coordinates(self._coordinate_module().zero())
 
     def _from_coordinates(self, coordinates: "Vector") -> BasedFreeModuleElement:
         return self.element_class(self, coordinates)
@@ -244,10 +292,23 @@ class BasedFreeModule(FreeModuleOnSet):
         return self.module_generating_set().cardinality()
 
     def _element_constructor_(self, value: "Element") -> BasedFreeModuleElement:
-        assert isinstance(value, BasedFreeModuleElement) and value.parent() is self, (
-            f"{value} is not an element of {self}"
-        )
-        return value
+        if isinstance(value, BasedFreeModuleElement) and value.parent() is self:
+            return value
+        match value:
+            case Sequence() | FreeModuleElement():
+                # A framing is exactly what makes a coordinate family name an
+                # element, so a module that has one reads its own coordinates.
+                assert len(value) == self.number_of_module_generators(), (
+                    f"{self} has rank {self.number_of_module_generators()}, "
+                    f"got {len(value)} coordinates"
+                )
+                return self._from_coordinates(value)
+        if value == self.base_ring().zero():
+            # $M(0)$ is the zero of $M$: a module has one, the additive
+            # identity is what $0$ names in any of them, and writing it is
+            # shorter than naming the module's own zero.
+            return self.zero()
+        assert False, f"{value} is not an element of {self}"
 
     def __contains__(self, value: "Element") -> bool:
         return isinstance(value, BasedFreeModuleElement) and value.parent() is self
@@ -293,4 +354,4 @@ class BasedFreeModule(FreeModuleOnSet):
 
 def Free_ZZ(module_generating_set: "OrderedSet") -> FreeModuleOnSet:
     r"""Construct the free \(\mathbb Z\)-module on ``module_generating_set``."""
-    return FreeModuleOn(ZZ, module_generating_set)
+    return FreeModuleOn(SageZZ, module_generating_set)

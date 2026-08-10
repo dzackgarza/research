@@ -11,9 +11,11 @@ ordered.  Finite ordered free modules are the specialization implemented by
 ``BasedFreeModule``.
 """
 
+
+from dzack_research.preamble.categories.rings.rings import OwnedBaseRing
+from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
 from typing import Self, TYPE_CHECKING
 
-from sage.categories.category_types import Category_over_base_ring
 from sage.categories.homset import Hom
 from sage.categories.morphism import SetMorphism
 from sage.structure.element import ModuleElement
@@ -29,7 +31,7 @@ if TYPE_CHECKING:
     from sage_lattice_category_spike.lexicon import OrderedSet
 
 
-class FramedFreeModules(Category_over_base_ring):
+class FramedFreeModules(OwnedCategoryOverBaseRing):
     r"""Free modules equipped with the canonical map \(S\to U(F_R(S))\)."""
 
     @classmethod
@@ -171,7 +173,7 @@ class FreeModuleOnSetElement(ModuleElement):
         )
 
 
-class FreeModuleOnSet(Parent):
+class FreeModuleOnSet(OwnedBaseRing, Parent):
     r"""The free \(R\)-module on the actual set \(S\)."""
 
     Element = FreeModuleOnSetElement
@@ -189,6 +191,11 @@ class FreeModuleOnSet(Parent):
         Sage installs a parent's structural surface -- the coercion from the
         base ring among it -- from the category ``Parent.__init__`` is given.
         """
+        # Intake: the module is built over the ring the engine computes in,
+        # whichever of the two names for it arrived.  A module over the owned
+        # view would carry a base its category, its matrices and its Smith
+        # forms do not share.  ``base_ring`` reports the name back.
+        base_ring = engine_ring(base_ring)
         module_generating_set = _as_set(module_generating_set)
         self._module_generating_set = module_generating_set
         if category is None:

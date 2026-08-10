@@ -16,6 +16,7 @@ And the triangle identities (zigzag equations):
     2) \varepsilon_{F_R(S)} \circ F_R(\eta_S) = id_{F_R(S)}  \in End_{Mod_R}(F_R(S))
 """
 
+from sage.misc.cachefunc import cached_method
 from sage.categories.functor import Functor
 from sage.categories.homset import Hom
 from sage.categories.modules import Modules
@@ -30,6 +31,11 @@ class FreeModuleFunctorClass(Functor):
     r"""The free module functor F_R: Set -> Mod_R."""
 
     def __init__(self, base_ring: "Ring"):
+        # Intake, as for any construction over a ring: the codomain named
+        # below is a category over this ring, and Sage checks membership in
+        # it on every application -- by base-ring identity, so the name here
+        # has to be the one the modules themselves report.
+        base_ring = owned_ring_view(base_ring)
         self._base_ring = base_ring
         super().__init__(Sets(), Modules(base_ring))
 
@@ -98,6 +104,7 @@ class GroupRingFunctor(Functor):
         from sage.categories.groups import Groups
         from sage.categories.rings import Rings
 
+        base_ring = owned_ring_view(base_ring)
         self._base_ring = base_ring
         super().__init__(Groups(), Rings())
 
@@ -108,7 +115,20 @@ class GroupRingFunctor(Functor):
     def _apply_functor(self, group: "Group") -> "Ring":
         from sage.algebras.group_algebra import GroupAlgebra
 
-        return GroupAlgebra(group, self._base_ring)
+        # Sage's group algebra is the engine's construction: it is built over
+        # the ring the engine computes in, not over the session's name.  What
+        # leaves the functor is the owned algebra it presents, because an
+        # \(R\)-algebra *is* the ring map \(R\to R[G]\), and because the
+        # session asked for \(R[G]\) over the \(R\) it named -- an object of
+        # this functor's codomain answers with the base ring it was built on.
+        #
+        # Owned and not refined.  Sage computes in ``GroupAlgebra`` through
+        # its category, which is over the engine's ring; joining a second
+        # algebra-over-a-base-ring node onto it leaves the scalar action with
+        # two bases to choose between, and the products stop resolving.
+        base_ring = engine_ring(self._base_ring)
+        algebra = GroupAlgebra(group, base_ring)
+        return own_algebra(algebra.coerce_map_from(base_ring))
 
 
 class FreeModuleOnGroupFunctor(Functor):
@@ -125,6 +145,7 @@ class FreeModuleOnGroupFunctor(Functor):
     def __init__(self, base_ring: "Ring") -> None:
         from sage.categories.groups import Groups
 
+        base_ring = owned_ring_view(base_ring)
         self._base_ring = base_ring
         self._free_on_sets = FreeModuleFunctorClass(base_ring)
         self._underlying_set = UnderlyingSetOfGroupFunctor()
@@ -146,6 +167,7 @@ class ForgetfulFunctorClass(Functor):
     r"""The forgetful functor U: Mod_R -> Set."""
 
     def __init__(self, base_ring: "Ring"):
+        base_ring = owned_ring_view(base_ring)
         self._base_ring = base_ring
         super().__init__(Modules(base_ring), Sets())
 
@@ -201,6 +223,7 @@ class FreeForgetfulAdjunction(Adjunction):
     r"""The free/forgetful adjunction F_R \dashv U between Set and R-Mod."""
 
     def __init__(self, base_ring: "Ring"):
+        base_ring = owned_ring_view(base_ring)
         self._base_ring = base_ring
         super().__init__(
             FreeModuleFunctorClass(base_ring),

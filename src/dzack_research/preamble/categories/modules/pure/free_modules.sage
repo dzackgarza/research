@@ -1,10 +1,11 @@
 r"""Free modules over a base ring."""
 
-from sage.categories.category_types import Category_over_base_ring
+
+from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
 from sage.categories.modules import Modules
 
 
-class FreeModules(Category_over_base_ring):
+class FreeModules(OwnedCategoryOverBaseRing):
     r"""Category of free modules over a base ring, without a chosen module_generators."""
 
     @classmethod

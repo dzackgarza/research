@@ -15,9 +15,11 @@ EXAMPLES::
     {'Sterk_1': 12, 'Sterk_2': 10, 'Sterk_3': 12, 'Sterk_4': 11, 'Sterk_5': 14}
 """
 
+from dzack_research.preamble.categories.modules.framed.formed.integrallattice.integral_lattices import _integral_lattice_with_names
+from dzack_research.preamble.catalogue import Lattices
 from typing import Any, TYPE_CHECKING
 
-from sage.rings.rational_field import QQ
+from sage.rings.rational_field import QQ as SageQQ
 
 if TYPE_CHECKING:
     # The ordered-set noun is type-only: the preamble loads into one
@@ -227,7 +229,7 @@ class Sterk:
             # because $v_{22}$ has even pairings.  Taken in $\mathbb Z$, so
             # that a lattice element is scaled by a scalar of its own ring and
             # a pairing that ever came out odd says so here.
-            half = ZZ(v["v22"].b(x) / 2)
+            half = SageZZ(v["v22"].b(x) / 2)
             return x + half * v["v22"]
 
         def involute(x: "ModuleElement") -> "ModuleElement":

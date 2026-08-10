@@ -13,7 +13,7 @@ Hierarchy:
 from sage.categories.category import Category
 from sage.categories.morphism import Morphism
 from sage.misc.abstract_method import abstract_method
-from sage.rings.integer_ring import ZZ
+from sage.rings.integer_ring import ZZ as SageZZ
 
 
 class SchemeMorphism(Morphism):

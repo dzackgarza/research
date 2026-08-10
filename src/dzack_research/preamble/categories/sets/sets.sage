@@ -11,7 +11,8 @@ from collections.abc import Iterable, Sequence
 from typing import TYPE_CHECKING, TypeVar
 
 from sage.rings.integer import Integer as SageInteger
-from sage.rings.integer_ring import ZZ
+from sage.rings.integer_ring import ZZ as SageZZ
+from sage.rings.real_mpfr import RR as SageRR
 from sage.sets.condition_set import ConditionSet as SageConditionSet
 from sage.sets.image_set import ImageSet as SageImageSet
 from sage.sets.integer_range import IntegerRange
@@ -135,7 +136,7 @@ class _Delta:
                 # Python's range yields int, a different object that prints
                 # the same, and the repo bans that fork.
                 return refine(
-                    TotallyOrderedFiniteSet(IntegerRange(ZZ(n) + ZZ.one())),
+                    TotallyOrderedFiniteSet(IntegerRange(SageZZ(n) + SageZZ.one())),
                     Sets().Finite().TotallyOrdered(),
                 )
             case _ if n == _ALEPH[0]:
@@ -163,7 +164,7 @@ class _Aleph:
                 if n == 0:
                     return NN.cardinality()
                 if n == 1:
-                    return RR.cardinality()
+                    return SageRR.cardinality()
                 assert False, "aleph index is only defined for 0 and 1"
             case _:
                 assert False, f"aleph expects an integer, got {n!r}"

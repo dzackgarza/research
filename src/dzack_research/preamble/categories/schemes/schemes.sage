@@ -16,7 +16,11 @@ Hierarchy:
           └── .ClosedEmbedding()
 """
 
-from sage.categories.category_types import Category_over_base_ring
+from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
+from sage.categories.morphism import Morphism
+from sage.structure.parent import Parent
+from dzack_research.preamble.categories.schemes.ringed_spaces import LocallyRingedSpace
+from sage.structure.element import Element
 from sage.categories.category_with_axiom import (
     all_axioms,
     axiom,
@@ -24,7 +28,7 @@ from sage.categories.category_with_axiom import (
 from sage.matrix.constructor import matrix
 from sage.misc.cachefunc import cached_method
 from sage.schemes.toric.all import toric_varieties
-from sage.rings.integer_ring import ZZ
+from sage.rings.integer_ring import ZZ as SageZZ
 
 from sage_lattice_category_spike.objects.sets import Sets
 
@@ -55,7 +59,7 @@ class Scheme(LocallyRingedSpace):
 
     Element = SchemeElement
 
-    def __init__(self, base_ring=ZZ) -> None:
+    def __init__(self, base_ring=SageZZ) -> None:
         r"""Initialize the scheme and refine into Schemes(S)."""
         LocallyRingedSpace.__init__(self, base_ring=base_ring)
         refine(self, Schemes(base_ring))
@@ -65,7 +69,7 @@ class SchemeMorphism(Morphism):
     r"""Morphism of schemes over S."""
 
 
-class Schemes(Category_over_base_ring):
+class Schemes(OwnedCategoryOverBaseRing):
     r"""Category of schemes over a base scheme or ring S."""
 
     def _repr_object_names(self) -> str:
@@ -106,7 +110,7 @@ class Schemes(Category_over_base_ring):
             return self.category().is_subcategory(Schemes(self.base_scheme()).Projective())
 
 
-class AffineSpaces(Category_over_base_ring):
+class AffineSpaces(OwnedCategoryOverBaseRing):
     r"""Category of affine spaces AA^n over a base scheme or ring S."""
 
     def _repr_object_names(self) -> str:
@@ -141,7 +145,7 @@ class AffineSpaces(Category_over_base_ring):
             return refine(sub, OpenSubschemes(self.base_ring()))
 
 
-class ProjectiveSpaces(Category_over_base_ring):
+class ProjectiveSpaces(OwnedCategoryOverBaseRing):
     r"""Category of projective spaces PP^n over a base scheme or ring S."""
 
     def _repr_object_names(self) -> str:

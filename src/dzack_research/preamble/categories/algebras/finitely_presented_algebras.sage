@@ -1,9 +1,9 @@
 r"""Finitely presented algebras as framed free-algebra quotients."""
 
+from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
 from collections.abc import Iterable
 from typing import Any, TYPE_CHECKING
 
-from sage.categories.category_types import Category_over_base_ring
 from sage.categories.homset import Hom
 from sage.categories.morphism import SetMorphism
 from sage.categories.map import Map
@@ -21,7 +21,7 @@ if TYPE_CHECKING:
     from sage_lattice_category_spike.lexicon import OrderedSet
 
 
-class FinitelyPresentedAlgebras(Category_over_base_ring):
+class FinitelyPresentedAlgebras(OwnedCategoryOverBaseRing):
     r"""Algebras presented as a quotient of a free algebra by finitely many relations."""
 
     @classmethod
@@ -72,10 +72,14 @@ class FinitelyPresentedAlgebras(Category_over_base_ring):
             assert isinstance(ring_hom, Map), (
                 "base_change requires a ring map from the algebra base ring"
             )
-            assert ring_hom.domain() == self.base_ring(), (
+            # Both ends of the map cross to the engine to be compared.  A
+            # session names owned rings, so the map it obtained runs between
+            # them; the ring a map is *between* is the same ring either way,
+            # and only the engine's name for it is common to both spellings.
+            assert engine_ring(ring_hom.domain()) == engine_ring(self.base_ring()), (
                 "base-change map must have this algebra's base ring as domain"
             )
-            if ring_hom.codomain() == self.base_ring():
+            if engine_ring(ring_hom.codomain()) == engine_ring(self.base_ring()):
                 return self
 
             target_base = ring_hom.codomain()
@@ -111,7 +115,7 @@ class FinitelyPresentedAlgebras(Category_over_base_ring):
             return self._algebra_presentation_morphism
 
 
-class FramedFGAlgebras(Category_over_base_ring):
+class FramedFGAlgebras(OwnedCategoryOverBaseRing):
     r"""Framed algebras with a finite algebra generating set.
 
     Not a super category of :class:`FinitelyPresentedAlgebras` and a

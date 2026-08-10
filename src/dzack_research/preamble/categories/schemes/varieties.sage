@@ -8,15 +8,19 @@ Hierarchy:
           └── ToricVariety
 """
 
-from sage.rings.rational_field import QQ
-from sage.categories.category_types import Category_over_base_ring
+from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
+from dzack_research.preamble.categories.schemes.schemes import SchemeElement
+from sage.categories.morphism import Morphism
+from sage.structure.parent import Parent
+from dzack_research.preamble.categories.schemes.schemes import Scheme
+from sage.rings.rational_field import QQ as SageQQ
 from sage.categories.category_with_axiom import (
     all_axioms,
     axiom,
 )
 import sage.schemes.curves.constructor as _sage_curve_const
 import sage.schemes.toric.variety as _sage_toric
-from sage.rings.integer_ring import ZZ
+from sage.rings.integer_ring import ZZ as SageZZ
 
 from typing import TYPE_CHECKING
 
@@ -45,13 +49,13 @@ class Variety(Scheme):
 
     Element = SchemeElement
 
-    def __init__(self, base_ring=ZZ) -> None:
+    def __init__(self, base_ring=SageZZ) -> None:
         r"""Initialize the variety and refine into Varieties(S)."""
         Scheme.__init__(self, base_ring=base_ring)
         refine(self, Varieties(base_ring))
 
 
-class Varieties(Category_over_base_ring):
+class Varieties(OwnedCategoryOverBaseRing):
     r"""Category of algebraic varieties over S: integral, separated schemes of finite type over S."""
 
     def _repr_object_names(self) -> str:
@@ -90,7 +94,7 @@ def ToricVariety(
     coordinate_names: "OrderedSet" = None,
     names: "OrderedSet" = None,
     coordinate_indices: "OrderedSet" = None,
-    base_ring: "Ring" = QQ,
+    base_ring: "Ring" = SageQQ,
     base_field: "Field" = None,
 ) -> "Parent":
     r"""Construct the toric variety of ``fan``, placing it in ``Varieties(R)``."""
@@ -111,7 +115,7 @@ def Curve(F: "Parent", A: "Parent" = None) -> "Parent":
     return refine(obj, Curves(obj.base_ring()))
 
 
-class Curves(Category_over_base_ring):
+class Curves(OwnedCategoryOverBaseRing):
     r"""Category of algebraic curves over S (varieties of dimension 1)."""
 
     def _repr_object_names(self) -> str:
@@ -153,7 +157,7 @@ class Surface(Variety):
 
     Element = SchemeElement
 
-    def __init__(self, base_ring=ZZ) -> None:
+    def __init__(self, base_ring=SageZZ) -> None:
         r"""Initialize the surface and refine into Surfaces(S)."""
         Variety.__init__(self, base_ring=base_ring)
         refine(self, Surfaces(base_ring))
@@ -163,7 +167,7 @@ class Surface(Variety):
         return 2
 
 
-class Surfaces(Category_over_base_ring):
+class Surfaces(OwnedCategoryOverBaseRing):
     r"""Category of algebraic surfaces over S (varieties of dimension 2)."""
 
     def _repr_object_names(self) -> str:

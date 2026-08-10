@@ -5,9 +5,11 @@ declaring ``FinitelyGeneratedModules(R)`` in its supercategories.
 """
 
 
+
+from dzack_research.preamble.categories.rings.rings import OwnedBaseRing
+from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
 from typing import Self
 
-from sage.categories.category_types import Category_over_base_ring
 from sage.categories.homset import Hom
 from sage.misc.cachefunc import cached_method
 from sage.categories.morphism import SetMorphism
@@ -16,7 +18,7 @@ from sage.matrix.matrix0 import Matrix
 from sage.matrix.special import identity_matrix
 from sage.misc.misc_c import prod
 from sage.modules.free_module_element import vector
-from sage.rings.integer_ring import ZZ
+from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.element import Element
 from sage.structure.parent import Parent
 from sage.structure.richcmp import richcmp
@@ -73,7 +75,7 @@ def _change_of_module_generators(
     )
 
 
-class FinitelyPresentedModules(Category_over_base_ring):
+class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
     r"""Category of finitely presented modules over a base ring $R$."""
 
     @classmethod
@@ -108,10 +110,38 @@ class FinitelyPresentedModules(Category_over_base_ring):
             changes the presentation and nothing else, and this says so.
             """
             target = _presented_on(self, self.relation_matrix().normal_form())
-            unchanged = identity_matrix(self.base_ring(), self.number_of_module_generators()).rows()
+            unchanged = identity_matrix(
+                engine_ring(self.base_ring()), self.number_of_module_generators()
+            ).rows()
             return Isomorphism(
                 _change_of_module_generators(self, target, unchanged),
                 _change_of_module_generators(target, self, unchanged),
+            )
+
+        def smith_form_module_generators(self: Self) -> "OrderedSet":
+            r"""Return generators realizing the invariant factor decomposition.
+
+            The Smith form $D=URV$ diagonalizes the relations, so the rows of
+            $V^{-1}$ are a generating set in which the module is
+            $\bigoplus_i R/d_iR$.  The diagonal runs out when there are fewer
+            relations than generators, and the generators past it are free:
+            $d_i=0$ there, and $R/0R=R$ is the summand each contributes.  A
+            generator with $d_i$ a unit spans the zero module and is dropped,
+            which is the whole reason this is a different generating set from
+            the presented one and not a change of basis of it.
+            """
+            smith, _, right = self._smith()
+            coordinates = right.inverse().change_ring(engine_ring(self.base_ring())).rows()
+            invariants = list(smith.diagonal())
+            invariants += [self.base_ring().zero()] * (
+                self.number_of_module_generators() - len(invariants)
+            )
+            return finite_ordered_set(
+                tuple(
+                    self._from_coordinates(coordinates[index])
+                    for index, invariant in enumerate(invariants)
+                    if invariant != 1
+                )
             )
 
         def invariant_factor_form(self: Self) -> "Isomorphism":
@@ -143,7 +173,7 @@ class FinitelyPresentedModules(Category_over_base_ring):
                 _change_of_module_generators(
                     target,
                     self,
-                    right.inverse().change_ring(self.base_ring()).rows(),
+                    right.inverse().change_ring(engine_ring(self.base_ring())).rows(),
                 ),
             )
 
@@ -201,7 +231,7 @@ class FinitelyPresentedModuleElement(Element):
         return hash(tuple(self._coordinates_))
 
 
-class FinitelyPresentedModule(Parent):
+class FinitelyPresentedModule(OwnedBaseRing, Parent):
     r"""The cokernel of a morphism of finite free modules.
 
     The relation morphism may have arbitrary rank, so this includes free,
@@ -216,7 +246,10 @@ class FinitelyPresentedModule(Parent):
             "a presentation is a morphism of framed modules"
         )
         codomain = presentation.codomain()
-        base_ring = codomain.base_ring()
+        # The quotient is over the ring the presented module is over, read as
+        # the engine names it: the category below is built from this, and a
+        # category over one name for a ring holds no object over the other.
+        base_ring = engine_ring(codomain.base_ring())
         relations = presentation.matrix()._sage_matrix().change_ring(base_ring)
         assert relations.ncols() == codomain.module_generating_set().cardinality(), (
             "the presentation matrix does not have the codomain's number of "
@@ -229,12 +262,12 @@ class FinitelyPresentedModule(Parent):
         )
         self._presentation = presentation
         self._relations = relations
-        assert base_ring is ZZ or base_ring.is_field(), (
+        assert engine_ring(base_ring) is SageZZ or base_ring.is_field(), (
             "finitely presented modules currently require ZZ or a field"
         )
         self._normal_form = MorphismMatrix(relations).normal_form()._sage_matrix()
         refine(self, FinitelyPresentedModules(base_ring))
-        if base_ring is ZZ and self.is_torsion():
+        if engine_ring(base_ring) is SageZZ and self.is_torsion():
             refine(self, FinitelyPresentedTorsionModules(base_ring))
         source = _underlying_module(codomain)
         source_module_generator_morphism = source.module_generator_morphism()
@@ -272,7 +305,7 @@ class FinitelyPresentedModule(Parent):
         return self.number_of_module_generators() - self._relations.rank()
 
     def is_torsion(self) -> bool:
-        return self.base_ring() is ZZ and self.rank() == 0
+        return engine_ring(self.base_ring()) is SageZZ and self.rank() == 0
 
     @cached_method
     def _smith(self) -> tuple:
@@ -315,7 +348,7 @@ class FinitelyPresentedModule(Parent):
         )
 
     def is_torsion_free(self) -> bool:
-        if self.base_ring() is not ZZ:
+        if engine_ring(self.base_ring()) is not SageZZ:
             return True
         smith = self._smith()[0]
         return all(abs(entry) == 1 for entry in smith.diagonal() if entry != 0)
@@ -324,7 +357,7 @@ class FinitelyPresentedModule(Parent):
         return all(generator == self.zero() for generator in self.module_generators())
 
     def invariants(self) -> tuple:
-        assert self.base_ring() is ZZ, "invariants are defined here over ZZ"
+        assert engine_ring(self.base_ring()) is SageZZ, "invariants are defined here over ZZ"
         smith = self._smith()[0]
         return tuple(
             abs(entry) for entry in smith.diagonal() if abs(entry) > 1
@@ -350,7 +383,7 @@ class FinitelyPresentedModule(Parent):
         )
 
     def _reduce(self, coordinates: "Vector") -> "Vector":
-        result = vector(self.base_ring(), list(coordinates))
+        result = vector(engine_ring(self.base_ring()), list(coordinates))
         assert len(result) == self.number_of_module_generators(), (
             f"this module has {self.number_of_module_generators()} coordinates, got {len(result)}"
         )
@@ -359,7 +392,7 @@ class FinitelyPresentedModule(Parent):
             if pivot is None:
                 continue
             match self.base_ring():
-                case ring if ring is ZZ:
+                case ring if engine_ring(ring) is SageZZ:
                     coefficient = result[pivot] // row[pivot]
                 case ring if ring.is_field():
                     coefficient = result[pivot] / row[pivot]

@@ -18,10 +18,21 @@ Callers that also want the named specimens continue with ``utilities.py``,
 """
 
 import dzack_research as _dzack_research
+
+# The preamble's files import each other by module path.  ``.sage`` is an
+# importable source format only once this finder is installed, so it goes in
+# before anything below loads a file that imports a sibling.
+import sageparse.preparser.importer  # noqa: F401
+
 _preamble_cache = getattr(_dzack_research, "_preamble_namespace", None)
 
 if _preamble_cache is not None:
     globals().update(_preamble_cache)
+    # The cached names never include ``ZZ`` and its fellows -- they were the
+    # engine's before this file ran, so they are not the preamble's exports --
+    # and the scope loading this one has just had Sage's namespace imported
+    # into it.  So the session's names are bound here as well.
+    install_session_rings(globals())
 else:
     _exported_before = set(globals())
 
@@ -30,9 +41,7 @@ else:
 
     _PREAMBLE = _Path(_dzack_research.__file__).resolve().parent / "preamble"
     _VENDOR_DIR = _PREAMBLE.parents[2] / "computations" / "vendor"
-    from dzack_research.preamble.preparser import install_preparser
-
-    install_preparser()
+    import sageparse.preparser.research  # noqa: F401
 
     def _vendor_import_roots(vendor_dir):
         r"""Return the vendor subtrees that expose importable modules or packages."""
@@ -84,6 +93,7 @@ else:
     load(str(_PREAMBLE / "utilities.py"))
     load(str(_PREAMBLE / "categories/forms/gram_matrices.sage"))
     load(str(_PREAMBLE / "categories/sets/sets.sage"))
+    load(str(_PREAMBLE / "categories/rings/rings.sage"))
     load(str(_PREAMBLE / "categories/abstract_categories/slice_categories.sage"))
     load(str(_PREAMBLE / "categories/abstract_categories/arrow_categories.sage"))
     load(str(_PREAMBLE / "categories/abstract_categories/products.sage"))
@@ -103,15 +113,26 @@ else:
     load(str(_PREAMBLE / "categories/modules/group_modules/group_modules.sage"))
     load(str(_PREAMBLE / "categories/forms/forms.sage"))
     load(str(_PREAMBLE / "categories/group/groups.sage"))
+    load(str(_PREAMBLE / "categories/group/profinite/profinite_groups.sage"))
+    load(str(_PREAMBLE / "categories/group/profinite/galois_choice_policy.sage"))
+    load(str(_PREAMBLE / "categories/group/profinite/absolute_galois_groups.sage"))
+    # The element class first: the group names it as its ``Element`` in the
+    # class body, which runs at load time.
+    load(str(_PREAMBLE / "categories/group/profinite/absolute_galois_group_element.sage"))
+    load(str(_PREAMBLE / "categories/group/profinite/absolute_galois_group.sage"))
+    load(str(_PREAMBLE / "categories/group/profinite/absolute_galois_group_subgroup.sage"))
+    load(str(_PREAMBLE / "categories/group/profinite/galois_quotient.sage"))
+    load(str(_PREAMBLE / "categories/group/profinite/galois_characters.sage"))
+    load(str(_PREAMBLE / "categories/group/profinite/galois_decomposition.sage"))
     load(str(_PREAMBLE / "categories/group/finitely_presented_groups.sage"))
     load(str(_PREAMBLE / "categories/group/predicate_subgroups.sage"))
     load(str(_PREAMBLE / "categories/modules/framed/formed/integrallattice/integral_lattices.sage"))
     load(str(_PREAMBLE / "categories/modules/framed/formed/integrallattice/subobjects.sage"))
     load(str(_PREAMBLE / "categories/modules/group_modules/group_lattices.sage"))
     load(str(_PREAMBLE / "categories/modules/fractional_ideals.sage"))
-    load(str(_PREAMBLE / "categories/modules/functors/trivial_action.sage"))
-    load(str(_PREAMBLE / "categories/modules/functors/free_forgetful_adjunction.sage"))
-    load(str(_PREAMBLE / "categories/modules/functors/base_change_adjunction.sage"))
+    load(str(_PREAMBLE / "categories/functors/trivial_action.sage"))
+    load(str(_PREAMBLE / "categories/functors/free_forgetful_adjunction.sage"))
+    load(str(_PREAMBLE / "categories/functors/base_change_adjunction.sage"))
     load(str(_PREAMBLE / "categories/modules/framed/formed/integrallattice/lattice_homomorphisms.sage"))
     load(str(_PREAMBLE / "categories/modules/framed/formed/integrallattice/lattice_isometries.sage"))
     load(str(_PREAMBLE / "categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage"))
@@ -173,6 +194,8 @@ else:
 
     load(str(_PREAMBLE / "categories/algebras/framed_free_algebras.sage"))
     load(str(_PREAMBLE / "categories/algebras/finitely_presented_algebras.sage"))
+    load(str(_PREAMBLE / "categories/functors/algebra_base_change.sage"))
+    load(str(_PREAMBLE / "categories/algebras/number_fields.sage"))
     load(str(_PREAMBLE / "categories/schemes/ringed_spaces.sage"))
     load(str(_PREAMBLE / "categories/schemes/schemes.sage"))
     load(str(_PREAMBLE / "categories/schemes/scheme_morphisms.sage"))
@@ -181,6 +204,7 @@ else:
     load(str(_PREAMBLE / "categories/schemes/subschemes.sage"))
     load(str(_PREAMBLE / "categories/schemes/varieties.sage"))
     load(str(_PREAMBLE / "catalogue.sage"))
+    install_groups()
     install_finitely_presented_groups()
     install_finitely_presented_algebras()
     install_algebras()
@@ -192,13 +216,10 @@ else:
     install_subschemes()
     install_varieties()
 
-    # ``R^n`` is the preamble's free module.  The caret is research notation
-    # the preparser lowers; Sage's own algorithms write Python's ``R**n`` and
-    # keep their native free modules.  Registered after the catalogue has
-    # loaded, since the layer needs those native modules to initialize.
-    from dzack_research.preamble.preparser import register_ring_power
-
-    register_ring_power(BasedFreeModule)
+    # ``R^n`` is the preamble's free module.  These are the rings a notebook
+    # names before it has built anything; every other ring is refined on
+    # intake, or by the constructor that builds it.
+    install_rings(globals())
 
     # Loading twice re-exports the *same* objects rather than re-running the scripts.
     _preamble_namespace = {
@@ -214,4 +235,13 @@ else:
             "Sets": Sets,
         }
     )
+    # ``ZZ`` and its fellows are deliberately absent from the cache: while this
+    # file runs they are the engine's, which is what the scripts still loading
+    # must build over, so they are not among the names this file exports.
     _dzack_research._preamble_namespace = _preamble_namespace
+
+    # Loading the preamble is what makes a scope a session, so this is where
+    # its ``ZZ`` starts meaning the ring rather than the engine's object.  Last
+    # in the file, because every ``load()`` above re-imports Sage's namespace
+    # into this scope and would rebind the names behind the session's back.
+    install_session_rings(globals())

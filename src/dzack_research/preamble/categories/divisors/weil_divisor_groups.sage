@@ -5,7 +5,7 @@ from sage.categories.category import Category
 
 def WeilDivisorGroup(module: "Module") -> "Module":
     r"""Refine the free module on the actual codimension-one subvarieties."""
-    assert module in FramedFreeModules(ZZ), (
+    assert module in FramedFreeModules(SageZZ), (
         "WeilDiv(X) is free on its specified set of prime divisors"
     )
     return refine(module, WeilDivisorGroups())

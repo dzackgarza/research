@@ -6,12 +6,16 @@ Hierarchy:
     └── LocallyRingedSpaces() = RingedSpaces().LocallyRinged()
 """
 
+from sage.categories.morphism import Morphism
+from sage.structure.parent import Parent
+from dzack_research.preamble.categories.rings.rings import OwnedBaseRing
+from sage.structure.element import Element
 from sage.categories.category import Category
 from sage.categories.category_with_axiom import (
     all_axioms,
     axiom,
 )
-from sage.rings.integer_ring import ZZ
+from sage.rings.integer_ring import ZZ as SageZZ
 
 from sage_lattice_category_spike.objects.sets import Sets
 
@@ -29,14 +33,20 @@ class RingedSpaceElement(Element):
     r"""Element / section or point of a ringed space."""
 
 
-class RingedSpace(Parent):
+class RingedSpace(OwnedBaseRing, Parent):
     r"""A ringed space (X, O_X): a topological space equipped with a sheaf of rings."""
 
     Element = RingedSpaceElement
 
-    def __init__(self, base_ring=ZZ) -> None:
-        r"""Initialize the ringed space and refine into RingedSpaces."""
-        Parent.__init__(self, base=base_ring)
+    def __init__(self, base_ring=SageZZ) -> None:
+        r"""Initialize the ringed space and refine into RingedSpaces.
+
+        Every scheme in this file's tower reaches ``Parent.__init__`` here, so
+        this is where the base ring crosses to the engine: the categories the
+        tower refines into are named by the engine's ring, and a space whose
+        base is the owned view of it would belong to none of them.
+        """
+        Parent.__init__(self, base=engine_ring(base_ring))
         refine(self, RingedSpaces())
 
 
@@ -88,7 +98,7 @@ class LocallyRingedSpace(RingedSpace):
 
     Element = RingedSpaceElement
 
-    def __init__(self, base_ring=ZZ) -> None:
+    def __init__(self, base_ring=SageZZ) -> None:
         r"""Initialize the locally ringed space and refine into LocallyRingedSpaces."""
         RingedSpace.__init__(self, base_ring=base_ring)
         refine(self, LocallyRingedSpaces())

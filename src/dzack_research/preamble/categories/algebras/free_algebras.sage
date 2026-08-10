@@ -1,9 +1,10 @@
 r"""Free algebras over a base ring, without a chosen generating set."""
 
-from sage.categories.category_types import Category_over_base_ring
+from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
 
 
-class FreeAlgebras(Category_over_base_ring):
+
+class FreeAlgebras(OwnedCategoryOverBaseRing):
     r"""Category of free commutative algebras over a base ring, without a chosen algebra_generators."""
 
     @classmethod

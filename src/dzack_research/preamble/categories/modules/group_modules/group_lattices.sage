@@ -1,7 +1,10 @@
-r"""Integral lattices equipped with a finite-group action by isometries."""
+r"""Integral lattices equipped with a group action by isometries."""
 
+from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormHomset
+import logging
 from typing import Self, TYPE_CHECKING
 
+from sage.misc.cachefunc import cached_method
 from sage.categories.category import Category
 from sage.categories.morphism import SetMorphism
 
@@ -15,7 +18,11 @@ class GroupLattices(Category):
     r"""The pullback of \(G\)-modules and integral lattices."""
 
     def __init__(self, group: "Group") -> None:
-        assert group.is_finite(), "this category currently requires a finite group"
+        # Finiteness is not what a G-lattice needs.  Equivariance is checked
+        # on generators, so the requirement is a generating set -- and an
+        # infinite-order isometry generates an infinite cyclic group with one
+        # of them.  A group that cannot produce generators is still a group
+        # acting on a lattice; its morphisms go unchecked and say so.
         self._group = group
         Category.__init__(self)
 
@@ -27,7 +34,7 @@ class GroupLattices(Category):
 
     def super_categories(self) -> list:
         return [
-            GroupModules(ZZ, self._group),
+            GroupModules(SageZZ, self._group),
             IntegralLattices(),
         ]
 
@@ -75,9 +82,15 @@ class GroupLattices(Category):
             return self.action_of(element)(vector_)
 
         def is_invariant(self: Self, vector_: "ModuleElement") -> bool:
+            r"""Return whether \(g\cdot v=v\) for every \(g\in G\).
+
+            Decided on generators: the elements fixing \(v\) form a
+            subgroup, so it contains \(G\) as soon as it contains a
+            generating set.
+            """
             return all(
-                self.act(element, vector_) == vector_
-                for element in self.group()
+                self.act(generator, vector_) == vector_
+                for generator in refine_group(self.group()).group_generators()
             )
 
         def subobject_on(self: Self, module_generators: "OrderedSet") -> "Subobject":
@@ -142,7 +155,7 @@ class GroupLatticeHomset(FormHomset):
         assert codomain in GroupLattices(domain.group()), (
             "the codomain is not a lattice for the stated group"
         )
-        assert domain.group() is codomain.group(), (
+        assert domain.group() == codomain.group(), (
             "a group-lattice homset has one specified acting group"
         )
         FormHomset.__init__(
@@ -152,7 +165,14 @@ class GroupLatticeHomset(FormHomset):
             GroupLattices(domain.group()),
         )
 
-    def _element_constructor_(self, images: dict) -> FormMorphism:
+    def _element_constructor_(self, images: dict, check_equivariance: bool = False) -> FormMorphism:
+        r"""Build the morphism, and check equivariance where that is possible.
+
+        ``check_equivariance`` forces the check in the branches that would
+        otherwise decline it.  It sits on morphism construction, not on the
+        homset: one homset serves many morphisms, and whether a given one was
+        checked is a fact about that morphism.
+        """
         match images:
             case FormMorphism():
                 assert images.parent() is self, (
@@ -168,21 +188,76 @@ class GroupLatticeHomset(FormHomset):
                     "a group-lattice morphism is specified by its generator "
                     "morphism or finite generator assignment"
                 )
-        assert all(
-            morphism(
-                self.domain().act(
-                    group_element,
-                    self.domain().module_generator(element_of_S),
-                )
-            )
-            == self.codomain().act(
-                group_element,
-                morphism(self.domain().module_generator(element_of_S)),
-            )
-            for group_element in self.domain().group()
-            for element_of_S in self.domain().module_generating_set()
-        ), "the proposed lattice map is not equivariant"
+        self._check_equivariance(morphism, forced=check_equivariance)
         return morphism
+
+    def _check_equivariance(self, morphism: FormMorphism, forced: bool) -> None:
+        r"""Check \(f(g\cdot m)=g\cdot f(m)\), and record whether it happened.
+
+        The check ranges over *generators*, of the group and of the module.
+        A module map commuting with a generating set commutes with the whole
+        group, because the action is by module maps and the identity extends
+        along products -- so the check is \(|S|\times|\text{module generators}|\)
+        comparisons, and finiteness of \(G\) is not what it needs.  Ranging
+        over \(G\) itself is what forced the finiteness assumption and shut
+        out every infinite-order isometry, which is the generic case for an
+        indefinite lattice.
+
+        Four routes, and the morphism records which one it took:
+
+        - generators already in hand: check, always, since it is free;
+        - computable but not yet computed: check when forced, otherwise say
+          so and leave the morphism unchecked, since the computation can be
+          long -- \(O(L)\) for a definite lattice;
+        - not known to be finitely generated: with ``forced``, assert; the
+          assertion is the honest statement that no algorithm is known here.
+          Unforced, say so and leave it unchecked;
+        - no generators at all: ask anyway when forced, and let the group
+          fail however it chooses.
+        """
+        group = refine_group(self.domain().group())
+        morphism._equivariance_checked = False
+
+        if group.has_computed_group_generators() is not True:
+            if group.is_finitely_generated() is not True:
+                if forced:
+                    assert group.is_finitely_generated() is True, (
+                        "no known way to check equivariance computationally "
+                        "for non-finitely-generated groups yet"
+                    )
+                logging.info(
+                    "%s is not known to be finitely generated; the morphism "
+                    "is not checked for equivariance",
+                    group,
+                )
+                return
+            if group.group_generators_are_computable() is not True:
+                logging.info(
+                    "no algorithm is known to produce generators of %s; the "
+                    "morphism is not checked for equivariance",
+                    group,
+                )
+                return
+            if not forced:
+                logging.info(
+                    "generators of %s are computable but not yet computed; "
+                    "pass check_equivariance=True to compute them and check",
+                    group,
+                )
+                return
+
+        domain = self.domain()
+        codomain = self.codomain()
+        assert all(
+            morphism(domain.act(generator, domain.module_generator(element_of_S)))
+            == codomain.act(
+                generator,
+                morphism(domain.module_generator(element_of_S)),
+            )
+            for generator in group.group_generators()
+            for element_of_S in domain.module_generating_set()
+        ), "the proposed lattice map is not equivariant"
+        morphism._equivariance_checked = True
 
     def _repr_(self) -> str:
         return (
