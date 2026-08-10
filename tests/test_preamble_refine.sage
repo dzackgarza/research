@@ -196,10 +196,20 @@ def test_cython_parents_refuse_refinement_and_so_keep_their_underlying_set() -> 
     dictionary.  That branch is only sound because such a parent also cannot
     be refined, so nothing ever moves its key, and this pins both halves
     rather than leaving the second one asserted in a comment.
+
+    Pins engine behaviour.  The witness has to be a Cython parent, and the
+    preamble builds none -- ``PolynomialRing`` in a session delivers the free
+    algebra on its variables, which is a heap type and accepts both.  So the
+    engine's own constructor is named explicitly: what is under test is
+    CPython's rule about extension types, on the objects that are ones.
     """
+    from sage.rings.polynomial.polynomial_ring_constructor import (
+        PolynomialRing as SagePolynomialRing,
+    )
+    from sage.rings.rational_field import QQ as SageRationals
     from sage_lattice_category_spike.objects.underlying_sets import UnderlyingSet
 
-    cython_parent = PolynomialRing(QQ, 2, "x")
+    cython_parent = SagePolynomialRing(SageRationals, 2, "x")
 
     attribute_refused = False
     try:
@@ -226,3 +236,106 @@ def test_cython_parents_refuse_refinement_and_so_keep_their_underlying_set() -> 
     assert UnderlyingSet(cython_parent) is UnderlyingSet(cython_parent), (
         "U is a functor, so U(X) is one object"
     )
+
+
+def test_a_module_takes_zero_to_its_own_zero():
+    r"""$M(0)$ is the additive identity of $M$, in any module."""
+    _ensure_preamble()
+
+    over_the_integers = ZZ^3
+    assert over_the_integers(0) == over_the_integers.zero(), (
+        "0 names the additive identity, and a module has one"
+    )
+    over_the_rationals = QQ^2
+    assert over_the_rationals(0) == over_the_rationals.zero(), (
+        "the convenience is the module's, not one ring's"
+    )
+
+
+def test_a_polynomial_ring_is_the_free_algebra_the_notebook_receives():
+    r"""``PolynomialRing`` delivers a free \(R\)-algebra, and \(R[x]\) does too.
+
+    Sage's polynomial rings stay behind the boundary as the engine the
+    algorithms run in.  What a notebook receives is the free commutative
+    algebra on its variables, which is what a polynomial ring *is* -- so the
+    subscript is this preamble's own and means the same thing.
+    """
+    _ensure_preamble()
+
+    ring = PolynomialRing(QQ, "post_init_witness")
+    assert ring in FramedFreeAlgebras(QQ), (
+        "a polynomial ring is delivered as the free algebra on its variables"
+    )
+    assert ring.number_of_algebra_generators() == 1
+    # ``algebra_generators`` is the word: the free algebra on one variable is
+    # generated as an algebra by that variable, and its powers are what the
+    # elements are built from.
+    generator, = ring.algebra_generators()
+    assert generator in ring
+    assert generator ** 2 in ring
+    assert generator ** 2 != generator
+
+    over_the_integers = ZZ["x"]
+    assert over_the_integers in FramedFreeAlgebras(ZZ), (
+        "the subscript is the owned ring's own, so it delivers the same thing"
+    )
+    assert len(over_the_integers.algebra_generators()) == 1, (
+        "one variable named, one algebra generator"
+    )
+    assert (ZZ^3).number_of_module_generators() == 3, (
+        "and R^n is the preamble's free module, for the notebook's ring"
+    )
+
+
+def test_real_roots_come_from_the_algebraic_closure():
+    r"""The owned branch: real roots without a mutable $\ZZ^{n+1}$ buffer.
+
+    Sage isolates real roots in the Bernstein basis, writing into a
+    coefficient vector by index and handing it to helpers typed
+    ``Vector_integer_dense``.  A module element is not a buffer, so the roots
+    come from $\overline{\QQ}$ instead -- the real ones are those of zero
+    imaginary part, exactly, and every other branch is unchanged.
+    """
+    _ensure_preamble()
+    # ``AA`` in the preamble's namespace is ``AffineSpace``.
+    from sage.rings.qqbar import AA as AlgebraicReals
+
+    x = PolynomialRing(QQ, "x").algebra_generators()[0]
+
+    both = (x**2 - 5).roots(ring=AlgebraicReals)
+    assert [multiplicity for _, multiplicity in both] == [1, 1], (
+        "x^2 - 5 is separable, so each real root is simple"
+    )
+    assert [root**2 for root, _ in both] == [5, 5], (
+        "each root squares to five, which is what makes it a root"
+    )
+    assert both[0][0] < 0 < both[1][0], (
+        "the two roots have opposite signs, and come in increasing order"
+    )
+    assert (x**2 - 5).roots(ring=AlgebraicReals, multiplicities=False) == [
+        root for root, _ in both
+    ], "without multiplicities the answer is the roots alone"
+    assert ((x - 1)**2 * (x - 2)).roots(ring=AlgebraicReals) == [(1, 2), (2, 1)], (
+        "a double root is reported once, with multiplicity two"
+    )
+    assert (x**2 + 1).roots(ring=AlgebraicReals) == [], (
+        "x^2 + 1 has no real root"
+    )
+    assert (x**2 - 4).roots() == [(2, 1), (-2, 1)], (
+        "roots in the polynomial's own ring are Sage's branch, untouched"
+    )
+
+
+def test_the_noncrystallographic_coxeter_groups_have_their_orders():
+    r"""$|H_3|=120$ and $|H_4|=14400$.
+
+    Both need the golden ratio, so both build a number field with a real
+    embedding and isolate a real root -- the branch the owned polynomial
+    rings exist for.  Their orders are the falsifiable fact: Coxeter's
+    classification gives $H_3$ order 120 and $H_4$ order 14400.
+    """
+    _ensure_preamble()
+    from sage.combinat.root_system.coxeter_group import CoxeterGroup
+
+    assert CoxeterGroup(["H", 3]).cardinality() == 120
+    assert CoxeterGroup(["H", 4]).cardinality() == 14400

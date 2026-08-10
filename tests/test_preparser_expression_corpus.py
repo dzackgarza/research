@@ -12,7 +12,8 @@ from dataclasses import dataclass
 from itertools import islice
 
 import pytest
-from dzack_research.preamble.preparser import preparse
+import sageparse.preparser.research  # noqa: F401  (installs the dialect)
+from sageparse.preparser import preparse
 from sage.repl.preparse import preparse as sage_preparse
 from sage.sets.condition_set import ConditionSet
 from sage.sets.image_set import ImageSet

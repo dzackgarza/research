@@ -1,7 +1,7 @@
 r"""Isolated behavioral proofs for the notebook's mathematical preparser.
 
 Plain-Python test file: it is never passed through Sage's preparser, so the
-only transformation under test is ``dzack_research.preamble.preparser.preparse``
+only transformation under test is ``sageparse.preparser.preparse``
 applied to the source strings below.  The names that Sage's preparse output may
 reference (``Integer``, ``RealNumber``, ``ellipsis_range``, ``Set``, ...) are
 supplied explicitly, exactly as a notebook REPL namespace supplies them.
@@ -9,7 +9,8 @@ supplied explicitly, exactly as a notebook REPL namespace supplies them.
 
 from itertools import islice
 
-from dzack_research.preamble.preparser import preparse
+import sageparse.preparser.research  # noqa: F401  (installs the dialect)
+from sageparse.preparser import preparse
 
 from sage.all import (  # noqa: F401  (names used by the executed source)
     NN,

@@ -139,8 +139,10 @@ def _sample_elements(group, bound=6):
         return list(group)
     # An infinite group is not enumerable -- Sage's free groups fall back to
     # ``list`` and fail -- so the sample is built from the generators, whose
-    # products are exactly where the group law could go wrong.
-    generators = list(group.gens())
+    # products are exactly where the group law could go wrong.  An owned group
+    # is asked for them in its own word: ``gens`` leaves open which structure
+    # is generated, and a group generates as a group.
+    generators = list(group.group_generators())
     words = [group.one()] + generators + [g**-1 for g in generators]
     words += [left * right for left in generators for right in generators]
     return words[:bound]

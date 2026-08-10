@@ -21,7 +21,9 @@ from pathlib import Path
 import pytest
 
 import sage.repl.load  # noqa: F401  (the wrapped load directive references it)
-from dzack_research.preamble.preparser import lower, preparse, preparse_file
+import sageparse.preparser.research  # noqa: F401  (installs the dialect)
+from sageparse import lower
+from sageparse.preparser import preparse, preparse_file
 
 from sage.all import (  # noqa: F401  (names used by the executed source)
     ZZ,
@@ -358,9 +360,10 @@ def test_sage_cli_preparse_is_the_research_preparser(tmp_path: Path) -> None:
 
     Nothing else would notice if that stopped holding: every ``.sage`` file
     would still preparse, into a different language.  The two witnesses below
-    are the ones that differ.  ``QQ^3`` is research notation Sage does not
-    have, and ``case -1:`` is what Sage's own preparser rewrites into
-    ``case -_sage_const_1:``, which is not a valid pattern.
+    are the ones that differ.  ``{1, 2}`` is set-builder notation Sage does
+    not have -- its own preparser leaves a Python set literal -- and
+    ``case -1:`` is what Sage's own rewrites into ``case -_sage_const_1:``,
+    which is not a valid pattern.
     """
     source = tmp_path / "probe.sage"
     source.write_text(
@@ -370,7 +373,7 @@ def test_sage_cli_preparse_is_the_research_preparser(tmp_path: Path) -> None:
         "            return -1\n"
         "        case _:\n"
         "            return x\n"
-        "V = QQ^3\n"
+        "S = {1, 2}\n"
     )
 
     subprocess.run(
@@ -381,8 +384,8 @@ def test_sage_cli_preparse_is_the_research_preparser(tmp_path: Path) -> None:
     )
     generated = (tmp_path / "probe.sage.py").read_text()
 
-    assert "research_pow(QQ, Integer(3))" in generated, (
-        "R^n is this preparser's notation; Sage's own emits QQ**Integer(3)"
+    assert "Set([Integer(1), Integer(2)])" in generated, (
+        "brace notation is this preparser's; Sage's own leaves a set literal"
     )
     assert "case -1:" in generated and "_sage_const_" not in generated, (
         "Sage's own preparser rewrites integer patterns into invalid syntax"

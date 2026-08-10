@@ -174,6 +174,29 @@ This discipline is culture, not a gate: do not build detectors, hooks, or mandat
 The emitting context reliably cannot see its own inventions — re-emission risk peaks *while processing a correction* ("cardinal-equipped" was emitted in the very sentence describing the previous fix, 2026-07-17) — so the audit must be fresh-context: spawn a subagent primed verbatim with `.agents/references/mathematical-auditor-priming.md` and hand it the artifact itself, never a summary.
 Checkpoint after any correction, before issue bodies or plan cards ship, and before committing lexicon/manifest/typing surfaces.
 
+# Relay and referent discipline (always-on)
+
+The user reads only the orchestrator's own messages — subagent reports, tool
+output, and session shorthand are private context. Communicating from that
+private context as if it were shared is a theory-of-mind failure with
+recurring shapes (memory: `relay-translation-not-forwarding`, 2026-08-09):
+
+- **Relay = translation, not forwarding.** State the decision-relevant claim
+  first, in repo-grounded terms (this repo's files, spec rows, standard
+  mathematical names), a few sentences; detail on request. An agent's
+  journey — what it ran, what it tried, how it got there — is not content.
+- **Coinages are not shared language.** Session-local shorthand (input→output
+  arrows like "A1^8 -> E8", row nicknames, bare count fractions) means
+  nothing outside the context that minted it. Re-ground every reference
+  before it crosses to the user.
+- **"I don't understand" names a dangling referent, not a knowledge gap.**
+  The repair is to restore the missing reference, never to explain the
+  underlying mathematics — this is the user's own research program; an
+  unrequested lecture is both the wrong fix and an insult.
+- **Compression test.** If the user's own summary of the issue is two
+  sentences, the message that needed those two sentences and didn't lead
+  with them failed, regardless of how much correct detail it carried.
+
 # Repository layout
 
 Top-level directories (this is a navigational map; each tree owns its own README/AGENTS.md):
@@ -439,6 +462,22 @@ Do not make the reader excavate the missing work from beneath praise, context-se
 Nuance belongs in the evidence and blocker analysis, not in softening the completion standard.
 The review should make it easy to finish the work, not easy to feel satisfied with less than the original contract required.
 
+# The preamble is a universe over Sage (always-on)
+
+The preamble is a layer over Sage, not a collection of helpers.
+Once a session loads it, the mathematician stops receiving raw Sage objects: everything reached from the preamble is an owned object, which may or may not use a Sage object underneath.
+The stated purpose is *owned uniformization*.
+
+What it exists to fix is Sage's non-uniformity, not Sage's algorithms.
+Sage carries more than ten distinct notions of *group*, and an operation as elementary as $\operatorname{Aut}(G)$ is, depending on which one you hold: absent; present under a different name; known and simple but unwired (it is a call into GAP); or genuinely uncomputable.
+A session cannot hold that variation, so the preamble presents one name for one mathematical operation, and either answers or asserts.
+
+This governs the rules below:
+
+- Sage objects are an implementation detail. The crossing happens inside owned code, at the point of computing, never in what a session receives.
+- Where Sage spells one mathematical operation several ways, the preamble picks one spelling and the others do not exist in the session.
+- Where Sage has no algorithm, the preamble still owns the name. A missing capability is a stated gap on the owned interface, never a second spelling and never a silent absence.
+
 # Mathematical Sage API discipline (always-on)
 
 These rules govern preamble, spike, and any Sage-facing API in this repo.
@@ -527,6 +566,10 @@ Tests falsify the mathematical or dispatch claim: refined methods win over class
 They do not exercise scaffolding, reassure about naming conflicts, or re-encode construction as gram-matrix comparisons.
 
 Predicates that are part of the theory (`is_involution`, invariant and coinvariant lattices, isotypic components, …) are methods on the owned category interfaces, not side conditions in catalogue loaders.
+
+**Adding to `tests/test_known_mathematics.sage`.** That file is the owner's specification of mathematics the preamble must reproduce, so agents do not extend it freely — but an addition is allowed whenever an independent source citation is attached to the new row: the Stacks Project, Kerodon, an item in the owner's Zotero library, a published paper, or an arXiv preprint. The citation is the admission ticket, and it names the source of the *asserted fact*, not of the implementation. Cite by the source's own identifier (Zotero `citationkey`, Stacks tag, arXiv id), verified against the source rather than recalled.
+
+A row whose assertion would hold with the functionality removed certifies nothing. Assert the content: a maximal overlattice is reached by an inclusion, so the arrow's index is the assertion, not the codomain's existence.
 
 ## 8. Block Hom spelling, invariant and coinvariant lattices, and catalogue hygiene
 

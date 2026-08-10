@@ -42,17 +42,45 @@ def _assert_fractional_ideal_generators(
     ring: Parent,
     expected_gens: "OrderedSet",
 ) -> None:
-    """Check that ideal generators and module generators are the same generating family."""
+    """Check the ideal is the R-submodule its family generates.
+
+    There is no second family to compare against: an ideal is an
+    R-submodule of R, so the generators of the ideal are the generators of
+    the module under one word.  What is checkable is that the family is the
+    expected one, and -- when the ideal is integral -- that the submodule it
+    names includes into R with the same image.
+
+    Image, not family.  A supplied family need not be a basis: $(2)$ arrives
+    from the order as $(2, 2a)$, while the submodule is free of rank one, so
+    its inclusion has one column and could not list two generators.  Equal
+    images is the statement that survives, and it is the statement that says
+    the two objects are the same submodule.
+    """
     module_category = Modules(ring)
     assert ideal in module_category, (
         f"{ideal} is not an explicit object of Modules({ring})"
     )
     module_generators = tuple(ideal.module_generators())
-    ideal_gens = tuple(ideal.gens())
     expected = tuple(expected_gens)
-
-    assert set(module_generators) == set(ideal_gens)
     assert set(module_generators) == set(expected)
+
+    if all(generator in ring for generator in module_generators):
+        submodule = ideal.as_submodule()
+        inclusion = submodule.embedding()
+        assert inclusion.codomain().base_ring() is ring, (
+            "an integral ideal includes into R read as a module over itself"
+        )
+        assert submodule.rank() == 1, (
+            "a nonzero ideal of a domain is free of rank one as a module"
+        )
+        spanning, = inclusion.matrix()._sage_matrix().list()
+        assert all(
+            ring(generator) / spanning in ring
+            for generator in module_generators
+        ), "every generator of the ideal lies in the image of the inclusion"
+        assert spanning in ideal, (
+            "and the image lies in the ideal, so the two submodules are one"
+        )
 
 
 def test_free_algebra_on_delta_records_the_generating_set() -> None:
@@ -354,9 +382,13 @@ def test_finitely_presented_algebra_base_change_is_explicit() -> None:
     relation = source.algebra_generator(0) * source.algebra_generator(1)
     presented = FinitelyPresentedAlgebra(source, [relation])
 
+    # $\QQ\subset\CC$, so a ring map to base-change along exists; the engine
+    # produces it as the coercion.  Its absence would be a missing embedding,
+    # not a missing test fixture, so it is asserted rather than guarded.
     ring_hom = ComplexField().coerce_map_from(QQ)
-    if ring_hom is None:
-        raise AssertionError("expected QQ-to-ComplexField coerce map")
+    assert ring_hom is not None, (
+        "QQ embeds in CC, so there is a ring map QQ -> CC"
+    )
     changed = presented.base_change(ring_hom)
 
     assert changed in FinitelyPresentedAlgebras(ComplexField())
@@ -379,8 +411,9 @@ def test_finitely_presented_algebra_base_change_transports_coefficients() -> Non
     presented = FinitelyPresentedAlgebra(source, [relation])
 
     ring_hom = ComplexField().coerce_map_from(ZZ)
-    if ring_hom is None:
-        raise AssertionError("expected ZZ-to-ComplexField coerce map")
+    assert ring_hom is not None, (
+        "ZZ embeds in CC, so there is a ring map ZZ -> CC"
+    )
     changed = presented.base_change(ring_hom)
 
     # ``ComplexField(2)`` is the field with 2 bits of precision, not the
@@ -394,9 +427,12 @@ def test_algebra_parent_base_change_rejects_invalid_map() -> None:
     """`Algebra.base_change` requires a morphism from the declared base ring."""
     _ensure_preamble()
     A = own_algebra(PolynomialRing(QQ, "t").coerce_map_from(QQ))
+    # A real ring map, wrong for this algebra: $\ZZ\subset\RR$ gives a map,
+    # and it does not start at $\QQ$, which is what makes it the test case.
     invalid_map = RealField().coerce_map_from(ZZ)
-    if invalid_map is None:
-        raise AssertionError("expected invalid-map precondition to produce a map")
+    assert invalid_map is not None, (
+        "ZZ embeds in RR, so there is a ring map ZZ -> RR"
+    )
 
     with pytest.raises(AssertionError):
         A.base_change(invalid_map)
@@ -600,8 +636,12 @@ def test_constructed_rings_are_explicit_objects_of_expected_algebra_categories()
     structure_map = algebra.coerce_map_from(base)
     _assert_algebra_membership(base, algebra, structure_map)
 
+    # A quotient of a free algebra is presented, not merely formed: the
+    # preamble's constructor is the one that keeps the presenting ring and
+    # the ideal, so $\QQ[x]/(x^2+1)$ arrives already knowing what it is a
+    # quotient of.
     R.<x> = PolynomialRing(QQ, 1)
-    algebra = R.quotient(x^2 + 1)
+    algebra = FinitelyPresentedAlgebra(R, [x^2 + 1])
     structure_map = algebra.coerce_map_from(base)
     _assert_algebra_membership(base, algebra, structure_map)
 
@@ -620,7 +660,7 @@ def test_constructed_rings_are_explicit_objects_of_expected_algebra_categories()
 
 
 def test_integral_and_fractional_Z_ideals_are_explicit_modules() -> None:
-    """`ZZ` ideals and their inverses match `module_generators()` with `gens()`."""
+    """`ZZ` ideals and their inverses report the family they were built on."""
     _ensure_preamble()
     R = ZZ
     principal = R.ideal(12)
@@ -643,13 +683,14 @@ def test_fractional_ideals_in_quadratic_integer_rings_are_explicit_modules() -> 
     R = K.ring_of_integers()
 
     # An ideal does not remember the family it was built from: the order
-    # hands back a module basis, $(2)$ as $(2, 2a)$.  What is invariant is
-    # that the family it does report is one family read two ways, and that
-    # $2$ divides it -- which is what $(2)$ being principal means.
+    # hands back a module basis, $(2)$ as $(2, 2a)$.  That family is the one
+    # asserted -- reading the ideal's own answer back into the expectation
+    # would compare it with itself -- and $2$ divides both of its members,
+    # which is what $(2)$ being principal means.
     principal = own_ideal(R.ideal(2))
     assert principal.is_principal()
     assert principal.principal_generator() == R(2)
-    _assert_fractional_ideal_generators(principal, R, principal.gens())
+    _assert_fractional_ideal_generators(principal, R, (R(2), R(2) * R(a)))
 
     _assert_fractional_ideal_generators(
         principal.inverse(), R, (K(1) / 2,)
@@ -662,3 +703,380 @@ def test_fractional_ideals_in_quadratic_integer_rings_are_explicit_modules() -> 
     unit_ideal = own_ideal(R.ideal([3, a + 1]))
     assert unit_ideal.is_principal()
     assert unit_ideal.principal_generator().is_unit()
+
+
+def test_degree_is_the_grading_and_holds_at_every_rank():
+    r"""$\deg$ is the total degree, and $\deg_s$ the degree in each generator.
+
+    $\operatorname{FreeAlg}_R(S)=R[\operatorname{Mon}(S)]$ is graded by the
+    sum of exponents whatever $S$ is, and an element has finite support, so
+    both are read off the framing with no engine and no chosen monomial order.
+    """
+    _ensure_preamble()
+
+    A = FreeAlgebraOn(QQ, finite_ordered_set(["x"]))
+    x = A.algebra_generators()[0]
+
+    assert (x * x - 5 * A.one()).degree() == 2
+    assert A.one().degree() == 0, "a nonzero constant has degree zero"
+    assert A.zero().degree() == -Infinity, (
+        "the zero element has no largest exponent"
+    )
+    assert ((x * x) * (x * x * x)).degree() == 5, (
+        "the degree adds, which is the monoid operation in the framing"
+    )
+
+    space = FreeAlgebraOn(QQ, finite_ordered_set(["x", "y", "z"]))
+    u, v, w = space.algebra_generators()
+    f = u * u * v * w * w * w + v * v
+    assert f.degree() == 6, (
+        "x^2*y*z^3 has total degree six, and y^2 does not exceed it"
+    )
+    assert f.multidegree() == {"x": 2, "y": 2, "z": 3}, (
+        "the degree in each generator is the largest exponent of it in the "
+        "support, taken separately"
+    )
+    assert space.one().multidegree() == {}, (
+        "a constant has degree zero in every generator, so nothing is nonzero"
+    )
+
+
+def test_roots_are_asked_only_of_an_algebra_of_rank_one():
+    r"""Roots of $x^2-5$, and a refusal above rank one.
+
+    Root finding is an algorithm, so it crosses to an engine once; the zeros
+    of an element of rank two are a variety and not a set of roots, so the
+    question is refused rather than answered with a coincidence.
+    """
+    _ensure_preamble()
+    # ``AA`` in the preamble's namespace is ``AffineSpace``.
+    from sage.rings.qqbar import AA as AlgebraicReals
+
+    A = FreeAlgebraOn(QQ, finite_ordered_set(["x"]))
+    x = A.algebra_generators()[0]
+
+    over_the_reals = (x * x - 5 * A.one()).roots(ring=AlgebraicReals)
+    assert [multiplicity for _, multiplicity in over_the_reals] == [1, 1], (
+        "x^2 - 5 is separable, so both real roots are simple"
+    )
+    assert [root**2 for root, _ in over_the_reals] == [5, 5], (
+        "each root squares to five, which is what makes it a root"
+    )
+    assert (x * x - 4 * A.one()).roots() == [(2, 1), (-2, 1)], (
+        "left open, the ring is the base ring"
+    )
+
+    plane = FreeAlgebraOn(QQ, finite_ordered_set(["x", "y"]))
+    refused = False
+    try:
+        plane.algebra_generators()[0].roots()
+    except AssertionError:
+        refused = True
+    assert refused, (
+        "the zero locus of x in QQ[x, y] is a line, and a line is not a "
+        "list of roots"
+    )
+
+
+def test_division_and_factorisation_come_back_as_algebra_elements():
+    r"""$(x-1)(x-2)(x-3)$, taken apart by the engine and returned owned.
+
+    Division with remainder, gcd, xgcd and factorisation are algorithms, so
+    they cross to the engine at the algebra's presentation -- and what comes
+    back is elements of the algebra, not of the ring the engine used.
+    """
+    _ensure_preamble()
+
+    A = FreeAlgebraOn(QQ, finite_ordered_set(["x"]))
+    x = A.algebra_generators()[0]
+    cubic = x * x * x - 6 * x * x + 11 * x - 6 * A.one()
+    quadratic = x * x - 3 * x + 2 * A.one()
+
+    quotient, remainder = cubic.quo_rem(quadratic)
+    assert quotient * quadratic + remainder == cubic, (
+        "quo_rem returns the division identity, in this algebra"
+    )
+    assert remainder == A.zero(), "the quadratic divides the cubic"
+    assert quotient.parent() is A, "the quotient is an element of the algebra"
+
+    assert cubic.gcd(quadratic) == quadratic, (
+        "their gcd is the quadratic, up to the unit convention"
+    )
+    common, left, right = cubic.xgcd(quadratic)
+    assert left * cubic + right * quadratic == common, (
+        "xgcd returns a Bezout identity that holds in the algebra"
+    )
+
+    factors = cubic.irreducible_factors()
+    assert len(factors) == 3 and all(
+        multiplicity == 1 for _, multiplicity in factors
+    ), "the cubic has three distinct linear factors"
+    product = A.one()
+    for factor, multiplicity in factors:
+        product = product * factor**multiplicity
+    assert product == cubic, "the factors multiply back to the element"
+    assert not quadratic.is_irreducible()
+    assert (x * x + A.one()).is_irreducible(), "x^2 + 1 is irreducible over QQ"
+    assert quadratic.discriminant() == 1, "(x-1)(x-2) has discriminant one"
+    assert cubic.resultant(quadratic) == 0, "they share roots, so the "\
+        "resultant vanishes"
+
+
+def test_evaluation_and_derivation_are_asked_by_generator():
+    r"""$\partial_s$ and substitution, at any rank.
+
+    Evaluation is the universal property of a free algebra, so it is an
+    assignment on generators and a partial one leaves the others standing.
+    Differentiation is a derivation, determined the same way.
+    """
+    _ensure_preamble()
+
+    space = FreeAlgebraOn(QQ, finite_ordered_set(["x", "y"]))
+    u, v = space.algebra_generators()
+    f = u * u * v + v * v
+
+    assert f.derivative("x") == 2 * u * v, "d/dx (x^2 y + y^2) = 2xy"
+    assert f.derivative("y") == u * u + 2 * v, "d/dy (x^2 y + y^2) = x^2 + 2y"
+    assert f.subs({"y": QQ(1)}) == u * u + space.one(), (
+        "substituting one generator leaves the other in place"
+    )
+    assert f(QQ(2), QQ(3)) == QQ(21), "x^2 y + y^2 at (2, 3) is 12 + 9"
+
+    line = FreeAlgebraOn(QQ, finite_ordered_set(["x"]))
+    x = line.algebra_generators()[0]
+    cubic = x * x * x - 6 * x * x + 11 * x - 6 * line.one()
+    assert cubic(QQ(1)) == QQ(0) and cubic(QQ(4)) == QQ(6), (
+        "the cubic vanishes at one of its roots and not elsewhere"
+    )
+    assert cubic.derivative() == 3 * x * x - 12 * x + 11 * line.one(), (
+        "at rank one the generator to differentiate in may be left open"
+    )
+
+
+def test_a_number_field_is_the_quotient_by_its_defining_polynomial():
+    r"""$K=\QQ[x]/(f)$, and what makes it a field is that $f$ is irreducible.
+
+    Nothing structural is added to the quotient: the free algebra presents it,
+    the ideal reduces, and $[K:\QQ]=\deg f$ because reduction leaves the
+    monomials below that degree.  A reducible $f$ is refused at construction
+    rather than failing later at a division.
+    """
+    _ensure_preamble()
+
+    A = FreeAlgebraOn(QQ, finite_ordered_set(["x"]))
+    x = A.algebra_generators()[0]
+    K = own_number_field(x * x - 5 * A.one())
+
+    assert K in OwnedNumberFields() and K in OwnedFields(), (
+        "a number field is placed as a field, on the irreducibility witness"
+    )
+    assert K.degree() == 2, "[QQ(sqrt 5) : QQ] = deg(x^2 - 5)"
+    assert K.defining_polynomial() == x * x - 5 * A.one()
+
+    a = K.primitive_element()
+    assert a * a == K(5 * A.one()), (
+        "the primitive element is a root of f, which is what the quotient says"
+    )
+    assert (a + K(A.one()))**2 == K(6 * A.one()) + 2 * a, (
+        "(1 + sqrt 5)^2 = 6 + 2 sqrt 5, after reduction"
+    )
+
+    cubic_field = own_number_field(x * x * x - 2 * A.one())
+    assert cubic_field.degree() == 3, "QQ(2^(1/3)) has degree three"
+
+    refused = False
+    try:
+        own_number_field(x * x - 4 * A.one())
+    except AssertionError:
+        refused = True
+    assert refused, (
+        "x^2 - 4 factors, so the quotient has zero divisors and is not a field"
+    )
+
+
+def test_the_arithmetic_of_a_number_field_is_answered_in_owned_terms():
+    r"""$\QQ(\sqrt5)$ and $\QQ(2^{1/3})$, against their recorded invariants.
+
+    Each of these is a computation rather than a definition, so each crosses
+    to an engine once; what is checked here is the mathematics, which is
+    independent of that: $d_K=5$ and $h=1$ for $\QQ(\sqrt5)$, and the cubic
+    has one real place and two complex ones with $r+2s=3$.
+    """
+    _ensure_preamble()
+    from sage.rings.qqbar import AA as AlgebraicReals
+
+    A = FreeAlgebraOn(QQ, finite_ordered_set(["x"]))
+    x = A.algebra_generators()[0]
+    real_quadratic = own_number_field(x * x - 5 * A.one())
+    cubic = own_number_field(x * x * x - 2 * A.one())
+
+    assert real_quadratic.discriminant() == 5, (
+        "the field discriminant of QQ(sqrt 5) is 5, not the polynomial's 20"
+    )
+    assert real_quadratic.signature() == (2, 0), "both places are real"
+    assert real_quadratic.class_number() == 1, "QQ(sqrt 5) is principal"
+    assert real_quadratic.ramified_primes() == (5,), (
+        "only 5 divides the discriminant, so only 5 ramifies"
+    )
+    assert real_quadratic.is_galois(), "a degree-two extension is normal"
+
+    galois = real_quadratic.galois_group()
+    assert galois.cardinality() == 2, "|Gal| = [K : QQ] for a Galois extension"
+    assert galois in OwnedGroups(), "the Galois group is returned as a group"
+
+    images = real_quadratic.embedding_images(AlgebraicReals)
+    assert len(images) == real_quadratic.signature()[0], (
+        "an embedding into the reals is a real root of f, so there are r of them"
+    )
+    assert [image**2 for image in images] == [5, 5], (
+        "each embedding sends the primitive element to a square root of 5"
+    )
+
+    assert cubic.signature() == (1, 1) and 1 + 2 * 1 == cubic.degree(), (
+        "r + 2s = [K : QQ] is what makes the signature a decomposition"
+    )
+    assert cubic.discriminant() == -108
+    assert not cubic.is_galois(), "x^3 - 2 does not split in QQ(2^(1/3))"
+    assert cubic.galois_group().cardinality() == 6, (
+        "the group of the normal closure is S_3, which is why the extension "
+        "is not normal"
+    )
+
+
+def test_an_integral_basis_is_a_basis_of_an_underlying_R_algebra():
+    r"""$K=A\otimes_R\operatorname{Frac}(R)$, and the basis is $A$'s.
+
+    An integral basis is not a number-field notion.  $K$ is a
+    $\operatorname{Frac}(R)$-algebra, an $R$-algebra underlying it is one with
+    the same presentation over $R$, and an integral basis is an $R$-basis of
+    that -- so the field answers by naming the algebra, and the relation
+    between the two is the base change rather than a resemblance.
+
+    Which $R$-form is a choice: the presentation names $R[\alpha]$, and the
+    maximal one is a different object.
+    """
+    _ensure_preamble()
+
+    A = FreeAlgebraOn(QQ, finite_ordered_set(["x"]))
+    x = A.algebra_generators()[0]
+    K = own_number_field(x * x - 5 * A.one())
+
+    order = K.underlying_algebra(ZZ)
+    assert order.base_ring() is ZZ, "the underlying algebra is over R"
+    assert order.relations() == (
+        (x * x - 5 * A.one()).change_ring(ZZ),
+    ), "presented by the same f, over R"
+
+    base_change = K.base_change_functor(ZZ)
+    assert order in base_change.domain() and K in base_change.codomain(), (
+        "the functor goes from R-algebras to Frac(R)-algebras, and the two "
+        "objects sit at its ends"
+    )
+    assert base_change(order).relations() == K.relations(), (
+        "F(A) = K for F = - (x)_R Frac(R): the field is a value of the "
+        "functor, not merely similar to a base change of the algebra"
+    )
+
+    basis = K.integral_basis(ZZ)
+    assert len(basis) == K.degree(), (
+        "reduction leaves the powers below deg f, and there are [K : QQ] of them"
+    )
+    assert basis[0] == K(A.one()) and basis[1] == K.primitive_element(), (
+        "the R-basis of R[alpha] is the power basis"
+    )
+    assert all(element.is_integral() for element in basis), (
+        "every member of an R-basis of an R-algebra is integral over R"
+    )
+
+
+def test_an_element_of_a_number_field_is_a_QQ_linear_endomorphism():
+    r"""$N$, $\operatorname{Tr}$, the minimal polynomial and the inverse.
+
+    Multiplication by $a$ is $\QQ$-linear on $K$, so $a$ *is* that
+    endomorphism: its norm is the determinant and its trace the trace, which
+    is why neither depends on the presentation.  The inverse comes from a
+    Bezout identity with $f$, irreducibility being exactly what makes the gcd
+    a unit.
+    """
+    _ensure_preamble()
+    from sage.rings.qqbar import AA as AlgebraicReals
+
+    A = FreeAlgebraOn(QQ, finite_ordered_set(["x"]))
+    x = A.algebra_generators()[0]
+    K = own_number_field(x * x - 5 * A.one())
+    one = K(A.one())
+    root_of_five = K.primitive_element()
+
+    assert root_of_five.norm() == -5 and root_of_five.trace() == 0, (
+        "N(sqrt 5) = -5 and Tr(sqrt 5) = 0, being det and tr of its matrix"
+    )
+    assert (one + root_of_five).norm() == -4, "N(1 + sqrt 5) = 1 - 5"
+    assert (one + root_of_five).trace() == 2, "Tr(1 + sqrt 5) = 2"
+
+    assert root_of_five.minimal_polynomial() == x * x - 5 * A.one(), (
+        "sqrt 5 generates K, so its minimal polynomial is f"
+    )
+    assert one.minimal_polynomial() == x - A.one(), (
+        "1 does not generate K, so its minimal polynomial has degree one"
+    )
+    assert one.characteristic_polynomial() == (x - A.one()) * (x - A.one()), (
+        "the characteristic polynomial has degree [K : QQ] whatever the element"
+    )
+
+    assert root_of_five.is_integral(), "sqrt 5 is an algebraic integer"
+    assert not (K((QQ(1) / 2) * A.one()) * root_of_five).is_integral(), (
+        "sqrt(5)/2 is not: its minimal polynomial is x^2 - 5/4"
+    )
+
+    inverse = root_of_five.inverse()
+    assert root_of_five * inverse == one, (
+        "the Bezout cofactor is the inverse, which is what irreducibility buys"
+    )
+
+    conjugates = root_of_five.conjugates(AlgebraicReals)
+    assert len(conjugates) == 2 and [c**2 for c in conjugates] == [5, 5], (
+        "the conjugates of sqrt 5 are its two real embeddings"
+    )
+    assert sum(conjugates) == root_of_five.trace(), (
+        "the trace is the sum over the embeddings, for a separable extension"
+    )
+
+
+def test_a_polynomial_factors_over_an_extension_it_gains_a_root_in():
+    r"""$x^2-5=(x-\sqrt5)(x+\sqrt5)$ over $\QQ(\sqrt5)$, irreducible over $\QQ$.
+
+    Base change is the free construction applied to $\QQ\hookrightarrow K$, so
+    the algebra over $K$ is the same generating set with new coefficients --
+    and factorisation there crosses to an engine that computes over $K$, with
+    the coefficients translated both ways.
+    """
+    _ensure_preamble()
+
+    A = FreeAlgebraOn(QQ, finite_ordered_set(["x"]))
+    x = A.algebra_generators()[0]
+    K = own_number_field(x * x - 5 * A.one())
+    root_of_five = K.primitive_element()
+
+    assert (x * x - 5 * A.one()).is_irreducible(), (
+        "x^2 - 5 has no rational root"
+    )
+
+    over_the_extension = (x * x - 5 * A.one()).change_ring(K)
+    factors = over_the_extension.irreducible_factors()
+    assert len(factors) == 2 and all(
+        multiplicity == 1 for _, multiplicity in factors
+    ), "over K it splits into two distinct linear factors"
+
+    product = over_the_extension.parent().one()
+    for factor, multiplicity in factors:
+        assert factor.degree() == 1, "each factor is linear"
+        product = product * factor**multiplicity
+    assert product == over_the_extension, (
+        "the factors multiply back to the polynomial, over K"
+    )
+
+    generator_over_K = over_the_extension.parent().algebra_generators()[0]
+    assert set(factors) == {
+        (generator_over_K - root_of_five * over_the_extension.parent().one(), 1),
+        (generator_over_K + root_of_five * over_the_extension.parent().one(), 1),
+    }, "the factors are x - sqrt 5 and x + sqrt 5"

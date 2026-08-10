@@ -40,10 +40,8 @@ load(str(_p / "install.sage"))
 
 def test_set_literal_preparser_preserves_sage_generator_declarations() -> None:
     r"""The notebook set extension must compose with Sage's ``R.<x> =`` syntax."""
-    from dzack_research.preamble.preparser import install_preparser
+    import sageparse.preparser.research  # noqa: F401
     from sage.repl import preparse as sage_preparse
-
-    install_preparser()
     namespace = dict(globals())
     source = (
         'A2.<alpha1, alpha2> = Lattices.root_lattice("A", 2); '

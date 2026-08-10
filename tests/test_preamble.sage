@@ -31,11 +31,6 @@ def _ensure_preamble() -> None:
     load(str(p / "utilities.py"))
     load(str(p / "catalogue.sage"))
     load(str(p / "sterk.sage"))
-    from sage_julia_bridge import JuliaHandle, julia
-
-    globals()["JuliaHandle"] = JuliaHandle
-    globals()["julia"] = julia
-    julia.eval("using Oscar")
     Lattices.install(globals())
 
 
@@ -1174,6 +1169,13 @@ def test_lattices_install_binds_specimens_and_lk3_generators() -> None:
 
 def test_julia_preamble_calls_oscar_with_a_sage_matrix() -> None:
     _ensure_preamble()
+
+    # Julia is a hidden backend, so it starts here and not in the loader: one
+    # test asks the bridge a question, and the other forty-four in this file
+    # are about the preamble and must not wait on Oscar to find out.
+    from sage_julia_bridge import julia
+
+    julia.eval("using Oscar")
 
     # Any nondegenerate specimen proves the bridge; the Coxeter edge lattices
     # this used to borrow from are unrelated to what is being tested here.

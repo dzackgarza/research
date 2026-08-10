@@ -29,3 +29,9 @@ members = [
     "computations/experiments/sage_lattice_category_spike",
     "computations/experiments/sage_lattice_feature_spike",
 ]
+
+[tool.pytest.ini_options]
+# Every run reports where it spent its time and leaves a machine-readable
+# record of it.  Both are pytest's own: --durations ranks the phases of each
+# test, and the JUnit report carries per-test times for comparing runs.
+addopts = "--durations=25 --durations-min=0.5 --junit-xml=tests/.report/junit.xml"
