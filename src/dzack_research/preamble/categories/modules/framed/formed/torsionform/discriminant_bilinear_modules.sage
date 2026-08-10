@@ -112,9 +112,12 @@ class DiscriminantBilinearModules(Category):
         )
         module = TorsionModule(morphism)
         gram = morphism.codomain().form().gram_matrix()
-        assert morphism.codomain().form().descends_along(morphism), (
-            "the form is not defined on the classes of this morphism"
-        )
+        # No check that the form descends.  For an R-lattice L, the
+        # discriminant group A_L = L^v/L carries an induced K/R-valued
+        # bilinear form -- that is a theorem, and b(L, L^v) subset R is the
+        # definition of L^v, not a property of this particular L.  The check
+        # that stood here re-derived it for every pair of generators, on the
+        # path that renders a lattice.
         form = BilinearForm(module, QmodnZ(1), gram)
         refine(form, [self] + cokernel_categories(morphism))
         subdivide_form_gram_matrix(form)

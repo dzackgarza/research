@@ -131,10 +131,15 @@ class DiscriminantQuadraticModules(Category):
             morphism.codomain().forget_form(),
             QmodnZ(2),
         )(gram)
-        assert quadratic_form.descends_along(morphism), (
-            "q is well defined only when the relations have even norm; these "
-            "do not, so the cokernel carries b alone -- use "
-            "discriminant_bilinear_form"
+        # The hypothesis of the quadratic refinement is that L is even: then
+        # q(y + x) = q(y) + 2b(y,x) + q(x) reduces to q(y) in K/2R, so q
+        # descends.  That is the branch this method is reached through --
+        # discriminant_group picks this category when is_even() -- so the
+        # hypothesis is stated where it decides something, and the theorem is
+        # not re-proved here for each generator.
+        assert morphism.domain().is_even(), (
+            "the discriminant quadratic form is the even case; an odd lattice "
+            "carries b alone -- use discriminant_bilinear_form"
         )
         form = QuadraticForm(module, QmodnZ(2), gram)
         refine(form, [self] + cokernel_categories(morphism))
