@@ -35,6 +35,7 @@ EXAMPLES::
 """
 
 from typing import TYPE_CHECKING
+from sage_lattice_category_spike.objects.underlying_sets import UnderlyingSet
 from sage_lattice_category_spike.lexicon import MorphismMatrix
 if TYPE_CHECKING:
     from sage_lattice_category_spike.lexicon import Element
@@ -43,6 +44,7 @@ if TYPE_CHECKING:
     from sage_lattice_category_spike.lexicon import Module
     from sage_lattice_category_spike.lexicon import ModuleElement
 
+from sage.categories.morphism import SetMorphism
 from sage.quadratic_forms.genera.genus import Genus
 from sage.categories.homset import Hom
 from sage.structure.parent import Parent

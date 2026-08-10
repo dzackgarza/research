@@ -17,6 +17,7 @@ if TYPE_CHECKING:
     from sage_lattice_category_spike.lexicon import Module
     from sage_lattice_category_spike.lexicon import ModuleElement
 
+from sage.categories.morphism import SetMorphism
 from sage.structure.parent import Parent
 if TYPE_CHECKING:
     from sage.categories.category import Category

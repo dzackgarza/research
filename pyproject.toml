@@ -40,7 +40,7 @@ members = [
 # --durations ranks test phases, pytest-durations aggregates them by file, and
 # the report log plus JUnit xml make runs comparable to each other.
 addopts = """
-  --timeout=90 --timeout-method=thread
+  --timeout=90 --timeout-method=signal
   --durations=0 --durations-min=0
   --junit-xml=tests/.report/junit.xml
   --report-log=tests/.report/run.jsonl
