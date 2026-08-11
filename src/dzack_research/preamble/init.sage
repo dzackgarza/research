@@ -27,30 +27,22 @@
 # importing them again only creates a second name for the same object -- or,
 # as happened with ``RR``, a line that names a module which does not export it
 # and takes the whole startup down with it.
-from pathlib import Path
-import os
-
 import IPython.core.ultratb
 from sage.libs.gap.libgap import libgap
+
+from dzack_research.preamble.install import install_preamble
 
 Σ = sum
 Π = prod
 
-# This file *is* the startup file (via symlink). Sibling scripts live next to it.
-_PREAMBLE = Path(os.environ["SAGE_STARTUP_FILE"]).resolve().parent
-
-# The category modules, their install hooks, and the export sweep that puts
-# their names in this session -- shared with the .sage tests so the two never
-# drift apart.  ``utilities`` and ``catalogue`` are in the module list it
-# imports, so this is where ``Lattices`` and ``zipsum`` come from; loading
-# either again would build a second copy of the catalogue.
-load(str(_PREAMBLE / "install.sage"))
+# One call, one mechanism: the categories, their install hooks, and every name
+# the preamble's modules export -- ``Lattices``, ``zipsum``, ``Sterk`` -- are
+# bound into this session.  The ``.sage`` tests call the same function with
+# their own namespace, so the two cannot drift apart.
+install_preamble(globals())
 
 libgap.LoadPackage("PackageManager")
 IPython.core.ultratb.VerboseTB._tb_highlight = "bg:ansired"
-
-# Not in that module list, so it is still loaded on its own.
-load(str(_PREAMBLE / "sterk.sage"))
 
 Lattices.install(globals())
 

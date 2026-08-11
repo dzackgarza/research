@@ -11,9 +11,8 @@ keeps the group's own elements -- a presentation by invariant factors would
 answer with different ones -- and that its scalar action is the power map.
 """
 
-load("src/dzack_research/preamble/install.sage")
-
-
+from dzack_research.preamble.install import install_preamble
+install_preamble(globals())
 def _abelian_groups():
     r"""Abelian groups, in the presentations the preamble meets them in."""
     return [

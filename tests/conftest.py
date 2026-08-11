@@ -29,9 +29,6 @@ import dzack_research
 from sage.all import *  # noqa: F403
 from sage.repl.load import load as _load
 
-_PREAMBLE = Path(dzack_research.__file__).resolve().parent / "preamble"
-
-
 def load(filename: str | Path, namespace: dict | None = None) -> None:
     r"""Run a ``.sage`` file the way a session does, into this namespace.
 
@@ -44,4 +41,5 @@ def load(filename: str | Path, namespace: dict | None = None) -> None:
     _load(str(filename), globals() if namespace is None else namespace)
 
 
-load(_PREAMBLE / "install.sage")
+from dzack_research.preamble.install import install_preamble
+install_preamble(globals())

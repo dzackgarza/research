@@ -7,10 +7,8 @@ from sage.all import CoxeterMatrix, TestSuite, matrix, ZZ
 from pathlib import Path
 import dzack_research
 
-_p = Path(dzack_research.__file__).resolve().parent / "preamble"
-load(str(_p / "install.sage"))
-
-
+from dzack_research.preamble.install import install_preamble
+install_preamble(globals())
 def test_cartan_type_constructs_its_diagram_as_a_sage_parent() -> None:
     r"""The Cartan type $A_4$ constructs its Coxeter diagram as a Sage parent."""
     diagram = CoxeterDiagrams().from_cartan_type(["A", 4])

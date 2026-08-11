@@ -27,9 +27,8 @@ def _ensure_preamble() -> None:
     import dzack_research
 
     p = Path(dzack_research.__file__).resolve().parent / "preamble"
-    load(str(p / "install.sage"))
-    load(str(p / "utilities.py"))
-    load(str(p / "catalogue.sage"))
+    from dzack_research.preamble.install import install_preamble
+    install_preamble(globals())
     load(str(p / "sterk.sage"))
     Lattices.install(globals())
 

@@ -34,10 +34,8 @@ import dzack_research
 
 _LatticeConstructorParams = ParamSpec("_LatticeConstructorParams")
 
-_p = Path(dzack_research.__file__).resolve().parent / "preamble"
-load(str(_p / "install.sage"))
-
-
+from dzack_research.preamble.install import install_preamble
+install_preamble(globals())
 def test_set_literal_preparser_preserves_sage_generator_declarations() -> None:
     r"""The notebook set extension must compose with Sage's ``R.<x> =`` syntax."""
     import sageparse.preparser.research  # noqa: F401

@@ -65,8 +65,8 @@ FINITELY_GENERATED = Groups().FinitelyGenerated()
 # -- are bound to the owned objects.  Loading ``install.sage`` alone leaves
 # them as the engine's, so the ``R^n`` claims below would be asked of the wrong
 # rings.
-_p = Path(dzack_research.__file__).resolve().parent / "preamble"
-load(str(_p / "install.sage"))
+from dzack_research.preamble.install import install_preamble
+install_preamble(globals())
 Lattices.install(globals())
 
 

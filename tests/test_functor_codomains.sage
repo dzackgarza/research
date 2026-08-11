@@ -10,9 +10,8 @@ That question is what makes these functors rather than callables. It is
 asked here of every functor the preamble declares.
 """
 
-load("src/dzack_research/preamble/install.sage")
-
-
+from dzack_research.preamble.install import install_preamble
+install_preamble(globals())
 def _sample_set():
     return finite_ordered_set([1, 2, 3])
 

@@ -15,12 +15,8 @@ def _ensure_preamble() -> None:
     from pathlib import Path
     import dzack_research
 
-    p = Path(dzack_research.__file__).resolve().parent / "preamble"
-    load(str(p / "install.sage"))
-    load(str(p / "utilities.py"))
-    load(str(p / "catalogue.sage"))
-
-
+    from dzack_research.preamble.install import install_preamble
+    install_preamble(globals())
 def _standard(n: int, negative: bool = False):
     r"""Return $I_{n,0}$, or $I_{0,n}$ when ``negative``."""
     gram = matrix(ZZ, n, n, lambda i, j: (0 if i != j else (-1 if negative else 1)))
