@@ -67,6 +67,25 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
         return [FreeModules(self.base_ring()), Modules(self.base_ring()).Framed()]
 
     class ParentMethods:
+        def module_generators(self: Self) -> "Set":
+            r"""Return the framed generators, as a set, without counting them.
+
+            The general framed version leaves injectivity to be probed, and
+            Sage probes it by asking this module for a cardinality an
+            infinite module has no reason to answer.  On a *free* module the
+            framing is injective by construction -- distinct labels index
+            distinct basis elements -- so saying so is honest, and it is what
+            lets $\ZZ^{\infty}$ answer at all.
+            """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from sage.sets.image_set import ImageSubobject
+
+            return ImageSubobject(
+                self.module_generator_morphism(),
+                self.module_generating_set(),
+                is_injective=True,
+            )
+
         def module_generator_morphism(self: Self) -> SetMorphism:
             r"""Return the canonical set morphism \(S\to U(F_R(S))\)."""
             morphism = self.__dict__.get("_free_module_generator_morphism")
