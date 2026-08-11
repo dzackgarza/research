@@ -93,6 +93,37 @@ class OwnedRings(Category):
         return [SageRings(), OwnedSemirings(), OwnedRngs()]
 
     class ParentMethods:
+        def _ring_morphism_defining_algebra_structure(self: "Ring") -> "Morphism":
+            r"""Return $R\to Z(R)$, the identity.
+
+            A ring is an algebra over itself, and this is the whole content of
+            saying so.  It is also the base case the other constructions
+            reduce to.
+            """
+            from sage.categories.homset import Hom
+            from sage.categories.morphism import SetMorphism
+            from sage.categories.rings import Rings
+
+            centre = self.ring_center()
+            return SetMorphism(Hom(self, centre, Rings()), lambda scalar: scalar)
+
+        def ring_center(self: "Ring") -> "Ring":
+            r"""Return $Z(R)$, the elements commuting with everything.
+
+            A commutative ring is its own centre, and that is the case this
+            preamble is built on: an $R$-algebra is a ring $A$ with a morphism
+            $R\to Z(A)$, and the morphism is what an algebra *is*.  For a
+            noncommutative $R$ the centre is a real computation and this
+            declines rather than guessing.
+            """
+            from sage.categories.commutative_rings import CommutativeRings
+
+            assert self in CommutativeRings(), (
+                f"{self} is not commutative, so its centre is not itself and "
+                "this preamble has no construction for it yet"
+            )
+            return self
+
         def __pow__(self, exponent):
             r"""Return \(R^n\), the free \(R\)-module on the canonical framing.
 

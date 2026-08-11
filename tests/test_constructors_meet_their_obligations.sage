@@ -84,6 +84,9 @@ def _constructions() -> dict:
         "based free module": BasedFreeModule(ZZ, Sets.Δ[2]),
         "R^n": ZZ**3,
         "isometry group": Lattices.A2.Aut(),
+        "free algebra": FreeAlgebraOn(QQ, Sets.Δ[1]),
+        "polynomial ring": QQ["x"],
+        "a ring as an algebra over itself": ZZ,
     }
 
 

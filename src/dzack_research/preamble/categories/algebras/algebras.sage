@@ -29,6 +29,31 @@ class Algebras(OwnedCategoryOverBaseRing):
     def _repr_object_names(cls) -> str:
         return "algebras"
 
+    class ParentMethods:
+        @abstract_method
+        def _ring_morphism_defining_algebra_structure(self: "Parent") -> "Morphism":
+            r"""Return $R\to Z(A)$, which is what makes $A$ an $R$-algebra.
+
+            Into the *centre*, not merely into $A$: that is what forces the
+            scalars to commute past everything, which is what an algebra over
+            a commutative ring means.  A map into $A$ alone would not say it.
+
+            The obligation of this category, parallel to a module's
+            $\rho:R\to\operatorname{End}(M)$.  Every construction supplies it
+            rather than declaring membership and hoping: a module with a
+            multiplication $m:A\otimes_R A\to A$ supplies $r\mapsto r\cdot 1_A$,
+            a free construction supplies the same, and $R$ over itself
+            supplies the identity $R\to Z(R)=R$.
+
+            The containment of the image in $Z(A)$ is trusted where it cannot
+            be decided -- for an algebra given by a multiplication tensor the
+            centre is not computable -- and checked where it can.
+            """
+
+        def scalar_structure_morphism(self: "Parent") -> "Morphism":
+            r"""Return the structure morphism, under the name it is used by."""
+            return self._ring_morphism_defining_algebra_structure()
+
     def __contains__(self, algebra: "Parent") -> bool:
         """Return whether ``algebra`` is an explicit ``R``-algebra witness."""
         # Asked of Sage's category, not of its method with this category as

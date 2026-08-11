@@ -985,6 +985,23 @@ class FreeAlgebraOnSet(FreeModuleOnSet):
     def _algebra_to_monomial(self, s: "Element") -> "Element":
         return self.monomial_monoid().gen(s)
 
+    def _ring_morphism_defining_algebra_structure(self) -> "Morphism":
+        r"""Return $R\to Z(A)$, $r\mapsto r\cdot 1$.
+
+        A free construction has its structure morphism for free: the scalars
+        enter as multiples of the unit, and they are central because the
+        monomials commute with them by construction.
+        """
+        # Local: a module-level import here would close a cycle; by call time this module is built.
+        from sage.categories.homset import Hom
+        from sage.categories.morphism import SetMorphism
+        from sage.categories.rings import Rings
+
+        return SetMorphism(
+            Hom(self.base_ring(), self, Rings()),
+            lambda scalar: scalar * self.one(),
+        )
+
     def algebra_generating_set(self) -> Parent:
         r"""Return the original set ``S`` (not ``Mon(S)``)."""
         return self._algebra_generating_set
