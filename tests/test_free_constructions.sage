@@ -308,6 +308,20 @@ def test_a_graded_piece_is_a_submodule_carrying_its_inclusion() -> None:
     assert x not in piece, "and a degree-one element does not"
 
 
+def test_tensor_and_divided_squares_respect_a_module_presentation() -> None:
+    r"""$T^2(\mathbb Z/2)=\mathbb Z/2$ and $\Gamma^2(\mathbb Z/2)=\mathbb Z/4$.
+
+    The first relation is $2(x\otimes x)=0$.  The divided-power relation is
+    $\gamma_2(2x)=4\gamma_2(x)=0$.  Thus the two square constructions cannot
+    use the same quotient presentation.
+    """
+    _ensure_preamble()
+    module = FinitelyPresentedTorsionModules().from_relations(matrix(ZZ, [[2]]))
+
+    assert TensorSquare(module).invariants() == (2,)
+    assert DividedSquare(module).invariants() == (4,)
+
+
 def test_the_grading_decomposes_every_element() -> None:
     r"""$a=\sum_na_n$ with $a_n\in A_n$, which is what $\bigoplus$ asserts.
 
