@@ -52,12 +52,13 @@ class Lattices(CategoryWithAxiom_over_base_ring):
         """
         from sage.categories.category import Category
         from sage.categories.rings import Rings
+        from sage.rings.integer import Integer
         from sage.structure.element import Matrix
 
         match arguments:
-            case ((str() as family), (int() as rank)) if family in ("A", "D", "E"):
+            case ((str() as family), (int() | Integer() as rank)) if family in ("A", "D", "E"):
                 return cls.root_lattice(family, rank, **keywords)
-            case ([str() as family, int() as rank],) if family in ("A", "D", "E"):
+            case ([str() as family, int() | Integer() as rank],) if family in ("A", "D", "E"):
                 return cls.root_lattice(family, rank, **keywords)
             case (str() as name,) if name in cls._specimens and not keywords:
                 return cls._specimens[name]
