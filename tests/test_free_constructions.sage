@@ -514,6 +514,24 @@ def test_exterior_and_divided_power_functoriality_preserve_their_operations() ->
     )
 
 
+def test_the_divided_power_adjunction_is_extension_and_restriction() -> None:
+    r"""Maps \(\Gamma(M)\to A\) preserve every \(\gamma_n\) by construction."""
+    _ensure_preamble()
+    module = BasedFreeModule(ZZ, Sets.Δ[1])
+    target = DividedPowerAlgebraOn(ZZ, Sets.Δ[1])
+    x, y = module.module_generators()
+    u, v = _generators(target)
+    linear = module_homset(module, target)({0: u + v, 1: v})
+    extension = divided_power_extension(linear)
+    restriction = restrict_free_algebra_morphism(module, extension)
+    source = extension.domain()
+
+    assert restriction(x) == linear(x)
+    assert restriction(y) == linear(y)
+    assert extension(source.divided_power(0, 2)) == target.divided_power(u + v, 2)
+    assert extension.preserves_divided_power(source.algebra_generator(0) + source.algebra_generator(1), 3)
+
+
 def test_the_grading_decomposes_every_element() -> None:
     r"""$a=\sum_na_n$ with $a_n\in A_n$, which is what $\bigoplus$ asserts.
 

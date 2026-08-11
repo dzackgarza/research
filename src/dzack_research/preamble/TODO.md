@@ -5,14 +5,6 @@
 Each of these is a mathematical statement the preamble makes in prose and does
 not realize as an object or a morphism.
 
-### The free divided-power adjunction has no target category
-
-Tensor and symmetric extension now implement their hom-set bijections.
-Alternating extension enforces the square-zero and anticommutation relations,
-and $\Gamma(f)$ preserves divided powers. A category of divided-power algebras,
-with morphisms that preserve every $\gamma_n$, is still absent. Thus
-$\Gamma$ has functoriality but not its full free-forgetful adjunction.
-
 ### $\Gamma^n(M) = (M^{\otimes n})^{S_n}$ for $n>2$
 
 Degree two now has both canonical maps. The invariant inclusion sends

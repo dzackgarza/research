@@ -825,6 +825,16 @@ class FreeAlgebraMorphism(ModuleMorphism):
         )
 
 
+class DividedPowerAlgebraMorphism(FreeAlgebraMorphism):
+    r"""An algebra morphism constructed to preserve all divided powers."""
+
+    def preserves_divided_power(self, element: "Element", degree: int) -> bool:
+        r"""Return whether this map sends \(\gamma_n(x)\) to \(\gamma_n(f(x))\)."""
+        return self(self.domain().divided_power(element, degree)) == (
+            self.codomain().divided_power(self(element), degree)
+        )
+
+
 class FreeAlgebraIdeal(Ideal_generic):
     r"""An ideal of a free commutative algebra, carrying its normal form.
 
@@ -1760,6 +1770,43 @@ def divided_power_induced_morphism(
         return image
 
     return FreeAlgebraMorphism(
+        module_homset(source, target),
+        SetMorphism(
+            Hom(
+                source.module_generating_set(),
+                UnderlyingSet(target),
+                Sets(),
+            ),
+            image_of_monomial,
+        ),
+    )
+
+
+def divided_power_extension(
+    module_morphism: ModuleMorphism,
+) -> DividedPowerAlgebraMorphism:
+    r"""Extend \(f:M\to U(A)\) uniquely to a divided-power morphism \(\Gamma(M)\to A\)."""
+    from dzack_research.preamble.categories.algebras.free_algebras import DividedPowerAlgebras
+
+    module = module_morphism.domain()
+    target = module_morphism.codomain()
+    assert target in DividedPowerAlgebras(module.base_ring()), (
+        "a divided-power extension requires a divided-power algebra target"
+    )
+    source = DividedPowerAlgebraOn(
+        module.base_ring(), module.module_generating_set()
+    )
+
+    def degree_one_image(label: "Element") -> "Element":
+        return module_morphism(module.module_generator(label))
+
+    def image_of_monomial(monomial: "Element") -> "Element":
+        image = target.one()
+        for label, exponent in source.monomial_system().factors(monomial):
+            image *= target.divided_power(degree_one_image(label), exponent)
+        return image
+
+    return DividedPowerAlgebraMorphism(
         module_homset(source, target),
         SetMorphism(
             Hom(
