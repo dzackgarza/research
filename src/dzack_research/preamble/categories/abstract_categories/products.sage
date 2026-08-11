@@ -11,7 +11,10 @@ Each cone object carries ``structure_morphisms()`` (the projections);
 each cocone object carries ``costructure_morphisms()`` (the injections).
 """
 
-from sage.categories.sets_cat import Sets
+# The owned root, not Sage's: the preamble places every set in it, and a
+# parent left in Sage's ``Sets()`` is not in the owned one, so a ``Hom`` out
+# of it in the preamble's category is refused.
+from sage_lattice_category_spike.objects.sets import Sets
 from dzack_research.preamble.refine import refine
 from typing import Any, Self, TYPE_CHECKING
 

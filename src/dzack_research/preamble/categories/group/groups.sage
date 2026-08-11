@@ -11,7 +11,7 @@ from typing import Any
 if TYPE_CHECKING:
     from typing import Callable
 
-from sage.categories.sets_cat import Sets
+from sage_lattice_category_spike.objects.sets import Sets
 if TYPE_CHECKING:
     from sage.categories.morphism import Morphism
 

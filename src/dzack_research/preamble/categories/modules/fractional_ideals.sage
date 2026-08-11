@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import BasedFreeModule
 from sage.categories.modules import Modules
-from sage.categories.sets_cat import Sets
+from sage_lattice_category_spike.objects.sets import Sets
 from dzack_research.preamble.categories.rings.rings import engine_ring
 if TYPE_CHECKING:
     from sage.rings.ring import Ring
