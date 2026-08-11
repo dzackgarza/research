@@ -718,9 +718,16 @@ for _session_ring_name in SESSION_RING_NAMES:
         own_ring(_session_ring)
 
 
-# The owned rings under their mathematical names.  Every preamble file that
-# computes over a ring names it this way; ``SageZZ`` and friends stay for the
-# places that must hand an object to Sage's own algorithms.
+# The owned rings, in code, under names nothing else in scope can supply.
+#
+# The point is a hard failure.  If these were spelled ``ZZ``, a file that
+# forgot the import would still find a ``ZZ`` -- Sage's, through the preparser
+# prelude or a stray import -- and build over the engine's ring silently,
+# which is the defect that put two free modules on one $(R,S)$.  Under these
+# names a missing import is a ``NameError`` at the first use.
+#
+# Code only.  Nobody types these at a prompt, and nobody has to: ``init.sage``
+# binds the session's ``ZZ`` to this object as its last act.
 ℤ = owned_ring_named("ZZ")
 ℚ = owned_ring_named("QQ")
 ℝ = owned_ring_named("RR")
