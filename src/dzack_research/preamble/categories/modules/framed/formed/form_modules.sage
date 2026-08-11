@@ -72,6 +72,21 @@ class FormModules(OwnedCategoryOverBaseRing):
 
     class ParentMethods:
 
+        # Read off the carried data, so what makes an object formed is the
+        # data and its placement -- not which class constructed it.  A ring
+        # equipped as its own rank-one lattice answers these too.
+        def form(self: Self) -> "FormMorphism":
+            r"""Return the form morphism classifying this object."""
+            return self._form
+
+        def forget_form(self: Self) -> "Module":
+            r"""Return the underlying module, forgetting the form."""
+            return self._module
+
+        def framing_morphism(self: Self) -> "FramingMorphism":
+            r"""Return the framing \(F_R(S)\to M\)."""
+            return self._framing_morphism
+
         def value_module(self: Self) -> "Module":
             return self.form().value_module()
 
@@ -636,15 +651,6 @@ class FormModule(OwnedBaseRing, Parent):
             ):
                 refine(self, GroupLattices(module.group()))
                 _install_group_lattice_structure(self)
-
-    def form(self) -> "FormMorphism":
-        return self._form
-
-    def forget_form(self) -> "Module":
-        return self._module
-
-    def framing_morphism(self) -> FramingMorphism:
-        return self._framing_morphism
 
     def _element_constructor_(self, element: FormModuleElement) -> FormModuleElement:
         assert isinstance(element, FormModuleElement) and element.parent() is self, (
