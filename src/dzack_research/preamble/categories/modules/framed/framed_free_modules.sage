@@ -67,6 +67,31 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
         return [FreeModules(self.base_ring()), Modules(self.base_ring()).Framed()]
 
     class ParentMethods:
+        def _ring_morphism_defining_module_action(self: Self) -> "Morphism":
+            r"""Return $\rho:R\to\operatorname{End}(F_R(S))$, $r\mapsto r\cdot(-)$.
+
+            The evident action, and the reason a free module never has to be
+            handed one: scaling a combination scales its coefficients.  A
+            constructor above this one supplies its data to this level rather
+            than assembling a module and declaring it to be one.
+            """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
+            from sage.categories.homset import Hom
+            from sage.categories.morphism import SetMorphism
+            from sage.categories.rings import Rings
+
+            endomorphisms = module_homset(self, self)
+            return SetMorphism(
+                Hom(self.base_ring(), endomorphisms, Rings()),
+                lambda scalar: endomorphisms(
+                    {
+                        label: scalar * self.module_generator(label)
+                        for label in self.module_generating_set()
+                    }
+                ),
+            )
+
         def module_generators(self: Self) -> "Set":
             r"""Return the framed generators, as a set, without counting them.
 

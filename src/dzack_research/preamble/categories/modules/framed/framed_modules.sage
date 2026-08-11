@@ -99,6 +99,18 @@ class FramedModules(CategoryWithAxiom_over_base_ring):
 
     _base_category_class_and_axiom = (Modules, "Framed")
 
+    def extra_super_categories(self) -> list:
+        r"""A framed module is a module, in the sense this preamble owns.
+
+        Which is where the obligation lives: a module is a ring morphism
+        $\rho:R\to\operatorname{End}(M)$, and saying the framed ones are
+        modules is what puts that requirement on everything built here.
+        """
+        # Local: a module-level import here would close a cycle; by call time this module is built.
+        from dzack_research.preamble.categories.modules.pure.modules import Modules as OwnedModules
+
+        return [OwnedModules(self.base_ring())]
+
     class ParentMethods:
 
         @abstract_method
