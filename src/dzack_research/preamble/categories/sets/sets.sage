@@ -20,7 +20,6 @@ from sage.rings.integer import Integer as SageInteger
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.real_mpfr import RR as SageRR
 from sage.sets.condition_set import ConditionSet as SageConditionSet
-from sage.misc.cachefunc import cached_function
 from sage.sets.set import Set_generic
 from sage.sets.image_set import ImageSet as SageImageSet
 from sage.sets.integer_range import IntegerRange
@@ -150,13 +149,13 @@ def _owned_members(members) -> tuple:
 
 
 def ordered_set_owned_by(elements) -> "lexicon.OrderedSet":
-    r"""Return a fresh ordered set on ``elements``, owned by its constructor.
+    r"""Return the ordered set on ``elements``, in their given order.
 
-    ``finite_ordered_set`` is canonical: $S=S'$ means one set, which is what
-    makes $F_R(S)=F_R(S')$ hold on the nose.  A family of *elements* is not
-    canonical in that way -- the generators of one module and of another can
-    compare equal while being different generators -- so a set of them belongs
-    to whatever built it and is not shared by value.
+    Not a *fresh* set: ``TotallyOrderedFiniteSet`` is a unique
+    representation, so equal members in the same order give one object no
+    matter who asks.  This spelling exists because its callers hold elements
+    rather than labels and do not want them run through the member
+    normalization that ``finite_ordered_set`` applies to raw input.
     """
     return refine(
         TotallyOrderedFiniteSet(tuple(elements)),
@@ -164,16 +163,14 @@ def ordered_set_owned_by(elements) -> "lexicon.OrderedSet":
     )
 
 
-@cached_function
 def _ordered_set_on(elements: tuple) -> "lexicon.OrderedSet":
     r"""Return *the* ordered set on this enumeration.
 
-    One object per enumeration, not one per call.  Two ordered sets with the
-    same members in the same order are the same set, and things keyed by them
-    -- a free module on a generating set, most of all -- are only the same
-    object when the key is.  ``TotallyOrderedFiniteSet`` is not a unique
-    representation, so without this a module built twice from equal
-    generators has two parents that print alike and refuse to coerce.
+    One object per enumeration, which is what makes $F_R(S)=F_R(S')$ hold
+    when $S=S'$.  The uniqueness is Sage's: ``TotallyOrderedFiniteSet``
+    defers to ``FiniteEnumeratedSet``, which is a unique representation, so
+    equal members in the same order already give one object.  Caching here
+    on top of that bought nothing, and a mutation check said so.
     """
     return refine(
         TotallyOrderedFiniteSet(elements),
