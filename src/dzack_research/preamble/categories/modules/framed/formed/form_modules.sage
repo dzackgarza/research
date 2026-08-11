@@ -110,6 +110,25 @@ class FormModules(OwnedCategoryOverBaseRing):
         def gram_matrix(self: Self) -> GramMatrix:
             return self.form().gram_matrix()
 
+        def gram_tensor(self: Self):
+            r"""Return the form as a type-$(0,2)$ tensor.
+
+            What the Gram matrix *is*: twice covariant, because the form eats
+            two vectors.  The matrix is its components in this module's
+            framing, so this reads them off rather than computing anything
+            new -- and a reader who wants the valence gets it from the object
+            instead of from a convention about which index is which.
+            """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.tensors import tensor
+
+            return tensor(
+                self.base_ring(),
+                [list(row) for row in self.gram_matrix().rows()],
+                valence=(0, 2),
+                module=self.forget_form(),
+            )
+
         def is_torsion_free(self: Self) -> bool:
             return bool(self.forget_form().is_torsion_free())
 

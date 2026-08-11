@@ -150,3 +150,49 @@ def test_the_trace_contracts_a_tensor_against_itself() -> None:
     identity = tensor(ZZ, [[1, 0], [0, 1]], valence=(1, 1))
 
     assert identity.trace() == 2, "the trace of the identity is the rank"
+
+
+def test_the_gram_matrix_is_the_forms_covariant_tensor() -> None:
+    r"""A lattice's form, read as the type-$(0,2)$ tensor it is.
+
+    Not a reformatting: the tensor is asked for the same pairings the form
+    is, and they agree entry by entry, so the matrix really is the components
+    of that tensor in this module's framing.
+    """
+    _ensure_preamble()
+    lattice = Lattices.A2
+    form_tensor = lattice.gram_tensor()
+
+    assert form_tensor.valence() == (0, 2)
+
+    lattice_generators = list(lattice.module_generators())
+    module_generators = list(lattice.forget_form().module_generators())
+    for i in (0, 1):
+        for j in (0, 1):
+            assert form_tensor(module_generators[i], module_generators[j]) == lattice.b(
+                lattice_generators[i], lattice_generators[j]
+            ), "the tensor pairs what the form pairs"
+
+
+def test_the_degree_two_piece_of_the_tensor_algebra_is_the_tensor_square() -> None:
+    r"""$T(M)[2]$ has all $\mathrm{rank}^2$ words, so it is $M^{\otimes 2}$.
+
+    Which is why no separate $M^{\otimes 2}$ is built: were this the
+    symmetric quotient it would have three monomials on two generators, not
+    four, and $xy$ would equal $yx$.
+    """
+    _ensure_preamble()
+    from dzack_research.preamble.categories.algebras.framed_free_algebras import (
+        TensorAlgebraOn,
+    )
+
+    algebra = TensorAlgebraOn(QQ, Sets.Δ[1])
+    piece = algebra.graded_piece_monomials(2)
+
+    assert len(piece) == 4, "two generators, so four words of length two"
+    assert all(
+        algebra.monomial_degree(monomial.monomials()[0]) == 2 for monomial in piece
+    )
+
+    x, y = [algebra.algebra_generator(label) for label in algebra.algebra_generating_set()]
+    assert x * y != y * x, "the tensor square does not identify xy with yx"

@@ -73,6 +73,23 @@ class TensorAlgebras(OwnedCategoryOverBaseRing):
                 return len(monomial.to_word_list())
             return sum(monomial.dict().values())
 
+        def graded_piece_monomials(self, degree: "Integer") -> tuple:
+            r"""Return the monomials spanning \(T(M)[n]\).
+
+            For a free \(M\) on \(S\) these are the words of length \(n\),
+            so the piece is \(M^{\otimes n}\) and there is no separate
+            \(M^{\otimes 2}\) to build: it is this.
+            """
+            from itertools import product as _tuples
+
+            labels = tuple(self.algebra_generating_set())
+            assert labels, "a graded piece of the tensor algebra on no generators"
+            return tuple(
+                self.algebra_generator(word[0]) if degree == 1 else
+                _product_of(self, word)
+                for word in _tuples(labels, repeat=int(degree))
+            )
+
 
 class SymmetricAlgebras(OwnedCategoryOverBaseRing):
     r"""\(\operatorname{Sym}(M)=T(M)/\langle x\otimes y-y\otimes x\rangle\).
@@ -114,3 +131,11 @@ class DividedPowerAlgebras(OwnedCategoryOverBaseRing):
 
     def super_categories(self) -> list:
         return [TensorAlgebras(self.base_ring())]
+
+
+def _product_of(algebra: "Parent", word: tuple) -> "Element":
+    r"""Return the monomial spelled by ``word``, in order."""
+    monomial = algebra.one()
+    for label in word:
+        monomial = monomial * algebra.algebra_generator(label)
+    return monomial

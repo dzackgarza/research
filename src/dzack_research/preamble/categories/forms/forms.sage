@@ -47,6 +47,10 @@ class TensorSquare(Parent):
     def module(self) -> "Module":
         return self._module
 
+    def graded_degree(self) -> int:
+        r"""Return 2: this is \(T(M)[2]\), the degree-two piece."""
+        return 2
+
     def __eq__(self, other: object) -> bool:
         return isinstance(other, TensorSquare) and self._module is other._module
 
@@ -76,6 +80,10 @@ class DividedSquare(Parent):
 
     def module(self) -> "Module":
         return self._module
+
+    def graded_degree(self) -> int:
+        r"""Return 2: this is \(\Gamma^2M\), the degree-two divided piece."""
+        return 2
 
     def __eq__(self, other: object) -> bool:
         return isinstance(other, DividedSquare) and self._module is other._module
