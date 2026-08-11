@@ -398,6 +398,29 @@ def test_the_divided_square_classifies_quadratic_maps() -> None:
         assert reclassified(generator) == classifier(generator)
 
 
+def test_divided_squares_are_symmetric_tensor_invariants() -> None:
+    r"""The inclusion and polarization compose as (2) and (1+\tau)."""
+    _ensure_preamble()
+    module = BasedFreeModule(ZZ, Sets.Δ[1])
+    divided = DividedSquare(module)
+    tensor = TensorSquare(module)
+    inclusion = divided_square_invariant_inclusion(module)
+    polarization = tensor_square_polarization(module)
+    gamma_x, xy, gamma_y = tuple(divided.module_generators())
+    xx, tensor_xy, tensor_yx, yy = tuple(tensor.module_generators())
+
+    assert inclusion(gamma_x) == xx
+    assert inclusion(xy) == tensor_xy + tensor_yx
+    assert inclusion(gamma_y) == yy
+    assert polarization(xx) == 2 * gamma_x
+    assert polarization(tensor_xy) == xy
+    assert polarization(tensor_yx) == xy
+    assert polarization(yy) == 2 * gamma_y
+    for generator in divided.module_generators():
+        assert polarization(inclusion(generator)) == 2 * generator
+    assert inclusion(polarization(tensor_xy)) == tensor_xy + tensor_yx
+
+
 def test_the_free_constructions_are_related_by_the_canonical_maps() -> None:
     r"""The quotient relations vanish, and \(\operatorname{Sym}\cong\Gamma\) over \(\mathbb Q\)."""
     _ensure_preamble()

@@ -13,18 +13,14 @@ and $\Gamma(f)$ preserves divided powers. A category of divided-power algebras,
 with morphisms that preserve every $\gamma_n$, is still absent. Thus
 $\Gamma$ has functoriality but not its full free-forgetful adjunction.
 
-### $\Gamma^n(M) = (M^{\otimes n})^{S_n}$
+### $\Gamma^n(M) = (M^{\otimes n})^{S_n}$ for $n>2$
 
-The divided powers are the symmetric invariants of the tensor power. This is
-the characterization that produces $\Gamma^2 M \to M \otimes M$, and that map
-is the general polarization: it is how a quadratic form and its bilinear form
-are one object seen twice. The preamble has bilinear forms on $M \otimes M$ and
-quadratic forms on $\Gamma^2 M$ as two homsets with nothing between them.
-
-Polarization *is* built for discriminant quadratic modules
-(`associated_bilinear_form`, with $q(x+y) = q(x) + q(y) + 2b_q(x,y)$). That is
-the special case. The general statement is missing, and the general statement
-is what the divided square was introduced for.
+Degree two now has both canonical maps. The invariant inclusion sends
+$\gamma_2(x)$ to $x\otimes x$ and $xy$ to
+$x\otimes y+y\otimes x$. Polarization sends $x\otimes y$ to $xy$.
+Their composites are multiplication by $2$ and $1+\tau$, respectively.
+The corresponding maps and symmetric-group actions remain absent in higher
+degrees.
 
 ### The free-module functor does not preserve equality of indexing sets
 

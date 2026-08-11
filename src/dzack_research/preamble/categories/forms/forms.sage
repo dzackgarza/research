@@ -150,6 +150,77 @@ def divided_square_element(module: "Module", element: "Element") -> "Element":
     )
 
 
+def _element_of_square(square: "Module", algebra_element: "Element") -> "Element":
+    r"""Read a degree-two algebra element in its square module."""
+    from dzack_research.preamble.utilities import zipsum
+
+    coefficients = algebra_element.coefficients()
+    ring = square.base_ring()
+    return zipsum(
+        (coefficients.get(label, ring.zero()) for label in square.module_generating_set()),
+        square.module_generators(),
+        square.zero(),
+    )
+
+
+def divided_square_invariant_inclusion(module: "Module") -> "Morphism":
+    r"""Return \(\Gamma^2M\to M^{\otimes2}\), with image in the swap invariants."""
+    from dzack_research.preamble.categories.algebras.framed_free_algebras import DividedPowerAlgebraOn
+    from dzack_research.preamble.categories.algebras.framed_free_algebras import TensorAlgebraOn
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
+
+    divided = DividedPowerAlgebraOn(module.base_ring(), module.module_generating_set())
+    tensor = TensorAlgebraOn(module.base_ring(), module.module_generating_set())
+    tensor_generators = {
+        label: tensor.algebra_generator(label)
+        for label in module.module_generating_set()
+    }
+
+    def invariant(monomial: "Element") -> "Element":
+        factors = tuple(divided.monomial_system().factors(monomial))
+        match factors:
+            case ((label, 2),):
+                image = tensor_generators[label] * tensor_generators[label]
+            case ((left, 1), (right, 1)):
+                image = (
+                    tensor_generators[left] * tensor_generators[right]
+                    + tensor_generators[right] * tensor_generators[left]
+                )
+            case _:
+                assert False, f"{monomial} is not a divided monomial of degree two"
+        return _element_of_square(TensorSquare(module), image)
+
+    return module_homset(DividedSquare(module), TensorSquare(module))(
+        {monomial: invariant(monomial) for monomial in DividedSquare(module).module_generating_set()}
+    )
+
+
+def tensor_square_polarization(module: "Module") -> "Morphism":
+    r"""Return \(M^{\otimes2}\to\Gamma^2M\), sending \(x\otimes y\) to \(xy\)."""
+    from dzack_research.preamble.categories.algebras.framed_free_algebras import DividedPowerAlgebraOn
+    from dzack_research.preamble.categories.algebras.framed_free_algebras import TensorAlgebraOn
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
+
+    tensor = TensorAlgebraOn(module.base_ring(), module.module_generating_set())
+    divided = DividedPowerAlgebraOn(module.base_ring(), module.module_generating_set())
+    divided_generators = {
+        label: divided.algebra_generator(label)
+        for label in module.module_generating_set()
+    }
+
+    def polarized(monomial: "Element") -> "Element":
+        factors = tuple(tensor.monomial_system().factors(monomial))
+        assert len(factors) == 2, f"{monomial} is not a tensor monomial of degree two"
+        return _element_of_square(
+            DividedSquare(module),
+            divided_generators[factors[0][0]] * divided_generators[factors[1][0]],
+        )
+
+    return module_homset(TensorSquare(module), DividedSquare(module))(
+        {monomial: polarized(monomial) for monomial in TensorSquare(module).module_generating_set()}
+    )
+
+
 class QuadraticMapMorphism(SetMorphism):
     r"""A set map recorded with its quadratic source and value module."""
 
