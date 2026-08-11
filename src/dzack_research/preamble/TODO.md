@@ -1,44 +1,81 @@
 # Outstanding work in the preamble
 
-## Claims the code makes and does not keep
+## Mathematics stated and not built
 
-These are not unstarted work. Each is a statement in the repository that is
-false as written, so each is misleading until fixed.
+Each of these is a mathematical statement the preamble makes in prose and does
+not realize as an object or a morphism.
 
-- **The obligation sweep says it covers everything and does not.**
-  `_constructions()` in `tests/test_constructors_meet_their_obligations.sage`
-  is documented as "every way the preamble makes an object" and is a
-  hand-maintained dict of nineteen entries. Function modules, the tensor
-  algebra, the alternating algebra, the divided power algebra, `Tensor(M,(p,q))`
-  and graded pieces are all absent — every constructor added since the sweep
-  was written is unswept, silently. A constructor list that does not enumerate
-  itself will keep drifting; the sweep should discover constructors rather than
-  be told about them.
+### The universal properties are not there
 
-- **`ideal_generators_in_degree` says "Γ adds its divided powers".**
-  No `DividedPowerAlgebras` override exists, so the method is wrong for Γ: its
-  ideal must be a divided power ideal, closed under the $\gamma_d$, so
-  $\gamma_d(k)$ for $k \in K$ and $d \geq 2$ must join the generators. Nothing
-  calls it yet, so nothing downstream is broken.
+$\Gamma^2$ is described as classifying quadratic forms:
+$\operatorname{Hom}(\Gamma^2M, W) \cong \{\text{quadratic maps } M \to W\}$.
+That bijection is the reason a quadratic form is a morphism rather than a set
+map, and it exists in neither direction. A quadratic map cannot be turned into
+a morphism out of $\Gamma^2M$, and a morphism out of $\Gamma^2M$ cannot be
+evaluated as a quadratic map.
 
-- **The four constructions are called left adjoints with nothing behind the
-  word.** That claim appears in several docstrings and is what justifies
-  $A(\operatorname{coker}) = A(F)/\langle K\rangle$. There are no `Functor`
-  objects and no `Adjunction` instances for `T`, `Sym`, `Λ` or `Γ` — only the
-  existing $F_R \dashv U$ pair between `Set` and `R-Mod` in
-  `categories/functors/free_forgetful_adjunction.sage`, which does have real
-  functors, a real unit and counit, and the hom-set bijection. Each of the four
-  needs its functor, its forgetful partner out of the matching algebra
-  category, and the pair.
+The same holds for freeness. $T \dashv U$ means
+$\operatorname{Hom}_{\text{Alg}}(T(M), A) \cong \operatorname{Hom}_{\text{Mod}}(M, U(A))$,
+and that bijection is what "free" asserts. It is written for $F_R \dashv U$
+between `Set` and `R-Mod` and for none of the four algebra constructions.
 
-- **`Tensor` is a parent whose elements do not belong to it.**
-  `Tensor(M,(p,q))` is a `Parent` in `Modules(R)`, and `TensorElement`
-  (`categories/modules/tensors.sage:109`) is a plain Python class with
-  hand-rolled `__eq__`, `__hash__`, `__add__` and `__mul__`. It is not an
-  `Element`, it is never built through `element_class`, and there is no
-  coercion — so the parent's category supplies it nothing. The arithmetic was
-  also written out rather than delegated: Sage's own tensor machinery was
-  named as the reference implementation and is not being leaned on.
+### The four constructions have no morphisms between them
+
+The category tree states `AlternatingAlgebras`, `SymmetricAlgebras` and
+`DividedPowerAlgebras` as subcategories of `TensorAlgebras`. A subcategory
+relation says $\Lambda(M)$ *is* a tensor algebra, which is false. The true
+relations are morphisms, and none is built:
+
+- $T(M) \twoheadrightarrow \operatorname{Sym}(M)$ and
+  $T(M) \twoheadrightarrow \Lambda(M)$, the quotients by
+  $x \otimes y - y \otimes x$ and by $x \otimes x$. Those relations are quoted
+  in the docstrings as the definitions, and neither construction is built that
+  way: both are built directly on their own monomials.
+- $\Gamma(M) \to \operatorname{Sym}(M)$, an isomorphism over $\mathbb{Q}$ and
+  not over $\mathbb{Z}$. Their graded ranks agree, which the tests check, but
+  agreeing ranks are evidence and not the map.
+
+Until these exist, "one construction seen through different relations" is
+prose, and a containment stands where a morphism belongs.
+
+### $\Gamma^n(M) = (M^{\otimes n})^{S_n}$
+
+The divided powers are the symmetric invariants of the tensor power. This is
+the characterization that produces $\Gamma^2 M \to M \otimes M$, and that map
+is the general polarization: it is how a quadratic form and its bilinear form
+are one object seen twice. The preamble has bilinear forms on $M \otimes M$ and
+quadratic forms on $\Gamma^2 M$ as two homsets with nothing between them.
+
+Polarization *is* built for discriminant quadratic modules
+(`associated_bilinear_form`, with $q(x+y) = q(x) + q(y) + 2b_q(x,y)$). That is
+the special case. The general statement is missing, and the general statement
+is what the divided square was introduced for.
+
+### A form gives $M \cong M^*$, and nothing uses it
+
+A nondegenerate form is an isomorphism $M \to M^*$. That isomorphism is what
+raising and lowering an index means, so it is the only thing connecting the
+tensor layer to the forms layer. `Tensor(M,(p,q))` has contraction and trace
+and no way to apply a lattice's form, so `gram_tensor()` returns a $(0,2)$
+tensor that can never become the $(1,1)$ identity, and a lattice cannot hand
+its form to a tensor at all.
+
+### $Z(A)$ is only computable where the contract is uninteresting
+
+An $R$-algebra is a ring $A$ with $R \to Z(A)$, and that morphism is what an
+algebra is. `ring_center` asserts the ring is commutative and declines
+otherwise. The tensor algebra is the noncommutative case the contract exists
+to describe — $Z(T(V)) = R$ for rank at least two — and it is exactly the case
+that cannot be asked.
+
+### The lattice axioms are declared and never established
+
+`Lattices(R)` is defined as the projective $R$-modules carrying an $R$-valued
+bilinear form, with `FinitelyGenerated`, `Integral` and `Nondegenerate` as
+axioms. Axioms are declarations by design. Nothing establishes any of them for
+a constructed object: no specimen is shown projective, no form is shown to
+land in $R$, and no Gram matrix is shown nonsingular. A lattice built from a
+degenerate Gram matrix would enter `Nondegenerate` and say so.
 
 ## The chain that blocks the forms layer
 
@@ -113,30 +150,6 @@ branch exists only because `Subsets` cannot be asked, and goes away here.
 Red proof: `test_the_subsets_of_a_countable_set_are_uncountable`, xfail
 against #348.
 
-## Papercuts worked around rather than fixed
-
-Each of these is a local accommodation for a defect that lives somewhere else.
-The accommodation works; the defect is still there and will produce the next
-one.
-
-- **The compiler prelude overwrites `Set` in every lowered module.**
-  `install_preamble` re-binds `Set`, `Sets`, `ConditionSet` and `ImageSet` from
-  their owning module after the export sweep, because every lowered `.sage`
-  module carries the prelude's `Set` and the last module swept wins. The cause
-  is in the prelude that `tree-sitter-sage` emits, not here.
-
-- **`ℤ` and `Z` are one Python identifier.** NFKC normalization makes them the
-  same name, which collided with `Lattices.Z`; `init.sage` works around it by
-  reading the session rings off the ring module. Any future unicode/ASCII pair
-  collides identically, silently, and the preamble has no check that would say
-  so.
-
-- **`_refine_category_` is an open backdoor.** An object can enter a category
-  without carrying its data, and neither `abstract_method` nor anything else
-  gates it — `__init_extra__` would, and is not used for this. The constructor
-  sweep is the only detector, and per the first section it does not cover
-  everything.
-
 ## Symmetric-only surface inherited by the other three
 
 `_as_polynomial`, `_from_polynomial`, factorisation, `gcd`, `roots`,
@@ -171,16 +184,55 @@ sited on the symmetric flavour rather than on the shared class.
   construction that assumes coordinates fail early — but they are also missing
   from the obligation sweep.
 
-## Unverified
+## Claims that need repair
 
-- **The preamble notebook has not been run since the restructuring.**
-  `computations/notebooks/preamble.ipynb` predates `install.sage` becoming
-  `install_preamble(namespace)`, the `Lattices` rework into a category with
-  axioms, and the graded node. Whether it still runs is unknown.
+- **The obligation sweep does not cover every constructor.**
+  `_constructions()` in `tests/test_constructors_meet_their_obligations.sage`
+  is a hand-maintained list. It omits function modules, three free-algebra
+  variants, `Tensor(M, (p, q))`, and graded pieces. New constructors can avoid
+  the sweep without a visible failure. The sweep needs a complete source of
+  constructors.
 
-- **Whether the preparser tests landed in the repository that owns the
-  compiler.** They were removed from here on the grounds that
-  `tree-sitter-sage` owns them; that they arrived there has not been checked.
+- **`ideal_generators_in_degree` says "Γ adds its divided powers".**
+  No `DividedPowerAlgebras` override exists, so the method is wrong for Γ: its
+  ideal must be a divided power ideal, closed under the $\gamma_d$, so
+  $\gamma_d(k)$ for $k \in K$ and $d \geq 2$ must join the generators. Nothing
+  calls it yet, so nothing downstream is broken.
+
+- **`Tensor` does not use Sage's parent and element structure.**
+  `Tensor(M, (p, q))` is a `Parent`, but `TensorElement` is a plain Python
+  class. It does not inherit `Element`, use `element_class`, or receive its
+  arithmetic from the parent's category. Replace its local arithmetic with
+  Sage's tensor implementation or another mature implementation.
+
+## Local workarounds with unresolved causes
+
+- **The compiler prelude overwrites `Set`.** `install_preamble` restores
+  `Set`, `Sets`, `ConditionSet`, and `ImageSet` after the export sweep. Each
+  lowered `.sage` module exports the prelude's names, so the last module can
+  overwrite the session bindings. The compiler prelude must stop exporting
+  these names into each module.
+
+- **Unicode and ASCII ring names can normalize to one identifier.** Python's
+  NFKC normalization made the mathematical integer-ring symbol and `Z` equal
+  as identifiers. `init.sage` restores the session rings from the ring module.
+  The preamble still needs a direct check for normalization collisions.
+
+- **Category refinement can bypass required data.** `_refine_category_` can
+  place an object in a category without implementations for its abstract
+  parent methods. The incomplete constructor sweep is the only current
+  detector.
+
+## Verification not completed
+
+- **The preamble notebook predates the restructuring.**
+  `computations/notebooks/preamble.ipynb` predates
+  `install_preamble(namespace)`, the category and axiom changes to `Lattices`,
+  and the graded-module work. Its current behavior is unknown.
+
+- **Ownership transfer of preparser tests was not confirmed.** Tests were
+  removed from this repository because `tree-sitter-sage` owns the compiler.
+  The transcript did not confirm that the required behavior has tests there.
 
 ## Repository
 
