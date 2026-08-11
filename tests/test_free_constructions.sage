@@ -751,6 +751,41 @@ def test_the_four_free_algebra_functors_preserve_identities_and_composition() ->
         assert second(first(generator * generator)) == direct(generator * generator)
 
 
+def test_the_free_algebra_units_are_natural_on_presented_modules() -> None:
+    r"""For every \(f:M\to N\), \(A(f)\eta_M=\eta_Nf\).
+
+    The specimen \(\mathbb Z/4\to\mathbb Z/2\) also proves that each unit
+    descends through a nontrivial module presentation.
+    """
+    _ensure_preamble()
+    free = BasedFreeModule(ZZ, Sets.Δ[0])
+    x = free.module_generator(0)
+    modulo_four = FinitelyPresentedModule(module_homset(free, free)({0: 4 * x}))
+    modulo_two = FinitelyPresentedModule(module_homset(free, free)({0: 2 * x}))
+    reduction = module_homset(modulo_four, modulo_two)(
+        {0: modulo_two.module_generator(0)}
+    )
+
+    for functor in (
+        TensorAlgebraFunctor(ZZ),
+        SymmetricAlgebraFunctor(ZZ),
+        AlternatingAlgebraFunctor(ZZ),
+        DividedPowerAlgebraFunctor(ZZ),
+    ):
+        source_unit = functor.unit(modulo_four)
+        target_unit = functor.unit(modulo_two)
+        induced = functor(reduction)
+        generator = modulo_four.module_generator(0)
+
+        assert induced.parent() == Hom(
+            induced.domain(),
+            induced.codomain(),
+            Algebras(ZZ),
+        )
+        assert induced(source_unit(generator)) == target_unit(reduction(generator))
+        assert 2 * target_unit(modulo_two.module_generator(0)) == induced.codomain().zero()
+
+
 def test_free_algebra_functors_preserve_their_characteristic_operations() -> None:
     r"""The induced maps preserve words, products, wedges, and divided powers."""
     _ensure_preamble()

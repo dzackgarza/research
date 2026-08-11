@@ -64,6 +64,24 @@ class FreeAlgebraFunctor(Functor):
         }
         return constructors[self._construction](module)
 
+    @cached_method
+    def unit(self, module: "Module") -> "ModuleMorphism":
+        r"""Return the canonical map \(M\to U(A(M))\).
+
+        This is the unit component of the free-algebra adjunction.  For a
+        presented module, the defining relations vanish in ``A(M)``, so the
+        same formula on generators descends from the chosen presentation.
+        """
+        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
+
+        algebra = self._apply_functor(module)
+        return module_homset(module, algebra)(
+            {
+                label: algebra.algebra_generator(label)
+                for label in module.module_generating_set()
+            }
+        )
+
     def _apply_functor_to_morphism(
         self,
         module_morphism: "ModuleMorphism",
@@ -127,8 +145,10 @@ class FreeAlgebraFunctor(Functor):
             )
             return codomain(lifted(representative))
 
+        from dzack_research.preamble.categories.algebras.algebras import Algebras
+
         return SetMorphism(
-            Hom(domain, codomain, Sets()),
+            Hom(domain, codomain, Algebras(self._base_ring)),
             apply_to_class,
         )
 
