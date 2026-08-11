@@ -209,15 +209,8 @@ else:
             )
 
             # Shared short names: bind TdP after TEn so session ``e`` is TdP's.
-            #
-            # Not ``inject_variables``, which reads ``gens`` -- a name a
-            # form-bearing module does not answer to, its generators being
-            # ``module_generators``.  Said in the preamble's own nouns it is the
-            # same act, and it is one the object supports.
             for lattice in (cls.TEn, cls.TdP, cls.LK3):
-                scope.update(
-                    zip(lattice.variable_names(), lattice.module_generators())
-                )
+                lattice.inject_variables(scope, verbose=False)
 
             ed, fd, epd, fpd, w1, w2, w3, w4, w5, w6, w7, w8 = (
                 cls.TEn.dual_lattice().module_generators()

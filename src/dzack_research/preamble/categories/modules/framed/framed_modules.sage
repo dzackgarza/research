@@ -157,6 +157,31 @@ class FramedModules(CategoryWithAxiom_over_base_ring):
                     self.module_generating_set(),
                 )
 
+        def inject_variables(self: Self, scope: dict, verbose: bool = True) -> None:
+            r"""Bind this module's named generators into ``scope``.
+
+            Sage's version of this method zips ``variable_names()`` against
+            ``gens()``, and ``gens`` is a name a framed module does not answer
+            to -- its generators are ``module_generators``.  So the inherited
+            method fails on every object in this category, and the call sites
+            that wanted it were writing the zip out by hand.  Said in the
+            module's own nouns it is the same act, and one the object
+            supports.
+
+            ``scope`` is required.  Sage's optional form falls back to the
+            ``globals()`` of the module the method is defined in, which is
+            never the namespace the caller meant.
+            """
+            names = tuple(self.variable_names())
+            generators = tuple(self.module_generators())
+            assert len(names) == len(generators), (
+                f"{self} has {len(names)} names for {len(generators)} "
+                "generators, so the naming does not describe this module"
+            )
+            if verbose:
+                print("Defining %s" % (", ".join(names)))
+            scope.update(zip(names, generators, strict=True))
+
         def linear_combination(self: Self, coefficients: dict) -> "ModuleElement":
             r"""Return the specified finite \(R\)-linear combination."""
             assert isinstance(coefficients, dict), (

@@ -122,9 +122,9 @@ _STERK_DIAGRAM_LAYOUTS: dict[str, dict[int, list[float]]] = {
 
 
 def _named_module_generators(lattice: "Lattice") -> dict[str, "ModuleElement"]:
-    return dict(
-        zip(lattice.variable_names(), lattice.module_generators(), strict=True)
-    )
+    names: dict[str, "ModuleElement"] = {}
+    lattice.inject_variables(names, verbose=False)
+    return names
 
 
 def _in_dual(lattice: "Lattice") -> "Module":
