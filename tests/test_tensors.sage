@@ -101,11 +101,52 @@ def test_tensors_of_one_type_add_and_scale() -> None:
     assert (first + second)(e[0], e[1]) == first(e[0], e[1]) + second(e[0], e[1])
 
 
-def test_evaluation_is_offered_only_where_it_means_something() -> None:
-    r"""A tensor with an upper slot eats a functional, which is not supplied."""
+def test_a_multiplication_table_multiplies() -> None:
+    r"""Fed two elements, $m$ returns the product -- a vector, not a scalar.
+
+    Evaluation is partial: a type-$(p,q)$ tensor given $k\le q$ elements is a
+    type-$(p,q-k)$ tensor.  So a table with an upper slot does not refuse; it
+    hands back what the multiplication produced.
+    """
     tensor = _tensor()
     multiplication = tensor(ZZ, [[[1, 0], [0, 0]], [[0, 1], [1, 0]]], valence=(1, 2))
+    one, x = list(multiplication.parent().module().module_generators())
 
-    e = list(multiplication.parent().module().module_generators())
-    with pytest.raises(AssertionError, match="purely covariant"):
-        multiplication(e[0], e[1])
+    product = multiplication(one, x)
+    assert product.valence() == (1, 0), "a product is a vector"
+    assert product.components() == {(1,): 1}, "1 * x = x"
+    assert multiplication(x, x).components() == {}, "x * x = 0 in R[x]/(x^2)"
+
+
+def test_feeding_one_element_leaves_a_tensor_with_the_rest_of_the_slots() -> None:
+    r"""$g(v)$ is the functional $w\mapsto g(v,w)$, of type $(0,1)$."""
+    tensor = _tensor()
+    form = tensor(ZZ, [[-2, 1], [1, -2]])
+    e = list(form.parent().module().module_generators())
+
+    partial = form(e[0])
+    assert partial.valence() == (0, 1)
+    assert partial.components() == {(0,): -2, (1,): 1}, "the first row of the Gram matrix"
+
+
+def test_contraction_pairs_an_upper_slot_with_a_lower_one() -> None:
+    r"""The basic operation: sum over the shared index.
+
+    A vector is a type-$(1,0)$ tensor and a functional a type-$(0,1)$ one, so
+    there is nothing to hand in that is not already a tensor.
+    """
+    tensor = _tensor()
+    form = tensor(ZZ, [[-2, 1], [1, -2]])
+    vector = tensor(ZZ, [1, 0], valence=(1, 0))
+
+    contracted = vector.contract(form, 0, 0)
+    assert contracted.valence() == (0, 1)
+    assert contracted.components() == {(0,): -2, (1,): 1}
+
+
+def test_the_trace_contracts_a_tensor_against_itself() -> None:
+    r"""The identity of a rank-2 module traces to 2."""
+    tensor = _tensor()
+    identity = tensor(ZZ, [[1, 0], [0, 1]], valence=(1, 1))
+
+    assert identity.trace() == 2, "the trace of the identity is the rank"
