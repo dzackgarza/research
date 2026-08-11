@@ -22,6 +22,12 @@ import pytest
 
 from sage.misc.abstract_method import AbstractMethod, abstract_methods_of_class
 
+from dzack_research.preamble.categories.forms.forms import (
+    BilinearFormMorphism,
+    QuadraticFormMorphism,
+    TensorSquare,
+)
+
 
 def _ensure_preamble() -> None:
     if "Lattices" in globals():
@@ -72,6 +78,54 @@ def _constructions() -> dict:
         "R^n": ZZ**3,
         "isometry group": Lattices.A2.Aut(),
     }
+
+
+def _formed_constructions() -> dict:
+    r"""The constructions whose results carry a form."""
+    return {
+        name: parent
+        for name, parent in _constructions().items()
+        if hasattr(parent, "form") and hasattr(parent, "value_module")
+    }
+
+
+@pytest.mark.parametrize("name", sorted(_formed_constructions()))
+def test_a_form_is_a_morphism_into_the_value_module(name: str) -> None:
+    r"""The form is a map, not a matrix.
+
+    A bilinear form on $M$ with values in $W$ is an element of
+    $\operatorname{Hom}_R(M\otimes_R M, W)$: its domain is the tensor square
+    and its codomain is the value module.  A Gram matrix is how a *finitely
+    generated* one can be written down, and asking for the morphism is what
+    keeps the general case expressible.
+    """
+    parent = _formed_constructions()[name]
+    form = parent.form()
+
+    assert form.codomain() is parent.value_module(), (
+        f"{name}: the form's codomain must be the value module, "
+        f"got {form.codomain()} against {parent.value_module()}"
+    )
+    # Which module the form is a map *out of* is what tells the two apart:
+    # a bilinear form is $M\otimes_R M\to W$, a quadratic form is $M\to W$.
+    domain = form.domain()
+    match form:
+        case BilinearFormMorphism():
+            assert isinstance(domain, TensorSquare), (
+                f"{name}: a bilinear form is defined on $M\\otimes_R M$, "
+                f"got a form on {domain}"
+            )
+            assert domain.module() is parent.forget_form(), (
+                f"{name}: the tensor square must be of this module, "
+                f"got one of {domain.module()}"
+            )
+        case QuadraticFormMorphism():
+            assert domain is parent.forget_form(), (
+                f"{name}: a quadratic form is defined on the module itself, "
+                f"got one on {domain}"
+            )
+        case _:
+            assert False, f"{name}: {type(form).__name__} is neither form"
 
 
 @pytest.mark.parametrize("name", sorted(_constructions()))

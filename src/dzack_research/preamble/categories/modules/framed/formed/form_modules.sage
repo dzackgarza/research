@@ -26,6 +26,7 @@ from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBase
 from typing import Any, Self, TYPE_CHECKING
 
 from sage.categories.homset import Hom, Homset
+from sage.misc.abstract_method import abstract_method
 from sage.categories.morphism import Morphism, SetMorphism
 from sage.rings.integer import Integer
 from sage.sets.totally_ordered_finite_set import TotallyOrderedFiniteSet
@@ -75,9 +76,25 @@ class FormModules(OwnedCategoryOverBaseRing):
         # Read off the carried data, so what makes an object formed is the
         # data and its placement -- not which class constructed it.  A ring
         # equipped as its own rank-one lattice answers these too.
+        @abstract_method
+        def _form_morphism(self: Self) -> "FormMorphism":
+            r"""Return the morphism this object's form *is*.
+
+            The obligation of this category, and the only one: a formed module
+            is a module together with a form morphism.  In the bilinear case
+            that morphism lives in $\operatorname{Hom}_R(M\otimes_R M, W)$ for
+            the value module $W$ -- it is a map, not a matrix, and a Gram
+            matrix is what a *finitely generated* one can be written as.
+
+            Declared abstract so that an object placed in this category
+            without one is visibly unfinished: nothing here can gate entry,
+            since refinement admits anything, but an obligation never met
+            resolves to this declaration and the constructor sweep reports it.
+            """
+
         def form(self: Self) -> "FormMorphism":
             r"""Return the form morphism classifying this object."""
-            return self._form
+            return self._form_morphism()
 
         def forget_form(self: Self) -> "Module":
             r"""Return the underlying module, forgetting the form."""
@@ -651,6 +668,13 @@ class FormModule(OwnedBaseRing, Parent):
             ):
                 refine(self, GroupLattices(module.group()))
                 _install_group_lattice_structure(self)
+
+    def _form_morphism(self) -> "FormMorphism":
+        r"""Return the morphism this object was constructed from.
+
+        The category's obligation, met by the constructor that received it.
+        """
+        return self._form
 
     def _element_constructor_(self, element: FormModuleElement) -> FormModuleElement:
         assert isinstance(element, FormModuleElement) and element.parent() is self, (

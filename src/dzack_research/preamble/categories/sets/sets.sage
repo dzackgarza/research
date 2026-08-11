@@ -122,12 +122,31 @@ def finite_ordered_set(
     the relation.
     """
     if isinstance(source, (list, tuple)):
-        return _ordered_set_on(tuple(dict.fromkeys(source)))
+        return _ordered_set_on(tuple(dict.fromkeys(_owned_members(source))))
     source = _as_set(source)
     assert source in Sets().Finite(), f"{source} is not a finite set"
     if source in Sets().TotallyOrdered():
         return source
-    return _ordered_set_on(tuple(source))
+    return _ordered_set_on(tuple(_owned_members(source)))
+
+
+def _owned_members(members) -> tuple:
+    r"""Return the members as this preamble's objects.
+
+    A Python ``int`` and a Sage ``Integer`` print alike, compare equal and
+    hash together, so a set built from either answers to the same cache key --
+    and the canonical set then holds whichever spelling reached it first.
+    That made a set's members depend on construction order, and a morphism out
+    of such a set returned a bare ``int`` where an ``Element`` was required.
+    The repo bans that fork elsewhere for the same reason; this is where it
+    would otherwise enter.
+    """
+    return tuple(
+        SageZZ(member)
+        if isinstance(member, int) and not isinstance(member, Element)
+        else member
+        for member in members
+    )
 
 
 def ordered_set_owned_by(elements) -> "lexicon.OrderedSet":
