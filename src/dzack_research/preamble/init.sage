@@ -21,14 +21,13 @@
 # Only the text/latex slot is touched. text/plain is still emitted alongside, so
 # nothing is lost; print(), tracebacks, plots and images are untouched.
 
-from sage.rings.cc import CC
+# Nothing standard is imported here.  This file is Sage's startup file, so it
+# runs in a session that has already imported ``sage.all``: ``ZZ``, ``QQ``,
+# ``RR``, ``CC``, ``latex``, ``prod`` and ``SageObject`` are present, and
+# importing them again only creates a second name for the same object -- or,
+# as happened with ``RR``, a line that names a module which does not export it
+# and takes the whole startup down with it.
 from dzack_research.preamble.catalogue import Lattices
-from sage.rings.rational_field import QQ
-from sage.categories.category import RR
-from sage.categories.category import ZZ
-from sage.misc.latex import latex
-from sage.misc.misc_c import prod
-from sage.structure.sage_object import SageObject
 from pathlib import Path
 import os
 
