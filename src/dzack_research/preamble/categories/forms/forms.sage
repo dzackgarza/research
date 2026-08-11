@@ -57,6 +57,36 @@ class TensorSquare(Parent):
         return f"Tensor square of {self._module}"
 
 
+class DividedSquare(Parent):
+    r"""The divided square \(\Gamma^2 M\), as a morphism domain.
+
+    A quadratic form is not a morphism of modules: \(q(rx)=r^2q(x)\), so it
+    does not lie in \(\operatorname{Hom}_R(M,W)\).  What it *is* is a morphism
+    out of the divided square, \(\Gamma^2M\to W\), the way a bilinear form is
+    one out of \(M\otimes_R M\).  Evaluating \(q\) at \(x\) means applying
+    it to \(\gamma_2(x)\).
+
+    Formal, like ``TensorSquare`` beside it: what the preamble needs of it is
+    that a form has an honest domain, not that its elements are constructed.
+    """
+
+    def __init__(self, module: "Module") -> None:
+        self._module = module
+        Parent.__init__(self, category=Sets())
+
+    def module(self) -> "Module":
+        return self._module
+
+    def __eq__(self, other: object) -> bool:
+        return isinstance(other, DividedSquare) and self._module is other._module
+
+    def __hash__(self) -> int:
+        return hash((DividedSquare, id(self._module)))
+
+    def _repr_(self) -> str:
+        return f"Divided square of {self._module}"
+
+
 class BilinearFormHomset(Homset):
     r"""The homset of bilinear forms \(M\otimes_RM\to W\)."""
 
@@ -90,19 +120,20 @@ class BilinearFormHomset(Homset):
 
 
 class QuadraticFormHomset(Homset):
-    r"""The homset of quadratic forms \(M\to W\)."""
+    r"""The homset of quadratic forms, \(\Gamma^2M\to W\)."""
 
     def __init__(self, module: "Module", value_module: "Module") -> None:
         Homset.__init__(
             self,
-            module,
+            DividedSquare(module),
             value_module,
             category=Sets(),
             check=False,
         )
 
     def module(self) -> "Module":
-        return self.domain()
+        r"""Return \(M\), which the domain is the divided square of."""
+        return self.domain().module()
 
     def _element_constructor_(self, gram: "GramMatrix") -> "QuadraticFormMorphism":
         return QuadraticFormMorphism(self, gram)
@@ -115,7 +146,7 @@ class QuadraticFormHomset(Homset):
 
     def _repr_(self) -> str:
         return (
-            f"Quadratic forms on {self.domain()} with values in "
+            f"Quadratic forms on {self.module()} with values in "
             f"{self.codomain()}"
         )
 
@@ -280,12 +311,17 @@ class BilinearFormMorphism(Morphism):
 
 
 class QuadraticFormMorphism(Morphism):
-    r"""A quadratic morphism \(q:M\to W\), recorded by its diagonal lift."""
+    r"""A quadratic form \(\Gamma^2M\to W\), recorded by its diagonal lift.
+
+    Evaluated at an element of \(M\): \(q(x)\) is this morphism applied to
+    \(\gamma_2(x)\), and writing it that way is what keeps a quadratic form
+    a morphism without pretending it is linear on \(M\).
+    """
 
     def __init__(self, parent: QuadraticFormHomset, gram: "GramMatrix") -> None:
         Morphism.__init__(self, parent)
         gram = gram if isinstance(gram, Matrix) else matrix(gram)
-        size = _framing_rank(parent.domain().module_generating_set())
+        size = _framing_rank(parent.module().module_generating_set())
         assert gram.is_symmetric(), (
             "the diagonal lift of a quadratic form is symmetric"
         )
@@ -299,7 +335,7 @@ class QuadraticFormMorphism(Morphism):
         self._lift_matrix = gram
 
     def module(self) -> "Module":
-        return self.domain()
+        return self.domain().module()
 
     def value_module(self) -> "Module":
         return self.codomain()
@@ -309,8 +345,8 @@ class QuadraticFormMorphism(Morphism):
         # import would close that cycle; it is built by call time.
         from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _coordinate_vector
 
-        assert element.parent() is self.domain(), (
-            f"{element} is not an element of {self.domain()}"
+        assert element.parent() is self.module(), (
+            f"{element} is not an element of {self.module()}"
         )
         coordinates = _coordinate_vector(element)
         return self.codomain()(
@@ -321,7 +357,7 @@ class QuadraticFormMorphism(Morphism):
         return self(element)
 
     def lift_form(self) -> BilinearFormMorphism:
-        return BilinearForms(self.domain(), SageQQ)(self._lift_matrix)
+        return BilinearForms(self.module(), SageQQ)(self._lift_matrix)
 
     def _polar_value_module(self) -> "Module":
         from sage.groups.additive_abelian.qmodnz import QmodnZ
@@ -333,7 +369,7 @@ class QuadraticFormMorphism(Morphism):
 
     def polar_form(self) -> BilinearFormMorphism:
         return BilinearForms(
-            self.domain(),
+            self.module(),
             self._polar_value_module(),
         )(self._lift_matrix)
 

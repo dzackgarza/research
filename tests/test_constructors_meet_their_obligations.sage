@@ -24,6 +24,7 @@ from sage.misc.abstract_method import AbstractMethod, abstract_methods_of_class
 
 from dzack_research.preamble.categories.forms.forms import (
     BilinearFormMorphism,
+    DividedSquare,
     QuadraticFormMorphism,
     TensorSquare,
 )
@@ -112,26 +113,25 @@ def test_a_form_is_a_morphism_into_the_value_module(name: str) -> None:
         f"{name}: the form's codomain must be the value module, "
         f"got {form.codomain()} against {parent.value_module()}"
     )
-    # Which module the form is a map *out of* is what tells the two apart:
-    # a bilinear form is $M\otimes_R M\to W$, a quadratic form is $M\to W$.
+    # Both forms are morphisms out of a square construction of the module:
+    # a bilinear form on $M\otimes_R M$, a quadratic form on $\Gamma^2M$.
+    # A quadratic form is not linear on $M$ -- $q(rx)=r^2q(x)$ -- so it is not
+    # a map out of $M$ at all, and the divided square is what makes it a
+    # morphism without pretending otherwise.
     domain = form.domain()
-    match form:
-        case BilinearFormMorphism():
-            assert isinstance(domain, TensorSquare), (
-                f"{name}: a bilinear form is defined on $M\\otimes_R M$, "
-                f"got a form on {domain}"
-            )
-            assert domain.module() is parent.forget_form(), (
-                f"{name}: the tensor square must be of this module, "
-                f"got one of {domain.module()}"
-            )
-        case QuadraticFormMorphism():
-            assert domain is parent.forget_form(), (
-                f"{name}: a quadratic form is defined on the module itself, "
-                f"got one on {domain}"
-            )
-        case _:
-            assert False, f"{name}: {type(form).__name__} is neither form"
+    expected = {
+        BilinearFormMorphism: TensorSquare,
+        QuadraticFormMorphism: DividedSquare,
+    }[type(form)]
+
+    assert isinstance(domain, expected), (
+        f"{name}: a {type(form).__name__} is defined on "
+        f"{expected.__name__}(M), got a form on {domain}"
+    )
+    assert domain.module() is parent.forget_form(), (
+        f"{name}: the square must be of this module, got one of "
+        f"{domain.module()}"
+    )
 
 
 @pytest.mark.parametrize("name", sorted(_constructions()))
