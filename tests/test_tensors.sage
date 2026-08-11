@@ -193,6 +193,21 @@ def test_raising_an_integral_index_requires_unimodularity() -> None:
         Lattices.A2.raise_index(Lattices.A2.gram_tensor(), 0)
 
 
+def test_a_nondegenerate_lattice_raises_indices_after_rationalization() -> None:
+    r"""The inverse form of (A_2) exists on (A_2\otimes\mathbb Q)."""
+    _ensure_preamble()
+    rational_form = Lattices.A2.vector_space()
+    raised = Lattices.A2.raise_index_over_fraction_field(
+        Lattices.A2.gram_tensor(),
+        0,
+    )
+
+    assert raised.parent().base_ring() == QQ
+    assert raised.valence() == (1, 1)
+    assert raised.components() == {(0, 0): QQ.one(), (1, 1): QQ.one()}
+    assert rational_form.lower_index(raised, 0) == rational_form.gram_tensor()
+
+
 def test_the_correlation_is_an_isomorphism_exactly_when_unimodular() -> None:
     r"""The two musical maps for \(U\) are inverse on every basis vector."""
     _ensure_preamble()

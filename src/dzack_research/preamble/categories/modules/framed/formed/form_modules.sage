@@ -133,6 +133,16 @@ class FormModules(OwnedCategoryOverBaseRing):
             r"""Raise one lower index using this form."""
             return tensor.raise_index(self, slot)
 
+        def raise_index_over_fraction_field(
+            self: Self,
+            tensor: "Element",
+            slot: int = 0,
+        ) -> "Element":
+            r"""Raise one lower index after extension to the fraction field."""
+            changed_form = self.vector_space()
+            changed_tensor = tensor.base_changed(changed_form.forget_form())
+            return changed_form.raise_index(changed_tensor, slot)
+
         def lower_index(self: Self, tensor: "Element", slot: int = 0) -> "Element":
             r"""Lower one upper index using this form."""
             return tensor.lower_index(self, slot)

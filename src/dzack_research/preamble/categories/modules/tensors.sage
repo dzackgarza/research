@@ -120,6 +120,12 @@ class TensorElement(ModuleElement):
         ModuleElement.__init__(self, parent)
         self._entries = dict(entries)
 
+    def base_changed(self, module: "Module") -> "TensorElement":
+        r"""Read this tensor after extending scalars to ``module.base_ring()``."""
+        target = Tensor(module, self.valence())
+        ring = module.base_ring()
+        return target({index: ring(entry) for index, entry in self._entries.items()})
+
     def valence(self) -> tuple:
         return self.parent().valence()
 

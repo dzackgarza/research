@@ -26,13 +26,6 @@ Polarization *is* built for discriminant quadratic modules
 the special case. The general statement is missing, and the general statement
 is what the divided square was introduced for.
 
-### Raising indices after scalar extension
-
-For an integral lattice, nondegeneracy makes $L\to L^*$ injective. It is an
-isomorphism over $\mathbb Z$ only when $L$ is unimodular. Raising and lowering
-indices now works over the current base ring in that case. A nonunimodular
-lattice still needs the same operation after extension to $\mathbb Q$.
-
 ### The free-module functor does not preserve equality of indexing sets
 
 The transcript requires $F_R(S)=F_R(S')$ when $S=S'$. This is equality of
