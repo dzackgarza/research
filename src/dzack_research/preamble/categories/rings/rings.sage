@@ -303,11 +303,19 @@ def install_rings(namespace: dict) -> dict:
     # :func:`install_session_rings`.  A constructor that spells the same ring
     # has to answer with the same object, or the session holds two names for
     # one ring and ``CC is ComplexField()`` stops being true.
+    #
+    # Every name, and not one per constructor: ``GF``, ``Zmod`` and
+    # ``Integers`` are aliases -- the same factory object under three
+    # spellings -- and a session names the ring with whichever it writes.  A
+    # spelling left out here hands back the engine's ring, so \(R[G]\) built
+    # over ``Integers(6)`` and \(R[G]\) built over ``Zmod(6)`` sit over two
+    # different objects and neither is the other's base ring.
     for name in (
         "GF",
         "FiniteField",
         "Zmod",
         "IntegerModRing",
+        "Integers",
         "Zp",
         "Qp",
         "RealField",
