@@ -39,11 +39,6 @@ parent assembles those pieces into one graded algebra.
   *count* of them, so `A[2]` is two new variables. The accessor stays
   `graded_piece(2)`.
 
-- **$T(M) \otimes_R T(M^*)$ as the home of type-$(p,q)$ tensors.**
-  `Tensor(M,(p,q))` stands alone and reads its own components. It is a graded
-  piece of that bigraded algebra, which is an $R$-algebra for any commutative
-  $R$ without further hypothesis.
-
 - **$L^2(\mathbb{R})$ and $C^\infty(\mathbb{R})$ are shells.** Smoothness,
   square-integrability and the bilinearity of the pairing are unchecked and
   not decidable there. That is deliberate — their purpose is to make a

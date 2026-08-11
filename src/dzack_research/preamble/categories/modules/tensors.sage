@@ -112,6 +112,10 @@ class Tensor(UniqueRepresentation, Parent):
     def zero(self) -> "TensorElement":
         return self({})
 
+    def mixed_tensor_algebra(self) -> "MixedTensorAlgebra":
+        r"""Return \(T(M)\otimes_R T(M^*)\), containing this homogeneous piece."""
+        return MixedTensorAlgebra(self._module)
+
 
 class TensorElement(ModuleElement):
     r"""A tensor, held by its components in the module's framing."""
@@ -284,6 +288,31 @@ class TensorElement(ModuleElement):
             ) + entry
         return self._scalar_or_tensor((contravariant - 1, covariant - 1), entries)
 
+    def tensor_product(self, other: "TensorElement") -> "TensorElement":
+        r"""Return the outer product, concatenating upper and lower slots."""
+        assert self.parent().module() is other.parent().module(), (
+            "an outer product uses tensors on one module"
+        )
+        left_upper, left_lower = self.valence()
+        right_upper, right_lower = other.valence()
+        entries = {}
+        for left_index, left_entry in self._entries.items():
+            for right_index, right_entry in other._entries.items():
+                index = (
+                    left_index[:left_upper]
+                    + right_index[:right_upper]
+                    + left_index[left_upper:]
+                    + right_index[right_upper:]
+                )
+                entries[index] = entries.get(
+                    index,
+                    self.parent().base_ring().zero(),
+                ) + left_entry * right_entry
+        return Tensor(
+            self.parent().module(),
+            (left_upper + right_upper, left_lower + right_lower),
+        )({index: entry for index, entry in entries.items() if entry != 0})
+
     def raise_index(self, formed_module: "Module", slot: int = 0) -> "TensorElement":
         r"""Raise one lower index with the inverse Gram matrix."""
         from sage.matrix.constructor import matrix
@@ -354,6 +383,133 @@ class TensorElement(ModuleElement):
 
 
 Tensor.Element = TensorElement
+
+
+class MixedTensorAlgebra(UniqueRepresentation, Parent):
+    r"""The bigraded algebra \(T(M)\otimes_R T(M^*)\)."""
+
+    def __init__(self, module: "Module") -> None:
+        from dzack_research.preamble.categories.algebras.algebras import Algebras
+
+        self._module = module
+        Parent.__init__(
+            self,
+            base=module.base_ring(),
+            category=Algebras(module.base_ring()),
+        )
+
+    def module(self) -> "Module":
+        return self._module
+
+    def base_ring(self) -> "Ring":
+        return self.base()
+
+    def homogeneous_piece(self, valence: tuple[int, int]) -> Tensor:
+        r"""Return the component of bidegree ``valence``."""
+        return Tensor(self._module, valence)
+
+    def include(self, tensor_element: TensorElement) -> "MixedTensorElement":
+        r"""Include a homogeneous tensor in the bigraded algebra."""
+        assert tensor_element.parent().module() is self._module, (
+            "the tensor must be on this algebra's module"
+        )
+        return self({tensor_element.valence(): tensor_element})
+
+    def _element_constructor_(self, components: dict) -> "MixedTensorElement":
+        return self.element_class(self, components)
+
+    def zero(self) -> "MixedTensorElement":
+        return self({})
+
+    def one(self) -> "MixedTensorElement":
+        scalar = Tensor(self._module, (0, 0))({(): self.base_ring().one()})
+        return self.include(scalar)
+
+    def _ring_morphism_defining_algebra_structure(self) -> "Morphism":
+        from sage.categories.homset import Hom
+        from sage.categories.morphism import SetMorphism
+        from sage.categories.rings import Rings
+
+        return SetMorphism(
+            Hom(self.base_ring(), self, Rings()),
+            lambda scalar: scalar * self.one(),
+        )
+
+    def _repr_(self) -> str:
+        return f"Mixed tensor algebra on {self._module}"
+
+
+class MixedTensorElement(ModuleElement):
+    r"""A finite sum of homogeneous mixed tensors."""
+
+    def __init__(self, parent: MixedTensorAlgebra, components: dict) -> None:
+        ModuleElement.__init__(self, parent)
+        self._components = {
+            tuple(valence): component
+            for valence, component in components.items()
+            if component != component.parent().zero()
+        }
+        assert all(
+            component.parent() is parent.homogeneous_piece(valence)
+            for valence, component in self._components.items()
+        ), "each component must belong to its stated bidegree"
+
+    def valences(self) -> tuple:
+        return tuple(self._components)
+
+    def homogeneous_component(self, valence: tuple[int, int]) -> TensorElement:
+        return self._components.get(
+            tuple(valence),
+            self.parent().homogeneous_piece(tuple(valence)).zero(),
+        )
+
+    def _add_(self, other: "MixedTensorElement") -> "MixedTensorElement":
+        components = dict(self._components)
+        for valence, component in other._components.items():
+            components[valence] = components.get(
+                valence,
+                component.parent().zero(),
+            ) + component
+        return self.parent()(components)
+
+    def _scaled(self, scalar: "Element") -> "MixedTensorElement":
+        return self.parent()(
+            {
+                valence: scalar * component
+                for valence, component in self._components.items()
+            }
+        )
+
+    def _lmul_(self, scalar: "Element") -> "MixedTensorElement":
+        return self._scaled(scalar)
+
+    def _rmul_(self, scalar: "Element") -> "MixedTensorElement":
+        return self._scaled(scalar)
+
+    def _mul_(self, other: "MixedTensorElement") -> "MixedTensorElement":
+        components = {}
+        for left in self._components.values():
+            for right in other._components.values():
+                product = left.tensor_product(right)
+                valence = product.valence()
+                components[valence] = components.get(
+                    valence,
+                    product.parent().zero(),
+                ) + product
+        return self.parent()(components)
+
+    def __eq__(self, other: "Element") -> bool:
+        return (
+            isinstance(other, MixedTensorElement)
+            and other.parent() is self.parent()
+            and other._components == self._components
+        )
+
+    def __repr__(self) -> str:
+        return repr(self._components)
+
+
+MixedTensorAlgebra.Element = MixedTensorElement
 
 
 def tensor(base_ring: "Ring", components, valence: tuple = None, module: "Module" = None):

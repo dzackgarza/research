@@ -232,6 +232,26 @@ def test_tensor_values_are_sage_elements() -> None:
     assert value.parent().zero() + value == value
 
 
+def test_mixed_tensors_are_the_homogeneous_pieces_of_one_bigraded_algebra() -> None:
+    r"""The product adds valences in \(T(M)\otimes_R T(M^*)\)."""
+    _ensure_preamble()
+    from dzack_research.preamble.categories.modules.tensors import MixedTensorAlgebra
+
+    module = BasedFreeModule(ZZ, Sets.Δ[1])
+    algebra = MixedTensorAlgebra(module)
+    vectors = algebra.homogeneous_piece((1, 0))
+    covectors = algebra.homogeneous_piece((0, 1))
+    x = algebra.include(vectors({(0,): 1}))
+    y = algebra.include(vectors({(1,): 1}))
+    phi = algebra.include(covectors({(0,): 2, (1,): 3}))
+
+    assert Tensor(module, (2, 1)) is algebra.homogeneous_piece((2, 1))
+    assert (x * y * phi).valences() == ((2, 1),)
+    assert (x * y) * phi == x * (y * phi)
+    assert algebra.one() * x == x == x * algebra.one()
+    assert x * y != y * x
+
+
 def test_the_degree_two_piece_of_the_tensor_algebra_is_the_tensor_square() -> None:
     r"""$T(M)[2]$ has all $\mathrm{rank}^2$ words, so it is $M^{\otimes 2}$.
 
