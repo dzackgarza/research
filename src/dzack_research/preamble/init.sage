@@ -27,7 +27,6 @@
 # importing them again only creates a second name for the same object -- or,
 # as happened with ``RR``, a line that names a module which does not export it
 # and takes the whole startup down with it.
-from dzack_research.preamble.catalogue import Lattices
 from pathlib import Path
 import os
 
@@ -40,15 +39,17 @@ from sage.libs.gap.libgap import libgap
 # This file *is* the startup file (via symlink). Sibling scripts live next to it.
 _PREAMBLE = Path(os.environ["SAGE_STARTUP_FILE"]).resolve().parent
 
-# Vendor paths, the category scripts, and their install hooks -- shared with the
-# .sage tests so the two never drift apart.
+# The category modules, their install hooks, and the export sweep that puts
+# their names in this session -- shared with the .sage tests so the two never
+# drift apart.  ``utilities`` and ``catalogue`` are in the module list it
+# imports, so this is where ``Lattices`` and ``zipsum`` come from; loading
+# either again would build a second copy of the catalogue.
 load(str(_PREAMBLE / "install.sage"))
 
 libgap.LoadPackage("PackageManager")
 IPython.core.ultratb.VerboseTB._tb_highlight = "bg:ansired"
 
-load(str(_PREAMBLE / "utilities.py"))
-load(str(_PREAMBLE / "catalogue.sage"))
+# Not in that module list, so it is still loaded on its own.
 load(str(_PREAMBLE / "sterk.sage"))
 
 Lattices.install(globals())
