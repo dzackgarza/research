@@ -104,6 +104,27 @@ def test_a_commutative_ring_is_its_own_centre_and_an_algebra_over_itself() -> No
     assert structure(integers(5)) == 5
 
 
+def test_forgetting_structure_returns_one_named_base_ring() -> None:
+    r"""Modules, algebras, and lattices built through the engine name the same ring."""
+    _ensure_preamble()
+    from dzack_research.preamble.categories.rings.rings import engine_ring
+
+    engine = engine_ring(ZZ)
+    module = BasedFreeModule(engine, Sets.Δ[1])
+    algebra = FreeAlgebraOn(engine, Sets.Δ[0])
+    lattice = BilinearForm(
+        BasedFreeModule(engine, Sets.Δ[0]),
+        engine,
+        matrix(engine, [[1]]),
+    )
+
+    assert module.base_ring() is ZZ
+    assert algebra.base_ring() is ZZ
+    assert lattice.base_ring() is ZZ
+    assert algebra._ring_morphism_defining_algebra_structure().domain() is ZZ
+    assert module._ring_morphism_defining_module_action().domain() is ZZ
+
+
 def test_a_free_algebra_places_the_scalars_as_multiples_of_the_unit() -> None:
     r"""$r\mapsto r\cdot 1$ is the structure morphism a free construction has."""
     _ensure_preamble()

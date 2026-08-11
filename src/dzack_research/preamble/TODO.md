@@ -5,18 +5,6 @@
 Each of these is a mathematical statement the preamble makes in prose and does
 not realize as an object or a morphism.
 
-### Forgetting structure does not preserve one ring object uniformly
-
-The transcript treats a ring $R$ as the same object when regarded as an
-$R$-module or an $R$-algebra. Forgetting structure should return that object,
-not a second ring joined by an implicit conversion.
-
-This holds for the named session rings, but not for every construction. A
-module built directly over an engine ring can return that engine object.
-Uniform promotion during parent construction breaks the base-ring morphism of
-a free algebra. The missing construction is one coherent family of forgetful
-and change-of-scalars functors across rings, modules, algebras, and lattices.
-
 ## The preamble does not own `Subsets` — [#348]
 
 `Subsets(S)` for infinite `S` reports itself as a **finite enumerated set** and
