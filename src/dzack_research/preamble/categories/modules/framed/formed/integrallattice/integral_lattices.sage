@@ -95,6 +95,16 @@ if TYPE_CHECKING:
     from sage_lattice_category_spike.lexicon import OrderedSet
 
 
+class FinitelyGeneratedIntegralLattices(CategoryWithAxiom_over_base_ring):
+    r"""Finitely generated lattices whose form is integral-valued."""
+
+    _base_category_class_and_axiom = (FinitelyGeneratedLattices, "Integral")
+
+    @classmethod
+    def _repr_object_names(cls) -> str:
+        return "finitely generated integral-valued lattices"
+
+
 class IntegralLattices(CategoryWithAxiom_over_base_ring):
     r"""Category of integral lattices with enriched computational methods.
 
@@ -111,12 +121,11 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
     def _repr_object_names(cls) -> str:
         return "integral lattices"
 
-    # What an integral lattice is, said as axioms rather than as a category
-    # name: a lattice -- a projective module with a symmetric bilinear form --
-    # that is finitely generated, takes its values in the base ring, and has
-    # zero radical.  ``Lattices(R).FinitelyGenerated().Integral()`` is the
-    # chain this class *is*; nondegeneracy is joined below.
-    _base_category_class_and_axiom = (FinitelyGeneratedLattices, "Integral")
+    # An integral lattice is finite, integral-valued, and nondegenerate.
+    _base_category_class_and_axiom = (
+        FinitelyGeneratedIntegralLattices,
+        "Nondegenerate",
+    )
 
     @staticmethod
     def __classcall_private__(cls, base_ring=None):
@@ -135,10 +144,6 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
         if isinstance(base_ring, Category):
             return super(IntegralLattices, cls).__classcall__(cls, base_ring)
         return super(IntegralLattices, cls).__classcall__(cls, base_ring)
-
-    def extra_super_categories(self) -> list:
-        r"""Add nondegeneracy, the third axiom in the definition."""
-        return [Lattices(self.base_ring()).Nondegenerate()]
 
     class ParentMethods:
         r"""Methods available on every integral lattice parent refined into this category."""
@@ -1335,7 +1340,8 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
 # ---- helper utilities ----
 
 
-setattr(FinitelyGeneratedLattices, "Integral", IntegralLattices)
+setattr(FinitelyGeneratedLattices, "Integral", FinitelyGeneratedIntegralLattices)
+setattr(FinitelyGeneratedIntegralLattices, "Nondegenerate", IntegralLattices)
 
 _ZERO_DOTS: bool = True
 
@@ -1685,6 +1691,18 @@ def refine_one_lattice(lattice: "Lattice") -> None:
     from dzack_research.preamble.categories.modules.framed.formed.integrallattice.definite_lattices import DefiniteLattices
     from dzack_research.preamble.categories.modules.framed.formed.integrallattice.hyperbolic_lattices import HyperbolicLattices
     from dzack_research.preamble.refine import refine
+    match lattice.gram_matrix().det() == 0:
+        case True:
+            refine(
+                lattice,
+                [
+                    Lattices(ℤ).FinitelyGenerated(),
+                    Lattices(ℤ).Integral(),
+                ],
+            )
+            return
+        case False:
+            pass
     refine(lattice, IntegralLattices())
     pos, neg = lattice.signature_pair()
     if pos > 0 and neg > 0 and min(pos, neg) == 1:

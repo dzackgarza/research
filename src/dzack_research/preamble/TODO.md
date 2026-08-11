@@ -33,15 +33,6 @@ isomorphism over $\mathbb Z$ only when $L$ is unimodular. Raising and lowering
 indices now works over the current base ring in that case. A nonunimodular
 lattice still needs the same operation after extension to $\mathbb Q$.
 
-### The lattice axioms are declared and never established
-
-`Lattices(R)` is defined as the projective $R$-modules carrying an $R$-valued
-bilinear form, with `FinitelyGenerated`, `Integral` and `Nondegenerate` as
-axioms. Axioms are declarations by design. Nothing establishes any of them for
-a constructed object: no specimen is shown projective, no form is shown to
-land in $R$, and no Gram matrix is shown nonsingular. A lattice built from a
-degenerate Gram matrix would enter `Nondegenerate` and say so.
-
 ### The free-module functor does not preserve equality of indexing sets
 
 The transcript requires $F_R(S)=F_R(S')$ when $S=S'$. This is equality of

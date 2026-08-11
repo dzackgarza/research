@@ -156,3 +156,25 @@ def test_a_lattice_subobject_has_the_restricted_form() -> None:
     image = subobject.inclusion()(source_generator)
 
     assert source_generator.b(source_generator) == image.b(image)
+
+
+def test_a_constructed_lattice_satisfies_its_defining_properties() -> None:
+    r"""A lattice is finite free, integral-valued, and nondegenerate."""
+    _ensure_preamble()
+    lattice = Lattices.A2
+    generators = tuple(lattice.module_generators())
+
+    assert lattice.forget_form().relations().cardinality() == 0
+    assert lattice.rank() == len(generators) == 2
+    assert all(left.b(right) in ZZ for left in generators for right in generators)
+    assert lattice.correlation_morphism().is_injective()
+
+
+def test_a_degenerate_gram_matrix_does_not_claim_nondegeneracy() -> None:
+    r"""A zero determinant does not enter the nondegenerate subcategory."""
+    _ensure_preamble()
+    formed = Lattices(matrix(ZZ, [[1, 1], [1, 1]]))
+
+    assert formed in Lattices(ZZ).FinitelyGenerated().Integral()
+    assert formed not in Lattices(ZZ).Nondegenerate()
+    assert formed not in IntegralLattices()
