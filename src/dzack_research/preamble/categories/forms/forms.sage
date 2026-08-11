@@ -97,7 +97,6 @@ class BilinearFormHomset(Homset):
             TensorSquare(module),
             value_module,
             category=Sets(),
-            check=False,
         )
 
     def module(self) -> "Module":
@@ -128,7 +127,6 @@ class QuadraticFormHomset(Homset):
             DividedSquare(module),
             value_module,
             category=Sets(),
-            check=False,
         )
 
     def module(self) -> "Module":
