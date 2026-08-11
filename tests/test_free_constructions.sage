@@ -621,6 +621,130 @@ def test_the_divided_power_adjunction_is_extension_and_restriction() -> None:
     assert extension.preserves_divided_power(source.algebra_generator(0) + source.algebra_generator(1), 3)
 
 
+def test_presented_free_algebras_are_quotients_by_the_module_relations() -> None:
+    r"""For (M=\mathbb Z/2), every positive-degree tensor has order two.
+
+    The scalar copy of \(mathbb Z\) remains unchanged. Thus this distinguishes
+    \(T(M)=\mathbb Z\langle x\rangle/(2x)\) from reducing the whole algebra
+    modulo two.
+    """
+    _ensure_preamble()
+    free = BasedFreeModule(ZZ, Sets.Δ[0])
+    relation = module_homset(free, free)({0: 2 * free.module_generator(0)})
+    module = FinitelyPresentedModule(relation)
+    tensor = TensorAlgebraOf(module)
+    x = tensor.algebra_generator(0)
+
+    assert 2 * tensor.one() != tensor.zero()
+    assert x != tensor.zero()
+    assert x * x != tensor.zero()
+    assert 2 * x == tensor.zero()
+    assert 2 * (x * x) == tensor.zero()
+    assert tensor.graded_piece(3).invariants() == (2,)
+
+
+def test_all_four_presented_constructions_have_their_defining_products() -> None:
+    r"""The relation (2x=0) descends through (T,\operatorname{Sym},\Lambda,\Gamma)."""
+    _ensure_preamble()
+    free = BasedFreeModule(ZZ, Sets.Δ[0])
+    relation = module_homset(free, free)({0: 2 * free.module_generator(0)})
+    module = FinitelyPresentedModule(relation)
+    tensor = TensorAlgebraOf(module)
+    symmetric = SymmetricAlgebraOf(module)
+    exterior = AlternatingAlgebraOf(module)
+    divided = DividedPowerAlgebraOf(module)
+
+    tx = tensor.algebra_generator(0)
+    sx = symmetric.algebra_generator(0)
+    ex = exterior.algebra_generator(0)
+    dx = divided.algebra_generator(0)
+    for algebra, generator in (
+        (tensor, tx),
+        (symmetric, sx),
+        (exterior, ex),
+        (divided, dx),
+    ):
+        assert generator != algebra.zero()
+        assert 2 * generator == algebra.zero()
+
+    assert tx * tx != tensor.zero()
+    assert sx * sx != symmetric.zero()
+    assert ex * ex == exterior.zero()
+    assert divided.divided_power(dx, 2) != divided.zero()
+    assert 4 * divided.divided_power(dx, 2) == divided.zero()
+
+
+def test_the_four_free_algebra_functors_preserve_identities_and_composition() -> None:
+    r"""Each object and morphism assignment obeys (F(1)=1) and (F(gf)=F(g)F(f))."""
+    _ensure_preamble()
+    free = BasedFreeModule(ZZ, Sets.Δ[0])
+    x = free.module_generator(0)
+    modulo_four = FinitelyPresentedModule(module_homset(free, free)({0: 4 * x}))
+    modulo_two = FinitelyPresentedModule(module_homset(free, free)({0: 2 * x}))
+    multiply_two = module_homset(modulo_four, modulo_four)(
+        {0: 2 * modulo_four.module_generator(0)}
+    )
+    reduction = module_homset(modulo_four, modulo_two)(
+        {0: modulo_two.module_generator(0)}
+    )
+    composite = module_homset(modulo_four, modulo_two)(
+        {0: modulo_two.zero()}
+    )
+    identity = module_homset(modulo_four, modulo_four)(
+        {0: modulo_four.module_generator(0)}
+    )
+
+    for functor in (
+        TensorAlgebraFunctor(ZZ),
+        SymmetricAlgebraFunctor(ZZ),
+        AlternatingAlgebraFunctor(ZZ),
+        DividedPowerAlgebraFunctor(ZZ),
+    ):
+        algebra = functor(modulo_four)
+        generator = algebra.algebra_generator(0)
+        identity_map = functor(identity)
+        first = functor(multiply_two)
+        second = functor(reduction)
+        direct = functor(composite)
+
+        assert identity_map(generator) == generator
+        assert second(first(generator)) == direct(generator) == direct.codomain().zero()
+        assert second(first(generator * generator)) == direct(generator * generator)
+
+
+def test_free_algebra_functors_preserve_their_characteristic_operations() -> None:
+    r"""The induced maps preserve words, products, wedges, and divided powers."""
+    _ensure_preamble()
+    source = BasedFreeModule(ZZ, Sets.Δ[1])
+    target = BasedFreeModule(ZZ, Sets.Δ[1])
+    x, y = source.module_generators()
+    u, v = target.module_generators()
+    linear = module_homset(source, target)({0: u + v, 1: v})
+
+    tensor_map = TensorAlgebraFunctor(ZZ)(linear)
+    tensor_source = tensor_map.domain()
+    tensor_target = tensor_map.codomain()
+    tx, ty = tensor_source.algebra_generators()
+    tu, tv = tensor_target.algebra_generators()
+    assert tensor_map(tx * ty) == (tu + tv) * tv
+
+    exterior_map = AlternatingAlgebraFunctor(ZZ)(linear)
+    exterior_source = exterior_map.domain()
+    exterior_target = exterior_map.codomain()
+    ex, ey = exterior_source.algebra_generators()
+    eu, ev = exterior_target.algebra_generators()
+    assert exterior_map(ex * ey) == eu * ev
+
+    divided_map = DividedPowerAlgebraFunctor(ZZ)(linear)
+    divided_source = divided_map.domain()
+    divided_target = divided_map.codomain()
+    dx = divided_source.algebra_generator(0)
+    du, dv = divided_target.algebra_generators()
+    assert divided_map(divided_source.divided_power(dx, 2)) == (
+        divided_target.divided_power(du + dv, 2)
+    )
+
+
 def test_the_grading_decomposes_every_element() -> None:
     r"""$a=\sum_na_n$ with $a_n\in A_n$, which is what $\bigoplus$ asserts.
 

@@ -118,6 +118,26 @@ def TensorPower(module: "Module", degree: int) -> Parent:
     return power
 
 
+def SymmetricPower(module: "Module", degree: int) -> Parent:
+    r"""Return \(\operatorname{Sym}(M)[n]=\operatorname{Sym}^nM\)."""
+    from dzack_research.preamble.categories.algebras.framed_free_algebras import FreeAlgebraOn
+
+    power = _degree_construction(module, FreeAlgebraOn, "symmetric", degree)
+    power._symmetric_power_of = module
+    power._symmetric_power_degree = int(degree)
+    return power
+
+
+def AlternatingPower(module: "Module", degree: int) -> Parent:
+    r"""Return \(\Lambda(M)[n]=\Lambda^nM\)."""
+    from dzack_research.preamble.categories.algebras.framed_free_algebras import AlternatingAlgebraOn
+
+    power = _degree_construction(module, AlternatingAlgebraOn, "alternating", degree)
+    power._alternating_power_of = module
+    power._alternating_power_degree = int(degree)
+    return power
+
+
 def DividedPower(module: "Module", degree: int) -> Parent:
     r"""Return \(\Gamma(M)[n]=\Gamma^nM\)."""
     from dzack_research.preamble.categories.algebras.framed_free_algebras import DividedPowerAlgebraOn

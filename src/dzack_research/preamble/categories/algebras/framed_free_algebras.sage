@@ -56,7 +56,9 @@ from sage.rings.polynomial.polynomial_ring_constructor import (
 )
 from sage.rings.ideal import Ideal_generic
 from sage.sets.image_set import ImageSubobject
+from sage.structure.element import ModuleElement
 from sage.structure.parent import Parent
+from sage.structure.unique_representation import UniqueRepresentation
 
 assert "_as_set" in globals(), "Framed free algebras requires Set() from the preamble"
 
@@ -1911,3 +1913,195 @@ def divided_power_extension(
             image_of_monomial,
         ),
     )
+
+
+class PresentedFreeAlgebraElement(ModuleElement):
+    r"""A class in a free algebra modulo relations generated in degree one."""
+
+    def __init__(self, parent: "PresentedFreeAlgebra", representative: "Element") -> None:
+        ModuleElement.__init__(self, parent)
+        assert representative.parent() is parent.presentation_algebra(), (
+            "a representative lies in this presentation algebra"
+        )
+        self._representative = representative
+
+    def representative(self) -> "Element":
+        return self._representative
+
+    def _add_(self, other: "PresentedFreeAlgebraElement") -> "PresentedFreeAlgebraElement":
+        return self.parent()(self._representative + other._representative)
+
+    def _neg_(self) -> "PresentedFreeAlgebraElement":
+        return self.parent()(-self._representative)
+
+    def _mul_(self, other: "PresentedFreeAlgebraElement") -> "PresentedFreeAlgebraElement":
+        return self.parent()(self._representative * other._representative)
+
+    def _lmul_(self, scalar: "Element") -> "PresentedFreeAlgebraElement":
+        return self.parent()(scalar * self._representative)
+
+    def _rmul_(self, scalar: "Element") -> "PresentedFreeAlgebraElement":
+        return self.parent()(self._representative * scalar)
+
+    def __eq__(self, other: "Element") -> bool:
+        if not isinstance(other, PresentedFreeAlgebraElement):
+            return False
+        if other.parent() is not self.parent():
+            return False
+        difference = self._representative - other._representative
+        return all(
+            self.parent()._class_in_degree(degree, component).is_zero()
+            for degree, component in difference.homogeneous_components().items()
+        )
+
+    def _repr_(self) -> str:
+        return repr(self._representative)
+
+    def homogeneous_components(self) -> dict:
+        return {
+            degree: self.parent()(component)
+            for degree, component in self._representative.homogeneous_components().items()
+        }
+
+    def degree(self) -> "Integer":
+        return self._representative.degree()
+
+
+class PresentedFreeAlgebra(UniqueRepresentation, Parent):
+    r"""The graded algebra (A(F)/\langle K\rangle) for a presented module."""
+
+    Element = PresentedFreeAlgebraElement
+
+    def __init__(
+        self,
+        module: "Module",
+        construction: str,
+        presentation_algebra: "Parent",
+    ) -> None:
+        from dzack_research.preamble.categories.algebras.algebras import Algebras
+
+        self._module = module
+        self._construction = construction
+        self._presentation_algebra = presentation_algebra
+        Parent.__init__(
+            self,
+            base=module.base_ring(),
+            category=Algebras(module.base_ring()),
+        )
+
+    def module(self) -> "Module":
+        return self._module
+
+    def base_ring(self) -> "Ring":
+        return self.base()
+
+    def presentation_algebra(self) -> "Parent":
+        return self._presentation_algebra
+
+    def algebra_generating_set(self) -> "OrderedSet":
+        return self._module.module_generating_set()
+
+    def algebra_generator(self, label: "Element") -> "PresentedFreeAlgebraElement":
+        return self(self._presentation_algebra.algebra_generator(label))
+
+    def algebra_generators(self) -> tuple:
+        return tuple(
+            self.algebra_generator(label)
+            for label in self.algebra_generating_set()
+        )
+
+    def zero(self) -> "PresentedFreeAlgebraElement":
+        return self(self._presentation_algebra.zero())
+
+    def one(self) -> "PresentedFreeAlgebraElement":
+        return self(self._presentation_algebra.one())
+
+    def _element_constructor_(self, representative: "Element") -> "PresentedFreeAlgebraElement":
+        if isinstance(representative, PresentedFreeAlgebraElement):
+            assert representative.parent() is self, "an algebra element has one parent"
+            return representative
+        if representative.parent() is not self._presentation_algebra:
+            representative = representative * self._presentation_algebra.one()
+        return self.element_class(self, representative)
+
+    def _ring_morphism_defining_algebra_structure(self) -> "Morphism":
+        from sage.categories.rings import Rings
+
+        return SetMorphism(
+            Hom(self.base_ring(), self, Rings()),
+            lambda scalar: scalar * self.one(),
+        )
+
+    def graded_piece(self, degree: int) -> "Module":
+        from dzack_research.preamble.categories.forms.forms import AlternatingPower
+        from dzack_research.preamble.categories.forms.forms import DividedPower
+        from dzack_research.preamble.categories.forms.forms import SymmetricPower
+        from dzack_research.preamble.categories.forms.forms import TensorPower
+
+        constructions = {
+            "tensor": TensorPower,
+            "symmetric": SymmetricPower,
+            "alternating": AlternatingPower,
+            "divided": DividedPower,
+        }
+        return constructions[self._construction](self._module, int(degree))
+
+    def _class_in_degree(self, degree: int, representative: "Element") -> "Element":
+        from dzack_research.preamble.categories.forms.forms import _element_of_degree_piece
+
+        return _element_of_degree_piece(self.graded_piece(degree), representative)
+
+    def divided_power(
+        self,
+        element: "PresentedFreeAlgebraElement | Element",
+        degree: int,
+    ) -> "PresentedFreeAlgebraElement":
+        assert self._construction == "divided", (
+            "divided powers belong to the divided power construction"
+        )
+        representative = (
+            element.representative()
+            if isinstance(element, PresentedFreeAlgebraElement)
+            else element
+        )
+        return self(self._presentation_algebra.divided_power(representative, degree))
+
+    def _repr_(self) -> str:
+        names = {
+            "tensor": "Tensor",
+            "symmetric": "Symmetric",
+            "alternating": "Alternating",
+            "divided": "Divided power",
+        }
+        return f"{names[self._construction]} algebra on {self._module}"
+
+
+def _free_algebra_of_module(
+    module: "Module",
+    construction: str,
+    constructor: "Callable[[Ring, OrderedSet], Parent]",
+) -> "Parent":
+    source = constructor(module.base_ring(), module.module_generating_set())
+    if module.relation_matrix().nrows() == 0:
+        return source
+    return PresentedFreeAlgebra(module, construction, source)
+
+
+def TensorAlgebraOf(module: "Module") -> "Parent":
+    r"""Return (T(M)), preserving a presentation of (M)."""
+    return _free_algebra_of_module(module, "tensor", TensorAlgebraOn)
+
+
+def SymmetricAlgebraOf(module: "Module") -> "Parent":
+    r"""Return (operatorname{Sym}(M)), preserving a presentation of (M)."""
+    return _free_algebra_of_module(module, "symmetric", FreeAlgebraOn)
+
+
+def AlternatingAlgebraOf(module: "Module") -> "Parent":
+    r"""Return (Lambda(M)), preserving a presentation of (M)."""
+    return _free_algebra_of_module(module, "alternating", AlternatingAlgebraOn)
+
+
+def DividedPowerAlgebraOf(module: "Module") -> "Parent":
+    r"""Return (Gamma(M)), preserving a presentation of (M)."""
+    return _free_algebra_of_module(module, "divided", DividedPowerAlgebraOn)

@@ -27,7 +27,7 @@ if TYPE_CHECKING:
     from sage.categories.morphism import Morphism
     from sage.rings.ring import Ring
 
-from sage.misc.cachefunc import cached_method
+from sage.misc.cachefunc import cached_function, cached_method
 from sage.categories.functor import Functor
 from sage.categories.homset import Hom
 from sage.categories.modules import Modules
@@ -36,6 +36,122 @@ from sage.misc.abstract_method import abstract_method
 from sage.structure.sage_object import SageObject
 from sage.categories.morphism import SetMorphism
 from sage_lattice_category_spike.objects.underlying_sets import UnderlyingSet
+
+
+class FreeAlgebraFunctor(Functor):
+    r"""One of the four free-algebra functors on (R)-modules."""
+
+    def __init__(self, base_ring: "Ring", construction: str) -> None:
+        from dzack_research.preamble.categories.algebras.algebras import Algebras
+        from dzack_research.preamble.categories.rings.rings import owned_ring_view
+
+        self._base_ring = owned_ring_view(base_ring)
+        self._construction = construction
+        super().__init__(Modules(self._base_ring), Algebras(self._base_ring))
+
+    @cached_method
+    def _apply_functor(self, module: "Module") -> "Module":
+        from dzack_research.preamble.categories.algebras.framed_free_algebras import AlternatingAlgebraOf
+        from dzack_research.preamble.categories.algebras.framed_free_algebras import DividedPowerAlgebraOf
+        from dzack_research.preamble.categories.algebras.framed_free_algebras import SymmetricAlgebraOf
+        from dzack_research.preamble.categories.algebras.framed_free_algebras import TensorAlgebraOf
+
+        constructors = {
+            "tensor": TensorAlgebraOf,
+            "symmetric": SymmetricAlgebraOf,
+            "alternating": AlternatingAlgebraOf,
+            "divided": DividedPowerAlgebraOf,
+        }
+        return constructors[self._construction](module)
+
+    def _apply_functor_to_morphism(
+        self,
+        module_morphism: "ModuleMorphism",
+    ) -> "Morphism":
+        from dzack_research.preamble.categories.algebras.framed_free_algebras import PresentedFreeAlgebra
+        from dzack_research.preamble.categories.algebras.framed_free_algebras import PresentedFreeAlgebraElement
+        from dzack_research.preamble.categories.algebras.framed_free_algebras import alternating_extension
+        from dzack_research.preamble.categories.algebras.framed_free_algebras import divided_power_extension
+        from dzack_research.preamble.categories.algebras.framed_free_algebras import symmetric_extension
+        from dzack_research.preamble.categories.algebras.framed_free_algebras import tensor_extension
+        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import BasedFreeModule
+        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _coordinate_vector
+        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
+
+        domain_module = module_morphism.domain()
+        codomain_module = module_morphism.codomain()
+        domain = self._apply_functor(domain_module)
+        codomain = self._apply_functor(codomain_module)
+        target_presentation = (
+            codomain.presentation_algebra()
+            if isinstance(codomain, PresentedFreeAlgebra)
+            else codomain
+        )
+        source_frame = BasedFreeModule(
+            domain_module.base_ring(),
+            domain_module.module_generating_set(),
+        )
+
+        def image_in_target_presentation(label: "Element") -> "Element":
+            image = module_morphism(domain_module.module_generator(label))
+            return sum(
+                (
+                    coefficient * target_presentation.algebra_generator(target_label)
+                    for coefficient, target_label in zip(
+                        _coordinate_vector(image),
+                        codomain_module.module_generating_set(),
+                    )
+                ),
+                target_presentation.zero(),
+            )
+
+        linear_lift = module_homset(source_frame, target_presentation)(
+            {
+                label: image_in_target_presentation(label)
+                for label in domain_module.module_generating_set()
+            }
+        )
+        extensions = {
+            "tensor": tensor_extension,
+            "symmetric": symmetric_extension,
+            "alternating": alternating_extension,
+            "divided": divided_power_extension,
+        }
+        lifted = extensions[self._construction](linear_lift)
+
+        def apply_to_class(element: "Element") -> "Element":
+            representative = (
+                element.representative()
+                if isinstance(element, PresentedFreeAlgebraElement)
+                else element
+            )
+            return codomain(lifted(representative))
+
+        return SetMorphism(
+            Hom(domain, codomain, Sets()),
+            apply_to_class,
+        )
+
+
+@cached_function
+def _free_algebra_functor(base_ring: "Ring", construction: str) -> FreeAlgebraFunctor:
+    return FreeAlgebraFunctor(base_ring, construction)
+
+
+def TensorAlgebraFunctor(base_ring: "Ring") -> FreeAlgebraFunctor:
+    return _free_algebra_functor(base_ring, "tensor")
+
+
+def SymmetricAlgebraFunctor(base_ring: "Ring") -> FreeAlgebraFunctor:
+    return _free_algebra_functor(base_ring, "symmetric")
+
+
+def AlternatingAlgebraFunctor(base_ring: "Ring") -> FreeAlgebraFunctor:
+    return _free_algebra_functor(base_ring, "alternating")
+
+
+def DividedPowerAlgebraFunctor(base_ring: "Ring") -> FreeAlgebraFunctor:
+    return _free_algebra_functor(base_ring, "divided")
 
 
 class FreeModuleFunctorClass(Functor):
