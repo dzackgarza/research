@@ -14,6 +14,9 @@ most here.
 """
 
 
+import pytest
+
+
 def _ensure_preamble() -> None:
     if "Lattices" in globals():
         return
@@ -258,3 +261,27 @@ def test_the_alternating_algebra_of_a_countable_module_is_countable() -> None:
     assert x * x == algebra.zero()
     assert x * y == -(y * x)
     assert (x * y).degree() == 2
+
+
+@pytest.mark.xfail(
+    strict=True,
+    reason="the preamble does not own Subsets; see issue #348",
+)
+def test_the_subsets_of_a_countable_set_are_uncountable() -> None:
+    r"""$|\mathcal{P}(S)|=2^{\aleph_0}$ when $S$ is countably infinite.
+
+    So $\mathcal{P}(S)$ is neither finite nor enumerable, and the finite
+    subsets -- the ones $\Lambda$ is framed by -- are the countable part of
+    it.  Sage's ``Subsets`` of an infinite set says it is a *finite*
+    enumerated set, which is why the alternating algebra assembles its
+    framing from the sizes instead of asking for it.
+    """
+    _ensure_preamble()
+    from sage.combinat.subset import Subsets
+
+    countable = Sets.Δ[Sets.ℵ[0]]
+    subsets = Subsets(countable)
+
+    assert subsets not in Sets().Finite(), (
+        "there are uncountably many subsets of a countable set"
+    )
