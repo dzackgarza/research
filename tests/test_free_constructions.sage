@@ -234,6 +234,27 @@ def test_each_construction_lands_in_its_own_category() -> None:
         assert algebra in category, f"{algebra} is not in {category}"
 
 
+def test_polynomial_algorithms_belong_only_to_the_symmetric_algebra() -> None:
+    r"""Noncommutative, alternating, and divided products have different arithmetic."""
+    _ensure_preamble()
+    labels = Sets.Δ[0]
+    symmetric = FreeAlgebraOn(ZZ, labels)
+    sx = next(iter(_generators(symmetric)))
+    assert (sx**2 - 1).leading_coefficient() == 1
+    assert (sx**2 - 1).gcd(sx - 1) == sx - 1
+
+    for algebra in (
+        TensorAlgebraOn(ZZ, labels),
+        AlternatingAlgebraOn(ZZ, labels),
+        DividedPowerAlgebraOn(ZZ, labels),
+    ):
+        generator = next(iter(_generators(algebra)))
+        with pytest.raises(AssertionError, match="symmetric algebra"):
+            generator.leading_coefficient()
+        with pytest.raises(AssertionError, match="symmetric algebra"):
+            generator.gcd(generator)
+
+
 def test_the_scalars_enter_every_construction_as_multiples_of_the_unit() -> None:
     r"""$R\to Z(A)$, $r\mapsto r\cdot 1$, is what makes each an $R$-algebra."""
     _ensure_preamble()

@@ -65,15 +65,6 @@ They require $A(F)/\langle K\rangle$ in every degree. The degree-wise relation
 generators, including every $\gamma_d(k)$ for $\Gamma$, now exist. No quotient
 parent assembles those pieces into one graded algebra.
 
-## Symmetric-only surface inherited by the other three
-
-`_as_polynomial`, `_from_polynomial`, factorisation, `gcd`, `roots`,
-`is_squarefree`, `leading_coefficient` and `monic` on `FreeAlgebraOnSet` cross
-to Sage's *commutative* polynomial rings, and several assert rank one. That was
-already wrong for `TensorAlgebraOnSet` before $\Lambda$ and $\Gamma$ inherited
-it by subclassing. Either they are refused where they do not apply, or they are
-sited on the symmetric flavour rather than on the shared class.
-
 ## Smaller, and unblocked
 
 - **Graded pieces of an infinitely generated algebra.** `monomials_of_degree`

@@ -517,6 +517,7 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
             algebra does not make -- see :meth:`multidegree`, which needs none.
             """
             parent = self.parent()
+            parent._require_symmetric_polynomial_structure()
             assert parent.number_of_algebra_generators() == 1, (
                 "a leading coefficient at higher rank names a monomial order, "
                 "and none is chosen here"
@@ -1078,6 +1079,7 @@ class FreeAlgebraOnSet(FreeModuleOnSet):
         into linear factors are written for one variable, and the engine
         offers them only there.
         """
+        self._require_symmetric_polynomial_structure()
         assert self._algebra_generating_set in Sets().Finite(), (
             "the polynomial presentation names one variable per generator, "
             "so it exists for finitely generated free algebras"
@@ -1091,6 +1093,15 @@ class FreeAlgebraOnSet(FreeModuleOnSet):
             # free algebra is what we already have.
             return _SagePolynomialRing(engine_base_ring, "x")
         return _SagePolynomialRing(engine_base_ring, rank, "x")
+
+    def _require_symmetric_polynomial_structure(self) -> None:
+        r"""Require the commutative polynomial structure used by these algorithms."""
+        from dzack_research.preamble.categories.algebras.free_algebras import SymmetricAlgebras
+
+        assert self in SymmetricAlgebras(self.base_ring()), (
+            "polynomial factorization, division, roots, and leading terms "
+            "belong to the symmetric algebra"
+        )
 
     @cached_method
     def _polynomial_variables(self) -> dict:
