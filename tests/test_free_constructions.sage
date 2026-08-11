@@ -220,6 +220,17 @@ def test_the_scalars_enter_every_construction_as_multiples_of_the_unit() -> None
         assert structure(QQ(3)) * x == 3 * x, "central, so it commutes with x"
 
 
+def test_the_center_of_a_tensor_algebra_on_two_generators_is_the_scalars() -> None:
+    r"""For rank at least two, \(Z(T(M))=R\)."""
+    _ensure_preamble()
+    tensor = TensorAlgebraOn(QQ, Sets.Δ[1])
+    x, y = _generators(tensor)
+
+    assert tensor.ring_center() is QQ
+    assert tensor.center_embedding()(QQ(3)) == 3 * tensor.one()
+    assert x * y - y * x != tensor.zero(), "a generator is not central"
+
+
 def test_the_monomials_of_the_alternating_algebra_are_the_subsets() -> None:
     r"""A module generator of $\Lambda$ is named by a subset of $S$.
 
@@ -320,6 +331,83 @@ def test_tensor_and_divided_squares_respect_a_module_presentation() -> None:
 
     assert TensorSquare(module).invariants() == (2,)
     assert DividedSquare(module).invariants() == (4,)
+
+
+def test_the_divided_square_classifies_quadratic_maps() -> None:
+    r"""Linear maps \(\Gamma^2M\to W\) and quadratic maps \(M\to W\) agree.
+
+    The mixed divided monomial records polarization.  This specimen uses
+    \(q(a,b)=2a^2+3ab+5b^2\).
+    """
+    _ensure_preamble()
+    module = BasedFreeModule(ZZ, Sets.Δ[1])
+    value_module = BasedFreeModule(ZZ, Sets.Δ[0])
+    x, y = module.module_generators()
+    value_generator = next(iter(value_module.module_generators()))
+
+    quadratic = QuadraticMap(
+        module,
+        value_module,
+        lambda element: (
+            2 * element._coordinates_[0] ** 2
+            + 3 * element._coordinates_[0] * element._coordinates_[1]
+            + 5 * element._coordinates_[1] ** 2
+        ) * value_generator,
+    )
+    classifier = classifying_morphism(quadratic)
+    recovered = quadratic_map_from_morphism(classifier)
+    reclassified = classifying_morphism(recovered)
+
+    for element in (x, y, x + y, 2 * x - y):
+        assert recovered(element) == quadratic(element)
+    assert quadratic(x + y) - quadratic(x) - quadratic(y) == 3 * value_generator
+    assert quadratic(2 * x) == 4 * quadratic(x)
+    for generator in DividedSquare(module).module_generators():
+        assert reclassified(generator) == classifier(generator)
+
+
+def test_the_free_constructions_are_related_by_the_canonical_maps() -> None:
+    r"""The quotient relations vanish, and \(\operatorname{Sym}\cong\Gamma\) over \(\mathbb Q\)."""
+    _ensure_preamble()
+    labels = Sets.Δ[1]
+    tensor = TensorAlgebraOn(QQ, labels)
+    symmetric = FreeAlgebraOn(QQ, labels)
+    alternating = AlternatingAlgebraOn(QQ, labels)
+    divided = DividedPowerAlgebraOn(QQ, labels)
+    tx, ty = _generators(tensor)
+
+    to_symmetric = tensor_to_symmetric(tensor)
+    to_alternating = tensor_to_alternating(tensor)
+    assert to_symmetric(tx * ty - ty * tx) == symmetric.zero()
+    assert to_alternating(tx * tx) == alternating.zero()
+    assert to_alternating(tx * ty + ty * tx) == alternating.zero()
+
+    to_divided = symmetric_to_divided(symmetric)
+    to_symmetric_from_divided = divided_to_symmetric(divided)
+    sx, sy = _generators(symmetric)
+    dx, dy = _generators(divided)
+    for element in (symmetric.one(), sx, sx**2, sx * sy, (sx + sy) ** 3):
+        assert to_symmetric_from_divided(to_divided(element)) == element
+    for element in (
+        divided.one(),
+        dx,
+        divided.divided_power(0, 2),
+        dx * dy,
+        divided.divided_power(0, 3),
+    ):
+        assert to_divided(to_symmetric_from_divided(element)) == element
+
+
+def test_symmetric_to_divided_is_not_an_isomorphism_over_the_integers() -> None:
+    r"""Over \(\mathbb Z\), \(x^2\mapsto2\gamma_2(x)\), not \(\gamma_2(x)\)."""
+    _ensure_preamble()
+    symmetric = FreeAlgebraOn(ZZ, Sets.Δ[0])
+    divided = DividedPowerAlgebraOn(ZZ, Sets.Δ[0])
+    x = next(iter(_generators(symmetric)))
+    morphism = symmetric_to_divided(symmetric)
+
+    assert morphism(x**2) == 2 * divided.divided_power(0, 2)
+    assert morphism(x**2) != divided.divided_power(0, 2)
 
 
 def test_the_grading_decomposes_every_element() -> None:

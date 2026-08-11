@@ -1,11 +1,12 @@
 r"""Free algebras over a base ring, without a chosen generating set."""
 
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
+from sage_lattice_category_spike.objects.sets import Sets
 
 
 
 class FreeAlgebras(OwnedCategoryOverBaseRing):
-    r"""Category of free commutative algebras over a base ring, without a chosen algebra_generators."""
+    r"""Algebras whose underlying modules are free."""
 
     @classmethod
     def _repr_object_names(cls) -> str:
@@ -17,11 +18,8 @@ class FreeAlgebras(OwnedCategoryOverBaseRing):
         from dzack_research.preamble.categories.algebras.algebras import Algebras
         from dzack_research.preamble.categories.modules.pure.free_modules import FreeModules
 
-        # Free *commutative* algebra: the monomials come from the free
-        # abelian monoid, so xy = yx holds by construction and the axiom is
-        # a declaration, not a claim to be checked.
         return [
-            Algebras(self.base_ring()).Commutative(),
+            Algebras(self.base_ring()),
             FreeModules(self.base_ring()),
         ]
 
@@ -40,22 +38,12 @@ class FreeAlgebras(OwnedCategoryOverBaseRing):
             return True
 
 
-class TensorAlgebras(OwnedCategoryOverBaseRing):
-    r"""Tensor algebras \(T(M)\), and what is carved out of them.
-
-    \(T\) is left adjoint to the forgetful functor \(R\text{-Alg}\to
-    R\text{-Mod}\), so \(T(M)\) exists for every module and is graded with
-    \(T(M)[n]=M^{\otimes n}\).  Everything else here is a quotient of it: the
-    symmetric algebra by \(x\otimes y-y\otimes x\), the alternating algebra
-    by \(x\otimes x\), and the divided power algebra by its own universal
-    property.  Locating them as subcategories is what says they are one
-    construction seen through different relations rather than four unrelated
-    ones.
-    """
+class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
+    r"""The common graded structure of the four free constructions."""
 
     @classmethod
     def _repr_object_names(cls) -> str:
-        return "tensor algebras"
+        return "graded free algebras"
 
     def super_categories(self) -> list:
         # Local: the graded node reaches the algebra node, so a module-level
@@ -65,6 +53,17 @@ class TensorAlgebras(OwnedCategoryOverBaseRing):
         return [FreeAlgebras(self.base_ring()), GradedAlgebras(self.base_ring())]
 
     class ParentMethods:
+        def _ring_morphism_defining_algebra_structure(self) -> "Morphism":
+            r"""Return \(R\to A\), \(r\mapsto r1_A\)."""
+            from sage.categories.homset import Hom
+            from sage.categories.morphism import SetMorphism
+            from sage.categories.rings import Rings
+
+            return SetMorphism(
+                Hom(self.base_ring(), self, Rings()),
+                lambda scalar: scalar * self.one(),
+            )
+
         def graded_piece(self, degree: "Integer") -> "Module":
             r"""Return the free submodule on the monomials of one degree."""
             from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import BasedFreeModule
@@ -168,6 +167,47 @@ class TensorAlgebras(OwnedCategoryOverBaseRing):
             return tuple(generators)
 
 
+class TensorAlgebras(OwnedCategoryOverBaseRing):
+    r"""Tensor algebras \(T(M)\)."""
+
+    @classmethod
+    def _repr_object_names(cls) -> str:
+        return "tensor algebras"
+
+    def super_categories(self) -> list:
+        return [GradedFreeAlgebras(self.base_ring())]
+
+    class ParentMethods:
+        def ring_center(self) -> "Ring":
+            r"""Return \(Z(T(M))\).
+
+            For zero or one generator the tensor algebra is commutative.  For
+            at least two generators, its center consists of the scalars.
+            """
+            labels = self.algebra_generating_set()
+            match labels in Sets().Finite():
+                case True if labels.cardinality() <= 1:
+                    return self
+                case _:
+                    return self.base_ring()
+
+        def center_embedding(self) -> "Morphism":
+            r"""Return the inclusion \(Z(T(M))\hookrightarrow T(M)\)."""
+            from sage.categories.homset import Hom
+            from sage.categories.morphism import SetMorphism
+            from sage.categories.rings import Rings
+
+            center = self.ring_center()
+            match center is self:
+                case True:
+                    return SetMorphism(Hom(self, self, Rings()), lambda element: element)
+                case False:
+                    return SetMorphism(
+                        Hom(center, self, Rings()),
+                        lambda scalar: scalar * self.one(),
+                    )
+
+
 class SymmetricAlgebras(OwnedCategoryOverBaseRing):
     r"""\(\operatorname{Sym}(M)=T(M)/\langle x\otimes y-y\otimes x\rangle\).
 
@@ -180,7 +220,12 @@ class SymmetricAlgebras(OwnedCategoryOverBaseRing):
         return "symmetric algebras"
 
     def super_categories(self) -> list:
-        return [TensorAlgebras(self.base_ring())]
+        from dzack_research.preamble.categories.algebras.algebras import Algebras
+
+        return [
+            GradedFreeAlgebras(self.base_ring()),
+            Algebras(self.base_ring()).Commutative(),
+        ]
 
 
 class AlternatingAlgebras(OwnedCategoryOverBaseRing):
@@ -191,7 +236,7 @@ class AlternatingAlgebras(OwnedCategoryOverBaseRing):
         return "alternating algebras"
 
     def super_categories(self) -> list:
-        return [TensorAlgebras(self.base_ring())]
+        return [GradedFreeAlgebras(self.base_ring())]
 
 
 class DividedPowerAlgebras(OwnedCategoryOverBaseRing):
@@ -207,13 +252,18 @@ class DividedPowerAlgebras(OwnedCategoryOverBaseRing):
         return "divided power algebras"
 
     def super_categories(self) -> list:
-        return [TensorAlgebras(self.base_ring())]
+        from dzack_research.preamble.categories.algebras.algebras import Algebras
+
+        return [
+            GradedFreeAlgebras(self.base_ring()),
+            Algebras(self.base_ring()).Commutative(),
+        ]
 
     class ParentMethods:
         def ideal_generators_in_degree(
             self, relations: tuple, degree: "Integer"
         ) -> tuple:
-            generators = TensorAlgebras.ParentMethods.ideal_generators_in_degree(
+            generators = GradedFreeAlgebras.ParentMethods.ideal_generators_in_degree(
                 self, relations, degree
             )
             match int(degree):

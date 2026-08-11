@@ -7,36 +7,10 @@ not realize as an object or a morphism.
 
 ### The universal properties are not there
 
-$\Gamma^2$ is described as classifying quadratic forms:
-$\operatorname{Hom}(\Gamma^2M, W) \cong \{\text{quadratic maps } M \to W\}$.
-That bijection is the reason a quadratic form is a morphism rather than a set
-map, and it exists in neither direction. A quadratic map cannot be turned into
-a morphism out of $\Gamma^2M$, and a morphism out of $\Gamma^2M$ cannot be
-evaluated as a quadratic map.
-
 The same holds for freeness. $T \dashv U$ means
 $\operatorname{Hom}_{\text{Alg}}(T(M), A) \cong \operatorname{Hom}_{\text{Mod}}(M, U(A))$,
 and that bijection is what "free" asserts. It is written for $F_R \dashv U$
 between `Set` and `R-Mod` and for none of the four algebra constructions.
-
-### The four constructions have no morphisms between them
-
-The category tree states `AlternatingAlgebras`, `SymmetricAlgebras` and
-`DividedPowerAlgebras` as subcategories of `TensorAlgebras`. A subcategory
-relation says $\Lambda(M)$ *is* a tensor algebra, which is false. The true
-relations are morphisms, and none is built:
-
-- $T(M) \twoheadrightarrow \operatorname{Sym}(M)$ and
-  $T(M) \twoheadrightarrow \Lambda(M)$, the quotients by
-  $x \otimes y - y \otimes x$ and by $x \otimes x$. Those relations are quoted
-  in the docstrings as the definitions, and neither construction is built that
-  way: both are built directly on their own monomials.
-- $\Gamma(M) \to \operatorname{Sym}(M)$, an isomorphism over $\mathbb{Q}$ and
-  not over $\mathbb{Z}$. Their graded ranks agree, which the tests check, but
-  agreeing ranks are evidence and not the map.
-
-Until these exist, "one construction seen through different relations" is
-prose, and a containment stands where a morphism belongs.
 
 ### $\Gamma^n(M) = (M^{\otimes n})^{S_n}$
 
@@ -59,14 +33,6 @@ tensor layer to the forms layer. `Tensor(M,(p,q))` has contraction and trace
 and no way to apply a lattice's form, so `gram_tensor()` returns a $(0,2)$
 tensor that can never become the $(1,1)$ identity, and a lattice cannot hand
 its form to a tensor at all.
-
-### $Z(A)$ is only computable where the contract is uninteresting
-
-An $R$-algebra is a ring $A$ with $R \to Z(A)$, and that morphism is what an
-algebra is. `ring_center` asserts the ring is commutative and declines
-otherwise. The tensor algebra is the noncommutative case the contract exists
-to describe — $Z(T(V)) = R$ for rank at least two — and it is exactly the case
-that cannot be asked.
 
 ### The lattice axioms are declared and never established
 
@@ -101,60 +67,6 @@ Uniform promotion during parent construction breaks the base-ring morphism of
 a free algebra. The missing construction is one coherent family of forgetful
 and change-of-scalars functors across rings, modules, algebras, and lattices.
 
-## The chain that blocks the forms layer
-
-One line of work, in order. Each is blocked on the one above it.
-
-### 1. A submodule requires the ambient to be finitely generated — [#351]
-
-`submodule` and `subobject_on` sit on `FinitelyGeneratedFreeModules.ParentMethods`,
-and `_independent_module_generators` (`module_morphisms.sage:225`) reads each
-element's coordinates against the *whole* framing, then rebuilds the answer by
-zipping against `module.module_generators()`. Both steps need a finite framing.
-
-Neither is needed for the mathematics. Finitely many elements have finite
-combined support, so the submodule they span is determined inside the framing
-generators they touch, whatever the rest of the framing is. The fix is to
-compute independence over the combined support and to site `submodule` on
-framed modules rather than on finitely generated free ones.
-
-`_independent_module_generators` is what every subobject in the preamble routes
-through, so this wants its own pass rather than being changed in passing.
-
-Red proof: `test_a_graded_piece_is_a_submodule_carrying_its_inclusion`, xfail
-against #351.
-
-### 2. Graded pieces become real submodules
-
-`GradedModules.ParentMethods.graded_piece` is written and correct — it asks for
-the submodule the degree-$n$ generators span — and fails today only because of
-(1). Nothing to write; it starts working when (1) lands.
-
-### 3. `TensorSquare` and `DividedSquare` stop being placeholders
-
-Both are formal `Parent`s in `categories/forms/forms.sage` and say so: "what
-the preamble needs of it is that a form has an honest domain, not that its
-elements are constructed." They should be $T(M)[2]$ and $\Gamma(M)[2]$, which
-is the point of building $T$ and $\Gamma$ at all — there is no separate
-$M^{\otimes 2}$.
-
-The discriminant group carries a quadratic form and is a *presented* torsion
-module, so this also needs (4).
-`tests/test_constructors_meet_their_obligations.sage:126-127` cases on
-`isinstance` against both and will need to follow.
-
-### 4. The free constructions applied to presented modules
-
-$A(M)$ for $M = \operatorname{coker}(K \to F)$. Each of $T$, `Sym`, $\Lambda$,
-$\Gamma$ is a free object functor into its own category of algebras, hence a
-left adjoint, hence preserves the presentation colimit:
-$A(M) = A(F)/\langle K\rangle$.
-
-`ideal_generators_in_degree` states the degree-$n$ part of that ideal and has
-no callers. Missing: the Γ override (above), and whatever object $A(M)$ returns
-for presented $M$. It needs `graded_piece(n)`; it does not obviously need a
-normal form, which for $T$ would mean noncommutative Gröbner bases.
-
 ## The preamble does not own `Subsets` — [#348]
 
 `Subsets(S)` for infinite `S` reports itself as a **finite enumerated set** and
@@ -173,6 +85,14 @@ branch exists only because `Subsets` cannot be asked, and goes away here.
 
 Red proof: `test_the_subsets_of_a_countable_set_are_uncountable`, xfail
 against #348.
+
+## Free constructions on presented modules beyond degree two
+
+The tensor and divided squares now use the degree-two quotient presentations.
+The full graded algebras on $M=\operatorname{coker}(K\to F)$ remain absent.
+They require $A(F)/\langle K\rangle$ in every degree. For $\Gamma$, the ideal
+must contain every $\gamma_d(k)$, not only the divided squares used by
+$\Gamma^2(M)$.
 
 ## Symmetric-only surface inherited by the other three
 
@@ -217,11 +137,9 @@ sited on the symmetric flavour rather than on the shared class.
   the sweep without a visible failure. The sweep needs a complete source of
   constructors.
 
-- **`ideal_generators_in_degree` says "Γ adds its divided powers".**
-  No `DividedPowerAlgebras` override exists, so the method is wrong for Γ: its
-  ideal must be a divided power ideal, closed under the $\gamma_d$, so
-  $\gamma_d(k)$ for $k \in K$ and $d \geq 2$ must join the generators. Nothing
-  calls it yet, so nothing downstream is broken.
+- **Higher divided-power ideal relations are absent.**
+  Degree two includes $\gamma_2(k)$. Degrees $d\geq3$ still need
+  $\gamma_d(k)$ for each presentation relation $k$.
 
 - **`Tensor` does not use Sage's parent and element structure.**
   `Tensor(M, (p, q))` is a `Parent`, but `TensorElement` is a plain Python

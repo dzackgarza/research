@@ -14,7 +14,9 @@ if TYPE_CHECKING:
 
 from sage.rings.integer import Integer
 from sage.categories.homset import Homset
-from sage.categories.morphism import Morphism
+from sage.categories.homset import Hom
+from sage.categories.morphism import Morphism, SetMorphism
+from sage_lattice_category_spike.objects.underlying_sets import UnderlyingSet
 from sage.matrix.matrix0 import Matrix
 from sage.structure.parent import Parent
 from sage_lattice_category_spike.lexicon import GramMatrix
@@ -104,14 +106,117 @@ def TensorSquare(module: "Module") -> Parent:
     r"""Return \(T(M)[2]=M\otimes_RM\)."""
     from dzack_research.preamble.categories.algebras.framed_free_algebras import TensorAlgebraOn
 
-    return _square(module, TensorAlgebraOn, "tensor")
+    square = _square(module, TensorAlgebraOn, "tensor")
+    square._tensor_square_of = module
+    return square
 
 
 def DividedSquare(module: "Module") -> Parent:
     r"""Return \(\Gamma(M)[2]=\Gamma^2M\)."""
     from dzack_research.preamble.categories.algebras.framed_free_algebras import DividedPowerAlgebraOn
 
-    return _square(module, DividedPowerAlgebraOn, "divided")
+    square = _square(module, DividedPowerAlgebraOn, "divided")
+    square._divided_square_of = module
+    return square
+
+
+def divided_square_element(module: "Module", element: "Element") -> "Element":
+    r"""Return \(\gamma_2(x)\in\Gamma^2M\)."""
+    from dzack_research.preamble.categories.algebras.framed_free_algebras import DividedPowerAlgebraOn
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _coordinate_vector
+    from dzack_research.preamble.utilities import zipsum
+
+    assert element.parent() is module, f"{element} is not an element of {module}"
+    labels = tuple(module.module_generating_set())
+    coordinates = _coordinate_vector(element)
+    algebra = DividedPowerAlgebraOn(module.base_ring(), module.module_generating_set())
+    degree_one = sum(
+        (
+            coefficient * algebra.algebra_generator(label)
+            for coefficient, label in zip(coordinates, labels)
+        ),
+        algebra.zero(),
+    )
+    divided = algebra.divided_square(degree_one)
+    square = DividedSquare(module)
+    coefficients = divided.coefficients()
+    return zipsum(
+        (
+            coefficients.get(label, module.base_ring().zero())
+            for label in square.module_generating_set()
+        ),
+        square.module_generators(),
+        square.zero(),
+    )
+
+
+class QuadraticMapMorphism(SetMorphism):
+    r"""A set map recorded with its quadratic source and value module."""
+
+
+def QuadraticMap(
+    module: "Module",
+    value_module: "Module",
+    function: "Callable[[Element], Element]",
+) -> QuadraticMapMorphism:
+    r"""Return a quadratic map \(M\to W\) supplied by its value function."""
+    quadratic = QuadraticMapMorphism(
+        Hom(
+            UnderlyingSet(module),
+            UnderlyingSet(value_module),
+            Sets(),
+        ),
+        function,
+    )
+    quadratic._quadratic_module = module
+    quadratic._quadratic_value_module = value_module
+    return quadratic
+
+
+def classifying_morphism(quadratic: SetMorphism) -> "Morphism":
+    r"""Return the unique linear map \(\Gamma^2M\to W\) classifying \(q\)."""
+    from dzack_research.preamble.categories.algebras.framed_free_algebras import DividedPowerAlgebraOn
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
+
+    module = quadratic._quadratic_module
+    value_module = quadratic._quadratic_value_module
+    square = DividedSquare(module)
+    algebra = DividedPowerAlgebraOn(module.base_ring(), module.module_generating_set())
+    module_generators = {
+        label: module.module_generator(label)
+        for label in module.module_generating_set()
+    }
+
+    def image_of_monomial(monomial: "Element") -> "Element":
+        factors = tuple(algebra.monomial_system().factors(monomial))
+        match factors:
+            case ((label, 2),):
+                return quadratic(module_generators[label])
+            case ((left, 1), (right, 1)):
+                x = module_generators[left]
+                y = module_generators[right]
+                return quadratic(x + y) - quadratic(x) - quadratic(y)
+            case _:
+                assert False, f"{monomial} is not a divided monomial of degree two"
+
+    return module_homset(square, value_module)(
+        {
+            monomial: image_of_monomial(monomial)
+            for monomial in square.module_generating_set()
+        }
+    )
+
+
+def quadratic_map_from_morphism(morphism: "Morphism") -> SetMorphism:
+    r"""Evaluate \(f:\Gamma^2M\to W\) on \(\gamma_2(x)\)."""
+    square = morphism.domain()
+    module = square.__dict__.get("_divided_square_of")
+    assert module is not None, "the morphism domain must be a divided square"
+    return QuadraticMap(
+        module,
+        morphism.codomain(),
+        lambda element: morphism(divided_square_element(module, element)),
+    )
 
 
 class BilinearFormHomset(Homset):

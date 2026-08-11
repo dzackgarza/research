@@ -48,6 +48,8 @@ from sage.rings.abc import AlgebraicRealField as _AlgebraicRealFieldType
 from sage.rings.abc import RealIntervalField as _RealIntervalFieldType
 from sage.rings.infinity import Infinity as _Infinity
 from sage.rings.integer import Integer as _SageIntegerType
+from sage.rings.rational_field import QQ as SageQQ
+from sage.arith.misc import factorial
 from sage.rings.qqbar import QQbar as _AlgebraicNumbers
 from sage.rings.polynomial.polynomial_ring_constructor import (
     PolynomialRing as _SagePolynomialRing,
@@ -1311,7 +1313,7 @@ class FreeAlgebraOnSet(FreeModuleOnSet):
 
         def image_of_monomial(monomial: "Element") -> "Element":
             image = codomain.one()
-            for label, exponent in monomial.dict().items():
+            for label, exponent in self.monomial_system().factors(monomial):
                 image *= image_of_generator(label) ** exponent
             return image
 
@@ -1564,3 +1566,78 @@ def DividedPowerAlgebraOn(
 ) -> DividedPowerAlgebraOnSet:
     r"""Return \(\Gamma(F_R(S))\), the same object on every call."""
     return DividedPowerAlgebraOnSet(base_ring, algebra_generating_set)
+
+
+def tensor_to_symmetric(source: TensorAlgebraOnSet) -> FreeAlgebraMorphism:
+    r"""Return \(T(M)\twoheadrightarrow\operatorname{Sym}(M)\)."""
+    assert isinstance(source, TensorAlgebraOnSet), "the source must be a tensor algebra"
+    target = FreeAlgebraOn(source.base_ring(), source.algebra_generating_set())
+    return source.hom(
+        {
+            label: target.algebra_generator(label)
+            for label in source.algebra_generating_set()
+        }
+    )
+
+
+def tensor_to_alternating(source: TensorAlgebraOnSet) -> FreeAlgebraMorphism:
+    r"""Return \(T(M)\twoheadrightarrow\Lambda(M)\)."""
+    assert isinstance(source, TensorAlgebraOnSet), "the source must be a tensor algebra"
+    target = AlternatingAlgebraOn(
+        source.base_ring(), source.algebra_generating_set()
+    )
+    return source.hom(
+        {
+            label: target.algebra_generator(label)
+            for label in source.algebra_generating_set()
+        }
+    )
+
+
+def symmetric_to_divided(source: FreeAlgebraOnSet) -> FreeAlgebraMorphism:
+    r"""Return \(\operatorname{Sym}(M)\to\Gamma(M)\), \(x^n\mapsto n!\gamma_n(x)\)."""
+    from dzack_research.preamble.categories.algebras.free_algebras import SymmetricAlgebras
+
+    assert source in SymmetricAlgebras(source.base_ring()), (
+        "the source must be a symmetric algebra"
+    )
+    target = DividedPowerAlgebraOn(
+        source.base_ring(), source.algebra_generating_set()
+    )
+    return source.hom(
+        {
+            label: target.algebra_generator(label)
+            for label in source.algebra_generating_set()
+        }
+    )
+
+
+def divided_to_symmetric(source: DividedPowerAlgebraOnSet) -> FreeAlgebraMorphism:
+    r"""Return \(\Gamma(M)\to\operatorname{Sym}(M)\) over \(\mathbb Q\)."""
+    assert isinstance(source, DividedPowerAlgebraOnSet), (
+        "the source must be a divided power algebra"
+    )
+    assert engine_ring(source.base_ring()) is SageQQ, (
+        "the inverse map from divided to symmetric powers requires QQ"
+    )
+    target = FreeAlgebraOn(source.base_ring(), source.algebra_generating_set())
+
+    def image_of_monomial(monomial: "Element") -> "Element":
+        image = target.one()
+        denominator = SageQQ.one()
+        for label, exponent in source.monomial_system().factors(monomial):
+            image *= target.algebra_generator(label) ** exponent
+            denominator *= factorial(exponent)
+        return image / denominator
+
+    return FreeAlgebraMorphism(
+        module_homset(source, target),
+        SetMorphism(
+            Hom(
+                source.module_generating_set(),
+                UnderlyingSet(target),
+                Sets(),
+            ),
+            image_of_monomial,
+        ),
+    )
