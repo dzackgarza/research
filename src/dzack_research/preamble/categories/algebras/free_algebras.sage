@@ -61,9 +61,17 @@ class TensorAlgebras(OwnedCategoryOverBaseRing):
         return [FreeAlgebras(self.base_ring())]
 
     class ParentMethods:
-        def graded_piece_degree(self, element: "Element") -> "Integer":
-            r"""Return \(n\) with the element in \(T(M)[n]\), for a monomial."""
-            return sum(exponent for _, exponent in element.monomial().list())
+        def monomial_degree(self, monomial: "Element") -> "Integer":
+            r"""Return the \(n\) with this monomial in \(T(M)[n]\).
+
+            The number of letters, however the monoid spells them: a word
+            reports its letters in order, an abelian monomial its exponents.
+            Both count to the same degree, which is what makes the symmetric
+            algebra a graded quotient of the tensor algebra.
+            """
+            if hasattr(monomial, "to_word_list"):
+                return len(monomial.to_word_list())
+            return sum(monomial.dict().values())
 
 
 class SymmetricAlgebras(OwnedCategoryOverBaseRing):

@@ -115,6 +115,7 @@ def install_preamble(namespace: dict) -> None:
             "categories.modules.module_morphisms.module_morphisms",
             "categories.modules.scalar_actions",
             "categories.modules.function_modules",
+            "categories.modules.tensors",
             "categories.modules.framed.formed.form_modules",
             "categories.modules.pure.projective_modules",
             "categories.modules.framed.formed.lattices",

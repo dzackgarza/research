@@ -748,9 +748,16 @@ class FreeAlgebraOnSet(FreeModuleOnSet):
 
     Element = FreeAlgebraOnSetElement
 
-    # The monoid the monomials form.  Swapping it is the whole difference
-    # between the free constructions, so it is stated once here.
+    # The monoid the monomials form, and the category that names what the
+    # quotient is.  Swapping the pair is the whole difference between the
+    # free constructions, so both are stated once here.
     _monomial_monoid = staticmethod(FreeAbelianMonoid)
+
+    @staticmethod
+    def _flavour_category(base_ring: "Ring") -> "Category":
+        from dzack_research.preamble.categories.algebras.free_algebras import SymmetricAlgebras
+
+        return SymmetricAlgebras(base_ring)
 
     def __init__(self, base_ring: "Ring", algebra_generating_set: "OrderedSet") -> None:
         # Intake, before the category is named: an algebra over the owned view
@@ -777,7 +784,7 @@ class FreeAlgebraOnSet(FreeModuleOnSet):
             self,
             base_ring,
             self._monomial_generating_set,
-            category=FramedFreeAlgebras(base_ring),
+            category=FramedFreeAlgebras(base_ring) & self._flavour_category(base_ring),
         )
         self._algebra_generator_morphism = SetMorphism(
             Hom(
@@ -1246,6 +1253,12 @@ class TensorAlgebraOnSet(FreeAlgebraOnSet):
     """
 
     _monomial_monoid = staticmethod(_FreeMonoid)
+
+    @staticmethod
+    def _flavour_category(base_ring: "Ring") -> "Category":
+        from dzack_research.preamble.categories.algebras.free_algebras import TensorAlgebras
+
+        return TensorAlgebras(base_ring)
 
     def _repr_(self) -> str:
         return f"Tensor algebra over {self.base_ring()} on {self.algebra_generating_set()}"
