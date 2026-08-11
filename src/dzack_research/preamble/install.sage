@@ -170,6 +170,24 @@ else:
         )
     globals().update(_exports)
 
+    # Every lowered ``.sage`` module carries the compiler's prelude, and
+    # ``Set`` is one of the names in it.  The sweep above reads module
+    # namespaces, so it cannot tell a name a module *defines* from one the
+    # prelude put there, and the last module wins -- which handed the session
+    # the engine's ``Set`` while the preamble's own modules kept theirs.  Two
+    # constructors for one word is the split this preamble exists to remove,
+    # so the owner is named here.
+    from dzack_research.preamble.categories.sets.sets import (
+        ConditionSet,
+        ImageSet,
+        Set,
+        Sets,
+    )
+    _exports.update(
+        {"ConditionSet": ConditionSet, "ImageSet": ImageSet, "Set": Set, "Sets": Sets}
+    )
+    globals().update(_exports)
+
     # ``R^n`` is the preamble's free module.  These are the rings a notebook
     # names before it has built anything; every other ring is refined on
     # intake, or by the constructor that builds it.

@@ -20,6 +20,7 @@ from sage.rings.integer import Integer as SageInteger
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.real_mpfr import RR as SageRR
 from sage.sets.condition_set import ConditionSet as SageConditionSet
+from sage.sets.set import Set_generic
 from sage.sets.image_set import ImageSet as SageImageSet
 from sage.sets.integer_range import IntegerRange
 from sage.sets.set import Set as SageSet
@@ -90,7 +91,11 @@ E = TypeVar("E", bound=Element)
 
 
 def _as_set(source: lexicon.Set[E] | lexicon.OrderedSet[E]) -> "lexicon.Set[E]":
-    if source in Sets():
+    # Membership in ``Sets()`` is not the question: every parent is in it, so
+    # asking that returned the semiring $\NN$ where the set of its elements
+    # was wanted.  What is asked is whether the source already *is* the set of
+    # its elements, and a parent carrying structure is not.
+    if isinstance(source, Set_generic):
         return source
     return Set(source)
 
