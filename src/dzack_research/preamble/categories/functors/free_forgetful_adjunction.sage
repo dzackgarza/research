@@ -74,8 +74,12 @@ class FreeModuleFunctorClass(Functor):
         r"""Apply F_R to a set morphism f: S -> T, producing F_R(f): F_R(S) -> F_R(T)."""
         domain_free = self._apply_functor(set_morphism.domain())
         codomain_free = self._apply_functor(set_morphism.codomain())
+        # ``_call_`` and not ``__call__``: the labels come out of the domain
+        # already, and a facade set has no conversion to put them back
+        # through.  This is the spelling the rest of the preamble uses when
+        # applying a set morphism to its own elements.
         mapping = {
-            s: codomain_free.module_generator(set_morphism(s))
+            s: codomain_free.module_generator(set_morphism._call_(s))
             for s in set_morphism.domain()
         }
         return domain_free.Hom(codomain_free)(mapping)
