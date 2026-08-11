@@ -149,6 +149,32 @@ class FramedModules(CategoryWithAxiom_over_base_ring):
             )
             return framing.module_generator_morphism()
 
+        def _ring_morphism_defining_module_action(self: Self) -> "Morphism":
+            r"""Return $\\rho:R\\to\\operatorname{End}(M)$, read off the framing.
+
+            A framed module has generators, and scaling them is the action:
+            $\\rho(r)$ sends each generator $g$ to $r\\cdot g$.  It descends
+            through a presentation because the relations are $R$-linear, so
+            nothing below this level has to be handed an action -- being
+            framed is already enough to have one.
+            """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
+            from sage.categories.homset import Hom
+            from sage.categories.morphism import SetMorphism
+            from sage.categories.rings import Rings
+
+            endomorphisms = module_homset(self, self)
+            return SetMorphism(
+                Hom(self.base_ring(), endomorphisms, Rings()),
+                lambda scalar: endomorphisms(
+                    {
+                        label: scalar * self.module_generator(label)
+                        for label in self.module_generating_set()
+                    }
+                ),
+            )
+
         def module_generating_set(self) -> "OrderedSet":
             r"""Return the domain \(S\) of the distinguished module-generator morphism."""
             return self.module_generator_morphism().domain()

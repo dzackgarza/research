@@ -50,8 +50,14 @@ def unmet_obligations(parent) -> list:
     required = abstract_methods_of_class(parent.category().parent_class)["required"]
     unmet = []
     for name in required:
-        resolved = getattr(type(parent), name, None)
-        if isinstance(resolved, AbstractMethod):
+        # Ask the object, and take its refusal at face value.  Reading the
+        # attribute off the class instead misses both directions: a class-level
+        # implementation is invisible there, and an unimplemented declaration
+        # can read as plain absence, which is what made this sweep report
+        # green while an object was raising on the very method.
+        try:
+            getattr(parent, name)
+        except (NotImplementedError, AttributeError):
             unmet.append(name)
     return sorted(unmet)
 

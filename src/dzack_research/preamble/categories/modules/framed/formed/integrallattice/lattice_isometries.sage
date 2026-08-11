@@ -120,6 +120,20 @@ class LatticeIsometries(Category):
         return [LatticeHomomorphisms(), OwnedFinitelyGeneratedGroups()]
 
     class ParentMethods:
+        def is_countable(self: Self) -> bool:
+            r"""Whether the isometries admit an enumeration.
+
+            Read off finiteness, which this category already decides: a
+            finite group is enumerated by listing it.  An indefinite lattice
+            has an infinite isometry group, and countability of that is not
+            settled here -- it is left to whatever decides it.
+            """
+            return bool(self.is_finite())
+
+        def is_uncountable(self: Self) -> bool:
+            r"""Whether the isometries are beyond every enumeration."""
+            return not self.is_countable()
+
         def __call__(self: Self, images: "dict | FormMorphism") -> "Morphism":
             # Local: a module-level import here would close a cycle; by call time this module is built.
             from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormMorphism

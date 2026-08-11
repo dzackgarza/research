@@ -45,6 +45,35 @@ class Subobjects(Category):
         return [Sets()]
 
     class ParentMethods:
+        # Sage's subquotient interface, in the nouns this preamble already
+        # has.  A subobject *is* its inclusion, so the ambient object, the
+        # lift and the retraction are all read off that one morphism rather
+        # than stored again.
+        def ambient(self: Self) -> "Module":
+            r"""Return $B$, the object this one is a subobject of."""
+            return self.embedding_codomain()
+
+        def lift(self: Self, element: "Element") -> "Element":
+            r"""Return $\iota(x)$, the element seen in the ambient object."""
+            return self.embedding()(element)
+
+        def retract(self: Self, element: "Element") -> "Element":
+            r"""Return the $x$ with $\iota(x)$ the given ambient element."""
+            return self.embedding().lift(element)
+
+        def is_countable(self: Self) -> bool:
+            r"""A subobject is countable exactly when its ambient is.
+
+            It injects into the ambient, so it is no larger; and the
+            countability is read off the object it sits in rather than
+            recomputed from a presentation.
+            """
+            return bool(self.ambient().is_countable())
+
+        def is_uncountable(self: Self) -> bool:
+            r"""Whether this subobject is beyond every enumeration."""
+            return not self.is_countable()
+
         def index(self: Self) -> "Integer":
             r"""Return $[B:S]$, the cardinality of $\operatorname{coker}(\iota)$.
 
