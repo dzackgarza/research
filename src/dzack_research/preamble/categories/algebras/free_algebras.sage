@@ -114,7 +114,8 @@ class TensorAlgebras(OwnedCategoryOverBaseRing):
             from dzack_research.preamble.categories.sets.sets import finite_ordered_set
 
             return finite_ordered_set(
-                self.monomial_system().monomials_of_degree(degree)
+                self.module_generator(monomial)
+                for monomial in self.monomial_system().monomials_of_degree(degree)
             )
 
         def ideal_generators_in_degree(

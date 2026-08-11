@@ -223,7 +223,12 @@ def _is_torsion(module: "Module") -> bool:
 
 
 def _independent_module_generators(module: "Module", module_generators: "OrderedSet") -> list:
-    r"""Return a basis of the submodule spanned by finite input."""
+    r"""Return a basis of the submodule spanned by finite input.
+
+    Each input element has finite support in the framing.  Independence is
+    therefore a finite computation on the union of those supports, even when
+    the module's full framing is infinite.
+    """
     # Local: at module level this closes an import cycle; the ring module is
     # built by the time generators are reduced.
     from dzack_research.preamble.categories.rings.rings import engine_ring
@@ -231,15 +236,26 @@ def _independent_module_generators(module: "Module", module_generators: "Ordered
     module_generators = list(module_generators)
     if not module_generators:
         return []
+    coefficient_functions = [_coefficients(generator) for generator in module_generators]
+    support = tuple(
+        dict.fromkeys(
+            label
+            for coefficients in coefficient_functions
+            for label in coefficients
+        )
+    )
     rows = matrix(
         engine_ring(module.base_ring()),
-        [_coordinate_vector(g) for g in module_generators],
+        [
+            [coefficients.get(label, module.base_ring().zero()) for label in support]
+            for coefficients in coefficient_functions
+        ],
     )
     independent = MorphismMatrix(rows).normal_form().rows()
     return [
         zipsum(
             row,
-            module.module_generators(),
+            (module.module_generator(label) for label in support),
             module.zero(),
         )
         for row in independent
@@ -575,6 +591,54 @@ class ModuleMorphism(Morphism):
     def image(self) -> "Subobject":
         return self.codomain().subobject_on(list(self.images()))
 
+    def image_contains(self, element: "Element") -> bool:
+        r"""Return whether ``element`` lies in this morphism's image.
+
+        A finite free domain has finitely many images.  Each image and the
+        target have finite support, so membership is a finite row-module
+        problem even when the codomain framing is infinite.
+        """
+        assert element.parent() is self.codomain(), (
+            f"{element} is not an element of {self.codomain()}"
+        )
+        codomain_labels = self.codomain().module_generating_set()
+        match codomain_labels in Sets().Finite():
+            case True:
+                system = self.matrix()
+                relations = self._codomain_relations()
+                match relations.nrows():
+                    case 0:
+                        pass
+                    case _:
+                        system = system.stack(relations)
+                return bool(_coordinate_vector(element) in system.row_module())
+            case False:
+                image_coefficients = [
+                    _coefficients(image)
+                    for image in self.images()
+                ]
+                target_coefficients = _coefficients(element)
+                support = tuple(
+                    dict.fromkeys(
+                        label
+                        for coefficients in (*image_coefficients, target_coefficients)
+                        for label in coefficients
+                    )
+                )
+                base_ring = self.codomain().base_ring()
+                system = matrix(
+                    base_ring,
+                    [
+                        [coefficients.get(label, base_ring.zero()) for label in support]
+                        for coefficients in image_coefficients
+                    ],
+                )
+                target = vector(
+                    base_ring,
+                    [target_coefficients.get(label, base_ring.zero()) for label in support],
+                )
+                return bool(target in system.row_module())
+
     def is_injective(self) -> bool:
         r"""Return whether this morphism is a monomorphism."""
         # Local: at module level this closes an import cycle; the free-module
@@ -591,7 +655,11 @@ class ModuleMorphism(Morphism):
         assert domain in FramedFreeModules(domain.base_ring()), (
             "injectivity is implemented for free and finite torsion domains"
         )
-        return bool(self.matrix().rank() == domain.rank())
+        independent_images = _independent_module_generators(
+            self.codomain(),
+            self.images(),
+        )
+        return bool(len(independent_images) == domain.rank())
 
     def index(self) -> "Integer":
         r"""Return $[N:f(M)]$.

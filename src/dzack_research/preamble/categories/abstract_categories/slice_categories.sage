@@ -145,6 +145,8 @@ class SubobjectCategory(SliceOverCategory):
             """
             return self.structure_morphism()
 
+        inclusion = embedding
+
         def embedding_codomain(self) -> Parent:
             r"""Return the ambient object \(X\) this subobject embeds into."""
             return self.embedding().codomain()

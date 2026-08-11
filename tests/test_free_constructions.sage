@@ -287,10 +287,6 @@ def test_the_subsets_of_a_countable_set_are_uncountable() -> None:
     )
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason="a submodule needs the ambient finitely generated; see issue #351",
-)
 def test_a_graded_piece_is_a_submodule_carrying_its_inclusion() -> None:
     r"""$A_n\subseteq A$, with the map that says so.
 
