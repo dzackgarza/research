@@ -1,3 +1,2 @@
-from dzack_research.preamble.preparser import install_preparser
-
-install_preparser()
+# Importing the package installs it over Sage's preparser hooks.
+import sageparse.preparser.research  # noqa: F401
