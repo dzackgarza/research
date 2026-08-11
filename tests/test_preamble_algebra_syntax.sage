@@ -93,8 +93,8 @@ def test_free_algebra_on_delta_records_the_generating_set() -> None:
     # The module framing is Mon(S), not S: the degree-two monomial x_0 x_1 is a
     # module generator, and the module generator it names is the product of the
     # two algebra generators.
-    monomials = A.monomial_monoid()
-    assert A.module_generator(monomials.gen(0) * monomials.gen(1)) == (
+    monomials = A.monomial_system()
+    assert A.module_generator(monomials.generator(0) * monomials.generator(1)) == (
         A.algebra_generator(0) * A.algebra_generator(1)
     )
     assert A.algebra_generator_morphism().domain() == S

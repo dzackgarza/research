@@ -90,6 +90,235 @@ assert "module_homset" in globals(), (
 )
 
 
+class MonomialSystem:
+    r"""How one free construction indexes its monomials and multiplies them.
+
+    Every algebra here is \(F_R(\text{monomials})\) with a bilinear product,
+    and the four constructions differ only in what a monomial is and what two
+    of them multiply to.  Stating that pair once is what lets \(\Lambda\) and
+    \(\Gamma\) be the same construction as \(T\) and \(\operatorname{Sym}\)
+    rather than three more classes: the symmetric algebra indexes by the free
+    abelian monoid, the tensor algebra by the free monoid, the alternating
+    algebra by finite subsets, and the divided power algebra by the abelian
+    monoid again but with a different product.
+
+    A product returns a *coefficient* as well as a monomial, because two of
+    them are not monoid operations: \(x\wedge y=-y\wedge x\) and
+    \(\gamma_a\gamma_b=\binom{a+b}{a}\gamma_{a+b}\).  A zero coefficient is
+    how \(x\wedge x=0\) is said.
+
+    ``factors`` reports a monomial as \((label, exponent)\) *in order*, which
+    is the primitive every degree, substitution and coefficient question is
+    written against.  Order matters for words and is harmless elsewhere.
+    """
+
+    def __init__(self, labels: "OrderedSet") -> None:
+        self._labels = labels
+        self._parent = self._build_parent(labels)
+
+    def parent(self) -> Parent:
+        r"""Return the parent the monomials live in."""
+        return self._parent
+
+    def degree(self, monomial: "Element") -> int:
+        r"""Return the total degree: the sum of the exponents."""
+        return sum(exponent for _, exponent in self.factors(monomial))
+
+    def _finite_labels(self) -> tuple:
+        assert self._labels in Sets().Finite(), (
+            "enumerating a graded piece runs over the generators, so there "
+            "must be finitely many of them"
+        )
+        return tuple(self._labels)
+
+    def _monomials_by_exponent_vector(self, degree: "Integer") -> tuple:
+        r"""Return the monomials of a degree, as exponent vectors on the labels."""
+        from sage.combinat.integer_vector import IntegerVectors
+
+        labels = self._finite_labels()
+        monomials = []
+        for vector in IntegerVectors(int(degree), len(labels)):
+            monomial = self.one()
+            for label, exponent in zip(labels, vector):
+                monomial *= self.generator(label) ** exponent
+            monomials.append(monomial)
+        return tuple(monomials)
+
+
+class CommutativeMonomials(MonomialSystem):
+    r"""\(\operatorname{Mon}(S)\): the free commutative monoid, for \(\operatorname{Sym}\)."""
+
+    @staticmethod
+    def _build_parent(labels: "OrderedSet") -> Parent:
+        return FreeAbelianMonoid(labels)
+
+    def one(self) -> "Element":
+        return self._parent.one()
+
+    def generator(self, label: "Element") -> "Element":
+        return self._parent.gen(label)
+
+    def factors(self, monomial: "Element") -> tuple:
+        return tuple(monomial.dict().items())
+
+    def product(self, left: "Element", right: "Element") -> tuple:
+        return (1, left * right)
+
+    monomials_of_degree = MonomialSystem._monomials_by_exponent_vector
+
+
+class WordMonomials(MonomialSystem):
+    r"""Words in \(S\): the free monoid, for \(T\).
+
+    A word is its letters in order and nothing may be reordered, which is the
+    whole content of the tensor algebra being noncommutative.
+    """
+
+    @staticmethod
+    def _build_parent(labels: "OrderedSet") -> Parent:
+        return _FreeMonoid(labels)
+
+    def one(self) -> "Element":
+        return self._parent.one()
+
+    def generator(self, label: "Element") -> "Element":
+        return self._parent.gen(label)
+
+    def factors(self, monomial: "Element") -> tuple:
+        return tuple((letter, 1) for letter in monomial.to_word_list())
+
+    def product(self, left: "Element", right: "Element") -> tuple:
+        return (1, left * right)
+
+    def monomials_of_degree(self, degree: "Integer") -> tuple:
+        r"""Return the words of a length: \(\mathrm{rank}^n\) of them."""
+        from itertools import product as _tuples
+
+        labels = self._finite_labels()
+        monomials = []
+        for word in _tuples(labels, repeat=int(degree)):
+            monomial = self.one()
+            for letter in word:
+                monomial *= self.generator(letter)
+            monomials.append(monomial)
+        return tuple(monomials)
+
+
+class AlternatingMonomials(MonomialSystem):
+    r"""Finite subsets of \(S\), for \(\Lambda\).
+
+    Not a monoid: \(x\wedge x=0\) and \(x\wedge y=-y\wedge x\), so the product
+    carries a sign and may be zero.  Indexing by subsets rather than by
+    squarefree monomials is what makes the module the right one --
+    \(\Lambda(F_R(S))\) has rank \(2^{|S|}\), which is what a framing by
+    subsets says and a framing by all monomials does not.
+
+    The sign is the parity of the shuffle: the number of pairs taken out of
+    order when the two sorted subsets are merged.
+    """
+
+    @staticmethod
+    def _build_parent(labels: "OrderedSet") -> Parent:
+        r"""Return the finite subsets of \(S\), which is what \(\Lambda\) is free on.
+
+        Finite subsets, not subsets: a monomial is a wedge of finitely many
+        generators whatever \(S\) is, so \(\Lambda(F_R(S))\) is free of
+        countable rank over a countable \(S\) and \(\Lambda^k\) is free of
+        rank \(\binom{|S|}{k}\) at every \(k\).  Every subset of a finite
+        \(S\) is finite, so ``Subsets`` says it directly there; otherwise the
+        finite subsets are graded by size and the union over the sizes is
+        that set.
+        """
+        from sage.combinat.subset import Subsets
+        from sage.sets.disjoint_union_enumerated_sets import (
+            DisjointUnionEnumeratedSets,
+        )
+        from sage.sets.family import Family
+        from sage.sets.non_negative_integers import NonNegativeIntegers
+
+        if labels in Sets().Finite():
+            return Subsets(labels)
+        return DisjointUnionEnumeratedSets(
+            Family(NonNegativeIntegers(), lambda size: Subsets(labels, size))
+        )
+
+    def _subset(self, members) -> "Element":
+        r"""Return the monomial that is the subset with these members."""
+        from sage.combinat.subset import Subsets
+
+        members = tuple(members)
+        return Subsets(self._labels, len(members))(members)
+
+    def _sorted(self, monomial: "Element") -> tuple:
+        r"""Return the members in the generating set's own order.
+
+        Its order, not a position looked up in an enumeration: a monomial is
+        finite however large \(S\) is, so sorting its members must not depend
+        on running through \(S\).
+        """
+        return tuple(sorted(monomial))
+
+    def one(self) -> "Element":
+        return self._subset(())
+
+    def generator(self, label: "Element") -> "Element":
+        return self._subset((label,))
+
+    def factors(self, monomial: "Element") -> tuple:
+        return tuple((label, 1) for label in self._sorted(monomial))
+
+    def product(self, left: "Element", right: "Element") -> tuple:
+        if set(left) & set(right):
+            return (0, self.one())
+        inversions = sum(
+            1 for first in left for second in right if first > second
+        )
+        return ((-1) ** inversions, self._subset(set(left) | set(right)))
+
+    def monomials_of_degree(self, degree: "Integer") -> tuple:
+        r"""Return the subsets of a size: \(\binom{n}{k}\) of them."""
+        from sage.combinat.subset import Subsets
+
+        return tuple(Subsets(self._labels, int(degree)))
+
+
+class DividedMonomials(MonomialSystem):
+    r"""Divided powers \(\gamma_a(s)\), for \(\Gamma\).
+
+    Indexed exactly as the symmetric algebra is -- \(\Gamma\) is not a
+    quotient of \(T\) but has the same monomials -- and multiplied by
+    \(\gamma_a(s)\gamma_b(s)=\binom{a+b}{a}\gamma_{a+b}(s)\).  Over \(\QQ\)
+    that binomial is invertible and \(\gamma_a(s)=s^a/a!\) makes
+    \(\Gamma\cong\operatorname{Sym}\); over \(\ZZ\) it does not, and the
+    difference is why \(\Gamma^2\) rather than \(\operatorname{Sym}^2\)
+    classifies quadratic forms.
+    """
+
+    @staticmethod
+    def _build_parent(labels: "OrderedSet") -> Parent:
+        return FreeAbelianMonoid(labels)
+
+    def one(self) -> "Element":
+        return self._parent.one()
+
+    def generator(self, label: "Element") -> "Element":
+        return self._parent.gen(label)
+
+    def factors(self, monomial: "Element") -> tuple:
+        return tuple(monomial.dict().items())
+
+    def product(self, left: "Element", right: "Element") -> tuple:
+        from sage.arith.misc import binomial
+
+        left_exponents = left.dict()
+        coefficient = 1
+        for label, exponent in right.dict().items():
+            coefficient *= binomial(left_exponents.get(label, 0) + exponent, exponent)
+        return (coefficient, left * right)
+
+    monomials_of_degree = MonomialSystem._monomials_by_exponent_vector
+
+
 class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
     r"""Free R-algebras equipped with the canonical map \(S \to U(\operatorname{FreeAlg}_R(S))\)."""
 
@@ -259,9 +488,8 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
             monomials = self.coefficients()
             if not monomials:
                 return -_Infinity
-            return max(
-                sum(monomial.dict().values()) for monomial in monomials
-            )
+            system = self.parent().monomial_system()
+            return max(system.degree(monomial) for monomial in monomials)
 
         def multidegree(self: Self) -> dict:
             r"""Return \(s\mapsto\deg_s\), the degree in each generator.
@@ -274,8 +502,9 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
             degree zero and there may be infinitely many of those.
             """
             degrees: dict = {}
+            system = self.parent().monomial_system()
             for monomial in self.coefficients():
-                for label, exponent in monomial.dict().items():
+                for label, exponent in system.factors(monomial):
                     if exponent > degrees.get(label, 0):
                         degrees[label] = exponent
             return degrees
@@ -294,7 +523,7 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
 
         def constant_coefficient(self: Self) -> "Element":
             r"""Return the coefficient of \(1\): this element's value at zero."""
-            return self.coefficient(self.parent().monomial_monoid().one())
+            return self.coefficient(self.parent().monomial_system().one())
 
         def leading_coefficient(self: Self) -> "Element":
             r"""Return the coefficient of the top-degree part, at rank one.
@@ -310,10 +539,11 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
             top = self.degree()
             if top == -_Infinity:
                 return parent.base_ring().zero()
+            system = parent.monomial_system()
             return next(
                 coefficient
                 for monomial, coefficient in self.coefficients().items()
-                if sum(monomial.dict().values()) == top
+                if system.degree(monomial) == top
             )
 
         def is_monic(self: Self) -> bool:
@@ -484,8 +714,9 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
             support and holds at every rank.  The zero element is homogeneous,
             vacuously and usefully: it belongs to every graded piece.
             """
+            system = self.parent().monomial_system()
             degrees = {
-                sum(monomial.dict().values()) for monomial in self.coefficients()
+                system.degree(monomial) for monomial in self.coefficients()
             }
             return len(degrees) <= 1
 
@@ -498,8 +729,9 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
             """
             parent = self.parent()
             components: dict = {}
+            system = parent.monomial_system()
             for monomial, coefficient in self.coefficients().items():
-                degree = sum(monomial.dict().values())
+                degree = system.degree(monomial)
                 part = components.get(degree, parent.zero())
                 components[degree] = part + coefficient * parent.module_generator(
                     monomial
@@ -514,8 +746,9 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
             """
             parent = self.parent()
             kept = parent.zero()
+            system = parent.monomial_system()
             for monomial, coefficient in self.coefficients().items():
-                if sum(monomial.dict().values()) < degree:
+                if system.degree(monomial) < degree:
                     kept = kept + coefficient * parent.module_generator(monomial)
             return kept
 
@@ -583,9 +816,10 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
             """
             target = FreeAlgebraOn(ring, self.parent().algebra_generating_set())
             image = target.zero()
+            system = self.parent().monomial_system()
             for monomial, coefficient in self.coefficients().items():
                 term = ring(coefficient) * target.one()
-                for label, exponent in monomial.dict().items():
+                for label, exponent in system.factors(monomial):
                     term = term * target.algebra_generator(label) ** exponent
                 image = image + term
             return image
@@ -600,9 +834,10 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
             parent = self.parent()
             zero = parent.base_ring().zero()
             total = zero
+            system = parent.monomial_system()
             for monomial, coefficient in self.coefficients().items():
                 term = coefficient
-                for label, exponent in monomial.dict().items():
+                for label, exponent in system.factors(monomial):
                     if label in values:
                         term = term * values[label] ** exponent
                     else:
@@ -714,9 +949,13 @@ class FreeAlgebraOnSetElement(FreeModuleOnSetElement):
         coefficients = {}
         for left_monomial, left_coefficient in self.coefficients().items():
             for right_monomial, right_coefficient in other.coefficients().items():
-                monomial = left_monomial * right_monomial
+                sign, monomial = parent.monomial_system().product(
+                    left_monomial, right_monomial
+                )
+                if sign == 0:
+                    continue
                 coefficients[monomial] = coefficients.get(monomial, zero) + (
-                    left_coefficient * right_coefficient
+                    sign * left_coefficient * right_coefficient
                 )
         return parent.element_class(parent, coefficients)
 
@@ -748,10 +987,11 @@ class FreeAlgebraOnSet(FreeModuleOnSet):
 
     Element = FreeAlgebraOnSetElement
 
-    # The monoid the monomials form, and the category that names what the
-    # quotient is.  Swapping the pair is the whole difference between the
-    # free constructions, so both are stated once here.
-    _monomial_monoid = staticmethod(FreeAbelianMonoid)
+    # How the monomials are indexed and multiplied, and the category that
+    # names which construction that makes this.  Swapping the pair is the
+    # whole difference between the free constructions, so both are stated
+    # once here and nothing below asks what flavour it is.
+    _monomials = CommutativeMonomials
 
     @staticmethod
     def _flavour_category(base_ring: "Ring") -> "Category":
@@ -771,14 +1011,16 @@ class FreeAlgebraOnSet(FreeModuleOnSet):
         self._algebra_generating_set_for_morphism = _as_set(
             self._algebra_generating_set
         )
-        # Which monoid the monomials form is the whole difference between the
-        # free constructions: the free abelian monoid on $S$ gives the
-        # symmetric algebra $R[S]$, the free monoid gives the tensor algebra
-        # $R\langle S\rangle$.  Both are indexed by an arbitrary set, so
-        # neither imposes finiteness.
-        self._monomial_parent = self._monomial_monoid(
+        # Which monomials, and how they multiply, is the whole difference
+        # between the free constructions: the free abelian monoid on $S$
+        # gives the symmetric algebra $R[S]$, the free monoid gives the
+        # tensor algebra $R\langle S\rangle$, the subsets of $S$ give
+        # $\Lambda$, and the abelian monoid with binomial coefficients gives
+        # $\Gamma$.
+        self._monomial_system = self._monomials(
             self._algebra_generating_set_for_morphism
         )
+        self._monomial_parent = self._monomial_system.parent()
         self._monomial_generating_set = _as_set(self._monomial_parent)
         FreeModuleOnSet.__init__(
             self,
@@ -920,9 +1162,10 @@ class FreeAlgebraOnSet(FreeModuleOnSet):
         position_of = {label: position for position, label in enumerate(labels)}
         zero = self.base_ring().zero()
         terms: dict = {}
+        system = self.monomial_system()
         for monomial, coefficient in element.coefficients().items():
             exponents = [0] * len(labels)
-            for label, exponent in monomial.dict().items():
+            for label, exponent in system.factors(monomial):
                 exponents[position_of[label]] = exponent
             key = exponents[0] if len(labels) == 1 else tuple(exponents)
             terms[key] = terms.get(key, zero) + coefficient
@@ -949,7 +1192,7 @@ class FreeAlgebraOnSet(FreeModuleOnSet):
         about \(\operatorname{Mon}(S)\), read here in whichever form the
         presentation used.
         """
-        monoid = self.monomial_monoid()
+        system = self.monomial_system()
         labels = tuple(self._algebra_generating_set)
         result = self.zero()
         for exponents, coefficient in polynomial.dict().items():
@@ -960,21 +1203,32 @@ class FreeAlgebraOnSet(FreeModuleOnSet):
                 if isinstance(exponents, _Iterable)
                 else (exponents,)
             )
-            monomial = monoid.one()
+            monomial = system.one()
             for label, exponent in zip(labels, exponents):
-                monomial *= monoid.gen(label) ** exponent
+                monomial *= system.generator(label) ** exponent
             result += self._from_engine_coefficient(coefficient) * (
                 self.module_generator(monomial)
             )
         return result
 
-    def monomial_monoid(self) -> Parent:
-        r"""Return \(\operatorname{Mon}(S)\), the free commutative monoid on \(S\).
+    def monomial_system(self) -> MonomialSystem:
+        r"""Return how this algebra's monomials are indexed and multiplied.
 
-        The module framing is indexed by it, and its multiplication is the
-        algebra's: \(\operatorname{FreeAlg}_R(S)=R[\operatorname{Mon}(S)]\).
-        :meth:`module_generating_set` is its underlying set, which no longer
-        multiplies, so the monoid is asked for monoid questions.
+        The one place any construction-specific fact about monomials lives:
+        what the unit is, what a generator is, how one reads off exponents,
+        and what two of them multiply to.
+        """
+        return self._monomial_system
+
+    def monomial_parent(self) -> Parent:
+        r"""Return the parent the monomials live in.
+
+        The module framing is indexed by it, and the product on it is the
+        algebra's: \(\operatorname{FreeAlg}_R(S)=R[\operatorname{Mon}(S)]\)
+        for the symmetric flavour, and the same statement with the other
+        monomials for the rest.  :meth:`module_generating_set` is its
+        underlying set, which no longer multiplies, so monomial questions go
+        to :meth:`monomial_system`.
         """
         return self._monomial_parent
 
@@ -990,7 +1244,7 @@ class FreeAlgebraOnSet(FreeModuleOnSet):
         )
 
     def _algebra_generator_label(self, monomial: "Element") -> "Element":
-        monomial_profile = monomial.dict()
+        monomial_profile = dict(self.monomial_system().factors(monomial))
         assert len(monomial_profile) == 1, (
             f"{monomial!r} is not a degree-1 monomial; the profile is {monomial_profile}"
         )
@@ -1002,7 +1256,7 @@ class FreeAlgebraOnSet(FreeModuleOnSet):
         return label
 
     def _algebra_to_monomial(self, s: "Element") -> "Element":
-        return self.monomial_monoid().gen(s)
+        return self.monomial_system().generator(s)
 
     def _ring_morphism_defining_algebra_structure(self) -> "Morphism":
         r"""Return $R\to Z(A)$, $r\mapsto r\cdot 1$.
@@ -1141,7 +1395,7 @@ class FreeAlgebraOnSet(FreeModuleOnSet):
 
     def one(self) -> "Element":
         r"""Return the multiplicative identity: the empty monomial."""
-        return self.module_generator(self.monomial_monoid().one())
+        return self.module_generator(self.monomial_system().one())
 
     def _first_ngens(self, count: int) -> tuple:
         r"""Return the first ``count`` generators, for the ``R.<x, y> =`` sugar.
@@ -1252,7 +1506,7 @@ class TensorAlgebraOnSet(FreeAlgebraOnSet):
     \(K\), which sits in degree one and so leaves the grading intact.
     """
 
-    _monomial_monoid = staticmethod(_FreeMonoid)
+    _monomials = WordMonomials
 
     @staticmethod
     def _flavour_category(base_ring: "Ring") -> "Category":
@@ -1267,3 +1521,83 @@ class TensorAlgebraOnSet(FreeAlgebraOnSet):
 def TensorAlgebraOn(base_ring: "Ring", algebra_generating_set: "OrderedSet") -> TensorAlgebraOnSet:
     r"""Return \(T(F_R(S))\), the same object on every call."""
     return TensorAlgebraOnSet(base_ring, algebra_generating_set)
+
+
+class AlternatingAlgebraOnSet(FreeAlgebraOnSet):
+    r"""The alternating algebra \(\Lambda(F_R(S))=T(M)/\langle x\otimes x\rangle\).
+
+    Framed by the subsets of \(S\), so \(\Lambda(F_R(S))\) is free of rank
+    \(2^{|S|}\) and \(\Lambda^k\) of rank \(\binom{n}{k}\) -- which is
+    the statement a framing by squarefree monomials inside all monomials would
+    not make.  The product is the shuffle sign, and zero when a generator
+    repeats.
+    """
+
+    _monomials = AlternatingMonomials
+
+    @staticmethod
+    def _flavour_category(base_ring: "Ring") -> "Category":
+        from dzack_research.preamble.categories.algebras.free_algebras import AlternatingAlgebras
+
+        return AlternatingAlgebras(base_ring)
+
+    def _repr_(self) -> str:
+        return (
+            f"Alternating algebra over {self.base_ring()} on "
+            f"{self.algebra_generating_set()}"
+        )
+
+
+def AlternatingAlgebraOn(
+    base_ring: "Ring", algebra_generating_set: "OrderedSet"
+) -> AlternatingAlgebraOnSet:
+    r"""Return \(\Lambda(F_R(S))\), the same object on every call."""
+    return AlternatingAlgebraOnSet(base_ring, algebra_generating_set)
+
+
+class DividedPowerAlgebraOnSet(FreeAlgebraOnSet):
+    r"""The divided power algebra \(\Gamma(F_R(S))\).
+
+    Framed by the same monomials as the symmetric algebra -- \(\Gamma\) is
+    not a quotient of \(T\) -- and multiplied by
+    \(\gamma_a\gamma_b=\binom{a+b}{a}\gamma_{a+b}\).  Over \(\QQ\) the
+    map \(\gamma_a(x)\mapsto x^a/a!\) is an isomorphism to
+    \(\operatorname{Sym}\); over \(\ZZ\) it is not, and \(\Gamma^2\) is
+    what represents quadratic forms.
+    """
+
+    _monomials = DividedMonomials
+
+    @staticmethod
+    def _flavour_category(base_ring: "Ring") -> "Category":
+        from dzack_research.preamble.categories.algebras.free_algebras import (
+            DividedPowerAlgebras,
+        )
+
+        return DividedPowerAlgebras(base_ring)
+
+    def divided_power(self, s: "Element", exponent: "Integer") -> "Element":
+        r"""Return \(\gamma_a(s)\), which is *not* \(s^a\).
+
+        \(s^a=a!\,\gamma_a(s)\), so over \(\ZZ\) the powers of a
+        generator span a proper submodule of what the divided powers span.
+        Naming the monomial directly is the only way to reach the rest.
+        """
+        assert s in self._algebra_generating_set, (
+            f"{s!r} is not in {self._algebra_generating_set}"
+        )
+        system = self.monomial_system()
+        return self.module_generator(system.generator(s) ** int(exponent))
+
+    def _repr_(self) -> str:
+        return (
+            f"Divided power algebra over {self.base_ring()} on "
+            f"{self.algebra_generating_set()}"
+        )
+
+
+def DividedPowerAlgebraOn(
+    base_ring: "Ring", algebra_generating_set: "OrderedSet"
+) -> DividedPowerAlgebraOnSet:
+    r"""Return \(\Gamma(F_R(S))\), the same object on every call."""
+    return DividedPowerAlgebraOnSet(base_ring, algebra_generating_set)

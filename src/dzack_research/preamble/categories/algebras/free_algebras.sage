@@ -64,14 +64,13 @@ class TensorAlgebras(OwnedCategoryOverBaseRing):
         def monomial_degree(self, monomial: "Element") -> "Integer":
             r"""Return the \(n\) with this monomial in \(T(M)[n]\).
 
-            The number of letters, however the monoid spells them: a word
-            reports its letters in order, an abelian monomial its exponents.
-            Both count to the same degree, which is what makes the symmetric
-            algebra a graded quotient of the tensor algebra.
+            The number of letters, however this construction spells them: a
+            word reports its letters in order, an abelian monomial its
+            exponents, a subset its members.  All count to the same degree,
+            which is what makes the other three graded companions of the
+            tensor algebra.
             """
-            if hasattr(monomial, "to_word_list"):
-                return len(monomial.to_word_list())
-            return sum(monomial.dict().values())
+            return self.monomial_system().degree(monomial)
 
         def graded_piece_monomials(self, degree: "Integer") -> tuple:
             r"""Return the monomials spanning \(T(M)[n]\).
@@ -79,15 +78,15 @@ class TensorAlgebras(OwnedCategoryOverBaseRing):
             For a free \(M\) on \(S\) these are the words of length \(n\),
             so the piece is \(M^{\otimes n}\) and there is no separate
             \(M^{\otimes 2}\) to build: it is this.
-            """
-            from itertools import product as _tuples
 
-            labels = tuple(self.algebra_generating_set())
-            assert labels, "a graded piece of the tensor algebra on no generators"
+            Asked of the monomials rather than assembled from products of
+            generators, because in \(\Gamma\) a product of generators is not
+            a monomial: \(x\cdot x=2\gamma_2(x)\).  Each construction knows
+            its own basis in each degree, and that is what a graded piece is.
+            """
             return tuple(
-                self.algebra_generator(word[0]) if degree == 1 else
-                _product_of(self, word)
-                for word in _tuples(labels, repeat=int(degree))
+                self.module_generator(monomial)
+                for monomial in self.monomial_system().monomials_of_degree(degree)
             )
 
 
@@ -131,11 +130,3 @@ class DividedPowerAlgebras(OwnedCategoryOverBaseRing):
 
     def super_categories(self) -> list:
         return [TensorAlgebras(self.base_ring())]
-
-
-def _product_of(algebra: "Parent", word: tuple) -> "Element":
-    r"""Return the monomial spelled by ``word``, in order."""
-    monomial = algebra.one()
-    for label in word:
-        monomial = monomial * algebra.algebra_generator(label)
-    return monomial
