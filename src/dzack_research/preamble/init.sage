@@ -30,6 +30,7 @@
 import IPython.core.ultratb
 from sage.libs.gap.libgap import libgap
 
+from dzack_research.preamble.display import install_implicit_typesetting
 from dzack_research.preamble.install import install_preamble
 
 Σ = sum
@@ -58,27 +59,7 @@ from sage_julia_bridge import JuliaHandle, julia
 
 julia.eval("using Oscar")
 
-## Implicit typesetting #######################################################
-
-def _typesettable(obj):
-    if isinstance(obj, SageObject):
-        return True
-    if isinstance(obj, (list, tuple, set, frozenset)):
-        return bool(obj) and all(_typesettable(v) for v in obj)
-    if isinstance(obj, dict):
-        return bool(obj) and all(_typesettable(v) for v in obj.values())
-    return False
-
-def _latex_if_typesettable(obj):
-    if not _typesettable(obj):
-        return None
-    return "$\\displaystyle " + str(latex(obj)) + "$"
-
-# Both names must stay resident: the registered formatter looks _typesettable up
-# by global name on every call, so deleting them breaks display with a NameError.
-get_ipython().display_formatter.formatters["text/latex"].for_type(
-    object, _latex_if_typesettable
-)
+install_implicit_typesetting(get_ipython())
 
 # Sage routes ``load(...)`` through its active preparser, so the interactive
 # extension is installed only after every authored preamble file has loaded.
