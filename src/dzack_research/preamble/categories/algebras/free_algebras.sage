@@ -38,3 +38,71 @@ class FreeAlgebras(OwnedCategoryOverBaseRing):
         def is_free(self) -> bool:
             r"""Return whether this algebra is free."""
             return True
+
+
+class TensorAlgebras(OwnedCategoryOverBaseRing):
+    r"""Tensor algebras \(T(M)\), and what is carved out of them.
+
+    \(T\) is left adjoint to the forgetful functor \(R\text{-Alg}\to
+    R\text{-Mod}\), so \(T(M)\) exists for every module and is graded with
+    \(T(M)[n]=M^{\otimes n}\).  Everything else here is a quotient of it: the
+    symmetric algebra by \(x\otimes y-y\otimes x\), the alternating algebra
+    by \(x\otimes x\), and the divided power algebra by its own universal
+    property.  Locating them as subcategories is what says they are one
+    construction seen through different relations rather than four unrelated
+    ones.
+    """
+
+    @classmethod
+    def _repr_object_names(cls) -> str:
+        return "tensor algebras"
+
+    def super_categories(self) -> list:
+        return [FreeAlgebras(self.base_ring())]
+
+    class ParentMethods:
+        def graded_piece_degree(self, element: "Element") -> "Integer":
+            r"""Return \(n\) with the element in \(T(M)[n]\), for a monomial."""
+            return sum(exponent for _, exponent in element.monomial().list())
+
+
+class SymmetricAlgebras(OwnedCategoryOverBaseRing):
+    r"""\(\operatorname{Sym}(M)=T(M)/\langle x\otimes y-y\otimes x\rangle\).
+
+    The polynomial algebra, when \(M\) is free: monomials are the free
+    *abelian* monoid on the generators, which is that quotient written out.
+    """
+
+    @classmethod
+    def _repr_object_names(cls) -> str:
+        return "symmetric algebras"
+
+    def super_categories(self) -> list:
+        return [TensorAlgebras(self.base_ring())]
+
+
+class AlternatingAlgebras(OwnedCategoryOverBaseRing):
+    r"""\(\Lambda(M)=T(M)/\langle x\otimes x\rangle\)."""
+
+    @classmethod
+    def _repr_object_names(cls) -> str:
+        return "alternating algebras"
+
+    def super_categories(self) -> list:
+        return [TensorAlgebras(self.base_ring())]
+
+
+class DividedPowerAlgebras(OwnedCategoryOverBaseRing):
+    r"""\(\Gamma(M)\), whose degree-two piece classifies quadratic forms.
+
+    Not a quotient by a relation but the object with the universal property
+    \(\operatorname{Hom}(\Gamma^2M,W)\cong\{\text{quadratic maps }M\to W\}\),
+    which is what makes a quadratic form a morphism rather than a set map.
+    """
+
+    @classmethod
+    def _repr_object_names(cls) -> str:
+        return "divided power algebras"
+
+    def super_categories(self) -> list:
+        return [TensorAlgebras(self.base_ring())]
