@@ -1527,6 +1527,31 @@ class DividedPowerAlgebraOnSet(FreeAlgebraOnSet):
         system = self.monomial_system()
         return self.module_generator(system.generator(s) ** int(exponent))
 
+    def divided_square(self, element: "Element") -> "Element":
+        r"""Return \(\gamma_2(x)\) for a degree-one element \(x\).
+
+        If \(x=\sum_i a_i e_i\), then
+        \(\gamma_2(x)=\sum_i a_i^2\gamma_2(e_i)
+        +\sum_{i<j}a_i a_j e_i e_j\).
+        """
+        assert element.parent() is self and element.degree() == 1, (
+            "the divided square is defined here on degree-one elements"
+        )
+        terms = tuple(element.coefficients().items())
+        result = self.zero()
+        for index, (monomial, coefficient) in enumerate(terms):
+            label = self._algebra_generator_label(monomial)
+            result += coefficient**2 * self.divided_power(label, 2)
+            for other_monomial, other_coefficient in terms[index + 1:]:
+                other_label = self._algebra_generator_label(other_monomial)
+                result += (
+                    coefficient
+                    * other_coefficient
+                    * self.algebra_generator(label)
+                    * self.algebra_generator(other_label)
+                )
+        return result
+
     def _repr_(self) -> str:
         return (
             f"Divided power algebra over {self.base_ring()} on "

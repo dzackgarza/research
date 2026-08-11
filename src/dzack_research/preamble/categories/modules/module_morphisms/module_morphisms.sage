@@ -167,12 +167,12 @@ def _coordinate_vector(element: "Element") -> FreeModuleElement:
     from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModuleElement
 
     match element:
+        case BasedFreeModuleElement():
+            return element._coordinates_
         case FormModuleElement():
             return _coordinate_vector(element.forget_form())
         case GroupModuleElement():
             return _coordinate_vector(element.forget_action())
-        case BasedFreeModuleElement():
-            return element._coordinates()
         case FinitelyPresentedModuleElement():
             return vector(element._lift())
         case _:
@@ -641,6 +641,11 @@ class ModuleMorphism(Morphism):
 
     def is_injective(self) -> bool:
         r"""Return whether this morphism is a monomorphism."""
+        match self.__dict__.get("_known_injective"):
+            case True:
+                return True
+            case _:
+                pass
         # Local: at module level this closes an import cycle; the free-module
         # category is built by the time injectivity is asked about.
         from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules

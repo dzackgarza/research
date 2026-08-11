@@ -122,18 +122,15 @@ def test_a_form_is_a_morphism_into_the_value_module(name: str) -> None:
     # a map out of $M$ at all, and the divided square is what makes it a
     # morphism without pretending otherwise.
     domain = form.domain()
-    expected = {
+    expected_constructor = {
         BilinearFormMorphism: TensorSquare,
         QuadraticFormMorphism: DividedSquare,
     }[type(form)]
+    expected_domain = expected_constructor(parent.forget_form())
 
-    assert isinstance(domain, expected), (
-        f"{name}: a {type(form).__name__} is defined on "
-        f"{expected.__name__}(M), got a form on {domain}"
-    )
-    assert domain.module() is parent.forget_form(), (
-        f"{name}: the square must be of this module, got one of "
-        f"{domain.module()}"
+    assert domain is expected_domain, (
+        f"{name}: the form has domain {domain}, not the degree-two "
+        f"construction {expected_domain}"
     )
 
 
@@ -148,3 +145,14 @@ def test_a_constructed_object_answers_what_its_categories_require(name: str) -> 
         f"{unmet}: the constructor placed it in a category without supplying "
         "what that category is about"
     )
+
+
+def test_a_lattice_subobject_has_the_restricted_form() -> None:
+    r"""The inclusion \(i:N\hookrightarrow L\) satisfies \(b_N=i^*b_L\)."""
+    _ensure_preamble()
+    generator = next(iter(Lattices.E8.module_generators()))
+    subobject = Lattices.E8.subobject_on([2 * generator])
+    source_generator = next(iter(subobject.module_generators()))
+    image = subobject.inclusion()(source_generator)
+
+    assert source_generator.b(source_generator) == image.b(image)

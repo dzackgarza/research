@@ -345,7 +345,13 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
             labels = finite_ordered_set(tuple(module_generators))
             sub = self._sub_form_module(gram, labels)
             images = {generator: generator for generator in labels}
-            return Subobject(sub.Hom(self)(images))
+            return Subobject(
+                FormHomset(
+                    sub,
+                    self,
+                    FormModules(self.base_ring()),
+                )(images)
+            )
 
         def _sub_form_module(
             self: Self,

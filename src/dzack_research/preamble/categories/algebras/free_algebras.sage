@@ -65,6 +65,26 @@ class TensorAlgebras(OwnedCategoryOverBaseRing):
         return [FreeAlgebras(self.base_ring()), GradedAlgebras(self.base_ring())]
 
     class ParentMethods:
+        def graded_piece(self, degree: "Integer") -> "Module":
+            r"""Return the free submodule on the monomials of one degree."""
+            from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import BasedFreeModule
+            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.subobjects import Subobject
+            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
+            from dzack_research.preamble.categories.sets.sets import finite_ordered_set
+
+            generators = tuple(self.module_generators_of_degree(degree))
+            source = BasedFreeModule(
+                self.base_ring(),
+                finite_ordered_set(
+                    self.monomial_system().monomials_of_degree(degree)
+                ),
+            )
+            inclusion = module_homset(source, self)(
+                dict(zip(source.module_generating_set(), generators))
+            )
+            inclusion._known_injective = True
+            return Subobject(inclusion)
+
         def degree_on_module_generator(self, module_generator: "Element") -> "Integer":
             r"""Return the degree of a monomial: the grading of these algebras.
 
@@ -188,3 +208,18 @@ class DividedPowerAlgebras(OwnedCategoryOverBaseRing):
 
     def super_categories(self) -> list:
         return [TensorAlgebras(self.base_ring())]
+
+    class ParentMethods:
+        def ideal_generators_in_degree(
+            self, relations: tuple, degree: "Integer"
+        ) -> tuple:
+            generators = TensorAlgebras.ParentMethods.ideal_generators_in_degree(
+                self, relations, degree
+            )
+            match int(degree):
+                case 2:
+                    return generators + tuple(
+                        self.divided_square(relation) for relation in relations
+                    )
+                case _:
+                    return generators

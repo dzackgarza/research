@@ -2,10 +2,12 @@ r"""Bilinear and quadratic forms as native Sage morphisms."""
 
 
 from sage.rings.rational_field import QQ as SageQQ
+from collections.abc import Callable
 from typing import TYPE_CHECKING
 from sage_lattice_category_spike.lexicon import Element
 if TYPE_CHECKING:
     from sage_lattice_category_spike.lexicon import Module
+    from sage_lattice_category_spike.lexicon import Ring
 
 if TYPE_CHECKING:
     from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormMorphism
@@ -37,62 +39,79 @@ def _framing_rank(module_generating_set: "OrderedSet") -> Integer:
     return SageZZ(size)
 
 
-class TensorSquare(Parent):
-    r"""The formal tensor square \(M\otimes_R M\), as a morphism domain."""
+def _square(
+    module: "Module",
+    algebra_constructor: "Callable[[Ring, OrderedSet], Parent]",
+    cache_key: str,
+) -> Parent:
+    r"""Return the degree-two construction induced by a module presentation."""
+    cache = module.__dict__.setdefault("_square_constructions", {})
+    cached = cache.get(cache_key)
+    if cached is not None:
+        return cached
 
-    def __init__(self, module: "Module") -> None:
-        self._module = module
-        Parent.__init__(self, category=Sets())
+    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import BasedFreeModule
+    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModule
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 
-    def module(self) -> "Module":
-        return self._module
+    algebra = algebra_constructor(
+        module.base_ring(), module.module_generating_set()
+    )
+    piece = algebra.graded_piece(2)
+    relations = module.relation_matrix()._sage_matrix()
+    match relations.nrows():
+        case 0:
+            cache[cache_key] = piece
+            return piece
+        case _:
+            pass
 
-    def graded_degree(self) -> int:
-        r"""Return 2: this is \(T(M)[2]\), the degree-two piece."""
-        return 2
+    labels = tuple(module.module_generating_set())
+    algebra_relations = tuple(
+        sum(
+            (
+                coefficient * algebra.algebra_generator(label)
+                for coefficient, label in zip(row, labels)
+            ),
+            algebra.zero(),
+        )
+        for row in relations.rows()
+    )
+    square_relations = algebra.ideal_generators_in_degree(algebra_relations, 2)
+    monomials = tuple(
+        next(iter(generator.coefficients()))
+        for generator in algebra.graded_piece_monomials(2)
+    )
+    relation_vectors = tuple(
+        piece([
+            relation.coefficients().get(monomial, module.base_ring().zero())
+            for monomial in monomials
+        ])
+        for relation in square_relations
+    )
+    relation_module = BasedFreeModule(
+        module.base_ring(), Sets.Δ[len(relation_vectors) - 1]
+    )
+    presentation = module_homset(relation_module, piece)(
+        dict(zip(relation_module.module_generating_set(), relation_vectors))
+    )
+    square = FinitelyPresentedModule(presentation)
+    cache[cache_key] = square
+    return square
 
-    def __eq__(self, other: object) -> bool:
-        return isinstance(other, TensorSquare) and self._module is other._module
 
-    def __hash__(self) -> int:
-        return hash((TensorSquare, id(self._module)))
+def TensorSquare(module: "Module") -> Parent:
+    r"""Return \(T(M)[2]=M\otimes_RM\)."""
+    from dzack_research.preamble.categories.algebras.framed_free_algebras import TensorAlgebraOn
 
-    def _repr_(self) -> str:
-        return f"Tensor square of {self._module}"
+    return _square(module, TensorAlgebraOn, "tensor")
 
 
-class DividedSquare(Parent):
-    r"""The divided square \(\Gamma^2 M\), as a morphism domain.
+def DividedSquare(module: "Module") -> Parent:
+    r"""Return \(\Gamma(M)[2]=\Gamma^2M\)."""
+    from dzack_research.preamble.categories.algebras.framed_free_algebras import DividedPowerAlgebraOn
 
-    A quadratic form is not a morphism of modules: \(q(rx)=r^2q(x)\), so it
-    does not lie in \(\operatorname{Hom}_R(M,W)\).  What it *is* is a morphism
-    out of the divided square, \(\Gamma^2M\to W\), the way a bilinear form is
-    one out of \(M\otimes_R M\).  Evaluating \(q\) at \(x\) means applying
-    it to \(\gamma_2(x)\).
-
-    Formal, like ``TensorSquare`` beside it: what the preamble needs of it is
-    that a form has an honest domain, not that its elements are constructed.
-    """
-
-    def __init__(self, module: "Module") -> None:
-        self._module = module
-        Parent.__init__(self, category=Sets())
-
-    def module(self) -> "Module":
-        return self._module
-
-    def graded_degree(self) -> int:
-        r"""Return 2: this is \(\Gamma^2M\), the degree-two divided piece."""
-        return 2
-
-    def __eq__(self, other: object) -> bool:
-        return isinstance(other, DividedSquare) and self._module is other._module
-
-    def __hash__(self) -> int:
-        return hash((DividedSquare, id(self._module)))
-
-    def _repr_(self) -> str:
-        return f"Divided square of {self._module}"
+    return _square(module, DividedPowerAlgebraOn, "divided")
 
 
 class BilinearFormHomset(Homset):
@@ -130,6 +149,7 @@ class QuadraticFormHomset(Homset):
     r"""The homset of quadratic forms, \(\Gamma^2M\to W\)."""
 
     def __init__(self, module: "Module", value_module: "Module") -> None:
+        self._module = module
         Homset.__init__(
             self,
             DividedSquare(module),
@@ -139,7 +159,7 @@ class QuadraticFormHomset(Homset):
 
     def module(self) -> "Module":
         r"""Return \(M\), which the domain is the divided square of."""
-        return self.domain().module()
+        return self._module
 
     def _element_constructor_(self, gram: "GramMatrix") -> "QuadraticFormMorphism":
         return QuadraticFormMorphism(self, gram)
@@ -363,7 +383,7 @@ class QuadraticFormMorphism(Morphism):
         self._lift_matrix = gram
 
     def module(self) -> "Module":
-        return self.domain().module()
+        return self.parent().module()
 
     def value_module(self) -> "Module":
         return self.codomain()

@@ -18,6 +18,7 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from sage_lattice_category_spike.lexicon import Module
+    from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormMorphism
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
     from sage_lattice_category_spike.lexicon import MorphismMatrix
 
@@ -49,6 +50,12 @@ class Subobjects(Category):
         # has.  A subobject *is* its inclusion, so the ambient object, the
         # lift and the retraction are all read off that one morphism rather
         # than stored again.
+        def _form_morphism(self: Self) -> "FormMorphism":
+            return self._form
+
+        def forget_form(self: Self) -> "Module":
+            return self._module
+
         def ambient(self: Self) -> "Module":
             r"""Return $B$, the object this one is a subobject of."""
             return self.embedding_codomain()
@@ -285,10 +292,30 @@ def Subobject(embedding: "ModuleMorphism") -> "Module":
     assert isinstance(embedding, (ModuleMorphism, FormMorphism)), (
         "a module subobject is represented by a module or form morphism"
     )
+    domain = embedding.domain()
+    domain_category = domain.category()
+    codomain = embedding.codomain()
+    match ("_form" in domain.__dict__, "_form" in codomain.__dict__):
+        case (True, _):
+            form = domain.__dict__["_form"]
+            underlying_module = domain.__dict__["_module"]
+        case (False, True):
+            form = codomain.form().pullback(embedding)
+            underlying_module = domain
+        case (False, False):
+            form = None
+            underlying_module = None
     subobject = Slice(embedding, is_mono=True)
-    categories = [subobject.category(), Subobjects()]
+    categories = [domain_category, subobject.category(), Subobjects()]
     # A submodule of a definite lattice is where reduction is defined, so the
     # axiom is joined here rather than asserted at each call site.
     if embedding.codomain() in DefiniteLattices():
         categories.append(DefiniteLattices().Subobjects())
-    return refine(subobject, categories)
+    subobject = refine(subobject, categories)
+    match form:
+        case None:
+            pass
+        case _:
+            subobject._form = form
+            subobject._module = underlying_module
+    return subobject
