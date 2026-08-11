@@ -937,7 +937,7 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             from dzack_research.preamble.categories.forms.forms import BilinearForm
             result = BilinearForm(
                 self.forget_form(),
-                SageZZ,
+                ℤ,
                 scale * matrix(SageZZ, self.gram_matrix()),
             )
             assert _summand_ranks(result) == _summand_ranks(self), (
@@ -1352,10 +1352,10 @@ def _lattice_with_gram(
             )
     lattice = BilinearForm(
         BasedFreeModule(
-            SageZZ,
+            ℤ,
             module_generating_set,
         ),
-        SageZZ,
+        ℤ,
         gram,
     )
     return lattice

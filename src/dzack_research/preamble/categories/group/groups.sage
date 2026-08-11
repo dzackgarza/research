@@ -33,6 +33,7 @@ from sage.groups.matrix_gps.named_group_gap import NamedMatrixGroup_gap
 from sage.groups.perm_gps.permgroup import PermutationGroup_generic
 from sage.misc.latex import latex
 from sage.misc.unknown import Unknown
+from dzack_research.preamble.categories.rings.rings import ℤ
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.sets.totally_ordered_finite_set import TotallyOrderedFiniteSet
 from sage.structure.element import Element
@@ -545,7 +546,7 @@ class OwnedAbelianGroups(Category):
             # ring of scalars a notebook asks about, and no arithmetic runs on
             # it here -- the action is a map of sets on the nose.
             return SetMorphism(
-                Hom(own_ring(SageZZ), endomorphisms, Rings()),
+                Hom(ℤ, endomorphisms, Rings()),
                 lambda exponent: endomorphisms(
                     lambda element: element**exponent
                 ),
