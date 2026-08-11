@@ -5,15 +5,6 @@
 Each of these is a mathematical statement the preamble makes in prose and does
 not realize as an object or a morphism.
 
-### $\Gamma^n(M) = (M^{\otimes n})^{S_n}$ for $n>2$
-
-Degree two now has both canonical maps. The invariant inclusion sends
-$\gamma_2(x)$ to $x\otimes x$ and $xy$ to
-$x\otimes y+y\otimes x$. Polarization sends $x\otimes y$ to $xy$.
-Their composites are multiplication by $2$ and $1+\tau$, respectively.
-The corresponding maps and symmetric-group actions remain absent in higher
-degrees.
-
 ### The free-module functor does not preserve equality of indexing sets
 
 The transcript requires $F_R(S)=F_R(S')$ when $S=S'$. This is equality of

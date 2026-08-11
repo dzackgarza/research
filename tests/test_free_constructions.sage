@@ -403,6 +403,9 @@ def test_tensor_and_divided_squares_respect_a_module_presentation() -> None:
 
     assert TensorSquare(module).invariants() == (2,)
     assert DividedSquare(module).invariants() == (4,)
+    assert TensorPower(module, 3).invariants() == (2,)
+    assert DividedPower(module, 3).invariants() == (2,)
+    assert DividedPower(module, 4).invariants() == (8,)
 
 
 def test_the_divided_square_classifies_quadratic_maps() -> None:
@@ -459,6 +462,33 @@ def test_divided_squares_are_symmetric_tensor_invariants() -> None:
     for generator in divided.module_generators():
         assert polarization(inclusion(generator)) == 2 * generator
     assert inclusion(polarization(tensor_xy)) == tensor_xy + tensor_yx
+
+
+def test_higher_divided_powers_are_symmetric_tensor_invariants() -> None:
+    r"""In degree three the two composites are (3!) and (sum_{\sigma\in S_3}\sigma)."""
+    _ensure_preamble()
+    from itertools import permutations
+
+    module = BasedFreeModule(ZZ, Sets.Δ[1])
+    divided = DividedPower(module, 3)
+    tensor = TensorPower(module, 3)
+    inclusion = divided_power_invariant_inclusion(module, 3)
+    polarization = tensor_power_polarization(module, 3)
+    actions = tuple(
+        tensor_power_permutation(module, 3, positions)
+        for positions in permutations(range(3))
+    )
+
+    for generator in divided.module_generators():
+        invariant = inclusion(generator)
+        assert polarization(invariant) == 6 * generator
+        assert all(action(invariant) == invariant for action in actions)
+    for generator in tensor.module_generators():
+        orbit_sum = sum(
+            (action(generator) for action in actions),
+            tensor.zero(),
+        )
+        assert inclusion(polarization(generator)) == orbit_sum
 
 
 def test_the_free_constructions_are_related_by_the_canonical_maps() -> None:
