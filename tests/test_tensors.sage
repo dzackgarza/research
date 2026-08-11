@@ -245,11 +245,42 @@ def test_mixed_tensors_are_the_homogeneous_pieces_of_one_bigraded_algebra() -> N
     y = algebra.include(vectors({(1,): 1}))
     phi = algebra.include(covectors({(0,): 2, (1,): 3}))
 
+    assert algebra.vector_tensor_algebra() is TensorAlgebraOf(module)
+    assert algebra.covector_tensor_algebra() is TensorAlgebraOf(DualModule(module))
     assert Tensor(module, (2, 1)) is algebra.homogeneous_piece((2, 1))
     assert (x * y * phi).valences() == ((2, 1),)
     assert (x * y) * phi == x * (y * phi)
     assert algebra.one() * x == x == x * algebra.one()
     assert x * y != y * x
+
+
+def test_covariant_slots_use_the_dual_module() -> None:
+    r"""For (M=\mathbb Z/2), (M^*=\operatorname{Hom}(M,\mathbb Z)=0)."""
+    _ensure_preamble()
+    free = BasedFreeModule(ZZ, Sets.Δ[0])
+    relation = module_homset(free, free)({0: 2 * free.module_generator(0)})
+    module = FinitelyPresentedModule(relation)
+
+    dual = DualModule(module)
+    vectors = Tensor(module, (1, 0))
+    covectors = Tensor(module, (0, 1))
+    vector = vectors({(0,): 1})
+
+    assert dual.is_zero()
+    assert covectors.intrinsic_module().is_zero()
+    assert vector != vectors.zero()
+    assert 2 * vector == vectors.zero()
+
+
+def test_a_tensor_piece_is_the_tensor_product_of_powers_of_a_module_and_its_dual() -> None:
+    r"""Type ((2,1)) has rank (2^2\cdot2=8) for a rank-two free module."""
+    _ensure_preamble()
+    module = BasedFreeModule(ZZ, Sets.Δ[1])
+    tensors = Tensor(module, (2, 1))
+
+    assert tensors.dual_module() is DualModule(module)
+    assert tensors.dual_module().rank() == 2
+    assert tensors.intrinsic_module().rank() == 8
 
 
 def test_the_degree_two_piece_of_the_tensor_algebra_is_the_tensor_square() -> None:

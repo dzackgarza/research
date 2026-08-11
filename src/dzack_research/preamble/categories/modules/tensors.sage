@@ -33,6 +33,7 @@ from typing import Self
 from sage.structure.parent import Parent
 from sage.structure.element import ModuleElement
 from sage.structure.unique_representation import UniqueRepresentation
+from sage.misc.cachefunc import cached_function
 
 
 def _nesting_shape(components) -> tuple:
@@ -58,6 +59,105 @@ def _entries_by_index(components, shape: tuple) -> dict:
     return entries
 
 
+@cached_function
+def DualModule(module: "Module") -> "Module":
+    r"""Return (M^*=\operatorname{Hom}_R(M,R)) from a presentation of (M)."""
+    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import BasedFreeModule
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
+    from dzack_research.preamble.categories.sets.sets import finite_ordered_set
+    from dzack_research.preamble.utilities import zipsum
+
+    dual_frame = BasedFreeModule(
+        module.base_ring(),
+        module.module_generating_set(),
+    )
+    relations = module.relation_matrix()._sage_matrix()
+    if relations.nrows() == 0:
+        return dual_frame
+
+    relation_labels = finite_ordered_set(tuple(range(relations.nrows())))
+    relation_dual = BasedFreeModule(module.base_ring(), relation_labels)
+    transpose = relations.transpose()
+    restriction = module_homset(dual_frame, relation_dual)(
+        {
+            label: zipsum(
+                row,
+                relation_dual.module_generators(),
+                relation_dual.zero(),
+            )
+            for label, row in zip(
+                dual_frame.module_generating_set(),
+                transpose.rows(),
+            )
+        }
+    )
+    return restriction.kernel()
+
+
+@cached_function
+def TensorProductModule(left: "Module", right: "Module") -> "Module":
+    r"""Return (M\otimes_RN) from presentations of (M) and (N).
+
+    Sage's mature free-module implementation is
+    ``sage.combinat.free_module.CombinatorialFreeModule_Tensor``. This keeps
+    its product basis and extends it through the standard right-exact
+    presentation: relations are (K\otimes F_N+F_M\otimes L).
+    """
+    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import BasedFreeModule
+    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModule
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
+    from dzack_research.preamble.categories.sets.sets import finite_ordered_set
+    from dzack_research.preamble.utilities import zipsum
+
+    assert left.base_ring() == right.base_ring(), (
+        "a tensor product is formed over one base ring"
+    )
+    left_labels = tuple(left.module_generating_set())
+    right_labels = tuple(right.module_generating_set())
+    product_labels = finite_ordered_set(
+        tuple(_index_product(left_labels, right_labels))
+    )
+    free_product = BasedFreeModule(left.base_ring(), product_labels)
+    left_relations = left.relation_matrix()._sage_matrix().rows()
+    right_relations = right.relation_matrix()._sage_matrix().rows()
+    relations = []
+    for relation in left_relations:
+        for right_label in right_labels:
+            relations.append(
+                zipsum(
+                    relation,
+                    (
+                        free_product.module_generator((left_label, right_label))
+                        for left_label in left_labels
+                    ),
+                    free_product.zero(),
+                )
+            )
+    for left_label in left_labels:
+        for relation in right_relations:
+            relations.append(
+                zipsum(
+                    relation,
+                    (
+                        free_product.module_generator((left_label, right_label))
+                        for right_label in right_labels
+                    ),
+                    free_product.zero(),
+                )
+            )
+    if not relations:
+        return free_product
+
+    relation_module = BasedFreeModule(
+        left.base_ring(),
+        finite_ordered_set(tuple(range(len(relations)))),
+    )
+    presentation = module_homset(relation_module, free_product)(
+        dict(zip(relation_module.module_generating_set(), relations))
+    )
+    return FinitelyPresentedModule(presentation)
+
+
 class Tensor(UniqueRepresentation, Parent):
     r"""The module of type-$(p,q)$ tensors on $M$."""
 
@@ -68,6 +168,8 @@ class Tensor(UniqueRepresentation, Parent):
         )
         self._module = module
         self._valence = (contravariant, covariant)
+        self._dual_module = DualModule(module)
+        self._intrinsic_module, self._index_to_generator = self._build_intrinsic_module()
         # Local: a module-level import here would close a cycle; by call time this module is built.
         from dzack_research.preamble.categories.modules.pure.modules import Modules
 
@@ -87,6 +189,70 @@ class Tensor(UniqueRepresentation, Parent):
 
     def base_ring(self) -> "Ring":
         return self.base()
+
+    def dual_module(self) -> "Module":
+        return self._dual_module
+
+    def intrinsic_module(self) -> "Module":
+        r"""Return (M^{\otimes p}\otimes_R(M^*)^{\otimes q})."""
+        return self._intrinsic_module
+
+    def _build_intrinsic_module(self) -> tuple:
+        from dzack_research.preamble.categories.algebras.framed_free_algebras import TensorAlgebraOn
+        from dzack_research.preamble.categories.forms.forms import TensorPower
+
+        contravariant, covariant = self._valence
+        vector_power = TensorPower(self._module, contravariant)
+        covector_power = TensorPower(self._dual_module, covariant)
+        intrinsic = TensorProductModule(vector_power, covector_power)
+
+        def word_label(factor_module: "Module", word: tuple) -> "Element":
+            algebra = TensorAlgebraOn(
+                factor_module.base_ring(),
+                factor_module.module_generating_set(),
+            )
+            element = algebra.one()
+            for label in word:
+                element *= algebra.algebra_generator(label)
+            return next(iter(element.coefficients()))
+
+        module_labels = tuple(self._module.module_generating_set())
+        dual_labels = tuple(self._dual_module.module_generating_set())
+        index_to_generator = {}
+        for vector_word in _index_product(module_labels, repeat=contravariant):
+            vector_label = word_label(self._module, vector_word)
+            for covector_word in _index_product(dual_labels, repeat=covariant):
+                covector_label = word_label(self._dual_module, covector_word)
+                index = tuple(vector_word) + tuple(covector_word)
+                index_to_generator[index] = intrinsic.module_generator(
+                    (vector_label, covector_label)
+                )
+        return intrinsic, index_to_generator
+
+    def _intrinsic_element(self, entries: dict) -> "Element":
+        return sum(
+            (
+                coefficient * self._index_to_generator[index]
+                for index, coefficient in entries.items()
+            ),
+            self._intrinsic_module.zero(),
+        )
+
+    def _entries_of_intrinsic_element(self, element: "Element") -> dict:
+        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _coordinate_vector
+
+        generator_to_index = {
+            generator: index
+            for index, generator in self._index_to_generator.items()
+        }
+        return {
+            generator_to_index[generator]: coefficient
+            for generator, coefficient in zip(
+                self._intrinsic_module.module_generators(),
+                _coordinate_vector(element),
+            )
+            if coefficient != 0
+        }
 
     def _ring_morphism_defining_module_action(self: Self) -> "Morphism":
         r"""Return $\rho$, scaling every component."""
@@ -122,7 +288,8 @@ class TensorElement(ModuleElement):
 
     def __init__(self, parent: Tensor, entries: dict) -> None:
         ModuleElement.__init__(self, parent)
-        self._entries = dict(entries)
+        self._intrinsic_element = parent._intrinsic_element(entries)
+        self._entries = parent._entries_of_intrinsic_element(self._intrinsic_element)
 
     def base_changed(self, module: "Module") -> "TensorElement":
         r"""Read this tensor after extending scalars to ``module.base_ring()``."""
@@ -150,11 +317,8 @@ class TensorElement(ModuleElement):
         return (
             isinstance(other, TensorElement)
             and other.parent() is self.parent()
-            and other._entries == self._entries
+            and other._intrinsic_element == self._intrinsic_element
         )
-
-    def __hash__(self) -> int:
-        return hash((self.parent(), tuple(sorted(self._entries.items()))))
 
     def _scaled(self, scalar) -> "TensorElement":
         return self.parent()(
@@ -390,8 +554,12 @@ class MixedTensorAlgebra(UniqueRepresentation, Parent):
 
     def __init__(self, module: "Module") -> None:
         from dzack_research.preamble.categories.algebras.algebras import Algebras
+        from dzack_research.preamble.categories.algebras.framed_free_algebras import TensorAlgebraOf
 
         self._module = module
+        self._dual_module = DualModule(module)
+        self._vector_tensor_algebra = TensorAlgebraOf(module)
+        self._covector_tensor_algebra = TensorAlgebraOf(self._dual_module)
         Parent.__init__(
             self,
             base=module.base_ring(),
@@ -403,6 +571,17 @@ class MixedTensorAlgebra(UniqueRepresentation, Parent):
 
     def base_ring(self) -> "Ring":
         return self.base()
+
+    def dual_module(self) -> "Module":
+        return self._dual_module
+
+    def vector_tensor_algebra(self) -> "Parent":
+        r"""Return the factor (T(M))."""
+        return self._vector_tensor_algebra
+
+    def covector_tensor_algebra(self) -> "Parent":
+        r"""Return the factor (T(M^*))."""
+        return self._covector_tensor_algebra
 
     def homogeneous_piece(self, valence: tuple[int, int]) -> Tensor:
         r"""Return the component of bidegree ``valence``."""
