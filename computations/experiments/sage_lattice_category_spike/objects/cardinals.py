@@ -27,6 +27,8 @@ from typing import TYPE_CHECKING
 
 from sage.rings.infinity import Infinity
 from sage.rings.integer_ring import ZZ
+from sage.rings.rational_field import QQ
+from sage.structure.element import Element
 
 from ..lexicon import Integer
 
@@ -49,7 +51,10 @@ class Cardinal:
     _countable: bool
 
     def __init__(self, value: object, countable: bool = True) -> None:
-        if value == Infinity:
+        # An integer is never Infinity, and asking whether it is coerces it
+        # into Sage's infinity ring -- which every count in the graph would
+        # then pay for on construction.
+        if not isinstance(value, (int, Integer)) and value == Infinity:
             self._value = Infinity
             self._countable = countable
             return
@@ -59,10 +64,13 @@ class Cardinal:
         self._countable = True
 
     def is_finite(self) -> bool:
-        return self._value != Infinity
+        # ``__init__`` stores either an exact ``ZZ`` element or the infinity
+        # object itself, so identity decides this without asking Sage's
+        # coercion machinery for a comparison on every count.
+        return self._value is not Infinity
 
     def is_infinite(self) -> bool:
-        return self._value == Infinity
+        return self._value is Infinity
 
     def is_countable(self) -> bool:
         return self._countable
@@ -94,6 +102,11 @@ class Cardinal:
         if not self.is_finite():
             raise TypeError(f"cannot convert infinite cardinal {self} to Sage Integer")
         return ZZ(self._value)
+
+    def _rational_(self) -> "Rational":
+        if not self.is_finite():
+            raise TypeError(f"cannot convert infinite cardinal {self} to Sage Rational")
+        return QQ(self._value)
 
     def __repr__(self) -> str:
         if self.is_finite():
@@ -171,7 +184,12 @@ class Cardinal:
         return max(self, other_cardinal)
 
     def __rmul__(self, other: object) -> object:
-        if isinstance(other, (Cardinal, Integer, int)) or other == Infinity:
+        if isinstance(other, (Cardinal, Integer, int)):
+            return self * other
+        # Only a Sage element can be the infinity; asking a plain Python
+        # object whether it equals it runs the whole coercion search, and
+        # ``list * cardinal`` (repetition by a count) arrives here.
+        if isinstance(other, Element) and other == Infinity:
             return self * other
         return NotImplemented
 

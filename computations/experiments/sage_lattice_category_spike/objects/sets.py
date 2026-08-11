@@ -157,15 +157,24 @@ class FiniteSets(CatObject, CategoryWithAxiom):
         def cardinality(self) -> Cardinal:
             r"""The exact count, by materializing the chosen enumeration —
             finite sets own the termination-dependent implementation,
-            constructed from the witness suite."""
-            from collections.abc import Iterable
+            constructed from the witness suite.
+
+            A construction that determines its own count states it directly
+            (the fundamental finite sets, cartesian products, disjoint
+            unions).  This is the one-time evaluation witness for a finite
+            set whose construction does not: the enumeration runs once and
+            the cardinal it yields is the set's stored count from then on."""
+            stored = self.__dict__.get("_owned_cardinality")
+            if stored is not None:
+                return stored
 
             from sage.rings.integer_ring import ZZ
 
             from .cardinals import Cardinal
 
-            members = self
-            return Cardinal(ZZ(sum(1 for _ in members)))
+            stored = Cardinal(ZZ(sum(1 for _ in self)))
+            self._owned_cardinality = stored
+            return stored
 
 
 class InfiniteSets(CatObject, CategoryWithAxiom):
