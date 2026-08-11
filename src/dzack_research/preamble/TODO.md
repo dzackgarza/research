@@ -77,6 +77,30 @@ a constructed object: no specimen is shown projective, no form is shown to
 land in $R$, and no Gram matrix is shown nonsingular. A lattice built from a
 degenerate Gram matrix would enter `Nondegenerate` and say so.
 
+### The free-module functor does not preserve equality of indexing sets
+
+The transcript requires $F_R(S)=F_R(S')$ when $S=S'$. This is equality of
+objects, not an extra chosen isomorphism. The induced maps must also agree
+under that equality.
+
+Separately built finite free modules with equal ordered indexing sets can be
+equal but not identical. Their underlying sets are then identified through
+equality, while morphism evaluation still expects identity. A morphism between
+the equal modules can fail. Thus the object assignment exists, but it is not
+yet a coherent functor on sets and maps.
+
+### Forgetting structure does not preserve one ring object uniformly
+
+The transcript treats a ring $R$ as the same object when regarded as an
+$R$-module or an $R$-algebra. Forgetting structure should return that object,
+not a second ring joined by an implicit conversion.
+
+This holds for the named session rings, but not for every construction. A
+module built directly over an engine ring can return that engine object.
+Uniform promotion during parent construction breaks the base-ring morphism of
+a free algebra. The missing construction is one coherent family of forgetful
+and change-of-scalars functors across rings, modules, algebras, and lattices.
+
 ## The chain that blocks the forms layer
 
 One line of work, in order. Each is blocked on the one above it.
