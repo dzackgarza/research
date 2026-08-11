@@ -33,6 +33,8 @@ from copy import copy
 from typing import Any, TYPE_CHECKING
 
 from sage.matrix.constructor import matrix as _matrix
+from sage.matrix.matrix_integer_dense import Matrix_integer_dense
+from sage.rings.integer_ring import ZZ as _ZZ
 from sage.structure.element import Matrix
 
 
@@ -207,6 +209,21 @@ class MorphismMatrix:
             MorphismMatrix(left),
             MorphismMatrix(right),
         )
+
+    def LLL(self) -> "MorphismMatrix":
+        r"""Return these rows LLL reduced.
+
+        A reduction of the rows and nothing else: the rows span what they
+        spanned, written in a shorter and more orthogonal generating set.
+        The reduced rows are again a matrix in the same two framings, which
+        is why this returns one and not a module.
+        """
+        # Over the integers and not the ring the entries happen to carry:
+        # reduction is of an integer row lattice.  ``LLL`` lives on the
+        # integer matrix type and not on the generic one, which is what the
+        # annotation says -- ``change_ring(ZZ)`` is what produces it.
+        integral: Matrix_integer_dense = self._matrix.change_ring(_ZZ)
+        return MorphismMatrix(integral.LLL())
 
     def __mul__(self, other: object) -> "CategoryMorphism":
         product = self._matrix * _underlying(other)

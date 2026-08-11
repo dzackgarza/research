@@ -706,12 +706,15 @@ AUDITED_MATHEMATICS = {
         lambda lattice: lattice.relations().cardinality(),
         lambda native: native.relations().rank(),
     ),
-    # a change of framing, and its matrix
-    "LLL": (
-        lambda lattice: lattice.LLL().codomain().gram_matrix(),
-        lambda native: native.LLL().gram_matrix(),
-    ),
 }
+
+# No ``LLL`` row.  This table asks a lattice a question and compares the two
+# answers, and reduction is not a question a lattice answers: it reduces a
+# *framing*, so it is defined on a submodule of a definite lattice whose
+# target is $I_{n,0}$ or $I_{0,n}$ -- ``DefiniteLattices.Subobjects``.  Sage
+# answering ``A4.LLL()`` is Sage conflating a lattice with a chosen basis for
+# it, and porting the signature would import that conflation.  The owned
+# surface is proved in ``test_subobject_lll.sage``.
 
 
 @pytest.mark.parametrize("question", sorted(AUDITED_MATHEMATICS))

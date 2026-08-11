@@ -1632,12 +1632,17 @@ def refine_one_lattice(lattice: "Lattice") -> None:
     also joins ``HyperbolicLattices``.
     """
     # Local: a module-level import here would close a cycle; by call time this module is built.
+    from dzack_research.preamble.categories.modules.framed.formed.integrallattice.definite_lattices import DefiniteLattices
     from dzack_research.preamble.categories.modules.framed.formed.integrallattice.hyperbolic_lattices import HyperbolicLattices
     from dzack_research.preamble.refine import refine
     refine(lattice, IntegralLattices())
     pos, neg = lattice.signature_pair()
     if pos > 0 and neg > 0 and min(pos, neg) == 1:
         refine(lattice, HyperbolicLattices())
+    # Definite either way round: this project writes the root lattices
+    # negative definite, so both signs are the category.
+    if pos == 0 or neg == 0:
+        refine(lattice, DefiniteLattices())
 
 _NAMED_GRAM_MATRICES: dict[str, Any] = {
     # The two names for the hyperbolic plane; the ADE names are read below.

@@ -250,9 +250,15 @@ def Subobject(embedding: "ModuleMorphism") -> "Module":
     from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormMorphism
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
     from dzack_research.preamble.categories.abstract_categories.slice_categories import Slice
+    from dzack_research.preamble.categories.modules.framed.formed.integrallattice.definite_lattices import DefiniteLattices
     from dzack_research.preamble.refine import refine
     assert isinstance(embedding, (ModuleMorphism, FormMorphism)), (
         "a module subobject is represented by a module or form morphism"
     )
     subobject = Slice(embedding, is_mono=True)
-    return refine(subobject, [subobject.category(), Subobjects()])
+    categories = [subobject.category(), Subobjects()]
+    # A submodule of a definite lattice is where reduction is defined, so the
+    # axiom is joined here rather than asserted at each call site.
+    if embedding.codomain() in DefiniteLattices():
+        categories.append(DefiniteLattices().Subobjects())
+    return refine(subobject, categories)
