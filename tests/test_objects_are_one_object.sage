@@ -28,6 +28,20 @@ def _owned_integers():
     return ℤ
 
 
+def test_compiler_runtime_names_do_not_enter_the_installed_namespace() -> None:
+    r"""Compiler support names cannot replace a constructor owned here."""
+    from dzack_research.preamble.install import install_preamble
+
+    install_preamble(globals())
+    from dzack_research.preamble.categories.sets.sets import ConditionSet as OwnedConditionSet
+    from dzack_research.preamble.categories.sets.sets import ImageSet as OwnedImageSet
+    from dzack_research.preamble.categories.sets.sets import Set as OwnedSet
+
+    assert Set is OwnedSet
+    assert ConditionSet is OwnedConditionSet
+    assert ImageSet is OwnedImageSet
+
+
 def test_a_free_module_is_one_object_per_ring_and_set() -> None:
     r"""$F_R(S)$ is the same object however it is reached.
 

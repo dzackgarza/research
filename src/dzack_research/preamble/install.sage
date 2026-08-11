@@ -177,31 +177,18 @@ def install_preamble(namespace: dict) -> None:
         _exports = {}
         for _module_name in _MODULES:
             _module = _importlib.import_module("dzack_research.preamble." + _module_name)
+            _compiler_names = getattr(
+                _module,
+                "__sageparse_runtime_names__",
+                frozenset(),
+            )
             _exports.update(
                 {
                     _key: _value
                     for _key, _value in vars(_module).items()
-                    if not _key.startswith("_")
+                    if not _key.startswith("_") and _key not in _compiler_names
                 }
             )
-        namespace.update(_exports)
-
-        # Every lowered ``.sage`` module carries the compiler's prelude, and
-        # ``Set`` is one of the names in it.  The sweep above reads module
-        # namespaces, so it cannot tell a name a module *defines* from one the
-        # prelude put there, and the last module wins -- which handed the session
-        # the engine's ``Set`` while the preamble's own modules kept theirs.  Two
-        # constructors for one word is the split this preamble exists to remove,
-        # so the owner is named here.
-        from dzack_research.preamble.categories.sets.sets import (
-            ConditionSet,
-            ImageSet,
-            Set,
-            Sets,
-        )
-        _exports.update(
-            {"ConditionSet": ConditionSet, "ImageSet": ImageSet, "Set": Set, "Sets": Sets}
-        )
         namespace.update(_exports)
 
         # ``R^n`` is the preamble's free module.  These are the rings a notebook
@@ -219,14 +206,6 @@ def install_preamble(namespace: dict) -> None:
         # session silently keeps Sage's, whose lattices have no ``Aut``.
         _preamble_namespace = dict(_exports)
         _preamble_namespace.update(_installed_rings)
-        _preamble_namespace.update(
-            {
-                "ConditionSet": ConditionSet,
-                "ImageSet": ImageSet,
-                "Set": Set,
-                "Sets": Sets,
-            }
-        )
         # ``ZZ`` and its fellows are deliberately absent from the cache: while this
         # file runs they are the engine's, which is what the scripts still loading
         # must build over, so they are not among the names this file exports.
