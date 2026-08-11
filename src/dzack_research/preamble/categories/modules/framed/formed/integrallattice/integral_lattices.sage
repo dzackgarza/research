@@ -72,6 +72,9 @@ from typing import Any, Self, TYPE_CHECKING, assert_never
 
 from sage.arith.misc import gcd
 from sage.categories.category import Category
+from sage.categories.category_with_axiom import CategoryWithAxiom_over_base_ring
+from dzack_research.preamble.categories.modules.framed.formed.lattices import Lattices
+from dzack_research.preamble.categories.modules.framed.formed.lattice_axioms import FinitelyGeneratedLattices
 from sage.categories.groups import Groups as SageGroups
 from sage.misc.cachefunc import cached_method
 from sage.categories.modules import Modules
@@ -91,7 +94,7 @@ if TYPE_CHECKING:
     from sage_lattice_category_spike.lexicon import OrderedSet
 
 
-class IntegralLattices(Category):
+class IntegralLattices(CategoryWithAxiom_over_base_ring):
     r"""Category of integral lattices with enriched computational methods.
 
     Unlike Sage's default::
@@ -107,20 +110,34 @@ class IntegralLattices(Category):
     def _repr_object_names(cls) -> str:
         return "integral lattices"
 
-    def super_categories(self) -> list:
-        r"""Return the free form modules, of which lattices are the integral ones.
+    # What an integral lattice is, said as axioms rather than as a category
+    # name: a lattice -- a projective module with a symmetric bilinear form --
+    # that is finitely generated, takes its values in the base ring, and has
+    # zero radical.  ``Lattices(R).FinitelyGenerated().Integral()`` is the
+    # chain this class *is*; nondegeneracy is joined below.
+    _base_category_class_and_axiom = (FinitelyGeneratedLattices, "Integral")
 
-        Everything a lattice has by having a form on a free module -- the
-        pairing, the norm, the rank, the basis, $v*w$ -- it has from there, and
-        this category is only what integrality adds.
+    @staticmethod
+    def __classcall_private__(cls, base_ring=None):
+        r"""Default the base ring to the integers.
+
+        Lattices are $R$-lattices and the category is parametrized by $R$;
+        over $\ZZ$ is the case a session means when it says no ring, and
+        saying so here keeps the general statement without making every call
+        site name the ring.
         """
-        # Local: a module-level import here would close a cycle; by call time this module is built.
-        from dzack_research.preamble.categories.modules.framed.formed.form_modules import FinitelyGeneratedFreeFormModules
-        from dzack_research.preamble.categories.modules.framed.formed.form_modules import SymmetricBilinearFormModules
-        return [
-            FinitelyGeneratedFreeFormModules(),
-            SymmetricBilinearFormModules(),
-        ]
+        from sage.categories.category import Category
+        from sage.rings.integer_ring import ZZ as _ZZ
+
+        if base_ring is None:
+            base_ring = _ZZ
+        if isinstance(base_ring, Category):
+            return super(IntegralLattices, cls).__classcall__(cls, base_ring)
+        return super(IntegralLattices, cls).__classcall__(cls, base_ring)
+
+    def extra_super_categories(self) -> list:
+        r"""Add nondegeneracy, the third axiom in the definition."""
+        return [Lattices(self.base_ring()).Nondegenerate()]
 
     class ParentMethods:
         r"""Methods available on every integral lattice parent refined into this category."""
@@ -1089,13 +1106,16 @@ class IntegralLattices(Category):
 
         def _first_ngens(self: Self, count: int) -> "OrderedSet":
             r"""Return generators matching the declared name slots."""
-            generators = self.module_generators()
+            # The enumeration of the generating set: a slot is a position in
+            # the declared names, and positions are read off the order, not
+            # off the set.
+            module_generators = tuple(self.module_generators())
             spec = self.__dict__.get("_ellipsis_spec")
             if spec is None or len(spec) != count:
-                return tuple(generators[:count])
+                return module_generators[:count]
             names = list(self.variable_names())
             return tuple(
-                Ellipsis if slot == "Ellipsis" else generators[names.index(slot)]
+                Ellipsis if slot == "Ellipsis" else module_generators[names.index(slot)]
                 for slot in spec
             )
 
@@ -1286,6 +1306,9 @@ class IntegralLattices(Category):
 
 
 # ---- helper utilities ----
+
+
+setattr(FinitelyGeneratedLattices, "Integral", IntegralLattices)
 
 _ZERO_DOTS: bool = True
 

@@ -32,12 +32,12 @@ def _projection_onto(
     built in the module homset for that reason.
     """
     block = summand
-    generators = tuple(block.module_generators())
+    module_generators = block.module_generators()
     return module_homset(L, block)(
         {
             label: (
-                generators[index - offset]
-                if 0 <= index - offset < len(generators)
+                module_generators[index - offset]
+                if 0 <= index - offset < module_generators.cardinality()
                 else block.zero()
             )
             for index, label in enumerate(L.module_generating_set())

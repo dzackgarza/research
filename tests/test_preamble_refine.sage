@@ -113,8 +113,8 @@ def test_unequal_rank_hom_from_generator_images() -> None:
     _ensure_preamble()
     E = Lattices.E8_2
     TdP = Lattices.TdP
-    generators = TdP.module_generators()
-    images = [generators[4 + i] + generators[12 + i] for i in range(8)]
+    module_generators = TdP.module_generators()
+    images = [module_generators[4 + i] + module_generators[12 + i] for i in range(8)]
     phi = E.Hom(TdP)(images)
     assert phi.matrix().dimensions() == (8, 20)
     assert phi(E.module_generators()[0]) == images[0]

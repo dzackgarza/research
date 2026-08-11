@@ -20,6 +20,7 @@ from sage.rings.integer import Integer as SageInteger
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.real_mpfr import RR as SageRR
 from sage.sets.condition_set import ConditionSet as SageConditionSet
+from sage.misc.cachefunc import cached_function
 from sage.sets.set import Set_generic
 from sage.sets.image_set import ImageSet as SageImageSet
 from sage.sets.integer_range import IntegerRange
@@ -121,16 +122,42 @@ def finite_ordered_set(
     the relation.
     """
     if isinstance(source, (list, tuple)):
-        return refine(
-            TotallyOrderedFiniteSet(tuple(dict.fromkeys(source))),
-            Sets().Finite().TotallyOrdered(),
-        )
+        return _ordered_set_on(tuple(dict.fromkeys(source)))
     source = _as_set(source)
     assert source in Sets().Finite(), f"{source} is not a finite set"
     if source in Sets().TotallyOrdered():
         return source
+    return _ordered_set_on(tuple(source))
+
+
+def ordered_set_owned_by(elements) -> "lexicon.OrderedSet":
+    r"""Return a fresh ordered set on ``elements``, owned by its constructor.
+
+    ``finite_ordered_set`` is canonical: $S=S'$ means one set, which is what
+    makes $F_R(S)=F_R(S')$ hold on the nose.  A family of *elements* is not
+    canonical in that way -- the generators of one module and of another can
+    compare equal while being different generators -- so a set of them belongs
+    to whatever built it and is not shared by value.
+    """
     return refine(
-        TotallyOrderedFiniteSet(tuple(source)),
+        TotallyOrderedFiniteSet(tuple(elements)),
+        Sets().Finite().TotallyOrdered(),
+    )
+
+
+@cached_function
+def _ordered_set_on(elements: tuple) -> "lexicon.OrderedSet":
+    r"""Return *the* ordered set on this enumeration.
+
+    One object per enumeration, not one per call.  Two ordered sets with the
+    same members in the same order are the same set, and things keyed by them
+    -- a free module on a generating set, most of all -- are only the same
+    object when the key is.  ``TotallyOrderedFiniteSet`` is not a unique
+    representation, so without this a module built twice from equal
+    generators has two parents that print alike and refuse to coerce.
+    """
+    return refine(
+        TotallyOrderedFiniteSet(elements),
         Sets().Finite().TotallyOrdered(),
     )
 
@@ -146,9 +173,12 @@ class _Delta:
                 # integers 0..n, and Sage's IntegerRange yields Integer.
                 # Python's range yields int, a different object that prints
                 # the same, and the repo bans that fork.
-                return refine(
-                    TotallyOrderedFiniteSet(IntegerRange(SageZZ(n) + SageZZ.one())),
-                    Sets().Finite().TotallyOrdered(),
+                # Through the same constructor as every other ordered set:
+                # $\Delta[0]$ and the ordered set on $(0)$ are one set, and
+                # anything keyed by them -- a free module, above all -- is the
+                # same object only when they are.
+                return _ordered_set_on(
+                    tuple(IntegerRange(SageZZ(n) + SageZZ.one()))
                 )
             case _ if n == _ALEPH[0]:
                 # The countable simplex is an owned ordered set like every

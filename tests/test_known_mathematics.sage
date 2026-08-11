@@ -568,12 +568,12 @@ def test_the_module_generators_are_a_framing_carrying_the_gram_matrix() -> None:
     framing rather than an arbitrary spanning set.
     """
     lattice = IntegralLattice("A4")
-    generators = lattice.module_generators()
-    assert len(generators) == lattice.rank(), (
+    module_generators = lattice.module_generators()
+    assert module_generators.cardinality() == lattice.rank(), (
         "a framing of a free module of rank n has n members"
     )
     pairings = matrix(
-        [[left * right for right in generators] for left in generators]
+        [[left * right for right in module_generators] for left in module_generators]
     )
     assert pairings == lattice.gram_matrix(), (
         "the Gram matrix is the matrix of the form on the module generators"

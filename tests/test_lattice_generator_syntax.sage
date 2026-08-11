@@ -89,7 +89,7 @@ def test_ellipsis_form_expands_the_range() -> None:
     IntegralLattice = _lattice_constructor()
     L.<a1,...,a8> = IntegralLattice("E8")
     assert L.variable_names() == tuple(f"a{i}" for i in range(1, 9)), L.variable_names()
-    assert len(L.module_generators()) == 8
+    assert L.module_generators().cardinality() == 8
     # The crux: a8 is the EIGHTH generator, not the third slot of the raw spec.
     assert a1 == L.module_generators()[0], a1
     assert a8 == L.module_generators()[7], a8
@@ -120,7 +120,7 @@ def test_assign_names_then_inject_works() -> None:
     names = tuple(f"a{i}" for i in range(1, 9))
     lattice._assign_names(names)
     assert lattice.variable_names() == names
-    assert len(lattice.module_generators()) == 8
+    assert lattice.module_generators().cardinality() == 8
     first_two = lattice._first_ngens(2)
     assert len(first_two) == 2
 
@@ -158,7 +158,7 @@ def test_named_lattice_helper_gives_the_intended_sugar() -> None:
     lattice = _lattice_constructor()("E8")
     named = lattice.with_names("a1..a8")
     assert named.variable_names() == tuple(f"a{i}" for i in range(1, 9))
-    assert len(named.module_generators()) == 8
+    assert named.module_generators().cardinality() == 8
 
     explicit = _lattice_constructor()("H").with_names("e, f")
     assert explicit.variable_names() == ("e", "f")

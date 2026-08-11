@@ -27,6 +27,7 @@ if TYPE_CHECKING:
     from sage.rings.ring import Ring
     from sage.structure.element import RingElement
 
+from dzack_research.preamble.categories.rings.rings import engine_ring
 from dzack_research.preamble.categories.rings.rings import OwnedBaseRing
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
 from typing import Self, TYPE_CHECKING
@@ -34,7 +35,9 @@ from typing import Self, TYPE_CHECKING
 from sage.categories.homset import Hom
 from sage.categories.morphism import SetMorphism
 from sage.structure.element import ModuleElement
+from sage.rings.integer import Integer as SageInteger
 from sage.structure.parent import Parent
+from sage.structure.unique_representation import UniqueRepresentation
 from sage.structure.richcmp import richcmp
 
 from sage_lattice_category_spike.objects.sets import Sets
@@ -195,8 +198,42 @@ class FreeModuleOnSetElement(ModuleElement):
         )
 
 
-class FreeModuleOnSet(OwnedBaseRing, Parent):
+class FreeModuleOnSet(UniqueRepresentation, OwnedBaseRing, Parent):
     r"""The free \(R\)-module on the actual set \(S\)."""
+
+    @staticmethod
+    def __classcall__(cls, base_ring, module_generating_set, *arguments, **keywords):
+        r"""Return *the* free module on \((R,S)\).
+
+        $F_R(S)=F_R(S')$ exactly when $S=S'$, so there is one object per
+        $(R,S)$ and not one per spelling.  The finite ordered case has its own
+        class, and the choice is made here rather than in a constructor
+        function: reaching the class directly must give the same object, or
+        two parents exist on one $(R,S)$ and elements of the two refuse to
+        coerce.
+        """
+        # Local: at module level this closes an import cycle; the finite
+        # ordered specialization is built by the time a free module is.
+        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import BasedFreeModule
+
+        # A ring and the owned view of it are one ring, so they key one
+        # module: $F_R(S)$ built over the session's ``ZZ`` and over the
+        # engine's must be the same object, or their elements refuse to
+        # coerce while both print as the integers.
+        base_ring = engine_ring(base_ring)
+        # A count names the standard set of that many slots: ``R^n`` says
+        # how many generators, not which, and $\Delta[n-1]$ is that set.
+        if isinstance(module_generating_set, (int, SageInteger)):
+            module_generating_set = Sets.Δ[module_generating_set - 1]
+        module_generating_set = _as_set(module_generating_set)
+        set_category = module_generating_set.category()
+        if cls is FreeModuleOnSet and set_category.is_subcategory(
+            Sets().Finite()
+        ) and set_category.is_subcategory(Sets().TotallyOrdered()):
+            cls = BasedFreeModule
+        return super(FreeModuleOnSet, cls).__classcall__(
+            cls, base_ring, module_generating_set, *arguments, **keywords
+        )
 
     Element = FreeModuleOnSetElement
 
@@ -280,18 +317,15 @@ class FreeModuleOnSet(OwnedBaseRing, Parent):
 
 
 def FreeModuleOn(base_ring: "Ring", module_generating_set: "OrderedSet") -> FreeModuleOnSet:
-    r"""Construct \(F_R(S)\) on the supplied set \(S\)."""
+    r"""Construct \(F_R(S)\) on the supplied set \(S\).
+
+    One object per \((R,S)\): free modules are rigid, and $F_R(S)=F_R(S')$
+    exactly when $S=S'$.  The classes are ``UniqueRepresentation`` so that
+    holds however the module is reached, not only through this constructor --
+    two parents that print alike and cannot coerce is what it prevents.
+    """
     # Local: at module level this closes an import cycle; the finite ordered
     # specialization is built by the time a free module is constructed.
     from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import BasedFreeModule
 
-    module_generating_set = _as_set(module_generating_set)
-    set_category = module_generating_set.category()
-    match (
-        set_category.is_subcategory(Sets().Finite()),
-        set_category.is_subcategory(Sets().TotallyOrdered()),
-    ):
-        case (True, True):
-            return BasedFreeModule(base_ring, module_generating_set)
-        case (True, False) | (False, True) | (False, False):
-            return FreeModuleOnSet(base_ring, module_generating_set)
+    return FreeModuleOnSet(base_ring, module_generating_set)

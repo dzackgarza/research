@@ -156,16 +156,27 @@ class FinitelyGeneratedModules(CategoryWithAxiom_over_base_ring):
 
     class ParentMethods:
         def module_generators(self):
-            r"""Return the finite framed generators as a tuple."""
+            r"""Return the finite framed generators, as an ordered set.
+
+            An ordered set, not a tuple: the generators are a set, and the
+            framing is what orders them.  Owned by this module rather than
+            canonical by value -- ``Free_R(S) = Free_R(S')`` when ``S = S'``,
+            which makes the *index* set canonical, but two modules'
+            generators can compare equal while being different generators.
+            """
             cached = self.__dict__.get("_preamble_module_generators")
             if cached is None:
                 module_generating_set = self.module_generating_set()
                 assert module_generating_set in Sets().Finite(), (
                     "module_generators() is defined only for finitely generated modules"
                 )
-                cached = tuple(
-                    self.module_generator(element_of_S)
-                    for element_of_S in module_generating_set
+                # Local: a module-level import here would close a cycle; by call time this module is built.
+                from dzack_research.preamble.categories.sets.sets import ordered_set_owned_by
+                cached = ordered_set_owned_by(
+                    tuple(
+                        self.module_generator(element_of_S)
+                        for element_of_S in module_generating_set
+                    )
                 )
                 self._preamble_module_generators = cached
             return cached

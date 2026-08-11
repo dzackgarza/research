@@ -118,9 +118,9 @@ def test_discriminant_form_is_the_inverse_gram_modulo_one() -> None:
     for name in ("A2", "D4", "E7", "U_2"):
         L = getattr(Lattices, name)
         inverse = L.gram_matrix().inverse()
-        generators = L.discriminant_bilinear_form().module_generators()
-        for i, x in enumerate(generators):
-            for j, y in enumerate(generators):
+        module_generators = L.discriminant_bilinear_form().module_generators()
+        for i, x in enumerate(module_generators):
+            for j, y in enumerate(module_generators):
                 assert QQ(x.b(y).lift() - inverse[i, j]) in ZZ, (
                     f"{name}: b(g{i}, g{j}) is not G^-1[{i},{j}] mod Z"
                 )
@@ -139,7 +139,7 @@ def test_normal_form_is_an_isometry_onto_a_smaller_generating_set() -> None:
         b = getattr(Lattices, name).discriminant_bilinear_form()
         normal = b.normal_form()
         assert normal.invariants() == b.invariants(), f"{name}: group changed"
-        assert len(normal.module_generators()) == len(normal.invariants()), (
+        assert normal.module_generators().cardinality() == len(normal.invariants()), (
             f"{name}: normal form should sit on a minimal generating set"
         )
         assert sorted(QQ(x.b(x).lift()) for x in b) == sorted(
@@ -152,7 +152,7 @@ def test_invariant_factor_form_is_an_isometry_on_invariant_factor_generators() -
     b = Lattices.TEn.discriminant_bilinear_form()
     factored = b.invariant_factor_form()
     assert factored.invariants() == b.invariants()
-    assert len(factored.module_generators()) == len(factored.invariants())
+    assert factored.module_generators().cardinality() == len(factored.invariants())
     assert sorted(QQ(x.b(x).lift()) for x in b) == sorted(
         QQ(x.b(x).lift()) for x in factored
     )

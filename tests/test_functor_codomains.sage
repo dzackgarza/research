@@ -141,9 +141,9 @@ def _sample_elements(group, bound=6):
     # products are exactly where the group law could go wrong.  An owned group
     # is asked for them in its own word: ``gens`` leaves open which structure
     # is generated, and a group generates as a group.
-    generators = list(group.group_generators())
-    words = [group.one()] + generators + [g**-1 for g in generators]
-    words += [left * right for left in generators for right in generators]
+    group_generators = list(group.group_generators())
+    words = [group.one()] + group_generators + [g**-1 for g in group_generators]
+    words += [left * right for left in group_generators for right in group_generators]
     return words[:bound]
 
 

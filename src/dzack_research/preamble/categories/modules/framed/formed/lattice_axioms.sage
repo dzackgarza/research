@@ -19,7 +19,12 @@ from sage.categories.category_with_axiom import (
     axiom,
 )
 
+from sage.categories.modules import Modules
+
 from dzack_research.preamble.categories.modules.framed.formed.lattices import Lattices
+from dzack_research.preamble.categories.modules.pure.finitely_generated.finitely_generated_modules import (  # noqa: F401
+    FinitelyGeneratedModules,
+)
 
 for _axiom_name in ("Integral", "Nondegenerate"):
     if _axiom_name not in cwa.all_axioms:
@@ -55,6 +60,16 @@ class FinitelyGeneratedLattices(CategoryWithAxiom_over_base_ring):
 
     _base_category_class_and_axiom = (Lattices, "FinitelyGenerated")
 
+    def extra_super_categories(self) -> list:
+        r"""A finitely generated lattice is a finitely generated module.
+
+        Said so that the module category's methods reach it: without this the
+        join resolves ``module_generators`` to the framed version, which
+        answers with an image set rather than the tuple a finite generating
+        set has.
+        """
+        return [Modules(self.base_ring()).FinitelyGenerated()]
+
     @classmethod
     def _repr_object_names(cls) -> str:
         return "finitely generated lattices"
@@ -80,6 +95,9 @@ class NondegenerateLattices(CategoryWithAxiom_over_base_ring):
         return "nondegenerate lattices"
 
 
+# ``IntegralLattices`` is ``Lattices(R).FinitelyGenerated().Integral()``, and
+# declares itself so in its own file; the binding happens there, once that
+# class exists.
 setattr(Lattices, "FinitelyGenerated", FinitelyGeneratedLattices)
 setattr(Lattices, "Integral", IntegralValuedLattices)
 setattr(Lattices, "Nondegenerate", NondegenerateLattices)

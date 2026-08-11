@@ -523,7 +523,7 @@ def test_discriminant_bilinear_form_elements_pair() -> None:
 
     assert A.invariants() == (3,)
     gens = A.module_generators()
-    assert len(gens) == 2, "one generator per generator of L, not per invariant factor"
+    assert gens.cardinality() == 2, "one generator per generator of L, not per invariant factor"
 
     x, y = gens
     assert x.b(y) == y.b(x)
@@ -678,7 +678,7 @@ def test_block_hom_Z2_U2_into_U_U2() -> None:
     for i in range(2):
         assert phi(domain.module_generators()[1 + i]) == codomain.module_generators()[2 + i]
     # Same matrix as the flat generator-image spelling.
-    flat = domain.Hom(codomain)([e + f] + list(codomain.module_generators()[2:]))
+    flat = domain.Hom(codomain)([e + f] + list(codomain.module_generators())[2:])
     assert phi.matrix() == flat.matrix()
 
 
