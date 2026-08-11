@@ -327,10 +327,6 @@ def test_the_alternating_algebra_of_a_countable_module_is_countable() -> None:
     assert (x * y).degree() == 2
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason="the preamble does not own Subsets; see issue #348",
-)
 def test_the_subsets_of_a_countable_set_are_uncountable() -> None:
     r"""$|\mathcal{P}(S)|=2^{\aleph_0}$ when $S$ is countably infinite.
 
@@ -341,13 +337,56 @@ def test_the_subsets_of_a_countable_set_are_uncountable() -> None:
     framing from the sizes instead of asking for it.
     """
     _ensure_preamble()
-    from sage.combinat.subset import Subsets
-
     countable = Sets.Δ[Sets.ℵ[0]]
-    subsets = Subsets(countable)
+    subsets = PowerSet(countable)
 
     assert subsets not in Sets().Finite(), (
         "there are uncountably many subsets of a countable set"
+    )
+    assert subsets in Sets().Infinite()
+    assert subsets in Sets().Uncountable()
+    assert subsets not in Sets().Countable()
+    assert subsets.cardinality() == Sets.ℵ[1]
+    assert Set((0, 2, 4)) in subsets
+
+
+def test_finite_subsets_of_a_countable_set_are_countably_infinite() -> None:
+    r"""Finite subsets are enumerated once, by their greatest element."""
+    _ensure_preamble()
+    countable = Sets.Δ[Sets.ℵ[0]]
+    subsets = FiniteSubsets(countable)
+    first = tuple(subsets[index] for index in range(8))
+
+    assert subsets in Sets().Countable().Infinite()
+    assert subsets.cardinality() == Sets.ℵ[0]
+    assert first == (
+        Set(()),
+        Set((0,)),
+        Set((1,)),
+        Set((0, 1)),
+        Set((2,)),
+        Set((0, 2)),
+        Set((1, 2)),
+        Set((0, 1, 2)),
+    )
+    assert subsets.index(Set((0, 2))) == 5
+
+
+def test_fixed_size_subsets_of_a_countable_set_are_countably_infinite() -> None:
+    r"""For positive ``k``, the ``k``-subsets of the naturals are countable."""
+    _ensure_preamble()
+    countable = Sets.Δ[Sets.ℵ[0]]
+    pairs = SubsetsOfSize(countable, 2)
+
+    assert pairs in Sets().Countable().Infinite()
+    assert pairs.cardinality() == Sets.ℵ[0]
+    assert tuple(pairs[index] for index in range(6)) == (
+        Set((0, 1)),
+        Set((0, 2)),
+        Set((1, 2)),
+        Set((0, 3)),
+        Set((1, 3)),
+        Set((2, 3)),
     )
 
 

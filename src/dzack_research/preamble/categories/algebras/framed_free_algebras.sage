@@ -279,30 +279,18 @@ class AlternatingMonomials(MonomialSystem):
         Finite subsets, not subsets: a monomial is a wedge of finitely many
         generators whatever \(S\) is, so \(\Lambda(F_R(S))\) is free of
         countable rank over a countable \(S\) and \(\Lambda^k\) is free of
-        rank \(\binom{|S|}{k}\) at every \(k\).  Every subset of a finite
-        \(S\) is finite, so ``Subsets`` says it directly there; otherwise the
-        finite subsets are graded by size and the union over the sizes is
-        that set.
+        rank \(\binom{|S|}{k}\) at every \(k\).
         """
-        from sage.combinat.subset import Subsets
-        from sage.sets.disjoint_union_enumerated_sets import (
-            DisjointUnionEnumeratedSets,
-        )
-        from sage.sets.family import Family
-        from sage.sets.non_negative_integers import NonNegativeIntegers
+        from dzack_research.preamble.categories.sets.sets import FiniteSubsets
 
-        if labels in Sets().Finite():
-            return Subsets(labels)
-        return DisjointUnionEnumeratedSets(
-            Family(NonNegativeIntegers(), lambda size: Subsets(labels, size))
-        )
+        return FiniteSubsets(labels)
 
     def _subset(self, members) -> "Element":
         r"""Return the monomial that is the subset with these members."""
-        from sage.combinat.subset import Subsets
+        from dzack_research.preamble.categories.sets.sets import SubsetsOfSize
 
         members = tuple(members)
-        return Subsets(self._labels, len(members))(members)
+        return SubsetsOfSize(self._labels, len(members))(members)
 
     def _sorted(self, monomial: "Element") -> tuple:
         r"""Return the members in the generating set's own order.
@@ -335,35 +323,12 @@ class AlternatingMonomials(MonomialSystem):
 
     def monomials_of_degree(self, degree: "Integer") -> Parent | tuple:
         r"""Return the subsets of a size: \(\binom{n}{k}\) of them."""
-        from sage.combinat.subset import Subsets
+        from dzack_research.preamble.categories.sets.sets import SubsetsOfSize
 
-        subsets = Subsets(self._labels, int(degree))
+        subsets = SubsetsOfSize(self._labels, int(degree))
         if int(degree) == 0 or self._labels in Sets().Finite():
             return tuple(subsets)
-        from itertools import islice
-        from sage.categories.cartesian_product import cartesian_product
-        from dzack_research.preamble.categories.sets.sets import ImageSet
-        from dzack_research.preamble.refine import refine
-
-        degree = int(degree)
-        words = cartesian_product([self._labels] * degree)
-        first_subset = tuple(islice(self._labels, degree))
-
-        def ordered_members_of_word(word: "Element") -> "Element":
-            members = tuple(dict.fromkeys(word))
-            if len(members) != degree:
-                members = first_subset
-            return words(tuple(sorted(members)))
-
-        return refine(
-            ImageSet(
-                ordered_members_of_word,
-                words,
-                is_injective=False,
-                inverse=lambda word: word,
-            ),
-            Sets().Infinite(),
-        )
+        return subsets
 
 
 class DividedMonomials(MonomialSystem):
