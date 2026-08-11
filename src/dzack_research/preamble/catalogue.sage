@@ -26,6 +26,7 @@ from dzack_research.preamble.categories.rings.rings import install_session_rings
 from dzack_research.preamble.categories.modules.framed.formed.integrallattice.integral_lattices import register_indecomposable
 from dzack_research.preamble.categories.modules.framed.formed.integrallattice.integral_lattices import _integral_lattice_with_names
 from sage.matrix.constructor import matrix
+from sage.structure.parent import Parent
 from sage.matrix.special import diagonal_matrix
 from sage.rings.integer_ring import ZZ as SageZZ
 
@@ -64,7 +65,7 @@ else:
     ]
 
 
-    class Lattices:
+    class _Catalogue:
         r"""Catalogue of named integral lattices.
 
         Most specimens are plain lattice objects.  Lattices that the session treats
@@ -181,12 +182,14 @@ else:
 
         @classmethod
         def namespace(cls) -> dict:
-            r"""Return the named lattice specimens as a ``{name: lattice}`` dict."""
-            return {
-                name: obj
-                for name, obj in vars(cls).items()
-                if obj in IntegralLattices()
-            }
+            r"""Return the named lattice specimens as a ``{name: lattice}`` dict.
+
+            Read off the registry rather than by scanning attributes for
+            things that look like lattices.  The class also carries the axiom
+            categories and the constructors, and ``obj in IntegralLattices()``
+            asks a class for its ``category()``.
+            """
+            return dict(cls._specimens)
 
         @classmethod
         def install(cls, scope):
@@ -198,9 +201,7 @@ else:
             the session's back -- so a notebook would find ``ZZ^3`` meaning one
             thing before the catalogue and another after it.
             """
-            for name, obj in vars(cls).items():
-                if obj in IntegralLattices():
-                    scope[name] = obj
+            scope.update(cls._specimens)
 
             scope.update(
                 I_dP=Involutions.I_dP,
@@ -235,6 +236,31 @@ else:
             install_session_rings(scope)
 
 
+
+
+    # One ``Lattices``.  The catalogue's specimens and constructors are
+    # attached to the category itself, so a session has a single name that
+    # answers both questions: ``Lattices(R)`` is the category of lattices over
+    # ``R``, ``Lattices("LK3")`` is the specimen, and ``Lattices.E8`` reads it
+    # as an attribute.  Two objects under one name is what the export sweep
+    # would otherwise resolve by module order.
+    from dzack_research.preamble.categories.modules.framed.formed.lattices import (
+        Lattices as _LatticeCategory,
+    )
+
+    for _catalogue_name, _catalogue_value in vars(_Catalogue).items():
+        if _catalogue_name.startswith("__"):
+            continue
+        setattr(_LatticeCategory, _catalogue_name, _catalogue_value)
+
+    Lattices = _LatticeCategory
+    Lattices._specimens = {
+        _catalogue_name: _catalogue_value
+        for _catalogue_name, _catalogue_value in vars(_Catalogue).items()
+        if not _catalogue_name.startswith("_")
+        and isinstance(_catalogue_value, Parent)
+        and _catalogue_value in IntegralLattices()
+    }
 
     # Names for the blocks a decomposition can actually produce.  Matching is Gram
     # equality, so only indecomposable lattices belong here: everything else splits

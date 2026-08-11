@@ -31,9 +31,26 @@ from dzack_research.preamble.categories.modules.pure.projective_modules import (
 
 
 class Lattices(CategoryWithAxiom_over_base_ring):
-    r"""Category of lattices over a base ring."""
+    r"""Category of lattices over a base ring, and the named specimens."""
 
     _base_category_class_and_axiom = (SymmetricBilinearFormModules, "Projective")
+
+    _specimens: dict = {}
+
+    @staticmethod
+    def __classcall_private__(cls, argument):
+        r"""Dispatch on what was asked for.
+
+        A ring names the category of lattices over it. A string names a
+        specimen from the catalogue, which registers itself here.
+        """
+        if isinstance(argument, str):
+            assert argument in cls._specimens, (
+                f"no lattice is named {argument!r}; "
+                f"known names are {sorted(cls._specimens)}"
+            )
+            return cls._specimens[argument]
+        return super(Lattices, cls).__classcall__(cls, argument)
 
     @classmethod
     def _repr_object_names(cls) -> str:

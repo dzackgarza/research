@@ -1042,11 +1042,11 @@ def test_catalogue_latex_fits_mathjax_and_has_balanced_environments() -> None:
     # lattices, each one costing a discriminant group and a node subprocess, to
     # re-check a fact about brace balance that A_2 and D_4 already establish.
     for name, lattice in {
-        **{
-            n: v
-            for n, v in vars(catalogue.Lattices).items()
-            if not n.startswith("_") and v in IntegralLattices()
-        },
+        # The registry, not a scan of the class's attributes: ``Lattices`` is
+        # the category as well as the catalogue, so its attributes include the
+        # axiom categories, and asking a class whether it is in
+        # ``IntegralLattices()`` asks a class for its ``category()``.
+        **catalogue.Lattices.namespace(),
         **{f"A{n}": catalogue.Lattices.root_lattice("A", n) for n in (1, 2, 5)},
         **{f"D{n}": catalogue.Lattices.root_lattice("D", n) for n in (4, 5)},
     }.items():
