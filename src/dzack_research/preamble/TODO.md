@@ -32,6 +32,57 @@ They require $A(F)/\langle K\rangle$ in every degree. The degree-wise relation
 generators, including every $\gamma_d(k)$ for $\Gamma$, now exist. No quotient
 parent assembles those pieces into one graded algebra.
 
+## The free constructions are not functors in the category layer
+
+The transcript used the functorial statement to determine the construction on
+a presentation:
+
+\[
+M=\operatorname{coker}(K\to F)
+\quad\Longrightarrow\quad
+A(M)=A(F)/\langle K\rangle,
+\]
+
+because each free-algebra functor is a left adjoint and therefore preserves
+colimits. The code now has extension and restriction morphisms, and it can
+construct induced morphisms in some free cases. It does not have functors
+
+\[
+T,\operatorname{Sym},\Lambda,\Gamma:R\text{-Mod}\longrightarrow R\text{-Alg}
+\]
+
+with object and morphism maps on the same domain. In particular, there is no
+identity or composition law for these assignments, no natural unit of an
+adjunction, and no induced algebra morphism for a morphism of presented
+modules. The missing full quotient algebras above are the missing object part
+of this same statement, not a separate convenience API.
+
+## Mixed tensors do not construct the stated tensor product
+
+`Tensor(M, (p, q))` is stated to be
+
+\[
+M^{\otimes p}\otimes_R(M^*)^{\otimes q},
+\]
+
+and `MixedTensorAlgebra(M)` is stated to be
+
+\[
+T(M)\otimes_R T(M^*).
+\]
+
+The implementation stores a component dictionary whose indices all range over
+one framing of `M`. It never constructs `M.dual_module()`, never forms either
+tensor algebra, and never takes their tensor product. Thus upper indices are
+labels from the same coordinate set as lower indices, rather than elements of
+the dual construction. Module relations are also absent, so the component
+model does not descend from a framing to a presented module.
+
+Contraction, outer product, trace, and index raising work for the finite free
+coordinate specimens now tested. They do not establish the claimed intrinsic
+construction. This is the remaining mathematical gap behind the transcript's
+request to place all type-$(p,q)$ tensors in one bigraded algebra.
+
 ## Smaller, and unblocked
 
 - **`A[n]` cannot mean the graded piece.** `FreeAlgebraOnSet.__getitem__` means
