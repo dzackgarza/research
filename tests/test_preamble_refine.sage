@@ -10,6 +10,8 @@ construction, wrap at the API boundary in a facade whose MRO puts
 ``MorphismMethods`` first.
 """
 
+import pytest
+
 
 def _ensure_preamble() -> None:
     if "Lattices" in globals():
@@ -59,6 +61,23 @@ def _sentinel_morphisms() -> Category:
                 return "from_refined_category"
 
     return _SentinelMorphisms()
+
+
+def test_refinement_refuses_a_module_without_its_action_morphism() -> None:
+    from dzack_research.preamble.categories.modules.pure.modules import Modules as OwnedModules
+    from dzack_research.preamble.refine import refine
+    from sage.categories.modules import Modules as SageModules
+    from sage.structure.parent import Parent
+
+    class _BareModule(Parent):
+        pass
+
+    parent = _BareModule(base=ZZ, category=SageModules(ZZ))
+    with pytest.raises(
+        AssertionError,
+        match="requires implementations of.*_ring_morphism_defining_module_action",
+    ):
+        refine(parent, OwnedModules(ZZ))
 
 
 def test_parent_methods_come_from_refined_category() -> None:

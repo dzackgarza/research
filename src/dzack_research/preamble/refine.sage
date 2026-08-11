@@ -233,6 +233,35 @@ def _rebuild_element_class(parent: "Parent", category: "Category") -> None:
         doccls=native,
     )
 
+
+def _assert_preamble_obligations_are_met(
+    obj: "SageObject",
+    category: "Category",
+) -> None:
+    r"""Require the data declared abstract by the preamble's categories."""
+    required = set()
+    for cat in category.all_super_categories(proper=False):
+        if not type(cat).__module__.startswith(_PREAMBLE_PACKAGE):
+            continue
+        methods = getattr(type(cat), "ParentMethods", None)
+        if methods is None:
+            continue
+        required.update(
+            name
+            for name, value in vars(methods).items()
+            if isinstance(value, AbstractMethod)
+        )
+    missing = []
+    for name in required:
+        try:
+            getattr(obj, name)
+        except (AttributeError, NotImplementedError):
+            missing.append(name)
+    assert not missing, (
+        f"refining {obj} into {category} requires implementations of "
+        f"{sorted(missing)}"
+    )
+
 def _refine_morphism(obj: "Morphism", category: "Category") -> "Morphism":
     """Reassign a morphism's class so ``MorphismMethods`` precede it."""
     mixins = _method_mixins(category, "MorphismMethods")
@@ -286,6 +315,7 @@ def refine(obj: "SageObject", category: "Category") -> "SageObject":
     # standalone category objects manufacture neither.
     if isinstance(obj, Parent) and not _is_homset(obj):
         _rebuild_element_class(obj, category)
+    _assert_preamble_obligations_are_met(obj, category)
     return obj
 
 def hook_post_init(
