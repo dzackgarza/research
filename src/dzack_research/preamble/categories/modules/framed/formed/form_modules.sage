@@ -129,6 +129,14 @@ class FormModules(OwnedCategoryOverBaseRing):
                 module=self.forget_form(),
             )
 
+        def raise_index(self: Self, tensor: "Element", slot: int = 0) -> "Element":
+            r"""Raise one lower index using this form."""
+            return tensor.raise_index(self, slot)
+
+        def lower_index(self: Self, tensor: "Element", slot: int = 0) -> "Element":
+            r"""Lower one upper index using this form."""
+            return tensor.lower_index(self, slot)
+
         def is_torsion_free(self: Self) -> bool:
             return bool(self.forget_form().is_torsion_free())
 

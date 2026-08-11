@@ -174,6 +174,49 @@ def test_the_gram_matrix_is_the_forms_covariant_tensor() -> None:
             ), "the tensor pairs what the form pairs"
 
 
+def test_a_unimodular_form_raises_and_lowers_an_index() -> None:
+    r"""For \(U\), raising one index of \(g\) gives \(\delta^i_j\)."""
+    _ensure_preamble()
+    gram = Lattices.U.gram_tensor()
+    identity = Lattices.U.raise_index(gram, 0)
+
+    assert identity.valence() == (1, 1)
+    assert identity.components() == {(0, 0): 1, (1, 1): 1}
+    assert Lattices.U.lower_index(identity, 0) == gram
+
+
+def test_raising_an_integral_index_requires_unimodularity() -> None:
+    r"""The inverse Gram matrix of \(A_2\) is not integral."""
+    _ensure_preamble()
+
+    with pytest.raises(AssertionError, match="unimodular"):
+        Lattices.A2.raise_index(Lattices.A2.gram_tensor(), 0)
+
+
+def test_the_correlation_is_an_isomorphism_exactly_when_unimodular() -> None:
+    r"""The two musical maps for \(U\) are inverse on every basis vector."""
+    _ensure_preamble()
+    correlation = Lattices.U.correlation_isomorphism()
+
+    for generator in Lattices.U.module_generators():
+        assert correlation.inverse()(correlation(generator)) == generator
+    for functional in Lattices.U.dual_module().module_generators():
+        assert correlation(correlation.inverse()(functional)) == functional
+
+    with pytest.raises(AssertionError, match="unimodular"):
+        Lattices.A2.correlation_isomorphism()
+
+
+def test_tensor_values_are_sage_elements() -> None:
+    r"""Tensor arithmetic belongs to the tensor parent."""
+    _ensure_preamble()
+    from sage.structure.element import Element
+
+    value = _tensor()(ZZ, [[1, 0], [0, 1]])
+    assert isinstance(value, Element)
+    assert value.parent().zero() + value == value
+
+
 def test_the_degree_two_piece_of_the_tensor_algebra_is_the_tensor_square() -> None:
     r"""$T(M)[2]$ has all $\mathrm{rank}^2$ words, so it is $M^{\otimes 2}$.
 

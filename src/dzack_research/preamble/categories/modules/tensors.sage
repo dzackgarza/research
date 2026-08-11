@@ -31,6 +31,7 @@ from itertools import product as _index_product
 from typing import Self
 
 from sage.structure.parent import Parent
+from sage.structure.element import ModuleElement
 from sage.structure.unique_representation import UniqueRepresentation
 
 
@@ -105,69 +106,71 @@ class Tensor(UniqueRepresentation, Parent):
         contravariant, covariant = self._valence
         return f"Type-({contravariant},{covariant}) tensors on {self._module}"
 
+    def _element_constructor_(self, entries: dict) -> "TensorElement":
+        return self.element_class(self, entries)
 
-class TensorElement:
+    def zero(self) -> "TensorElement":
+        return self({})
+
+
+class TensorElement(ModuleElement):
     r"""A tensor, held by its components in the module's framing."""
 
     def __init__(self, parent: Tensor, entries: dict) -> None:
-        self._parent = parent
+        ModuleElement.__init__(self, parent)
         self._entries = dict(entries)
 
-    def parent(self) -> Tensor:
-        return self._parent
-
     def valence(self) -> tuple:
-        return self._parent.valence()
+        return self.parent().valence()
 
     def __getitem__(self, index):
         r"""Return the component at a multi-index, zero where unrecorded."""
         index = index if isinstance(index, tuple) else (index,)
-        assert len(index) == self._parent.degree(), (
-            f"a type-{self._parent.valence()} tensor takes "
-            f"{self._parent.degree()} indices, got {len(index)}"
+        assert len(index) == self.parent().degree(), (
+            f"a type-{self.parent().valence()} tensor takes "
+            f"{self.parent().degree()} indices, got {len(index)}"
         )
-        return self._entries.get(index, self._parent.base_ring().zero())
+        return self._entries.get(index, self.parent().base_ring().zero())
 
     def components(self) -> dict:
         r"""Return the components, keyed by multi-index."""
         return dict(self._entries)
 
-    def __eq__(self, other: object) -> bool:
+    def __eq__(self, other: "Element") -> bool:
         return (
             isinstance(other, TensorElement)
-            and other._parent is self._parent
+            and other.parent() is self.parent()
             and other._entries == self._entries
         )
 
     def __hash__(self) -> int:
-        return hash((self._parent, tuple(sorted(self._entries.items()))))
+        return hash((self.parent(), tuple(sorted(self._entries.items()))))
 
     def _scaled(self, scalar) -> "TensorElement":
-        return TensorElement(
-            self._parent,
+        return self.parent()(
             {index: scalar * entry for index, entry in self._entries.items()},
         )
 
-    def __mul__(self, scalar) -> "TensorElement":
+    def _lmul_(self, scalar) -> "TensorElement":
         return self._scaled(scalar)
 
-    __rmul__ = __mul__
+    def _rmul_(self, scalar) -> "TensorElement":
+        return self._scaled(scalar)
 
-    def __add__(self, other: "TensorElement") -> "TensorElement":
-        assert other.parent() is self._parent, (
+    def _add_(self, other: "TensorElement") -> "TensorElement":
+        assert other.parent() is self.parent(), (
             "tensors add within one type on one module"
         )
         entries = dict(self._entries)
         for index, entry in other._entries.items():
-            entries[index] = entries.get(index, self._parent.base_ring().zero()) + entry
-        return TensorElement(self._parent, entries)
+            entries[index] = entries.get(index, self.parent().base_ring().zero()) + entry
+        return self.parent()(entries)
 
     def _scalar_or_tensor(self, valence: tuple, entries: dict):
         r"""Return the scalar when no slots are left, else the tensor."""
         if sum(valence) == 0:
-            return entries.get((), self._parent.base_ring().zero())
-        return TensorElement(
-            Tensor(self._parent.module(), valence),
+            return entries.get((), self.parent().base_ring().zero())
+        return Tensor(self.parent().module(), valence)(
             {index: entry for index, entry in entries.items() if entry != 0},
         )
 
@@ -197,14 +200,14 @@ class TensorElement:
         entries: dict = {}
         for index, entry in self._entries.items():
             eaten = index[contravariant : contravariant + filled]
-            weight = self._parent.base_ring().one()
+            weight = self.parent().base_ring().one()
             for slot, position in enumerate(eaten):
                 weight = weight * coordinates[slot][position]
             if weight == 0:
                 continue
             remaining = index[:contravariant] + index[contravariant + filled :]
             entries[remaining] = entries.get(
-                remaining, self._parent.base_ring().zero()
+                remaining, self.parent().base_ring().zero()
             ) + entry * weight
         return self._scalar_or_tensor((contravariant, covariant - filled), entries)
 
@@ -226,7 +229,7 @@ class TensorElement:
             f"slot {other_slot} is not a lower index of a "
             f"type-{other.valence()} tensor"
         )
-        assert other.parent().module() is self._parent.module(), (
+        assert other.parent().module() is self.parent().module(), (
             "contraction pairs tensors on one module"
         )
         entries: dict = {}
@@ -248,7 +251,7 @@ class TensorElement:
                     + right[other_contravariant:]
                 )
                 entries[merged] = entries.get(
-                    merged, self._parent.base_ring().zero()
+                    merged, self.parent().base_ring().zero()
                 ) + entry * other_entry
         return self._scalar_or_tensor(
             (contravariant - 1 + other_contravariant, covariant + other_covariant - 1),
@@ -271,16 +274,80 @@ class TensorElement:
                 if place not in (slot, contravariant + other_slot)
             )
             entries[remaining] = entries.get(
-                remaining, self._parent.base_ring().zero()
+                remaining, self.parent().base_ring().zero()
             ) + entry
         return self._scalar_or_tensor((contravariant - 1, covariant - 1), entries)
+
+    def raise_index(self, formed_module: "Module", slot: int = 0) -> "TensorElement":
+        r"""Raise one lower index with the inverse Gram matrix."""
+        from sage.matrix.constructor import matrix
+
+        contravariant, covariant = self.valence()
+        assert covariant > slot >= 0, (
+            f"slot {slot} is not a lower index of a type-{self.valence()} tensor"
+        )
+        assert formed_module.forget_form() is self.parent().module(), (
+            "the form and tensor must use the same module"
+        )
+        inverse = matrix(formed_module.gram_matrix()).inverse()
+        ring = self.parent().base_ring()
+        assert all(entry in ring for entry in inverse.list()), (
+            "raising an index over this ring requires a unimodular form"
+        )
+        rank = inverse.nrows()
+        entries = {}
+        for index, entry in self._entries.items():
+            contracted = index[contravariant + slot]
+            remaining_lower = (
+                index[contravariant:contravariant + slot]
+                + index[contravariant + slot + 1:]
+            )
+            for raised in range(rank):
+                output = index[:contravariant] + (raised,) + remaining_lower
+                entries[output] = entries.get(output, ring.zero()) + (
+                    ring(inverse[raised, contracted]) * entry
+                )
+        return Tensor(self.parent().module(), (contravariant + 1, covariant - 1))(
+            {index: entry for index, entry in entries.items() if entry != 0}
+        )
+
+    def lower_index(self, formed_module: "Module", slot: int = 0) -> "TensorElement":
+        r"""Lower one upper index with the Gram matrix."""
+        from sage.matrix.constructor import matrix
+
+        contravariant, covariant = self.valence()
+        assert contravariant > slot >= 0, (
+            f"slot {slot} is not an upper index of a type-{self.valence()} tensor"
+        )
+        assert formed_module.forget_form() is self.parent().module(), (
+            "the form and tensor must use the same module"
+        )
+        gram = matrix(formed_module.gram_matrix())
+        ring = self.parent().base_ring()
+        rank = gram.nrows()
+        entries = {}
+        for index, entry in self._entries.items():
+            contracted = index[slot]
+            remaining_upper = index[:slot] + index[slot + 1:contravariant]
+            lower = index[contravariant:]
+            for lowered in range(rank):
+                output = remaining_upper + lower + (lowered,)
+                entries[output] = entries.get(output, ring.zero()) + (
+                    ring(gram[lowered, contracted]) * entry
+                )
+        return Tensor(self.parent().module(), (contravariant - 1, covariant + 1))(
+            {index: entry for index, entry in entries.items() if entry != 0}
+        )
 
     def __repr__(self) -> str:
         contravariant, covariant = self.valence()
         return (
             f"type-({contravariant},{covariant}) tensor on "
-            f"{self._parent.module()}"
+            f"{self.parent().module()}"
         )
+
+
+Tensor.Element = TensorElement
 
 
 def tensor(base_ring: "Ring", components, valence: tuple = None, module: "Module" = None):
@@ -317,4 +384,4 @@ def tensor(base_ring: "Ring", components, valence: tuple = None, module: "Module
         for index, entry in _entries_by_index(components, shape).items()
         if entry != 0
     }
-    return TensorElement(Tensor(module, tuple(valence)), entries)
+    return Tensor(module, tuple(valence))(entries)

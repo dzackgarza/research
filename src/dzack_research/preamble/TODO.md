@@ -26,14 +26,12 @@ Polarization *is* built for discriminant quadratic modules
 the special case. The general statement is missing, and the general statement
 is what the divided square was introduced for.
 
-### A form gives $M \cong M^*$, and nothing uses it
+### Raising indices after scalar extension
 
-A nondegenerate form is an isomorphism $M \to M^*$. That isomorphism is what
-raising and lowering an index means, so it is the only thing connecting the
-tensor layer to the forms layer. `Tensor(M,(p,q))` has contraction and trace
-and no way to apply a lattice's form, so `gram_tensor()` returns a $(0,2)$
-tensor that can never become the $(1,1)$ identity, and a lattice cannot hand
-its form to a tensor at all.
+For an integral lattice, nondegeneracy makes $L\to L^*$ injective. It is an
+isomorphism over $\mathbb Z$ only when $L$ is unimodular. Raising and lowering
+indices now works over the current base ring in that case. A nonunimodular
+lattice still needs the same operation after extension to $\mathbb Q$.
 
 ### The lattice axioms are declared and never established
 
@@ -137,12 +135,6 @@ sited on the symmetric flavour rather than on the shared class.
   variants, `Tensor(M, (p, q))`, and graded pieces. New constructors can avoid
   the sweep without a visible failure. The sweep needs a complete source of
   constructors.
-
-- **`Tensor` does not use Sage's parent and element structure.**
-  `Tensor(M, (p, q))` is a `Parent`, but `TensorElement` is a plain Python
-  class. It does not inherit `Element`, use `element_class`, or receive its
-  arithmetic from the parent's category. Replace its local arithmetic with
-  Sage's tensor implementation or another mature implementation.
 
 ## Local workarounds with unresolved causes
 

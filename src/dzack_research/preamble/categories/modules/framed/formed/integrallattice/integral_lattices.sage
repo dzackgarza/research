@@ -523,6 +523,32 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             """
             return self.is_nondegenerate() and self.discriminant_group().cardinality() == 1
 
+        def correlation_isomorphism(self: Self) -> "ModuleMorphism":
+            r"""Return \(L\cong L^*\) when the form is unimodular."""
+            from dzack_research.preamble.categories.abstract_categories.arrow_categories import Isomorphism
+            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
+            from dzack_research.preamble.utilities import zipsum
+
+            assert self.is_unimodular(), (
+                "the correlation is an isomorphism exactly for a unimodular lattice"
+            )
+            forward = self.correlation_morphism()
+            inverse_matrix = self.gram_matrix().inverse()
+            backward = module_homset(self.dual_module(), self)(
+                {
+                    label: zipsum(
+                        (self.base_ring()(coefficient) for coefficient in row),
+                        self.module_generators(),
+                        self.zero(),
+                    )
+                    for label, row in zip(
+                        self.dual_module().module_generating_set(),
+                        inverse_matrix.rows(),
+                    )
+                }
+            )
+            return Isomorphism(forward, backward)
+
         # ---- invariants of the form, computed by the realization ----
 
         def signature_pair(self: Self) -> tuple:
