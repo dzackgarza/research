@@ -190,6 +190,16 @@ class BilinearFormMorphism(Morphism):
 
     def __init__(self, parent: BilinearFormHomset, gram: "GramMatrix") -> None:
         Morphism.__init__(self, parent)
+        # A form is its pairing.  A Gram matrix is how a *finitely generated*
+        # one can be written down -- it is a presentation, not the form -- so
+        # a module without a finite generating set states the pairing itself.
+        # Bilinearity is not checkable for such a pairing and is trusted; the
+        # matrix route is checked as before.
+        if callable(gram) and not isinstance(gram, Matrix):
+            self._pairing = gram
+            self._gram_matrix = None
+            return
+        self._pairing = None
         gram = gram if isinstance(gram, Matrix) else matrix(gram)
         module = parent.module()
         size = _framing_rank(module.module_generating_set())
@@ -209,6 +219,16 @@ class BilinearFormMorphism(Morphism):
         return self.codomain()
 
     def gram_matrix(self) -> GramMatrix:
+        r"""Return the matrix of the form in the module's framing.
+
+        Only a finitely generated module has one: the entries are the
+        pairings of a finite generating family, and there is no such family
+        to run over otherwise.
+        """
+        assert self._gram_matrix is not None, (
+            f"{self.module()} has no finite generating set, so its form has "
+            "no Gram matrix; the form is its pairing"
+        )
         return GramMatrix(self._gram_matrix)
 
     def __call__(self, left: "Element", right: "Element") -> "Element":
@@ -220,6 +240,8 @@ class BilinearFormMorphism(Morphism):
             element.parent() is self.module()
             for element in (left, right)
         ), f"the form pairs elements of {self.module()}"
+        if self._pairing is not None:
+            return self.codomain()(self._pairing(left, right))
         return self.codomain()(
             _coordinate_vector(left)
             * self._gram_matrix
