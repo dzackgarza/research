@@ -522,9 +522,17 @@ class ModuleMorphism(Morphism):
             return self._matrix
 
     def _call_(self, element: "Element") -> "Element":
-        assert element.parent() is self.domain(), (
-            f"{element} is not an element of {self.domain()}"
-        )
+        if element.parent() is not self.domain():
+            assert element.parent() == self.domain(), (
+                f"{element} is not an element of {self.domain()}"
+            )
+            element = sum(
+                (
+                    coefficient * self.domain().module_generator(label)
+                    for label, coefficient in _coefficients(element).items()
+                ),
+                self.domain().zero(),
+            )
         return sum(
             (
                 coefficient

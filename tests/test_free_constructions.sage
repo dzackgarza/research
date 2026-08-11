@@ -560,6 +560,25 @@ def test_tensor_and_symmetric_freeness_are_homset_bijections() -> None:
     assert symmetric_map(sx * sy) == (sx + sy) * sx
 
 
+def test_morphisms_respect_equality_of_free_module_objects() -> None:
+    r"""Equal realizations of (F_R(S)) have the same elements and induced maps."""
+    _ensure_preamble()
+    from sage.misc.classcall_metaclass import typecall
+
+    labels = Sets.Δ[1]
+    first = BasedFreeModule(ZZ, labels)
+    second = typecall(BasedFreeModule, ZZ, labels)
+    assert first == second
+    assert first is not second
+    first_x, first_y = first.module_generators()
+    second_x = second._from_coordinates(second._coordinate_module().gen(0))
+    second_y = second._from_coordinates(second._coordinate_module().gen(1))
+    morphism = module_homset(first, first)({0: first_x + first_y, 1: first_y})
+
+    assert morphism(second_x) == morphism(first_x)
+    assert morphism(second_y) == morphism(first_y)
+
+
 def test_exterior_and_divided_power_functoriality_preserve_their_operations() -> None:
     r"""\(\Lambda(f)\) preserves wedges and \(\Gamma(f)\) preserves divided powers."""
     _ensure_preamble()

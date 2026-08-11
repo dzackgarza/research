@@ -5,18 +5,6 @@
 Each of these is a mathematical statement the preamble makes in prose and does
 not realize as an object or a morphism.
 
-### The free-module functor does not preserve equality of indexing sets
-
-The transcript requires $F_R(S)=F_R(S')$ when $S=S'$. This is equality of
-objects, not an extra chosen isomorphism. The induced maps must also agree
-under that equality.
-
-Separately built finite free modules with equal ordered indexing sets can be
-equal but not identical. Their underlying sets are then identified through
-equality, while morphism evaluation still expects identity. A morphism between
-the equal modules can fail. Thus the object assignment exists, but it is not
-yet a coherent functor on sets and maps.
-
 ### Forgetting structure does not preserve one ring object uniformly
 
 The transcript treats a ring $R$ as the same object when regarded as an
