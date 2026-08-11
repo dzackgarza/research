@@ -13,6 +13,7 @@ needs cosets, hence an abelian ambient category -- see
 :meth:`Subobjects.ParentMethods.index`.
 """
 
+from dzack_research.preamble.categories.rings.rings import ℤ
 from sage.rings.integer_ring import ZZ as SageZZ
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -216,8 +217,8 @@ def _free_quotient_lifts(module: "Module", relations: "MorphismMatrix") -> list:
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _coordinate_vector
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
     rows = matrix(SageZZ, relations).rows()
-    free = BasedFreeModule(SageZZ, module.module_generating_set())
-    domain = BasedFreeModule(SageZZ, len(rows))
+    free = BasedFreeModule(ℤ, module.module_generating_set())
+    domain = BasedFreeModule(ℤ, len(rows))
     presentation = module_homset(domain, free)(
         dict(
             zip(

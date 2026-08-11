@@ -16,6 +16,7 @@ if TYPE_CHECKING:
     from sage.structure.element import RingElement
 
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreeModuleOnSet
+from dzack_research.preamble.categories.rings.rings import ℤ
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
 from collections.abc import Iterable, Iterator, Sequence
 from typing import Any, Self, TYPE_CHECKING
@@ -399,4 +400,4 @@ def Free_ZZ(module_generating_set: "OrderedSet") -> FreeModuleOnSet:
     # module is built by the time one is constructed over ZZ.
     from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreeModuleOn
 
-    return FreeModuleOn(SageZZ, module_generating_set)
+    return FreeModuleOn(ℤ, module_generating_set)

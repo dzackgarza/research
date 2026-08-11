@@ -82,6 +82,7 @@ from sage.matrix.constructor import matrix
 from sage.matrix.special import identity_matrix
 from sage.misc.latex import latex as _latex_fn
 from sage.rings.integer import Integer
+from dzack_research.preamble.categories.rings.rings import ℤ
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 
@@ -459,7 +460,7 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             """
             # Local: a module-level import here would close a cycle; by call time this module is built.
             from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import BasedFreeModule
-            return BasedFreeModule(SageZZ, self.module_generating_set())
+            return BasedFreeModule(ℤ, self.module_generating_set())
 
         @cached_method
         def correlation_morphism(self: Self) -> "FormMorphism":
@@ -679,7 +680,7 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             )
             gram = self.gram_matrix().inverse()
             return BilinearForm(
-                BasedFreeModule(SageZZ, self.module_generating_set()),
+                BasedFreeModule(ℤ, self.module_generating_set()),
                 SageQQ,
                 gram,
             )

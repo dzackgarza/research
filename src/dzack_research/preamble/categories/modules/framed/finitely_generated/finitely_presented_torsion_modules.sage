@@ -33,6 +33,7 @@ from sage.modules.free_module_element import vector
 if TYPE_CHECKING:
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
 
+from dzack_research.preamble.categories.rings.rings import ℤ
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
 from collections.abc import Iterable
 from typing import Self, TYPE_CHECKING
@@ -214,7 +215,7 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
         from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _module_morphism
 
         relations = MorphismMatrix(relations, SageZZ)
-        domain = BasedFreeModule(SageZZ, Sets.Δ[relations.nrows() - 1])
+        domain = BasedFreeModule(ℤ, Sets.Δ[relations.nrows() - 1])
         match module_generating_set:
             case None:
                 module_generating_set = Sets.Δ[relations.ncols() - 1]
@@ -227,7 +228,7 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
                 assert False, (
                     "a generating set is a finite set or finite iterable"
                 )
-        codomain = BasedFreeModule(SageZZ, module_generating_set)
+        codomain = BasedFreeModule(ℤ, module_generating_set)
         return TorsionModule(
             _module_morphism(
                 domain,

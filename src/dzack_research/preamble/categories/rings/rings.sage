@@ -619,6 +619,26 @@ def install_session_rings(scope: dict) -> None:
             scope[name] = _owning(_over_the_engine(constructor))
 
 
+# The owned rings, under names that cannot be mistaken for the engine's.
+#
+# ``ZZ`` in a preamble file is Sage's ring: the modules import it as
+# ``SageZZ`` and build over it, while a session's ``ZZ`` is the owned view
+# that ``install_session_rings`` binds.  The two print alike, so a file that
+# reached for the wrong one read correctly and produced a second object --
+# two free modules on one $(R,S)$, whose elements then refuse to coerce.
+#
+# Spelling the owned ones as the mathematics writes them makes the choice
+# visible: $\ZZ$ is the ring, ``SageZZ`` is the engine's object, and no line
+# can mean both.
+
+
+def owned_ring_named(name: str) -> "OwnedRing":
+    r"""Return the owned view of the engine ring bound to ``name``."""
+    from sage.all import __dict__ as _sage_all
+    engine = _sage_all[name]
+    return own_ring(engine)
+
+
 _OWNED_RINGS: dict = {}
 
 
@@ -696,3 +716,12 @@ for _session_ring_name in SESSION_RING_NAMES:
     _session_ring = getattr(_sage_all, _session_ring_name, None)
     if isinstance(_session_ring, Parent) and _session_ring in SageRings():
         own_ring(_session_ring)
+
+
+# The owned rings under their mathematical names.  Every preamble file that
+# computes over a ring names it this way; ``SageZZ`` and friends stay for the
+# places that must hand an object to Sage's own algorithms.
+ℤ = owned_ring_named("ZZ")
+ℚ = owned_ring_named("QQ")
+ℝ = owned_ring_named("RR")
+ℂ = owned_ring_named("CC")
