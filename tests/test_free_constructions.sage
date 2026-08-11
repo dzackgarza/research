@@ -372,6 +372,25 @@ def test_a_graded_piece_is_a_submodule_carrying_its_inclusion() -> None:
     assert x not in piece, "and a degree-one element does not"
 
 
+def test_degree_two_pieces_exist_for_countably_many_generators() -> None:
+    r"""Each degree-two basis is countable and every basis element has degree two."""
+    _ensure_preamble()
+    labels = Sets.Δ[Sets.ℵ[0]]
+
+    for algebra in (
+        FreeAlgebraOn(QQ, labels),
+        TensorAlgebraOn(QQ, labels),
+        AlternatingAlgebraOn(QQ, labels),
+        DividedPowerAlgebraOn(QQ, labels),
+    ):
+        piece = algebra.graded_piece(2)
+        assert piece.module_generating_set() not in Sets().Finite()
+        generator = next(iter(piece.module_generators()))
+        image = piece.inclusion()(generator)
+        assert image.degree() == 2
+        assert image in algebra
+
+
 def test_tensor_and_divided_squares_respect_a_module_presentation() -> None:
     r"""$T^2(\mathbb Z/2)=\mathbb Z/2$ and $\Gamma^2(\mathbb Z/2)=\mathbb Z/4$.
 

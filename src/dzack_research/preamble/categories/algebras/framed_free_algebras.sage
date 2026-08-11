@@ -126,6 +126,10 @@ class MonomialSystem:
         r"""Return the total degree: the sum of the exponents."""
         return sum(exponent for _, exponent in self.factors(monomial))
 
+    def basis_monomial(self, index: "Element") -> "Element":
+        r"""Return the algebra monomial represented by a graded-piece index."""
+        return index
+
     def _finite_labels(self) -> tuple:
         assert self._labels in Sets().Finite(), (
             "enumerating a graded piece runs over the generators, so there "
@@ -145,6 +149,48 @@ class MonomialSystem:
                 monomial *= self.generator(label) ** exponent
             monomials.append(monomial)
         return tuple(monomials)
+
+    def _monomials_from_words(
+        self,
+        degree: "Integer",
+        *,
+        injective: bool,
+    ) -> Parent:
+        r"""Return degree monomials as the image of length-``degree`` words."""
+        from sage.categories.cartesian_product import cartesian_product
+        from dzack_research.preamble.categories.sets.sets import ImageSet
+        from dzack_research.preamble.categories.sets.sets import finite_ordered_set
+        from dzack_research.preamble.refine import refine
+
+        degree = int(degree)
+        assert degree >= 0, "a graded degree is nonnegative"
+        if degree == 0:
+            return finite_ordered_set((self.one(),))
+        words = cartesian_product([self._labels] * degree)
+
+        def monomial_of_word(word: "Element") -> "Element":
+            monomial = self.one()
+            for label in word:
+                monomial *= self.generator(label)
+            return monomial
+
+        def word_of_monomial(monomial: "Element") -> "Element":
+            letters = tuple(
+                label
+                for label, exponent in self.factors(monomial)
+                for _ in range(exponent)
+            )
+            return words(letters)
+
+        return refine(
+            ImageSet(
+                monomial_of_word,
+                words,
+                is_injective=injective,
+                inverse=word_of_monomial,
+            ),
+            Sets().Infinite(),
+        )
 
 
 class CommutativeMonomials(MonomialSystem):
@@ -166,7 +212,10 @@ class CommutativeMonomials(MonomialSystem):
     def product(self, left: "Element", right: "Element") -> tuple:
         return (1, left * right)
 
-    monomials_of_degree = MonomialSystem._monomials_by_exponent_vector
+    def monomials_of_degree(self, degree: "Integer") -> Parent | tuple:
+        if self._labels in Sets().Finite():
+            return self._monomials_by_exponent_vector(degree)
+        return self._monomials_from_words(degree, injective=False)
 
 
 class WordMonomials(MonomialSystem):
@@ -192,10 +241,12 @@ class WordMonomials(MonomialSystem):
     def product(self, left: "Element", right: "Element") -> tuple:
         return (1, left * right)
 
-    def monomials_of_degree(self, degree: "Integer") -> tuple:
+    def monomials_of_degree(self, degree: "Integer") -> Parent | tuple:
         r"""Return the words of a length: \(\mathrm{rank}^n\) of them."""
         from itertools import product as _tuples
 
+        if self._labels not in Sets().Finite():
+            return self._monomials_from_words(degree, injective=True)
         labels = self._finite_labels()
         monomials = []
         for word in _tuples(labels, repeat=int(degree)):
@@ -269,6 +320,9 @@ class AlternatingMonomials(MonomialSystem):
     def factors(self, monomial: "Element") -> tuple:
         return tuple((label, 1) for label in self._sorted(monomial))
 
+    def basis_monomial(self, index: "Element") -> "Element":
+        return self._subset(tuple(index))
+
     def product(self, left: "Element", right: "Element") -> tuple:
         if set(left) & set(right):
             return (0, self.one())
@@ -277,11 +331,37 @@ class AlternatingMonomials(MonomialSystem):
         )
         return ((-1) ** inversions, self._subset(set(left) | set(right)))
 
-    def monomials_of_degree(self, degree: "Integer") -> tuple:
+    def monomials_of_degree(self, degree: "Integer") -> Parent | tuple:
         r"""Return the subsets of a size: \(\binom{n}{k}\) of them."""
         from sage.combinat.subset import Subsets
 
-        return tuple(Subsets(self._labels, int(degree)))
+        subsets = Subsets(self._labels, int(degree))
+        if int(degree) == 0 or self._labels in Sets().Finite():
+            return tuple(subsets)
+        from itertools import islice
+        from sage.categories.cartesian_product import cartesian_product
+        from dzack_research.preamble.categories.sets.sets import ImageSet
+        from dzack_research.preamble.refine import refine
+
+        degree = int(degree)
+        words = cartesian_product([self._labels] * degree)
+        first_subset = tuple(islice(self._labels, degree))
+
+        def ordered_members_of_word(word: "Element") -> "Element":
+            members = tuple(dict.fromkeys(word))
+            if len(members) != degree:
+                members = first_subset
+            return words(tuple(sorted(members)))
+
+        return refine(
+            ImageSet(
+                ordered_members_of_word,
+                words,
+                is_injective=False,
+                inverse=lambda word: word,
+            ),
+            Sets().Infinite(),
+        )
 
 
 class DividedMonomials(MonomialSystem):
@@ -318,7 +398,10 @@ class DividedMonomials(MonomialSystem):
             coefficient *= binomial(left_exponents.get(label, 0) + exponent, exponent)
         return (coefficient, left * right)
 
-    monomials_of_degree = MonomialSystem._monomials_by_exponent_vector
+    def monomials_of_degree(self, degree: "Integer") -> Parent | tuple:
+        if self._labels in Sets().Finite():
+            return self._monomials_by_exponent_vector(degree)
+        return self._monomials_from_words(degree, injective=False)
 
 
 class FramedFreeAlgebras(OwnedCategoryOverBaseRing):

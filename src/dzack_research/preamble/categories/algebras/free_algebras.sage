@@ -66,20 +66,22 @@ class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
 
         def graded_piece(self, degree: "Integer") -> "Module":
             r"""Return the free submodule on the monomials of one degree."""
-            from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import BasedFreeModule
+            from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreeModuleOn
             from dzack_research.preamble.categories.modules.framed.formed.integrallattice.subobjects import Subobject
             from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
             from dzack_research.preamble.categories.sets.sets import finite_ordered_set
 
-            generators = tuple(self.module_generators_of_degree(degree))
-            source = BasedFreeModule(
+            monomials = self.monomial_system().monomials_of_degree(degree)
+            if isinstance(monomials, tuple):
+                monomials = finite_ordered_set(monomials)
+            source = FreeModuleOn(
                 self.base_ring(),
-                finite_ordered_set(
-                    self.monomial_system().monomials_of_degree(degree)
-                ),
+                monomials,
             )
             inclusion = module_homset(source, self)(
-                dict(zip(source.module_generating_set(), generators))
+                lambda index: self.module_generator(
+                    self.monomial_system().basis_monomial(index)
+                )
             )
             inclusion._known_injective = True
             return Subobject(inclusion)
@@ -103,7 +105,7 @@ class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
             """
             return self.degree_on_module_generator(monomial)
 
-        def graded_piece_monomials(self, degree: "Integer") -> tuple:
+        def graded_piece_monomials(self, degree: "Integer") -> "Set | tuple":
             r"""Return the monomials spanning \(T(M)[n]\).
 
             For a free \(M\) on \(S\) these are the words of length \(n\),
@@ -115,12 +117,25 @@ class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
             a monomial: \(x\cdot x=2\gamma_2(x)\).  Each construction knows
             its own basis in each degree, and that is what a graded piece is.
             """
-            return tuple(
-                self.module_generator(monomial)
-                for monomial in self.monomial_system().monomials_of_degree(degree)
+            from dzack_research.preamble.categories.sets.sets import ImageSet
+
+            monomials = self.monomial_system().monomials_of_degree(degree)
+            if isinstance(monomials, tuple):
+                return tuple(
+                    self.module_generator(
+                        self.monomial_system().basis_monomial(index)
+                    )
+                    for index in monomials
+                )
+            return ImageSet(
+                lambda index: self.module_generator(
+                    self.monomial_system().basis_monomial(index)
+                ),
+                monomials,
+                is_injective=True,
             )
 
-        def module_generators_of_degree(self, degree: "Integer") -> "OrderedSet":
+        def module_generators_of_degree(self, degree: "Integer") -> "Set | tuple":
             r"""Return the monomials of a degree, which the grading asks for.
 
             Asked of the monomials rather than filtered out of all of them:
@@ -128,14 +143,7 @@ class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
             degree, so the general reading -- run over the generators and keep
             the ones that fit -- does not terminate here.
             """
-            # Local: the set node reaches this module, so a module-level
-            # import would close that cycle.
-            from dzack_research.preamble.categories.sets.sets import finite_ordered_set
-
-            return finite_ordered_set(
-                self.module_generator(monomial)
-                for monomial in self.monomial_system().monomials_of_degree(degree)
-            )
+            return self.graded_piece_monomials(degree)
 
         def ideal_generators_in_degree(
             self, relations: tuple, degree: "Integer"

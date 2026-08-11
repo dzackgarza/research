@@ -67,13 +67,6 @@ parent assembles those pieces into one graded algebra.
 
 ## Smaller, and unblocked
 
-- **Graded pieces of an infinitely generated algebra.** `monomials_of_degree`
-  asserts the generating set is finite (`MonomialSystem._finite_labels`) and
-  `module_generators_of_degree` wraps the result in `finite_ordered_set`. For
-  infinite $S$ there are infinitely many degree-$n$ monomials, so both are
-  wrong rather than merely unbuilt: $T(F_R(S))[n]$ exists and has countable
-  rank.
-
 - **`A[n]` cannot mean the graded piece.** `FreeAlgebraOnSet.__getitem__` means
   adjoining variables, and `polynomial_ring` already reads an integer as a
   *count* of them, so `A[2]` is two new variables. The accessor stays
