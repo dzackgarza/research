@@ -105,6 +105,7 @@ def install_preamble(namespace: dict) -> None:
             "categories.abstract_categories.arrow_categories",
             "categories.abstract_categories.products",
             "categories.modules.pure.modules",
+            "categories.modules.graded_modules",
             "categories.modules.pure.finitely_generated.finitely_generated_modules",
             "categories.modules.pure.free_modules",
             "categories.modules.framed.framed_modules",

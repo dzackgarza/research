@@ -285,3 +285,53 @@ def test_the_subsets_of_a_countable_set_are_uncountable() -> None:
     assert subsets not in Sets().Finite(), (
         "there are uncountably many subsets of a countable set"
     )
+
+
+@pytest.mark.xfail(
+    strict=True,
+    reason="a submodule needs the ambient finitely generated; see issue #351",
+)
+def test_a_graded_piece_is_a_submodule_carrying_its_inclusion() -> None:
+    r"""$A_n\subseteq A$, with the map that says so.
+
+    $T(M)[2]$ is $M\otimes_RM$ and $\Gamma(M)[2]$ is $\Gamma^2M$, so this is
+    where a bilinear form's domain and a quadratic form's domain come from.
+    Neither is built separately, and neither is a bare module: the grading is
+    a statement about maps into $A$, so the piece carries its inclusion.
+    """
+    _ensure_preamble()
+    algebra = TensorAlgebraOn(QQ, Sets.Δ[1])
+    piece = algebra.graded_piece(2)
+
+    inclusion = piece.inclusion()
+    assert inclusion.codomain() is algebra
+    assert piece.rank() == 4, "four words of length two on two generators"
+
+    x, y = _generators(algebra)
+    assert x * y in piece, "a degree-two element lies in the degree-two piece"
+    assert x not in piece, "and a degree-one element does not"
+
+
+def test_the_grading_decomposes_every_element() -> None:
+    r"""$a=\sum_na_n$ with $a_n\in A_n$, which is what $\bigoplus$ asserts.
+
+    A decomposition and not a filtration: the parts add back to the element,
+    and each part is homogeneous.
+    """
+    _ensure_preamble()
+    labels = Sets.Δ[1]
+
+    for algebra in (
+        FreeAlgebraOn(QQ, labels),
+        TensorAlgebraOn(QQ, labels),
+        AlternatingAlgebraOn(QQ, labels),
+        DividedPowerAlgebraOn(QQ, labels),
+    ):
+        x, y = _generators(algebra)
+        element = algebra.one() + x + x * y
+
+        components = element.homogeneous_components()
+        assert set(components) == {0, 1, 2}
+        assert sum(components.values(), algebra.zero()) == element
+        assert all(part.is_homogeneous() for part in components.values())
+        assert components[2].degree() == 2

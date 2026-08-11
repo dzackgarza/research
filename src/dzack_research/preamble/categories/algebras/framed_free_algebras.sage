@@ -474,23 +474,6 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
             )
 
     class ElementMethods:
-        def degree(self: Self) -> "Integer":
-            r"""Return \(\deg\) of this element: the total degree.
-
-            \(\operatorname{FreeAlg}_R(S)\) is graded by
-            \(\operatorname{Mon}(S)\to\NN\), the sum of exponents, at every
-            rank and for \(S\) infinite as well -- an element is a *finitely*
-            supported function on the monomials, so the maximum over its
-            support exists whatever \(S\) is.  Read off the framing, not asked
-            of an engine.  The zero element has degree \(-\infty\), which is
-            what makes the degree additive on products.
-            """
-            monomials = self.coefficients()
-            if not monomials:
-                return -_Infinity
-            system = self.parent().monomial_system()
-            return max(system.degree(monomial) for monomial in monomials)
-
         def multidegree(self: Self) -> dict:
             r"""Return \(s\mapsto\deg_s\), the degree in each generator.
 
@@ -706,51 +689,6 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
         def is_constant(self: Self) -> bool:
             r"""Return whether this element lies in the base ring."""
             return self.degree() <= 0
-
-        def is_homogeneous(self: Self) -> bool:
-            r"""Return whether every monomial in the support has one degree.
-
-            The grading is the algebra's own, so this is a question about the
-            support and holds at every rank.  The zero element is homogeneous,
-            vacuously and usefully: it belongs to every graded piece.
-            """
-            system = self.parent().monomial_system()
-            degrees = {
-                system.degree(monomial) for monomial in self.coefficients()
-            }
-            return len(degrees) <= 1
-
-        def homogeneous_components(self: Self) -> dict:
-            r"""Return \(d\mapsto\) the degree-\(d\) part, over the support.
-
-            The decomposition \(A=\bigoplus_d A_d\), read off the grading:
-            their sum is this element, which is what makes it a decomposition
-            rather than a filtration.
-            """
-            parent = self.parent()
-            components: dict = {}
-            system = parent.monomial_system()
-            for monomial, coefficient in self.coefficients().items():
-                degree = system.degree(monomial)
-                part = components.get(degree, parent.zero())
-                components[degree] = part + coefficient * parent.module_generator(
-                    monomial
-                )
-            return components
-
-        def truncate(self: Self, degree: "Integer") -> "Element":
-            r"""Return the part of degree below ``degree``.
-
-            The image in \(A/A_{\geq d}\), lifted back: the terms it drops are
-            exactly those the quotient kills.
-            """
-            parent = self.parent()
-            kept = parent.zero()
-            system = parent.monomial_system()
-            for monomial, coefficient in self.coefficients().items():
-                if system.degree(monomial) < degree:
-                    kept = kept + coefficient * parent.module_generator(monomial)
-            return kept
 
         def is_squarefree(self: Self) -> bool:
             r"""Return whether no irreducible divides this element twice.

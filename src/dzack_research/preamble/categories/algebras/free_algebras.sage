@@ -58,11 +58,15 @@ class TensorAlgebras(OwnedCategoryOverBaseRing):
         return "tensor algebras"
 
     def super_categories(self) -> list:
-        return [FreeAlgebras(self.base_ring())]
+        # Local: the graded node reaches the algebra node, so a module-level
+        # import here would close that cycle.
+        from dzack_research.preamble.categories.modules.graded_modules import GradedAlgebras
+
+        return [FreeAlgebras(self.base_ring()), GradedAlgebras(self.base_ring())]
 
     class ParentMethods:
-        def monomial_degree(self, monomial: "Element") -> "Integer":
-            r"""Return the \(n\) with this monomial in \(T(M)[n]\).
+        def degree_on_module_generator(self, module_generator: "Element") -> "Integer":
+            r"""Return the degree of a monomial: the grading of these algebras.
 
             The number of letters, however this construction spells them: a
             word reports its letters in order, an abelian monomial its
@@ -70,7 +74,15 @@ class TensorAlgebras(OwnedCategoryOverBaseRing):
             which is what makes the other three graded companions of the
             tensor algebra.
             """
-            return self.monomial_system().degree(monomial)
+            return self.monomial_system().degree(module_generator)
+
+        def monomial_degree(self, monomial: "Element") -> "Integer":
+            r"""Return the \(n\) with this monomial in \(T(M)[n]\).
+
+            The grading, asked of a monomial by the word this construction
+            uses for one.
+            """
+            return self.degree_on_module_generator(monomial)
 
         def graded_piece_monomials(self, degree: "Integer") -> tuple:
             r"""Return the monomials spanning \(T(M)[n]\).
@@ -88,6 +100,51 @@ class TensorAlgebras(OwnedCategoryOverBaseRing):
                 self.module_generator(monomial)
                 for monomial in self.monomial_system().monomials_of_degree(degree)
             )
+
+        def module_generators_of_degree(self, degree: "Integer") -> "OrderedSet":
+            r"""Return the monomials of a degree, which the grading asks for.
+
+            Asked of the monomials rather than filtered out of all of them:
+            there are infinitely many monomials and finitely many in each
+            degree, so the general reading -- run over the generators and keep
+            the ones that fit -- does not terminate here.
+            """
+            # Local: the set node reaches this module, so a module-level
+            # import would close that cycle.
+            from dzack_research.preamble.categories.sets.sets import finite_ordered_set
+
+            return finite_ordered_set(
+                self.monomial_system().monomials_of_degree(degree)
+            )
+
+        def ideal_generators_in_degree(
+            self, relations: tuple, degree: "Integer"
+        ) -> tuple:
+            r"""Return generators of \(\langle K\rangle_n\) for \(K\) in degree one.
+
+            \(A\) is a left adjoint, so it takes a presentation
+            \(M=\operatorname{coker}(K\to F)\) to \(A(M)=A(F)/\langle
+            K\rangle\).  The degree-\(n\) part of a two-sided ideal generated
+            in degree one is \(\sum_{i+j=n-1}A_i\,K\,A_j\), which is what this
+            spans.
+
+            One statement for three of the four: in a commutative flavour the
+            two sides coincide, so the extra generators are redundant rather
+            than wrong.  \(\Gamma\) adds its divided powers.
+            """
+            monomials = self.monomial_system().monomials_of_degree
+            generators = []
+            for relation in relations:
+                for left_degree in range(int(degree)):
+                    right_degree = int(degree) - 1 - left_degree
+                    for left in monomials(left_degree):
+                        for right in monomials(right_degree):
+                            generators.append(
+                                self.module_generator(left)
+                                * relation
+                                * self.module_generator(right)
+                            )
+            return tuple(generators)
 
 
 class SymmetricAlgebras(OwnedCategoryOverBaseRing):
