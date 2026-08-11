@@ -5,12 +5,13 @@
 Each of these is a mathematical statement the preamble makes in prose and does
 not realize as an object or a morphism.
 
-### The universal properties are not there
+### The free divided-power adjunction has no target category
 
-The same holds for freeness. $T \dashv U$ means
-$\operatorname{Hom}_{\text{Alg}}(T(M), A) \cong \operatorname{Hom}_{\text{Mod}}(M, U(A))$,
-and that bijection is what "free" asserts. It is written for $F_R \dashv U$
-between `Set` and `R-Mod` and for none of the four algebra constructions.
+Tensor and symmetric extension now implement their hom-set bijections.
+Alternating extension enforces the square-zero and anticommutation relations,
+and $\Gamma(f)$ preserves divided powers. A category of divided-power algebras,
+with morphisms that preserve every $\gamma_n$, is still absent. Thus
+$\Gamma$ has functoriality but not its full free-forgetful adjunction.
 
 ### $\Gamma^n(M) = (M^{\otimes n})^{S_n}$
 
@@ -90,9 +91,9 @@ against #348.
 
 The tensor and divided squares now use the degree-two quotient presentations.
 The full graded algebras on $M=\operatorname{coker}(K\to F)$ remain absent.
-They require $A(F)/\langle K\rangle$ in every degree. For $\Gamma$, the ideal
-must contain every $\gamma_d(k)$, not only the divided squares used by
-$\Gamma^2(M)$.
+They require $A(F)/\langle K\rangle$ in every degree. The degree-wise relation
+generators, including every $\gamma_d(k)$ for $\Gamma$, now exist. No quotient
+parent assembles those pieces into one graded algebra.
 
 ## Symmetric-only surface inherited by the other three
 
@@ -136,10 +137,6 @@ sited on the symmetric flavour rather than on the shared class.
   variants, `Tensor(M, (p, q))`, and graded pieces. New constructors can avoid
   the sweep without a visible failure. The sweep needs a complete source of
   constructors.
-
-- **Higher divided-power ideal relations are absent.**
-  Degree two includes $\gamma_2(k)$. Degrees $d\geq3$ still need
-  $\gamma_d(k)$ for each presentation relation $k$.
 
 - **`Tensor` does not use Sage's parent and element structure.**
   `Tensor(M, (p, q))` is a `Parent`, but `TensorElement` is a plain Python

@@ -136,6 +136,38 @@ def test_divided_powers_multiply_by_binomial_coefficients() -> None:
             )
 
 
+def test_divided_powers_of_linear_combinations_satisfy_the_pd_laws() -> None:
+    r"""\(\gamma_3(x+y)=\sum_{i+j=3}\gamma_i(x)\gamma_j(y)\)."""
+    _ensure_preamble()
+    algebra = DividedPowerAlgebraOn(ZZ, Sets.Δ[1])
+    x, y = _generators(algebra)
+
+    assert algebra.divided_power(x + y, 3) == (
+        algebra.divided_power(0, 3)
+        + algebra.divided_power(0, 2) * y
+        + x * algebra.divided_power(1, 2)
+        + algebra.divided_power(1, 3)
+    )
+    assert algebra.divided_power(2 * x, 3) == 8 * algebra.divided_power(0, 3)
+
+
+def test_the_divided_power_ideal_contains_all_divided_relations() -> None:
+    r"""For \(M=\mathbb Z/2\), \(\Gamma^3M=\mathbb Z/2\) and \(\Gamma^4M=\mathbb Z/8\)."""
+    _ensure_preamble()
+    algebra = DividedPowerAlgebraOn(ZZ, Sets.Δ[0])
+    x = next(iter(_generators(algebra)))
+
+    for degree, expected_order in ((3, 2), (4, 8)):
+        monomial = algebra.monomial_system().monomials_of_degree(degree)[0]
+        relations = algebra.ideal_generators_in_degree((2 * x,), degree)
+        coefficients = [
+            relation.coefficient(monomial)
+            for relation in relations
+            if relation != algebra.zero()
+        ]
+        assert gcd(coefficients) == expected_order
+
+
 def test_the_divided_and_symmetric_algebras_share_their_monomials() -> None:
     r"""$\Gamma$ is not a quotient of $T$: it has the same basis as $\operatorname{Sym}$.
 
@@ -408,6 +440,55 @@ def test_symmetric_to_divided_is_not_an_isomorphism_over_the_integers() -> None:
 
     assert morphism(x**2) == 2 * divided.divided_power(0, 2)
     assert morphism(x**2) != divided.divided_power(0, 2)
+
+
+def test_tensor_and_symmetric_freeness_are_homset_bijections() -> None:
+    r"""Extension and restriction are inverse on algebra and module maps."""
+    _ensure_preamble()
+    module = BasedFreeModule(QQ, Sets.Δ[1])
+    tensor = TensorAlgebraOn(QQ, Sets.Δ[1])
+    symmetric = FreeAlgebraOn(QQ, Sets.Δ[1])
+    mx, my = module.module_generators()
+    tx, ty = _generators(tensor)
+    sx, sy = _generators(symmetric)
+
+    tensor_linear = module_homset(module, tensor)({0: tx + ty, 1: tx})
+    tensor_map = tensor_extension(tensor_linear)
+    tensor_restriction = restrict_free_algebra_morphism(module, tensor_map)
+    assert tensor_restriction(mx) == tensor_linear(mx)
+    assert tensor_restriction(my) == tensor_linear(my)
+    assert tensor_map(tx * ty) == (tx + ty) * tx
+
+    symmetric_linear = module_homset(module, symmetric)({0: sx + sy, 1: sx})
+    symmetric_map = symmetric_extension(symmetric_linear)
+    symmetric_restriction = restrict_free_algebra_morphism(module, symmetric_map)
+    assert symmetric_restriction(mx) == symmetric_linear(mx)
+    assert symmetric_restriction(my) == symmetric_linear(my)
+    assert symmetric_map(sx * sy) == (sx + sy) * sx
+
+
+def test_exterior_and_divided_power_functoriality_preserve_their_operations() -> None:
+    r"""\(\Lambda(f)\) preserves wedges and \(\Gamma(f)\) preserves divided powers."""
+    _ensure_preamble()
+    module = BasedFreeModule(ZZ, Sets.Δ[1])
+    x, y = module.module_generators()
+    exterior = AlternatingAlgebraOn(ZZ, Sets.Δ[1])
+    ex, ey = _generators(exterior)
+    exterior_linear = module_homset(module, exterior)({0: ex + ey, 1: ey})
+    exterior_map = alternating_extension(exterior_linear)
+    assert exterior_map(ex * ey) == ex * ey
+
+    target_module = BasedFreeModule(ZZ, Sets.Δ[1])
+    u, v = target_module.module_generators()
+    linear = module_homset(module, target_module)({0: u + v, 1: v})
+    divided_map = divided_power_induced_morphism(linear)
+    source_divided = DividedPowerAlgebraOn(ZZ, Sets.Δ[1])
+    target_divided = DividedPowerAlgebraOn(ZZ, Sets.Δ[1])
+    assert divided_map(source_divided.divided_power(0, 2)) == (
+        target_divided.divided_power(0, 2)
+        + target_divided.algebra_generator(0) * target_divided.algebra_generator(1)
+        + target_divided.divided_power(1, 2)
+    )
 
 
 def test_the_grading_decomposes_every_element() -> None:

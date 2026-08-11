@@ -1516,18 +1516,38 @@ class DividedPowerAlgebraOnSet(FreeAlgebraOnSet):
 
         return DividedPowerAlgebras(base_ring)
 
-    def divided_power(self, s: "Element", exponent: "Integer") -> "Element":
-        r"""Return \(\gamma_a(s)\), which is *not* \(s^a\).
+    def divided_power(self, value: "Element", exponent: "Integer") -> "Element":
+        r"""Return \(\gamma_a(x)\), which is *not* \(x^a\).
 
         \(s^a=a!\,\gamma_a(s)\), so over \(\ZZ\) the powers of a
         generator span a proper submodule of what the divided powers span.
         Naming the monomial directly is the only way to reach the rest.
         """
-        assert s in self._algebra_generating_set, (
-            f"{s!r} is not in {self._algebra_generating_set}"
-        )
+        exponent = int(exponent)
         system = self.monomial_system()
-        return self.module_generator(system.generator(s) ** int(exponent))
+        match value:
+            case FreeAlgebraOnSetElement() if value.parent() is self:
+                assert value.degree() == 1 or value == self.zero(), (
+                    "divided powers are defined here on degree-one elements"
+                )
+                terms = tuple(value.coefficients().items())
+                from sage.combinat.integer_vector import IntegerVectors
+
+                result = self.zero()
+                for powers in IntegerVectors(exponent, len(terms)):
+                    monomial = system.one()
+                    coefficient = self.base_ring().one()
+                    for (generator_monomial, scalar), power in zip(terms, powers):
+                        label = self._algebra_generator_label(generator_monomial)
+                        monomial *= system.generator(label) ** power
+                        coefficient *= scalar**power
+                    result += coefficient * self.module_generator(monomial)
+                return result
+            case _:
+                assert value in self._algebra_generating_set, (
+                    f"{value!r} is not in {self._algebra_generating_set}"
+                )
+                return self.module_generator(system.generator(value) ** exponent)
 
     def divided_square(self, element: "Element") -> "Element":
         r"""Return \(\gamma_2(x)\) for a degree-one element \(x\).
@@ -1539,20 +1559,7 @@ class DividedPowerAlgebraOnSet(FreeAlgebraOnSet):
         assert element.parent() is self and element.degree() == 1, (
             "the divided square is defined here on degree-one elements"
         )
-        terms = tuple(element.coefficients().items())
-        result = self.zero()
-        for index, (monomial, coefficient) in enumerate(terms):
-            label = self._algebra_generator_label(monomial)
-            result += coefficient**2 * self.divided_power(label, 2)
-            for other_monomial, other_coefficient in terms[index + 1:]:
-                other_label = self._algebra_generator_label(other_monomial)
-                result += (
-                    coefficient
-                    * other_coefficient
-                    * self.algebra_generator(label)
-                    * self.algebra_generator(other_label)
-                )
-        return result
+        return self.divided_power(element, 2)
 
     def _repr_(self) -> str:
         return (
@@ -1629,6 +1636,128 @@ def divided_to_symmetric(source: DividedPowerAlgebraOnSet) -> FreeAlgebraMorphis
             image *= target.algebra_generator(label) ** exponent
             denominator *= factorial(exponent)
         return image / denominator
+
+    return FreeAlgebraMorphism(
+        module_homset(source, target),
+        SetMorphism(
+            Hom(
+                source.module_generating_set(),
+                UnderlyingSet(target),
+                Sets(),
+            ),
+            image_of_monomial,
+        ),
+    )
+
+
+def tensor_extension(module_morphism: ModuleMorphism) -> FreeAlgebraMorphism:
+    r"""Extend \(f:M\to U(A)\) uniquely to \(T(M)\to A\)."""
+    module = module_morphism.domain()
+    source = TensorAlgebraOn(module.base_ring(), module.module_generating_set())
+    return source.hom(
+        {
+            label: module_morphism(module.module_generator(label))
+            for label in module.module_generating_set()
+        }
+    )
+
+
+def symmetric_extension(module_morphism: ModuleMorphism) -> FreeAlgebraMorphism:
+    r"""Extend \(f:M\to U(A)\) uniquely to \(\operatorname{Sym}(M)\to A\)."""
+    from sage.categories.commutative_rings import CommutativeRings
+
+    assert module_morphism.codomain() in CommutativeRings(), (
+        "a symmetric-algebra extension requires a commutative target"
+    )
+    module = module_morphism.domain()
+    source = FreeAlgebraOn(module.base_ring(), module.module_generating_set())
+    return source.hom(
+        {
+            label: module_morphism(module.module_generator(label))
+            for label in module.module_generating_set()
+        }
+    )
+
+
+def alternating_extension(module_morphism: ModuleMorphism) -> FreeAlgebraMorphism:
+    r"""Extend an alternating linear map uniquely to \(\Lambda(M)\)."""
+    module = module_morphism.domain()
+    labels = tuple(module.module_generating_set())
+    images = tuple(
+        module_morphism(module.module_generator(label)) for label in labels
+    )
+    target = module_morphism.codomain()
+    assert all(image * image == target.zero() for image in images), (
+        "each generator image must square to zero"
+    )
+    assert all(
+        left * right + right * left == target.zero()
+        for index, left in enumerate(images)
+        for right in images[index + 1:]
+    ), "generator images must anticommute"
+    source = AlternatingAlgebraOn(module.base_ring(), module.module_generating_set())
+    image_by_label = dict(zip(labels, images))
+    return FreeAlgebraMorphism(
+        module_homset(source, target),
+        SetMorphism(
+            Hom(
+                source.module_generating_set(),
+                UnderlyingSet(target),
+                Sets(),
+            ),
+            source._extend_to_monomials(image_by_label.__getitem__, target),
+        ),
+    )
+
+
+def restrict_free_algebra_morphism(
+    module: "Module", algebra_morphism: FreeAlgebraMorphism
+) -> ModuleMorphism:
+    r"""Restrict a free-algebra morphism to its degree-one module."""
+    source = algebra_morphism.domain()
+    assert source.algebra_generating_set() == module.module_generating_set(), (
+        "the algebra must be free on this module's framing"
+    )
+    return module_homset(module, algebra_morphism.codomain())(
+        {
+            label: algebra_morphism(source.algebra_generator(label))
+            for label in module.module_generating_set()
+        }
+    )
+
+
+def divided_power_induced_morphism(
+    module_morphism: ModuleMorphism,
+) -> FreeAlgebraMorphism:
+    r"""Return \(\Gamma(f):\Gamma(M)\to\Gamma(N)\)."""
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _coordinate_vector
+
+    domain = module_morphism.domain()
+    codomain = module_morphism.codomain()
+    source = DividedPowerAlgebraOn(
+        domain.base_ring(), domain.module_generating_set()
+    )
+    target = DividedPowerAlgebraOn(
+        codomain.base_ring(), codomain.module_generating_set()
+    )
+
+    def degree_one_image(label: "Element") -> "Element":
+        image = module_morphism(domain.module_generator(label))
+        return sum(
+            (
+                coefficient * target.algebra_generator(target_label)
+                for coefficient, target_label in zip(
+                    _coordinate_vector(image), codomain.module_generating_set()
+                )
+            ),
+            target.zero(),
+        )
+
+    def image_of_monomial(monomial: "Element") -> "Element":
+        image = target.one()
+        for label, exponent in source.monomial_system().factors(monomial):
+            image *= target.divided_power(degree_one_image(label), exponent)
+        return image
 
     return FreeAlgebraMorphism(
         module_homset(source, target),

@@ -266,10 +266,13 @@ class DividedPowerAlgebras(OwnedCategoryOverBaseRing):
             generators = GradedFreeAlgebras.ParentMethods.ideal_generators_in_degree(
                 self, relations, degree
             )
-            match int(degree):
-                case 2:
-                    return generators + tuple(
-                        self.divided_square(relation) for relation in relations
-                    )
-                case _:
-                    return generators
+            degree = int(degree)
+            added = []
+            for relation in relations:
+                for divided_degree in range(2, degree + 1):
+                    divided = self.divided_power(relation, divided_degree)
+                    for monomial in self.monomial_system().monomials_of_degree(
+                        degree - divided_degree
+                    ):
+                        added.append(divided * self.module_generator(monomial))
+            return generators + tuple(added)
