@@ -253,6 +253,10 @@ else:
             continue
         setattr(_LatticeCategory, _catalogue_name, _catalogue_value)
 
+    # The raw constructor, reached by the dispatch above.  ``Lattices`` is the
+    # entry point; this is what it delegates to for a name or a Gram matrix.
+    _LatticeCategory._lattice_with_names = staticmethod(_integral_lattice_with_names)
+
     Lattices = _LatticeCategory
     Lattices._specimens = {
         _catalogue_name: _catalogue_value

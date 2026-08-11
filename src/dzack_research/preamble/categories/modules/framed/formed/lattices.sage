@@ -38,19 +38,44 @@ class Lattices(CategoryWithAxiom_over_base_ring):
     _specimens: dict = {}
 
     @staticmethod
-    def __classcall_private__(cls, argument):
-        r"""Dispatch on what was asked for.
+    def __classcall_private__(cls, *arguments, **keywords):
+        r"""The one entry point: dispatch on what was asked for.
 
-        A ring names the category of lattices over it. A string names a
-        specimen from the catalogue, which registers itself here.
+        - a ring names the category of lattices over it;
+        - a name names a specimen, or a root system by family and rank;
+        - a Gram matrix builds the lattice carrying it.
+
+        This is the constructor as well as the category, and it replaces
+        Sage's ``IntegralLattice``.  Subcategories do not each grow an entry
+        point of their own: what is specific to them is reached by delegating
+        here, as the root systems are below.
         """
-        if isinstance(argument, str):
-            assert argument in cls._specimens, (
-                f"no lattice is named {argument!r}; "
-                f"known names are {sorted(cls._specimens)}"
-            )
-            return cls._specimens[argument]
-        return super(Lattices, cls).__classcall__(cls, argument)
+        from sage.categories.category import Category
+        from sage.categories.rings import Rings
+        from sage.structure.element import Matrix
+
+        match arguments:
+            case ((str() as family), (int() as rank)) if family in ("A", "D", "E"):
+                return cls.root_lattice(family, rank, **keywords)
+            case ([str() as family, int() as rank],) if family in ("A", "D", "E"):
+                return cls.root_lattice(family, rank, **keywords)
+            case (str() as name,) if name in cls._specimens and not keywords:
+                return cls._specimens[name]
+            case (str() as name,):
+                return cls._lattice_with_names(name, **keywords)
+            case (Matrix() as gram,):
+                return cls._lattice_with_names(gram, **keywords)
+            case (Category() as base_category,):
+                # Sage builds an axiom category by calling it on the category
+                # it refines; that path must reach the ordinary construction.
+                return super(Lattices, cls).__classcall__(cls, base_category)
+            case (base_ring,) if base_ring in Rings():
+                return super(Lattices, cls).__classcall__(cls, base_ring)
+
+        assert False, (
+            f"Lattices takes a ring, a name, a root system, or a Gram matrix; "
+            f"got {arguments!r}"
+        )
 
     @classmethod
     def _repr_object_names(cls) -> str:
