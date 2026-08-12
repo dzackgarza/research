@@ -452,70 +452,15 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             """
             return _lattice_with_gram(gram, module_generating_set)
 
-        # ---- the radical, and the axioms defined by it ----
-
-        @cached_method
-        def dual_module(self: Self) -> "Module":
-            r"""Return $\operatorname{Hom}(L,\mathbb Z)$, free on the dual basis.
-
-            The dual as a *module*, which every lattice has: $\operatorname{Hom}$
-            into $\mathbb Z$ of a free module of rank $n$ is free of rank $n$,
-            with no condition on the form.  It carries no form -- the one on
-            $L^\vee$ is $G^{-1}$, and that is where nondegeneracy is needed.
-            """
-            # Local: a module-level import here would close a cycle; by call time this module is built.
-            from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import BasedFreeModule
-            return BasedFreeModule(ℤ, self.module_generating_set())
-
-        @cached_method
-        def correlation_morphism(self: Self) -> "FormMorphism":
-            r"""Return $c: L\to\operatorname{Hom}(L,\mathbb Z)$, $v\mapsto b(v,-)$.
-
-            Always defined, and the map the radical and nondegeneracy are
-            about: $b(v,-)$ is a functional on $L$ whatever the form does, and
-            its matrix in the dual basis is $G$.  :meth:`correlation` is this
-            same map with $\operatorname{Hom}(L,\mathbb Z)$ carrying the form
-            that makes it $L^\vee$, which exists only when $c$ is injective.
-            """
-            # Local: a module-level import here would close a cycle; by call time this module is built.
-            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
-            from dzack_research.preamble.utilities import zipsum
-            dual_module = self.dual_module()
-            assignment = dict(
-                zip(
-                    self.module_generating_set(),
-                    (
-                        zipsum(
-            row,
-            dual_module.module_generators(),
-            dual_module.zero(),
-        )
-                        for row in self.gram_matrix().rows()
-                    ),
-                )
-            )
-            homset = module_homset(self, dual_module)
-            return homset.zero() if not assignment else homset(assignment)
-
-        @cached_method
-        def radical(self: Self) -> Subobject:
-            r"""Return $\operatorname{rad}(L)=\ker(c)$, as a subobject.
-
-            $\{v: b(v,w)=0 \text{ for all } w\}$ is by definition the set of
-            $v$ killed by $v\mapsto b(v,-)$, so the radical is that map's
-            kernel and is computed as one -- not as a Gram-matrix kernel that
-            happens to agree with it.
-            """
-            return self.correlation_morphism().kernel()
-
-        def is_nondegenerate(self: Self) -> bool:
-            r"""Return whether $\operatorname{rad}(L)=0$, i.e. $c$ is injective.
-
-            The radical being the zero object, asked of it.  Not that it has
-            rank $0$ -- a nonzero torsion module has rank $0$ too, and a kernel
-            is not obliged to be free.
-            """
-            return self.radical().is_zero()
+        # ---- the axioms, on top of the predicates the formed surface owns ----
+        #
+        # ``dual_module``, ``correlation_morphism``, ``radical`` and
+        # ``is_nondegenerate`` live on ``FinitelyGeneratedFreeFormModules``:
+        # the axiom gates ask candidates those questions *before* admission,
+        # so they cannot be answered from inside this category.
+        # :meth:`correlation` below is the correlation morphism with
+        # $\operatorname{Hom}(L,\mathbb Z)$ carrying the form that makes it
+        # $L^\vee$, which exists only when $c$ is injective.
 
         def is_unimodular(self: Self) -> bool:
             r"""Return whether $c: L\to L^\vee$ is an isomorphism.
@@ -1691,8 +1636,11 @@ def refine_one_lattice(lattice: "Lattice") -> None:
     from dzack_research.preamble.categories.modules.framed.formed.integrallattice.definite_lattices import DefiniteLattices
     from dzack_research.preamble.categories.modules.framed.formed.integrallattice.hyperbolic_lattices import HyperbolicLattices
     from dzack_research.preamble.refine import refine
-    match lattice.gram_matrix().det() == 0:
-        case True:
+    # Routed by the predicate the axiom gate re-asks, not a determinant
+    # proxy: the radical is the kernel module of the correlation morphism,
+    # and ``refine`` refuses the ``Nondegenerate`` axiom when it is nonzero.
+    match lattice.is_nondegenerate():
+        case False:
             refine(
                 lattice,
                 [
@@ -1701,7 +1649,7 @@ def refine_one_lattice(lattice: "Lattice") -> None:
                 ],
             )
             return
-        case False:
+        case True:
             pass
     refine(lattice, IntegralLattices())
     pos, neg = lattice.signature_pair()

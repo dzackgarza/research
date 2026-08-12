@@ -234,6 +234,35 @@ def _rebuild_element_class(parent: "Parent", category: "Category") -> None:
     )
 
 
+def _assert_certifying_predicates_hold(
+    obj: "SageObject",
+    category: "Category",
+) -> None:
+    r"""Evaluate the predicates the target categories claim of their objects.
+
+    A category class carrying ``_certifying_predicate`` names a method the
+    candidate must answer ``True`` to be admitted -- ``is_nondegenerate`` for
+    the ``Nondegenerate`` axiom, say.  The claim is always the participant's
+    own: a finitely generated lattice computes its radical, while an object
+    whose nondegeneracy is a theorem answers through its own method, which is
+    then auditable by name on the object.  Placement never grants the
+    property; the object asserts it, here, or is refused.
+    """
+    for cat in category.all_super_categories(proper=False):
+        category_type = type(cat)
+        if not _is_owned_category(category_type):
+            continue
+        # Read through the class: Sage hands out ``<Class>_with_category``
+        # dynamic subclasses, so the marker sits one level up the MRO.
+        predicate_name = getattr(category_type, "_certifying_predicate", None)
+        if predicate_name is None:
+            continue
+        assert getattr(obj, predicate_name)() is True, (
+            f"refining {obj} into {cat} requires {predicate_name}() to hold, "
+            "and the object answers otherwise"
+        )
+
+
 def _assert_preamble_obligations_are_met(
     obj: "SageObject",
     category: "Category",
@@ -316,6 +345,7 @@ def refine(obj: "SageObject", category: "Category") -> "SageObject":
     if isinstance(obj, Parent) and not _is_homset(obj):
         _rebuild_element_class(obj, category)
     _assert_preamble_obligations_are_met(obj, category)
+    _assert_certifying_predicates_hold(obj, category)
     return obj
 
 def hook_post_init(

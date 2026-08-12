@@ -242,6 +242,15 @@ class FramedModules(CategoryWithAxiom_over_base_ring):
             Finite input has finite combined support in the framing.  The
             containing module need not have a finite generating set.
             """
+            if "_form" in self.__dict__:
+                # A formed parent's subobjects carry the restricted form,
+                # and the formed category owns that construction.  Said
+                # explicitly: which mixin wins the name must not decide
+                # whether a sublattice is a lattice.
+                # Local: a module-level import here would close a cycle; by call time this module is built.
+                from dzack_research.preamble.categories.modules.framed.formed.form_modules import FreeFormModules
+
+                return FreeFormModules.ParentMethods.subobject_on(self, module_generators)
             from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import BasedFreeModule
             from dzack_research.preamble.categories.modules.framed.formed.integrallattice.subobjects import Subobject
             from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _independent_module_generators

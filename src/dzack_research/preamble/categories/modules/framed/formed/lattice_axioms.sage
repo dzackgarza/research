@@ -18,6 +18,7 @@ from sage.categories.category_with_axiom import (
     CategoryWithAxiom_over_base_ring,
     axiom,
 )
+from sage.misc.abstract_method import abstract_method
 
 from sage.categories.modules import Modules
 
@@ -56,7 +57,13 @@ class FinitelyGeneratedLattices(CategoryWithAxiom_over_base_ring):
     ``SubcategoryMethods`` above is not enough: the application resolves
     through a class naming this pair, and without one ``_with_axiom`` returns
     the unrefined category and the axiom is silently lost.
+
+    Admission is by predicate: ``refine`` evaluates
+    ``is_finitely_generated()``, which the module surface computes from the
+    framing being finite rather than declaring from membership.
     """
+
+    _certifying_predicate = "is_finitely_generated"
 
     _base_category_class_and_axiom = (Lattices, "FinitelyGenerated")
 
@@ -76,23 +83,51 @@ class FinitelyGeneratedLattices(CategoryWithAxiom_over_base_ring):
 
 
 class IntegralValuedLattices(CategoryWithAxiom_over_base_ring):
-    r"""Lattices whose form takes its values in the base ring."""
+    r"""Lattices whose form takes its values in the base ring.
+
+    Admission is by predicate: ``refine`` evaluates ``is_integral()`` on the
+    candidate and refuses a ``False``.  A finitely generated formed module
+    computes the answer from its Gram entries; any other participant must
+    answer for itself -- a ``return True`` backed by a theorem is
+    admissible, and it is the *participant's* auditable claim, made by name
+    on the object rather than granted by placement.
+    """
 
     _base_category_class_and_axiom = (Lattices, "Integral")
+    _certifying_predicate = "is_integral"
 
     @classmethod
     def _repr_object_names(cls) -> str:
         return "integral-valued lattices"
 
+    class ParentMethods:
+        @abstract_method
+        def is_integral(self) -> bool:
+            r"""Return whether every value of the form is integral over $\mathbb Z$."""
+
 
 class NondegenerateLattices(CategoryWithAxiom_over_base_ring):
-    r"""Lattices whose radical is zero."""
+    r"""Lattices whose radical is zero.
+
+    Admission is by predicate: ``refine`` evaluates ``is_nondegenerate()``
+    on the candidate and refuses a ``False``.  The finitely generated free
+    formed surface computes it as the radical -- the kernel *module* of the
+    correlation morphism -- being zero; an infinite lattice whose
+    nondegeneracy is a theorem participates by supplying its own method,
+    which is then the participant's auditable claim.
+    """
 
     _base_category_class_and_axiom = (Lattices, "Nondegenerate")
+    _certifying_predicate = "is_nondegenerate"
 
     @classmethod
     def _repr_object_names(cls) -> str:
         return "nondegenerate lattices"
+
+    class ParentMethods:
+        @abstract_method
+        def is_nondegenerate(self) -> bool:
+            r"""Return whether $\operatorname{rad}(L)=0$."""
 
 
 # ``IntegralLattices`` is ``Lattices(R).FinitelyGenerated().Integral()``, and

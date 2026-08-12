@@ -306,16 +306,20 @@ def Subobject(embedding: "ModuleMorphism") -> "Module":
             form = None
             underlying_module = None
     subobject = Slice(embedding, is_mono=True)
-    categories = [domain_category, subobject.category(), Subobjects()]
-    # A submodule of a definite lattice is where reduction is defined, so the
-    # axiom is joined here rather than asserted at each call site.
-    if embedding.codomain() in DefiniteLattices():
-        categories.append(DefiniteLattices().Subobjects())
-    subobject = refine(subobject, categories)
+    # The form is attached *before* refinement: admission into a category is
+    # allowed to interrogate the candidate -- obligations, certifying
+    # predicates, even its repr -- and a formed subobject that cannot answer
+    # ``form()`` yet would be refused for the wrong reason.
     match form:
         case None:
             pass
         case _:
             subobject._form = form
             subobject._module = underlying_module
+    categories = [domain_category, subobject.category(), Subobjects()]
+    # A submodule of a definite lattice is where reduction is defined, so the
+    # axiom is joined here rather than asserted at each call site.
+    if embedding.codomain() in DefiniteLattices():
+        categories.append(DefiniteLattices().Subobjects())
+    subobject = refine(subobject, categories)
     return subobject

@@ -200,11 +200,14 @@ class FinitelyGeneratedModules(CategoryWithAxiom_over_base_ring):
             return FreeResolution(self)
 
         def is_finitely_generated(self) -> bool:
-            r"""Return whether this module is finitely generated.
+            r"""Return whether the chosen generating set is finite.
 
-            Always ``True`` for objects in this category.
+            Computed from the framing rather than declared from membership:
+            the ``FinitelyGenerated`` axiom gate consults this answer, so an
+            object claiming the axiom with an infinite framing is refused
+            rather than believed.
             """
-            return True
+            return self.module_generating_set() in Sets().Finite()
 
         def is_zero(self) -> bool:
             r"""Return whether every element in the chosen generating set vanishes."""
