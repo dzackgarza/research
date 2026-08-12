@@ -4,7 +4,10 @@ This category *is* ``SymmetricBilinearFormModules(R).Projective()``. It is
 declared rather than composed: Sage models "this category, plus this axiom" as
 the axiom's category class bound onto the category it refines, so a class that
 names the pair and is bound with ``setattr`` is that join, under whatever name
-suits it.  ``FramedModules`` is ``Modules(R).Framed()`` by the same device.
+suits it.  Both halves are the preamble's own classes, which is what the
+device requires -- an axiom bound onto one of Sage's category classes is a
+monkey-patch, and the module categories below are plain owned categories for
+that reason.
 
 A lattice is not a module with a bilinear form.  That is
 ``SymmetricBilinearFormModules(R)``, and it holds anything with a pairing.
@@ -19,7 +22,10 @@ $SL_2(\RR)$ with $b(x,y)=\operatorname{tr}(xy)$.
 
 from typing import TYPE_CHECKING, TypeAlias
 
-from sage.categories.category_with_axiom import CategoryWithAxiom_over_base_ring
+from sage.categories.category_with_axiom import (
+    CategoryWithAxiom_over_base_ring,
+    all_axioms,
+)
 
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
     SymmetricBilinearFormModules,
@@ -40,11 +46,15 @@ if TYPE_CHECKING:
         str | int | Integer | Matrix | Category | Ring | list
     )
 
-# Imported for the registration and binding of the ``Projective`` axiom, which
-# is what makes the declaration below resolve.
-from dzack_research.preamble.categories.modules.pure.projective_modules import (  # noqa: F401
+from dzack_research.preamble.categories.modules.pure.projective_modules import (
     ProjectiveModules,
 )
+
+# The axiom name this category is declared with.  It is registered here, where
+# it is used: ``ProjectiveModules`` is an owned category, not an axiom bound
+# onto Sage's ``Modules``.
+if "Projective" not in all_axioms:
+    all_axioms.add("Projective")
 
 
 class Lattices(CategoryWithAxiom_over_base_ring):
@@ -115,6 +125,17 @@ class Lattices(CategoryWithAxiom_over_base_ring):
             f"Lattices takes a ring, a name, a root system, or a Gram matrix; "
             f"got {arguments!r}"
         )
+
+    def extra_super_categories(self) -> list:
+        r"""A lattice is a projective module.
+
+        Named rather than left to the axiom machinery: ``Projective`` is
+        declared on this preamble's own ``SymmetricBilinearFormModules``, and
+        propagating it up the module chain would need it bound onto Sage's
+        ``Modules`` as well, which is the monkey-patch this preamble does not
+        make.  So the containment is stated here, where it is true.
+        """
+        return [ProjectiveModules(self.base_ring())]
 
     @classmethod
     def _repr_object_names(cls) -> str:

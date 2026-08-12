@@ -11,6 +11,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 from sage.categories.groups import Groups
 from sage.matrix.matrix0 import Matrix
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
+from dzack_research.preamble.categories.modules.framed.framed_modules import FramedModules
 from sage.categories.modules import Modules
 if TYPE_CHECKING:
     from sage.categories.category import Category
@@ -173,7 +174,7 @@ class FormModules(OwnedCategoryOverBaseRing):
         return "form modules"
 
     def super_categories(self) -> list:
-        return [Modules(self.base_ring()).Framed()]
+        return [FramedModules(self.base_ring())]
 
     class ParentMethods(_ParentBase):
 

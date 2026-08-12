@@ -54,7 +54,13 @@ from sage.rings.integer_ring import ZZ as SageIntegers
 from sage.rings.qqbar import QQbar as SageAlgebraicNumbers
 from sage.rings.rational_field import QQ as SageRationals
 
-FINITELY_GENERATED = Groups().FinitelyGenerated()
+# The owned category is the surface (AGENTS.md: the preamble owns its
+# categories outright); Sage's ``Groups().FinitelyGenerated()`` is a
+# declaration registry the preamble consumes on intake, not the node these
+# assertions ask about.
+from dzack_research.preamble.categories.group.groups import OwnedFinitelyGeneratedGroups
+
+FINITELY_GENERATED = OwnedFinitelyGeneratedGroups()
 
 # These are claims about the preamble's universe, so the preamble is loaded:
 # ``R^n``, the refinements, and the category layer are what the assertions are
@@ -76,17 +82,13 @@ Lattices.install(globals())
 # QUIRK.  Sage's ``FinitelyGenerated`` is a declaration, not a decision.  A
 # category is only entered when some constructor says so, and most never do:
 # ``FreeGroup(2)``, ``AbelianGroup([5])``, ``GL(3,ZZ)`` and every ``O(L)``
-# stand outside it while answering ``ngens`` on request.  So ``G in
-# Groups().FinitelyGenerated()`` reads as "somebody wrote it down", and its
-# False carries no mathematics at all.  Only its True is evidence.
+# stand outside it while answering ``ngens`` on request.  So Sage's node
+# reads as "somebody wrote it down", and its False carries no mathematics.
 #
-# REMEDIATION.  The preamble supplies the evidence Sage never declared, into
-# Sage's own node rather than a parallel one -- refinement is additive, and a
-# second vocabulary would split every later reader.  Where the object can be
-# asked, the preamble asks and refines; where it cannot, the object stays out
-# and the answer is Unknown rather than a silent False.  Refinement happens on
-# intake, when the preamble first receives the group, because the interesting
-# groups are built on demand and Sage's classes admit no construction hook.
+# REMEDIATION.  The preamble owns the finitely-generated-groups category and
+# refines groups into it on intake, reading Sage's declaration as one
+# admission source among the decidable ones.  These assertions ask the owned
+# node, where membership is a decision.
 # ---------------------------------------------------------------------------
 
 FINITE_GROUPS = {

@@ -1,7 +1,8 @@
 r"""Finitely generated modules over a base ring.
 
-Defines the ``FinitelyGenerated`` axiom for ``Modules(R)`` via Sage's ``CategoryWithAxiom_over_base_ring``
-framework, enabling ``Modules(R).FinitelyGenerated()`` and ``FinitelyGeneratedModules(R)``.
+``FinitelyGeneratedModules(R)`` is the owned category; it consumes
+``FramedModules(R)`` as its supercategory, since the finite generating set is
+the framing.
 """
 
 from typing import Protocol, TYPE_CHECKING
@@ -13,20 +14,12 @@ if TYPE_CHECKING:
     from sage.structure.element import Matrix
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
 
-import sage.categories.category_with_axiom as cwa
-from sage.categories.category_types import Category_module
-from sage.categories.category_with_axiom import CategoryWithAxiom_over_base_ring
-from sage.categories.modules import Modules
+from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
 from sage.categories.principal_ideal_domains import PrincipalIdealDomains
 from sage.matrix.constructor import matrix
-from sage.misc.cachefunc import cached_method
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.sets.owned_sets import Sets
-
-# Register FinitelyGenerated axiom string if not present in Sage's axiom container
-if "FinitelyGenerated" not in cwa.all_axioms:
-    cwa.all_axioms.add("FinitelyGenerated")
 
 
 class FreeResolution(SageObject):
@@ -143,7 +136,7 @@ def _relation_inclusion(free_on_generators: "Module", columns: list) -> tuple:
 
 if TYPE_CHECKING:
     class FinitelyGeneratedModuleParent(Protocol):
-        r"""What a parent placed in ``Modules(R).FinitelyGenerated()``
+        r"""What a parent placed in ``FinitelyGeneratedModules(R)``
         supplies: the framing set, the generator naming a label, and the
         module's zero."""
 
@@ -153,18 +146,19 @@ if TYPE_CHECKING:
         def zero(self) -> "ModuleElement": ...
 
 
-class FinitelyGeneratedModules(CategoryWithAxiom_over_base_ring):
+class FinitelyGeneratedModules(OwnedCategoryOverBaseRing):
     r"""Category of finitely generated modules over a base ring."""
 
-    _base_category_class_and_axiom = (Modules, "FinitelyGenerated")
+    @classmethod
+    def _repr_object_names(cls) -> str:
+        return "finitely generated modules"
 
-    def extra_super_categories(self) -> list:
+    def super_categories(self) -> list:
         r"""Require the chosen finite generating morphism used by this preamble."""
-        # Imported for its registration of the Framed axiom on Modules, which
-        # is what makes ``.Framed()`` below an attribute at all.
-        from dzack_research.preamble.categories.modules.framed.framed_modules import FramedModules  # noqa: F401
+        # Local: a module-level import here would close a cycle; by call time this module is built.
+        from dzack_research.preamble.categories.modules.framed.framed_modules import FramedModules
 
-        return [Modules(self.base_ring()).Framed()]
+        return [FramedModules(self.base_ring())]
 
     class ParentMethods:
         def module_generators(self: "FinitelyGeneratedModuleParent") -> "OrderedSet":
@@ -229,11 +223,3 @@ class FinitelyGeneratedModules(CategoryWithAxiom_over_base_ring):
             )
 
 
-@cached_method
-def _fg_subcategory(self: "Category") -> "Category":
-    subcategory: "Category" = self._with_axiom("FinitelyGenerated")
-    return subcategory
-
-
-setattr(Modules, "FinitelyGenerated", FinitelyGeneratedModules)
-setattr(Category_module, "FinitelyGenerated", _fg_subcategory)

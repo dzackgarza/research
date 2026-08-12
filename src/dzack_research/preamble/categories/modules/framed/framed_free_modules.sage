@@ -83,11 +83,10 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
         # Local: at module level this closes an import cycle; the free-module
         # category is built by the time supercategories are asked for.
         from dzack_research.preamble.categories.modules.pure.free_modules import FreeModules
-        # Imported for its registration of the Framed axiom on Modules, which
-        # is what makes ``.Framed()`` below an attribute at all.
-        from dzack_research.preamble.categories.modules.framed.framed_modules import FramedModules  # noqa: F401
+        # Local: a module-level import here would close a cycle; by call time this module is built.
+        from dzack_research.preamble.categories.modules.framed.framed_modules import FramedModules
 
-        return [FreeModules(self.base_ring()), Modules(self.base_ring()).Framed()]
+        return [FreeModules(self.base_ring()), FramedModules(self.base_ring())]
 
     class ParentMethods:
         def module_generators(self: "FreeModuleParent") -> "Set":

@@ -28,10 +28,7 @@ if TYPE_CHECKING:
 from collections.abc import Iterable
 from typing import Any, Self, TYPE_CHECKING
 
-import sage.categories.category_with_axiom as cwa
-from sage.categories.category_types import Category_module
-from sage.categories.category_with_axiom import CategoryWithAxiom_over_base_ring
-from sage.categories.modules import Modules
+from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
 from sage.misc.abstract_method import abstract_method
 from sage.misc.cachefunc import cached_method
 from sage.sets.image_set import ImageSubobject
@@ -47,10 +44,6 @@ if TYPE_CHECKING:
     # load into one shared namespace where Sage's ``Set()`` constructor
     # lives under the same name.
     from dzack_research.preamble.lexicon import Set
-
-
-if "Framed" not in cwa.all_axioms:
-    cwa.all_axioms.add("Framed")
 
 
 def _finite_coefficient_function(module: "Module", coefficients: Iterable) -> dict:
@@ -98,7 +91,7 @@ def _finite_module_generator_assignment(
 
 if TYPE_CHECKING:
     class FramedModuleParent(Protocol):
-        r"""What a parent placed in ``Modules(R).Framed()`` supplies: the ring
+        r"""What a parent placed in ``FramedModules(R)`` supplies: the ring
         underneath, its zero, the framing, and the generator naming behind the
         preparser's ``M.<e,f> = ...`` protocol."""
 
@@ -120,12 +113,14 @@ if TYPE_CHECKING:
 else:
     _ParentBase = object
 
-class FramedModules(CategoryWithAxiom_over_base_ring):
+class FramedModules(OwnedCategoryOverBaseRing):
     r"""Modules carrying a specified surjection \(F_R(S)\to M\)."""
 
-    _base_category_class_and_axiom = (Modules, "Framed")
+    @classmethod
+    def _repr_object_names(cls) -> str:
+        return "framed modules"
 
-    def extra_super_categories(self) -> list:
+    def super_categories(self) -> list:
         r"""A framed module is a module, in the sense this preamble owns.
 
         Which is where the obligation lives: a module is a ring morphism
@@ -310,7 +305,7 @@ class FramedModules(CategoryWithAxiom_over_base_ring):
             # module is built by the time a homset is asked for.
             from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 
-            if codomain in Modules(self.base_ring()).Framed():
+            if codomain in FramedModules(self.base_ring()):
                 homset: "Homset" = module_homset(self, codomain)
                 return homset
             return Parent.Hom(self, codomain, category)
@@ -335,11 +330,3 @@ class FramedModules(CategoryWithAxiom_over_base_ring):
             return fraction_field_base_change(self.base_ring())(self)
 
 
-@cached_method
-def _framed_subcategory(self: "Category") -> "Category":
-    subcategory: "Category" = self._with_axiom("Framed")
-    return subcategory
-
-
-setattr(Modules, "Framed", FramedModules)
-setattr(Category_module, "Framed", _framed_subcategory)
