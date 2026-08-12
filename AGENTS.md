@@ -56,6 +56,8 @@ Never write these terms in code, issues, docs, comments, memories, or doctrine; 
 | --- | --- | --- |
 | **"carrier"** (carrier module/set, "carrier of a structure", "carrier siting") | 3+ — P1's first draft; the P6 enforcement clause's own name (corrected 2026-07-12); Tier B row 1 predates both | the **underlying set/module** (image of the forgetful functor); in doctrine prose name the entity: the **object, morphism, homset, or functor** |
 | **"ambient"** as free-standing data ("the ambient", "shared ambient", "shared span/coordinates", `ambient=`/`in_ambient=` parameters, stored `_ambient` state) | pervasive — Sage back-porting; issue #100's own original body; re-emitted in doctrine prose 2026-07-11 | a subobject is the pair `(A, f: A ↪ B)`: its ambient **is** `f.codomain()`; rational/real constructions live in the **base-changed parent** `L ⊗ R'`, named by its functor |
+| bare **"generators"** (also "defining generators", generators as `tuple`/`list`, `len(generators)`) | 3+ — ruled 2026-08-06 (names must state the structure); re-emitted 2026-08-08 as "defining generators"; re-emitted 2026-08-11 ("discussed ad nauseum") | **`group_generators`**, **`module_generators`**, **`algebra_generators`** — the name states the structure; a generating set is a **set** with a **cardinality**, never a sequence with a length |
+| bare **"dual"** (one method named `dual`, a stored `_dual`) | ruled 2026-08-06 ("there are many possible duals"); re-emitted in later API drafts | **`dual_module`**, **`dual_lattice`**, **`dual_group`** — every dual names which duality functor produced it |
 
 **Graduation rule:** when a drift term already carrying a dictionary row is emitted a *second* time, it graduates to this index — the repetition is the evidence of a strong prior.
 Diagnose new drift by principle first (generative failure model P1–P6); this index is only for proven repeat offenders.
@@ -531,6 +533,145 @@ This governs the rules below:
 - Sage objects are an implementation detail. The crossing happens inside owned code, at the point of computing, never in what a session receives.
 - Where Sage spells one mathematical operation several ways, the preamble picks one spelling and the others do not exist in the session.
 - Where Sage has no algorithm, the preamble still owns the name. A missing capability is a stated gap on the owned interface, never a second spelling and never a silent absence.
+
+# Mathematical ontology (always-on)
+
+The rules below are the shapes that recur across unrelated categories. Each states
+what an object *is*; the *tell* names the code shape or phrase that shows up while
+the drift is happening, when the category involved is not the one a past record
+named. The vault holds the episodes; this section is the contract.
+
+**Added structure enriches an object; it never wraps one.** A formed module *is* a
+module that additionally has a form. An abelian group *is* a $\mathbb{Z}$-module.
+`ZZ` is at once a ring, a rank-one $\mathbb{Z}$-module, a rank-one
+$\mathbb{Z}$-algebra, a group and a monoid — one object, several categories. A
+subobject *is* the module $S$, an object of the ambient category like any other,
+which additionally has an inclusion $f: S\hookrightarrow B$. Underlying-ness is what
+a forgetful functor produces on demand, never data an object stores.
+*The tell:* the phrase "has an underlying X"; a stored `self._underlying`; a
+`forget_*()` call used to obtain the receiver of a method rather than to name a
+functor; delegation chains for methods the object already has from its own category.
+(Vault: `subobjects-are-a-subcategory-not-a-wrapper`.)
+
+**An implementation obstacle is fixed where it occurs; the mathematics does not move
+to accommodate it.** A recursion, a type error, a slow path, or a failing gate is a
+fact about the implementation. Re-siting a construction onto a different object,
+wrapping a type, or weakening an annotation to make one of them go away changes what
+the code *says* in order to change how it *runs*, and the mathematical claim is then
+false while the suite is green. Fix the recursion; make the type real; find out why
+it is slow. An obstacle that survives that is a discussion, not a redesign made
+alone.
+*The tell:* a docstring or comment that justifies placement by what it avoids
+("sited here, which keeps X from re-entering Y"); a wrapper type introduced during a
+type-checking pass; `cast`; any edit whose stated benefit is that a checker or a test
+stops complaining.
+(Vault: `the-mathematics-never-moves-to-accommodate-an-implementation-obstacle`.)
+
+**A predicate is computed from its definition, on the entity the definition is
+about.** Nondegeneracy is $\ker c = 0$ for the correlation $c: L \to
+\operatorname{Hom}(L,R)$ — form the kernel and ask it whether it is zero, or ask the
+arrow whether it is injective. Primitivity of an embedding is that its cokernel is
+torsion-free. Saturation and index are properties of a morphism, so they are asked of
+the inclusion, never of a bare object. Determinants, gcds of matrix entries and rank
+comparisons are recognition criteria that hold under hypotheses the definition does
+not carry; using one asserts a theorem nobody proved, at a site where nobody will
+look for it.
+*The tell:* `det(...) == 0`; `gcd(...) == 1`; a predicate whose body mentions entries,
+a basis, or coordinates; a predicate sited on an object whose mathematical statement
+names an arrow.
+(Vault: `numerics-quarantine-saturation-and-primitivity-are-subobject-definitions`,
+`witness-consuming-methods-belong-on-morphisms-not-objects`,
+`primitive-embedding-is-computed-from-cokernel-not-caller-flag`.)
+
+**Implement the general notion; recover the special case from it.** A form is
+$b: M\times M\to W$ for an arbitrary value module $W$, so its scale is a submodule of
+$W$ — an ideal only when $W$ happens to be the ring. A group's generating set is a
+set; finiteness and an ordering are the axioms `FinitelyGenerated` and `Finite`, not
+part of the notion. A lattice is a *projective* module with a form; a form module is
+any module with a form. Where a term already has an a priori meaning, that meaning
+stands: any ring morphism $R\to S$ defines integrality, so integrality is never
+re-parameterized by a submodule of the implementer's choosing.
+*The tell:* a name that fixes the special case (`scale_ideal`, or `dual` for one of
+several duals); a parameter added for something the definition already determines;
+code that runs on $\mathbb{Q}/\mathbb{Z}$ where the statement was about $K/R$.
+(Vault: `integrality-has-an-a-priori-meaning-never-parameterize-or-coin-it`.)
+
+**When the vocabulary cannot express the general statement, that is the finding.**
+Discovering that the repo can build $\mathbb{Q}/\mathbb{Z}$ but has no object for
+$K/R$ stops the work and opens a discussion. Patching the case that already worked
+leaves the general statement unsayable and the gap unrecorded.
+*The tell:* agreement with a general statement followed by an edit confined to the
+one case that already worked.
+(Vault: `agreeing-to-general-mathematics-the-dsl-has-no-vocabulary-to-express`.)
+
+**Every name states the structure it belongs to.** `group_generators`,
+`module_generators`, `algebra_generators`; `dual_module`, `dual_lattice`,
+`dual_group`. A bare `generators` or `dual` is ill-defined the moment an object sits
+in more than one category, which every object here does. Generators are a *set*,
+possibly ordered, possibly finite: they have a cardinality, not a length, and
+repeated elements are not an error. Where the field has a word, use the field's word;
+where it has none, that absence is a signal to check the notion, not licence to coin
+a name for it.
+*The tell:* a bare structure noun; a plural returned as `tuple`, `list` or
+`Sequence`; `len(...)` on generators; a coined compound adjective; `Any` or `object`
+standing where a mathematical noun belongs.
+(Vault: `generator-names-must-always-state-the-structure`,
+`mathematical-apis-must-use-the-field-s-actual-lexicon`; proven repeat offenders are
+in the banned-language index above.)
+
+**A predicate is decided on the data that determines it, or it answers that it does
+not know.** Equivariance of $\rho$ is checked on generators when generators are
+available; membership in $O(L)$ is $M^{t}G_{L}M = G_{L}$; a subgroup of $O(L)$ is
+carved out by a predicate. Iterating a group, a homset or a module to establish a
+property is correct only for the finite objects that happen to be in the suite, and
+$\mathrm{GL}_n(R)$, $\mathrm{Gal}(\overline{\mathbb{Q}}/\mathbb{Q})$, $O(L)$ for
+indefinite $L$, and $\mathbb{Z}^{\infty}$ are all ordinary inputs here. Where the
+check cannot be made, the answer is a three-valued *unknown* that collapses to false,
+with the reason stated — never a loop that works on small inputs. Sage is a computer
+algebra system, not a proof assistant: a standard theorem is cited, never
+re-established at runtime.
+*The tell:* `for g in G`; `for f in Hom(...)`; a bounded search with a cap;
+`all(... for ... in <an object>)`; a docstring claiming a property is "verified" or
+"proven" by the method body.
+(Vault: `sage-is-a-cas-not-a-proof-assistant-runtime-verification-of-a-theorem-is-triple-slop`,
+`undecidable-problem-pseudo-booleans`; the undecidability audit under *Work-selection
+discipline* is the sibling rule.)
+
+**Morphisms are constructed by the caller, in the categories they live in.** A
+$G$-action on $M$ is a group morphism $\rho: G\to\operatorname{Aut}(M)$ that the
+caller builds; $M$ does not accept a group and a list of images and assemble one.
+Passing from $R$-modules to $R[G]$-modules is a functor, and asking for an invariant
+sublattice applies it. An $S$-module, for any ring $S$, is a set with a ring morphism
+$S\to\operatorname{End}(M)$, so group modules, lattices with an action and modules
+over a group ring all specialize one constructor and need no special case.
+*The tell:* a constructor taking raw matrices or images where a morphism is the
+datum; a method on an object returning a morphism between two *other* objects; a
+`from_*` classmethod duplicating a homset's `_element_constructor_`.
+(Vault: `a-group-action-is-a-morphism-the-caller-constructs`.)
+
+**Shared infrastructure never carries a local exception.** The global QC in
+`~/ai-review-ci` is machine-wide and already has sanctioned routes for shielding code
+(the excluded directory names, the archived paths). A repo-specific rule, exclusion
+or suppression written into it inverts ownership in either direction — a local ruling
+promoted to a universal one, or a local exemption inlined into a universal gate.
+Both are user decisions before they are edits.
+*The tell:* a repo name, path or convention appearing in a shared config; an
+exclusion added while fixing a failure in one repo.
+(Vault:
+`a-highly-specific-fix-is-not-a-general-rule-project-conventions-never-promote-to-global-qc`.)
+
+**Reference implementations are absorbed by semantic reconciliation.** The archived
+spikes are this project's own earlier versions. Each notion they hold is first mapped
+onto the preamble's notion: where the preamble already owns it, the spike's version
+is superseded and call sites are re-expressed in the owned vocabulary; where it is
+genuinely missing, it arrives rewritten to current standards and sited where the
+category tree says it belongs. Neither a wholesale copy nor a minimal trim is
+reconciliation.
+*The tell:* a new file mirroring the source layout; a second definition of a notion
+the preamble already has; not-yet-absorbed code described as severed or contaminated
+rather than as pending its round.
+(Vault:
+`spike-absorption-is-semantic-reconciliation-never-quarantine-or-copy-paste`.)
 
 # Mathematical Sage API discipline (always-on)
 
