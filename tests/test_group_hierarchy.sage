@@ -336,3 +336,27 @@ def test_standard_finite_groups_are_finitely_presented():
         assert group in OwnedFinitelyPresentedGroups(), (
             f"{name} is finitely presented because every finite group is"
         )
+
+
+def test_groups_is_the_flat_catalogue_of_standard_groups():
+    r"""The group category constructs standard families on one public surface."""
+    assert Groups is groups is OwnedGroups
+
+    finite_groups = (
+        (Groups.C(5), 5),
+        (Groups.S(4), 24),
+        (Groups.A(4), 12),
+        (Groups.D(5), 10),
+        (Groups.Q(), 8),
+        (Groups.V4(), 4),
+        (Groups.GL(2, GF(3)), 48),
+        (Groups.SL(2, GF(3)), 24),
+        (Groups.Sp(2, GF(3)), 24),
+    )
+    for group, order in finite_groups:
+        assert group in Groups()
+        assert group in OwnedFiniteGroups()
+        assert group.order() == order
+
+    assert Groups.Free(2) in Groups()
+    assert Groups.Braid(4) in Groups()

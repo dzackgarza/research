@@ -41,14 +41,131 @@ from sage.structure.element import Element, RingElement
 from sage.structure.parent import Parent
 
 
+def _owned_group_constructor(constructor):
+    r"""Return Sage's constructor with its result refined as a group here."""
+    from functools import wraps
+
+    @wraps(constructor)
+    def construct(*arguments, **keywords):
+        return refine_group(constructor(*arguments, **keywords))
+
+    return staticmethod(construct)
+
+
+def _group_over_engine_ring(constructor, degree, ring, *arguments, **keywords):
+    r"""Construct through Sage using the engine view of the scalar ring."""
+    from dzack_research.preamble.categories.rings.rings import engine_ring
+
+    return refine_group(
+        constructor(degree, engine_ring(ring), *arguments, **keywords)
+    )
+
+
+def _GL(degree, ring, var="a"):
+    r"""Return \(GL_{\mathrm{degree}}(\mathrm{ring})\)."""
+    from sage.groups.matrix_gps.catalog import GL
+    return _group_over_engine_ring(GL, degree, ring, var=var)
+
+
+def _SL(degree, ring, var="a"):
+    r"""Return \(SL_{\mathrm{degree}}(\mathrm{ring})\)."""
+    from sage.groups.matrix_gps.catalog import SL
+    return _group_over_engine_ring(SL, degree, ring, var=var)
+
+
+def _Sp(degree, ring, var="a", invariant_form=None):
+    r"""Return the symplectic group over ``ring`` in the selected degree."""
+    from sage.groups.matrix_gps.catalog import Sp
+    return _group_over_engine_ring(
+        Sp, degree, ring, var=var, invariant_form=invariant_form
+    )
+
+
+def _GU(degree, ring, var="a", invariant_form=None):
+    r"""Return the general unitary group over ``ring`` in the selected degree."""
+    from sage.groups.matrix_gps.catalog import GU
+    return _group_over_engine_ring(
+        GU, degree, ring, var=var, invariant_form=invariant_form
+    )
+
+
+def _SU(degree, ring, var="a", invariant_form=None):
+    r"""Return the special unitary group over ``ring`` in the selected degree."""
+    from sage.groups.matrix_gps.catalog import SU
+    return _group_over_engine_ring(
+        SU, degree, ring, var=var, invariant_form=invariant_form
+    )
+
+
+def _GO(degree, ring, e=0, var="a", invariant_form=None):
+    r"""Return the general orthogonal group over ``ring`` in the selected degree."""
+    from sage.groups.matrix_gps.catalog import GO
+    return _group_over_engine_ring(
+        GO, degree, ring, e=e, var=var, invariant_form=invariant_form
+    )
+
+
+def _SO(degree, ring, e=None, var="a", invariant_form=None):
+    r"""Return the special orthogonal group over ``ring`` in the selected degree."""
+    from sage.groups.matrix_gps.catalog import SO
+    return _group_over_engine_ring(
+        SO, degree, ring, e=e, var=var, invariant_form=invariant_form
+    )
+
+
+def _Affine(degree, ring):
+    r"""Return the affine group over ``ring`` in the selected degree."""
+    from sage.groups.affine_gps.catalog import Affine
+    return _group_over_engine_ring(Affine, degree, ring)
+
+
+def _Euclidean(degree, ring):
+    r"""Return the Euclidean group over ``ring`` in the selected degree."""
+    from sage.groups.affine_gps.catalog import Euclidean
+    return _group_over_engine_ring(Euclidean, degree, ring)
+
+
+def _SemimonomialTransformation(ring, degree):
+    r"""Return the semimonomial transformation group over ``ring``."""
+    from dzack_research.preamble.categories.rings.rings import engine_ring
+    from sage.groups.misc_gps.misc_groups_catalog import SemimonomialTransformation
+
+    return refine_group(SemimonomialTransformation(engine_ring(ring), degree))
+
+
+def _Heisenberg(degree=1, ring=0):
+    r"""Return the Heisenberg group over ``ring`` in the selected degree."""
+    from dzack_research.preamble.categories.rings.rings import engine_ring
+    from sage.groups.matrix_gps.catalog import Heisenberg
+
+    scalar_ring = ring if ring == 0 else engine_ring(ring)
+    return refine_group(Heisenberg(degree, scalar_ring))
+
+
+def _Coxeter(data, implementation="reflection", base_ring=None, index_set=None):
+    r"""Return the Coxeter group for ``data`` through Sage's constructor."""
+    from dzack_research.preamble.categories.rings.rings import engine_ring
+    from sage.groups.misc_gps.misc_groups_catalog import CoxeterGroup
+
+    scalar_ring = None if base_ring is None else engine_ring(base_ring)
+    return refine_group(
+        CoxeterGroup(
+            data,
+            implementation=implementation,
+            base_ring=scalar_ring,
+            index_set=index_set,
+        )
+    )
+
+
 def _engine_answer(
     group: "Group", question: str
 ) -> "bool | Integer | Unknown":
     r"""Return the engine's answer to ``question``, or ``Unknown``.
 
-    Asked of the class Sage built rather than of ``group``, because the owned
-    node sits in front of that class: asking the object would find the owned
-    method that called this one.
+    Asked of the class Sage built rather than of ``group`` when the owned
+    category supplies the public method.  Asking the object in that case
+    would find the method that called this one.
 
     Sage says "I cannot decide" in two ways -- no such method, and a method
     that raises ``NotImplementedError`` -- and neither is mathematics.  Both
@@ -60,7 +177,13 @@ def _engine_answer(
     function of the group.
     """
     try:
-        answer = getattr(super(OwnedGroups.ParentMethods, group), question)
+        match group.category().is_subcategory(OwnedGroups()):
+            case True:
+                answer = getattr(
+                    super(OwnedGroups.ParentMethods, group), question
+                )
+            case False:
+                answer = getattr(group, question)
     except AttributeError:
         return Unknown
     try:
@@ -91,7 +214,95 @@ class OwnedGroups(Category):
     ``Groups`` category is a category of multiplicatively written groups, while
     a module is an additively written group.  Both are groups.  Each concrete
     realization keeps its notation and supplies its operation there.
+
+    The class is also the flat catalogue of standard groups.  Tab completion
+    on ``Groups.`` shows the available families.  The constructors ``C(n)``,
+    ``S(n)``, ``A(n)``, and ``D(n)`` return \(C_n\), \(S_n\), \(A_n\), and
+    \(D_n\), where \(|D_n|=2n\).  Matrix groups keep their standard names and
+    signatures, such as ``GL(n, R)`` and ``Sp(n, R)``.
     """
+
+    from sage.groups.lie_gps.catalog import Nilpotent as _SageNilpotent
+    from sage.groups.misc_gps.misc_groups_catalog import (
+        Artin as _SageArtin,
+        Braid as _SageBraid,
+        Cactus as _SageCactus,
+        Free as _SageFree,
+        PureCactus as _SagePureCactus,
+        ReflectionGroup as _SageReflection,
+        RightAngledArtin as _SageRightAngledArtin,
+        WeylGroup as _SageWeyl,
+    )
+    from sage.groups.perm_gps.permutation_groups_catalog import (
+        ComplexReflection as _SageComplexReflection,
+        Janko as _SageJanko,
+        Mathieu as _SageMathieu,
+        PGL as _SagePGL,
+        PGU as _SagePGU,
+        PSL as _SagePSL,
+        PSp as _SagePSp,
+        PSU as _SagePSU,
+        RubiksCube as _SageRubiksCube,
+        Suzuki as _SageSuzuki,
+        SuzukiSporadic as _SageSuzukiSporadic,
+        Transitive as _SageTransitive,
+    )
+    from sage.groups.perm_gps.permgroup_named import (
+        AlternatingGroup as _SageAlternatingGroup,
+        CyclicPermutationGroup as _SageCyclicGroup,
+        DiCyclicGroup as _SageDiCyclicGroup,
+        DihedralGroup as _SageDihedralGroup,
+        KleinFourGroup as _SageKleinFourGroup,
+        QuaternionGroup as _SageQuaternionGroup,
+        SymmetricGroup as _SageSymmetricGroup,
+    )
+    from sage.groups.abelian_gps.abelian_group import AbelianGroup as _SageAbelianGroup
+
+    C = _owned_group_constructor(_SageCyclicGroup)
+    S = _owned_group_constructor(_SageSymmetricGroup)
+    A = _owned_group_constructor(_SageAlternatingGroup)
+    D = _owned_group_constructor(_SageDihedralGroup)
+    Dic = _owned_group_constructor(_SageDiCyclicGroup)
+    Q = _owned_group_constructor(_SageQuaternionGroup)
+    V4 = _owned_group_constructor(_SageKleinFourGroup)
+
+    Abelian = _owned_group_constructor(_SageAbelianGroup)
+    Free = _owned_group_constructor(_SageFree)
+    Artin = _owned_group_constructor(_SageArtin)
+    Braid = _owned_group_constructor(_SageBraid)
+    Cactus = _owned_group_constructor(_SageCactus)
+    PureCactus = _owned_group_constructor(_SagePureCactus)
+    Coxeter = staticmethod(_Coxeter)
+    Weyl = _owned_group_constructor(_SageWeyl)
+    Reflection = _owned_group_constructor(_SageReflection)
+    RightAngledArtin = _owned_group_constructor(_SageRightAngledArtin)
+
+    GL = staticmethod(_GL)
+    SL = staticmethod(_SL)
+    Sp = staticmethod(_Sp)
+    GU = staticmethod(_GU)
+    SU = staticmethod(_SU)
+    GO = staticmethod(_GO)
+    SO = staticmethod(_SO)
+    Heisenberg = staticmethod(_Heisenberg)
+    SemimonomialTransformation = staticmethod(_SemimonomialTransformation)
+
+    Affine = staticmethod(_Affine)
+    Euclidean = staticmethod(_Euclidean)
+    Nilpotent = _owned_group_constructor(_SageNilpotent)
+
+    ComplexReflection = _owned_group_constructor(_SageComplexReflection)
+    Mathieu = _owned_group_constructor(_SageMathieu)
+    Janko = _owned_group_constructor(_SageJanko)
+    Suzuki = _owned_group_constructor(_SageSuzuki)
+    SuzukiSporadic = _owned_group_constructor(_SageSuzukiSporadic)
+    PGL = _owned_group_constructor(_SagePGL)
+    PSL = _owned_group_constructor(_SagePSL)
+    PSp = _owned_group_constructor(_SagePSp)
+    PGU = _owned_group_constructor(_SagePGU)
+    PSU = _owned_group_constructor(_SagePSU)
+    Transitive = _owned_group_constructor(_SageTransitive)
+    RubiksCube = _owned_group_constructor(_SageRubiksCube)
 
     @classmethod
     def _repr_object_names(cls) -> str:

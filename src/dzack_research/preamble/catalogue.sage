@@ -58,11 +58,15 @@ else:
 
     __all__ = [
         "Embeddings",
+        "Groups",
         "Involutions",
         "Lattices",
         "NegativeDefTwoElementary",
         "TwoElementary",
     ]
+
+    from dzack_research.preamble.categories.group.groups import OwnedGroups as Groups
+    groups = Groups
 
 
     class _Catalogue:
