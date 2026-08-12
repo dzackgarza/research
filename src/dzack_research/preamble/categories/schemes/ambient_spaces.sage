@@ -28,26 +28,28 @@ _NativeProjectiveSpace = _sage_projective.ProjectiveSpace
 
 def AffineSpace(
     n: "Integer",
-    R: "Ring" = None,
-    names: "OrderedSet" = None,
-    ambient_projective_space: "Parent" = None,
-    default_embedding_index: "Integer" = None,
+    R: "Ring | None" = None,
+    names: "OrderedSet | None" = None,
+    ambient_projective_space: "Parent | None" = None,
+    default_embedding_index: "Integer | None" = None,
 ) -> "Parent":
     r"""Construct $\mathbb A^n_R$, refining it into ``AffineSpaces(R)``."""
     obj = _NativeAffineSpace(
         n, R, names, ambient_projective_space, default_embedding_index
     )
-    return refine(obj, AffineSpaces(obj.base_ring()))
+    affine_space: "Parent" = refine(obj, AffineSpaces(obj.base_ring()))
+    return affine_space
 
 
 def ProjectiveSpace(
     n: "Integer",
-    R: "Ring" = None,
-    names: "OrderedSet" = None,
+    R: "Ring | None" = None,
+    names: "OrderedSet | None" = None,
 ) -> "Parent":
     r"""Construct $\mathbb P^n_R$, refining it into ``ProjectiveSpaces(R)``."""
     obj = _NativeProjectiveSpace(n, R, names)
-    return refine(obj, ProjectiveSpaces(obj.base_ring()))
+    projective_space: "Parent" = refine(obj, ProjectiveSpaces(obj.base_ring()))
+    return projective_space
 
 
 # Aliases exported to preamble scope

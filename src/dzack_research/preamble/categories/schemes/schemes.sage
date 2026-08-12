@@ -32,6 +32,25 @@ from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.sets.owned_sets import Sets
 
+from typing import Self, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from sage.geometry.fan import RationalPolyhedralFan
+    from dzack_research.preamble.lexicon import Ring, RingElement
+
+    from typing import Protocol
+
+    class SchemeParent(Protocol):
+        r"""What these categories' objects have from their placement on Sage's
+        ``sage.schemes.generic.ambient_space.AmbientSpace``."""
+
+        def base_ring(self) -> "Ring": ...
+        def category(self) -> Category: ...
+        def subscheme(self, equations: object, **keywords: object) -> Parent: ...
+        def gen(self, i: "Integer") -> Element: ...
+        def dimension_relative(self) -> "Integer": ...
+        def base_scheme(self) -> "Ring": ...
+
 # Register scheme axioms in Sage's axiom registry if not already present
 for _axiom_name in (
     "Affine",
@@ -59,7 +78,7 @@ class Scheme(LocallyRingedSpace):
 
     Element = SchemeElement
 
-    def __init__(self, base_ring=SageZZ) -> None:
+    def __init__(self, base_ring: "Ring" = SageZZ) -> None:
         r"""Initialize the scheme and refine into Schemes(S)."""
         # Local: a module-level import would close a cycle; the module is built by the time this runs.
         from dzack_research.preamble.refine import refine
@@ -103,17 +122,24 @@ class Schemes(OwnedCategoryOverBaseRing):
     class ParentMethods:
         r"""Scheme parent methods."""
 
-        def base_scheme(self):
+        def base_scheme(self: "SchemeParent") -> "Ring":
             r"""Return the base scheme or ring S."""
-            return self.base_ring()
+            base: "Ring" = self.base_ring()
+            return base
 
-        def is_affine(self) -> bool:
+        def is_affine(self: "SchemeParent") -> bool:
             r"""Return whether the scheme is affine."""
-            return self.category().is_subcategory(Schemes(self.base_scheme()).Affine())
+            affine: bool = self.category().is_subcategory(
+                Schemes(self.base_scheme()).Affine()
+            )
+            return affine
 
-        def is_projective(self) -> bool:
+        def is_projective(self: "SchemeParent") -> bool:
             r"""Return whether the scheme is projective."""
-            return self.category().is_subcategory(Schemes(self.base_scheme()).Projective())
+            projective: bool = self.category().is_subcategory(
+                Schemes(self.base_scheme()).Projective()
+            )
+            return projective
 
 
 class AffineSpaces(OwnedCategoryOverBaseRing):
@@ -130,24 +156,26 @@ class AffineSpaces(OwnedCategoryOverBaseRing):
         r"""Parent methods for AffineSpaces category."""
 
         @cached_method
-        def picard_group(self):
+        def picard_group(self: "SchemeParent") -> "PicardGroup":
             r"""Return \(\operatorname{Pic}(\mathbb A^n)=0\)."""
             # Local: a module-level import would close a cycle; the module is built by the time this runs.
             from dzack_research.preamble.categories.divisors.picard_groups import PicardGroup
             from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import Free_ZZ
 
-            return PicardGroup(Free_ZZ(Sets.Δ[-1]))
+            picard: "PicardGroup" = PicardGroup(Free_ZZ(Sets.Δ[-1]))
+            return picard
 
         @cached_method
-        def class_group(self):
+        def class_group(self: "SchemeParent") -> "ClassGroup":
             r"""Return \(\operatorname{Cl}(\mathbb A^n)=0\)."""
             # Local: a module-level import would close a cycle; the module is built by the time this runs.
             from dzack_research.preamble.categories.divisors.class_groups import ClassGroup
             from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import Free_ZZ
 
-            return ClassGroup(Free_ZZ(Sets.Δ[-1]))
+            divisor_classes: "ClassGroup" = ClassGroup(Free_ZZ(Sets.Δ[-1]))
+            return divisor_classes
 
-        def closed_subscheme(self, *equations):
+        def closed_subscheme(self: "SchemeParent", *equations: object) -> Parent:
             r"""Return V(f1,...,fk) subset AA^n refined into ClosedSubschemes(R)."""
             # Local: a module-level import would close a cycle; the module is built by the time this runs.
             from dzack_research.preamble.categories.schemes.subschemes import ClosedSubschemes
@@ -155,16 +183,18 @@ class AffineSpaces(OwnedCategoryOverBaseRing):
 
             eqs = equations[0] if len(equations) == 1 and isinstance(equations[0], (list, tuple)) else list(equations)
             sub = self.subscheme(eqs)
-            return refine(sub, ClosedSubschemes(self.base_ring()))
+            closed: Parent = refine(sub, ClosedSubschemes(self.base_ring()))
+            return closed
 
-        def basic_open(self, f):
+        def basic_open(self: "SchemeParent", f: "RingElement") -> Parent:
             r"""Return D(f) = AA^n \ V(f) as an OpenSubschemes(R)."""
             # Local: a module-level import would close a cycle; the module is built by the time this runs.
             from dzack_research.preamble.categories.schemes.subschemes import OpenSubschemes
             from dzack_research.preamble.refine import refine
 
             sub = self.subscheme([], principal_open=f)
-            return refine(sub, OpenSubschemes(self.base_ring()))
+            distinguished_open: Parent = refine(sub, OpenSubschemes(self.base_ring()))
+            return distinguished_open
 
 
 class ProjectiveSpaces(OwnedCategoryOverBaseRing):
@@ -180,38 +210,44 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
     class ParentMethods:
         r"""Parent methods for ProjectiveSpaces category."""
 
-        def fan(self):
+        def fan(self: "SchemeParent") -> "RationalPolyhedralFan":
             r"""Return the rational polyhedral fan of PP^n."""
-            return toric_varieties.P(int(self.dimension_relative())).fan()
+            fan: "RationalPolyhedralFan" = toric_varieties.P(
+                int(self.dimension_relative())
+            ).fan()
+            return fan
 
         @cached_method
-        def picard_group(self):
+        def picard_group(self: "SchemeParent") -> "PicardGroup":
             r"""Return \(\operatorname{Pic}(\mathbb P^n)\cong\mathbb Z\)."""
             # Local: a module-level import would close a cycle; the module is built by the time this runs.
             from dzack_research.preamble.categories.divisors.picard_groups import PicardGroup
             from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import Free_ZZ
 
-            return PicardGroup(Free_ZZ(Sets.Δ[0]))
+            picard: "PicardGroup" = PicardGroup(Free_ZZ(Sets.Δ[0]))
+            return picard
 
         @cached_method
-        def class_group(self):
+        def class_group(self: "SchemeParent") -> "ClassGroup":
             r"""Return \(\operatorname{Cl}(\mathbb P^n)\cong\mathbb Z\)."""
             # Local: a module-level import would close a cycle; the module is built by the time this runs.
             from dzack_research.preamble.categories.divisors.class_groups import ClassGroup
             from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import Free_ZZ
 
-            return ClassGroup(Free_ZZ(Sets.Δ[0]))
+            divisor_classes: "ClassGroup" = ClassGroup(Free_ZZ(Sets.Δ[0]))
+            return divisor_classes
 
-        def hyperplane(self, i=0):
+        def hyperplane(self: "SchemeParent", i: "Integer" = 0) -> Parent:
             r"""Return the hyperplane H_i = (x_i = 0) subset PP^n as a ClosedSubschemes(R)."""
             # Local: a module-level import would close a cycle; the module is built by the time this runs.
             from dzack_research.preamble.categories.schemes.subschemes import ClosedSubschemes
             from dzack_research.preamble.refine import refine
 
             sub = self.subscheme([self.gen(i)])
-            return refine(sub, ClosedSubschemes(self.base_ring()))
+            hyperplane: Parent = refine(sub, ClosedSubschemes(self.base_ring()))
+            return hyperplane
 
-        def closed_subscheme(self, *equations):
+        def closed_subscheme(self: "SchemeParent", *equations: object) -> Parent:
             r"""Return V(f1,...,fk) subset PP^n refined into ClosedSubschemes(R)."""
             # Local: a module-level import would close a cycle; the module is built by the time this runs.
             from dzack_research.preamble.categories.schemes.subschemes import ClosedSubschemes
@@ -219,16 +255,18 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
 
             eqs = equations[0] if len(equations) == 1 and isinstance(equations[0], (list, tuple)) else list(equations)
             sub = self.subscheme(eqs)
-            return refine(sub, ClosedSubschemes(self.base_ring()))
+            closed: Parent = refine(sub, ClosedSubschemes(self.base_ring()))
+            return closed
 
-        def basic_open(self, f):
+        def basic_open(self: "SchemeParent", f: "RingElement") -> Parent:
             r"""Return D(f) = PP^n \ V(f) as an OpenSubschemes(R)."""
             # Local: a module-level import would close a cycle; the module is built by the time this runs.
             from dzack_research.preamble.categories.schemes.subschemes import OpenSubschemes
             from dzack_research.preamble.refine import refine
 
             sub = self.subscheme([], principal_open=f)
-            return refine(sub, OpenSubschemes(self.base_ring()))
+            distinguished_open: Parent = refine(sub, OpenSubschemes(self.base_ring()))
+            return distinguished_open
 
 
 def install_schemes() -> None:

@@ -24,7 +24,14 @@ and extensions: the first embedding returned by
 normal-extension algorithm, etc.
 """
 
+from typing import TYPE_CHECKING
+
 from sage.structure.sage_object import SageObject
+
+if TYPE_CHECKING:
+    from sage.categories.morphism import Morphism
+    from sage.rings.number_field.number_field_ideal import NumberFieldFractionalIdeal
+    from dzack_research.preamble.lexicon import Ring
 
 
 class GaloisChoicePolicy(SageObject):
@@ -43,7 +50,7 @@ class GaloisChoicePolicy(SageObject):
         r"""Return the policy name (e.g. ``"sage"``, ``"random"``, ``"custom"``)."""
         return self._name
 
-    def choose_embedding(self, K, Omega):
+    def choose_embedding(self, K: "Ring", Omega: "Ring") -> "Morphism":
         r"""Choose an embedding \(K\hookrightarrow\Omega\).
 
         Default: if ``K`` has a distinguished embedding into ``Omega``,
@@ -53,12 +60,16 @@ class GaloisChoicePolicy(SageObject):
         if emb is not None:
             emb = emb()
             if emb is not None and emb.codomain() == Omega:
-                return emb
+                distinguished: "Morphism" = emb
+                return distinguished
         embeddings = K.embeddings(Omega)
         assert embeddings, f"no embeddings of {K} into {Omega}"
-        return embeddings[0]
+        first: "Morphism" = embeddings[0]
+        return first
 
-    def choose_extension(self, automorphism, extensions):
+    def choose_extension(
+        self, automorphism: "Morphism", extensions: "list[Morphism]"
+    ) -> "Morphism":
         r"""Choose one extension of ``automorphism`` among ``extensions``.
 
         ``extensions`` is a finite list of automorphisms of a larger
@@ -66,9 +77,15 @@ class GaloisChoicePolicy(SageObject):
         original field.  Default: take the first.
         """
         assert extensions, "no extensions available"
-        return extensions[0]
+        first: "Morphism" = extensions[0]
+        return first
 
-    def choose_prolongation(self, prime, closure, candidates):
+    def choose_prolongation(
+        self,
+        prime: "NumberFieldFractionalIdeal",
+        closure: "Ring",
+        candidates: "list[NumberFieldFractionalIdeal]",
+    ) -> "NumberFieldFractionalIdeal":
         r"""Choose a prolongation of ``prime`` to ``closure`` among ``candidates``.
 
         Default: take the first.
@@ -80,7 +97,11 @@ class GaloisChoicePolicy(SageObject):
         return hash((type(self), self._name))
 
     def __eq__(self, other: object) -> bool:
-        return type(other) is type(self) and self._name == other._name
+        return (
+            isinstance(other, GaloisChoicePolicy)
+            and type(other) is type(self)
+            and self._name == other._name
+        )
 
     def _repr_(self) -> str:
         return f"Galois choice policy ({self._name})"

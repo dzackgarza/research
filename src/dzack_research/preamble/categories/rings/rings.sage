@@ -27,8 +27,18 @@ preamble's shared load namespace it sends Sage's axiom deduction hunting for a
 base category class by name, where it finds the preamble's groups node.
 """
 
+from collections.abc import Callable, Iterator
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
+    from typing import Protocol
+
+    class BaseRingParent(Protocol):
+        r"""What this mixin's parents have from ``CategoryObject``: ``base()``
+        returns what ``Parent.__init__`` was handed."""
+
+        def base(self) -> "Ring": ...
+
+    from dzack_research.preamble.categories.sets.cardinals import Cardinal
     from dzack_research.preamble.lexicon import Element
     from dzack_research.preamble.lexicon import Group
     from dzack_research.preamble.lexicon import Module
@@ -182,7 +192,7 @@ class OwnedRings(Category):
                 CommutativeRings(),
             )
 
-        def __pow__(self, exponent):
+        def __pow__(self: "Ring", exponent: "Integer | Cardinal") -> "Module":
             r"""Return \(R^n\), the free \(R\)-module on the canonical framing.
 
             EXAMPLES::
@@ -248,7 +258,7 @@ class OwnedFields(Category):
 
             return absolute_galois_group_factory(self)
 
-        def algebra_generators(self) -> tuple:
+        def algebra_generators(self: "Ring") -> tuple:
             r"""Return generators of \(K\) as an algebra over its base.
 
             Sage's bare ``gens`` on a number field leaves open which
@@ -271,7 +281,7 @@ _PLACEMENTS = (
 )
 
 
-def _owning(constructor):
+def _owning(constructor: "Callable[..., Ring]") -> "Callable[..., OwnedRing]":
     r"""Return ``constructor``, handing out the owned view of the ring it builds.
 
     Owned and not refined.  Sage's ring constructors are cached by
@@ -282,7 +292,7 @@ def _owning(constructor):
     computing.  The wrapper leaves the engine's ring alone.
     """
 
-    def build(*arguments, **keywords):
+    def build(*arguments: object, **keywords: object) -> OwnedRing:
         return own_ring(constructor(*arguments, **keywords))
 
     build.__name__ = getattr(constructor, "__name__", "constructor")
@@ -303,13 +313,19 @@ class OwnedCategoryOverBaseRing(Category_over_base_ring):
     """
 
     @staticmethod
-    def __classcall__(cls, base_ring, *arguments, **keywords):
-        return Category_over_base_ring.__classcall__(
+    def __classcall__(
+        cls: type["OwnedCategoryOverBaseRing"],
+        base_ring: "Ring",
+        *arguments: object,
+        **keywords: object,
+    ) -> Category:
+        over_the_owned_base: Category = Category_over_base_ring.__classcall__(
             cls, owned_ring_view(base_ring), *arguments, **keywords
         )
+        return over_the_owned_base
 
 
-def _over_the_engine(constructor):
+def _over_the_engine(constructor: "Callable[..., object]") -> "Callable[..., object]":
     r"""Return ``constructor`` reading an owned ring as the ring it is.
 
     A session says ``matrix(ZZ, ...)`` and means a matrix of integers.  Sage
@@ -322,14 +338,15 @@ def _over_the_engine(constructor):
     if getattr(constructor, "_crosses_to_the_engine", False):
         return constructor
 
-    def build(*arguments, **keywords):
+    def build(*arguments: object, **keywords: object) -> object:
         return constructor(
             *(engine_ring(argument) for argument in arguments), **keywords
         )
 
     build.__name__ = getattr(constructor, "__name__", "constructor")
     build.__doc__ = constructor.__doc__
-    build._crosses_to_the_engine = True
+    # Installed on the wrapper so a second pass leaves it alone.
+    setattr(build, "_crosses_to_the_engine", True)
     return build
 
 
@@ -464,7 +481,7 @@ class OwnedRing(Parent):
             return True
         return bool(self._engine.has_coerce_map_from(engine_ring(other)))
 
-    def coerce_map_from(self, other: "Parent") -> "Morphism":
+    def coerce_map_from(self, other: object) -> "Morphism | None":
         r"""Return the coercion \(S\to R\), named between the rings it joins.
 
         Answered here rather than by Sage, and this is the whole of the
@@ -484,10 +501,12 @@ class OwnedRing(Parent):
             # Sage asks this of Python types too -- ``int`` coerces into every
             # ring.  A type is not a ring a session named, so it has no owned
             # view and there are no two ends to rename.
-            return engine_map
-        return OwnedRingMap(engine_map, owned_ring_view(crossed), self)
+            crossing: "Morphism" = engine_map
+            return crossing
+        renamed: "Morphism" = OwnedRingMap(engine_map, owned_ring_view(crossed), self)
+        return renamed
 
-    def has_coerce_map_from(self, other: "Parent") -> bool:
+    def has_coerce_map_from(self, other: object) -> bool:
         return bool(self._engine.has_coerce_map_from(engine_ring(other)))
 
     def _element_constructor_(self, value: "Element") -> "Element":
@@ -511,7 +530,8 @@ class OwnedRing(Parent):
         preamble's is the post-init hook in ``fraction_field_quotients``,
         which refines every such quotient as it is built.
         """
-        return self._engine / engine_ring(ideal)
+        quotient: "Parent" = self._engine / engine_ring(ideal)
+        return quotient
 
     def __getitem__(self, names: "OrderedSet | str | int") -> "Parent":
         r"""Return \(R[x_s:s\in S]\), the free \(R\)-algebra on the names.
@@ -524,9 +544,10 @@ class OwnedRing(Parent):
         # Local: a module-level import would close a cycle; the module is built by the time this runs.
         from dzack_research.preamble.categories.algebras.framed_free_algebras import polynomial_ring
 
-        return polynomial_ring(self, names)
+        algebra: "Parent" = polynomial_ring(self, names)
+        return algebra
 
-    def __iter__(self):
+    def __iter__(self) -> "Iterator[Element]":
         r"""Iterate the engine's elements: they are this ring's own.
 
         Promised by the category, which is the engine's -- \(\ZZ\) is an
@@ -549,32 +570,38 @@ class OwnedRing(Parent):
         return self._engine.one()
 
     def characteristic(self) -> "Integer":
-        return self._engine.characteristic()
+        characteristic: "Integer" = self._engine.characteristic()
+        return characteristic
 
     def is_field(self) -> bool:
-        return self._engine.is_field()
+        field: bool = self._engine.is_field()
+        return field
 
     def is_integral_domain(self) -> bool:
-        return self._engine.is_integral_domain()
+        integral_domain: bool = self._engine.is_integral_domain()
+        return integral_domain
 
     def is_finite(self) -> bool:
-        return self._engine.is_finite()
+        finite: bool = self._engine.is_finite()
+        return finite
 
     def cardinality(self) -> "Cardinal":
         return self._engine.cardinality()
 
     def fraction_field(self) -> "Parent":
         r"""Return \(\operatorname{Frac}(R)\), owned as this ring is."""
-        return own_ring(self._engine.fraction_field())
+        fraction_field: "Parent" = own_ring(self._engine.fraction_field())
+        return fraction_field
 
-    def _first_ngens(self, count: "Integer") -> tuple:
+    def _first_ngens(self, count: int) -> tuple:
         r"""Return the first ``count`` generators, for ``K.<a> = ...`` syntax.
 
         Sage's preparser lowers a generator-naming assignment to this call, so
         a ring a session names that way has to answer it.  The generators are
         the engine's elements, which are this ring's own.
         """
-        return self._engine._first_ngens(count)
+        first: tuple = self._engine._first_ngens(count)
+        return first
 
     def gens(self) -> tuple:
         r"""Return the generators, which are the engine's elements."""
@@ -593,7 +620,8 @@ class OwnedRing(Parent):
         The engine's object: an ideal is not a ring, so it has no owned view
         of its own, and ``own_ideal`` is the preamble's word for one.
         """
-        return self._engine.ideal(*generators, **keywords)
+        ideal: "Parent" = self._engine.ideal(*generators, **keywords)
+        return ideal
 
     def embeddings(self, codomain: "Ring") -> list:
         r"""Return the field maps \(R\to\Omega\), which the engine computes.
@@ -601,7 +629,8 @@ class OwnedRing(Parent):
         Both ends cross: an embedding is a computation, and the engine has
         never heard of either wrapper.
         """
-        return self._engine.embeddings(engine_ring(codomain))
+        maps: list = self._engine.embeddings(engine_ring(codomain))
+        return maps
 
     def algebraic_closure(self) -> "Parent":
         r"""Return \(\bar R\), owned as this ring is.
@@ -797,7 +826,7 @@ class OwnedBaseRing:
     returns exactly what ``Parent.__init__`` was handed.
     """
 
-    def base_ring(self) -> "Ring":
+    def base_ring(self: "BaseRingParent") -> "Ring":
         return owned_ring_view(self.base())
 
 

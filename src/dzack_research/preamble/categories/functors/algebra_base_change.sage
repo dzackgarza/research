@@ -18,6 +18,10 @@ if TYPE_CHECKING:
     from sage.categories.morphism import Morphism
     from sage.structure.parent import Parent
 
+    # The algebra noun, taken the way the lexicon takes ``Ring``: the
+    # category's own ``ParentMethods``.
+    from dzack_research.preamble.categories.algebras.algebras import Algebras
+
 from sage.categories.functor import Functor
 
 
@@ -40,7 +44,7 @@ class AlgebraBaseChangeFunctor(Functor):
         r"""Return \(f\), the morphism the coefficients travel along."""
         return self._ring_map
 
-    def _apply_functor(self, algebra: "Parent") -> "Parent":
+    def _apply_functor(self, algebra: "Algebras.ParentMethods") -> "Parent":
         r"""Return \(A\otimes_RS\).
 
         The presentation does not move: the same generators, the same
@@ -59,7 +63,8 @@ class AlgebraBaseChangeFunctor(Functor):
             f"{algebra} is an algebra over {algebra.base_ring()}, and this "
             f"functor starts from {self._ring_map.domain()}"
         )
-        return algebra.base_change(self._ring_map)
+        base_changed: "Parent" = algebra.base_change(self._ring_map)
+        return base_changed
 
     def _apply_functor_to_morphism(self, morphism: "Morphism") -> "Morphism":
         r"""Return \(g\otimes S\), the same generator images over \(S\).
@@ -70,7 +75,7 @@ class AlgebraBaseChangeFunctor(Functor):
         """
         source = self(morphism.domain())
         target = self(morphism.codomain())
-        return source.hom(
+        base_changed: "Morphism" = source.hom(
             {
                 label: target._base_change_relation(
                     morphism(morphism.domain().algebra_generator(label)),
@@ -81,6 +86,7 @@ class AlgebraBaseChangeFunctor(Functor):
             },
             target,
         )
+        return base_changed
 
     def _repr_(self) -> str:
         return f"Base change of algebras along {self._ring_map}"

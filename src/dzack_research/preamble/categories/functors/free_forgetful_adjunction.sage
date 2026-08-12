@@ -206,7 +206,7 @@ class FreeModuleFunctorClass(Functor):
 
         return FreeModuleOnSet(self._base_ring, set_object)
 
-    def _apply_functor_to_morphism(self, set_morphism: SetMorphism) -> "Morphism":
+    def _apply_functor_to_morphism(self, set_morphism: Morphism) -> "Morphism":
         r"""Apply F_R to a set morphism f: S -> T, producing F_R(f): F_R(S) -> F_R(T)."""
         domain_free = self._apply_functor(set_morphism.domain())
         codomain_free = self._apply_functor(set_morphism.codomain())
@@ -218,7 +218,8 @@ class FreeModuleFunctorClass(Functor):
             s: codomain_free.module_generator(set_morphism._call_(s))
             for s in set_morphism.domain()
         }
-        return domain_free.Hom(codomain_free)(mapping)
+        free_morphism: "Morphism" = domain_free.Hom(codomain_free)(mapping)
+        return free_morphism
 
 
 class UnderlyingSetOfGroupFunctor(Functor):
@@ -422,7 +423,8 @@ class FreeForgetfulAdjunction(Adjunction):
         underlying = self._right_adjoint(module_object)
         free_mod = self._left_adjoint(underlying)
         mapping = {s: s.value for s in underlying}
-        return free_mod.Hom(module_object)(mapping)
+        counit_morphism: "Morphism" = free_mod.Hom(module_object)(mapping)
+        return counit_morphism
 
     def hom_set_isomorphism_forward(self, module_morphism: "ModuleMorphism") -> SetMorphism:
         r"""Forward bijection \Phi(\phi) = U(\phi) \circ \eta_S: S \to U(M)."""
@@ -430,7 +432,11 @@ class FreeForgetfulAdjunction(Adjunction):
         set_object = domain_free.module_generating_set()
         eta_S = self.unit(set_object)
         U_phi = self._right_adjoint._apply_functor_to_morphism(module_morphism)
-        return U_phi * eta_S
+        transposed = U_phi * eta_S
+        assert isinstance(transposed, SetMorphism), (
+            "the transpose of a module morphism is a map of sets"
+        )
+        return transposed
 
     def hom_set_isomorphism_inverse(
         self, set_morphism: SetMorphism, codomain_module: "Module"

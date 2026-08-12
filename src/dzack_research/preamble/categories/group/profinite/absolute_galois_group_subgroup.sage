@@ -25,7 +25,13 @@ group operation             field computation
 ==========================  ========================================
 """
 
+from typing import TYPE_CHECKING
+
 from sage.structure.sage_object import SageObject
+
+if TYPE_CHECKING:
+    from sage.categories.morphism import Morphism
+    from dzack_research.preamble.lexicon import Ring
 
 
 class OpenAbsoluteGaloisSubgroup(SageObject):
@@ -37,7 +43,12 @@ class OpenAbsoluteGaloisSubgroup(SageObject):
     realized \(G_K\), not merely a conjugacy class.
     """
 
-    def __init__(self, ambient, extension, embedding=None) -> None:
+    def __init__(
+        self,
+        ambient: "AbsoluteGaloisGroup",
+        extension: "Ring",
+        embedding: "Morphism | None" = None,
+    ) -> None:
         self._ambient = ambient
         self._extension = extension
 
@@ -48,32 +59,37 @@ class OpenAbsoluteGaloisSubgroup(SageObject):
             )
         self._embedding = embedding
 
-    def ambient(self):
+    def ambient(self) -> "AbsoluteGaloisGroup":
         r"""Return \(G_K\), the ambient absolute Galois group."""
         return self._ambient
 
-    def fixed_field(self):
+    def fixed_field(self) -> "Ring":
         r"""Return \(E\) as embedded in \(\bar K\)."""
         return self._extension
 
-    def embedding(self):
+    def embedding(self) -> "Morphism":
         r"""Return the embedding \(E\hookrightarrow\bar K\)."""
         return self._embedding
 
-    def index(self):
+    def index(self) -> "Integer":
         r"""Return \([E:K]\), the index of \(G_E\) in \(G_K\)."""
-        return self._extension.degree(self._ambient.base_field())
+        degree: "Integer" = self._extension.degree(self._ambient.base_field())
+        return degree
 
     def is_normal(self) -> bool:
         r"""Return whether \(E/K\) is Galois."""
-        return self._extension.is_galois()
+        galois: bool = self._extension.is_galois()
+        return galois
 
-    def core(self):
+    def core(self) -> "OpenAbsoluteGaloisSubgroup":
         r"""Return \(G_{\widetilde E}\) for \(\widetilde E\) the normal closure of \(E/K\)."""
         normal_closure = self._extension.galois_closure()
-        return self._ambient.open_subgroup(normal_closure)
+        subgroup: "OpenAbsoluteGaloisSubgroup" = self._ambient.open_subgroup(
+            normal_closure
+        )
+        return subgroup
 
-    def conjugacy_class(self):
+    def conjugacy_class(self) -> "OpenGaloisSubgroupConjugacyClass":
         r"""Return the conjugacy class of this subgroup, forgetting the embedding."""
         return OpenGaloisSubgroupConjugacyClass(
             self._ambient, self._extension
@@ -101,22 +117,26 @@ class OpenGaloisSubgroupConjugacyClass(SageObject):
     chosen :class:`OpenAbsoluteGaloisSubgroup`.
     """
 
-    def __init__(self, ambient, extension) -> None:
+    def __init__(self, ambient: "AbsoluteGaloisGroup", extension: "Ring") -> None:
         self._ambient = ambient
         self._extension = extension
 
-    def ambient(self):
+    def ambient(self) -> "AbsoluteGaloisGroup":
         return self._ambient
 
-    def fixed_field(self):
+    def fixed_field(self) -> "Ring":
         return self._extension
 
-    def index(self):
-        return self._extension.degree(self._ambient.base_field())
+    def index(self) -> "Integer":
+        degree: "Integer" = self._extension.degree(self._ambient.base_field())
+        return degree
 
-    def representative(self):
+    def representative(self) -> "OpenAbsoluteGaloisSubgroup":
         r"""Return a chosen representative subgroup from this conjugacy class."""
-        return self._ambient.open_subgroup(self._extension)
+        subgroup: "OpenAbsoluteGaloisSubgroup" = self._ambient.open_subgroup(
+            self._extension
+        )
+        return subgroup
 
     def __hash__(self) -> int:
         return hash((type(self), self._ambient, self._extension))

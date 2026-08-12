@@ -21,6 +21,11 @@ from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.sets.owned_sets import Sets
 
+from typing import Self, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from dzack_research.preamble.lexicon import Ring
+
 # Register LocallyRinged axiom in Sage's axiom registry if not already present
 if "LocallyRinged" not in all_axioms:
     all_axioms.add("LocallyRinged")
@@ -40,7 +45,7 @@ class RingedSpace(OwnedBaseRing, Parent):
 
     Element = RingedSpaceElement
 
-    def __init__(self, base_ring=SageZZ) -> None:
+    def __init__(self, base_ring: "Ring" = SageZZ) -> None:
         r"""Initialize the ringed space and refine into RingedSpaces.
 
         Every scheme in this file's tower reaches ``Parent.__init__`` here, so
@@ -59,6 +64,12 @@ class RingedSpaceMorphism(Morphism):
 class RingedSpaces(Category):
     r"""Category of ringed spaces."""
 
+    if TYPE_CHECKING:
+        # Offered through ``SubcategoryMethods`` below.  Sage synthesizes the
+        # axiom application from the registry entry, so nothing here defines
+        # it and the checker is told what the axiom offers.
+        def LocallyRinged(self) -> Category: ...
+
     @classmethod
     def _repr_object_names(cls) -> str:
         return "ringed spaces"
@@ -75,11 +86,11 @@ class RingedSpaces(Category):
     class ParentMethods:
         r"""Ringed space parent methods."""
 
-        def structure_sheaf(self):
+        def structure_sheaf(self: Self) -> "Sheaf":
             r"""Return O_X, the sheaf of rings."""
             assert False, "structure_sheaf must be implemented by concrete RingedSpace"
 
-        def underlying_space(self):
+        def underlying_space(self: Self) -> Parent:
             r"""Return the underlying topological space X."""
             assert False, "underlying_space must be implemented by concrete RingedSpace"
 
@@ -100,7 +111,7 @@ class LocallyRingedSpace(RingedSpace):
 
     Element = RingedSpaceElement
 
-    def __init__(self, base_ring=SageZZ) -> None:
+    def __init__(self, base_ring: "Ring" = SageZZ) -> None:
         r"""Initialize the locally ringed space and refine into LocallyRingedSpaces."""
         RingedSpace.__init__(self, base_ring=base_ring)
         refine(self, LocallyRingedSpaces())
@@ -120,7 +131,7 @@ class LocallyRingedSpaces(Category):
     class ParentMethods:
         r"""Locally ringed space parent methods."""
 
-        def stalk(self, point):
+        def stalk(self: Self, point: Element) -> "Ring":
             r"""Return O_{X, x}, the stalk at point x (a local ring)."""
             assert False, "stalk must be implemented by concrete LocallyRingedSpace"
 

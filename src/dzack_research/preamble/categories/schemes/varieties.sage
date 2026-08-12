@@ -30,10 +30,21 @@ import sage.schemes.toric.variety as _sage_toric
 from sage.rings.integer_ring import ZZ as SageZZ
 
 
+from typing import Self
+
 if TYPE_CHECKING:
     # The ordered-set noun is type-only: the preamble loads into one
     # shared namespace and nothing named OrderedSet may bind there.
-    from dzack_research.preamble.lexicon import Integer, OrderedSet
+    from dzack_research.preamble.lexicon import OrderedSet, Ring
+
+    from typing import Protocol
+
+    class CurveParent(Protocol):
+        r"""What a curve has from its placement: Sage's
+        ``sage.schemes.curves.curve`` computes the genus, and the two genera
+        below are named views of it."""
+
+        def genus(self) -> "Integer": ...
 
 
 _NativeToricVariety = _sage_toric.ToricVariety
@@ -55,7 +66,7 @@ class Variety(Scheme):
 
     Element = SchemeElement
 
-    def __init__(self, base_ring=SageZZ) -> None:
+    def __init__(self, base_ring: "Ring" = SageZZ) -> None:
         r"""Initialize the variety and refine into Varieties(S)."""
         Scheme.__init__(self, base_ring=base_ring)
         refine(self, Varieties(base_ring))
@@ -107,7 +118,8 @@ def ToricVariety(
     obj = _NativeToricVariety(
         fan, coordinate_names, names, coordinate_indices, base_ring, base_field
     )
-    return refine(obj, Varieties(obj.base_ring()))
+    toric_variety: "Parent" = refine(obj, Varieties(obj.base_ring()))
+    return toric_variety
 
 
 # ---------------------------------------------------------------------------
@@ -115,10 +127,11 @@ def ToricVariety(
 # ---------------------------------------------------------------------------
 
 
-def Curve(F: "Parent", A: "Parent" = None) -> "Parent":
+def Curve(F: "Parent", A: "Parent | None" = None) -> "Parent":
     r"""Construct the curve cut out by ``F``, placing it in ``Curves(R)``."""
     obj = _NativeCurve(F, A)
-    return refine(obj, Curves(obj.base_ring()))
+    curve: "Parent" = refine(obj, Curves(obj.base_ring()))
+    return curve
 
 
 class Curves(OwnedCategoryOverBaseRing):
@@ -134,15 +147,15 @@ class Curves(OwnedCategoryOverBaseRing):
     class ParentMethods:
         r"""Curve parent methods."""
 
-        def dimension(self) -> "Integer":
+        def dimension(self: Self) -> "Integer":
             r"""Return 1."""
             return 1
 
-        def arithmetic_genus(self):
+        def arithmetic_genus(self: "CurveParent") -> "Integer":
             r"""Return p_a = 1 - chi(O_C), the arithmetic genus of the curve."""
             return self.genus()
 
-        def geometric_genus(self):
+        def geometric_genus(self: "CurveParent") -> "Integer":
             r"""Return p_g = g(C_tilde), the geometric genus."""
             return self.genus()
 
@@ -163,7 +176,7 @@ class Surface(Variety):
 
     Element = SchemeElement
 
-    def __init__(self, base_ring=SageZZ) -> None:
+    def __init__(self, base_ring: "Ring" = SageZZ) -> None:
         r"""Initialize the surface and refine into Surfaces(S)."""
         Variety.__init__(self, base_ring=base_ring)
         refine(self, Surfaces(base_ring))

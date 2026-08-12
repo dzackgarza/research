@@ -135,7 +135,7 @@ def _decays_like_a_gaussian(expression: Expression, variable: Expression) -> boo
     return (
         exponent.is_polynomial(variable)
         and exponent.degree(variable) == 2
-        and bool(exponent.coefficient(variable, 2) < 0)
+        and bool(exponent.coefficient(variable, 2r) < 0)
     )
 
 

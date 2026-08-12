@@ -24,8 +24,22 @@ new axiom.  An axiom would have to be registered globally and installed onto
 profinite group sits somewhere honest in the hierarchy.
 """
 
+from collections.abc import Iterator
+from typing import Self, TYPE_CHECKING
+
 from sage.categories.category_singleton import Category_singleton
 from sage.categories.groups import Groups as SageGroups
+
+if TYPE_CHECKING:
+    from dzack_research.preamble.lexicon import GroupElement, OrderedSet
+
+    from typing import Protocol
+
+    class GroupParent(Protocol):
+        r"""What a group parent has from its placement: the generating set,
+        supplied by the owned group category this one refines."""
+
+        def group_generators(self) -> "OrderedSet": ...
 
 
 class ProfiniteGroups(Category_singleton):
@@ -43,7 +57,9 @@ class ProfiniteGroups(Category_singleton):
         return [OwnedGroups(), SageGroups().Topological()]
 
     class ParentMethods:
-        def topological_group_generators(self):
+        def topological_group_generators(
+            self: "GroupParent",
+        ) -> "Iterator[GroupElement]":
             r"""Yield some topological generators as an infinite stream.
 
             Distinct from :meth:`group_generators`: a finite set may be
@@ -53,6 +69,6 @@ class ProfiniteGroups(Category_singleton):
             """
             yield from self.group_generators()
 
-        def is_profinite(self) -> bool:
+        def is_profinite(self: Self) -> bool:
             r"""Return ``True``: membership in this category is the claim."""
             return True

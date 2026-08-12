@@ -28,7 +28,20 @@ finite-level ``decomposition_group``, ``inertia_group``, and
 ``artin_symbol``.
 """
 
+from typing import TYPE_CHECKING
+
 from sage.structure.sage_object import SageObject
+
+if TYPE_CHECKING:
+    # A place of \(K\) is a prime of \(O_K\); a finite quotient of \(G_K\)
+    # is one of Sage's finite Galois groups, and it is there that
+    # decomposition, inertia and the Artin symbol are computed.
+    from sage.rings.number_field.galois_group import (
+        GaloisGroup_subgroup,
+        GaloisGroup_v2,
+        GaloisGroupElement,
+    )
+    from sage.rings.number_field.number_field_ideal import NumberFieldFractionalIdeal
 
 
 class AbsoluteDecompositionGroup(SageObject):
@@ -39,21 +52,25 @@ class AbsoluteDecompositionGroup(SageObject):
     finite-level ``decomposition_group``.
     """
 
-    def __init__(self, ambient, prime) -> None:
+    def __init__(
+        self, ambient: "AbsoluteGaloisGroup", prime: "NumberFieldFractionalIdeal"
+    ) -> None:
         self._ambient = ambient
         self._prime = prime
 
-    def ambient(self):
+    def ambient(self) -> "AbsoluteGaloisGroup":
         return self._ambient
 
-    def prime(self):
+    def prime(self) -> "NumberFieldFractionalIdeal":
         return self._prime
 
-    def image(self, quotient, prime_ideal):
+    def image(
+        self, quotient: "GaloisGroup_v2", prime_ideal: "NumberFieldFractionalIdeal"
+    ) -> "GaloisGroup_subgroup":
         r"""Return the image of \(D_{\bar v}\) in the finite quotient ``quotient``."""
         return quotient.decomposition_group(prime_ideal)
 
-    def conjugacy_class(self):
+    def conjugacy_class(self) -> "DecompositionGroupConjugacyClass":
         r"""Return the conjugacy class of this decomposition group, forgetting the prolongation."""
         return DecompositionGroupConjugacyClass(self._ambient, self._prime)
 
@@ -74,21 +91,25 @@ class AbsoluteDecompositionGroup(SageObject):
 class AbsoluteInertiaGroup(SageObject):
     r"""The inertia group \(I_{\bar v}\subseteq G_K\) at a chosen prolongation of ``prime``."""
 
-    def __init__(self, ambient, prime) -> None:
+    def __init__(
+        self, ambient: "AbsoluteGaloisGroup", prime: "NumberFieldFractionalIdeal"
+    ) -> None:
         self._ambient = ambient
         self._prime = prime
 
-    def ambient(self):
+    def ambient(self) -> "AbsoluteGaloisGroup":
         return self._ambient
 
-    def prime(self):
+    def prime(self) -> "NumberFieldFractionalIdeal":
         return self._prime
 
-    def image(self, quotient, prime_ideal):
+    def image(
+        self, quotient: "GaloisGroup_v2", prime_ideal: "NumberFieldFractionalIdeal"
+    ) -> "GaloisGroup_subgroup":
         r"""Return the image of \(I_{\bar v}\) in the finite quotient ``quotient``."""
         return quotient.inertia_group(prime_ideal)
 
-    def conjugacy_class(self):
+    def conjugacy_class(self) -> "InertiaGroupConjugacyClass":
         r"""Return the conjugacy class of this inertia group, forgetting the prolongation."""
         return InertiaGroupConjugacyClass(self._ambient, self._prime)
 
@@ -114,21 +135,25 @@ class FrobeniusConjugacyClass(SageObject):
     \(G_K\).  The ``_class`` variant forgets the prolongation choice.
     """
 
-    def __init__(self, ambient, prime) -> None:
+    def __init__(
+        self, ambient: "AbsoluteGaloisGroup", prime: "NumberFieldFractionalIdeal"
+    ) -> None:
         self._ambient = ambient
         self._prime = prime
 
-    def ambient(self):
+    def ambient(self) -> "AbsoluteGaloisGroup":
         return self._ambient
 
-    def prime(self):
+    def prime(self) -> "NumberFieldFractionalIdeal":
         return self._prime
 
-    def image(self, quotient, prime_ideal):
+    def image(
+        self, quotient: "GaloisGroup_v2", prime_ideal: "NumberFieldFractionalIdeal"
+    ) -> "GaloisGroupElement":
         r"""Return the image (the Artin symbol) in the finite quotient ``quotient``."""
         return quotient.artin_symbol(prime_ideal)
 
-    def conjugacy_class(self):
+    def conjugacy_class(self) -> "FrobeniusConjugacyClass":
         r"""Return self; the Frobenius is already a conjugacy class."""
         return self
 
@@ -149,18 +174,23 @@ class FrobeniusConjugacyClass(SageObject):
 class DecompositionGroupConjugacyClass(SageObject):
     r"""The conjugacy class of decomposition groups at ``prime``, forgetting the prolongation."""
 
-    def __init__(self, ambient, prime) -> None:
+    def __init__(
+        self, ambient: "AbsoluteGaloisGroup", prime: "NumberFieldFractionalIdeal"
+    ) -> None:
         self._ambient = ambient
         self._prime = prime
 
-    def ambient(self):
+    def ambient(self) -> "AbsoluteGaloisGroup":
         return self._ambient
 
-    def prime(self):
+    def prime(self) -> "NumberFieldFractionalIdeal":
         return self._prime
 
-    def representative(self):
-        return self._ambient.decomposition_group(self._prime)
+    def representative(self) -> "AbsoluteDecompositionGroup":
+        chosen: "AbsoluteDecompositionGroup" = self._ambient.decomposition_group(
+            self._prime
+        )
+        return chosen
 
     def __hash__(self) -> int:
         return hash((type(self), self._ambient, self._prime))
@@ -179,18 +209,21 @@ class DecompositionGroupConjugacyClass(SageObject):
 class InertiaGroupConjugacyClass(SageObject):
     r"""The conjugacy class of inertia groups at ``prime``, forgetting the prolongation."""
 
-    def __init__(self, ambient, prime) -> None:
+    def __init__(
+        self, ambient: "AbsoluteGaloisGroup", prime: "NumberFieldFractionalIdeal"
+    ) -> None:
         self._ambient = ambient
         self._prime = prime
 
-    def ambient(self):
+    def ambient(self) -> "AbsoluteGaloisGroup":
         return self._ambient
 
-    def prime(self):
+    def prime(self) -> "NumberFieldFractionalIdeal":
         return self._prime
 
-    def representative(self):
-        return self._ambient.inertia_group(self._prime)
+    def representative(self) -> "AbsoluteInertiaGroup":
+        chosen: "AbsoluteInertiaGroup" = self._ambient.inertia_group(self._prime)
+        return chosen
 
     def __hash__(self) -> int:
         return hash((type(self), self._ambient, self._prime))

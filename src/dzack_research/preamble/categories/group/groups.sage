@@ -3,8 +3,8 @@ r"""Owned categories of groups."""
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from dzack_research.preamble.categories.sets.cardinals import Cardinal
-    from dzack_research.preamble.lexicon import Group
-    from dzack_research.preamble.lexicon import OrderedSet
+    from dzack_research.preamble.lexicon import CartanType, Group, GroupElement, Matrix, Ring
+    from dzack_research.preamble.lexicon import OrderedSet, Set
 
 if TYPE_CHECKING:
     from typing import Callable
@@ -41,18 +41,36 @@ from sage.structure.element import Element, RingElement
 from sage.structure.parent import Parent
 
 
-def _owned_group_constructor(constructor):
+if TYPE_CHECKING:
+    from typing import Protocol
+
+    class GroupParent(Protocol):
+        r"""What a group parent has from its placement: an identity, supplied
+        by Sage's ``Groups().ParentMethods``."""
+
+        def one(self) -> "GroupElement": ...
+
+
+def _owned_group_constructor(
+    constructor: "Callable[..., Group]",
+) -> "staticmethod[..., Group]":
     r"""Return Sage's constructor with its result refined as a group here."""
     from functools import wraps
 
     @wraps(constructor)
-    def construct(*arguments, **keywords):
+    def construct(*arguments: object, **keywords: object) -> "Group":
         return refine_group(constructor(*arguments, **keywords))
 
     return staticmethod(construct)
 
 
-def _group_over_engine_ring(constructor, degree, ring, *arguments, **keywords):
+def _group_over_engine_ring(
+    constructor: "Callable[..., Group]",
+    degree: "Integer",
+    ring: "Ring",
+    *arguments: object,
+    **keywords: object,
+) -> "Group":
     r"""Construct through Sage using the engine view of the scalar ring."""
     from dzack_research.preamble.categories.rings.rings import engine_ring
 
@@ -61,19 +79,24 @@ def _group_over_engine_ring(constructor, degree, ring, *arguments, **keywords):
     )
 
 
-def _GL(degree, ring, var="a"):
+def _GL(degree: "Integer", ring: "Ring", var: str = "a") -> "Group":
     r"""Return \(GL_{\mathrm{degree}}(\mathrm{ring})\)."""
     from sage.groups.matrix_gps.catalog import GL
     return _group_over_engine_ring(GL, degree, ring, var=var)
 
 
-def _SL(degree, ring, var="a"):
+def _SL(degree: "Integer", ring: "Ring", var: str = "a") -> "Group":
     r"""Return \(SL_{\mathrm{degree}}(\mathrm{ring})\)."""
     from sage.groups.matrix_gps.catalog import SL
     return _group_over_engine_ring(SL, degree, ring, var=var)
 
 
-def _Sp(degree, ring, var="a", invariant_form=None):
+def _Sp(
+    degree: "Integer",
+    ring: "Ring",
+    var: str = "a",
+    invariant_form: "Matrix | None" = None,
+) -> "Group":
     r"""Return the symplectic group over ``ring`` in the selected degree."""
     from sage.groups.matrix_gps.catalog import Sp
     return _group_over_engine_ring(
@@ -81,7 +104,12 @@ def _Sp(degree, ring, var="a", invariant_form=None):
     )
 
 
-def _GU(degree, ring, var="a", invariant_form=None):
+def _GU(
+    degree: "Integer",
+    ring: "Ring",
+    var: str = "a",
+    invariant_form: "Matrix | None" = None,
+) -> "Group":
     r"""Return the general unitary group over ``ring`` in the selected degree."""
     from sage.groups.matrix_gps.catalog import GU
     return _group_over_engine_ring(
@@ -89,7 +117,12 @@ def _GU(degree, ring, var="a", invariant_form=None):
     )
 
 
-def _SU(degree, ring, var="a", invariant_form=None):
+def _SU(
+    degree: "Integer",
+    ring: "Ring",
+    var: str = "a",
+    invariant_form: "Matrix | None" = None,
+) -> "Group":
     r"""Return the special unitary group over ``ring`` in the selected degree."""
     from sage.groups.matrix_gps.catalog import SU
     return _group_over_engine_ring(
@@ -97,7 +130,13 @@ def _SU(degree, ring, var="a", invariant_form=None):
     )
 
 
-def _GO(degree, ring, e=0, var="a", invariant_form=None):
+def _GO(
+    degree: "Integer",
+    ring: "Ring",
+    e: "Integer" = 0,
+    var: str = "a",
+    invariant_form: "Matrix | None" = None,
+) -> "Group":
     r"""Return the general orthogonal group over ``ring`` in the selected degree."""
     from sage.groups.matrix_gps.catalog import GO
     return _group_over_engine_ring(
@@ -105,7 +144,13 @@ def _GO(degree, ring, e=0, var="a", invariant_form=None):
     )
 
 
-def _SO(degree, ring, e=None, var="a", invariant_form=None):
+def _SO(
+    degree: "Integer",
+    ring: "Ring",
+    e: "Integer | None" = None,
+    var: str = "a",
+    invariant_form: "Matrix | None" = None,
+) -> "Group":
     r"""Return the special orthogonal group over ``ring`` in the selected degree."""
     from sage.groups.matrix_gps.catalog import SO
     return _group_over_engine_ring(
@@ -113,19 +158,19 @@ def _SO(degree, ring, e=None, var="a", invariant_form=None):
     )
 
 
-def _Affine(degree, ring):
+def _Affine(degree: "Integer", ring: "Ring") -> "Group":
     r"""Return the affine group over ``ring`` in the selected degree."""
     from sage.groups.affine_gps.catalog import Affine
     return _group_over_engine_ring(Affine, degree, ring)
 
 
-def _Euclidean(degree, ring):
+def _Euclidean(degree: "Integer", ring: "Ring") -> "Group":
     r"""Return the Euclidean group over ``ring`` in the selected degree."""
     from sage.groups.affine_gps.catalog import Euclidean
     return _group_over_engine_ring(Euclidean, degree, ring)
 
 
-def _SemimonomialTransformation(ring, degree):
+def _SemimonomialTransformation(ring: "Ring", degree: "Integer") -> "Group":
     r"""Return the semimonomial transformation group over ``ring``."""
     from dzack_research.preamble.categories.rings.rings import engine_ring
     from sage.groups.misc_gps.misc_groups_catalog import SemimonomialTransformation
@@ -133,7 +178,7 @@ def _SemimonomialTransformation(ring, degree):
     return refine_group(SemimonomialTransformation(engine_ring(ring), degree))
 
 
-def _Heisenberg(degree=1, ring=0):
+def _Heisenberg(degree: "Integer" = 1, ring: "Ring | Integer" = 0) -> "Group":
     r"""Return the Heisenberg group over ``ring`` in the selected degree."""
     from dzack_research.preamble.categories.rings.rings import engine_ring
     from sage.groups.matrix_gps.catalog import Heisenberg
@@ -142,7 +187,12 @@ def _Heisenberg(degree=1, ring=0):
     return refine_group(Heisenberg(degree, scalar_ring))
 
 
-def _Coxeter(data, implementation="reflection", base_ring=None, index_set=None):
+def _Coxeter(
+    data: "CartanType | Matrix | str",
+    implementation: str = "reflection",
+    base_ring: "Ring | None" = None,
+    index_set: "OrderedSet | None" = None,
+) -> "Group":
     r"""Return the Coxeter group for ``data`` through Sage's constructor."""
     from dzack_research.preamble.categories.rings.rings import engine_ring
     from sage.groups.misc_gps.misc_groups_catalog import CoxeterGroup
@@ -327,7 +377,7 @@ class OwnedGroups(Category):
             # Local: a module-level import would close a cycle; the module is built by the time this runs.
             from dzack_research.preamble.refine import refine
 
-            family = SageGroups().ParentMethods.group_generators(self)
+            family: "Set" = SageGroups().ParentMethods.group_generators(self)
             if family.category().is_subcategory(Sets().TotallyOrdered()):
                 return family
             return refine(family, placement_of(family).TotallyOrdered())
@@ -483,7 +533,7 @@ class OwnedFinitelyGeneratedGroups(Category):
             r"""Return ``True`` because membership states this property."""
             return True
 
-        def group_generators(self: Self) -> TotallyOrderedFiniteSet:
+        def group_generators(self: "GroupParent") -> TotallyOrderedFiniteSet:
             r"""Return \(S\), which the axiom makes a *finite* ordered set.
 
             The same generating set, with the finiteness the axiom supplies.
@@ -516,7 +566,8 @@ class OwnedFinitelyGeneratedGroups(Category):
                         for generator in stored
                         if not generator.is_identity()
                     )
-            return finite_ordered_set(nonidentity)
+            generating_set: TotallyOrderedFiniteSet = finite_ordered_set(nonidentity)
+            return generating_set
 
 def _presentation_of(group: "Group") -> tuple:
     r"""Return \((F(S), R)\) for a finitely presented group.
@@ -606,11 +657,18 @@ class AbelianGroupEndomorphism(Element):
     one -- a permutation group has no coordinates to read an exponent off.
     """
 
-    def __init__(self, parent: "Parent", mapping: "Callable") -> None:
+    if TYPE_CHECKING:
+        # The parent of an endomorphism is the endomorphism ring, which is
+        # what makes the ring's own operations reachable from an element.
+        def parent(self) -> "AbelianGroupEndomorphismRing": ...
+
+    def __init__(
+        self, parent: "Parent", mapping: "Callable[[GroupElement], GroupElement]"
+    ) -> None:
         Element.__init__(self, parent)
         self._mapping = mapping
 
-    def __call__(self, element: "Element") -> "Element":
+    def __call__(self, element: "GroupElement") -> "GroupElement":
         return self._mapping(element)
 
     def _add_(self, other: "AbelianGroupEndomorphism") -> "AbelianGroupEndomorphism":
@@ -637,7 +695,15 @@ class AbelianGroupEndomorphism(Element):
         return self.parent()(lambda element: self(other(element)))
 
 
-class AbelianGroupEndomorphismRing(Parent):
+if TYPE_CHECKING:
+    EndomorphismRingParent = Parent[AbelianGroupEndomorphism]
+else:
+    # ``Parent`` is a cython extension type and is not subscriptable at
+    # runtime; the element binding is for the checker.
+    EndomorphismRingParent = Parent
+
+
+class AbelianGroupEndomorphismRing(EndomorphismRingParent):
     r"""\(\operatorname{End}(A)\) for \(A\) abelian, as a ring.
 
     Endomorphisms of any group compose, so they always form a monoid; they
@@ -657,21 +723,23 @@ class AbelianGroupEndomorphismRing(Parent):
         self._additive = _uses_additive_notation(group)
         Parent.__init__(self, category=Rings())
 
-    def _sum_values(self, left: "Element", right: "Element") -> "Element":
+    def _sum_values(
+        self, left: "GroupElement", right: "GroupElement"
+    ) -> "GroupElement":
         match self._additive:
             case True:
                 return left + right
             case False:
                 return left * right
 
-    def _negative_value(self, value: "Element") -> "Element":
+    def _negative_value(self, value: "GroupElement") -> "GroupElement":
         match self._additive:
             case True:
                 return -value
             case False:
                 return value ** -1
 
-    def _identity_value(self) -> "Element":
+    def _identity_value(self) -> "GroupElement":
         match self._additive:
             case True:
                 return self._group.zero()
@@ -684,8 +752,11 @@ class AbelianGroupEndomorphismRing(Parent):
     def codomain(self) -> "Group":
         return self._group
 
-    def _element_constructor_(self, mapping: "Callable") -> AbelianGroupEndomorphism:
-        return self.element_class(self, mapping)
+    def _element_constructor_(
+        self, mapping: "Callable[[GroupElement], GroupElement]"
+    ) -> AbelianGroupEndomorphism:
+        endomorphism: AbelianGroupEndomorphism = self.element_class(self, mapping)
+        return endomorphism
 
     def one(self) -> AbelianGroupEndomorphism:
         return self(lambda element: element)
@@ -696,8 +767,12 @@ class AbelianGroupEndomorphismRing(Parent):
     def __hash__(self) -> int:
         return hash((type(self), self._group))
 
-    def __eq__(self, other: "AbelianGroupEndomorphismRing") -> bool:
-        return type(other) is type(self) and self._group == other._group
+    def __eq__(self, other: object) -> bool:
+        return (
+            isinstance(other, AbelianGroupEndomorphismRing)
+            and type(other) is type(self)
+            and self._group == other._group
+        )
 
     def _repr_(self) -> str:
         return f"Endomorphism ring of {self._group}"
@@ -740,7 +815,9 @@ class OwnedAbelianGroups(Category):
             endomorphisms = self.endomorphism_ring()
             additive = _uses_additive_notation(self)
 
-            def multiple(exponent: "RingElement", element: "Element") -> "Element":
+            def multiple(
+                exponent: "RingElement", element: "GroupElement"
+            ) -> "GroupElement":
                 match additive:
                     case True:
                         return exponent * element
@@ -806,8 +883,12 @@ def _uses_additive_notation(group: "Group") -> bool:
     r"""Return whether this realization writes the group law additively."""
     recorded = group.__dict__.get("_preamble_uses_additive_notation")
     if recorded is not None:
-        return recorded
-    return group.category().is_subcategory(CommutativeAdditiveGroups())
+        additive: bool = recorded
+        return additive
+    written_additively: bool = group.category().is_subcategory(
+        CommutativeAdditiveGroups()
+    )
+    return written_additively
 
 
 def refine_group(group: "Group") -> "Group":
@@ -830,7 +911,7 @@ def refine_group(group: "Group") -> "Group":
     return group
 
 
-def _group_categories(group: "Group") -> list:
+def _group_categories(group: "Group") -> list[Category]:
     r"""Return the owned categories ``group``'s presentation witnesses.
 
     Each axiom is claimed only when the group carries the witness the
@@ -844,7 +925,7 @@ def _group_categories(group: "Group") -> list:
 
     A group that answers none of these is still a group, and is placed as one.
     """
-    categories = [OwnedGroups()]
+    categories: list[Category] = [OwnedGroups()]
     finite = _finiteness(group) is True
     abelian = _answers_abelian(group)
     match (finite, abelian):

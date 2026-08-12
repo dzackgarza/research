@@ -15,10 +15,15 @@ existence of such an extension is guaranteed by the
 normal-extension theorem (Stacks 0BME).
 """
 
+from typing import TYPE_CHECKING
+
 from sage.categories.fields import Fields as SageFields
 from sage.categories.homset import Hom
 from sage.categories.morphism import Morphism
 from sage.structure.element import Element
+
+if TYPE_CHECKING:
+    from dzack_research.preamble.lexicon import Ring
 
 
 class AbsoluteGaloisGroupElement(Morphism):
@@ -31,7 +36,9 @@ class AbsoluteGaloisGroupElement(Morphism):
     the extension.
     """
 
-    def __init__(self, parent, stage, action) -> None:
+    def __init__(
+        self, parent: "AbsoluteGaloisGroup", stage: "Ring", action: Morphism
+    ) -> None:
         r"""Initialize from a finite stage and a finite-level automorphism.
 
         ``stage`` is a finite Galois extension \(L/K\subset\bar K\).
@@ -43,18 +50,18 @@ class AbsoluteGaloisGroupElement(Morphism):
         self._stage = stage
         self._action = action
 
-    def parent(self):
+    def parent(self) -> "AbsoluteGaloisGroup":
         return self._parent
 
-    def stage(self):
+    def stage(self) -> "Ring":
         r"""Return the finite Galois field on which this automorphism is currently realized."""
         return self._stage
 
-    def action(self):
+    def action(self) -> Morphism:
         r"""Return the finite-level automorphism of :meth:`stage`."""
         return self._action
 
-    def _call_(self, alpha: "Element") -> "Element":
+    def _call_(self, alpha: Element) -> Element:
         r"""Evaluate this automorphism on \(\alpha\in\bar K\), extending lazily.
 
         If \(\alpha\) lies in the current stage, the cached action
@@ -63,7 +70,8 @@ class AbsoluteGaloisGroupElement(Morphism):
         parent's choice policy, cache, and return.
         """
         if alpha in self._stage:
-            return self._action(alpha)
+            known: Element = self._action(alpha)
+            return known
 
         # Force: build M = normal closure of stage(alpha) over K inside bar K
         closure = self._parent.algebraic_closure()
@@ -76,16 +84,18 @@ class AbsoluteGaloisGroupElement(Morphism):
         )
         self._stage = M
         self._action = extension
-        return extension(alpha)
+        image: Element = extension(alpha)
+        return image
 
-    def restrict(self, L):
+    def restrict(self, L: "Ring") -> Morphism:
         r"""Return the restriction of this automorphism to \(L\), if \(L\subseteq\) current stage."""
         assert L in self._stage, (
             f"{L} is not contained in the current stage {self._stage}"
         )
-        return self._action.restrict(L)
+        restriction: Morphism = self._action.restrict(L)
+        return restriction
 
-    def conjugacy_class(self):
+    def conjugacy_class(self) -> "ElementConjugacyClass":
         r"""Return the conjugacy class of this element in \(G_K\)."""
         return ElementConjugacyClass(self._parent, self)
 
@@ -111,14 +121,18 @@ class ElementConjugacyClass:
     realization choices that produced the representative.
     """
 
-    def __init__(self, ambient, representative) -> None:
+    def __init__(
+        self,
+        ambient: "AbsoluteGaloisGroup",
+        representative: "AbsoluteGaloisGroupElement",
+    ) -> None:
         self._ambient = ambient
         self._representative = representative
 
-    def ambient(self):
+    def ambient(self) -> "AbsoluteGaloisGroup":
         return self._ambient
 
-    def representative(self):
+    def representative(self) -> "AbsoluteGaloisGroupElement":
         return self._representative
 
     def __hash__(self) -> int:

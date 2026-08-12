@@ -30,6 +30,9 @@ The constructor is installed on every field via
     Category of absolute Galois groups
 """
 
+from collections.abc import Iterator
+from typing import TYPE_CHECKING
+
 from sage.rings.finite_rings.integer_mod_ring import Integers
 from sage.categories.category_singleton import Category_singleton
 from sage.categories.fields import Fields as SageFields
@@ -38,6 +41,26 @@ from sage.categories.number_fields import NumberFields
 from sage.misc.unknown import Unknown
 from sage.rings.rational_field import QQ as SageQQ
 from sage.misc.cachefunc import cached_method
+
+if TYPE_CHECKING:
+    from sage.rings.number_field.galois_group import GaloisGroup_v2, GaloisGroupElement
+    from sage.rings.number_field.number_field_ideal import NumberFieldFractionalIdeal
+    from sage.sets.family import Family
+    from sage.categories.morphism import Morphism
+    from dzack_research.preamble.lexicon import Ring, RingElement
+
+    from typing import Protocol
+
+    class AbsoluteGaloisGroupParent(Protocol):
+        r"""What \(G_K\) has from its own class rather than from this
+        category: the base field, and the supply of finite Galois extensions
+        the finite coordinates run over."""
+
+        def base_field(self) -> "Ring": ...
+        def _finite_galois_extensions(self) -> "Iterator[Ring | None]": ...
+        def finite_quotient(self: "AbsoluteGaloisGroupParent", L: "Ring") -> "GaloisGroup_v2": ...
+        def restriction_map(self: "AbsoluteGaloisGroupParent", L: "Ring") -> "GaloisRestrictionMap": ...
+        def lift(self: "AbsoluteGaloisGroupParent", sigma: "GaloisGroupElement") -> "AbsoluteGaloisGroupElement": ...
 
 
 class AbsoluteGaloisGroups(Category_singleton):
@@ -56,15 +79,18 @@ class AbsoluteGaloisGroups(Category_singleton):
         return [ProfiniteGroups()]
 
     class ParentMethods:
-        def characteristic(self):
+        def characteristic(self: "AbsoluteGaloisGroupParent") -> "Integer":
             r"""Return the characteristic of the base field \(K\)."""
-            return self.base_field().characteristic()
+            characteristic: "Integer" = self.base_field().characteristic()
+            return characteristic
 
         def is_profinite(self) -> bool:
             r"""Return ``True``; an absolute Galois group is profinite."""
             return True
 
-        def is_finitely_generated(self) -> "bool | Unknown":
+        def is_finitely_generated(
+            self: "AbsoluteGaloisGroupParent",
+        ) -> "bool | Unknown":
             r"""Return whether \(G_K\) is finitely generated.
 
             ``False`` for a number field: \(G_{\QQ}\) surjects onto
@@ -81,7 +107,9 @@ class AbsoluteGaloisGroups(Category_singleton):
                 return False
             return Unknown
 
-        def group_generators_are_computable(self) -> "bool | Unknown":
+        def group_generators_are_computable(
+            self: "AbsoluteGaloisGroupParent",
+        ) -> "bool | Unknown":
             r"""Return whether generators can be produced.
 
             Only the finite-field case: Frobenius is a generator and is
@@ -92,11 +120,13 @@ class AbsoluteGaloisGroups(Category_singleton):
                 return True
             return False
 
-        def has_computed_group_generators(self) -> "bool | Unknown":
+        def has_computed_group_generators(
+            self: "AbsoluteGaloisGroupParent",
+        ) -> "bool | Unknown":
             r"""Return whether generators are already in hand."""
             return self.base_field() in SageFields().Finite()
 
-        def finite_quotient(self, L):
+        def finite_quotient(self: "AbsoluteGaloisGroupParent", L: "Ring") -> "GaloisGroup_v2":
             r"""Return \(\operatorname{Gal}(L/K)\) as a finite quotient of \(G_K\).
 
             \(L/K\) is a finite Galois extension inside \(K^{\mathrm{sep}}\).
@@ -104,9 +134,12 @@ class AbsoluteGaloisGroups(Category_singleton):
             literally one of the defining coordinates of the profinite
             group, not an approximation.
             """
-            return self.base_field()._absolute_galois_finite_quotient_(L)
+            quotient: "GaloisGroup_v2" = (
+                self.base_field()._absolute_galois_finite_quotient_(L)
+            )
+            return quotient
 
-        def restriction_map(self, L):
+        def restriction_map(self: "AbsoluteGaloisGroupParent", L: "Ring") -> "GaloisRestrictionMap":
             r"""Return the continuous surjection \(G_K\twoheadrightarrow\operatorname{Gal}(L/K)\)."""
             # Local: a module-level import would close a cycle; the module is built by the time this runs.
             from dzack_research.preamble.categories.group.profinite.galois_quotient import GaloisRestrictionMap
@@ -114,7 +147,9 @@ class AbsoluteGaloisGroups(Category_singleton):
             quotient = self.finite_quotient(L)
             return GaloisRestrictionMap(self, quotient, L)
 
-        def open_subgroup(self, E, embedding=None):
+        def open_subgroup(
+            self: "AbsoluteGaloisGroupParent", E: "Ring", embedding: "Morphism | None" = None
+        ) -> "OpenAbsoluteGaloisSubgroup":
             r"""Return the actual open subgroup \(G_E\subset G_K\) for \(E/K\).
 
             Given \(E/K\), embed \(E\) into the chosen \(\bar K\) via the
@@ -127,7 +162,7 @@ class AbsoluteGaloisGroups(Category_singleton):
 
             return OpenAbsoluteGaloisSubgroup(self, E, embedding)
 
-        def open_subgroup_class(self, E):
+        def open_subgroup_class(self: "AbsoluteGaloisGroupParent", E: "Ring") -> "OpenGaloisSubgroupConjugacyClass":
             r"""Return the conjugacy class of open subgroups determined by \(E/K\).
 
             Choice-independent: forgetting the embedding yields the
@@ -139,7 +174,7 @@ class AbsoluteGaloisGroups(Category_singleton):
 
             return OpenGaloisSubgroupConjugacyClass(self, E)
 
-        def cyclotomic_character(self, n):
+        def cyclotomic_character(self: "AbsoluteGaloisGroupParent", n: "Integer") -> "CyclotomicCharacter":
             r"""Return the cyclotomic character \(\chi_n:G_K\to(\mathbb Z/n\mathbb Z)^\times\)."""
             # Local: a module-level import would close a cycle; the module is built by the time this runs.
             from dzack_research.preamble.categories.group.profinite.galois_characters import CyclotomicCharacter
@@ -150,7 +185,7 @@ class AbsoluteGaloisGroups(Category_singleton):
             aut_mu = Integers(n).unit_group()
             return CyclotomicCharacter(pi, aut_mu)
 
-        def quadratic_character(self, a):
+        def quadratic_character(self: "AbsoluteGaloisGroupParent", a: "RingElement") -> "QuadraticCharacter":
             r"""Return the quadratic character attached to \(K(\sqrt a)/K\)."""
             # Local: a module-level import would close a cycle; the module is built by the time this runs.
             from dzack_research.preamble.categories.group.profinite.galois_characters import QuadraticCharacter
@@ -160,49 +195,61 @@ class AbsoluteGaloisGroups(Category_singleton):
             pi = self.restriction_map(L)
             return QuadraticCharacter(pi)
 
-        def decomposition_group(self, prime):
+        def decomposition_group(
+            self: "AbsoluteGaloisGroupParent", prime: "NumberFieldFractionalIdeal"
+        ) -> "AbsoluteDecompositionGroup":
             r"""Return \(D_{\bar v}\subseteq G_K\) at a chosen prolongation of ``prime``."""
             # Local: a module-level import would close a cycle; the module is built by the time this runs.
             from dzack_research.preamble.categories.group.profinite.galois_decomposition import AbsoluteDecompositionGroup
 
             return AbsoluteDecompositionGroup(self, prime)
 
-        def decomposition_group_class(self, prime):
+        def decomposition_group_class(
+            self: "AbsoluteGaloisGroupParent", prime: "NumberFieldFractionalIdeal"
+        ) -> "DecompositionGroupConjugacyClass":
             r"""Return the conjugacy class of decomposition groups at ``prime``."""
             # Local: a module-level import would close a cycle; the module is built by the time this runs.
             from dzack_research.preamble.categories.group.profinite.galois_decomposition import DecompositionGroupConjugacyClass
 
             return DecompositionGroupConjugacyClass(self, prime)
 
-        def inertia_group(self, prime):
+        def inertia_group(
+            self: "AbsoluteGaloisGroupParent", prime: "NumberFieldFractionalIdeal"
+        ) -> "AbsoluteInertiaGroup":
             r"""Return \(I_{\bar v}\subseteq G_K\) at a chosen prolongation of ``prime``."""
             # Local: a module-level import would close a cycle; the module is built by the time this runs.
             from dzack_research.preamble.categories.group.profinite.galois_decomposition import AbsoluteInertiaGroup
 
             return AbsoluteInertiaGroup(self, prime)
 
-        def inertia_group_class(self, prime):
+        def inertia_group_class(
+            self: "AbsoluteGaloisGroupParent", prime: "NumberFieldFractionalIdeal"
+        ) -> "InertiaGroupConjugacyClass":
             r"""Return the conjugacy class of inertia groups at ``prime``."""
             # Local: a module-level import would close a cycle; the module is built by the time this runs.
             from dzack_research.preamble.categories.group.profinite.galois_decomposition import InertiaGroupConjugacyClass
 
             return InertiaGroupConjugacyClass(self, prime)
 
-        def frobenius(self, prime):
+        def frobenius(
+            self: "AbsoluteGaloisGroupParent", prime: "NumberFieldFractionalIdeal"
+        ) -> "FrobeniusConjugacyClass":
             r"""Return the Frobenius conjugacy class at ``prime`` (choices made)."""
             # Local: a module-level import would close a cycle; the module is built by the time this runs.
             from dzack_research.preamble.categories.group.profinite.galois_decomposition import FrobeniusConjugacyClass
 
             return FrobeniusConjugacyClass(self, prime)
 
-        def frobenius_class(self, prime):
+        def frobenius_class(
+            self: "AbsoluteGaloisGroupParent", prime: "NumberFieldFractionalIdeal"
+        ) -> "FrobeniusConjugacyClass":
             r"""Return the canonical Frobenius conjugacy class at ``prime``."""
             # Local: a module-level import would close a cycle; the module is built by the time this runs.
             from dzack_research.preamble.categories.group.profinite.galois_decomposition import FrobeniusConjugacyClass
 
             return FrobeniusConjugacyClass(self, prime)
 
-        def lift(self, sigma):
+        def lift(self: "AbsoluteGaloisGroupParent", sigma: "GaloisGroupElement") -> "AbsoluteGaloisGroupElement":
             r"""Lift \(\sigma\in\operatorname{Gal}(L/K)\) to a lazy element of \(G_K\)."""
             # Local: a module-level import would close a cycle; the module is built by the time this runs.
             from dzack_research.preamble.categories.group.profinite.absolute_galois_group_element import AbsoluteGaloisGroupElement
@@ -210,7 +257,7 @@ class AbsoluteGaloisGroups(Category_singleton):
             L = sigma.parent().domain() if hasattr(sigma, "parent") else None
             return AbsoluteGaloisGroupElement(self, L, sigma)
 
-        def lifts(self, sigma):
+        def lifts(self: "AbsoluteGaloisGroupParent", sigma: "GaloisGroupElement") -> "LiftCoset":
             r"""Return the open coset \(g\cdot G_L\) of all lifts of \(\sigma\)."""
             # Local: a module-level import would close a cycle; the module is built by the time this runs.
             from dzack_research.preamble.categories.group.profinite.absolute_galois_group import LiftCoset
@@ -218,17 +265,20 @@ class AbsoluteGaloisGroups(Category_singleton):
             L = sigma.parent().domain() if hasattr(sigma, "parent") else None
             return LiftCoset(self, sigma, L)
 
-        def topological_generating_family(self):
+        def topological_generating_family(
+            self: "AbsoluteGaloisGroupParent",
+        ) -> "Family":
             r"""Return a lazy family topologically generating \(G_K\)."""
             from sage.sets.family import Family
 
-            def _generators():
+            def _generators() -> "Iterator[AbsoluteGaloisGroupElement]":
                 for L in self._finite_galois_extensions():
                     Q = self.finite_quotient(L)
                     for sigma in Q.gens():
                         yield self.lift(sigma)
 
-            return Family(list(_generators()))
+            family: "Family" = Family(list(_generators()))
+            return family
 
 
 # ``absolute_galois_group`` is declared on ``OwnedFields.ParentMethods``, in
@@ -238,7 +288,9 @@ class AbsoluteGaloisGroups(Category_singleton):
 # inherited it, so no field ever answered.
 
 
-def absolute_galois_group_factory(field, **kwargs):
+def absolute_galois_group_factory(
+    field: "Ring", **kwargs: "Ring | Morphism | GaloisChoicePolicy | None"
+) -> "AbsoluteGaloisGroup":
     r"""Dispatch to the right :class:`AbsoluteGaloisGroup` subclass for ``field``."""
     from sage.rings.finite_rings.finite_field_base import FiniteField
 

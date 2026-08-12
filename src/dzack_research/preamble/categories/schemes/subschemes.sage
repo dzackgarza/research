@@ -14,22 +14,39 @@ from sage.structure.parent import Parent
 from dzack_research.preamble.categories.schemes.schemes import Scheme
 from sage.rings.integer_ring import ZZ as SageZZ
 
+from typing import Self, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from dzack_research.preamble.lexicon import Ring
+
+    from typing import Protocol
+
+    class AmbientSpaceParent(Protocol):
+        def dimension_relative(self) -> "Integer": ...
+
+    class SubschemeParent(Protocol):
+        r"""What a subscheme has from its placement on Sage's
+        ``AlgebraicScheme_subscheme``."""
+
+        def ambient_space(self) -> "AmbientSpaceParent": ...
+        def dimension(self) -> "Integer": ...
+
 
 class Subscheme(Scheme):
     r"""A subscheme A of a scheme B, carrying the inclusion morphism i: A -> B."""
 
     Element = SchemeElement
 
-    def __init__(self, ambient, base_ring=SageZZ) -> None:
+    def __init__(self, ambient: "Parent", base_ring: "Ring" = SageZZ) -> None:
         r"""Initialize the subscheme and record its ambient scheme B."""
         Scheme.__init__(self, base_ring=base_ring)
         self._ambient = ambient
 
-    def ambient_scheme(self):
+    def ambient_scheme(self) -> "Parent":
         r"""Return the ambient scheme B of which this is a subscheme."""
         return self._ambient
 
-    def inclusion_morphism(self):
+    def inclusion_morphism(self) -> "Morphism":
         r"""Return the structure inclusion morphism i: A -> B."""
         assert False, "inclusion_morphism must be implemented by concrete Subscheme"
 
@@ -50,7 +67,7 @@ class ClosedSubschemes(OwnedCategoryOverBaseRing):
     class ParentMethods:
         r"""Parent methods for closed subschemes V -> X."""
 
-        def codimension(self):
+        def codimension(self: "SubschemeParent") -> "Integer":
             r"""Return dim(X) - dim(V), the codimension of V in ambient X."""
             amb = self.ambient_space()
             dim_amb = amb.dimension_relative()
@@ -75,7 +92,7 @@ class OpenSubscheme(Subscheme):
 
     Element = SchemeElement
 
-    def __init__(self, ambient, base_ring=SageZZ) -> None:
+    def __init__(self, ambient: "Parent", base_ring: "Ring" = SageZZ) -> None:
         r"""Initialize the open subscheme and refine into OpenSubschemes(base_ring)."""
         # Local: a module-level import would close a cycle; the module is built by the time this runs.
         from dzack_research.preamble.refine import refine
@@ -89,7 +106,7 @@ class ClosedSubscheme(Subscheme):
 
     Element = SchemeElement
 
-    def __init__(self, ambient, base_ring=SageZZ) -> None:
+    def __init__(self, ambient: "Parent", base_ring: "Ring" = SageZZ) -> None:
         r"""Initialize the closed subscheme and refine into ClosedSubschemes(base_ring)."""
         # Local: a module-level import would close a cycle; the module is built by the time this runs.
         from dzack_research.preamble.refine import refine
@@ -103,7 +120,7 @@ class QuasiScheme(Scheme):
 
     Element = SchemeElement
 
-    def __init__(self, base_ring=SageZZ) -> None:
+    def __init__(self, base_ring: "Ring" = SageZZ) -> None:
         r"""Initialize the quasi-scheme."""
         Scheme.__init__(self, base_ring=base_ring)
 

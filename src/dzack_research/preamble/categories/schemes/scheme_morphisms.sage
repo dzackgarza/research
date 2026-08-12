@@ -14,6 +14,7 @@ from sage.categories.category import Category
 from sage.categories.morphism import Morphism
 from sage.misc.abstract_method import abstract_method
 from sage.rings.integer_ring import ZZ as SageZZ
+from sage.structure.parent import Parent
 
 
 class SchemeMorphism(Morphism):
@@ -25,7 +26,7 @@ class SchemeMorphism(Morphism):
       3. Preimages / fibers over S-points or subobjects Z -> Y are fiber products X \times_Y Z.
     """
 
-    def __init__(self, parent=None) -> None:
+    def __init__(self, parent: "Parent | None" = None) -> None:
         if parent is not None:
             Morphism.__init__(self, parent)
 
@@ -47,7 +48,11 @@ class SchemeMorphism(Morphism):
 
     def evaluate_at(self, p: SchemeMorphism) -> SchemeMorphism:
         r"""Evaluate self at an S-point p: S -> X via composition f * p."""
-        return self * p
+        evaluated = self * p
+        assert isinstance(evaluated, SchemeMorphism), (
+            "a morphism composed with an S-point is an S-point"
+        )
+        return evaluated
 
     def fiber_over(self, y: SchemeMorphism) -> object:
         r"""Return the fiber X \times_Y S over an S-point y: S -> Y via pullback."""

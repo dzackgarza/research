@@ -26,7 +26,13 @@ from dzack_research.preamble.categories.rings.rings import install_session_rings
 from dzack_research.preamble.categories.modules.framed.formed.integrallattice.integral_lattices import register_indecomposable
 from dzack_research.preamble.categories.modules.framed.formed.integrallattice.integral_lattices import _integral_lattice_with_names
 from sage.matrix.constructor import matrix
+from sage.sets.integer_range import IntegerRange
 from sage.structure.parent import Parent
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from dzack_research.preamble.lexicon import Module, OrderedSet
 from sage.matrix.special import diagonal_matrix
 from sage.rings.integer_ring import ZZ as SageZZ
 
@@ -72,6 +78,11 @@ else:
 
 
     class _Catalogue:
+        # Filled in below from the specimens defined in this class body: the
+        # registry is what ``namespace`` and ``install`` read, rather than a
+        # scan for attributes that look like lattices.
+        _specimens: "dict[str, Module]"
+
         r"""Catalogue of named integral lattices.
 
         Most specimens are plain lattice objects.  Lattices that the session treats
@@ -157,7 +168,9 @@ else:
         L_20_2_0 = TdP
 
         @staticmethod
-        def root_lattice(kind, rank, names=None):
+        def root_lattice(
+            kind: str, rank: "Integer", names: "OrderedSet | None" = None
+        ) -> "Module":
             """Return the negative-definite root lattice of the given type.
 
             With ``names`` (the ``L.<generators> = ...`` sugar) a fresh lattice is
@@ -170,19 +183,19 @@ else:
             return _apply_names(_integral_lattice_with_names(f"{kind}{rank}").twist(-1), names)
 
         @staticmethod
-        def IPQ(p, q):
+        def IPQ(p: "Integer", q: "Integer") -> "Module":
             r"""Return the odd unimodular lattice $I_{p,q}$."""
             assert p >= 0 and q >= 0 and p + q > 0, f"empty signature ({p}, {q})"
             return _integral_lattice_with_names(diagonal_matrix(SageZZ, [1] * p + [-1] * q))
 
         @staticmethod
-        def LK3_2d(degree):
+        def LK3_2d(degree: "Integer") -> "Module":
             r"""Return $\langle -2d\rangle \oplus U^2 \oplus E_8^2$."""
             assert degree >= 1, f"degree must be positive, got {degree}"
             return Lattices.Z.twist(-2 * degree) + Lattices.U^2 + Lattices.E8^2
 
         @staticmethod
-        def rank_one_negative(scale):
+        def rank_one_negative(scale: "Integer") -> "Module":
             r"""Return the rank-one lattice \(\langle-2\,\mathrm{scale}\rangle\)."""
             return Lattices.Z.twist(-2 * scale)
 
@@ -198,7 +211,7 @@ else:
             return dict(cls._specimens)
 
         @classmethod
-        def install(cls, scope):
+        def install(cls, scope: dict) -> None:
             r"""Bind catalogue specimens and named generators into *scope*.
 
             The owned rings are settled here too, and settled *last*.  Loading a
@@ -289,9 +302,9 @@ else:
     # $D_2$ is $\langle-2\rangle^2$, which decomposes before any lookup runs.
     # $U$ and $E_8$ are $II_{1,1}$ and $II_{0,8}$, but keep their own names, which
     # say more than the signature does.
-    for _rank in range(2, 22):
+    for _rank in IntegerRange(2, 22):
         register_indecomposable(f"A_{{{_rank}}}", Lattices.root_lattice("A", _rank))
-    for _rank in range(3, 23):
+    for _rank in IntegerRange(3, 23):
         register_indecomposable(f"D_{{{_rank}}}", Lattices.root_lattice("D", _rank))
     for _rank in (6, 7, 8):
         register_indecomposable(f"E_{{{_rank}}}", Lattices.root_lattice("E", _rank))

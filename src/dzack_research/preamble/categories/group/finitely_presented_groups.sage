@@ -13,15 +13,15 @@ from sage.categories.category import Category
 from sage.groups.finitely_presented import FinitelyPresentedGroup
 
 
-_FP_LAYOUT_INLINE_WIDTH = 150
-_FP_LAYOUT_STACKED_GENERATOR_WIDTH = 220
-_FP_LAYOUT_STACKED_REL_WIDTH = 180
-_FP_LAYOUT_STACKED_RELATION_AREA_BUDGET = 900
-_FP_LAYOUT_STACKED_RELATION_COUNT_BUDGET = 12
-_FP_LAYOUT_EXPANDED_GENERATOR_WIDTH = 90
-_FP_LAYOUT_EXPANDED_RELATION_SOURCE_BUDGET = 180
-_FP_LAYOUT_EXPANDED_COLUMN_GAP_BUDGET = 12
-_FP_LAYOUT_EXPANDED_MAX_COLUMNS = 4
+_FP_LAYOUT_INLINE_WIDTH = 150r
+_FP_LAYOUT_STACKED_GENERATOR_WIDTH = 220r
+_FP_LAYOUT_STACKED_REL_WIDTH = 180r
+_FP_LAYOUT_STACKED_RELATION_AREA_BUDGET = 900r
+_FP_LAYOUT_STACKED_RELATION_COUNT_BUDGET = 12r
+_FP_LAYOUT_EXPANDED_GENERATOR_WIDTH = 90r
+_FP_LAYOUT_EXPANDED_RELATION_SOURCE_BUDGET = 180r
+_FP_LAYOUT_EXPANDED_COLUMN_GAP_BUDGET = 12r
+_FP_LAYOUT_EXPANDED_MAX_COLUMNS = 4r
 
 
 class GroupsWithChosenFinitePresentation(Category):
@@ -69,15 +69,15 @@ def _fp_relation_syllables(group: "Group", word: "Element") -> tuple[tuple[int, 
     syl: list[tuple[int, int]] = []
     for item in tuple(raw):
         v = int(item)
-        if v == 0:
+        if v == 0r:
             continue
-        idx = abs(v) - 1
+        idx = abs(v) - 1r
         assert 0 <= idx < nc, f"index out of range: idx={idx}, n_gens={nc}"
-        exp = 1 if v > 0 else -1
+        exp = 1r if v > 0 else -1r
         match bool(syl and syl[-1][0] == idx):
             case True:
                 syl[-1] = (idx, syl[-1][1] + exp)
-                if syl[-1][1] == 0:
+                if syl[-1][1] == 0r:
                     del syl[-1]
             case False:
                 syl.append((idx, exp))
@@ -106,7 +106,7 @@ def _fp_format_word_latex(group: "Group", word: "Element") -> str:
                 return generator
             case -1:
                 return f"{generator}^{{-1}}"
-            case value if value not in (1, -1):
+            case value:
                 return f"{generator}^{{{value}}}"
 
     return "".join(syllable(idx, exponent) for idx, exponent in syl)
@@ -139,7 +139,7 @@ def _fp_relation_table_latex(rows: tuple[str, ...]) -> str:
         return ""
     widest = max(len(r) for r in rows)
     cols = max(
-        1,
+        1r,
         min(
             _FP_LAYOUT_EXPANDED_MAX_COLUMNS,
             len(rows),

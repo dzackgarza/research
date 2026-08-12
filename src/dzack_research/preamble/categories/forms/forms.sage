@@ -655,8 +655,12 @@ class BilinearFormMorphism(Morphism):
             "a bilinear form is evaluated on the two elements it pairs"
         )
         left, right = x, args[0]
-        assert isinstance(left, ModuleElement) and isinstance(right, ModuleElement), (
-            "a bilinear form pairs module elements"
+        # Element, not ModuleElement: finitely presented quotient elements
+        # (discriminant modules) are Elements whose module structure lives on
+        # the parent, and the parent-identity assert below is the real
+        # mathematical precondition.
+        assert isinstance(left, Element) and isinstance(right, Element), (
+            "a bilinear form pairs elements"
         )
         assert all(
             element.parent() is self.module()
@@ -816,8 +820,10 @@ class QuadraticFormMorphism(Morphism):
             "a quadratic form is evaluated on one element"
         )
         element = x
-        assert isinstance(element, ModuleElement), (
-            "a quadratic form is evaluated on a module element"
+        # Element, not ModuleElement — same reason as the bilinear pairing:
+        # the parent-identity assert below carries the mathematics.
+        assert isinstance(element, Element), (
+            "a quadratic form is evaluated on an element"
         )
         assert element.parent() is self.module(), (
             f"{element} is not an element of {self.module()}"

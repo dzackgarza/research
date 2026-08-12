@@ -3,6 +3,7 @@
 # The base of Sage's parent hierarchy that carries category and base data
 # (category_object.pyx). Only the surface the preamble consumes is declared.
 from sage.rings.integer import Integer
+from sage.categories.category import Category
 from sage.structure.parent import Parent
 
 # category_object.pyx: validates/expands generator names — 'x' with n=3
@@ -10,4 +11,5 @@ from sage.structure.parent import Parent
 def normalize_names(ngens: int | Integer, names: object) -> tuple[str, ...]: ...
 
 class CategoryObject:
+    def _refine_category_(self, category: Category) -> None: ...
     def base(self) -> Parent: ...

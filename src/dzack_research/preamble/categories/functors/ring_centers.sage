@@ -19,6 +19,10 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from sage.rings.ring import Ring
 
+    from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+        Core,
+    )
+
 from sage.categories.commutative_rings import CommutativeRings
 from sage.categories.functor import Functor
 from sage.categories.homset import Hom
@@ -37,6 +41,11 @@ class RingCenterFunctor(Functor):
 
     def _apply_functor(self, ring: "Ring") -> "Ring":
         return ring.ring_center()
+
+    if TYPE_CHECKING:
+        # This functor is defined on the *core*: its ``arrow`` gate is what
+        # refuses a morphism that was never declared invertible.
+        def domain(self) -> "Core": ...
 
     def _apply_functor_to_morphism(self, morphism: Morphism) -> Morphism:
         r"""Return \(Z(f):Z(A)\to Z(B)\), the restriction of \(f\).

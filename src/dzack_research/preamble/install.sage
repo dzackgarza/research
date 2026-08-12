@@ -49,10 +49,10 @@ def install_preamble(namespace: dict) -> None:
         from pathlib import Path as _Path
 
         _PREAMBLE = _Path(_dzack_research.__file__).resolve().parent / "preamble"
-        _VENDOR_DIR = _PREAMBLE.parents[2] / "computations" / "vendor"
+        _VENDOR_DIR = _PREAMBLE.parents[2r] / "computations" / "vendor"
         import sageparse.preparser.research  # noqa: F401
 
-        def _vendor_import_roots(vendor_dir):
+        def _vendor_import_roots(vendor_dir: "_Path") -> "tuple[_Path, ...]":
             r"""Return the vendor subtrees that expose importable modules or packages."""
             assert vendor_dir.is_dir(), f"vendor directory is missing: {vendor_dir}"
             roots = set((vendor_dir,))
@@ -180,7 +180,7 @@ def install_preamble(namespace: dict) -> None:
         _exports = {}
         for _module_name in _MODULES:
             _module = _importlib.import_module("dzack_research.preamble." + _module_name)
-            _compiler_names = getattr(
+            _compiler_names: frozenset[str] = getattr(
                 _module,
                 "__sageparse_runtime_names__",
                 frozenset(),

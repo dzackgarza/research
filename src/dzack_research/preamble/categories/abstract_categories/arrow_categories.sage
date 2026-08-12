@@ -27,22 +27,37 @@ track \(M'\) separately.
 
 from sage.categories.sets_cat import Sets
 from typing import TYPE_CHECKING
-if TYPE_CHECKING:
-    from sage.categories.homset import Homset
-
 from sage.categories.category import Category
 from sage.categories.morphism import IdentityMorphism
 from sage.categories.morphism import Morphism
 from sage.categories.objects import Objects
 from sage.structure.parent import Parent
 
+if TYPE_CHECKING:
+    from sage.categories.homset import Homset
+
+    from typing import Protocol
+
+    class ArrowObject(Protocol):
+        r"""An object of \(\operatorname{Ar}(\mathbf{C})\): an arrow of
+        \(\mathbf{C}\), applied to elements and asked for its two ends."""
+
+        def __call__(self, x: Element) -> Element: ...
+        def domain(self) -> Parent: ...
+        def codomain(self) -> Parent: ...
+        def source(self) -> Parent: ...
+        def target(self) -> Parent: ...
+
 
 class ArrowCategory(Category):
     r"""\(\operatorname{Ar}(\mathbf{C})\): the morphisms of \(\mathbf{C}\) as objects."""
 
     @staticmethod
-    def __classcall_private__(cls, ambient_category: Category) -> "ArrowCategory":
-        return super().__classcall__(cls, ambient_category)
+    def __classcall_private__(
+        cls: type["ArrowCategory"], ambient_category: Category
+    ) -> "ArrowCategory":
+        arrows: ArrowCategory = super().__classcall__(cls, ambient_category)
+        return arrows
 
     def __init__(self, ambient_category: Category) -> None:
         self._ambient_category = ambient_category
@@ -63,17 +78,17 @@ class ArrowCategory(Category):
     class MorphismMethods:
         r"""The methods of an *object* of \(\operatorname{Ar}(\mathbf{C})\)."""
 
-        def source(self) -> Parent:
+        def source(self: "ArrowObject") -> Parent:
             r"""Return \(X\), for this object \(f:X\to Y\)."""
             return self.domain()
 
-        def target(self) -> Parent:
+        def target(self: "ArrowObject") -> Parent:
             r"""Return \(Y\), for this object \(f:X\to Y\)."""
             return self.codomain()
 
         def is_commuting_square(
-            self,
-            other: Morphism,
+            self: "ArrowObject",
+            other: "ArrowObject",
             left: Morphism,
             right: Morphism,
         ) -> bool:
@@ -114,6 +129,9 @@ class IsoArrowCategory(ArrowCategory):
         return [ArrowCategory(self._ambient_category)]
 
     class MorphismMethods(ArrowCategory.MorphismMethods):
+        # Installed on the arrow by ``Isomorphism`` below.
+        _inverse_morphism: Morphism
+
         def inverse(self) -> Morphism:
             r"""Return the inverse arrow \(f^{-1}:Y\to X\)."""
             return self._inverse_morphism
@@ -138,8 +156,11 @@ class Core(Category):
     """
 
     @staticmethod
-    def __classcall_private__(cls, ambient_category: Category) -> "Core":
-        return super().__classcall__(cls, ambient_category)
+    def __classcall_private__(
+        cls: type["Core"], ambient_category: Category
+    ) -> "Core":
+        core: Core = super().__classcall__(cls, ambient_category)
+        return core
 
     def __init__(self, ambient_category: Category) -> None:
         self._ambient_category = ambient_category
@@ -185,9 +206,11 @@ class Core(Category):
         return morphism
 
 
-Category.Arrow = lambda self: ArrowCategory(self)
-Category.IsoArrow = lambda self: IsoArrowCategory(self)
-Category.core = lambda self: Core(self)
+# Installed onto Sage's ``Category``: these constructions are the preamble's,
+# so they are attached here rather than declared on the Sage class.
+setattr(Category, "Arrow", lambda self: ArrowCategory(self))
+setattr(Category, "IsoArrow", lambda self: IsoArrowCategory(self))
+setattr(Category, "core", lambda self: Core(self))
 
 
 def Ar(source: Parent, target: Parent) -> "Homset":
@@ -201,7 +224,8 @@ def Ar(source: Parent, target: Parent) -> "Homset":
     same arrow.  There is nothing to add: the hom-set already *is* the object
     whose elements are the arrows.
     """
-    return source.Hom(target)
+    arrows: "Homset" = source.Hom(target)
+    return arrows
 
 
 class IsomorphismSet(Parent):
@@ -229,12 +253,15 @@ class IsomorphismSet(Parent):
         r"""Return \(\operatorname{Ar}(X,Y)\), the arrow set this sits inside."""
         return Ar(self._source, self._target)
 
-    def __contains__(self, arrow: Morphism) -> bool:
+    def __contains__(self, arrow: object) -> bool:
         match arrow:
             case IsoArrowCategory.MorphismMethods():
+                # An object of Ar(C) is an arrow of C, and its source and
+                # target are that arrow's two ends.
+                assert isinstance(arrow, Morphism)
                 return (
-                    arrow.source() is self._source
-                    and arrow.target() is self._target
+                    arrow.domain() is self._source
+                    and arrow.codomain() is self._target
                 )
             case _:
                 return False
@@ -287,8 +314,11 @@ def Isomorphism(forward: Morphism, backward: Morphism) -> Morphism:
         forward(backward(generator)) == generator
         for generator in sole_structure_generators(forward.codomain())
     ), "the declared inverse does not recover the target's generators"
-    forward._inverse_morphism = backward
-    backward._inverse_morphism = forward
+    # Installed on the arrows themselves: ``Morphism`` is a cython class and
+    # the inverse is declared here, not held by any Sage class.
+    setattr(forward, "_inverse_morphism", backward)
+    setattr(backward, "_inverse_morphism", forward)
     iso_arrows = forward.domain().category().IsoArrow()
     refine(backward, iso_arrows)
-    return refine(forward, iso_arrows)
+    isomorphism: Morphism = refine(forward, iso_arrows)
+    return isomorphism

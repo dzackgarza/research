@@ -28,33 +28,43 @@ These are genuine Sage morphisms, not metadata::
 all have real meanings.
 """
 
+from typing import TYPE_CHECKING
+
 from sage.categories.groups import Groups as SageGroups
 from sage.categories.homset import Hom
 from sage.categories.morphism import Morphism
+
+if TYPE_CHECKING:
+    from dzack_research.preamble.lexicon import Group, Ring
 
 
 class CyclotomicCharacter(Morphism):
     r"""The cyclotomic character \(\chi_n:G_K\to(\mathbb Z/n\mathbb Z)^\times\)."""
 
-    def __init__(self, restriction_map, target) -> None:
+    def __init__(
+        self, restriction_map: "GaloisRestrictionMap", target: "Group"
+    ) -> None:
         Morphism.__init__(
             self, Hom(restriction_map.domain(), target, SageGroups())
         )
         self._restriction_map = restriction_map
         self._target = target
 
-    def domain(self):
+    def domain(self) -> "AbsoluteGaloisGroup":
         return self._restriction_map.domain()
 
-    def codomain(self):
+    def codomain(self) -> "Group":
         return self._target
 
-    def kernel(self):
+    def kernel(self) -> "OpenAbsoluteGaloisSubgroup":
         return self._restriction_map.kernel()
 
-    def restrict(self, L):
+    def restrict(self, L: "Ring") -> "OpenAbsoluteGaloisSubgroup":
         r"""Restrict the character along \(G_L\hookrightarrow G_K\)."""
-        return self._restriction_map.domain().open_subgroup(L)
+        subgroup: "OpenAbsoluteGaloisSubgroup" = (
+            self._restriction_map.domain().open_subgroup(L)
+        )
+        return subgroup
 
     def _repr_(self) -> str:
         return f"Cyclotomic character {self.domain()} -> {self._target}"
@@ -63,7 +73,7 @@ class CyclotomicCharacter(Morphism):
 class QuadraticCharacter(Morphism):
     r"""The quadratic character \(G_K\to\{\pm1\}\) attached to \(K(\sqrt a)/K\)."""
 
-    def __init__(self, restriction_map) -> None:
+    def __init__(self, restriction_map: "GaloisRestrictionMap") -> None:
         from sage.groups.perm_gps.permgroup_named import CyclicPermutationGroup
 
         target = CyclicPermutationGroup(2)
@@ -72,10 +82,10 @@ class QuadraticCharacter(Morphism):
         )
         self._restriction_map = restriction_map
 
-    def domain(self):
+    def domain(self) -> "AbsoluteGaloisGroup":
         return self._restriction_map.domain()
 
-    def kernel(self):
+    def kernel(self) -> "OpenAbsoluteGaloisSubgroup":
         return self._restriction_map.kernel()
 
     def _repr_(self) -> str:

@@ -16,31 +16,74 @@ each cocone object carries ``costructure_morphisms()`` (the injections).
 # of it in the preamble's category is refused.
 from dzack_research.preamble.categories.sets.owned_sets import Sets
 from dzack_research.preamble.refine import refine
-from typing import Any, Self, TYPE_CHECKING
+from collections.abc import Callable, Iterable, Iterator
+from typing import Self, TYPE_CHECKING
 
 from sage.categories.category import Category
 from sage.categories.morphism import Morphism
+from sage.structure.element import Element
 from sage.structure.parent import Parent
 
 if TYPE_CHECKING:
+    from typing import Protocol
+
     # The ordered-set noun is type-only: the preamble loads into one
     # shared namespace and nothing named OrderedSet may bind there.
-    from dzack_research.preamble.lexicon import OrderedSet
+    from dzack_research.preamble.lexicon import Module, OrderedSet
+
+    # What an object gets from sitting in each of these categories.  Placement
+    # is what supplies these, not the class an object was constructed from, so
+    # the requirement is stated structurally and named after the objects.
+    class ConeParent(Protocol):
+        def category(self) -> "ConeCategory": ...
+
+    class CoconeParent(Protocol):
+        def category(self) -> "CoconeCategory": ...
+
+    class ModuleParent(Protocol):
+        r"""A factor of a tensor product: a module with a generating set."""
+
+        def module_generating_set(self) -> "OrderedSet": ...
+        def module_generator(self, label: Element) -> Element: ...
+
+    class TensorProductParent(Protocol):
+        r"""A tensor product object: a cocone apex that is itself a module and
+        knows how to form \(x_1\otimes\cdots\otimes x_n\)."""
+
+        def category(self) -> "TensorProductCategory": ...
+        def costructure_morphism(self, i: "Integer") -> Morphism: ...
+        def tensor_factors(self) -> "tuple[ModuleParent, ...]": ...
+        def module_generating_set(self) -> "OrderedSet": ...
+        def hom(self, images: dict, codomain: "Module" = ...) -> "ModuleMorphism": ...
+        def _pure_tensor(self, *elements: Element) -> Element: ...
 
 
 class DiagramCategory(Category):
     r"""A diagram \(F:J\to\mathbf{C}\): a family of objects and morphisms."""
 
     @staticmethod
-    def __classcall_private__(
-        cls: type,
+    def _diagram_arguments(
         ambient_category: Category,
-        objects: tuple,
-        morphisms: tuple = (),
+        objects: "Iterable[Parent]",
+        morphisms: "Iterable[Morphism]" = (),
+    ) -> tuple:
+        r"""Return the constructor arguments in the form the cache keys on."""
+        return (ambient_category, tuple(objects), tuple(morphisms))
+
+    @staticmethod
+    def __classcall_private__(
+        cls: type, *arguments: object, **keywords: object
     ) -> "DiagramCategory":
-        return super().__classcall__(
-                cls, ambient_category, tuple(objects), tuple(morphisms)
-            )
+        # Sage reads this slot out of ``cls.__dict__`` and never inherits it,
+        # so it is protocol plumbing; the mathematics is on the normalizer.
+        ambient_category, objects, *optional = arguments
+        morphisms = optional[0] if optional else keywords.get("morphisms", ())
+        assert isinstance(ambient_category, Category)
+        assert isinstance(objects, Iterable) and isinstance(morphisms, Iterable)
+        constructed: DiagramCategory = Category.__classcall__(
+            cls, *DiagramCategory._diagram_arguments(ambient_category, objects, morphisms)
+        )
+        return constructed
 
     def __init__(self, ambient_category: Category, objects: tuple, morphisms: tuple = ()) -> None:
         self._ambient_category = ambient_category
@@ -65,16 +108,30 @@ class DirectedSystem(DiagramCategory):
     r"""A directed system: \((X_i)_{i\in I}\) with morphisms \(X_i\to X_j\) for \(i\le j\)."""
 
     @staticmethod
-    def __classcall_private__(
-        cls: type,
+    def _directed_system_arguments(
         ambient_category: Category,
         index_set: "OrderedSet",
-        objects: tuple,
-        morphisms: tuple = (),
+        objects: "Iterable[Parent]",
+        morphisms: "Iterable[Morphism]" = (),
+    ) -> tuple:
+        r"""Return the constructor arguments in the form the cache keys on."""
+        return (ambient_category, index_set, tuple(objects), tuple(morphisms))
+
+    @staticmethod
+    def __classcall_private__(
+        cls: type, *arguments: object, **keywords: object
     ) -> "DirectedSystem":
-        return super().__classcall__(
-                cls, ambient_category, index_set, tuple(objects), tuple(morphisms)
-            )
+        # Sage reads this slot out of ``cls.__dict__`` and never inherits it,
+        # so it is protocol plumbing; the mathematics is on the normalizer.
+        ambient_category, index_set, objects, *optional = arguments
+        morphisms = optional[0] if optional else keywords.get("morphisms", ())
+        assert isinstance(ambient_category, Category)
+        assert isinstance(objects, Iterable) and isinstance(morphisms, Iterable)
+        constructed: DirectedSystem = Category.__classcall__(
+            cls,
+            *DirectedSystem._directed_system_arguments(ambient_category, index_set, objects, morphisms),
+        )
+        return constructed
 
     def __init__(self, ambient_category: Category, index_set: "OrderedSet", objects: tuple, morphisms: tuple = ()) -> None:
         self._index_set = index_set
@@ -94,16 +151,30 @@ class InverseSystem(DiagramCategory):
     r"""An inverse system: \((X_i)_{i\in I}\) with morphisms \(X_j\to X_i\) for \(i\le j\)."""
 
     @staticmethod
-    def __classcall_private__(
-        cls: type,
+    def _inverse_system_arguments(
         ambient_category: Category,
         index_set: "OrderedSet",
-        objects: tuple,
-        morphisms: tuple = (),
+        objects: "Iterable[Parent]",
+        morphisms: "Iterable[Morphism]" = (),
+    ) -> tuple:
+        r"""Return the constructor arguments in the form the cache keys on."""
+        return (ambient_category, index_set, tuple(objects), tuple(morphisms))
+
+    @staticmethod
+    def __classcall_private__(
+        cls: type, *arguments: object, **keywords: object
     ) -> "InverseSystem":
-        return super().__classcall__(
-                cls, ambient_category, index_set, tuple(objects), tuple(morphisms)
-            )
+        # Sage reads this slot out of ``cls.__dict__`` and never inherits it,
+        # so it is protocol plumbing; the mathematics is on the normalizer.
+        ambient_category, index_set, objects, *optional = arguments
+        morphisms = optional[0] if optional else keywords.get("morphisms", ())
+        assert isinstance(ambient_category, Category)
+        assert isinstance(objects, Iterable) and isinstance(morphisms, Iterable)
+        constructed: InverseSystem = Category.__classcall__(
+            cls,
+            *InverseSystem._inverse_system_arguments(ambient_category, index_set, objects, morphisms),
+        )
+        return constructed
 
     def __init__(self, ambient_category: Category, index_set: "OrderedSet", objects: tuple, morphisms: tuple = ()) -> None:
         self._index_set = index_set
@@ -129,6 +200,10 @@ class ConeCategory(DirectedSystem):
         return [DirectedSystem(self._ambient_category, self._index_set, self._diagram_objects, self._diagram_morphisms)]
 
     class ParentMethods:
+        # Installed on the apex by the ``Cone`` constructor below: no Python
+        # class holds the projections, so they are declared, not defined.
+        _structure_morphisms: "tuple[Morphism, ...]"
+
         def structure_morphisms(self: Self) -> "tuple[Morphism, ...]":
             r"""Return the projections \(\pi_i:A\to X_i\)."""
             return self._structure_morphisms
@@ -137,13 +212,13 @@ class ConeCategory(DirectedSystem):
             r"""Return the \(i\)-th projection \(\pi_i:A\to X_i\)."""
             return self._structure_morphisms[i]
 
-        def factors(self: Self) -> "tuple[Parent, ...]":
+        def factors(self: "ConeParent") -> "tuple[Parent, ...]":
             r"""Return the factor objects \(X_i\) of the diagram."""
-            return self.category()._diagram_objects
+            return self.category().diagram_objects()
 
-        def factor(self: Self, i: "Integer") -> Parent:
+        def factor(self: "ConeParent", i: "Integer") -> Parent:
             r"""Return the \(i\)-th factor \(X_i\)."""
-            return self.category()._diagram_objects[i]
+            return self.category().diagram_objects()[i]
 
 
 class CoconeCategory(InverseSystem):
@@ -156,6 +231,9 @@ class CoconeCategory(InverseSystem):
         return [InverseSystem(self._ambient_category, self._index_set, self._diagram_objects, self._diagram_morphisms)]
 
     class ParentMethods:
+        # Installed on the coapex by the ``Cocone`` constructor below.
+        _costructure_morphisms: "tuple[Morphism, ...]"
+
         def costructure_morphisms(self: Self) -> "tuple[Morphism, ...]":
             r"""Return the injections \(\iota_i:X_i\to A\)."""
             return self._costructure_morphisms
@@ -164,25 +242,38 @@ class CoconeCategory(InverseSystem):
             r"""Return the \(i\)-th injection \(\iota_i:X_i\to A\)."""
             return self._costructure_morphisms[i]
 
-        def cofactors(self: Self) -> "tuple[Parent, ...]":
+        def cofactors(self: "CoconeParent") -> "tuple[Parent, ...]":
             r"""Return the cofactor objects \(X_i\) of the diagram."""
-            return self.category()._diagram_objects
+            return self.category().diagram_objects()
 
-        def cofactor(self: Self, i: "Integer") -> Parent:
+        def cofactor(self: "CoconeParent", i: "Integer") -> Parent:
             r"""Return the \(i\)-th cofactor \(X_i\)."""
-            return self.category()._diagram_objects[i]
+            return self.category().diagram_objects()[i]
 
 
 class ProductCategory(ConeCategory):
     r"""A product: a cone over a discrete diagram. Parameterized by factors."""
 
     @staticmethod
+    def _product_arguments(
+        ambient_category: Category, factors: "Iterable[Parent]"
+    ) -> tuple:
+        r"""Return the constructor arguments in the form the cache keys on."""
+        return (ambient_category, tuple(factors))
+
+    @staticmethod
     def __classcall_private__(
-        cls: type,
-        ambient_category: Category,
-        factors: tuple,
+        cls: type, *arguments: object, **keywords: object
     ) -> "ProductCategory":
-        return super().__classcall__(cls, ambient_category, tuple(factors))
+        # Sage reads this slot out of ``cls.__dict__`` and never inherits it,
+        # so it is protocol plumbing; the mathematics is on the normalizer.
+        ambient_category, factors = arguments
+        assert isinstance(ambient_category, Category)
+        assert isinstance(factors, Iterable)
+        constructed: ProductCategory = Category.__classcall__(
+            cls, *ProductCategory._product_arguments(ambient_category, factors)
+        )
+        return constructed
 
     def __init__(self, ambient_category: Category, factors: tuple) -> None:
         factors = tuple(factors)
@@ -200,12 +291,25 @@ class CoproductCategory(CoconeCategory):
     r"""A coproduct: a cocone under a discrete diagram. Parameterized by cofactors."""
 
     @staticmethod
+    def _coproduct_arguments(
+        ambient_category: Category, cofactors: "Iterable[Parent]"
+    ) -> tuple:
+        r"""Return the constructor arguments in the form the cache keys on."""
+        return (ambient_category, tuple(cofactors))
+
+    @staticmethod
     def __classcall_private__(
-        cls: type,
-        ambient_category: Category,
-        cofactors: tuple,
+        cls: type, *arguments: object, **keywords: object
     ) -> "CoproductCategory":
-        return super().__classcall__(cls, ambient_category, tuple(cofactors))
+        # Sage reads this slot out of ``cls.__dict__`` and never inherits it,
+        # so it is protocol plumbing; the mathematics is on the normalizer.
+        ambient_category, cofactors = arguments
+        assert isinstance(ambient_category, Category)
+        assert isinstance(cofactors, Iterable)
+        constructed: CoproductCategory = Category.__classcall__(
+            cls, *CoproductCategory._coproduct_arguments(ambient_category, cofactors)
+        )
+        return constructed
 
     def __init__(self, ambient_category: Category, cofactors: tuple) -> None:
         cofactors = tuple(cofactors)
@@ -228,12 +332,25 @@ class BiproductCategory(ProductCategory, CoproductCategory):
     """
 
     @staticmethod
+    def _biproduct_arguments(
+        ambient_category: Category, factors: "Iterable[Parent]"
+    ) -> tuple:
+        r"""Return the constructor arguments in the form the cache keys on."""
+        return (ambient_category, tuple(factors))
+
+    @staticmethod
     def __classcall_private__(
-        cls: type,
-        ambient_category: Category,
-        factors: tuple,
+        cls: type, *arguments: object, **keywords: object
     ) -> "BiproductCategory":
-        return super().__classcall__(cls, ambient_category, tuple(factors))
+        # Sage reads this slot out of ``cls.__dict__`` and never inherits it,
+        # so it is protocol plumbing; the mathematics is on the normalizer.
+        ambient_category, factors = arguments
+        assert isinstance(ambient_category, Category)
+        assert isinstance(factors, Iterable)
+        constructed: BiproductCategory = Category.__classcall__(
+            cls, *BiproductCategory._biproduct_arguments(ambient_category, factors)
+        )
+        return constructed
 
     class ParentMethods(ConeCategory.ParentMethods, CoconeCategory.ParentMethods):
         r"""A biproduct object carries both the projections and the injections."""
@@ -255,15 +372,17 @@ class BiproductCategory(ProductCategory, CoproductCategory):
 DirectSumCategory = BiproductCategory
 
 
-Category.Diagram = lambda self, objects, morphisms=(): DiagramCategory(self, objects, morphisms)
-Category.DirectedSystem = lambda self, index_set, objects, morphisms=(): DirectedSystem(self, index_set, objects, morphisms)
-Category.InverseSystem = lambda self, index_set, objects, morphisms=(): InverseSystem(self, index_set, objects, morphisms)
-Category.Cone = lambda self, index_set, objects, morphisms=(): ConeCategory(self, index_set, objects, morphisms)
-Category.Cocone = lambda self, index_set, objects, morphisms=(): CoconeCategory(self, index_set, objects, morphisms)
-Category.Product = lambda self, factors: ProductCategory(self, factors)
-Category.Coproduct = lambda self, cofactors: CoproductCategory(self, cofactors)
-Category.Biproduct = lambda self, factors: BiproductCategory(self, factors)
-Category.DirectSum = lambda self, factors: DirectSumCategory(self, factors)
+# Installed onto Sage's ``Category``: these constructions are the preamble's,
+# so they are attached here rather than declared on the Sage class.
+setattr(Category, "Diagram", lambda self, objects, morphisms=(): DiagramCategory(self, objects, morphisms))
+setattr(Category, "DirectedSystem", lambda self, index_set, objects, morphisms=(): DirectedSystem(self, index_set, objects, morphisms))
+setattr(Category, "InverseSystem", lambda self, index_set, objects, morphisms=(): InverseSystem(self, index_set, objects, morphisms))
+setattr(Category, "Cone", lambda self, index_set, objects, morphisms=(): ConeCategory(self, index_set, objects, morphisms))
+setattr(Category, "Cocone", lambda self, index_set, objects, morphisms=(): CoconeCategory(self, index_set, objects, morphisms))
+setattr(Category, "Product", lambda self, factors: ProductCategory(self, factors))
+setattr(Category, "Coproduct", lambda self, cofactors: CoproductCategory(self, cofactors))
+setattr(Category, "Biproduct", lambda self, factors: BiproductCategory(self, factors))
+setattr(Category, "DirectSum", lambda self, factors: DirectSumCategory(self, factors))
 
 
 def Cone(structure_morphisms: "tuple[Morphism, ...]") -> Parent:
@@ -280,7 +399,8 @@ def Cone(structure_morphisms: "tuple[Morphism, ...]") -> Parent:
     objects = tuple(m.codomain() for m in projections)
     index_set = tuple(range(len(projections)))
     refine(apex, apex.category().Cone(index_set, objects))
-    return apex
+    constructed: Parent = apex
+    return constructed
 
 
 def Cocone(costructure_morphisms: "tuple[Morphism, ...]") -> Parent:
@@ -297,7 +417,8 @@ def Cocone(costructure_morphisms: "tuple[Morphism, ...]") -> Parent:
     objects = tuple(m.domain() for m in injections)
     index_set = tuple(range(len(injections)))
     refine(coapex, coapex.category().Cocone(index_set, objects))
-    return coapex
+    constructed: Parent = coapex
+    return constructed
 
 
 def Product(structure_morphisms: "tuple[Morphism, ...]") -> Parent:
@@ -313,7 +434,8 @@ def Product(structure_morphisms: "tuple[Morphism, ...]") -> Parent:
     domain._structure_morphisms = projections
     factors = tuple(m.codomain() for m in projections)
     refine(domain, domain.category().Product(factors))
-    return domain
+    constructed: Parent = domain
+    return constructed
 
 
 def Coproduct(costructure_morphisms: "tuple[Morphism, ...]") -> Parent:
@@ -329,7 +451,8 @@ def Coproduct(costructure_morphisms: "tuple[Morphism, ...]") -> Parent:
     codomain._costructure_morphisms = injections
     cofactors = tuple(m.domain() for m in injections)
     refine(codomain, codomain.category().Coproduct(cofactors))
-    return codomain
+    constructed: Parent = codomain
+    return constructed
 
 
 def Biproduct(
@@ -356,7 +479,8 @@ def Biproduct(
         "the injections of a biproduct share one codomain"
     )
     obj = projections[0].domain()
-    assert obj is injections[0].codomain(), (
+    coapex = injections[0].codomain()
+    assert obj is coapex, (
         "the product domain and coproduct codomain of a biproduct coincide"
     )
     assert len(projections) == len(injections), (
@@ -369,7 +493,8 @@ def Biproduct(
     obj._structure_morphisms = projections
     obj._costructure_morphisms = injections
     refine(obj, obj.category().Biproduct(factors))
-    return obj
+    constructed: Parent = obj
+    return constructed
 
 
 # Direct sum is the additive synonym for biproduct: in an additive category
@@ -381,7 +506,15 @@ def Biproduct(
 # ``DirectSumDecomposition`` in ``direct_sum_objects`` is the other one.
 DirectSum = Biproduct
 
-class CartesianProductOfSets(Parent):
+if TYPE_CHECKING:
+    # Its elements are tuples, not ``Element``s -- see the class docstring.
+    # ``Parent`` is a cython extension type, not subscriptable at runtime.
+    CartesianProductParent = Parent[tuple[Element, ...]]
+else:
+    CartesianProductParent = Parent
+
+
+class CartesianProductOfSets(CartesianProductParent):
     r"""The cartesian product \(U(X_1)\times\cdots\times U(X_n)\) of underlying sets.
 
     A *set*, not a module.  The module-level product of \(M\) and \(N\) is
@@ -402,12 +535,12 @@ class CartesianProductOfSets(Parent):
     def factors(self) -> "tuple[Parent, ...]":
         return self._factors
 
-    def __iter__(self) -> Any:
+    def __iter__(self) -> "Iterator[tuple[Element, ...]]":
         from itertools import product as _product
 
         return iter(_product(*self._factors))
 
-    def __contains__(self, element: Any) -> bool:
+    def __contains__(self, element: object) -> bool:
         return (
             isinstance(element, tuple)
             and len(element) == len(self._factors)
@@ -417,7 +550,7 @@ class CartesianProductOfSets(Parent):
             )
         )
 
-    def _element_constructor_(self, element: Any) -> tuple:
+    def _element_constructor_(self, element: "Iterable[Element]") -> "tuple[Element, ...]":
         r"""Return the tuple as an element of this set.
 
         An element here is a tuple of elements of the factors and nothing
@@ -425,13 +558,15 @@ class CartesianProductOfSets(Parent):
         because every map out of this set coerces its argument through the
         domain before evaluating it.
         """
-        element = tuple(element)
-        assert element in self, (
-            f"{element} is not a tuple of elements of the factors of {self}"
+        components = tuple(element)
+        assert components in self, (
+            f"{components} is not a tuple of elements of the factors of {self}"
         )
-        return element
+        return components
 
-    def __call__(self, element: Any) -> tuple:
+    def __call__(
+        self, x: object = (), *arguments: object, **keywords: object
+    ) -> "tuple[Element, ...]":
         r"""Return the tuple, without Sage's default conversion.
 
         ``Parent.__call__`` routes through a conversion map declared to
@@ -439,7 +574,8 @@ class CartesianProductOfSets(Parent):
         tuples -- that is what a product of sets has -- so the constructor
         is called directly.
         """
-        return self._element_constructor_(element)
+        assert isinstance(x, Iterable), "an element here is a tuple of factor elements"
+        return self._element_constructor_(x)
 
     def _repr_(self) -> str:
         return " x ".join(str(factor) for factor in self._factors)
@@ -466,16 +602,29 @@ class TensorProductCategory(CoconeCategory):
     """
 
     @staticmethod
+    def _tensor_product_arguments(
+        ambient_category: Category, factors: "Iterable[Parent]"
+    ) -> tuple:
+        r"""Return the constructor arguments in the form the cache keys on."""
+        return (ambient_category, tuple(factors))
+
+    @staticmethod
     def __classcall_private__(
-        cls: type,
-        ambient_category: Category,
-        factors: tuple,
+        cls: type, *arguments: object, **keywords: object
     ) -> "TensorProductCategory":
-        return super().__classcall__(cls, ambient_category, tuple(factors))
+        # Sage reads this slot out of ``cls.__dict__`` and never inherits it,
+        # so it is protocol plumbing; the mathematics is on the normalizer.
+        ambient_category, factors = arguments
+        assert isinstance(ambient_category, Category)
+        assert isinstance(factors, Iterable)
+        constructed: TensorProductCategory = Category.__classcall__(
+            cls, *TensorProductCategory._tensor_product_arguments(ambient_category, factors)
+        )
+        return constructed
 
     def __init__(self, ambient_category: Category, factors: tuple) -> None:
         factors = tuple(factors)
-        self._tensor_factors = factors
+        self._tensor_factors: "tuple[ModuleParent, ...]" = factors
         source = CartesianProductOfSets(factors)
         CoconeCategory.__init__(self, ambient_category, (0,), (source,), ())
 
@@ -486,23 +635,25 @@ class TensorProductCategory(CoconeCategory):
         )
 
     class ParentMethods(CoconeCategory.ParentMethods):
-        def tensor_factors(self: Any) -> "tuple[Parent, ...]":
+        def tensor_factors(self: "TensorProductParent") -> "tuple[ModuleParent, ...]":
             r"""Return the factors \(X_i\)."""
             return self.category()._tensor_factors
 
-        def tensor_factor(self: Any, i: Any) -> Parent:
+        def tensor_factor(self: "TensorProductParent", i: "Integer") -> "ModuleParent":
             r"""Return the \(i\)-th factor \(X_i\)."""
             return self.category()._tensor_factors[i]
 
-        def cartesian_source(self: Any) -> Parent:
+        def cartesian_source(self: "TensorProductParent") -> Parent:
             r"""Return \(M\times N\), the object this cocone sits under."""
-            return self.category()._diagram_objects[0]
+            source: Parent = self.category().diagram_objects()[0]
+            return source
 
-        def universal_bilinear_map(self: Any) -> Morphism:
+        def universal_bilinear_map(self: "TensorProductParent") -> Morphism:
             r"""Return \(\otimes:M\times N\to M\otimes N\), the cocone's structure map."""
-            return self.costructure_morphism(0)
+            tensor_map: Morphism = self.costructure_morphism(0)
+            return tensor_map
 
-        def pure_tensor(self: Any, *elements: Any) -> Any:
+        def pure_tensor(self: "TensorProductParent", *elements: Element) -> Element:
             r"""Return \(x_1\otimes\cdots\otimes x_n=\otimes(x_1,\dots,x_n)\).
 
             Every element of the tensor product is a *sum* of these; not
@@ -517,9 +668,14 @@ class TensorProductCategory(CoconeCategory):
                 element.parent() is factor
                 for element, factor in zip(elements, factors)
             ), "each element belongs to its own factor"
-            return self._pure_tensor(*elements)
+            tensor: Element = self._pure_tensor(*elements)
+            return tensor
 
-        def from_bilinear(self: Any, bilinear: Any, codomain: Any) -> Morphism:
+        def from_bilinear(
+            self: "TensorProductParent",
+            bilinear: "Callable[[Element, Element], Element]",
+            codomain: Parent,
+        ) -> Morphism:
             r"""Factor a bilinear map through \(\otimes\).
 
             For bilinear \(\beta:M\times N\to P\) there is a unique
@@ -528,7 +684,7 @@ class TensorProductCategory(CoconeCategory):
             of morphisms out of a tensor product.
             """
             left, right = self.tensor_factors()
-            return self.hom(
+            factorization: Morphism = self.hom(
                 {
                     label: bilinear(
                         left.module_generator(left_label), right.module_generator(right_label)
@@ -544,6 +700,7 @@ class TensorProductCategory(CoconeCategory):
                 },
                 codomain,
             )
+            return factorization
 
 
-Category.TensorProduct = lambda self, factors: TensorProductCategory(self, factors)
+setattr(Category, "TensorProduct", lambda self, factors: TensorProductCategory(self, factors))

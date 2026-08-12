@@ -33,6 +33,7 @@ from dzack_research.preamble.catalogue import Lattices
 from typing import Any, TYPE_CHECKING
 
 from sage.rings.rational_field import QQ as SageQQ
+from sage.sets.integer_range import IntegerRange
 
 if TYPE_CHECKING:
     # The ordered-set noun is type-only: the preamble loads into one
@@ -48,7 +49,9 @@ __all__ = [
     "SterkDiagrams",
 ]
 
-_STERK_DIAGRAM_LAYOUTS: dict[str, dict[int, list[float]]] = {
+# Preparsed literals: a .sage integer is ``Integer`` and a decimal is
+# ``RealNumber``, which is the fork the repo bans confusing with int/float.
+_STERK_DIAGRAM_LAYOUTS: dict[str, dict[Integer, list[RingElement]]] = {
     "Sterk_1": {
         0: [0, 0],
         1: [4, 0],
@@ -59,8 +62,8 @@ _STERK_DIAGRAM_LAYOUTS: dict[str, dict[int, list[float]]] = {
         6: [0, -8],
         7: [0, -4],
         8: [2, -6],
-        9: [3.25, -4.75],
-        10: [4.5, -3.5],
+        9: [13/4, -19/4],
+        10: [9/2, -7/2],
         11: [6, -2],
     },
     "Sterk_2": {
@@ -321,7 +324,7 @@ class Sterk:
         }
 
         for name, roots in configurations.items():
-            for index, root in enumerate(roots, start=1):
+            for index, root in enumerate(roots, start=1r):
                 norm = TdP.b(root, root)
                 assert norm in (-2, -4), (
                     f"{name} root {index} has norm {norm}"
@@ -369,9 +372,9 @@ class Sterk:
         lattice = Lattices.U.direct_sum([Lattices.E8_2])
         module_generators = list(lattice.module_generators())
         e, f = module_generators[0], module_generators[1]
-        a = {i: module_generators[i + 1] for i in range(1, 9)}
+        a = {i: module_generators[i + 1] for i in IntegerRange(1, 9)}
         dual = lattice.dual_lattice().module_generators()
-        ad = {i: dual[i + 1] for i in range(1, 9)}
+        ad = {i: dual[i + 1] for i in IntegerRange(1, 9)}
         c = _in_dual(lattice)
         vectors = (
             a[2],
@@ -390,7 +393,7 @@ class Sterk:
             2 * e - a[1],
         )
         assert len(vectors) == 14
-        for index, v in enumerate(vectors, start=1):
+        for index, v in enumerate(vectors, start=1r):
             norm = v.q()
             assert norm in (-2, -4), f"Sterk5 vector {index} has norm {norm}"
         return lattice, vectors
@@ -401,18 +404,18 @@ class Sterk:
         TEn = Lattices.TEn
         b = _named_module_generators(TEn)
         e, f, ep, fp = b["e"], b["f"], b["ep"], b["fp"]
-        a = {i: b[f"a{i}"] for i in range(1, 9)}
+        a = {i: b[f"a{i}"] for i in IntegerRange(1, 9)}
         dual = TEn.dual_lattice().module_generators()
-        ad2 = {i: 2 * dual[i + 3] for i in range(1, 9)}
-        ad1 = {i: dual[i + 3] for i in range(1, 9)}
+        ad2 = {i: 2 * dual[i + 3] for i in IntegerRange(1, 9)}
+        ad1 = {i: dual[i + 3] for i in IntegerRange(1, 9)}
         c = _in_dual(TEn)
-        sterks1 = tuple(a[i] for i in range(1, 9)) + (
+        sterks1 = tuple(a[i] for i in IntegerRange(1, 9)) + (
             fp - ep,
             c.lift(c(2 * ep) + ad2[8]),
             c.lift(c(2 * ep + 2 * fp) + ad2[1] + ad2[8]),
             c.lift(c(5 * ep + 3 * fp) + 2 * ad2[2]),
         )
-        sterks2 = tuple(a[i] for i in range(1, 9)) + (
+        sterks2 = tuple(a[i] for i in IntegerRange(1, 9)) + (
             c.lift(c(2 * f) + ad2[8]),
             e - f,
         )
@@ -446,13 +449,14 @@ def _sterk_diagram(name: str, roots: "OrderedSet") -> "Graph":
         index: tuple(coordinates)
         for index, coordinates in _STERK_DIAGRAM_LAYOUTS[name].items()
     }
-    return FiniteCoxeterDiagram.from_roots(
+    diagram: "Graph" = FiniteCoxeterDiagram.from_roots(
         rooted,
         # Identifier names; Sage derives the LaTeX form r_{i} itself
         # (``latex_variable_names``) — brace-form names fail ``certify_names``.
         names=tuple(f"r_{index + 1}" for index in range(len(rooted))),
         positions=positions,
     )
+    return diagram
 
 
 _STERK_ROOTS = Sterk.sterk_roots()

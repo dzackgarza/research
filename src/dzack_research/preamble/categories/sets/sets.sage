@@ -13,7 +13,7 @@ from dzack_research.preamble.refine import refine
 if TYPE_CHECKING:
     from sage.categories.morphism import Morphism
 
-from collections.abc import Iterable, Sequence
+from collections.abc import Iterable, Iterator, Sequence
 from typing import TYPE_CHECKING, TypeVar
 
 from sage.rings.integer import Integer as SageInteger
@@ -59,7 +59,7 @@ def Set(source: Parent | Iterable[Element]) -> "lexicon.Set":
 
 
 def ConditionSet(
-    universe: "Set",
+    universe: "lexicon.Set",
     *predicates: "Element",
     names: "OrderedSet | None" = None,
 ) -> "lexicon.Set":
@@ -70,7 +70,7 @@ def ConditionSet(
 
 def ImageSet(
     map_: "Morphism",
-    domain_subset: "Set",
+    domain_subset: "lexicon.Set",
     *,
     is_injective: bool | None = None,
     inverse: "Morphism | None" = None,
@@ -85,7 +85,15 @@ def ImageSet(
     return refine(result, placement_of(result))
 
 
-class PowerSetParent(UniqueRepresentation, Parent):
+if TYPE_CHECKING:
+    # These parents' elements are Sage sets, not ``Element``s.  ``Parent`` is a
+    # cython extension type and is not subscriptable at runtime.
+    SubsetsParent = Parent[Set_object_enumerated]
+else:
+    SubsetsParent = Parent
+
+
+class PowerSetParent(UniqueRepresentation, SubsetsParent):
     r"""The set of all subsets of a finite or countable set."""
 
     element_class = Set_object_enumerated
@@ -108,15 +116,18 @@ class PowerSetParent(UniqueRepresentation, Parent):
     def source(self) -> "lexicon.Set":
         return self._source
 
-    def _element_constructor_(self, members: Iterable) -> "lexicon.Set":
+    def _element_constructor_(self, members: Iterable) -> Set_object_enumerated:
         subset = self.element_class(members)
         assert all(member in self._source for member in subset), (
             "every member of a subset must lie in its source set"
         )
         return subset
 
-    def __call__(self, members: Iterable) -> "lexicon.Set":
-        return self._element_constructor_(members)
+    def __call__(
+        self, x: object = (), *arguments: object, **keywords: object
+    ) -> Set_object_enumerated:
+        assert isinstance(x, Iterable), "a subset is built from its members"
+        return self._element_constructor_(x)
 
     def __contains__(self, candidate: object) -> bool:
         if candidate is self._source:
@@ -125,7 +136,7 @@ class PowerSetParent(UniqueRepresentation, Parent):
             return False
         return all(member in self._source for member in candidate)
 
-    def __iter__(self):
+    def __iter__(self) -> "Iterator[lexicon.Set]":
         assert self._source in Sets().Finite(), (
             "an uncountable power set has no enumeration"
         )
@@ -145,7 +156,7 @@ class PowerSetParent(UniqueRepresentation, Parent):
         return f"Power set of {self._source}"
 
 
-class FixedCardinalitySubsetsParent(UniqueRepresentation, Parent):
+class FixedCardinalitySubsetsParent(UniqueRepresentation, SubsetsParent):
     r"""The subsets of ``S`` with one fixed finite cardinality.
 
     The finite case delegates to Sage's mature ``sage.combinat.subset.Subsets``.
@@ -154,7 +165,7 @@ class FixedCardinalitySubsetsParent(UniqueRepresentation, Parent):
 
     element_class = Set_object_enumerated
 
-    def __init__(self, source: "lexicon.Set", cardinality: int) -> None:
+    def __init__(self, source: "lexicon.Set", cardinality: "Integer") -> None:
         if source not in Sets().Countable():
             source = _as_set(source)
         cardinality = SageInteger(cardinality)
@@ -176,9 +187,10 @@ class FixedCardinalitySubsetsParent(UniqueRepresentation, Parent):
         return self._source
 
     def subset_cardinality(self) -> SageInteger:
-        return self._subset_cardinality
+        cardinality: SageInteger = self._subset_cardinality
+        return cardinality
 
-    def _element_constructor_(self, members: Iterable) -> "lexicon.Set":
+    def _element_constructor_(self, members: Iterable) -> Set_object_enumerated:
         subset = self.element_class(members)
         assert len(subset) == self._subset_cardinality, (
             f"a member has cardinality {self._subset_cardinality}"
@@ -188,8 +200,11 @@ class FixedCardinalitySubsetsParent(UniqueRepresentation, Parent):
         )
         return subset
 
-    def __call__(self, members: Iterable) -> "lexicon.Set":
-        return self._element_constructor_(members)
+    def __call__(
+        self, x: object = (), *arguments: object, **keywords: object
+    ) -> Set_object_enumerated:
+        assert isinstance(x, Iterable), "a subset is built from its members"
+        return self._element_constructor_(x)
 
     def __contains__(self, candidate: object) -> bool:
         if not isinstance(candidate, Iterable):
@@ -200,7 +215,7 @@ class FixedCardinalitySubsetsParent(UniqueRepresentation, Parent):
             and all(member in self._source for member in subset)
         )
 
-    def __iter__(self):
+    def __iter__(self) -> "Iterator[lexicon.Set]":
         from sage.combinat.subset import Subsets as SageSubsets
 
         if self._source in Sets().Finite():
@@ -210,7 +225,7 @@ class FixedCardinalitySubsetsParent(UniqueRepresentation, Parent):
             yield self.element_class(())
             return
 
-        preceding = []
+        preceding: list[Element] = []
         for maximum in self._source:
             if len(preceding) >= self._subset_cardinality - 1:
                 for initial in SageSubsets(
@@ -227,7 +242,7 @@ class FixedCardinalitySubsetsParent(UniqueRepresentation, Parent):
         )
 
 
-class FiniteSubsetsParent(UniqueRepresentation, Parent):
+class FiniteSubsetsParent(UniqueRepresentation, SubsetsParent):
     r"""The set of all finite subsets of a countable set.
 
     The finite case delegates to Sage's mature ``sage.combinat.subset.Subsets``.
@@ -253,15 +268,18 @@ class FiniteSubsetsParent(UniqueRepresentation, Parent):
     def source(self) -> "lexicon.Set":
         return self._source
 
-    def _element_constructor_(self, members: Iterable) -> "lexicon.Set":
+    def _element_constructor_(self, members: Iterable) -> Set_object_enumerated:
         subset = self.element_class(members)
         assert all(member in self._source for member in subset), (
             "every member of a subset must lie in its source set"
         )
         return subset
 
-    def __call__(self, members: Iterable) -> "lexicon.Set":
-        return self._element_constructor_(members)
+    def __call__(
+        self, x: object = (), *arguments: object, **keywords: object
+    ) -> Set_object_enumerated:
+        assert isinstance(x, Iterable), "a subset is built from its members"
+        return self._element_constructor_(x)
 
     def __contains__(self, candidate: object) -> bool:
         if not isinstance(candidate, Iterable):
@@ -269,7 +287,7 @@ class FiniteSubsetsParent(UniqueRepresentation, Parent):
         subset = SageSet(candidate)
         return all(member in self._source for member in subset)
 
-    def __iter__(self):
+    def __iter__(self) -> "Iterator[lexicon.Set]":
         from sage.combinat.subset import Subsets as SageSubsets
 
         if self._source in Sets().Finite():
@@ -277,7 +295,7 @@ class FiniteSubsetsParent(UniqueRepresentation, Parent):
             return
 
         yield self.element_class(())
-        preceding = []
+        preceding: list[Element] = []
         for maximum in self._source:
             for initial in SageSubsets(tuple(preceding)):
                 yield self.element_class(tuple(initial) + (maximum,))
@@ -295,7 +313,7 @@ def PowerSet(source: "lexicon.Set") -> PowerSetParent:
 @cached_function
 def SubsetsOfSize(
     source: "lexicon.Set",
-    cardinality: int,
+    cardinality: "Integer",
 ) -> FixedCardinalitySubsetsParent:
     return FixedCardinalitySubsetsParent(source, cardinality)
 
@@ -347,7 +365,7 @@ def finite_ordered_set(
     return _ordered_set_on(tuple(_owned_members(source)))
 
 
-def _owned_members(members) -> tuple:
+def _owned_members(members: "Iterable[Element | int]") -> tuple:
     r"""Return the members as this preamble's objects.
 
     A Python ``int`` and a Sage ``Integer`` print alike, compare equal and
@@ -359,14 +377,12 @@ def _owned_members(members) -> tuple:
     would otherwise enter.
     """
     return tuple(
-        SageZZ(member)
-        if isinstance(member, int) and not isinstance(member, Element)
-        else member
+        SageZZ(member) if isinstance(member, int) else member
         for member in members
     )
 
 
-def ordered_set_owned_by(elements) -> "lexicon.OrderedSet":
+def ordered_set_owned_by(elements: "Iterable[Element]") -> "lexicon.OrderedSet":
     r"""Return the ordered set on ``elements``, in their given order.
 
     Not a *fresh* set: ``TotallyOrderedFiniteSet`` is a unique
@@ -399,7 +415,9 @@ def _ordered_set_on(elements: tuple) -> "lexicon.OrderedSet":
 class _Delta:
     r"""Finite and countable simplex indexing objects \(\Delta[n]\)."""
 
-    def __getitem__(self, n: "Integer") -> "lexicon.OrderedSet[Integer]":
+    def __getitem__(
+        self, n: "Integer | int | Cardinal"
+    ) -> "lexicon.OrderedSet[Integer]":
         match n:
             case int() | SageInteger():
                 assert n >= -1, f"a simplex ordinal has dimension at least -1, got {n}"
@@ -436,7 +454,7 @@ setattr(Sets, "Δ", _DELTA)
 class _Aleph:
     r"""Selected aleph cardinal symbols used as ordinal indices."""
 
-    def __getitem__(self, n: "Integer") -> "Cardinal":
+    def __getitem__(self, n: "Integer | int") -> "Cardinal":
         match n:
             case int() | SageInteger():
                 if n == 0:

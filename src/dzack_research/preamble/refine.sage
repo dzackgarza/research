@@ -94,7 +94,7 @@ def _implemented_mixin(mixin: type) -> type:
 def _concrete_base(obj: "SageObject") -> type:
     """Return the non-dynamic concrete class Sage would use as ``__base__``."""
     cls = type(obj)
-    cached = getattr(cls, "_preamble_concrete", None)
+    cached: type | None = getattr(cls, "_preamble_concrete", None)
     if cached is not None:
         return cached
 
@@ -265,7 +265,7 @@ def _assert_preamble_obligations_are_met(
     category: "Category",
 ) -> None:
     r"""Require the data declared abstract by the preamble's categories."""
-    required = set()
+    required: set[str] = set()
     for cat in category.all_super_categories(proper=False):
         if not type(cat).__module__.startswith(_PREAMBLE_PACKAGE):
             continue
@@ -371,9 +371,11 @@ def hook_post_init(
     entries.append((category, predicate))
 
     if cls not in _ORIGINAL_INIT:
-        _ORIGINAL_INIT[cls] = cls.__init__
+        # Looked up dynamically: the initializer to preserve is whichever one
+        # ``cls`` resolves today, its own or an inherited one.
+        _ORIGINAL_INIT[cls] = getattr(cls, "__init__")
 
-        def _init(self: Self, *args: Any, **kwargs: Any) -> None:
+        def _init(self: "SageObject", *args: Any, **kwargs: Any) -> None:
             _ORIGINAL_INIT[cls](self, *args, **kwargs)
             for hook in _BEFORE.get(cls, ()):
                 hook(self)
@@ -386,7 +388,7 @@ def hook_post_init(
                 for hook in after_hooks:
                     hook(self)
 
-        cls.__init__ = _init  # noqa: intentional post-init registration
+        setattr(cls, "__init__", _init)  # intentional post-init registration
 
     if before is not None:
         _BEFORE.setdefault(cls, [])
