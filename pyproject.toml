@@ -23,11 +23,12 @@ where = ["src"]
 [tool.uv.sources]
 sage-lattice-category-spike = { workspace = true }
 sage-lattice-feature-spike = { workspace = true }
+tree-sitter-sage = { git = "https://github.com/dzackgarza/tree-sitter-sage", rev = "47c09760d7380680c7e3e5e7d7460ca1d48eb6e5" }
 
 [tool.uv.workspace]
 members = [
     "computations/archives/sage_lattice_category_spike",
-    "computations/experiments/sage_lattice_feature_spike",
+    "computations/archives/sage_lattice_feature_spike",
 ]
 
 [tool.pytest.ini_options]
@@ -48,3 +49,8 @@ addopts = """
 log_cli = false
 log_file = "tests/.report/pytest.log"
 log_file_level = "DEBUG"
+
+[dependency-groups]
+dev = [
+    "tree-sitter-sage",
+]

@@ -1,6 +1,6 @@
 [project]
 name = "dzack-research-preamble"
-version = "0.0.6"
+version = "0.0.9"
 description = "SageMath preamble: categorical foundations for lattice research"
 requires-python = ">=3.14"
 # sagepython (the compiler core) is sage-free and needs only these;
@@ -11,15 +11,11 @@ dependencies = [
 ]
 
 # Requirements installed into the uvx mypy environment so static analysis can
-# resolve imports (see ai-review-ci justfiles/sage.just, _sage-mypy). The local
-# spike package must be a PEP 508 direct reference; uv rejects relative paths
-# here, so this is an absolute workspace-local file:// URL (not portable to
-# other machines — update it on a fresh checkout). PyPI names resolve from
-# the index.
+# resolve imports (see ai-review-ci justfiles/sage.just, _sage-mypy). Nothing
+# in the preamble imports the archived spike, so it is not pinned here. PyPI
+# names resolve from the index.
 [dependency-groups]
 dev = [
-    # Workspace-local package (research monorepo layout); PEP 508 direct reference.
-    "sage-lattice-category-spike @ file:///home/dzack/research/computations/archives/sage_lattice_category_spike",
     "networkx",
     "types-networkx",
     "ipython",
@@ -33,7 +29,7 @@ requires = ["setuptools>=80"]
 build-backend = "setuptools.build_meta"
 
 # The preamble is a PEP 420 namespace package: dzack_research.preamble maps to
-# this directory (same package-dir pattern as sage_lattice_category_spike).
+# this directory.
 # Subpackages are the categories tree; there are no __init__.py files.
 [tool.setuptools]
 package-dir = { "dzack_research.preamble" = "." }
@@ -58,4 +54,5 @@ packages = [
     "dzack_research.preamble.categories.modules.pure.finitely_generated",
     "dzack_research.preamble.categories.schemes",
     "dzack_research.preamble.categories.sets",
+    "dzack_research.preamble.lexicon",
 ]

@@ -1,6 +1,6 @@
-r"""Installable Sage surface for the maintained lattice research spikes."""
+r"""The research package: the preamble is the codebase.
 
-import sage_lattice_category_spike as lattice
-import sage_lattice_feature_spike as feature
-
-__all__ = ["feature", "lattice"]
+The exploratory spikes that once re-exported here are archived reference
+material under ``computations/archives/`` — importable in a session for
+reference, imported by nothing.
+"""
