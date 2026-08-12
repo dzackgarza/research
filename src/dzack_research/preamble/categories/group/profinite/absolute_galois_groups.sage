@@ -254,16 +254,16 @@ class AbsoluteGaloisGroups(Category_singleton):
             # Local: a module-level import would close a cycle; the module is built by the time this runs.
             from dzack_research.preamble.categories.group.profinite.absolute_galois_group_element import AbsoluteGaloisGroupElement
 
-            L = sigma.parent().domain() if hasattr(sigma, "parent") else None
-            return AbsoluteGaloisGroupElement(self, L, sigma)
+            return AbsoluteGaloisGroupElement(
+                self, sigma.parent().top_field(), sigma.as_hom()
+            )
 
         def lifts(self: "AbsoluteGaloisGroupParent", sigma: "GaloisGroupElement") -> "LiftCoset":
             r"""Return the open coset \(g\cdot G_L\) of all lifts of \(\sigma\)."""
             # Local: a module-level import would close a cycle; the module is built by the time this runs.
             from dzack_research.preamble.categories.group.profinite.absolute_galois_group import LiftCoset
 
-            L = sigma.parent().domain() if hasattr(sigma, "parent") else None
-            return LiftCoset(self, sigma, L)
+            return LiftCoset(self, sigma, sigma.parent().top_field())
 
         def topological_generating_family(
             self: "AbsoluteGaloisGroupParent",

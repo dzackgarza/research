@@ -22,6 +22,11 @@ from sage.categories.homset import Hom
 from sage.categories.morphism import Morphism
 from sage.structure.element import Element
 
+from dzack_research.preamble.categories.group.profinite.galois_quotient import (
+    extensions_along,
+    restrict_along,
+)
+
 if TYPE_CHECKING:
     from dzack_research.preamble.lexicon import Ring
 
@@ -74,25 +79,27 @@ class AbsoluteGaloisGroupElement(Morphism):
             return known
 
         # Force: build M = normal closure of stage(alpha) over K inside bar K
-        closure = self._parent.algebraic_closure()
-        K = self._parent.base_field()
-        # Embed alpha and stage into closure; form the compositum and normalize
         M = self._parent._normal_closure_containing(self._stage, alpha)
-        extensions = self._action.extensions(M)
-        extension = self._parent.choice_policy().choose_extension(
-            self._action, extensions
-        )
+        policy = self._parent.choice_policy()
+        embedding = policy.choose_embedding(self._stage, M)
+        candidates = [sigma.as_hom() for sigma in self._parent.finite_quotient(M)]
+        extensions = extensions_along(self._action, embedding, candidates)
+        extension = policy.choose_extension(self._action, extensions)
         self._stage = M
         self._action = extension
         image: Element = extension(alpha)
         return image
 
     def restrict(self, L: "Ring") -> Morphism:
-        r"""Return the restriction of this automorphism to \(L\), if \(L\subseteq\) current stage."""
-        assert L in self._stage, (
-            f"{L} is not contained in the current stage {self._stage}"
-        )
-        restriction: Morphism = self._action.restrict(L)
+        r"""Return the restriction of this automorphism to a subfield \(L\) of the current stage.
+
+        The subfield is presented by an embedding \(L\hookrightarrow\)
+        stage chosen by the parent's :class:`GaloisChoicePolicy`;
+        different embeddings give restrictions that differ by
+        conjugation, which is why the choice is the policy's to make.
+        """
+        embedding = self._parent.choice_policy().choose_embedding(L, self._stage)
+        restriction: Morphism = restrict_along(self._action, embedding)
         return restriction
 
     def conjugacy_class(self) -> "ElementConjugacyClass":

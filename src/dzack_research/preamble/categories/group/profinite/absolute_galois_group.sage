@@ -237,8 +237,9 @@ class AbsoluteGaloisGroup(UniqueRepresentation, Parent):
         0BME).  This returns one such lift as a lazy
         :class:`AbsoluteGaloisGroupElement`.
         """
-        L = sigma.parent().domain() if hasattr(sigma, "parent") else None
-        return AbsoluteGaloisGroupElement(self, L, sigma)
+        return AbsoluteGaloisGroupElement(
+            self, sigma.parent().top_field(), sigma.as_hom()
+        )
 
     def lifts(self, sigma: "GaloisGroupElement") -> "LiftCoset":
         r"""Return the open coset \(g\cdot G_L\) of all lifts of \(\sigma\).
@@ -247,8 +248,7 @@ class AbsoluteGaloisGroup(UniqueRepresentation, Parent):
         of all automorphisms of \(\bar K\) restricting to \(\sigma\) on
         \(L\).
         """
-        L = sigma.parent().domain() if hasattr(sigma, "parent") else None
-        return LiftCoset(self, sigma, L)
+        return LiftCoset(self, sigma, sigma.parent().top_field())
 
     def is_abelian(self) -> bool:
         r"""Return whether \(G_K\) is abelian.
@@ -313,13 +313,18 @@ class AbsoluteGaloisGroup(UniqueRepresentation, Parent):
         r"""Return a finite normal extension \(M/K\) with \(\mathrm{stage}(\alpha)\subset M\subset\bar K\).
 
         Internal helper for :class:`AbsoluteGaloisGroupElement._call_`.
+
+        Refuses.  The extension mechanics the caller needs are in place
+        (:func:`extensions_along` solves \(\sigma\circ j=j\circ\tau\) for
+        \(\sigma\)); what is missing is the closure itself, which has to
+        place \(M\) *inside the chosen* \(\bar K\) so that successive
+        forcings compose.  Choosing that placement is the open part
+        (dzackgarza/research#356).
         """
-        # Embed stage and alpha into the closure; form the compositum
-        # and take its normal closure over K inside bar K.
-        # This is field-specific and may raise NotImplementedError for
-        # fields where Sage cannot compute it.
         raise NotImplementedError(
-            f"lazy extension not yet implemented for {type(self._field).__name__}"
+            f"the normal closure of {stage} and {alpha} inside "
+            f"{self._closure} is not yet placed for "
+            f"{type(self._field).__name__} (dzackgarza/research#356)"
         )
 
     def __hash__(self) -> int:

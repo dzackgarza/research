@@ -467,6 +467,141 @@ def test_the_absolute_galois_group_of_the_rationals_is_constructible() -> None:
 
 
 # ---------------------------------------------------------------------------
+# Restriction to a subfield, on the tower $\QQ\subset\QQ(i),\QQ(\sqrt3)\subset
+# \QQ(\zeta_{12})$.
+#
+# $\mathrm{Gal}(\QQ(\zeta_{12})/\QQ)\cong(\ZZ/2)^2$ acts by
+# $\zeta_{12}\mapsto\zeta_{12}^k$ for $k\in\{1,5,7,11\}$, and the three
+# quadratic subfields are the fixed fields of its three subgroups of order 2.
+# Which subfield an element moves is therefore a different fact for each
+# element, and it is arithmetic anyone can redo by hand:
+#
+#   $i=\zeta_{12}^3$ and $\sqrt3=\zeta_{12}+\zeta_{12}^{-1}$, so
+#   $k=11$ (complex conjugation) sends $i\mapsto-i$ and fixes $\sqrt3$;
+#   $k=5$ fixes $i$ and sends $\sqrt3\mapsto-\sqrt3$;
+#   $k=7$ moves both.
+#
+# The group is abelian, so these restrictions do not depend on which of the two
+# embeddings of the subfield the choice policy takes.
+# ---------------------------------------------------------------------------
+
+from dzack_research.preamble.categories.group.profinite.galois_quotient import (
+    extensions_along,
+)
+
+_ZETA_12 = CyclotomicField(12)
+_GAUSSIAN = QuadraticField(-1, "i")
+_REAL_QUADRATIC = QuadraticField(3, "r")
+
+# Sage names the elements of a Galois group by a permutation of the roots; the
+# mathematics names them by the power of $\zeta_{12}$ they produce, so that is
+# how they are looked up here.
+_BY_EXPONENT = {
+    (_ZETA_12.gen() ** exponent): exponent
+    for exponent in (1, 5, 7, 11)
+}
+
+
+def _automorphism_sending_zeta_to_power(exponent: int):
+    r"""Return the \(\sigma\in\mathrm{Gal}(\QQ(\zeta_{12})/\QQ)\) with \(\zeta\mapsto\zeta^{e}\)."""
+    generator = _ZETA_12.gen()
+    matches = [
+        sigma
+        for sigma in _ZETA_12.galois_group()
+        if sigma(generator) == generator**exponent
+    ]
+    assert len(matches) == 1, f"no unique automorphism for exponent {exponent}"
+    return matches[0]
+
+
+# Each row: the exponent $k$, and whether $\zeta_{12}\mapsto\zeta_{12}^k$ moves
+# $i$ and whether it moves $\sqrt3$.
+MOVES_THE_SUBFIELD_GENERATOR = {
+    1: (False, False),
+    5: (False, True),
+    7: (True, True),
+    11: (True, False),
+}
+
+
+@pytest.mark.parametrize("exponent", sorted(MOVES_THE_SUBFIELD_GENERATOR))
+def test_restriction_to_a_subfield_is_the_arithmetic_of_that_subfield(
+    exponent: int,
+) -> None:
+    r"""\(\zeta_{12}\mapsto\zeta_{12}^{k}\) restricts to the right automorphism of each subfield.
+
+    Complex conjugation is the case that separates the two subfields:
+    $\sqrt3=\zeta_{12}+\zeta_{12}^{-1}$ is real, so conjugation fixes it while
+    sending $i$ to $-i$. A restriction computed on the wrong subfield, or with
+    the two embeddings confused, gets this row wrong.
+    """
+    lifted = QQ.absolute_galois_group().lift(
+        _automorphism_sending_zeta_to_power(exponent)
+    )
+    moves_i, moves_root_three = MOVES_THE_SUBFIELD_GENERATOR[exponent]
+
+    to_gaussian = lifted.restrict(_GAUSSIAN)
+    assert (to_gaussian(_GAUSSIAN.gen()) == -_GAUSSIAN.gen()) is moves_i, (
+        f"zeta12 |-> zeta12^{exponent} sends i to {to_gaussian(_GAUSSIAN.gen())}"
+    )
+
+    to_real = lifted.restrict(_REAL_QUADRATIC)
+    assert (
+        to_real(_REAL_QUADRATIC.gen()) == -_REAL_QUADRATIC.gen()
+    ) is moves_root_three, (
+        f"zeta12 |-> zeta12^{exponent} sends sqrt3 to "
+        f"{to_real(_REAL_QUADRATIC.gen())}"
+    )
+
+
+def test_restriction_to_a_subfield_is_a_group_homomorphism() -> None:
+    r"""\(\mathrm{Gal}(\QQ(\zeta_{12})/\QQ)\to\mathrm{Gal}(\QQ(i)/\QQ)\) is a homomorphism.
+
+    Restriction being multiplicative is what makes it the map in
+    $1\to G_{\QQ(i)}\to G_\QQ\to\mathrm{Gal}(\QQ(i)/\QQ)\to1$ rather than an
+    assignment of automorphisms one at a time.
+    """
+    group = QQ.absolute_galois_group()
+    quotient = _ZETA_12.galois_group()
+    gaussian_generator = _GAUSSIAN.gen()
+    for sigma, tau in itertools.product(quotient, quotient):
+        product = group.lift(sigma * tau).restrict(_GAUSSIAN)
+        composite = group.lift(sigma).restrict(_GAUSSIAN)(
+            group.lift(tau).restrict(_GAUSSIAN)(gaussian_generator)
+        )
+        assert product(gaussian_generator) == composite, (
+            f"restriction of {sigma}*{tau} is not the composite of the restrictions"
+        )
+
+
+def test_the_extensions_of_an_automorphism_form_a_coset_of_the_open_subgroup() -> None:
+    r"""The automorphisms of \(\QQ(\zeta_{12})\) extending \(i\mapsto-i\) number \([\QQ(\zeta_{12}):\QQ(i)]\).
+
+    Galois theory: the set of extensions of $\tau$ to $M$ is a coset of
+    $\mathrm{Gal}(M/L)$, hence nonempty and of size $[M:L]=2$ here. The two are
+    $k=7$ and $k=11$, the elements that move $i$.
+    """
+    embedding = _GAUSSIAN.embeddings(_ZETA_12)[0]
+    conjugation = [
+        automorphism
+        for automorphism in _GAUSSIAN.embeddings(_GAUSSIAN)
+        if automorphism(_GAUSSIAN.gen()) == -_GAUSSIAN.gen()
+    ][0]
+    candidates = [sigma.as_hom() for sigma in _ZETA_12.galois_group()]
+
+    extensions = extensions_along(conjugation, embedding, candidates)
+
+    # $\mathrm{Gal}(M/\QQ)$ is partitioned into these cosets, one per
+    # automorphism of $\QQ(i)$, so each has $|\mathrm{Gal}(M/\QQ)|/|\mathrm{Aut}
+    # (\QQ(i))|$ members -- the Galois correspondence, counted.
+    assert len(extensions) == len(candidates) // len(
+        _GAUSSIAN.embeddings(_GAUSSIAN)
+    )
+    generator = _ZETA_12.gen()
+    assert {_BY_EXPONENT[extension(generator)] for extension in extensions} == {7, 11}
+
+
+# ---------------------------------------------------------------------------
 # The preamble universe loses nothing Sage's lattices could already answer.
 #
 # A root lattice is one object.  Whichever constructor built it, every question

@@ -27,6 +27,12 @@ from sage.categories.rings import Rings
 from sage.groups.abelian_gps.abelian_group import AbelianGroup_class
 from sage.groups.finitely_presented import FinitelyPresentedGroup
 from sage.groups.free_group import FreeGroup_class
+from sage.groups.matrix_gps.finitely_generated import (
+    FinitelyGeneratedMatrixGroup_generic,
+)
+from sage.groups.matrix_gps.finitely_generated_gap import (
+    FinitelyGeneratedMatrixGroup_gap,
+)
 from sage.groups.matrix_gps.named_group import NamedMatrixGroup_generic
 from sage.groups.matrix_gps.named_group_gap import NamedMatrixGroup_gap
 from sage.groups.perm_gps.permgroup import PermutationGroup_generic
@@ -507,7 +513,7 @@ class OwnedGroups(Category):
             relations, or carved out of \(GL_n(R)\) on stated matrices,
             answers ``True`` and no computation follows.
             """
-            for stored in ("_group_generators", "_gens"):
+            for stored in ("_group_generators", "_gens", "_gens_matrix"):
                 if self.__dict__.get(stored) is not None:
                     return True
             return Unknown
@@ -951,9 +957,18 @@ def _group_categories(group: "Group") -> list[Category]:
 # ``__init__`` of its family, so the instance is complete when the hook runs.
 # The classical groups have two: a GAP-backed one is not built by running the
 # generic constructor and then adding GAP, so neither reaches the other.
+#
+# The two matrix groups *given by* a finite list of generating matrices are the
+# exception, and are listed by that base class rather than by the families that
+# build on it.  The construction is the witness -- the group is the one those
+# matrices generate -- so every such family is finitely generated for the same
+# reason, and each of them (Weyl, Coxeter, a bare ``MatrixGroup``) delegates to
+# this constructor as its last statement, leaving the instance complete.
 _GROUP_CONSTRUCTIONS = (
     NamedMatrixGroup_generic,
     NamedMatrixGroup_gap,
+    FinitelyGeneratedMatrixGroup_generic,
+    FinitelyGeneratedMatrixGroup_gap,
     PermutationGroup_generic,
     SymmetricGroup,
     AlternatingGroup,
