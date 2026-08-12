@@ -52,4 +52,6 @@ log_file = "tests/.report/pytest.log"
 log_file_level = "DEBUG"
 
 [dependency-groups]
-dev = []
+dev = [
+    "ipython>=9.16.1",
+]

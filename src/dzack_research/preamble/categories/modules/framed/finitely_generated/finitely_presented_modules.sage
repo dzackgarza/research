@@ -6,7 +6,7 @@ declaring ``FinitelyGeneratedModules(R)`` in its supercategories.
 
 
 
-from typing import TYPE_CHECKING
+from typing import Protocol, TYPE_CHECKING
 from dzack_research.preamble.utilities import zipsum
 if TYPE_CHECKING:
     from dzack_research.preamble.lexicon import Module
@@ -21,6 +21,7 @@ if TYPE_CHECKING:
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import FramingMorphism
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
     from sage.structure.element import RingElement
+    from sage.rings.ring import Ring
 
 from dzack_research.preamble.categories.rings.rings import OwnedBaseRing
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
@@ -33,7 +34,7 @@ from sage.matrix.constructor import matrix
 from sage.matrix.matrix0 import Matrix
 from sage.matrix.special import identity_matrix
 from sage.misc.misc_c import prod
-from sage.modules.free_module_element import vector
+from sage.modules.free_module_element import FreeModuleElement, vector
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.element import Element
 from sage.structure.parent import Parent
@@ -100,6 +101,19 @@ def _change_of_module_generators(
     )
 
 
+if TYPE_CHECKING:
+    class PresentedModuleParent(Protocol):
+        r"""What a parent placed in ``FinitelyPresentedModules(R)`` supplies:
+        the presentation itself, its Smith decomposition, the ring underneath,
+        the generator count, and the coordinate route in."""
+
+        def base_ring(self) -> "Ring": ...
+        def relation_matrix(self) -> MorphismMatrix: ...
+        def number_of_module_generators(self) -> int: ...
+        def _smith(self) -> tuple: ...
+        def _from_coordinates(self, coordinates: "Vector") -> "FinitelyPresentedModuleElement": ...
+
+
 class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
     r"""Category of finitely presented modules over a base ring $R$."""
 
@@ -115,11 +129,11 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
         return [FinitelyGeneratedModules(self.base_ring())]
 
     class ParentMethods:
-        def is_finitely_presented(self: Self) -> bool:
+        def is_finitely_presented(self: "PresentedModuleParent") -> bool:
             r"""Return whether this module is finitely presented."""
             return True
 
-        def hermite_form(self: Self) -> "Isomorphism":
+        def hermite_form(self: "PresentedModuleParent") -> "Isomorphism":
             r"""Return the isomorphism $M\to M'$ onto the reduced presentation.
 
             A normal form of a module is another module of this category
@@ -152,7 +166,7 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
                 _change_of_module_generators(target, self, unchanged),
             )
 
-        def smith_form_module_generators(self: Self) -> "OrderedSet":
+        def smith_form_module_generators(self: "PresentedModuleParent") -> "OrderedSet":
             r"""Return generators realizing the invariant factor decomposition.
 
             The Smith form $D=URV$ diagonalizes the relations, so the rows of
@@ -182,7 +196,7 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
                 )
             )
 
-        def invariant_factor_form(self: Self) -> "Isomorphism":
+        def invariant_factor_form(self: "PresentedModuleParent") -> "Isomorphism":
             r"""Return the isomorphism $M\to M'$ onto the invariant factor presentation.
 
             The Smith form $D=URV$ of the relations $R$ is a normal form of a
@@ -224,9 +238,19 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
 class FinitelyPresentedModuleElement(Element):
     r"""An element of a presented module, reduced modulo its relations."""
 
-    def __init__(self, parent: "Parent", coordinates: "Vector") -> None:
+    if TYPE_CHECKING:
+        # The parent is the presented module the coordinates are reduced in;
+        # ``Element.parent`` states only that it is some parent.  Declared,
+        # never defined.
+        def parent(self) -> "FinitelyPresentedModule": ...
+
+        # Negation is parent-preserving on a module element;
+        # ``Element.__neg__`` is deliberately wider, for the extended reals.
+        def __neg__(self) -> "FinitelyPresentedModuleElement": ...
+
+    def __init__(self, parent: "FinitelyPresentedModule", coordinates: "Vector") -> None:
         Element.__init__(self, parent)
-        self._coordinates_ = parent._reduce(coordinates)
+        self._coordinates_: FreeModuleElement = parent._reduce(coordinates)
 
     def _coordinates(self) -> "Vector":
         return self._coordinates_
@@ -251,10 +275,10 @@ class FinitelyPresentedModuleElement(Element):
             if coefficient != 0
         }
 
-    def _add_(self, other: object) -> "FinitelyPresentedModuleElement":
+    def _add_(self, other: "FinitelyPresentedModuleElement") -> "FinitelyPresentedModuleElement":
         return self.parent()._from_coordinates(self._coordinates_ + other._coordinates_)
 
-    def _sub_(self, other: object) -> "FinitelyPresentedModuleElement":
+    def _sub_(self, other: "FinitelyPresentedModuleElement") -> "FinitelyPresentedModuleElement":
         return self.parent()._from_coordinates(self._coordinates_ - other._coordinates_)
 
     def _neg_(self) -> "FinitelyPresentedModuleElement":
@@ -267,7 +291,7 @@ class FinitelyPresentedModuleElement(Element):
 
     _rmul_ = _lmul_
 
-    def _richcmp_(self, other: object, op: int) -> bool:
+    def _richcmp_(self, other: "FinitelyPresentedModuleElement", op: int) -> bool:
         return richcmp(self._coordinates_, other._coordinates_, op)
 
     def __hash__(self) -> int:
@@ -352,7 +376,8 @@ class FinitelyPresentedModule(OwnedBaseRing, Parent):
         return MorphismMatrix(self._relations)
 
     def number_of_module_generators(self) -> int:
-        return self._relations.ncols()
+        count: int = self._relations.ncols()
+        return count
 
     def rank(self) -> "Cardinal":
         return self.number_of_module_generators() - self._relations.rank()
@@ -373,7 +398,8 @@ class FinitelyPresentedModule(OwnedBaseRing, Parent):
         decomposition, so it is computed once and named rather than
         recomputed at each question.
         """
-        return self._relations.smith_form()
+        decomposition: tuple = self._relations.smith_form()
+        return decomposition
 
     def torsion_free_quotient(self) -> "ModuleMorphism":
         r"""Return the projection $M\twoheadrightarrow M/\operatorname{tors}(M)$.
@@ -481,16 +507,17 @@ class FinitelyPresentedModule(OwnedBaseRing, Parent):
         return self._reduce(coordinates)
 
     def _from_coordinates(self, coordinates: "Vector") -> FinitelyPresentedModuleElement:
-        return self.element_class(self, coordinates)
+        member: FinitelyPresentedModuleElement = self.element_class(self, coordinates)
+        return member
 
-    def _element_constructor_(self, x: "Element") -> FinitelyPresentedModuleElement:
+    def _element_constructor_(self, x: FinitelyPresentedModuleElement) -> FinitelyPresentedModuleElement:
         assert isinstance(x, FinitelyPresentedModuleElement) and x.parent() is self, (
             f"{x} is not an element of {self}; construct classes using this "
             "module's generators and explicit sums"
         )
         return x
 
-    def __contains__(self, x: "Element") -> bool:
+    def __contains__(self, x: object) -> bool:
         return isinstance(x, FinitelyPresentedModuleElement) and x.parent() is self
 
     def _repr_(self) -> str:

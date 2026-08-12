@@ -6,5 +6,9 @@ from sage.symbolic.expression import Expression
 
 class SymbolicRing(Parent):
     def __call__(self, x: object = ..., *args: object, **kwds: object) -> Expression: ...
+    def var(self, name: str, *args: object, **kwds: object) -> Expression: ...
+    # Reaches SymbolicRing through the commutative-ring category's
+    # ParentMethods; declared here where consumers look it up.
+    def zero(self) -> Expression: ...
 
 SR: SymbolicRing

@@ -1,6 +1,6 @@
 r"""Free modules on finite totally ordered sets."""
 
-from typing import TYPE_CHECKING
+from typing import Protocol, TYPE_CHECKING
 if TYPE_CHECKING:
     from dzack_research.preamble.lexicon import Module
     from dzack_research.preamble.lexicon import Vector
@@ -26,7 +26,7 @@ from sage.categories.morphism import SetMorphism
 from sage.matrix.constructor import matrix
 from sage.modules.free_module_element import FreeModuleElement, vector
 from sage.rings.integer import Integer as SageInteger
-from sage.structure.element import Element, ModuleElement
+from sage.structure.element import Element, Element as SageElement, ModuleElement
 from sage.structure.parent import Parent
 from sage.structure.richcmp import richcmp
 from dzack_research.preamble.categories.sets.cardinals import Cardinal
@@ -38,6 +38,29 @@ if TYPE_CHECKING:
     # The ordered-set noun is type-only: the preamble loads into one
     # shared namespace and nothing named OrderedSet may bind there.
     from dzack_research.preamble.lexicon import OrderedSet
+
+    from sage.categories.category import Category
+    from sage.modules.free_module import FreeModule_generic
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleHomset
+
+    # The admissible ways to name a map out of a finite framing, in the order
+    # ``hom`` matches them: the generator morphism itself, a finite assignment
+    # of generator images, or those images in the framing's order.
+    GeneratorAssignment = SetMorphism | dict | list | tuple
+
+    class FiniteFreeModuleParent(Protocol):
+        r"""What a parent placed in ``FinitelyGeneratedFreeModules(R)``
+        supplies: the finite framing, the ring underneath, the homset
+        surface, and the coordinate route in."""
+
+        def base_ring(self) -> "Ring": ...
+        def module_generating_set(self) -> "OrderedSet": ...
+        def module_generators(self) -> "OrderedSet": ...
+        def is_zero(self) -> bool: ...
+        def zero(self) -> "BasedFreeModuleElement": ...
+        def rank(self) -> "Cardinal": ...
+        def Hom(self, codomain: "Module", category: "Category | None" = ...) -> "ModuleHomset": ...
+        def _from_coordinates(self, coordinates: "Vector") -> "BasedFreeModuleElement": ...
 
 
 def _finite_rank(module_generating_set: "OrderedSet") -> int:
@@ -67,12 +90,11 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
         ]
 
     class ParentMethods:
-
-        def rank(self: Self) -> "Cardinal":
+        def rank(self: "FiniteFreeModuleParent") -> "Cardinal":
             r"""Return the cardinality of the finite generating set."""
             return self.module_generating_set().cardinality()
 
-        def relations(self: Self) -> "OrderedSet":
+        def relations(self: "FiniteFreeModuleParent") -> "OrderedSet":
             r"""Return the relations among the module generators: none.
 
             A free module is presented by its generating set and nothing else
@@ -84,7 +106,7 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
             """
             return finite_ordered_set(())
 
-        def relation_matrix(self: Self) -> "MorphismMatrix":
+        def relation_matrix(self: "FiniteFreeModuleParent") -> "MorphismMatrix":
             r"""Return the relations as the matrix a presentation asks for.
 
             The same answer as ``relations``, written the way a presentation
@@ -105,13 +127,14 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
                 )
             )
 
-        def number_of_module_generators(self: Self) -> "Integer":
-            return self.module_generating_set().cardinality()
+        def number_of_module_generators(self: "FiniteFreeModuleParent") -> "Integer":
+            count: "Integer" = self.module_generating_set().cardinality()
+            return count
 
-        def is_torsion(self: Self) -> bool:
+        def is_torsion(self: "FiniteFreeModuleParent") -> bool:
             return bool(self.is_zero())
 
-        def Aut(self: Self) -> "ModuleAutomorphismGroup":
+        def Aut(self: "FiniteFreeModuleParent") -> "ModuleAutomorphismGroup":
             # Local: at module level this closes an import cycle; the morphism
             # module is built by the time automorphisms are asked for.
             from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleAutomorphismGroup
@@ -122,7 +145,7 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
                 self._preamble_Aut = cached
             return cached
 
-        def subobject_on(self: Self, module_generators: "OrderedSet") -> "Subobject":
+        def subobject_on(self: "FiniteFreeModuleParent", module_generators: "OrderedSet") -> "Subobject":
             from dzack_research.preamble.categories.modules.framed.framed_modules import FramedModules
 
             module_generators = tuple(
@@ -133,7 +156,7 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
             )
             return FramedModules.ParentMethods.subobject_on(self, module_generators)
 
-        def hom(self: Self, images: dict, codomain: "Module" = None) -> "ModuleMorphism":
+        def hom(self: "FiniteFreeModuleParent", images: "GeneratorAssignment", codomain: "Module | None" = None) -> "ModuleMorphism":
             r"""Construct the map specified on the finite generating set."""
             # Local: at module level this closes an import cycle; the framed
             # module is built by the time a homomorphism is constructed.
@@ -146,7 +169,7 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
                         "its module codomain"
                     )
                     target = images.codomain().structured_parent()
-                    assignment = images
+                    assignment: "GeneratorAssignment" = images
                 case dict() if images:
                     target = next(iter(images.values())).parent()
                     assignment = images
@@ -173,13 +196,19 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
 class BasedFreeModuleElement(ModuleElement):
     r"""An element represented in its parent's chosen ordered basis."""
 
-    def __init__(self, parent: "Parent", coordinates: "Vector") -> None:
+    if TYPE_CHECKING:
+        # The parent is the based free module the coordinates are read in;
+        # ``Element.parent`` states only that it is some parent.  Declared,
+        # never defined: the inherited implementation is the one that runs.
+        def parent(self) -> "BasedFreeModule": ...
+
+    def __init__(self, parent: "BasedFreeModule", coordinates: "Vector") -> None:
         ModuleElement.__init__(self, parent)
         coordinate_module = parent._coordinate_module()
         # Coordinate arithmetic already lands in the coordinate module, so a
         # sum, difference, negation or scaling arrives here as its own answer.
         # The module rejects a wrong-length assignment itself.
-        self._coordinates_ = (
+        self._coordinates_: FreeModuleElement = (
             coordinates
             if isinstance(coordinates, FreeModuleElement)
             and coordinates.parent() is coordinate_module
@@ -205,19 +234,20 @@ class BasedFreeModuleElement(ModuleElement):
             "only an element in the image of the canonical generator morphism "
             "has one underlying element of S"
         )
-        element_of_S, coefficient = nonzero[0]
+        element_of_S: "Element" = nonzero[0][0]
+        coefficient = nonzero[0][1]
         assert coefficient == self.parent().base_ring().one(), (
             "only an element in the image of the canonical generator morphism "
             "has one underlying element of S"
         )
         return element_of_S
 
-    def _add_(self, other: object) -> "BasedFreeModuleElement":
+    def _add_(self, other: "BasedFreeModuleElement") -> "BasedFreeModuleElement":
         return self.parent()._from_coordinates(
                 self._coordinates_ + other._coordinates_
             )
 
-    def _sub_(self, other: object) -> "BasedFreeModuleElement":
+    def _sub_(self, other: "BasedFreeModuleElement") -> "BasedFreeModuleElement":
         return self.parent()._from_coordinates(
                 self._coordinates_ - other._coordinates_
             )
@@ -232,7 +262,7 @@ class BasedFreeModuleElement(ModuleElement):
 
     _rmul_ = _lmul_
 
-    def _richcmp_(self, other: object, op: int) -> bool:
+    def _richcmp_(self, other: "BasedFreeModuleElement", op: int) -> bool:
         return bool(richcmp(self._coordinates_, other._coordinates_, op))
 
     def __hash__(self) -> int:
@@ -272,7 +302,7 @@ class BasedFreeModule(FreeModuleOnSet):
             module_generating_set = _as_set(module_generating_set)
         FreeModuleOnSet.__init__(self, base_ring, module_generating_set)
 
-    def _module_generator_element(self, element_of_S: "Element") -> BasedFreeModuleElement:
+    def _module_generator_element(self, element_of_S: SageElement) -> BasedFreeModuleElement:
         module_generating_set = self.__dict__.get("_module_generating_set")
         assert module_generating_set is not None, (
             "a framed free module stores its canonical generating set"
@@ -286,7 +316,7 @@ class BasedFreeModule(FreeModuleOnSet):
     def number_of_module_generators(self) -> int:
         return _finite_rank(self.module_generating_set())
 
-    def _coordinate_module(self) -> "Parent":
+    def _coordinate_module(self) -> "FreeModule_generic":
         r"""The engine's \(R^n\), where this module's coordinate vectors live.
 
         A standard basis vector and the zero vector are this module's own,
@@ -296,7 +326,7 @@ class BasedFreeModule(FreeModuleOnSet):
         # is built by the time coordinates are asked for.
         from dzack_research.preamble.categories.rings.rings import engine_ring
 
-        cached = self.__dict__.get("_coordinate_module_")
+        cached: "FreeModule_generic | None" = self.__dict__.get("_coordinate_module_")
         if cached is None:
             cached = engine_ring(self.base_ring()) ** self.number_of_module_generators()
             self._coordinate_module_ = cached
@@ -306,12 +336,13 @@ class BasedFreeModule(FreeModuleOnSet):
         return self._from_coordinates(self._coordinate_module().zero())
 
     def _from_coordinates(self, coordinates: "Vector") -> BasedFreeModuleElement:
-        return self.element_class(self, coordinates)
+        member: BasedFreeModuleElement = self.element_class(self, coordinates)
+        return member
 
     def rank(self) -> "Cardinal":
         return self.module_generating_set().cardinality()
 
-    def _element_constructor_(self, value: "Element") -> BasedFreeModuleElement:
+    def _element_constructor_(self, value: object) -> BasedFreeModuleElement:
         if isinstance(value, BasedFreeModuleElement) and value.parent() is self:
             return value
         match value:
@@ -330,7 +361,7 @@ class BasedFreeModule(FreeModuleOnSet):
             return self.zero()
         assert False, f"{value} is not an element of {self}"
 
-    def __contains__(self, value: "Element") -> bool:
+    def __contains__(self, value: object) -> bool:
         match value:
             case BasedFreeModuleElement() if value.parent() is self:
                 return True

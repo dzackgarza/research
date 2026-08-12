@@ -1,9 +1,13 @@
 # Repo-scoped stubs; see lexicon/README.md.
 from typing import Any, ClassVar, Generic, TypeVar
 
+from sage.categories.category import Category
+from sage.categories.homset import Homset
 from sage.structure.element import Element
 
-_E = TypeVar("_E", bound=Element, default=Element, covariant=True)
+# Unbounded: Sage does not constrain _element_constructor_ to Element —
+# facade and set-theoretic parents return tuples or other parents' elements.
+_E = TypeVar("_E", default=Element, covariant=True)
 
 class Parent(Generic[_E]):
     # Generic over the element type: Parent.__call__ (conversion into the
@@ -14,7 +18,7 @@ class Parent(Generic[_E]):
     #
     # The category framework injects element_class at parent construction
     # (a class-level attribute on the dynamic parent class).
-    element_class: ClassVar[Any]
+    element_class: Any
     def __init__(
         self,
         base: object = ...,
@@ -38,7 +42,10 @@ class Parent(Generic[_E]):
     # The homspace out of this parent: Hom(self, codomain, category)
     # (sage/structure/parent.pyx). Typed Any because the concrete homset
     # class depends on the resolved category.
-    def Hom(self, codomain: object, category: object = ...) -> Any: ...
+    # category_object.pyx:631 — Hom(self, codomain, category=None).
+    # category_object.pyx:625 — the ``base=`` this parent was built with.
+    def base(self) -> Parent: ...
+    def Hom(self, codomain: Parent, category: Category | None = ...) -> Homset: ...
     def coerce_map_from(self, S: object) -> Any: ...
     def has_coerce_map_from(self, S: object) -> bool: ...
     def __contains__(self, x: object) -> bool: ...

@@ -1,4 +1,5 @@
 # Repo-scoped stubs; see lexicon/README.md.
+from sage.groups.matrix_gps.finitely_generated_gap import FinitelyGeneratedMatrixGroup_gap
 from typing import Any, Literal, overload
 
 from sage.modules.free_module_element import FreeModuleElement
@@ -6,6 +7,7 @@ from sage.rings.integer import Integer
 from sage.structure.element import Matrix
 
 class QuadraticForm:
+    def automorphism_group(self) -> FinitelyGeneratedMatrixGroup_gap: ...
     def __init__(self, *args: Any, **kwds: Any) -> None: ...
     def signature_vector(self) -> tuple[int, int, int]: ...
     def short_vector_list_up_to_length(self, len_bound: int | Integer, up_to_sign_flag: bool = ...) -> list[list[FreeModuleElement]]: ...

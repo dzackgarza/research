@@ -17,3 +17,6 @@ class IntegerModRing_generic(Rings.ParentMethods, Parent):
     def __contains__(self, x: object) -> bool: ...
 
 def IntegerModRing(order: int | Integer = ...) -> IntegerModRing_generic: ...
+
+# Module-level documented alias.
+Integers = IntegerModRing

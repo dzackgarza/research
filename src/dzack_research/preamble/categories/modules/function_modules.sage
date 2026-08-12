@@ -48,6 +48,8 @@ import operator as _operator
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from sage.rings.polynomial.polynomial_element import Polynomial
     from dzack_research.preamble.lexicon import Element, Module
 
@@ -74,6 +76,13 @@ from sage.symbolic.operators import add_vararg, mul_vararg
 from sage.symbolic.ring import SR
 
 from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+if TYPE_CHECKING:
+    # What a module of functions is offered as an element: a symbolic
+    # expression, which the certifier can read, or an opaque Python callable,
+    # which it cannot.  The whole membership ladder is the case distinction
+    # between these two.  Type-only; nothing constructs it.
+    Function = Expression | Callable
 
 _SMOOTH = "C^infty"
 _SQUARE_INTEGRABLE = "L^2"
@@ -135,7 +144,8 @@ def _is_polynomially_bounded(expression: Expression, variable: Expression) -> bo
     if expression.is_polynomial(variable):
         return True
     if expression.operator() in (sin, cos):
-        return expression.operands()[0].is_polynomial(variable)
+        argument: Expression = expression.operands()[0]
+        return argument.is_polynomial(variable)
     return False
 
 
@@ -339,7 +349,7 @@ def _square_integrability(expression: Expression, variable: Expression) -> str:
     return _integral_verdict(expression, variable)
 
 
-def _certify_membership(kind: str, domain_name: str, function) -> None:
+def _certify_membership(kind: str, domain_name: str, function: "Function") -> None:
     r"""Certify, refuse, or record that the proposed element is trusted.
 
     The refusal is an assertion because it is a theorem about the function
@@ -384,12 +394,12 @@ def _certify_membership(kind: str, domain_name: str, function) -> None:
 class FunctionModuleElement(ModuleElement):
     r"""A function, as an element of a module of functions."""
 
-    def __init__(self, parent: "FunctionModule", function) -> None:
+    def __init__(self, parent: "FunctionModule", function: "Function") -> None:
         ModuleElement.__init__(self, parent)
         assert callable(function), f"an element of {parent} is a function, got {function!r}"
         self._function = function
 
-    def __call__(self, point):
+    def __call__(self, point: "Element") -> "Element":
         r"""Return the value at ``point``; an element of a function module is a function.
 
         A symbolic expression is evaluated by substituting for its variable,
@@ -403,7 +413,7 @@ class FunctionModuleElement(ModuleElement):
             })
         return self._function(point)
 
-    def _by_closure(self, function) -> "FunctionModuleElement":
+    def _by_closure(self, function: "Function") -> "FunctionModuleElement":
         r"""Return an element of the same module, without certifying it.
 
         A module is closed under its own operations, so a sum, a negative or a
@@ -411,7 +421,8 @@ class FunctionModuleElement(ModuleElement):
         this goes around the certifier instead of asking it again.
         """
         parent = self.parent()
-        return parent.element_class(parent, function)
+        member: "FunctionModuleElement" = parent.element_class(parent, function)
+        return member
 
     def _add_(self, other: "FunctionModuleElement") -> "FunctionModuleElement":
         if isinstance(self._function, Expression) and isinstance(other._function, Expression):
@@ -423,7 +434,7 @@ class FunctionModuleElement(ModuleElement):
             return self._by_closure(-self._function)
         return self._by_closure(lambda point: -self(point))
 
-    def _lmul_(self, scalar) -> "FunctionModuleElement":
+    def _lmul_(self, scalar: "Element") -> "FunctionModuleElement":
         if isinstance(self._function, Expression):
             return self._by_closure(scalar * self._function)
         return self._by_closure(lambda point: scalar * self(point))
@@ -447,15 +458,17 @@ class FunctionModule(UniqueRepresentation, Parent):
     def base_ring(self) -> "Ring":
         return self.base()
 
-    def _element_constructor_(self, function) -> FunctionModuleElement:
+    def _element_constructor_(self, function: "Function | FunctionModuleElement") -> FunctionModuleElement:
         if isinstance(function, FunctionModuleElement) and function.parent() is self:
             return function
         _certify_membership(self._kind, self._domain_name, function)
-        return self.element_class(self, function)
+        member: FunctionModuleElement = self.element_class(self, function)
+        return member
 
     def zero(self) -> FunctionModuleElement:
         r"""Return the zero function, which is a member of anything by closure."""
-        return self.element_class(self, SR.zero())
+        zero_function: FunctionModuleElement = self.element_class(self, SR.zero())
+        return zero_function
 
     def _ring_morphism_defining_module_action(self: Self) -> "Morphism":
         r"""Return $\rho:R\to\operatorname{End}(M)$, $r\mapsto(f\mapsto rf)$.

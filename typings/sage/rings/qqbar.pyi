@@ -8,6 +8,7 @@ from typing import Literal, overload
 
 from sage.categories.fields import Fields
 from sage.rings.integer import Integer
+from sage.rings.polynomial.polynomial_ring import PolynomialRing_general
 from sage.rings.real_mpfr import RealNumber as RealApproximation
 from sage.structure.element import FieldElement
 from sage.structure.parent import Parent
@@ -36,6 +37,8 @@ class AlgebraicReal(AlgebraicNumber_base):
 
 class AlgebraicRealField(Fields.ParentMethods, Parent[AlgebraicReal]):
     def __call__(self, x: object = ..., *args: object, **kwds: object) -> AlgebraicReal: ...
+    # Ring.__getitem__ polynomial-ring constructor: AA['x'].
+    def __getitem__(self, name: str) -> PolynomialRing_general: ...
 
 AA: AlgebraicRealField
 

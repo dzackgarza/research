@@ -43,7 +43,8 @@ class Modules(Category_over_base_ring):
     def __classcall_private__(cls: type, base_ring: "Ring") -> "Category":
         if base_ring in SageFields():
             return VectorSpaces(base_ring)
-        return Category_over_base_ring.__classcall__(cls, base_ring)
+        category: "Category" = Category_over_base_ring.__classcall__(cls, base_ring)
+        return category
 
     @classmethod
     def _repr_object_names(cls) -> str:

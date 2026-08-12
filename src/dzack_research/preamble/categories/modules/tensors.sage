@@ -28,31 +28,54 @@ if TYPE_CHECKING:
     from dzack_research.preamble.lexicon import Element, Module
 
 from itertools import product as _index_product
-from typing import Self
+from typing import ClassVar, Self
 
 from sage.structure.parent import Parent
-from sage.structure.element import ModuleElement
+from sage.structure.element import Element as _SageElement, ModuleElement
 from sage.structure.unique_representation import UniqueRepresentation
 from sage.misc.cachefunc import cached_function
 
+if TYPE_CHECKING:
+    # What ``tensor`` reads its shape off: a rectangular nesting of lists or
+    # tuples bottoming out in scalars.  Drawn from Sage's element hierarchy
+    # rather than the lexicon noun, because a union is a type only when every
+    # member is one, and the lexicon has no stubs yet (issue #354).  Type-only;
+    # nothing constructs it.
+    Components = list | tuple | _SageElement | int
 
-def _nesting_shape(components) -> tuple:
+    # The two parents here are generic in the elements they construct, which is
+    # what makes ``self(entries)`` a tensor rather than a bare element.  The
+    # runtime classes are Cython extension types and cannot be subscripted, so
+    # the binding happens through an alias, per the note in
+    # ``typings/sage/structure/parent.pyi``.
+    TensorParent = Parent["TensorElement"]
+    MixedTensorParent = Parent["MixedTensorElement"]
+else:
+    TensorParent = Parent
+    MixedTensorParent = Parent
+
+
+def _nesting_shape(components: "Components") -> tuple:
     r"""Return the shape of a nested list, checking it is rectangular."""
     if not isinstance(components, (list, tuple)):
         return ()
     assert components, "a tensor's components cannot be an empty list"
-    inner = {_nesting_shape(entry) for entry in components}
+    inner: set[tuple] = {_nesting_shape(entry) for entry in components}
     assert len(inner) == 1, (
         f"the components are ragged: {sorted(inner)} at one level"
     )
     return (len(components),) + inner.pop()
 
 
-def _entries_by_index(components, shape: tuple) -> dict:
+def _entries_by_index(components: "Components", shape: tuple) -> dict:
     r"""Return ``{multi-index: entry}`` for a rectangular nesting."""
     if not shape:
         return {(): components}
-    entries = {}
+    assert isinstance(components, (list, tuple)), (
+        f"shape {shape} says there is another level of nesting, but "
+        f"{components} is a leaf"
+    )
+    entries: dict = {}
     for position, block in enumerate(components):
         for index, entry in _entries_by_index(block, shape[1:]).items():
             entries[(position,) + index] = entry
@@ -158,8 +181,12 @@ def TensorProductModule(left: "Module", right: "Module") -> "Module":
     return FinitelyPresentedModule(presentation)
 
 
-class Tensor(UniqueRepresentation, Parent):
+class Tensor(UniqueRepresentation, TensorParent):
     r"""The module of type-$(p,q)$ tensors on $M$."""
+
+    # Bound below, once ``TensorElement`` exists; the category framework reads
+    # it off the class.  Declared here so the class states its own element.
+    Element: ClassVar[type["TensorElement"]]
 
     def __init__(self, module: "Module", valence: tuple) -> None:
         contravariant, covariant = valence
@@ -206,7 +233,7 @@ class Tensor(UniqueRepresentation, Parent):
         covector_power = TensorPower(self._dual_module, covariant)
         intrinsic = TensorProductModule(vector_power, covector_power)
 
-        def word_label(factor_module: "Module", word: tuple) -> "Element":
+        def word_label(factor_module: "Module", word: tuple) -> ModuleElement:
             algebra = TensorAlgebraOn(
                 factor_module.base_ring(),
                 factor_module.module_generating_set(),
@@ -214,7 +241,8 @@ class Tensor(UniqueRepresentation, Parent):
             element = algebra.one()
             for label in word:
                 element *= algebra.algebra_generator(label)
-            return next(iter(element.coefficients()))
+            label_element: ModuleElement = next(iter(element.coefficients()))
+            return label_element
 
         module_labels = tuple(self._module.module_generating_set())
         dual_labels = tuple(self._dual_module.module_generating_set())
@@ -229,16 +257,17 @@ class Tensor(UniqueRepresentation, Parent):
                 )
         return intrinsic, index_to_generator
 
-    def _intrinsic_element(self, entries: dict) -> "Element":
-        return sum(
+    def _intrinsic_element(self, entries: dict) -> ModuleElement:
+        combination: ModuleElement = sum(
             (
                 coefficient * self._index_to_generator[index]
                 for index, coefficient in entries.items()
             ),
             self._intrinsic_module.zero(),
         )
+        return combination
 
-    def _entries_of_intrinsic_element(self, element: "Element") -> dict:
+    def _entries_of_intrinsic_element(self, element: ModuleElement) -> dict:
         from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _coordinate_vector
 
         generator_to_index = {
@@ -273,7 +302,8 @@ class Tensor(UniqueRepresentation, Parent):
         return f"Type-({contravariant},{covariant}) tensors on {self._module}"
 
     def _element_constructor_(self, entries: dict) -> "TensorElement":
-        return self.element_class(self, entries)
+        tensor_element: "TensorElement" = self.element_class(self, entries)
+        return tensor_element
 
     def zero(self) -> "TensorElement":
         return self({})
@@ -285,6 +315,12 @@ class Tensor(UniqueRepresentation, Parent):
 
 class TensorElement(ModuleElement):
     r"""A tensor, held by its components in the module's framing."""
+
+    if TYPE_CHECKING:
+        # A tensor's parent is the type-$(p,q)$ module it was built in;
+        # ``Element.parent`` states only that it is some parent.  Declared,
+        # never defined: the inherited implementation is the one that runs.
+        def parent(self) -> Tensor: ...
 
     def __init__(self, parent: Tensor, entries: dict) -> None:
         ModuleElement.__init__(self, parent)
@@ -300,7 +336,7 @@ class TensorElement(ModuleElement):
     def valence(self) -> tuple:
         return self.parent().valence()
 
-    def __getitem__(self, index):
+    def __getitem__(self, index: tuple | int) -> "Element":
         r"""Return the component at a multi-index, zero where unrecorded."""
         index = index if isinstance(index, tuple) else (index,)
         assert len(index) == self.parent().degree(), (
@@ -320,15 +356,15 @@ class TensorElement(ModuleElement):
             and other._intrinsic_element == self._intrinsic_element
         )
 
-    def _scaled(self, scalar) -> "TensorElement":
+    def _scaled(self, scalar: "Element") -> "TensorElement":
         return self.parent()(
             {index: scalar * entry for index, entry in self._entries.items()},
         )
 
-    def _lmul_(self, scalar) -> "TensorElement":
+    def _lmul_(self, scalar: "Element") -> "TensorElement":
         return self._scaled(scalar)
 
-    def _rmul_(self, scalar) -> "TensorElement":
+    def _rmul_(self, scalar: "Element") -> "TensorElement":
         return self._scaled(scalar)
 
     def _add_(self, other: "TensorElement") -> "TensorElement":
@@ -340,7 +376,7 @@ class TensorElement(ModuleElement):
             entries[index] = entries.get(index, self.parent().base_ring().zero()) + entry
         return self.parent()(entries)
 
-    def _scalar_or_tensor(self, valence: tuple, entries: dict):
+    def _scalar_or_tensor(self, valence: tuple, entries: dict) -> "Element":
         r"""Return the scalar when no slots are left, else the tensor."""
         if sum(valence) == 0:
             return entries.get((), self.parent().base_ring().zero())
@@ -348,7 +384,7 @@ class TensorElement(ModuleElement):
             {index: entry for index, entry in entries.items() if entry != 0},
         )
 
-    def __call__(self, *arguments):
+    def __call__(self, *arguments: "Element") -> "Element":
         r"""Feed elements into the covariant slots, left to right.
 
         Partial: a type-$(p,q)$ tensor given $k\le q$ elements is a
@@ -385,7 +421,7 @@ class TensorElement(ModuleElement):
             ) + entry * weight
         return self._scalar_or_tensor((contravariant, covariant - filled), entries)
 
-    def contract(self, other: "TensorElement", slot: int = 0, other_slot: int = 0):
+    def contract(self, other: "TensorElement", slot: int | Integer = 0, other_slot: int | Integer = 0) -> "Element":
         r"""Contract an upper slot of this tensor with a lower slot of ``other``.
 
         The basic operation of the calculus: sum over the shared index.  The
@@ -432,7 +468,7 @@ class TensorElement(ModuleElement):
             entries,
         )
 
-    def trace(self, slot: int = 0, other_slot: int = 0):
+    def trace(self, slot: int | Integer = 0, other_slot: int | Integer = 0) -> "Element":
         r"""Contract one of this tensor's own upper slots against a lower one."""
         contravariant, covariant = self.valence()
         assert contravariant > slot >= 0 and covariant > other_slot >= 0, (
@@ -459,7 +495,7 @@ class TensorElement(ModuleElement):
         )
         left_upper, left_lower = self.valence()
         right_upper, right_lower = other.valence()
-        entries = {}
+        entries: dict = {}
         for left_index, left_entry in self._entries.items():
             for right_index, right_entry in other._entries.items():
                 index = (
@@ -477,7 +513,7 @@ class TensorElement(ModuleElement):
             (left_upper + right_upper, left_lower + right_lower),
         )({index: entry for index, entry in entries.items() if entry != 0})
 
-    def raise_index(self, formed_module: "Module", slot: int = 0) -> "TensorElement":
+    def raise_index(self, formed_module: "Module", slot: int | Integer = 0) -> "TensorElement":
         r"""Raise one lower index with the inverse Gram matrix."""
         from sage.matrix.constructor import matrix
 
@@ -494,7 +530,7 @@ class TensorElement(ModuleElement):
             "raising an index over this ring requires a unimodular form"
         )
         rank = inverse.nrows()
-        entries = {}
+        entries: dict = {}
         for index, entry in self._entries.items():
             contracted = index[contravariant + slot]
             remaining_lower = (
@@ -510,7 +546,7 @@ class TensorElement(ModuleElement):
             {index: entry for index, entry in entries.items() if entry != 0}
         )
 
-    def lower_index(self, formed_module: "Module", slot: int = 0) -> "TensorElement":
+    def lower_index(self, formed_module: "Module", slot: int | Integer = 0) -> "TensorElement":
         r"""Lower one upper index with the Gram matrix."""
         from sage.matrix.constructor import matrix
 
@@ -524,7 +560,7 @@ class TensorElement(ModuleElement):
         gram = matrix(formed_module.gram_matrix())
         ring = self.parent().base_ring()
         rank = gram.nrows()
-        entries = {}
+        entries: dict = {}
         for index, entry in self._entries.items():
             contracted = index[slot]
             remaining_upper = index[:slot] + index[slot + 1:contravariant]
@@ -549,8 +585,12 @@ class TensorElement(ModuleElement):
 Tensor.Element = TensorElement
 
 
-class MixedTensorAlgebra(UniqueRepresentation, Parent):
+class MixedTensorAlgebra(UniqueRepresentation, MixedTensorParent):
     r"""The bigraded algebra \(T(M)\otimes_R T(M^*)\)."""
+
+    # Bound below, once ``MixedTensorElement`` exists; the category framework
+    # reads it off the class.
+    Element: ClassVar[type["MixedTensorElement"]]
 
     def __init__(self, module: "Module") -> None:
         from dzack_research.preamble.categories.algebras.algebras import Algebras
@@ -577,13 +617,15 @@ class MixedTensorAlgebra(UniqueRepresentation, Parent):
 
     def vector_tensor_algebra(self) -> "Parent":
         r"""Return the factor (T(M))."""
-        return self._vector_tensor_algebra
+        algebra: "Parent" = self._vector_tensor_algebra
+        return algebra
 
     def covector_tensor_algebra(self) -> "Parent":
         r"""Return the factor (T(M^*))."""
-        return self._covector_tensor_algebra
+        algebra: "Parent" = self._covector_tensor_algebra
+        return algebra
 
-    def homogeneous_piece(self, valence: tuple[int, int]) -> Tensor:
+    def homogeneous_piece(self, valence: tuple) -> Tensor:
         r"""Return the component of bidegree ``valence``."""
         return Tensor(self._module, valence)
 
@@ -595,7 +637,8 @@ class MixedTensorAlgebra(UniqueRepresentation, Parent):
         return self({tensor_element.valence(): tensor_element})
 
     def _element_constructor_(self, components: dict) -> "MixedTensorElement":
-        return self.element_class(self, components)
+        mixed_element: "MixedTensorElement" = self.element_class(self, components)
+        return mixed_element
 
     def zero(self) -> "MixedTensorElement":
         return self({})
@@ -621,6 +664,12 @@ class MixedTensorAlgebra(UniqueRepresentation, Parent):
 class MixedTensorElement(ModuleElement):
     r"""A finite sum of homogeneous mixed tensors."""
 
+    if TYPE_CHECKING:
+        # A mixed tensor's parent is the bigraded algebra it was built in;
+        # ``Element.parent`` states only that it is some parent.  Declared,
+        # never defined: the inherited implementation is the one that runs.
+        def parent(self) -> MixedTensorAlgebra: ...
+
     def __init__(self, parent: MixedTensorAlgebra, components: dict) -> None:
         ModuleElement.__init__(self, parent)
         self._components = {
@@ -637,10 +686,11 @@ class MixedTensorElement(ModuleElement):
         return tuple(self._components)
 
     def homogeneous_component(self, valence: tuple[int, int]) -> TensorElement:
-        return self._components.get(
+        component: TensorElement = self._components.get(
             tuple(valence),
             self.parent().homogeneous_piece(tuple(valence)).zero(),
         )
+        return component
 
     def _add_(self, other: "MixedTensorElement") -> "MixedTensorElement":
         components = dict(self._components)
@@ -666,7 +716,7 @@ class MixedTensorElement(ModuleElement):
         return self._scaled(scalar)
 
     def _mul_(self, other: "MixedTensorElement") -> "MixedTensorElement":
-        components = {}
+        components: dict = {}
         for left in self._components.values():
             for right in other._components.values():
                 product = left.tensor_product(right)
@@ -691,7 +741,12 @@ class MixedTensorElement(ModuleElement):
 MixedTensorAlgebra.Element = MixedTensorElement
 
 
-def tensor(base_ring: "Ring", components, valence: tuple = None, module: "Module" = None):
+def tensor(
+    base_ring: "Ring",
+    components: "Components",
+    valence: tuple | None = None,
+    module: "Module | None" = None,
+) -> TensorElement:
     r"""Return the tensor with these components, as ``matrix`` returns a matrix.
 
     ``tensor(R, [[-2, 1], [1, -2]])`` is a type-$(0,2)$ tensor: the nesting

@@ -13,15 +13,39 @@ accessors that belong to any graded thing.  The grading is one notion, and
 this is where it lives.
 """
 
-from typing import TYPE_CHECKING, Self
+from typing import Protocol, TYPE_CHECKING, Self
 
 from sage.misc.abstract_method import abstract_method
 from sage.rings.infinity import Infinity as _Infinity
+from sage.rings.infinity import MinusInfinity
 
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
 
 if TYPE_CHECKING:
     from dzack_research.preamble.lexicon import Element, Module, OrderedSet
+
+
+if TYPE_CHECKING:
+    class GradedModuleParent(Protocol):
+        r"""What a parent placed in ``GradedModules(R)`` supplies.
+
+        A graded module is a framed module, so the framing surface the
+        grading is read off arrives with the placement.
+        """
+
+        def module_generators(self) -> "OrderedSet": ...
+        def submodule(self, module_generators: "OrderedSet") -> "Module": ...
+        def module_generators_of_degree(self, degree: "Integer") -> "OrderedSet": ...
+        def degree_on_module_generator(self, module_generator: "Element") -> "Integer": ...
+        def module_generator(self, label: "Element") -> "Element": ...
+        def zero(self) -> "Element": ...
+
+    class GradedModuleElement(Protocol):
+        r"""What an element of a graded module supplies: the module it lies
+        in, and its own finite support in that module's framing."""
+
+        def parent(self) -> "GradedModuleParent": ...
+        def coefficients(self) -> dict: ...
 
 
 class GradedModules(OwnedCategoryOverBaseRing):
@@ -48,7 +72,7 @@ class GradedModules(OwnedCategoryOverBaseRing):
             category follows from that.
             """
 
-        def module_generators_of_degree(self: Self, degree: "Integer") -> "OrderedSet":
+        def module_generators_of_degree(self: "GradedModuleParent", degree: "Integer") -> "OrderedSet":
             r"""Return the module generators sitting in one degree."""
             # Local: the set node reaches this module, so a module-level
             # import would close that cycle.
@@ -62,7 +86,7 @@ class GradedModules(OwnedCategoryOverBaseRing):
                 ]
             )
 
-        def graded_piece(self: Self, degree: "Integer") -> "Module":
+        def graded_piece(self: "GradedModuleParent", degree: "Integer") -> "Module":
             r"""Return \(M_n\), as the submodule of \(M\) that it is.
 
             A subobject, so it carries its inclusion \(M_n\hookrightarrow M\):
@@ -72,7 +96,7 @@ class GradedModules(OwnedCategoryOverBaseRing):
             return self.submodule(self.module_generators_of_degree(degree))
 
     class ElementMethods:
-        def degree(self: Self) -> "Integer":
+        def degree(self: "GradedModuleElement") -> "Integer | MinusInfinity":
             r"""Return the top degree in this element's support.
 
             The zero element has degree \(-\infty\), which is what makes the
@@ -87,7 +111,7 @@ class GradedModules(OwnedCategoryOverBaseRing):
                 for module_generator in support
             )
 
-        def is_homogeneous(self: Self) -> bool:
+        def is_homogeneous(self: "GradedModuleElement") -> bool:
             r"""Return whether the support sits in one degree.
 
             The zero element is homogeneous, vacuously and usefully: it
@@ -98,9 +122,10 @@ class GradedModules(OwnedCategoryOverBaseRing):
                 parent.degree_on_module_generator(module_generator)
                 for module_generator in self.coefficients()
             }
-            return len(degrees) <= 1
+            homogeneous: bool = len(degrees) <= 1
+            return homogeneous
 
-        def homogeneous_components(self: Self) -> dict:
+        def homogeneous_components(self: "GradedModuleElement") -> dict:
             r"""Return \(d\mapsto\) the degree-\(d\) part, over the support.
 
             Their sum is this element, which is what makes \(M=\bigoplus_nM_n\)
@@ -116,7 +141,7 @@ class GradedModules(OwnedCategoryOverBaseRing):
                 )
             return components
 
-        def truncate(self: Self, degree: "Integer") -> "Element":
+        def truncate(self: "GradedModuleElement", degree: "Integer") -> "Element":
             r"""Return the part of degree below ``degree``.
 
             The image in \(M/M_{\geq d}\), lifted back: the terms it drops are

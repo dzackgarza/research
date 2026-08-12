@@ -12,7 +12,7 @@ ordered.  Finite ordered free modules are the specialization implemented by
 """
 
 
-from typing import TYPE_CHECKING
+from typing import Protocol, TYPE_CHECKING
 from dzack_research.preamble.lexicon import Element
 if TYPE_CHECKING:
     from dzack_research.preamble.lexicon import Module
@@ -37,7 +37,30 @@ from sage.categories.morphism import SetMorphism
 from sage.structure.element import ModuleElement
 from sage.rings.integer import Integer as SageInteger
 from sage.structure.parent import Parent
+from sage.structure.element import Element as SageElement
 from sage.structure.unique_representation import UniqueRepresentation
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleHomset
+    from dzack_research.preamble.lexicon import OrderedSet, Set
+
+    # The admissible ways to name a map out of a free framing, in the order
+    # ``hom`` matches them: the generator morphism itself, a finite assignment
+    # of generator images, or any function on the framing set.
+    GeneratorAssignment = SetMorphism | dict | Callable
+
+    class FreeModuleParent(Protocol):
+        r"""What a parent placed in ``FramedFreeModules(R)`` supplies: the
+        framing set it was built on, the ring underneath, the homset surface,
+        and the canonical generator naming a label."""
+
+        def base_ring(self) -> "Ring": ...
+        def module_generating_set(self) -> "OrderedSet": ...
+        def module_generator_morphism(self) -> SetMorphism: ...
+        def Hom(self, codomain: "Module", category: "Category | None" = ...) -> "ModuleHomset": ...
+        def _module_generator_element(self, element_of_S: SageElement) -> "FreeModuleOnSetElement": ...
 from sage.structure.richcmp import richcmp
 
 from dzack_research.preamble.categories.sets.owned_sets import Sets
@@ -67,7 +90,7 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
         return [FreeModules(self.base_ring()), Modules(self.base_ring()).Framed()]
 
     class ParentMethods:
-        def module_generators(self: Self) -> "Set":
+        def module_generators(self: "FreeModuleParent") -> "Set":
             r"""Return the framed generators, as a set, without counting them.
 
             The general framed version leaves injectivity to be probed, and
@@ -86,9 +109,9 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
                 is_injective=True,
             )
 
-        def module_generator_morphism(self: Self) -> SetMorphism:
+        def module_generator_morphism(self: "FreeModuleParent") -> SetMorphism:
             r"""Return the canonical set morphism \(S\to U(F_R(S))\)."""
-            morphism = self.__dict__.get("_free_module_generator_morphism")
+            morphism: SetMorphism | None = self.__dict__.get("_free_module_generator_morphism")
             if morphism is None:
                 module_generating_set = self.__dict__.get("_module_generating_set")
                 assert (
@@ -101,7 +124,7 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
                 self._free_module_generator_morphism = morphism
             return morphism
 
-        def hom(self: Self, images: dict, codomain: "Module" = None) -> "ModuleMorphism":
+        def hom(self: "FreeModuleParent", images: "GeneratorAssignment", codomain: "Module | None" = None) -> "ModuleMorphism":
             r"""Extend a set morphism \(S\to U(N)\) \(R\)-linearly."""
             match images:
                 case SetMorphism():
@@ -133,9 +156,19 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
 
 
 class FreeModuleOnSetElement(ModuleElement):
+    if TYPE_CHECKING:
+        # The parent is the free module this coefficient function is read in;
+        # ``Element.parent`` states only that it is some parent.  Declared,
+        # never defined.
+        def parent(self) -> "FreeModuleOnSet": ...
+
+        # Negation is parent-preserving on a module element; ``Element.__neg__``
+        # is deliberately wider, for the extended reals where it is not.
+        def __neg__(self) -> "FreeModuleOnSetElement": ...
+
     r"""A finitely supported coefficient function on the set \(S\)."""
 
-    def __init__(self, parent: "Parent", coefficients: dict) -> None:
+    def __init__(self, parent: "FreeModuleOnSet", coefficients: dict) -> None:
         ModuleElement.__init__(self, parent)
         coefficients = dict(coefficients)
         assert all(
@@ -151,10 +184,10 @@ class FreeModuleOnSetElement(ModuleElement):
     def coefficients(self) -> dict:
         return dict(self._coefficients)
 
-    def _add_(self, other: object) -> "FreeModuleOnSetElement":
+    def _add_(self, other: "FreeModuleOnSetElement") -> "FreeModuleOnSetElement":
         zero = self.parent().base_ring().zero()
         support = self._coefficients.keys() | other._coefficients.keys()
-        return self.parent().element_class(
+        total: "FreeModuleOnSetElement" = self.parent().element_class(
             self.parent(),
             {
                 element_of_S: (
@@ -164,32 +197,35 @@ class FreeModuleOnSetElement(ModuleElement):
                 for element_of_S in support
             },
         )
+        return total
 
-    def _sub_(self, other: object) -> "FreeModuleOnSetElement":
+    def _sub_(self, other: "FreeModuleOnSetElement") -> "FreeModuleOnSetElement":
         return self._add_(-other)
 
     def _neg_(self) -> "FreeModuleOnSetElement":
-        return self.parent().element_class(
+        negated: "FreeModuleOnSetElement" = self.parent().element_class(
             self.parent(),
             {
                 element_of_S: -coefficient
                 for element_of_S, coefficient in self._coefficients.items()
             },
         )
+        return negated
 
     def _lmul_(self, factor: "RingElement") -> "FreeModuleOnSetElement":
         factor = self.parent().base_ring()(factor)
-        return self.parent().element_class(
+        scaled: "FreeModuleOnSetElement" = self.parent().element_class(
             self.parent(),
             {
                 element_of_S: factor * coefficient
                 for element_of_S, coefficient in self._coefficients.items()
             },
         )
+        return scaled
 
     _rmul_ = _lmul_
 
-    def _richcmp_(self, other: object, op: int) -> bool:
+    def _richcmp_(self, other: "FreeModuleOnSetElement", op: int) -> bool:
         return richcmp(self._coefficients, other._coefficients, op)
 
     def __hash__(self) -> int:
@@ -221,7 +257,13 @@ class FreeModuleOnSet(UniqueRepresentation, OwnedBaseRing, Parent):
     r"""The free \(R\)-module on the actual set \(S\)."""
 
     @staticmethod
-    def __classcall__(cls, base_ring, module_generating_set, *arguments, **keywords):
+    def __classcall__(
+        cls: type["FreeModuleOnSet"],
+        base_ring: "Ring",
+        module_generating_set: "OrderedSet",
+        *arguments: object,
+        **keywords: object,
+    ) -> "FreeModuleOnSet":
         r"""Return *the* free module on \((R,S)\).
 
         $F_R(S)=F_R(S')$ exactly when $S=S'$, so there is one object per
@@ -250,9 +292,10 @@ class FreeModuleOnSet(UniqueRepresentation, OwnedBaseRing, Parent):
             Sets().Finite()
         ) and set_category.is_subcategory(Sets().TotallyOrdered()):
             cls = BasedFreeModule
-        return super(FreeModuleOnSet, cls).__classcall__(
+        module: "FreeModuleOnSet" = super(FreeModuleOnSet, cls).__classcall__(
             cls, base_ring, module_generating_set, *arguments, **keywords
         )
+        return module
 
     Element = FreeModuleOnSetElement
 
@@ -260,7 +303,7 @@ class FreeModuleOnSet(UniqueRepresentation, OwnedBaseRing, Parent):
         self,
         base_ring: "Ring",
         module_generating_set: "OrderedSet",
-        category: "Category" = None,
+        category: "Category | None" = None,
     ) -> None:
         r"""Frame a free module on ``module_generating_set``.
 
@@ -295,30 +338,33 @@ class FreeModuleOnSet(UniqueRepresentation, OwnedBaseRing, Parent):
         )
 
     def module_generating_set(self) -> Parent:
-        return self._module_generating_set
+        framing: Parent = self._module_generating_set
+        return framing
 
     def framing_morphism(self) -> "FramingMorphism":
         return self._framing_morphism
 
-    def _module_generator_element(self, element_of_S: "Element") -> FreeModuleOnSetElement:
+    def _module_generator_element(self, element_of_S: SageElement) -> FreeModuleOnSetElement:
         assert element_of_S in self._module_generating_set, (
             f"{element_of_S!r} is not in {self._module_generating_set}"
         )
-        return self.element_class(
+        generator: FreeModuleOnSetElement = self.element_class(
             self,
             {element_of_S: self.base_ring().one()},
         )
+        return generator
 
     def zero(self) -> FreeModuleOnSetElement:
-        return self.element_class(self, {})
+        zero_element: FreeModuleOnSetElement = self.element_class(self, {})
+        return zero_element
 
-    def _element_constructor_(self, value: "Element") -> FreeModuleOnSetElement:
+    def _element_constructor_(self, value: FreeModuleOnSetElement) -> FreeModuleOnSetElement:
         assert isinstance(value, FreeModuleOnSetElement) and value.parent() is self, (
             f"{value} is not an element of {self}"
         )
         return value
 
-    def __contains__(self, value: "Element") -> bool:
+    def __contains__(self, value: object) -> bool:
         return isinstance(value, FreeModuleOnSetElement) and value.parent() is self
 
     def __eq__(self, other: object) -> bool:

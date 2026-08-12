@@ -11,7 +11,7 @@ datum.  No finiteness, countability, or orderability hypothesis is imposed on
 \(S\).
 """
 
-from typing import TYPE_CHECKING
+from typing import Protocol, TYPE_CHECKING
 if TYPE_CHECKING:
     from dzack_research.preamble.lexicon import Element
     from dzack_research.preamble.lexicon import Module
@@ -25,6 +25,7 @@ if TYPE_CHECKING:
     from sage.categories.homset import Homset
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import FramingMorphism
 
+from collections.abc import Iterable
 from typing import Any, Self, TYPE_CHECKING
 
 import sage.categories.category_with_axiom as cwa
@@ -52,17 +53,17 @@ if "Framed" not in cwa.all_axioms:
     cwa.all_axioms.add("Framed")
 
 
-def _finite_coefficient_function(module: "Module", coefficients: dict) -> dict:
+def _finite_coefficient_function(module: "Module", coefficients: Iterable) -> dict:
     r"""Pair a coordinate vector with the module's ordered generating set."""
-    coefficients = tuple(coefficients)
-    assert len(coefficients) == module.number_of_module_generators(), (
+    ordered_coefficients = tuple(coefficients)
+    assert len(ordered_coefficients) == module.number_of_module_generators(), (
         f"{module} has {module.number_of_module_generators()} generators, got "
-        f"{len(coefficients)} coefficients"
+        f"{len(ordered_coefficients)} coefficients"
     )
     return dict(
         zip(
             module.module_generating_set(),
-            coefficients,
+            ordered_coefficients,
             strict=True,
         )
     )
@@ -95,6 +96,30 @@ def _finite_module_generator_assignment(
     )
 
 
+if TYPE_CHECKING:
+    class FramedModuleParent(Protocol):
+        r"""What a parent placed in ``Modules(R).Framed()`` supplies: the ring
+        underneath, its zero, the framing, and the generator naming behind the
+        preparser's ``M.<e,f> = ...`` protocol."""
+
+        def base_ring(self) -> "Ring": ...
+        def zero(self) -> "ModuleElement": ...
+        def variable_names(self) -> tuple[str, ...]: ...
+        def module_generators(self) -> "OrderedSet": ...
+        def module_generator(self, label: "Element") -> "ModuleElement": ...
+        def module_generating_set(self) -> "OrderedSet": ...
+        def subobject_on(self, module_generators: "OrderedSet") -> "Subobject": ...
+
+
+
+# ``ParentMethods`` methods run on parents, but a bare methods class has no
+# base to say so, and ``Parent.Hom``'s fallback branch needs nominal
+# parenthood.  Runtime-identical: a bare class already derives from object.
+if TYPE_CHECKING:
+    _ParentBase = Parent
+else:
+    _ParentBase = object
+
 class FramedModules(CategoryWithAxiom_over_base_ring):
     r"""Modules carrying a specified surjection \(F_R(S)\to M\)."""
 
@@ -112,8 +137,7 @@ class FramedModules(CategoryWithAxiom_over_base_ring):
 
         return [OwnedModules(self.base_ring())]
 
-    class ParentMethods:
-
+    class ParentMethods(_ParentBase):
         @abstract_method
         def framing_morphism(self) -> "FramingMorphism":
             r"""Return the framing morphism \(F_R(S)\to M\)."""
@@ -148,9 +172,10 @@ class FramedModules(CategoryWithAxiom_over_base_ring):
             assert framing.parent() is module_homset(source, self), (
                 "the framing morphism belongs to a noncanonical homset"
             )
-            return framing.module_generator_morphism()
+            generator_morphism: "SetMorphism" = framing.module_generator_morphism()
+            return generator_morphism
 
-        def _ring_morphism_defining_module_action(self: Self) -> "Morphism":
+        def _ring_morphism_defining_module_action(self: "FramedModuleParent") -> "Morphism":
             r"""Return $\\rho:R\\to\\operatorname{End}(M)$, read off the framing.
 
             A framed module has generators, and scaling them is the action:
@@ -196,7 +221,7 @@ class FramedModules(CategoryWithAxiom_over_base_ring):
                     self.module_generating_set(),
                 )
 
-        def inject_variables(self: Self, scope: dict, verbose: bool = True) -> None:
+        def inject_variables(self: "FramedModuleParent", scope: object = None, verbose: bool = True) -> None:
             r"""Bind this module's named generators into ``scope``.
 
             Sage's version of this method zips ``variable_names()`` against
@@ -211,6 +236,11 @@ class FramedModules(CategoryWithAxiom_over_base_ring):
             ``globals()`` of the module the method is defined in, which is
             never the namespace the caller meant.
             """
+            assert isinstance(scope, dict), (
+                "``scope`` is required: Sage's optional form falls back to the "
+                "globals() of the module this method is defined in, which is "
+                "never the namespace the caller meant"
+            )
             names = tuple(self.variable_names())
             generators = tuple(self.module_generators())
             assert len(names) == len(generators), (
@@ -221,7 +251,7 @@ class FramedModules(CategoryWithAxiom_over_base_ring):
                 print("Defining %s" % (", ".join(names)))
             scope.update(zip(names, generators, strict=True))
 
-        def linear_combination(self: Self, coefficients: dict) -> "ModuleElement":
+        def linear_combination(self: "FramedModuleParent", coefficients: dict) -> "ModuleElement":
             r"""Return the specified finite \(R\)-linear combination."""
             assert isinstance(coefficients, dict), (
                 "a finite linear combination is specified by its coefficient "
@@ -236,7 +266,7 @@ class FramedModules(CategoryWithAxiom_over_base_ring):
                 self.zero(),
             )
 
-        def subobject_on(self: Self, module_generators: "OrderedSet") -> "Subobject":
+        def subobject_on(self: "FramedModuleParent", module_generators: "OrderedSet") -> "Subobject":
             r"""Return the subobject generated by finitely many elements.
 
             Finite input has finite combined support in the framing.  The
@@ -270,24 +300,25 @@ class FramedModules(CategoryWithAxiom_over_base_ring):
             )
             return Subobject(inclusion)
 
-        def submodule(self: Self, module_generators: "OrderedSet") -> "Subobject":
+        def submodule(self: "FramedModuleParent", module_generators: "OrderedSet") -> "Subobject":
             r"""Return the submodule generated by finitely many elements."""
             return self.subobject_on(module_generators)
 
-        def Hom(self, codomain: "Module", category: "Category" = None) -> "Homset":
+        def Hom(self: Self, codomain: "Module", category: "Category | None" = None) -> "Homset":
             r"""Return the canonical homset from this module to ``codomain``."""
             # Local: at module level this closes an import cycle; the homset
             # module is built by the time a homset is asked for.
             from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 
             if codomain in Modules(self.base_ring()).Framed():
-                return module_homset(self, codomain)
+                homset: "Homset" = module_homset(self, codomain)
+                return homset
             return Parent.Hom(self, codomain, category)
 
-        def is_framed(self: Self) -> bool:
+        def is_framed(self: "FramedModuleParent") -> bool:
             return True
 
-        def vector_space(self: Self) -> "Module":
+        def vector_space(self: "FramedModuleParent") -> "Module":
             r"""Return \(M\otimes_R\operatorname{Frac}(R)\).
 
             The vector space of a module is its rationalization, and the
@@ -305,8 +336,9 @@ class FramedModules(CategoryWithAxiom_over_base_ring):
 
 
 @cached_method
-def _framed_subcategory(self: Self) -> "Category":
-    return self._with_axiom("Framed")
+def _framed_subcategory(self: "Category") -> "Category":
+    subcategory: "Category" = self._with_axiom("Framed")
+    return subcategory
 
 
 setattr(Modules, "Framed", FramedModules)

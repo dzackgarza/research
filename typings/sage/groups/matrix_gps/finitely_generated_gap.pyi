@@ -4,9 +4,13 @@ from collections.abc import Iterator
 
 from sage.groups.matrix_gps.group_element import MatrixGroupElement_gap
 from sage.rings.integer import Integer
+from sage.groups.perm_gps.permgroup import PermutationGroup_generic
 from sage.structure.parent import Parent
 
 class FinitelyGeneratedMatrixGroup_gap(Parent[MatrixGroupElement_gap]):
+    def as_permutation_group(
+        self, algorithm: str | None = ..., seed: int | None = ...
+    ) -> PermutationGroup_generic: ...
     def order(self) -> Integer: ...
     def gens(self) -> tuple[MatrixGroupElement_gap, ...]: ...
     # Supplied by ParentLibGAP: a finitely generated group knows how many

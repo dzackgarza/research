@@ -47,8 +47,9 @@ class ProjectiveModules(CategoryWithAxiom_over_base_ring):
 
 
 @cached_method
-def _projective_subcategory(self) -> "Category":
-    return self._with_axiom("Projective")
+def _projective_subcategory(self: "Category") -> "Category":
+    subcategory: "Category" = self._with_axiom("Projective")
+    return subcategory
 
 
 # Two bindings, as the sibling axioms do: the axiom category on ``Modules``,

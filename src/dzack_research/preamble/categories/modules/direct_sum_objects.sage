@@ -45,6 +45,11 @@ class DirectSumObjects(Category):
         return [Sets()]
 
     class ParentMethods:
+        # Installed on the object by the constructor: the ordered summands
+        # and the set indexing them.
+        _summands: tuple
+        _summand_index_set: "OrderedSet"
+
         # No ``underlying_object``/``module_generating_set``/``rank``/
         # ``group`` here.  ``group_modules`` refines a module *in place* into
         # this category, and on that object those names must keep answering
@@ -54,7 +59,8 @@ class DirectSumObjects(Category):
         # summands and nothing else.
 
         def summands(self: Self) -> tuple:
-            return self._summands
+            summands: tuple = self._summands
+            return summands
 
         def summand_index_set(self: Self) -> "OrderedSet":
             return self._summand_index_set

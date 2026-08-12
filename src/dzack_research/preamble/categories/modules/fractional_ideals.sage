@@ -10,7 +10,7 @@ The generating family is the ideal's own -- ``gens`` and
 this object exists so that reading is a fact rather than a coincidence.
 """
 
-from typing import TYPE_CHECKING
+from typing import Protocol, TYPE_CHECKING
 if TYPE_CHECKING:
     from dzack_research.preamble.lexicon import Element
     from dzack_research.preamble.lexicon import Module
@@ -149,6 +149,14 @@ class FractionalIdeal(OwnedBaseRing, Parent):
         return f"Fractional ideal ({listed}) of {self._ring}"
 
 
+if TYPE_CHECKING:
+    class IdealParent(Protocol):
+        r"""What a parent placed in ``OwnedIdeals(R)`` supplies."""
+
+        def ring(self) -> "Ring": ...
+        def module_generators(self) -> "OrderedSet": ...
+
+
 class OwnedIdeals(OwnedCategoryOverBaseRing):
     r"""Ideals of \(R\), which are the \(R\)-submodules of \(R\).
 
@@ -168,7 +176,7 @@ class OwnedIdeals(OwnedCategoryOverBaseRing):
         return [Modules(self.base_ring())]
 
     class ParentMethods:
-        def as_submodule(self) -> "Subobject":
+        def as_submodule(self: "IdealParent") -> "Subobject":
             r"""Return \(I\hookrightarrow R\), the submodule with its inclusion.
 
             \(R\) as a module over itself is free of rank one on the framing

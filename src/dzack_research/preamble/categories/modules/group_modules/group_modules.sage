@@ -23,7 +23,7 @@ if TYPE_CHECKING:
     from sage.structure.element import RingElement
 
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleHomset
-from typing import Self, TYPE_CHECKING
+from typing import Protocol, Self, TYPE_CHECKING
 
 from sage.misc.cachefunc import cached_method
 from sage.categories.category import Category
@@ -43,13 +43,42 @@ if TYPE_CHECKING:
     # The ordered-set noun is type-only: the preamble loads into one
     # shared namespace and nothing named OrderedSet may bind there.
     from dzack_research.preamble.lexicon import OrderedSet
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleAutomorphismGroup
 
+    # The admissible ways to name an equivariant map, in the order the
+    # constructors match them: the generator morphism itself, a finite
+    # assignment of generator images, or those images in the framing's order.
+    EquivariantAssignment = SetMorphism | dict | list | tuple
+
+    class GroupModuleParent(Protocol):
+        r"""What a parent placed in ``GroupModules(R, G)`` supplies.
+
+        Category placement, not the constructing class, is what gives an
+        object these; ``GroupModule`` is one such parent and the group
+        lattices are others.
+        """
+
+        def base_ring(self) -> "Ring": ...
+        def rank(self) -> "Cardinal": ...
+        def group(self) -> "Group": ...
+        def action_matrix(self, element: "Element") -> MorphismMatrix: ...
+        def Hom(self, codomain: "Module", category: "Category | None" = ...) -> "Homset": ...
+
+
+
+# ``ParentMethods`` methods run on parents, but a bare methods class has no
+# base to say so, and ``Parent.Hom``'s fallback branch needs nominal
+# parenthood.  Runtime-identical: a bare class already derives from object.
+if TYPE_CHECKING:
+    _ParentBase = Parent
+else:
+    _ParentBase = object
 
 class GroupModules(Category):
     r"""The category of \(R[G]\)-modules for the specified \(R\) and \(G\)."""
 
     @staticmethod
-    def __classcall__(cls, base_ring: "Ring", group: "Group"):
+    def __classcall__(cls: type["GroupModules"], base_ring: "Ring", group: "Group") -> "GroupModules":
         # One category per ring and group, named the way a module reports
         # its base: callers reach here both from a module and from the
         # engine's own \(\ZZ\), and those two must not name two categories
@@ -57,7 +86,10 @@ class GroupModules(Category):
         # Local: a module-level import would close a cycle; the module is built by the time this runs.
         from dzack_research.preamble.categories.rings.rings import owned_ring_view
 
-        return Category.__classcall__(cls, owned_ring_view(base_ring), group)
+        category: "GroupModules" = Category.__classcall__(
+            cls, owned_ring_view(base_ring), group
+        )
+        return category
 
     def __init__(self, base_ring: "Ring", group: "Group") -> None:
         # No finiteness requirement.  R[G]-Mod is defined for every group;
@@ -105,7 +137,10 @@ class GroupModules(Category):
         if not base_ring.is_field():
             return False
         characteristic = base_ring.characteristic()
-        return characteristic == 0 or self._group.order() % characteristic != 0
+        semisimple: bool = (
+            characteristic == 0 or self._group.order() % characteristic != 0
+        )
+        return semisimple
 
     def splitting_field(self) -> "Field":
         r"""Return \(K=\mathbb Q(\zeta_n)\), a field that *splits* \(G\).
@@ -152,11 +187,19 @@ class GroupModules(Category):
         2 -- the \(F\)-irreducible ones do, and the absolutely irreducible
         ones index components that have no \(R\)-form.
         """
-        return self.base_ring().fraction_field().has_coerce_map_from(
+        splits: bool = self.base_ring().fraction_field().has_coerce_map_from(
             self.splitting_field()
         )
+        return splits
 
-    class ParentMethods:
+    class ParentMethods(_ParentBase):
+        # Installed on the object by the constructor: the two halves of the
+        # pair $(M,\rho)$, and the same $\rho$ recorded through the element
+        # wrapping so it moves this parent's own elements.
+        _module: "Module"
+        _action: GroupAction
+        _acting_automorphisms: GroupAction
+
         def forget_action(self: Self) -> "Module":
             return self._module
 
@@ -172,7 +215,7 @@ class GroupModules(Category):
         def action_matrix(self: Self, element: "Element") -> MorphismMatrix:
             return self.action_of(element).matrix()
 
-        def character(self: Self) -> Character:
+        def character(self: "GroupModuleParent") -> Character:
             r"""Return \(\chi_\rho:g\mapsto\operatorname{tr}\rho(g)\).
 
             The character *of the representation*, and the only place the
@@ -202,13 +245,14 @@ class GroupModules(Category):
             )
             return Character(class_function)
 
-        def Hom(self: Self, codomain: "Module", category: "Category" = None) -> "Homset":
+        def Hom(self: Self, codomain: "Module", category: "Category | None" = None) -> "Homset":
             if codomain in GroupModules(self.base_ring(), self.group()):
                 return group_module_homset(self, codomain)
             return Parent.Hom(self, codomain, category)
 
         def act(self: Self, element: "Element", vector_: "ModuleElement") -> "ModuleElement":
-            return self.action_of(element)(vector_)
+            moved: "ModuleElement" = self.action_of(element)(vector_)
+            return moved
 
         def is_invariant(self: Self, vector_: "ModuleElement") -> bool:
             r"""Return whether \(g\cdot v=v\) for every \(g\in G\).
@@ -229,7 +273,7 @@ class GroupModules(Category):
         def subobject_on(self: Self, module_generators: "OrderedSet") -> "Subobject":
             return _group_subobject(self, module_generators)
 
-        def hom(self: Self, images: dict, codomain: "Module" = None) -> "ModuleMorphism":
+        def hom(self: "GroupModuleParent", images: "EquivariantAssignment", codomain: "Module | None" = None) -> "ModuleMorphism":
             # Local: a module-level import would close a cycle; the module is built by the time this runs.
             from dzack_research.preamble.categories.modules.framed.framed_modules import _finite_module_generator_assignment
 
@@ -240,7 +284,7 @@ class GroupModules(Category):
                         "its module codomain"
                     )
                     target = images.codomain().structured_parent()
-                    assignment = images
+                    assignment: "EquivariantAssignment" = images
                 case dict() if images:
                     target = next(iter(images.values())).parent()
                     assignment = images
@@ -306,7 +350,8 @@ class GroupModuleHomset(ModuleHomset):
             GroupModules(domain.base_ring(), domain.group()),
         )
 
-    def _element_constructor_(self, images: dict) -> ModuleMorphism:
+    def _element_constructor_(self, images: "EquivariantAssignment | ModuleMorphism") -> ModuleMorphism:
+        morphism: ModuleMorphism
         match images:
             case ModuleMorphism():
                 assert images.parent() is self, (
@@ -346,7 +391,7 @@ class GroupModuleHomset(ModuleHomset):
 def group_module_homset(domain: "Module", codomain: "Module") -> GroupModuleHomset:
     r"""Return the canonical equivariant homset of two \(G\)-modules."""
     cache = domain.__dict__.setdefault("_group_module_homsets", {})
-    homset = cache.get(codomain)
+    homset: GroupModuleHomset | None = cache.get(codomain)
     if homset is None:
         homset = GroupModuleHomset(domain, codomain)
         cache[codomain] = homset
@@ -356,7 +401,13 @@ def group_module_homset(domain: "Module", codomain: "Module") -> GroupModuleHoms
 class GroupModuleElement(ModuleElement):
     r"""An element of an \(R[G]\)-module and its image after forgetting \(G\)."""
 
-    def __init__(self, parent: "Parent", element: "Element") -> None:
+    if TYPE_CHECKING:
+        # The parent is the group module this element was wrapped for;
+        # ``Element.parent`` states only that it is some parent.  Declared,
+        # never defined: the inherited implementation is the one that runs.
+        def parent(self) -> "GroupModule": ...
+
+    def __init__(self, parent: "GroupModule", element: "Element") -> None:
         ModuleElement.__init__(self, parent)
         assert element.parent() is parent.forget_action(), (
             f"{element} is not an element of {parent.forget_action()}"
@@ -370,7 +421,8 @@ class GroupModuleElement(ModuleElement):
         # Local: a module-level import would close a cycle; the module is built by the time this runs.
         from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _coefficients
 
-        return _coefficients(self._underlying)
+        coefficient_function: dict = _coefficients(self._underlying)
+        return coefficient_function
 
     def underlying_set_element(self) -> "Element":
         r"""Recover the element of \(S\) defining a canonical generator."""
@@ -382,10 +434,10 @@ class GroupModuleElement(ModuleElement):
 
         return _coordinate_vector(self._underlying)
 
-    def _add_(self, other: object) -> "GroupModuleElement":
+    def _add_(self, other: "GroupModuleElement") -> "GroupModuleElement":
         return self.parent()._over(self._underlying + other._underlying)
 
-    def _sub_(self, other: object) -> "GroupModuleElement":
+    def _sub_(self, other: "GroupModuleElement") -> "GroupModuleElement":
         return self.parent()._over(self._underlying - other._underlying)
 
     def _neg_(self) -> "GroupModuleElement":
@@ -396,7 +448,7 @@ class GroupModuleElement(ModuleElement):
 
     _rmul_ = _lmul_
 
-    def _richcmp_(self, other: object, op: int) -> bool:
+    def _richcmp_(self, other: "GroupModuleElement", op: int) -> bool:
         return richcmp(self._underlying, other._underlying, op)
 
     def __hash__(self) -> int:
@@ -410,6 +462,13 @@ class GroupModule(Parent):
     r"""A finite free module \(M\) with a specified action \(G\to Aut_R(M)\)."""
 
     Element = GroupModuleElement
+
+    if TYPE_CHECKING:
+        # Reached from the categories this parent is placed in:
+        # ``Aut`` from the free-module surface underneath, ``group`` from
+        # ``GroupModules.ParentMethods``.  Declared, never defined.
+        def Aut(self) -> "ModuleAutomorphismGroup": ...
+        def group(self) -> "Group": ...
 
     def __init__(self, module: "Module", action: GroupAction) -> None:
         # Local: a module-level import would close a cycle; the module is built by the time this runs.
@@ -488,19 +547,20 @@ class GroupModule(Parent):
     def zero(self) -> GroupModuleElement:
         return self._over(self._module.zero())
 
-    def _over(self, element: "Element") -> GroupModuleElement:
-        return self.element_class(self, element)
+    def _over(self, element: ModuleElement) -> GroupModuleElement:
+        wrapped: GroupModuleElement = self.element_class(self, element)
+        return wrapped
 
     def _from_coordinates(self, coordinates: "Vector") -> GroupModuleElement:
         return self._over(self._module._from_coordinates(coordinates))
 
-    def _element_constructor_(self, element: "Element") -> GroupModuleElement:
+    def _element_constructor_(self, element: GroupModuleElement) -> GroupModuleElement:
         assert isinstance(element, GroupModuleElement) and element.parent() is self, (
             f"{element} is not an element of {self}"
         )
         return element
 
-    def __contains__(self, element: "Element") -> bool:
+    def __contains__(self, element: object) -> bool:
         return (
             isinstance(element, GroupModuleElement)
             and element.parent() is self
@@ -511,7 +571,8 @@ class GroupModule(Parent):
 
     def __eq__(self, other: object) -> bool:
         return (
-            type(other) is type(self)
+            isinstance(other, GroupModule)
+            and type(other) is type(self)
             and self._module == other._module
             and self._action == other._action
         )
@@ -596,7 +657,7 @@ def _module_coinvariants(module: "Module") -> "Module":
     return FinitelyPresentedModule(presentation)
 
 
-def _base_field_automorphisms(category: "Category") -> tuple:
+def _base_field_automorphisms(category: GroupModules) -> tuple:
     r"""Return \(\operatorname{Gal}(K/F)\) for \(F\) the fraction field of \(R\).
 
     The absolutely irreducible characters are permuted by the automorphisms of
@@ -657,7 +718,7 @@ def _index_characters(module: "Module") -> tuple:
         return characters
     field = category.splitting_field()
     automorphisms = _base_field_automorphisms(category)
-    orbits = {}
+    orbits: dict = {}
     for character in characters:
         orbit = frozenset(
             tuple(
@@ -826,7 +887,7 @@ def _restricted_action_automorphisms(
     ]
 
 
-def _equivariant_hom(domain: "Module", codomain: "Module", images: dict) -> "ModuleMorphism":
+def _equivariant_hom(domain: "Module", codomain: "Module", images: "EquivariantAssignment") -> "ModuleMorphism":
     match images:
         case dict():
             assignment = images

@@ -4,13 +4,13 @@ Defines the ``FinitelyGenerated`` axiom for ``Modules(R)`` via Sage's ``Category
 framework, enabling ``Modules(R).FinitelyGenerated()`` and ``FinitelyGeneratedModules(R)``.
 """
 
-from typing import TYPE_CHECKING
+from typing import Protocol, TYPE_CHECKING
 from dzack_research.preamble.utilities import zipsum
 if TYPE_CHECKING:
     from dzack_research.preamble.lexicon import Module
 
 if TYPE_CHECKING:
-    from sage.matrix.constructor import Matrix
+    from sage.structure.element import Matrix
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
 
 import sage.categories.category_with_axiom as cwa
@@ -141,6 +141,18 @@ def _relation_inclusion(free_on_generators: "Module", columns: list) -> tuple:
     )
 
 
+if TYPE_CHECKING:
+    class FinitelyGeneratedModuleParent(Protocol):
+        r"""What a parent placed in ``Modules(R).FinitelyGenerated()``
+        supplies: the framing set, the generator naming a label, and the
+        module's zero."""
+
+        def module_generating_set(self) -> "OrderedSet": ...
+        def module_generator(self, element_of_S: "Element") -> "ModuleElement": ...
+        def module_generators(self) -> "OrderedSet": ...
+        def zero(self) -> "ModuleElement": ...
+
+
 class FinitelyGeneratedModules(CategoryWithAxiom_over_base_ring):
     r"""Category of finitely generated modules over a base ring."""
 
@@ -155,7 +167,7 @@ class FinitelyGeneratedModules(CategoryWithAxiom_over_base_ring):
         return [Modules(self.base_ring()).Framed()]
 
     class ParentMethods:
-        def module_generators(self):
+        def module_generators(self: "FinitelyGeneratedModuleParent") -> "OrderedSet":
             r"""Return the finite framed generators, as an ordered set.
 
             An ordered set, not a tuple: the generators are a set, and the
@@ -164,7 +176,7 @@ class FinitelyGeneratedModules(CategoryWithAxiom_over_base_ring):
             which makes the *index* set canonical, but two modules'
             generators can compare equal while being different generators.
             """
-            cached = self.__dict__.get("_preamble_module_generators")
+            cached: "OrderedSet | None" = self.__dict__.get("_preamble_module_generators")
             if cached is None:
                 module_generating_set = self.module_generating_set()
                 assert module_generating_set in Sets().Finite(), (
@@ -181,7 +193,7 @@ class FinitelyGeneratedModules(CategoryWithAxiom_over_base_ring):
                 self._preamble_module_generators = cached
             return cached
 
-        def free_resolution(self) -> FreeResolution:
+        def free_resolution(self: "FinitelyGeneratedModuleParent") -> FreeResolution:
             r"""Return the free resolution of this module.
 
             A resolution writes $M$ in free modules: $F_0$ on this module's
@@ -199,7 +211,7 @@ class FinitelyGeneratedModules(CategoryWithAxiom_over_base_ring):
             """
             return FreeResolution(self)
 
-        def is_finitely_generated(self) -> bool:
+        def is_finitely_generated(self: "FinitelyGeneratedModuleParent") -> bool:
             r"""Return whether the chosen generating set is finite.
 
             Computed from the framing rather than declared from membership:
@@ -209,7 +221,7 @@ class FinitelyGeneratedModules(CategoryWithAxiom_over_base_ring):
             """
             return self.module_generating_set() in Sets().Finite()
 
-        def is_zero(self) -> bool:
+        def is_zero(self: "FinitelyGeneratedModuleParent") -> bool:
             r"""Return whether every element in the chosen generating set vanishes."""
             return all(
                 generator == self.zero()
@@ -218,8 +230,9 @@ class FinitelyGeneratedModules(CategoryWithAxiom_over_base_ring):
 
 
 @cached_method
-def _fg_subcategory(self):
-    return self._with_axiom("FinitelyGenerated")
+def _fg_subcategory(self: "Category") -> "Category":
+    subcategory: "Category" = self._with_axiom("FinitelyGenerated")
+    return subcategory
 
 
 setattr(Modules, "FinitelyGenerated", FinitelyGeneratedModules)

@@ -11,3 +11,4 @@ class MinusInfinity(RingElement):
     def __neg__(self) -> PlusInfinity: ...
 
 Infinity: PlusInfinity
+infinity: PlusInfinity

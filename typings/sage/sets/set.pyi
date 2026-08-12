@@ -6,6 +6,7 @@
 # the name ``SageSet`` precisely because the bare name is the noun
 # (INVENTORY.md II.5 / naming rule IV.3).
 from collections.abc import Iterable, Iterator
+from typing import overload
 
 from sage.categories.category import Category
 from sage.categories.sets_cat import Sets
@@ -13,7 +14,9 @@ from sage.rings.integer import Integer
 from sage.structure.element import Element
 from sage.structure.parent import Parent
 
-class Set_object(Sets.ParentMethods[Element], Parent[Element]):
+class Set_generic(Parent[Element]): ...
+
+class Set_object(Set_generic, Sets.ParentMethods[Element]):
     def cardinality(self) -> Integer: ...
     def __iter__(self) -> Iterator[Element]: ...
     def __contains__(self, x: object) -> bool: ...
@@ -23,8 +26,11 @@ class Set_object(Sets.ParentMethods[Element], Parent[Element]):
 
 class Set_object_enumerated(Set_object):
     def list(self) -> list[Element]: ...
+    def __len__(self) -> int: ...
 
-def Set(
-    X: Parent | Iterable[Element] | None = ...,
-    category: Category | None = ...,
-) -> Set_object: ...
+# A finite iterable enumerates (which is why len() works on the result);
+# a parent stays a general set object.
+@overload
+def Set(X: Iterable[Element], category: Category | None = ...) -> Set_object_enumerated: ...
+@overload
+def Set(X: Parent | None = ..., category: Category | None = ...) -> Set_object: ...

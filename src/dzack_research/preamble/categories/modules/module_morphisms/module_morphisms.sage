@@ -55,9 +55,33 @@ if TYPE_CHECKING:
     # shared namespace and nothing named OrderedSet may bind there.
     from dzack_research.preamble.lexicon import OrderedSet
 
+    # The three admissible ways to name a module morphism, in the order
+    # ``ModuleMorphism.__init__`` matches them: the generator morphism itself,
+    # a finite dictionary of generator images, or any function on the
+    # generating set.  Type-only: nothing constructs it.
+    ModuleMorphismData = SetMorphism | dict | Callable
 
-class ModuleHomset(Homset):
+    # A homset is a parent whose elements are its morphisms; binding the
+    # parameter is what makes ``self(images)`` a module morphism.  The runtime
+    # class is a Cython extension type and cannot be subscripted, so the
+    # binding goes through an alias, per the note in
+    # ``typings/sage/structure/parent.pyi``.
+    ModuleHomsetBase = Homset["ModuleMorphism"]
+    GroupActionHomsetBase = Homset["GroupAction"]
+else:
+    ModuleHomsetBase = Homset
+    GroupActionHomsetBase = Homset
+
+
+class ModuleHomset(ModuleHomsetBase):
     r"""The homset \(\operatorname{Hom}_R(M,N)\) of two framed modules."""
+
+    if TYPE_CHECKING:
+        # Both ends of a module homset are modules; ``Homset`` states only
+        # that they are parents.  Declared, never defined: the inherited
+        # implementations are the ones that run.
+        def domain(self) -> "Module": ...
+        def codomain(self) -> "Module": ...
 
     def __init__(self, domain: "Module", codomain: "Module", category: "Category") -> None:
         assert domain.base_ring() == codomain.base_ring(), (
@@ -72,7 +96,7 @@ class ModuleHomset(Homset):
             check=False,
         )
 
-    def _element_constructor_(self, images: dict) -> "ModuleMorphism":
+    def _element_constructor_(self, images: "ModuleMorphismData") -> "ModuleMorphism":
         return ModuleMorphism(self, images)
 
     def zero(self) -> "ModuleMorphism":
@@ -97,7 +121,7 @@ class ModuleHomset(Homset):
             self.domain().module_generator_morphism(),
         )
 
-    def __contains__(self, morphism: "Morphism") -> bool:
+    def __contains__(self, morphism: object) -> bool:
         return (
             isinstance(morphism, ModuleMorphism)
             and morphism.parent() is self
@@ -110,7 +134,7 @@ class ModuleHomset(Homset):
 def module_homset(domain: "Module", codomain: "Module") -> ModuleHomset:
     r"""Return the canonical module homset after forgetting extra structure."""
     cache = domain.__dict__.setdefault("_module_homsets", {})
-    homset = cache.get(codomain)
+    homset: ModuleHomset | None = cache.get(codomain)
     if homset is None:
         homset = ModuleHomset(
             domain,
@@ -121,7 +145,7 @@ def module_homset(domain: "Module", codomain: "Module") -> ModuleHomset:
     return homset
 
 
-def _module_morphism(domain: "Module", codomain: "Module", images: dict) -> "ModuleMorphism":
+def _module_morphism(domain: "Module", codomain: "Module", images: "ModuleMorphismData") -> "ModuleMorphism":
     r"""Construct a module morphism through its canonical homset."""
     return module_homset(domain, codomain)(images)
 
@@ -141,7 +165,8 @@ def endomorphism_ring(module: "Module") -> ModuleHomset:
     to land in the subgroup preserving the form, not one whose endomorphism
     ring was formed somewhere else.
     """
-    return refine(module_homset(module, module), Rings())
+    endset: ModuleHomset = refine(module_homset(module, module), Rings())
+    return endset
 
 
 def _underlying_module(module: "Module") -> "Module":
@@ -169,7 +194,8 @@ def _coordinate_vector(element: "Element") -> FreeModuleElement:
 
     match element:
         case BasedFreeModuleElement():
-            return element._coordinates_
+            coordinates: FreeModuleElement = element._coordinates_
+            return coordinates
         case FormModuleElement():
             return _coordinate_vector(element.forget_form())
         case GroupModuleElement():
@@ -337,7 +363,17 @@ def _expand_subobject_dict(parent: ModuleHomset, images: dict) -> dict:
 class ModuleMorphism(Morphism):
     r"""The linear extension of a morphism \(S\to U(N)\)."""
 
-    def __init__(self, parent: ModuleHomset, images: dict) -> None:
+    if TYPE_CHECKING:
+        # A morphism's parent is the homset it was constructed in;
+        # ``Element.parent`` states only that it is some parent.  Declared,
+        # never defined: the inherited implementation is the one that runs.
+        def parent(self) -> ModuleHomset: ...
+
+    # Cached by :meth:`matrix` on first request; declared, never preset, so
+    # the AttributeError that fills it still fires.
+    _matrix: MorphismMatrix
+
+    def __init__(self, parent: ModuleHomset, images: "ModuleMorphismData") -> None:
         Morphism.__init__(self, parent)
         module_generating_set = self._domain_module_generating_set()
         set_homset = Hom(
@@ -410,12 +446,12 @@ class ModuleMorphism(Morphism):
             isinstance(other, ModuleMorphism)
             and other.parent() is self.parent()
         ), "morphisms add only inside one homset"
-        return self._pointwise(
-            lambda element_of_S: (
-                self.module_generator_morphism()._call_(element_of_S)
-                + other.module_generator_morphism()._call_(element_of_S)
-            )
-        )
+        def sum_at(element_of_S: "Element") -> "ModuleElement":
+            here: "ModuleElement" = self.module_generator_morphism()._call_(element_of_S)
+            there: "ModuleElement" = other.module_generator_morphism()._call_(element_of_S)
+            return here + there
+
+        return self._pointwise(sum_at)
 
     def __neg__(self) -> "ModuleMorphism":
         r"""Return the pointwise negation \(-f\)."""
@@ -425,7 +461,7 @@ class ModuleMorphism(Morphism):
             )
         )
 
-    def __sub__(self, other: object) -> "ModuleMorphism":
+    def __sub__(self, other: "ModuleMorphism") -> "ModuleMorphism":
         return self + (-other)
 
     def __mul__(self, other: object) -> "ModuleMorphism":
@@ -522,26 +558,32 @@ class ModuleMorphism(Morphism):
             self._matrix = MorphismMatrix(m)
             return self._matrix
 
-    def _call_(self, element: "Element") -> "Element":
-        if element.parent() is not self.domain():
-            assert element.parent() == self.domain(), (
-                f"{element} is not an element of {self.domain()}"
+    def _call_(self, element: object) -> "Element":
+        # ``object`` because ``Map._call_`` declares it; the hook runs only
+        # after ``__call__`` has converted its argument into the domain,
+        # which is what the narrowing states.
+        assert isinstance(element, Element), f"{element} is not an element"
+        source: "Element" = element
+        if source.parent() is not self.domain():
+            assert source.parent() == self.domain(), (
+                f"{source} is not an element of {self.domain()}"
             )
-            element = sum(
+            source = sum(
                 (
                     coefficient * self.domain().module_generator(label)
-                    for label, coefficient in _coefficients(element).items()
+                    for label, coefficient in _coefficients(source).items()
                 ),
                 self.domain().zero(),
             )
-        return sum(
+        image: "Element" = sum(
             (
                 coefficient
                 * self._module_generator_image(element_of_S)
-                for element_of_S, coefficient in _coefficients(element).items()
+                for element_of_S, coefficient in _coefficients(source).items()
             ),
             self.codomain().zero(),
         )
+        return image
 
     def lift(self, element: "Element") -> "ModuleElement":
         assert element.parent() is self.codomain(), (
@@ -708,7 +750,8 @@ class ModuleMorphism(Morphism):
         assert reduced.nrows() == width, (
             "the image does not have finite index in the codomain"
         )
-        return abs(reduced.det())
+        index: "Integer" = abs(reduced.det())
+        return index
 
     def orthogonal_complement(self) -> "Subobject":
         codomain = self.codomain()
@@ -785,7 +828,7 @@ class FramingMorphism(ModuleMorphism):
     enumeration algorithm, since \(S\) may be a membership-only set.
     """
 
-    def __init__(self, parent: ModuleHomset, images: dict) -> None:
+    def __init__(self, parent: ModuleHomset, images: "ModuleMorphismData") -> None:
         # Local: at module level this closes an import cycle; the free-module
         # category is built by the time a framing is declared.
         from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules
@@ -805,7 +848,7 @@ class FramingMorphism(ModuleMorphism):
 def framing_morphism(
     domain: "Module",
     codomain: "Module",
-    images: dict,
+    images: "ModuleMorphismData",
 ) -> FramingMorphism:
     r"""Construct the declared framing epimorphism in its canonical homset."""
     return FramingMorphism(module_homset(domain, codomain), images)
@@ -814,7 +857,14 @@ def framing_morphism(
 class ModuleAutomorphism(ModuleMorphism):
     r"""An invertible endomorphism of a finitely generated free module."""
 
-    def __init__(self, parent: "ModuleAutomorphismGroup", images: dict) -> None:
+    if TYPE_CHECKING:
+        # An automorphism's parent is the automorphism group it was
+        # constructed in; ``Element.parent`` states only that it is some
+        # parent.  Declared for the reader and the checker, never defined:
+        # the inherited implementation is the one that runs.
+        def parent(self) -> "ModuleAutomorphismGroup": ...
+
+    def __init__(self, parent: "ModuleAutomorphismGroup", images: "ModuleMorphismData") -> None:
         ModuleMorphism.__init__(self, parent, images)
         assert self.domain() is self.codomain(), (
             "an automorphism is an endomorphism"
@@ -901,6 +951,16 @@ class FiniteAutomorphismSubgroup:
     \(\operatorname{Aut}_R(M)\) and \(O(L)\) -- sit in unrelated homset
     hierarchies and the group surface is the same in both.
     """
+
+    if TYPE_CHECKING:
+        # What this mixin requires of whichever homset it is mixed into: the
+        # module it is the automorphisms of, whether it is a literal finite
+        # subgroup, that subgroup's generators, and its elements.  Declared,
+        # never defined -- the host supplies every one.
+        def domain(self) -> "Module": ...
+        def is_finite(self) -> bool: ...
+        def group_generators(self) -> TotallyOrderedFiniteSet["ModuleAutomorphism"]: ...
+        def __iter__(self) -> Iterator["ModuleAutomorphism"]: ...
 
     def inclusion(self) -> "GroupAction":
         r"""Return \(\rho:G\hookrightarrow\operatorname{Aut}(M)\), this group's own arrow.
@@ -1016,6 +1076,15 @@ class ModuleAutomorphismGroup(FiniteAutomorphismSubgroup, ModuleHomset):
 
     Element = ModuleAutomorphism
 
+    if TYPE_CHECKING:
+        # The elements here are automorphisms, narrower than the module
+        # morphisms ``ModuleHomset`` binds.  That binding is already fixed by
+        # the base class, so the conversion into this homset is narrowed
+        # directly.  Declared, never defined.
+        def __call__(
+            self, x: object = ..., *args: object, **kwds: object
+        ) -> ModuleAutomorphism: ...
+
     def __init__(self, module: "Module", group_generators: "OrderedSet" = None) -> None:
         ModuleHomset.__init__(
             self,
@@ -1038,7 +1107,7 @@ class ModuleAutomorphismGroup(FiniteAutomorphismSubgroup, ModuleHomset):
             )
             self._elements = self._close()
 
-    def _element_constructor_(self, images: dict) -> ModuleAutomorphism:
+    def _element_constructor_(self, images: "ModuleMorphismData") -> ModuleAutomorphism:
         return ModuleAutomorphism(self, images)
 
     def module(self) -> "Module":
@@ -1054,8 +1123,13 @@ class ModuleAutomorphismGroup(FiniteAutomorphismSubgroup, ModuleHomset):
         )
         return ModuleAutomorphismGroup(self.module(), group_generators)
 
-    def group_generators(self) -> TotallyOrderedFiniteSet:
-        return finite_ordered_set(()) if self._group_generators is None else finite_ordered_set(self._group_generators)
+    def group_generators(self) -> TotallyOrderedFiniteSet[ModuleAutomorphism]:
+        generators: TotallyOrderedFiniteSet[ModuleAutomorphism] = (
+            finite_ordered_set(())
+            if self._group_generators is None
+            else finite_ordered_set(self._group_generators)
+        )
+        return generators
 
     def is_finite(self) -> bool:
         return self._elements is not None
@@ -1079,7 +1153,7 @@ class ModuleAutomorphismGroup(FiniteAutomorphismSubgroup, ModuleHomset):
         )
         return iter(self._elements)
 
-    def __contains__(self, element: "Element") -> bool:
+    def __contains__(self, element: object) -> bool:
         return (
             isinstance(element, ModuleAutomorphism)
             and element.parent() is self
@@ -1112,8 +1186,15 @@ class ModuleAutomorphismGroup(FiniteAutomorphismSubgroup, ModuleHomset):
         return f"Aut({self.module()})"
 
 
-class GroupActionHomset(Homset):
+class GroupActionHomset(GroupActionHomsetBase):
     r"""Homomorphisms from a group to the automorphisms of one module."""
+
+    if TYPE_CHECKING:
+        # An action goes from a group to the automorphism group of the
+        # module; ``Homset`` states only that both are parents.  Declared,
+        # never defined: the inherited implementations are the ones that run.
+        def domain(self) -> "Group": ...
+        def codomain(self) -> "ModuleAutomorphismGroup": ...
 
     def __init__(self, group: "Group", module: "Module") -> None:
         self._module = module
@@ -1187,7 +1268,7 @@ class GroupActionHomset(Homset):
                         frontier.append(product)
         return values
 
-    def __contains__(self, action: "GroupAction") -> bool:
+    def __contains__(self, action: object) -> bool:
         return (
             isinstance(action, GroupAction)
             and action.parent() is self
@@ -1202,7 +1283,7 @@ def group_action_homset(group: "Group", module: "Module") -> GroupActionHomset:
     content-keyed cache would hand one subgroup's homset to another.
     """
     cache = module.__dict__.setdefault("_group_action_homsets", {})
-    homset = cache.get(id(group))
+    homset: GroupActionHomset | None = cache.get(id(group))
     if homset is None:
         homset = GroupActionHomset(group, module)
         cache[id(group)] = homset
@@ -1211,6 +1292,12 @@ def group_action_homset(group: "Group", module: "Module") -> GroupActionHomset:
 
 class GroupAction(Morphism):
     r"""A homomorphism \(G\to\operatorname{Aut}_R(M)\)."""
+
+    if TYPE_CHECKING:
+        # An action's parent is the homset it was named in; ``Element.parent``
+        # states only that it is some parent.  Declared, never defined: the
+        # inherited implementation is the one that runs.
+        def parent(self) -> GroupActionHomset: ...
 
     def __init__(self, parent: GroupActionHomset, values: dict) -> None:
         Morphism.__init__(self, parent)
@@ -1236,11 +1323,12 @@ class GroupAction(Morphism):
     def module(self) -> "Module":
         return self.parent().module()
 
-    def _call_(self, element: "Element") -> ModuleAutomorphism:
+    def _call_(self, element: object) -> ModuleAutomorphism:
         assert element in self._values, (
             f"{element} is not an element of this action's group"
         )
-        return self._values[element]
+        automorphism: ModuleAutomorphism = self._values[element]
+        return automorphism
 
     def values(self) -> dict:
         return dict(self._values)

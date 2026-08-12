@@ -19,7 +19,7 @@ that gives each class a canonical representative to print and hash.
 
 
 from sage.rings.integer_ring import ZZ as SageZZ
-from typing import TYPE_CHECKING
+from typing import Protocol, TYPE_CHECKING
 from dzack_research.preamble.utilities import zipsum
 if TYPE_CHECKING:
     from dzack_research.preamble.lexicon import Group
@@ -47,7 +47,11 @@ from dzack_research.preamble.categories.modules.module_morphisms.morphism_matric
 from dzack_research.preamble.categories.sets.owned_sets import Sets
 
 if TYPE_CHECKING:
+    from collections.abc import Iterator
+
     from sage.rings.ideal import Ideal_pid
+    from sage.rings.ring import Ring
+    from dzack_research.preamble.lexicon import Element
     # The ordered-set noun is type-only: the preamble loads into one
     # shared namespace and nothing named OrderedSet may bind there.
     from dzack_research.preamble.lexicon import OrderedSet
@@ -58,14 +62,40 @@ def _is_additive(group: "Group") -> bool:
     r"""Return whether ``group`` is written additively, asked of its category."""
     from sage.categories.commutative_additive_groups import CommutativeAdditiveGroups
 
-    return group.category().is_subcategory(CommutativeAdditiveGroups())
+    additive: bool = group.category().is_subcategory(CommutativeAdditiveGroups())
+    return additive
+
+
+if TYPE_CHECKING:
+    class TorsionModuleParent(Protocol):
+        r"""What a parent placed in ``FinitelyPresentedTorsionModules(R)``
+        supplies: the presentation, the generating set and its size, the zero,
+        the coordinate route in, the invariant factors, and the exponent."""
+
+        def relation_matrix(self) -> MorphismMatrix: ...
+        def number_of_module_generators(self) -> int: ...
+        def module_generators(self) -> "OrderedSet": ...
+        def zero(self) -> "Element": ...
+        def invariants(self) -> tuple: ...
+        def exponent(self) -> "Integer": ...
+        def annihilator(self) -> "Ideal_pid": ...
+        def presenting_free_group(self) -> "Group": ...
+        def _from_coordinates(self, coordinates: "Vector") -> "Element": ...
+
+    class TorsionModuleElement(Protocol):
+        r"""What an element of a torsion module supplies."""
+
+        def parent(self) -> "TorsionModuleParent": ...
+        def is_zero(self) -> bool: ...
 
 
 class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
     r"""Finitely presented torsion modules with a chosen generating set over a base ring $R$."""
 
     @staticmethod
-    def __classcall_private__(cls, base_ring=None):
+    def __classcall_private__(
+        cls: type["FinitelyPresentedTorsionModules"], base_ring: "Ring | None" = None
+    ) -> "FinitelyPresentedTorsionModules":
         # Local: at module level this closes an import cycle; the ring module
         # is built by the time this category is constructed.
         from dzack_research.preamble.categories.rings.rings import engine_ring
@@ -74,11 +104,14 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
         # category carry: the owned ring is the session's name for it, and a
         # category built over one while its objects carry the other has no
         # members at all.
+        over_the_integers: "FinitelyPresentedTorsionModules"
         match base_ring:
             case None:
-                return super().__classcall__(cls, SageZZ)
+                over_the_integers = super().__classcall__(cls, SageZZ)
+                return over_the_integers
             case _ if engine_ring(base_ring) is SageZZ:
-                return super().__classcall__(cls, SageZZ)
+                over_the_integers = super().__classcall__(cls, SageZZ)
+                return over_the_integers
             case _:
                 assert False, (
                     "this finite-presentation implementation is over ZZ"
@@ -103,7 +136,7 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
             GroupsWithChosenFinitePresentation(),
         ]
 
-    def direct_sum_of_cyclics(self, orders: "OrderedSet") -> "TorsionModule":
+    def direct_sum_of_cyclics(self, orders: "OrderedSet") -> FinitelyPresentedModule:
         r"""Return $\bigoplus_i\mathbb Z/d_i$ on one generator per summand.
 
         The orders are taken as given and not normalized: $[2,3]$ builds a
@@ -117,7 +150,7 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
         )
         return self.from_relations(MorphismMatrix(diagonal_matrix(SageZZ, orders)))
 
-    def from_abelian_group(self, group: "Group") -> "TorsionModule":
+    def from_abelian_group(self, group: "Group") -> FinitelyPresentedModule:
         r"""Return ``group`` as an object of this category, on its own generators.
 
         The generating set is the one the group already has.  Nothing is
@@ -205,7 +238,7 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
         self,
         relations: "MorphismMatrix",
         module_generating_set: "OrderedSet" = None,
-    ) -> "TorsionModule":
+    ) -> FinitelyPresentedModule:
         r"""Return the module presented by ``relations``, as a morphism.
 
         The matrix is turned into the morphism it is the matrix of, because
@@ -265,7 +298,7 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
         nonzero ideal, so it has a generator.
         """
 
-        def order(self: Self) -> "Integer":
+        def order(self: "TorsionModuleElement") -> "Integer":
             r"""Return the generator of $\operatorname{Ann}(a)\subseteq\mathbb Z$.
 
             The least $k\ge 1$ with $ka=0$, which exists because this module is
@@ -289,7 +322,7 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
     class ParentMethods:
         r"""What a torsion module is asked, none of which involves a form."""
 
-        def _latex_(self: Self) -> str:
+        def _latex_(self: "TorsionModuleParent") -> str:
             r"""Return the chosen module presentation in additive notation.
 
             Commutativity is part of the category of modules.  Thus the
@@ -307,7 +340,7 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
             )
 
             def relation(row: "Vector") -> str:
-                terms = []
+                terms: list[str] = []
                 for coefficient, generator in zip(row, generators):
                     coefficient = int(coefficient)
                     if coefficient == 0:
@@ -329,17 +362,18 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
             relations = tuple(
                 relation(row) for row in self.relation_matrix().rows()
             )
-            return _fp_format_presentation_latex(
+            presentation: str = _fp_format_presentation_latex(
                 generators,
                 relations,
                 subscript="\\mathbb{Z}",
             )
+            return presentation
 
-        def is_abelian(self: Self) -> bool:
+        def is_abelian(self: "TorsionModuleParent") -> bool:
             r"""Return ``True`` because module addition is commutative."""
             return True
 
-        def group_generators(self: Self) -> "OrderedSet":
+        def group_generators(self: "TorsionModuleParent") -> "OrderedSet":
             r"""Return the module generators as additive group generators."""
             zero = self.zero()
             return finite_ordered_set(
@@ -351,7 +385,7 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
             )
 
         @cached_method
-        def presenting_free_group(self: Self) -> "Group":
+        def presenting_free_group(self: "TorsionModuleParent") -> "Group":
             r"""Return the free group on the chosen module generators."""
             from sage.groups.free_group import FreeGroup
 
@@ -363,7 +397,7 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
                     return FreeGroup([f"e{i + 1}" for i in range(size)])
 
         @cached_method
-        def defining_relations(self: Self) -> "OrderedSet":
+        def defining_relations(self: "TorsionModuleParent") -> "OrderedSet":
             r"""Return commutativity and module relations as group words."""
             free = self.presenting_free_group()
             generators = free.gens()
@@ -387,7 +421,7 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
             )
             return finite_ordered_set(words)
 
-        def is_p_elementary(self: Self, p: "Integer") -> bool:
+        def is_p_elementary(self: "TorsionModuleParent", p: "Integer") -> bool:
             r"""Return whether $pA=0$, so that $A$ is a vector space over $\mathbb F_p$.
 
             The definition, asked of the module: $p$ kills $A$ exactly when it
@@ -400,7 +434,7 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
             assert p.is_prime(), f"p must be prime, got {p}"
             return p in self.annihilator()
 
-        def primary_decomposition(self: Self) -> dict:
+        def primary_decomposition(self: "TorsionModuleParent") -> dict:
             r"""Return the primary decomposition as $\{p: \text{orders}\}$.
 
             An invariant of the isomorphism class, read off the invariant
@@ -420,7 +454,7 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
                 for prime in sorted({prime for prime, _ in prime_powers})
             }
 
-        def __iter__(self: Self):
+        def __iter__(self: "TorsionModuleParent") -> "Iterator[Element]":
             from sage.misc.mrange import cartesian_product_iterator
 
             reduced = self.relation_matrix().normal_form()
@@ -430,13 +464,14 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
             ):
                 yield self._from_coordinates(point)
 
-        def annihilator(self: Self) -> "Ideal_pid":
+        def annihilator(self: "TorsionModuleParent") -> "Ideal_pid":
             r"""Return the annihilator ideal \(\operatorname{Ann}(M)\subseteq R\).
 
             An ideal, not the exponent generating it: the consumer at
             ``torsion_modules_with_form`` asks it for ``.gen()``.
             """
-            return SageZZ.ideal(self.exponent())
+            annihilator: "Ideal_pid" = SageZZ.ideal(self.exponent())
+            return annihilator
 
 
 def TorsionModule(presentation: "ModuleMorphism") -> FinitelyPresentedModule:

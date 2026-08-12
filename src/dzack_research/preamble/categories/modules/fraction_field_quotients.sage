@@ -41,7 +41,7 @@ element generating it -- so the ring is asked, and refuses.
 """
 
 from sage.rings.integer_ring import ZZ as SageZZ
-from typing import Self, TYPE_CHECKING
+from typing import Protocol, Self, TYPE_CHECKING
 
 from sage.arith.functions import lcm
 from sage.arith.misc import gcd
@@ -65,14 +65,38 @@ if TYPE_CHECKING:
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import FramingMorphism
 
 
+if TYPE_CHECKING:
+    class FractionFieldQuotientParent(Protocol):
+        r"""What a parent placed in ``FractionFieldQuotients(R)`` supplies."""
+
+        # Installed on the object by the constructor: the generator $n$ of
+        # the ideal quotiented out.
+        _fraction_field_modulus: "Element"
+
+        def base(self) -> "Ring": ...
+        def base_ring(self) -> "Ring": ...
+        def coerce_map_from(self, source: "Ring") -> "Morphism": ...
+        def fraction_field(self) -> "Ring": ...
+        def modulus(self) -> "Element": ...
+        def divisibility_chain(self, index: "Element") -> "Element": ...
+        def projection_from_fraction_field(self) -> "Morphism": ...
+        def _chain_class(self, index: "Element") -> "Element": ...
+        def lift(self, element: "Element") -> "Element": ...
+        def subobject_on(self, module_generators: "OrderedSet") -> "Subobject": ...
+        def __call__(self, x: object = ..., *args: object, **kwds: object) -> "Element": ...
+
+
 class FractionFieldQuotients(OwnedCategoryOverBaseRing):
     r"""Cokernels of a fractional ideal in the fraction field of $R$."""
 
     @staticmethod
-    def __classcall_private__(cls: type, base_ring: "Ring" = None) -> "FractionFieldQuotients":
-        return super().__classcall__(
+    def __classcall_private__(
+        cls: type["FractionFieldQuotients"], base_ring: "Ring | None" = None
+    ) -> "FractionFieldQuotients":
+        category: "FractionFieldQuotients" = super().__classcall__(
             cls, SageZZ if base_ring is None else engine_ring(base_ring)
         )
+        return category
 
     @classmethod
     def _repr_object_names(cls) -> str:
@@ -92,8 +116,7 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
         return [FramedModules(self.base_ring())]
 
     class ParentMethods:
-
-        def base_ring(self: Self) -> "Ring":
+        def base_ring(self: "FractionFieldQuotientParent") -> "Ring":
             r"""Return $R$, under the name a session names it by.
 
             Sage's $\mathbb Q/n\mathbb Z$ answers with the engine's
@@ -104,11 +127,11 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
             """
             return owned_ring_view(self.base())
 
-        def fraction_field(self: Self) -> "Ring":
+        def fraction_field(self: "FractionFieldQuotientParent") -> "Ring":
             r"""Return $K$, the field this is a quotient of."""
             return self.base_ring().fraction_field()
 
-        def modulus(self: Self) -> "Element":
+        def modulus(self: "FractionFieldQuotientParent") -> "Element":
             r"""Return the $n\in K$ generating the ideal quotiented out.
 
             A generator and not the ideal: this category's objects are
@@ -117,7 +140,7 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
             """
             return self._fraction_field_modulus
 
-        def lift(self: Self, element: "Element") -> "Element":
+        def lift(self: "FractionFieldQuotientParent", element: "Element") -> "Element":
             r"""Return a representative in $K$ of the class ``element``.
 
             The quotient map $K\to K/\mathfrak a$ has no section as a module
@@ -131,7 +154,7 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
             )
             return self.fraction_field()(element.lift())
 
-        def divisibility_chain(self: Self, index: "Element") -> "Element":
+        def divisibility_chain(self: "FractionFieldQuotientParent", index: "Element") -> "Element":
             r"""Return $d_n\in R$, the $n$-th step of a divisibility-cofinal chain.
 
             Cofinal for divisibility means every nonzero $r\in R$ divides some
@@ -148,7 +171,7 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
             )
             return SageZZ(index).factorial()
 
-        def framing_morphism(self: Self) -> "FramingMorphism":
+        def framing_morphism(self: "FractionFieldQuotientParent") -> "FramingMorphism":
             r"""Return the countable framing $F_R(\mathbb N)\twoheadrightarrow K/\mathfrak a$.
 
             $e_n\mapsto[1/d_n]$, which is the framing of $K$ followed by the
@@ -174,7 +197,7 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
                 self._chain_class,
             )
 
-        def projection_from_fraction_field(self: Self) -> "Morphism":
+        def projection_from_fraction_field(self: "FractionFieldQuotientParent") -> "Morphism":
             r"""Return $\pi:K\twoheadrightarrow K/\mathfrak a$, the map presenting this object.
 
             Sage's own declared coercion, asked for under the engine's name
@@ -182,15 +205,18 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
             a quotient of, so there is nothing here to construct.  Asked for
             by name because the framing is stated through it.
             """
-            return self.coerce_map_from(engine_ring(self.fraction_field()))
+            projection: "Morphism" = self.coerce_map_from(
+                engine_ring(self.fraction_field())
+            )
+            return projection
 
-        def _chain_class(self: Self, index: "Element") -> "Element":
+        def _chain_class(self: "FractionFieldQuotientParent", index: "Element") -> "Element":
             r"""Return $[1/d_n]=\pi(1/d_n)$, the framed generator at ``index``."""
             return self.projection_from_fraction_field()(
                 ~self.fraction_field()(self.divisibility_chain(index))
             )
 
-        def subobject_on(self: Self, module_generators: "OrderedSet") -> "Subobject":
+        def subobject_on(self: "FractionFieldQuotientParent", module_generators: "OrderedSet") -> "Subobject":
             r"""Return the submodule generated by finitely many classes.
 
             Cyclic, by the classification this category's docstring states:
@@ -236,7 +262,7 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
             )
             return Subobject(inclusion)
 
-        def submodule(self: Self, module_generators: "OrderedSet") -> "Subobject":
+        def submodule(self: "FractionFieldQuotientParent", module_generators: "OrderedSet") -> "Subobject":
             r"""Return the submodule generated by finitely many classes."""
             return self.subobject_on(module_generators)
 

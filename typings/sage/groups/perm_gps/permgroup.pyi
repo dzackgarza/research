@@ -5,11 +5,13 @@ from collections.abc import Iterator
 from typing import Any, Literal, TypeVar, overload
 
 from sage.rings.integer import Integer
+from sage.groups.finitely_presented import FinitelyPresentedGroup
 from sage.structure.parent import Parent
 
 _Point = TypeVar("_Point")
 
 class PermutationGroup_generic(Parent):
+    def as_finitely_presented_group(self, reduced: bool = ...) -> FinitelyPresentedGroup: ...
     def order(self) -> Integer: ...
     def gens(self) -> tuple[Any, ...]: ...
     def ngens(self) -> int: ...
