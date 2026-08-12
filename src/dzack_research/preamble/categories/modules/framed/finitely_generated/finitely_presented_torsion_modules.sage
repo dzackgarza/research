@@ -332,14 +332,11 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
             r"""Return this module as a finitely presented abelian group."""
             from sage.groups.free_group import FreeGroup
             from sage.misc.misc_c import prod
-            # Local: at module level this closes an import cycle; the group
-            # module is built by the time a group is asked for.
-            from dzack_research.preamble.categories.group.groups import own_group
 
             relations = self.relation_matrix()
             size = relations.ncols()
             if size == 0:
-                return own_group(FreeGroup(0, "e").quotient([]))
+                return FreeGroup(0, "e").quotient([])
 
             free = FreeGroup([f"e{i + 1}" for i in range(size)])
             # A free *group*, so its generators are group generators.  The
@@ -363,7 +360,7 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
                 )
                 for row in relations.rows()
             )
-            return own_group(free.quotient(words))
+            return free.quotient(words)
 
         def __iter__(self: Self):
             from sage.misc.mrange import cartesian_product_iterator

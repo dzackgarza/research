@@ -635,6 +635,128 @@ Rules distilled from preamble work on direct-sum coordinates, embeddings, and co
 
 **Catalogue is specimens plus nested namespaces, not ceremony.** Call `categories.install()` before building catalogue lattices; no manual `refine_one_lattice`. No `_with_names`, `_involutions`, `_embeddings`, or similar factories around one-liners or class bodies. Nested `Involutions` / `Embeddings` belong in the `Lattices` class body (populate empty nested classes in that body when Python scoping requires it); no post-hoc `__qualname__` patching or `Lattices.X = …` assignment after the class is built. Once the principled block or coinvariant API exists, catalogue entries use it everywhere — flat lists or kernel-basis shortcuts left “because they still work” are drift.
 
+# Python and Sage research code style (always-on)
+
+These rules govern Python, Sage, spikes, the preamble, the installed package, tests, and notebooks.
+Use the detailed mathematical and repository rules above when they give a narrower instruction.
+
+## Mathematical model before representation
+
+- Work in the order mathematical object → representation → implementation.
+- Start with the mathematical object, its data, its laws, and its hypotheses.
+- Identify the relevant category, objects, morphisms, functors, and universal properties before choosing classes or methods.
+- Map that representation into Sage only after its objects, morphisms, hypotheses, and constructions are specified.
+- Implement only the operations that remain after native Sage structure is used.
+- Do not derive an API from the methods, classes, or data layouts that happen to exist.
+- Do not duplicate the data of a chosen morphism in fields on its domain or codomain.
+- Represent a chosen representative of a subobject of $B$ by a monomorphism $f:A\hookrightarrow B$.
+- Obtain its target from `f.codomain()` and use $f$ as the chosen monomorphism.
+- Keep an element of $A$ distinct from its image in $B$.
+- Do not use coercion to erase the distinction between an element and its image.
+- Preserve distinctions between objects, presentations, morphisms, images, theorems, and decision procedures.
+- A presentation is not the object that it presents, a registry label is not a category, and runtime validation is not a theorem.
+- Never replace an undecidable equality problem with a new Boolean method.
+
+## Native Sage model and direct code
+
+- Use Sage's `Parent`, `Element`, `Category`, `Morphism`, and `Hom` structures.
+- Model a functor as a functor and a morphism as a morphism.
+- Let subcategory relations and Sage categories with axioms determine available methods, hypotheses, codomains, and algorithms.
+- Put mathematical operations, constructions, and predicates in category methods, as specified above.
+- Use a narrow subclass for one representation-specific defect that Sage categories cannot express.
+- Override only the incorrect operation and retain the established implementation.
+- Keep each method in the same order as the mathematical definition.
+- A mathematician must be able to compare the method body directly with that definition.
+- Do not hide the defining steps behind chains of non-mathematical helper functions.
+- Return results in their correct parent and category.
+- Make public operations and valid constructions explicit after every refactor.
+- Compare valid constructions, methods, category membership, result parents, and notebook behavior.
+- Compare semantics, not filenames, class counts, method counts, or structural similarity.
+
+## Types
+
+- Give each value the type that names its mathematical role.
+- Use `Parent` for an object of a Sage category, not `Any` or `object`.
+- Distinguish parents, elements, morphisms, coefficient rings, modules, matrices, domains, and codomains.
+- Treat each mypy error as evidence about the model or import boundary.
+- Fix the model, method owner, return contract, import path, or missing stub.
+- Never weaken an annotation to silence the checker.
+- Make stable `.sage` definitions importable when their real types cannot otherwise be named.
+
+## Simplicity and prior art
+
+- Choose the smallest implementation that satisfies the complete mathematical requirement.
+- Add no unused parameter, speculative extension point, or interface with one caller.
+- Add an abstraction only when a second real use requires it.
+- Use the project's dependencies before adding code or packages.
+- Use native Sage before adding a parallel implementation.
+- Use a maintained package or mature reference implementation before new local code.
+- Keep unavoidable local code small and cite its mature reference implementation.
+- Remove obsolete constructors, aliases, fallbacks, bridges, and compatibility paths.
+- Keep one current implementation for each operation or construction.
+
+## Names and ownership
+
+- Use established mathematical or Sage terminology.
+- Name each entity by its mathematical role, not its storage or implementation.
+- Treat a wrong name as possible evidence of a wrong abstraction.
+- Check the definition, type, owner, operations, and category before a semantic rename.
+- Give each mathematical entity one authoritative module and one public export.
+- Place public exports at a clear package boundary.
+- Keep category methods, catalogues of examples, session defaults, and computation code in their stated homes.
+- Keep definitions, terminology, category declarations, exports, and decisions in one authoritative source.
+- Do not create mirrored registries or synchronized copies.
+
+## Repository placement
+
+- Keep the installed package thin and stable.
+- Move code from a spike into `src/` only after a high-level research notebook uses it.
+- Do not promote code because it looks complete.
+- Develop new mathematics in the active spikes by generalizing from verified examples.
+- Use the frozen category specifications only as prior art.
+- Install published dependencies normally.
+- Put unpackaged external code in `computations/vendor/`.
+- Code in `computations/vendor/` never graduates into the maintained package.
+- Keep project-authored experimental code in a spike.
+- Treat `computations/notebooks/` as the researcher's control surface.
+- Do not reorganize, classify, or tidy that notebook tree unless the user asks.
+- Use editable installs and repository symlinks instead of notebook path manipulation.
+- Keep notebook setup cells minimal and make editable-install changes available without copying code.
+- Use high-level notebooks for real mathematical work, not only API demonstrations.
+- Keep the preamble small, cohesive, native to Sage, and usable without notebook setup.
+
+## Proof and tests
+
+- Test mathematical behavior and method resolution through Sage categories, not scaffolding or correction history.
+- Assert the correct parent, category, domain, codomain, images of elements where defined, composition, or mathematical equality.
+- Test high-level notebook operations when notebook usability is the claimed behavior.
+- Use the smallest test case that distinguishes correct behavior from a plausible failure.
+- Use a large named example only when the claim concerns that example.
+- Verify the surface named by the requirement.
+- Use a real Sage process for Sage behavior and a live kernel for notebook behavior.
+- Inspect rendered output when the requirement concerns rendering.
+- Treat a nearby green check as evidence only for the proposition it executes.
+
+## Performance and search
+
+- Measure wall time and its growth with input size.
+- Use call counts only to locate repeated work.
+- Remove repeated derivation, needless enumeration, repeated verification, and overly general algorithms.
+- Preserve code that shows the correct mathematical sequence, even when a faster form is less clear.
+- Start filesystem discovery at the requested path with a shallow query.
+- Expand the search only when the evidence requires it.
+
+## Completion and durability
+
+- Complete the original mathematical operation or construction, not only a local type, test, registry, or plan task.
+- Continue when the next in-scope step is clear and safe.
+- Defer work only for a real dependency or a required user decision.
+- Context limits and a successful local subtask do not justify deferral.
+- End each substantive unit in a focused commit.
+- Preserve unknown files until their ownership is known.
+- After ownership is known, commit required files and use recoverable deletion for disposable files.
+- Keep important work in version control, not only in a working tree or notebook session.
+
 # Addendum: installing methods on Sage objects via category refinement
 
 This addendum is the **mechanism** for §1 above (category as extension point).
