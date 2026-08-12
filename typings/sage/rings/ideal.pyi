@@ -3,6 +3,7 @@
 # An ideal of a principal ideal domain: generic in the ring's element type,
 # with the exact ZZ regime as the default (INVENTORY.md Part III, scalar
 # parametrization). A PID ideal is exactly its one generator.
+from collections.abc import Sequence
 from typing import Generic
 
 from typing_extensions import TypeVar
@@ -14,6 +15,11 @@ from sage.structure.parent import Parent
 _Scalar = TypeVar("_Scalar", bound=RingElement, default=Integer)
 
 class Ideal_generic(Element):
+    # sage/rings/ideal.py — Ideal_generic.__init__(ring, gens, coerce=True):
+    # the ambient ring and the generators the ideal is spanned by.
+    def __init__(
+        self, ring: Parent, gens: Sequence[Element] | Element = ..., coerce: bool = ...
+    ) -> None: ...
     def __contains__(self, x: object) -> bool: ...
     def gen(self, i: int = ...) -> Element: ...
     def gens(self) -> tuple[Element, ...]: ...

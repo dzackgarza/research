@@ -12,13 +12,15 @@ if TYPE_CHECKING:
 
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
 from collections.abc import Iterable
-from typing import Any, TYPE_CHECKING
+from typing import Protocol, TYPE_CHECKING
 
 from sage.categories.homset import Hom
 from sage.categories.morphism import SetMorphism
 from sage.categories.map import Map
 from sage.rings.ideal import Ideal_generic
 from sage.structure.parent import Parent
+
+from sage.categories.rings import Rings as SageRings
 
 from dzack_research.preamble.categories.sets.owned_sets import Sets
 from dzack_research.preamble.categories.sets.underlying_sets import UnderlyingSet
@@ -27,6 +29,55 @@ if TYPE_CHECKING:
     # The ordered-set noun is type-only: the preamble loads into one
     # shared namespace and nothing named OrderedSet may bind there.
     from dzack_research.preamble.lexicon import OrderedSet
+
+    # What this node requires of the two parents a presentation runs
+    # between.  Sage binds ``ParentMethods`` onto a parent by COPYING the
+    # methods into a dynamic class, so the object a method runs on is never
+    # an instance of the class the method is written in: ``self`` is
+    # annotated with what its placement gives it.
+
+    class PresentingAlgebraParent(Protocol):
+        r"""The free algebra a presentation is a quotient of.
+
+        It names the generating set \(S\), and it forms the quotient by an
+        ideal of relations -- which is what a finite presentation is.
+        """
+
+        def base_ring(self) -> "Ring": ...
+        def zero(self) -> "Element": ...
+        def one(self) -> "Element": ...
+        def algebra_generating_set(self) -> "OrderedSet": ...
+        def algebra_generator(self, label: "Element") -> "Element": ...
+        def ideal(self, generators: "OrderedSet") -> "Ideal_generic": ...
+        def quotient(self, relations: "Ideal_generic") -> "PresentedAlgebraParent": ...
+        def hom(
+            self, images: dict, codomain: "PresentedAlgebraParent"
+        ) -> "Morphism": ...
+
+    class PresentedAlgebraParent(Protocol):
+        r"""A parent in ``FinitelyPresentedAlgebras(R)``: the quotient, once
+        :func:`FinitelyPresentedAlgebra` has bound the presentation onto it.
+        """
+
+        _presentation_ring: "PresentingAlgebraParent"
+        _presentation_ideal: "Ideal_generic"
+        _presentation_generators: tuple["Element", ...]
+        _algebra_generator_morphism: SetMorphism
+        _algebra_presentation_morphism: "Morphism"
+
+        def __call__(self, representative: "Element") -> "Element": ...
+        def base_ring(self) -> "Ring": ...
+        def relations(self) -> "OrderedSet": ...
+        def algebra_generating_set(self) -> "OrderedSet": ...
+        def algebra_generator(self, label: "Element") -> "Element": ...
+        def algebra_generator_morphism(self) -> SetMorphism: ...
+        def presentation_ring(self) -> "PresentingAlgebraParent": ...
+        def _base_change_relation(
+            self,
+            relation: "Element",
+            ring_hom: "Morphism",
+            target_presentation_ring: "PresentingAlgebraParent",
+        ) -> "Element": ...
 
 
 class FinitelyPresentedAlgebras(OwnedCategoryOverBaseRing):
@@ -45,23 +96,27 @@ class FinitelyPresentedAlgebras(OwnedCategoryOverBaseRing):
         def is_finitely_presented(self) -> bool:
             return True
 
-        def presentation(self) -> tuple[Any, Any]:
+        def presentation(
+            self: "PresentedAlgebraParent",
+        ) -> tuple["PresentingAlgebraParent", "Ideal_generic"]:
             return (self._presentation_ring, self._presentation_ideal)
 
-        def presentation_ring(self) -> "Parent":
+        def presentation_ring(
+            self: "PresentedAlgebraParent",
+        ) -> "PresentingAlgebraParent":
             return self._presentation_ring
 
-        def presentation_ideal(self) -> "Parent":
+        def presentation_ideal(self: "PresentedAlgebraParent") -> "Ideal_generic":
             return self._presentation_ideal
 
-        def relations(self) -> "OrderedSet":
+        def relations(self: "PresentedAlgebraParent") -> "OrderedSet":
             return tuple(self._presentation_generators)
 
         def _base_change_relation(
             self,
             relation: "Element",
             ring_hom: "Morphism",
-            target_presentation_ring: "Parent",
+            target_presentation_ring: "PresentingAlgebraParent",
         ) -> "Element":
             mapped_relation = target_presentation_ring.zero()
             assert isinstance(ring_hom, Map), (
@@ -75,7 +130,9 @@ class FinitelyPresentedAlgebras(OwnedCategoryOverBaseRing):
                 mapped_relation += ring_hom(coefficient) * monomial_image
             return mapped_relation
 
-        def base_change(self, ring_hom: "Morphism") -> "Module":
+        def base_change(
+            self: "PresentedAlgebraParent", ring_hom: "Morphism"
+        ) -> "Module":
             """Transport this finitely presented algebra along a base-ring map."""
             # Local: both modules import this one, so module-level imports
             # here would close those cycles; they are built by call time.
@@ -103,16 +160,20 @@ class FinitelyPresentedAlgebras(OwnedCategoryOverBaseRing):
             )
             return FinitelyPresentedAlgebra(target_presentation, relations)
 
-        def algebra_generating_set(self) -> "OrderedSet":
+        def algebra_generating_set(self: "PresentedAlgebraParent") -> "OrderedSet":
             return self.presentation_ring().algebra_generating_set()
 
-        def algebra_generator_morphism(self) -> SetMorphism:
+        def algebra_generator_morphism(
+            self: "PresentedAlgebraParent",
+        ) -> SetMorphism:
             return self._algebra_generator_morphism
 
-        def algebra_generator(self, label: "Element") -> "Element":
+        def algebra_generator(
+            self: "PresentedAlgebraParent", label: "Element"
+        ) -> "Element":
             return self.algebra_generator_morphism()._call_(label)
 
-        def algebra_generators(self) -> "OrderedSet":
+        def algebra_generators(self: "PresentedAlgebraParent") -> "OrderedSet":
             assert self.algebra_generating_set() in Sets().Finite(), (
                 "algebra_generators() enumerates only finitely generated algebras"
             )
@@ -121,10 +182,14 @@ class FinitelyPresentedAlgebras(OwnedCategoryOverBaseRing):
                 for label in self.algebra_generating_set()
             )
 
-        def algebra_presentation_morphism(self) -> SetMorphism:
+        def algebra_presentation_morphism(
+            self: "PresentedAlgebraParent",
+        ) -> "Morphism":
             return self._algebra_presentation_morphism
 
-        def algebra_framing_morphism(self) -> SetMorphism:
+        def algebra_framing_morphism(
+            self: "PresentedAlgebraParent",
+        ) -> "Morphism":
             return self._algebra_presentation_morphism
 
 
@@ -148,16 +213,22 @@ class FramedFGAlgebras(OwnedCategoryOverBaseRing):
 _FINITELY_PRESENTED_ALGEBRAS_INSTALLED = False
 
 
-def _ideal_module_generators(relation_ideal: "Parent") -> "OrderedSet":
+def _ideal_module_generators(relation_ideal: "Ideal_generic") -> "OrderedSet":
     assert isinstance(relation_ideal, Ideal_generic), (
         "relations must be an ideal in the presenting parent"
     )
     return tuple(relation_ideal.gen(i) for i in range(relation_ideal.ngens()))
 
 
-def _relations_to_ideal(presentation_ring: "Parent", relations: "MorphismMatrix") -> tuple[Any, tuple[Any, ...]]:
+def _relations_to_ideal(
+    presentation_ring: "PresentingAlgebraParent",
+    relations: "Ideal_generic | Iterable[Element]",
+) -> tuple["Ideal_generic", tuple["Element", ...]]:
     if isinstance(relations, Ideal_generic):
-        assert relations.ring() is presentation_ring, (
+        # ``Ideal_generic.ring()`` reports the ring an ideal was formed in,
+        # which for these relations is the presenting algebra itself.
+        ideal_ring: "PresentingAlgebraParent | Parent" = relations.ring()
+        assert ideal_ring is presentation_ring, (
             "relations must lie in the presenting free algebra"
         )
         return relations, _ideal_module_generators(relations)
@@ -169,7 +240,9 @@ def _relations_to_ideal(presentation_ring: "Parent", relations: "MorphismMatrix"
     return presentation_ring.ideal(relation_generators), relation_generators
 
 
-def FinitelyPresentedAlgebra(presentation_ring: "Parent", relations: "MorphismMatrix") -> "Parent":
+def FinitelyPresentedAlgebra(
+    presentation_ring: "PresentingAlgebraParent", relations: "MorphismMatrix"
+) -> "Parent":
     """Present an algebra as ``presentation_ring/relations`` and expose the data."""
     # Local: free_algebras imports this module, so a module-level import here
     # would close that cycle; both are built by the time this runs.
@@ -211,7 +284,10 @@ def FinitelyPresentedAlgebra(presentation_ring: "Parent", relations: "MorphismMa
         quotient,
     )
 
-    return refine(quotient, FinitelyPresentedAlgebras(presentation_ring.base_ring()))
+    presented: "Parent" = refine(
+        quotient, FinitelyPresentedAlgebras(presentation_ring.base_ring())
+    )
+    return presented
 
 
 def FGAlgebra(base_ring: "Ring", algebra_generating_set: "OrderedSet", relations: "MorphismMatrix") -> "Parent":

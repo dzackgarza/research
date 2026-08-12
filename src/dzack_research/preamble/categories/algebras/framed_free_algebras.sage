@@ -38,7 +38,7 @@ if TYPE_CHECKING:
     from sage.rings.ring import Ring
 
 from collections.abc import Iterable as _Iterable
-from typing import Any, Self, TYPE_CHECKING
+from typing import Any, Protocol, TYPE_CHECKING
 
 from sage.categories.homset import Hom
 from sage.categories.morphism import SetMorphism
@@ -56,7 +56,11 @@ from sage.rings.polynomial.polynomial_ring_constructor import (
 )
 from sage.rings.ideal import Ideal_generic
 from sage.sets.image_set import ImageSubobject
+from sage.structure.element import Element as _SageElement
 from sage.structure.element import ModuleElement
+from sage.categories.rings import Rings as SageRings
+from sage.structure.element import RingElement
+from sage.structure.element import Vector
 from sage.structure.parent import Parent
 from sage.structure.unique_representation import UniqueRepresentation
 
@@ -69,6 +73,126 @@ if TYPE_CHECKING:
     # The ordered-set noun is type-only: the preamble loads into one
     # shared namespace and nothing named OrderedSet may bind there.
     from dzack_research.preamble.lexicon import OrderedSet
+
+    # The surfaces the category's methods are written against.  Sage binds
+    # ``ParentMethods`` onto a parent and ``ElementMethods`` onto its
+    # elements by COPYING them into a dynamic class, so neither edge is a
+    # Python base; ``typings/sage/categories/rings.pyi`` declares the same
+    # true edge statically, for the same reason.  At runtime both names are
+    # ``object``, so what Sage receives is the plain class it expects.
+
+    class FreeAlgebraParent(Protocol):
+        r"""A parent in ``FramedFreeAlgebras(R)``.
+
+        Two framings, and every operation below reads one of them: \(S\) is
+        the algebra framing and \(\operatorname{Mon}(S)\) the module one.
+        :class:`FreeAlgebraOnSet` is what answers them.
+        """
+
+        def base_ring(self) -> "Ring": ...
+        def one(self) -> "FreeAlgebraOnSetElement": ...
+        def zero(self) -> "FreeAlgebraOnSetElement": ...
+        def number_of_algebra_generators(self) -> "Cardinal": ...
+        def monomial_system(self) -> "MonomialSystem": ...
+        def algebra_generating_set(self) -> "OrderedSet": ...
+        def algebra_generator(self, label: "Element") -> "FreeAlgebraOnSetElement": ...
+        def module_generating_set(self) -> "OrderedSet": ...
+        def module_generator(
+            self, monomial: "Element"
+        ) -> "FreeAlgebraOnSetElement": ...
+        def _generator_images(
+            self,
+            images: "SetMorphism | dict | tuple | list | Callable",
+            codomain: "Module",
+        ) -> "tuple[Callable, Module]": ...
+        def _extend_to_monomials(
+            self, image_of_generator: "Callable", codomain: "Module"
+        ) -> "Callable": ...
+        def hom(
+            self,
+            images: "SetMorphism | dict | tuple | list | Callable",
+            codomain: "Module" = ...,
+        ) -> "FreeAlgebraMorphism": ...
+
+    class _MonomialParent(Parent):
+        r"""Where the monomials live: a monoid, or the finite subsets of
+        \(S\) for \(\Lambda\).  Two operations are common to all four, and
+        they are the ones :class:`MonomialSystem` reads."""
+
+        def one(self) -> "Element": ...
+        def gen(self, label: "Element") -> "Element": ...
+
+    class _PolynomialRing(Parent["_EnginePolynomial"]):
+        r"""The engine's \(R[x_s]\): the presentation this algebra crosses
+        into for division, factorisation and roots.  Its variables are what
+        the bijection \(S\leftrightarrow\{x_s\}\) is chosen against."""
+
+        def gens(self) -> tuple["_EnginePolynomial", ...]: ...
+        def ideal(self, generators: list["_EnginePolynomial"]) -> "_EngineIdeal": ...
+
+    class _EngineIdeal:
+        r"""An ideal of the polynomial presentation: what a quotient decides
+        equality by, through the normal form it can reduce to."""
+
+        def reduce(self, element: "_EnginePolynomial") -> "_EnginePolynomial": ...
+        def __contains__(self, element: "_EnginePolynomial") -> bool: ...
+
+    class _EnginePolynomial(RingElement):
+        r"""The engine's polynomial, on the far side of
+        :meth:`FreeAlgebraOnSet._as_polynomial`.
+
+        Named by the operations the crossing uses rather than by a class: the
+        presentation is univariate at rank one and multivariate above, and
+        Sage's two polynomial classes share no base below
+        ``CommutativeRingElement``.
+        """
+
+        def derivative(self, variable: "Element") -> "_EnginePolynomial": ...
+        def divides(self, other: "_EnginePolynomial") -> bool: ...
+        def dict(self) -> dict["Element", "Element"]: ...
+        def roots(
+            self, ring: "Parent | None" = ..., multiplicities: bool = ...
+        ) -> list: ...
+        def __mod__(self, other: "_EnginePolynomial") -> "_EnginePolynomial": ...
+
+    class _NumberFieldCoefficient(RingElement):
+        r"""A base-ring coefficient when the base ring is a number field: it
+        is written in the power basis of the primitive element, which is what
+        the crossing transports."""
+
+        def _power_basis_coordinates(self) -> "Vector": ...
+
+    class FreeAlgebraElement(Protocol):
+        r"""An element of a framed free algebra: a finitely supported
+        function on \(\operatorname{Mon}(S)\), so its coefficients are a
+        lookup rather than a question for an engine."""
+
+        def parent(self) -> "FreeAlgebraOnSet": ...
+        def base_ring(self) -> "Ring": ...
+        def coefficients(self) -> dict["Element", "Element"]: ...
+        def degree(self) -> "Integer": ...
+        def coefficient(self, monomial: "Element") -> "Element": ...
+        def leading_coefficient(self) -> "Element": ...
+        def denominator(self) -> "Element": ...
+        def derivative(self, label: "Element" = ...) -> "Element": ...
+        def gcd(self, other: "Element") -> "Element": ...
+        def subs(self, values: dict) -> "Element": ...
+        def roots(
+            self, ring: "Ring" = ..., multiplicities: bool = ...
+        ) -> list: ...
+        def _delegate(self, name: str, *arguments: "Element") -> "Element": ...
+
+    class _PresentedAlgebraBase(Parent["PresentedFreeAlgebraElement"]):
+        r"""``Parent`` with this algebra's element type bound.
+
+        The runtime class is a Cython extension type and is not
+        subscriptable, so the binding is declared here and the plain
+        ``Parent`` is what is inherited at runtime -- the technique
+        ``typings/sage/structure/parent.pyi`` describes.
+        """
+
+else:
+    _PresentedAlgebraBase = Parent
 
 
 assert "FramedAlgebras" in globals(), (
@@ -116,11 +240,26 @@ class MonomialSystem:
     written against.  Order matters for words and is harmless elsewhere.
     """
 
+    if TYPE_CHECKING:
+        # What one construction supplies and the next one differs in.  The
+        # degree, enumeration and word methods below are written against
+        # these four, which is what makes the four constructions one class;
+        # each subclass answers them, and only there.
+        @staticmethod
+        def _build_parent(labels: "OrderedSet") -> "_MonomialParent": ...
+        def one(self) -> "Element": ...
+        def generator(self, label: "Element") -> "Element": ...
+        def factors(self, monomial: "Element") -> tuple: ...
+        def product(self, left: "Element", right: "Element") -> tuple: ...
+        def monomials_of_degree(
+            self, degree: "Integer | int"
+        ) -> Parent | tuple: ...
+
     def __init__(self, labels: "OrderedSet") -> None:
         self._labels = labels
         self._parent = self._build_parent(labels)
 
-    def parent(self) -> Parent:
+    def parent(self) -> "_MonomialParent":
         r"""Return the parent the monomials live in."""
         return self._parent
 
@@ -139,7 +278,7 @@ class MonomialSystem:
         )
         return tuple(self._labels)
 
-    def _monomials_by_exponent_vector(self, degree: "Integer") -> tuple:
+    def _monomials_by_exponent_vector(self, degree: "Integer | int") -> tuple:
         r"""Return the monomials of a degree, as exponent vectors on the labels."""
         from sage.combinat.integer_vector import IntegerVectors
 
@@ -154,7 +293,7 @@ class MonomialSystem:
 
     def _monomials_from_words(
         self,
-        degree: "Integer",
+        degree: "Integer | int",
         *,
         injective: bool,
     ) -> Parent:
@@ -167,7 +306,8 @@ class MonomialSystem:
         degree = int(degree)
         assert degree >= 0, "a graded degree is nonnegative"
         if degree == 0:
-            return finite_ordered_set((self.one(),))
+            one_only: Parent = finite_ordered_set((self.one(),))
+            return one_only
         words = cartesian_product([self._labels] * degree)
 
         def monomial_of_word(word: "Element") -> "Element":
@@ -184,7 +324,7 @@ class MonomialSystem:
             )
             return words(letters)
 
-        return refine(
+        monomials: Parent = refine(
             ImageSet(
                 monomial_of_word,
                 words,
@@ -193,14 +333,16 @@ class MonomialSystem:
             ),
             Sets().Infinite(),
         )
+        return monomials
 
 
 class CommutativeMonomials(MonomialSystem):
     r"""\(\operatorname{Mon}(S)\): the free commutative monoid, for \(\operatorname{Sym}\)."""
 
     @staticmethod
-    def _build_parent(labels: "OrderedSet") -> Parent:
-        return FreeAbelianMonoid(labels)
+    def _build_parent(labels: "OrderedSet") -> "_MonomialParent":
+        monoid: "_MonomialParent" = FreeAbelianMonoid(labels)
+        return monoid
 
     def one(self) -> "Element":
         return self._parent.one()
@@ -214,7 +356,7 @@ class CommutativeMonomials(MonomialSystem):
     def product(self, left: "Element", right: "Element") -> tuple:
         return (1, left * right)
 
-    def monomials_of_degree(self, degree: "Integer") -> Parent | tuple:
+    def monomials_of_degree(self, degree: "Integer | int") -> Parent | tuple:
         if self._labels in Sets().Finite():
             return self._monomials_by_exponent_vector(degree)
         return self._monomials_from_words(degree, injective=False)
@@ -228,8 +370,9 @@ class WordMonomials(MonomialSystem):
     """
 
     @staticmethod
-    def _build_parent(labels: "OrderedSet") -> Parent:
-        return _FreeMonoid(labels)
+    def _build_parent(labels: "OrderedSet") -> "_MonomialParent":
+        monoid: "_MonomialParent" = _FreeMonoid(labels)
+        return monoid
 
     def one(self) -> "Element":
         return self._parent.one()
@@ -243,7 +386,7 @@ class WordMonomials(MonomialSystem):
     def product(self, left: "Element", right: "Element") -> tuple:
         return (1, left * right)
 
-    def monomials_of_degree(self, degree: "Integer") -> Parent | tuple:
+    def monomials_of_degree(self, degree: "Integer | int") -> Parent | tuple:
         r"""Return the words of a length: \(\mathrm{rank}^n\) of them."""
         from itertools import product as _tuples
 
@@ -273,7 +416,7 @@ class AlternatingMonomials(MonomialSystem):
     """
 
     @staticmethod
-    def _build_parent(labels: "OrderedSet") -> Parent:
+    def _build_parent(labels: "OrderedSet") -> "_MonomialParent":
         r"""Return the finite subsets of \(S\), which is what \(\Lambda\) is free on.
 
         Finite subsets, not subsets: a monomial is a wedge of finitely many
@@ -283,9 +426,10 @@ class AlternatingMonomials(MonomialSystem):
         """
         from dzack_research.preamble.categories.sets.sets import FiniteSubsets
 
-        return FiniteSubsets(labels)
+        subsets: "_MonomialParent" = FiniteSubsets(labels)
+        return subsets
 
-    def _subset(self, members) -> "Element":
+    def _subset(self, members: "_Iterable[Element]") -> "Element":
         r"""Return the monomial that is the subset with these members."""
         from dzack_research.preamble.categories.sets.sets import SubsetsOfSize
 
@@ -321,14 +465,15 @@ class AlternatingMonomials(MonomialSystem):
         )
         return ((-1) ** inversions, self._subset(set(left) | set(right)))
 
-    def monomials_of_degree(self, degree: "Integer") -> Parent | tuple:
+    def monomials_of_degree(self, degree: "Integer | int") -> Parent | tuple:
         r"""Return the subsets of a size: \(\binom{n}{k}\) of them."""
         from dzack_research.preamble.categories.sets.sets import SubsetsOfSize
 
-        subsets = SubsetsOfSize(self._labels, int(degree))
+        subsets: "OrderedSet" = SubsetsOfSize(self._labels, int(degree))
         if int(degree) == 0 or self._labels in Sets().Finite():
             return tuple(subsets)
-        return subsets
+        of_that_size: Parent = subsets
+        return of_that_size
 
 
 class DividedMonomials(MonomialSystem):
@@ -344,8 +489,9 @@ class DividedMonomials(MonomialSystem):
     """
 
     @staticmethod
-    def _build_parent(labels: "OrderedSet") -> Parent:
-        return FreeAbelianMonoid(labels)
+    def _build_parent(labels: "OrderedSet") -> "_MonomialParent":
+        monoid: "_MonomialParent" = FreeAbelianMonoid(labels)
+        return monoid
 
     def one(self) -> "Element":
         return self._parent.one()
@@ -365,7 +511,7 @@ class DividedMonomials(MonomialSystem):
             coefficient *= binomial(left_exponents.get(label, 0) + exponent, exponent)
         return (coefficient, left * right)
 
-    def monomials_of_degree(self, degree: "Integer") -> Parent | tuple:
+    def monomials_of_degree(self, degree: "Integer | int") -> Parent | tuple:
         if self._labels in Sets().Finite():
             return self._monomials_by_exponent_vector(degree)
         return self._monomials_from_words(degree, injective=False)
@@ -386,11 +532,11 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
         ]
 
     class ParentMethods:
-        def number_of_algebra_generators(self) -> "Cardinal":
+        def number_of_algebra_generators(self: "FreeAlgebraParent") -> "Cardinal":
             r"""Return \(|S|\), the cardinality of the algebra generating set."""
             return self.algebra_generating_set().cardinality()
 
-        def number_of_module_generators(self) -> "Cardinal":
+        def number_of_module_generators(self: "FreeAlgebraParent") -> "Cardinal":
             r"""Return \(|\operatorname{Mon}(S)|\).
 
             Two framings, two counts: the module framing is by monomials, so
@@ -401,7 +547,7 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
             return self.module_generating_set().cardinality()
 
         def hom(
-            self,
+            self: "FreeAlgebraParent",
             images: "SetMorphism | dict | tuple | list | Callable",
             codomain: "Module" = None,
         ) -> "ModuleMorphism":
@@ -435,7 +581,9 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
                 ),
             )
 
-        def induced_hom(self, set_morphism: SetMorphism, codomain: "Module") -> "Morphism":
+        def induced_hom(
+            self: "FreeAlgebraParent", set_morphism: SetMorphism, codomain: "Module"
+        ) -> "Morphism":
             r"""Return \(\operatorname{FreeAlg}_R(g)\) for \(g:S\to T\).
 
             The free construction is a functor, and this is its action on a
@@ -449,12 +597,13 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
                 codomain.algebra_generating_set(),
                 Sets(),
             ), "the map must have the two algebra generating sets as endpoints"
-            return self.hom(
+            induced: "Morphism" = self.hom(
                 lambda label: codomain.algebra_generator(set_morphism._call_(label)),
                 codomain,
             )
+            return induced
 
-        def _an_element_(self) -> "Element":
+        def _an_element_(self: "FreeAlgebraParent") -> "Element":
             r"""Return \(1+s\) for a generator \(s\), or \(1\) if there are none.
 
             Named rather than left to be guessed: Sage's default looks for an
@@ -469,15 +618,16 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
                 next(iter(generators))
             )
 
-        def characteristic(self) -> "Integer":
+        def characteristic(self: "FreeAlgebraParent") -> "Integer":
             r"""Return the characteristic, which is the base ring's.
 
             Adjoining indeterminates adds no additive relation, so nothing
             here can change it.
             """
-            return self.base_ring().characteristic()
+            characteristic: "Integer" = self.base_ring().characteristic()
+            return characteristic
 
-        def is_field(self) -> bool:
+        def is_field(self: "FreeAlgebraParent") -> bool:
             r"""Return whether this algebra is a field.
 
             A generator is never invertible -- there is no monomial of
@@ -488,7 +638,7 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
                 return False
             return bool(self.base_ring().is_field())
 
-        def is_integral_domain(self) -> bool:
+        def is_integral_domain(self: "FreeAlgebraParent") -> bool:
             r"""Return whether this algebra has no zero divisors.
 
             The degree is additive on products, so a product of nonzero
@@ -497,7 +647,7 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
             """
             return bool(self.base_ring().is_integral_domain())
 
-        def krull_dimension(self) -> "Integer":
+        def krull_dimension(self: "FreeAlgebraParent") -> "Integer":
             r"""Return \(\dim R+|S|\), for \(R\) Noetherian.
 
             Adjoining one indeterminate raises the dimension by one, which is
@@ -509,7 +659,10 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
                 "the dimension of an algebra on infinitely many generators is "
                 "infinite, and is not read off a finite sum"
             )
-            return self.base_ring().krull_dimension() + rank.finite_value()
+            dimension: "Integer" = (
+                self.base_ring().krull_dimension() + rank.finite_value()
+            )
+            return dimension
 
         def linear_combination(self, coefficients: dict) -> "Element":
             r"""Refuse: an algebra element is built from the algebra generators.
@@ -526,7 +679,7 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
             )
 
     class ElementMethods:
-        def multidegree(self: Self) -> dict:
+        def multidegree(self: "FreeAlgebraElement") -> dict:
             r"""Return \(s\mapsto\deg_s\), the degree in each generator.
 
             Also canonical at every rank, and for a different reason than a
@@ -550,17 +703,17 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
         # questions for an engine.
         # ---------------------------------------------------------------
 
-        def coefficient(self: Self, monomial: "Element") -> "Element":
+        def coefficient(self: "FreeAlgebraElement", monomial: "Element") -> "Element":
             r"""Return the coefficient of ``monomial``, zero when absent."""
             return self.coefficients().get(
                 monomial, self.parent().base_ring().zero()
             )
 
-        def constant_coefficient(self: Self) -> "Element":
+        def constant_coefficient(self: "FreeAlgebraElement") -> "Element":
             r"""Return the coefficient of \(1\): this element's value at zero."""
             return self.coefficient(self.parent().monomial_system().one())
 
-        def leading_coefficient(self: Self) -> "Element":
+        def leading_coefficient(self: "FreeAlgebraElement") -> "Element":
             r"""Return the coefficient of the top-degree part, at rank one.
 
             Above rank one 'leading' is a choice of monomial order, which this
@@ -582,11 +735,12 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
                 if system.degree(monomial) == top
             )
 
-        def is_monic(self: Self) -> bool:
+        def is_monic(self: "FreeAlgebraElement") -> bool:
             r"""Return whether the leading coefficient is \(1\)."""
-            return self.leading_coefficient() == self.parent().base_ring().one()
+            monic: bool = self.leading_coefficient() == self.parent().base_ring().one()
+            return monic
 
-        def monic(self: Self) -> "Element":
+        def monic(self: "FreeAlgebraElement") -> "Element":
             r"""Return this element scaled to leading coefficient \(1\)."""
             leading = self.leading_coefficient()
             assert leading.is_unit(), (
@@ -601,10 +755,12 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
         # own presentation -- once -- and comes back as algebra elements.
         # ---------------------------------------------------------------
 
-        def _delegate(self: Self, name: str, *arguments: object) -> object:
+        def _delegate(self: "FreeAlgebraElement", name: str, *arguments: "Element") -> "Element":
             r"""Return the engine's answer to ``name`` at the presentation."""
             parent = self.parent()
-            presented = [parent._as_polynomial(self)]
+            presented: list["_EnginePolynomial | Element"] = [
+                parent._as_polynomial(self)
+            ]
             for argument in arguments:
                 presented.append(
                     parent._as_polynomial(argument)
@@ -613,7 +769,7 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
                 )
             return getattr(presented[0], name)(*presented[1:])
 
-        def derivative(self: Self, label: "Element" = None) -> "Element":
+        def derivative(self: "FreeAlgebraElement", label: "Element" = None) -> "Element":
             r"""Return \(\partial/\partial s\) for the generator \(s\).
 
             A derivation of the algebra, determined by where it sends the
@@ -632,7 +788,7 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
                 parent._as_polynomial(self).derivative(variable)
             )
 
-        def quo_rem(self: Self, other: "Element") -> tuple:
+        def quo_rem(self: "FreeAlgebraElement", other: "Element") -> tuple:
             r"""Return \((q,r)\) with ``self`` \(=q\cdot\)``other``\(+r\)."""
             quotient, remainder = self._delegate("quo_rem", other)
             parent = self.parent()
@@ -641,15 +797,15 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
                 parent._from_polynomial(remainder),
             )
 
-        def gcd(self: Self, other: "Element") -> "Element":
+        def gcd(self: "FreeAlgebraElement", other: "Element") -> "Element":
             r"""Return a greatest common divisor of the two."""
             return self.parent()._from_polynomial(self._delegate("gcd", other))
 
-        def lcm(self: Self, other: "Element") -> "Element":
+        def lcm(self: "FreeAlgebraElement", other: "Element") -> "Element":
             r"""Return a least common multiple of the two."""
             return self.parent()._from_polynomial(self._delegate("lcm", other))
 
-        def xgcd(self: Self, other: "Element") -> tuple:
+        def xgcd(self: "FreeAlgebraElement", other: "Element") -> tuple:
             r"""Return \((g,a,b)\) with \(g=a\cdot\)``self``\(+b\cdot\)``other``."""
             parent = self.parent()
             return tuple(
@@ -657,11 +813,11 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
                 for entry in self._delegate("xgcd", other)
             )
 
-        def is_irreducible(self: Self) -> bool:
+        def is_irreducible(self: "FreeAlgebraElement") -> bool:
             r"""Return whether this element is irreducible in the algebra."""
             return bool(self._delegate("is_irreducible"))
 
-        def irreducible_factors(self: Self) -> tuple:
+        def irreducible_factors(self: "FreeAlgebraElement") -> tuple:
             r"""Return the irreducible factors with their multiplicities.
 
             The unit is not among them: over a field it is
@@ -674,7 +830,7 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
                 for factor, multiplicity in self._delegate("factor")
             )
 
-        def resultant(self: Self, other: "Element") -> "Element":
+        def resultant(self: "FreeAlgebraElement", other: "Element") -> "Element":
             r"""Return \(\operatorname{Res}\) of the two, at rank one.
 
             An element of the base ring: it vanishes exactly when the two have
@@ -687,7 +843,7 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
             )
             return self._delegate("resultant", other)
 
-        def discriminant(self: Self) -> "Element":
+        def discriminant(self: "FreeAlgebraElement") -> "Element":
             r"""Return \(\operatorname{disc}\), zero exactly on a repeated root."""
             assert self.parent().number_of_algebra_generators() == 1, (
                 "the discriminant is the resultant with the derivative, and "
@@ -695,7 +851,9 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
             )
             return self._delegate("discriminant")
 
-        def roots(self: Self, ring: "Ring" = None, multiplicities: bool = True):
+        def roots(
+            self: "FreeAlgebraElement", ring: "Ring" = None, multiplicities: bool = True
+        ) -> list:
             r"""Return the roots of this element, with multiplicities.
 
             ``ring`` left open means the base ring, as it does everywhere.
@@ -729,21 +887,22 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
                 return [root for root, _ in real_roots]
             return presented.roots(ring=ring, multiplicities=multiplicities)
 
-        def any_root(self: Self, ring: "Ring" = None) -> "Element":
+        def any_root(self: "FreeAlgebraElement", ring: "Ring" = None) -> "Element":
             r"""Return one root, in ``ring`` when given."""
             roots = self.roots(ring=ring, multiplicities=False)
             assert roots, "this element has no root in that ring"
             return roots[0]
 
-        def monomials(self: Self) -> tuple:
+        def monomials(self: "FreeAlgebraElement") -> tuple:
             r"""Return the monomials this element is supported on."""
             return tuple(self.coefficients())
 
-        def is_constant(self: Self) -> bool:
+        def is_constant(self: "FreeAlgebraElement") -> bool:
             r"""Return whether this element lies in the base ring."""
-            return self.degree() <= 0
+            constant: bool = self.degree() <= 0
+            return constant
 
-        def is_squarefree(self: Self) -> bool:
+        def is_squarefree(self: "FreeAlgebraElement") -> bool:
             r"""Return whether no irreducible divides this element twice.
 
             Decided by \(\gcd(f,f')\), which is a unit exactly then -- so it
@@ -756,9 +915,10 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
             )
             if self == self.parent().zero():
                 return False
-            return self.gcd(self.derivative()).degree() == 0
+            squarefree: bool = self.gcd(self.derivative()).degree() == 0
+            return squarefree
 
-        def complex_roots(self: Self) -> tuple:
+        def complex_roots(self: "FreeAlgebraElement") -> tuple:
             r"""Return the roots in \(\overline{\QQ}\), where there are \(\deg\) of them.
 
             The algebraically closed answer, which is the one the degree
@@ -766,7 +926,7 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
             """
             return tuple(self.roots(ring=_AlgebraicNumbers, multiplicities=True))
 
-        def content(self: Self) -> "Element":
+        def content(self: "FreeAlgebraElement") -> "Element":
             r"""Return the gcd of the coefficients.
 
             A statement about the coefficients, so it is read off the framing:
@@ -781,14 +941,14 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
                 content = content.gcd(coefficient)
             return content
 
-        def denominator(self: Self) -> "Element":
+        def denominator(self: "FreeAlgebraElement") -> "Element":
             r"""Return the least common denominator of the coefficients."""
             denominator = self.base_ring().one()
             for coefficient in self.coefficients().values():
                 denominator = denominator.lcm(coefficient.denominator())
             return denominator
 
-        def numerator(self: Self) -> "Element":
+        def numerator(self: "FreeAlgebraElement") -> "Element":
             r"""Return this element cleared of denominators.
 
             The same element scaled by :meth:`denominator`, so its
@@ -797,7 +957,7 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
             """
             return self.denominator() * self
 
-        def change_ring(self: Self, ring: "Ring") -> "Element":
+        def change_ring(self: "FreeAlgebraElement", ring: "Ring") -> "Element":
             r"""Return this element with its coefficients moved to ``ring``.
 
             The image under \(\operatorname{FreeAlg}_R(S)\to
@@ -805,7 +965,9 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
             a map of base rings: the generating set is untouched, which is
             what makes the two algebras comparable at all.
             """
-            target = FreeAlgebraOn(ring, self.parent().algebra_generating_set())
+            target: "FreeAlgebraOnSet" = FreeAlgebraOn(
+                ring, self.parent().algebra_generating_set()
+            )
             image = target.zero()
             system = self.parent().monomial_system()
             for monomial, coefficient in self.coefficients().items():
@@ -815,7 +977,7 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
                 image = image + term
             return image
 
-        def subs(self: Self, values: dict) -> "Element":
+        def subs(self: "FreeAlgebraElement", values: dict) -> "Element":
             r"""Return the value of this element at ``values``, keyed by label.
 
             Evaluation is the universal property, so it is the algebra map out
@@ -836,7 +998,7 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
                 total = total + term
             return total
 
-        def __call__(self: Self, *values: object) -> "Element":
+        def __call__(self: "FreeAlgebraElement", *values: object) -> "Element":
             r"""Evaluate at the generators in their framing's order."""
             labels = tuple(self.parent().algebra_generating_set())
             assert len(values) == len(labels), (
@@ -851,9 +1013,10 @@ class FreeAlgebraMorphism(ModuleMorphism):
     r"""Algebra morphisms are module maps on monomial generators."""
 
     def _domain_module_generating_set(self) -> Parent:
-        return self.domain().module_generating_set()
+        generating_set: Parent = self.domain().module_generating_set()
+        return generating_set
 
-    def then(self, other: object) -> "FreeAlgebraMorphism":
+    def then(self, other: ModuleMorphism) -> "FreeAlgebraMorphism":
         r"""Compose this morphism with a second morphism.
 
         This returns ``other ∘ self`` by extending the composition on
@@ -881,9 +1044,10 @@ class DividedPowerAlgebraMorphism(FreeAlgebraMorphism):
 
     def preserves_divided_power(self, element: "Element", degree: int) -> bool:
         r"""Return whether this map sends \(\gamma_n(x)\) to \(\gamma_n(f(x))\)."""
-        return self(self.domain().divided_power(element, degree)) == (
+        preserved: bool = self(self.domain().divided_power(element, degree)) == (
             self.codomain().divided_power(self(element), degree)
         )
+        return preserved
 
 
 class FreeAlgebraIdeal(Ideal_generic):
@@ -894,21 +1058,30 @@ class FreeAlgebraIdeal(Ideal_generic):
     normal form is the polynomial one, read through the presentation.
     """
 
+    if TYPE_CHECKING:
+        # The ring is the free algebra this ideal was formed in, and its
+        # generators are elements of that algebra -- which is what carries
+        # the polynomial presentation read below.
+        def ring(self) -> "FreeAlgebraOnSet": ...
+        def gens(self) -> tuple["FreeAlgebraOnSetElement", ...]: ...
+
     @cached_method
-    def _polynomial_ideal(self) -> "Ideal_generic":
+    def _polynomial_ideal(self) -> "_EngineIdeal":
         algebra = self.ring()
         return algebra._polynomial_ring().ideal(
             [algebra._as_polynomial(generator) for generator in self.gens()]
         )
 
-    def reduce(self, element: "Element") -> "Element":
+    def reduce(
+        self, element: "FreeAlgebraOnSetElement"
+    ) -> "FreeAlgebraOnSetElement":
         r"""Return the normal form of ``element`` modulo this ideal."""
         algebra = self.ring()
         return algebra._from_polynomial(
             self._polynomial_ideal().reduce(algebra._as_polynomial(element))
         )
 
-    def _contains_(self, element: "Element") -> bool:
+    def _contains_(self, element: "FreeAlgebraOnSetElement") -> bool:
         algebra = self.ring()
         return algebra._as_polynomial(element) in self._polynomial_ideal()
 
@@ -924,9 +1097,10 @@ class FreeAlgebraOnSetElement(FreeModuleOnSetElement):
         available here.
         """
         parent = self.parent()
-        return parent._from_polynomial(
+        reduced: "FreeAlgebraOnSetElement" = parent._from_polynomial(
             parent._as_polynomial(self) % parent._as_polynomial(other)
         )
+        return reduced
 
     def divides(self, other: "Element") -> bool:
         r"""Return whether this element divides ``other`` in the algebra.
@@ -938,7 +1112,10 @@ class FreeAlgebraOnSetElement(FreeModuleOnSetElement):
             "divisibility is a question inside one algebra"
         )
         parent = self.parent()
-        return parent._as_polynomial(self).divides(parent._as_polynomial(other))
+        divides: bool = parent._as_polynomial(self).divides(
+            parent._as_polynomial(other)
+        )
+        return divides
 
     def _mul_(self, other: object) -> "FreeAlgebraOnSetElement":
         assert (
@@ -947,7 +1124,7 @@ class FreeAlgebraOnSetElement(FreeModuleOnSetElement):
         ), "free-algebra multiplication requires elements of one parent"
         parent = self.parent()
         zero = parent.base_ring().zero()
-        coefficients = {}
+        coefficients: dict["Element", "Element"] = {}
         for left_monomial, left_coefficient in self.coefficients().items():
             for right_monomial, right_coefficient in other.coefficients().items():
                 sign, monomial = parent.monomial_system().product(
@@ -958,9 +1135,12 @@ class FreeAlgebraOnSetElement(FreeModuleOnSetElement):
                 coefficients[monomial] = coefficients.get(monomial, zero) + (
                     sign * left_coefficient * right_coefficient
                 )
-        return parent.element_class(parent, coefficients)
+        product: "FreeAlgebraOnSetElement" = parent.element_class(
+            parent, coefficients
+        )
+        return product
 
-    def underlying_set_element(self) -> "Element":
+    def underlying_set_element(self) -> "_SageElement":
         r"""Recover the algebra label ``s`` when this element is ``[s]``."""
         assert len(self._coefficients) == 1, (
             "only an element in the image of the canonical algebra generator map "
@@ -971,7 +1151,8 @@ class FreeAlgebraOnSetElement(FreeModuleOnSetElement):
             "only an element in the image of the canonical algebra generator map "
             "has coefficient one"
         )
-        return self.parent()._algebra_generator_label(monomial)
+        label: "_SageElement" = self.parent()._algebra_generator_label(monomial)
+        return label
 
 
 class FreeAlgebraOnSet(FreeModuleOnSet):
@@ -992,7 +1173,7 @@ class FreeAlgebraOnSet(FreeModuleOnSet):
     # names which construction that makes this.  Swapping the pair is the
     # whole difference between the free constructions, so both are stated
     # once here and nothing below asks what flavour it is.
-    _monomials = CommutativeMonomials
+    _monomials: type[MonomialSystem] = CommutativeMonomials
 
     @staticmethod
     def _flavour_category(base_ring: "Ring") -> "Category":
@@ -1005,6 +1186,7 @@ class FreeAlgebraOnSet(FreeModuleOnSet):
         # of a ring whose underlying module is over the engine's is not one
         # object, and the framing morphism is where that shows.
         base_ring = engine_ring(base_ring)
+        self._algebra_generating_set: "OrderedSet"
         if isinstance(algebra_generating_set, Parent):
             self._algebra_generating_set = algebra_generating_set
         else:
@@ -1038,7 +1220,9 @@ class FreeAlgebraOnSet(FreeModuleOnSet):
             self.algebra_generator,
         )
 
-    def _element_constructor_(self, value: "Element") -> "Element":
+    def _element_constructor_(
+        self, value: "FreeAlgebraOnSetElement | RingElement"
+    ) -> "FreeAlgebraOnSetElement":
         r"""Return ``value`` as an element of this algebra.
 
         An \(R\)-algebra comes with its structure map \(R\to A\), so a scalar
@@ -1051,14 +1235,18 @@ class FreeAlgebraOnSet(FreeModuleOnSet):
         element constructor, and it runs before this parent is refined.
         """
         if isinstance(value, FreeModuleOnSetElement) and value.parent() is self:
-            return value
+            own_element: "FreeAlgebraOnSetElement" = value
+            return own_element
         assert value in self.base_ring(), (
             f"{value} is neither an element of {self} nor a scalar of "
             f"{self.base_ring()}"
         )
-        return self.base_ring()(value) * self.one()
+        scalar_multiple: "FreeAlgebraOnSetElement" = (
+            self.base_ring()(value) * self.one()
+        )
+        return scalar_multiple
 
-    def _engine_base_ring(self) -> Parent:
+    def _engine_base_ring(self) -> "SageRings.ParentMethods":
         r"""Return the base ring as the engine knows how to compute in it.
 
         A base ring the preamble presents as a quotient -- a number field --
@@ -1073,12 +1261,16 @@ class FreeAlgebraOnSet(FreeModuleOnSet):
 
         base_ring = self.base_ring()
         if base_ring.category().is_subcategory(OwnedNumberFields()):
-            return base_ring._engine_field()
+            engine_field: "SageRings.ParentMethods" = base_ring._engine_field()
+            return engine_field
         # A ring the session names is reported in the session's word; Singular
         # is not told about that word, so the crossing unwraps it here.
-        return engine_ring(base_ring)
+        engine_base_ring: "SageRings.ParentMethods" = engine_ring(base_ring)
+        return engine_base_ring
 
-    def _as_engine_coefficient(self, coefficient: "Element") -> "Element":
+    def _as_engine_coefficient(
+        self, coefficient: "_NumberFieldCoefficient"
+    ) -> "RingElement":
         r"""Return ``coefficient`` in :meth:`_engine_base_ring`."""
         # Local: number_fields imports this module, so a module-level import
         # would close that cycle; it is built by the time this method runs.
@@ -1102,7 +1294,7 @@ class FreeAlgebraOnSet(FreeModuleOnSet):
             power *= generator
         return total
 
-    def _from_engine_coefficient(self, value: "Element") -> "Element":
+    def _from_engine_coefficient(self, value: "RingElement") -> "RingElement":
         r"""Return ``value`` back in the base ring."""
         # Local: number_fields imports this module, so a module-level import
         # would close that cycle; it is built by the time this method runs.
@@ -1111,10 +1303,11 @@ class FreeAlgebraOnSet(FreeModuleOnSet):
         base_ring = self.base_ring()
         if not base_ring.category().is_subcategory(OwnedNumberFields()):
             return value
-        return base_ring._from_engine_element(value)
+        in_the_base_ring: "RingElement" = base_ring._from_engine_element(value)
+        return in_the_base_ring
 
     @cached_method
-    def _polynomial_ring(self) -> Parent:
+    def _polynomial_ring(self) -> "_PolynomialRing":
         r"""Return \(R[x_s:s\in S]\), which this algebra *is* for finite \(S\).
 
         \(R[\operatorname{Mon}(S)]\) built as a module knows its addition and
@@ -1141,8 +1334,14 @@ class FreeAlgebraOnSet(FreeModuleOnSet):
             # binds ``PolynomialRing`` to the delivery, which returns a free
             # algebra -- and this is the crossing *into* the engine, where a
             # free algebra is what we already have.
-            return _SagePolynomialRing(engine_base_ring, "x")
-        return _SagePolynomialRing(engine_base_ring, rank, "x")
+            in_one_variable: "_PolynomialRing" = _SagePolynomialRing(
+                engine_base_ring, "x"
+            )
+            return in_one_variable
+        in_several: "_PolynomialRing" = _SagePolynomialRing(
+            engine_base_ring, rank, "x"
+        )
+        return in_several
 
     def _require_symmetric_polynomial_structure(self) -> None:
         r"""Require the commutative polynomial structure used by these algorithms."""
@@ -1159,7 +1358,9 @@ class FreeAlgebraOnSet(FreeModuleOnSet):
             zip(self._algebra_generating_set, self._polynomial_ring().gens())
         )
 
-    def _as_polynomial(self, element: "Element") -> "Element":
+    def _as_polynomial(
+        self, element: "FreeAlgebraElement"
+    ) -> "_EnginePolynomial":
         r"""Transport ``element`` along the polynomial presentation.
 
         Built by handing the ring its coefficients, not by multiplying its
@@ -1180,9 +1381,10 @@ class FreeAlgebraOnSet(FreeModuleOnSet):
                 exponents[position_of[label]] = exponent
             key = exponents[0] if len(labels) == 1 else tuple(exponents)
             terms[key] = terms.get(key, zero) + coefficient
-        return ring(
+        presented: "_EnginePolynomial" = ring(
             {key: self._as_engine_coefficient(value) for key, value in terms.items()}
         )
+        return presented
 
     def ideal(self, generators: "OrderedSet") -> FreeAlgebraIdeal:
         r"""Return the ideal generated by ``generators``, with its normal form."""
@@ -1195,7 +1397,9 @@ class FreeAlgebraOnSet(FreeModuleOnSet):
             [self(generator) for generator in finite_ordered_set(generators)],
         )
 
-    def _from_polynomial(self, polynomial: "Element") -> "Element":
+    def _from_polynomial(
+        self, polynomial: "_EnginePolynomial"
+    ) -> "FreeAlgebraOnSetElement":
         r"""Transport ``polynomial`` back along the polynomial presentation.
 
         A polynomial in one variable indexes its coefficients by an exponent
@@ -1205,7 +1409,7 @@ class FreeAlgebraOnSet(FreeModuleOnSet):
         """
         system = self.monomial_system()
         labels = tuple(self._algebra_generating_set)
-        result = self.zero()
+        result: "FreeAlgebraOnSetElement" = self.zero()
         for exponents, coefficient in polynomial.dict().items():
             # One variable indexes by an exponent, several by a sequence of
             # them -- and the engine's sequence is its own type, not a tuple.
@@ -1231,7 +1435,7 @@ class FreeAlgebraOnSet(FreeModuleOnSet):
         """
         return self._monomial_system
 
-    def monomial_parent(self) -> Parent:
+    def monomial_parent(self) -> "_MonomialParent":
         r"""Return the parent the monomials live in.
 
         The module framing is indexed by it, and the product on it is the
@@ -1243,7 +1447,7 @@ class FreeAlgebraOnSet(FreeModuleOnSet):
         """
         return self._monomial_parent
 
-    def module_generating_set(self) -> Parent:
+    def module_generating_set(self) -> "OrderedSet":
         """Return the monomial framing set in which relations live."""
         return self._monomial_generating_set
 
@@ -1254,7 +1458,9 @@ class FreeAlgebraOnSet(FreeModuleOnSet):
             self.module_generating_set(),
         )
 
-    def _algebra_generator_label(self, monomial: "Element") -> "Element":
+    def _algebra_generator_label(
+        self, monomial: "_SageElement"
+    ) -> "_SageElement":
         monomial_profile = dict(self.monomial_system().factors(monomial))
         assert len(monomial_profile) == 1, (
             f"{monomial!r} is not a degree-1 monomial; the profile is {monomial_profile}"
@@ -1264,10 +1470,12 @@ class FreeAlgebraOnSet(FreeModuleOnSet):
             f"{monomial!r} is not a generator monomial; exponent profile is "
             f"{monomial_profile}"
         )
-        return label
+        generator_label: "_SageElement" = label
+        return generator_label
 
-    def _algebra_to_monomial(self, s: "Element") -> "Element":
-        return self.monomial_system().generator(s)
+    def _algebra_to_monomial(self, s: "_SageElement") -> "_SageElement":
+        monomial: "_SageElement" = self.monomial_system().generator(s)
+        return monomial
 
     def _ring_morphism_defining_algebra_structure(self) -> "Morphism":
         r"""Return $R\to Z(A)$, $r\mapsto r\cdot 1$.
@@ -1286,7 +1494,7 @@ class FreeAlgebraOnSet(FreeModuleOnSet):
             lambda scalar: scalar * self.one(),
         )
 
-    def algebra_generating_set(self) -> Parent:
+    def algebra_generating_set(self) -> "OrderedSet":
         r"""Return the original set ``S`` (not ``Mon(S)``)."""
         return self._algebra_generating_set
 
@@ -1300,14 +1508,20 @@ class FreeAlgebraOnSet(FreeModuleOnSet):
 
     def module_generator_morphism(self) -> SetMorphism:
         """Return the framing map from module generators (monomials) to the algebra."""
-        return FramedFreeModules.ParentMethods.module_generator_morphism(self)
+        framing: SetMorphism = FramedFreeModules.ParentMethods.module_generator_morphism(
+            self
+        )
+        return framing
 
-    def algebra_generator(self, s: "Element") -> "Element":
+    def algebra_generator(self, s: "_SageElement") -> "FreeAlgebraOnSetElement":
         r"""Return the degree-1 monomial ``[s]`` in ``FreeAlg_R(S)``."""
         assert s in self._algebra_generating_set, (
             f"{s!r} is not in {self._algebra_generating_set}"
         )
-        return self.module_generator(self._algebra_to_monomial(s))
+        generator: "FreeAlgebraOnSetElement" = self.module_generator(
+            self._algebra_to_monomial(s)
+        )
+        return generator
 
     def algebra_generators(self) -> tuple:
         r"""Return algebra generators when the framing set is finite."""
@@ -1317,9 +1531,14 @@ class FreeAlgebraOnSet(FreeModuleOnSet):
         )
         return tuple(self.algebra_generator(s) for s in self._algebra_generating_set)
 
-    def product_on_algebra_generators(self, s: "Element", t: "Element") -> "Element":
+    def product_on_algebra_generators(
+        self, s: "_SageElement", t: "_SageElement"
+    ) -> "FreeAlgebraOnSetElement":
         r"""Return the product of algebra generators s and t."""
-        return self.algebra_generator(s) * self.algebra_generator(t)
+        product: "FreeAlgebraOnSetElement" = (
+            self.algebra_generator(s) * self.algebra_generator(t)
+        )
+        return product
 
     def _generator_images(
         self,
@@ -1404,9 +1623,12 @@ class FreeAlgebraOnSet(FreeModuleOnSet):
         )
         return dict(zip(self._algebra_generating_set, values, strict=True))
 
-    def one(self) -> "Element":
+    def one(self) -> "FreeAlgebraOnSetElement":
         r"""Return the multiplicative identity: the empty monomial."""
-        return self.module_generator(self.monomial_system().one())
+        one: "FreeAlgebraOnSetElement" = self.module_generator(
+            self.monomial_system().one()
+        )
+        return one
 
     def _first_ngens(self, count: int) -> tuple:
         r"""Return the first ``count`` generators, for the ``R.<x, y> =`` sugar.
@@ -1474,7 +1696,7 @@ def polynomial_ring(
     # close that cycle; it is built by the time this function runs.
     from dzack_research.preamble.categories.sets.sets import finite_ordered_set
 
-    names = keywords.pop("names", None)
+    names: "OrderedSet | str | tuple[str, ...] | None" = keywords.pop("names", None)
     counted = None
     for argument in arguments:
         if isinstance(argument, (int, _SageIntegerType)):
@@ -1587,7 +1809,9 @@ class DividedPowerAlgebraOnSet(FreeAlgebraOnSet):
 
         return DividedPowerAlgebras(base_ring)
 
-    def divided_power(self, value: "Element", exponent: "Integer") -> "Element":
+    def divided_power(
+        self, value: "Element", exponent: "Integer | int"
+    ) -> "Element":
         r"""Return \(\gamma_a(x)\), which is *not* \(x^a\).
 
         \(s^a=a!\,\gamma_a(s)\), so over \(\ZZ\) the powers of a
@@ -1649,27 +1873,31 @@ def DividedPowerAlgebraOn(
 def tensor_to_symmetric(source: TensorAlgebraOnSet) -> FreeAlgebraMorphism:
     r"""Return \(T(M)\twoheadrightarrow\operatorname{Sym}(M)\)."""
     assert isinstance(source, TensorAlgebraOnSet), "the source must be a tensor algebra"
-    target = FreeAlgebraOn(source.base_ring(), source.algebra_generating_set())
-    return source.hom(
+    target: "FreeAlgebraOnSet" = FreeAlgebraOn(
+        source.base_ring(), source.algebra_generating_set()
+    )
+    morphism: "FreeAlgebraMorphism" = source.hom(
         {
             label: target.algebra_generator(label)
             for label in source.algebra_generating_set()
         }
     )
+    return morphism
 
 
 def tensor_to_alternating(source: TensorAlgebraOnSet) -> FreeAlgebraMorphism:
     r"""Return \(T(M)\twoheadrightarrow\Lambda(M)\)."""
     assert isinstance(source, TensorAlgebraOnSet), "the source must be a tensor algebra"
-    target = AlternatingAlgebraOn(
+    target: "AlternatingAlgebraOnSet" = AlternatingAlgebraOn(
         source.base_ring(), source.algebra_generating_set()
     )
-    return source.hom(
+    morphism: "FreeAlgebraMorphism" = source.hom(
         {
             label: target.algebra_generator(label)
             for label in source.algebra_generating_set()
         }
     )
+    return morphism
 
 
 def symmetric_to_divided(source: FreeAlgebraOnSet) -> FreeAlgebraMorphism:
@@ -1679,15 +1907,16 @@ def symmetric_to_divided(source: FreeAlgebraOnSet) -> FreeAlgebraMorphism:
     assert source in SymmetricAlgebras(source.base_ring()), (
         "the source must be a symmetric algebra"
     )
-    target = DividedPowerAlgebraOn(
+    target: "DividedPowerAlgebraOnSet" = DividedPowerAlgebraOn(
         source.base_ring(), source.algebra_generating_set()
     )
-    return source.hom(
+    morphism: "FreeAlgebraMorphism" = source.hom(
         {
             label: target.algebra_generator(label)
             for label in source.algebra_generating_set()
         }
     )
+    return morphism
 
 
 def divided_to_symmetric(source: DividedPowerAlgebraOnSet) -> FreeAlgebraMorphism:
@@ -1698,7 +1927,9 @@ def divided_to_symmetric(source: DividedPowerAlgebraOnSet) -> FreeAlgebraMorphis
     assert engine_ring(source.base_ring()) is SageQQ, (
         "the inverse map from divided to symmetric powers requires QQ"
     )
-    target = FreeAlgebraOn(source.base_ring(), source.algebra_generating_set())
+    target: "FreeAlgebraOnSet" = FreeAlgebraOn(
+        source.base_ring(), source.algebra_generating_set()
+    )
 
     def image_of_monomial(monomial: "Element") -> "Element":
         image = target.one()
@@ -1724,13 +1955,16 @@ def divided_to_symmetric(source: DividedPowerAlgebraOnSet) -> FreeAlgebraMorphis
 def tensor_extension(module_morphism: ModuleMorphism) -> FreeAlgebraMorphism:
     r"""Extend \(f:M\to U(A)\) uniquely to \(T(M)\to A\)."""
     module = module_morphism.domain()
-    source = TensorAlgebraOn(module.base_ring(), module.module_generating_set())
-    return source.hom(
+    source: "TensorAlgebraOnSet" = TensorAlgebraOn(
+        module.base_ring(), module.module_generating_set()
+    )
+    morphism: "FreeAlgebraMorphism" = source.hom(
         {
             label: module_morphism(module.module_generator(label))
             for label in module.module_generating_set()
         }
     )
+    return morphism
 
 
 def symmetric_extension(module_morphism: ModuleMorphism) -> FreeAlgebraMorphism:
@@ -1741,13 +1975,16 @@ def symmetric_extension(module_morphism: ModuleMorphism) -> FreeAlgebraMorphism:
         "a symmetric-algebra extension requires a commutative target"
     )
     module = module_morphism.domain()
-    source = FreeAlgebraOn(module.base_ring(), module.module_generating_set())
-    return source.hom(
+    source: "FreeAlgebraOnSet" = FreeAlgebraOn(
+        module.base_ring(), module.module_generating_set()
+    )
+    morphism: "FreeAlgebraMorphism" = source.hom(
         {
             label: module_morphism(module.module_generator(label))
             for label in module.module_generating_set()
         }
     )
+    return morphism
 
 
 def alternating_extension(module_morphism: ModuleMorphism) -> FreeAlgebraMorphism:
@@ -1883,14 +2120,22 @@ def divided_power_extension(
 class PresentedFreeAlgebraElement(ModuleElement):
     r"""A class in a free algebra modulo relations generated in degree one."""
 
-    def __init__(self, parent: "PresentedFreeAlgebra", representative: "Element") -> None:
+    def __init__(
+        self, parent: "PresentedFreeAlgebra", representative: "FreeAlgebraOnSetElement"
+    ) -> None:
         ModuleElement.__init__(self, parent)
         assert representative.parent() is parent.presentation_algebra(), (
             "a representative lies in this presentation algebra"
         )
         self._representative = representative
 
-    def representative(self) -> "Element":
+    if TYPE_CHECKING:
+        # The class is an element OF the presented algebra, which is what
+        # makes the arithmetic below land back in it.  Declared only for
+        # the checker: at runtime ``parent`` is Sage's own.
+        def parent(self) -> "PresentedFreeAlgebra": ...
+
+    def representative(self) -> "FreeAlgebraOnSetElement":
         return self._representative
 
     def _add_(self, other: "PresentedFreeAlgebraElement") -> "PresentedFreeAlgebraElement":
@@ -1929,10 +2174,11 @@ class PresentedFreeAlgebraElement(ModuleElement):
         }
 
     def degree(self) -> "Integer":
-        return self._representative.degree()
+        degree: "Integer" = self._representative.degree()
+        return degree
 
 
-class PresentedFreeAlgebra(UniqueRepresentation, Parent):
+class PresentedFreeAlgebra(UniqueRepresentation, _PresentedAlgebraBase):
     r"""The graded algebra (A(F)/\langle K\rangle) for a presented module."""
 
     Element = PresentedFreeAlgebraElement
@@ -1941,7 +2187,7 @@ class PresentedFreeAlgebra(UniqueRepresentation, Parent):
         self,
         module: "Module",
         construction: str,
-        presentation_algebra: "Parent",
+        presentation_algebra: "FreeAlgebraOnSet",
     ) -> None:
         from dzack_research.preamble.categories.algebras.algebras import Algebras
 
@@ -1960,13 +2206,15 @@ class PresentedFreeAlgebra(UniqueRepresentation, Parent):
     def base_ring(self) -> "Ring":
         return self.base()
 
-    def presentation_algebra(self) -> "Parent":
+    def presentation_algebra(self) -> "FreeAlgebraOnSet":
         return self._presentation_algebra
 
     def algebra_generating_set(self) -> "OrderedSet":
         return self._module.module_generating_set()
 
-    def algebra_generator(self, label: "Element") -> "PresentedFreeAlgebraElement":
+    def algebra_generator(
+        self, label: "_SageElement"
+    ) -> "PresentedFreeAlgebraElement":
         return self(self._presentation_algebra.algebra_generator(label))
 
     def algebra_generators(self) -> tuple:
@@ -1981,13 +2229,18 @@ class PresentedFreeAlgebra(UniqueRepresentation, Parent):
     def one(self) -> "PresentedFreeAlgebraElement":
         return self(self._presentation_algebra.one())
 
-    def _element_constructor_(self, representative: "Element") -> "PresentedFreeAlgebraElement":
+    def _element_constructor_(
+        self, representative: "PresentedFreeAlgebraElement | FreeAlgebraOnSetElement"
+    ) -> "PresentedFreeAlgebraElement":
         if isinstance(representative, PresentedFreeAlgebraElement):
             assert representative.parent() is self, "an algebra element has one parent"
             return representative
         if representative.parent() is not self._presentation_algebra:
             representative = representative * self._presentation_algebra.one()
-        return self.element_class(self, representative)
+        algebra_class: "PresentedFreeAlgebraElement" = self.element_class(
+            self, representative
+        )
+        return algebra_class
 
     def _ring_morphism_defining_algebra_structure(self) -> "Morphism":
         from sage.categories.rings import Rings
@@ -2011,14 +2264,19 @@ class PresentedFreeAlgebra(UniqueRepresentation, Parent):
         }
         return constructions[self._construction](self._module, int(degree))
 
-    def _class_in_degree(self, degree: int, representative: "Element") -> "Element":
+    def _class_in_degree(
+        self, degree: int, representative: "_SageElement"
+    ) -> "_SageElement":
         from dzack_research.preamble.categories.forms.forms import _element_of_degree_piece
 
-        return _element_of_degree_piece(self.graded_piece(degree), representative)
+        in_degree: "_SageElement" = _element_of_degree_piece(
+            self.graded_piece(degree), representative
+        )
+        return in_degree
 
     def divided_power(
         self,
-        element: "PresentedFreeAlgebraElement | Element",
+        element: "PresentedFreeAlgebraElement | FreeAlgebraOnSetElement",
         degree: int,
     ) -> "PresentedFreeAlgebraElement":
         assert self._construction == "divided", (
@@ -2044,7 +2302,7 @@ class PresentedFreeAlgebra(UniqueRepresentation, Parent):
 def _free_algebra_of_module(
     module: "Module",
     construction: str,
-    constructor: "Callable[[Ring, OrderedSet], Parent]",
+    constructor: "Callable[[Ring, OrderedSet], FreeAlgebraOnSet]",
 ) -> "Parent":
     source = constructor(module.base_ring(), module.module_generating_set())
     if module.relation_matrix().nrows() == 0:

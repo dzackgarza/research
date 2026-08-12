@@ -25,13 +25,17 @@ if TYPE_CHECKING:
 
 from sage.rings.rational_field import QQ as SageQQ
 if TYPE_CHECKING:
-    from sage.matrix.constructor import Matrix
+    # The matrix CLASS, which is what an annotation names; the capitalized
+    # name in ``sage.matrix.constructor`` is an alias of the constructor
+    # function, and a value of this type is what that function returns.
+    from sage.structure.element import Matrix
     from sage.structure.parent import Parent
     from sage.rings.ring import Ring
     from sage.structure.sequence import Sequence
+    from dzack_research.preamble.lexicon import OrderedSet
 
 from dzack_research.preamble.categories.rings.rings import SageZZ
-from typing import Self
+from typing import Protocol
 
 from sage.categories.category import Category
 from sage.libs.pari import pari as _pari
@@ -42,7 +46,76 @@ from sage.rings.number_field.number_field import (
     NumberField as _SageNumberField,
 )
 from sage.rings.rational_field import RationalField as _RationalFieldType
+from sage.categories.rings import Rings as SageRings
 
+if TYPE_CHECKING:
+    # What this node requires of the objects it is about.  Sage binds
+    # ``ParentMethods`` onto a parent and ``ElementMethods`` onto its
+    # elements by COPYING the methods into a dynamic class, so the object a
+    # method runs on is never an instance of the class the method is written
+    # in: ``self`` is annotated with what its placement gives it.
+
+    class PresentingAlgebraParent(Protocol):
+        r"""The free \(\QQ\)-algebra of rank one that presents \(K\).
+
+        The presentation is where the polynomial spelling of \(f\) lives:
+        crossing to a polynomial and back is this algebra's operation, not
+        the field's.
+        """
+
+        def number_of_algebra_generators(self) -> "Integer": ...
+        def _as_polynomial(self, element: "Element") -> "Element": ...
+        def _from_polynomial(self, polynomial: "Element") -> "Element": ...
+
+    class EngineNumberField(Protocol):
+        r"""Sage's \(\QQ[x]/(f)\), which the arithmetic algorithms run in.
+
+        Reached only through
+        :meth:`OwnedNumberFields.ParentMethods._engine_field`, and only for
+        the five computations below: each is an algorithm rather than a
+        definition, so each crosses once and comes back.
+        """
+
+        def discriminant(self) -> "Integer": ...
+        def signature(self) -> tuple["Integer", "Integer"]: ...
+        def class_number(self) -> "Integer": ...
+        def is_galois(self) -> bool: ...
+        def galois_group(self) -> "Group": ...
+
+    class NumberFieldParent(Protocol):
+        r"""A parent in ``OwnedNumberFields()``.
+
+        Everything here is the finite presentation it inherits from
+        ``FinitelyPresentedAlgebras``: one generator, one relation.
+        """
+
+        def __call__(self, value: "Element") -> "Element": ...
+        def base_ring(self) -> "Ring": ...
+        def zero(self) -> "Element": ...
+        def one(self) -> "Element": ...
+        def relations(self) -> "OrderedSet": ...
+        def algebra_generating_set(self) -> "OrderedSet": ...
+        def algebra_generator(self, label: "Element") -> "Element": ...
+        def presentation_ring(self) -> "PresentingAlgebraParent": ...
+        def defining_polynomial(self) -> "Element": ...
+        def degree(self) -> "Integer": ...
+        def discriminant(self) -> "Integer": ...
+        def primitive_element(self) -> "Element": ...
+        def embedding_images(self, ring: "Ring") -> tuple: ...
+        def underlying_algebra(self, base_ring: "Ring" = ...) -> "Parent": ...
+        def _from_power_basis(self, coefficients: "Sequence") -> "Element": ...
+        def _engine_field(self) -> "EngineNumberField": ...
+
+    class NumberFieldElement(Protocol):
+        r"""An element of \(K\): a class in the quotient, so it lifts."""
+
+        def lift(self) -> "Element": ...
+        def parent(self) -> "NumberFieldParent": ...
+        def _representative(self) -> "Element": ...
+        def _power_basis_coordinates(self) -> "Vector": ...
+        def matrix(self) -> "Matrix": ...
+        def minimal_polynomial(self) -> "Element": ...
+        def roots(self) -> tuple: ...
 
 class OwnedNumberFields(Category):
     r"""Finite extensions \(K/\QQ\), presented on a primitive element."""
@@ -60,7 +133,7 @@ class OwnedNumberFields(Category):
         return [FinitelyPresentedAlgebras(SageQQ), OwnedFields()]
 
     class ParentMethods:
-        def defining_polynomial(self) -> "Element":
+        def defining_polynomial(self: "NumberFieldParent") -> "Element":
             r"""Return \(f\), the one relation this field is presented by."""
             relations = self.relations()
             assert len(relations) == 1, (
@@ -69,15 +142,16 @@ class OwnedNumberFields(Category):
             )
             return relations[0]
 
-        def degree(self) -> "Integer":
+        def degree(self: "NumberFieldParent") -> "Integer":
             r"""Return \([K:\QQ]\), which is \(\deg f\).
 
             The dimension of \(K\) as a \(\QQ\)-module: reduction modulo \(f\)
             leaves the monomials below \(\deg f\), and they are a basis.
             """
-            return self.defining_polynomial().degree()
+            degree: "Integer" = self.defining_polynomial().degree()
+            return degree
 
-        def primitive_element(self) -> "Element":
+        def primitive_element(self: "NumberFieldParent") -> "Element":
             r"""Return the image of the generator, a root of \(f\) in \(K\).
 
             Primitive because \(K\) is generated by it as a \(\QQ\)-algebra --
@@ -88,7 +162,7 @@ class OwnedNumberFields(Category):
             label = next(iter(self.algebra_generating_set()))
             return self.algebra_generator(label)
 
-        def algebra_generators(self) -> tuple:
+        def algebra_generators(self: "NumberFieldParent") -> tuple:
             r"""Return \((\alpha)\): one generator, because \(K=\QQ(\alpha)\).
 
             Declared here because the generic field answers this by asking for
@@ -102,7 +176,7 @@ class OwnedNumberFields(Category):
             r"""Return ``True``: \(f\) is irreducible, so \((f)\) is maximal."""
             return True
 
-        def _an_element_(self) -> "Element":
+        def _an_element_(self: "NumberFieldParent") -> "Element":
             r"""Return \(\alpha\), the element this field is presented on.
 
             Named rather than left to be guessed: Sage looks for an example by
@@ -121,7 +195,7 @@ class OwnedNumberFields(Category):
         # ---------------------------------------------------------------
 
         @cached_method
-        def _engine_field(self) -> "Parent":
+        def _engine_field(self: "NumberFieldParent") -> "EngineNumberField":
             r"""Return the engine's \(\QQ[x]/(f)\), for the algorithms only.
 
             The presentation is the same \(f\); nothing is chosen here that
@@ -131,9 +205,12 @@ class OwnedNumberFields(Category):
             presented = self.presentation_ring()._as_polynomial(
                 self.defining_polynomial()
             )
-            return _SageNumberField(presented, "a")
+            engine_field: "EngineNumberField" = _SageNumberField(presented, "a")
+            return engine_field
 
-        def _from_engine_element(self, element: "Element") -> "Element":
+        def _from_engine_element(
+            self: "NumberFieldParent", element: "Element"
+        ) -> "Element":
             r"""Return ``element`` as a combination of powers of \(\alpha\).
 
             The engine writes an element in the power basis of its own
@@ -149,7 +226,7 @@ class OwnedNumberFields(Category):
                 power = power * primitive
             return total
 
-        def discriminant(self) -> "Integer":
+        def discriminant(self: "NumberFieldParent") -> "Integer":
             r"""Return \(d_K\), the discriminant of the maximal order.
 
             Not the discriminant of \(f\): they differ by the square of the
@@ -158,7 +235,7 @@ class OwnedNumberFields(Category):
             """
             return self._engine_field().discriminant()
 
-        def signature(self) -> tuple:
+        def signature(self: "NumberFieldParent") -> tuple:
             r"""Return \((r,s)\): the real and the conjugate-pair places.
 
             \(r+2s=[K:\QQ]\), which is what makes this a decomposition of the
@@ -166,7 +243,9 @@ class OwnedNumberFields(Category):
             """
             return tuple(self._engine_field().signature())
 
-        def _from_power_basis(self, coefficients: "Sequence") -> "Element":
+        def _from_power_basis(
+            self: "NumberFieldParent", coefficients: "Sequence"
+        ) -> "Element":
             r"""Return \(\sum c_i\alpha^i\) for the coefficients given."""
             total = self.zero()
             power = self.one()
@@ -175,7 +254,9 @@ class OwnedNumberFields(Category):
                 power = power * self.primitive_element()
             return total
 
-        def underlying_algebra(self, base_ring: "Ring" = SageZZ) -> "Parent":
+        def underlying_algebra(
+            self: "NumberFieldParent", base_ring: "Ring" = SageZZ
+        ) -> "Parent":
             r"""Return the \(R\)-algebra this field is the base change of.
 
             \(K\) is a \(\operatorname{Frac}(R)\)-algebra, and an \(R\)-algebra
@@ -208,13 +289,16 @@ class OwnedNumberFields(Category):
                 "the quotient is not free of rank deg(f)"
             )
             over_the_base = defining_polynomial.change_ring(base_ring)
-            return FGAlgebra(
+            underlying: "Parent" = FGAlgebra(
                 base_ring,
                 self.algebra_generating_set(),
                 (over_the_base,),
             )
+            return underlying
 
-        def base_change_functor(self, base_ring: "Ring" = SageZZ) -> "AlgebraBaseChangeFunctor":
+        def base_change_functor(
+            self: "NumberFieldParent", base_ring: "Ring" = SageZZ
+        ) -> "AlgebraBaseChangeFunctor":
             r"""Return \(F=-\otimes_R\operatorname{Frac}(R)\), with \(F(A)=K\).
 
             The functor itself, because that is what relates this field to the
@@ -228,7 +312,9 @@ class OwnedNumberFields(Category):
 
             return algebra_base_change(self.base_ring().coerce_map_from(base_ring))
 
-        def integral_basis(self, base_ring: "Ring" = SageZZ) -> tuple:
+        def integral_basis(
+            self: "NumberFieldParent", base_ring: "Ring" = SageZZ
+        ) -> tuple:
             r"""Return an \(R\)-basis of :meth:`underlying_algebra`, inside \(K\).
 
             An integral basis is not a number-field notion: it is a basis of
@@ -244,15 +330,15 @@ class OwnedNumberFields(Category):
                 for power in range(self.degree())
             )
 
-        def class_number(self) -> "Integer":
+        def class_number(self: "NumberFieldParent") -> "Integer":
             r"""Return \(|\operatorname{Cl}(\mathcal O_K)|\)."""
             return self._engine_field().class_number()
 
-        def ramified_primes(self) -> tuple:
+        def ramified_primes(self: "NumberFieldParent") -> tuple:
             r"""Return the primes that ramify: those dividing \(d_K\)."""
             return tuple(self.discriminant().prime_factors())
 
-        def is_galois(self) -> bool:
+        def is_galois(self: "NumberFieldParent") -> bool:
             r"""Return whether \(K/\QQ\) is Galois.
 
             Equivalently whether \(f\) splits in \(K\): the extension is
@@ -261,7 +347,7 @@ class OwnedNumberFields(Category):
             """
             return bool(self._engine_field().is_galois())
 
-        def galois_group(self) -> "Group":
+        def galois_group(self: "NumberFieldParent") -> "Group":
             r"""Return \(\operatorname{Gal}\), as an owned group.
 
             The Galois group of the *defining polynomial*, which is the group
@@ -272,7 +358,7 @@ class OwnedNumberFields(Category):
             """
             return self._engine_field().galois_group()
 
-        def embedding_images(self, ring: "Ring") -> tuple:
+        def embedding_images(self: "NumberFieldParent", ring: "Ring") -> tuple:
             r"""Return the images of \(\alpha\) under the embeddings into ``ring``.
 
             An embedding \(K\hookrightarrow L\) is determined by where
@@ -290,11 +376,11 @@ class OwnedNumberFields(Category):
 
 
     class ElementMethods:
-        def _representative(self: Self) -> "Element":
+        def _representative(self: "NumberFieldElement") -> "Element":
             r"""Return the reduced representative in \(\QQ[x]\)."""
             return self.lift()
 
-        def _power_basis_coordinates(self: Self) -> "Vector":
+        def _power_basis_coordinates(self: "NumberFieldElement") -> "Vector":
             r"""Return the coordinates in \(1,\alpha,\dots,\alpha^{n-1}\).
 
             Reduction modulo \(f\) leaves exactly those monomials, so the
@@ -313,7 +399,7 @@ class OwnedNumberFields(Category):
                 [by_degree.get(exponent, SageQQ.zero()) for exponent in range(degree)],
             )
 
-        def matrix(self: Self) -> "Matrix":
+        def matrix(self: "NumberFieldElement") -> "Matrix":
             r"""Return the matrix of multiplication by this element.
 
             \(K\) is a \(\QQ\)-vector space and multiplication by an element is
@@ -330,15 +416,15 @@ class OwnedNumberFields(Category):
                 image = image * primitive
             return _column_matrix(SageQQ, columns)
 
-        def norm(self: Self) -> "Element":
+        def norm(self: "NumberFieldElement") -> "Element":
             r"""Return \(N(a)=\det\) of multiplication by \(a\)."""
             return self.matrix().determinant()
 
-        def trace(self: Self) -> "Element":
+        def trace(self: "NumberFieldElement") -> "Element":
             r"""Return \(\operatorname{Tr}(a)=\operatorname{tr}\) of multiplication by \(a\)."""
             return self.matrix().trace()
 
-        def characteristic_polynomial(self: Self) -> "Element":
+        def characteristic_polynomial(self: "NumberFieldElement") -> "Element":
             r"""Return the characteristic polynomial of multiplication by \(a\).
 
             Of degree \([K:\QQ]\) whatever \(a\) is, which is what
@@ -349,13 +435,13 @@ class OwnedNumberFields(Category):
                 self.matrix().characteristic_polynomial()
             )
 
-        def minimal_polynomial(self: Self) -> "Element":
+        def minimal_polynomial(self: "NumberFieldElement") -> "Element":
             r"""Return the minimal polynomial of \(a\) over \(\QQ\)."""
             return self.parent().presentation_ring()._from_polynomial(
                 self.matrix().minimal_polynomial()
             )
 
-        def is_integral(self: Self) -> bool:
+        def is_integral(self: "NumberFieldElement") -> bool:
             r"""Return whether \(a\) is an algebraic integer.
 
             Whether its minimal polynomial is monic over \(\ZZ\), which is the
@@ -367,7 +453,7 @@ class OwnedNumberFields(Category):
                 for coefficient in self.minimal_polynomial().coefficients().values()
             )
 
-        def inverse(self: Self) -> "Element":
+        def inverse(self: "NumberFieldElement") -> "Element":
             r"""Return \(a^{-1}\), from a Bezout identity with \(f\).
 
             \(\gcd(g,f)=1\) for any representative \(g\) of a nonzero \(a\),
@@ -381,7 +467,7 @@ class OwnedNumberFields(Category):
             )
             return field(cofactor * common.leading_coefficient()**-1)
 
-        def conjugates(self: Self, ring: "Ring") -> tuple:
+        def conjugates(self: "NumberFieldElement", ring: "Ring") -> tuple:
             r"""Return the images of \(a\) under the embeddings into ``ring``.
 
             An embedding is fixed by where \(\alpha\) goes, so a conjugate of
@@ -439,4 +525,5 @@ def own_number_field(defining_polynomial: "Element") -> "Parent":
     # concrete class, and a join has none of its own to name -- so joining
     # would leave the quotient's own ``is_field``, which declines to decide,
     # in front of the answer irreducibility already gives.
-    return refine(field, OwnedNumberFields())
+    owned_field: "Parent" = refine(field, OwnedNumberFields())
+    return owned_field

@@ -11,12 +11,12 @@ if TYPE_CHECKING:
 
 if TYPE_CHECKING:
     from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormMorphism
-    from dzack_research.preamble.categories.modules.framed.formed.integrallattice.subobjects import Subobject
 
 from sage.rings.integer import Integer
 from sage.categories.homset import Homset
 from sage.categories.homset import Hom
 from sage.categories.morphism import Morphism, SetMorphism
+from sage.structure.element import ModuleElement
 from dzack_research.preamble.categories.sets.underlying_sets import UnderlyingSet
 from sage.matrix.matrix0 import Matrix
 from sage.structure.parent import Parent
@@ -31,28 +31,74 @@ if TYPE_CHECKING:
     # The ordered-set noun is type-only: the preamble loads into one
     # shared namespace and nothing named OrderedSet may bind there.
     from dzack_research.preamble.lexicon import OrderedSet
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+        ModuleMorphism,
+    )
+
+    # What the graded constructions ask of the algebra they are cut out of,
+    # and what the piece they return records.  Declared for the checker
+    # only: at runtime the objects are the free algebra and the module the
+    # constructions actually build.
+
+    class _GradedAlgebra(Parent):
+        r"""A free algebra read one degree at a time."""
+
+        def zero(self) -> "Element": ...
+        def one(self) -> "Element": ...
+        def algebra_generator(self, label: "Element") -> "Element": ...
+        def divided_square(self, element: "Element") -> "Element": ...
+        def monomial_system(self) -> "Parent": ...
+        def graded_piece(self, degree: "Integer | int") -> "_GradedPiece": ...
+        def graded_piece_monomials(
+            self, degree: "Integer | int"
+        ) -> "OrderedSet | tuple": ...
+        def ideal_generators_in_degree(
+            self, relations: tuple, degree: "Integer | int"
+        ) -> tuple: ...
+
+    class _GradedPiece(Parent):
+        r"""One graded piece \(A[n]\), marked with the module and the degree
+        it was built from -- which is what lets a later call recognize it as
+        the tensor, symmetric, alternating or divided power of that module."""
+
+        _tensor_power_of: "Module"
+        _tensor_power_degree: int
+        _symmetric_power_of: "Module"
+        _symmetric_power_degree: int
+        _alternating_power_of: "Module"
+        _alternating_power_degree: int
+        _divided_power_of: "Module"
+        _divided_power_degree: int
+        _tensor_square_of: "Module"
+        _divided_square_of: "Module"
+
+        def zero(self) -> "Element": ...
+        def base_ring(self) -> "Ring": ...
+        def module_generating_set(self) -> "OrderedSet": ...
+        def module_generators(self) -> "OrderedSet": ...
 
 
 def _framing_rank(module_generating_set: "OrderedSet") -> Integer:
     size = module_generating_set.cardinality()
     if isinstance(size, Cardinal):
         assert size.is_finite(), "a Gram matrix requires a finite framing set"
-        return size.finite_value()
+        rank: Integer = size.finite_value()
+        return rank
     assert size in SageZZ, "a Gram matrix requires a finite framing set"
     return SageZZ(size)
 
 
 def _degree_construction(
     module: "Module",
-    algebra_constructor: "Callable[[Ring, OrderedSet], Parent]",
+    algebra_constructor: "Callable[[Ring, OrderedSet], _GradedAlgebra]",
     cache_key: str,
-    degree: int,
-) -> Parent:
+    degree: "Integer | int",
+) -> "_GradedPiece":
     r"""Return one graded construction induced by a module presentation."""
     degree = int(degree)
     assert degree >= 0, "a graded degree is nonnegative"
     cache = module.__dict__.setdefault("_degree_constructions", {})
-    cached = cache.get((cache_key, degree))
+    cached: "_GradedPiece | None" = cache.get((cache_key, degree))
     if cached is not None:
         return cached
 
@@ -63,7 +109,7 @@ def _degree_construction(
     algebra = algebra_constructor(
         module.base_ring(), module.module_generating_set()
     )
-    piece = algebra.graded_piece(degree)
+    piece: "_GradedPiece" = algebra.graded_piece(degree)
     relations = module.relation_matrix()._sage_matrix()
     match relations.nrows():
         case 0:
@@ -104,12 +150,12 @@ def _degree_construction(
     presentation = module_homset(relation_module, piece)(
         dict(zip(relation_module.module_generating_set(), relation_vectors))
     )
-    result = FinitelyPresentedModule(presentation)
+    result: "_GradedPiece" = FinitelyPresentedModule(presentation)
     cache[(cache_key, degree)] = result
     return result
 
 
-def TensorPower(module: "Module", degree: int) -> Parent:
+def TensorPower(module: "Module", degree: "Integer | int") -> "_GradedPiece":
     r"""Return \(T(M)[n]=M^{\otimes n}\)."""
     from dzack_research.preamble.categories.algebras.framed_free_algebras import TensorAlgebraOn
 
@@ -119,7 +165,7 @@ def TensorPower(module: "Module", degree: int) -> Parent:
     return power
 
 
-def SymmetricPower(module: "Module", degree: int) -> Parent:
+def SymmetricPower(module: "Module", degree: "Integer | int") -> "_GradedPiece":
     r"""Return \(\operatorname{Sym}(M)[n]=\operatorname{Sym}^nM\)."""
     from dzack_research.preamble.categories.algebras.framed_free_algebras import FreeAlgebraOn
 
@@ -129,7 +175,7 @@ def SymmetricPower(module: "Module", degree: int) -> Parent:
     return power
 
 
-def AlternatingPower(module: "Module", degree: int) -> Parent:
+def AlternatingPower(module: "Module", degree: "Integer | int") -> "_GradedPiece":
     r"""Return \(\Lambda(M)[n]=\Lambda^nM\)."""
     from dzack_research.preamble.categories.algebras.framed_free_algebras import AlternatingAlgebraOn
 
@@ -139,7 +185,7 @@ def AlternatingPower(module: "Module", degree: int) -> Parent:
     return power
 
 
-def DividedPower(module: "Module", degree: int) -> Parent:
+def DividedPower(module: "Module", degree: "Integer | int") -> "_GradedPiece":
     r"""Return \(\Gamma(M)[n]=\Gamma^nM\)."""
     from dzack_research.preamble.categories.algebras.framed_free_algebras import DividedPowerAlgebraOn
 
@@ -149,14 +195,14 @@ def DividedPower(module: "Module", degree: int) -> Parent:
     return power
 
 
-def TensorSquare(module: "Module") -> Parent:
+def TensorSquare(module: "Module") -> "_GradedPiece":
     r"""Return \(T(M)[2]=M\otimes_RM\)."""
     square = TensorPower(module, 2)
     square._tensor_square_of = module
     return square
 
 
-def DividedSquare(module: "Module") -> Parent:
+def DividedSquare(module: "Module") -> "_GradedPiece":
     r"""Return \(\Gamma(M)[2]=\Gamma^2M\)."""
     square = DividedPower(module, 2)
     square._divided_square_of = module
@@ -193,7 +239,9 @@ def divided_square_element(module: "Module", element: "Element") -> "Element":
     )
 
 
-def _element_of_degree_piece(piece: "Module", algebra_element: "Element") -> "Element":
+def _element_of_degree_piece(
+    piece: "_GradedPiece", algebra_element: "Element"
+) -> "Element":
     r"""Read a homogeneous algebra element in its graded-piece module."""
     from dzack_research.preamble.utilities import zipsum
 
@@ -208,7 +256,7 @@ def _element_of_degree_piece(piece: "Module", algebra_element: "Element") -> "El
 
 def divided_power_invariant_inclusion(
     module: "Module",
-    degree: int,
+    degree: "Integer | int",
 ) -> "Morphism":
     r"""Return \(\Gamma^nM\to M^{\otimes n}\) by summing each word orbit."""
     from itertools import permutations
@@ -242,12 +290,13 @@ def divided_power_invariant_inclusion(
 
     source = DividedPower(module, degree)
     target = TensorPower(module, degree)
-    return module_homset(source, target)(
+    inclusion: "Morphism" = module_homset(source, target)(
         {monomial: invariant(monomial) for monomial in source.module_generating_set()}
     )
+    return inclusion
 
 
-def tensor_power_polarization(module: "Module", degree: int) -> "Morphism":
+def tensor_power_polarization(module: "Module", degree: "Integer | int") -> "Morphism":
     r"""Return \(M^{\otimes n}\to\Gamma^nM\), sending a word to its product."""
     from dzack_research.preamble.categories.algebras.framed_free_algebras import DividedPowerAlgebraOn
     from dzack_research.preamble.categories.algebras.framed_free_algebras import TensorAlgebraOn
@@ -271,14 +320,15 @@ def tensor_power_polarization(module: "Module", degree: int) -> "Morphism":
 
     source = TensorPower(module, degree)
     target = DividedPower(module, degree)
-    return module_homset(source, target)(
+    polarization: "Morphism" = module_homset(source, target)(
         {monomial: polarized(monomial) for monomial in source.module_generating_set()}
     )
+    return polarization
 
 
 def tensor_power_permutation(
     module: "Module",
-    degree: int,
+    degree: "Integer | int",
     positions: tuple[int, ...],
 ) -> "Morphism":
     r"""Return the permutation of tensor factors specified by ``positions``."""
@@ -305,9 +355,10 @@ def tensor_power_permutation(
             image *= generators[word[position]]
         return _element_of_degree_piece(power, image)
 
-    return module_homset(power, power)(
+    permutation: "Morphism" = module_homset(power, power)(
         {monomial: permuted(monomial) for monomial in power.module_generating_set()}
     )
+    return permutation
 
 
 def divided_square_invariant_inclusion(module: "Module") -> "Morphism":
@@ -322,6 +373,19 @@ def tensor_square_polarization(module: "Module") -> "Morphism":
 
 class QuadraticMapMorphism(SetMorphism):
     r"""A set map recorded with its quadratic source and value module."""
+
+    # Bound by :func:`QuadraticMap`, which is the only thing that builds one:
+    # a quadratic map is the pair (function, the two modules it runs between).
+    _quadratic_module: "Module"
+    _quadratic_value_module: "Module"
+
+    if TYPE_CHECKING:
+        # The values lie in a module, which is what lets the polarization
+        # below subtract them; a set map in general promises no more than
+        # elements.
+        def __call__(
+            self, x: object, *args: object, **kwds: object
+        ) -> "Element": ...
 
 
 def QuadraticMap(
@@ -343,7 +407,7 @@ def QuadraticMap(
     return quadratic
 
 
-def classifying_morphism(quadratic: SetMorphism) -> "Morphism":
+def classifying_morphism(quadratic: QuadraticMapMorphism) -> "Morphism":
     r"""Return the unique linear map \(\Gamma^2M\to W\) classifying \(q\)."""
     from dzack_research.preamble.categories.algebras.framed_free_algebras import DividedPowerAlgebraOn
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
@@ -369,12 +433,13 @@ def classifying_morphism(quadratic: SetMorphism) -> "Morphism":
             case _:
                 assert False, f"{monomial} is not a divided monomial of degree two"
 
-    return module_homset(square, value_module)(
+    classifier: "Morphism" = module_homset(square, value_module)(
         {
             monomial: image_of_monomial(monomial)
             for monomial in square.module_generating_set()
         }
     )
+    return classifier
 
 
 def quadratic_map_from_morphism(morphism: "Morphism") -> SetMorphism:
@@ -400,6 +465,13 @@ class BilinearFormHomset(Homset):
             value_module,
             category=Sets(),
         )
+
+    if TYPE_CHECKING:
+        # Conversion into this homset builds the form ``_element_constructor_``
+        # below builds; Sage routes ``__call__`` there.
+        def __call__(
+            self, x: object = ..., *args: object, **kwds: object
+        ) -> "BilinearFormMorphism": ...
 
     def module(self) -> "Module":
         return self._module
@@ -432,6 +504,13 @@ class QuadraticFormHomset(Homset):
             category=Sets(),
         )
 
+    if TYPE_CHECKING:
+        # Conversion into this homset builds the form ``_element_constructor_``
+        # below builds.
+        def __call__(
+            self, x: object = ..., *args: object, **kwds: object
+        ) -> "QuadraticFormMorphism": ...
+
     def module(self) -> "Module":
         r"""Return \(M\), which the domain is the divided square of."""
         return self._module
@@ -453,7 +532,8 @@ class QuadraticFormHomset(Homset):
 
 
 def _form_homset_cache(module: "Module") -> dict:
-    return module.__dict__.setdefault("_form_homsets", {})
+    homsets: dict = module.__dict__.setdefault("_form_homsets", {})
+    return homsets
 
 
 def BilinearForms(module: "Module", value_module: "Module") -> BilinearFormHomset:
@@ -462,7 +542,8 @@ def BilinearForms(module: "Module", value_module: "Module") -> BilinearFormHomse
     cache = _form_homset_cache(module)
     if key not in cache:
         cache[key] = BilinearFormHomset(module, value_module)
-    return cache[key]
+    forms: BilinearFormHomset = cache[key]
+    return forms
 
 
 def QuadraticForms(module: "Module", value_module: "Module") -> QuadraticFormHomset:
@@ -471,7 +552,8 @@ def QuadraticForms(module: "Module", value_module: "Module") -> QuadraticFormHom
     cache = _form_homset_cache(module)
     if key not in cache:
         cache[key] = QuadraticFormHomset(module, value_module)
-    return cache[key]
+    forms: QuadraticFormHomset = cache[key]
+    return forms
 
 
 def _forget_form_element(element: "Element") -> "Element":
@@ -488,7 +570,9 @@ def _forget_form_element(element: "Element") -> "Element":
             assert False, f"{element!r} is not a module element"
 
 
-def _value_submodule(form: "Morphism") -> "Subobject":
+def _value_submodule(
+    form: "BilinearFormMorphism | QuadraticFormMorphism",
+) -> Parent:
     r"""Return the submodule of \(W\) generated by ``form``'s values.
 
     One reading for both kinds of form, because it is one statement: the
@@ -503,13 +587,19 @@ def _value_submodule(form: "Morphism") -> "Subobject":
     of a discriminant form a submodule of \(\mathbb Q/\mathbb Z\).
     """
     value_module = form.codomain()
-    return value_module.subobject_on(
+    submodule: Parent = value_module.subobject_on(
         [value for row in form.values_matrix() for value in row]
     )
+    return submodule
 
 
 class BilinearFormMorphism(Morphism):
     r"""A morphism \(M\otimes_RM\to W\), recorded on a finite framing."""
+
+    if TYPE_CHECKING:
+        # The parent is the homset of forms on one module, which is where
+        # ``module`` below is read from.
+        def parent(self) -> BilinearFormHomset: ...
 
     def __init__(self, parent: BilinearFormHomset, gram: "GramMatrix") -> None:
         Morphism.__init__(self, parent)
@@ -554,11 +644,20 @@ class BilinearFormMorphism(Morphism):
         )
         return GramMatrix(self._gram_matrix)
 
-    def __call__(self, left: "Element", right: "Element") -> "Element":
+    def __call__(
+        self, x: object, *args: object, **kwds: object
+    ) -> "Element":
         # Local: the morphism node imports this module, so a module-level
         # import would close that cycle; it is built by call time.
         from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _coordinate_vector
 
+        assert len(args) == 1 and not kwds, (
+            "a bilinear form is evaluated on the two elements it pairs"
+        )
+        left, right = x, args[0]
+        assert isinstance(left, ModuleElement) and isinstance(right, ModuleElement), (
+            "a bilinear form pairs module elements"
+        )
         assert all(
             element.parent() is self.module()
             for element in (left, right)
@@ -598,12 +697,16 @@ class BilinearFormMorphism(Morphism):
         # module is built by the time this method runs.
         from dzack_research.preamble.categories.rings.rings import engine_ring
 
+        assert self._gram_matrix is not None, (
+            f"{self.module()} has no finite generating set, so this form has "
+            "no matrix of entries to carry along the ring map"
+        )
         value_ring = module.base_ring()
         return BilinearForms(module, value_ring)(
             self._gram_matrix.change_ring(engine_ring(value_ring))
         )
 
-    def pullback(self, morphism: "Morphism") -> "BilinearFormMorphism":
+    def pullback(self, morphism: "ModuleMorphism") -> "BilinearFormMorphism":
         # Local: the morphism node imports this module, so a module-level
         # import would close that cycle; it is built by call time.
         from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _underlying_module
@@ -618,7 +721,7 @@ class BilinearFormMorphism(Morphism):
             )
         )
 
-    def descends_along(self, morphism: "Morphism") -> bool:
+    def descends_along(self, morphism: "ModuleMorphism") -> bool:
         return all(
             self(
                 _forget_form_element(morphism(domain.module_generator(label))),
@@ -631,12 +734,16 @@ class BilinearFormMorphism(Morphism):
         )
 
     def values_matrix(self) -> tuple:
+        assert self._gram_matrix is not None, (
+            f"{self.module()} has no finite generating set, so this form has "
+            "no finite family of values to tabulate"
+        )
         return tuple(
             tuple(self.codomain()(entry) for entry in row)
             for row in self._gram_matrix.rows()
         )
 
-    def image(self) -> "Subobject":
+    def image(self) -> Parent:
         r"""Return the submodule of \(W\) the form's values generate.
 
         \(M\) is generated by the \(e_i\), so \(M\otimes_RM\) is generated by
@@ -665,6 +772,10 @@ class BilinearFormMorphism(Morphism):
 
 
 class QuadraticFormMorphism(Morphism):
+    if TYPE_CHECKING:
+        # The parent is the homset of quadratic forms on one module.
+        def parent(self) -> QuadraticFormHomset: ...
+
     r"""A quadratic form \(\Gamma^2M\to W\), recorded by its diagonal lift.
 
     Evaluated at an element of \(M\): \(q(x)\) is this morphism applied to
@@ -694,11 +805,20 @@ class QuadraticFormMorphism(Morphism):
     def value_module(self) -> "Module":
         return self.codomain()
 
-    def __call__(self, element: "Element") -> "Element":
+    def __call__(
+        self, x: object, *args: object, **kwds: object
+    ) -> "Element":
         # Local: the morphism node imports this module, so a module-level
         # import would close that cycle; it is built by call time.
         from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _coordinate_vector
 
+        assert not args and not kwds, (
+            "a quadratic form is evaluated on one element"
+        )
+        element = x
+        assert isinstance(element, ModuleElement), (
+            "a quadratic form is evaluated on a module element"
+        )
         assert element.parent() is self.module(), (
             f"{element} is not an element of {self.module()}"
         )
@@ -767,7 +887,7 @@ class QuadraticFormMorphism(Morphism):
             self._lift_matrix.change_ring(engine_ring(value_ring))
         )
 
-    def pullback(self, morphism: "Morphism") -> "QuadraticFormMorphism":
+    def pullback(self, morphism: "ModuleMorphism") -> "QuadraticFormMorphism":
         # Local: the morphism node imports this module, so a module-level
         # import would close that cycle; it is built by call time.
         from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _underlying_module
@@ -780,7 +900,7 @@ class QuadraticFormMorphism(Morphism):
             * matrix_of_map.transpose()
         )
 
-    def descends_along(self, morphism: "Morphism") -> bool:
+    def descends_along(self, morphism: "ModuleMorphism") -> bool:
         if not self.lift_form().descends_along(morphism):
             return False
         return all(
@@ -795,7 +915,7 @@ class QuadraticFormMorphism(Morphism):
             for row in self.gram_matrix().rows()
         )
 
-    def image(self) -> "Subobject":
+    def image(self) -> Parent:
         r"""Return the submodule of \(W\) the form's values generate.
 
         \(\Gamma^2M\) is generated by the \(\gamma_2(e_i)\) and the products
@@ -823,19 +943,29 @@ class QuadraticFormMorphism(Morphism):
         return repr(self.gram_matrix())
 
 
-def BilinearForm(module: "Module", value_module: "Module", gram_matrix: "GramMatrix") -> "BilinearFormMorphism":
+def BilinearForm(
+    module: "Module", value_module: "Module", gram_matrix: "GramMatrix"
+) -> Parent:
     r"""Construct the formed module classified by a bilinear form."""
     # Local: form_modules imports this module, so a module-level import here
     # would close that cycle; it is built by the time this function runs.
     from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModule
 
-    return FormModule(BilinearForms(module, value_module)(gram_matrix))
+    formed: Parent = FormModule(
+        BilinearForms(module, value_module)(gram_matrix)
+    )
+    return formed
 
 
-def QuadraticForm(module: "Module", value_module: "Module", gram_matrix: "GramMatrix") -> "QuadraticFormMorphism":
+def QuadraticForm(
+    module: "Module", value_module: "Module", gram_matrix: "GramMatrix"
+) -> Parent:
     r"""Construct the formed module classified by a quadratic form."""
     # Local: form_modules imports this module, so a module-level import here
     # would close that cycle; it is built by the time this function runs.
     from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModule
 
-    return FormModule(QuadraticForms(module, value_module)(gram_matrix))
+    formed: Parent = FormModule(
+        QuadraticForms(module, value_module)(gram_matrix)
+    )
+    return formed

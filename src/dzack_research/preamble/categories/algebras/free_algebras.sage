@@ -1,9 +1,70 @@
 r"""Free algebras over a base ring, without a chosen generating set."""
 
+from typing import Protocol, TYPE_CHECKING
+
+from sage.categories.category import Category
+from sage.categories.category_types import Category_over_base_ring
+from sage.categories.rings import Rings as SageRings
+from sage.structure.parent import Parent
+
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
 from dzack_research.preamble.categories.sets.owned_sets import Sets
 
+if TYPE_CHECKING:
+    from dzack_research.preamble.categories.algebras.framed_free_algebras import (
+        MonomialSystem,
+    )
+    from dzack_research.preamble.lexicon import Element
+    from dzack_research.preamble.lexicon import OrderedSet
 
+    # What these categories require of the objects they are about.  Sage
+    # binds ``ParentMethods`` onto a parent and ``SubcategoryMethods`` onto a
+    # category by COPYING the methods into a dynamic class, so the object a
+    # method runs on is never an instance of the class the method is written
+    # in: ``self`` is annotated with what its placement gives it.
+
+    class GradedFreeAlgebraParent(Protocol):
+        r"""A parent in these categories, read through its monomials.
+
+        Everything below is off the framing -- what a monomial is, and which
+        element of the algebra it names -- so these are the operations the
+        graded surface is written against.
+        """
+
+        def base_ring(self) -> "Ring": ...
+        def monomial_system(self) -> "MonomialSystem": ...
+        def module_generator(self, monomial: "Element") -> "Element": ...
+        def degree_on_module_generator(
+            self, module_generator: "Element"
+        ) -> "Integer": ...
+        def graded_piece_monomials(
+            self, degree: "Integer | int"
+        ) -> "Set | tuple": ...
+
+    class DividedPowerAlgebraParent(GradedFreeAlgebraParent, Protocol):
+        r"""A parent in \(\Gamma\): the divided powers are its own operation."""
+
+        def divided_power(
+            self, value: "Element", exponent: "Integer | int"
+        ) -> "Element": ...
+
+    class FreeAlgebraCategory(Protocol):
+        r"""The category itself, which ``SubcategoryMethods`` are bound onto."""
+
+        def base_ring(self) -> "Ring": ...
+
+
+if TYPE_CHECKING:
+    # Nominal, and not a protocol: the two methods that keep this base hand
+    # ``self`` to ``Hom``, which takes a ``Parent``, and return it where a
+    # ring is expected.  A parent in these categories IS a ring parent, and
+    # naming its generating set is what a free one adds.  At runtime the name
+    # is ``object``, so the class Sage receives is the plain one it expects.
+    class _FreeAlgebraRingBase(SageRings.ParentMethods):
+        def algebra_generating_set(self) -> "OrderedSet": ...
+
+else:
+    _FreeAlgebraRingBase = object
 
 class FreeAlgebras(OwnedCategoryOverBaseRing):
     r"""Algebras whose underlying modules are free."""
@@ -24,13 +85,18 @@ class FreeAlgebras(OwnedCategoryOverBaseRing):
         ]
 
     class SubcategoryMethods:
-        def on(self, algebra_generating_set):
+        def on(
+            self: "FreeAlgebraCategory", algebra_generating_set: "OrderedSet"
+        ) -> "Parent":
             r"""Return the free algebra on ``algebra_generating_set``."""
             # Local: framed_free_algebras imports this module, so a
             # module-level import here would close that cycle.
             from dzack_research.preamble.categories.algebras.framed_free_algebras import FreeAlgebraOn
 
-            return FreeAlgebraOn(self.base_ring(), algebra_generating_set)
+            free_algebra: "Parent" = FreeAlgebraOn(
+                self.base_ring(), algebra_generating_set
+            )
+            return free_algebra
 
     class ParentMethods:
         def is_free(self) -> bool:
@@ -52,7 +118,7 @@ class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
 
         return [FreeAlgebras(self.base_ring()), GradedAlgebras(self.base_ring())]
 
-    class ParentMethods:
+    class ParentMethods(_FreeAlgebraRingBase):
         def _ring_morphism_defining_algebra_structure(self) -> "Morphism":
             r"""Return \(R\to A\), \(r\mapsto r1_A\)."""
             from sage.categories.homset import Hom
@@ -64,7 +130,9 @@ class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
                 lambda scalar: scalar * self.one(),
             )
 
-        def graded_piece(self, degree: "Integer") -> "Module":
+        def graded_piece(
+            self: "GradedFreeAlgebraParent", degree: "Integer"
+        ) -> "Module":
             r"""Return the free submodule on the monomials of one degree."""
             from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreeModuleOn
             from dzack_research.preamble.categories.modules.framed.formed.integrallattice.subobjects import Subobject
@@ -86,7 +154,9 @@ class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
             inclusion._known_injective = True
             return Subobject(inclusion)
 
-        def degree_on_module_generator(self, module_generator: "Element") -> "Integer":
+        def degree_on_module_generator(
+            self: "GradedFreeAlgebraParent", module_generator: "Element"
+        ) -> "Integer":
             r"""Return the degree of a monomial: the grading of these algebras.
 
             The number of letters, however this construction spells them: a
@@ -95,9 +165,12 @@ class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
             which is what makes the other three graded companions of the
             tensor algebra.
             """
-            return self.monomial_system().degree(module_generator)
+            degree: "Integer" = self.monomial_system().degree(module_generator)
+            return degree
 
-        def monomial_degree(self, monomial: "Element") -> "Integer":
+        def monomial_degree(
+            self: "GradedFreeAlgebraParent", monomial: "Element"
+        ) -> "Integer":
             r"""Return the \(n\) with this monomial in \(T(M)[n]\).
 
             The grading, asked of a monomial by the word this construction
@@ -105,7 +178,9 @@ class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
             """
             return self.degree_on_module_generator(monomial)
 
-        def graded_piece_monomials(self, degree: "Integer") -> "Set | tuple":
+        def graded_piece_monomials(
+            self: "GradedFreeAlgebraParent", degree: "Integer | int"
+        ) -> "Set | tuple":
             r"""Return the monomials spanning \(T(M)[n]\).
 
             For a free \(M\) on \(S\) these are the words of length \(n\),
@@ -135,7 +210,9 @@ class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
                 is_injective=True,
             )
 
-        def module_generators_of_degree(self, degree: "Integer") -> "Set | tuple":
+        def module_generators_of_degree(
+            self: "GradedFreeAlgebraParent", degree: "Integer | int"
+        ) -> "Set | tuple":
             r"""Return the monomials of a degree, which the grading asks for.
 
             Asked of the monomials rather than filtered out of all of them:
@@ -146,7 +223,9 @@ class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
             return self.graded_piece_monomials(degree)
 
         def ideal_generators_in_degree(
-            self, relations: tuple, degree: "Integer"
+            self: "GradedFreeAlgebraParent",
+            relations: tuple,
+            degree: "Integer | int",
         ) -> tuple:
             r"""Return generators of \(\langle K\rangle_n\) for \(K\) in degree one.
 
@@ -185,7 +264,7 @@ class TensorAlgebras(OwnedCategoryOverBaseRing):
     def super_categories(self) -> list:
         return [GradedFreeAlgebras(self.base_ring())]
 
-    class ParentMethods:
+    class ParentMethods(_FreeAlgebraRingBase):
         def ring_center(self) -> "Ring":
             r"""Return \(Z(T(M))\).
 
@@ -269,7 +348,9 @@ class DividedPowerAlgebras(OwnedCategoryOverBaseRing):
 
     class ParentMethods:
         def ideal_generators_in_degree(
-            self, relations: tuple, degree: "Integer"
+            self: "DividedPowerAlgebraParent",
+            relations: tuple,
+            degree: "Integer | int",
         ) -> tuple:
             generators = GradedFreeAlgebras.ParentMethods.ideal_generators_in_degree(
                 self, relations, degree
