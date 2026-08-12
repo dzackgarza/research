@@ -53,16 +53,16 @@ def test_root_lattice_discriminant_groups_are_the_classical_ones() -> None:
     Textbook values, independent of how the cokernel is presented.
     """
     _ensure_preamble()
-    for rank in range(2, 8):
+    for rank in range(2r, 8r):
         invariants = Lattices.root_lattice("A", rank).discriminant_group().invariants()
         assert prod(invariants) == rank + 1, f"A_{rank}: got {invariants}"
-    for rank in range(4, 8):
+    for rank in range(4r, 8r):
         invariants = Lattices.root_lattice("D", rank).discriminant_group().invariants()
         assert prod(invariants) == 4, f"D_{rank}: got {invariants}"
         assert _elementary_divisors(invariants) == ([2, 2] if rank % 2 == 0 else [4]), (
             f"D_{rank} should be (Z/2)^2 for even rank and Z/4 for odd: {invariants}"
         )
-    for rank, order in ((6, 3), (7, 2), (8, 1)):
+    for rank, order in ((6r, 3r), (7r, 2r), (8r, 1r)):
         invariants = Lattices.root_lattice("E", rank).discriminant_group().invariants()
         assert (prod(invariants) or ZZ.one()) == order, f"E_{rank}: got {invariants}"
 

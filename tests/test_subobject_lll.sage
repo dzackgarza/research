@@ -33,7 +33,7 @@ def _standard(n: int, negative: bool = False) -> "FormModule":
 def _skew_submodule(negative: bool = False) -> "Subobject":
     r"""Return a finite-index submodule of $I_{4,0}$ on long, skew generators."""
     _ensure_preamble()
-    ambient = _standard(4, negative)
+    ambient = _standard(4r, negative)
     e = ambient.module_generators()
     return ambient.subobject_on([
         9 * e[0] + 13 * e[1],

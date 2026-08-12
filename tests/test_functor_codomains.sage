@@ -137,7 +137,7 @@ def _groups() -> list:
     ]
 
 
-def _sample_elements(group: "ModuleAutomorphismGroup", bound: int = 6) -> list:
+def _sample_elements(group: "ModuleAutomorphismGroup", bound: int = 6r) -> list:
     r"""Return finitely many elements, exhaustively when the group is finite."""
     if group in Sets().Finite():
         return list(group)

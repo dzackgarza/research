@@ -99,7 +99,7 @@ def _mathjax_full_root() -> str:
                 check=False,
                 capture_output=True,
                 text=True,
-                timeout=10,
+                timeout=10r,
             )
             if proc.returncode == 0:
                 candidates.append(Path(proc.stdout.strip()) / "mathjax-full")
@@ -152,7 +152,7 @@ def _configured_mathjax_max_buffer() -> int | None:
         if not match:
             return None
         try:
-            config = json.loads(match.group(1))
+            config = json.loads(match.group(1r))
         except Exception:
             return None
         value = config.get("mathjaxMaxBuffer")
@@ -171,7 +171,7 @@ def _configured_mathjax_max_buffer() -> int | None:
         for suffix in ("", "/"):
             url = base_url.rstrip("/") + suffix
             try:
-                with urllib.request.urlopen(url, timeout=2) as response:
+                with urllib.request.urlopen(url, timeout=2r) as response:
                     body = response.read().decode("utf-8", errors="replace")
             except (OSError, urllib.error.URLError, ValueError):
                 continue
@@ -260,7 +260,7 @@ def _assert_latex_renders_in_browser_mathjax(rendered: str, name: str) -> None:
             capture_output=True,
             text=True,
             check=False,
-            timeout=15,
+            timeout=15r,
         )
         if result.returncode != 0:
             raise AssertionError(
@@ -364,7 +364,7 @@ def _assert_latex_sequence_renders_in_browser_mathjax(
             capture_output=True,
             text=True,
             check=False,
-            timeout=20,
+            timeout=20r,
           )
         if result.returncode != 0:
             details = result.stdout.strip()
@@ -592,7 +592,7 @@ def test_every_sterk_vector_is_a_root() -> None:
     catalogue, _, sterk = _preamble()
     TdP = catalogue.Lattices.TdP
     for name, roots in sterk.sterk_roots().items():
-        for index, root in enumerate(roots, start=1):
+        for index, root in enumerate(roots, start=1r):
             norm = TdP.b(root, root)
             assert norm in (-2, -4), f"{name} root {index}: norm {norm}"
 
@@ -926,7 +926,7 @@ def test_sterks_in_ten_are_root_configurations() -> None:
     expected_counts = {"sterks1": 12, "sterks2": 10, "sterks3": 12}
     for name, vectors in configurations.items():
         assert len(vectors) == expected_counts[name], name
-        for index, vector_ in enumerate(vectors, start=1):
+        for index, vector_ in enumerate(vectors, start=1r):
             norm = TEn.b(vector_, vector_)
             assert norm in (-2, -4), f"{name} vector {index}: norm {norm}"
 

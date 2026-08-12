@@ -619,7 +619,7 @@ AUDITED_MATHEMATICS = {
         lambda native: len(
             [
                 vector
-                for vector in itertools.islice(native.enumerate_short_vectors(), 10)
+                for vector in itertools.islice(native.enumerate_short_vectors(), 10r)
                 if native(vector).inner_product(native(vector)) <= 2
             ]
         ),

@@ -8,4 +8,8 @@
 # modules must import everything else explicitly (repo style), and an honest
 # short list keeps accidental star-reliance visible.
 from sage.rings.integer import Integer as Integer
-from sage.rings.real_mpfr import RealNumber as RealNumber
+from sage.rings.real_mpfr import RealNumber as _RealElement
+
+# The preparser's real-literal spelling calls create_RealNumber, the factory
+# that accepts the literal as a string; the element class is its return.
+def RealNumber(x: str | float | int | _RealElement, base: int | Integer = ...) -> _RealElement: ...
