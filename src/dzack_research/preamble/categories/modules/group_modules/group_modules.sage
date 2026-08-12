@@ -31,7 +31,7 @@ from sage.categories.homset import Hom
 from sage.categories.morphism import SetMorphism
 from sage.structure.element import ModuleElement
 from sage.structure.parent import Parent
-from sage.structure.richcmp import richcmp
+from sage.structure.richcmp import op_EQ, richcmp
 
 from dzack_research.preamble.categories.sets.cardinals import Cardinal
 from dzack_research.preamble.categories.modules.group_modules.characters import Character
@@ -451,6 +451,21 @@ class GroupModuleElement(ModuleElement):
     def _richcmp_(self, other: "GroupModuleElement", op: int) -> bool:
         return richcmp(self._underlying, other._underlying, op)
 
+    def __eq__(self, other: object) -> bool:
+        # Identification across parents is a stated morphism, never coercion
+        # (AGENTS.md: coercion must not erase the element/image distinction),
+        # so equality outside this parent is plain False and Sage's
+        # conversion fallback never consults a constructor.
+        if not (
+            isinstance(other, GroupModuleElement)
+            and other.parent() is self.parent()
+        ):
+            return False
+        return bool(richcmp(self._underlying, other._underlying, op_EQ))
+
+    def __ne__(self, other: object) -> bool:
+        return not self.__eq__(other)
+
     def __hash__(self) -> int:
         return hash((id(self.parent()), self._underlying))
 
@@ -554,11 +569,16 @@ class GroupModule(Parent):
     def _from_coordinates(self, coordinates: "Vector") -> GroupModuleElement:
         return self._over(self._module._from_coordinates(coordinates))
 
-    def _element_constructor_(self, element: GroupModuleElement) -> GroupModuleElement:
-        assert isinstance(element, GroupModuleElement) and element.parent() is self, (
-            f"{element} is not an element of {self}"
+    def _element_constructor_(self, element: object) -> GroupModuleElement:
+        # Conversion, not just recognition: coordinate data converts through
+        # the module's own coordinate route; an element of this parent passes
+        # through unchanged.
+        if isinstance(element, GroupModuleElement) and element.parent() is self:
+            return element
+        assert isinstance(element, (tuple, list, ModuleElement)), (
+            f"{element} is neither an element of {self} nor coordinate data for one"
         )
-        return element
+        return self._over(self._module(element))
 
     def __contains__(self, element: object) -> bool:
         return (

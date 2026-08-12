@@ -296,7 +296,14 @@ class GroupRingFunctor(Functor):
         # algebra-over-a-base-ring node onto it leaves the scalar action with
         # two bases to choose between, and the products stop resolving.
         base_ring = engine_ring(self._base_ring)
-        algebra = GroupAlgebra(group, base_ring)
+        # The functor names its source: a refined group is a semigroup under
+        # more than one operation, and the group ring is the one over the
+        # group law -- exactly the disambiguation the docstring promises.
+        from sage.categories.groups import Groups as SageGroupsCategory
+
+        # ``S.algebra(R, category=...)`` is the disambiguated spelling Sage
+        # itself names; the functor is still the public surface.
+        algebra = group.algebra(base_ring, category=SageGroupsCategory())
         return own_algebra(algebra.coerce_map_from(base_ring))
 
 

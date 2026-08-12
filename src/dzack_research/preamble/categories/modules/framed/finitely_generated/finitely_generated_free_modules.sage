@@ -28,7 +28,7 @@ from sage.modules.free_module_element import FreeModuleElement, vector
 from sage.rings.integer import Integer as SageInteger
 from sage.structure.element import Element, Element as SageElement, ModuleElement
 from sage.structure.parent import Parent
-from sage.structure.richcmp import richcmp
+from sage.structure.richcmp import op_EQ, richcmp
 from dzack_research.preamble.categories.sets.cardinals import Cardinal
 
 from dzack_research.preamble.categories.modules.module_morphisms.morphism_matrices import MorphismMatrix
@@ -264,6 +264,19 @@ class BasedFreeModuleElement(ModuleElement):
 
     def _richcmp_(self, other: "BasedFreeModuleElement", op: int) -> bool:
         return bool(richcmp(self._coordinates_, other._coordinates_, op))
+
+
+    def __eq__(self, other: object) -> bool:
+        # Identification across parents is a stated morphism, never coercion
+        # (AGENTS.md: coercion must not erase the element/image distinction),
+        # so equality outside this parent is plain False and Sage's
+        # conversion fallback never consults a constructor.
+        if not (isinstance(other, BasedFreeModuleElement) and other.parent() is self.parent()):
+            return False
+        return bool(richcmp(self._coordinates_, other._coordinates_, op_EQ))
+
+    def __ne__(self, other: object) -> bool:
+        return not self.__eq__(other)
 
     def __hash__(self) -> int:
         return hash(tuple(self._coordinates_))
