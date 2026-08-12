@@ -10,6 +10,7 @@ dependencies = [
     "sage-lattice-category-spike==0.0.1",
     "sage-lattice-feature-spike==0.1.0",
     "streamlit>=1.59.2",
+    "tree-sitter-sage",
     "z3-solver>=4.16.0.0",
 ]
 
@@ -51,6 +52,4 @@ log_file = "tests/.report/pytest.log"
 log_file_level = "DEBUG"
 
 [dependency-groups]
-dev = [
-    "tree-sitter-sage",
-]
+dev = []

@@ -5,6 +5,8 @@ Workspace for mathematical notes, computation experiments, and live research pro
 ## Sage research package
 
 The installable `dzack_research` package is the preamble.
+It is a **Sage** package, not a plain Python package: its modules are `.sage` sources that the [sageparse](https://github.com/dzackgarza/tree-sitter-sage) preparser compiles to Python on import.
+`tree-sitter-sage` is therefore a hard runtime dependency, and the package must be imported inside a Sage environment (`SAGE_BIN`; `src/sitecustomize.py` installs the import hook into every process).
 After checkout or after `.envrc` changes, run:
 
 ```bash
