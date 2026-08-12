@@ -16,13 +16,8 @@ import pytest
 def _ensure_preamble() -> None:
     if "Lattices" in globals():
         return
-    from pathlib import Path
-    import dzack_research
-
-    p = Path(dzack_research.__file__).resolve().parent / "preamble"
     from dzack_research.preamble.install import install_preamble
     install_preamble(globals())
-    load(str(p / "sterk.sage"))
     Lattices.install(globals())
 
 

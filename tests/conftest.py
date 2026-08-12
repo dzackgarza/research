@@ -10,36 +10,20 @@ has no attribute 'Aut'`` on a file that passes when collected alone.
 
 Loading here removes the race rather than ordering around it.  A conftest is
 imported before the test modules beside it, so the refinements are in place
-before any of them runs a line.  The modules keep their own ``load`` -- that
-is what puts the preamble's names in *their* globals -- and it finds the work
-already done.
+before any of them runs a line.  Each test module calls ``install_preamble``
+itself -- that is what puts the preamble's names in *their* globals -- and it
+finds the work already done.
 """
 
 from __future__ import annotations
 
-from pathlib import Path
-
-import dzack_research
-
-# The preamble is preparsed source: its lowered form spells literals as
-# ``Integer(2)`` and ranges as ``ellipsis_range``.  A ``.py`` conftest gets no
-# preparser prelude, so ``load`` would run that code against a namespace with
-# none of those names.  This is the prelude, and it is why the star import is
-# the right spelling here and nowhere else in the suite.
+# Sage's namespace comes in first, and the star import is the spelling that
+# brings all of it: with only the preamble imported here, ``GF(5)^3`` and
+# ``Zmod(6)^3`` arrive in a later test module carrying none of the owned
+# free-module methods.  Whatever the intake path over a finite ring reads, it
+# reads it from a session that has already imported ``sage.all``.
 from sage.all import *  # noqa: F403
-from sage.repl.load import load as _load
-
-def load(filename: str | Path, namespace: dict | None = None) -> None:
-    r"""Run a ``.sage`` file the way a session does, into this namespace.
-
-    ``install.sage`` loads its fifty-five files by writing ``load("...")``,
-    one argument, because that is what a session provides.  The importable
-    ``load`` takes the namespace explicitly, so this supplies it -- and puts
-    itself in the namespace it supplies, which is what makes the nested loads
-    inside the preamble resolve to this same spelling.
-    """
-    _load(str(filename), globals() if namespace is None else namespace)
-
 
 from dzack_research.preamble.install import install_preamble
+
 install_preamble(globals())
