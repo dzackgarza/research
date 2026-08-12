@@ -39,7 +39,6 @@ from typing import Self, TYPE_CHECKING
 from sage.matrix.matrix0 import Matrix
 from sage.categories.category import Category
 from sage.categories.groups import Groups
-from sage.categories.modules import Modules
 from sage.matrix.special import diagonal_matrix
 from sage.misc.cachefunc import cached_method
 from sage.structure.parent import Parent
@@ -52,6 +51,7 @@ if TYPE_CHECKING:
     # The ordered-set noun is type-only: the preamble loads into one
     # shared namespace and nothing named OrderedSet may bind there.
     from sage_lattice_category_spike.lexicon import OrderedSet
+    from sage_lattice_category_spike.lexicon import Vector
 
 
 def _is_additive(group: "Group") -> bool:
@@ -288,6 +288,52 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
 
     class ParentMethods:
         r"""What a torsion module is asked, none of which involves a form."""
+
+        def _latex_(self: Self) -> str:
+            r"""Return the chosen module presentation in additive notation.
+
+            Commutativity is part of the category of modules.  Thus the
+            displayed relations are the rows of the presentation matrix.
+            The presentation of the underlying group retains its commutator
+            relators.
+            """
+            from dzack_research.preamble.categories.group.finitely_presented_groups import (
+                _fp_format_presentation_latex,
+            )
+
+            generators = tuple(
+                f"e_{{{index}}}"
+                for index in range(1, self.number_of_module_generators() + 1)
+            )
+
+            def relation(row: "Vector") -> str:
+                terms = []
+                for coefficient, generator in zip(row, generators):
+                    coefficient = int(coefficient)
+                    if coefficient == 0:
+                        continue
+                    magnitude = abs(coefficient)
+                    term = (
+                        generator
+                        if magnitude == 1
+                        else f"{magnitude}{generator}"
+                    )
+                    if not terms:
+                        terms.append(f"-{term}" if coefficient < 0 else term)
+                    else:
+                        terms.append(
+                            f" {'-' if coefficient < 0 else '+'} {term}"
+                        )
+                return f"{''.join(terms) if terms else '0'}=0"
+
+            relations = tuple(
+                relation(row) for row in self.relation_matrix().rows()
+            )
+            return _fp_format_presentation_latex(
+                generators,
+                relations,
+                subscript="\\mathbb{Z}",
+            )
 
         def is_abelian(self: Self) -> bool:
             r"""Return ``True`` because module addition is commutative."""

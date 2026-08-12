@@ -105,10 +105,12 @@ def test_endomorphisms_of_a_nonabelian_group_are_refused():
     assert False, "End(S3) was built as a ring, and its addition is not one"
 
 
-def test_the_integer_action_is_the_unique_ring_morphism():
+def test_every_abelian_group_is_a_module_over_the_integers():
     r"""$\rho:\mathbb Z\to\operatorname{End}(A)$ is a ring map, and is $n$-th power."""
+    assert OwnedAbelianGroups().is_subcategory(Modules(ZZ))
     for name, group in _abelian_groups():
-        action = group.integer_action()
+        assert group in Modules(ZZ), f"{name} is a module over the integers"
+        action = group.scalar_action()
         assert action.domain() is ZZ, f"{name}: the scalars are the integers"
         assert action.codomain() == group.endomorphism_ring(), (
             f"{name}: rho lands in End(A)"
@@ -122,6 +124,7 @@ def test_the_integer_action_is_the_unique_ring_morphism():
                 assert action(left)(element) == element**left, (
                     f"{name}: rho(n) is not the n-th power map"
                 )
+                assert group.scalar_multiple(left, element) == element**left
                 for right in _scalars():
                     assert (
                         action(left + right)(element)
@@ -154,6 +157,21 @@ def test_finite_torsion_modules_are_finite_abelian_groups():
                     f"{name}{rank}: no smaller scalar annihilates it, so the "
                     "group element has the stated order"
                 )
+
+
+def test_a_module_presentation_uses_the_presentation_matrix_relations():
+    r"""The underlying-group presentation retains its commutator relators."""
+    from sage.misc.latex import latex
+
+    module = Lattices.A4.discriminant_group().forget_form()
+    free = module.presenting_free_group()
+    first, second = free.gens()[:2]
+    commutator = first * second * first**-1 * second**-1
+
+    assert commutator in module.defining_relations()
+    presentation = str(latex(module))
+    assert r"\right\rangle_{\mathbb{Z}}" in presentation
+    assert "[e_{1}, e_{2}]" not in presentation
 
 
 # --------------------------------------------------------------------------

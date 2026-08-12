@@ -991,14 +991,15 @@ def test_lattice_latex_representation() -> None:
     assert r"\mathrm{disc}(L) = -1" in u_latex
     assert r"\cdot" in u_latex
     assert r"A_L = \left\langle e_{1}, e_{2} \;\middle|\;" in u_latex
+    assert r"\right\rangle_{\mathbb{Z}} \in \mathbb{Z}\text{-Mod}" in u_latex
     assert r"\text{(Finite presentation)}" in u_latex
-    assert r"A_L \cong 0 \in \mathrm{Groups}" in u_latex
+    assert r"A_L \cong 0 \in \mathbb{Z}\text{-Mod}" in u_latex
     assert r"G_{q_{A_L}} = ()" in u_latex
 
     a2_latex = str(latex(catalogue.Lattices.root_lattice("A", 2)))
     assert r"A_L = \left\langle e_{1}, e_{2} \;\middle|\;" in a2_latex
     assert r"\text{(Finite presentation)}" in a2_latex
-    assert r"A_L \cong C_{3} \in \mathrm{Groups}" in a2_latex
+    assert r"A_L \cong C_{3} \in \mathbb{Z}\text{-Mod}" in a2_latex
     assert r"G_{q_{A_L}} =" in a2_latex
 
     a2_disc = catalogue.Lattices.root_lattice("A", 2).discriminant_group().gram_matrix()
@@ -1183,5 +1184,4 @@ def test_lattices_install_binds_specimens_and_lk3_generators() -> None:
 
     e = ns["e"]
     assert e.parent() is Lattices.TdP
-
 

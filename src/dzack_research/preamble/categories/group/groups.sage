@@ -654,9 +654,7 @@ class AbelianGroupEndomorphismRing(Parent):
             f"{group} is not abelian, so its endomorphisms do not add"
         )
         self._group = group
-        self._additive = group.category().is_subcategory(
-            CommutativeAdditiveGroups()
-        )
+        self._additive = _uses_additive_notation(group)
         Parent.__init__(self, category=Rings())
 
     def _sum_values(self, left: "Element", right: "Element") -> "Element":
@@ -708,10 +706,9 @@ class AbelianGroupEndomorphismRing(Parent):
 class OwnedAbelianGroups(Category):
     r"""Abelian groups.
 
-    \(\mathrm{Ab}\) and \(\mathbb Z\text{-Mod}\) are isomorphic categories.
-    A module over \(\mathbb Z\) is therefore already an additively written
-    abelian group.  A multiplicatively written abelian group carries the same
-    integer action by powers.
+    This is \(\mathbb Z\text{-Mod}\).  A Sage realization can write its group
+    law additively or multiplicatively.  In the second notation, scalar
+    multiplication by \(n\) is the \(n\)-th power map.
     """
 
     @classmethod
@@ -719,7 +716,9 @@ class OwnedAbelianGroups(Category):
         return "abelian groups"
 
     def super_categories(self) -> list:
-        return [OwnedGroups()]
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+        return [OwnedGroups(), Modules(ℤ)]
 
     class ParentMethods:
         @cached_method
@@ -728,7 +727,7 @@ class OwnedAbelianGroups(Category):
             return AbelianGroupEndomorphismRing(self)
 
         @cached_method
-        def integer_action(self: Self) -> "Morphism":
+        def _ring_morphism_defining_module_action(self: Self) -> "Morphism":
             r"""Return the unique \(\rho:\mathbb Z\to\operatorname{End}(A)\).
 
             \(\mathbb Z\) is initial in rings, so there is exactly one ring
@@ -738,13 +737,8 @@ class OwnedAbelianGroups(Category):
             nothing about it is chosen.  It sends \(n\) to the \(n\)-th power
             map, which is what \(\rho(n)=n\cdot 1\) unwinds to.
             """
-            # Local: a module-level import would close a cycle; the module is built by the time this runs.
-            from dzack_research.preamble.categories.rings.rings import own_ring
-
             endomorphisms = self.endomorphism_ring()
-            additive = self.category().is_subcategory(
-                CommutativeAdditiveGroups()
-            )
+            additive = _uses_additive_notation(self)
 
             def multiple(exponent: "RingElement", element: "Element") -> "Element":
                 match additive:
@@ -801,6 +795,21 @@ def _answers_abelian(group: "Group") -> bool:
     return _engine_answer(group, "is_abelian") is True
 
 
+def _record_group_notation(group: "Group") -> None:
+    r"""Record how Sage writes the group law before category refinement."""
+    group._preamble_uses_additive_notation = group.category().is_subcategory(
+        CommutativeAdditiveGroups()
+    )
+
+
+def _uses_additive_notation(group: "Group") -> bool:
+    r"""Return whether this realization writes the group law additively."""
+    recorded = group.__dict__.get("_preamble_uses_additive_notation")
+    if recorded is not None:
+        return recorded
+    return group.category().is_subcategory(CommutativeAdditiveGroups())
+
+
 def refine_group(group: "Group") -> "Group":
     r"""Put ``group`` in every owned category witnessed by its structure.
 
@@ -809,6 +818,8 @@ def refine_group(group: "Group") -> "Group":
     """
     from dzack_research.preamble.refine import refine
 
+    if "_preamble_uses_additive_notation" not in group.__dict__:
+        _record_group_notation(group)
     if group.category().is_subcategory(OwnedGroups()):
         return group
     categories = tuple(
@@ -916,7 +927,11 @@ def install_groups() -> None:
     if _GROUPS_INSTALLED:
         return
     for construction in _GROUP_CONSTRUCTIONS:
-        hook_post_init(construction, OwnedGroups())
+        hook_post_init(
+            construction,
+            OwnedGroups(),
+            before=_record_group_notation,
+        )
         hook_post_init(
             construction,
             OwnedFinitelyGeneratedGroups(),
