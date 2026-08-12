@@ -17,15 +17,19 @@ if TYPE_CHECKING:
     from dzack_research.preamble.lexicon import OrderedSet
 
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import BasedFreeModule
-from sage.categories.modules import Modules
+from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.sets.owned_sets import Sets
 from dzack_research.preamble.categories.rings.rings import engine_ring
 if TYPE_CHECKING:
+    from sage.categories.morphism import Morphism
     from sage.rings.ring import Ring
     from dzack_research.preamble.categories.modules.framed.formed.integrallattice.subobjects import Subobject
 
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
 from dzack_research.preamble.categories.rings.rings import OwnedBaseRing
+from sage.categories.homset import Hom
+from sage.categories.morphism import SetMorphism
+from sage.categories.rings import Rings as SageRings
 from sage.rings.ideal import Ideal_generic
 from sage.structure.parent import Parent
 
@@ -77,6 +81,27 @@ class FractionalIdeal(OwnedBaseRing, Parent):
     def ring(self) -> "Ring":
         r"""Return \(R\), the ring this is an ideal of."""
         return self._ring
+
+    def _ring_morphism_defining_module_action(self) -> "Morphism":
+        r"""Return \(\rho:R\to\operatorname{End}(I)\), \(r\mapsto(x\mapsto rx)\).
+
+        The action an ideal has from being an ideal: \(RI\subseteq I\) is one
+        of the two conditions defining it, so multiplication in
+        \(\operatorname{Frac}(R)\) already lands where it must.  No generating
+        family is consulted -- being a module is not a statement about
+        generators.
+        """
+        # Local: a module-level import here would close a cycle; the morphism
+        # module is built by the time an ideal is asked for its action.
+        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
+
+        endomorphisms = module_homset(self, self)
+        return SetMorphism(
+            Hom(self._ring, endomorphisms, SageRings()),
+            lambda scalar: SetMorphism(
+                endomorphisms, lambda element: scalar * element
+            ),
+        )
 
     def module_generators(self) -> tuple:
         r"""Return the generating family, read as module generators.

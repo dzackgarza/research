@@ -468,6 +468,21 @@ class OwnedRing(Parent):
             facade=engine,
             category=_owned_ring_category(engine),
         )
+        if not engine.is_exact():
+            # \(|R|\), which the engine cannot state: Sage's axioms record
+            # finiteness alone, so \(\mathbb R\) and \(\mathbb Z\) both arrive
+            # *infinite* and both answer \(+\infty\) -- the one distinction the
+            # owned cardinals exist to keep.  An inexact ring is Sage's own
+            # word for a ring whose elements are approximations to those of a
+            # completion (\(\mathbb R\), \(\mathbb C\), \(\mathbb Q_p\), a
+            # power series ring), and every such completion is of the
+            # continuum: a point is an infinite sequence of digits and every
+            # sequence is a point.  Refined rather than joined, so the owned
+            # cardinality precedes Sage's countable-blind one.
+            from dzack_research.preamble.categories.sets.owned_sets import Sets as OwnedSets
+            from dzack_research.preamble.refine import refine
+
+            refine(self, OwnedSets().Uncountable())
 
     def _coerce_map_from_(self, other: "Parent") -> bool:
         r"""Return whether ``other`` coerces here, which is the engine's answer.

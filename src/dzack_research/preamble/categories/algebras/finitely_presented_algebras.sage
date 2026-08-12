@@ -9,6 +9,7 @@ if TYPE_CHECKING:
 if TYPE_CHECKING:
     from sage.categories.morphism import Morphism
     from sage.rings.ring import Ring
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import FramingMorphism
 
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
 from collections.abc import Iterable
@@ -17,6 +18,7 @@ from typing import Protocol, TYPE_CHECKING
 from sage.categories.homset import Hom
 from sage.categories.morphism import SetMorphism
 from sage.categories.map import Map
+from sage.misc.cachefunc import cached_method
 from sage.rings.ideal import Ideal_generic
 from sage.structure.parent import Parent
 
@@ -48,6 +50,10 @@ if TYPE_CHECKING:
         def one(self) -> "Element": ...
         def algebra_generating_set(self) -> "OrderedSet": ...
         def algebra_generator(self, label: "Element") -> "Element": ...
+        def module_generator(self, monomial: "Element") -> "Element": ...
+        def product_on_algebra_generators(
+            self, s: "Element", t: "Element"
+        ) -> "Element": ...
         def ideal(self, generators: "OrderedSet") -> "Ideal_generic": ...
         def quotient(self, relations: "Ideal_generic") -> "PresentedAlgebraParent": ...
         def hom(
@@ -71,6 +77,7 @@ if TYPE_CHECKING:
         def algebra_generating_set(self) -> "OrderedSet": ...
         def algebra_generator(self, label: "Element") -> "Element": ...
         def algebra_generator_morphism(self) -> SetMorphism: ...
+        def algebra_presentation_morphism(self) -> "Morphism": ...
         def presentation_ring(self) -> "PresentingAlgebraParent": ...
         def _base_change_relation(
             self,
@@ -191,6 +198,41 @@ class FinitelyPresentedAlgebras(OwnedCategoryOverBaseRing):
             self: "PresentedAlgebraParent",
         ) -> "Morphism":
             return self._algebra_presentation_morphism
+
+        @cached_method
+        def framing_morphism(self: "PresentedAlgebraParent") -> "FramingMorphism":
+            r"""Return the module framing \(F_R(\operatorname{Mon}(S))\to A\).
+
+            The presentation *is* the framing.  The cover is free on the
+            monomials in \(S\) as a module, and \(\pi:F\to F/I\) is surjective
+            by construction, so the framing of \(A\) is the cover's framing
+            followed by \(\pi\): each monomial goes to its own class.  That
+            class is already reduced, since the quotient constructs its
+            elements through the ideal's normal form.
+            """
+            # Local: at module level this closes an import cycle; the morphism
+            # module is built by the time a presented algebra is refined.
+            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import framing_morphism
+
+            cover = self.presentation_ring()
+            return framing_morphism(
+                cover,
+                self,
+                lambda monomial: self(cover.module_generator(monomial)),
+            )
+
+        def product_on_algebra_generators(
+            self: "PresentedAlgebraParent", s: "Element", t: "Element"
+        ) -> "Element":
+            r"""Return the product of the algebra generators labelled \(s,t\).
+
+            The projection is an algebra map, so the product of the images is
+            the image of the product: the cover multiplies its own generators,
+            and \(A\) reads the answer through \(\pi\).
+            """
+            return self.algebra_presentation_morphism()(
+                self.presentation_ring().product_on_algebra_generators(s, t)
+            )
 
 
 class FramedFGAlgebras(OwnedCategoryOverBaseRing):

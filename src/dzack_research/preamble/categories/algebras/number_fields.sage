@@ -355,8 +355,17 @@ class OwnedNumberFields(Category):
             of its normal closure otherwise -- so the two cases are not
             conflated, and the caller is told which it asked for by
             :meth:`is_galois`.
+
+            Refined on the way back, because no construction hook reaches this
+            one: Sage builds a Galois group without running
+            ``PermutationGroup_generic.__init__`` (its attributes are lazy), so
+            the post-init hook the owned groups install never fires for it.
             """
-            return self._engine_field().galois_group()
+            # Local: the group node reaches the algebra node, so a module-level
+            # import here would close that cycle.
+            from dzack_research.preamble.categories.group.groups import refine_group
+
+            return refine_group(self._engine_field().galois_group())
 
         def embedding_images(self: "NumberFieldParent", ring: "Ring") -> tuple:
             r"""Return the images of \(\alpha\) under the embeddings into ``ring``.
