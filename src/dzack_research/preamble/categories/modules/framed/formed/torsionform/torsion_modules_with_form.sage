@@ -6,7 +6,6 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from typing import TYPE_CHECKING
 from sage_lattice_category_spike.lexicon import Element
 if TYPE_CHECKING:
-    from sage_lattice_category_spike.lexicon import Group
     from sage_lattice_category_spike.lexicon import Lattice
     from sage_lattice_category_spike.lexicon import Module
     from sage_lattice_category_spike.lexicon import ModuleElement
@@ -19,7 +18,7 @@ if TYPE_CHECKING:
 
 from sage.categories.category import Category
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
-from typing import Any, Self, TYPE_CHECKING
+from typing import Self, TYPE_CHECKING
 
 from sage_lattice_category_spike.objects.cardinals import Cardinal
 from sage_lattice_category_spike.lexicon import GramMatrix, MorphismMatrix
@@ -63,12 +62,12 @@ class TorsionModulesWithForm(OwnedCategoryOverBaseRing):
         return "torsion modules with form"
 
     def super_categories(self) -> list:
-        r"""Return the finite framed form modules lying over torsion modules.
+        r"""Return finite abelian groups equipped with a form.
 
-        Not a category of groups: an element of $(G,b)$ is a module element
-        that a form can be evaluated on, and its addition and its $\mathbb Z$
-        action are the module's.  What $G$ is belongs to :meth:`forget_form`,
-        which is where the group questions are asked and answered.
+        An element of $(G,b)$ is an element of the finite abelian group $G$.
+        The object keeps additive notation because its group law is module
+        addition.  Forgetting the form removes only $b$ and returns the same
+        finite-presentation structure on the underlying module.
 
         Nor a category with its own pairing: $b(a,a')$ and the norm are what it
         is to have a form at all, so they come from :class:`FormModules` here
@@ -78,10 +77,10 @@ class TorsionModulesWithForm(OwnedCategoryOverBaseRing):
         """
         # Local: a module-level import here would close a cycle; by call time this module is built.
         from dzack_research.preamble.categories.modules.framed.formed.form_modules import FinitelyGeneratedFormModules
-        from dzack_research.preamble.categories.modules.pure.torsion_modules import TorsionModules
+        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_torsion_modules import FinitelyPresentedTorsionModules
         return [
             FinitelyGeneratedFormModules(self.base_ring()),
-            TorsionModules(self.base_ring()),
+            FinitelyPresentedTorsionModules(self.base_ring()),
         ]
 
     class ParentMethods:
@@ -294,16 +293,6 @@ class TorsionModulesWithForm(OwnedCategoryOverBaseRing):
                     frontier.append(reached)
                     yield reached
 
-        def abelian_group(self: Self) -> "Group":
-            r"""Return the underlying group, asked of the underlying group.
-
-            $(G,b)$ is not determined by $G$, and this method is about $G$
-            alone, so the answer comes from :meth:`forget_form` -- which is an
-            object of :class:`FinitelyPresentedTorsionModules` and the place
-            such questions are settled and cached.
-            """
-            return self.forget_form().abelian_group()
-
         def is_p_elementary(self: Self, p: "Integer") -> bool:
             r"""Return whether the underlying group is elementary abelian of exponent $p$."""
             return self.forget_form().is_p_elementary(p)
@@ -317,7 +306,7 @@ class TorsionModulesWithForm(OwnedCategoryOverBaseRing):
             invs = self.invariants()
             n = self.gram_matrix().nrows()
 
-            fp_latex = str(_latex_fn(self.forget_form().as_finitely_presented_group()))
+            fp_latex = str(_latex_fn(self.forget_form()))
             inv_str = _format_invariant_factor_latex(invs)
             prim_str = _format_primary_decomp_latex(invs)
             gram_latex = _form_gram_matrix_latex(self)
@@ -596,7 +585,9 @@ def relations_among(form: "FormMorphism", module_generators: "OrderedSet") -> "M
     return kernel[:, : lifts.nrows()]
 
 
-def p_adic_jordan_module_generators(form: "FormMorphism") -> list[Any]:
+def p_adic_jordan_module_generators(
+    form: "FormMorphism",
+) -> list["ModuleElement"]:
     r"""Return lifts of generators putting ``form`` in $p$-adic Jordan normal form.
 
     Sage's reduction is the engine and works on a realization, so one is built

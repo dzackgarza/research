@@ -1,17 +1,15 @@
 r"""Finitely presented torsion modules.
 
-A finite torsion $\mathbb Z$-module with a chosen generating set, presented by
-a morphism $p:\mathbb Z^n\to\mathbb Z^m$ and by nothing else.  Every finitely
-presented module is the cokernel of such a $p$, so this is what being finitely
-presented *is*, not a mark of where the module came from -- a relation is a
-generator of $p$'s domain, and the familiar relation matrix is $p$ read in the
-two generating sets.
+A finite torsion $\mathbb Z$-module with a chosen generating set and a chosen
+presentation morphism $p:\mathbb Z^n\to\mathbb Z^m$.  Finite presentation is
+a property of the module.  The selected $p$ is additional data.  A relation
+is a generator of $p$'s domain.  The relation matrix is $p$ in the two
+selected generating sets.
 
-Which $p$ also settles what else is known.  When $p$ is a morphism of lattices
-there is a cover to project from; when it is a correlation the cokernel is a
-discriminant form; and when it is synthesized from a group and a matrix it is
-none of those and the module is no worse for it.  Those are refinements of the
-resulting object, not different kinds of module.
+The selected $p$ also determines which constructions apply.  When $p$ is a
+morphism of lattices, its codomain maps onto the cokernel.  When $p$ is a
+correlation, the cokernel is the discriminant group.  Its induced form makes
+it a discriminant form.  These facts refine the resulting object.
 
 An element is a coordinate vector in the chosen generators, taken modulo the
 lattice the relations span.  Two are equal when their difference lies in it,
@@ -43,6 +41,7 @@ from sage.categories.category import Category
 from sage.categories.groups import Groups
 from sage.categories.modules import Modules
 from sage.matrix.special import diagonal_matrix
+from sage.misc.cachefunc import cached_method
 from sage.structure.parent import Parent
 
 from sage_lattice_category_spike.lexicon import MorphismMatrix
@@ -94,10 +93,14 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
         # are built by the time supercategories are asked for.
         from dzack_research.preamble.categories.modules.pure.torsion_modules import TorsionModules
         from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModules
+        from dzack_research.preamble.categories.group.groups import OwnedFiniteAbelianGroups
+        from dzack_research.preamble.categories.group.finitely_presented_groups import GroupsWithChosenFinitePresentation
 
         return [
             TorsionModules(self.base_ring()),
             FinitelyPresentedModules(self.base_ring()),
+            OwnedFiniteAbelianGroups(),
+            GroupsWithChosenFinitePresentation(),
         ]
 
     def direct_sum_of_cyclics(self, orders: "OrderedSet") -> "TorsionModule":
@@ -286,14 +289,57 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
     class ParentMethods:
         r"""What a torsion module is asked, none of which involves a form."""
 
-        def abelian_group(self: Self) -> "Group":
-            r"""Return this module as a Sage finite abelian group."""
-            from sage.groups.abelian_gps.abelian_group import AbelianGroup
-            # Local: at module level this closes an import cycle; the group
-            # module is built by the time a group is asked for.
-            from dzack_research.preamble.categories.group.groups import own_group
+        def is_abelian(self: Self) -> bool:
+            r"""Return ``True`` because module addition is commutative."""
+            return True
 
-            return own_group(AbelianGroup(list(self.invariants())))
+        def group_generators(self: Self) -> "OrderedSet":
+            r"""Return the module generators as additive group generators."""
+            zero = self.zero()
+            return finite_ordered_set(
+                tuple(
+                    generator
+                    for generator in self.module_generators()
+                    if generator != zero
+                )
+            )
+
+        @cached_method
+        def presenting_free_group(self: Self) -> "Group":
+            r"""Return the free group on the chosen module generators."""
+            from sage.groups.free_group import FreeGroup
+
+            size = self.number_of_module_generators()
+            match size:
+                case 0:
+                    return FreeGroup(0, "e")
+                case _:
+                    return FreeGroup([f"e{i + 1}" for i in range(size)])
+
+        @cached_method
+        def defining_relations(self: Self) -> "OrderedSet":
+            r"""Return commutativity and module relations as group words."""
+            free = self.presenting_free_group()
+            generators = free.gens()
+            words = [
+                generators[i]
+                * generators[j]
+                * (generators[i] ^ -1)
+                * (generators[j] ^ -1)
+                for i in range(len(generators))
+                for j in range(i + 1, len(generators))
+            ]
+            words.extend(
+                prod(
+                    (
+                        generators[column] ^ int(row[column])
+                        for column in range(len(generators))
+                    ),
+                    free.one(),
+                )
+                for row in self.relation_matrix().rows()
+            )
+            return finite_ordered_set(words)
 
         def is_p_elementary(self: Self, p: "Integer") -> bool:
             r"""Return whether $pA=0$, so that $A$ is a vector space over $\mathbb F_p$.
@@ -327,40 +373,6 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
                 )
                 for prime in sorted({prime for prime, _ in prime_powers})
             }
-
-        def as_finitely_presented_group(self: Self) -> "Group":
-            r"""Return this module as a finitely presented abelian group."""
-            from sage.groups.free_group import FreeGroup
-            from sage.misc.misc_c import prod
-
-            relations = self.relation_matrix()
-            size = relations.ncols()
-            if size == 0:
-                return FreeGroup(0, "e").quotient([])
-
-            free = FreeGroup([f"e{i + 1}" for i in range(size)])
-            # A free *group*, so its generators are group generators.  The
-            # module noun asks it for data it does not have -- the words
-            # below are products in the group law, not linear combinations.
-            generators = free.gens()
-            words = [
-                generators[i]
-                * generators[j]
-                * (generators[i] ^ -1)
-                * (generators[j] ^ -1)
-                for i in range(size)
-                for j in range(i + 1, size)
-            ]
-            words.extend(
-                prod(
-                    (
-                        generators[column] ^ int(row[column])
-                        for column in range(size)
-                    )
-                )
-                for row in relations.rows()
-            )
-            return free.quotient(words)
 
         def __iter__(self: Self):
             from sage.misc.mrange import cartesian_product_iterator

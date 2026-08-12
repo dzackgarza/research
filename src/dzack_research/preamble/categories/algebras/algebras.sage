@@ -166,10 +166,9 @@ class OwnedAlgebra(OwnedBaseRing, Parent):
     and \(\mathbb Q\) over \(\mathbb Q\) are two algebras that differ in
     nothing but their structure map.
 
-    Constructed from the Sage ring rather than refined onto it, for the
-    reason :class:`OwnedGroup` records: refinement gives a foreign parent
-    methods that ask for data an owned constructor would have stored.  The
-    engine crosses the boundary once, here, and is private afterwards.
+    Constructed from the structure map rather than refined onto its codomain.
+    One ring is an algebra over different base rings through different maps,
+    so the map is additional structure and must remain part of this parent.
     """
 
     def __init__(self, structure_map: "Map") -> None:

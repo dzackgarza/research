@@ -21,7 +21,6 @@ if TYPE_CHECKING:
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormMorphism
 from dzack_research.preamble.categories.modules.framed.formed.integrallattice.integral_lattices import _integral_lattice_with_names
 from dzack_research.preamble.categories.sets.sets import finite_ordered_set
-from dzack_research.preamble.categories.group.groups import own_group
 if TYPE_CHECKING:
     from sage.combinat.root_system.cartan_type import CartanType
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleAutomorphismGroup
@@ -375,7 +374,7 @@ class FiniteCoxeterDiagram(CoxeterDiagramParent):
 
     def Aut(self) -> "ModuleAutomorphismGroup":
         r"""Return the finite group of Coxeter-diagram automorphisms."""
-        return own_group(self.graph().automorphism_group(edge_labels=True))
+        return self.graph().automorphism_group(edge_labels=True)
 
     def drawing_conventions(self) -> dict[str, str]:
         r"""Return the node, edge, and self-loop drawing conventions.

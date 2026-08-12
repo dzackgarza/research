@@ -4,12 +4,11 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from sage_lattice_category_spike.lexicon import Cardinal
     from sage_lattice_category_spike.lexicon import Group
-    from sage_lattice_category_spike.lexicon import Module
     from sage_lattice_category_spike.lexicon import OrderedSet
 
-from typing import Any
 if TYPE_CHECKING:
     from typing import Callable
+    from sage.rings.integer import Integer
 
 from sage_lattice_category_spike.objects.sets import Sets
 if TYPE_CHECKING:
@@ -19,8 +18,8 @@ from typing import Self
 
 from sage.misc.cachefunc import cached_method
 from sage.categories.category import Category
+from sage.categories.commutative_additive_groups import CommutativeAdditiveGroups
 from sage.categories.finite_groups import FiniteGroups as SageFiniteGroups
-from sage.misc.abstract_method import abstract_method
 from sage.categories.groups import Groups as SageGroups
 from sage.categories.homset import Hom
 from sage.categories.morphism import SetMorphism
@@ -31,16 +30,20 @@ from sage.groups.free_group import FreeGroup_class
 from sage.groups.matrix_gps.named_group import NamedMatrixGroup_generic
 from sage.groups.matrix_gps.named_group_gap import NamedMatrixGroup_gap
 from sage.groups.perm_gps.permgroup import PermutationGroup_generic
-from sage.misc.latex import latex
+from sage.groups.perm_gps.permgroup_named import AlternatingGroup
+from sage.groups.perm_gps.permgroup_named import SymmetricGroup
 from sage.misc.unknown import Unknown
 from dzack_research.preamble.categories.rings.rings import ℤ
 from sage.rings.integer_ring import ZZ as SageZZ
+from sage.categories.sets_cat import Sets as SageSets
 from sage.sets.totally_ordered_finite_set import TotallyOrderedFiniteSet
-from sage.structure.element import Element
+from sage.structure.element import Element, RingElement
 from sage.structure.parent import Parent
 
 
-def _engine_answer(group: "Group", question: str) -> "Any":
+def _engine_answer(
+    group: "Group", question: str
+) -> "bool | Integer | Unknown":
     r"""Return the engine's answer to ``question``, or ``Unknown``.
 
     Asked of the class Sage built rather than of ``group``, because the owned
@@ -71,7 +74,7 @@ def _finiteness(group: "Group") -> "bool | Unknown":
 
     The group's own answer wherever it has one, so a category that decides
     finiteness -- ``LatticeIsometries`` puts the question to GAP -- is the one
-    that answers.  A group placed in no owned node has not got
+    that answers.  A group placed in no owned category has not got
     :meth:`OwnedGroups.ParentMethods.is_finite` yet, which is why the decline
     is caught here too.
     """
@@ -82,14 +85,20 @@ def _finiteness(group: "Group") -> "bool | Unknown":
 
 
 class OwnedGroups(Category):
-    r"""Groups whose notebook-facing methods are owned by the preamble."""
+    r"""Groups whose notebook-facing methods are owned by the preamble.
+
+    This category does not choose additive or multiplicative notation.  Sage's
+    ``Groups`` category is a category of multiplicatively written groups, while
+    a module is an additively written group.  Both are groups.  Each concrete
+    realization keeps its notation and supplies its operation there.
+    """
 
     @classmethod
     def _repr_object_names(cls) -> str:
         return "groups"
 
     def super_categories(self) -> list:
-        return [SageGroups()]
+        return [SageSets()]
 
     class ParentMethods:
         def group_generators(self: Self) -> "OrderedSet":
@@ -102,7 +111,7 @@ class OwnedGroups(Category):
             a group -- so an infinite generating set survives being asked.
 
             Dropping the identity needs the set enumerated, so it happens at
-            the finitely generated node and not here.
+            the category of finitely generated groups and not here.
             """
             # Local: a module-level import would close a cycle; the module is built by the time this runs.
             from dzack_research.preamble.refine import refine
@@ -158,7 +167,7 @@ class OwnedGroups(Category):
             ``Sp_4(\ZZ)`` reaches here, and the exception Sage raises instead
             says nothing about the group.
             """
-            if self in SageFiniteGroups():
+            if self in OwnedFiniteGroups() or self in SageFiniteGroups():
                 return True
             return _engine_answer(self, "is_finite")
 
@@ -205,7 +214,7 @@ class OwnedGroups(Category):
         def group_generators_are_computable(self: Self) -> "bool | Unknown":
             r"""Return whether some algorithm produces a generating set.
 
-            Asked of this object's resolution order with the owned nodes'
+            Asked of this object's resolution order with the owned categories'
             own answer discounted.  ``OwnedGroups`` gives *every* group it
             holds a ``group_generators`` that reads the group's ``gens``, so
             asking the object whether the method is there finds the
@@ -246,9 +255,9 @@ class OwnedGroups(Category):
 class OwnedFinitelyGeneratedGroups(Category):
     r"""Groups admitting a surjection \(F(S)\twoheadrightarrow G\), \(S\) finite.
 
-    Finite generation is a property of a *morphism* -- the existence of that
-    surjection -- and not of a stored list of elements.  Stated this way the
-    next axiom has something to be the kernel of.
+    Finite generation is witnessed by such a surjection.  It is not witnessed
+    by an arbitrary stored list of elements.  The kernel of this surjection
+    occurs in the definition of finite presentation.
     """
 
     @classmethod
@@ -256,17 +265,13 @@ class OwnedFinitelyGeneratedGroups(Category):
         return "finitely generated groups"
 
     def super_categories(self) -> list:
-        r"""Return the owned node and Sage's own finite-generation axiom.
-
-        Sage's axiom is stated here rather than claimed again at each
-        construction: a group placed in this category *is* finitely generated
-        in Sage's vocabulary, and a reader who asks in Sage's words gets the
-        preamble's answer.  A parallel axiom would split every later reader
-        into two who disagree about the same group.
-        """
-        return [OwnedGroups(), SageGroups().FinitelyGenerated()]
+        return [OwnedGroups()]
 
     class ParentMethods:
+        def is_finitely_generated(self: Self) -> bool:
+            r"""Return ``True`` because membership states this property."""
+            return True
+
         def group_generators(self: Self) -> TotallyOrderedFiniteSet:
             r"""Return \(S\), which the axiom makes a *finite* ordered set.
 
@@ -283,49 +288,37 @@ class OwnedFinitelyGeneratedGroups(Category):
             from dzack_research.preamble.categories.sets.sets import finite_ordered_set
 
             identity = self.one()
-            return finite_ordered_set(
-                tuple(
-                    generator
-                    for generator in SageGroups().ParentMethods.group_generators(
+            stored = self.__dict__.get("_group_generators")
+            match stored:
+                case None:
+                    generators = SageGroups().ParentMethods.group_generators(
                         self
                     )
-                    if generator != identity
-                )
-            )
-
-        def _latex_(self: Self) -> str:
-            r"""Return the group displayed by a finite generating set."""
-            group_generators = self.group_generators()
-            if not group_generators:
-                return r"\{1\}"
-            entries = ", ".join(str(latex(generator)) for generator in group_generators)
-            return rf"\left\langle {entries} \right\rangle"
-
+                    nonidentity = tuple(
+                        generator
+                        for generator in generators
+                        if generator != identity
+                    )
+                case _:
+                    nonidentity = tuple(
+                        generator
+                        for generator in stored
+                        if not generator.is_identity()
+                    )
+            return finite_ordered_set(nonidentity)
 
 def _presentation_of(group: "Group") -> tuple:
     r"""Return \((F(S), R)\) for a finitely presented group.
 
-    \(C_2\), \(S_2\), \(\langle x\mid x^2\rangle\) and \(\mathbb Z/2\) are the
-    same finitely presented group, so each of them has generators and
-    relations to hand over and none of them is *interpreted as* anything.
-    What differs is only where the type it arrived as keeps them, and this is
-    the one place that says so.  A type that cannot say is rejected here
-    rather than answered with a guess.
+    Each realization of \(C_2\) is a finitely presented group.  Each one has
+    generators and relations to supply.  This function only records where
+    each Sage type stores that data.  A type that cannot supply the data is
+    rejected here.
 
-    A group the preamble built has no Sage type to read a presentation off, so
-    the owned category asks it instead: membership in
-    :class:`OwnedFinitelyPresentedGroups` is the promise that
-    ``presented_group`` answers, which is what makes this a routing decision
-    and not a probe for a method that may or may not be there.  \(O(L)\) is
-    the case, computing its presentation from its own matrix-group model.
-
-    The match below is for groups that arrived as a Sage type and are asked
-    through a wrapper, which hands over the engine rather than itself.
+    This function is the private boundary to Sage's representation-specific
+    presentation algorithms.  It returns presentation data.  It does not
+    return another public group that callers must use instead of ``group``.
     """
-    if group in OwnedFinitelyPresentedGroups():
-        presented = group.presented_group()
-        return presented.free_group(), tuple(presented.relations())
-
     match group:
         case FreeGroup_class():
             return group, ()
@@ -337,15 +330,20 @@ def _presentation_of(group: "Group") -> tuple:
         case AbelianGroup_class():
             presented = group.permutation_group().as_finitely_presented_group()
             return presented.free_group(), tuple(presented.relations())
+        case NamedMatrixGroup_generic() | NamedMatrixGroup_gap():
+            presented = (
+                group.as_permutation_group().as_finitely_presented_group()
+            )
+            return presented.free_group(), tuple(presented.relations())
         case _:
             assert False, (
-                f"{group} does not say where its presentation is kept"
+                f"{group} does not supply finite-presentation data"
             )
 
 
 class OwnedFinitelyPresentedGroups(Category):
     r"""Finitely generated groups whose defining surjection has
-    finitely generated kernel.
+    kernel normally generated by finitely many relators.
 
     Strictly stronger than finite generation: there are finitely generated
     groups admitting no finite presentation.  Strictly weaker than finiteness:
@@ -360,20 +358,9 @@ class OwnedFinitelyPresentedGroups(Category):
         return [OwnedFinitelyGeneratedGroups()]
 
     class ParentMethods:
-        @abstract_method
-        def presented_group(self: Self) -> "Group":
-            r"""Return a finitely presented group presenting this one.
-
-            The axiom's obligation, demanded of every object placed here: a
-            group is finitely presented by exhibiting a presentation, and this
-            is where it says which one.  ``presenting_free_group`` and
-            ``defining_relations`` are the two halves read off the answer, so
-            an object implements this and never those.
-
-            A group that arrived as a Sage type is asked through a wrapper,
-            which hands ``_presentation_of`` the engine; the engine is not
-            placed in this category and reaches the type-based route instead.
-            """
+        def is_finitely_presented(self: Self) -> bool:
+            r"""Return ``True`` because membership states this property."""
+            return True
 
         def presenting_free_group(self: Self) -> "Group":
             r"""Return \(F(S)\), the free group the relations are words in."""
@@ -389,7 +376,7 @@ class OwnedFinitelyPresentedGroups(Category):
         def defining_relations(self: Self) -> "OrderedSet":
             r"""Return the relations of this group's presentation.
 
-            The relations generate the kernel of \(F(S)\twoheadrightarrow G\),
+            The relations normally generate the kernel of \(F(S)\twoheadrightarrow G\),
             so they are a set of words in \(F(S)\) -- not the words themselves
             repeated, and not an ordering the presentation depends on.
             """
@@ -398,33 +385,6 @@ class OwnedFinitelyPresentedGroups(Category):
 
             _, relations = _presentation_of(self)
             return finite_ordered_set(relations)
-
-        def _latex_(self: Self) -> str:
-            r"""Return the group displayed by a presentation \(\langle S\mid R\rangle\).
-
-            \(S\) is the generating set of \(F(S)\), not of \(G\): the
-            relations are words in \(F(S)\), and the presenting map need not
-            be injective -- in the trivial group every generator has the same
-            image, so \(G\)'s own generating set is a single element and names
-            none of the letters the relations are written in.  That is what
-            distinguishes this from
-            :meth:`OwnedFinitelyGeneratedGroups.ParentMethods._latex_`, which
-            displays the set \(G\) is generated by.
-            """
-            generators = ", ".join(
-                str(latex(generator))
-                for generator in self.presenting_free_group().group_generators()
-            )
-            relations = ", ".join(
-                str(latex(relation)) for relation in self.defining_relations()
-            )
-            if not generators:
-                return r"\{1\}"
-            if not relations:
-                return rf"\left\langle {generators} \right\rangle"
-            return (
-                rf"\left\langle {generators} \;\middle|\; {relations} \right\rangle"
-            )
 
 
 class AbelianGroupEndomorphism(Element):
@@ -450,10 +410,16 @@ class AbelianGroupEndomorphism(Element):
         each other to give \((f+g)(x)(f+g)(y)\).  This is the whole reason
         the endomorphism ring is a ring, and the reason it is built here.
         """
-        return self.parent()(lambda element: self(element) * other(element))
+        return self.parent()(
+            lambda element: self.parent()._sum_values(
+                self(element), other(element)
+            )
+        )
 
     def _neg_(self) -> "AbelianGroupEndomorphism":
-        return self.parent()(lambda element: self(element) ** -1)
+        return self.parent()(
+            lambda element: self.parent()._negative_value(self(element))
+        )
 
     def _mul_(self, other: "AbelianGroupEndomorphism") -> "AbelianGroupEndomorphism":
         r"""Return the composite \(f\circ g\), the ring's multiplication."""
@@ -477,7 +443,31 @@ class AbelianGroupEndomorphismRing(Parent):
             f"{group} is not abelian, so its endomorphisms do not add"
         )
         self._group = group
+        self._additive = group.category().is_subcategory(
+            CommutativeAdditiveGroups()
+        )
         Parent.__init__(self, category=Rings())
+
+    def _sum_values(self, left: "Element", right: "Element") -> "Element":
+        match self._additive:
+            case True:
+                return left + right
+            case False:
+                return left * right
+
+    def _negative_value(self, value: "Element") -> "Element":
+        match self._additive:
+            case True:
+                return -value
+            case False:
+                return value ** -1
+
+    def _identity_value(self) -> "Element":
+        match self._additive:
+            case True:
+                return self._group.zero()
+            case False:
+                return self._group.one()
 
     def domain(self) -> "Group":
         return self._group
@@ -492,12 +482,12 @@ class AbelianGroupEndomorphismRing(Parent):
         return self(lambda element: element)
 
     def zero(self) -> AbelianGroupEndomorphism:
-        return self(lambda element: self._group.one())
+        return self(lambda element: self._identity_value())
 
     def __hash__(self) -> int:
         return hash((type(self), self._group))
 
-    def __eq__(self, other: object) -> bool:
+    def __eq__(self, other: "AbelianGroupEndomorphismRing") -> bool:
         return type(other) is type(self) and self._group == other._group
 
     def _repr_(self) -> str:
@@ -508,10 +498,9 @@ class OwnedAbelianGroups(Category):
     r"""Abelian groups.
 
     \(\mathrm{Ab}\) and \(\mathbb Z\text{-Mod}\) are isomorphic categories.
-    That is not the statement that a group parent already is a module: a
-    \(\mathbb Z\)-module is a pair \((S,\rho)\) and \(\rho\) is structure, so
-    it has to be put there.  What the isomorphism says is that there is no
-    choice in putting it -- see :meth:`as_module`.
+    A module over \(\mathbb Z\) is therefore already an additively written
+    abelian group.  A multiplicatively written abelian group carries the same
+    integer action by powers.
     """
 
     @classmethod
@@ -542,29 +531,26 @@ class OwnedAbelianGroups(Category):
             from dzack_research.preamble.categories.rings.rings import own_ring
 
             endomorphisms = self.endomorphism_ring()
+            additive = self.category().is_subcategory(
+                CommutativeAdditiveGroups()
+            )
+
+            def multiple(exponent: "RingElement", element: "Element") -> "Element":
+                match additive:
+                    case True:
+                        return exponent * element
+                    case False:
+                        return element ** exponent
+
             # \(\ZZ\) named as the session names it: \(\rho\)'s domain is the
             # ring of scalars a notebook asks about, and no arithmetic runs on
             # it here -- the action is a map of sets on the nose.
             return SetMorphism(
                 Hom(ℤ, endomorphisms, Rings()),
                 lambda exponent: endomorphisms(
-                    lambda element: element**exponent
+                    lambda element: multiple(exponent, element)
                 ),
             )
-
-        @cached_method
-        def as_module(self: Self) -> "Module":
-            r"""Return this group as a \(\mathbb Z\)-module.
-
-            The elements are unchanged -- this group's own -- and \(\rho\) is
-            what is added.  Presenting the module by invariant factors instead
-            would answer with a different set of elements, and would choose a
-            decomposition where the isomorphism asks for none.
-            """
-            # Local: a module-level import would close a cycle; the module is built by the time this runs.
-            from dzack_research.preamble.categories.modules.scalar_actions import module_over_ring
-
-            return module_over_ring(self.integer_action())
 
 
 class OwnedFiniteGroups(Category):
@@ -575,7 +561,23 @@ class OwnedFiniteGroups(Category):
         return "finite groups"
 
     def super_categories(self) -> list:
-        return [OwnedGroups(), SageFiniteGroups()]
+        return [OwnedFinitelyPresentedGroups()]
+
+    class ParentMethods:
+        def is_finite(self: Self) -> bool:
+            r"""Return ``True`` because membership states this property."""
+            return True
+
+
+class OwnedFiniteAbelianGroups(Category):
+    r"""Finite abelian groups, in either additive or multiplicative notation."""
+
+    @classmethod
+    def _repr_object_names(cls) -> str:
+        return "finite abelian groups"
+
+    def super_categories(self) -> list:
+        return [OwnedFiniteGroups(), OwnedAbelianGroups()]
 
 
 def _answers_abelian(group: "Group") -> bool:
@@ -585,21 +587,24 @@ def _answers_abelian(group: "Group") -> bool:
     is abelian -- so a group declining the question is not a group that is
     nonabelian.  Placing on a witness and not on a default is the difference.
     """
-    try:
-        return bool(group.is_abelian())
-    except NotImplementedError:
-        return False
+    return _engine_answer(group, "is_abelian") is True
 
 
 def refine_group(group: "Group") -> "Group":
-    r"""Put ``group`` in the owned category, and return it.
+    r"""Put ``group`` in every owned category witnessed by its structure.
 
-    The generator probes live on the owned node, so a group reaches them by
-    being refined into it -- and every group the preamble receives, whatever
-    built it, is a group the preamble may have to ask.
+    The parent stays the same.  Refinement adds mathematical properties and
+    their methods.  It does not construct a second group.
     """
-    if not group.category().is_subcategory(OwnedGroups()):
-        group._refine_category_(OwnedGroups())
+    from dzack_research.preamble.refine import refine
+
+    if group.category().is_subcategory(OwnedGroups()):
+        return group
+    categories = tuple(
+        category
+        for category in _group_categories(group)
+    )
+    refine(group, categories)
     return group
 
 
@@ -618,171 +623,25 @@ def _group_categories(group: "Group") -> list:
     A group that answers none of these is still a group, and is placed as one.
     """
     categories = [OwnedGroups()]
-    if _finiteness(group) is True:
-        categories.append(OwnedFiniteGroups())
+    finite = _finiteness(group) is True
+    abelian = _answers_abelian(group)
+    match (finite, abelian):
+        case (True, True):
+            categories.append(OwnedFiniteAbelianGroups())
+        case (True, False):
+            categories.append(OwnedFiniteGroups())
+        case (False, True) | (False, False):
+            pass
     # The probe, not ``ngens`` directly: a group that cannot answer must not
     # take the placement down with it, and Unknown is the honest outcome for
     # one whose generators nobody knows how to produce.
-    if OwnedGroups.ParentMethods.is_finitely_generated(group) is True:
+    if not finite and OwnedGroups.ParentMethods.is_finitely_generated(group) is True:
         categories.append(OwnedFinitelyGeneratedGroups())
-    if (
-        _finiteness(group) is True
-        or isinstance(group, (FinitelyPresentedGroup, FreeGroup_class))
-    ):
+    if not finite and isinstance(group, (FinitelyPresentedGroup, FreeGroup_class)):
         categories.append(OwnedFinitelyPresentedGroups())
-    if _answers_abelian(group):
+    if abelian and not finite:
         categories.append(OwnedAbelianGroups())
     return categories
-
-
-class OwnedGroup(Parent):
-    r"""The group a Sage group presents, as an owned object.
-
-    Constructed from the Sage group rather than refined onto it.  Refining
-    reassigns ``__class__`` on a parent this preamble did not build and cannot
-    answer for: the object keeps whatever data Sage gave it, gains methods that
-    ask for data an owned constructor would have stored, and fails at the first
-    one that does.  Construction has no such gap -- the categories are settled
-    here, from :func:`_group_categories`, so there is nothing left to refine.
-
-    The elements are the Sage group's own.  A group's underlying set does not
-    change by being placed, and the multiplication that makes it a group is the
-    one the engine already computes.
-
-    The engine crosses the boundary once, here, and is private afterwards.
-    Handing it back out would make every method below optional: a caller who
-    can reach the Sage group asks it directly, in Sage's nouns, and the owned
-    object stops being where the group's questions are answered.
-    """
-
-    def __init__(self, engine: "Group") -> None:
-        assert engine in SageGroups(), f"{engine} is not a group"
-        # Refined on intake, so every question below is asked in the
-        # preamble's words rather than translated at each call site.
-        if not engine.category().is_subcategory(OwnedGroups()):
-            engine._refine_category_(OwnedGroups())
-        self._engine = engine
-        Parent.__init__(self, category=_group_categories(engine))
-
-    def _element_constructor_(self, value: "Element") -> "Element":
-        return self._engine(value)
-
-    def __contains__(self, value: object) -> bool:
-        return value in self._engine
-
-    def __iter__(self):
-        return iter(self._engine)
-
-    def one(self) -> "Element":
-        return self._engine.one()
-
-    def an_element(self) -> "Element":
-        return self._engine.an_element()
-
-    def group_generators(self) -> "OrderedSet":
-        r"""Return the generating set, answered at this group's own placement.
-
-        The bare noun ``gens`` is not this object's word.  A generating set
-        belongs to a structure, and which structure it generates is the whole
-        content: these generate under the group law, not linearly.
-
-        Asked at the node *this* object sits at, not at the engine's.  The
-        engine is placed only in the category of groups, so delegating to it
-        would answer a finitely generated group with the general set -- and
-        the identity would survive, which at the finitely generated node it
-        does not.
-        """
-        engine = self._engine
-        if self in OwnedFinitelyGeneratedGroups():
-            return OwnedFinitelyGeneratedGroups.ParentMethods.group_generators(
-                engine
-            )
-        return OwnedGroups.ParentMethods.group_generators(engine)
-
-    def number_of_group_generators(self) -> "Integer":
-        r"""Return \(|S|\) for the presentation's generating set \(S\)."""
-        return self._engine.number_of_group_generators()
-
-    def has_computed_group_generators(self) -> "bool | Unknown":
-        r"""Return the engine's answer, since the generators are stored there.
-
-        The generic probe reads the group's own storage, and this object
-        stores an engine rather than generators -- so a permutation group
-        given by generators would look, through the wrapper, like a group
-        whose generators nobody has produced, and every equivariance check
-        over them would decline for a computation that costs nothing.
-        """
-        return self._engine.has_computed_group_generators()
-
-    def presenting_free_group(self) -> "Group":
-        r"""Return \(F(S)\), the free group the relations are words in."""
-        return OwnedFinitelyPresentedGroups.ParentMethods.presenting_free_group(
-            self._engine
-        )
-
-    def defining_relations(self) -> "OrderedSet":
-        r"""Return the relations of this group's presentation."""
-        return OwnedFinitelyPresentedGroups.ParentMethods.defining_relations(
-            self._engine
-        )
-
-    def cardinality(self) -> "Cardinal":
-        return self._engine.cardinality()
-
-    def is_finite(self) -> bool:
-        return self._engine.is_finite()
-
-    def is_abelian(self) -> bool:
-        return self._engine.is_abelian()
-
-    def _presentation_data(self) -> tuple:
-        r"""Return \((|S|, \{\text{relators}\})\), the presentation's identity.
-
-        The relators as Tietze words, which read them by generator position
-        rather than by name: naming the generator \(x\) instead of \(a\) is a
-        choice of alphabet, not a different group, exactly as a module's names
-        are an index-set identification and stay out of its identity.
-        """
-        data = self.__dict__.get("_presentation_identity")
-        if data is None:
-            free_group, relations = _presentation_of(self._engine)
-            data = (
-                free_group.rank(),
-                frozenset(relation.Tietze() for relation in relations),
-            )
-            self._presentation_identity = data
-        return data
-
-    def __hash__(self) -> int:
-        r"""Hash on \(|G|\), an invariant equal groups share and cheap to get.
-
-        The presentation is not hashed: for a group handed over as
-        permutations it is a computation, and hashing is not where a
-        computation belongs.  Equal groups have equal cardinality, so this
-        keeps the contract while leaving the presentation to ``__eq__``.
-        """
-        return hash((type(self), self.cardinality()))
-
-    def __eq__(self, other: object) -> bool:
-        r"""Return whether the two are the same finitely presented group.
-
-        Equal generating sets and equal sets of relations, and nothing about
-        how each arrived: \(C_2\) as permutations, \(S_2\), \(\ZZ/2\) and
-        \(\langle x\mid x^2\rangle\) are one group, and the whole point of
-        owning the category is that they compare as one.
-        """
-        return (
-            type(other) is type(self)
-            and self._presentation_data() == other._presentation_data()
-        )
-
-    def _repr_(self) -> str:
-        return repr(self._engine)
-
-
-def own_group(group: "Group") -> OwnedGroup:
-    r"""Return the owned group ``group`` presents."""
-    return OwnedGroup(group)
 
 
 # The Sage constructors a session builds groups with.  Each is the outermost
@@ -792,6 +651,9 @@ def own_group(group: "Group") -> OwnedGroup:
 _GROUP_CONSTRUCTIONS = (
     NamedMatrixGroup_generic,
     NamedMatrixGroup_gap,
+    PermutationGroup_generic,
+    SymmetricGroup,
+    AlternatingGroup,
     FreeGroup_class,
     AbelianGroup_class,
 )
@@ -802,11 +664,27 @@ def _witnesses_finite_generation(group: "Group") -> bool:
     return group.is_finitely_generated() is True
 
 
+def _witnesses_finiteness(group: "Group") -> bool:
+    return _finiteness(group) is True
+
+
+def _witnesses_finite_presentation(group: "Group") -> bool:
+    return _witnesses_finiteness(group) or isinstance(group, FreeGroup_class)
+
+
+def _witnesses_commutativity(group: "Group") -> bool:
+    return _answers_abelian(group)
+
+
+def _witnesses_finite_abelian(group: "Group") -> bool:
+    return _witnesses_finiteness(group) and _answers_abelian(group)
+
+
 _GROUPS_INSTALLED = False
 
 
 def install_groups() -> None:
-    r"""Refine every group a session constructs into the owned nodes.
+    r"""Refine every group a session constructs into the owned categories.
 
     Construction *is* intake here: once the preamble is loaded the session is
     inside its universe, and a group built in that session is a group the
@@ -815,7 +693,7 @@ def install_groups() -> None:
     through a preamble constructor first.
 
     Two registrations, in this order, because the second's evidence lives on
-    the first: the owned node is what supplies ``is_finitely_generated``, and
+    the first: the owned group category supplies ``is_finitely_generated``, and
     only a group that answers it with ``True`` carries the axiom.  A group
     that cannot say stays outside and answers ``Unknown``, which is the whole
     difference between this and a declaration.
@@ -832,6 +710,26 @@ def install_groups() -> None:
             construction,
             OwnedFinitelyGeneratedGroups(),
             predicate=_witnesses_finite_generation,
+        )
+        hook_post_init(
+            construction,
+            OwnedFinitelyPresentedGroups(),
+            predicate=_witnesses_finite_presentation,
+        )
+        hook_post_init(
+            construction,
+            OwnedFiniteGroups(),
+            predicate=_witnesses_finiteness,
+        )
+        hook_post_init(
+            construction,
+            OwnedAbelianGroups(),
+            predicate=_witnesses_commutativity,
+        )
+        hook_post_init(
+            construction,
+            OwnedFiniteAbelianGroups(),
+            predicate=_witnesses_finite_abelian,
         )
     _GROUPS_INSTALLED = True
 

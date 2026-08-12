@@ -61,7 +61,7 @@ def _definite_isometry_group_generator_matrices(lattice: "Lattice") -> tuple:
     :mod:`predicate_subgroups` exists because computing one for a common
     indefinite lattice runs for days.  That \(O(L)\) is nevertheless finitely
     generated is Borel and Harish-Chandra's theorem, which is why the group is
-    placed in the finitely generated node without being asked to exhibit
+    placed in the category of finitely generated groups without being asked to exhibit
     anything.
     """
     positive, negative = lattice.signature_pair()
@@ -85,9 +85,9 @@ def _definite_isometry_group_generator_matrices(lattice: "Lattice") -> tuple:
 class LatticeIsometries(Category):
     r"""Invertible lattice homomorphisms.
 
-    A group, as an object: the parents here are \(O(L)\) and its subgroups --
-    an isometry homset is an endset, and composition of isometries is the
-    group law.  So the owned group node is a super category rather than a
+    A group, as an object: the parents here are \(O(L)\) and its subgroups.
+    Composition of lattice automorphisms is the group law.  Thus the owned
+    group category is a super category rather than a
     declaration made again at each construction, and the words a group
     answers -- ``number_of_group_generators``, ``is_finitely_generated`` --
     reach these objects because they are groups and not because anything was
@@ -99,7 +99,7 @@ class LatticeIsometries(Category):
         return "lattice isometries"
 
     def super_categories(self) -> list:
-        r"""Return the homomorphism node and the finitely generated group node.
+        r"""Return the homomorphism and finitely generated group categories.
 
         Finitely generated and not merely a group: every object here has a
         finite generating set.  A subgroup was named by one, and \(O(L)\) has
@@ -108,7 +108,7 @@ class LatticeIsometries(Category):
         subgroup of a finitely presented group need not be finitely presented.
 
         Stating it here is also what orders the methods.  The finitely
-        generated node answers ``group_generators`` by reading Sage's
+        category of finitely generated groups answers ``group_generators`` by reading Sage's
         ``gens``, which these groups do not have -- they compute their
         generators from the Gram matrix -- and a category that this one
         declares as a super category is a category this one's methods
@@ -241,12 +241,8 @@ class LatticeIsometries(Category):
             )
 
         @cached_method
-        def presented_group(self: Self) -> "FinitelyPresentedGroup":
-            r"""Return this group as generators and relations.
-
-            The finitely presented node's obligation, answered here: the words
-            read off it -- ``presenting_free_group``, ``defining_relations``
-            -- are that node's and are not restated here.
+        def presenting_free_group(self: Self) -> "Group":
+            r"""Return the free group in a computed presentation of this group.
 
             A presentation is what coset enumeration produces, and the
             algorithm wants a permutation action to enumerate over, so the
@@ -257,15 +253,25 @@ class LatticeIsometries(Category):
             for the same reason.  That \(O(L)\) *has* a finite presentation
             regardless is Borel and Harish-Chandra's theorem.
 
-            Cached on the group and not on the lattice: a presentation is this
-            group's own fact, and the lattice whose isometries it is is not
-            where its computations belong.
+            The temporary Sage quotient supplies data only.  This object
+            remains the isometry group and receives the free group and
+            relators directly.
             """
-            return (
+            presented = (
                 self._matrix_group()
                 .as_permutation_group()
                 .as_finitely_presented_group()
             )
+            self._finite_presentation_relations = tuple(presented.relations())
+            return presented.free_group()
+
+        @cached_method
+        def defining_relations(self: Self) -> "OrderedSet":
+            r"""Return the relators in :meth:`presenting_free_group`."""
+            from dzack_research.preamble.categories.sets.sets import finite_ordered_set
+
+            self.presenting_free_group()
+            return finite_ordered_set(self._finite_presentation_relations)
 
         def is_finite(self: Self) -> bool:
             r"""Return whether this group is finite, as decided by GAP."""
@@ -297,7 +303,7 @@ class LatticeIsometries(Category):
         def is_involution(self: Self) -> bool:
             return (self * self).is_identity()
 
-        def __mul__(self: Self, other: object) -> "Element":
+        def __mul__(self: Self, other: "Element") -> "Element":
             # Local: a module-level import here would close a cycle; by call time this module is built.
             from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormMorphism
             assert (

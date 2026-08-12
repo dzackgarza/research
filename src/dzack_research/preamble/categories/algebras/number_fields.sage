@@ -270,11 +270,7 @@ class OwnedNumberFields(Category):
             conflated, and the caller is told which it asked for by
             :meth:`is_galois`.
             """
-            # Local: the group node reaches this module, so a module-level
-            # import would close that cycle; it is built by call time.
-            from dzack_research.preamble.categories.group.groups import own_group
-
-            return own_group(self._engine_field().galois_group())
+            return self._engine_field().galois_group()
 
         def embedding_images(self, ring: "Ring") -> tuple:
             r"""Return the images of \(\alpha\) under the embeddings into ``ring``.

@@ -1,14 +1,8 @@
-r"""Groups, and the $\mathbb Z$-module an abelian one carries.
+r"""Groups, including additively written finite abelian groups.
 
-$\mathrm{Ab}\cong\mathbb Z\text{-Mod}$ is not the statement that a group
-parent already is a module.  A $\mathbb Z$-module is a pair $(S,\rho)$, and
-$\rho$ is structure: what the isomorphism says is that $\rho$ exists and
-nothing about it is chosen, because $\mathbb Z$ is initial in rings and
-$\operatorname{End}(A)$ is a ring.
-
-So the module is *constructed*, and what these tests ask of it is that it
-keeps the group's own elements -- a presentation by invariant factors would
-answer with different ones -- and that its scalar action is the power map.
+Finite presentation is a property of a group.  A chosen presentation is data
+on that group.  A finite torsion $\mathbb Z$-module is already a finite
+abelian group.  It does not need a second parent to state either fact.
 """
 
 from dzack_research.preamble.install import install_preamble
@@ -16,10 +10,10 @@ install_preamble(globals())
 def _abelian_groups():
     r"""Abelian groups, in the presentations the preamble meets them in."""
     return [
-        ("C3 multiplicative", own_group(AbelianGroup([3]))),
-        ("Z/2 + Z/4", own_group(AbelianGroup([2, 4]))),
-        ("(Z/2)^3", own_group(AbelianGroup([2, 2, 2]))),
-        ("C5 permutation", own_group(CyclicPermutationGroup(5))),
+        ("C3 multiplicative", AbelianGroup([3])),
+        ("Z/2 + Z/4", AbelianGroup([2, 4])),
+        ("(Z/2)^3", AbelianGroup([2, 2, 2])),
+        ("C5 permutation", CyclicPermutationGroup(5)),
     ]
 
 
@@ -28,9 +22,9 @@ def _scalars():
     return [ZZ(n) for n in (-3, -1, 0, 1, 2, 3, 4, 6)]
 
 
-def test_own_group_refines_on_witnesses_only():
+def test_groups_refine_on_witnesses_only():
     r"""Each axiom is refined in exactly when the group carries its witness."""
-    finite_nonabelian = own_group(SymmetricGroup(3))
+    finite_nonabelian = SymmetricGroup(3)
     assert finite_nonabelian in OwnedFinitelyPresentedGroups(), (
         "a finite group is finitely presented: its multiplication table is a "
         "presentation"
@@ -39,7 +33,7 @@ def test_own_group_refines_on_witnesses_only():
         "S3 is not abelian, and Sage decides so"
     )
 
-    infinite_presented = own_group(FreeGroup(2))
+    infinite_presented = FreeGroup(2)
     assert infinite_presented in OwnedFinitelyPresentedGroups(), (
         "a free group is presented by its generators and no relators"
     )
@@ -96,7 +90,7 @@ def test_endomorphisms_of_a_nonabelian_group_are_refused():
     factors of $f(x)f(y)g(x)g(y)$ commute past each other.  A nonabelian
     group has a witness that they do not.
     """
-    symmetric_group = own_group(SymmetricGroup(3))
+    symmetric_group = SymmetricGroup(3)
     witnesses = [
         (left, right)
         for left in symmetric_group
@@ -139,77 +133,26 @@ def test_the_integer_action_is_the_unique_ring_morphism():
                     ), f"{name}: rho does not preserve multiplication"
 
 
-def test_the_module_keeps_the_group_s_own_elements():
-    r"""$U(A)$ is unchanged: only $\rho$ is added."""
-    for name, group in _abelian_groups():
-        module = group.as_module()
-        assert module.base_ring() is ZZ, f"{name} is a module over ZZ"
-        assert module.underlying_module() is group, (
-            f"{name}: the module's underlying object is the group itself"
-        )
-        assert module.zero() == group.one(), (
-            f"{name}: the module's zero is the group's identity, written "
-            "the group's way"
-        )
-        for element in group:
-            assert element in module, (
-                f"{name}: a group element is an element of the module"
-            )
-            assert module(element) == element, (
-                f"{name}: constructing an element of the module returns the "
-                "group element unchanged, rather than re-presenting it"
-            )
-
-
-def test_the_module_axioms_hold_with_the_group_law_as_addition():
-    r"""$n(mx)=(nm)x$ and $(n+m)x=nx+mx$, where $+$ on $A$ is its group law."""
-    for name, group in _abelian_groups():
-        module = group.as_module()
-        for element in group:
-            assert module.act(ZZ.zero(), element) == module.zero(), (
-                f"{name}: 0.x is the zero of the module"
-            )
-            assert module.act(ZZ.one(), element) == element, (
-                f"{name}: 1.x is x"
-            )
-            for left in _scalars():
-                for right in _scalars():
-                    assert (
-                        module.act(left, module.act(right, element))
-                        == module.act(left * right, element)
-                    ), f"{name}: the action is not associative over ZZ"
-                    assert (
-                        module.act(left + right, element)
-                        == module.act(left, element) * module.act(right, element)
-                    ), f"{name}: the action does not distribute over ZZ"
-
-
-def test_a_torsion_module_and_its_group_carry_the_same_action():
-    r"""The group of a torsion module is a module again, and acts the same way.
-
-    ``abelian_group`` forgets the module structure of a torsion
-    $\mathbb Z$-module; putting it back is what these categories do, and the
-    action recovered is the one that was forgotten -- order for order.
-    """
+def test_finite_torsion_modules_are_finite_abelian_groups():
+    r"""$A_L$ has its group structure and presentation on the same parent."""
     for name, rank in [("A", 3), ("D", 4), ("E", 6)]:
-        torsion = Lattices.root_lattice(name, rank).discriminant_group()
-        group = torsion.abelian_group()
-        assert group in OwnedAbelianGroups(), (
-            f"the underlying group of {name}{rank}'s discriminant module is "
-            "abelian"
+        group = Lattices.root_lattice(name, rank).discriminant_group()
+        assert group in OwnedFiniteAbelianGroups(), (
+            f"A_{{{name}{rank}}} is a finite abelian group"
         )
-        module = group.as_module()
-        assert module.base_ring() is ZZ
+        assert group in OwnedFinitelyPresentedGroups(), (
+            f"A_{{{name}{rank}}} is finitely presented"
+        )
         for element in group:
             annihilator = ZZ(element.order())
-            assert module.act(annihilator, element) == module.zero(), (
+            assert annihilator * element == group.zero(), (
                 f"{name}{rank}: the order of a group element annihilates it "
-                "as a scalar"
+                "under the additive group law"
             )
             for smaller in range(1, annihilator):
-                assert module.act(ZZ(smaller), element) != module.zero(), (
+                assert ZZ(smaller) * element != group.zero(), (
                     f"{name}{rank}: no smaller scalar annihilates it, so the "
-                    "recovered action has exactly the orders the group had"
+                    "group element has the stated order"
                 )
 
 
@@ -222,7 +165,7 @@ def test_a_torsion_module_and_its_group_carry_the_same_action():
 def _swap_involution():
     r"""$A_1\oplus A_1$ with the involution exchanging the two summands."""
     L = IntegralLattice(matrix(ZZ, [[-2, 0], [0, -2]]))
-    G = own_group(CyclicPermutationGroup(2))
+    G = CyclicPermutationGroup(2)
     labels = tuple(L.module_generating_set())
     e, f = L.module_generators()
     swap = L.Aut()({labels[0]: f, labels[1]: e})
@@ -253,7 +196,7 @@ def test_trivial_action_is_a_functor_into_group_lattices():
         "forgetting the action returns the lattice it was put on"
     )
     assert trivial_action(G)(L) is trivial, (
-        "a functor is well defined on objects"
+        "the implementation caches its object image"
     )
 
 
@@ -263,9 +206,9 @@ def test_trivial_action_carries_lattice_maps_to_equivariant_ones():
     trivial = trivial_action(G)
     e, f = L.module_generators()
     labels = tuple(L.module_generating_set())
-    doubling = L.Hom(L)({labels[0]: f, labels[1]: e})
+    swap = L.Hom(L)({labels[0]: f, labels[1]: e})
 
-    carried = trivial(doubling)
+    carried = trivial(swap)
     assert carried.domain() is trivial(L) and carried.codomain() is trivial(L), (
         "the functor's morphism half runs between the functor's objects"
     )
@@ -321,7 +264,7 @@ def test_a_group_generating_set_is_the_images_of_the_generating_morphism():
     the relations are written in.
     """
     free = FreeGroup(2)
-    trivial = own_group(free / [free([1]), free([2])])
+    trivial = free / [free([1]), free([2])]
 
     group_generators = trivial.group_generators()
     assert all(generator in trivial for generator in group_generators), (
@@ -341,10 +284,10 @@ def test_finite_generation_is_what_makes_the_generating_set_finite():
     r"""The axiom carries the finiteness, not the category of groups.
 
     ``OwnedGroups`` claims a set and an order and no more; the finitely
-    generated node is where $|S|<\infty$ comes from, and it is the node that
-    can enumerate $S$ to display $\langle S\rangle$.
+    generated category is where $|S|<\infty$ comes from.  That category can
+    enumerate $S$ to display $\langle S\rangle$.
     """
-    G = own_group(CyclicPermutationGroup(5))
+    G = CyclicPermutationGroup(5)
     assert G in OwnedFinitelyGeneratedGroups(), (
         "a finite group is finitely generated: it generates itself"
     )
@@ -352,43 +295,44 @@ def test_finite_generation_is_what_makes_the_generating_set_finite():
         "the cyclic group of order five is generated by one element"
     )
     assert G.group_generators() in Sets().Finite().TotallyOrdered(), (
-        "the finitely generated node answers with a finite ordered set"
+        "the finitely generated category answers with a finite ordered set"
     )
     assert "OwnedGroups.ParentMethods.group_generators" == (
         OwnedGroups.ParentMethods.group_generators.__qualname__
     ), "the generating set itself is declared on the category of groups"
 
 
-def test_one_group_reached_through_four_sage_types_is_one_group():
-    r"""$C_2$, $S_2$, $\ZZ/2$ and $\langle x\mid x^2\rangle$ are equal.
-
-    Owning the category is what makes them so: each of them *is* a finitely
-    presented group, none is interpreted as one, and identity is the
-    presentation -- generator count and relators read by position, so the
-    letter's name is not part of it.  A different group stays different.
-    """
+def test_four_realizations_of_c2_expose_their_presentations_directly():
+    r"""Four realizations of $C_2$ are finitely presented groups themselves."""
     free = FreeGroup(1)
-    presented = own_group(free / [free([1, 1])])
-    permutation = own_group(CyclicPermutationGroup(2))
-    symmetric = own_group(SymmetricGroup(2))
-    abelian = own_group(AbelianGroup([2]))
-
-    assert len({presented, permutation, symmetric, abelian}) == 1, (
-        "four spellings of Z/2 are one group"
-    )
-    assert permutation != own_group(CyclicPermutationGroup(3)), (
-        "Z/3 is not Z/2"
-    )
     for name, group in (
-        ("<x | x^2>", presented),
-        ("C2", permutation),
-        ("S2", symmetric),
-        ("Z/2", abelian),
+        ("<x | x^2>", free / [free([1, 1])]),
+        ("C2", CyclicPermutationGroup(2)),
+        ("S2", SymmetricGroup(2)),
+        ("Z/2", AbelianGroup([2])),
     ):
+        assert group in OwnedFinitelyPresentedGroups(), (
+            f"{name} is finitely presented without conversion"
+        )
         relators = tuple(
             relation.Tietze() for relation in group.defining_relations()
         )
         assert relators == ((1, 1),), (
             f"{name} is presented on one generator by the relation x^2, "
             f"got {relators}"
+        )
+
+
+def test_standard_finite_groups_are_finitely_presented():
+    r"""$C_2$, $S_3$, $A_4$, and $GL_2(\mathbb F_3)$ carry the property."""
+    for name, group in (
+        ("C2", CyclicPermutationGroup(2)),
+        ("S3", SymmetricGroup(3)),
+        ("A4", AlternatingGroup(4)),
+        ("GL2(F3)", GL(2, GF(3))),
+    ):
+        assert group in Groups().Finite(), f"Sage classifies {name} as finite"
+        assert group in OwnedFiniteGroups(), f"{name} is finite"
+        assert group in OwnedFinitelyPresentedGroups(), (
+            f"{name} is finitely presented because every finite group is"
         )

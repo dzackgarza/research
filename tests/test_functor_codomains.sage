@@ -112,10 +112,6 @@ def _groups():
     because it is a group presented as a ring's additive structure, which is
     a different route into the same construction.
     """
-    # Routed through ``own_group`` so the functor is exercised on the
-    # preamble's own group categories rather than on stock Sage parents that
-    # happen to be lying around.
-    #
     # ``(FF_5,+)`` is C5 and ``ZZ`` is the free group on one generator: an
     # additive abelian group is a ZZ-module, so those belong to the module
     # categories, and ``AdditiveAbelianGroup`` reaches them by building ZZ^n
@@ -123,12 +119,12 @@ def _groups():
     # not provide.  Presenting them multiplicatively is what this functor,
     # whose source is Grp, actually takes.
     return [
-        ("C2", own_group(CyclicPermutationGroup(2))),
-        ("C3", own_group(CyclicPermutationGroup(3))),
-        ("S3", own_group(SymmetricGroup(3))),
-        ("(FF_5,+)", own_group(CyclicPermutationGroup(5))),
-        ("ZZ", own_group(FreeGroup(1))),
-        ("F(2)", own_group(FreeGroup(2))),
+        ("C2", CyclicPermutationGroup(2)),
+        ("C3", CyclicPermutationGroup(3)),
+        ("S3", SymmetricGroup(3)),
+        ("(FF_5,+)", CyclicPermutationGroup(5)),
+        ("ZZ", FreeGroup(1)),
+        ("F(2)", FreeGroup(2)),
     ]
 
 
@@ -192,7 +188,7 @@ def test_group_ring_over_many_base_rings():
 
 
 def test_group_ring_is_noncommutative_exactly_when_the_group_is():
-    r"""\(R[G]\) is commutative iff \(G\) is abelian (for nonzero \(R\))."""
+    r"""For commutative nonzero \(R\), \(R[G]\) is commutative iff \(G\) is abelian."""
     for ring_name, base_ring in [("ZZ", ZZ), ("QQ", QQ), ("GF(7)", GF(7))]:
         abelian = GroupRingFunctor(base_ring)(CyclicPermutationGroup(3))
         assert abelian.is_commutative(), f"{ring_name}[C3] should be commutative"

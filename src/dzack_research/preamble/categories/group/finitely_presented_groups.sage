@@ -5,9 +5,9 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from sage_lattice_category_spike.lexicon import Group
 
-from dzack_research.preamble.categories.group.groups import OwnedGroups
+from dzack_research.preamble.categories.group.groups import OwnedFinitelyPresentedGroups
 from dzack_research.preamble.refine import hook_post_init
-from typing import Any, Self
+from typing import Self
 
 from sage.categories.category import Category
 from sage.groups.finitely_presented import (
@@ -32,7 +32,7 @@ class OwnedFinitelyPresentedGroupElement(FinitelyPresentedGroupElement):
 
 
 class OwnedFinitelyPresentedGroup(FinitelyPresentedGroup):
-    r"""A finitely presented group in :class:`FinitelyPresentedGroups`.
+    r"""A group in :class:`GroupsWithChosenFinitePresentation`.
 
     The owned parent type; the behaviour is the category's.
     """
@@ -51,15 +51,21 @@ def _own_fp_group_types(group: "Group") -> None:
     group.Element = OwnedFinitelyPresentedGroupElement
 
 
-class FinitelyPresentedGroups(Category):
-    r"""Finitely presented groups with compact multi-line LaTeX."""
+class GroupsWithChosenFinitePresentation(Category):
+    r"""Groups represented by a chosen finite presentation.
+
+    This category records representation data.  The property that a group is
+    finitely presented belongs to :class:`OwnedFinitelyPresentedGroups`.
+    Named groups and matrix groups can have that property while retaining
+    their native display.
+    """
 
     @classmethod
     def _repr_object_names(cls) -> str:
         return "finitely presented groups"
 
     def super_categories(self) -> list:
-        return [OwnedGroups()]
+        return [OwnedFinitelyPresentedGroups()]
 
     class ParentMethods:
         def _latex_(self: Self) -> str:
@@ -67,7 +73,9 @@ class FinitelyPresentedGroups(Category):
 
 
 def _fp_group_generator_names(group: "Group") -> tuple[str, ...]:
-    return tuple(str(name) for name in group.variable_names())
+    return tuple(
+        str(name) for name in group.presenting_free_group().variable_names()
+    )
 
 
 def _fp_format_generator_name(name: str) -> str:
@@ -131,7 +139,9 @@ def _fp_format_word_latex(group: "Group", word: "Element") -> str:
     return "".join(syllable(idx, exponent) for idx, exponent in syl)
 
 
-def _fp_relation_word_rows(group: "Group", rels: tuple[Any, ...]) -> tuple[str, ...]:
+def _fp_relation_word_rows(
+    group: "Group", rels: tuple[Element, ...]
+) -> tuple[str, ...]:
     return tuple(_fp_format_word_latex(group, r) for r in rels)
 
 
@@ -174,9 +184,9 @@ def _fp_relation_table_latex(rows: tuple[str, ...]) -> str:
 
 
 def _fp_format_finite_presentation_latex(group: "Group") -> str:
-    r"""Render a ``FinitelyPresentedGroup`` as compact LaTeX."""
+    r"""Render the chosen finite presentation of ``group`` as compact LaTeX."""
     gens = tuple(_fp_format_generator_name(n) for n in _fp_group_generator_names(group))
-    rels = tuple(group.relations())
+    rels = tuple(group.defining_relations())
     rel_words = _fp_relation_word_rows(group, rels)
     gens_text = ", ".join(gens)
     empty = not rel_words
@@ -230,7 +240,7 @@ def install_finitely_presented_groups() -> None:
 
     hook_post_init(
         FinitelyPresentedGroup,
-        FinitelyPresentedGroups(),
+        GroupsWithChosenFinitePresentation(),
         before=_own_fp_group_types,
     )
     _FINITELY_PRESENTED_GROUPS_INSTALLED = True
