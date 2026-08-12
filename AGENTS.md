@@ -635,6 +635,99 @@ Rules distilled from preamble work on direct-sum coordinates, embeddings, and co
 
 **Catalogue is specimens plus nested namespaces, not ceremony.** Call `categories.install()` before building catalogue lattices; no manual `refine_one_lattice`. No `_with_names`, `_involutions`, `_embeddings`, or similar factories around one-liners or class bodies. Nested `Involutions` / `Embeddings` belong in the `Lattices` class body (populate empty nested classes in that body when Python scoping requires it); no post-hoc `__qualname__` patching or `Lattices.X = …` assignment after the class is built. Once the principled block or coinvariant API exists, catalogue entries use it everywhere — flat lists or kernel-basis shortcuts left “because they still work” are drift.
 
+# Categorical organization model (always-on)
+
+How the preamble's category tree is organized, and where new content goes.
+For precise, formalized definitions of the notions below, defer to
+`~/gitclones/lean-categories` (FOUNDATIONS.md and `LeanCategories/`): framed
+generators and bases are §13.5, chosen presentations as structure are §75,
+partial resolutions and the $FP_n$ hierarchy are §76, resolution classifiers
+are §77. When a preamble docstring and that document disagree, the document
+wins.
+
+## Property subcategories vs data subcategories
+
+Two kinds of subcategory, and the distinction decides method placement.
+
+- A *property* subcategory states a fact about its members: finitely
+  generated, finitely presented, finite, abelian. Membership is the
+  statement, so its methods are predicates answered by placement
+  (`is_finite` returns `True` because membership states it) and theorems the
+  property entails.
+- A *data* subcategory states that members carry a chosen datum: a framing
+  (a chosen generating epimorphism $F(S)\twoheadrightarrow X$ from a free
+  object), a chosen presentation (a framing plus chosen free relations), a
+  chosen basis. Its methods consume the datum.
+
+A property is the propositional truncation of the corresponding data
+category: finitely generated = "some finite 1-framing exists"; finitely
+presented = "some finite 2-framing exists"; $FP_n$ continues through chosen
+syzygies, and each extension of a framing to the next level is itself a
+choice. So a method that consumes a choice lives on the data subcategory and
+never on the property one. A group can be provably finitely presented
+(arithmeticity) while no practical presentation algorithm exists; asking it
+for a presenting free group must be an absence, not a computation.
+
+Producing a choice is one explicit crossing: a single named method computes
+the datum once, stores it, refines the object into the data subcategory, and
+returns it. Downstream code then asks the data category's words. A property
+category never silently computes presentation data on demand.
+
+The basic form of such a datum is a collection of morphisms (the chosen
+tower). Where the surrounding category supports it, prefer the principled
+package — an augmented chain complex for additive data, a DGA only when the
+resolution must carry multiplication — over loose tuples of maps.
+
+## Axioms live as high up as possible
+
+An axiomatic subcategory is declared once, at the highest category that can
+state it, and reached by `with_axiom` (the axiom name registered in
+`sage.categories.category_with_axiom.all_axioms`). `Framed` is the model
+case: one global axiom whose category owns everything derivable from the
+framing datum — generating set, generators, counts, presentation display —
+so that groups, modules, and algebras share one contract instead of three
+restatements.
+
+Duplication is the diagnostic: if two parallel categories restate the same
+contract or the same derived method, the axiom was attached too low. Never
+re-declare in a subcategory what a supercategory already provides, and never
+restate category methods on a concrete class.
+
+## Contracts are abstract_methods
+
+A data subcategory states its contractual requirement as `abstract_method`s
+on its `ParentMethods` (the pattern of
+`categories/modules/pure/modules.sage`, where being a module *is* the ring
+morphism $\rho: R \to \operatorname{End}(M)$ and the category requires it).
+The obligation cannot be a construction gate — `_refine_category_` admits
+anything and runs no hook — but it can be *visible*: an unmet obligation
+resolves to the abstract declaration on the object, and the sweep below
+reports it.
+
+## Every constructor registers in the obligations sweep (for now)
+
+`tests/test_constructors_meet_their_obligations.sage` runs every way the
+preamble makes an object and asks each result whether any name its
+categories require still resolves to an abstract declaration. That sweep is
+the enforcement of the contract above, so every new constructor or
+construction path must add a specimen row to its `_constructions()` table.
+An object that can enter a category without the category's defining datum is
+exactly the failure class this catches (modules with no ring action, form
+modules with no form). "For now": the sweep is the current gate; a stronger
+mechanism may replace it, but absence from the sweep is never acceptable.
+
+## Classes only tie constructions into the tree
+
+Almost everything lives at the categorical level. Concrete `Parent` classes
+enter only to tie a specific construction into the tree for a specific
+subcategory — `BasedFreeModule`, framed groups intake, the framed free
+algebras — and constructions are uniformized as high up as possible: one
+free functor per concrete category in
+`categories/functors/free_forgetful_adjunction.sage`, one framing contract,
+per-category classes only where the construction itself is specific. A new
+capability is new category content plus, at most, one construction class;
+it is never a parallel class hierarchy.
+
 # Python and Sage research code style (always-on)
 
 These rules govern Python, Sage, spikes, the preamble, the installed package, tests, and notebooks.
@@ -656,6 +749,73 @@ Use the detailed mathematical and repository rules above when they give a narrow
 - Preserve distinctions between objects, presentations, morphisms, images, theorems, and decision procedures.
 - A presentation is not the object that it presents, a registry label is not a category, and runtime validation is not a theorem.
 - Never replace an undecidable equality problem with a new Boolean method.
+
+## Goal substitution and agent hubris
+
+Treat the user's technical discussion as a precise specification.
+Do not read it as loose guidance because it arrives in prose.
+Every mathematical noun, qualifier, example, caveat, and request to think can constrain the result.
+If code and the stated model differ, surface the difference.
+Never silently choose the code's weaker model.
+
+This repository contains research code that is intentionally outside common software patterns.
+The agent will tend to replace unusual mathematics with conventional code from its training distribution.
+This default can change the object, hypotheses, codomain, or required construction.
+Conventional code is not a useful default when the task is to implement new mathematics.
+
+Assume that the user knows this repository, Sage, and the mathematical program better than the agent.
+This is an operational limit on the agent's authority.
+It does not make every user claim true.
+It means that an apparent contradiction must become a discussion, not a silent correction.
+
+Agent hubris occurs when the agent treats its current framing as the only possible framing.
+An apparent implementation barrier proves only that the present approach has a barrier.
+It does not prove that the mathematical requirement must be weakened.
+The agent is often too close to its first design to see a better formulation.
+User input can resolve the barrier by changing the representation, category, functor, or direction of construction.
+
+Never make a theoretical compromise on the user's behalf.
+This includes replacing a general object with a special case, a construction with a predicate, or a theorem with a runtime guess.
+It also includes adding a fallback, an exception branch, or a weaker public operation to make the code run.
+
+When the exact implementation appears impossible, stop before writing compromise code.
+Report these facts:
+
+- The exact requested object or statement.
+- The precise obstruction in the current approach.
+- The hypothesis or property that a proposed compromise would weaken.
+- The mathematically distinct alternatives that remain visible.
+- The smallest question that needs the user's judgment.
+
+Recommend a compromise when useful, but do not select it without approval.
+The user can often remove the obstruction without any compromise.
+A short expert reframe can prevent generic code, false abstractions, and a later refactor.
+
+For example, let $R$ be a commutative ring.
+Let $M$ and $W$ be $R$-modules, and let $b:M\times M\to W$ be $R$-bilinear.
+A user can request the submodule $\langle b(x,y)\mid x,y\in M\rangle_R\le W$.
+Replacing it with a $\mathbb Z$-lattice's scale ideal changes the codomain and requested object.
+The user already made that distinction.
+The agent must preserve it, not teach it back or erase it.
+
+Likewise, let $f:M\to N$ be an $R$-module homomorphism.
+A request to construct $\ker(f)\le M$ is not a request to decide whether $\ker(f)=0$.
+If current code decides only the latter in a special case, surface the mismatch before changing the construction.
+
+A passing test can hide the substitution when the test encodes only the weaker claim.
+The loop is self-confirming:
+
+1. Replace the requested object with a familiar proxy.
+2. Test the proxy.
+3. Use the passing test as evidence for the original requirement.
+
+Such evidence says nothing about the omitted requirement.
+It makes later work inherit a mathematically false interface.
+
+No instruction file can contain all of the user's mathematical knowledge.
+Exact listening is therefore a required research method.
+Implement what the user specified.
+If that cannot be done exactly, surface the nuance and defer the mathematical decision.
 
 ## Native Sage model and direct code
 
