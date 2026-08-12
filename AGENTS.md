@@ -541,6 +541,22 @@ what an object *is*; the *tell* names the code shape or phrase that shows up whi
 the drift is happening, when the category involved is not the one a past record
 named. The vault holds the episodes; this section is the contract.
 
+**The preamble owns its categories outright; it never monkey-patches Sage's.** When
+the preamble needs a category, it defines and owns that category itself, and Sage
+objects are re-exposed through the uniform APIs of the owned categories — by
+refinement, by init hooks, and by the other sanctioned admission routes. Installing
+an axiom or a method onto one of Sage's own category classes (`setattr` on
+`Groups`, `Modules`, `Category_module`, ...) is the legacy mechanism this project
+is migrating away from: it makes Sage's spelling the public surface, splits
+authority between two class hierarchies, and breaks silently when two copies of a
+class exist in one process. The owned category is the single surface; Sage's
+classes stay unmodified and are consumed, not extended. Tests assert against the
+owned surface, never against Sage's spelling of a preamble-defined notion.
+*The tell:* `setattr` whose target is a class imported from `sage.*`; an axiom or
+accessor that only exists because the preamble injected it into a Sage category; a
+test asserting membership through `sage.categories.*` for behavior the preamble
+defines; a stub declaration on a Sage class for a member Sage does not have.
+
 **Added structure enriches an object; it never wraps one.** A formed module *is* a
 module that additionally has a form. An abelian group *is* a $\mathbb{Z}$-module.
 `ZZ` is at once a ring, a rank-one $\mathbb{Z}$-module, a rank-one
