@@ -56,6 +56,10 @@ class RootLattices(Category):
         return [IntegralLattices()]
 
     class ParentMethods:
+        # Recorded by ``refine_root_lattice`` when the Cartan matrix becomes
+        # the Gram matrix; annotation only, so nothing is bound on the class.
+        _cartan_type: "CartanType"
+
         def cartan_type(self: Self) -> "CartanType":
             r"""Return the root system this lattice is the root lattice of."""
             return self._cartan_type
@@ -109,6 +113,10 @@ class RootLatticeIsometries(Category):
         return [LatticeIsometries()]
 
     class ParentMethods:
+        if TYPE_CHECKING:
+            # $O(L)$ is a homset; ``domain`` is the lattice it acts on.
+            def domain(self) -> "FormModule": ...
+
         def cardinality(self: Self) -> "Cardinal":
             r"""Return $|O(L)|=|W(R)|\cdot|\Gamma(R)|$.
 

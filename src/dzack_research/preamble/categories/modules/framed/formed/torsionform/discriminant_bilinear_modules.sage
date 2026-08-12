@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from sage.categories.morphism import Morphism
     from dzack_research.preamble.categories.forms.forms import QuadraticFormMorphism
 
-from typing import Self, TYPE_CHECKING
+from typing import Protocol, TYPE_CHECKING
 
 from sage.categories.category import Category
 from sage.groups.additive_abelian.qmodnz import QmodnZ
@@ -20,6 +20,22 @@ if TYPE_CHECKING:
     # The ordered-set noun is type-only: the preamble loads into one
     # shared namespace and nothing named OrderedSet may bind there.
     from dzack_research.preamble.lexicon import OrderedSet
+
+    class DiscriminantBilinearParent(Protocol):
+        r"""What an object of this category offers."""
+
+        def forget_form(self) -> "Module": ...
+        def form(self) -> "BilinearFormMorphism": ...
+        def smith_form_module_generators(self) -> "OrderedSet": ...
+        def regenerate(self, module_generators: "OrderedSet") -> "FormModule": ...
+
+    class DiscriminantBilinearElement(Protocol):
+        r"""What an element of such an object offers."""
+
+        def parent(self) -> "DiscriminantBilinearParent": ...
+        def forget_form(self) -> "Element": ...
+        def q(self) -> "Element": ...
+        def b(self, other: "Element") -> "Element": ...
 
 
 class DiscriminantBilinearModules(Category):
@@ -126,7 +142,7 @@ class DiscriminantBilinearModules(Category):
     class ParentMethods:
         r"""Methods available on discriminant bilinear modules."""
 
-        def regenerate(self: Self, module_generators: "OrderedSet") -> "FormModule":
+        def regenerate(self: "DiscriminantBilinearParent", module_generators: "OrderedSet") -> "FormModule":
             r"""Return this form on the generating set ``module_generators``.
 
             A different generating set is a different object of this category,
@@ -145,7 +161,7 @@ class DiscriminantBilinearModules(Category):
             )
             return DiscriminantBilinearModules().from_module(module, gram)
 
-        def form_vanishes_on(self: Self, elements: "OrderedSet") -> bool:
+        def form_vanishes_on(self: "DiscriminantBilinearParent", elements: "OrderedSet") -> bool:
             r"""Return whether $b$ is zero on every pair drawn from ``elements``.
 
             A pairing takes two arguments, so vanishing is a statement about
@@ -160,7 +176,7 @@ class DiscriminantBilinearModules(Category):
                 for right in elements
             )
 
-        def associated_quadratic_form(self: Self) -> "QuadraticFormMorphism":
+        def associated_quadratic_form(self: "DiscriminantBilinearParent") -> "QuadraticFormMorphism":
             r"""Return the discriminant quadratic form on the same group.
 
             $b$ does not determine $q$: the refinement
@@ -178,11 +194,11 @@ class DiscriminantBilinearModules(Category):
                 self.form().polar_form().gram_matrix(),
             )
 
-        def _form_matrix_latex_label(self: Self) -> str:
+        def _form_matrix_latex_label(self: "DiscriminantBilinearParent") -> str:
             r"""Return the LaTeX label for the bilinear Gram matrix."""
             return "G_{b_{A_L}}"
 
-        def invariant_factor_form(self: Self) -> "FormModule":
+        def invariant_factor_form(self: "DiscriminantBilinearParent") -> "FormModule":
             r"""Return $b$ on module_generators from the invariant factor decomposition.
 
             The same cokernel of the same $c$, so the same $b$; what changes is the
@@ -193,7 +209,7 @@ class DiscriminantBilinearModules(Category):
             """
             return self.regenerate(self.smith_form_module_generators())
 
-        def normal_form(self: Self) -> "FormModule":
+        def normal_form(self: "DiscriminantBilinearParent") -> "FormModule":
             r"""Return $b$ on $p$-adic Jordan module_generators -- again a different object.
 
             The module_generators are the Jordan ones prime by prime, cutting out their own

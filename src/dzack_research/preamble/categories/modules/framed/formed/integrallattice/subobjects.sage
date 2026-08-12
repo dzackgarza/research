@@ -23,7 +23,7 @@ if TYPE_CHECKING:
     from dzack_research.preamble.categories.modules.module_morphisms.morphism_matrices import MorphismMatrix
 
 from sage.misc.misc_c import prod
-from typing import Self, TYPE_CHECKING
+from typing import Protocol, TYPE_CHECKING
 
 from sage.categories.category import Category
 
@@ -33,6 +33,29 @@ if TYPE_CHECKING:
     # The ordered-set noun is type-only: the preamble loads into one
     # shared namespace and nothing named OrderedSet may bind there.
     from dzack_research.preamble.lexicon import OrderedSet
+
+    from dzack_research.preamble.lexicon import Element
+
+    class SubobjectParent(Protocol):
+        r"""What an object of this category offers.
+
+        A subobject *is* its inclusion, so what this names is the ambient
+        object's own surface plus the arrow.  Structural rather than a class:
+        the subobject is an object of the ambient category, whatever class
+        that category builds its objects from.
+        """
+
+        _form: "FormMorphism"
+        _module: "Module"
+
+        def embedding(self) -> "ModuleMorphism": ...
+        def embedding_codomain(self) -> "Module": ...
+        def ambient(self) -> "Module": ...
+        def gram_matrix(self) -> "MorphismMatrix": ...
+        def module_generators(self) -> tuple: ...
+        def is_countable(self) -> bool: ...
+        def is_primitive(self) -> bool: ...
+        def embedded_module_generators(self) -> "OrderedSet": ...
 
 
 class Subobjects(Category):
@@ -50,25 +73,25 @@ class Subobjects(Category):
         # has.  A subobject *is* its inclusion, so the ambient object, the
         # lift and the retraction are all read off that one morphism rather
         # than stored again.
-        def _form_morphism(self: Self) -> "FormMorphism":
+        def _form_morphism(self: "SubobjectParent") -> "FormMorphism":
             return self._form
 
-        def forget_form(self: Self) -> "Module":
+        def forget_form(self: "SubobjectParent") -> "Module":
             return self._module
 
-        def ambient(self: Self) -> "Module":
+        def ambient(self: "SubobjectParent") -> "Module":
             r"""Return $B$, the object this one is a subobject of."""
             return self.embedding_codomain()
 
-        def lift(self: Self, element: "Element") -> "Element":
+        def lift(self: "SubobjectParent", element: "Element") -> "Element":
             r"""Return $\iota(x)$, the element seen in the ambient object."""
             return self.embedding()(element)
 
-        def retract(self: Self, element: "Element") -> "Element":
+        def retract(self: "SubobjectParent", element: "Element") -> "Element":
             r"""Return the $x$ with $\iota(x)$ the given ambient element."""
             return self.embedding().lift(element)
 
-        def is_countable(self: Self) -> bool:
+        def is_countable(self: "SubobjectParent") -> bool:
             r"""A subobject is countable exactly when its ambient is.
 
             It injects into the ambient, so it is no larger; and the
@@ -77,11 +100,11 @@ class Subobjects(Category):
             """
             return bool(self.ambient().is_countable())
 
-        def is_uncountable(self: Self) -> bool:
+        def is_uncountable(self: "SubobjectParent") -> bool:
             r"""Whether this subobject is beyond every enumeration."""
             return not self.is_countable()
 
-        def index(self: Self) -> "Integer":
+        def index(self: "SubobjectParent") -> "Integer":
             r"""Return $[B:S]$, the cardinality of $\operatorname{coker}(\iota)$.
 
             Sited here and not on the abstract subobject category: an index
@@ -94,9 +117,10 @@ class Subobjects(Category):
 
             The computation belongs to the arrow: ``ModuleMorphism.index``.
             """
-            return self.embedding().index()
+            index: "Integer" = self.embedding().index()
+            return index
 
-        def is_primitive(self: Self) -> bool:
+        def is_primitive(self: "SubobjectParent") -> bool:
             r"""Return whether this subobject is primitive (saturated) in its codomain.
 
             The definition, and the single place it is computed: $S\subseteq M$
@@ -109,11 +133,12 @@ class Subobjects(Category):
             Torsion free is not free: over a general $R$ the two differ, and
             the definition is the former.
             """
-            return self.embedding().cokernel().is_torsion_free()
+            primitive: bool = self.embedding().cokernel().is_torsion_free()
+            return primitive
 
         is_saturated = is_primitive
 
-        def saturation(self: Self) -> "Subobject":
+        def saturation(self: "SubobjectParent") -> "SubobjectParent":
             r"""Return the primitive closure $S^{\mathrm{sat}}\subseteq M$.
 
             $S^{\mathrm{sat}}/S=\operatorname{tors}(M/S)$, so
@@ -143,7 +168,7 @@ class Subobjects(Category):
                     for label in ambient.module_generating_set()
                 }
             )
-            return ambient.subobject_on(
+            saturation: "SubobjectParent" = ambient.subobject_on(
                 [
                     zipsum(
                         _coordinate_vector(generator),
@@ -154,8 +179,9 @@ class Subobjects(Category):
                     in torsion_free.kernel().embedded_module_generators()
                 ]
             )
+            return saturation
 
-        def index_in_saturation(self: Self) -> "Integer":
+        def index_in_saturation(self: "SubobjectParent") -> "Integer":
             r"""Return $[S^{\mathrm{sat}}:S]$, an index every subobject has.
 
             $S^{\mathrm{sat}}/S=\operatorname{tors}(M/S)$ -- the identity
@@ -169,13 +195,14 @@ class Subobjects(Category):
             are not zero multiply to.  That decomposition is the presented
             module's own, asked of it, and not a normal form computed here.
             """
-            return prod(
+            index: "Integer" = prod(
                 invariant
                 for invariant in self.embedding().cokernel().invariants()
                 if invariant != 0
             )
+            return index
 
-        def embedded_module_generators(self: Self) -> "OrderedSet":
+        def embedded_module_generators(self: "SubobjectParent") -> "OrderedSet":
             r"""Return the images $\iota(e_i)$ of this subobject's generators.
 
             Not ``module_generators``: those are the abstract $e_i$ this
@@ -192,7 +219,7 @@ class Subobjects(Category):
                 )
             )
 
-        def isotropic_reduction(self: Self) -> "Module":
+        def isotropic_reduction(self: "SubobjectParent") -> "Module":
             r"""Return $S^{\perp}/S$ for an isotropic subobject of a formed module."""
             # Local: a module-level import here would close a cycle; by call time this module is built.
             from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _coordinate_vector

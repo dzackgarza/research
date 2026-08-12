@@ -17,11 +17,28 @@ hold $\ZZ^{\infty}$ with the standard form, or $SL_2(\ZZ)$ inside
 $SL_2(\RR)$ with $b(x,y)=\operatorname{tr}(xy)$.
 """
 
+from typing import TYPE_CHECKING, TypeAlias
+
 from sage.categories.category_with_axiom import CategoryWithAxiom_over_base_ring
 
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
     SymmetricBilinearFormModules,
 )
+
+if TYPE_CHECKING:
+    from sage.categories.category import Category
+    from sage.rings.integer import Integer
+    from sage.rings.ring import Ring
+    from sage.structure.element import Matrix
+
+    from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModule
+    from dzack_research.preamble.lexicon import OrderedSet
+
+    # What the one entry point accepts: a ring naming the category, a
+    # specimen's name, a root system as family and rank, or a Gram matrix.
+    LatticeSpecification: TypeAlias = (
+        str | int | Integer | Matrix | Category | Ring | list
+    )
 
 # Imported for the registration and binding of the ``Projective`` axiom, which
 # is what makes the declaration below resolve.
@@ -37,8 +54,29 @@ class Lattices(CategoryWithAxiom_over_base_ring):
 
     _specimens: dict = {}
 
+    if TYPE_CHECKING:
+        # Installed onto this class by ``catalogue.sage``, which owns the
+        # named specimens and the raw constructor the dispatch delegates to.
+        @staticmethod
+        def root_lattice(
+            family: str,
+            rank: "int | Integer",
+            names: "OrderedSet | None" = ...,
+        ) -> "FormModule": ...
+
+        @staticmethod
+        def _lattice_with_names(
+            described: "str | Matrix",
+            names: "OrderedSet | None" = ...,
+            module_generating_set: "OrderedSet | None" = ...,
+        ) -> "FormModule": ...
+
     @staticmethod
-    def __classcall_private__(cls, *arguments, **keywords):
+    def __classcall_private__(
+        cls: type["Lattices"],
+        *arguments: "LatticeSpecification",
+        **keywords: "OrderedSet",
+    ) -> "Lattices | FormModule":
         r"""The one entry point: dispatch on what was asked for.
 
         - a ring names the category of lattices over it;

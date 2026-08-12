@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
 from sage.categories.category import Category
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
-from typing import Self, TYPE_CHECKING
+from typing import Protocol, TYPE_CHECKING
 
 from dzack_research.preamble.categories.sets.cardinals import Cardinal
 from dzack_research.preamble.lexicon import GramMatrix
@@ -36,23 +36,75 @@ if TYPE_CHECKING:
     # it yet, so the stub tree's own class is what the signatures below say.
     from sage.rings.ideal import Ideal_pid
 
+    from collections.abc import Iterator
+
+    from sage.rings.ring import Ring
+
+    class TorsionFormParent(Protocol):
+        r"""What a finite torsion module with a form offers."""
+
+        _over: "Module"
+
+        def form(self) -> "FormMorphism": ...
+        def forget_form(self) -> "Module": ...
+        def presentation(self) -> "ModuleMorphism": ...
+        def module_generator(self, label: "Element") -> "Element": ...
+        def module_generators(self) -> tuple: ...
+        def module_generating_set(self) -> "OrderedSet": ...
+        def smith_form_module_generators(self) -> "OrderedSet": ...
+        def invariants(self) -> tuple: ...
+        def cardinality(self) -> "Cardinal": ...
+        def annihilator(self) -> "Ideal_pid": ...
+        def zero(self) -> "Element": ...
+        def regenerate(self, module_generators: "OrderedSet") -> "FormModule": ...
+        def form_vanishes_on(self, elements: "OrderedSet") -> bool: ...
+        def subobject_generated_by(self, elements: "OrderedSet") -> Subobject: ...
+        def primary_decomposition(self) -> dict: ...
+        def _isotropic_subgroups(self) -> "Iterator[frozenset]": ...
+        def gram_matrix(self) -> GramMatrix: ...
+        def _form_matrix_latex_label(self) -> str: ...
+        def _form_matrix_latex_codomain(self) -> str: ...
+        def __iter__(self) -> "Iterator[Element]": ...
+
+    class TorsionFormElement(Protocol):
+        r"""What an element of such a module offers."""
+
+        def parent(self) -> "TorsionFormParent": ...
+        def forget_form(self) -> "Element": ...
+
+    class CokernelFormParent(Protocol):
+        r"""What a form on a cokernel offers: the map it came from."""
+
+        _presentation: "ModuleMorphism"
+
+        def presentation(self) -> "ModuleMorphism": ...
+        def cover(self) -> "Module": ...
+        def module_generator(self, label: "Element") -> "Element": ...
+        def projection(self) -> "FormMorphism": ...
+
 
 class TorsionModulesWithForm(OwnedCategoryOverBaseRing):
     r"""Category of finite torsion modules equipped with a form."""
 
     @staticmethod
-    def __classcall_private__(cls, base_ring=None):
+    def __classcall_private__(
+        cls: type["TorsionModulesWithForm"],
+        base_ring: "Ring | None" = None,
+    ) -> "TorsionModulesWithForm":
         # Over the engine's integers, which is what the modules of this
         # category carry: the owned ring is the session's name for it, and a
         # category built over one while its objects carry the other has no
         # members at all.
         # Local: a module-level import here would close a cycle; by call time this module is built.
         from dzack_research.preamble.categories.rings.rings import engine_ring
+        category: "TorsionModulesWithForm"
         match base_ring:
             case None:
-                return super().__classcall__(cls, SageZZ)
+                category = super().__classcall__(cls, SageZZ)
+                return category
             case _ if engine_ring(base_ring) is SageZZ:
-                return super().__classcall__(cls, SageZZ)
+                category = super().__classcall__(cls, SageZZ)
+                return category
             case _:
                 assert False, (
                     "finite torsion-form algorithms here are over ZZ"
@@ -87,7 +139,7 @@ class TorsionModulesWithForm(OwnedCategoryOverBaseRing):
     class ParentMethods:
         r"""Methods shared by bilinear and quadratic discriminant modules."""
 
-        def gram_matrix(self: Self) -> GramMatrix:
+        def gram_matrix(self: "TorsionFormParent") -> GramMatrix:
             r"""Return the form's matrix with its entries read in the value module.
 
             The form stores representatives -- rationals -- because $\mathbb
@@ -110,11 +162,11 @@ class TorsionModulesWithForm(OwnedCategoryOverBaseRing):
             reduced.subdivide(*form.gram_matrix().subdivisions())
             return reduced
 
-        def relation_matrix(self: Self) -> MorphismMatrix:
+        def relation_matrix(self: "TorsionFormParent") -> MorphismMatrix:
             r"""Return :meth:`presentation`'s matrix, one row per relation."""
             return self.forget_form().relation_matrix()
 
-        def presentation(self: Self) -> "ModuleMorphism":
+        def presentation(self: "TorsionFormParent") -> "ModuleMorphism":
             r"""Return $p$, the morphism this object is the cokernel of.
 
             Every object here has one, because every finitely presented module
@@ -125,22 +177,23 @@ class TorsionModulesWithForm(OwnedCategoryOverBaseRing):
             """
             return self.forget_form().presentation()
 
-        def invariants(self: Self) -> tuple:
+        def invariants(self: "TorsionFormParent") -> tuple:
             r"""Return the invariant factors of the underlying module."""
             return tuple(self.forget_form().invariants())
 
-        def cardinality(self: Self) -> "Cardinal":
+        def cardinality(self: "TorsionFormParent") -> "Cardinal":
             r"""Return \(|A|\), which a form does not change."""
             return self.forget_form().cardinality()
 
-        def annihilator(self: Self) -> "Ideal_pid":
+        def annihilator(self: "TorsionFormParent") -> "Ideal_pid":
             r"""Return $\operatorname{Ann}(A)\subseteq\mathbb Z$, which is nonzero here.
 
             The ideal, not its generator: callers ask it for ``gen()``.
             """
-            return self.forget_form().annihilator()
+            annihilator: "Ideal_pid" = self.forget_form().annihilator()
+            return annihilator
 
-        def smith_form_module_generators(self: Self) -> "OrderedSet":
+        def smith_form_module_generators(self: "TorsionFormParent") -> "OrderedSet":
             r"""Return generators realizing the invariant factor decomposition.
 
             The form is not written in them -- they are a different generating
@@ -156,12 +209,12 @@ class TorsionModulesWithForm(OwnedCategoryOverBaseRing):
                 )
             )
 
-        def __iter__(self: Self):
+        def __iter__(self: "TorsionFormParent") -> "Iterator[Element]":
             r"""Iterate over the elements, of which there are finitely many."""
             return map(self._over, self.forget_form())
 
 
-        def primary_part(self: Self, p: "Integer") -> Subobject:
+        def primary_part(self: "TorsionFormParent", p: "Integer") -> Subobject:
             r"""Return $A_p\hookrightarrow A$ as a subobject: the inclusion is the data.
 
             A presentation does not say which combinations of its generators
@@ -182,7 +235,9 @@ class TorsionModulesWithForm(OwnedCategoryOverBaseRing):
             decomposition standing apart from it.
             """
 
-            def primary_generator(generator: "ModuleElement") -> tuple:
+            def primary_generator(
+                generator: "ModuleElement",
+            ) -> tuple["ModuleElement", ...]:
                 order = generator.order()
                 primary = p ** order.valuation(p)
                 assert primary >= 1
@@ -191,6 +246,8 @@ class TorsionModulesWithForm(OwnedCategoryOverBaseRing):
                         return ()
                     case value if value > 1:
                         return ((order // value) * generator,)
+                    case _:
+                        assert False, "a prime power is 1 or larger than 1"
 
             generators = tuple(
                 primary_element
@@ -200,7 +257,7 @@ class TorsionModulesWithForm(OwnedCategoryOverBaseRing):
             return self.subobject_generated_by(generators)
 
         def subobject_generated_by(
-            self: Self,
+            self: "TorsionFormParent",
             module_generators: "OrderedSet",
         ) -> Subobject:
             r"""Return $\langle S\rangle\hookrightarrow A$ as a subobject.
@@ -223,7 +280,7 @@ class TorsionModulesWithForm(OwnedCategoryOverBaseRing):
 
         # ---- isotropic subobjects ----
 
-        def isotropic_subobjects(self: Self):
+        def isotropic_subobjects(self: "TorsionFormParent") -> "Iterator[Subobject]":
             r"""Iterate over the subobjects of $A$ the form vanishes on.
 
             Exhaustible because $A$ is finite, and searched rather than
@@ -241,7 +298,9 @@ class TorsionModulesWithForm(OwnedCategoryOverBaseRing):
             for _, module_generators in self._isotropic_subgroups():
                 yield self.subobject_generated_by(module_generators)
 
-        def maximal_isotropic_subobjects(self: Self):
+        def maximal_isotropic_subobjects(
+            self: "TorsionFormParent",
+        ) -> "Iterator[Subobject]":
             r"""Iterate over the isotropic subobjects contained in no other.
 
             Maximal means maximal among the isotropic subgroups, which is a
@@ -255,7 +314,9 @@ class TorsionModulesWithForm(OwnedCategoryOverBaseRing):
                     continue
                 yield self.subobject_generated_by(module_generators)
 
-        def _isotropic_subgroups(self: Self):
+        def _isotropic_subgroups(
+            self: "TorsionFormParent",
+        ) -> "Iterator[tuple[frozenset, tuple]]":
             r"""Iterate over the isotropic subgroups as (elements, generators).
 
             The elements are what maximality is decided on and what the form
@@ -290,19 +351,24 @@ class TorsionModulesWithForm(OwnedCategoryOverBaseRing):
                     if larger in seen or not self.form_vanishes_on(larger):
                         continue
                     seen.add(larger)
-                    reached = (larger, module_generators + (element,))
+                    reached: tuple[frozenset, tuple] = (
+                        larger,
+                        module_generators + (element,),
+                    )
                     frontier.append(reached)
                     yield reached
 
-        def is_p_elementary(self: Self, p: "Integer") -> bool:
+        def is_p_elementary(self: "TorsionFormParent", p: "Integer") -> bool:
             r"""Return whether the underlying group is elementary abelian of exponent $p$."""
-            return self.forget_form().is_p_elementary(p)
+            elementary: bool = self.forget_form().is_p_elementary(p)
+            return elementary
 
-        def primary_decomposition(self: Self) -> dict:
+        def primary_decomposition(self: "TorsionFormParent") -> dict:
             r"""Return the underlying group's primary decomposition."""
-            return self.forget_form().primary_decomposition()
+            decomposition: dict = self.forget_form().primary_decomposition()
+            return decomposition
 
-        def _latex_(self: Self) -> str:
+        def _latex_(self: "TorsionFormParent") -> str:
             r"""Return multi-line LaTeX for the torsion module and its form."""
             invs = self.invariants()
             n = self.gram_matrix().nrows()
@@ -336,11 +402,11 @@ class TorsionModulesWithForm(OwnedCategoryOverBaseRing):
                 + "\n\\end{gathered}"
             )
 
-        def _form_matrix_latex_label(self: Self) -> str:
+        def _form_matrix_latex_label(self: "TorsionFormParent") -> str:
             r"""Return the LaTeX label for this form's Gram matrix."""
             return "G_{A_L}"
 
-        def _form_matrix_latex_codomain(self: Self) -> str:
+        def _form_matrix_latex_codomain(self: "TorsionFormParent") -> str:
             r"""Return the LaTeX codomain for this form's Gram matrix entries."""
             return "\\mathbb{Q}/\\mathbb{Z}"
 
@@ -358,13 +424,14 @@ class TorsionModulesWithForm(OwnedCategoryOverBaseRing):
         module, which is why it is stated here and not above.
         """
 
-        def order(self: Self) -> "Integer":
+        def order(self: "TorsionFormElement") -> "Integer":
             r"""Return the generator of $\operatorname{Ann}(a)$, asked of $U(a)$.
 
             A module question, and one the form has no part in, so it is put to
             the element's image under the fibration's projection.
             """
-            return self.forget_form().order()
+            order: "Integer" = self.forget_form().order()
+            return order
 
 
 class CokernelForms(Category):
@@ -402,11 +469,11 @@ class CokernelForms(Category):
         already is; nothing below computes with a form.
         """
 
-        def cover(self: Self) -> "Module":
+        def cover(self: "CokernelFormParent") -> "Module":
             r"""Return $M=\operatorname{codom} f$, whose classes these are."""
             return self.presentation().codomain()
 
-        def projection(self: Self) -> "FormMorphism":
+        def projection(self: "CokernelFormParent") -> "FormMorphism":
             r"""Return $\pi:M\to G$, sending $M$'s $i$-th generator to this object's.
 
             Available because there is a cover to project from.  A torsion form
@@ -454,11 +521,11 @@ class DiscriminantForms(Category):
     class ParentMethods:
         r"""Methods available on the discriminant form of a lattice."""
 
-        def correlation(self: Self) -> "FormMorphism":
+        def correlation(self: "CokernelFormParent") -> "FormMorphism":
             r"""Return $c: L\to L^\vee$: the presentation, under its own name."""
             return self.presentation()
 
-        def source_lattice(self: Self) -> "FormModule":
+        def source_lattice(self: "CokernelFormParent") -> "FormModule":
             r"""Return the lattice $L$ this is the discriminant form of."""
             return self.presentation().domain()
 
@@ -606,7 +673,7 @@ def p_adic_jordan_module_generators(
     from sage.quadratic_forms.genera.normal_form import _normalize, p_adic_normal_form
     from sage.rings.padics.factory import Zp
 
-    generators = []
+    generators: list["Element"] = []
     exponent = form.annihilator().gen()
     for p in exponent.prime_divisors():
         # The primary decomposition is where the reduction can run: it is one
@@ -725,6 +792,8 @@ def _format_cyclic_group_latex(orders: tuple[int, ...]) -> str:
                 return f"C_{{{n}}}"
             case _ if multiplicity > 1:
                 return f"C_{{{n}}}^{{{multiplicity}}}"
+            case _:
+                assert False, "a multiplicity is 1 or larger than 1"
 
     return " \\oplus ".join(
         cyclic_factor(n, counts[n])
@@ -796,9 +865,10 @@ def _form_gram_matrix_cuts(module: "Module", raw: "GramMatrix") -> list[int]:
     # alone would split into singletons.  A form on some other generating set
     # has no such morphism, and there the matrix is all there is.
     if module.category().is_subcategory(CokernelForms()):
-        transported = list(
+        transported: list[int] = list(
             module.presentation().domain().gram_matrix().subdivisions()[0]
         )
         if transported and max(transported) < raw.nrows():
             return transported
-    return _matrix_connected_component_cuts(raw)
+    component_cuts: list[int] = _matrix_connected_component_cuts(raw)
+    return component_cuts

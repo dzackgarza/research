@@ -162,9 +162,14 @@ class CoxeterDiagrams(Category):
 class CoxeterVertex(ElementWrapper):
     r"""A vertex of a finite Coxeter diagram."""
 
+    if TYPE_CHECKING:
+        # A vertex is built only by its diagram, so that diagram is the parent.
+        def parent(self) -> "FiniteCoxeterDiagram": ...
+
     def _repr_(self) -> str:
         parent = self.parent()
-        return parent.variable_names()[parent.index_set().index(self.value)]
+        name: str = parent.variable_names()[parent.index_set().index(self.value)]
+        return name
 
 
 if TYPE_CHECKING:
@@ -199,7 +204,7 @@ class FiniteCoxeterDiagram(CoxeterDiagramParent):
     negative_two_node_color = COXETER_NEGATIVE_TWO_NODE_COLOR
 
     if TYPE_CHECKING:
-        element_class: ClassVar[type[CoxeterVertex]]
+        element_class: type[CoxeterVertex]
 
     def __init__(
         self,
@@ -243,7 +248,7 @@ class FiniteCoxeterDiagram(CoxeterDiagramParent):
         roots: Sequence[Any],
         names: Sequence[str] | str | None = None,
         positions: Mapping[Hashable, Sequence[object]] | None = None,
-        index_set: Sequence[Hashable] | None = None,
+        index_set: "Sequence[Hashable] | OrderedSet | None" = None,
     ) -> FiniteCoxeterDiagram:
         r"""Construct the diagram and root subobject determined by ``roots``."""
         roots = tuple(roots)
@@ -253,20 +258,21 @@ class FiniteCoxeterDiagram(CoxeterDiagramParent):
         assert all(root.parent() is realization for root in roots), (
             "all diagram roots must belong to the same lattice"
         )
+        vertex_index_set: "OrderedSet"
         match index_set:
             case None:
-                index_set = Sets.Δ[rank - 1]
+                vertex_index_set = Sets.Δ[rank - 1]
             case Sequence():
-                index_set = finite_ordered_set(index_set)
+                vertex_index_set = finite_ordered_set(index_set)
             case Parent():
-                index_set = finite_ordered_set(index_set)
+                vertex_index_set = finite_ordered_set(index_set)
             case _:
                 assert False, (
                     "a Coxeter index set is a finite set or finite sequence"
                 )
-        assert index_set.cardinality() == rank, f"index set must have one entry per root; index_set={index_set!r}, roots={rank}"
+        assert vertex_index_set.cardinality() == rank, f"index set must have one entry per root; index_set={vertex_index_set!r}, roots={rank}"
         if names is None:
-            names = tuple(f"s_{i}" for i in index_set)
+            names = tuple(f"s_{i}" for i in vertex_index_set)
         normalized_names = normalize_names(rank, names)
         gram = realization.gram_of(roots)
         entries = [[1 if i == j else _coxeter_exponent(gram[i, i], gram[j, j], gram[i, j]) for j in range(rank)] for i in range(rank)]
@@ -282,7 +288,7 @@ class FiniteCoxeterDiagram(CoxeterDiagramParent):
         homset = root_module.Hom(realization)
         root_morphism = homset({root: root for root in roots})
         return cls(
-            CoxeterMatrix(entries, index_set=index_set),
+            CoxeterMatrix(entries, index_set=vertex_index_set),
             names=normalized_names,
             root_morphism=root_morphism,
             positions=positions,
@@ -304,7 +310,8 @@ class FiniteCoxeterDiagram(CoxeterDiagramParent):
                 category=hom_category,
             )
             cache[key] = homset
-        return homset
+        diagram_homset: CoxeterDiagramHomset = homset
+        return diagram_homset
 
     def hom(
         self,
@@ -584,12 +591,16 @@ def _normalize_positions(
         "every diagram position must be a coordinate pair"
     )
     return {
-        vertex: (coordinates[0], coordinates[1])
+        vertex: (coordinates[0r], coordinates[1r])
         for vertex, coordinates in positions.items()
     }
 
 
-def _coxeter_exponent(left_norm: object, right_norm: object, pairing: object) -> object:
+def _coxeter_exponent(
+    left_norm: "Element",
+    right_norm: "Element",
+    pairing: "Element",
+) -> "Element":
     r"""Coxeter bond $m$ of a rank-two root pair.
 
     ``product`` is $(2\cos\theta)^2 = 4\,b(v,w)^2/(v^2 w^2)$: values $1,2,3$
@@ -607,7 +618,11 @@ def _coxeter_exponent(left_norm: object, right_norm: object, pairing: object) ->
     return exponent_by_product[product]
 
 
-def _tikz_edge_style(left_norm: object, right_norm: object, pairing: object) -> str:
+def _tikz_edge_style(
+    left_norm: "Element",
+    right_norm: "Element",
+    pairing: "Element",
+) -> str:
     exponent = _coxeter_exponent(left_norm, right_norm, pairing)
     if exponent == 3:
         return "-"
@@ -623,7 +638,7 @@ def _tikz_edge_style(left_norm: object, right_norm: object, pairing: object) -> 
     assert False, f"TikZ export does not render Coxeter bond m={exponent}"
 
 
-def _tikz_node_color(norm: object) -> str:
+def _tikz_node_color(norm: "Element") -> str:
     norm = norm
     assert norm in COXETER_NODE_COLORS, f"no Coxeter node color is defined for square {norm}"
     if norm == -4:
@@ -636,6 +651,18 @@ def _tikz_node_name(vertex: Hashable) -> str:
 
 
 class CoxeterDiagramHomset(Homset):
+    if TYPE_CHECKING:
+        # This homset connects two diagrams, and its elements are the maps
+        # between them.
+        def domain(self) -> "FiniteCoxeterDiagram": ...
+        def codomain(self) -> "FiniteCoxeterDiagram": ...
+        def __call__(
+            self,
+            x: object = ...,
+            *args: object,
+            **kwds: object,
+        ) -> "CoxeterDiagramMorphism": ...
+
     r"""Coxeter-matrix-preserving maps between two finite diagrams."""
 
     Element: ClassVar[type[CoxeterDiagramMorphism]]
@@ -656,7 +683,8 @@ class CoxeterDiagramHomset(Homset):
     ) -> CoxeterDiagramMorphism:
         return CoxeterDiagramMorphism(self, images)
 
-    def __contains__(self, morphism: "Morphism") -> bool:
+    def __contains__(self, morphism: object) -> bool:
+        # ``in`` is asked of an arbitrary value.
         return (
             isinstance(morphism, CoxeterDiagramMorphism)
             and morphism.parent() is self
@@ -702,14 +730,17 @@ class CoxeterDiagramMorphism(Morphism):
         )
         self._images = image_map
 
-    def _call_(self, vertex: CoxeterVertex) -> CoxeterVertex:
+    def _call_(self, vertex: object) -> CoxeterVertex:
+        # Sage calls a morphism on an arbitrary value and lets the domain
+        # convert; the parameter is unrestricted for that reason.
         domain = self.domain()
         codomain = self.codomain()
-        vertex = domain(vertex)
-        return codomain(self._images[vertex.value])
+        converted = domain(vertex)
+        image: CoxeterVertex = codomain(self._images[converted.value])
+        return image
 
-    def __call__(self, vertex: CoxeterVertex) -> CoxeterVertex:
-        return self._call_(vertex)
+    def __call__(self, *args: object, **kwds: object) -> CoxeterVertex:
+        return self._call_(*args, **kwds)
 
     def images(self) -> tuple[CoxeterVertex, ...]:
         domain = self.domain()
@@ -720,10 +751,11 @@ class CoxeterDiagramMorphism(Morphism):
         assert other.codomain() is self.domain(), "morphisms compose only when the inner codomain is the outer domain"
         domain = other.domain()
         codomain = self.codomain()
-        return domain.hom(
+        composite: CoxeterDiagramMorphism = domain.hom(
             [self(other(domain.vertex(i))).value for i in range(domain.cardinality())],
             codomain=codomain,
         )
+        return composite
 
 
 CoxeterDiagramHomset.Element = CoxeterDiagramMorphism

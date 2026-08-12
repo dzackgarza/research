@@ -19,9 +19,31 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from dzack_research.preamble.lexicon import Element
 
-from typing import Any, Self
+from typing import TYPE_CHECKING
 
 from sage.categories.category import Category
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
+    from dzack_research.preamble.lexicon import GramMatrix, RingElement, SignaturePair
+    from tqdm.auto import tqdm
+
+    from typing import Protocol
+
+    class HyperbolicLatticeParent(Protocol):
+        r"""What Vinberg's algorithm asks of a hyperbolic lattice."""
+
+        def signature_pair(self) -> "SignaturePair": ...
+        def twist(self, scale: "RingElement") -> "HyperbolicLatticeParent": ...
+        def gram_matrix(self) -> "GramMatrix": ...
+        def module_generators(self) -> tuple: ...
+        def zero(self) -> "Element": ...
+        def _vinberg_progress(
+            self,
+            total: int | None,
+        ) -> tuple["Callable[[int, int], None]", "tqdm"]: ...
+
 
 class HyperbolicLattices(Category):
     r"""Category of hyperbolic integral lattices (signature ``(n, 1)``).
@@ -44,14 +66,14 @@ class HyperbolicLattices(Category):
         r"""Methods available on hyperbolic lattices refined into this category."""
 
         def vinberg_algorithm(
-            self: Self,
-            v0: "Element" = None,
+            self: "HyperbolicLatticeParent",
+            v0: "Element | None" = None,
             use_coxiter: bool = False,
-            output: "Element" = None,
+            output: "Element | None" = None,
             max_roots: int | None = None,
             max_decompositions: int | None = None,
             verbose: bool = False,
-        ) -> "Element":
+        ) -> list["Element"]:
             r"""Enumerate roots using the vendored Vinberg algorithm.
 
             Requires the ``vinal`` clone in ``computations/vendor/``.
@@ -123,7 +145,7 @@ class HyperbolicLattices(Category):
                     f"confirmed. For signature (n, 1) with n=1 the criterion is "
                     f"unreachable (half-line in H^1, infinite volume).",
                     RuntimeWarning,
-                    stacklevel=2,
+                    stacklevel=2r,
                 )
             # What comes back is coordinates: the algorithm was handed a Gram
             # matrix and knows nothing else, so reading its output as elements
@@ -139,7 +161,9 @@ class HyperbolicLattices(Category):
             return [-root for root in roots] if negate_roots else roots
 
         @staticmethod
-        def _vinberg_progress(total: int | None) -> tuple[Any, Any]:
+        def _vinberg_progress(
+            total: int | None,
+        ) -> tuple["Callable[[int, int], None]", "tqdm"]:
             r"""Return a progress callback and tqdm bar for Vinberg search."""
             from tqdm.auto import tqdm
 

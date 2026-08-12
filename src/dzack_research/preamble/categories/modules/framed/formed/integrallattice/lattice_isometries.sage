@@ -13,7 +13,9 @@ if TYPE_CHECKING:
 
 if TYPE_CHECKING:
     from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormMorphism
-    from sage.groups.matrix_gps.finitely_generated import MatrixGroup
+    from sage.groups.matrix_gps.finitely_generated_gap import (
+        FinitelyGeneratedMatrixGroup_gap,
+    )
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleAutomorphism
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleAutomorphismGroup
     from sage.categories.morphism import Morphism
@@ -21,7 +23,7 @@ if TYPE_CHECKING:
 
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormAutomorphismGroup
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import FiniteAutomorphismSubgroup
-from typing import Self, TYPE_CHECKING
+from typing import Protocol, TYPE_CHECKING
 
 from sage.misc.cachefunc import cached_method
 
@@ -36,6 +38,44 @@ if TYPE_CHECKING:
     # The ordered-set noun is type-only: the preamble loads into one
     # shared namespace and nothing named OrderedSet may bind there.
     from dzack_research.preamble.lexicon import OrderedSet
+
+    from collections.abc import Iterator
+
+    from sage.libs.gap.element import GapElement
+
+    class IsometryGroupParent(Protocol):
+        r"""What $O(L)$ and its subgroups offer.
+
+        A homset whose elements are the isometries, so the lattice it acts on
+        is read off the arrow: ``domain()``.
+        """
+
+        _group_generators: TotallyOrderedFiniteSet
+        _finite_presentation_relations: tuple
+
+        def domain(self) -> "FormModule": ...
+        def is_finite(self) -> bool: ...
+        def is_countable(self) -> bool: ...
+        def one(self) -> "ModuleAutomorphism": ...
+        def cardinality(self) -> "Cardinal": ...
+        def group_generators(self) -> TotallyOrderedFiniteSet["FormMorphism"]: ...
+        def subgroup_on(self, group_generators: "Set") -> "ModuleAutomorphismGroup": ...
+        def presenting_free_group(self) -> "Group": ...
+        def _isometry_on_rows(self, rows: "Iterable") -> "ModuleAutomorphism": ...
+        def _matrix_group(self) -> "FinitelyGeneratedMatrixGroup_gap": ...
+        def _defining_matrix_group(self) -> "FinitelyGeneratedMatrixGroup_gap": ...
+        def __call__(self, images: "dict | FormMorphism") -> "Morphism": ...
+        def __contains__(self, candidate: object) -> bool: ...
+
+    class IsometryMorphism(Protocol):
+        r"""What one isometry offers."""
+
+        def parent(self) -> "IsometryGroupParent": ...
+        def domain(self) -> "FormModule": ...
+        def matrix(self) -> "MorphismMatrix": ...
+        def is_identity(self) -> bool: ...
+        def __mul__(self, other: "IsometryMorphism") -> "IsometryMorphism": ...
+        def __call__(self, element: "Element") -> "Element": ...
 
 
 def _definite_isometry_group_generator_matrices(lattice: "FormModule") -> tuple:
@@ -120,7 +160,7 @@ class LatticeIsometries(Category):
         return [LatticeHomomorphisms(), OwnedFinitelyGeneratedGroups()]
 
     class ParentMethods:
-        def is_countable(self: Self) -> bool:
+        def is_countable(self: "IsometryGroupParent") -> bool:
             r"""Whether the isometries admit an enumeration.
 
             Read off finiteness, which this category already decides: a
@@ -130,11 +170,11 @@ class LatticeIsometries(Category):
             """
             return bool(self.is_finite())
 
-        def is_uncountable(self: Self) -> bool:
+        def is_uncountable(self: "IsometryGroupParent") -> bool:
             r"""Whether the isometries are beyond every enumeration."""
             return not self.is_countable()
 
-        def __call__(self: Self, images: "dict | FormMorphism") -> "Morphism":
+        def __call__(self: "IsometryGroupParent", images: "dict | FormMorphism") -> "Morphism":
             # Local: a module-level import here would close a cycle; by call time this module is built.
             from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormMorphism
             from dzack_research.preamble.categories.modules.framed.formed.integrallattice.lattice_homomorphisms import LatticeHomomorphisms
@@ -148,7 +188,8 @@ class LatticeIsometries(Category):
                 assert images.domain() is self.domain(), (
                     f"{images} is not an isometry of {self.domain()}"
                 )
-                return images
+                held: "Morphism" = images
+                return held
             morphism = LatticeHomomorphisms.ParentMethods.__call__(
                 self,
                 images,
@@ -157,9 +198,10 @@ class LatticeIsometries(Category):
             assert determinant in (1, -1), (
                 f"an integral isometry has unit determinant, got {determinant}"
             )
-            return refine(morphism, LatticeIsometries())
+            isometry: "Morphism" = refine(morphism, LatticeIsometries())
+            return isometry
 
-        def one(self: Self) -> "ModuleAutomorphism":
+        def one(self: "IsometryGroupParent") -> "ModuleAutomorphism":
             return self(
                 {
                     label: self.domain().module_generator(label)
@@ -167,7 +209,7 @@ class LatticeIsometries(Category):
                 }
             )
 
-        def an_element(self: Self) -> "ModuleAutomorphism":
+        def an_element(self: "IsometryGroupParent") -> "ModuleAutomorphism":
             r"""Return the identity.
 
             Sage's generic ``_an_element_`` probes with ``self(0)``,
@@ -175,16 +217,17 @@ class LatticeIsometries(Category):
             declaring a lattice morphism from an integer.  A group has a
             distinguished element and this is it.
             """
-            return self.one()
+            identity: "ModuleAutomorphism" = self.one()
+            return identity
 
-        def subgroup_on(self: Self, group_generators: "Set") -> "ModuleAutomorphismGroup":
+        def subgroup_on(self: "IsometryGroupParent", group_generators: "Set") -> "ModuleAutomorphismGroup":
             r"""Return the subgroup generated by a *set* of isometries."""
             assert all(generator in self for generator in group_generators), (
                 "each subgroup generator must belong to this isometry group"
             )
             return LatticeIsometrySubgroup(self, group_generators)
 
-        def _isometry_on_rows(self: Self, rows: "Iterable") -> "ModuleAutomorphism":
+        def _isometry_on_rows(self: "IsometryGroupParent", rows: "Iterable") -> "ModuleAutomorphism":
             r"""Return the isometry sending each framing label to a row's combination.
 
             The one place a matrix becomes an element of this group.  A row is
@@ -202,7 +245,9 @@ class LatticeIsometries(Category):
                 }
             )
 
-        def group_generators(self: Self) -> TotallyOrderedFiniteSet:
+        def group_generators(
+            self: "IsometryGroupParent",
+        ) -> TotallyOrderedFiniteSet["FormMorphism"]:
             r"""Return \(S\) with \(\langle S\rangle\) this group.
 
             One question with two sources and one answer.  A subgroup was
@@ -213,7 +258,9 @@ class LatticeIsometries(Category):
             """
             # Local: a module-level import here would close a cycle; by call time this module is built.
             from dzack_research.preamble.categories.sets.sets import finite_ordered_set
-            stored = self.__dict__.get("_group_generators")
+            stored: TotallyOrderedFiniteSet["FormMorphism"] | None = (
+                self.__dict__.get("_group_generators")
+            )
             if stored is None:
                 stored = finite_ordered_set(
                     tuple(
@@ -226,7 +273,9 @@ class LatticeIsometries(Category):
             return stored
 
         @cached_method
-        def _matrix_group(self: Self) -> "MatrixGroup":
+        def _matrix_group(
+            self: "IsometryGroupParent",
+        ) -> "FinitelyGeneratedMatrixGroup_gap":
             r"""Return this group as a GAP-backed matrix group.  The private model.
 
             \(O(L)\) is cut out of \(GL_n(R)\) by \(MGM^t=G\), so it and every
@@ -236,12 +285,13 @@ class LatticeIsometries(Category):
             repo calls and never restates.  Every method below defers here and
             translates the answers back into this group's own elements.
             """
-            return matrix_group(
+            gap_group: "FinitelyGeneratedMatrixGroup_gap" = matrix_group(
                 generator.matrix() for generator in self.group_generators()
             )
+            return gap_group
 
         @cached_method
-        def presenting_free_group(self: Self) -> "Group":
+        def presenting_free_group(self: "IsometryGroupParent") -> "Group":
             r"""Return the free group in a computed presentation of this group.
 
             A presentation is what coset enumeration produces, and the
@@ -266,26 +316,26 @@ class LatticeIsometries(Category):
             return presented.free_group()
 
         @cached_method
-        def defining_relations(self: Self) -> "OrderedSet":
+        def defining_relations(self: "IsometryGroupParent") -> "OrderedSet":
             r"""Return the relators in :meth:`presenting_free_group`."""
             from dzack_research.preamble.categories.sets.sets import finite_ordered_set
 
             self.presenting_free_group()
             return finite_ordered_set(self._finite_presentation_relations)
 
-        def is_finite(self: Self) -> bool:
+        def is_finite(self: "IsometryGroupParent") -> bool:
             r"""Return whether this group is finite, as decided by GAP."""
             return bool(self._matrix_group().is_finite())
 
-        def cardinality(self: Self) -> "Cardinal":
+        def cardinality(self: "IsometryGroupParent") -> "Cardinal":
             r"""Return \(|G|\), as computed by GAP."""
             return Cardinal(self._matrix_group().order())
 
-        def order(self: Self) -> "Cardinal":
+        def order(self: "IsometryGroupParent") -> "Cardinal":
             r"""Return \(|G|\).  The order of a group is its cardinality."""
             return self.cardinality()
 
-        def __iter__(self: Self):
+        def __iter__(self: "IsometryGroupParent") -> "Iterator[ModuleAutomorphism]":
             r"""Enumerate this group's elements, which a finite group has."""
             assert self.is_finite(), (
                 f"{self} is infinite, so it cannot be enumerated"
@@ -294,16 +344,18 @@ class LatticeIsometries(Category):
                 yield self._isometry_on_rows(element.matrix().rows())
 
     class MorphismMethods:
-        def to_matrix(self: Self) -> "MorphismMatrix":
+        def to_matrix(self: "IsometryMorphism") -> "MorphismMatrix":
             return self.matrix()
 
-        def is_identity(self: Self) -> bool:
-            return self.matrix().is_one()
+        def is_identity(self: "IsometryMorphism") -> bool:
+            identity: bool = self.matrix().is_one()
+            return identity
 
-        def is_involution(self: Self) -> bool:
-            return (self * self).is_identity()
+        def is_involution(self: "IsometryMorphism") -> bool:
+            involution: bool = (self * self).is_identity()
+            return involution
 
-        def __mul__(self: Self, other: "Element") -> "Element":
+        def __mul__(self: "IsometryMorphism", other: "Element") -> "Element":
             # Local: a module-level import here would close a cycle; by call time this module is built.
             from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormMorphism
             assert (
@@ -317,7 +369,7 @@ class LatticeIsometries(Category):
                 }
             )
 
-        def inverse(self: Self) -> "ModuleAutomorphism":
+        def inverse(self: "IsometryMorphism") -> "ModuleAutomorphism":
             # Local: a module-level import here would close a cycle; by call time this module is built.
             from dzack_research.preamble.utilities import zipsum
             inverse_matrix = self.matrix().inverse().change_ring(SageZZ)
@@ -335,7 +387,7 @@ class LatticeIsometries(Category):
                 }
             )
 
-        def cyclic_subgroup(self: Self) -> "Group":
+        def cyclic_subgroup(self: "IsometryMorphism") -> "Group":
             r"""Return \(\langle f\rangle\le O(L)\), the subgroup this generates.
 
             A group in its own right, and the \(G\) of the construction that
@@ -346,7 +398,7 @@ class LatticeIsometries(Category):
             """
             return self.parent().subgroup_on({self})
 
-        def _libgap_(self: Self) -> "GapElement":
+        def _libgap_(self: "IsometryMorphism") -> "GapElement":
             r"""Return this isometry inside its group's GAP model.
 
             A character is a function on a group, and when that group is a

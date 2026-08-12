@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import FramingMorphism
 from sage.categories.groups import Groups
-from sage.matrix.constructor import Matrix
+from sage.matrix.matrix0 import Matrix
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
 from sage.categories.modules import Modules
 if TYPE_CHECKING:
@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 
 from dzack_research.preamble.categories.rings.rings import OwnedBaseRing
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
-from typing import Any, Self, TYPE_CHECKING
+from typing import Protocol, Self, TYPE_CHECKING, TypeAlias
 
 from sage.categories.homset import Hom, Homset
 from sage.misc.abstract_method import abstract_method
@@ -45,12 +45,111 @@ if TYPE_CHECKING:
     # shared namespace and nothing named OrderedSet may bind there.
     from dzack_research.preamble.lexicon import OrderedSet
 
+    from collections.abc import Callable
+
+    from dzack_research.preamble.categories.forms.forms import BilinearFormMorphism
+    from dzack_research.preamble.categories.forms.forms import QuadraticFormMorphism
+    from dzack_research.preamble.categories.modules.tensors import TensorElement
+
+    # The form itself: the morphism out of $M\otimes_R M$ (or the quadratic
+    # map) that a formed module is equipped with.  Not ``FormMorphism``
+    # below, which is a map *between* two formed modules.
+    Form: TypeAlias = BilinearFormMorphism | QuadraticFormMorphism
+
+    # How a map out of a formed module may be named: an assignment on the
+    # framing labels, the generator morphism itself, or a function on the
+    # framing set.
+    GeneratorAssignment: TypeAlias = SetMorphism | dict | Callable
+
+    class FormedParent(Protocol):
+        r"""What an object of these categories offers.
+
+        Structural rather than a class, for the reason the categories
+        themselves are: what makes an object formed is the carried data and
+        its placement, so a ring equipped as its own rank-one lattice
+        answers these too and is no instance of ``FormModule``.
+        """
+
+        _module: "Module"
+        _framing_morphism: FramingMorphism
+
+        def _form_morphism(self) -> "Form": ...
+        def base_ring(self) -> "Ring": ...
+        def form(self) -> "Form": ...
+        def forget_form(self) -> "Module": ...
+        def value_module(self) -> "Module": ...
+        def gram_matrix(self) -> GramMatrix: ...
+        def vector_space(self) -> "FormedParent": ...
+        def module_generating_set(self) -> "OrderedSet": ...
+        def module_generators(self) -> tuple: ...
+        def module_generator_morphism(self) -> SetMorphism: ...
+        def zero(self) -> "Element": ...
+        def is_torsion(self) -> bool: ...
+        def raise_index(
+            self,
+            tensor: "TensorElement",
+            slot: Integer = ...,
+        ) -> "TensorElement": ...
+        def _sub_form_module(
+            self,
+            gram: Matrix,
+            module_generating_set: "OrderedSet",
+        ) -> "FormModule": ...
+        def Hom(
+            self,
+            codomain: "Module",
+            category: "Category | None" = ...,
+        ) -> Homset: ...
+
+    class FiniteFreeFormedParent(FormedParent, Protocol):
+        r"""What the finitely generated free formed surface adds.
+
+        Separate from ``FormedParent`` because these are not questions every
+        formed module can answer: the dual and the correlation morphism are
+        built from a finite basis.
+        """
+
+        _preamble_Aut: "ModuleAutomorphismGroup"
+
+        def dual_module(self) -> "Module": ...
+        def correlation_morphism(self) -> ModuleMorphism: ...
+
+    class FormedElement(Protocol):
+        r"""What an element of a formed module offers."""
+
+        def parent(self) -> "FormModule": ...
+        def forget_form(self) -> "UnderlyingElement": ...
+        def b(self, other: "Element") -> "Element": ...
+        def span(self) -> "Subobject": ...
+        def _coordinates(self) -> "Vector": ...
+
+    class UnderlyingElement(Protocol):
+        r"""An element of the module a formed module is built on."""
+
+        def parent(self) -> "Parent": ...
+        def coefficients(self) -> dict: ...
+        def underlying_set_element(self) -> "Element": ...
+        def __add__(self, other: "UnderlyingElement") -> "UnderlyingElement": ...
+        def __sub__(self, other: "UnderlyingElement") -> "UnderlyingElement": ...
+        def __neg__(self) -> "UnderlyingElement": ...
+        def __rmul__(self, factor: "Element") -> "UnderlyingElement": ...
+
+
+# ``Hom`` hands ``self`` to ``Parent.Hom``, a nominal API, so the methods
+# class needs Parent as a base to type-check that one call.  Runtime-identical:
+# a bare class already has ``object`` as its base.
+if TYPE_CHECKING:
+    _ParentBase = Parent
+else:
+    _ParentBase = object
+
 
 def _finite_rank(module_generating_set: TotallyOrderedFiniteSet) -> Integer:
     size = module_generating_set.cardinality()
     if isinstance(size, Cardinal):
         assert size.is_finite(), "a finitely generated form module has finite rank"
-        return size.finite_value()
+        rank: Integer = size.finite_value()
+        return rank
     return Integer(size)
 
 
@@ -58,12 +157,16 @@ class FormModules(OwnedCategoryOverBaseRing):
     r"""Modules over \(R\) equipped with a form."""
 
     @staticmethod
-    def __classcall_private__(cls: type, base_ring: "Ring" = None) -> "FormModules":
+    def __classcall_private__(
+        cls: type["FormModules"],
+        base_ring: "Ring | None" = None,
+    ) -> "FormModules":
         # Local: a module-level import here would close a cycle; by call time this module is built.
         from dzack_research.preamble.categories.rings.rings import engine_ring
-        return super().__classcall__(
+        category: FormModules = super().__classcall__(
             cls, SageZZ if base_ring is None else engine_ring(base_ring)
         )
+        return category
 
     @classmethod
     def _repr_object_names(cls) -> str:
@@ -72,13 +175,13 @@ class FormModules(OwnedCategoryOverBaseRing):
     def super_categories(self) -> list:
         return [Modules(self.base_ring()).Framed()]
 
-    class ParentMethods:
+    class ParentMethods(_ParentBase):
 
         # Read off the carried data, so what makes an object formed is the
         # data and its placement -- not which class constructed it.  A ring
         # equipped as its own rank-one lattice answers these too.
         @abstract_method
-        def _form_morphism(self: Self) -> "FormMorphism":
+        def _form_morphism(self: "FormedParent") -> "Form":
             r"""Return the morphism this object's form *is*.
 
             The obligation of this category, and the only one: a formed module
@@ -93,25 +196,25 @@ class FormModules(OwnedCategoryOverBaseRing):
             resolves to this declaration and the constructor sweep reports it.
             """
 
-        def form(self: Self) -> "FormMorphism":
+        def form(self: "FormedParent") -> "Form":
             r"""Return the form morphism classifying this object."""
             return self._form_morphism()
 
-        def forget_form(self: Self) -> "Module":
+        def forget_form(self: "FormedParent") -> "Module":
             r"""Return the underlying module, forgetting the form."""
             return self._module
 
-        def framing_morphism(self: Self) -> "FramingMorphism":
+        def framing_morphism(self: "FormedParent") -> "FramingMorphism":
             r"""Return the framing \(F_R(S)\to M\)."""
             return self._framing_morphism
 
-        def value_module(self: Self) -> "Module":
+        def value_module(self: "FormedParent") -> "Module":
             return self.form().value_module()
 
-        def gram_matrix(self: Self) -> GramMatrix:
+        def gram_matrix(self: "FormedParent") -> GramMatrix:
             return self.form().gram_matrix()
 
-        def gram_tensor(self: Self):
+        def gram_tensor(self: "FormedParent") -> "TensorElement":
             r"""Return the form as a type-$(0,2)$ tensor.
 
             What the Gram matrix *is*: twice covariant, because the form eats
@@ -123,40 +226,58 @@ class FormModules(OwnedCategoryOverBaseRing):
             # Local: a module-level import here would close a cycle; by call time this module is built.
             from dzack_research.preamble.categories.modules.tensors import tensor
 
-            return tensor(
+            gram_tensor: "TensorElement" = tensor(
                 self.base_ring(),
                 [list(row) for row in self.gram_matrix().rows()],
                 valence=(0, 2),
                 module=self.forget_form(),
             )
+            return gram_tensor
 
-        def raise_index(self: Self, tensor: "Element", slot: int = 0) -> "Element":
+        def raise_index(
+            self: "FormedParent",
+            tensor: "TensorElement",
+            slot: Integer = 0,
+        ) -> "TensorElement":
             r"""Raise one lower index using this form."""
             return tensor.raise_index(self, slot)
 
         def raise_index_over_fraction_field(
-            self: Self,
-            tensor: "Element",
-            slot: int = 0,
-        ) -> "Element":
+            self: "FormedParent",
+            tensor: "TensorElement",
+            slot: Integer = 0,
+        ) -> "TensorElement":
             r"""Raise one lower index after extension to the fraction field."""
             changed_form = self.vector_space()
             changed_tensor = tensor.base_changed(changed_form.forget_form())
             return changed_form.raise_index(changed_tensor, slot)
 
-        def lower_index(self: Self, tensor: "Element", slot: int = 0) -> "Element":
+        def lower_index(
+            self: "FormedParent",
+            tensor: "TensorElement",
+            slot: Integer = 0,
+        ) -> "TensorElement":
             r"""Lower one upper index using this form."""
             return tensor.lower_index(self, slot)
 
-        def is_torsion_free(self: Self) -> bool:
+        def is_torsion_free(self: "FormedParent") -> bool:
             return bool(self.forget_form().is_torsion_free())
 
-        def is_torsion(self: Self) -> bool:
+        def is_torsion(self: "FormedParent") -> bool:
             return bool(self.forget_form().is_torsion())
 
-        def Hom(self: Self, codomain: "Module", category: "Category" = None) -> "Homset":
+        def Hom(
+            self: Self,
+            codomain: "Module",
+            category: "Category | None" = None,
+        ) -> "FormHomset | Homset":
+            # The union is the honest return: the formed branch builds a
+            # FormHomset (its ends are the FormedParent protocol, not a
+            # nominal Parent), the fallback delegates to Parent.Hom.
             if codomain in FormModules(self.base_ring()):
-                cache = self.__dict__.setdefault("_form_module_homsets", {})
+                cache: dict["Module", "FormHomset"] = self.__dict__.setdefault(
+                    "_form_module_homsets", {}
+                )
                 homset = cache.get(codomain)
                 if homset is None:
                     homset = FormHomset(
@@ -166,9 +287,15 @@ class FormModules(OwnedCategoryOverBaseRing):
                     )
                     cache[codomain] = homset
                 return homset
-            return Parent.Hom(self, codomain, category)
+            plain_homset: "Homset" = Parent.Hom(self, codomain, category)
+            return plain_homset
 
-        def hom(self: Self, images: dict, codomain: "Module" = None) -> "FormMorphism":
+        def hom(
+            self: "FormedParent",
+            images: "GeneratorAssignment",
+            codomain: "Module | None" = None,
+        ) -> "FormMorphism":
+            assignment: "GeneratorAssignment"
             match images:
                 case SetMorphism():
                     assert isinstance(images.codomain(), UnderlyingSet), (
@@ -198,40 +325,48 @@ class FormModules(OwnedCategoryOverBaseRing):
                         "specified by a finite assignment or a function on "
                         "its generating set"
                     )
-            return self.Hom(target)(assignment)
+            morphism = self.Hom(target)(assignment)
+            assert isinstance(morphism, FormMorphism), (
+                f"{target} is a formed module, so its homset builds form "
+                f"morphisms; got {morphism}"
+            )
+            return morphism
 
     class ElementMethods:
 
-        def _coordinates(self: Self) -> "Vector":
+        def _coordinates(self: "FormedElement") -> "Vector":
             # Local: a module-level import here would close a cycle; by call time this module is built.
             from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _coordinate_vector
-            return _coordinate_vector(self.forget_form())
+            coordinates: "Vector" = _coordinate_vector(self.forget_form())
+            return coordinates
 
-        def b(self: Self, other: "Element") -> "Element":
+        def b(self: "FormedElement", other: "Element") -> "Element":
             # Local: a module-level import here would close a cycle; by call time this module is built.
             from dzack_research.preamble.categories.forms.forms import _forget_form_element
             assert other.parent() is self.parent(), (
                 "a form pairs two elements of one formed module"
             )
-            return self.parent().form().b(
+            value: "Element" = self.parent().form().b(
                 _forget_form_element(self),
                 _forget_form_element(other),
             )
+            return value
 
-        def norm(self: Self) -> "Element":
+        def norm(self: "FormedElement") -> "Element":
             # Local: a module-level import here would close a cycle; by call time this module is built.
             from dzack_research.preamble.categories.forms.forms import _forget_form_element
-            return self.parent().form().norm(
+            value: "Element" = self.parent().form().norm(
                 _forget_form_element(self)
             )
+            return value
 
-        def span(self: Self) -> "Subobject":
+        def span(self: "FormedElement") -> "Subobject":
             return self.parent().subobject_on([self])
 
-        def isotropic_reduction(self: Self) -> "Module":
+        def isotropic_reduction(self: "FormedElement") -> "Module":
             return self.span().isotropic_reduction()
 
-        def __mul__(self: Self, other: object) -> "Element":
+        def __mul__(self: "FormedElement", other: "Element | RingElement") -> "Element":
             match other:
                 case Element() if other.parent() is self.parent():
                     return self.b(other)
@@ -245,7 +380,7 @@ class FormModules(OwnedCategoryOverBaseRing):
                         f"a scalar of {self.parent().base_ring()}"
                     )
 
-        def __truediv__(self: Self, divisor: "RingElement") -> "Element":
+        def __truediv__(self: "FormedElement", divisor: "RingElement") -> "Element":
             # Local: a module-level import here would close a cycle; by call time this module is built.
             from dzack_research.preamble.utilities import zipsum
             assert not self.parent().is_torsion(), (
@@ -256,23 +391,28 @@ class FormModules(OwnedCategoryOverBaseRing):
             assert all(
                 entry in coefficient_ring for entry in coordinates
             ), "the quotient is not an element of this module"
-            return zipsum(
+            quotient: "Element" = zipsum(
             tuple(coefficient_ring(entry) for entry in coordinates),
             self.parent().module_generators(),
             self.parent().zero(),
             )
+            return quotient
 
 
 class BilinearFormModules(OwnedCategoryOverBaseRing):
     r"""Modules whose form is bilinear."""
 
     @staticmethod
-    def __classcall_private__(cls: type, base_ring: "Ring" = None) -> "BilinearFormModules":
+    def __classcall_private__(
+        cls: type["BilinearFormModules"],
+        base_ring: "Ring | None" = None,
+    ) -> "BilinearFormModules":
         # Local: a module-level import here would close a cycle; by call time this module is built.
         from dzack_research.preamble.categories.rings.rings import engine_ring
-        return super().__classcall__(
+        category: BilinearFormModules = super().__classcall__(
             cls, SageZZ if base_ring is None else engine_ring(base_ring)
         )
+        return category
 
     @classmethod
     def _repr_object_names(cls) -> str:
@@ -286,12 +426,16 @@ class SymmetricBilinearFormModules(OwnedCategoryOverBaseRing):
     r"""Modules equipped with a symmetric bilinear form."""
 
     @staticmethod
-    def __classcall_private__(cls: type, base_ring: "Ring" = None) -> "SymmetricBilinearFormModules":
+    def __classcall_private__(
+        cls: type["SymmetricBilinearFormModules"],
+        base_ring: "Ring | None" = None,
+    ) -> "SymmetricBilinearFormModules":
         # Local: a module-level import here would close a cycle; by call time this module is built.
         from dzack_research.preamble.categories.rings.rings import engine_ring
-        return super().__classcall__(
+        category: SymmetricBilinearFormModules = super().__classcall__(
             cls, SageZZ if base_ring is None else engine_ring(base_ring)
         )
+        return category
 
     @classmethod
     def _repr_object_names(cls) -> str:
@@ -305,12 +449,16 @@ class QuadraticFormModules(OwnedCategoryOverBaseRing):
     r"""Modules whose form is quadratic."""
 
     @staticmethod
-    def __classcall_private__(cls: type, base_ring: "Ring" = None) -> "QuadraticFormModules":
+    def __classcall_private__(
+        cls: type["QuadraticFormModules"],
+        base_ring: "Ring | None" = None,
+    ) -> "QuadraticFormModules":
         # Local: a module-level import here would close a cycle; by call time this module is built.
         from dzack_research.preamble.categories.rings.rings import engine_ring
-        return super().__classcall__(
+        category: QuadraticFormModules = super().__classcall__(
             cls, SageZZ if base_ring is None else engine_ring(base_ring)
         )
+        return category
 
     @classmethod
     def _repr_object_names(cls) -> str:
@@ -324,12 +472,16 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
     r"""Form modules whose image after forgetting the form is free."""
 
     @staticmethod
-    def __classcall_private__(cls: type, base_ring: "Ring" = None) -> "FreeFormModules":
+    def __classcall_private__(
+        cls: type["FreeFormModules"],
+        base_ring: "Ring | None" = None,
+    ) -> "FreeFormModules":
         # Local: a module-level import here would close a cycle; by call time this module is built.
         from dzack_research.preamble.categories.rings.rings import engine_ring
-        return super().__classcall__(
+        category: FreeFormModules = super().__classcall__(
             cls, SageZZ if base_ring is None else engine_ring(base_ring)
         )
+        return category
 
     @classmethod
     def _repr_object_names(cls) -> str:
@@ -345,10 +497,14 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
 
     class ParentMethods:
 
-        def rank(self: Self) -> "Cardinal":
-            return self.forget_form().rank()
+        def rank(self: "FormedParent") -> "Cardinal":
+            rank: "Cardinal" = self.forget_form().rank()
+            return rank
 
-        def subobject_on(self: Self, module_generators: "OrderedSet") -> "Subobject":
+        def subobject_on(
+            self: "FormedParent",
+            module_generators: "OrderedSet",
+        ) -> "Subobject":
             # Local: a module-level import here would close a cycle; by call time this module is built.
             from dzack_research.preamble.categories.modules.framed.formed.integrallattice.subobjects import Subobject
             from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _independent_module_generators
@@ -373,10 +529,10 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
             )
 
         def _sub_form_module(
-            self: Self,
+            self: "FormedParent",
             gram: Matrix,
             module_generating_set: "OrderedSet",
-        ) -> "FormMorphism":
+        ) -> "FormModule":
             # Local: a module-level import here would close a cycle; by call time this module is built.
             from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import BasedFreeModule
             from dzack_research.preamble.categories.forms.forms import BilinearForm
@@ -384,24 +540,33 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
                 self.base_ring(),
                 module_generating_set,
             )
-            return BilinearForm(module, self.value_module(), gram)
+            # ``BilinearForm`` builds the formed module the form classifies.
+            sub_form_module: "FormModule" = BilinearForm(
+                module, self.value_module(), gram
+            )
+            return sub_form_module
 
     class ElementMethods:
-        def underlying_set_element(self: Self) -> "Element":
+        def underlying_set_element(self: "FormedElement") -> "Element":
             r"""Recover the element of \(S\) defining a canonical generator."""
-            return self.forget_form().underlying_set_element()
+            label: "Element" = self.forget_form().underlying_set_element()
+            return label
 
 
 class FinitelyGeneratedFormModules(OwnedCategoryOverBaseRing):
     r"""Form modules whose chosen framing set is finite."""
 
     @staticmethod
-    def __classcall_private__(cls: type, base_ring: "Ring" = None) -> "FinitelyGeneratedFormModules":
+    def __classcall_private__(
+        cls: type["FinitelyGeneratedFormModules"],
+        base_ring: "Ring | None" = None,
+    ) -> "FinitelyGeneratedFormModules":
         # Local: a module-level import here would close a cycle; by call time this module is built.
         from dzack_research.preamble.categories.rings.rings import engine_ring
-        return super().__classcall__(
+        category: FinitelyGeneratedFormModules = super().__classcall__(
             cls, SageZZ if base_ring is None else engine_ring(base_ring)
         )
+        return category
 
     @classmethod
     def _repr_object_names(cls) -> str:
@@ -417,10 +582,10 @@ class FinitelyGeneratedFormModules(OwnedCategoryOverBaseRing):
 
     class ParentMethods:
 
-        def number_of_module_generators(self: Self) -> Integer:
+        def number_of_module_generators(self: "FormedParent") -> Integer:
             return _finite_rank(self.module_generating_set())
 
-        def scale_submodule(self: Self) -> "Subobject":
+        def scale_submodule(self: "FormedParent") -> "Subobject":
             r"""Return $\mathfrak s(L)\subseteq W$: the image of the form.
 
             The construction is the same for every value module: $b$ is a
@@ -440,12 +605,13 @@ class FinitelyGeneratedFormModules(OwnedCategoryOverBaseRing):
             value_module = self.value_module()
             if value_module is self.base_ring():
                 # Specialization, derived: a submodule of R over R is an ideal.
-                return value_module.ideal(
+                scale: "Subobject" = value_module.ideal(
                     [entry for row in self.gram_matrix().rows() for entry in row]
                 )
+                return scale
             return self.form().image()
 
-        def is_integral(self: Self) -> bool:
+        def is_integral(self: "FormedParent") -> bool:
             r"""Return whether the form's values are integral.
 
             Integrality has one a priori meaning: a ring morphism $R\to S$
@@ -476,7 +642,11 @@ class FinitelyGeneratedFormModules(OwnedCategoryOverBaseRing):
                 for entry in row
             )
 
-        def hom(self: Self, images: dict, codomain: "Module" = None) -> "FormMorphism":
+        def hom(
+            self: "FormedParent",
+            images: "GeneratorAssignment | list | tuple",
+            codomain: "Module | None" = None,
+        ) -> "FormMorphism":
             # Local: a module-level import here would close a cycle; by call time this module is built.
             from dzack_research.preamble.categories.modules.framed.framed_modules import _finite_module_generator_assignment
             match images:
@@ -492,7 +662,12 @@ class FinitelyGeneratedFormModules(OwnedCategoryOverBaseRing):
                         images,
                         codomain,
                     )
-                    return self.Hom(target)(assignment)
+                    morphism = self.Hom(target)(assignment)
+                    assert isinstance(morphism, FormMorphism), (
+                        f"{target} is a formed module, so its homset builds "
+                        f"form morphisms; got {morphism}"
+                    )
+                    return morphism
                 case _:
                     assert False, (
                         "a homomorphism is specified by a finite assignment "
@@ -504,12 +679,16 @@ class FinitelyGeneratedFreeFormModules(OwnedCategoryOverBaseRing):
     r"""Finite free modules equipped with a form."""
 
     @staticmethod
-    def __classcall_private__(cls: type, base_ring: "Ring" = None) -> "FinitelyGeneratedFreeFormModules":
+    def __classcall_private__(
+        cls: type["FinitelyGeneratedFreeFormModules"],
+        base_ring: "Ring | None" = None,
+    ) -> "FinitelyGeneratedFreeFormModules":
         # Local: a module-level import here would close a cycle; by call time this module is built.
         from dzack_research.preamble.categories.rings.rings import engine_ring
-        return super().__classcall__(
+        category: FinitelyGeneratedFreeFormModules = super().__classcall__(
             cls, SageZZ if base_ring is None else engine_ring(base_ring)
         )
+        return category
 
     @classmethod
     def _repr_object_names(cls) -> str:
@@ -525,7 +704,7 @@ class FinitelyGeneratedFreeFormModules(OwnedCategoryOverBaseRing):
         ]
 
     class ParentMethods:
-        def Aut(self: Self) -> "ModuleAutomorphismGroup":
+        def Aut(self: "FiniteFreeFormedParent") -> "ModuleAutomorphismGroup":
             cached = self.__dict__.get("_preamble_Aut")
             if cached is None:
                 cached = FormAutomorphismGroup(self)
@@ -541,7 +720,7 @@ class FinitelyGeneratedFreeFormModules(OwnedCategoryOverBaseRing):
         # ``is_nondegenerate() == False`` from right here.
 
         @cached_method
-        def dual_module(self: Self) -> "Module":
+        def dual_module(self: "FiniteFreeFormedParent") -> "Module":
             r"""Return $\operatorname{Hom}(L,R)$, free on the dual basis.
 
             The dual as a *module*, which every finite free module has:
@@ -553,10 +732,13 @@ class FinitelyGeneratedFreeFormModules(OwnedCategoryOverBaseRing):
             # Local: a module-level import here would close a cycle; by call time this module is built.
             from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import BasedFreeModule
 
-            return BasedFreeModule(self.base_ring(), self.module_generating_set())
+            dual_module: "Module" = BasedFreeModule(
+                self.base_ring(), self.module_generating_set()
+            )
+            return dual_module
 
         @cached_method
-        def correlation_morphism(self: Self) -> "ModuleMorphism":
+        def correlation_morphism(self: "FiniteFreeFormedParent") -> ModuleMorphism:
             r"""Return $c: L\to\operatorname{Hom}(L,R)$, $v\mapsto b(v,-)$.
 
             Always defined, and the map the radical and nondegeneracy are
@@ -587,7 +769,7 @@ class FinitelyGeneratedFreeFormModules(OwnedCategoryOverBaseRing):
             return homset.zero() if not assignment else homset(assignment)
 
         @cached_method
-        def radical(self: Self) -> "Subobject":
+        def radical(self: "FiniteFreeFormedParent") -> "Subobject":
             r"""Return $\operatorname{rad}(L)=\ker(c)$, as a subobject.
 
             $\{v: b(v,w)=0 \text{ for all } w\}$ is by definition the set of
@@ -597,7 +779,7 @@ class FinitelyGeneratedFreeFormModules(OwnedCategoryOverBaseRing):
             """
             return self.correlation_morphism().kernel()
 
-        def is_nondegenerate(self: Self) -> bool:
+        def is_nondegenerate(self: "FiniteFreeFormedParent") -> bool:
             r"""Return whether $\operatorname{rad}(L)=0$, i.e. $c$ is injective.
 
             Asked of the correlation morphism itself: $\ker c=0$ *is*
@@ -616,17 +798,23 @@ class FormModuleElement(ModuleElement):
     r"""An element of a formed module and its image after forgetting the form."""
 
 
-    def __init__(self, parent: "Parent", element: "Element") -> None:
+    _underlying: "UnderlyingElement"
+
+    if TYPE_CHECKING:
+        # Built only by ``FormModule._over``, so the parent is that module.
+        def parent(self) -> "FormModule": ...
+
+    def __init__(self, parent: "FormModule", element: "UnderlyingElement") -> None:
         ModuleElement.__init__(self, parent)
         assert element.parent() is parent.forget_form(), (
             f"{element} is not an element of {parent.forget_form()}"
         )
         self._underlying = element
 
-    def forget_form(self) -> "Module":
+    def forget_form(self) -> "UnderlyingElement":
         return self._underlying
 
-    def coefficients(self) -> dict[Any, Any]:
+    def coefficients(self) -> dict["Element", "RingElement"]:
         return dict(self._underlying.coefficients())
 
     def _add_(self: "FormModuleElement", other: "FormModuleElement") -> "FormModuleElement":
@@ -643,7 +831,7 @@ class FormModuleElement(ModuleElement):
 
     _rmul_ = _lmul_
 
-    def _richcmp_(self: "FormModuleElement", other: object, op: int) -> bool:
+    def _richcmp_(self: "FormModuleElement", other: "FormModuleElement", op: int) -> bool:
         return bool(richcmp(self._underlying, other._underlying, op))
 
     def __hash__(self) -> int:
@@ -653,7 +841,7 @@ class FormModuleElement(ModuleElement):
         return repr(self._underlying)
 
 
-def _formed_element_representation(element: "Element") -> "Element":
+def _formed_element_representation(element: "FormedElement") -> "UnderlyingElement":
     r"""Forget exactly the form structure represented by ``element``."""
     match element:
         case FormModuleElement():
@@ -667,7 +855,7 @@ class FormModule(OwnedBaseRing, Parent):
 
     Element = FormModuleElement
 
-    def __init__(self, form: "FormMorphism") -> None:
+    def __init__(self, form: "Form") -> None:
         # Local: a module-level import here would close a cycle; by call time this module is built.
         from dzack_research.preamble.categories.forms.forms import BilinearFormMorphism
         from dzack_research.preamble.categories.forms.forms import QuadraticFormMorphism
@@ -848,27 +1036,30 @@ class FormModule(OwnedBaseRing, Parent):
                 refine(self, GroupLattices(module.group()))
                 _install_group_lattice_structure(self)
 
-    def _form_morphism(self) -> "FormMorphism":
+    def _form_morphism(self) -> "Form":
         r"""Return the morphism this object was constructed from.
 
         The category's obligation, met by the constructor that received it.
         """
         return self._form
 
-    def _element_constructor_(self, element: FormModuleElement) -> FormModuleElement:
+    def _element_constructor_(self, element: "FormModuleElement") -> FormModuleElement:
         assert isinstance(element, FormModuleElement) and element.parent() is self, (
             f"{element} is not an element of {self}"
         )
         return element
 
-    def __contains__(self, element: "Element") -> bool:
+    def __contains__(self, element: object) -> bool:
+        # ``in`` is asked of an arbitrary value: the question membership
+        # answers is whether that value is one of ours.
         return (
             isinstance(element, FormModuleElement)
             and element.parent() is self
         )
 
-    def _over(self, element: "Element") -> FormModuleElement:
-        return self.element_class(self, element)
+    def _over(self, element: "UnderlyingElement") -> FormModuleElement:
+        formed: FormModuleElement = self.element_class(self, element)
+        return formed
 
 
     def zero(self) -> FormModuleElement:
@@ -881,7 +1072,23 @@ class FormModule(OwnedBaseRing, Parent):
         )
 
 
-class FormHomset(Homset):
+# ``Homset`` is generic in its morphism type; the runtime class is not
+# subscriptable, so the binding goes through a TYPE_CHECKING-only alias.
+# The ends bind to a phantom NOMINAL type: a form homset's ends really are
+# Parents (the protocol alone is not, so it cannot sit under Parent.Hom's
+# declared Homset return), and they carry the formed surface — stated once
+# by inheriting the protocol.
+if TYPE_CHECKING:
+
+    class FormedModule(Parent, FormedParent):
+        r"""A Parent that offers the formed surface (type-only)."""
+
+    _FormHomsetBase = Homset["FormMorphism", "FormedModule", "FormedModule"]
+else:
+    _FormHomsetBase = Homset
+
+
+class FormHomset(_FormHomsetBase):
     r"""The homset of form-preserving morphisms between formed modules."""
 
     def __init__(self, domain: "Module", codomain: "Module", category: "Category") -> None:
@@ -900,7 +1107,7 @@ class FormHomset(Homset):
         )
         self._module_homset = module_homset(domain, codomain)
 
-    def _element_constructor_(self, images: dict) -> "FormMorphism":
+    def _element_constructor_(self, images: "GeneratorAssignment | ModuleMorphism") -> "FormMorphism":
         match images:
             case ModuleMorphism():
                 module_morphism = images
@@ -917,7 +1124,8 @@ class FormHomset(Homset):
                 )
         return FormMorphism(self, module_morphism)
 
-    def __contains__(self, morphism: "Morphism") -> bool:
+    def __contains__(self, morphism: object) -> bool:
+        # ``in`` is asked of an arbitrary value.
         return (
             isinstance(morphism, FormMorphism)
             and morphism.parent() is self
@@ -932,6 +1140,11 @@ class FormHomset(Homset):
 
 class FormMorphism(Morphism):
     r"""A morphism whose underlying module map preserves the form."""
+
+    if TYPE_CHECKING:
+        # Built only by ``FormHomset._element_constructor_``, so that homset
+        # is the parent.
+        def parent(self) -> FormHomset: ...
 
     def __init__(self, parent: FormHomset, module_morphism: ModuleMorphism) -> None:
         Morphism.__init__(self, parent)
@@ -948,16 +1161,21 @@ class FormMorphism(Morphism):
         return self._module_morphism
 
     def module_generator_morphism(self) -> SetMorphism:
-        return self._module_morphism.module_generator_morphism()
+        generator_morphism: SetMorphism = self._module_morphism.module_generator_morphism()
+        return generator_morphism
 
     def matrix(self) -> MorphismMatrix:
         return self._module_morphism.matrix()
 
-    def _call_(self, element: "Element") -> "Element":
-        return self._module_morphism(element)
+    def _call_(self, element: object) -> "Element":
+        # Sage calls a morphism on an arbitrary value and lets the underlying
+        # map decide; the parameter is unrestricted for that reason.
+        image: "Element" = self._module_morphism(element)
+        return image
 
     def lift(self, element: "Element") -> "ModuleElement":
-        return self._module_morphism.lift(element)
+        lifted: "ModuleElement" = self._module_morphism.lift(element)
+        return lifted
 
     def kernel(self) -> "Subobject":
         return self._module_morphism.kernel()
@@ -972,7 +1190,8 @@ class FormMorphism(Morphism):
         return bool(self._module_morphism.is_injective())
 
     def index(self) -> "Integer":
-        return self._module_morphism.index()
+        index: "Integer" = self._module_morphism.index()
+        return index
 
     def orthogonal_complement(self) -> "Subobject":
         return self._module_morphism.orthogonal_complement()
@@ -982,7 +1201,7 @@ class FormMorphism(Morphism):
             "the codomain of the first map is not the domain of the second"
         )
         module_generator_morphism = self.module_generator_morphism()
-        return self.domain().Hom(other.codomain())(
+        composite: "FormMorphism" = self.domain().Hom(other.codomain())(
                 SetMorphism(
                     Hom(
                         module_generator_morphism.domain(),
@@ -994,6 +1213,7 @@ class FormMorphism(Morphism):
                     ),
                 )
             )
+        return composite
 
     def __mul__(self, other: object) -> "FormMorphism":
         assert (
@@ -1056,7 +1276,10 @@ class FormAutomorphismGroup(FormHomset):
         # as ambiguous.  The homset surface comes from the class it subclasses.
         refine(self, [Groups()])
 
-    def _element_constructor_(self, images: dict) -> FormMorphism:
+    def _element_constructor_(
+        self,
+        images: "GeneratorAssignment | ModuleMorphism",
+    ) -> FormMorphism:
         morphism = FormHomset._element_constructor_(self, images)
         determinant = morphism.matrix().det()
         assert determinant.is_unit(), (
@@ -1067,7 +1290,8 @@ class FormAutomorphismGroup(FormHomset):
     def one(self) -> FormMorphism:
         return self(self.domain().module_generator_morphism())
 
-    def __contains__(self, morphism: "Morphism") -> bool:
+    def __contains__(self, morphism: object) -> bool:
+        # ``in`` is asked of an arbitrary value.
         return (
             isinstance(morphism, FormMorphism)
             and morphism.parent() is self
@@ -1079,7 +1303,7 @@ def correlation_of(lattice: "FormModule") -> FormMorphism:
     # Local: a module-level import here would close a cycle; by call time this module is built.
     from dzack_research.preamble.utilities import zipsum
     dual = lattice.dual_lattice()
-    return lattice.Hom(dual)(
+    correlation = lattice.Hom(dual)(
             {
                 label: zipsum(
                 row,
@@ -1092,3 +1316,8 @@ def correlation_of(lattice: "FormModule") -> FormMorphism:
                 )
             }
         )
+    assert isinstance(correlation, FormMorphism), (
+        f"{dual} is a formed module, so its homset builds form morphisms; "
+        f"got {correlation}"
+    )
+    return correlation

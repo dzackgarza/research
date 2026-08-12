@@ -23,7 +23,7 @@ if TYPE_CHECKING:
     from sage.categories.morphism import Morphism
     from dzack_research.preamble.categories.forms.forms import QuadraticFormMorphism
 
-from typing import Self, TYPE_CHECKING
+from typing import Protocol, TYPE_CHECKING
 
 from sage.categories.category import Category
 from sage.groups.additive_abelian.qmodnz import QmodnZ
@@ -34,6 +34,27 @@ if TYPE_CHECKING:
     # The ordered-set noun is type-only: the preamble loads into one
     # shared namespace and nothing named OrderedSet may bind there.
     from dzack_research.preamble.lexicon import OrderedSet
+
+    from collections.abc import Iterator
+
+    class DiscriminantQuadraticParent(Protocol):
+        r"""What an object of this category offers."""
+
+        def forget_form(self) -> "Module": ...
+        def form(self) -> "QuadraticFormMorphism": ...
+        def smith_form_module_generators(self) -> "OrderedSet": ...
+        def regenerate(self, module_generators: "OrderedSet") -> "FormModule": ...
+
+        # A discriminant module is finite, so listing it is how it is searched.
+        def __iter__(self) -> "Iterator[DiscriminantQuadraticElement]": ...
+
+    class DiscriminantQuadraticElement(Protocol):
+        r"""What an element of such an object offers."""
+
+        def parent(self) -> "DiscriminantQuadraticParent": ...
+        def forget_form(self) -> "Element": ...
+        def q(self) -> "Element": ...
+        def b(self, other: "Element") -> "Element": ...
 
 
 class DiscriminantQuadraticModules(Category):
@@ -149,7 +170,7 @@ class DiscriminantQuadraticModules(Category):
     class ParentMethods:
         r"""Methods available on discriminant quadratic modules."""
 
-        def regenerate(self: Self, module_generators: "OrderedSet") -> "FormModule":
+        def regenerate(self: "DiscriminantQuadraticParent", module_generators: "OrderedSet") -> "FormModule":
             r"""Return this form on the generating set ``module_generators``.
 
             A different generating set is a different object of this category,
@@ -168,7 +189,7 @@ class DiscriminantQuadraticModules(Category):
             )
             return DiscriminantQuadraticModules().from_module(module, gram)
 
-        def form_vanishes_on(self: Self, elements: "OrderedSet") -> bool:
+        def form_vanishes_on(self: "DiscriminantQuadraticParent", elements: "OrderedSet") -> bool:
             r"""Return whether $q$ is zero on every element of ``elements``.
 
             The quadratic condition, and it is the stronger one: $q(x)=0$
@@ -180,11 +201,11 @@ class DiscriminantQuadraticModules(Category):
             """
             return all(element.q() == 0 for element in elements)
 
-        def associated_quadratic_form(self: Self) -> "QuadraticFormMorphism":
+        def associated_quadratic_form(self: "DiscriminantQuadraticParent") -> "DiscriminantQuadraticParent":
             r"""Return this form: it is already the quadratic one."""
             return self
 
-        def associated_bilinear_form(self: Self) -> "BilinearFormMorphism":
+        def associated_bilinear_form(self: "DiscriminantQuadraticParent") -> "BilinearFormMorphism":
             r"""Return $b_q$, the polarization -- an object of the sibling category.
 
             Always defined, and it forgets: distinct $q$ on the same group can
@@ -197,15 +218,15 @@ class DiscriminantQuadraticModules(Category):
                 self.form().polar_form().gram_matrix(),
             )
 
-        def _form_matrix_latex_label(self: Self) -> str:
+        def _form_matrix_latex_label(self: "DiscriminantQuadraticParent") -> str:
             r"""Return the LaTeX label for the quadratic Gram matrix."""
             return "G_{q_{A_L}}"
 
-        def _form_matrix_latex_codomain(self: Self) -> str:
+        def _form_matrix_latex_codomain(self: "DiscriminantQuadraticParent") -> str:
             r"""Return the LaTeX codomain for the quadratic Gram matrix entries."""
             return "\\mathbb{Q}/2\\mathbb{Z}"
 
-        def invariant_factor_form(self: Self) -> "FormModule":
+        def invariant_factor_form(self: "DiscriminantQuadraticParent") -> "FormModule":
             r"""Return $q$ on module_generators from the invariant factor decomposition.
 
             The change merges factors across summands -- $A_{A_2\oplus A_3}$ lands
@@ -215,7 +236,7 @@ class DiscriminantQuadraticModules(Category):
             """
             return self.regenerate(self.smith_form_module_generators())
 
-        def normal_form(self: Self) -> "FormModule":
+        def normal_form(self: "DiscriminantQuadraticParent") -> "FormModule":
             r"""Return $q$ on $p$-adic Jordan module_generators -- a different object.
 
             For $p$ odd the blocks are those of Peters--Sterk Prop. 9.4.1; at $p=2$
@@ -230,7 +251,7 @@ class DiscriminantQuadraticModules(Category):
     class ElementMethods:
         r"""Methods available on elements of discriminant quadratic modules."""
 
-        def q(self: Self) -> "Element":
+        def q(self: "DiscriminantQuadraticElement") -> "Element":
             r"""Return $q(\bar x)\in\mathbb Q/2\mathbb Z$.
 
             The same pairing the bilinear form reads modulo $\mathbb Z$, read
@@ -239,12 +260,16 @@ class DiscriminantQuadraticModules(Category):
             """
             return self.parent().form()(self.forget_form())
 
-        def __pow__(self: Self, exponent: "Integer", modulus: "Integer" = None) -> "Element":
+        def __pow__(
+            self: "DiscriminantQuadraticElement",
+            exponent: "Integer",
+            modulus: "Integer | None" = None,
+        ) -> "Element":
             r"""``x ^ 2`` -> $q(x)$."""
             assert exponent == 2, f"exponent {exponent} not supported"
             return self.q()
 
-        def is_characteristic(self: Self) -> bool:
+        def is_characteristic(self: "DiscriminantQuadraticElement") -> bool:
             r"""Return whether $q(x)=b(x,v^*)$ modulo $\mathbb Z$ for every $x$."""
             return all(
                 x.q().lift() - x.b(self).lift() in SageZZ

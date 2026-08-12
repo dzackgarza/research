@@ -27,14 +27,39 @@ from sage.categories.groups import Groups
 from sage.categories.modules import Modules
 from sage.categories.category import Category
 from sage.categories.morphism import Morphism
+from sage.structure.element import Element
 from sage.structure.parent import Parent
 
-from typing import TYPE_CHECKING
+from typing import Protocol, Self, TYPE_CHECKING, runtime_checkable
+
+
+# Runtime class, not a TYPE_CHECKING declaration: ``Slice(..., is_mono=True)``
+# gates on ``isinstance(..., MonoCapableArrow)`` before asserting injectivity,
+# so the protocol must exist when that assert runs.
+@runtime_checkable
+class MonoCapableArrow(Protocol):
+    r"""An arrow that can decide whether it is a monomorphism.  Sage puts
+    ``is_injective`` on particular morphism classes, not on ``Morphism``,
+    and the slice construction is what requires it."""
+
+    def is_injective(self) -> bool: ...
+
 
 if TYPE_CHECKING:
     # The ordered-set noun is type-only: the preamble loads into one
     # shared namespace and nothing named OrderedSet may bind there.
-    from dzack_research.preamble.lexicon import OrderedSet
+    from dzack_research.preamble.lexicon import Group, Module, OrderedSet
+
+    # The algebra noun, taken the way the lexicon takes ``Ring`` and
+    # ``Group``: the category's own ``ParentMethods``.
+    from dzack_research.preamble.categories.algebras.algebras import Algebras
+
+    class SliceParent(Protocol):
+        r"""What an object of a slice category has from its placement: the
+        arrow it is an object over."""
+
+        def structure_morphism(self) -> Morphism: ...
+        def embedding(self) -> Morphism: ...
 
 
 def sole_structure_generators(obj: Parent) -> "OrderedSet":
@@ -66,21 +91,32 @@ def sole_structure_generators(obj: Parent) -> "OrderedSet":
     )
     match named[0]:
         case "module":
-            return tuple(obj.module_generators())
+            module: "Module" = obj
+            return tuple(module.module_generators())
         case "group":
-            return tuple(obj.group_generators())
+            group: "Group" = obj
+            return tuple(group.group_generators())
         case "algebra":
-            return tuple(obj.algebra_generators())
+            algebra: "Algebras.ParentMethods" = obj
+            return tuple(algebra.algebra_generators())
 
 
 class SliceOverCategory(Category):
     r"""Slice category \(\mathbf{C}/X\) of objects over \(X\)."""
 
     @staticmethod
-    def __classcall_private__(cls, ambient_category: Category, X: Parent) -> "SliceOverCategory":
-        return super().__classcall__(cls, ambient_category, X)
+    def __classcall_private__(
+        cls: type["SliceOverCategory"], ambient_category: Category, X: "Parent | Morphism"
+    ) -> "SliceOverCategory":
+        # ``X`` is an object for a slice and a *morphism* for the kernel
+        # subcategory, which slices over the domain of the map it is the
+        # kernel of.
+        slice_category: SliceOverCategory = super().__classcall__(
+            cls, ambient_category, X
+        )
+        return slice_category
 
-    def __init__(self, ambient_category: Category, X: Parent) -> None:
+    def __init__(self, ambient_category: Category, X: "Parent | Morphism") -> None:
         self._ambient_category = ambient_category
         self._target_object = X
         Category.__init__(self)
@@ -92,7 +128,10 @@ class SliceOverCategory(Category):
         return [self._ambient_category]
 
     class ParentMethods:
-        def structure_morphism(self) -> Morphism:
+        # Installed on the domain by ``Slice`` below.
+        _structure_morphism: Morphism
+
+        def structure_morphism(self: Self) -> Morphism:
             return self._structure_morphism
 
 
@@ -100,10 +139,19 @@ class CosliceUnderCategory(Category):
     r"""Coslice category \(X \setminus \mathbf{C}\) of objects under \(X\)."""
 
     @staticmethod
-    def __classcall_private__(cls, ambient_category: Category, X: Parent) -> "CosliceUnderCategory":
-        return super().__classcall__(cls, ambient_category, X)
+    def __classcall_private__(
+        cls: type["CosliceUnderCategory"],
+        ambient_category: Category,
+        X: "Parent | Morphism",
+    ) -> "CosliceUnderCategory":
+        # ``X`` is an object for a coslice and a *morphism* for the cokernel
+        # subcategory, which coslices under the codomain of that map.
+        coslice_category: CosliceUnderCategory = super().__classcall__(
+            cls, ambient_category, X
+        )
+        return coslice_category
 
-    def __init__(self, ambient_category: Category, X: Parent) -> None:
+    def __init__(self, ambient_category: Category, X: "Parent | Morphism") -> None:
         self._ambient_category = ambient_category
         self._source_object = X
         Category.__init__(self)
@@ -115,7 +163,10 @@ class CosliceUnderCategory(Category):
         return [self._ambient_category]
 
     class ParentMethods:
-        def costructure_morphism(self) -> Morphism:
+        # Installed on the codomain by ``Coslice`` below.
+        _costructure_morphism: Morphism
+
+        def costructure_morphism(self: Self) -> Morphism:
             return self._costructure_morphism
 
 
@@ -136,7 +187,7 @@ class SubobjectCategory(SliceOverCategory):
         subobject adds one thing: the monomorphism.
         """
 
-        def embedding(self) -> Morphism:
+        def embedding(self: "SliceParent") -> Morphism:
             r"""Return the monomorphism \(A\hookrightarrow X\) representing this subobject.
 
             The slice category calls this arrow ``structure_morphism``; in a
@@ -147,9 +198,10 @@ class SubobjectCategory(SliceOverCategory):
 
         inclusion = embedding
 
-        def embedding_codomain(self) -> Parent:
+        def embedding_codomain(self: "SliceParent") -> Parent:
             r"""Return the ambient object \(X\) this subobject embeds into."""
-            return self.embedding().codomain()
+            ambient: Parent = self.embedding().codomain()
+            return ambient
 
 
 class SuperobjectCategory(CosliceUnderCategory):
@@ -189,7 +241,11 @@ class KernelCategory(SubobjectCategory):
         return f"Category of kernels of {self._target_object} in {self._ambient_category}"
 
     def super_categories(self) -> list[Category]:
-        return [SubobjectCategory(self._ambient_category, self._target_object.domain())]
+        map_taken = self._target_object
+        assert isinstance(map_taken, Morphism), (
+            "a kernel category is parameterized by the morphism it is the kernel of"
+        )
+        return [SubobjectCategory(self._ambient_category, map_taken.domain())]
 
 
 class CokernelCategory(CoveredObjectCategory):
@@ -199,17 +255,23 @@ class CokernelCategory(CoveredObjectCategory):
         return f"Category of cokernels of {self._source_object} in {self._ambient_category}"
 
     def super_categories(self) -> list[Category]:
-        return [CoveredObjectCategory(self._ambient_category, self._source_object.codomain())]
+        map_taken = self._source_object
+        assert isinstance(map_taken, Morphism), (
+            "a cokernel category is parameterized by the morphism it is the cokernel of"
+        )
+        return [CoveredObjectCategory(self._ambient_category, map_taken.codomain())]
 
 
-Category.SliceOver = lambda self, X: SliceOverCategory(self, X)
-Category.CosliceUnder = lambda self, X: CosliceUnderCategory(self, X)
-Category.SubObject = lambda self, X: SubobjectCategory(self, X)
-Category.SuperObject = lambda self, X: SuperobjectCategory(self, X)
-Category.CoveringObject = lambda self, X: CoveringObjectCategory(self, X)
-Category.CoveredObject = lambda self, X: CoveredObjectCategory(self, X)
-Category.Kernel = lambda self, f: KernelCategory(self, f)
-Category.Cokernel = lambda self, f: CokernelCategory(self, f)
+# Installed onto Sage's ``Category``: these constructions are the preamble's,
+# so they are attached here rather than declared on the Sage class.
+setattr(Category, "SliceOver", lambda self, X: SliceOverCategory(self, X))
+setattr(Category, "CosliceUnder", lambda self, X: CosliceUnderCategory(self, X))
+setattr(Category, "SubObject", lambda self, X: SubobjectCategory(self, X))
+setattr(Category, "SuperObject", lambda self, X: SuperobjectCategory(self, X))
+setattr(Category, "CoveringObject", lambda self, X: CoveringObjectCategory(self, X))
+setattr(Category, "CoveredObject", lambda self, X: CoveredObjectCategory(self, X))
+setattr(Category, "Kernel", lambda self, f: KernelCategory(self, f))
+setattr(Category, "Cokernel", lambda self, f: CokernelCategory(self, f))
 
 
 def Slice(structure_morphism: Morphism, is_mono: bool = False, is_epi: bool = False) -> Parent:
@@ -227,6 +289,9 @@ def Slice(structure_morphism: Morphism, is_mono: bool = False, is_epi: bool = Fa
         "the structure morphism of a slice object must be a Morphism"
     )
     if is_mono:
+        assert isinstance(structure_morphism, MonoCapableArrow), (
+            "is_mono requires an arrow that can decide injectivity"
+        )
         assert structure_morphism.is_injective(), (
             "is_mono requires the structure morphism to be a monomorphism"
         )
@@ -240,7 +305,8 @@ def Slice(structure_morphism: Morphism, is_mono: bool = False, is_epi: bool = Fa
         refine(domain, cat.CoveringObject(codomain))
     else:
         refine(domain, cat.SliceOver(codomain))
-    return domain
+    sliced: Parent = domain
+    return sliced
 
 
 def Coslice(costructure_morphism: Morphism, is_mono: bool = False, is_epi: bool = False) -> Parent:
@@ -267,7 +333,8 @@ def Coslice(costructure_morphism: Morphism, is_mono: bool = False, is_epi: bool 
         refine(codomain, cat.CoveredObject(source))
     else:
         refine(codomain, cat.CosliceUnder(source))
-    return codomain
+    cosliced: Parent = codomain
+    return cosliced
 
 
 def Superobject(costructure_morphism: Morphism) -> Parent:
