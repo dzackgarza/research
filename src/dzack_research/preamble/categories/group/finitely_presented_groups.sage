@@ -156,28 +156,19 @@ def _fp_relation_table_latex(rows: tuple[str, ...]) -> str:
     return f"\\begin{{array}}{{{colspec}}}\n" + "\\\\\n".join(rendered) + "\n\\end{array}"
 
 
-def _fp_format_presentation_latex(
-    gens: tuple[str, ...],
-    rel_words: tuple[str, ...],
-    *,
-    subscript: str = "",
-) -> str:
-    r"""Render named generators and relations as compact LaTeX."""
+def _fp_format_finite_presentation_latex(group: "Group") -> str:
+    r"""Render the chosen finite presentation of ``group`` as compact LaTeX."""
+    gens = tuple(_fp_format_generator_name(n) for n in _fp_group_generator_names(group))
+    rels = tuple(group.defining_relations())
+    rel_words = _fp_relation_word_rows(group, rels)
     gens_text = ", ".join(gens)
     empty = not rel_words
-    suffix = f"_{{{subscript}}}" if subscript else ""
 
-    inline = (
-        f"\\left\\langle {gens_text} \\;\\middle|\\; "
-        f"{', '.join(rel_words)} \\right\\rangle{suffix}"
-    )
+    inline = f"\\left\\langle {gens_text} \\;\\middle|\\; {', '.join(rel_words)} \\right\\rangle"
     if empty:
         if not gens:
-            return f"\\left\\langle \\;\\middle|\\; \\right\\rangle{suffix}"
-        return (
-            f"\\left\\langle {gens_text} \\;\\middle|\\; "
-            f"\\right\\rangle{suffix}"
-        )
+            return "\\left\\langle \\;\\middle|\\; \\right\\rangle"
+        return f"\\left\\langle {gens_text} \\;\\middle|\\; \\right\\rangle"
     if len(inline) <= _FP_LAYOUT_INLINE_WIDTH:
         return inline
 
@@ -194,11 +185,7 @@ def _fp_format_presentation_latex(
         and ra <= _FP_LAYOUT_STACKED_RELATION_AREA_BUDGET
     ):
         stacked = "\\\\\n".join(rel_words)
-        return (
-            f"\\left\\langle {gens_text} \\;\\middle|\\; "
-            f"\\begin{{aligned}}\n{stacked}\n\\end{{aligned}} "
-            f"\\right\\rangle{suffix}"
-        )
+        return f"\\left\\langle {gens_text} \\;\\middle|\\; \\begin{{aligned}}\n{stacked}\n\\end{{aligned}} \\right\\rangle"
 
     gen_lines = _fp_pack_rows(gens, _FP_LAYOUT_EXPANDED_GENERATOR_WIDTH, ", ") or ("\\,\\,",)
     table = _fp_relation_table_latex(rel_words)
@@ -211,16 +198,8 @@ def _fp_format_presentation_latex(
         "\\end{gathered}\\\\[0.75em]\n"
         "\\text{Relations:}\\\\[0.25em]\n"
         f"{table}\n"
-        f"\\end{{gathered}}{suffix}"
+        "\\end{gathered}"
     )
-
-
-def _fp_format_finite_presentation_latex(group: "Group") -> str:
-    r"""Render the chosen finite presentation of ``group`` as compact LaTeX."""
-    gens = tuple(_fp_format_generator_name(n) for n in _fp_group_generator_names(group))
-    rels = tuple(group.defining_relations())
-    rel_words = _fp_relation_word_rows(group, rels)
-    return _fp_format_presentation_latex(gens, rel_words)
 
 
 _FINITELY_PRESENTED_GROUPS_INSTALLED = False

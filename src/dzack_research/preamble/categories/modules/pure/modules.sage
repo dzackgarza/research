@@ -29,7 +29,6 @@ if TYPE_CHECKING:
 from typing import Self
 
 from sage.categories.additive_groups import AdditiveGroups
-from sage.categories.category import Category
 from sage.categories.category_types import Category_over_base_ring
 from sage.categories.fields import Fields as SageFields
 from sage.categories.modules import Modules as SageModules
@@ -54,17 +53,6 @@ class Modules(Category_over_base_ring):
             SageModules(self.base_ring()),
             AdditiveGroups().AdditiveCommutative(),
         ]
-
-    def __contains__(self, module: "Module") -> bool:
-        r"""Return whether ``module`` is an object of this category.
-
-        Test category membership first.  This includes abelian groups, since
-        each has a canonical structure as a module over the integers.  Sage's
-        base-ring membership test decides all remaining cases.
-        """
-        if Category.__contains__(self, module):
-            return True
-        return Category_over_base_ring.__contains__(self, module)
 
     class ParentMethods:
         @abstract_method

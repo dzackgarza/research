@@ -313,15 +313,15 @@ class TorsionModulesWithForm(OwnedCategoryOverBaseRing):
             label = self._form_matrix_latex_label()
 
             line1 = (
-                f"A_L = {fp_latex} \\in \\mathbb{{Z}}\\text{{-Mod}} \\quad "
+                f"A_L = {fp_latex} \\in \\mathrm{{Groups}} \\quad "
                 "\\text{(Finite presentation)} \\\\"
             )
             line2 = (
-                f"A_L \\cong {inv_str} \\in \\mathbb{{Z}}\\text{{-Mod}} \\quad "
+                f"A_L \\cong {inv_str} \\in \\mathrm{{Groups}} \\quad "
                 "\\text{(Invariant factor decomposition)} \\\\"
             )
             line3 = (
-                f"A_L \\cong {prim_str} \\in \\mathbb{{Z}}\\text{{-Mod}} \\quad "
+                f"A_L \\cong {prim_str} \\in \\mathrm{{Groups}} \\quad "
                 "\\text{(Primary decomposition)} \\\\"
             )
             line4 = (
