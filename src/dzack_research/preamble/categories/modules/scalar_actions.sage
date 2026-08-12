@@ -18,8 +18,8 @@ condition on \(\rho\), not a different endomorphism ring.
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from sage_lattice_category_spike.lexicon import Element
-    from sage_lattice_category_spike.lexicon import Module
+    from dzack_research.preamble.lexicon import Element
+    from dzack_research.preamble.lexicon import Module
 
 from dzack_research.preamble.categories.rings.rings import OwnedBaseRing
 from sage.categories.modules import Modules

@@ -25,7 +25,7 @@ slots are up.
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from sage_lattice_category_spike.lexicon import Element, Module
+    from dzack_research.preamble.lexicon import Element, Module
 
 from itertools import product as _index_product
 from typing import Self
@@ -702,7 +702,7 @@ def tensor(base_ring: "Ring", components, valence: tuple = None, module: "Module
     """
     # Local: a module-level import here would close a cycle; by call time this module is built.
     from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreeModuleOn
-    from sage_lattice_category_spike.objects.sets import Sets as _OwnedSets
+    from dzack_research.preamble.categories.sets.owned_sets import Sets as _OwnedSets
 
     shape = _nesting_shape(components)
     assert shape, "a tensor is built from a nested list of components"

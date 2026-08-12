@@ -7,7 +7,7 @@ framework, enabling ``Modules(R).FinitelyGenerated()`` and ``FinitelyGeneratedMo
 from typing import TYPE_CHECKING
 from dzack_research.preamble.utilities import zipsum
 if TYPE_CHECKING:
-    from sage_lattice_category_spike.lexicon import Module
+    from dzack_research.preamble.lexicon import Module
 
 if TYPE_CHECKING:
     from sage.matrix.constructor import Matrix
@@ -22,7 +22,7 @@ from sage.matrix.constructor import matrix
 from sage.misc.cachefunc import cached_method
 from sage.structure.sage_object import SageObject
 
-from sage_lattice_category_spike.objects.sets import Sets
+from dzack_research.preamble.categories.sets.owned_sets import Sets
 
 # Register FinitelyGenerated axiom string if not present in Sage's axiom container
 if "FinitelyGenerated" not in cwa.all_axioms:

@@ -12,17 +12,17 @@ from typing import Self, TYPE_CHECKING
 from sage.categories.category import Category
 from sage.combinat.root_system.weyl_group import WeylGroup
 
-from sage_lattice_category_spike.objects.cardinals import Cardinal
+from dzack_research.preamble.categories.sets.cardinals import Cardinal
 
 if TYPE_CHECKING:
     from sage.combinat.root_system.cartan_type import CartanType
-    from sage_lattice_category_spike.lexicon import Lattice
-    from sage_lattice_category_spike.lexicon import RingElement
-    from sage_lattice_category_spike.lexicon import OrderedSet
+    from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModule
+    from dzack_research.preamble.lexicon import RingElement
+    from dzack_research.preamble.lexicon import OrderedSet
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleAutomorphismGroup
 
 
-def refine_root_lattice(lattice: "Lattice", cartan_type: "CartanType") -> "Lattice":
+def refine_root_lattice(lattice: "FormModule", cartan_type: "CartanType") -> "FormModule":
     r"""Record that ``lattice`` is the root lattice of ``cartan_type``.
 
     The one crossing.  A presentation is used once, here, where the Cartan
@@ -60,7 +60,7 @@ class RootLattices(Category):
             r"""Return the root system this lattice is the root lattice of."""
             return self._cartan_type
 
-        def twist(self: Self, scale: "RingElement", names: "OrderedSet" = None) -> "Lattice":
+        def twist(self: Self, scale: "RingElement", names: "OrderedSet" = None) -> "FormModule":
             r"""Return $L(n)$, still a root lattice when $n$ is a unit.
 
             $L(-1)$ is the same root system read with the other sign, which is

@@ -30,7 +30,7 @@ from sage.misc.cachefunc import cached_method
 from sage.schemes.toric.all import toric_varieties
 from sage.rings.integer_ring import ZZ as SageZZ
 
-from sage_lattice_category_spike.objects.sets import Sets
+from dzack_research.preamble.categories.sets.owned_sets import Sets
 
 # Register scheme axioms in Sage's axiom registry if not already present
 for _axiom_name in (

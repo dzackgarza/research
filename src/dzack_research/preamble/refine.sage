@@ -118,10 +118,9 @@ def _concrete_base(obj: "SageObject") -> type:
 
 # Ownership is provenance, which the class hierarchy already records: a
 # category is this project's when its class was defined here.  The preamble
-# and the lattice spike are both ordinary packages, so a category is owned
-# when its ``__module__`` sits inside one of them.  Sage's own categories are
-# never owned, so their ``ParentMethods`` are never hoisted over a concrete
-# class.
+# is an ordinary package, so a category is owned when its ``__module__`` sits
+# inside it.  Sage's own categories are never owned, so their
+# ``ParentMethods`` are never hoisted over a concrete class.
 #
 # A name registry stood here instead, and an unlisted category's methods were
 # silently dropped: once a refine target has *any* owned category among its
@@ -133,14 +132,12 @@ _PREAMBLE_PACKAGE = __name__.rpartition(".")[0] + "."
 assert _PREAMBLE_PACKAGE != ".", (
     "refine.sage must be imported as a module of the preamble package"
 )
-_SPIKE_PACKAGE = "sage_lattice_category_spike."
 _MIXIN_CACHE: dict[tuple[Any, str], tuple[type, ...]] = {}
 
 
 def _is_owned_category(category_type: type) -> bool:
     """Whether ``category_type`` was defined by this project."""
-    module = category_type.__module__
-    return module.startswith(_PREAMBLE_PACKAGE) or module.startswith(_SPIKE_PACKAGE)
+    return category_type.__module__.startswith(_PREAMBLE_PACKAGE)
 
 
 def _preamble_mixins(category: "Category", attr: str) -> tuple[type, ...]:

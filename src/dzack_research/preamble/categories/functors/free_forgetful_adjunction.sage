@@ -18,8 +18,8 @@ And the triangle identities (zigzag equations):
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from sage_lattice_category_spike.lexicon import Group
-    from sage_lattice_category_spike.lexicon import Module
+    from dzack_research.preamble.lexicon import Group
+    from dzack_research.preamble.lexicon import Module
 
 if TYPE_CHECKING:
     from dzack_research.preamble.categories.sets.sets import Set
@@ -35,7 +35,7 @@ from sage.categories.sets_cat import Sets
 from sage.misc.abstract_method import abstract_method
 from sage.structure.sage_object import SageObject
 from sage.categories.morphism import SetMorphism
-from sage_lattice_category_spike.objects.underlying_sets import UnderlyingSet
+from dzack_research.preamble.categories.sets.underlying_sets import UnderlyingSet
 
 
 class FreeAlgebraFunctor(Functor):

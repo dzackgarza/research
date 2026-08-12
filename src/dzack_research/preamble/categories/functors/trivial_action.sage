@@ -22,9 +22,9 @@ of a trivial \(G\)-lattice lands in it.
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from sage_lattice_category_spike.lexicon import Element
-    from sage_lattice_category_spike.lexicon import Group
-    from sage_lattice_category_spike.lexicon import Lattice
+    from dzack_research.preamble.lexicon import Element
+    from dzack_research.preamble.lexicon import Group
+    from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModule
 
 from dzack_research.preamble.categories.modules.group_modules.group_lattices import GroupLattices
 from dzack_research.preamble.categories.modules.framed.formed.integrallattice.integral_lattices import IntegralLattices
@@ -49,7 +49,7 @@ class TrivialActionFunctor(Functor):
         return self._group
 
     @cached_method
-    def _apply_functor(self, lattice: "Lattice") -> "Lattice":
+    def _apply_functor(self, lattice: "FormModule") -> "FormModule":
         r"""Return \((L,\mathbf 1)\), the same object on every call.
 
         Cached because a functor is well defined on objects:

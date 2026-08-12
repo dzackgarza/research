@@ -18,7 +18,7 @@ gap is wider still.
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from sage_lattice_category_spike.lexicon import Module
+    from dzack_research.preamble.lexicon import Module
 
 import sage.categories.category_with_axiom as cwa
 from sage.categories.category_with_axiom import CategoryWithAxiom_over_base_ring

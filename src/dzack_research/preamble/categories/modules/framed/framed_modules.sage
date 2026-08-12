@@ -13,9 +13,9 @@ datum.  No finiteness, countability, or orderability hypothesis is imposed on
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from sage_lattice_category_spike.lexicon import Element
-    from sage_lattice_category_spike.lexicon import Module
-    from sage_lattice_category_spike.lexicon import ModuleElement
+    from dzack_research.preamble.lexicon import Element
+    from dzack_research.preamble.lexicon import Module
+    from dzack_research.preamble.lexicon import ModuleElement
 
 from sage.categories.morphism import SetMorphism
 from sage.structure.element import Element
@@ -38,14 +38,14 @@ from sage.sets.image_set import ImageSubobject
 if TYPE_CHECKING:
     # The ordered-set noun is type-only: the preamble loads into one
     # shared namespace and nothing named OrderedSet may bind there.
-    from sage_lattice_category_spike.lexicon import OrderedSet
+    from dzack_research.preamble.lexicon import OrderedSet
 
 
 if TYPE_CHECKING:
     # The mathematical ``Set`` noun must not bind at runtime: these files
     # load into one shared namespace where Sage's ``Set()`` constructor
     # lives under the same name.
-    from sage_lattice_category_spike.lexicon import Set
+    from dzack_research.preamble.lexicon import Set
 
 
 if "Framed" not in cwa.all_axioms:

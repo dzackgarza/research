@@ -49,7 +49,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from sage.rings.polynomial.polynomial_element import Polynomial
-    from sage_lattice_category_spike.lexicon import Element, Module
+    from dzack_research.preamble.lexicon import Element, Module
 
 from typing import Self
 

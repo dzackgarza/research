@@ -225,7 +225,7 @@ def test_cython_parents_refuse_refinement_and_so_keep_their_underlying_set() -> 
         PolynomialRing as SagePolynomialRing,
     )
     from sage.rings.rational_field import QQ as SageRationals
-    from sage_lattice_category_spike.objects.underlying_sets import UnderlyingSet
+    from dzack_research.preamble.categories.sets.underlying_sets import UnderlyingSet
 
     cython_parent = SagePolynomialRing(SageRationals, 2, "x")
 

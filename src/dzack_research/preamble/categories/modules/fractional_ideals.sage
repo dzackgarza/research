@@ -12,13 +12,13 @@ this object exists so that reading is a fact rather than a coincidence.
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from sage_lattice_category_spike.lexicon import Element
-    from sage_lattice_category_spike.lexicon import Module
-    from sage_lattice_category_spike.lexicon import OrderedSet
+    from dzack_research.preamble.lexicon import Element
+    from dzack_research.preamble.lexicon import Module
+    from dzack_research.preamble.lexicon import OrderedSet
 
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import BasedFreeModule
 from sage.categories.modules import Modules
-from sage_lattice_category_spike.objects.sets import Sets
+from dzack_research.preamble.categories.sets.owned_sets import Sets
 from dzack_research.preamble.categories.rings.rings import engine_ring
 if TYPE_CHECKING:
     from sage.rings.ring import Ring

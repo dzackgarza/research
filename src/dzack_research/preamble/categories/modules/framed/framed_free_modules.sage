@@ -13,9 +13,9 @@ ordered.  Finite ordered free modules are the specialization implemented by
 
 
 from typing import TYPE_CHECKING
-from sage_lattice_category_spike.lexicon import Element
+from dzack_research.preamble.lexicon import Element
 if TYPE_CHECKING:
-    from sage_lattice_category_spike.lexicon import Module
+    from dzack_research.preamble.lexicon import Module
 
 from sage.categories.modules import Modules
 from dzack_research.preamble.categories.sets.sets import _as_set
@@ -40,13 +40,13 @@ from sage.structure.parent import Parent
 from sage.structure.unique_representation import UniqueRepresentation
 from sage.structure.richcmp import richcmp
 
-from sage_lattice_category_spike.objects.sets import Sets
-from sage_lattice_category_spike.objects.underlying_sets import UnderlyingSet
+from dzack_research.preamble.categories.sets.owned_sets import Sets
+from dzack_research.preamble.categories.sets.underlying_sets import UnderlyingSet
 
 if TYPE_CHECKING:
     # The ordered-set noun is type-only: the preamble loads into one
     # shared namespace and nothing named OrderedSet may bind there.
-    from sage_lattice_category_spike.lexicon import OrderedSet
+    from dzack_research.preamble.lexicon import OrderedSet
 
 
 class FramedFreeModules(OwnedCategoryOverBaseRing):

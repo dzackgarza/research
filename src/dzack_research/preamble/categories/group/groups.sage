@@ -2,15 +2,15 @@ r"""Owned categories of groups."""
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from sage_lattice_category_spike.lexicon import Cardinal
-    from sage_lattice_category_spike.lexicon import Group
-    from sage_lattice_category_spike.lexicon import OrderedSet
+    from dzack_research.preamble.categories.sets.cardinals import Cardinal
+    from dzack_research.preamble.lexicon import Group
+    from dzack_research.preamble.lexicon import OrderedSet
 
 if TYPE_CHECKING:
     from typing import Callable
     from sage.rings.integer import Integer
 
-from sage_lattice_category_spike.objects.sets import Sets
+from dzack_research.preamble.categories.sets.owned_sets import Sets, placement_of
 if TYPE_CHECKING:
     from sage.categories.morphism import Morphism
 
@@ -330,7 +330,7 @@ class OwnedGroups(Category):
             family = SageGroups().ParentMethods.group_generators(self)
             if family.category().is_subcategory(Sets().TotallyOrdered()):
                 return family
-            return refine(family, Sets().TotallyOrdered())
+            return refine(family, placement_of(family).TotallyOrdered())
 
         def number_of_group_generators(self: Self) -> "Cardinal":
             r"""Return \(|S|\), which is a cardinal and may be infinite."""

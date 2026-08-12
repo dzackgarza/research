@@ -4,10 +4,10 @@ r"""Bilinear and quadratic forms as native Sage morphisms."""
 from sage.rings.rational_field import QQ as SageQQ
 from collections.abc import Callable
 from typing import TYPE_CHECKING
-from sage_lattice_category_spike.lexicon import Element
+from dzack_research.preamble.lexicon import Element
 if TYPE_CHECKING:
-    from sage_lattice_category_spike.lexicon import Module
-    from sage_lattice_category_spike.lexicon import Ring
+    from dzack_research.preamble.lexicon import Module
+    from dzack_research.preamble.lexicon import Ring
 
 if TYPE_CHECKING:
     from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormMorphism
@@ -17,20 +17,20 @@ from sage.rings.integer import Integer
 from sage.categories.homset import Homset
 from sage.categories.homset import Hom
 from sage.categories.morphism import Morphism, SetMorphism
-from sage_lattice_category_spike.objects.underlying_sets import UnderlyingSet
+from dzack_research.preamble.categories.sets.underlying_sets import UnderlyingSet
 from sage.matrix.matrix0 import Matrix
 from sage.structure.parent import Parent
-from sage_lattice_category_spike.lexicon import GramMatrix
-from sage_lattice_category_spike.objects.cardinals import Cardinal
+from dzack_research.preamble.lexicon import GramMatrix
+from dzack_research.preamble.categories.sets.cardinals import Cardinal
 from sage.rings.integer_ring import ZZ as SageZZ
 
-from sage_lattice_category_spike.objects.sets import Sets
+from dzack_research.preamble.categories.sets.owned_sets import Sets
 
 
 if TYPE_CHECKING:
     # The ordered-set noun is type-only: the preamble loads into one
     # shared namespace and nothing named OrderedSet may bind there.
-    from sage_lattice_category_spike.lexicon import OrderedSet
+    from dzack_research.preamble.lexicon import OrderedSet
 
 
 def _framing_rank(module_generating_set: "OrderedSet") -> Integer:

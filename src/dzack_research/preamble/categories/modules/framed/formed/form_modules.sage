@@ -4,9 +4,8 @@ r"""Modules equipped with a bilinear or quadratic form."""
 from sage.rings.integer_ring import ZZ as SageZZ
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from sage_lattice_category_spike.lexicon import Lattice
-    from sage_lattice_category_spike.lexicon import Module
-    from sage_lattice_category_spike.lexicon import Vector
+    from dzack_research.preamble.lexicon import Module
+    from dzack_research.preamble.lexicon import Vector
 
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import FramingMorphism
 from sage.categories.groups import Groups
@@ -34,16 +33,17 @@ from sage.sets.totally_ordered_finite_set import TotallyOrderedFiniteSet
 from sage.structure.element import Element, ModuleElement
 from sage.structure.parent import Parent
 from sage.structure.richcmp import richcmp
-from sage_lattice_category_spike.lexicon import GramMatrix, MorphismMatrix
-from sage_lattice_category_spike.objects.cardinals import Cardinal
+from dzack_research.preamble.lexicon import GramMatrix
+from dzack_research.preamble.categories.modules.module_morphisms.morphism_matrices import MorphismMatrix
+from dzack_research.preamble.categories.sets.cardinals import Cardinal
 
-from sage_lattice_category_spike.objects.sets import Sets
-from sage_lattice_category_spike.objects.underlying_sets import UnderlyingSet
+from dzack_research.preamble.categories.sets.owned_sets import Sets
+from dzack_research.preamble.categories.sets.underlying_sets import UnderlyingSet
 
 if TYPE_CHECKING:
     # The ordered-set noun is type-only: the preamble loads into one
     # shared namespace and nothing named OrderedSet may bind there.
-    from sage_lattice_category_spike.lexicon import OrderedSet
+    from dzack_research.preamble.lexicon import OrderedSet
 
 
 def _finite_rank(module_generating_set: TotallyOrderedFiniteSet) -> Integer:
@@ -561,13 +561,9 @@ class FinitelyGeneratedFreeFormModules(OwnedCategoryOverBaseRing):
 
             Always defined, and the map the radical and nondegeneracy are
             about: $b(v,-)$ is a functional on $L$ whatever the form does,
-            and its matrix in the dual basis is $G$.
-
-            A morphism of *modules*: $c$ is linear in $v$ and the form plays
-            no part in its domain being a module, so it is sited on the
-            underlying module.  Its kernel is then a plain module subobject
-            -- which is also what keeps the radical from re-entering the
-            formed constructors it is asked about.
+            and its matrix in the dual basis is $G$.  The domain is this
+            module -- a formed module *is* a module, and $c$ leaves from it,
+            not from some stored carrier.
             """
             # Local: a module-level import here would close a cycle; by call time this module is built.
             from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
@@ -587,7 +583,7 @@ class FinitelyGeneratedFreeFormModules(OwnedCategoryOverBaseRing):
                     ),
                 )
             )
-            homset = module_homset(self.forget_form(), dual_module)
+            homset = module_homset(self, dual_module)
             return homset.zero() if not assignment else homset(assignment)
 
         @cached_method
@@ -604,11 +600,16 @@ class FinitelyGeneratedFreeFormModules(OwnedCategoryOverBaseRing):
         def is_nondegenerate(self: Self) -> bool:
             r"""Return whether $\operatorname{rad}(L)=0$, i.e. $c$ is injective.
 
-            The radical being the zero object, asked of it.  Not that it has
-            rank $0$ -- a nonzero torsion module has rank $0$ too, and a
-            kernel is not obliged to be free.
+            Asked of the correlation morphism itself: $\ker c=0$ *is*
+            injectivity of $c$, so the question is decided on the arrow
+            without constructing the kernel object.  That is what lets the
+            axiom gate and lattice-birth routing ask it of every candidate
+            -- including the radical's own submodule as it is built --
+            without a construction asking for itself.  :meth:`radical`
+            still constructs $\ker c$ as an honest subobject for whoever
+            wants the object rather than the answer.
             """
-            return self.radical().is_zero()
+            return bool(self.correlation_morphism().is_injective())
 
 
 class FormModuleElement(ModuleElement):
@@ -1073,7 +1074,7 @@ class FormAutomorphismGroup(FormHomset):
         )
 
 
-def correlation_of(lattice: "Lattice") -> FormMorphism:
+def correlation_of(lattice: "FormModule") -> FormMorphism:
     r"""Return \(c:L\to L^\vee\), \(v\mapsto b(v,-)\)."""
     # Local: a module-level import here would close a cycle; by call time this module is built.
     from dzack_research.preamble.utilities import zipsum

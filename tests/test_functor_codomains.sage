@@ -14,7 +14,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleAutomorphismGroup
-    from sage_lattice_category_spike.lexicon import OrderedSet
+    from dzack_research.preamble.lexicon import OrderedSet
 
 from dzack_research.preamble.install import install_preamble
 install_preamble(globals())

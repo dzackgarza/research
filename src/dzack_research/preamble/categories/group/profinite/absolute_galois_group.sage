@@ -21,7 +21,7 @@ concrete objects, not the only interface.
 """
 
 from sage.rings.integer_ring import ZZ as SageZZ
-from sage_lattice_category_spike.lexicon import Element
+from dzack_research.preamble.lexicon import Element
 from sage.arith.misc import next_prime
 from dzack_research.preamble.categories.group.profinite.absolute_galois_group_element import AbsoluteGaloisGroupElement
 from sage.categories.fields import Fields as SageFields

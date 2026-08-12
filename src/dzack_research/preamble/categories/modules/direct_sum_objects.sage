@@ -2,8 +2,8 @@ r"""Objects equipped with a chosen ordered direct-sum decomposition."""
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from sage_lattice_category_spike.lexicon import Element
-    from sage_lattice_category_spike.lexicon import Module
+    from dzack_research.preamble.lexicon import Element
+    from dzack_research.preamble.lexicon import Module
 
 from dzack_research.preamble.categories.sets.sets import finite_ordered_set
 from collections.abc import Iterable
@@ -12,12 +12,12 @@ from typing import Self, TYPE_CHECKING
 from sage.categories.category import Category
 from sage.structure.parent import Parent
 
-from sage_lattice_category_spike.objects.sets import Sets
+from dzack_research.preamble.categories.sets.owned_sets import Sets
 
 if TYPE_CHECKING:
     # The ordered-set noun is type-only: the preamble loads into one
     # shared namespace and nothing named OrderedSet may bind there.
-    from sage_lattice_category_spike.lexicon import OrderedSet
+    from dzack_research.preamble.lexicon import OrderedSet
 
 
 def _is_subobject(source: "Module") -> bool:

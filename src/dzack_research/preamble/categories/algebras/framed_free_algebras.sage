@@ -16,10 +16,10 @@ The exposed *algebra* generating set is ``S``; the module generators are
 
 from typing import Callable
 from typing import TYPE_CHECKING
-from sage_lattice_category_spike.lexicon import Element
-from sage_lattice_category_spike.lexicon import Module
+from dzack_research.preamble.lexicon import Element
+from dzack_research.preamble.lexicon import Module
 if TYPE_CHECKING:
-    from sage_lattice_category_spike.lexicon import Cardinal
+    from dzack_research.preamble.categories.sets.cardinals import Cardinal
 
 from dzack_research.preamble.categories.algebras.algebras import FramedAlgebras
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules
@@ -62,13 +62,13 @@ from sage.structure.unique_representation import UniqueRepresentation
 
 assert "_as_set" in globals(), "Framed free algebras requires Set() from the preamble"
 
-from sage_lattice_category_spike.objects.sets import Sets
-from sage_lattice_category_spike.objects.underlying_sets import UnderlyingSet
+from dzack_research.preamble.categories.sets.owned_sets import Sets
+from dzack_research.preamble.categories.sets.underlying_sets import UnderlyingSet
 
 if TYPE_CHECKING:
     # The ordered-set noun is type-only: the preamble loads into one
     # shared namespace and nothing named OrderedSet may bind there.
-    from sage_lattice_category_spike.lexicon import OrderedSet
+    from dzack_research.preamble.lexicon import OrderedSet
 
 
 assert "FramedAlgebras" in globals(), (

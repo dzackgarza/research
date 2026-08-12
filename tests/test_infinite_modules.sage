@@ -13,7 +13,7 @@ got them should not be expected to answer.
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from sage_lattice_category_spike.lexicon import OrderedSet
+    from dzack_research.preamble.lexicon import OrderedSet
 
 
 def _ensure_preamble() -> None:

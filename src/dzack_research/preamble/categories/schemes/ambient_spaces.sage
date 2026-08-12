@@ -19,7 +19,7 @@ import sage.schemes.projective.projective_space as _sage_projective
 if TYPE_CHECKING:
     # The ordered-set noun is type-only: the preamble loads into one
     # shared namespace and nothing named OrderedSet may bind there.
-    from sage_lattice_category_spike.lexicon import OrderedSet
+    from dzack_research.preamble.lexicon import OrderedSet
 
 
 _NativeAffineSpace = _sage_affine.AffineSpace

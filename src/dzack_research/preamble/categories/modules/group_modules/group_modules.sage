@@ -1,12 +1,12 @@
 r"""Finite-group representations on finitely generated free modules."""
 
 from typing import TYPE_CHECKING
-from sage_lattice_category_spike.lexicon import Element
+from dzack_research.preamble.lexicon import Element
 if TYPE_CHECKING:
-    from sage_lattice_category_spike.lexicon import Group
-    from sage_lattice_category_spike.lexicon import GroupElement
-    from sage_lattice_category_spike.lexicon import Module
-    from sage_lattice_category_spike.lexicon import Vector
+    from dzack_research.preamble.lexicon import Group
+    from dzack_research.preamble.lexicon import GroupElement
+    from dzack_research.preamble.lexicon import Module
+    from dzack_research.preamble.lexicon import Vector
 
 from sage.rings.number_field.number_field import CyclotomicField
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import FramingMorphism
@@ -33,15 +33,16 @@ from sage.structure.element import ModuleElement
 from sage.structure.parent import Parent
 from sage.structure.richcmp import richcmp
 
-from sage_lattice_category_spike.objects.cardinals import Cardinal
-from sage_lattice_category_spike.lexicon import Character, MorphismMatrix
-from sage_lattice_category_spike.objects.sets import Sets
-from sage_lattice_category_spike.objects.underlying_sets import UnderlyingSet
+from dzack_research.preamble.categories.sets.cardinals import Cardinal
+from dzack_research.preamble.categories.modules.group_modules.characters import Character
+from dzack_research.preamble.categories.modules.module_morphisms.morphism_matrices import MorphismMatrix
+from dzack_research.preamble.categories.sets.owned_sets import Sets
+from dzack_research.preamble.categories.sets.underlying_sets import UnderlyingSet
 
 if TYPE_CHECKING:
     # The ordered-set noun is type-only: the preamble loads into one
     # shared namespace and nothing named OrderedSet may bind there.
-    from sage_lattice_category_spike.lexicon import OrderedSet
+    from dzack_research.preamble.lexicon import OrderedSet
 
 
 class GroupModules(Category):

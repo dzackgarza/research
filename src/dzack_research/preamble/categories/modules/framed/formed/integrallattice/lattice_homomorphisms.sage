@@ -2,7 +2,7 @@ r"""Form-preserving homomorphisms of integral lattices."""
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from sage_lattice_category_spike.lexicon import Module
+    from dzack_research.preamble.lexicon import Module
 
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormHomset
 if TYPE_CHECKING:
@@ -12,7 +12,7 @@ from typing import Self
 
 from sage.categories.category import Category
 
-from sage_lattice_category_spike.objects.sets import Sets
+from dzack_research.preamble.categories.sets.owned_sets import Sets
 
 
 class LatticeHomomorphisms(Category):

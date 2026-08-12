@@ -17,22 +17,22 @@ from dzack_research.preamble.categories.rings.rings import ℤ
 from sage.rings.integer_ring import ZZ as SageZZ
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from sage_lattice_category_spike.lexicon import Module
+    from dzack_research.preamble.lexicon import Module
     from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormMorphism
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
-    from sage_lattice_category_spike.lexicon import MorphismMatrix
+    from dzack_research.preamble.categories.modules.module_morphisms.morphism_matrices import MorphismMatrix
 
 from sage.misc.misc_c import prod
 from typing import Self, TYPE_CHECKING
 
 from sage.categories.category import Category
 
-from sage_lattice_category_spike.objects.sets import Sets
+from dzack_research.preamble.categories.sets.owned_sets import Sets
 
 if TYPE_CHECKING:
     # The ordered-set noun is type-only: the preamble loads into one
     # shared namespace and nothing named OrderedSet may bind there.
-    from sage_lattice_category_spike.lexicon import OrderedSet
+    from dzack_research.preamble.lexicon import OrderedSet
 
 
 class Subobjects(Category):

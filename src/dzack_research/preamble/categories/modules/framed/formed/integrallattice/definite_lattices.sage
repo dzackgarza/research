@@ -15,7 +15,7 @@ EXAMPLES::
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from sage_lattice_category_spike.lexicon import Module
+    from dzack_research.preamble.lexicon import Module
 
 from typing import Self
 

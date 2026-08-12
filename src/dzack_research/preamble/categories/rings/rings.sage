@@ -29,10 +29,10 @@ base category class by name, where it finds the preamble's groups node.
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from sage_lattice_category_spike.lexicon import Element
-    from sage_lattice_category_spike.lexicon import Group
-    from sage_lattice_category_spike.lexicon import Module
-    from sage_lattice_category_spike.lexicon import OrderedSet
+    from dzack_research.preamble.lexicon import Element
+    from dzack_research.preamble.lexicon import Group
+    from dzack_research.preamble.lexicon import Module
+    from dzack_research.preamble.lexicon import OrderedSet
 
 if TYPE_CHECKING:
     from sage.rings.ring import Ring
@@ -56,7 +56,7 @@ from sage.rings.integer import Integer as SageInteger
 # later binding can take them away.
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
-from sage_lattice_category_spike.objects.cardinals import Cardinal
+from dzack_research.preamble.categories.sets.cardinals import Cardinal
 from sage.structure.parent import Parent
 
 

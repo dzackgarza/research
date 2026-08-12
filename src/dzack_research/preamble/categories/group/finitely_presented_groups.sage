@@ -1,9 +1,9 @@
 r"""Finitely presented groups."""
 
-from sage_lattice_category_spike.lexicon import Element
+from dzack_research.preamble.lexicon import Element
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from sage_lattice_category_spike.lexicon import Group
+    from dzack_research.preamble.lexicon import Group
 
 from dzack_research.preamble.categories.group.groups import OwnedFinitelyPresentedGroups
 from dzack_research.preamble.refine import hook_post_init

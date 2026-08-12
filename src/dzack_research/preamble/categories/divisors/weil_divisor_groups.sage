@@ -3,7 +3,7 @@ r"""Weil divisor groups."""
 from sage.rings.integer_ring import ZZ as SageZZ
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from sage_lattice_category_spike.lexicon import Module
+    from dzack_research.preamble.lexicon import Module
 
 from dzack_research.preamble.categories.divisors.divisor_groups import DivisorGroups
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules

@@ -7,8 +7,8 @@ R-module on S.
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from sage_lattice_category_spike.lexicon import Element
-    from sage_lattice_category_spike.lexicon import Module
+    from dzack_research.preamble.lexicon import Element
+    from dzack_research.preamble.lexicon import Module
 
 from sage.categories.morphism import Morphism
 if TYPE_CHECKING:
@@ -250,7 +250,7 @@ def finite_algebra_generators(algebra: "Parent") -> tuple:
     is an accident reported as a missing attribute rather than the
     mathematical refusal this owes its caller.
     """
-    from sage_lattice_category_spike.objects.sets import Sets
+    from dzack_research.preamble.categories.sets.owned_sets import Sets
 
     assert hasattr(algebra, "algebra_generating_set"), (
         f"{algebra} cannot name a generating set, so what it generates is "

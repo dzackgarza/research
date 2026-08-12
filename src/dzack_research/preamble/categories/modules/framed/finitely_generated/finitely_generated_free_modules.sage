@@ -2,8 +2,8 @@ r"""Free modules on finite totally ordered sets."""
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from sage_lattice_category_spike.lexicon import Module
-    from sage_lattice_category_spike.lexicon import Vector
+    from dzack_research.preamble.lexicon import Module
+    from dzack_research.preamble.lexicon import Vector
 
 from sage.rings.integer_ring import ZZ as SageZZ
 from dzack_research.preamble.categories.sets.sets import _as_set
@@ -29,15 +29,15 @@ from sage.rings.integer import Integer as SageInteger
 from sage.structure.element import Element, ModuleElement
 from sage.structure.parent import Parent
 from sage.structure.richcmp import richcmp
-from sage_lattice_category_spike.objects.cardinals import Cardinal
+from dzack_research.preamble.categories.sets.cardinals import Cardinal
 
-from sage_lattice_category_spike.lexicon import MorphismMatrix
-from sage_lattice_category_spike.objects.sets import Sets
+from dzack_research.preamble.categories.modules.module_morphisms.morphism_matrices import MorphismMatrix
+from dzack_research.preamble.categories.sets.owned_sets import Sets
 
 if TYPE_CHECKING:
     # The ordered-set noun is type-only: the preamble loads into one
     # shared namespace and nothing named OrderedSet may bind there.
-    from sage_lattice_category_spike.lexicon import OrderedSet
+    from dzack_research.preamble.lexicon import OrderedSet
 
 
 def _finite_rank(module_generating_set: "OrderedSet") -> int:

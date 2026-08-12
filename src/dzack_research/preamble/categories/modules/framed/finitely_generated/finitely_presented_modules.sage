@@ -9,10 +9,10 @@ declaring ``FinitelyGeneratedModules(R)`` in its supercategories.
 from typing import TYPE_CHECKING
 from dzack_research.preamble.utilities import zipsum
 if TYPE_CHECKING:
-    from sage_lattice_category_spike.lexicon import Module
-    from sage_lattice_category_spike.lexicon import ModuleElement
-    from sage_lattice_category_spike.lexicon import OrderedSet
-    from sage_lattice_category_spike.lexicon import Vector
+    from dzack_research.preamble.lexicon import Module
+    from dzack_research.preamble.lexicon import ModuleElement
+    from dzack_research.preamble.lexicon import OrderedSet
+    from dzack_research.preamble.lexicon import Vector
 
 from dzack_research.preamble.categories.sets.sets import finite_ordered_set
 from dzack_research.preamble.refine import refine
@@ -39,10 +39,10 @@ from sage.structure.element import Element
 from sage.structure.parent import Parent
 from sage.structure.richcmp import richcmp
 
-from sage_lattice_category_spike.objects.cardinals import Cardinal
-from sage_lattice_category_spike.lexicon import MorphismMatrix
-from sage_lattice_category_spike.objects.sets import Sets
-from sage_lattice_category_spike.objects.underlying_sets import UnderlyingSet
+from dzack_research.preamble.categories.sets.cardinals import Cardinal
+from dzack_research.preamble.categories.modules.module_morphisms.morphism_matrices import MorphismMatrix
+from dzack_research.preamble.categories.sets.owned_sets import Sets
+from dzack_research.preamble.categories.sets.underlying_sets import UnderlyingSet
 
 
 def _presented_on(module: "Module", relations: MorphismMatrix) -> "FinitelyPresentedModule":

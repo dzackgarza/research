@@ -35,14 +35,14 @@ EXAMPLES::
 """
 
 from typing import TYPE_CHECKING
-from sage_lattice_category_spike.objects.underlying_sets import UnderlyingSet
-from sage_lattice_category_spike.lexicon import MorphismMatrix
+from dzack_research.preamble.categories.sets.underlying_sets import UnderlyingSet
+from dzack_research.preamble.categories.modules.module_morphisms.morphism_matrices import MorphismMatrix
 if TYPE_CHECKING:
-    from sage_lattice_category_spike.lexicon import Element
-    from sage_lattice_category_spike.lexicon import Lattice
-    from sage_lattice_category_spike.lexicon import LatticeName
-    from sage_lattice_category_spike.lexicon import Module
-    from sage_lattice_category_spike.lexicon import ModuleElement
+    from dzack_research.preamble.lexicon import Element
+    from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModule
+    from dzack_research.preamble.lexicon import LatticeName
+    from dzack_research.preamble.lexicon import Module
+    from dzack_research.preamble.lexicon import ModuleElement
 
 from sage.categories.morphism import SetMorphism
 from sage.quadratic_forms.genera.genus import Genus
@@ -86,13 +86,13 @@ from dzack_research.preamble.categories.rings.rings import ℤ
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 
-from sage_lattice_category_spike.lexicon import GramMatrix
-from sage_lattice_category_spike.objects.sets import Sets
+from dzack_research.preamble.lexicon import GramMatrix
+from dzack_research.preamble.categories.sets.owned_sets import Sets
 
 if TYPE_CHECKING:
     # The ordered-set noun is type-only: the preamble loads into one
     # shared namespace and nothing named OrderedSet may bind there.
-    from sage_lattice_category_spike.lexicon import OrderedSet
+    from dzack_research.preamble.lexicon import OrderedSet
 
 
 class FinitelyGeneratedIntegralLattices(CategoryWithAxiom_over_base_ring):
@@ -307,7 +307,7 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             dual_element = self.correlation()(element) / divisibility
             return self.discriminant_projection()(dual_element)
 
-        def glue(self: Self, *elements: "OrderedSet") -> "Lattice":
+        def glue(self: Self, *elements: "OrderedSet") -> "FormModule":
             r"""Return the even overlattice glued along discriminant elements.
 
             The inputs are elements of the discriminant form $A_L = L^\vee/L$
@@ -409,7 +409,7 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
 
         # ---- isometry ----
 
-        def is_isometric(self: Self, other: "Lattice") -> bool:
+        def is_isometric(self: Self, other: "FormModule") -> bool:
             r"""Return whether two integral lattices are isometric."""
             from sage.quadratic_forms.binary_qf import BinaryQF
             from sage.quadratic_forms.quadratic_form import QuadraticForm
@@ -444,7 +444,7 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             self: Self,
             gram: "GramMatrix",
             module_generating_set: "OrderedSet",
-        ) -> "Lattice":
+        ) -> "FormModule":
             r"""Return the lattice on ``gram``: a sublattice of a lattice is one.
 
             The form restricted to a subobject is still $\mathbb Z$-valued, so
@@ -700,7 +700,7 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
 
         def discriminant_group(
             self: Self, s: "Element" = 0, *, reduce_trivial: bool = False
-        ) -> "Lattice":
+        ) -> "FormModule":
             r"""Return $A_L=\operatorname{coker}(c: L\to L^\vee)$ with the form $L$ supports.
 
             $q$ when $L$ is even, $b$ alone when it is odd -- two different
@@ -852,7 +852,7 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             self: Self,
             summands: "OrderedSet",
             names: "OrderedSet" = None,
-        ) -> "Lattice":
+        ) -> "FormModule":
             r"""Construct an orthogonal direct sum with its ordered subobjects.
 
             A direct sum is indexed by a family, so the summands arrive as
@@ -863,7 +863,7 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             construction: the sum is the lattice on that matrix, and its
             decomposition is found the way every lattice's is.
             """
-            def orthogonal_sum(left: "Element", right: "Element") -> "Lattice":
+            def orthogonal_sum(left: "Element", right: "Element") -> "FormModule":
                 expected = (
                     _gram_component_ranks(left.gram_matrix())
                     + _gram_component_ranks(right.gram_matrix())
@@ -1049,7 +1049,7 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             r"""Return $(L^G)^{\perp L}\hookrightarrow L$ for the representation $\rho$."""
             return self.with_action(action).formed_coinvariants()
 
-        def _induced_lattice(self: Self, coordinate_basis: "MorphismMatrix") -> "Lattice":
+        def _induced_lattice(self: Self, coordinate_basis: "MorphismMatrix") -> "FormModule":
             """Return the integral lattice with Gram form induced on ``coordinate_basis``."""
             # Local: a module-level import here would close a cycle; by call time this module is built.
             from dzack_research.preamble.categories.sets.sets import finite_ordered_set
@@ -1096,17 +1096,17 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
                 for slot in spec
             )
 
-        def __add__(self: Self, other: object) -> "Lattice":
+        def __add__(self: Self, other: object) -> "FormModule":
             r"""``L + M`` as the orthogonal direct sum (for ``sum([...])``)."""
             return self.direct_sum([other])
 
-        def __radd__(self: Self, other: object) -> "Lattice":
+        def __radd__(self: Self, other: object) -> "FormModule":
             """Allow ``sum([L, M, ...])`` (Python starts from ``0``)."""
             if other == 0:
                 return self
             return NotImplemented
 
-        def __matmul__(self: Self, other: "Lattice") -> "Lattice":
+        def __matmul__(self: Self, other: "FormModule") -> "FormModule":
             r"""``L @ M`` as the tensor product lattice \(L\otimes_{\mathbb Z}M\).
 
             The form is determined by what a form on a tensor product *is*:
@@ -1440,7 +1440,7 @@ def _expand_ellipsis_names(names: tuple[str, ...]) -> tuple[str, ...]:
         expanded.extend(f"{stem}{i}{suffix}" for i in range(start + 1, stop))
     return tuple(expanded)
 
-def _apply_names(lattice: "Lattice", names: "OrderedSet") -> "Lattice":
+def _apply_names(lattice: "FormModule", names: "OrderedSet") -> "FormModule":
     r"""Expand a declared name tuple onto a lattice, checking rank."""
     declared = tuple(names)
     expanded = _expand_ellipsis_names(declared)
@@ -1452,7 +1452,7 @@ def _apply_names(lattice: "Lattice", names: "OrderedSet") -> "Lattice":
     return lattice
 
 
-def _apply_optional_names(lattice: "Lattice", names: "OrderedSet") -> "Lattice":
+def _apply_optional_names(lattice: "FormModule", names: "OrderedSet") -> "FormModule":
     r"""Apply an explicitly supplied finite name family."""
     match names:
         case None:
@@ -1462,7 +1462,7 @@ def _apply_optional_names(lattice: "Lattice", names: "OrderedSet") -> "Lattice":
         case _:
             assert False, "lattice names are supplied as a finite tuple or list"
 
-def _subdivide_gram(L: "Lattice", *cuts: "Integer") -> None:
+def _subdivide_gram(L: "FormModule", *cuts: "Integer") -> None:
     r"""Subdivide a lattice's Gram matrix, handling immutability."""
     form = L.form()
     gram = form.gram_matrix()
@@ -1473,7 +1473,7 @@ def _subdivide_gram(L: "Lattice", *cuts: "Integer") -> None:
         form._gram_matrix = gram
     gram.subdivide(*cuts)
 
-def _decompose_lattice(L: "Lattice") -> "DirectSumObject":
+def _decompose_lattice(L: "FormModule") -> "DirectSumObject":
     r"""Split \(L\) along its generators and record the summands.
 
     Decomposability here is a property of the chosen generating set: \(L\)
@@ -1529,7 +1529,7 @@ def _gram_component_ranks(gram: "GramMatrix") -> tuple:
     return tuple(end - start for start, end in zip([0] + cuts, cuts + [gram.nrows()]))
 
 
-def _summand_ranks(L: "Lattice") -> tuple[Integer, ...]:
+def _summand_ranks(L: "FormModule") -> tuple[Integer, ...]:
     r"""Return the ranks of \(L\)'s summands, or its own rank when indecomposable."""
     if L.is_decomposable():
         return tuple(summand.rank() for summand in L.summands())
@@ -1547,7 +1547,7 @@ def _gram_key(gram: "GramMatrix") -> tuple:
     return tuple(tuple(row) for row in gram.rows())
 
 
-def register_indecomposable(name: str, lattice: "Lattice") -> None:
+def register_indecomposable(name: str, lattice: "FormModule") -> None:
     r"""Register *lattice*'s Gram matrix under the LaTeX *name*.
 
     Matching is Gram equality, not isometry: a block **is** the named lattice
@@ -1596,7 +1596,7 @@ def _summand_name(block: "GramMatrix") -> str | None:
             return f"{untwisted}({scale})"
 
 
-def _decomposition_latex(L: "Lattice") -> str | None:
+def _decomposition_latex(L: "FormModule") -> str | None:
     r"""Return ``N_1 \oplus N_2 \oplus ...`` for *L*, or ``None`` if it has no summands.
 
     Unrecognized blocks fall back to a positional name; a lattice whose blocks
@@ -1626,7 +1626,7 @@ def _format_disc_latex(disc: int) -> str:
     f_latex = str(_latex_fn(f))
     return f"{disc} = {f_latex}" if f_latex != str(disc) else str(disc)
 
-def refine_one_lattice(lattice: "Lattice") -> None:
+def refine_one_lattice(lattice: "FormModule") -> None:
     r"""Refine a single integral lattice into the appropriate categories.
 
     Always refines into ``IntegralLattices``.  If signature is ``(n, 1)``,
@@ -1711,7 +1711,7 @@ def _integral_lattice_with_names(
     described: "GramMatrix | LatticeName",
     names: "OrderedSet" = None,
     module_generating_set: "OrderedSet" = None,
-) -> "Lattice":
+) -> "FormModule":
     r"""Return the integral lattice these arguments describe.
 
     A Gram matrix or a name, which is a matrix once it is read.  Nothing here

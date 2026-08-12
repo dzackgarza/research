@@ -18,10 +18,10 @@ it.  The field answers the first; its elements answer the second.
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from sage_lattice_category_spike.lexicon import Element
-    from sage_lattice_category_spike.lexicon import Functor
-    from sage_lattice_category_spike.lexicon import Group
-    from sage_lattice_category_spike.lexicon import Vector
+    from dzack_research.preamble.lexicon import Element
+    from dzack_research.preamble.categories.functors.algebra_base_change import AlgebraBaseChangeFunctor
+    from dzack_research.preamble.lexicon import Group
+    from dzack_research.preamble.lexicon import Vector
 
 from sage.rings.rational_field import QQ as SageQQ
 if TYPE_CHECKING:
@@ -214,7 +214,7 @@ class OwnedNumberFields(Category):
                 (over_the_base,),
             )
 
-        def base_change_functor(self, base_ring: "Ring" = SageZZ) -> "Functor":
+        def base_change_functor(self, base_ring: "Ring" = SageZZ) -> "AlgebraBaseChangeFunctor":
             r"""Return \(F=-\otimes_R\operatorname{Frac}(R)\), with \(F(A)=K\).
 
             The functor itself, because that is what relates this field to the

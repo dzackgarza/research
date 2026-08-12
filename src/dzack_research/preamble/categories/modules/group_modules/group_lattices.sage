@@ -2,13 +2,13 @@ r"""Integral lattices equipped with a group action by isometries."""
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from sage_lattice_category_spike.lexicon import Character
-    from sage_lattice_category_spike.lexicon import Element
-    from sage_lattice_category_spike.lexicon import Group
-    from sage_lattice_category_spike.lexicon import Lattice
-    from sage_lattice_category_spike.lexicon import Module
-    from sage_lattice_category_spike.lexicon import ModuleElement
-    from sage_lattice_category_spike.lexicon import MorphismMatrix
+    from dzack_research.preamble.categories.modules.group_modules.characters import Character
+    from dzack_research.preamble.lexicon import Element
+    from dzack_research.preamble.lexicon import Group
+    from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModule
+    from dzack_research.preamble.lexicon import Module
+    from dzack_research.preamble.lexicon import ModuleElement
+    from dzack_research.preamble.categories.modules.module_morphisms.morphism_matrices import MorphismMatrix
 
 from sage.rings.integer_ring import ZZ as SageZZ
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModule
@@ -32,7 +32,7 @@ from sage.categories.morphism import SetMorphism
 if TYPE_CHECKING:
     # The ordered-set noun is type-only: the preamble loads into one
     # shared namespace and nothing named OrderedSet may bind there.
-    from sage_lattice_category_spike.lexicon import OrderedSet
+    from dzack_research.preamble.lexicon import OrderedSet
 
 
 class GroupLattices(Category):
@@ -351,7 +351,7 @@ def _install_group_lattice_structure(formed_module: "Module") -> None:
 
 
 def _formed_group_subobject(
-    group_lattice_: "Lattice",
+    group_lattice_: "FormModule",
     representation_subobject: "Subobject",
 ) -> "Subobject":
     r"""Equip a \(G\)-submodule with the pulled-back form and its inclusion."""
@@ -377,7 +377,7 @@ def _formed_group_subobject(
     return Subobject(embedding)
 
 
-def group_lattice(lattice: "Lattice", action: GroupAction) -> FormModule:
+def group_lattice(lattice: "FormModule", action: GroupAction) -> FormModule:
     r"""Equip ``lattice`` with the specified action by isometries."""
     # Local: a module-level import would close a cycle; the module is built by the time this runs.
     from dzack_research.preamble.categories.modules.framed.formed.integrallattice.integral_lattices import IntegralLattices

@@ -22,7 +22,7 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from typing import TYPE_CHECKING
 from dzack_research.preamble.utilities import zipsum
 if TYPE_CHECKING:
-    from sage_lattice_category_spike.lexicon import Group
+    from dzack_research.preamble.lexicon import Group
 
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModule
 from dzack_research.preamble.categories.sets.sets import finite_ordered_set
@@ -43,15 +43,15 @@ from sage.matrix.special import diagonal_matrix
 from sage.misc.cachefunc import cached_method
 from sage.structure.parent import Parent
 
-from sage_lattice_category_spike.lexicon import MorphismMatrix
-from sage_lattice_category_spike.objects.sets import Sets
+from dzack_research.preamble.categories.modules.module_morphisms.morphism_matrices import MorphismMatrix
+from dzack_research.preamble.categories.sets.owned_sets import Sets
 
 if TYPE_CHECKING:
     from sage.rings.ideal import Ideal_pid
     # The ordered-set noun is type-only: the preamble loads into one
     # shared namespace and nothing named OrderedSet may bind there.
-    from sage_lattice_category_spike.lexicon import OrderedSet
-    from sage_lattice_category_spike.lexicon import Vector
+    from dzack_research.preamble.lexicon import OrderedSet
+    from dzack_research.preamble.lexicon import Vector
 
 
 def _is_additive(group: "Group") -> bool:

@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 
 if TYPE_CHECKING:
     from sage.categories.category import Category
-    from sage_lattice_category_spike.lexicon import Element
+    from dzack_research.preamble.lexicon import Element
     from sage.rings.ring import Ring
 
 from sage.categories.homset import Hom

@@ -29,14 +29,15 @@ from sage.structure.parent import Parent
 from sage.structure.unique_representation import UniqueRepresentation
 from sage.misc.cachefunc import cached_function
 
-from sage_lattice_category_spike.objects.cardinals import Cardinal
-from sage_lattice_category_spike import lexicon
-from sage_lattice_category_spike.objects.sets import Sets
+from dzack_research.preamble.categories.sets.cardinals import Cardinal
+from dzack_research.preamble import lexicon
+from dzack_research.preamble.categories.sets.owned_sets import Sets, placement_of
 
 if TYPE_CHECKING:
     # Type-only: the preamble loads into one shared namespace and nothing
     # named OrderedSet may bind there.
-    from sage_lattice_category_spike.lexicon import Cardinal, OrderedSet
+    from dzack_research.preamble.lexicon import OrderedSet
+    from dzack_research.preamble.categories.sets.cardinals import Cardinal
 
 
 def Set(source: Parent | Iterable[Element]) -> "lexicon.Set":
@@ -54,7 +55,7 @@ def Set(source: Parent | Iterable[Element]) -> "lexicon.Set":
             )
     if result.category().is_subcategory(Sets()):
         return result
-    return refine(result, Sets())
+    return refine(result, placement_of(result))
 
 
 def ConditionSet(
@@ -63,10 +64,8 @@ def ConditionSet(
     names: "OrderedSet | None" = None,
 ) -> "lexicon.Set":
     r"""Construct a predicate-defined object of the owned category of sets."""
-    return refine(
-        SageConditionSet(universe, *predicates, names=names),
-        Sets(),
-    )
+    result = SageConditionSet(universe, *predicates, names=names)
+    return refine(result, placement_of(result))
 
 
 def ImageSet(
@@ -77,15 +76,13 @@ def ImageSet(
     inverse: "Morphism | None" = None,
 ) -> "lexicon.Set":
     r"""Construct an image object in the owned category of sets."""
-    return refine(
-        SageImageSet(
-            map_,
-            domain_subset,
-            is_injective=is_injective,
-            inverse=inverse,
-        ),
-        Sets(),
+    result = SageImageSet(
+        map_,
+        domain_subset,
+        is_injective=is_injective,
+        inverse=inverse,
     )
+    return refine(result, placement_of(result))
 
 
 class PowerSetParent(UniqueRepresentation, Parent):
@@ -137,8 +134,8 @@ class PowerSetParent(UniqueRepresentation, Parent):
         yield from SageSubsets(self._source)
 
     def cardinality(self) -> Cardinal:
-        from sage_lattice_category_spike.objects.cardinals import Cardinal as OwnedCardinal
-        from sage_lattice_category_spike.objects.cardinals import continuum
+        from dzack_research.preamble.categories.sets.cardinals import Cardinal as OwnedCardinal
+        from dzack_research.preamble.categories.sets.cardinals import continuum
 
         if self._source not in Sets().Finite():
             return continuum
@@ -443,11 +440,11 @@ class _Aleph:
         match n:
             case int() | SageInteger():
                 if n == 0:
-                    from sage_lattice_category_spike.objects.cardinals import aleph0
+                    from dzack_research.preamble.categories.sets.cardinals import aleph0
 
                     return aleph0
                 if n == 1:
-                    from sage_lattice_category_spike.objects.cardinals import continuum
+                    from dzack_research.preamble.categories.sets.cardinals import continuum
 
                     return continuum
                 assert False, "aleph index is only defined for 0 and 1"

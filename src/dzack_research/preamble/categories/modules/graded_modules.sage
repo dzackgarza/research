@@ -21,7 +21,7 @@ from sage.rings.infinity import Infinity as _Infinity
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
 
 if TYPE_CHECKING:
-    from sage_lattice_category_spike.lexicon import Element, Module, OrderedSet
+    from dzack_research.preamble.lexicon import Element, Module, OrderedSet
 
 
 class GradedModules(OwnedCategoryOverBaseRing):

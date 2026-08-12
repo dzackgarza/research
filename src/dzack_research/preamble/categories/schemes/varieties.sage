@@ -33,7 +33,7 @@ from sage.rings.integer_ring import ZZ as SageZZ
 if TYPE_CHECKING:
     # The ordered-set noun is type-only: the preamble loads into one
     # shared namespace and nothing named OrderedSet may bind there.
-    from sage_lattice_category_spike.lexicon import Integer, OrderedSet
+    from dzack_research.preamble.lexicon import Integer, OrderedSet
 
 
 _NativeToricVariety = _sage_toric.ToricVariety

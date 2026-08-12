@@ -2,7 +2,7 @@ r"""Discriminant bilinear modules."""
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from sage_lattice_category_spike.lexicon import Module
+    from dzack_research.preamble.lexicon import Module
 
 from sage.rings.integer_ring import ZZ as SageZZ
 if TYPE_CHECKING:
@@ -19,7 +19,7 @@ from sage.matrix.matrix0 import Matrix
 if TYPE_CHECKING:
     # The ordered-set noun is type-only: the preamble loads into one
     # shared namespace and nothing named OrderedSet may bind there.
-    from sage_lattice_category_spike.lexicon import OrderedSet
+    from dzack_research.preamble.lexicon import OrderedSet
 
 
 class DiscriminantBilinearModules(Category):

@@ -14,7 +14,7 @@ each cocone object carries ``costructure_morphisms()`` (the injections).
 # The owned root, not Sage's: the preamble places every set in it, and a
 # parent left in Sage's ``Sets()`` is not in the owned one, so a ``Hom`` out
 # of it in the preamble's category is refused.
-from sage_lattice_category_spike.objects.sets import Sets
+from dzack_research.preamble.categories.sets.owned_sets import Sets
 from dzack_research.preamble.refine import refine
 from typing import Any, Self, TYPE_CHECKING
 
@@ -25,7 +25,7 @@ from sage.structure.parent import Parent
 if TYPE_CHECKING:
     # The ordered-set noun is type-only: the preamble loads into one
     # shared namespace and nothing named OrderedSet may bind there.
-    from sage_lattice_category_spike.lexicon import OrderedSet
+    from dzack_research.preamble.lexicon import OrderedSet
 
 
 class DiagramCategory(Category):

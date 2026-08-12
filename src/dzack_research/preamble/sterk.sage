@@ -17,9 +17,9 @@ EXAMPLES::
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from sage_lattice_category_spike.lexicon import Lattice
-    from sage_lattice_category_spike.lexicon import Module
-    from sage_lattice_category_spike.lexicon import ModuleElement
+    from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModule
+    from dzack_research.preamble.lexicon import Module
+    from dzack_research.preamble.lexicon import ModuleElement
 
 from sage.rings.integer_ring import ZZ as SageZZ
 from dzack_research.preamble.catalogue import Embeddings
@@ -37,7 +37,7 @@ from sage.rings.rational_field import QQ as SageQQ
 if TYPE_CHECKING:
     # The ordered-set noun is type-only: the preamble loads into one
     # shared namespace and nothing named OrderedSet may bind there.
-    from sage_lattice_category_spike.lexicon import OrderedSet
+    from dzack_research.preamble.lexicon import OrderedSet
 
 
 NOT_PORTED: tuple[str, ...] = ()
@@ -121,13 +121,13 @@ _STERK_DIAGRAM_LAYOUTS: dict[str, dict[int, list[float]]] = {
 }
 
 
-def _named_module_generators(lattice: "Lattice") -> dict[str, "ModuleElement"]:
+def _named_module_generators(lattice: "FormModule") -> dict[str, "ModuleElement"]:
     names: dict[str, "ModuleElement"] = {}
     lattice.inject_variables(names, verbose=False)
     return names
 
 
-def _in_dual(lattice: "Lattice") -> "Module":
+def _in_dual(lattice: "FormModule") -> "Module":
     r"""Return $c: L\to L^\vee$, for writing a vector the way the literature does.
 
     Sterk's vectors are written as sums of generators and

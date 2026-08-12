@@ -1,7 +1,7 @@
 r"""Free algebras over a base ring, without a chosen generating set."""
 
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
-from sage_lattice_category_spike.objects.sets import Sets
+from dzack_research.preamble.categories.sets.owned_sets import Sets
 
 
 

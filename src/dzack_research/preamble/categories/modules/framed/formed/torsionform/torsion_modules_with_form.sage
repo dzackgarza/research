@@ -4,11 +4,11 @@ r"""Finite torsion modules equipped with a bilinear or quadratic form."""
 from sage.rings.rational_field import QQ as SageQQ
 from sage.rings.integer_ring import ZZ as SageZZ
 from typing import TYPE_CHECKING
-from sage_lattice_category_spike.lexicon import Element
+from dzack_research.preamble.lexicon import Element
 if TYPE_CHECKING:
-    from sage_lattice_category_spike.lexicon import Lattice
-    from sage_lattice_category_spike.lexicon import Module
-    from sage_lattice_category_spike.lexicon import ModuleElement
+    from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModule
+    from dzack_research.preamble.lexicon import Module
+    from dzack_research.preamble.lexicon import ModuleElement
 
 from dzack_research.preamble.categories.modules.framed.formed.integrallattice.subobjects import Subobject
 if TYPE_CHECKING:
@@ -20,8 +20,9 @@ from sage.categories.category import Category
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
 from typing import Self, TYPE_CHECKING
 
-from sage_lattice_category_spike.objects.cardinals import Cardinal
-from sage_lattice_category_spike.lexicon import GramMatrix, MorphismMatrix
+from dzack_research.preamble.categories.sets.cardinals import Cardinal
+from dzack_research.preamble.lexicon import GramMatrix
+from dzack_research.preamble.categories.modules.module_morphisms.morphism_matrices import MorphismMatrix
 
 from sage.arith.misc import factor
 from sage.misc.latex import latex as _latex_fn
@@ -29,7 +30,7 @@ from sage.misc.latex import latex as _latex_fn
 if TYPE_CHECKING:
     # The ordered-set noun is type-only: the preamble loads into one
     # shared namespace and nothing named OrderedSet may bind there.
-    from sage_lattice_category_spike.lexicon import Matrix, OrderedSet
+    from dzack_research.preamble.lexicon import Matrix, OrderedSet
 
     # An ideal of ZZ, which is what an annihilator is. No lexicon noun names
     # it yet, so the stub tree's own class is what the signatures below say.
@@ -457,7 +458,7 @@ class DiscriminantForms(Category):
             r"""Return $c: L\to L^\vee$: the presentation, under its own name."""
             return self.presentation()
 
-        def source_lattice(self: Self) -> "Lattice":
+        def source_lattice(self: Self) -> "FormModule":
             r"""Return the lattice $L$ this is the discriminant form of."""
             return self.presentation().domain()
 

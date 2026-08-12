@@ -57,10 +57,10 @@ from dzack_research.preamble.categories.rings.rings import owned_ring_view
 
 if TYPE_CHECKING:
     from sage.categories.morphism import Morphism
-    from sage_lattice_category_spike.lexicon import Element
-    from sage_lattice_category_spike.lexicon import Module
-    from sage_lattice_category_spike.lexicon import OrderedSet
-    from sage_lattice_category_spike.lexicon import Ring
+    from dzack_research.preamble.lexicon import Element
+    from dzack_research.preamble.lexicon import Module
+    from dzack_research.preamble.lexicon import OrderedSet
+    from dzack_research.preamble.lexicon import Ring
     from dzack_research.preamble.categories.modules.framed.formed.integrallattice.subobjects import Subobject
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import FramingMorphism
 
