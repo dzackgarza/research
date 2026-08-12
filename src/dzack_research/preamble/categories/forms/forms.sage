@@ -28,6 +28,12 @@ from dzack_research.preamble.categories.sets.owned_sets import Sets
 
 
 if TYPE_CHECKING:
+    Pairing = Callable[[Element, Element], Element]
+    # The two ways one bilinear form is handed over: written down on a
+    # framing, as a Gram matrix, or stated as the pairing it is.  A Gram
+    # matrix is a ``NewType`` over ``Matrix``, which is the spelling here.
+    FormDatum = Matrix | Pairing
+
     # The ordered-set noun is type-only: the preamble loads into one
     # shared namespace and nothing named OrderedSet may bind there.
     from dzack_research.preamble.lexicon import OrderedSet
@@ -200,6 +206,42 @@ def TensorSquare(module: "Module") -> "_GradedPiece":
     square = TensorPower(module, 2)
     square._tensor_square_of = module
     return square
+
+
+def _is_framed(module: "Module") -> bool:
+    r"""Return whether ``module`` carries a framing \(F_R(S)\to M\).
+
+    Being framed is category membership and is asked of the category, not of
+    the object's attributes: the framing is the datum the monomial
+    constructions above run on.
+    """
+    # Local: the framed node is loaded before this one, and importing it at
+    # module level here would close a cycle through the form modules.
+    from dzack_research.preamble.categories.modules.framed.framed_modules import FramedModules
+
+    framed: bool = module in FramedModules(module.base_ring())
+    return framed
+
+
+def _bilinear_form_domain(module: "Module") -> Parent:
+    r"""Return the object a bilinear form on \(M\) is a morphism out of.
+
+    \(T^2(M)=M\otimes_RM\) exists for every \(R\)-module, and
+    :func:`TensorSquare` is one *presentation* of it -- the monomial one, cut
+    out of the tensor algebra on a framing, so it is available exactly when
+    \(M\) is framed.  An unframed module has no presentation to build it
+    from, so the form is handed over as the bilinear pairing on
+    \(U(M)\times U(M)\); by the universal property of the tensor product that
+    is the same datum as the morphism out of \(M\otimes_RM\), which is why
+    nothing is lost by siting the unframed form on the product of sets.
+    """
+    # Local: the product node is loaded before this one; see above.
+    from dzack_research.preamble.categories.abstract_categories.products import CartesianProductOfSets
+
+    if _is_framed(module):
+        return TensorSquare(module)
+    pairs: Parent = CartesianProductOfSets((module, module))
+    return pairs
 
 
 def DividedSquare(module: "Module") -> "_GradedPiece":
@@ -455,13 +497,20 @@ def quadratic_map_from_morphism(morphism: "Morphism") -> SetMorphism:
 
 
 class BilinearFormHomset(Homset):
-    r"""The homset of bilinear forms \(M\otimes_RM\to W\)."""
+    r"""The homset of bilinear forms on \(M\) with values in \(W\).
+
+    Two presentations of one homset, because
+    \(\operatorname{Hom}(M\otimes_RM,W)\) and the bilinear maps
+    \(U(M)\times U(M)\to W\) are the same set: a framed \(M\) has the tensor
+    square built, and an unframed one is paired on the product of sets, which
+    :func:`_bilinear_form_domain` decides.
+    """
 
     def __init__(self, module: "Module", value_module: "Module") -> None:
         self._module = module
         Homset.__init__(
             self,
-            TensorSquare(module),
+            _bilinear_form_domain(module),
             value_module,
             category=Sets(),
         )
@@ -476,8 +525,8 @@ class BilinearFormHomset(Homset):
     def module(self) -> "Module":
         return self._module
 
-    def _element_constructor_(self, gram: "GramMatrix") -> "BilinearFormMorphism":
-        return BilinearFormMorphism(self, gram)
+    def _element_constructor_(self, datum: "FormDatum") -> "BilinearFormMorphism":
+        return BilinearFormMorphism(self, datum)
 
     def __contains__(self, form: "FormMorphism") -> bool:
         return (
@@ -594,27 +643,36 @@ def _value_submodule(
 
 
 class BilinearFormMorphism(Morphism):
-    r"""A morphism \(M\otimes_RM\to W\), recorded on a finite framing."""
+    r"""A bilinear form on \(M\), given by a Gram matrix or by its pairing."""
 
     if TYPE_CHECKING:
         # The parent is the homset of forms on one module, which is where
         # ``module`` below is read from.
         def parent(self) -> BilinearFormHomset: ...
 
-    def __init__(self, parent: BilinearFormHomset, gram: "GramMatrix") -> None:
+        # Which of the two the form was given by is what it keeps: the
+        # pairing, or the matrix -- never both, and never neither.
+        _pairing: "Pairing | None"
+        _gram_matrix: "Matrix | None"
+
+    def __init__(self, parent: BilinearFormHomset, datum: "FormDatum") -> None:
         Morphism.__init__(self, parent)
         # A form is its pairing.  A Gram matrix is how a *finitely generated*
         # one can be written down -- it is a presentation, not the form -- so
         # a module without a finite generating set states the pairing itself.
         # Bilinearity is not checkable for such a pairing and is trusted; the
         # matrix route is checked as before.
-        if callable(gram) and not isinstance(gram, Matrix):
-            self._pairing = gram
+        if callable(datum) and not isinstance(datum, Matrix):
+            self._pairing = datum
             self._gram_matrix = None
             return
         self._pairing = None
-        gram = gram if isinstance(gram, Matrix) else matrix(gram)
         module = parent.module()
+        assert _is_framed(module), (
+            f"{module} has no framing, so a form on it has no Gram matrix to "
+            "be given by; state the pairing instead"
+        )
+        gram: "Matrix" = datum if isinstance(datum, Matrix) else matrix(datum)
         size = _framing_rank(module.module_generating_set())
         assert gram.nrows() == size and gram.ncols() == size, (
             f"the Gram matrix is {gram.nrows()}x{gram.ncols()} but the "
@@ -772,6 +830,8 @@ class BilinearFormMorphism(Morphism):
         return "Bilinear form"
 
     def _repr_defn(self) -> str:
+        if self._gram_matrix is None:
+            return "the pairing it is given by"
         return repr(self._gram_matrix)
 
 
