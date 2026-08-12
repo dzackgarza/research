@@ -3,7 +3,7 @@
 from sage.all import QQ, ProjectiveSpace
 
 
-def test_curve_singularity_local_invariants_match_A1_and_A3():
+def test_curve_singularity_local_invariants_match_A1_and_A3() -> None:
     """Simple curves in P1 x P1 recover expected ADE fingerprints."""
     P1_x = ProjectiveSpace(QQ, 1, names=("x0", "x1"))
     P1_y = ProjectiveSpace(QQ, 1, names=("y0", "y1"))
@@ -30,7 +30,7 @@ def test_curve_singularity_local_invariants_match_A1_and_A3():
     assert p_a3.tjurina_number() == 3
 
 
-def test_smooth_curve_points_are_nonsingular():
+def test_smooth_curve_points_are_nonsingular() -> None:
     """A transverse linear curve has no singular test points."""
     P1_x = ProjectiveSpace(QQ, 1, names=("x0", "x1"))
     P1_y = ProjectiveSpace(QQ, 1, names=("y0", "y1"))

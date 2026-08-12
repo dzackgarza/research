@@ -3,7 +3,7 @@
 from sage.all import AffineSpace, QQ, ProjectiveSpace
 
 
-def test_affine_tensored_product_backbone_is_non_toric_affine():
+def test_affine_tensored_product_backbone_is_non_toric_affine() -> None:
     """Tensor-product affine presentations keep the expected apex dimension."""
     A1 = AffineSpace(QQ, 1, names=("u", "v"))
     A2 = AffineSpace(QQ, 2, names=("x", "y", "z"))
@@ -13,7 +13,7 @@ def test_affine_tensored_product_backbone_is_non_toric_affine():
     assert mixed_affine.apex().dimension() == 3
 
 
-def test_projective_and_affine_base_change_products():
+def test_projective_and_affine_base_change_products() -> None:
     """Hybrid products keep projection interfaces and base schemes."""
     P1_left = ProjectiveSpace(QQ, 1, names=("a0", "a1"))
     P1_right = ProjectiveSpace(QQ, 1, names=("b0", "b1"))

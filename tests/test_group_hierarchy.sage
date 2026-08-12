@@ -7,7 +7,7 @@ abelian group.  It does not need a second parent to state either fact.
 
 from dzack_research.preamble.install import install_preamble
 install_preamble(globals())
-def _abelian_groups():
+def _abelian_groups() -> list:
     r"""Abelian groups, in the presentations the preamble meets them in."""
     return [
         ("C3 multiplicative", AbelianGroup([3])),
@@ -17,12 +17,12 @@ def _abelian_groups():
     ]
 
 
-def _scalars():
+def _scalars() -> list:
     r"""Scalars including negative ones and multiples of the exponent."""
     return [ZZ(n) for n in (-3, -1, 0, 1, 2, 3, 4, 6)]
 
 
-def test_groups_refine_on_witnesses_only():
+def test_groups_refine_on_witnesses_only() -> None:
     r"""Each axiom is refined in exactly when the group carries its witness."""
     finite_nonabelian = SymmetricGroup(3)
     assert finite_nonabelian in OwnedFinitelyPresentedGroups(), (
@@ -53,7 +53,7 @@ def test_groups_refine_on_witnesses_only():
         )
 
 
-def test_endomorphisms_of_an_abelian_group_form_a_ring():
+def test_endomorphisms_of_an_abelian_group_form_a_ring() -> None:
     r"""$\operatorname{End}(A)$ satisfies the ring axioms on real elements."""
     for name, group in _abelian_groups():
         endomorphisms = group.endomorphism_ring()
@@ -83,7 +83,7 @@ def test_endomorphisms_of_an_abelian_group_form_a_ring():
             assert (f + -f)(element) == group.one(), "negation inverts"
 
 
-def test_endomorphisms_of_a_nonabelian_group_are_refused():
+def test_endomorphisms_of_a_nonabelian_group_are_refused() -> None:
     r"""The ring exists because $A$ is abelian, so it is refused when it is not.
 
     Pointwise addition of endomorphisms is a homomorphism only when the
@@ -105,10 +105,12 @@ def test_endomorphisms_of_a_nonabelian_group_are_refused():
     assert False, "End(S3) was built as a ring, and its addition is not one"
 
 
-def test_the_integer_action_is_the_unique_ring_morphism():
+def test_every_abelian_group_is_a_module_over_the_integers() -> None:
     r"""$\rho:\mathbb Z\to\operatorname{End}(A)$ is a ring map, and is $n$-th power."""
+    assert OwnedAbelianGroups().is_subcategory(Modules(ZZ))
     for name, group in _abelian_groups():
-        action = group.integer_action()
+        assert group in Modules(ZZ), f"{name} is a module over the integers"
+        action = group.scalar_action()
         assert action.domain() is ZZ, f"{name}: the scalars are the integers"
         assert action.codomain() == group.endomorphism_ring(), (
             f"{name}: rho lands in End(A)"
@@ -122,6 +124,7 @@ def test_the_integer_action_is_the_unique_ring_morphism():
                 assert action(left)(element) == element**left, (
                     f"{name}: rho(n) is not the n-th power map"
                 )
+                assert group.scalar_multiple(left, element) == element**left
                 for right in _scalars():
                     assert (
                         action(left + right)(element)
@@ -133,7 +136,7 @@ def test_the_integer_action_is_the_unique_ring_morphism():
                     ), f"{name}: rho does not preserve multiplication"
 
 
-def test_finite_torsion_modules_are_finite_abelian_groups():
+def test_finite_torsion_modules_are_finite_abelian_groups() -> None:
     r"""$A_L$ has its group structure and presentation on the same parent."""
     for name, rank in [("A", 3), ("D", 4), ("E", 6)]:
         group = Lattices.root_lattice(name, rank).discriminant_group()
@@ -156,13 +159,28 @@ def test_finite_torsion_modules_are_finite_abelian_groups():
                 )
 
 
+def test_a_module_presentation_uses_the_presentation_matrix_relations() -> None:
+    r"""The underlying-group presentation retains its commutator relators."""
+    from sage.misc.latex import latex
+
+    module = Lattices.A4.discriminant_group().forget_form()
+    free = module.presenting_free_group()
+    first, second = free.gens()[:2]
+    commutator = first * second * first**-1 * second**-1
+
+    assert commutator in module.defining_relations()
+    presentation = str(latex(module))
+    assert r"\right\rangle_{\mathbb{Z}}" in presentation
+    assert "[e_{1}, e_{2}]" not in presentation
+
+
 # --------------------------------------------------------------------------
 # $\varepsilon^*$: the trivial-action functor, and the adjunction that makes
 # the invariant lattice a value rather than a coincidence.
 # --------------------------------------------------------------------------
 
 
-def _swap_involution():
+def _swap_involution() -> tuple:
     r"""$A_1\oplus A_1$ with the involution exchanging the two summands."""
     L = IntegralLattice(matrix(ZZ, [[-2, 0], [0, -2]]))
     G = CyclicPermutationGroup(2)
@@ -179,7 +197,7 @@ def _swap_involution():
     return L, G, action
 
 
-def test_trivial_action_is_a_functor_into_group_lattices():
+def test_trivial_action_is_a_functor_into_group_lattices() -> None:
     r"""$\varepsilon^*L$ is a $G$-lattice on which every $g$ acts as the identity."""
     L, G, _ = _swap_involution()
     trivial = trivial_action(G)(L)
@@ -200,7 +218,7 @@ def test_trivial_action_is_a_functor_into_group_lattices():
     )
 
 
-def test_trivial_action_carries_lattice_maps_to_equivariant_ones():
+def test_trivial_action_carries_lattice_maps_to_equivariant_ones() -> None:
     r"""$\varepsilon^*$ acts on morphisms: the same map, now equivariant."""
     L, G, _ = _swap_involution()
     trivial = trivial_action(G)
@@ -217,7 +235,7 @@ def test_trivial_action_carries_lattice_maps_to_equivariant_ones():
     )
 
 
-def test_invariants_is_right_adjoint_to_the_trivial_action():
+def test_invariants_is_right_adjoint_to_the_trivial_action() -> None:
     r"""$\operatorname{Hom}_{\mathrm{Lat}_G}(\varepsilon^*N,(L,\rho))=\operatorname{Hom}_{\mathrm{Lat}}(N,L^G)$.
 
     An equivariant map out of a trivially-acted lattice has invariant image,
@@ -255,7 +273,7 @@ def test_invariants_is_right_adjoint_to_the_trivial_action():
     )
 
 
-def test_a_group_generating_set_is_the_images_of_the_generating_morphism():
+def test_a_group_generating_set_is_the_images_of_the_generating_morphism() -> None:
     r"""$S\subseteq G$: honest elements of the group, and a set of them.
 
     The images of $F(S)\twoheadrightarrow G$, so two generators with the same
@@ -280,7 +298,7 @@ def test_a_group_generating_set_is_the_images_of_the_generating_morphism():
     )
 
 
-def test_finite_generation_is_what_makes_the_generating_set_finite():
+def test_finite_generation_is_what_makes_the_generating_set_finite() -> None:
     r"""The axiom carries the finiteness, not the category of groups.
 
     ``OwnedGroups`` claims a set and an order and no more; the finitely
@@ -302,7 +320,7 @@ def test_finite_generation_is_what_makes_the_generating_set_finite():
     ), "the generating set itself is declared on the category of groups"
 
 
-def test_four_realizations_of_c2_expose_their_presentations_directly():
+def test_four_realizations_of_c2_expose_their_presentations_directly() -> None:
     r"""Four realizations of $C_2$ are finitely presented groups themselves."""
     free = FreeGroup(1)
     for name, group in (
@@ -323,7 +341,7 @@ def test_four_realizations_of_c2_expose_their_presentations_directly():
         )
 
 
-def test_standard_finite_groups_are_finitely_presented():
+def test_standard_finite_groups_are_finitely_presented() -> None:
     r"""$C_2$, $S_3$, $A_4$, and $GL_2(\mathbb F_3)$ carry the property."""
     for name, group in (
         ("C2", CyclicPermutationGroup(2)),
@@ -338,7 +356,7 @@ def test_standard_finite_groups_are_finitely_presented():
         )
 
 
-def test_groups_is_the_flat_catalogue_of_standard_groups():
+def test_groups_is_the_flat_catalogue_of_standard_groups() -> None:
     r"""The group category constructs standard families on one public surface."""
     assert Groups is groups is OwnedGroups
 

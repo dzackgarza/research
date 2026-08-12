@@ -52,10 +52,13 @@ from ..algebra.domain_algebra import (
     in_nondegenerate,
     in_positive_definite,
 )
+from ..objects.cardinals import Cardinal
+from ..objects.characters import Character
+from ..objects.morphism_matrices import MorphismMatrix
 from .algebra import (
     AbelianGroup,
-    Element,
     BaseRing,
+    Element,
     Field,
     FiniteAbelianGroup,
     FreeModule,
@@ -86,9 +89,6 @@ from .foundations import (
     SignaturePair,
     SymbolicExpression,
 )
-from ..objects.cardinals import Cardinal
-from ..objects.characters import Character
-from ..objects.morphism_matrices import MorphismMatrix
 from .geometry import CoxeterMatrix, Graph, Polygon, Polyhedron
 from .interop import (
     SageCartanMatrix,

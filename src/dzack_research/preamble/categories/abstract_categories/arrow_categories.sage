@@ -11,6 +11,9 @@ r"""Arrow categories: \(\operatorname{Ar}(\mathbf{C})\), its hom-sets, and the i
 - ``Isomorphism(f, g)`` -- the construction: declare \(f\) invertible with
   inverse \(g\), and get back \(f\) as an object of
   \(\operatorname{Ar}(\mathbf{C})\).
+- ``C.core()`` -- \(\operatorname{core}(\mathbf{C})\): the same objects, and
+  the isomorphisms as the only arrows.  A functor defined only on
+  isomorphisms declares this as its source.
 
 Sage seats an object of a category in a ``Parent`` and an arrow in an element
 of a homset.  An object of \(\operatorname{Ar}(\mathbf{C})\) is an arrow of
@@ -28,6 +31,7 @@ if TYPE_CHECKING:
     from sage.categories.homset import Homset
 
 from sage.categories.category import Category
+from sage.categories.morphism import IdentityMorphism
 from sage.categories.morphism import Morphism
 from sage.categories.objects import Objects
 from sage.structure.parent import Parent
@@ -118,8 +122,72 @@ class IsoArrowCategory(ArrowCategory):
             return True
 
 
+class Core(Category):
+    r"""\(\operatorname{core}(\mathbf{C})\): the objects of \(\mathbf{C}\), its isomorphisms alone.
+
+    The maximal subgroupoid.  A construction that is functorial only on
+    isomorphisms names this as its source, and the naming is the point: the
+    refusal of a non-invertible arrow becomes part of what the functor *is*,
+    rather than a check each call site has to remember.  \(Z\) is such a
+    construction -- an isomorphism \(A\to B\) restricts to \(Z(A)\to Z(B)\)
+    and a general ring map does not.
+
+    Invertibility is read off the arrow and never searched for, as
+    :func:`Isomorphism` records it: an identity is invertible by itself, and
+    every other arrow of the core is one that was declared with its inverse.
+    """
+
+    @staticmethod
+    def __classcall_private__(cls, ambient_category: Category) -> "Core":
+        return super().__classcall__(cls, ambient_category)
+
+    def __init__(self, ambient_category: Category) -> None:
+        self._ambient_category = ambient_category
+        Category.__init__(self)
+
+    def _repr_(self) -> str:
+        return f"Core of {self._ambient_category}"
+
+    def super_categories(self) -> list[Category]:
+        # Objects, for ArrowCategory's reason read the other way round: what
+        # separates the core from C is which *arrows* it has, and Sage's
+        # subcategory relation is about objects satisfying more.  Naming C
+        # here would say the core has fewer objects, which is the one thing
+        # it does not.
+        return [Objects()]
+
+    def ambient_category(self) -> Category:
+        return self._ambient_category
+
+    def __contains__(self, candidate: object) -> bool:
+        r"""Return whether ``candidate`` is an object of \(\mathbf{C}\): the core keeps them all."""
+        return candidate in self._ambient_category
+
+    def admits(self, morphism: Morphism) -> bool:
+        r"""Return whether ``morphism`` is an arrow of the core, i.e. invertible."""
+        match morphism:
+            case IdentityMorphism():
+                return True
+            case IsoArrowCategory.MorphismMethods():
+                return morphism.is_isomorphism()
+            case _:
+                return False
+
+    def arrow(self, morphism: Morphism) -> Morphism:
+        r"""Return ``morphism`` as an arrow of the core, refusing one that is not.
+
+        The gate a functor out of the core passes its argument through.
+        """
+        assert self.admits(morphism), (
+            f"{morphism} is not a declared isomorphism, so it is not an arrow "
+            f"of {self}"
+        )
+        return morphism
+
+
 Category.Arrow = lambda self: ArrowCategory(self)
 Category.IsoArrow = lambda self: IsoArrowCategory(self)
+Category.core = lambda self: Core(self)
 
 
 def Ar(source: Parent, target: Parent) -> "Homset":

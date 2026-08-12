@@ -5,7 +5,7 @@ from sage.all import QQ, QuadraticForm, ZZ, matrix
 import sage_lattice_category_spike.lattice_categories as lc
 
 
-def test_dickson_ross_equivalence_uses_splag_unimodular_witness():
+def test_dickson_ross_equivalence_uses_splag_unimodular_witness() -> None:
     """SPLAG Ch. 15, Sec. 11 gives this Dickson-Ross ternary equivalence.
 
     Conway-Sloane record the Gram matrices below, note that their genus has one
@@ -31,7 +31,7 @@ def test_dickson_ross_equivalence_uses_splag_unimodular_witness():
     assert [isometry(v).q() for v in second.gens()] == [v.q() for v in second.gens()]
 
 
-def test_hasse_minkowski_rational_diagonal_forms_match_splag_decision():
+def test_hasse_minkowski_rational_diagonal_forms_match_splag_decision() -> None:
     """SPLAG Ch. 15, Secs. 5.1-5.2, Thms. 3-4 decide rational equivalence.
 
     The first two diagonal forms are the rational diagonalizations printed in
@@ -70,7 +70,7 @@ def test_hasse_minkowski_rational_diagonal_forms_match_splag_decision():
     assert not second.is_isometric(sign_changed)
 
 
-def test_a2_isometry_group_has_splag_dihedral_conjugacy_data():
+def test_a2_isometry_group_has_splag_dihedral_conjugacy_data() -> None:
     """SPLAG Ch. 3, Sec. 4.1 and Ch. 4, Sec. 6 identify Aut(A2).
 
     The hexagonal lattice has dihedral automorphism group of order 12; Ch. 4,

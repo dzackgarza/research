@@ -3,7 +3,7 @@
 from sage.all import CyclicPermutationGroup, QQ, ProjectiveSpace
 
 
-def test_complete_intersection_certificate_for_an_affine_quadric_surface():
+def test_complete_intersection_certificate_for_an_affine_quadric_surface() -> None:
     """A quadratic surface in P4 has the expected complete-intersection data."""
     P = ProjectiveSpace(QQ, 4, names=("A", "B", "C", "D", "E"))
     A, B, C, D, E = P.gens()
@@ -26,7 +26,7 @@ def test_complete_intersection_certificate_for_an_affine_quadric_surface():
     assert W.del_Pezzo_degree() == 4
 
 
-def test_diagonal_sign_quotient_family_has_global_quotient_data():
+def test_diagonal_sign_quotient_family_has_global_quotient_data() -> None:
     """Diagonal sign automorphisms induce compatible enriques quotient families."""
     P1_x = ProjectiveSpace(QQ, 1, names=("x0", "x1"))
     P1_y = ProjectiveSpace(QQ, 1, names=("y0", "y1"))

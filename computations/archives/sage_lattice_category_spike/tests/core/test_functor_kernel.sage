@@ -15,6 +15,8 @@ Gram matrix ``[[-2, 1], [1, -2]]``.
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import pytest
 
 from sage.all import QQ, ZZ, identity_matrix, matrix
@@ -28,8 +30,11 @@ from sage_lattice_category_spike.objects.functors import (
     TwistFunctor,
 )
 
+if TYPE_CHECKING:
+    from sage_lattice_category_spike import lexicon
 
-def test_twist_functor_acts_on_objects_and_morphisms():
+
+def test_twist_functor_acts_on_objects_and_morphisms() -> None:
     r"""``L(2)`` doubles the form and keeps morphism matrices: the twist
     endofunctor is total data (objects and morphisms), not an object-only
     construction."""
@@ -48,7 +53,7 @@ def test_twist_functor_acts_on_objects_and_morphisms():
     assert image * image == twisted.identity_morphism()
 
 
-def test_composition_is_associative_with_exact_boundaries():
+def test_composition_is_associative_with_exact_boundaries() -> None:
     r"""``(F . T2) . T3`` and ``F . (T2 . T3)`` are the same route
     ``Lattices(ZZ) -> Lattices(QQ)``: same boundaries, same object image
     (``A2`` twisted by 6 over ``QQ``), same morphism image."""
@@ -74,7 +79,7 @@ def test_composition_is_associative_with_exact_boundaries():
     assert left(reflection) == right(reflection)
 
 
-def test_identity_is_absorbed_and_acts_as_identity():
+def test_identity_is_absorbed_and_acts_as_identity() -> None:
     r"""The identity of ``Fun(C, C)`` is the unit of composition: it is
     absorbed exactly (object identity, not a wrapper), and it fixes objects
     and nonidentity morphisms."""
@@ -91,7 +96,7 @@ def test_identity_is_absorbed_and_acts_as_identity():
     assert (FunctorSpace(Lattices(QQ), Lattices(QQ)).identity() * F) is F
 
 
-def test_composition_refuses_mismatched_boundaries():
+def test_composition_refuses_mismatched_boundaries() -> None:
     r"""``T2 . F`` with ``T2`` at ``ZZ`` and ``F`` landing in ``QQ`` is an
     incoherent route and must be refused at composition time."""
     T2 = TwistFunctor(Lattices(ZZ), 2)
@@ -100,7 +105,7 @@ def test_composition_refuses_mismatched_boundaries():
         T2 * F
 
 
-def test_categories_are_objects_of_cat_and_functor_spaces_are_its_homsets():
+def test_categories_are_objects_of_cat_and_functor_spaces_are_its_homsets() -> None:
     r"""The kernel's categorical statement made literal: category instances
     are elements of ``Cat``, and ``Hom_Cat(C, D)`` IS the functor space, so
     functors are genuinely morphisms of a category of categories."""
@@ -128,7 +133,7 @@ def test_categories_are_objects_of_cat_and_functor_spaces_are_its_homsets():
     assert Hom(Magmas(), Sets()) is FunctorSpace(Magmas(), Sets())
 
 
-def test_cat_is_a_proper_class_never_an_object_of_itself():
+def test_cat_is_a_proper_class_never_an_object_of_itself() -> None:
     r"""``Cat`` is an object of ``Objects()``, never of itself: its objects
     form a proper class. Membership therefore cannot be the bare type test
     (``Cat`` is itself a category instance), and every route to a functor
@@ -150,7 +155,7 @@ def test_cat_is_a_proper_class_never_an_object_of_itself():
         FunctorSpace(Lattices(ZZ), cat)
 
 
-def test_functor_space_refuses_non_category_endpoints_on_every_route():
+def test_functor_space_refuses_non_category_endpoints_on_every_route() -> None:
     r"""Objecthood in ``Cat`` is the functor space's construction invariant:
     a ring is not an object of the category of categories, so ``Fun(C, ZZ)``
     must refuse on EVERY route -- the public constructor, the ``Hom_Cat``
@@ -172,7 +177,7 @@ def test_functor_space_refuses_non_category_endpoints_on_every_route():
         Sets()._Hom_(ZZ)
 
 
-def test_functor_space_membership_is_boundary_exact():
+def test_functor_space_membership_is_boundary_exact() -> None:
     r"""``Fun(C, D)`` is a genuine parent: unique per boundary pair, and
     membership is exactly agreement of domain and codomain."""
     fun_zq = FunctorSpace(Lattices(ZZ), Lattices(QQ))
@@ -186,7 +191,7 @@ def test_functor_space_membership_is_boundary_exact():
     assert (F * T2) in fun_zq
 
 
-def test_minus_one_is_a_natural_automorphism_of_the_identity():
+def test_minus_one_is_a_natural_automorphism_of_the_identity() -> None:
     r"""``v -> -v`` is the classic nonidentity natural automorphism of the
     identity functor on an additive category: its components are the
     ``-id`` isometries and every naturality square against real morphisms
@@ -195,7 +200,7 @@ def test_minus_one_is_a_natural_automorphism_of_the_identity():
     E8 = Lattice("E8")
     identity = FunctorSpace(Lattices(ZZ), Lattices(ZZ)).identity()
 
-    def minus_one(L):
+    def minus_one(L: lexicon.Lattice) -> lexicon.LatticeMorphism:
         return Lattices(ZZ).morphism(L, -identity_matrix(ZZ, L.rank()), codomain=L)
 
     eta = NaturalIsomorphism(identity, identity, components=minus_one, inverse_components=minus_one)
@@ -212,7 +217,7 @@ def test_minus_one_is_a_natural_automorphism_of_the_identity():
     assert component * inverse.component(A2) == A2.identity_morphism()
 
 
-def test_base_change_preserves_laws_and_is_faithful_on_a_finite_homset():
+def test_base_change_preserves_laws_and_is_faithful_on_a_finite_homset() -> None:
     r"""The concrete-node functor laws for scalar extension, proven
     exhaustively on the order-12 group ``O(A2)``: identities and
     compositions are preserved, and the twelve images stay pairwise
@@ -231,7 +236,7 @@ def test_base_change_preserves_laws_and_is_faithful_on_a_finite_homset():
     assert F.is_faithful()
 
 
-def test_every_owned_category_class_is_an_object_of_cat():
+def test_every_owned_category_class_is_an_object_of_cat() -> None:
     r"""Completeness sweep, not a hand-picked list: every category class
     the spike's object modules define is swept up introspectively, an
     instance is realized, and BOTH objecthood protocols are exercised —

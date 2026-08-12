@@ -3,7 +3,7 @@
 from sage.all import QQ, ProjectiveSpace
 
 
-def test_complete_linear_system_image_and_base_locus():
+def test_complete_linear_system_image_and_base_locus() -> None:
     """Complete linear systems on bigrids have expected dimension and basepoint data."""
     P1_x = ProjectiveSpace(QQ, 1, names=("x0", "x1"))
     P1_y = ProjectiveSpace(QQ, 1, names=("y0", "y1"))
@@ -22,7 +22,7 @@ def test_complete_linear_system_image_and_base_locus():
     assert morphism.codomain().O(1).pullback(morphism) == L
 
 
-def test_restriction_map_has_expected_rank_and_cokernel():
+def test_restriction_map_has_expected_rank_and_cokernel() -> None:
     """Restriction to a complete-intersection curve has predictable linear-algebra size."""
     P1_x = ProjectiveSpace(QQ, 1, names=("x0", "x1"))
     P1_y = ProjectiveSpace(QQ, 1, names=("y0", "y1"))

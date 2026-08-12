@@ -7,19 +7,24 @@ stored-ambient substrate.
 """
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import pytest
 
 import sage_lattice_category_spike.lattice_categories as lc
 
+if TYPE_CHECKING:
+    from sage_lattice_category_spike.morphisms.homsets import Subobject
 
-def _a2_in_i03():
+
+def _a2_in_i03() -> Subobject:
     A2 = lc.Lattice("A2")
     embedding = A2.bourbaki_embedding()
     ambient = embedding.codomain()
     return ambient.subobject([embedding(A2.gen(0)), embedding(A2.gen(1))], label="A2_in_I03")
 
 
-def test_bourbaki_realization_is_a_genuine_primitive_subobject():
+def test_bourbaki_realization_is_a_genuine_primitive_subobject() -> None:
     subobject = _a2_in_i03()
     assert subobject.rank() == 2
     assert subobject.gram_matrix() == lc.Lattice("A2").gram_matrix()   # -Cartan, negative definite
@@ -27,7 +32,7 @@ def test_bourbaki_realization_is_a_genuine_primitive_subobject():
     assert subobject.is_primitive()                                     # cokernel Z, torsion-free
 
 
-def test_orthogonal_complement_and_saturation_compose_the_inclusion():
+def test_orthogonal_complement_and_saturation_compose_the_inclusion() -> None:
     subobject = _a2_in_i03()
     complement = subobject.orthogonal_complement()
     assert complement.ambient() is subobject.ambient()
@@ -36,7 +41,7 @@ def test_orthogonal_complement_and_saturation_compose_the_inclusion():
     assert saturation.rank() == subobject.rank() and saturation.is_primitive()
 
 
-def test_subobject_generators_must_be_elements_not_raw_lists():
+def test_subobject_generators_must_be_elements_not_raw_lists() -> None:
     A2 = lc.Lattice("A2")
     with pytest.raises(AssertionError):
         A2.subobject([[1, 0]])                                          # raw list rejected (#6)

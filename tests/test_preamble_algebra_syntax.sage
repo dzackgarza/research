@@ -704,7 +704,7 @@ def test_fractional_ideals_in_quadratic_integer_rings_are_explicit_modules() -> 
     assert unit_ideal.principal_generator().is_unit()
 
 
-def test_degree_is_the_grading_and_holds_at_every_rank():
+def test_degree_is_the_grading_and_holds_at_every_rank() -> None:
     r"""$\deg$ is the total degree, and $\deg_s$ the degree in each generator.
 
     $\operatorname{FreeAlg}_R(S)=R[\operatorname{Mon}(S)]$ is graded by the
@@ -740,7 +740,7 @@ def test_degree_is_the_grading_and_holds_at_every_rank():
     )
 
 
-def test_roots_are_asked_only_of_an_algebra_of_rank_one():
+def test_roots_are_asked_only_of_an_algebra_of_rank_one() -> None:
     r"""Roots of $x^2-5$, and a refusal above rank one.
 
     Root finding is an algorithm, so it crosses to an engine once; the zeros
@@ -777,7 +777,7 @@ def test_roots_are_asked_only_of_an_algebra_of_rank_one():
     )
 
 
-def test_division_and_factorisation_come_back_as_algebra_elements():
+def test_division_and_factorisation_come_back_as_algebra_elements() -> None:
     r"""$(x-1)(x-2)(x-3)$, taken apart by the engine and returned owned.
 
     Division with remainder, gcd, xgcd and factorisation are algorithms, so
@@ -821,7 +821,7 @@ def test_division_and_factorisation_come_back_as_algebra_elements():
         "resultant vanishes"
 
 
-def test_evaluation_and_derivation_are_asked_by_generator():
+def test_evaluation_and_derivation_are_asked_by_generator() -> None:
     r"""$\partial_s$ and substitution, at any rank.
 
     Evaluation is the universal property of a free algebra, so it is an
@@ -852,7 +852,7 @@ def test_evaluation_and_derivation_are_asked_by_generator():
     )
 
 
-def test_a_number_field_is_the_quotient_by_its_defining_polynomial():
+def test_a_number_field_is_the_quotient_by_its_defining_polynomial() -> None:
     r"""$K=\QQ[x]/(f)$, and what makes it a field is that $f$ is irreducible.
 
     Nothing structural is added to the quotient: the free algebra presents it,
@@ -893,7 +893,7 @@ def test_a_number_field_is_the_quotient_by_its_defining_polynomial():
     )
 
 
-def test_the_arithmetic_of_a_number_field_is_answered_in_owned_terms():
+def test_the_arithmetic_of_a_number_field_is_answered_in_owned_terms() -> None:
     r"""$\QQ(\sqrt5)$ and $\QQ(2^{1/3})$, against their recorded invariants.
 
     Each of these is a computation rather than a definition, so each crosses
@@ -942,7 +942,7 @@ def test_the_arithmetic_of_a_number_field_is_answered_in_owned_terms():
     )
 
 
-def test_an_integral_basis_is_a_basis_of_an_underlying_R_algebra():
+def test_an_integral_basis_is_a_basis_of_an_underlying_R_algebra() -> None:
     r"""$K=A\otimes_R\operatorname{Frac}(R)$, and the basis is $A$'s.
 
     An integral basis is not a number-field notion.  $K$ is a
@@ -988,7 +988,7 @@ def test_an_integral_basis_is_a_basis_of_an_underlying_R_algebra():
     )
 
 
-def test_an_element_of_a_number_field_is_a_QQ_linear_endomorphism():
+def test_an_element_of_a_number_field_is_a_QQ_linear_endomorphism() -> None:
     r"""$N$, $\operatorname{Tr}$, the minimal polynomial and the inverse.
 
     Multiplication by $a$ is $\QQ$-linear on $K$, so $a$ *is* that
@@ -1041,7 +1041,7 @@ def test_an_element_of_a_number_field_is_a_QQ_linear_endomorphism():
     )
 
 
-def test_a_polynomial_factors_over_an_extension_it_gains_a_root_in():
+def test_a_polynomial_factors_over_an_extension_it_gains_a_root_in() -> None:
     r"""$x^2-5=(x-\sqrt5)(x+\sqrt5)$ over $\QQ(\sqrt5)$, irreducible over $\QQ$.
 
     Base change is the free construction applied to $\QQ\hookrightarrow K$, so

@@ -2,14 +2,20 @@
 Utility functions for constructing standard lattices using proper SageMath methods.
 """
 
-def create_hyperbolic_plane():
+from sage.matrix.constructor import matrix
+from sage.modules.free_quadratic_module_integer_symmetric import (
+    FreeQuadraticModule_integer_symmetric,
+    IntegralLattice,
+)
+
+def create_hyperbolic_plane() -> FreeQuadraticModule_integer_symmetric:
     """
     Create the hyperbolic plane U with Gram matrix [[0,1],[1,0]] using proper SageMath.
     """
     U_gram = matrix(ZZ, [[0, 1], [1, 0]])
     return IntegralLattice(U_gram)
 
-def create_root_lattice(root_type, rank):
+def create_root_lattice(root_type: str, rank: int) -> FreeQuadraticModule_integer_symmetric:
     """
     Create root lattices using SageMath's root system infrastructure.
     
@@ -42,7 +48,7 @@ def create_root_lattice(root_type, rank):
         
         return IntegralLattice(gram_matrix)
 
-def create_orthogonal_sum(lattices):
+def create_orthogonal_sum(lattices: list[FreeQuadraticModule_integer_symmetric]) -> FreeQuadraticModule_integer_symmetric:
     """
     Create orthogonal direct sum of IntegralLattice objects using native SageMath.
     
@@ -52,14 +58,15 @@ def create_orthogonal_sum(lattices):
     OUTPUT:
     - IntegralLattice representing the orthogonal sum
     """
-    if len(lattices) == 1:
-        return lattices[0]
-    
     # Use IntegralLattice's native direct_sum method
-    from functools import reduce
-    return reduce(lambda x, y: x.direct_sum(y), lattices)
+    # Annotated because the preparser rewrites the index literal to Integer(0),
+    # which loses list.__getitem__'s element type.
+    total: FreeQuadraticModule_integer_symmetric = lattices[0]
+    for summand in lattices[1:]:
+        total = total.direct_sum(summand)
+    return total
 
-def get_lattice_signature(lattice):
+def get_lattice_signature(lattice: FreeQuadraticModule_integer_symmetric) -> tuple[int, int]:
     """
     Get signature (t+, t-) using native SageMath IntegralLattice methods.
     

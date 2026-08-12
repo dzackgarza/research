@@ -30,20 +30,19 @@ holds the invariant: an operation exists here or it does not exist at all.
 from __future__ import annotations
 
 from copy import copy
-from typing import Any, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from sage.matrix.constructor import matrix as _matrix
 from sage.matrix.matrix_integer_dense import Matrix_integer_dense
 from sage.rings.integer_ring import ZZ as _ZZ
 from sage.structure.element import Matrix
 
-
 if TYPE_CHECKING:
     from ..lexicon import (
-        Element,
         BaseRing,
         Cardinal,
         CategoryMorphism,
+        Element,
         Integer,
         Rational,
         RawMorphismMatrix,
@@ -56,7 +55,7 @@ __all__ = ["MorphismMatrix"]
 class MorphismMatrix:
     r"""The matrix of a morphism of free $R$-modules in chosen generating sets."""
 
-    def __init__(self, entries: "RawMorphismMatrix", base_ring: "BaseRing" = None) -> None:
+    def __init__(self, entries: RawMorphismMatrix, base_ring: BaseRing = None) -> None:
         match entries:
             case MorphismMatrix():
                 built = entries._matrix
@@ -82,7 +81,7 @@ class MorphismMatrix:
         r"""Return the underlying Sage matrix. DSL-internal."""
         return self._matrix
 
-    def _matrix_(self, base_ring: "Ring" = None) -> Matrix:
+    def _matrix_(self, base_ring: Ring = None) -> Matrix:
         r"""Sage's conversion protocol, so ``M in G`` works as containment.
 
         Asking whether a morphism matrix lies in a matrix group is ordinary
@@ -95,7 +94,7 @@ class MorphismMatrix:
 
     # -- shape and entries -------------------------------------------------
 
-    def base_ring(self) -> "Ring":
+    def base_ring(self) -> Ring:
         return self._matrix.base_ring()
 
     def nrows(self) -> int:
@@ -108,13 +107,13 @@ class MorphismMatrix:
         r"""Return ``(nrows, ncols)``: the sizes of the two framings."""
         return (self.nrows(), self.ncols())
 
-    def rank(self) -> "Cardinal":
+    def rank(self) -> Cardinal:
         return self._matrix.rank()
 
-    def det(self) -> "Rational":
+    def det(self) -> Rational:
         return self._matrix.det()
 
-    def trace(self) -> "Element":
+    def trace(self) -> Element:
         r"""Return $\operatorname{tr}$ of the endomorphism this presents.
 
         A conjugation invariant, so the value belongs to the endomorphism and
@@ -142,12 +141,12 @@ class MorphismMatrix:
     def list(self) -> list:
         return self._matrix.list()
 
-    def __getitem__(self, key: "Integer") -> "Element":
+    def __getitem__(self, key: Integer) -> Element:
         return self._matrix[key]
 
     # -- operations that stay morphism matrices ----------------------------
 
-    def transpose(self) -> "MorphismMatrix":
+    def transpose(self) -> MorphismMatrix:
         r"""Return the matrix of the dual morphism $f^t:N^\vee\to M^\vee$.
 
         A morphism has no "transpose" as such; what it has is a dual, and
@@ -155,19 +154,19 @@ class MorphismMatrix:
         """
         return MorphismMatrix(self._matrix.transpose())
 
-    def inverse(self) -> "MorphismMatrix":
+    def inverse(self) -> MorphismMatrix:
         r"""Return the matrix of the inverse morphism."""
         return MorphismMatrix(self._matrix.inverse())
 
-    def change_ring(self, ring: "Ring") -> "MorphismMatrix":
+    def change_ring(self, ring: Ring) -> MorphismMatrix:
         return MorphismMatrix(self._matrix.change_ring(ring))
 
-    def stack(self, other: object) -> "MorphismMatrix":
+    def stack(self, other: object) -> MorphismMatrix:
         return MorphismMatrix(self._matrix.stack(_underlying(other)))
 
     def hermite_form(
         self, transformation: bool = False, **kwargs: Any
-    ) -> "MorphismMatrix | tuple":
+    ) -> MorphismMatrix | tuple:
         r"""Return the Hermite form, with its transformation when asked.
 
         ``transformation=True`` makes Sage return the pair $(H,U)$ with
@@ -181,7 +180,7 @@ class MorphismMatrix:
             return (MorphismMatrix(reduced), MorphismMatrix(transform))
         return MorphismMatrix(self._matrix.hermite_form(**kwargs))
 
-    def normal_form(self, include_zero_rows: bool = False) -> "MorphismMatrix":
+    def normal_form(self, include_zero_rows: bool = False) -> MorphismMatrix:
         r"""Return the row-reduced form appropriate to the base ring.
 
         Which normal form reduces a family of rows is a fact about the base
@@ -210,7 +209,7 @@ class MorphismMatrix:
             MorphismMatrix(right),
         )
 
-    def LLL(self) -> "MorphismMatrix":
+    def LLL(self) -> MorphismMatrix:
         r"""Return these rows LLL reduced.
 
         A reduction of the rows and nothing else: the rows span what they
@@ -225,21 +224,21 @@ class MorphismMatrix:
         integral: Matrix_integer_dense = self._matrix.change_ring(_ZZ)
         return MorphismMatrix(integral.LLL())
 
-    def __mul__(self, other: object) -> "CategoryMorphism":
+    def __mul__(self, other: object) -> CategoryMorphism:
         product = self._matrix * _underlying(other)
         return MorphismMatrix(product) if isinstance(product, Matrix) else product
 
-    def __rmul__(self, other: object) -> "MorphismMatrix":
+    def __rmul__(self, other: object) -> MorphismMatrix:
         product = _underlying(other) * self._matrix
         return MorphismMatrix(product) if isinstance(product, Matrix) else product
 
     # -- nullspaces: private, and matrices ---------------------------------
 
-    def _left_kernel_matrix(self) -> "MorphismMatrix":
+    def _left_kernel_matrix(self) -> MorphismMatrix:
         r"""Return the rows spanning $\{x : xA = 0\}$. Callers: morphisms only."""
         return MorphismMatrix(self._matrix.left_kernel_matrix())
 
-    def _right_kernel_matrix(self) -> "MorphismMatrix":
+    def _right_kernel_matrix(self) -> MorphismMatrix:
         r"""Return the rows spanning $\{x : Ax = 0\}$. Callers: morphisms only."""
         return MorphismMatrix(self._matrix.right_kernel_matrix())
 
@@ -267,13 +266,13 @@ class MorphismMatrix:
     def __repr__(self) -> str:
         return repr(self._matrix)
 
-    def _latex_(self) -> "str":
+    def _latex_(self) -> str:
         from sage.misc.latex import latex
 
         return latex(self._matrix)
 
 
-def matrix_group(generators: "Iterable[MorphismMatrix]") -> Any:
+def matrix_group(generators: Iterable[MorphismMatrix]) -> Any:
     r"""Return the GAP-backed matrix group these generate.
 
     Handing a group to GAP is the one legitimate reason to unwrap these
@@ -293,5 +292,5 @@ def matrix_group(generators: "Iterable[MorphismMatrix]") -> Any:
     return MatrixGroup([generator._matrix for generator in generators])
 
 
-def _underlying(value: "Element") -> "Matrix":
+def _underlying(value: Element) -> Matrix:
     return value._sage_matrix() if isinstance(value, MorphismMatrix) else value

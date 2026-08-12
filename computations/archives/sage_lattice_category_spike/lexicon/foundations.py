@@ -9,14 +9,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Literal, NewType
 
-from sage.rings.integer import Integer
-from sage.rings.rational import Rational
-from sage.rings.qqbar import AlgebraicReal
-from sage.sets.totally_ordered_finite_set import TotallyOrderedFiniteSet
-from sage.rings.real_mpfr import RealNumber as RealApproximation
 from sage.categories.sets_cat import Sets as SageSets
+from sage.rings.integer import Integer
+from sage.rings.qqbar import AlgebraicReal
+from sage.rings.rational import Rational
+from sage.rings.real_mpfr import RealNumber as RealApproximation
+from sage.sets.totally_ordered_finite_set import TotallyOrderedFiniteSet
 from sage.structure.element import Element, Matrix
-
 from sage.symbolic.expression import Expression as SymbolicExpression
 
 __all__ = [

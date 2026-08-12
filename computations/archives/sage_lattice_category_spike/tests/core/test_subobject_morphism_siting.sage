@@ -17,7 +17,7 @@ from sage.all import ZZ, identity_matrix, matrix, oo
 from sage_lattice_category_spike.lattice_categories import Lattice
 
 
-def test_realized_root_sublattice_dual_chain_induces_negation_action():
+def test_realized_root_sublattice_dual_chain_induces_negation_action() -> None:
     r"""The historical #100 reproducer, kept green: A2 realized as a genuine
     subobject of I_{0,3} (rank 2 strictly below the codomain rank 3), routed
     through ``dual -> finite_quotient -> induced_map_on_quotient``. This chain
@@ -39,7 +39,7 @@ def test_realized_root_sublattice_dual_chain_induces_negation_action():
     assert induced(generator) != generator  # negation is nontrivial on Z/3
 
 
-def test_induced_action_on_a_genuine_subobject_relation_quotient():
+def test_induced_action_on_a_genuine_subobject_relation_quotient() -> None:
     r"""The quotient machinery on a relation that is a genuine finite-index
     subobject (not the metric dual): the induced action of a cover isometry
     that preserves the relation is the correct action on the finite quotient."""
@@ -54,7 +54,7 @@ def test_induced_action_on_a_genuine_subobject_relation_quotient():
     assert induced(generator) != generator  # negation is nontrivial on Z/3
 
 
-def test_induced_map_rejects_isometry_not_preserving_the_relation():
+def test_induced_map_rejects_isometry_not_preserving_the_relation() -> None:
     r"""A morphism descends to the quotient exactly when the composite
     ``relation -> cover -> cover -> cover/relation`` is zero; an isometry of
     the cover that does not preserve the relation subobject is rejected."""
@@ -66,7 +66,7 @@ def test_induced_map_rejects_isometry_not_preserving_the_relation():
         swap.induced_map_on_quotient(quotient)
 
 
-def test_isometry_subgroup_preserves_is_a_factorization_query_on_the_subobject():
+def test_isometry_subgroup_preserves_is_a_factorization_query_on_the_subobject() -> None:
     r"""``preserves`` asks whether each generator composed with the inclusion
     factors through the inclusion -- sited on the carried witness. The bare
     spelling was degenerate (membership in the full standard module, true for
@@ -80,7 +80,7 @@ def test_isometry_subgroup_preserves_is_a_factorization_query_on_the_subobject()
     assert not O_M.subgroup([swap]).preserves(S)
 
 
-def test_index_is_the_cokernel_cardinality_of_the_inclusion():
+def test_index_is_the_cokernel_cardinality_of_the_inclusion() -> None:
     r"""The index ``[M : L]`` is BY DEFINITION the cardinality of the
     inclusion's cokernel -- asked on the morphism, total for every morphism
     (infinite when the image is not full rank)."""
@@ -94,7 +94,7 @@ def test_index_is_the_cokernel_cardinality_of_the_inclusion():
     assert thin.index() == oo  # rank 1 in rank 2: the cokernel is infinite
 
 
-def test_index_in_saturation_is_the_factorization_index_on_the_subobject():
+def test_index_in_saturation_is_the_factorization_index_on_the_subobject() -> None:
     r"""``[L^sat : L]`` is the cokernel cardinality of the mono factorization
     ``L -> L^sat`` of the carried inclusion -- sited on the subobject, not on
     a bare lattice (which carries no witness to saturate against)."""

@@ -194,7 +194,7 @@ review-packet:
 
     This repository is a mathematical research monorepo. The active code
     surface is the lattice spike under
-    `computations/experiments/sage_lattice_category_spike/` (plus its
+    `computations/archives/sage_lattice_category_spike/` (plus its
     feature-spike fork). Reviews here are advisory: they feed a triage
     ledger and never block work. An empty report is always preferable to
     a stretched finding.
@@ -254,7 +254,7 @@ review-packet:
 
     mkdir -p "$staging/policies" "$staging/spec" "$staging/references"
     cp STYLE.md "$staging/policies/STYLE.md"
-    cp computations/experiments/sage_lattice_category_spike/SYNTHETIC_LATTICE_MODEL.md "$staging/spec/"
+    cp computations/archives/sage_lattice_category_spike/SYNTHETIC_LATTICE_MODEL.md "$staging/spec/"
     cp .agents/references/terminology-dictionary.md "$staging/references/"
     cp .agents/references/slop-pattern-index.md "$staging/references/"
 

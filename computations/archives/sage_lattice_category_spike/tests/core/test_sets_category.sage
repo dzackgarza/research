@@ -17,6 +17,8 @@ from __future__ import annotations
 import json
 import os
 import subprocess
+from collections.abc import Iterator
+from typing import TYPE_CHECKING
 
 import pytest
 
@@ -25,6 +27,9 @@ from sage.categories.sets_cat import Sets as SageSets
 from sage.structure.parent import Parent
 
 from sage_lattice_category_spike.objects.sets import Sets
+
+if TYPE_CHECKING:
+    from sage.rings.integer import Integer
 
 
 # The complete documented owned registration set: the form axioms from
@@ -51,7 +56,7 @@ _OWNED_REGISTRATIONS = {
 }
 
 
-def test_axiom_registration_is_exact_and_idempotent_in_an_isolated_process():
+def test_axiom_registration_is_exact_and_idempotent_in_an_isolated_process() -> None:
     r"""A fresh Sage process importing the package changes ``all_axioms`` by
     exactly the documented owned registrations, and re-running the set-axiom
     adapter changes nothing."""
@@ -78,7 +83,7 @@ def test_axiom_registration_is_exact_and_idempotent_in_an_isolated_process():
     assert added == _OWNED_REGISTRATIONS
 
 
-def test_owned_sets_root_sits_over_sage_sets():
+def test_owned_sets_root_sits_over_sage_sets() -> None:
     r"""The owned root is a genuine subcategory of Sage's ``Sets()``, and a
     countably infinite set is expressed as ``Sets().Countable().Infinite()``,
     not a new named root."""
@@ -88,14 +93,14 @@ def test_owned_sets_root_sits_over_sage_sets():
     assert countably_infinite.is_subcategory(SageSets().Infinite())
 
 
-def test_finite_refines_countable_and_uncountable_refines_infinite():
+def test_finite_refines_countable_and_uncountable_refines_infinite() -> None:
     r"""Every finite set receives the countable enumeration contract, and an
     uncountable set is in particular infinite."""
     assert Sets().Finite().is_subcategory(Sets().Countable())
     assert Sets().Uncountable().is_subcategory(Sets().Infinite())
 
 
-def test_contradictory_owned_axioms_are_refused_at_the_request_boundary():
+def test_contradictory_owned_axioms_are_refused_at_the_request_boundary() -> None:
     r"""``Countable``/``Uncountable`` are disjoint at the owned boundary,
     ``Finite`` implies ``Countable`` so ``Finite``+``Uncountable`` is
     refused too, and ``Uncountable``+``Finite`` is refused by Sage's native
@@ -115,25 +120,25 @@ class OddNaturals(Parent):
     r"""The odd natural numbers, an operationally countable infinite set:
     enumeration ``1, 3, 5, ...`` with exact indexing and reverse lookup."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         Parent.__init__(self, category=Sets().Countable().Infinite())
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[Integer]:
         value = 1
         while True:
             yield value
             value += 2
 
-    def __getitem__(self, n):
+    def __getitem__(self, n: Integer) -> Integer:
         assert n >= 0, f"enumeration indices are nonnegative; found {n}"
         return 2 * n + 1
 
-    def index(self, element):
+    def index(self, element: Integer) -> Integer:
         assert element % 2 == 1 and element >= 1, f"{element} is not an odd natural"
         return (element - 1) // 2
 
 
-def test_countable_parent_runs_its_executable_witness_suite():
+def test_countable_parent_runs_its_executable_witness_suite() -> None:
     r"""The effective-witness contract in action: exhaustive duplicate-free
     prefix, index round trips on nontrivial members, and the uniform
     infinite-set consequences arriving through the Sage ``Infinite`` join —
@@ -161,11 +166,11 @@ def test_countable_parent_runs_its_executable_witness_suite():
 class ClaimedCountable(Parent):
     r"""A parent that opts into ``Countable`` without supplying the suite."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         Parent.__init__(self, category=Sets().Countable())
 
 
-def test_countable_claim_without_the_suite_fails_at_the_abstract_boundary():
+def test_countable_claim_without_the_suite_fails_at_the_abstract_boundary() -> None:
     r"""Opting in is trusted, but the executable obligations are forced:
     every suite operation is a Sage abstract method, so touching it on a
     parent that never implemented it fails loudly."""
@@ -180,11 +185,11 @@ class ContinuumStandIn(Parent):
     r"""A parent placed in ``Uncountable`` by trusted declaration: no
     enumeration data exists or is demanded."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         Parent.__init__(self, category=Sets().Uncountable())
 
 
-def test_uncountable_trusted_placement_owns_the_uniform_consequences():
+def test_uncountable_trusted_placement_owns_the_uniform_consequences() -> None:
     r"""Trusted placement instantiates cleanly with no witness suite and the
     consequences are category facts: uncountable, not countable, infinite
     cardinality."""

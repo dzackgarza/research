@@ -12,7 +12,7 @@ A comparison requires an explicit mathematical statement relating the named Lean
 
 ## Sage parity implementation {#sec-sage-parity-realization}
 
-The maintained base experiment is `computations/experiments/sage_lattice_category_spike`. Its public facade is `lattice_categories.py`; its packages implement algebraic objects, forms, morphisms, and lattice constructions.
+The maintained base experiment is `computations/archives/sage_lattice_category_spike`. Its public facade is `lattice_categories.py`; its packages implement algebraic objects, forms, morphisms, and lattice constructions.
 The generated [SageMath category framework reference](../sage/Sage-Category-Framework-Inventory.md) and [Sage category class catalogue](../sage/Sage-Category-Classes.md) describe the pinned Sage reference surface used for parity comparisons.
 
 ## Lean proof of concept {#sec-lean-realization}

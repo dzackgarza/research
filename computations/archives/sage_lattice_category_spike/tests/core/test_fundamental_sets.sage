@@ -15,10 +15,11 @@ witness discharging the categorical obligation.
 from __future__ import annotations
 
 import itertools
+from collections.abc import Iterator
 
 import pytest
 
-from sage.all import NN, QQ, RR, ZZ, oo
+from sage.all import NN, QQ, RR, ZZ, Integer, oo
 from sage.categories.homset import Hom
 from sage.categories.sets_cat import Sets as SageSets
 
@@ -31,7 +32,7 @@ from sage_lattice_category_spike.objects.fundamental_sets import (
 )
 
 
-def test_integers_reuse_sage_zigzag_with_the_exact_index_formula():
+def test_integers_reuse_sage_zigzag_with_the_exact_index_formula() -> None:
     integers = Integers()
     assert list(itertools.islice(iter(integers), 7)) == [0, 1, -1, 2, -2, 3, -3]
 
@@ -54,7 +55,7 @@ def test_integers_reuse_sage_zigzag_with_the_exact_index_formula():
     assert integers.cardinality() == oo
 
 
-def test_integers_elements_are_sage_integers():
+def test_integers_elements_are_sage_integers() -> None:
     r"""The owned object is a categorical address, not a new arithmetic:
     elements belong to Sage's ZZ, so downstream parent checks and coercion
     keep working."""
@@ -66,7 +67,7 @@ def test_integers_elements_are_sage_integers():
     assert QQ(1) / 2 not in integers
 
 
-def test_rationals_reuse_sage_height_enumeration_with_scan_reverse_lookup():
+def test_rationals_reuse_sage_height_enumeration_with_scan_reverse_lookup() -> None:
     rationals = Rationals()
     prefix = list(itertools.islice(iter(rationals), 9))
     assert prefix == [0, 1, -1, 1 / 2, -1 / 2, 2, -2, 1 / 3, -1 / 3]
@@ -83,7 +84,7 @@ def test_rationals_reuse_sage_height_enumeration_with_scan_reverse_lookup():
     assert rationals.cardinality() == oo
 
 
-def test_nonnegative_integers_enumerate_identically():
+def test_nonnegative_integers_enumerate_identically() -> None:
     naturals = NonNegativeIntegers()
     assert list(itertools.islice(iter(naturals), 5)) == [0, 1, 2, 3, 4]
     assert naturals.index(7) == 7
@@ -94,7 +95,7 @@ def test_nonnegative_integers_enumerate_identically():
     assert naturals.cardinality() == oo
 
 
-def test_reals_are_uncountable_by_trusted_placement():
+def test_reals_are_uncountable_by_trusted_placement() -> None:
     r"""Trusted placement: no enumeration data exists or is demanded, and
     the uniform consequences are category facts."""
     reals = Reals()
@@ -108,7 +109,7 @@ def test_reals_are_uncountable_by_trusted_placement():
     assert 1.5 in reals
 
 
-def test_enumeration_injection_is_an_element_of_the_actual_homset():
+def test_enumeration_injection_is_an_element_of_the_actual_homset() -> None:
     r"""The categorical obligation (a monomorphism X -> NN) is discharged by
     construction from the operational suite: the morphism lives in the real
     homset, computes index values as elements of the owned naturals, and is
@@ -135,7 +136,7 @@ def test_enumeration_injection_is_an_element_of_the_actual_homset():
     assert len(set(images)) == 15
 
 
-def test_generic_suite_derives_indexing_from_iteration_alone():
+def test_generic_suite_derives_indexing_from_iteration_alone() -> None:
     r"""A countable parent supplying ONLY the enumeration receives working
     indexing, reverse lookup, and the injection, all constructed from the
     iterator — the effective-witness principle in code."""
@@ -143,10 +144,10 @@ def test_generic_suite_derives_indexing_from_iteration_alone():
     from sage_lattice_category_spike.objects.sets import Sets
 
     class PowersOfTwo(Parent):
-        def __init__(self):
+        def __init__(self) -> None:
             Parent.__init__(self, facade=ZZ, category=Sets().Countable().Infinite().Facade())
 
-        def __iter__(self):
+        def __iter__(self) -> Iterator[Integer]:
             power = ZZ(1)
             while True:
                 yield power

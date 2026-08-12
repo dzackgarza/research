@@ -56,9 +56,10 @@ from __future__ import annotations
 
 import sage_lattice_category_spike.lattice_categories as lc
 from sage.all import ZZ, kronecker, matrix
+from sage_lattice_category_spike.lexicon import Lattice
 
 
-def _u_plus_2():
+def _u_plus_2() -> Lattice:
     r"""U (+) <2>: even, indefinite, rank-3 lattice with the Gram matrix
     ``matrix(ZZ, 3, [0,1,0, 1,0,0, 0,0,2])`` (hyperbolic plane plus a norm-2
     vector). Nontrivial 2-adic symbol with both a type-II and a type-I
@@ -66,7 +67,7 @@ def _u_plus_2():
     return lc.Lattice(matrix(ZZ, 3, [0, 1, 0, 1, 0, 0, 0, 0, 2]))
 
 
-def _cs99_local_excess(tuples, p):
+def _cs99_local_excess(tuples: tuple[tuple[int, ...], ...], p: int) -> int:
     r"""The p-excess (p>=3) / oddity (p=2) computed *independently from the
     canonical Jordan symbol* via the Conway-Sloane existence formulae
     [CS10 Ch.15 sec 7.7]:
@@ -138,7 +139,7 @@ _ROWS = [
 ]
 
 
-def test_local_genus_symbols_and_p_adic_invariants_match_conway_sloane_ch15():
+def test_local_genus_symbols_and_p_adic_invariants_match_conway_sloane_ch15() -> None:
     r"""Per-prime local genus symbols and p-adic invariants against
     Conway-Sloane, *SPLAG* Ch.15 [CS10], across positive-definite root
     lattices, an even unimodular lattice (E_8, E_8^2), the hyperbolic plane U,
@@ -201,7 +202,7 @@ def test_local_genus_symbols_and_p_adic_invariants_match_conway_sloane_ch15():
         assert genus.is_locally_even(p) == (lattice.is_even() if p == 2 else True), tag
 
 
-def test_genus_determined_by_signature_and_discriminant_form_nikulin_1_10_1():
+def test_genus_determined_by_signature_and_discriminant_form_nikulin_1_10_1() -> None:
     r"""Nikulin, Thm 1.10.1 / Cor 1.9.4 [Nik80]: the genus of an even lattice is
     determined by its signature (t_+, t_-) together with its discriminant
     quadratic form q_L. Demonstrated through ``same_genus`` / genus equality and
@@ -262,7 +263,7 @@ def test_genus_determined_by_signature_and_discriminant_form_nikulin_1_10_1():
     assert q.genus((4, 2)) == w42.genus()
 
 
-def test_is_genus_respects_gauss_milgram_signature_congruence_nikulin_1_3_3():
+def test_is_genus_respects_gauss_milgram_signature_congruence_nikulin_1_3_3() -> None:
     r"""``q.is_genus((t_+, t_-))`` decides whether an even lattice with
     discriminant form q_{A_2} (group C_3, Brown/Gauss-sum invariant 2) and the
     given signature exists. The decisions are oracle-pinned, and the necessary

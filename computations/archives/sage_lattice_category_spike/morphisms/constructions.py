@@ -22,7 +22,6 @@ from sage.matrix.special import block_diagonal_matrix
 from .. import lexicon
 
 if TYPE_CHECKING:
-    from ..objects.parents import SyntheticLattice
     from .homsets import Subobject, SyntheticLatticeCokernel
 
 

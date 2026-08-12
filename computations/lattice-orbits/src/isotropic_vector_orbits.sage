@@ -9,20 +9,27 @@ This implementation provides SageMath code for:
 4. Algorithm 3.2: Tits' buildings for maximal lattices
 """
 
-def smith_normal_form_with_transforms(A):
+from sage.arith.functions import lcm
+from sage.arith.misc import gcd
+from sage.matrix.constructor import matrix
+from sage.structure.element import Matrix
+from sage.modules.free_module_element import FreeModuleElement, vector
+from sage.rings.integer import Integer
+
+def smith_normal_form_with_transforms(A: Matrix) -> tuple[Matrix, Matrix, Matrix]:
     """
     Compute Smith normal form with transformation matrices.
     Returns P, Q such that P*A*Q is in Smith normal form.
     """
     return A.smith_form()
 
-def gram_matrix_to_dual_inclusion(G):
+def gram_matrix_to_dual_inclusion(G: Matrix) -> Matrix:
     """
     Convert Gram matrix G to inclusion G(L): L -> L^vee
     """
     return G
 
-def compute_divisor(v, L_gram):
+def compute_divisor(v: FreeModuleElement, L_gram: Matrix) -> Integer:
     """
     Compute div(v) - the positive generator of the ideal (v, L)
     """
@@ -45,18 +52,18 @@ class IsotropicVectorOrbits:
     Main class for computing orbits of isotropic vectors in lattices.
     """
     
-    def __init__(self, gram_matrix):
+    def __init__(self, gram_matrix: Matrix) -> None:
         """
         Initialize with a Gram matrix of the lattice.
-        
+
         INPUT:
         - gram_matrix: Symmetric integer matrix defining the quadratic form
         """
         self.G = matrix(ZZ, gram_matrix)
         self.n = self.G.nrows()
         self.signature = self._compute_signature()
-        
-    def _compute_signature(self):
+
+    def _compute_signature(self) -> tuple[int | Integer, int | Integer]:
         """
         Compute signature (t+, t-) of the quadratic form.
         """
@@ -67,13 +74,13 @@ class IsotropicVectorOrbits:
         t_minus = sum(1 for ev in eigenvals if ev < 0)
         return (t_plus, t_minus)
     
-    def is_isotropic_vector(self, v):
+    def is_isotropic_vector(self, v: FreeModuleElement) -> bool:
         """
         Check if vector v is isotropic (v^2 = 0).
         """
         return v * self.G * v == 0
-    
-    def is_definite_orthogonal_complement(self, v):
+
+    def is_definite_orthogonal_complement(self, v: FreeModuleElement) -> bool:
         """
         Check if v^perp is definite.
         """
@@ -89,7 +96,7 @@ class IsotropicVectorOrbits:
         eigenvals = perp_gram.change_ring(RR).eigenvalues()
         return all(ev > 0 for ev in eigenvals) or all(ev < 0 for ev in eigenvals)
     
-    def _orthogonal_complement_basis(self, v):
+    def _orthogonal_complement_basis(self, v: FreeModuleElement) -> list[FreeModuleElement]:
         """
         Compute basis for orthogonal complement of v.
         """
@@ -108,7 +115,7 @@ class IsotropicVectorOrbits:
         # For now, return the found orthogonal vectors
         return basis
         
-    def algorithm_2_1_orbit_equivalence(self, v1, v2, group_type='O'):
+    def algorithm_2_1_orbit_equivalence(self, v1: FreeModuleElement, v2: FreeModuleElement, group_type: str = 'O') -> bool:
         """
         Algorithm 2.1: Determine if v1 ~ v2 under Gamma for non-isotropic vectors
         where v1^perp is definite.
@@ -123,7 +130,7 @@ class IsotropicVectorOrbits:
         print(f"Algorithm 2.1: Testing orbit equivalence of {v1} and {v2}")
         
         # Step 1: Find minimal c_i such that c_i * v_i ∈ L
-        def find_minimal_c(v):
+        def find_minimal_c(v: FreeModuleElement) -> Integer:
             # For rational vector, find minimal c to make integral
             denoms = [QQ(x).denominator() for x in v]
             return lcm(denoms)
@@ -170,7 +177,7 @@ class IsotropicVectorOrbits:
         print(f"Found isometry: {isometry}")
         return True
     
-    def _compute_orthogonal_complement_lattice(self, w):
+    def _compute_orthogonal_complement_lattice(self, w: FreeModuleElement) -> list[FreeModuleElement]:
         """
         Compute lattice basis for w^perp using Smith normal form.
         """
@@ -198,7 +205,7 @@ class IsotropicVectorOrbits:
                     basis.append(e_i)
             return basis
     
-    def _are_lattices_isometric(self, basis1, basis2):
+    def _are_lattices_isometric(self, basis1: list[FreeModuleElement], basis2: list[FreeModuleElement]) -> bool:
         """
         Check if two lattices are isometric.
         """
@@ -215,7 +222,7 @@ class IsotropicVectorOrbits:
             
         return True  # Simplified check
     
-    def _find_lattice_isometry(self, basis1, basis2):
+    def _find_lattice_isometry(self, basis1: list[FreeModuleElement], basis2: list[FreeModuleElement]) -> Matrix | None:
         """
         Find isometry between two lattices if it exists.
         """
@@ -227,7 +234,9 @@ class IsotropicVectorOrbits:
         # Return identity as placeholder
         return matrix.identity(len(basis1))
     
-    def algorithm_3_2_tits_building_maximal(self):
+    def algorithm_3_2_tits_building_maximal(
+        self,
+    ) -> dict[str, list[FreeModuleElement] | list[str] | list[tuple[FreeModuleElement, str]]]:
         """
         Algorithm 3.2: Calculate Tits' building B(O+(L')) for maximal lattice L'
         of signature (2,n).
@@ -267,7 +276,7 @@ class IsotropicVectorOrbits:
             for plane in C:
                 edges.append((line, plane))
                 
-        building = {
+        building: dict[str, list[FreeModuleElement] | list[str] | list[tuple[FreeModuleElement, str]]] = {
             'vertices_lines': P,
             'vertices_planes': C, 
             'edges': edges
@@ -276,7 +285,7 @@ class IsotropicVectorOrbits:
         print(f"Tits building: {len(P)} lines, {len(C)} planes, {len(edges)} edges")
         return building
     
-    def _find_primitive_isotropic_vector(self):
+    def _find_primitive_isotropic_vector(self) -> FreeModuleElement | None:
         """
         Find a primitive isotropic vector in the lattice.
         """
@@ -299,7 +308,7 @@ class IsotropicVectorOrbits:
                     
         return None
     
-    def _compute_genus_0_n_minus_2(self, n):
+    def _compute_genus_0_n_minus_2(self, n: int | Integer) -> list[str | None]:
         """
         Compute genus classes for lattices of signature (0, n).
         Placeholder implementation.
@@ -311,14 +320,14 @@ class IsotropicVectorOrbits:
         # Return dummy genus with one class
         return [f"genus_class_{i}" for i in range(min(n, 3))]
     
-    def _create_isotropic_plane_basis(self, L0_class):
+    def _create_isotropic_plane_basis(self, L0_class: str | None) -> str:
         """
         Create basis for isotropic plane corresponding to L0 class.
         """
         # Simplified - would construct actual basis vectors
         return f"plane_basis_for_{L0_class}"
 
-def example_usage():
+def example_usage() -> None:
     """
     Example usage of the isotropic vector orbit algorithms.
     """

@@ -37,6 +37,7 @@ from sage.all import QQ, Infinity
 import pytest
 
 import sage_lattice_category_spike.lattice_categories as lc
+from sage_lattice_category_spike.lexicon import Rational
 
 
 # (name, rank, det, is_unimodular, [N(0), N(2), N(4), N(6)], CS10 theta-series location)
@@ -56,7 +57,9 @@ _THETA = [
 
 
 @pytest.mark.parametrize("name, rank, det, unimodular, shells", _THETA)
-def test_theta_series_low_shells_match_conway_sloane(name, rank, det, unimodular, shells):
+def test_theta_series_low_shells_match_conway_sloane(
+    name: str, rank: int, det: int, unimodular: bool, shells: list[int]
+) -> None:
     r"""[CS10 / Zotero T2WVLTDB] SPLAG Ch. 4 prints the theta series of A_2
     (sec 6.2), E_6, E_7, E_8 (secs 8.1-8.3) explicitly; the coefficient of q^m is
     N(m), the number of lattice vectors of norm m. This pins the *shell census*
@@ -108,7 +111,9 @@ _DUAL = [
 
 
 @pytest.mark.parametrize("name, rank, det, dual_det", _DUAL)
-def test_dual_lattice_determinants_match_conway_sloane(name, rank, det, dual_det):
+def test_dual_lattice_determinants_match_conway_sloane(
+    name: str, rank: int, det: int, dual_det: Rational
+) -> None:
     r"""[CS10 / Zotero T2WVLTDB] SPLAG Ch. 4 tabulates each dual lattice: A_n^*
     has det 1/(n+1) (sec 6.6), D_n^* has det 1/4 (sec 7.4), E_6^* has det 1/3
     (sec 8.3), E_7^* has det 1/2 (sec 8.2), and E_8^* = E_8 with det 1 (sec 8.1).
@@ -148,7 +153,9 @@ _LLL = [
 
 
 @pytest.mark.parametrize("name, rank, det, glue, tau", _LLL)
-def test_lll_reduction_preserves_conway_sloane_invariants(name, rank, det, glue, tau):
+def test_lll_reduction_preserves_conway_sloane_invariants(
+    name: str, rank: int, det: int, glue: tuple[int, ...], tau: int
+) -> None:
     r"""[CS10 / Zotero T2WVLTDB] LLL / reduced_basis change the generating basis
     but not the lattice, so they must preserve every isometry invariant published
     in SPLAG Ch. 4: the determinant, the glue group L^*/L (secs 6.1/7.1/8.1-8.3),

@@ -21,7 +21,7 @@ from math import factorial
 import sage_lattice_category_spike.lattice_categories as lc
 
 
-def test_root_lattice_weyl_group_orders_rank_ge_7_match_conway_sloane_chapter_4():
+def test_root_lattice_weyl_group_orders_rank_ge_7_match_conway_sloane_chapter_4() -> None:
     r"""CS10 Ch. 4 automorphism-group orders g = g_0 g_1 [CS10]:
 
       - A_8 (sec 6.1): G_0 = W(A_8) = S_9 (order 9!), g_1 = 2 (negation);

@@ -7,7 +7,14 @@ indices": the valence is part of what the object is, and these check that it
 is carried rather than inferred at the call site.
 """
 
+from typing import TYPE_CHECKING
+
 import pytest
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
+    from dzack_research.preamble.categories.modules.tensors import TensorElement
 
 
 def _ensure_preamble() -> None:
@@ -19,11 +26,12 @@ def _ensure_preamble() -> None:
     Lattices.install(globals())
 
 
-def _tensor():
+def _tensor() -> "Callable[..., TensorElement]":
     _ensure_preamble()
     from dzack_research.preamble.categories.modules.tensors import tensor
 
-    return tensor
+    constructor: "Callable[..., TensorElement]" = tensor
+    return constructor
 
 
 def test_a_gram_matrix_is_a_twice_covariant_tensor() -> None:
@@ -228,8 +236,8 @@ def test_tensor_values_are_sage_elements() -> None:
     from sage.structure.element import Element
 
     value = _tensor()(ZZ, [[1, 0], [0, 1]])
-    assert isinstance(value, Element)
     assert value.parent().zero() + value == value
+    assert isinstance(value, Element)
 
 
 def test_mixed_tensors_are_the_homogeneous_pieces_of_one_bigraded_algebra() -> None:

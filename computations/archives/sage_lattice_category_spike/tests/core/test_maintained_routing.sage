@@ -29,7 +29,7 @@ from sage_lattice_category_spike.objects.modules import (
 from sage_lattice_category_spike.objects.sets import Sets
 
 
-def test_lattices_route_through_the_owned_module_spine():
+def test_lattices_route_through_the_owned_module_spine() -> None:
     a2 = Lattice("A2")
     assert a2 in FiniteFreeModules(ZZ)
     assert a2 in FiniteProjectiveModules(ZZ)
@@ -39,7 +39,7 @@ def test_lattices_route_through_the_owned_module_spine():
     assert not a2.is_torsion()
 
 
-def test_a_positive_rank_lattice_is_countably_infinite_through_the_rollup():
+def test_a_positive_rank_lattice_is_countably_infinite_through_the_rollup() -> None:
     a2 = Lattice("A2")
     cardinality = a2.cardinality()
     assert isinstance(cardinality, Cardinal)
@@ -54,7 +54,7 @@ def test_a_positive_rank_lattice_is_countably_infinite_through_the_rollup():
     assert rational.is_countable()
 
 
-def test_the_rank_zero_lattice_is_the_singleton():
+def test_the_rank_zero_lattice_is_the_singleton() -> None:
     trivial = Lattice(matrix(ZZ, 0, 0, []), label="zero-lattice")
     cardinality = trivial.cardinality()
     assert isinstance(cardinality, Cardinal)
@@ -65,7 +65,7 @@ def test_the_rank_zero_lattice_is_the_singleton():
     assert points[0].parent() is trivial
 
 
-def test_enumeration_returns_lattice_elements_through_the_chosen_basis():
+def test_enumeration_returns_lattice_elements_through_the_chosen_basis() -> None:
     a2 = Lattice("A2")
     elements = list(islice(iter(a2), 24))
     assert len(set(elements)) == 24
@@ -77,12 +77,12 @@ def test_enumeration_returns_lattice_elements_through_the_chosen_basis():
     assert all(element.q() <= 0 for element in elements)
 
 
-def test_discriminant_groups_route_through_the_owned_additive_spine():
+def test_discriminant_groups_route_through_the_owned_additive_spine() -> None:
     group = Lattice("A2").discriminant_group()
     assert group in AdditiveGroups().AdditiveCommutative().Finite()
 
 
-def test_a_discriminant_group_rolls_up_through_its_cyclic_factor_product():
+def test_a_discriminant_group_rolls_up_through_its_cyclic_factor_product() -> None:
     r"""The finite abelian group's rollup point is its cyclic-factor
     decomposition ``D = prod Z/n_i``: cardinality is the product's Cardinal
     and enumeration maps the factor product back through the group's own
@@ -110,7 +110,7 @@ def test_a_discriminant_group_rolls_up_through_its_cyclic_factor_product():
     assert trivial.elements() == (trivial.zero(),)
 
 
-def test_a_genus_is_a_finite_set_placed_in_the_owned_axioms():
+def test_a_genus_is_a_finite_set_placed_in_the_owned_axioms() -> None:
     genus = Lattice("A2").genus()
     assert genus in Sets().Finite()
 
@@ -125,7 +125,7 @@ def test_a_genus_is_a_finite_set_placed_in_the_owned_axioms():
     assert representatives[0].genus() == genus
 
 
-def test_the_isometry_homset_routes_through_the_torsor_node():
+def test_the_isometry_homset_routes_through_the_torsor_node() -> None:
     r"""Isom(L, M) carries its O(M)-torsor structure as first-class data
     (acting_group + act) and its set behavior arrives through the general
     node's typed operations — the leaf spellings are gone."""
@@ -151,7 +151,7 @@ def test_the_isometry_homset_routes_through_the_torsor_node():
     assert list(empty) == []
 
 
-def test_isometry_groups_route_through_the_owned_group_node():
+def test_isometry_groups_route_through_the_owned_group_node() -> None:
     r"""O(L) is placed in the owned Groups() node, so the forwarding root
     serves its set behavior: cardinality arrives through the underlying
     set's finite materialization, while order() keeps its classical
@@ -166,7 +166,7 @@ def test_isometry_groups_route_through_the_owned_group_node():
     assert isinstance(group.order(), Integer)
 
 
-def test_lattice_coordinates_speak_the_based_elements_own_vocabulary():
+def test_lattice_coordinates_speak_the_based_elements_own_vocabulary() -> None:
     r"""The free-module coordinate chart consumes elements ONLY through the
     one owned presentation crossing (``coordinate_vector``, declared
     abstract on the free node); the based lattice supplies that crossing
@@ -185,7 +185,7 @@ def test_lattice_coordinates_speak_the_based_elements_own_vocabulary():
     assert back.parent() is a2
 
 
-def test_subgroup_and_infinite_index_answers_are_cardinals():
+def test_subgroup_and_infinite_index_answers_are_cardinals() -> None:
     r"""The owned-cardinal contract reaches the quotient-side vocabulary:
     a discriminant subgroup's cardinality and a non-full-rank subobject's
     infinite index are Cardinals, absorbing Sage's two-valued infinity on

@@ -22,7 +22,7 @@ from sage_lattice_category_spike.lattice_categories import Lattice
 from sage_lattice_category_spike.objects.cardinals import Cardinal
 
 
-def test_baseline_discriminant_group_of_a2():
+def test_baseline_discriminant_group_of_a2() -> None:
     r"""Row: A2's discriminant group — order three, exactly the cyclic
     group ZZ/3 in behavior."""
     group = Lattice("A2").discriminant_group()
@@ -43,14 +43,14 @@ def test_baseline_discriminant_group_of_a2():
     assert witness + witness + witness == group.zero()
 
 
-def test_baseline_discriminant_group_of_a1():
+def test_baseline_discriminant_group_of_a1() -> None:
     r"""Row: A1's discriminant group — order two."""
     group = Lattice("A1").discriminant_group()
     assert group.order() == 2
     assert len(list(group)) == 2
 
 
-def test_baseline_isometry_group_of_a2():
+def test_baseline_isometry_group_of_a2() -> None:
     r"""Row: O(A2) — order twelve, elements are lattice morphisms with the
     right boundaries, inverses compose to the identity."""
     a2 = Lattice("A2")
@@ -70,7 +70,7 @@ def test_baseline_isometry_group_of_a2():
     assert witness * witness.inverse() == a2.identity_morphism()
 
 
-def test_baseline_isometry_homset_of_a2():
+def test_baseline_isometry_homset_of_a2() -> None:
     r"""Row: Isom(A2, A2) — cardinality twelve as a first-class homset."""
     a2 = Lattice("A2")
     homset = a2.Isom(a2)
@@ -83,7 +83,7 @@ def test_baseline_isometry_homset_of_a2():
     assert isinstance(cardinality, Cardinal)
 
 
-def test_baseline_genus_of_a2():
+def test_baseline_genus_of_a2() -> None:
     r"""Row: the A2 genus — a single isometry class, with cardinality
     agreeing with the class number and the representative genuinely
     isometric to A2."""

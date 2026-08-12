@@ -28,11 +28,30 @@ Findings these tests encode, each verified against this Sage:
 
 # Category hooks: load mathematical preamble scripts (not notebook init.sage).
 from pathlib import Path
-from typing import Callable, ParamSpec, cast
+from typing import TYPE_CHECKING, Protocol, cast
 
 import dzack_research
 
-_LatticeConstructorParams = ParamSpec("_LatticeConstructorParams")
+if TYPE_CHECKING:
+    # Degrades to the unresolvable preamble surface today, and binds to the
+    # real class the day the preamble grows importable types.
+    from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModule
+
+
+class _LatticeConstructor(Protocol):
+    r"""What the sugar calls: a name or Gram specification, and ``names=``.
+
+    A ``ParamSpec`` cannot say this -- unbound, it collapses every call
+    signature to ``Never`` -- and the constructor's contract is concrete:
+    the preparser hands it a string plus the generator names it parsed.
+    """
+
+    def __call__(
+        self,
+        specification: str,
+        *,
+        names: "str | tuple[str, ...] | None" = None,
+    ) -> "FormModule": ...
 
 from dzack_research.preamble.install import install_preamble
 install_preamble(globals())
@@ -60,7 +79,7 @@ def test_set_literal_preparser_preserves_sage_generator_declarations() -> None:
     assert namespace["weight"] == 3 * namespace["alpha1"] + 2 * namespace["alpha2"]
 
 
-def _lattice_constructor() -> Callable[_LatticeConstructorParams, "Lattice"]:
+def _lattice_constructor() -> _LatticeConstructor:
     r"""Return the preamble's lattice constructor.
 
     Not ``sage.all``'s function of this name.  The preamble installs its own
@@ -69,7 +88,8 @@ def _lattice_constructor() -> Callable[_LatticeConstructorParams, "Lattice"]:
     ``module_generators`` and ``with_names`` live.  Sage's returns a submodule
     of a base-changed module over $\mathbb Q$, which answers to none of them.
     """
-    return IntegralLattice
+    constructor: _LatticeConstructor = IntegralLattice
+    return constructor
 
 
 def test_explicit_generator_form_preparses_to_names_keyword() -> None:

@@ -20,7 +20,6 @@ module onto its coordinate description.
 
 from __future__ import annotations
 
-
 from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any
 
@@ -36,7 +35,7 @@ from sage.categories.morphism import SetMorphism
 from sage.categories.sets_cat import Sets as SageSets
 from sage.matrix.constructor import matrix
 
-from ..lexicon import BaseRing, SageParent
+from ..lexicon import BaseRing
 from .functors import CatObject
 from .magmas import AdditiveGroups
 
@@ -124,7 +123,7 @@ class FreeModules(CatObject, Category_over_base_ring):
             return False
 
         @abstract_method
-        def coordinate_vector(self, element: "Element") -> Vector:
+        def coordinate_vector(self, element: Element) -> Vector:
             r"""The element's vector of scalars in the module's distinguished
             presentation (Sage's own free-module spelling of this map) — the
             ONE boundary where an element presentation crosses into

@@ -3,7 +3,7 @@
 The **separate spike carrying the genuinely new mathematics** — things not in Sage in any meaningful way yet, but that should be.
 It is the fork of the base parity spike, per the ruling [spike-scope-is-sage-parity-only-new-mathematics-forks-into-a-separate-spike].
 
-This spike **imports** the base spike (`computations/experiments/sage_lattice_category_spike/`) — "call the spike an import for all future work."
+This spike **imports** the base spike (`computations/archives/sage_lattice_category_spike/`) — "call the spike an import for all future work."
 The base is the drop-in Sage replacement / parity substrate; this package supplies engines and vocabulary that go **beyond** what Sage can compute.
 
 ## Scope (the FORK bucket)

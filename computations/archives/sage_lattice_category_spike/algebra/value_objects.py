@@ -14,13 +14,11 @@ General Dedekind K/R is explicitly OUT of v1 scope: a non-ZZ base ring fails lou
 
 from __future__ import annotations
 
-from typing import Any, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 from sage.groups.additive_abelian.qmodnz import QmodnZ
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
-
-
 
 if TYPE_CHECKING:
     from ..lexicon import (
@@ -30,7 +28,7 @@ if TYPE_CHECKING:
         ValueModule,
     )
 
-def value_module(base_ring: "BaseRing" = ZZ, level: "Rational" = ZZ.one()) -> "Module":
+def value_module(base_ring: BaseRing = ZZ, level: Rational = ZZ.one()) -> Module:
     """The K/R form-value object K/(level * R), K = Frac(R).
 
     For R = ZZ this is QQ/(level * ZZ), returned as a Sage ``QmodnZ``:
@@ -43,12 +41,12 @@ def value_module(base_ring: "BaseRing" = ZZ, level: "Rational" = ZZ.one()) -> "M
     return QmodnZ(QQ(level))
 
 
-def bilinear_value_module(base_ring: "BaseRing" = ZZ) -> "ValueModule":
+def bilinear_value_module(base_ring: BaseRing = ZZ) -> ValueModule:
     """The bilinear form-value object K/R (QQ/ZZ for R = ZZ)."""
     return value_module(base_ring, ZZ.one())
 
 
-def quadratic_value_module(base_ring: "BaseRing" = ZZ, level: "Rational" = 2 * ZZ.one()) -> "ValueModule":
+def quadratic_value_module(base_ring: BaseRing = ZZ, level: Rational = 2 * ZZ.one()) -> ValueModule:
     """The quadratic form-value object K/(level * R) (QQ/2ZZ for the even case)."""
     return value_module(base_ring, level)
 

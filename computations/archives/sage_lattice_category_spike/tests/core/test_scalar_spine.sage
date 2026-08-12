@@ -49,7 +49,7 @@ from sage_lattice_category_spike.objects.scalars import (
 )
 
 
-def test_the_scalar_spine_chains_into_both_operation_roots():
+def test_the_scalar_spine_chains_into_both_operation_roots() -> None:
     assert Rings().is_subcategory(SageRings())
     assert Rings().is_subcategory(Rngs())
     assert Rings().is_subcategory(Semirings())
@@ -64,7 +64,7 @@ def test_the_scalar_spine_chains_into_both_operation_roots():
     assert Fields().is_subcategory(SageFields())
 
 
-def test_canonical_scalars_sit_at_their_full_placement():
+def test_canonical_scalars_sit_at_their_full_placement() -> None:
     integers = Integers()
     assert integers.category().is_subcategory(Rings().Commutative())
     assert integers.category().is_subcategory(SageEuclideanDomains())
@@ -86,7 +86,7 @@ def test_canonical_scalars_sit_at_their_full_placement():
     assert reals.cardinality() == continuum
 
 
-def test_finite_scalars_have_exact_cardinality_through_their_hosts():
+def test_finite_scalars_have_exact_cardinality_through_their_hosts() -> None:
     mod_six = IntegerModRing(6)
     assert mod_six.category().is_subcategory(Rings().Commutative().Finite())
     assert mod_six.cardinality() == 6
@@ -102,7 +102,7 @@ def test_finite_scalars_have_exact_cardinality_through_their_hosts():
     assert len(set(elements)) == 9
 
 
-def test_no_scalar_class_repeats_a_generic_set_method():
+def test_no_scalar_class_repeats_a_generic_set_method() -> None:
     r"""The anti-bypass direction: the facades' own classes carry only
     their exact witnesses (enumeration, index formulas); cardinality and
     the countability predicates resolve through the forwarding roots and
@@ -115,7 +115,7 @@ def test_no_scalar_class_repeats_a_generic_set_method():
         assert "cardinality" not in vars(facade_class)
 
 
-def test_the_ring_diamond_reaches_one_underlying_set_on_objects_and_morphisms():
+def test_the_ring_diamond_reaches_one_underlying_set_on_objects_and_morphisms() -> None:
     integers = Integers()
     mod_six = IntegerModRing(6)
     through_multiplication = UnderlyingSetFunctor(Magmas())
@@ -130,7 +130,7 @@ def test_the_ring_diamond_reaches_one_underlying_set_on_objects_and_morphisms():
     assert mult_image(ZZ(11)) == add_image(ZZ(11)) == Zmod(6)(5)
 
 
-def test_enumeration_witnesses_survive_the_placement_refinement():
+def test_enumeration_witnesses_survive_the_placement_refinement() -> None:
     r"""The CP1 witness suite is untouched by the scalar refinement: same
     zigzag, same exact index formula, same round trips."""
     integers = Integers()

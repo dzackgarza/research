@@ -13,11 +13,18 @@ footgun that invites reasoning about it as a vector in R^n.
 """
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import pytest
 
 from sage.all import ZZ, matrix, vector
 
 from sage_lattice_category_spike.lattice_categories import Lattice, Lattices
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
+    from sage_lattice_category_spike import lexicon
 
 
 CONSTRUCTORS = [
@@ -29,14 +36,16 @@ CONSTRUCTORS = [
 ]
 
 
-def _coordinate_forms(element):
+def _coordinate_forms(
+    element: lexicon.LatticeElement,
+) -> list[tuple[lexicon.Integer | lexicon.Rational, ...] | list[lexicon.Integer | lexicon.Rational] | lexicon.Vector]:
     r"""The raw coordinate objects the element must NOT be conflated with."""
     coordinates = list(element.coefficient_vector())
     return [tuple(coordinates), coordinates, vector(ZZ, coordinates)]
 
 
 @pytest.mark.parametrize("construct", CONSTRUCTORS)
-def test_element_is_not_equal_to_any_coordinate_object(construct):
+def test_element_is_not_equal_to_any_coordinate_object(construct: Callable[[], lexicon.Lattice]) -> None:
     r"""``element == (its coordinates as tuple/list/vector)`` must be False: the
     element lives in the lattice, the coordinates live in R^n; they are distinct
     objects and must never compare equal via coercion."""
@@ -48,7 +57,7 @@ def test_element_is_not_equal_to_any_coordinate_object(construct):
 
 
 @pytest.mark.parametrize("construct", CONSTRUCTORS)
-def test_element_is_not_contained_among_coordinate_objects(construct):
+def test_element_is_not_contained_among_coordinate_objects(construct: Callable[[], lexicon.Lattice]) -> None:
     r"""Membership routes through ``==``: an element must not be found inside a
     container of its own coordinate representations."""
     lattice = construct()
@@ -57,7 +66,7 @@ def test_element_is_not_contained_among_coordinate_objects(construct):
 
 
 @pytest.mark.parametrize("construct", CONSTRUCTORS)
-def test_element_repr_is_not_a_bare_coordinate(construct):
+def test_element_repr_is_not_a_bare_coordinate(construct: Callable[[], lexicon.Lattice]) -> None:
     r"""The element must not RENDER as its raw coordinates -- a lattice element
     is a combination of generators, not the tuple/list/vector of coefficients.
     Asserts off the coordinate reprs only, not on any particular symbolic form."""

@@ -11,7 +11,7 @@ import sage_lattice_category_spike.lattice_categories as lc
 from sage.all import ZZ, identity_matrix
 
 
-def test_identity_morphism_is_the_identity_isometry():
+def test_identity_morphism_is_the_identity_isometry() -> None:
     A2 = lc.Lattice("A2")
     idm = A2.identity_morphism()
     assert idm.domain() is A2
@@ -19,14 +19,14 @@ def test_identity_morphism_is_the_identity_isometry():
     assert idm.matrix() == identity_matrix(ZZ, 2)
 
 
-def test_discriminant_group_invariant_factors_names_the_invariants():
+def test_discriminant_group_invariant_factors_names_the_invariants() -> None:
     D4 = lc.Lattice("D4")
     group = D4.discriminant_group()
     assert group.invariant_factors() == group.invariants()
     assert group.invariant_factors() == (2, 2)
 
 
-def test_direct_sum_is_variadic_and_agrees_with_operators():
+def test_direct_sum_is_variadic_and_agrees_with_operators() -> None:
     U = lc.Lattice("U")
     variadic = U.direct_sum(U, U)
     operator = U + U + U
@@ -36,7 +36,7 @@ def test_direct_sum_is_variadic_and_agrees_with_operators():
     assert reduced.gram_matrix() == variadic.gram_matrix()
 
 
-def test_signature_returns_the_pair_p_q_not_the_integer():
+def test_signature_returns_the_pair_p_q_not_the_integer() -> None:
     r"""#9: ``signature()`` is the pair ``(p, q)`` (positive index, negative
     index), not the integer ``p - q`` it inherited from Sage. The classical
     integer ``p - q`` is derived, never the name of the method."""
@@ -47,7 +47,7 @@ def test_signature_returns_the_pair_p_q_not_the_integer():
     assert sig != sig[0] - sig[1]   # a pair, not the old integer p - q
 
 
-def test_repr_shows_mathematical_invariants_not_just_rank_and_ring():
+def test_repr_shows_mathematical_invariants_not_just_rank_and_ring() -> None:
     E8 = lc.Lattice("E8")
     text = repr(E8)
     assert "rank 8" in text

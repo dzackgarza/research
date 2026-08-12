@@ -23,7 +23,7 @@ __all__ = ["Character"]
 class Character:
     r"""A class function $\chi:G\to K$ afforded by a representation of $G$."""
 
-    def __init__(self, class_function: "ClassFunction | Character") -> None:
+    def __init__(self, class_function: ClassFunction | Character) -> None:
         match class_function:
             case Character():
                 self._class_function = class_function._class_function
@@ -34,15 +34,15 @@ class Character:
                     f"{class_function!r} is not a computed class function"
                 )
 
-    def group(self) -> "Group":
+    def group(self) -> Group:
         r"""Return the group $G$ this character is a class function on."""
         return self._class_function.domain()
 
-    def __call__(self, element: "GroupElement") -> "Element":
+    def __call__(self, element: GroupElement) -> Element:
         r"""Return $\chi(g)$, the trace of $g$ in a representation affording $\chi$."""
         return self._class_function(element)
 
-    def degree(self) -> "Integer":
+    def degree(self) -> Integer:
         r"""Return $\chi(1)$, the dimension of a representation affording $\chi$."""
         return self._class_function.degree()
 
@@ -69,7 +69,7 @@ class Character:
             for constituent in self._class_function.irreducible_constituents()
         )
 
-    def __add__(self, other: object) -> "Character":
+    def __add__(self, other: object) -> Character:
         r"""Return $\chi+\psi$, the character of a direct sum."""
         assert isinstance(other, Character), (
             "a character is added to another character of the same group"

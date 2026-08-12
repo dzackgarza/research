@@ -61,11 +61,13 @@ else:
         "Groups",
         "Involutions",
         "Lattices",
+        "Modules",
         "NegativeDefTwoElementary",
         "TwoElementary",
     ]
 
     from dzack_research.preamble.categories.group.groups import OwnedGroups as Groups
+    from dzack_research.preamble.categories.modules.pure.modules import Modules
     groups = Groups
 
 

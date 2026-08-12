@@ -3,7 +3,7 @@
 from sage.all import QQ, ProjectiveSpace
 
 
-def test_projection_pullback_matches_multiindices():
+def test_projection_pullback_matches_multiindices() -> None:
     """Pulling back divisors along projections preserves multigrading."""
     P1_x = ProjectiveSpace(QQ, 1, names=("x0", "x1"))
     P1_y = ProjectiveSpace(QQ, 1, names=("y0", "y1"))
@@ -22,7 +22,7 @@ def test_projection_pullback_matches_multiindices():
     assert pulled_sections.rank() == 3
 
 
-def test_identity_base_change_is_faithful_on_schemes_and_bundles():
+def test_identity_base_change_is_faithful_on_schemes_and_bundles() -> None:
     """Base-change along the base identity preserves dimension and bundle data."""
     P2 = ProjectiveSpace(QQ, 2, names=("z0", "z1", "z2"))
     scheme = P2

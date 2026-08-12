@@ -14,6 +14,8 @@ of the actual homsets.
 from __future__ import annotations
 
 import itertools
+from collections.abc import Iterator
+from typing import TYPE_CHECKING
 
 import pytest
 from sage.all import ZZ, oo
@@ -31,42 +33,45 @@ from sage_lattice_category_spike.objects.set_constructions import (
 )
 from sage_lattice_category_spike.objects.sets import Sets
 
+if TYPE_CHECKING:
+    from sage.rings.integer import Integer
+
 
 class PrimesBelowSeven(Parent):
     r"""The finite set {2, 3, 5}, operationally countable. A facade that is
     a PROPER subset of its host must own membership: the facade default
     delegates to the host."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         Parent.__init__(self, facade=ZZ, category=Sets().Finite().Facade())
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[Integer]:
         return iter([ZZ(2), ZZ(3), ZZ(5)])
 
-    def __contains__(self, x):
+    def __contains__(self, x: object) -> bool:
         return x in (2, 3, 5)
 
-    def cardinality(self):
+    def cardinality(self) -> Integer:
         return ZZ(3)
 
 
 class EmptySet(Parent):
     r"""The empty set, finite with cardinality zero."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         Parent.__init__(self, facade=ZZ, category=Sets().Finite().Facade())
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[Integer]:
         return iter(())
 
-    def __contains__(self, x):
+    def __contains__(self, x: object) -> bool:
         return False
 
-    def cardinality(self):
+    def cardinality(self) -> Integer:
         return ZZ(0)
 
 
-def test_empty_product_is_the_finite_singleton():
+def test_empty_product_is_the_finite_singleton() -> None:
     empty_product = CartesianProduct()
     assert empty_product.is_finite()
     assert empty_product.cardinality() == 1
@@ -75,7 +80,7 @@ def test_empty_product_is_the_finite_singleton():
     assert elements[0] == empty_product(())
 
 
-def test_empty_factor_takes_precedence_over_everything():
+def test_empty_factor_takes_precedence_over_everything() -> None:
     r"""A product with an empty factor is the finite empty set, even when
     another factor is uncountable."""
     product = CartesianProduct(Reals(), EmptySet())
@@ -85,7 +90,7 @@ def test_empty_factor_takes_precedence_over_everything():
     assert list(product) == []
 
 
-def test_finite_product_multiplies_exact_cardinalities():
+def test_finite_product_multiplies_exact_cardinalities() -> None:
     primes = PrimesBelowSeven()
     product = CartesianProduct(primes, primes)
     assert product.is_finite()
@@ -98,7 +103,7 @@ def test_finite_product_multiplies_exact_cardinalities():
     assert product[product.index(product((5, 2)))] == product((5, 2))
 
 
-def test_countable_product_of_infinite_factors_is_fairly_enumerated():
+def test_countable_product_of_infinite_factors_is_fairly_enumerated() -> None:
     integers = Integers()
     product = CartesianProduct(integers, integers)
     assert product.is_countable()
@@ -117,7 +122,7 @@ def test_countable_product_of_infinite_factors_is_fairly_enumerated():
     assert product[product.index(witness)] == witness
 
 
-def test_uncountable_factor_propagates_when_others_are_nonempty():
+def test_uncountable_factor_propagates_when_others_are_nonempty() -> None:
     product = CartesianProduct(Integers(), Reals())
     assert product.is_uncountable()
     assert not product.is_countable()
@@ -126,7 +131,7 @@ def test_uncountable_factor_propagates_when_others_are_nonempty():
     assert product.cardinality() > aleph0
 
 
-def test_projections_are_homset_elements_acting_componentwise():
+def test_projections_are_homset_elements_acting_componentwise() -> None:
     primes = PrimesBelowSeven()
     integers = Integers()
     product = CartesianProduct(primes, integers)
@@ -141,7 +146,7 @@ def test_projections_are_homset_elements_acting_componentwise():
     assert second(pair).parent() is ZZ
 
 
-def test_cartesian_product_morphism_acts_componentwise():
+def test_cartesian_product_morphism_acts_componentwise() -> None:
     integers = Integers()
     negate = SetMorphism(Hom(integers, integers, SageSets()), lambda v: -v)
     double = SetMorphism(Hom(integers, integers, SageSets()), lambda v: 2 * v)
@@ -153,7 +158,7 @@ def test_cartesian_product_morphism_acts_componentwise():
     assert image == product_map.codomain()((-3, 10))
 
 
-def test_disjoint_union_tags_summands_and_sums_cardinality():
+def test_disjoint_union_tags_summands_and_sums_cardinality() -> None:
     primes = PrimesBelowSeven()
     union = DisjointUnion(primes, primes)
     assert union.is_finite()
@@ -168,7 +173,7 @@ def test_disjoint_union_tags_summands_and_sums_cardinality():
     assert list(empty_union) == []
 
 
-def test_disjoint_union_interleaves_countable_summands_fairly():
+def test_disjoint_union_interleaves_countable_summands_fairly() -> None:
     integers = Integers()
     primes = PrimesBelowSeven()
     union = DisjointUnion(integers, primes)
@@ -187,14 +192,14 @@ def test_disjoint_union_interleaves_countable_summands_fairly():
     assert injection(ZZ(5)) in union
 
 
-def test_uncountable_summand_makes_the_union_uncountable():
+def test_uncountable_summand_makes_the_union_uncountable() -> None:
     union = DisjointUnion(Integers(), Reals())
     assert union.is_uncountable()
     assert not union.is_finite()
     assert union.cardinality() == continuum
 
 
-def test_disjoint_union_membership_agrees_with_construction_on_sage_integer_tags():
+def test_disjoint_union_membership_agrees_with_construction_on_sage_integer_tags() -> None:
     r"""A preparsed literal tag is a Sage Integer, not a Python int: the
     advertised raw ``(tag, element)`` representation must be accepted by
     membership exactly where the element constructor accepts it."""
@@ -206,7 +211,7 @@ def test_disjoint_union_membership_agrees_with_construction_on_sage_integer_tags
     assert ("1", ZZ(5)) not in union
 
 
-def test_disjoint_union_construction_rejects_non_integral_tags_loudly():
+def test_disjoint_union_construction_rejects_non_integral_tags_loudly() -> None:
     r"""Membership rejects non-integral tags, so construction must too:
     a raw point like ``(0.5, x)`` or ``("1", x)`` fails loudly instead of
     being silently normalized into summand 0 or 1."""
@@ -218,7 +223,7 @@ def test_disjoint_union_construction_rejects_non_integral_tags_loudly():
             union((bad_tag, ZZ(5)))
 
 
-def test_owned_constructions_stay_aligned_with_the_delegated_native_machinery():
+def test_owned_constructions_stay_aligned_with_the_delegated_native_machinery() -> None:
     r"""The owned parents delegate fair iteration to Sage's native
     constructions; this pins the alignment at the REAL boundary — the
     owned enumeration is exactly the delegated one's, element for element,

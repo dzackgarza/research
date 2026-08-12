@@ -11,6 +11,8 @@ operations sit on the data they consume — a morphism or a pair of them.
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from sage.all import ZZ, matrix
 
 from sage.categories.sets_cat import Sets as SageSets
@@ -22,8 +24,11 @@ from sage_lattice_category_spike.objects.fundamental_sets import Integers
 from sage_lattice_category_spike.objects.set_constructions import CartesianProduct
 from sage_lattice_category_spike.objects.sets import Sets
 
+if TYPE_CHECKING:
+    from sage_lattice_category_spike import lexicon
 
-def _collapse_of_degenerate_rank_two():
+
+def _collapse_of_degenerate_rank_two() -> tuple[lexicon.LatticeMorphism, lexicon.Lattice, lexicon.Lattice]:
     r"""A morphism with a genuine kernel: nondegenerate lattices admit only
     injective form-preserving maps, so the interesting source is degenerate —
     an A1 line plus a radical line, collapsing onto A1."""
@@ -32,7 +37,7 @@ def _collapse_of_degenerate_rank_two():
     return degenerate.hom(matrix(ZZ, [[1, 0]]), codomain=a1), degenerate, a1
 
 
-def _index_two_embedding():
+def _index_two_embedding() -> tuple[lexicon.LatticeMorphism, lexicon.Lattice]:
     r"""A morphism with a finite nontrivial cokernel: multiplication by 2
     from the rescaled line ``(-8)`` into ``A1 = (-2)``, image of index 2."""
     doubled = Lattice(matrix(ZZ, [[-8]]), label="2A1-source")
@@ -40,7 +45,7 @@ def _index_two_embedding():
     return doubled.hom(matrix(ZZ, [[2]]), codomain=a1), a1
 
 
-def test_kernel_and_image_are_module_level_operations():
+def test_kernel_and_image_are_module_level_operations() -> None:
     collapse, degenerate, a1 = _collapse_of_degenerate_rank_two()
 
     kernel = constructions.kernel(collapse)
@@ -55,7 +60,7 @@ def test_kernel_and_image_are_module_level_operations():
     assert image.index() == 1
 
 
-def test_cokernel_exists_for_every_morphism_and_measures_the_index():
+def test_cokernel_exists_for_every_morphism_and_measures_the_index() -> None:
     doubling, _ = _index_two_embedding()
     cokernel = constructions.cokernel(doubling)
     assert not cokernel.is_torsion_free()
@@ -70,7 +75,7 @@ def test_cokernel_exists_for_every_morphism_and_measures_the_index():
     assert surjective_cokernel.cardinality() == 1
 
 
-def test_the_image_inclusion_and_cokernel_compose_exactly():
+def test_the_image_inclusion_and_cokernel_compose_exactly() -> None:
     r"""Exactness at the codomain: the cokernel of ``f`` and the cokernel of
     its image inclusion are the same finitely generated module."""
     doubling, _ = _index_two_embedding()
@@ -78,7 +83,7 @@ def test_the_image_inclusion_and_cokernel_compose_exactly():
     assert constructions.cokernel(doubling).invariants() == constructions.cokernel(image_inclusion).invariants()
 
 
-def test_direct_sum_acts_on_morphisms_functorially():
+def test_direct_sum_acts_on_morphisms_functorially() -> None:
     r"""The direct sum is a functor, not an object-only construction: it
     preserves identities and composition."""
     a2 = Lattice("A2")
@@ -97,7 +102,7 @@ def test_direct_sum_acts_on_morphisms_functorially():
     assert composed == constructions.direct_sum(second, other) * constructions.direct_sum(first, other)
 
 
-def test_direct_sum_of_morphisms_commutes_with_the_summand_embeddings():
+def test_direct_sum_of_morphisms_commutes_with_the_summand_embeddings() -> None:
     r"""Naturality of the embeddings: ``(f (+) g)`` restricted along a
     summand embedding is that summand's morphism followed by its embedding."""
     a2 = Lattice("A2")
@@ -111,7 +116,7 @@ def test_direct_sum_of_morphisms_commutes_with_the_summand_embeddings():
     assert summed * into_second == into_second * other
 
 
-def test_the_lattice_direct_sum_is_the_module_theoretic_one():
+def test_the_lattice_direct_sum_is_the_module_theoretic_one() -> None:
     r"""A lattice is module data: ``(L, b)`` with ``b in Hom(L, L*)``, and
     ``(L1, b1) (+) (L2, b2) = (L1 (+) L2, b1 (+) b2)`` — nothing here is
     form-specific. Executable witness: the summed lattice's canonical map
@@ -125,7 +130,7 @@ def test_the_lattice_direct_sum_is_the_module_theoretic_one():
     assert summed_form.codomain() == (a2 + a1).dual()
 
 
-def test_the_morphism_direct_sum_spelling_delegates_to_the_construction():
+def test_the_morphism_direct_sum_spelling_delegates_to_the_construction() -> None:
     a2 = Lattice("A2")
     a1 = Lattice("A1")
     isometry = a2.isometry_group().group_generators()[0]
@@ -133,7 +138,7 @@ def test_the_morphism_direct_sum_spelling_delegates_to_the_construction():
     assert isometry.direct_sum(other) == constructions.direct_sum(isometry, other)
 
 
-def test_lattice_morphism_spellings_delegate_to_the_constructions():
+def test_lattice_morphism_spellings_delegate_to_the_constructions() -> None:
     collapse, _, _ = _collapse_of_degenerate_rank_two()
     assert collapse.kernel() == constructions.kernel(collapse)
     assert collapse.image() == constructions.image(collapse)
@@ -143,7 +148,7 @@ def test_lattice_morphism_spellings_delegate_to_the_constructions():
     assert doubling.image().cokernel().invariants() == constructions.cokernel(doubling).invariants()
 
 
-def test_the_owned_cartesian_product_lives_in_the_standard_construction_category():
+def test_the_owned_cartesian_product_lives_in_the_standard_construction_category() -> None:
     r"""Integration, not invention: the owned product parent is a member of
     Sage's ``CartesianProducts()`` construction category — reached through
     the owned ``Sets()`` and agreeing with Sage's own node."""
@@ -154,7 +159,7 @@ def test_the_owned_cartesian_product_lives_in_the_standard_construction_category
     assert product.cartesian_factors() == product.factors()
 
 
-def test_the_cartesian_projections_answer_both_spellings():
+def test_the_cartesian_projections_answer_both_spellings() -> None:
     product = CartesianProduct(Integers(), Integers())
     point = product((ZZ(3), ZZ(-1)))
     assert product.cartesian_projection(0)(point) == ZZ(3)

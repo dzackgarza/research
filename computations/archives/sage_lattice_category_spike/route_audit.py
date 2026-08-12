@@ -30,10 +30,9 @@ below and its anti-bypass property are unchanged by that migration.
 
 from __future__ import annotations
 
-from collections.abc import Callable, Iterable
+from collections.abc import Callable
 from itertools import islice
-from typing import Any, NamedTuple, TYPE_CHECKING
-
+from typing import TYPE_CHECKING, Any, NamedTuple
 
 if TYPE_CHECKING:
     from .lexicon import (
@@ -65,7 +64,7 @@ class MaintainedParent(NamedTuple):
     nonidentity_morphism: Callable[[Any], Any] | None = None
 
 
-def _lattice(name: str) -> "Lattice":
+def _lattice(name: str) -> Lattice:
     from .lattice_categories import Lattice
 
     return Lattice(name)
@@ -102,14 +101,14 @@ def maintained_parent_inventory() -> tuple[MaintainedParent, ...]:
     everywhere, with no test edits."""
     from sage.rings.integer_ring import ZZ
 
-    def _rank_zero() -> "Lattice":
+    def _rank_zero() -> Lattice:
         from sage.matrix.constructor import matrix
 
         from .lattice_categories import Lattice
 
         return Lattice(matrix(ZZ, 0, 0, []), label="zero-lattice")
 
-    def _first_isometry(lattice: "Lattice") -> "CategoryMorphism":
+    def _first_isometry(lattice: Lattice) -> CategoryMorphism:
         return lattice.isometry_group().group_generators()[0]
 
     return (
@@ -277,51 +276,51 @@ def maintained_parent_inventory() -> tuple[MaintainedParent, ...]:
     )
 
 
-def _naturals() -> "Set":
+def _naturals() -> Set:
     from .objects.fundamental_sets import NonNegativeIntegers
 
     return NonNegativeIntegers()
 
 
-def _rationals() -> "Field":
+def _rationals() -> Field:
     from .objects.fundamental_sets import Rationals
 
     return Rationals()
 
 
-def _finite_field(order: int) -> "Field":
+def _finite_field(order: int) -> Field:
     from .objects.fundamental_sets import FiniteField
 
     return FiniteField(order)
 
 
-def _product_of_integers() -> "Set":
+def _product_of_integers() -> Set:
     from .objects.fundamental_sets import Integers
     from .objects.set_constructions import CartesianProduct
 
     return CartesianProduct(Integers(), Integers())
 
 
-def _union_of_integers() -> "Set":
+def _union_of_integers() -> Set:
     from .objects.fundamental_sets import Integers
     from .objects.set_constructions import DisjointUnion
 
     return DisjointUnion(Integers(), Integers())
 
 
-def _integers() -> "Ring":
+def _integers() -> Ring:
     from .objects.fundamental_sets import Integers
 
     return Integers()
 
 
-def _reals() -> "Field":
+def _reals() -> Field:
     from .objects.fundamental_sets import Reals
 
     return Reals()
 
 
-def _zmod(modulus: int) -> "QuotientRing":
+def _zmod(modulus: int) -> QuotientRing:
     from .objects.fundamental_sets import IntegerModRing
 
     return IntegerModRing(modulus)
@@ -343,7 +342,7 @@ def provenance_of_type(parent_type: type, operation: str) -> str:
     return f"{getattr(implementation, '__module__', '<?>')}::{getattr(implementation, '__qualname__', '<?>')}"
 
 
-def provenance(parent: "SageParent", operation: str) -> str:
+def provenance(parent: SageParent, operation: str) -> str:
     return provenance_of_type(type(parent), operation)
 
 
@@ -359,7 +358,7 @@ def provenance_failures(parent_type: type, owners: dict[str, str]) -> list[str]:
     return failures
 
 
-def derived_route(parent: "SageParent") -> tuple[str, ...]:
+def derived_route(parent: SageParent) -> tuple[str, ...]:
     r"""The owned category nodes on the parent's route, in linearization
     order, ending at the owned ``Sets()`` when the route terminates."""
     return tuple(repr(node) for node in parent.category().all_super_categories() if type(node).__module__.startswith(_SPIKE))
@@ -385,7 +384,7 @@ def _validate_row(spec: MaintainedParent) -> list[str]:
     return failures
 
 
-def _audit_route(spec: MaintainedParent, parent: "SageParent") -> list[str]:
+def _audit_route(spec: MaintainedParent, parent: SageParent) -> list[str]:
     r"""Check 1: the route to the owned Sets() exists and terminates.
     Structured parents are deliberately NOT subcategories of Sets() (the
     forgetful functor is faithful, never an inclusion), so their route is
@@ -419,7 +418,7 @@ def _audit_route(spec: MaintainedParent, parent: "SageParent") -> list[str]:
     return failures
 
 
-def _audit_two_leg_coherence(parent: "SageParent") -> list[str]:
+def _audit_two_leg_coherence(parent: SageParent) -> list[str]:
     r"""Check 6's diamond, traversed independently: a parent reaching Sets()
     through BOTH operation roots (the ring diamond) must forget to the SAME
     underlying set along each leg."""
@@ -437,11 +436,11 @@ def _audit_two_leg_coherence(parent: "SageParent") -> list[str]:
     return failures
 
 
-def _audit_provenance(spec: MaintainedParent, parent: "SageParent") -> list[str]:
+def _audit_provenance(spec: MaintainedParent, parent: SageParent) -> list[str]:
     return provenance_failures(type(parent), spec.owners)
 
 
-def forgetful_functor_failures(spec: MaintainedParent, parent: "SageParent") -> list[str]:
+def forgetful_functor_failures(spec: MaintainedParent, parent: SageParent) -> list[str]:
     r"""Checks 3-5: honesty, morphism action, and functor laws, run where
     the parent carries the forwarding surface and a morphism factory."""
     from .objects.magmas import UnderlyingSetFunctor
@@ -487,7 +486,7 @@ def forgetful_functor_failures(spec: MaintainedParent, parent: "SageParent") -> 
     return failures
 
 
-def _audit_route_coherence(spec: MaintainedParent, parent: "SageParent") -> list[str]:
+def _audit_route_coherence(spec: MaintainedParent, parent: SageParent) -> list[str]:
     r"""Check 6: where the parent's category reaches Sets() through more
     than one root (the ring additive/multiplicative diamond), the exposed
     forwarding is the single shared owner and the underlying set is one
@@ -502,7 +501,7 @@ def _audit_route_coherence(spec: MaintainedParent, parent: "SageParent") -> list
     return failures
 
 
-def refinement_failures(spec: MaintainedParent, parent: "SageParent") -> list[str]:
+def refinement_failures(spec: MaintainedParent, parent: SageParent) -> list[str]:
     r"""Check 7: the classification's executable consequences."""
     from .objects.cardinals import Cardinal, aleph0
 

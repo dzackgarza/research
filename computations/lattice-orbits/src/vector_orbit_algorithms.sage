@@ -2,6 +2,13 @@
 Implementation of Dawes' algorithms for vector orbit computation using modular components.
 """
 
+from sage.arith.functions import lcm
+from sage.arith.misc import gcd
+from sage.modules.free_module_element import FreeModuleElement, vector
+from sage.modules.free_quadratic_module_integer_symmetric import FreeQuadraticModule_integer_symmetric
+from sage.rings.integer import Integer
+from sage.rings.rational import Rational
+
 load("lattice_utils.sage")
 load("smith_normal_form_utils.sage")
 
@@ -10,11 +17,11 @@ class VectorOrbitAnalyzer:
     Analyzer for vector orbits using proper SageMath methods.
     Implements Algorithm 2.1 from Dawes' paper.
     """
-    
-    def __init__(self, lattice):
+
+    def __init__(self, lattice: FreeQuadraticModule_integer_symmetric) -> None:
         """
         Initialize with an IntegralLattice.
-        
+
         INPUT:
         - lattice: IntegralLattice object
         """
@@ -22,26 +29,26 @@ class VectorOrbitAnalyzer:
         self.gram_matrix = lattice.gram_matrix()
         self.rank = self.gram_matrix.nrows()
         self.signature = get_lattice_signature(lattice)
-    
-    def quadratic_form_value(self, vector):
+
+    def quadratic_form_value(self, vector: FreeModuleElement) -> Integer | Rational:
         """
         Compute v² = v^T G v using native SageMath methods.
         """
-        return self.lattice.q(vector)
-    
-    def is_isotropic(self, vector):
+        return vector * self.gram_matrix * vector
+
+    def is_isotropic(self, vector: FreeModuleElement) -> bool:
         """
         Check if vector is isotropic (v² = 0).
         """
         return self.quadratic_form_value(vector) == 0
-    
-    def inner_product(self, u, v):
+
+    def inner_product(self, u: FreeModuleElement, v: FreeModuleElement) -> Integer | Rational:
         """
         Compute (u,v) = u^T G v using native SageMath methods.
         """
-        return self.lattice.b(u, v)
-    
-    def minimal_denominator(self, vector):
+        return u * self.gram_matrix * v
+
+    def minimal_denominator(self, vector: FreeModuleElement) -> Integer | int:
         """
         Find minimal c such that c*vector has integral coordinates.
         
@@ -60,7 +67,7 @@ class VectorOrbitAnalyzer:
         
         return lcm(denominators) if denominators else 1
     
-    def algorithm_2_1_orbit_test(self, v1, v2, verbose=True):
+    def algorithm_2_1_orbit_test(self, v1: FreeModuleElement, v2: FreeModuleElement, verbose: bool = True) -> bool:
         """
         Algorithm 2.1: Test if v1 ~ v2 under orthogonal group action.
         
@@ -134,7 +141,7 @@ class IsotropicVectorFinder:
     Specialized class for finding and analyzing isotropic vectors.
     """
     
-    def __init__(self, lattice):
+    def __init__(self, lattice: FreeQuadraticModule_integer_symmetric) -> None:
         """
         Initialize with an IntegralLattice.
         """
@@ -142,8 +149,8 @@ class IsotropicVectorFinder:
         self.gram_matrix = lattice.gram_matrix()
         self.rank = self.gram_matrix.nrows()
         self.orbit_analyzer = VectorOrbitAnalyzer(lattice)
-    
-    def find_primitive_isotropic_vectors(self, search_bound=3):
+
+    def find_primitive_isotropic_vectors(self, search_bound: int | Integer = 3) -> list[FreeModuleElement]:
         """
         Find primitive isotropic vectors by systematic search.
         
@@ -173,7 +180,7 @@ class IsotropicVectorFinder:
         
         return isotropic_vectors
     
-    def classify_isotropic_orbits(self, isotropic_vectors, verbose=False):
+    def classify_isotropic_orbits(self, isotropic_vectors: list[FreeModuleElement], verbose: bool = False) -> dict[str, list[FreeModuleElement] | str]:
         """
         Classify isotropic vectors into orbit equivalence classes.
         

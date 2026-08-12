@@ -19,7 +19,7 @@ dependencies = [
 [dependency-groups]
 dev = [
     # Workspace-local package (research monorepo layout); PEP 508 direct reference.
-    "sage-lattice-category-spike @ file:///home/dzack/research/computations/experiments/sage_lattice_category_spike",
+    "sage-lattice-category-spike @ file:///home/dzack/research/computations/archives/sage_lattice_category_spike",
     "networkx",
     "types-networkx",
     "ipython",

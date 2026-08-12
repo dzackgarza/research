@@ -3,7 +3,7 @@
 from sage.all import QQ, ProjectiveSpace
 
 
-def test_cyclic_cover_datum_and_cover_morphism():
+def test_cyclic_cover_datum_and_cover_morphism() -> None:
     """Cyclic-cover datum is compatible with branch data and map invariants."""
     P1_x = ProjectiveSpace(QQ, 1, names=("x0", "x1"))
     P1_y = ProjectiveSpace(QQ, 1, names=("y0", "y1"))
@@ -35,7 +35,7 @@ def test_cyclic_cover_datum_and_cover_morphism():
     assert cover.ramification_subscheme().dimension() == 1
 
 
-def test_involution_lifts_of_cyclic_cover():
+def test_involution_lifts_of_cyclic_cover() -> None:
     """A branch-even involution has two lifted automorphisms on the cover."""
     P1_x = ProjectiveSpace(QQ, 1, names=("x0", "x1"))
     P1_y = ProjectiveSpace(QQ, 1, names=("y0", "y1"))

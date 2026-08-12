@@ -2,7 +2,14 @@
 Smith normal form utilities for computing orthogonal complements using proper SageMath methods.
 """
 
-def compute_orthogonal_complement_smith(lattice, vector):
+from sage.matrix.constructor import matrix
+from sage.structure.element import Matrix
+from sage.modules.free_module_element import FreeModuleElement
+from sage.modules.free_quadratic_module_integer_symmetric import FreeQuadraticModule_integer_symmetric
+from sage.rings.integer import Integer
+from sage.rings.rational import Rational
+
+def compute_orthogonal_complement_smith(lattice: FreeQuadraticModule_integer_symmetric, vector: FreeModuleElement) -> tuple[list[FreeModuleElement], tuple[Matrix, Matrix, Matrix]]:
     """
     Compute orthogonal complement of vector using Smith normal form.
     
@@ -31,7 +38,7 @@ def compute_orthogonal_complement_smith(lattice, vector):
     
     return complement_basis, (D, U, V)
 
-def verify_orthogonal_complement(lattice, original_vector, complement_basis):
+def verify_orthogonal_complement(lattice: FreeQuadraticModule_integer_symmetric, original_vector: FreeModuleElement, complement_basis: list[FreeModuleElement]) -> bool:
     """
     Verify that the complement basis is indeed orthogonal to the original vector.
     
@@ -54,7 +61,7 @@ def verify_orthogonal_complement(lattice, original_vector, complement_basis):
     
     return True
 
-def compute_complement_gram_matrix(lattice, complement_basis):
+def compute_complement_gram_matrix(lattice: FreeQuadraticModule_integer_symmetric, complement_basis: list[FreeModuleElement]) -> Matrix:
     """
     Compute Gram matrix for the orthogonal complement sublattice.
     
@@ -79,7 +86,11 @@ def compute_complement_gram_matrix(lattice, complement_basis):
     
     return complement_gram
 
-def analyze_orthogonal_complement(lattice, vector, verbose=True):
+def analyze_orthogonal_complement(
+    lattice: FreeQuadraticModule_integer_symmetric,
+    vector: FreeModuleElement,
+    verbose: bool = True,
+) -> dict[str, list[FreeModuleElement] | Matrix | tuple[Matrix, Matrix, Matrix] | Integer | Rational | int | bool]:
     """
     Complete analysis of orthogonal complement including Smith form and verification.
     

@@ -19,7 +19,7 @@ algorithm is invented merely because the category exists.
 from __future__ import annotations
 
 from collections.abc import Iterator
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from sage.categories.category import Category
 from sage.categories.g_sets import GSets as SageGSets
@@ -28,7 +28,6 @@ from ..lexicon import SageParent
 from .cardinals import Cardinal, cardinal
 from .functors import CatObject
 from .underlying_sets import ViaUnderlyingSet
-
 
 if TYPE_CHECKING:
     from ..lexicon import (
@@ -64,7 +63,7 @@ class GSets(CatObject, Category):
     ParentMethods = ViaUnderlyingSet
 
 
-def torsor_enumeration(torsor: "DiscriminantSubgroup") -> Iterator[object]:
+def torsor_enumeration(torsor: DiscriminantSubgroup) -> Iterator[object]:
     r"""Enumeration through the trivializing choice: acting the group
     through one chosen point is exhaustive (transitivity) and
     duplicate-free (freeness). The typed operation both the ``Torsors``
@@ -73,12 +72,12 @@ def torsor_enumeration(torsor: "DiscriminantSubgroup") -> Iterator[object]:
     return (torsor.act(group_element, chosen) for group_element in torsor.acting_group())
 
 
-def torsor_cardinality(torsor: "DiscriminantSubgroup") -> Cardinal:
+def torsor_cardinality(torsor: DiscriminantSubgroup) -> Cardinal:
     r"""``|T| = |G|``: the trivialization is a bijection."""
     return cardinal(torsor.acting_group().order())
 
 
-def torsor_transporter(torsor: "DiscriminantSubgroup", source: object, target: object) -> object:
+def torsor_transporter(torsor: DiscriminantSubgroup, source: object, target: object) -> object:
     r"""The unique ``g`` with ``g . source == target`` — existence by
     transitivity, uniqueness by freeness. Terminates for finite acting
     groups; no termination promise otherwise."""
@@ -114,7 +113,7 @@ class Torsors(CatObject, Category):
         def act(self, group_element: object, element: object) -> object:
             r"""The action of ``g`` on a point."""
 
-        def acting_group(self) -> "Group":
+        def acting_group(self) -> Group:
             r"""The acting group, read off the torsor's category node."""
             parent = self
             for node in parent.category().all_super_categories():

@@ -15,7 +15,6 @@ from sage.structure.parent import Parent
 
 from ..lexicon import DiscriminantAction, DiscriminantOrthogonalGroup, Genus
 
-
 if TYPE_CHECKING:
     from ..lexicon import (
         Cardinal,
@@ -46,7 +45,7 @@ if TYPE_CHECKING:
     from .discriminant_forms import SyntheticDiscriminantForm
 
 
-def lattice_key(lattice: "Lattice") -> tuple[Any, ...]:
+def lattice_key(lattice: Lattice) -> tuple[Any, ...]:
     return (
         repr(lattice.base_ring()),
         lattice.rank(),
@@ -54,7 +53,7 @@ def lattice_key(lattice: "Lattice") -> tuple[Any, ...]:
     )
 
 
-def relation_inclusion_matrix(cover_lattice: "Lattice", relation_lattice: "Lattice") -> "MorphismMatrix":
+def relation_inclusion_matrix(cover_lattice: Lattice, relation_lattice: Lattice) -> MorphismMatrix:
     r"""Integer inclusion of ``relation_lattice`` into ``cover_lattice`` (rows in cover coordinates).
 
     A finite quotient ``cover / relation`` is defined by an inclusion morphism.
@@ -74,11 +73,11 @@ def relation_inclusion_matrix(cover_lattice: "Lattice", relation_lattice: "Latti
     return matrix(ZZ, relation_lattice.identity_morphism().matrix())
 
 
-def _finite_coordinates(group: "Group", element: "Element") -> tuple[Any, ...]:
+def _finite_coordinates(group: Group, element: Element) -> tuple[Any, ...]:
     return tuple(group.coordinates(group(element)))
 
 
-def all_group_automorphisms(group: "Group") -> tuple[SyntheticDiscriminantAction, ...]:
+def all_group_automorphisms(group: Group) -> tuple[SyntheticDiscriminantAction, ...]:
     if group.ngens() == 0:
         return (SyntheticDiscriminantAction(group, identity_matrix(ZZ, 0)),)
     automorphisms = []
@@ -90,7 +89,7 @@ def all_group_automorphisms(group: "Group") -> tuple[SyntheticDiscriminantAction
     return tuple(automorphisms)
 
 
-def finite_all_subgroups(parent: "SageParent") -> tuple[Any, ...]:
+def finite_all_subgroups(parent: SageParent) -> tuple[Any, ...]:
     seen = {}
     zero = parent.subgroup_generated_by(())
     seen[zero._key()] = zero
@@ -106,23 +105,23 @@ def finite_all_subgroups(parent: "SageParent") -> tuple[Any, ...]:
     return tuple(seen[key] for key in sorted(seen, key=lambda item: sorted(item)))
 
 
-def finite_relations_among(parent: "SageParent", gens: "RawVectors") -> tuple[tuple[Any, ...], ...]:
+def finite_relations_among(parent: SageParent, gens: RawVectors) -> tuple[tuple[Any, ...], ...]:
     gens = tuple(parent(gen) for gen in gens)
     ranges = tuple(range(parent.order(generator)) for generator in gens)
     return tuple(tuple(ZZ(coefficient) for coefficient in coefficients) for coefficients in product(*ranges) if parent.discrete_exp(coefficients, gens=gens) == parent.zero())
 
 
-def finite_basis_from_module_generators(parent: "SageParent", module_generators: "RawVectors") -> tuple[Any, ...]:
+def finite_basis_from_module_generators(parent: SageParent, module_generators: RawVectors) -> tuple[Any, ...]:
     subgroup = parent.subgroup_generated_by(module_generators)
     assert subgroup.cardinality() == parent.cardinality(), "generators do not span the whole group"
     return tuple(parent(gen) for gen in module_generators)
 
 
-def _finite_scalar_multiply(parent: "SageParent", scalar: "Rational", element: "Element") -> "GroupElement":
+def _finite_scalar_multiply(parent: SageParent, scalar: Rational, element: Element) -> GroupElement:
     return ZZ(scalar) * element
 
 
-def finite_p_torsion(parent: "SageParent", p: "Integer", k: "Integer" = 1) -> "FiniteAbelianGroup":
+def finite_p_torsion(parent: SageParent, p: Integer, k: Integer = 1) -> FiniteAbelianGroup:
     p = ZZ(p)
     k = ZZ(k)
     assert p.is_prime(), f"p-torsion requires a prime; found={p}"
@@ -130,7 +129,7 @@ def finite_p_torsion(parent: "SageParent", p: "Integer", k: "Integer" = 1) -> "F
     return parent.subgroup_generated_by(element for element in parent.elements() if _finite_scalar_multiply(parent, p**k, element) == parent.zero())
 
 
-def form_matrix_on_images(group: "Group", images: "OrderedSet") -> "GramMatrix":
+def form_matrix_on_images(group: Group, images: OrderedSet) -> GramMatrix:
     images = tuple(group(image) for image in images)
     form = matrix(QQ, len(images), len(images))
     for i, left in enumerate(images):
@@ -140,7 +139,7 @@ def form_matrix_on_images(group: "Group", images: "OrderedSet") -> "GramMatrix":
     return form
 
 
-def _coset_reduce(ambient: "Lattice", relation_subgroup: "DiscriminantSubgroup") -> Callable[[Any], Any]:
+def _coset_reduce(ambient: Lattice, relation_subgroup: DiscriminantSubgroup) -> Callable[[Any], Any]:
     r"""Return ``x |-> min representative of the coset x + H``."""
     relations = relation_subgroup.elements()
     return lambda x: min(
@@ -149,7 +148,7 @@ def _coset_reduce(ambient: "Lattice", relation_subgroup: "DiscriminantSubgroup")
     )
 
 
-def _quotient_closure(reduce: Callable[[Any], Any], zero: "Element", generators: "OrderedSet") -> dict[Any, Any]:
+def _quotient_closure(reduce: Callable[[Any], Any], zero: Element, generators: OrderedSet) -> dict[Any, Any]:
     r"""BFS closure of ``generators`` under coset addition, keyed by rep coords."""
     seen = {tuple(zero.coefficient_vector()): zero}
     frontier = [zero]
@@ -164,7 +163,7 @@ def _quotient_closure(reduce: Callable[[Any], Any], zero: "Element", generators:
     return seen
 
 
-def induced_subquotient_form(ambient: "Lattice", relation_subgroup: "DiscriminantSubgroup", cover_subgroup: "DiscriminantSubgroup") -> "DiscriminantForm":
+def induced_subquotient_form(ambient: Lattice, relation_subgroup: DiscriminantSubgroup, cover_subgroup: DiscriminantSubgroup) -> DiscriminantForm:
     r"""The finite quadratic form on ``K / H`` (``H ⊆ K ⊆ H``-perp, ``H`` isotropic).
 
     The ambient bilinear/quadratic form descends to ``K / H``; present it on a
@@ -210,7 +209,7 @@ class SyntheticDiscriminantGroupElement(Element):
         # The parent is always a consolidated synthetic finite quotient.
         def parent(self) -> SyntheticDiscriminantForm: ...
 
-    def __init__(self, parent: "SyntheticDiscriminantForm", coordinates: "Vector") -> None:
+    def __init__(self, parent: SyntheticDiscriminantForm, coordinates: Vector) -> None:
         Element.__init__(self, parent)
         if isinstance(coordinates, SyntheticDiscriminantGroupElement):
             coordinates = coordinates.coefficient_vector()
@@ -225,33 +224,33 @@ class SyntheticDiscriminantGroupElement(Element):
     def _repr_(self) -> str:
         return repr(self._coordinates)
 
-    def coefficient_vector(self) -> "Vector":
+    def coefficient_vector(self) -> Vector:
         return self._coordinates
 
-    def b(self, other: object) -> "Rational":
+    def b(self, other: object) -> Rational:
         from .discriminant_forms import SyntheticBilinearDiscriminantForm
 
         parent = self.parent()
         assert isinstance(parent, SyntheticBilinearDiscriminantForm), f"the pairing b lives on form-carrying parents (a bare finite quotient has no form); found={type(parent)}"
         return parent.b(self, other)
 
-    def q(self) -> "Rational":
+    def q(self) -> Rational:
         from .discriminant_forms import SyntheticBilinearDiscriminantForm
 
         parent = self.parent()
         assert isinstance(parent, SyntheticBilinearDiscriminantForm), f"the form q lives on form-carrying parents (a bare finite quotient has no form); found={type(parent)}"
         return parent.q(self)
 
-    def _add_(self, other: object) -> "Element":
+    def _add_(self, other: object) -> Element:
         return self.parent()(self.coefficient_vector() + other.coefficient_vector())
 
-    def _sub_(self, other: object) -> "Element":
+    def _sub_(self, other: object) -> Element:
         return self.parent()(self.coefficient_vector() - other.coefficient_vector())
 
-    def _neg_(self) -> "Element":
+    def _neg_(self) -> Element:
         return self.parent()(-self.coefficient_vector())
 
-    def _lmul_(self, scalar: "Rational") -> "Element":
+    def _lmul_(self, scalar: Rational) -> Element:
         return self.parent()(scalar * self.coefficient_vector())
 
     def __eq__(self, other: object) -> bool:
@@ -263,7 +262,7 @@ class SyntheticDiscriminantGroupElement(Element):
         # richcmp (id-based or coercion) and disagree or raise (#226).
         return not self == other
 
-    def __mul__(self, other: object) -> "CategoryMorphism":
+    def __mul__(self, other: object) -> CategoryMorphism:
         r"""``g * h`` = bilinear pairing (same parent); ``s * g`` = scalar action.
 
         For ``s ∈ R``: the R-module action, result in D.
@@ -297,7 +296,7 @@ class SyntheticDiscriminantGroupElement(Element):
 class SyntheticDiscriminantSubgroup:
     r"""Finite subgroup of a synthetic discriminant group."""
 
-    def __init__(self, ambient: "Lattice", group_generators: "RawVectors") -> None:
+    def __init__(self, ambient: Lattice, group_generators: RawVectors) -> None:
         from .discriminant_forms import SyntheticDiscriminantForm
 
         assert isinstance(ambient, SyntheticDiscriminantForm), f"discriminant subgroups live in a consolidated finite quotient parent; found={type(ambient)}"
@@ -305,7 +304,7 @@ class SyntheticDiscriminantSubgroup:
         self._group_generators = tuple(self._coerce(generator) for generator in group_generators)
         self._elements = tuple(sorted(self._closure(), key=self._element_key))
 
-    def ambient(self) -> "Lattice":
+    def ambient(self) -> Lattice:
         return self._ambient
 
     def group_generators(self) -> tuple[Any, ...]:
@@ -314,7 +313,7 @@ class SyntheticDiscriminantSubgroup:
     def elements(self) -> tuple[Any, ...]:
         return self._elements
 
-    def cardinality(self) -> "Cardinal":
+    def cardinality(self) -> Cardinal:
         # Cardinal per the ratified owned-cardinal contract (the classical
         # Integer count remains available as len(elements())).
         from ..objects.cardinals import cardinal
@@ -331,7 +330,7 @@ class SyntheticDiscriminantSubgroup:
         span = ambient_module.span([vector(ZZ, generator.coefficient_vector()) for generator in self.group_generators()] + list(relations.gens()))
         return tuple(span.quotient(relations).invariants())
 
-    def __contains__(self, element: "Element") -> bool:
+    def __contains__(self, element: Element) -> bool:
         return self._element_key(element) in self._key()
 
     def is_bilinear_isotropic(self) -> bool:
@@ -340,7 +339,7 @@ class SyntheticDiscriminantSubgroup:
     def is_quadratic_isotropic(self) -> bool:
         return all(self.ambient().q(element) == 0 for element in self.elements())
 
-    def orthogonal_submodule(self) -> "DiscriminantSubgroup":
+    def orthogonal_submodule(self) -> DiscriminantSubgroup:
         return self.ambient().orthogonal_submodule_to(self)
 
     def _key(self) -> frozenset[Any]:
@@ -370,17 +369,17 @@ class SyntheticDiscriminantSubgroup:
             elements.add(element)
         return elements
 
-    def _coerce(self, element: "Element") -> "Element":
+    def _coerce(self, element: Element) -> Element:
         return self.ambient()(element)
 
-    def _element_key(self, element: "Element") -> tuple[Any, ...]:
+    def _element_key(self, element: Element) -> tuple[Any, ...]:
         return tuple(self.ambient().coordinates(self._coerce(element)))
 
 
 class SyntheticDiscriminantAction(DiscriminantAction):
     r"""Endomorphism of a synthetic discriminant group in invariant coordinates."""
 
-    def __init__(self, discriminant_group: "DiscriminantSubgroup", matrix_data: "RawMorphismMatrix") -> None:
+    def __init__(self, discriminant_group: DiscriminantSubgroup, matrix_data: RawMorphismMatrix) -> None:
         from .discriminant_forms import SyntheticDiscriminantForm
 
         assert isinstance(discriminant_group, SyntheticDiscriminantForm), f"discriminant actions act on a consolidated finite quotient parent; found={type(discriminant_group)}"
@@ -400,17 +399,17 @@ class SyntheticDiscriminantAction(DiscriminantAction):
         self._matrix = reduced
 
     @classmethod
-    def from_images(cls, discriminant_group: "DiscriminantSubgroup", images: "OrderedSet") -> SyntheticDiscriminantAction:
+    def from_images(cls, discriminant_group: DiscriminantSubgroup, images: OrderedSet) -> SyntheticDiscriminantAction:
         columns = [vector(ZZ, _finite_coordinates(discriminant_group, image)) for image in images]
         return cls(discriminant_group, column_matrix(ZZ, columns))
 
-    def discriminant_form(self) -> "DiscriminantForm":
+    def discriminant_form(self) -> DiscriminantForm:
         return self._discriminant_group
 
-    def matrix(self) -> "MorphismMatrix":
+    def matrix(self) -> MorphismMatrix:
         return self._matrix
 
-    def __call__(self, element: "Element") -> "CategoryMorphism":
+    def __call__(self, element: Element) -> CategoryMorphism:
         group = self.discriminant_form()
         return group(self.matrix() * vector(ZZ, _finite_coordinates(group, element)))
 
@@ -429,7 +428,7 @@ class SyntheticDiscriminantAction(DiscriminantAction):
             (element for element in group.elements() if self(element) == group.zero()),
         )
 
-    def inverse_image(self, subgroup_or_gens: "DiscriminantSubgroup | RawVectors") -> SyntheticDiscriminantSubgroup:
+    def inverse_image(self, subgroup_or_gens: DiscriminantSubgroup | RawVectors) -> SyntheticDiscriminantSubgroup:
         group = self.discriminant_form()
         subgroup = group._subgroup(subgroup_or_gens)
         return SyntheticDiscriminantSubgroup(
@@ -444,7 +443,7 @@ class SyntheticDiscriminantAction(DiscriminantAction):
     def im_gens(self) -> tuple[Any, ...]:
         return self.image().group_generators()
 
-    def lift(self, element: "Element") -> "ModuleElement":
+    def lift(self, element: Element) -> ModuleElement:
         group = self.discriminant_form()
         element = group(element)
         preimages = tuple(candidate for candidate in group.elements() if self(candidate) == element)
@@ -490,18 +489,18 @@ class SyntheticDiscriminantAction(DiscriminantAction):
 class SyntheticOrthogonalGroup(DiscriminantOrthogonalGroup):
     r"""Finite group wrapper for owned discriminant-form automorphisms."""
 
-    def __init__(self, discriminant_group: "DiscriminantSubgroup", actions: "OrderedSet", close: bool = False) -> None:
+    def __init__(self, discriminant_group: DiscriminantSubgroup, actions: OrderedSet, close: bool = False) -> None:
         self._discriminant_group = discriminant_group
         self._group_generators = tuple(actions)
         self._actions = self._closure(self._group_generators) if close else self._group_generators
 
-    def discriminant_form(self) -> "DiscriminantForm":
+    def discriminant_form(self) -> DiscriminantForm:
         return self._discriminant_group
 
     def group_generators(self) -> tuple[Any, ...]:
         return self._group_generators
 
-    def order(self) -> "Integer":
+    def order(self) -> Integer:
         return ZZ(len(self._actions))
 
     def __iter__(self) -> Iterator[Any]:
@@ -510,10 +509,10 @@ class SyntheticOrthogonalGroup(DiscriminantOrthogonalGroup):
     def __len__(self) -> int:
         return len(self._actions)
 
-    def __getitem__(self, index: int) -> "Element":
+    def __getitem__(self, index: int) -> Element:
         return self._generators[index]
 
-    def __call__(self, action: "DiscriminantAction") -> "CategoryMorphism":
+    def __call__(self, action: DiscriminantAction) -> CategoryMorphism:
         action = action if isinstance(action, SyntheticDiscriminantAction) else SyntheticDiscriminantAction(self.discriminant_form(), action)
         assert action in self, f"action is not in this orthogonal group: {action.matrix()}"
         return action.matrix()
@@ -523,7 +522,7 @@ class SyntheticOrthogonalGroup(DiscriminantOrthogonalGroup):
         action = candidate if isinstance(candidate, SyntheticDiscriminantAction) else SyntheticDiscriminantAction(self.discriminant_form(), candidate)
         return any(action == group_action for group_action in self._actions)
 
-    def as_matrix_group(self) -> "MatrixGroup":
+    def as_matrix_group(self) -> MatrixGroup:
         r"""Contracted GAP matrix-group seam. The action matrices here compose
         modulo per-row invariants, so they carry NO faithful integer
         matrix-group structure to hand to Sage — the faithful GAP
@@ -535,7 +534,7 @@ class SyntheticOrthogonalGroup(DiscriminantOrthogonalGroup):
             f"for the GAP seam; invariants={self.discriminant_form().invariants()}"
         )
 
-    def as_permutation_group(self) -> "PermutationGroup":
+    def as_permutation_group(self) -> PermutationGroup:
         r"""GAP-backed permutation representation (spec 3.5): the faithful action on the
         underlying finite group's elements. (The matrix-group representation has no
         faithful backing here — action matrices compose modulo per-row
@@ -549,7 +548,7 @@ class SyntheticOrthogonalGroup(DiscriminantOrthogonalGroup):
             permutations = [list(range(1, len(elements) + 1))]
         return PermutationGroup(permutations)
 
-    def _closure(self, generators: "OrderedSet") -> tuple[Any, ...]:
+    def _closure(self, generators: OrderedSet) -> tuple[Any, ...]:
         identity = SyntheticDiscriminantAction(
             self.discriminant_form(),
             identity_matrix(ZZ, self.discriminant_form().ngens()),
@@ -567,7 +566,7 @@ class SyntheticOrthogonalGroup(DiscriminantOrthogonalGroup):
         return tuple(sorted(seen, key=lambda action: tuple(action.matrix().list())))
 
 
-def TorsionQuadraticForm(gram_matrix: "GramMatrix") -> "DiscriminantForm":
+def TorsionQuadraticForm(gram_matrix: GramMatrix) -> DiscriminantForm:
     r"""Public Sage-compatible constructor for an owned finite quadratic form;
     routes through the section-1.4 category entry point."""
     # lazy import: discriminant_forms imports this module at load time
@@ -583,7 +582,7 @@ class SyntheticGenus(Genus, Parent):
     representative lattice per class. Parity is the ``Even`` axiom, acquired as
     output from the discriminant form."""
 
-    def __init__(self, discriminant_group: "DiscriminantSubgroup", signature_pair: "SignaturePair") -> None:
+    def __init__(self, discriminant_group: DiscriminantSubgroup, signature_pair: SignaturePair) -> None:
         from ..objects.categories import Genera
 
         self._discriminant_group = discriminant_group
@@ -597,22 +596,22 @@ class SyntheticGenus(Genus, Parent):
     # cardinality/__iter__ are the class-number/representatives rollup on
     # the Genus base (CP3 routing) — no leaf spellings here.
 
-    def discriminant_form(self) -> "DiscriminantForm":
+    def discriminant_form(self) -> DiscriminantForm:
         return self._discriminant_group
 
     def signature_pair(self) -> tuple[Any, Any]:
         return self._signature_pair
 
-    def signature(self) -> "SignaturePair":
+    def signature(self) -> SignaturePair:
         return self._signature_pair[0] - self._signature_pair[1]
 
     def is_even(self) -> bool:
         return self._even
 
-    def brown_invariant(self) -> "Integer":
+    def brown_invariant(self) -> Integer:
         return self.discriminant_form().brown_invariant()
 
-    def _sage_engine(self) -> "SageGenus":
+    def _sage_engine(self) -> SageGenus:
         r"""Ephemeral Sage genus symbol built from this genus's own data
         (discriminant-form Gram + signature) through the torsion-module constructor."""
         from sage.modules.torsion_quadratic_module import TorsionQuadraticForm
@@ -626,13 +625,13 @@ class SyntheticGenus(Genus, Parent):
         )
         return sage_form.genus(self.signature_pair())
 
-    def det(self) -> "Rational":
+    def det(self) -> Rational:
         return ZZ(self._sage_engine().determinant())
 
-    def dim(self) -> "Integer":
+    def dim(self) -> Integer:
         return ZZ(self._sage_engine().dimension())
 
-    def representative(self) -> "Lattice":
+    def representative(self) -> Lattice:
         r"""A lattice in this genus: Sage's genus machinery returns an integer
         Gram matrix, converted into an owned synthetic lattice."""
         from ..objects.categories import Lattices
@@ -646,7 +645,7 @@ class SyntheticGenus(Genus, Parent):
 
         return tuple(Lattices(ZZ).from_gram_matrix(gram, label=f"genus_class_{index}") for index, gram in enumerate(self._sage_engine().representatives()))
 
-    def class_number(self) -> "Integer":
+    def class_number(self) -> Integer:
         r"""``h(genus)`` = the number of isometry classes, counted from the
         enumerated representatives."""
         return ZZ(len(self._sage_engine().representatives()))
@@ -656,7 +655,7 @@ class SyntheticGenus(Genus, Parent):
         where genus equality decides isometry)."""
         return bool(self.class_number() == 1)
 
-    def local_symbol(self, p: "Integer") -> "SageLocalGenusSymbol":
+    def local_symbol(self, p: Integer) -> SageLocalGenusSymbol:
         r"""The p-adic symbol at ``p`` (spec 3.5): the
         returned object is Sage's local genus symbol."""
         return self._sage_engine().local_symbol(ZZ(p))
@@ -673,7 +672,7 @@ class SyntheticGenus(Genus, Parent):
     # [scale-valuation, rank, det-class, type II/I, oddity] — the p = 2
     # complication Nik80 section 1.8 tracks; at odd p they carry three.
 
-    def local_symbol_tuples(self, p: "Integer") -> tuple[tuple[Any, ...], ...]:
+    def local_symbol_tuples(self, p: Integer) -> tuple[tuple[Any, ...], ...]:
         r"""The CANONICAL Conway-Sloane symbol tuples of the Jordan
         constituents at ``p`` (Sage's ``canonical_symbol``), as a tuple of
         integer tuples. Canonical, not raw: the raw 2-adic constituent data is
@@ -682,24 +681,24 @@ class SyntheticGenus(Genus, Parent):
         usable per-prime data."""
         return tuple(tuple(ZZ(entry) for entry in constituent) for constituent in self.local_symbol(p).canonical_symbol())
 
-    def local_determinant(self, p: "Integer") -> "Rational":
+    def local_determinant(self, p: Integer) -> Rational:
         r"""Determinant datum of the ``p``-adic symbol (Sage's local ``determinant``)."""
         return ZZ(self.local_symbol(p).determinant())
 
-    def local_rank(self, p: "Integer") -> "Integer":
+    def local_rank(self, p: Integer) -> Integer:
         r"""Dimension of the ``p``-adic symbol."""
         return ZZ(self.local_symbol(p).dimension())
 
-    def local_excess(self, p: "Integer") -> "Integer":
+    def local_excess(self, p: Integer) -> Integer:
         r"""The p-excess (Conway-Sloane Ch. 15 section 7.5; at ``p = 2`` this is
         the oddity), from Sage's local symbol."""
         return self.local_symbol(p).excess()
 
-    def local_level(self, p: "Integer") -> "Rational":
+    def local_level(self, p: Integer) -> Rational:
         r"""Level of the ``p``-adic symbol."""
         return ZZ(self.local_symbol(p).level())
 
-    def is_locally_even(self, p: "Integer") -> bool:
+    def is_locally_even(self, p: Integer) -> bool:
         r"""Whether the ``p``-adic symbol is of even type (Sage ``is_even``)."""
         return bool(self.local_symbol(p).is_even())
 

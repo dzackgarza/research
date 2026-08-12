@@ -12,17 +12,22 @@ The cited local sources used for these finite-form facts are:
 from sage.all import QQ, ZZ, matrix
 
 import sage_lattice_category_spike.lattice_categories as lc
+from sage_lattice_category_spike.lexicon import (
+    DiscriminantFormElement,
+    FiniteAbelianGroup,
+    Integer,
+)
 
 
-def _coordinates(form, element):
+def _coordinates(form: FiniteAbelianGroup, element: DiscriminantFormElement) -> tuple[Integer, ...]:
     return tuple(ZZ(c) for c in form.coordinates(element))
 
 
-def _cyclic_elements_by_coefficient(form):
+def _cyclic_elements_by_coefficient(form: FiniteAbelianGroup) -> dict[tuple[Integer, ...], DiscriminantFormElement]:
     return {_coordinates(form, element): element for element in form.elements()}
 
 
-def test_nikulin_rank_one_sign_pair_separates_quadratic_from_bilinear_form():
+def test_nikulin_rank_one_sign_pair_separates_quadratic_from_bilinear_form() -> None:
     """The forms <2> and <-2> have the same 2-primary group/b but opposite q.
 
     Nikulin defines q(x + L) = x^2 mod 2Z on L*/L and records that negating a
@@ -47,7 +52,7 @@ def test_nikulin_rank_one_sign_pair_separates_quadratic_from_bilinear_form():
     assert minus.brown_invariant() == 7
 
 
-def test_nikulin_lagrangian_glue_of_rank_one_sign_pair_has_trivial_quotient():
+def test_nikulin_lagrangian_glue_of_rank_one_sign_pair_has_trivial_quotient() -> None:
     """For <2> + <-2>, the diagonal order-two subgroup is Lagrangian glue.
 
     Nikulin Prop. 1.4.1 identifies even overlattices with isotropic subgroups H
@@ -81,7 +86,7 @@ def test_nikulin_lagrangian_glue_of_rank_one_sign_pair_has_trivial_quotient():
     assert glued.discriminant_group().invariants() == ()
 
 
-def test_conway_sloane_d8_isotropic_self_glue_reconstructs_e8():
+def test_conway_sloane_d8_isotropic_self_glue_reconstructs_e8() -> None:
     """Conway-Sloane's D8+ glue uses an isotropic D8 glue class to obtain E8."""
 
     d8 = lc.Lattice("D8(-1)")
@@ -108,7 +113,7 @@ def test_conway_sloane_d8_isotropic_self_glue_reconstructs_e8():
         assert glued.is_isometric(e8)
 
 
-def test_conway_sloane_d8_maximal_overlattice_is_the_d8_plus_e8_glue():
+def test_conway_sloane_d8_maximal_overlattice_is_the_d8_plus_e8_glue() -> None:
     """The public maximal-overlattice search should find CS99's D8+ = E8 glue.
 
     Conway-Sloane Ch. 4 lists D8+ as the even unimodular E8 lattice obtained by
@@ -144,7 +149,7 @@ def test_conway_sloane_d8_maximal_overlattice_is_the_d8_plus_e8_glue():
     assert three_primary_maximal.is_isometric(d8)
 
 
-def test_conway_sloane_a2_discriminant_form_is_anisotropic_and_nonmetabolic():
+def test_conway_sloane_a2_discriminant_form_is_anisotropic_and_nonmetabolic() -> None:
     """A2 has glue group C3; in Cartan normalization its exact finite q is 2/3.
 
     Conway-Sloane list the A2 glue group as cyclic of order three.  Combining
@@ -183,7 +188,7 @@ def test_conway_sloane_a2_discriminant_form_is_anisotropic_and_nonmetabolic():
     assert form.lagrangian_subgroups() == ()
 
 
-def test_nikulin_non_lagrangian_u2_a2_glue_leaves_a2_discriminant_form():
+def test_nikulin_non_lagrangian_u2_a2_glue_leaves_a2_discriminant_form() -> None:
     r"""Nikulin Prop. 1.4.1 gives q_{S'} = H^\perp/H for overlattice glue.
 
     For S = U(2) (+) A2, gluing along one U(2) order-two isotropic subgroup is
@@ -234,7 +239,7 @@ def test_nikulin_non_lagrangian_u2_a2_glue_leaves_a2_discriminant_form():
     }
 
 
-def test_nikulin_local_modification_accepts_public_primary_subgroup_objects():
+def test_nikulin_local_modification_accepts_public_primary_subgroup_objects() -> None:
     r"""Nikulin Prop. 1.4.1 is p-local on primary discriminant parts.
 
     For S = A2 (+) A2(-1) (+) U(2), the 2-primary and 3-primary parts each

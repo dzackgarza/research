@@ -19,7 +19,7 @@ from sage.all import ZZ, oo
 from sage_lattice_category_spike.objects.cardinals import Cardinal, aleph0, cardinal, continuum
 
 
-def test_the_cardinal_tower_is_strictly_ordered():
+def test_the_cardinal_tower_is_strictly_ordered() -> None:
     five = cardinal(5)
     assert five < aleph0 < continuum
     assert five < continuum
@@ -28,14 +28,14 @@ def test_the_cardinal_tower_is_strictly_ordered():
     assert cardinal(5) == 5 == ZZ(5)
 
 
-def test_sage_infinity_reads_as_aleph_naught():
+def test_sage_infinity_reads_as_aleph_naught() -> None:
     assert aleph0 == oo
     assert continuum != oo
     assert continuum > oo
     assert cardinal(oo) == aleph0
 
 
-def test_addition_is_exact_then_absorbs():
+def test_addition_is_exact_then_absorbs() -> None:
     assert cardinal(3) + cardinal(4) == 7
     assert cardinal(5) + aleph0 == aleph0
     assert aleph0 + aleph0 == aleph0
@@ -44,7 +44,7 @@ def test_addition_is_exact_then_absorbs():
     assert 5 + aleph0 == aleph0
 
 
-def test_multiplication_is_exact_absorbs_and_is_annihilated_by_zero():
+def test_multiplication_is_exact_absorbs_and_is_annihilated_by_zero() -> None:
     assert cardinal(3) * cardinal(4) == 12
     assert cardinal(5) * aleph0 == aleph0
     assert aleph0 * aleph0 == aleph0
@@ -55,7 +55,7 @@ def test_multiplication_is_exact_absorbs_and_is_annihilated_by_zero():
     assert 0 * aleph0 == 0
 
 
-def test_exponentiation_follows_cardinal_laws_within_the_representable_range():
+def test_exponentiation_follows_cardinal_laws_within_the_representable_range() -> None:
     assert cardinal(0) ** cardinal(0) == 1
     assert cardinal(0) ** aleph0 == 0
     assert cardinal(1) ** continuum == 1
@@ -67,7 +67,7 @@ def test_exponentiation_follows_cardinal_laws_within_the_representable_range():
     assert continuum ** aleph0 == continuum
 
 
-def test_beyond_the_continuum_is_refused_not_misrepresented():
+def test_beyond_the_continuum_is_refused_not_misrepresented() -> None:
     with pytest.raises(AssertionError):
         cardinal(2) ** continuum
     with pytest.raises(AssertionError):
@@ -76,7 +76,7 @@ def test_beyond_the_continuum_is_refused_not_misrepresented():
         Cardinal(-1)
 
 
-def test_predicates_and_hashing_are_consistent():
+def test_predicates_and_hashing_are_consistent() -> None:
     assert cardinal(5).is_finite() and cardinal(5).is_countable()
     assert aleph0.is_countably_infinite() and not aleph0.is_finite()
     assert continuum.is_uncountably_infinite() and continuum.is_uncountable()
@@ -85,7 +85,7 @@ def test_predicates_and_hashing_are_consistent():
     assert len({aleph0, continuum, aleph0 + aleph0, continuum * aleph0}) == 2
 
 
-def test_equal_cardinals_hash_equally_across_the_coercion_boundary():
+def test_equal_cardinals_hash_equally_across_the_coercion_boundary() -> None:
     r"""The Python hash law: whatever compares equal hashes equally — in
     particular against Sage's two-valued infinity, which the countable
     infinite cardinal absorbs on equality."""
@@ -99,7 +99,7 @@ def test_equal_cardinals_hash_equally_across_the_coercion_boundary():
     assert hash(aleph0) != hash(continuum) or aleph0 == continuum
 
 
-def test_cardinal_arithmetic_is_closed_over_counts_and_refuses_scalar_actions():
+def test_cardinal_arithmetic_is_closed_over_counts_and_refuses_scalar_actions() -> None:
     r"""There is no scalar action of a larger ring on the cardinals: a
     rational times a cardinal does not typecheck mathematically, finite or
     not, and fails loudly. Counts (Cardinals, integers, the two-valued

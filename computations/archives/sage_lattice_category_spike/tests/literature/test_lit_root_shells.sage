@@ -3,7 +3,7 @@ from __future__ import annotations
 import sage_lattice_category_spike.lattice_categories as lc
 
 
-def test_d4_theta_shell_counts_match_conway_sloane_chapter_4():
+def test_d4_theta_shell_counts_match_conway_sloane_chapter_4() -> None:
     r"""Conway-Sloane Ch. 4 tabulates the theta-shell data of the D_4 root
     lattice: one zero vector, 24 roots of norm 2, 24 vectors of norm 4, and
     96 vectors of norm 6. This pins the enumeration vocabulary beyond the
@@ -39,7 +39,7 @@ def test_d4_theta_shell_counts_match_conway_sloane_chapter_4():
     ]
 
 
-def test_a2_direct_sum_theta_shell_convolution_matches_conway_sloane():
+def test_a2_direct_sum_theta_shell_convolution_matches_conway_sloane() -> None:
     r"""For an orthogonal direct sum, theta series multiply. Combining the
     Conway-Sloane Ch. 4 A_2 shell data gives 12 roots in A_2 + A_2 and
     36 vectors of norm 4: the 6 * 6 cross-summand ``(root, root)`` pairs.

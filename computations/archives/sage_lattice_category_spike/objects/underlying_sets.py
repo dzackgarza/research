@@ -12,7 +12,7 @@ subcategory inclusion (a forgetful functor is faithful, not monic).
 
 from __future__ import annotations
 
-from collections.abc import Iterable, Iterator
+from collections.abc import Iterator
 from typing import TYPE_CHECKING
 
 from ..lexicon import SageParent, SageUniqueRepresentation
@@ -59,11 +59,11 @@ class UnderlyingSet(SageUniqueRepresentation, SageParent):
     """
 
     @staticmethod
-    def __classcall__(cls, structured: SageParent) -> "UnderlyingSet":
+    def __classcall__(cls, structured: SageParent) -> UnderlyingSet:
         stored = getattr(structured, "_underlying_set", None)
         if stored is not None:
             return stored
-        underlying = super(UnderlyingSet, cls).__classcall__(cls, structured)
+        underlying = super().__classcall__(cls, structured)
         try:
             structured._underlying_set = underlying
         except AttributeError:

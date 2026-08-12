@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import warnings
 from collections.abc import Callable, Iterator, Sequence
-from typing import TYPE_CHECKING, Any, ClassVar, Literal
+from typing import TYPE_CHECKING, ClassVar, Literal
 
 if TYPE_CHECKING:
     from ..lexicon.geometry import Polyhedron
@@ -39,7 +39,6 @@ from ..lexicon import (
     DiscriminantFormElement,
     DiscriminantSubgroup,
     EmbeddingHomset,
-    Rational,
     FiniteAbelianGroup,
     FreeModule,
     Genus,
@@ -55,6 +54,7 @@ from ..lexicon import (
     LatticeSimilarity,
     NondegenerateLattice,
     PositiveDefiniteLattice,
+    Rational,
     RawGramMatrix,
     RawMorphismMatrix,
     RawVectors,
@@ -658,7 +658,7 @@ class SyntheticLattice(Lattice, SyntheticElementParent):
                 cartan_type=self._cartan_type if keeps_provenance else None,
             )
 
-    def _foreign_homset(self, codomain: Parent, category: SageCategory | None) -> "EmbeddingHomset":
+    def _foreign_homset(self, codomain: Parent, category: SageCategory | None) -> EmbeddingHomset:
         r"""Cross-category homsets Sage's conversion machinery asks for
         (e.g. into the underlying-set facade — surfaced by the #197 route
         audit) belong to Sage's generic homsets, not the lattice homset:

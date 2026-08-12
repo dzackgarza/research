@@ -33,7 +33,7 @@ from math import factorial
 import sage_lattice_category_spike.lattice_categories as lc
 
 
-def test_root_reflection_is_the_humphreys_involution_fixing_the_mirror():
+def test_root_reflection_is_the_humphreys_involution_fixing_the_mirror() -> None:
     r"""Humphreys, *Reflection Groups and Coxeter Groups*, sec 1.1 [EM8H6HGI]:
     for an anisotropic vector v the orthogonal reflection
 
@@ -85,7 +85,7 @@ def test_root_reflection_is_the_humphreys_involution_fixing_the_mirror():
             assert s in group
 
 
-def test_o_a2_is_the_order_12_dihedral_group_of_the_hexagon():
+def test_o_a2_is_the_order_12_dihedral_group_of_the_hexagon() -> None:
     r"""CS10 Ch. 4 sec 4.1 [CS10]: "the automorphism group of the hexagonal
     lattice ... is a dihedral group of order 12". The hexagonal lattice is A_2,
     so O(A_2) is the dihedral group of order 12 (= the symmetry group of a regular
@@ -117,7 +117,7 @@ def test_o_a2_is_the_order_12_dihedral_group_of_the_hexagon():
     assert len({representative.matrix() for representative in representatives}) == 6
 
 
-def test_orthogonal_group_of_a2_plus_a2_is_the_wreath_product():
+def test_orthogonal_group_of_a2_plus_a2_is_the_wreath_product() -> None:
     r"""CS10 Ch. 4 gluing theory [CS10]: for L a direct sum of root lattices the
     automorphism group has order g = g_0 g_1 g_2, where g_0 is the product of the
     component Weyl groups, G_1 is the Coxeter-diagram graph-automorphism group, and

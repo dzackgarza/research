@@ -3,7 +3,7 @@
 from sage.all import QQ, ProjectiveSpace
 
 
-def test_product_chow_pairing_and_self_intersection():
+def test_product_chow_pairing_and_self_intersection() -> None:
     """Intersection pairing agrees with bidegree arithmetic."""
     P1_x = ProjectiveSpace(QQ, 1, names=("x0", "x1"))
     P1_y = ProjectiveSpace(QQ, 1, names=("y0", "y1"))
@@ -19,7 +19,7 @@ def test_product_chow_pairing_and_self_intersection():
     assert N.top_self_intersection() == 6
 
 
-def test_bundle_cohomology_dimensions_match_expected_formula():
+def test_bundle_cohomology_dimensions_match_expected_formula() -> None:
     """`H(i)` dimensions on small divisors are numerically stable."""
     P1_x = ProjectiveSpace(QQ, 1, names=("u", "v"))
     P1_y = ProjectiveSpace(QQ, 1, names=("w", "z"))

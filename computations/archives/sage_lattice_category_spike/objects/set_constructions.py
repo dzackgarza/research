@@ -24,7 +24,6 @@ actual homsets.
 from __future__ import annotations
 
 from collections.abc import Iterable, Iterator
-from typing import Any
 
 from sage.categories.category import Category
 from sage.categories.homset import Hom

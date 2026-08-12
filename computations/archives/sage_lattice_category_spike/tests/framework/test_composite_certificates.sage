@@ -3,7 +3,7 @@
 from sage.all import QQ, ProjectiveSpace
 
 
-def test_picard_cycle_linking_linear_system_and_cyclic_cover():
+def test_picard_cycle_linking_linear_system_and_cyclic_cover() -> None:
     """A cycle through line bundles, sections, and cyclic covers is internally consistent."""
     P1_x = ProjectiveSpace(QQ, 1, names=("x0", "x1"))
     P1_y = ProjectiveSpace(QQ, 1, names=("y0", "y1"))

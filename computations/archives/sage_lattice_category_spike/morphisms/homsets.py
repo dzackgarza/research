@@ -3,10 +3,9 @@ r"""Homsets and morphisms for synthetic lattices."""
 from __future__ import annotations
 
 import warnings
+from collections.abc import Iterator
 from typing import TYPE_CHECKING, Any, ClassVar
 
-
-from collections.abc import Iterator
 if TYPE_CHECKING:
     from ..lexicon import (
         CategoryMorphism,
@@ -86,19 +85,19 @@ class Subobject:
     def __hash__(self) -> int:
         return hash(self.inclusion())
 
-    def lattice(self) -> "Lattice":
+    def lattice(self) -> Lattice:
         return self._inclusion.domain()
 
     def inclusion(self) -> lexicon.LatticeMorphism:
         return self._inclusion
 
-    def ambient(self) -> "Lattice":
+    def ambient(self) -> Lattice:
         return self._inclusion.codomain()
 
-    def rank(self) -> "Cardinal":
+    def rank(self) -> Cardinal:
         return self.lattice().rank()
 
-    def gram_matrix(self) -> "GramMatrix":
+    def gram_matrix(self) -> GramMatrix:
         return self.lattice().gram_matrix()
 
     def cokernel(self) -> SyntheticLatticeCokernel:
@@ -109,7 +108,7 @@ class Subobject:
         r"""Primitive iff the inclusion's cokernel is torsion-free."""
         return self._inclusion.cokernel().is_torsion_free()
 
-    def index(self) -> "Integer":
+    def index(self) -> Integer:
         r"""The index ``[M : L]`` in the EXTENDED scalars ``ZZ u {oo}``
         (Sage's infinity ring): determinant-scaling formulas are equations
         there. The Cardinal answer is ``cokernel().cardinality()``."""
@@ -125,7 +124,7 @@ class Subobject:
             raise AttributeError(name)
         return getattr(self.lattice(), name)
 
-    def direct_sum(self, summands: "OrderedSet", label: str = "direct_sum") -> "Lattice":
+    def direct_sum(self, summands: OrderedSet, label: str = "direct_sum") -> Lattice:
         lattices = [other.lattice() if isinstance(other, Subobject) else other for other in others]
         return self.lattice().direct_sum(*lattices, label=label)
 
@@ -142,7 +141,7 @@ class Subobject:
             return bool(module.span(self._inclusion.matrix().columns()).is_submodule(module.span(other.inclusion().matrix().columns())))
         return bool(self.ambient() == other)
 
-    def _span_in_codomain(self) -> "Subobject":
+    def _span_in_codomain(self) -> Subobject:
         r"""The image of the carried inclusion as a module inside the
         codomain's coordinate module -- the shared substrate of the subobject
         algebra (sum, intersection)."""
@@ -195,7 +194,7 @@ class Subobject:
         the coordinate solve lives on the inclusion itself."""
         return self._inclusion.saturation_factorization()
 
-    def index_in_saturation(self) -> "Integer":
+    def index_in_saturation(self) -> Integer:
         r"""The index ``[L^sat : L]`` -- the cokernel cardinality of the
         saturation factorization; ``1`` exactly when the subobject is
         primitive."""
@@ -209,7 +208,7 @@ class SyntheticLatticeCokernel(lexicon.LatticeCokernel):
     predicates (torsion-freeness, order) are asked of the object, never
     reconstructed by the caller from matrix internals."""
 
-    def __init__(self, module_quotient: "LatticeCokernel") -> None:
+    def __init__(self, module_quotient: LatticeCokernel) -> None:
         self._quotient = module_quotient
 
     def is_torsion_free(self) -> bool:
@@ -262,7 +261,7 @@ class LatticeHomset(lexicon.LatticeHomset, Homset):
     def codomain(self) -> SyntheticLattice:
         return self._codomain
 
-    def _element_constructor_(self, matrix_data: "RawMorphismMatrix") -> LatticeMorphism:
+    def _element_constructor_(self, matrix_data: RawMorphismMatrix) -> LatticeMorphism:
         return LatticeMorphism(self, matrix_data)
 
     # There is no from_matrix: morphisms are built by the public named
@@ -278,7 +277,7 @@ class LatticeMorphism(lexicon.LatticeMorphism, SageMorphism):
         # The parent is always a synthetic lattice homset.
         def parent(self) -> LatticeHomset: ...
 
-    def __init__(self, parent: LatticeHomset, matrix_data: "RawMorphismMatrix") -> None:
+    def __init__(self, parent: LatticeHomset, matrix_data: RawMorphismMatrix) -> None:
         SageMorphism.__init__(self, parent)
         domain = parent.domain()
         codomain = parent.codomain()
@@ -295,13 +294,13 @@ class LatticeMorphism(lexicon.LatticeMorphism, SageMorphism):
     def _repr_(self) -> str:
         return f"Synthetic lattice morphism represented by\n{self.matrix()}"
 
-    def matrix(self) -> "MorphismMatrix":
+    def matrix(self) -> MorphismMatrix:
         return self._matrix
 
-    def domain(self) -> "CategoryObject":
+    def domain(self) -> CategoryObject:
         return self.parent().domain()
 
-    def codomain(self) -> "CategoryObject":
+    def codomain(self) -> CategoryObject:
         return self.parent().codomain()
 
     def is_isometry(self) -> bool:
@@ -310,10 +309,10 @@ class LatticeMorphism(lexicon.LatticeMorphism, SageMorphism):
         # e.g. U -> U^2 on the hyperbolic plane is form-preserving but not one.
         return bool(self.matrix().is_square() and self.matrix().is_invertible())
 
-    def __call__(self, element: LatticeElement) -> "CategoryMorphism":
+    def __call__(self, element: LatticeElement) -> CategoryMorphism:
         return self._call_(element)
 
-    def _call_(self, element: LatticeElement) -> "LatticeElement":
+    def _call_(self, element: LatticeElement) -> LatticeElement:
         element = self.domain()(element) if element.parent() is not self.domain() else element
         return self.codomain()(self.matrix() * vector(self.domain().base_ring(), element.coefficient_vector()))
 
@@ -354,7 +353,7 @@ class LatticeMorphism(lexicon.LatticeMorphism, SageMorphism):
 
         return cokernel(self)
 
-    def induced_map_on_discriminant_group(self) -> "DiscriminantAction":
+    def induced_map_on_discriminant_group(self) -> DiscriminantAction:
         r"""The per-morphism functor to O(q_L) (spec 3.3); defined for
         endomorphisms of an integral nondegenerate lattice — the lattice-side
         discriminant vocabulary gates the rest."""
@@ -365,7 +364,7 @@ class LatticeMorphism(lexicon.LatticeMorphism, SageMorphism):
         r"""[total] — the cokernel is trivial (spec 3.5)."""
         return bool(self.cokernel().cardinality() == 1)
 
-    def index(self) -> "Integer":
+    def index(self) -> Integer:
         r"""The index ``[codomain : image]`` — the cokernel's cardinality
         spelled in the EXTENDED scalars ``ZZ u {oo}`` (Sage's infinity
         ring), where determinant-scaling formulas are equations; there is
@@ -380,7 +379,7 @@ class LatticeMorphism(lexicon.LatticeMorphism, SageMorphism):
     # -- object spellings are delegations through a canonical attached
     # -- morphism. ----------------------------------------------------------
 
-    def restrict(self, subobject: Subobject) -> "LatticeMorphism":
+    def restrict(self, subobject: Subobject) -> LatticeMorphism:
         r"""Precomposition with the carried inclusion:
         ``self * subobject.inclusion()`` -- restriction IS composition."""
         assert isinstance(subobject, Subobject), f"restrict consumes a subobject (the carried inclusion), not a bare lattice; found={type(subobject)}"
@@ -403,7 +402,7 @@ class LatticeMorphism(lexicon.LatticeMorphism, SageMorphism):
         assert self.is_injective(), f"saturation is monomorphism vocabulary; matrix={self.matrix()}"
         return self.image().saturation()
 
-    def saturation_factorization(self) -> tuple["LatticeMorphism", "LatticeMorphism"]:
+    def saturation_factorization(self) -> tuple[LatticeMorphism, LatticeMorphism]:
         r"""The mono ``A -> A^sat`` through which this monomorphism factors:
         ``f.saturation().inclusion() * f.saturation_factorization() == f``.
         The one coordinate solve lives here, inside the morphism's
@@ -420,7 +419,7 @@ class LatticeMorphism(lexicon.LatticeMorphism, SageMorphism):
         which carries the inclusion)."""
         return self.image().orthogonal_complement()
 
-    def induced_map_on_quotient(self, quotient: "LatticeCokernel") -> "CategoryMorphism":
+    def induced_map_on_quotient(self, quotient: LatticeCokernel) -> CategoryMorphism:
         r"""The endomorphism of ``cover/relations`` induced by this morphism
         of the cover -- an action on the finite quotient (its parent left the
         lattice category).
@@ -445,7 +444,7 @@ class LatticeMorphism(lexicon.LatticeMorphism, SageMorphism):
     def im_gens(self) -> tuple[Any, ...]:
         return tuple(self(self.domain().gen(i)) for i in range(self.domain().rank()))
 
-    def lift(self, element: LatticeElement) -> "ModuleElement":
+    def lift(self, element: LatticeElement) -> ModuleElement:
         element = self.codomain()(element) if element.parent() is not self.codomain() else element
         rhs = vector(QQ, element.coefficient_vector())
         solution = matrix(QQ, self.matrix()).solve_right(rhs)
@@ -459,7 +458,7 @@ class LatticeMorphism(lexicon.LatticeMorphism, SageMorphism):
     # -- full End(L) RING with sums/nilpotents lives on module endomorphisms,
     # -- V0d ratification 2026-07-03) --------------------------------------
 
-    def __mul__(self, other: object) -> "CategoryMorphism":
+    def __mul__(self, other: object) -> CategoryMorphism:
         r"""Composition: ``(f * g)(x) = f(g(x))``."""
         assert isinstance(other, LatticeMorphism), f"morphism composition needs a LatticeMorphism; found={type(other)}"
         assert other.codomain() == self.domain(), (
@@ -467,7 +466,7 @@ class LatticeMorphism(lexicon.LatticeMorphism, SageMorphism):
         )
         return other.domain().hom(self.matrix() * other.matrix(), codomain=self.codomain())
 
-    def __pow__(self, n: int) -> "LatticeMorphism":
+    def __pow__(self, n: int) -> LatticeMorphism:
         assert self.domain() == self.codomain(), f"powers need an endomorphism; domain={self.domain()}, codomain={self.codomain()}"
         n = int(n)
         if n < 0:
@@ -475,14 +474,14 @@ class LatticeMorphism(lexicon.LatticeMorphism, SageMorphism):
         power = self.matrix() ** n if n > 0 else self.matrix().parent().identity_matrix()
         return self.parent()(power)
 
-    def inverse(self) -> "LatticeMorphism":
+    def inverse(self) -> LatticeMorphism:
         assert self.is_isometry(), f"only isometries are invertible in the lattice category; matrix={self.matrix()}"
         return self.codomain().hom(self.matrix().inverse(), codomain=self.domain())
 
     def is_identity(self) -> bool:
         return bool(self.domain() == self.codomain() and self.matrix().is_one())
 
-    def order(self) -> "Integer":
+    def order(self) -> Integer:
         r"""Multiplicative order (computed by Sage); ``+Infinity`` for infinite order."""
         assert self.domain() == self.codomain(), f"order needs an endomorphism; domain={self.domain()}, codomain={self.codomain()}"
         return multiplicative_order(self.matrix())
@@ -524,8 +523,8 @@ class LatticeSimilarity(lexicon.LatticeSimilarity, Element):
         self,
         domain: Lattice | SyntheticLattice,
         codomain: Lattice | SyntheticLattice,
-        matrix_data: "RawMorphismMatrix",
-        scalar: "Rational",
+        matrix_data: RawMorphismMatrix,
+        scalar: Rational,
     ) -> None:
         assert domain.base_ring() == codomain.base_ring(), f"a lattice similarity needs one scalar ring; domain={domain.base_ring()}, codomain={codomain.base_ring()}"
         homset = domain.Hom(codomain)
@@ -547,19 +546,19 @@ class LatticeSimilarity(lexicon.LatticeSimilarity, Element):
     def _repr_(self) -> str:
         return f"Synthetic lattice similarity with scalar {self.scalar()} represented by\n{self.matrix()}"
 
-    def matrix(self) -> "MorphismMatrix":
+    def matrix(self) -> MorphismMatrix:
         return self._matrix
 
-    def scalar(self) -> "Rational":
+    def scalar(self) -> Rational:
         return self._scalar
 
-    def domain(self) -> "CategoryObject":
+    def domain(self) -> CategoryObject:
         return self.parent().domain()
 
-    def codomain(self) -> "CategoryObject":
+    def codomain(self) -> CategoryObject:
         return self.parent().codomain()
 
-    def __call__(self, element: LatticeElement) -> "CategoryMorphism":
+    def __call__(self, element: LatticeElement) -> CategoryMorphism:
         element = self.domain()(element) if element.parent() is not self.domain() else element
         image = self.matrix() * matrix(
             self.domain().base_ring(),
@@ -704,7 +703,7 @@ class IsometryHomset(lexicon.IsometryHomset, Parent):
         # mismatch in the engine's transformation fails loudly here.
         return left.hom(matrix(ZZ, transformation), codomain=right)
 
-    def acting_group(self) -> "Group":
+    def acting_group(self) -> Group:
         r"""``O(M)``: the nonempty homset is an ``O(M)``-torsor by
         postcomposition. Answered exactly where ``O(M)`` carries a grounded
         finiteness answer — the ``Groups().Finite()`` category refinement
@@ -723,11 +722,11 @@ class IsometryHomset(lexicon.IsometryHomset, Parent):
         )
         return group
 
-    def act(self, group_element: "GroupElement", element: "Element") -> "Element":
+    def act(self, group_element: GroupElement, element: Element) -> Element:
         r"""The ``O(M)``-action: postcomposition."""
         return group_element * element
 
-    def underlying_set(self) -> "Set":
+    def underlying_set(self) -> Set:
         r"""``U(Isom(L, M))`` through the standard structure-forgetting
         functor — the homset's own spelling; it sits outside the forwarding
         roots' injection scope, so the delegation is written here."""
@@ -745,7 +744,7 @@ class IsometryHomset(lexicon.IsometryHomset, Parent):
             return cardinal(ZZ(0))
         return torsor_cardinality(self)
 
-    def __iter__(self) -> "Iterator":
+    def __iter__(self) -> Iterator:
         r"""Torsor enumeration: ``{g . f0 : g in O(M)}`` through the general
         node's typed operation; implemented exactly where ``O(M)`` is finite."""
         from ..objects.g_sets import torsor_enumeration
@@ -754,7 +753,7 @@ class IsometryHomset(lexicon.IsometryHomset, Parent):
             return iter(())
         return torsor_enumeration(self)
 
-    def transporter(self, source: "CategoryObject", target: "CategoryObject") -> "IsometryHomset":
+    def transporter(self, source: CategoryObject, target: CategoryObject) -> IsometryHomset:
         r"""The unique ``g in O(M)`` with ``g . source == target``."""
         from ..objects.g_sets import torsor_transporter
 
@@ -792,7 +791,7 @@ class EmbeddingHomset(lexicon.EmbeddingHomset, Parent):
     def codomain(self) -> SyntheticLattice:
         return self._codomain
 
-    def __iter__(self) -> "Iterator":
+    def __iter__(self) -> Iterator:
         r"""Depth-first assignment of generator images: candidate images of
         the ``i``-th generator are the codomain vectors of its square, pruned
         by the pairing constraints against the already-placed generators.
@@ -823,7 +822,7 @@ class EmbeddingHomset(lexicon.EmbeddingHomset, Parent):
             return  # an integral form represents only integers: Emb is empty
         candidate_pools = [codomain.vectors_of_square(gram[i, i]) for i in range(domain.rank())]
 
-        def assign(placed: list) -> "OrderedSet":
+        def assign(placed: list) -> OrderedSet:
             position = len(placed)
             if position == domain.rank():
                 columns = column_matrix(ZZ, [image.coefficient_vector() for image in placed])

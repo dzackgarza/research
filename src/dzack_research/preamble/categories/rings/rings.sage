@@ -100,29 +100,87 @@ class OwnedRings(Category):
             saying so.  It is also the base case the other constructions
             reduce to.
             """
+            from sage.categories.commutative_rings import CommutativeRings
             from sage.categories.homset import Hom
             from sage.categories.morphism import SetMorphism
             from sage.categories.rings import Rings
 
+            # The identity is a map into the centre only when the centre is
+            # the whole ring.  A noncommutative $R$ is not an algebra over
+            # itself in this sense, and saying so here is what keeps the
+            # base case honest now that $Z(R)$ answers for more rings.
+            assert self in CommutativeRings(), (
+                f"{self} is not commutative, so the identity does not land in "
+                f"its centre and {self} is not an algebra over itself"
+            )
             centre = self.ring_center()
             return SetMorphism(Hom(self, centre, Rings()), lambda scalar: scalar)
 
+        def is_central(self: "Ring", element: "Element") -> bool:
+            r"""Return whether ``element`` commutes with every element of \(R\).
+
+            Deciding this needs nothing but a generating set.  The
+            centralizer of an element is a subring, so an element that
+            commutes with a set commutes with everything that set generates:
+            checking the generators decides all of \(R\).
+
+            A commutative ring has nothing to check.  For an \(R\)-algebra
+            the generators to check are the algebra generators, and the
+            scalars need no checking -- an \(R\)-algebra *is* a ring map
+            \(R\to Z(A)\), so its image is central by the obligation that
+            makes it an algebra, and the algebra generators together with the
+            scalars generate the ring.
+
+            A ring that can name no finite generating set is refused rather
+            than answered on trust.
+            """
+            from sage.categories.commutative_rings import CommutativeRings
+
+            # Local: the algebra node reaches this one, so a module-level
+            # import would close that cycle; it is built by call time.
+            from dzack_research.preamble.categories.algebras.algebras import finite_algebra_generators
+
+            if self in CommutativeRings():
+                return True
+            return all(
+                element * generator == generator * element
+                for generator in finite_algebra_generators(self)
+            )
+
+        @cached_method
         def ring_center(self: "Ring") -> "Ring":
             r"""Return $Z(R)$, the elements commuting with everything.
 
             A commutative ring is its own centre, and that is the case this
             preamble is built on: an $R$-algebra is a ring $A$ with a morphism
-            $R\to Z(A)$, and the morphism is what an algebra *is*.  For a
-            noncommutative $R$ the centre is a real computation and this
-            declines rather than guessing.
+            $R\to Z(A)$, and the morphism is what an algebra *is*.
+
+            Otherwise the centre is the carve-out by :meth:`is_central` and
+            not a presentation of it.  Constructing $Z(\Lambda(M))$ means
+            proving $\Lambda^{\text{even}}\oplus\Lambda^{\text{top}}$, while
+            *deciding* $z\in Z(\Lambda(M))$ is a finite check against the
+            generators -- and deciding is what every use of the centre needs.
+
+            Cached, because $Z$ is a functor and a functor must be well
+            defined on objects: two carve-outs of one ring would be two
+            objects with no map between them.
             """
             from sage.categories.commutative_rings import CommutativeRings
 
-            assert self in CommutativeRings(), (
-                f"{self} is not commutative, so its centre is not itself and "
-                "this preamble has no construction for it yet"
+            # Local: the carve-out imports this node, so a module-level
+            # import would close that cycle; it is built by call time.
+            from dzack_research.preamble.categories.rings.predicate_subrings import PredicateSubring
+
+            if self in CommutativeRings():
+                return self
+            return PredicateSubring(
+                self,
+                self.is_central,
+                "z commutes with every element",
+                # Always commutative: two central elements commute with
+                # everything, so in particular with each other.
+                CommutativeRings(),
             )
-            return self
 
         def __pow__(self, exponent):
             r"""Return \(R^n\), the free \(R\)-module on the canonical framing.
@@ -441,6 +499,19 @@ class OwnedRing(Parent):
     def __pow__(self, exponent: "Integer") -> "Module":
         r"""Return \(R^n\), the free \(R\)-module on the canonical framing."""
         return OwnedRings.ParentMethods.__pow__(self, exponent)
+
+    def __truediv__(self, ideal: object) -> "Parent":
+        r"""Return \(K/\mathfrak a\), which is the engine's quotient.
+
+        ``QQ/ZZ`` and ``QQ/(2*ZZ)`` are Sage's own spelling of
+        \(\Q/\Z\) and \(\Q/2\Z\), and the engine builds the right object; a
+        session loses that syntax only because a dunder is looked up on the
+        type, and the type of the ring a session names is this one.  So the
+        crossing is the whole of the method.  What makes the result the
+        preamble's is the post-init hook in ``fraction_field_quotients``,
+        which refines every such quotient as it is built.
+        """
+        return self._engine / engine_ring(ideal)
 
     def __getitem__(self, names: "OrderedSet | str | int") -> "Parent":
         r"""Return \(R[x_s:s\in S]\), the free \(R\)-algebra on the names.

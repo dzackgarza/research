@@ -204,6 +204,6 @@ authoritative surface; everything else points to it.
 ## References
 
 - Terminology dictionary: `.agents/references/terminology-dictionary.md`
-- Spike specification: `computations/experiments/sage_lattice_category_spike/SYNTHETIC_LATTICE_MODEL.md`
+- Spike specification: `computations/archives/sage_lattice_category_spike/SYNTHETIC_LATTICE_MODEL.md`
 - Governing memories: see agent-memory vault keys listed in
   `PLAN-demo-notebook-research-instrument`

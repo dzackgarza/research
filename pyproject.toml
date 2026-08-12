@@ -26,7 +26,7 @@ sage-lattice-feature-spike = { workspace = true }
 
 [tool.uv.workspace]
 members = [
-    "computations/experiments/sage_lattice_category_spike",
+    "computations/archives/sage_lattice_category_spike",
     "computations/experiments/sage_lattice_feature_spike",
 ]
 

@@ -20,7 +20,7 @@ from sage_lattice_category_spike.objects.modules import Modules
 from sage_lattice_category_spike.objects.scalars import Rings
 
 
-def test_magmatic_algebras_join_the_module_and_multiplicative_branches():
+def test_magmatic_algebras_join_the_module_and_multiplicative_branches() -> None:
     node = MagmaticAlgebras(ZZ)
     assert node.is_subcategory(SageMagmaticAlgebras(ZZ))
     assert node.is_subcategory(Modules(ZZ))
@@ -28,7 +28,7 @@ def test_magmatic_algebras_join_the_module_and_multiplicative_branches():
     assert node.is_subcategory(AdditiveMagmas())
 
 
-def test_associative_unital_algebras_are_in_particular_rings():
+def test_associative_unital_algebras_are_in_particular_rings() -> None:
     node = Algebras(ZZ)
     assert node.is_subcategory(SageAlgebras(ZZ))
     assert node.is_subcategory(MagmaticAlgebras(ZZ))
@@ -36,7 +36,7 @@ def test_associative_unital_algebras_are_in_particular_rings():
     assert node.is_subcategory(Monoids())
 
 
-def test_standard_refinements_arrive_through_sage_axioms():
+def test_standard_refinements_arrive_through_sage_axioms() -> None:
     commutative = Algebras(QQ).Commutative()
     assert commutative.is_subcategory(Algebras(QQ))
     assert "Commutative" in commutative.axioms()

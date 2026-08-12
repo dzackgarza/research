@@ -16,6 +16,8 @@ operations reaches the SAME underlying set through either route.
 from __future__ import annotations
 
 import itertools
+from collections.abc import Iterator
+from typing import TYPE_CHECKING
 
 from sage.all import QQ, ZZ, Zmod
 from sage.categories.homset import Hom
@@ -41,8 +43,13 @@ from sage_lattice_category_spike.objects.magmas import (
 from sage_lattice_category_spike.objects.sets import Sets
 from sage_lattice_category_spike.objects.underlying_sets import UnderlyingSet
 
+if TYPE_CHECKING:
+    from sage.rings.integer import Integer
+    from sage.rings.rational import Rational
+    from sage.structure.element import RingElement
 
-def test_the_multiplicative_spine_follows_sage_standard_axioms():
+
+def test_the_multiplicative_spine_follows_sage_standard_axioms() -> None:
     assert Magmas().is_subcategory(SageMagmas())
     assert Semigroups() is Magmas().Associative()
     assert Monoids() is Semigroups().Unital()
@@ -51,7 +58,7 @@ def test_the_multiplicative_spine_follows_sage_standard_axioms():
     assert Magmas().Countable().is_subcategory(Magmas())
 
 
-def test_the_additive_spine_follows_sage_standard_axioms():
+def test_the_additive_spine_follows_sage_standard_axioms() -> None:
     assert AdditiveMagmas().is_subcategory(SageAdditiveMagmas())
     assert AdditiveSemigroups() is AdditiveMagmas().AdditiveAssociative()
     assert AdditiveMonoids() is AdditiveSemigroups().AdditiveUnital()
@@ -64,27 +71,27 @@ class NonzeroRationalsUnderMultiplication(Parent):
     the rationals with zero removed. Supplies ONLY the enumeration — every
     other set behavior must arrive through the underlying-set route."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         Parent.__init__(self, facade=QQ, category=Groups().Countable().Infinite())
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[Rational]:
         return (q for q in iter(QQ) if q != 0)
 
-    def __contains__(self, x):
+    def __contains__(self, x: object) -> bool:
         return x in QQ and x != 0
 
 
 class IntegersModFiveUnderAddition(Parent):
     r"""The additive group ``ZZ/5``: finite, enumeration from the host."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         Parent.__init__(self, facade=Zmod(5), category=AdditiveGroups().Finite())
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[RingElement]:
         return iter(Zmod(5))
 
 
-def test_set_behavior_forwards_through_the_underlying_set_route():
+def test_set_behavior_forwards_through_the_underlying_set_route() -> None:
     r"""The rollup in action: the group defines no cardinality, no
     countability predicates, no indexing — yet answers all of them, through
     ``U`` and CP1's owners."""
@@ -108,7 +115,7 @@ def test_set_behavior_forwards_through_the_underlying_set_route():
     assert sorted(int(x) for x in mod_five.underlying_set()) == [0, 1, 2, 3, 4]
 
 
-def test_the_underlying_set_functor_is_a_faithful_kernel_element():
+def test_the_underlying_set_functor_is_a_faithful_kernel_element() -> None:
     forget = UnderlyingSetFunctor(Magmas())
     assert forget in FunctorSpace(Magmas(), Sets())
     assert forget.is_faithful()
@@ -126,17 +133,17 @@ class IntegersWithBothOperations(Parent):
     r"""``ZZ`` carrying both operations: the two structure-forgetting
     routes must reach the SAME underlying set."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         from sage.categories.category import Category
 
         category = Category.join([Magmas(), AdditiveGroups()]).Countable().Infinite()
         Parent.__init__(self, facade=ZZ, category=category)
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[Integer]:
         return iter(ZZ)
 
 
-def test_both_operation_routes_reach_the_same_underlying_set():
+def test_both_operation_routes_reach_the_same_underlying_set() -> None:
     both = IntegersWithBothOperations()
     through_multiplication = UnderlyingSetFunctor(Magmas())(both)
     through_addition = UnderlyingSetFunctor(AdditiveMagmas())(both)

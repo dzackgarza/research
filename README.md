@@ -34,7 +34,7 @@ v * v   # 2
 Run the spike test gates from the repository root:
 
 ```bash
-just -f computations/experiments/sage_lattice_category_spike/justfile test
+just -f computations/archives/sage_lattice_category_spike/justfile test
 just -f computations/experiments/sage_lattice_feature_spike/justfile test
 ```
 

@@ -15,7 +15,7 @@ from sage.all import ZZ
 from sage_lattice_category_spike.lattice_categories import Lattice
 
 
-def test_discriminant_representation_and_stable_kernel_split_O_A2():
+def test_discriminant_representation_and_stable_kernel_split_O_A2() -> None:
     O = Lattice("A2").isometry_group()
     representation = O.discriminant_representation()
     kernel = O.stable_kernel()
@@ -26,12 +26,12 @@ def test_discriminant_representation_and_stable_kernel_split_O_A2():
     assert representation.order() * kernel.order() == O.order()
 
 
-def test_orthogonal_submodule_of_trivial_isotropic_subgroup_is_everything():
+def test_orthogonal_submodule_of_trivial_isotropic_subgroup_is_everything() -> None:
     discriminant = Lattice("A2").discriminant_group()
     (trivial_subgroup,) = discriminant.isotropic_subgroups()
     assert trivial_subgroup.invariants() == ()
     assert trivial_subgroup.orthogonal_submodule().invariants() == discriminant.invariants() == (3,)
 
 
-def test_A2_is_unique_in_its_genus():
+def test_A2_is_unique_in_its_genus() -> None:
     assert Lattice("A2").genus().is_unique_class()

@@ -3,7 +3,7 @@
 from sage.all import QQ, ProjectiveSpace
 
 
-def test_graph_and_fixed_subscheme_for_involution():
+def test_graph_and_fixed_subscheme_for_involution() -> None:
     P1x = ProjectiveSpace(QQ, 1, names=("tx0", "tx1"))
     P1y = ProjectiveSpace(QQ, 1, names=("ty0", "ty1"))
     X = P1x * P1y
@@ -24,7 +24,7 @@ def test_graph_and_fixed_subscheme_for_involution():
     assert len(fixed.rational_points()) == 4
 
 
-def test_fiber_pullback_from_projection_is_one_dimensional():
+def test_fiber_pullback_from_projection_is_one_dimensional() -> None:
     P1x = ProjectiveSpace(QQ, 1, names=("px0", "px1"))
     P1y = ProjectiveSpace(QQ, 1, names=("py0", "py1"))
     X = P1x * P1y

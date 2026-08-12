@@ -256,7 +256,7 @@ def test_cython_parents_refuse_refinement_and_so_keep_their_underlying_set() -> 
     )
 
 
-def test_a_module_takes_zero_to_its_own_zero():
+def test_a_module_takes_zero_to_its_own_zero() -> None:
     r"""$M(0)$ is the additive identity of $M$, in any module."""
     _ensure_preamble()
 
@@ -270,7 +270,7 @@ def test_a_module_takes_zero_to_its_own_zero():
     )
 
 
-def test_a_polynomial_ring_is_the_free_algebra_the_notebook_receives():
+def test_a_polynomial_ring_is_the_free_algebra_the_notebook_receives() -> None:
     r"""``PolynomialRing`` delivers a free \(R\)-algebra, and \(R[x]\) does too.
 
     Sage's polynomial rings stay behind the boundary as the engine the
@@ -305,7 +305,7 @@ def test_a_polynomial_ring_is_the_free_algebra_the_notebook_receives():
     )
 
 
-def test_real_roots_come_from_the_algebraic_closure():
+def test_real_roots_come_from_the_algebraic_closure() -> None:
     r"""The owned branch: real roots without a mutable $\ZZ^{n+1}$ buffer.
 
     Sage isolates real roots in the Bernstein basis, writing into a
@@ -344,7 +344,7 @@ def test_real_roots_come_from_the_algebraic_closure():
     )
 
 
-def test_the_noncrystallographic_coxeter_groups_have_their_orders():
+def test_the_noncrystallographic_coxeter_groups_have_their_orders() -> None:
     r"""$|H_3|=120$ and $|H_4|=14400$.
 
     Both need the golden ratio, so both build a number field with a real

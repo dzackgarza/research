@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 from sage.modules.free_module_element import vector
 from sage.structure.element import Element, RingElement
 
-from ..lexicon import Rational, LatticeElement, Vector
+from ..lexicon import LatticeElement, Rational, Vector
 
 if TYPE_CHECKING:
     from .parents import SyntheticLattice

@@ -2,7 +2,7 @@ r"""Exact arithmetic helpers for the synthetic lattice spike."""
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, TypeGuard
+from typing import TYPE_CHECKING, TypeGuard
 
 from sage.combinat.root_system.cartan_matrix import CartanMatrix
 from sage.matrix.constructor import matrix
@@ -11,7 +11,6 @@ from sage.rings.rational_field import QQ
 from sage.structure.element import Matrix
 
 from ..lexicon.foundations import CartanType, GramMatrix, SignaturePair
-
 
 if TYPE_CHECKING:
     from ..lexicon import (
@@ -70,7 +69,7 @@ def signature_pair(gram_matrix: object) -> SignaturePair:
     return positives, negatives
 
 
-def rational_mod(value: "Element", modulus: "Rational") -> "Rational":
+def rational_mod(value: Element, modulus: Rational) -> Rational:
     value = QQ(value)
     modulus = QQ(modulus)
     return value - modulus * (value / modulus).floor()

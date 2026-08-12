@@ -3,7 +3,7 @@
 from sage.all import QQ, ProjectiveSpace
 
 
-def test_fixed_locus_for_product_sign_and_swap_actions():
+def test_fixed_locus_for_product_sign_and_swap_actions() -> None:
     """Coordinate sign automorphisms realize zero- and one-dimensional fixed loci."""
     P1_x = ProjectiveSpace(QQ, 1, names=("x0", "x1"))
     P1_y = ProjectiveSpace(QQ, 1, names=("y0", "y1"))

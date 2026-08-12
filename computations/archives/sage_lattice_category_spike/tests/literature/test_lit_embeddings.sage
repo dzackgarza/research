@@ -44,23 +44,24 @@ Sources (Zotero item key | Better-BibTeX key | markdown-extraction attachment):
 from __future__ import annotations
 
 import sage_lattice_category_spike.lattice_categories as lc
+from sage_lattice_category_spike.morphisms.homsets import Subobject
 
 
-def _unit(index, dimension=8):
+def _unit(index: int, dimension: int = 8) -> list[int]:
     """Coordinate vector of the ``index``-th E_8 simple root in the E_8 basis."""
     coordinates = [0] * dimension
     coordinates[index] = 1
     return coordinates
 
 
-def _is_anti_isometric(lattice_s, lattice_k):
+def _is_anti_isometric(lattice_s: Subobject, lattice_k: Subobject) -> bool:
     """Nikulin's anti-isometry test: q_S ~ -q_K, with -q_K = q_{K(-1)}."""
     return lattice_s.discriminant_group().is_isomorphic(
         lattice_k.twist(-1).discriminant_group(), kind="quadratic"
     )
 
 
-def test_orthogonal_complements_in_e8_recover_root_lattices_and_the_nikulin_anti_isometry():
+def test_orthogonal_complements_in_e8_recover_root_lattices_and_the_nikulin_anti_isometry() -> None:
     r"""Compute orthogonal complements inside E_8 and check Nikulin Cor 1.6.2.
 
     The spike builds E_8 with Gram = Cartan matrix, so its basis vectors are
@@ -131,7 +132,7 @@ def test_orthogonal_complements_in_e8_recover_root_lattices_and_the_nikulin_anti
         assert not _is_anti_isometric(s, s)
 
 
-def test_even_overlattice_index_realizes_the_isotropic_glue_of_S_plus_S_minus_one():
+def test_even_overlattice_index_realizes_the_isotropic_glue_of_S_plus_S_minus_one() -> None:
     r"""Nikulin Prop 1.4.1 + Cor 1.6.3: the even-overlattice / isotropic-subgroup
     correspondence and its index formula, realized on S (+) S(-1).
 

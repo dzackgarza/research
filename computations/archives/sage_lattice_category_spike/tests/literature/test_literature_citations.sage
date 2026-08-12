@@ -32,22 +32,29 @@ invariants, is_isomorphic, and brown_invariant.
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from functools import reduce
 from math import factorial, prod
 
 from sage.all import QQ, ZZ, identity_matrix, matrix
 import sage_lattice_category_spike.lattice_categories as lc
+from sage_lattice_category_spike.lexicon import (
+    DiscriminantFormElement,
+    Genus,
+    Integer,
+    Lattice,
+)
 
 
-def _direct_sum(*lattices):
+def _direct_sum(*lattices: Lattice) -> Lattice:
     return reduce(lambda a, b: a.direct_sum(b), lattices)
 
 
-def _coefficient_rows(elements):
+def _coefficient_rows(elements: Iterable[DiscriminantFormElement]) -> list[tuple[Integer, ...]]:
     return sorted(tuple(element.coefficient_vector()) for element in elements)
 
 
-def _local_symbol_rows(genus):
+def _local_symbol_rows(genus: Genus) -> dict[Integer, dict[str, tuple[tuple[int, ...], ...] | Integer]]:
     return {
         ZZ(symbol.prime()): {
             "canonical_symbol": tuple(tuple(row) for row in symbol.canonical_symbol()),
@@ -60,7 +67,7 @@ def _local_symbol_rows(genus):
     }
 
 
-def test_irreducible_root_lattice_invariants_match_conway_sloane_chapter_4():
+def test_irreducible_root_lattice_invariants_match_conway_sloane_chapter_4() -> None:
     r"""Determinant, minimal norm, and number of roots of every irreducible root
     lattice, pinned to Conway & Sloane, *SPLAG* Chapter 4 [CS10]. For a root
     lattice the minimal vectors ARE the roots (minimal norm 2), so the kissing
@@ -88,7 +95,7 @@ def test_irreducible_root_lattice_invariants_match_conway_sloane_chapter_4():
         assert len(lattice.roots()) == tau, name
 
 
-def test_root_lattice_discriminant_groups_are_the_conway_sloane_glue_groups():
+def test_root_lattice_discriminant_groups_are_the_conway_sloane_glue_groups() -> None:
     r"""The discriminant group L^*/L of a root lattice is the Conway-Sloane glue
     group: order = det L [CS10 sec 2.4], with invariant-factor structure from
     [CS10 Ch. 4]:
@@ -113,7 +120,7 @@ def test_root_lattice_discriminant_groups_are_the_conway_sloane_glue_groups():
         assert order == lattice.determinant(), name          # |L^*/L| = det L
 
 
-def test_small_root_lattice_automorphism_orders_match_conway_sloane_chapter_4():
+def test_small_root_lattice_automorphism_orders_match_conway_sloane_chapter_4() -> None:
     r"""Conway-Sloane Ch. 4 describes root-lattice automorphism groups via the
     Weyl group G_0 and diagram automorphisms G_1, with |G(L)| = g_0 g_1
     [CS10 Ch. 4 sec. 2 and the summary lines in secs. 6.1, 7.1].
@@ -142,7 +149,7 @@ def test_small_root_lattice_automorphism_orders_match_conway_sloane_chapter_4():
         assert all(generator.is_isometry() for generator in group.group_generators())
 
 
-def test_nikulin_primary_decomposition_of_finite_quadratic_forms():
+def test_nikulin_primary_decomposition_of_finite_quadratic_forms() -> None:
     r"""Nikulin Prop. 1.2.2 [Nik80]: a finite quadratic form decomposes as the
     orthogonal direct sum of its p-primary restrictions q_p. The fixture is a
     deliberately small mixed-primary form with 2-, 3-, and 5-primary factors, so
@@ -166,7 +173,7 @@ def test_nikulin_primary_decomposition_of_finite_quadratic_forms():
         )
 
 
-def test_nikulin_rank_obstruction_for_genus_of_finite_quadratic_form():
+def test_nikulin_rank_obstruction_for_genus_of_finite_quadratic_form() -> None:
     r"""Nikulin Thm. 1.10.1 [Nik80] gives the rank and local-generator
     obstructions for realizing a finite quadratic form as the discriminant form
     of an even lattice with prescribed signature. The 2-elementary form
@@ -185,7 +192,7 @@ def test_nikulin_rank_obstruction_for_genus_of_finite_quadratic_form():
         assert not form.is_genus(signature)
 
 
-def test_watson_split_genus_local_symbols_match_conway_sloane_chapter_15():
+def test_watson_split_genus_local_symbols_match_conway_sloane_chapter_15() -> None:
     r"""Conway-Sloane Ch. 15 sec. 9 [CS10] gives Watson's split genus example:
     the ternary positive-definite lattices with Gram matrices
     ``[[2,1,0],[1,2,0],[0,0,18]]`` and
@@ -226,7 +233,7 @@ def test_watson_split_genus_local_symbols_match_conway_sloane_chapter_15():
     assert _local_symbol_rows(second_genus) == _local_symbol_rows(first_genus)
 
 
-def test_nikulin_even_overlattices_of_U2_are_isotropic_subgroups():
+def test_nikulin_even_overlattices_of_U2_are_isotropic_subgroups() -> None:
     r"""Nikulin Prop. 1.4.1 [Nik80]: even overlattices S' of an even lattice S
     correspond to isotropic subgroups H of A_S, and the discriminant form of S'
     is q_{S'} = (q_S | H^perp) / H. For S = U(2), A_S = (Z/2)^2 has exactly two
@@ -273,7 +280,7 @@ def test_nikulin_even_overlattices_of_U2_are_isotropic_subgroups():
         assert abs(ZZ(lattice.determinant() / overlattice.determinant())) == 4
 
 
-def test_a2_e6_isotropic_glue_reconstructs_the_e8_root_lattice():
+def test_a2_e6_isotropic_glue_reconstructs_the_e8_root_lattice() -> None:
     r"""Conway-Sloane Ch. 4 describes E_6 as the complement of an A_2 sublattice
     in E_8, and Nikulin Prop. 1.4.1 identifies even overlattices with isotropic
     subgroups of the discriminant form. The anti-isometry q_{A_2} = -q_{E_6}
@@ -303,7 +310,7 @@ def test_a2_e6_isotropic_glue_reconstructs_the_e8_root_lattice():
     assert glued.is_isometric(lc.Lattice("E8(-1)"))
 
 
-def test_nikulin_orthogonal_complement_anti_isometry_corollary_1_6_2():
+def test_nikulin_orthogonal_complement_anti_isometry_corollary_1_6_2() -> None:
     r"""Nikulin, Corollary 1.6.2 [Nik80]: an even lattice S has an even lattice K
     as its orthogonal complement in SOME even unimodular lattice if and only if
     q_S = -q_K (isomorphic finite quadratic forms). Equivalently, for S and K
@@ -317,7 +324,7 @@ def test_nikulin_orthogonal_complement_anti_isometry_corollary_1_6_2():
     even unimodular lattice (indeed A_1 + A_1 has no even unimodular overlattice
     with A_1^perp = A_1).
     """
-    def anti_isometric(s_name, k_name):
+    def anti_isometric(s_name: str, k_name: str) -> bool:
         q_s = lc.Lattice(s_name).discriminant_group()
         minus_q_k = lc.Lattice(k_name).twist(-1).discriminant_group()
         return q_s.is_isomorphic(minus_q_k, kind="quadratic")
@@ -329,7 +336,7 @@ def test_nikulin_orthogonal_complement_anti_isometry_corollary_1_6_2():
     assert not anti_isometric("A1", "A1")
 
 
-def test_gauss_milgram_signature_congruence_nikulin_theorem_1_3_3():
+def test_gauss_milgram_signature_congruence_nikulin_theorem_1_3_3() -> None:
     r"""Gauss-Milgram / Milgram's formula (Milnor-Husemoller App. 4; CS10 Ch. 15;
     exactly Nikulin Thm 1.3.3* [Nik80]).
 
@@ -365,7 +372,7 @@ def test_gauss_milgram_signature_congruence_nikulin_theorem_1_3_3():
         assert gauss_sum_invariant % 8 == (pos - neg) % 8
 
 
-def test_even_unimodular_lattices_and_the_k3_lattice_match_kondo():
+def test_even_unimodular_lattices_and_the_k3_lattice_match_kondo() -> None:
     r"""Even unimodular lattices in the K3/Enriques setting [Kon20].
 
       - U is the even unimodular lattice of signature (1, 1) (Example 1.4).
@@ -402,7 +409,7 @@ def test_even_unimodular_lattices_and_the_k3_lattice_match_kondo():
     assert k3.is_even() and k3.is_unimodular()
 
 
-def test_e8_is_the_even_unimodular_root_lattice_of_rank_8():
+def test_e8_is_the_even_unimodular_root_lattice_of_rank_8() -> None:
     r"""E_8 [CS10 sec 8.1]: the unique even unimodular lattice of rank 8 -- det 1,
     minimal norm 2, kissing number 240, and self-dual (E_8^* = E_8), so its
     discriminant group L^*/L is trivial. It is the rank-8 case of the even

@@ -19,6 +19,7 @@ CS10 Chapter 4 is the independent oracle:
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from math import factorial
 
 from sage.matrix.constructor import matrix
@@ -26,21 +27,30 @@ from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 
 import sage_lattice_category_spike.lattice_categories as lc
+from sage_lattice_category_spike.lexicon import (
+    DiscriminantFormElement,
+    DiscriminantSubgroup,
+    Integer,
+    Matrix,
+    Rational,
+)
 
 
-def _coefficient_rows(elements):
+def _coefficient_rows(elements: Iterable[DiscriminantFormElement]) -> list[tuple[Integer, ...]]:
     return sorted(tuple(element.coefficient_vector()) for element in elements)
 
 
-def _orbit_rows(orbits):
+def _orbit_rows(orbits: Iterable[Iterable[DiscriminantFormElement]]) -> list[tuple[tuple[Integer, ...], ...]]:
     return sorted(tuple(_coefficient_rows(orbit)) for orbit in orbits)
 
 
-def _matrix_rows(matrix_):
+def _matrix_rows(matrix_: Matrix) -> tuple[tuple[Rational, ...], ...]:
     return tuple(tuple(row) for row in matrix_.rows())
 
 
-def _subgroup_orbit_rows(orbits):
+def _subgroup_orbit_rows(
+    orbits: Iterable[Iterable[DiscriminantSubgroup]],
+) -> list[tuple[tuple[tuple[Integer, ...], ...], ...]]:
     return sorted(
         tuple(
             sorted(
@@ -52,7 +62,7 @@ def _subgroup_orbit_rows(orbits):
     )
 
 
-def test_a4_a4_order_five_glue_reconstructs_e8_through_public_gluing_surfaces():
+def test_a4_a4_order_five_glue_reconstructs_e8_through_public_gluing_surfaces() -> None:
     r"""A_4 has glue group C_5 [CS10, Ch. 4 sec. 6.1].  The order-five
     isotropic glue between two A_4 components is a Ch. 4 sec. 3 overlattice;
     the resulting even unimodular rank-eight root lattice has the E_8 root
@@ -93,7 +103,7 @@ def test_a4_a4_order_five_glue_reconstructs_e8_through_public_gluing_surfaces():
     assert via_constructor.is_isometric(via_lattice_glue)
 
 
-def test_a2_e6_gluing_returns_primitive_complementary_embeddings_in_e8():
+def test_a2_e6_gluing_returns_primitive_complementary_embeddings_in_e8() -> None:
     r"""CS10 Ch. 4 sec. 8 identifies E_6 as the orthogonal complement of
     A_2 in E_8. The public gluing constructor should therefore return actual
     primitive isometric summand embeddings when asked, not just the glued
@@ -125,7 +135,7 @@ def test_a2_e6_gluing_returns_primitive_complementary_embeddings_in_e8():
     assert glued.orthogonal_complement(e6_image).is_isometric(a2)
 
 
-def test_a2_diagram_automorphism_induces_inversion_on_dual_quotient():
+def test_a2_diagram_automorphism_induces_inversion_on_dual_quotient() -> None:
     r"""The A_2 diagram automorphism acts by inversion on A_2^*/A_2.
 
     CS10 Ch. 4 sec. 6.1 identifies A_n^*/A_n with the cyclic glue group
@@ -166,7 +176,7 @@ def test_a2_diagram_automorphism_induces_inversion_on_dual_quotient():
     )
 
 
-def test_a4_full_isometry_action_negates_cyclic_glue_group_and_has_cs99_orbits():
+def test_a4_full_isometry_action_negates_cyclic_glue_group_and_has_cs99_orbits() -> None:
     r"""CS10 Ch. 4 sec. 6.1 identifies the A_n glue group as C_{n+1} and
     says the order-two automorphism sends [i] to [n+1-i].  For A_4, this is
     negation on C_5, with orbits {0}, {+-[1]}, and {+-[2]}.
@@ -189,7 +199,7 @@ def test_a4_full_isometry_action_negates_cyclic_glue_group_and_has_cs99_orbits()
     ]
 
 
-def test_a4_group_automorphisms_separate_from_form_isometries_and_transport_forms():
+def test_a4_group_automorphisms_separate_from_form_isometries_and_transport_forms() -> None:
     r"""The A_4 glue group is cyclic of order five [CS10, Ch. 4 sec. 6.1],
     while the diagram automorphism only realizes negation on that group.  Thus
     the finite group automorphism surface has four units, but the discriminant
@@ -230,7 +240,7 @@ def test_a4_group_automorphisms_separate_from_form_isometries_and_transport_form
     ) == [(1,), (4,)]
 
 
-def test_d4_reflections_generate_weyl_subgroup_and_full_isometries_act_by_triality():
+def test_d4_reflections_generate_weyl_subgroup_and_full_isometries_act_by_triality() -> None:
     r"""CS10 Ch. 4 sec. 7.1 gives the D_4 Weyl subgroup order
     2^3 * 4! = 192 and the full automorphism order multiplied by the
     order-six triality group.  The simple-root reflections also satisfy the

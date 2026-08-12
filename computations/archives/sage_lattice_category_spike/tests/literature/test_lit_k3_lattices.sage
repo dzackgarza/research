@@ -55,33 +55,35 @@ from functools import reduce
 
 import sage_lattice_category_spike.lattice_categories as lc
 from sage.all import ZZ, matrix
+from sage_lattice_category_spike.lexicon import Lattice
+from sage_lattice_category_spike.morphisms.homsets import Subobject
 
 
-def _direct_sum(*lattices):
+def _direct_sum(*lattices: Lattice) -> Lattice:
     return reduce(lambda a, b: a.direct_sum(b), lattices)
 
 
-def _U():
+def _U() -> Lattice:
     return lc.Lattice("U")
 
 
-def _E8m():
+def _E8m() -> Lattice:
     # E_8(-1) of the literature: the negative-definite E8, the K3/AG sign
     # convention [Kon20 Thm 1.27] -- now the unmarked AG default (no twist).
     return lc.Lattice("E8")
 
 
-def _rank_one(n):
+def _rank_one(n: int) -> Lattice:
     # the rank-1 lattice with Gram [n]
     return lc.Lattice(matrix(ZZ, 1, [n]))
 
 
-def _k3_lattice():
+def _k3_lattice() -> Lattice:
     # L_K3 = H^2(K3, Z) = U^3 (+) E8(-1)^2  [Kon20 Thm 1.27]
     return _direct_sum(_U(), _U(), _U(), _E8m(), _E8m())
 
 
-def _anti_isometric(s, k):
+def _anti_isometric(s: Lattice | Subobject, k: Lattice | Subobject) -> bool:
     r"""Nikulin Cor 1.6.2 predicate: q_S ~ -q_K, tested as
     q_S ~ q_{K(-1)} on finite quadratic forms."""
     return s.discriminant_group().is_isomorphic(
@@ -89,7 +91,7 @@ def _anti_isometric(s, k):
     )
 
 
-def test_k3_lattice_is_even_unimodular_and_isometry_ignores_summand_order():
+def test_k3_lattice_is_even_unimodular_and_isometry_ignores_summand_order() -> None:
     r"""The K3 lattice H^2(X, Z) = U^3 (+) E8(-1)^2 [Kon20 Thm 1.27], and the
     fact that its isometry class does not depend on how the orthogonal summands
     are ordered.
@@ -121,7 +123,7 @@ def test_k3_lattice_is_even_unimodular_and_isometry_ignores_summand_order():
         assert k3.is_isometric(other)
 
 
-def test_degree_two_polarization_neron_severi_transcendental_anti_isometry():
+def test_degree_two_polarization_neron_severi_transcendental_anti_isometry() -> None:
     r"""Transcendental / Neron-Severi splitting of a degree-2 (d = 1) polarized
     K3 [Kon20 Def 6.4, Ch. 8, period section; Nik80 Cor 1.6.2].
 
@@ -175,7 +177,7 @@ def test_degree_two_polarization_neron_severi_transcendental_anti_isometry():
     assert glued.determinant() == -4                            # 2 * |det T|, index-2 glue
 
 
-def test_degree_four_polarization_transcendental_has_order_four_discriminant():
+def test_degree_four_polarization_transcendental_has_order_four_discriminant() -> None:
     r"""Degree-4 (d = 2) polarized K3: the transcendental lattice carries a
     Z/4 discriminant form, distinguishing it from the degree-2 case
     [Kon20 Def 6.4, period section; Nik80 Cor 1.6.2].
@@ -207,7 +209,7 @@ def test_degree_four_polarization_transcendental_has_order_four_discriminant():
     )
 
 
-def test_minus_two_root_class_primitively_embedded_in_k3_and_its_complement():
+def test_minus_two_root_class_primitively_embedded_in_k3_and_its_complement() -> None:
     r"""A (-2)-class (root) primitively embedded in the K3 lattice and its
     orthogonal complement [Nik80 Cor 1.6.2, 1.6.3].
 
@@ -232,7 +234,7 @@ def test_minus_two_root_class_primitively_embedded_in_k3_and_its_complement():
     assert _anti_isometric(complement, root)                    # q_{r^perp} ~ -q_{<-2>}
 
 
-def test_enriques_lattice_e10_is_a_unimodular_summand_of_the_k3_lattice():
+def test_enriques_lattice_e10_is_a_unimodular_summand_of_the_k3_lattice() -> None:
     r"""The Enriques lattice E10 = U (+) E8(-1) and its relation to the K3
     lattice [Kon20 Cor 1.26, Thm 1.27, introduction; Dol24 E10; Nik80 Cor 1.6.2].
 

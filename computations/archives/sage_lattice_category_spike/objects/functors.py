@@ -21,7 +21,6 @@ from .. import lexicon
 
 if TYPE_CHECKING:
     from .categories import Lattices
-    from .parents import SyntheticLattice
 
 
 class Functor(lexicon.SageFunctor):

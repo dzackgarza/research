@@ -17,7 +17,7 @@ from sage.all import QQ, ZZ, matrix, oo
 from sage_lattice_category_spike.lattice_categories import Lattice
 
 
-def test_mono_factors_through_its_saturation():
+def test_mono_factors_through_its_saturation() -> None:
     r"""The saturation triangle on a genuine index-2 mono: ``iota = (S^sat ->
     M) . (S -> S^sat)`` with ``[S^sat : S] = 2``, all three arrows morphisms.
     Witness: S = span(2e1, e2) inside M = diag(-1, -1) (rank 2 = codomain
@@ -37,14 +37,14 @@ def test_mono_factors_through_its_saturation():
     assert line.saturation().inclusion() * line_factor == line
 
 
-def test_primitive_embedding_has_identity_saturation_factorization():
+def test_primitive_embedding_has_identity_saturation_factorization() -> None:
     A2 = Lattice("A2")
     bourbaki = A2.bourbaki_embedding()
     assert bourbaki.is_primitive_embedding()
     assert bourbaki.saturation_factorization().index() == 1
 
 
-def test_restrict_is_precomposition_and_preserves_is_factorization():
+def test_restrict_is_precomposition_and_preserves_is_factorization() -> None:
     r"""A reflection preserves the line it reflects and its orthogonal
     complement, and ``restrict`` to a stable line is the morphism computing
     the +-1 action there; an isometry moving the line is refused nothing --
@@ -66,7 +66,7 @@ def test_restrict_is_precomposition_and_preserves_is_factorization():
     assert not rotation.preserves(line)
 
 
-def test_orthogonal_complement_is_the_kernel_of_the_composed_pairing():
+def test_orthogonal_complement_is_the_kernel_of_the_composed_pairing() -> None:
     r"""On the rank < codomain-rank witness A2 c I_{0,3}: the complement of
     the realized A2 is the rank-1 primitive line pairing to zero with it."""
     A2 = Lattice("A2")
@@ -79,7 +79,7 @@ def test_orthogonal_complement_is_the_kernel_of_the_composed_pairing():
         assert codomain_form.b(realization(A2.gen(i)), complement.inclusion()(complement.lattice().gen(0))) == 0
 
 
-def test_radical_is_the_complement_of_the_identity():
+def test_radical_is_the_complement_of_the_identity() -> None:
     r"""The radical as morphism-sited vocabulary: ``radical()`` IS the
     orthogonal complement of the identity morphism -- the subobject pairing
     to zero with everything. Witness: diag(0, -2) has rank-1 primitive
@@ -104,7 +104,7 @@ def test_radical_is_the_complement_of_the_identity():
     assert skew.radical_quotient().rank() == 1
 
 
-def test_isometry_existence_is_the_homset_emptiness_question():
+def test_isometry_existence_is_the_homset_emptiness_question() -> None:
     r"""``Isom(L, M)`` is a parent: emptiness owns the G1 decision,
     ``is_isometric`` is its router, and the nonempty homset enumerates as an
     ``O(M)``-torsor."""
@@ -125,7 +125,7 @@ def test_isometry_existence_is_the_homset_emptiness_question():
     assert all(isometry in isometries for isometry in enumerated)
 
 
-def test_empty_isometry_homset_and_the_router_agree():
+def test_empty_isometry_homset_and_the_router_agree() -> None:
     A2 = Lattice("A2")
     square = Lattice(matrix(ZZ, [[-2, 0], [0, -2]]), label="square")
     isometries = A2.Isom(square)
@@ -137,7 +137,7 @@ def test_empty_isometry_homset_and_the_router_agree():
         isometries.an_element()
 
 
-def test_isometry_homset_cardinality_fails_under_its_own_name_when_ungrounded():
+def test_isometry_homset_cardinality_fails_under_its_own_name_when_ungrounded() -> None:
     r"""``Isom(L, M).cardinality()`` on a NONEMPTY homset whose ``O(M)``
     carries no grounded finiteness answer (indefinite rank 3: the odd
     unimodular diag(1, 1, -1), a single-spinor-genus genus so emptiness IS
@@ -154,7 +154,7 @@ def test_isometry_homset_cardinality_fails_under_its_own_name_when_ungrounded():
         isometries.cardinality()
 
 
-def test_embedding_homset_enumerates_by_generator_patterns():
+def test_embedding_homset_enumerates_by_generator_patterns() -> None:
     r"""``Emb(L, M)`` on definite codomains: A1(-1) = diag(-2) has exactly
     six embeddings into A2 (one per root -- rank 1 < codomain rank 2), and
     each is recognized by the homset."""
@@ -169,7 +169,7 @@ def test_embedding_homset_enumerates_by_generator_patterns():
     assert embeddings.an_element() in embeddings
 
 
-def test_embedding_homset_is_empty_when_no_vector_represents_the_square():
+def test_embedding_homset_is_empty_when_no_vector_represents_the_square() -> None:
     r"""diag(-10) does not embed into A2: x^2 - xy + y^2 = 5 has no integer
     solutions, so the generator has no candidate image."""
     diag10 = Lattice(matrix(ZZ, [[-10]]), label="diag-10")
@@ -180,7 +180,7 @@ def test_embedding_homset_is_empty_when_no_vector_represents_the_square():
         embeddings.an_element()
 
 
-def test_embedding_homset_finds_the_index_two_sublattice():
+def test_embedding_homset_finds_the_index_two_sublattice() -> None:
     r"""A full-rank non-primitive embedding is still an embedding: span(2e1,
     e2) in M = diag(-1,-1) is found by the enumeration with index 2."""
     S = Lattice(matrix(ZZ, [[-4, 0], [0, -1]]), label="S")
@@ -191,7 +191,7 @@ def test_embedding_homset_finds_the_index_two_sublattice():
     assert all(not embedding.is_primitive_embedding() for embedding in embeddings)
 
 
-def test_embedding_homset_owns_its_integral_definite_regime():
+def test_embedding_homset_owns_its_integral_definite_regime() -> None:
     r"""``Emb(L, M)`` names its supported regime at its own boundary. A
     NON-integral definite codomain (gram diag(1/2, 1/2)) is refused by the
     homset's own gating assert -- not by an incidental assert deep in the
@@ -213,7 +213,7 @@ def test_embedding_homset_owns_its_integral_definite_regime():
     assert half_line.Emb(A2).is_empty()  # -1/2 is not an integral value
 
 
-def test_subobject_sum_and_intersection_carry_their_inclusions():
+def test_subobject_sum_and_intersection_carry_their_inclusions() -> None:
     r"""The subobject algebra inside a common codomain (#100 T4, burden
     transferred from the deleted bare-lattice sum/intersection): joins and
     meets return subobjects, whose indices and saturations are asked of
@@ -240,7 +240,7 @@ def test_subobject_sum_and_intersection_carry_their_inclusions():
     assert first_axis.intersection(second_axis).rank() == 0
 
 
-def test_quotient_descent_is_asked_of_the_morphism():
+def test_quotient_descent_is_asked_of_the_morphism() -> None:
     r"""The morphism-sited descent on the genuine finite-index subobject
     relation: negation descends to M/span(3e1, e2), the swap isometry (which
     does not preserve the relation) is refused."""

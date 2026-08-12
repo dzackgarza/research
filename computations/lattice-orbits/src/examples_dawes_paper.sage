@@ -2,11 +2,14 @@
 Examples from Dawes' paper implemented using the modular, idiomatic SageMath components.
 """
 
+from sage.modules.free_module_element import FreeModuleElement
+from sage.modules.free_quadratic_module_integer_symmetric import FreeQuadraticModule_integer_symmetric
+
 load("lattice_utils.sage")
-load("smith_normal_form_utils.sage") 
+load("smith_normal_form_utils.sage")
 load("vector_orbit_algorithms.sage")
 
-def run_example_2_2():
+def run_example_2_2() -> tuple[FreeQuadraticModule_integer_symmetric, VectorOrbitAnalyzer, bool]:
     """
     Example 2.2 from Dawes' paper: L = U ⊕ A₃
     Tests if v₁ = (4, 4, 1, 2, -1) ~ v₂ = (36, 144, 5, -30, 83) under Ô⁺(L)
@@ -36,7 +39,7 @@ def run_example_2_2():
     
     return L, analyzer, result
 
-def run_example_2_6():
+def run_example_2_6() -> tuple[FreeQuadraticModule_integer_symmetric, VectorOrbitAnalyzer, bool]:
     """
     Example 2.6 from Dawes' paper: L = U ⊕ A₃
     Tests if v₁ = (1, -1, 0, 0, 0) ~ v₂ = (1, 0, 1, 0, 0) under ŜO⁺(L)
@@ -60,7 +63,7 @@ def run_example_2_6():
     
     return L, analyzer, result
 
-def demonstrate_isotropic_vector_analysis():
+def demonstrate_isotropic_vector_analysis() -> tuple[IsotropicVectorFinder, list[FreeModuleElement], dict[str, list[FreeModuleElement] | str]]:
     """
     Demonstrate isotropic vector finding and analysis using modular components.
     """
@@ -88,7 +91,7 @@ def demonstrate_isotropic_vector_analysis():
     
     return finder, isotropic_vectors, orbit_data
 
-def demonstrate_lattice_constructions():
+def demonstrate_lattice_constructions() -> dict[str, FreeQuadraticModule_integer_symmetric]:
     """
     Demonstrate proper SageMath lattice constructions.
     """
@@ -124,7 +127,12 @@ def demonstrate_lattice_constructions():
         'U_plus_A2': L1, '2U_plus_A2': L2
     }
 
-def main():
+def main() -> dict[
+    str,
+    tuple[FreeQuadraticModule_integer_symmetric, VectorOrbitAnalyzer, bool]
+    | tuple[IsotropicVectorFinder, list[FreeModuleElement], dict[str, list[FreeModuleElement] | str]]
+    | dict[str, FreeQuadraticModule_integer_symmetric],
+]:
     """
     Run all examples and demonstrations.
     """

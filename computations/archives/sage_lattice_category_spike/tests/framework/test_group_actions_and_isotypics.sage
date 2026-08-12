@@ -3,7 +3,7 @@
 from sage.all import QQ, CyclicPermutationGroup, ProjectiveSpace
 
 
-def test_isotypic_decomposition_of_quadratic_involution_action():
+def test_isotypic_decomposition_of_quadratic_involution_action() -> None:
     """The involution on `(4,4)` has 13+12 dimensional decomposition."""
     P1_x = ProjectiveSpace(QQ, 1, names=("x0", "x1"))
     P1_y = ProjectiveSpace(QQ, 1, names=("y0", "y1"))

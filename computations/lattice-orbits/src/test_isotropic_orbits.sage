@@ -2,7 +2,9 @@
 Test isotropic vector orbit computation
 """
 
-def test_isotropic_orbit_computation():
+from sage.modules.free_module_element import FreeModuleElement
+
+def test_isotropic_orbit_computation() -> list[FreeModuleElement]:
     """
     Test computation of orbits for isotropic vectors using simplified approach.
     """
@@ -63,7 +65,7 @@ def test_isotropic_orbit_computation():
     
     return isotropic_vectors
 
-def test_building_structure():
+def test_building_structure() -> None:
     """
     Test basic Tits building structure computation.
     """

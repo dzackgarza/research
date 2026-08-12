@@ -10,17 +10,26 @@ That question is what makes these functors rather than callables. It is
 asked here of every functor the preamble declares.
 """
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleAutomorphismGroup
+    from sage_lattice_category_spike.lexicon import OrderedSet
+
 from dzack_research.preamble.install import install_preamble
 install_preamble(globals())
-def _sample_set():
-    return finite_ordered_set([1, 2, 3])
 
 
-def _sample_group():
+def _sample_set() -> "OrderedSet":
+    labels: "OrderedSet" = finite_ordered_set([1, 2, 3])
+    return labels
+
+
+def _sample_group() -> "ModuleAutomorphismGroup":
     return Involutions.I_dP.cyclic_subgroup()
 
 
-def test_free_module_functor_lands_in_modules():
+def test_free_module_functor_lands_in_modules() -> None:
     r"""$F_R(S)$ is an $R$-module, and not $S$."""
     functor = FreeModuleFunctorClass(ZZ)
     source = _sample_set()
@@ -36,7 +45,7 @@ def test_free_module_functor_lands_in_modules():
     )
 
 
-def test_underlying_set_of_group_functor_lands_in_sets():
+def test_underlying_set_of_group_functor_lands_in_sets() -> None:
     r"""$U(G)$ is a set, and not $G$."""
     functor = UnderlyingSetOfGroupFunctor()
     source = _sample_group()
@@ -50,7 +59,7 @@ def test_underlying_set_of_group_functor_lands_in_sets():
     )
 
 
-def test_group_ring_module_functor_lands_in_modules():
+def test_group_ring_module_functor_lands_in_modules() -> None:
     r"""The underlying module of $R[G]$ is an $R$-module of rank $|G|$."""
     functor = FreeModuleOnGroupFunctor(ZZ)
     source = _sample_group()
@@ -64,7 +73,7 @@ def test_group_ring_module_functor_lands_in_modules():
     )
 
 
-def test_forgetful_module_functor_lands_in_sets():
+def test_forgetful_module_functor_lands_in_sets() -> None:
     r"""$U(M)$ is a set, and not $M$."""
     functor = ForgetfulFunctorClass(ZZ)
     source = FreeModuleFunctorClass(ZZ)(_sample_set())
@@ -75,7 +84,7 @@ def test_forgetful_module_functor_lands_in_sets():
     )
 
 
-def _base_rings():
+def _base_rings() -> list:
     r"""Rings the group ring must be constructible over.
 
     \(R[G]\) is defined for every ring \(R\): nothing in the construction
@@ -101,7 +110,7 @@ def _base_rings():
     ]
 
 
-def _groups():
+def _groups() -> list:
     r"""Groups the group ring must be constructible over.
 
     \(R[G]\) asks nothing of \(G\) but that it be a group: not finiteness,
@@ -128,7 +137,7 @@ def _groups():
     ]
 
 
-def _sample_elements(group, bound=6):
+def _sample_elements(group: "ModuleAutomorphismGroup", bound: int = 6) -> list:
     r"""Return finitely many elements, exhaustively when the group is finite."""
     if group in Sets().Finite():
         return list(group)
@@ -143,7 +152,7 @@ def _sample_elements(group, bound=6):
     return words[:bound]
 
 
-def test_group_ring_over_many_base_rings():
+def test_group_ring_over_many_base_rings() -> None:
     r"""\(R[G]\) is a ring of rank \(|G|\) whose product is the group law."""
     failures = []
     for ring_name, base_ring in _base_rings():
@@ -187,7 +196,7 @@ def test_group_ring_over_many_base_rings():
     assert not failures, "\n".join(failures)
 
 
-def test_group_ring_is_noncommutative_exactly_when_the_group_is():
+def test_group_ring_is_noncommutative_exactly_when_the_group_is() -> None:
     r"""For commutative nonzero \(R\), \(R[G]\) is commutative iff \(G\) is abelian."""
     for ring_name, base_ring in [("ZZ", ZZ), ("QQ", QQ), ("GF(7)", GF(7))]:
         abelian = GroupRingFunctor(base_ring)(CyclicPermutationGroup(3))
@@ -208,7 +217,7 @@ def test_group_ring_is_noncommutative_exactly_when_the_group_is():
         ), f"{ring_name}[S3] lost the noncommutativity of S3"
 
 
-def test_free_module_functor_carries_morphisms():
+def test_free_module_functor_carries_morphisms() -> None:
     r"""$F_R$ takes $f:S\to T$ to a morphism $F_R(S)\to F_R(T)$.
 
     A functor acts on morphisms too, and the domain and codomain of the

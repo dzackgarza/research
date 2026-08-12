@@ -7,6 +7,13 @@ the standard one.
 """
 
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModule
+    from dzack_research.preamble.categories.modules.framed.formed.integrallattice.subobjects import Subobject
+
+
 def _ensure_preamble() -> None:
     # Not ``IntegralLattice``: that name is Sage's own until the preamble
     # rebinds it, so guarding on it would leave the lattices unrefined.
@@ -17,13 +24,13 @@ def _ensure_preamble() -> None:
 
     from dzack_research.preamble.install import install_preamble
     install_preamble(globals())
-def _standard(n: int, negative: bool = False):
+def _standard(n: int, negative: bool = False) -> "FormModule":
     r"""Return $I_{n,0}$, or $I_{0,n}$ when ``negative``."""
     gram = matrix(ZZ, n, n, lambda i, j: (0 if i != j else (-1 if negative else 1)))
     return IntegralLattice(gram)
 
 
-def _skew_submodule(negative: bool = False):
+def _skew_submodule(negative: bool = False) -> "Subobject":
     r"""Return a finite-index submodule of $I_{4,0}$ on long, skew generators."""
     _ensure_preamble()
     ambient = _standard(4, negative)

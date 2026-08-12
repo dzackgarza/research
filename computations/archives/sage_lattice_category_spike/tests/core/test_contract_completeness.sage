@@ -14,6 +14,9 @@ localized (implement / constructor-assert-with-data / leaf subcategory).
 """
 from __future__ import annotations
 
+from collections.abc import Callable
+from typing import TYPE_CHECKING
+
 import pytest
 
 from sage.all import QQ, ZZ, TestSuite, matrix
@@ -27,6 +30,9 @@ from sage_lattice_category_spike.lattice_categories import (
     Lattices,
 )
 
+if TYPE_CHECKING:
+    from sage_lattice_category_spike import lexicon
+
 
 CONSTRUCTORS = [
     pytest.param(lambda: Lattice("A2"), id="Lattice_A2_posdef"),
@@ -39,7 +45,7 @@ CONSTRUCTORS = [
 
 @pytest.mark.xfail(reason="red proof gate for OPEN issue dzackgarza/research#24: unrealized required contracts (primitive-embedding cluster) await the implement/localize triage", strict=True)
 @pytest.mark.parametrize("construct", CONSTRUCTORS)
-def test_constructor_implements_all_required_contracts(construct):
+def test_constructor_implements_all_required_contracts(construct: Callable[[], lexicon.Lattice]) -> None:
     r"""Sage's standard abstract-method compliance check. Raises
     ``AssertionError: Not implemented method: <name>`` for the first required
     contract a constructor leaves unrealized. A gap is a bright red flag: the
@@ -52,7 +58,7 @@ def test_constructor_implements_all_required_contracts(construct):
 
 
 @pytest.mark.parametrize("construct", CONSTRUCTORS)
-def test_zero_satisfies_inherited_additive_group_axioms(construct):
+def test_zero_satisfies_inherited_additive_group_axioms(construct: Callable[[], lexicon.Lattice]) -> None:
     r"""The zero slice of ``TestSuite(obj).run()``: the additive-group axioms the
     element class inherits from the module category chain
     (``AdditiveMagmas.AdditiveUnital`` up through ``Element``) -- ``zero`` reads
@@ -69,7 +75,7 @@ def test_zero_satisfies_inherited_additive_group_axioms(construct):
 
 
 @pytest.mark.parametrize("construct", CONSTRUCTORS)
-def test_elements_are_hashable_consistently_with_equality(construct):
+def test_elements_are_hashable_consistently_with_equality(construct: Callable[[], lexicon.Lattice]) -> None:
     r"""Sage's ``Element`` sets ``__hash__ = None`` -- rich comparison lives at
     the C level and every element subclass must opt into hashing. Lattice
     elements opt in categorically on ``LatticeElement`` over their generator
@@ -82,7 +88,7 @@ def test_elements_are_hashable_consistently_with_equality(construct):
 
 
 @pytest.mark.parametrize("construct", CONSTRUCTORS)
-def test_pickling_roundtrip_preserves_equality(construct):
+def test_pickling_roundtrip_preserves_equality(construct: Callable[[], lexicon.Lattice]) -> None:
     r"""The pickling slice of ``TestSuite(obj).run()``. A deserialized element
     has a fresh parent equal by ``(R, G)``; the equal-parent coercion must make
     Sage compare its coefficient vector in a common parent."""
@@ -90,7 +96,7 @@ def test_pickling_roundtrip_preserves_equality(construct):
     lattice.zero()._test_pickling()
 
 
-def test_fresh_dual_elements_compare_through_equal_parent_coercion():
+def test_fresh_dual_elements_compare_through_equal_parent_coercion() -> None:
     r"""Fresh dual parents have equal lattice data, so corresponding elements
     compare through the canonical identity coercion rather than by allocation
     identity."""
@@ -101,7 +107,7 @@ def test_fresh_dual_elements_compare_through_equal_parent_coercion():
     assert first_dual.gen(0) == second_dual.gen(0)
 
 
-def test_equal_parent_coercion_maps_elements_to_the_target_parent():
+def test_equal_parent_coercion_maps_elements_to_the_target_parent() -> None:
     r"""The public coercion map transports a vector from a fresh equal parent
     into the target parent without changing its coefficient data."""
     lattice = Lattice("A2")
@@ -114,7 +120,7 @@ def test_equal_parent_coercion_maps_elements_to_the_target_parent():
     assert converted == target.gen(0)
 
 
-def test_sourced_discriminant_lifts_compare_across_fresh_dual_parents():
+def test_sourced_discriminant_lifts_compare_across_fresh_dual_parents() -> None:
     r"""``lift`` and ``coset_representative`` independently construct the
     dual cover, but represent the same discriminant coset."""
     discriminant_form = Lattice("A2").discriminant_group()
@@ -122,7 +128,7 @@ def test_sourced_discriminant_lifts_compare_across_fresh_dual_parents():
     assert discriminant_form.lift(generator) == discriminant_form.coset_representative(generator)
 
 
-def test_subobjects_compare_by_lattice_and_inclusion_morphism():
+def test_subobjects_compare_by_lattice_and_inclusion_morphism() -> None:
     r"""Subobjects retain their slice data: equal inclusions compare equal,
     while equal-Gram inclusions into different generator lines do not."""
     lattice = Lattices(ZZ).from_gram_matrix(matrix(ZZ, [[2, 0], [0, 2]]))
@@ -134,7 +140,7 @@ def test_subobjects_compare_by_lattice_and_inclusion_morphism():
     assert first != different
 
 
-def test_plain_lattice_and_subobject_compare_false_with_warning():
+def test_plain_lattice_and_subobject_compare_false_with_warning() -> None:
     r"""A plain lattice and an equal presented subobject are categorically
     distinct; the comparison must be visible rather than silently conflated."""
     lattice = Lattices(ZZ).from_gram_matrix(matrix(ZZ, [[2]]))
@@ -145,7 +151,7 @@ def test_plain_lattice_and_subobject_compare_false_with_warning():
         assert not (subobject == lattice)
 
 
-def test_lattice_hom_factory_accepts_the_explicit_category():
+def test_lattice_hom_factory_accepts_the_explicit_category() -> None:
     r"""The category-root ``Hom`` factory and parent spelling construct the
     form-preserving homset in the requested lattice category."""
     lattice = Lattice("A2")
@@ -159,7 +165,7 @@ def test_lattice_hom_factory_accepts_the_explicit_category():
     assert sage_homset(identity_matrix) == lattice.identity_morphism()
 
 
-def test_public_hom_uses_the_canonical_forgetful_functor_to_sets():
+def test_public_hom_uses_the_canonical_forgetful_functor_to_sets() -> None:
     r"""A request in ``Sets()`` follows the canonical forgetful functor and
     then asks Sage for the resulting generic set homset."""
     lattice = Lattice("A2")
@@ -172,7 +178,7 @@ def test_public_hom_uses_the_canonical_forgetful_functor_to_sets():
     assert sage_set_homset(lattice.identity_morphism().matrix()) != lattice.identity_morphism()
 
 
-def test_base_change_functor_refines_the_target_category_and_maps_morphisms():
+def test_base_change_functor_refines_the_target_category_and_maps_morphisms() -> None:
     r"""Base change is a first-class functor from ``Lattices(ZZ)`` to
     ``Lattices(QQ)``. Its object value is rebuilt by the target category, and
     its morphism value belongs to the transported homset."""
@@ -190,7 +196,7 @@ def test_base_change_functor_refines_the_target_category_and_maps_morphisms():
     assert mapped_identity.is_identity()
 
 
-def test_cross_base_hom_uses_base_change_before_the_category_meet():
+def test_cross_base_hom_uses_base_change_before_the_category_meet() -> None:
     r"""The lattice Hom resolver transports the ``ZZ`` source to ``QQ``
     before computing the lattice-category meet. An explicit target category is
     the same canonical request, not a membership assertion on the source."""
@@ -211,7 +217,7 @@ FULL_TESTSUITE_SKIP = ("_test_not_implemented_methods",)
 
 
 @pytest.mark.parametrize("construct", CONSTRUCTORS)
-def test_full_testsuite_passes_except_tracked_failures(construct):
+def test_full_testsuite_passes_except_tracked_failures(construct: Callable[[], lexicon.Lattice]) -> None:
     r"""Run the FULL Sage ``TestSuite(obj).run()`` battery -- pickling of the
     parent, category axioms, ``some_elements``, ``an_element``, and the rest --
     so a regression in ANY axiom is caught, not only the hand-picked slices above.

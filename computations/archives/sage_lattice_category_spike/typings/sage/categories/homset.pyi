@@ -13,3 +13,12 @@ class Homset(Parent):
 
     def domain(self) -> Parent: ...
     def codomain(self) -> Parent: ...
+
+# The homset constructor: Hom(X, Y) in the given category (the meet of the
+# parents' categories when none is named).
+def Hom(
+    X: Parent,
+    Y: Parent,
+    category: Category | None = ...,
+    check: bool = ...,
+) -> Homset: ...

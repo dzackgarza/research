@@ -19,6 +19,9 @@ class FreeQuadraticModule_integer_symmetric(FreeModule_generic):
         is_finite: bool | None = ...,
     ) -> GroupOfIsometries: ...
     def signature_pair(self) -> tuple[int, int]: ...
+    def direct_sum(
+        self, other: FreeQuadraticModule_integer_symmetric
+    ) -> FreeQuadraticModule_integer_symmetric: ...
 
 # The descriptor is a Gram matrix, a Euclidean rank, a Cartan type for a root
 # lattice, or "U"/"H" for the hyperbolic plane.

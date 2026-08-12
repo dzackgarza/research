@@ -28,7 +28,7 @@ from sage.rings.rational_field import QQ
 from sage.rings.real_mpfr import RR
 from sage.rings.semirings.non_negative_integer_semiring import NN
 
-from ..lexicon import Rational, Integer, SageParent, SageUniqueRepresentation
+from ..lexicon import Integer, Rational, SageParent, SageUniqueRepresentation
 from .cardinals import Cardinal, cardinal
 from .scalars import Fields, Rings, Semirings
 

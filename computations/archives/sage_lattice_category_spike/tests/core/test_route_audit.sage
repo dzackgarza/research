@@ -15,10 +15,13 @@ answer must still turn the provenance check red.
 
 from __future__ import annotations
 
+from collections.abc import Iterator
+
 import pytest
 
 from sage_lattice_category_spike.lattice_categories import Lattice
 from sage_lattice_category_spike.route_audit import (
+    MaintainedParent,
     audit_parent,
     maintained_parent_inventory,
     provenance_failures,
@@ -29,12 +32,12 @@ _INVENTORY = maintained_parent_inventory()
 
 
 @pytest.mark.parametrize("spec", _INVENTORY, ids=[spec.label for spec in _INVENTORY])
-def test_the_maintained_parent_survives_the_route_audit(spec):
+def test_the_maintained_parent_survives_the_route_audit(spec: MaintainedParent) -> None:
     failures = audit_parent(spec)
     assert not failures, "; ".join(failures)
 
 
-def test_a_numerically_correct_leaf_override_turns_the_provenance_check_red():
+def test_a_numerically_correct_leaf_override_turns_the_provenance_check_red() -> None:
     r"""Check 8: introduce a leaf override whose ANSWER is exactly right —
     the provenance comparator must red on it anyway, because provenance is
     a fact of the resolution order, not of the output."""
@@ -52,7 +55,7 @@ def test_a_numerically_correct_leaf_override_turns_the_provenance_check_red():
     assert all("cardinality" in failure for failure in failures), "only the bypassed operation may red"
 
 
-def test_the_route_report_derives_from_the_live_graph_and_is_green():
+def test_the_route_report_derives_from_the_live_graph_and_is_green() -> None:
     r"""Deliverable 2: the report runs from the same introspection surface
     (no stored inputs, so report/test disagreement is impossible) and shows
     every inventory row green on the completed foundation."""
@@ -62,7 +65,7 @@ def test_the_route_report_derives_from_the_live_graph_and_is_green():
         assert spec.label in text
 
 
-def test_the_inventory_covers_the_production_parent_surface():
+def test_the_inventory_covers_the_production_parent_surface() -> None:
     r"""Independent completeness: the production-parent surface is
     enumerated from the modules themselves and compared against the
     authored inventory — a new production Parent class must either be
@@ -110,7 +113,7 @@ def test_the_inventory_covers_the_production_parent_surface():
     assert not missing, f"production parents with no inventory family and no reasoned exemption: {missing}"
 
 
-def test_an_identity_returning_forgetful_functor_turns_the_honesty_check_red():
+def test_an_identity_returning_forgetful_functor_turns_the_honesty_check_red() -> None:
     r"""Red demonstration for check 3, kept as a permanent test: a functor
     that hands back the structured object unchanged must fail honesty."""
     from sage.structure.parent import Parent as SageParent
@@ -119,13 +122,13 @@ def test_an_identity_returning_forgetful_functor_turns_the_honesty_check_red():
     from sage_lattice_category_spike.route_audit import MaintainedParent, forgetful_functor_failures
 
     class DishonestlyForgetting(SageParent):
-        def __init__(self):
+        def __init__(self) -> None:
             SageParent.__init__(self, category=Sets().Finite())
 
-        def underlying_set(self):
+        def underlying_set(self) -> DishonestlyForgetting:
             return self
 
-        def an_element(self):
+        def an_element(self) -> int:
             return 0
 
     parent = DishonestlyForgetting()
@@ -144,7 +147,7 @@ def test_an_identity_returning_forgetful_functor_turns_the_honesty_check_red():
     assert not forgetful_functor_failures(a2_spec, a2_spec.construct())
 
 
-def test_a_broken_enumeration_turns_the_refinement_check_red():
+def test_a_broken_enumeration_turns_the_refinement_check_red() -> None:
     r"""Red demonstration for check 7, kept as a permanent test: a
     countable parent whose enumeration repeats itself must fail the
     duplicate-free prefix law even though every other answer is right."""
@@ -155,20 +158,20 @@ def test_a_broken_enumeration_turns_the_refinement_check_red():
     from sage_lattice_category_spike.route_audit import MaintainedParent, refinement_failures
 
     class ConstantEnumeration(SageParent):
-        def __init__(self):
+        def __init__(self) -> None:
             SageParent.__init__(self, category=Sets().Countable().Infinite())
 
-        def cardinality(self):
+        def cardinality(self) -> Cardinal:
             return aleph0
 
-        def __iter__(self):
+        def __iter__(self) -> Iterator[int]:
             while True:
                 yield 1
 
-        def __getitem__(self, n):
+        def __getitem__(self, n: int) -> int:
             return 1
 
-        def index(self, element):
+        def index(self, element: int) -> int:
             return 0
 
     parent = ConstantEnumeration()

@@ -10,6 +10,11 @@ set.  Those belong to the finitely generated node, and a module that has not
 got them should not be expected to answer.
 """
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from sage_lattice_category_spike.lexicon import OrderedSet
+
 
 def _ensure_preamble() -> None:
     if "Lattices" in globals():
@@ -20,10 +25,11 @@ def _ensure_preamble() -> None:
     Lattices.install(globals())
 
 
-def _countable_framing():
+def _countable_framing() -> "OrderedSet":
     r"""Return $\Delta[\aleph_0]$, the countable set of generator labels."""
     _ensure_preamble()
-    return Sets.Δ[Sets.ℵ[0]]
+    labels: "OrderedSet" = Sets.Δ[Sets.ℵ[0]]
+    return labels
 
 
 def test_a_countably_framed_free_module_is_constructible() -> None:

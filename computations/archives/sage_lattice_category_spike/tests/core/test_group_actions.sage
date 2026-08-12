@@ -15,6 +15,8 @@ under ``O(A2)`` by precomposition.
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from sage.all import ZZ, matrix
 from sage.categories.g_sets import GSets as SageGSets
 from sage.structure.parent import Parent
@@ -23,14 +25,17 @@ from sage_lattice_category_spike.lattice_categories import Lattice
 from sage_lattice_category_spike.objects.cardinals import Cardinal
 from sage_lattice_category_spike.objects.g_sets import GSets, Torsors
 
+if TYPE_CHECKING:
+    from sage_lattice_category_spike import lexicon
 
-def _conjugated_a2():
+
+def _conjugated_a2() -> tuple[lexicon.Lattice, lexicon.Lattice]:
     a2 = Lattice("A2")
     change = matrix(ZZ, [[1, 1], [0, 1]])
     return a2, Lattice(change.transpose() * a2.gram_matrix() * change, label="A2-conjugate")
 
 
-def test_torsors_refine_g_sets():
+def test_torsors_refine_g_sets() -> None:
     group = Lattice("A2").isometry_group()
     assert Torsors(group).is_subcategory(GSets(group))
     assert Torsors(group).is_subcategory(SageGSets(group))
@@ -45,19 +50,19 @@ class IsometriesAsTorsor(Parent):
     cardinality, and transporters must arrive through the torsor
     contract."""
 
-    def __init__(self, source, target):
+    def __init__(self, source: lexicon.Lattice, target: lexicon.Lattice) -> None:
         self._source = source
         self._target = target
         Parent.__init__(self, category=Torsors(source.isometry_group()).Finite())
 
-    def an_element(self):
+    def an_element(self) -> lexicon.LatticeMorphism:
         return self._source.Isom(self._target).an_element()
 
-    def act(self, group_element, element):
+    def act(self, group_element: lexicon.LatticeMorphism, element: lexicon.LatticeMorphism) -> lexicon.LatticeMorphism:
         return element * group_element
 
 
-def test_a_finite_isometry_homset_enumerates_through_its_torsor_structure():
+def test_a_finite_isometry_homset_enumerates_through_its_torsor_structure() -> None:
     a2, conjugate = _conjugated_a2()
     torsor = IsometriesAsTorsor(a2, conjugate)
 
@@ -74,7 +79,7 @@ def test_a_finite_isometry_homset_enumerates_through_its_torsor_structure():
     assert all(isometry in homset for isometry in isometries)
 
 
-def test_the_transporter_is_the_unique_group_element_between_two_points():
+def test_the_transporter_is_the_unique_group_element_between_two_points() -> None:
     a2, conjugate = _conjugated_a2()
     torsor = IsometriesAsTorsor(a2, conjugate)
     isometries = list(torsor)

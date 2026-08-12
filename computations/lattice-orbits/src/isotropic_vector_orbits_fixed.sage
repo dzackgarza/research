@@ -5,7 +5,11 @@ Based on "Orbits in Lattices" by Matthew Dawes (arXiv:2205.10601)
 Fixed version with actual examples from the paper.
 """
 
-def example_2_2_from_paper():
+from sage.matrix.matrix0 import Matrix
+from sage.modules.free_module_element import FreeModuleElement
+from sage.structure.element import Vector
+
+def example_2_2_from_paper() -> tuple[Matrix, FreeModuleElement, FreeModuleElement]:
     """
     Example 2.2 from the paper: L = U ⊕ A3
     Tests if v1 = (4, 4, 1, 2, -1) ~ v2 = (36, 144, 5, -30, 83) under Ô+(L)
@@ -50,7 +54,7 @@ def example_2_2_from_paper():
     
     return G, v1, v2
 
-def example_2_6_from_paper():
+def example_2_6_from_paper() -> tuple[Matrix, FreeModuleElement, FreeModuleElement]:
     """
     Example 2.6 from the paper: L = U ⊕ A3
     Tests if v1 = (1, -1, 0, 0, 0) ~ v2 = (1, 0, 1, 0, 0) under ŜO+(L)
@@ -83,7 +87,7 @@ def example_2_6_from_paper():
     
     return G, v1, v2
 
-def compute_orthogonal_complement_smith(G, w):
+def compute_orthogonal_complement_smith(G: Matrix, w: FreeModuleElement) -> list[Vector]:
     """
     Compute orthogonal complement w^perp using Smith normal form.
     """
@@ -133,7 +137,7 @@ def compute_orthogonal_complement_smith(G, w):
             
         return complement_basis
 
-def verify_isotropic_examples():
+def verify_isotropic_examples() -> list[FreeModuleElement]:
     """
     Verify that we can find isotropic vectors for building construction.
     """
@@ -178,7 +182,7 @@ def verify_isotropic_examples():
     print(f"Total isotropic vectors found: {len(isotropic_vectors)}")
     return isotropic_vectors
 
-def main():
+def main() -> None:
     """
     Run examples from the paper.
     """

@@ -79,9 +79,9 @@ if TYPE_CHECKING:
     )
     from ..lexicon.foundations import (
         CartanType,
-        Rational,
         GramMatrix,
         Integer,
+        Rational,
         SignaturePair,
         SymbolicExpression,
     )
@@ -1313,7 +1313,7 @@ class FiniteAbelianGroup:
     # The invariant-factor decomposition D = prod Z/n_i is the group's
     # trivialization; these are its definitional consequences, computed at
     # this node once — leaf classes carry none of them.
-    def _cyclic_factor_product(self) -> "FiniteAbelianGroup":
+    def _cyclic_factor_product(self) -> FiniteAbelianGroup:
         r"""``U(Z/n_1) x ... x U(Z/n_k)``: the coordinate description's home,
         built from the fundamental sets underlying the cyclic factors."""
         from ..objects.fundamental_sets import IntegerModRing
@@ -1657,7 +1657,7 @@ class DiscriminantSubgroup:
         contract."""
 
     @abstract_method
-    def __contains__(self, element: "Element") -> bool: ...
+    def __contains__(self, element: Element) -> bool: ...
 
     @abstract_method
     def is_bilinear_isotropic(self) -> bool:

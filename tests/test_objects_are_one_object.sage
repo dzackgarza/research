@@ -12,6 +12,12 @@ data is how the duplicates got in.
 """
 
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from dzack_research.preamble.categories.rings.rings import OwnedRing
+
+
 def _ensure_preamble() -> None:
     if "Lattices" in globals():
         return
@@ -21,7 +27,7 @@ def _ensure_preamble() -> None:
     Lattices.install(globals())
 
 
-def _owned_integers():
+def _owned_integers() -> "OwnedRing":
     _ensure_preamble()
     from dzack_research.preamble.categories.rings.rings import ℤ
 

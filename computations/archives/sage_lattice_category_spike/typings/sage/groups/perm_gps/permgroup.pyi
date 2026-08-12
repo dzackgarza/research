@@ -1,3 +1,5 @@
+import builtins
+
 # Repo-scoped stubs; see lexicon/README.md.
 from collections.abc import Iterator
 from typing import Any, Literal, TypeVar, overload
@@ -19,7 +21,7 @@ class PermutationGroup_generic(Parent):
         self,
         point: tuple[_Point, ...],
         action: Literal["OnSets"],
-    ) -> list[tuple[_Point, ...]]: ...
+    ) -> builtins.list[tuple[_Point, ...]]: ...  # builtins.: the class's own `list` method shadows the name here
     @overload
     def direct_product(
         self,

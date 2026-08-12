@@ -18,7 +18,7 @@ import sage_lattice_category_spike.lattice_categories as lc
 from sage.all import ZZ
 
 
-def test_even_lattice_genus_lives_in_the_even_genera_category():
+def test_even_lattice_genus_lives_in_the_even_genera_category() -> None:
     r"""A2 is an even lattice, so its genus is an object of ``Genera(ZZ)`` and
     acquires the ``Even`` axiom as OUTPUT (parity is a property of the genus,
     not a constructor argument)."""
@@ -27,7 +27,7 @@ def test_even_lattice_genus_lives_in_the_even_genera_category():
     assert genus in lc.Genera(ZZ).Even(), "an even lattice's genus must acquire the Even axiom"
 
 
-def test_genus_cardinality_is_its_class_number():
+def test_genus_cardinality_is_its_class_number() -> None:
     r"""A genus IS the finite set of its isometry classes; as a parent its
     cardinality equals the class number."""
     genus = lc.Lattice("A2").genus()
@@ -37,7 +37,7 @@ def test_genus_cardinality_is_its_class_number():
     )
 
 
-def test_iterating_a_genus_enumerates_one_lattice_per_class():
+def test_iterating_a_genus_enumerates_one_lattice_per_class() -> None:
     r"""The finite-set iteration inherited from ``EnumeratedSets().Finite()``:
     iterating a genus yields exactly its representative lattices, one per isometry
     class, matching its cardinality."""
@@ -52,7 +52,7 @@ def test_iterating_a_genus_enumerates_one_lattice_per_class():
     )
 
 
-def test_genera_is_usable_from_the_package_root():
+def test_genera_is_usable_from_the_package_root() -> None:
     r"""The package root is the documented public surface. Exercise the re-export by
     USING it: a genus built through the root-imported constructor must land in the
     root-imported ``Genera`` category -- a dropped root export fails this test."""

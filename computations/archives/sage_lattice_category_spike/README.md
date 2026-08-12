@@ -33,4 +33,4 @@ Do not add cross-package helpers until two real call sites force a shared abstra
 
 ## Verification
 
-Run this spike through `just -f computations/experiments/sage_lattice_category_spike/justfile test`. The repository root `just test` delegates to the same recipe after the umbrella hygiene sweep.
+Run this spike through `just -f computations/archives/sage_lattice_category_spike/justfile test`. The repository root `just test` delegates to the same recipe after the umbrella hygiene sweep.

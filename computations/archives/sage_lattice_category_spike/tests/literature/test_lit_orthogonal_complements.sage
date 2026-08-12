@@ -3,7 +3,7 @@ from __future__ import annotations
 import sage_lattice_category_spike.lattice_categories as lc
 
 
-def test_a2_e6_glued_e8_orthogonal_complements_match_conway_sloane():
+def test_a2_e6_glued_e8_orthogonal_complements_match_conway_sloane() -> None:
     r"""Conway-Sloane Ch. 4 identifies E_6 as the orthogonal complement of
     A_2 in E_8, and Nikulin Cor. 1.6.2 identifies the discriminant forms of
     complementary primitive sublattices in an even unimodular lattice by

@@ -38,9 +38,10 @@ from __future__ import annotations
 
 import sage_lattice_category_spike.lattice_categories as lc
 from sage.all import ZZ, matrix
+from sage_lattice_category_spike.lexicon import Lattice
 
 
-def _U(scale):
+def _U(scale: int) -> Lattice:
     r"""U(2^k): the even lattice with Gram [[0, 2^k],[2^k, 0]]. This is exactly the
     Miranda-Morrison module U_k (MM09 ACX7WF7L .md:562: "matrix ((0,2^k),(2^k,0))
     ... denoted by U_k"), whose discriminant form is the elementary 2-adic form u_k.
@@ -48,7 +49,7 @@ def _U(scale):
     return lc.Lattice(matrix(ZZ, 2, [0, scale, scale, 0]))
 
 
-def test_elementary_2adic_forms_u_and_v_gauss_milgram_signature():
+def test_elementary_2adic_forms_u_and_v_gauss_milgram_signature() -> None:
     r"""Brown/Gauss-sum invariant of the Miranda-Morrison elementary 2-adic forms.
 
     u_k is the discriminant form of U_k = [[0,2^k],[2^k,0]] (MM09 .md:562); v_1 is
@@ -104,7 +105,7 @@ def test_elementary_2adic_forms_u_and_v_gauss_milgram_signature():
     assert q.brown_invariant() % 8 == (pos - neg) % 8   # Milgram, Thm 1.3.3*
 
 
-def test_brown_invariant_is_additive_over_primary_parts_and_matches_milgram():
+def test_brown_invariant_is_additive_over_primary_parts_and_matches_milgram() -> None:
     r"""q = (+)_p q_p and Br is additive over the primary parts.
 
     Nik80 D7BP5F7Z .md:156 Prop 1.2.2: q = (+)_p q_p is an orthogonal splitting of
@@ -150,7 +151,7 @@ def test_brown_invariant_is_additive_over_primary_parts_and_matches_milgram():
     assert q.brown_invariant() % 8 == (pos - neg) % 8
 
 
-def test_quadratic_isomorphism_refines_bilinear_and_group_isomorphism():
+def test_quadratic_isomorphism_refines_bilinear_and_group_isomorphism() -> None:
     r"""u_1 and v_1 share group and bilinear form but are distinct quadratic forms.
 
     q_{U(2)} = u_1 and q_{D4} = v_1 both live on (Z/2)^2, so they are isomorphic as
@@ -179,7 +180,7 @@ def test_quadratic_isomorphism_refines_bilinear_and_group_isomorphism():
     assert (qu.brown_invariant(), qv.brown_invariant()) == (0, 4)
 
 
-def test_rank_one_2adic_form_separates_bilinear_and_quadratic_orthogonal_groups():
+def test_rank_one_2adic_form_separates_bilinear_and_quadratic_orthogonal_groups() -> None:
     r"""For the rank-one even lattice <8>, A_L is cyclic of order eight.
 
     Nikulin's 2-adic rank-one forms distinguish the bilinear pairing from the
@@ -219,7 +220,7 @@ def test_rank_one_2adic_form_separates_bilinear_and_quadratic_orthogonal_groups(
     ) == [(1,), (7,)]
 
 
-def test_form_negation_via_twist_matches_miranda_morrison_negation_rules():
+def test_form_negation_via_twist_matches_miranda_morrison_negation_rules() -> None:
     r"""-q_L = q_{L(-1)}, and MM09's negation rules classify when q ~= -q.
 
     Negating a lattice negates its discriminant form: q.twist(-1) equals
@@ -247,7 +248,7 @@ def test_form_negation_via_twist_matches_miranda_morrison_negation_rules():
     assert (qe.brown_invariant(), qe.twist(-1).brown_invariant()) == (7, 1)
 
 
-def test_isotropic_subgroups_are_even_overlattices_nikulin_prop_1_4_1():
+def test_isotropic_subgroups_are_even_overlattices_nikulin_prop_1_4_1() -> None:
     r"""Isotropic subgroups of q_L <-> even overlattices of L (Nikulin Prop 1.4.1).
 
     Nik80 D7BP5F7Z .md:216-220 Prop 1.4.1: H |-> S' is a bijection between isotropic

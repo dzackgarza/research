@@ -30,7 +30,10 @@ from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 from sage.structure.element import Element
 
-from ..lexicon import Integer
+# From the defining module, not the ``..lexicon`` aggregator: the aggregator
+# imports this module, and an aggregator import here is a cycle that only
+# survives under one hand-arranged import order no formatter preserves.
+from ..lexicon.foundations import Integer
 
 if TYPE_CHECKING:
     from sage.rings.infinity import PlusInfinity
@@ -103,7 +106,7 @@ class Cardinal:
             raise TypeError(f"cannot convert infinite cardinal {self} to Sage Integer")
         return ZZ(self._value)
 
-    def _rational_(self) -> "Rational":
+    def _rational_(self) -> Rational:
         if not self.is_finite():
             raise TypeError(f"cannot convert infinite cardinal {self} to Sage Rational")
         return QQ(self._value)

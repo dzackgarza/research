@@ -17,7 +17,7 @@ from sage.all import ZZ, matrix
 from sage_lattice_category_spike.lattice_categories import Lattice, Lattices
 
 
-def test_preparser_generator_binding_hyperbolic_plane():
+def test_preparser_generator_binding_hyperbolic_plane() -> None:
     L.<e, f> = Lattice("U")
     assert repr(e) == "e"
     assert repr(f) == "f"
@@ -26,48 +26,48 @@ def test_preparser_generator_binding_hyperbolic_plane():
     assert L.variable_names() == ("e", "f")
 
 
-def test_preparser_generator_binding_gram_constructor():
+def test_preparser_generator_binding_gram_constructor() -> None:
     M.<a, b> = Lattice(matrix(ZZ, [[2, 1], [1, 2]]))
     assert repr(a) == "a"
     assert repr(-a + 3 * b) == "-a + 3*b"
     assert M.variable_names() == ("a", "b")
 
 
-def test_named_generators_on_root_lattice():
+def test_named_generators_on_root_lattice() -> None:
     R.<r1, r2> = Lattice("A2")
     assert repr(r1 + r2) == "r1 + r2"
 
 
-def test_names_keyword_without_preparser():
+def test_names_keyword_without_preparser() -> None:
     L = Lattice("U", names=("e", "f"))
     e, f = L.gens()
     assert repr(2 * e - f) == "2*e - f"
     assert L.variable_names() == ("e", "f")
 
 
-def test_category_entry_point_accepts_names():
+def test_category_entry_point_accepts_names() -> None:
     L = Lattices(ZZ).from_gram_matrix(matrix(ZZ, [[0, 1], [1, 0]]), names=("e", "f"))
     assert repr(L.gen(0)) == "e"
 
 
-def test_zero_element_prints_as_zero():
+def test_zero_element_prints_as_zero() -> None:
     L.<e, f> = Lattice("U")
     assert repr(e - e) == "0"
     assert repr(L.zero()) == "0"
 
 
-def test_default_names_are_indexed_generator_symbols():
+def test_default_names_are_indexed_generator_symbols() -> None:
     L = Lattice("U")
     e0, e1 = L.gens()
     assert repr(2 * e0 - e1) == "2*e_0 - e_1"
 
 
-def test_name_count_mismatch_is_a_caller_contract_bug():
+def test_name_count_mismatch_is_a_caller_contract_bug() -> None:
     with pytest.raises((AssertionError, ValueError, IndexError)):
         Lattice("U", names=("e", "f", "g"))
 
 
-def test_generators_survive_arithmetic_round_trip():
+def test_generators_survive_arithmetic_round_trip() -> None:
     L.<e, f> = Lattice("U")
     x = 2 * e - f
     assert x == L((2, -1))

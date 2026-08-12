@@ -5,14 +5,27 @@ Using SageMath's proper IntegralLattice and related classes
 Based on "Orbits in Lattices" by Matthew Dawes (arXiv:2205.10601)
 """
 
-def create_hyperbolic_plane():
+from collections.abc import Sequence
+from sage.arith.functions import lcm
+from sage.arith.misc import gcd
+from sage.matrix.constructor import matrix
+from sage.structure.element import Matrix
+from sage.modules.free_module_element import FreeModuleElement, vector
+from sage.modules.free_quadratic_module_integer_symmetric import (
+    FreeQuadraticModule_integer_symmetric,
+    IntegralLattice,
+)
+from sage.rings.integer import Integer
+from sage.rings.rational import Rational
+
+def create_hyperbolic_plane() -> FreeQuadraticModule_integer_symmetric:
     """
     Create the hyperbolic plane U with Gram matrix [[0,1],[1,0]].
     """
     U_gram = matrix(ZZ, [[0, 1], [1, 0]])
     return IntegralLattice(U_gram)
 
-def create_A_root_lattice(n):
+def create_A_root_lattice(n: int | Integer) -> FreeQuadraticModule_integer_symmetric:
     """
     Create the A_n root lattice using SageMath's built-in root system.
     """
@@ -33,7 +46,7 @@ def create_A_root_lattice(n):
         gram_matrix = matrix(ZZ, [[r.scalar(s) for s in simple_roots] for r in simple_roots])
         return IntegralLattice(gram_matrix)
 
-def create_orthogonal_sum(lattice_list):
+def create_orthogonal_sum(lattice_list: list[FreeQuadraticModule_integer_symmetric]) -> FreeQuadraticModule_integer_symmetric:
     """
     Create orthogonal direct sum of lattices using native SageMath methods.
     """
@@ -49,10 +62,10 @@ class IsotropicVectorOrbitsProper:
     Proper implementation using SageMath's IntegralLattice class.
     """
     
-    def __init__(self, lattice):
+    def __init__(self, lattice: FreeQuadraticModule_integer_symmetric) -> None:
         """
         Initialize with an IntegralLattice.
-        
+
         INPUT:
         - lattice: An IntegralLattice object
         """
@@ -60,8 +73,8 @@ class IsotropicVectorOrbitsProper:
         self.G = lattice.gram_matrix()
         self.n = self.G.nrows()
         self.signature = self._compute_signature()
-        
-    def _compute_signature(self):
+
+    def _compute_signature(self) -> tuple[int | Integer, int | Integer]:
         """
         Compute signature (t+, t-) using proper eigenvalue computation.
         """
@@ -80,25 +93,25 @@ class IsotropicVectorOrbitsProper:
             t_minus = sum(1 for ev in eigenvals if ev < -1e-10)
             return (t_plus, t_minus)
     
-    def is_isotropic_vector(self, v):
+    def is_isotropic_vector(self, v: FreeModuleElement) -> bool:
         """
         Check if vector v is isotropic (v^2 = 0).
         """
         return v * self.G * v == 0
-    
-    def quadratic_form_value(self, v):
+
+    def quadratic_form_value(self, v: FreeModuleElement) -> Integer | Rational:
         """
         Compute quadratic form value v^2 = v^T * G * v using native SageMath.
         """
-        return self.L.q(v)
-    
-    def inner_product(self, u, v):
+        return v * self.G * v
+
+    def inner_product(self, u: FreeModuleElement, v: FreeModuleElement) -> Integer | Rational:
         """
         Compute inner product (u, v) = u^T * G * v using native SageMath.
         """
-        return self.L.b(u, v)
-    
-    def find_primitive_isotropic_vectors(self, max_search=5):
+        return u * self.G * v
+
+    def find_primitive_isotropic_vectors(self, max_search: int | Integer = 5) -> list[FreeModuleElement]:
         """
         Find primitive isotropic vectors by systematic search.
         """
@@ -119,7 +132,7 @@ class IsotropicVectorOrbitsProper:
                     
         return isotropic_vectors
     
-    def orthogonal_complement_basis(self, v):
+    def orthogonal_complement_basis(self, v: FreeModuleElement) -> Sequence[FreeModuleElement]:
         """
         Compute basis for orthogonal complement v^perp using proper linear algebra.
         """
@@ -133,7 +146,7 @@ class IsotropicVectorOrbitsProper:
         
         return kernel.basis()
     
-    def smith_normal_form_detailed(self, v):
+    def smith_normal_form_detailed(self, v: FreeModuleElement) -> tuple[Matrix, Matrix, Matrix, list[FreeModuleElement]]:
         """
         Compute Smith normal form for vector v following Algorithm 2.1.
         """
@@ -168,7 +181,7 @@ class IsotropicVectorOrbitsProper:
             
         return D, U, V, complement_basis
     
-    def algorithm_2_1_detailed(self, v1, v2):
+    def algorithm_2_1_detailed(self, v1: FreeModuleElement, v2: FreeModuleElement) -> bool:
         """
         Detailed implementation of Algorithm 2.1 from the paper.
         """
@@ -178,7 +191,7 @@ class IsotropicVectorOrbitsProper:
         print(f"v2 = {v2}")
         
         # Step 1: Find minimal c_i such that c_i * v_i ∈ L
-        def find_minimal_denominator(v):
+        def find_minimal_denominator(v: FreeModuleElement) -> Integer | int:
             denoms = []
             for x in v:
                 if x in QQ:
@@ -240,7 +253,7 @@ class IsotropicVectorOrbitsProper:
         print("RESULT: v1 ~ v2 (orthogonal complements appear isometric)")
         return True
 
-def test_examples_from_paper():
+def test_examples_from_paper() -> tuple[IsotropicVectorOrbitsProper, list[FreeModuleElement]]:
     """
     Test the examples from the paper using proper SageMath constructions.
     """
@@ -286,7 +299,7 @@ def test_examples_from_paper():
     
     return orbits, isotropic_vecs
 
-def demonstrate_lattice_properties():
+def demonstrate_lattice_properties() -> None:
     """
     Demonstrate various lattice properties using SageMath's infrastructure.
     """

@@ -35,6 +35,17 @@ class AlgebraicReal(AlgebraicNumber_base):
     def __ge__(self, other: object) -> bool: ...
 
 class AlgebraicRealField(Fields.ParentMethods, Parent[AlgebraicReal]):
-    def __call__(self, x: object = ...) -> AlgebraicReal: ...  # type: ignore[override]
+    def __call__(self, x: object = ...) -> AlgebraicReal: ...
 
 AA: AlgebraicRealField
+
+# The algebraic closure of QQ: AA's complex counterpart, same laziness and
+# same exact-then-approximate discipline.
+class AlgebraicNumber(AlgebraicNumber_base):
+    def real(self) -> AlgebraicReal: ...
+    def imag(self) -> AlgebraicReal: ...
+
+class AlgebraicField(Fields.ParentMethods, Parent[AlgebraicNumber]):
+    def __call__(self, x: object = ...) -> AlgebraicNumber: ...
+
+QQbar: AlgebraicField

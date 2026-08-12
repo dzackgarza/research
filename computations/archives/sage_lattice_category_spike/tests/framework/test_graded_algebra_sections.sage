@@ -3,7 +3,7 @@
 from sage.all import Algebras, QQ, ProjectiveSpace
 
 
-def test_cox_ring_structure_and_section_space_roundtrip():
+def test_cox_ring_structure_and_section_space_roundtrip() -> None:
     """Cox ring grading and section ring conversion are internally consistent."""
     P1_x = ProjectiveSpace(QQ, 1, names=("x0", "x1"))
     P1_y = ProjectiveSpace(QQ, 1, names=("y0", "y1"))

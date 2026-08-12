@@ -8,11 +8,9 @@ monkey-patched in place; this corrected callable is the re-export owned code
 calls instead of the method.
 """
 
-from typing import Any, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 from sage.rings.integer_ring import ZZ
-
-
 
 if TYPE_CHECKING:
     from ..lexicon import (
@@ -20,7 +18,7 @@ if TYPE_CHECKING:
         MorphismMatrix,
     )
 
-def multiplicative_order(matrix: "MorphismMatrix") -> "Integer":
+def multiplicative_order(matrix: MorphismMatrix) -> Integer:
     r"""``matrix.multiplicative_order()`` with the identity case corrected."""
     if matrix.is_one():
         return ZZ.one()

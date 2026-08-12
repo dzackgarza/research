@@ -16,6 +16,8 @@ elements."""
 from __future__ import annotations
 
 import itertools
+from collections.abc import Iterator
+from typing import TYPE_CHECKING
 
 from sage.all import QQ, ZZ, FreeModule, vector
 from sage.categories.modules import Modules as SageModules
@@ -34,8 +36,11 @@ from sage_lattice_category_spike.objects.modules import (
 )
 from sage_lattice_category_spike.objects.set_constructions import CartesianProduct
 
+if TYPE_CHECKING:
+    from sage_lattice_category_spike import lexicon
 
-def test_the_module_spine_has_the_exact_owned_edges():
+
+def test_the_module_spine_has_the_exact_owned_edges() -> None:
     assert Modules(ZZ).is_subcategory(SageModules(ZZ))
     assert Modules(ZZ).is_subcategory(AdditiveGroups())
     assert FreeModules(ZZ).is_subcategory(Modules(ZZ))
@@ -44,7 +49,7 @@ def test_the_module_spine_has_the_exact_owned_edges():
     assert FiniteFreeModules(ZZ).is_subcategory(FiniteProjectiveModules(ZZ))
 
 
-def test_modules_over_a_field_dispatch_to_vector_spaces():
+def test_modules_over_a_field_dispatch_to_vector_spaces() -> None:
     dispatched = Modules(QQ)
     assert dispatched is VectorSpaces(QQ)
     assert dispatched.is_subcategory(SageVectorSpaces(QQ))
@@ -59,14 +64,14 @@ class RankTwoIntegerModule(Parent):
     ``coordinate_vector``) — every predicate and every set behavior must
     arrive through the category."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         Parent.__init__(self, facade=FreeModule(ZZ, 2), category=FiniteFreeModules(ZZ).Countable().Infinite())
 
-    def coordinate_vector(self, element):
+    def coordinate_vector(self, element: lexicon.Vector) -> lexicon.Vector:
         r"""The distinguished presentation is the host free module's own."""
         return FreeModule(ZZ, 2).coordinate_vector(element)
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[lexicon.Vector]:
         host = FreeModule(ZZ, 2)
         for point in CartesianProduct(Integers().underlying_set(), Integers().underlying_set()):
             element = host(point.value)
@@ -74,7 +79,7 @@ class RankTwoIntegerModule(Parent):
             yield element
 
 
-def test_opt_in_predicate_overrides_live_at_the_owned_nodes():
+def test_opt_in_predicate_overrides_live_at_the_owned_nodes() -> None:
     module = RankTwoIntegerModule()
     assert module.is_free()
     assert module.is_torsionfree()
@@ -84,7 +89,7 @@ def test_opt_in_predicate_overrides_live_at_the_owned_nodes():
     assert "is_free" not in vars(RankTwoIntegerModule)
 
 
-def test_positive_rank_integer_modules_are_countably_infinite_through_composition():
+def test_positive_rank_integer_modules_are_countably_infinite_through_composition() -> None:
     module = RankTwoIntegerModule()
     assert module.cardinality() == aleph0
     assert module.is_countable()
@@ -98,7 +103,7 @@ def test_positive_rank_integer_modules_are_countably_infinite_through_compositio
     assert vector(ZZ, (0, 0)) in [p for p in prefix]
 
 
-def test_coordinates_exist_only_through_a_chosen_basis_and_invert_to_module_elements():
+def test_coordinates_exist_only_through_a_chosen_basis_and_invert_to_module_elements() -> None:
     module = RankTwoIntegerModule()
     host = FreeModule(ZZ, 2)
     basis = (host((1, 1)), host((0, 1)))
