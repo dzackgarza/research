@@ -169,10 +169,10 @@ if TYPE_CHECKING:
 
         def parent(self) -> "FreeAlgebraOnSet": ...
         def base_ring(self) -> "Ring": ...
-        def coefficients(self) -> dict["Element", "Element"]: ...
+        def coefficients(self) -> dict["Element", "RingElement"]: ...
         def degree(self) -> "Integer": ...
-        def coefficient(self, monomial: "Element") -> "Element": ...
-        def leading_coefficient(self) -> "Element": ...
+        def coefficient(self, monomial: "Element") -> "RingElement": ...
+        def leading_coefficient(self) -> "RingElement": ...
         def denominator(self) -> "Element": ...
         def derivative(self, label: "Element" = ...) -> "Element": ...
         def gcd(self, other: "Element") -> "Element": ...
@@ -703,17 +703,19 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
         # questions for an engine.
         # ---------------------------------------------------------------
 
-        def coefficient(self: "FreeAlgebraElement", monomial: "Element") -> "Element":
+        def coefficient(
+            self: "FreeAlgebraElement", monomial: "Element"
+        ) -> "RingElement":
             r"""Return the coefficient of ``monomial``, zero when absent."""
             return self.coefficients().get(
                 monomial, self.parent().base_ring().zero()
             )
 
-        def constant_coefficient(self: "FreeAlgebraElement") -> "Element":
+        def constant_coefficient(self: "FreeAlgebraElement") -> "RingElement":
             r"""Return the coefficient of \(1\): this element's value at zero."""
             return self.coefficient(self.parent().monomial_system().one())
 
-        def leading_coefficient(self: "FreeAlgebraElement") -> "Element":
+        def leading_coefficient(self: "FreeAlgebraElement") -> "RingElement":
             r"""Return the coefficient of the top-degree part, at rank one.
 
             Above rank one 'leading' is a choice of monomial order, which this
@@ -1124,7 +1126,7 @@ class FreeAlgebraOnSetElement(FreeModuleOnSetElement):
         ), "free-algebra multiplication requires elements of one parent"
         parent = self.parent()
         zero = parent.base_ring().zero()
-        coefficients: dict["Element", "Element"] = {}
+        coefficients: dict["Element", "RingElement"] = {}
         for left_monomial, left_coefficient in self.coefficients().items():
             for right_monomial, right_coefficient in other.coefficients().items():
                 sign, monomial = parent.monomial_system().product(
