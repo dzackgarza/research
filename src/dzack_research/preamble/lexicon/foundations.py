@@ -16,7 +16,8 @@ from sage.rings.qqbar import AlgebraicReal
 from sage.rings.rational import Rational
 from sage.rings.real_mpfr import RealNumber as RealApproximation
 from sage.sets.totally_ordered_finite_set import TotallyOrderedFiniteSet
-from sage.structure.element import Element, Matrix
+from sage.matrix.matrix0 import Matrix
+from sage.structure.element import Element
 from sage.symbolic.expression import Expression as SymbolicExpression
 
 __all__ = [
