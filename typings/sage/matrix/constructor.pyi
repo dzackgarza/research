@@ -7,15 +7,12 @@
 from collections.abc import Sequence
 from typing import Any
 
-from sage.matrix.matrix0 import Matrix as _ConcreteMatrix
 from sage.rings.integer import Integer
 from sage.structure.element import Matrix as _MatrixClass
 from sage.structure.parent import Parent
 
 class _MatrixConstructor:
-    # constructor.pyx:20,673 / matrix0.pyx:54 — matrix() dispatches through
-    # MatrixArgs.element(), whose concrete matrix classes extend matrix0.Matrix.
-    def __call__(self, *args: Any, **kwds: Any) -> _ConcreteMatrix: ...
+    def __call__(self, *args: Any, **kwds: Any) -> _MatrixClass: ...
     def diagonal(self, *args: Any, **kwds: Any) -> _MatrixClass: ...
     def identity(self, *args: Any, **kwds: Any) -> _MatrixClass: ...
     def zero(self, *args: Any, **kwds: Any) -> _MatrixClass: ...
