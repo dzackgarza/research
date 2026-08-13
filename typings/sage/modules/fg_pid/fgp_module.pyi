@@ -6,6 +6,7 @@
 from collections.abc import Iterable, Iterator
 
 from sage.modules.fg_pid.fgp_element import FGP_Element
+from sage.modules.fg_pid.fgp_morphism import FGP_Morphism
 from sage.modules.free_module import FreeModule_generic
 from sage.rings.ideal import Ideal_pid
 from sage.rings.integer import Integer
@@ -21,6 +22,16 @@ class FGP_Module_class(Parent[FGP_Element]):
     def zero(self) -> FGP_Element: ...
     def invariants(self, include_ones: bool = ...) -> tuple[Integer, ...]: ...
     def cardinality(self) -> Integer: ...
+    # Finite iff no invariant is 0.
+    def is_finite(self) -> bool: ...
+    # Morphism sending gens() to im_gens; a FreeModule_generic codomain is
+    # first quotiented by its zero submodule.
+    def hom(
+        self,
+        im_gens: Iterable[Element],
+        codomain: FGP_Module_class | FreeModule_generic | None = ...,
+        check: bool = ...,
+    ) -> FGP_Morphism: ...
     # The ideal of the base ring annihilating the module (the exponent, as an
     # ideal of the PID).
     def annihilator(self) -> Ideal_pid: ...

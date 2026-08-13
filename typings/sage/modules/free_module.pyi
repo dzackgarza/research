@@ -1,16 +1,19 @@
 # General free-module contract; generic in the scalar with the exact ZZ/QQ
 # regime as default (see structure/element.pyi). Verified by
 # lexicon/verify_against_sage.py.
-from collections.abc import Sequence
-from typing import Any, Generic
+from collections.abc import Callable, Iterable, Sequence
+from typing import Any, Generic, Literal
 
 from typing_extensions import TypeVar
 
+from sage.categories.category import Category
 from sage.modules.fg_pid.fgp_module import FGP_Module_class
 from sage.modules.free_module_element import FreeModuleElement
+from sage.modules.free_module_morphism import FreeModuleMorphism
+from sage.rings.infinity import PlusInfinity
 from sage.rings.integer import Integer
 from sage.rings.rational import Rational
-from sage.structure.element import Matrix, RingElement, Vector
+from sage.structure.element import Element, Matrix, RingElement, Vector
 from sage.structure.parent import Parent
 
 _Scalar = TypeVar("_Scalar", bound=RingElement, default=Integer | Rational)
@@ -19,6 +22,34 @@ class FreeModule_generic(Parent[FreeModuleElement[_Scalar]], Generic[_Scalar]):
     def zero(self) -> FreeModuleElement[_Scalar]: ...
     def rank(self) -> Integer: ...
     def dimension(self) -> Integer: ...
+    # G = B*A*B.transpose() for A the inner product matrix and B the basis
+    # matrix (free_module.py:3100).
+    def gram_matrix(self) -> Matrix[_Scalar]: ...
+    # free_module.py:3148: im_gens is a list of images, a matrix (rows or
+    # columns per ``side``), or a morphism; the trailing keywords forward to
+    # Parent.hom.
+    def hom(
+        self,
+        im_gens: Sequence[Element] | Matrix[_Scalar] | FreeModuleMorphism,
+        codomain: Parent | None = ...,
+        *,
+        side: Literal["left", "right"] = ...,
+        category: Category | None = ...,
+        check: bool = ...,
+    ) -> FreeModuleMorphism: ...
+    def is_finite(self) -> bool: ...
+    # free_module.py:2595 — "either an integer or +Infinity".
+    def cardinality(self) -> Integer | PlusInfinity: ...
+    # Sage category mixin (finite_dimensional_modules_with_basis.py:56),
+    # present on every finite-rank free module: the submodule annihilating a
+    # finite set S under a bilinear action.
+    def annihilator(
+        self,
+        S: Iterable[Element],
+        action: Callable[[Element, Element], Element] = ...,
+        side: Literal["left", "right"] = ...,
+        category: Category | None = ...,
+    ) -> FreeModule_generic[_Scalar]: ...
     def gen(self, i: int | Integer = ...) -> FreeModuleElement[_Scalar]: ...
     def gens(self) -> tuple[FreeModuleElement[_Scalar], ...]: ...
     def basis(self) -> Sequence[FreeModuleElement[_Scalar]]: ...

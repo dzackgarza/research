@@ -1,0 +1,13 @@
+# Repo-scoped stubs; see lexicon/README.md.
+from sage.categories.morphism import Morphism
+from sage.modules.fg_pid.fgp_element import FGP_Element
+from sage.modules.fg_pid.fgp_module import FGP_Module_class
+
+class FGP_Morphism(Morphism):
+    def kernel(self) -> FGP_Module_class: ...
+    def image(self) -> FGP_Module_class: ...
+    # A is a submodule of the codomain; the result is a submodule of the domain.
+    def inverse_image(self, A: FGP_Module_class) -> FGP_Module_class: ...
+    # A preimage element in the domain (ValueError when x has none) -- unlike
+    # FGP_Element.lift, which lifts to the cover V.
+    def lift(self, x: FGP_Element) -> FGP_Element: ...
