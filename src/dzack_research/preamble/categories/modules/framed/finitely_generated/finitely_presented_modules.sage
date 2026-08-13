@@ -252,6 +252,14 @@ class FinitelyPresentedModuleElement(ModuleElement):
         ModuleElement.__init__(self, parent)
         self._coordinates_: FreeModuleElement = parent._reduce(coordinates)
 
+    def additive_order(self) -> "Integer":
+        if self.parent().is_torsion():
+            # Local: the torsion category imports this module to build its
+            # parent, so the category owner is available when this runs.
+            from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_torsion_modules import FinitelyPresentedTorsionModules
+            return FinitelyPresentedTorsionModules.ElementMethods.additive_order(self)
+        return ModuleElement.additive_order(self)
+
     def _coordinates(self) -> "Vector":
         return self._coordinates_
 
