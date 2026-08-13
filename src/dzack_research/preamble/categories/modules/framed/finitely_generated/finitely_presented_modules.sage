@@ -36,7 +36,7 @@ from sage.matrix.special import identity_matrix
 from sage.misc.misc_c import prod
 from sage.modules.free_module_element import FreeModuleElement, vector
 from sage.rings.integer_ring import ZZ as SageZZ
-from sage.structure.element import Element
+from sage.structure.element import ModuleElement
 from sage.structure.parent import Parent
 from sage.structure.richcmp import richcmp
 
@@ -235,7 +235,7 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
             )
 
 
-class FinitelyPresentedModuleElement(Element):
+class FinitelyPresentedModuleElement(ModuleElement):
     r"""An element of a presented module, reduced modulo its relations."""
 
     if TYPE_CHECKING:
@@ -245,11 +245,11 @@ class FinitelyPresentedModuleElement(Element):
         def parent(self) -> "FinitelyPresentedModule": ...
 
         # Negation is parent-preserving on a module element;
-        # ``Element.__neg__`` is deliberately wider, for the extended reals.
+        # Sage's inherited negation dispatches to ``_neg_``.
         def __neg__(self) -> "FinitelyPresentedModuleElement": ...
 
     def __init__(self, parent: "FinitelyPresentedModule", coordinates: "Vector") -> None:
-        Element.__init__(self, parent)
+        ModuleElement.__init__(self, parent)
         self._coordinates_: FreeModuleElement = parent._reduce(coordinates)
 
     def _coordinates(self) -> "Vector":
