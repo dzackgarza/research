@@ -1,6 +1,8 @@
 [Unit]
 Description=JupyterLab dynamic dashboard
 After=default.target
+StartLimitIntervalSec=1800
+StartLimitBurst=3
 
 [Service]
 Type=simple

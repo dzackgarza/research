@@ -4,8 +4,8 @@
 
 Let $\cL \da \OO_S(-K_S) \in \Pic(S)$. By [@DK25 Prop. 9.1.1], taking a section $s\in H^0(\cL ^{\tensor 2})$ with $Z(s) = C$ yields a branched double cover $f: X\to S$ where $X$ is a smooth K3 surface.
 Let $\sigma$ be the involution generating the deck transformations of this cover.
-Then the fixed locus $\mathrm{Fix}(\sigma)$ is a union of $n$ smooth rational curves which are precisely $f^{-1}(C_i)$ where $C_i$ are the irreducible components of $C$ in $S$.
-By [@CDL25 Def. 5.4.3], the preimages $f^{-1}(C_i)$ are disjoint $(-2)$-curves and $\Pic(X)$ is a 2-elementary lattice with invariants of the form
+Then the fixed locus $\mathrm{Fix}(\sigma)$ is a union of $n$ smooth rational curves which are precisely the reduced preimages $(f^{-1}(C_i))_{\mathrm{red}}$, where $C_i$ are the irreducible components of $C$ in $S$.
+By [@CDL25 Def. 5.4.3], the preimages $f^{-1}(C_i)$ are disjoint $(-2)$-curves and $\Pic(S)$ is a 2-elementary lattice with invariants of the form
 $$
 (r,a,\delta)_1 = (10+n, 12-n, \delta)_1
 .
@@ -27,7 +27,7 @@ $$
 T_{\Co} \da S_{\Co}^{\perp \lkt} = (11, 11, 1)_2 \cong \latI_{2, 9}(2) \cong \gens{2} \oplus E_{10}(2)
 .
 $$
-The lattices $S_{\Co}$ and $T_{\Co}$ will be of fundamental importance in constructing the Hodge-theoretic period domain for Coble surfaces, yielding a coarse space for the corresponding moduli space; the identifications above are derived in the section on period domains.
+The lattices $S_{\Co}$ and $T_{\Co}$ will be used to construct  the Hodge-theoretic period domain for Coble surfaces, yielding a coarse space for the corresponding moduli space; the identifications above are derived in the section on period domains.
 :::
 
 ::: {.proposition ref="prop:coble-invariant-lattice"}
@@ -50,7 +50,7 @@ $$
 **Injectivity and the twist by $2$.** If $f^*D = 0$ then $2D = f_* f^* D = 0$, and $\Pic(S)\cong\latI_{1, 10}$ is torsion-free, so $D = 0$; thus $f^*$ is injective.
 As $f$ has degree $2$, one has $f_* f^* = 2$, and the projection formula gives, for all $D, D'\in\Pic(S)$,
 $$
-\qty(f^*D \cdot f^*D') = D \cdot f_* f^* D' = D\cdot 2D' = 2\qty(D\cdot D')
+\qty{f^*D \cdot f^*D'} = D \cdot f_* f^* D' = D\cdot 2D' = 2\qty(D\cdot D')
 .
 $$
 Applied to the orthogonal basis $H, E_1, \ldots, E_{10}$, this shows that $f^*H, f^*E_1, \ldots, f^*E_{10}$ have Gram matrix $\operatorname{diag}(2, -2, \ldots, -2)$, so that $S_\Co \cong \gens{2}\oplus\gens{-2}^{10} = \latI_{1, 10}(2)$, of signature $(1, 10)$.
