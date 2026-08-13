@@ -24,7 +24,7 @@ where = ["src"]
 [tool.uv.sources]
 sage-lattice-category-spike = { workspace = true }
 sage-lattice-feature-spike = { workspace = true }
-tree-sitter-sage = { git = "https://github.com/dzackgarza/tree-sitter-sage", rev = "47c09760d7380680c7e3e5e7d7460ca1d48eb6e5" }
+tree-sitter-sage = { git = "https://github.com/dzackgarza/tree-sitter-sage", rev = "fd5c72bafb61d67fedb0f6860eeb48f6c1616dbd" }
 
 [tool.uv.workspace]
 members = [
