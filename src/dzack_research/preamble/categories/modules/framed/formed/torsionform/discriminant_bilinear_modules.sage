@@ -2,6 +2,7 @@ r"""Discriminant bilinear modules."""
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
+    from dzack_research.preamble.lexicon import ModuleElement
     from dzack_research.preamble.lexicon import Module
 
 from sage.rings.integer_ring import ZZ as SageZZ
@@ -33,7 +34,7 @@ if TYPE_CHECKING:
         r"""What an element of such an object offers."""
 
         def parent(self) -> "DiscriminantBilinearParent": ...
-        def forget_form(self) -> "Element": ...
+        def forget_form(self) -> "ModuleElement": ...
         def q(self) -> "Element": ...
         def b(self, other: "Element") -> "Element": ...
 
