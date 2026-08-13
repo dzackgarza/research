@@ -1,6 +1,6 @@
 [project]
 name = "dzack-research"
-version = "0.1.0"
+version = "0.1.1"
 requires-python = ">=3.14"
 dependencies = [
     "haystack-ai>=2.31.0",
@@ -20,6 +20,9 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+dzack_research = ["py.typed"]
 
 [tool.uv.sources]
 sage-lattice-category-spike = { workspace = true }
