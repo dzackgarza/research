@@ -74,115 +74,141 @@ class Cat(Category):
 
     class ParentMethods:
         r"""What a category \(\mathbf{C}\) can do because it is an object of
-        \(\mathbf{Cat}\): construct the categories built out of it."""
+        \(\mathbf{Cat}\): construct the categories built out of it.
 
-        def Arrow(self: Category) -> Category:
+        ``self`` is a category here, which is what being an object of
+        \(\mathbf{Cat}\) means; each construction is named for what it
+        returns and hands the work to the class that already builds it.
+        """
+
+        def Arrow(self) -> Category:
             r"""Return \(\operatorname{Ar}(\mathbf{C})\), whose objects are the arrows of \(\mathbf{C}\)."""
-            return ArrowCategory(self)
+            arrows: Category = ArrowCategory(self)
+            return arrows
 
-        def IsoArrow(self: Category) -> Category:
+        def IsoArrow(self) -> Category:
             r"""Return the subcategory of \(\operatorname{Ar}(\mathbf{C})\) whose objects are the isomorphisms."""
-            return IsoArrowCategory(self)
+            isomorphisms: Category = IsoArrowCategory(self)
+            return isomorphisms
 
-        def core(self: Category) -> Category:
+        def core(self) -> Category:
             r"""Return \(\operatorname{core}(\mathbf{C})\): the same objects, the isomorphisms as the only arrows."""
-            return Core(self)
+            core_category: Category = Core(self)
+            return core_category
 
         def Diagram(
-            self: Category,
+            self,
             objects: "Iterable[Parent]",
             morphisms: "Iterable[Morphism]" = (),
         ) -> Category:
             r"""Return the category of diagrams \(F:J\to\mathbf{C}\) on these objects and morphisms."""
-            return DiagramCategory(self, objects, morphisms)
+            diagrams: Category = DiagramCategory(self, objects, morphisms)
+            return diagrams
 
         def DirectedSystem(
-            self: Category,
+            self,
             index_set: "OrderedSet",
             objects: "Iterable[Parent]",
             morphisms: "Iterable[Morphism]" = (),
         ) -> Category:
             r"""Return the category of directed systems \((X_i)_{i\in I}\) with morphisms \(X_i\to X_j\)."""
-            return DirectedSystem(self, index_set, objects, morphisms)
+            systems: Category = DirectedSystem(self, index_set, objects, morphisms)
+            return systems
 
         def InverseSystem(
-            self: Category,
+            self,
             index_set: "OrderedSet",
             objects: "Iterable[Parent]",
             morphisms: "Iterable[Morphism]" = (),
         ) -> Category:
             r"""Return the category of inverse systems \((X_i)_{i\in I}\) with morphisms \(X_j\to X_i\)."""
-            return InverseSystem(self, index_set, objects, morphisms)
+            systems: Category = InverseSystem(self, index_set, objects, morphisms)
+            return systems
 
         def Cone(
-            self: Category,
+            self,
             index_set: "OrderedSet",
             objects: "Iterable[Parent]",
             morphisms: "Iterable[Morphism]" = (),
         ) -> Category:
             r"""Return the category of cones: an apex \(A\) with projections \(\pi_i:A\to X_i\)."""
-            return ConeCategory(self, index_set, objects, morphisms)
+            cones: Category = ConeCategory(self, index_set, objects, morphisms)
+            return cones
 
         def Cocone(
-            self: Category,
+            self,
             index_set: "OrderedSet",
             objects: "Iterable[Parent]",
             morphisms: "Iterable[Morphism]" = (),
         ) -> Category:
             r"""Return the category of cocones: a coapex \(A\) with injections \(\iota_i:X_i\to A\)."""
-            return CoconeCategory(self, index_set, objects, morphisms)
+            cocones: Category = CoconeCategory(self, index_set, objects, morphisms)
+            return cocones
 
-        def Product(self: Category, factors: "Iterable[Parent]") -> Category:
+        def Product(self, factors: "Iterable[Parent]") -> Category:
             r"""Return the category of products \(\prod_i X_i\) of these factors."""
-            return ProductCategory(self, factors)
+            products: Category = ProductCategory(self, factors)
+            return products
 
-        def Coproduct(self: Category, cofactors: "Iterable[Parent]") -> Category:
+        def Coproduct(self, cofactors: "Iterable[Parent]") -> Category:
             r"""Return the category of coproducts \(\coprod_i X_i\) of these cofactors."""
-            return CoproductCategory(self, cofactors)
+            coproducts: Category = CoproductCategory(self, cofactors)
+            return coproducts
 
-        def Biproduct(self: Category, factors: "Iterable[Parent]") -> Category:
+        def Biproduct(self, factors: "Iterable[Parent]") -> Category:
             r"""Return the category of biproducts of these factors: product and coproduct at once."""
-            return BiproductCategory(self, factors)
+            biproducts: Category = BiproductCategory(self, factors)
+            return biproducts
 
-        def DirectSum(self: Category, factors: "Iterable[Parent]") -> Category:
+        def DirectSum(self, factors: "Iterable[Parent]") -> Category:
             r"""Return the category of direct sums \(\bigoplus_i X_i\), the additive name for the biproduct."""
-            return DirectSumCategory(self, factors)
+            direct_sums: Category = DirectSumCategory(self, factors)
+            return direct_sums
 
-        def TensorProduct(self: Category, factors: "Iterable[Parent]") -> Category:
+        def TensorProduct(self, factors: "Iterable[Parent]") -> Category:
             r"""Return the category of tensor products \(X_1\otimes\cdots\otimes X_n\) of these factors."""
-            return TensorProductCategory(self, factors)
+            tensor_products: Category = TensorProductCategory(self, factors)
+            return tensor_products
 
-        def SliceOver(self: Category, X: "Parent | Morphism") -> Category:
+        def SliceOver(self, X: "Parent | Morphism") -> Category:
             r"""Return the slice category \(\mathbf{C}/X\), whose objects are the arrows \(A\to X\)."""
-            return SliceOverCategory(self, X)
+            slices: Category = SliceOverCategory(self, X)
+            return slices
 
-        def CosliceUnder(self: Category, X: "Parent | Morphism") -> Category:
+        def CosliceUnder(self, X: "Parent | Morphism") -> Category:
             r"""Return the coslice category \(X\setminus\mathbf{C}\), whose objects are the arrows \(X\to A\)."""
-            return CosliceUnderCategory(self, X)
+            coslices: Category = CosliceUnderCategory(self, X)
+            return coslices
 
-        def SubObject(self: Category, X: "Parent | Morphism") -> Category:
+        def SubObject(self, X: "Parent | Morphism") -> Category:
             r"""Return the category of subobjects of \(X\): the monomorphisms \(A\hookrightarrow X\)."""
-            return SubobjectCategory(self, X)
+            subobjects: Category = SubobjectCategory(self, X)
+            return subobjects
 
-        def SuperObject(self: Category, X: "Parent | Morphism") -> Category:
+        def SuperObject(self, X: "Parent | Morphism") -> Category:
             r"""Return the category of superobjects of \(X\): the monomorphisms \(X\hookrightarrow B\)."""
-            return SuperobjectCategory(self, X)
+            superobjects: Category = SuperobjectCategory(self, X)
+            return superobjects
 
-        def CoveringObject(self: Category, X: "Parent | Morphism") -> Category:
+        def CoveringObject(self, X: "Parent | Morphism") -> Category:
             r"""Return the category of covering objects of \(X\): the epimorphisms \(A\twoheadrightarrow X\)."""
-            return CoveringObjectCategory(self, X)
+            coverings: Category = CoveringObjectCategory(self, X)
+            return coverings
 
-        def CoveredObject(self: Category, X: "Parent | Morphism") -> Category:
+        def CoveredObject(self, X: "Parent | Morphism") -> Category:
             r"""Return the category of covered objects of \(X\): the epimorphisms \(X\twoheadrightarrow B\)."""
-            return CoveredObjectCategory(self, X)
+            covereds: Category = CoveredObjectCategory(self, X)
+            return covereds
 
-        def Kernel(self: Category, f: Morphism) -> Category:
+        def Kernel(self, f: Morphism) -> Category:
             r"""Return the category of kernels of \(f\): the subobject \(\ker f\hookrightarrow\operatorname{dom}f\)."""
-            return KernelCategory(self, f)
+            kernels: Category = KernelCategory(self, f)
+            return kernels
 
-        def Cokernel(self: Category, f: Morphism) -> Category:
+        def Cokernel(self, f: Morphism) -> Category:
             r"""Return the category of cokernels of \(f\): the covered object \(\operatorname{cod}f\twoheadrightarrow\operatorname{coker}f\)."""
-            return CokernelCategory(self, f)
+            cokernels: Category = CokernelCategory(self, f)
+            return cokernels
 
 
 # The one crossing of the Sage boundary.  Every construction above is declared
