@@ -18,7 +18,7 @@ EXAMPLES::
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModule
-    from dzack_research.preamble.lexicon import Module
+    from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormMorphism
     from dzack_research.preamble.lexicon import ModuleElement
 
 from sage.rings.integer_ring import ZZ as SageZZ
@@ -130,7 +130,7 @@ def _named_module_generators(lattice: "FormModule") -> dict[str, "ModuleElement"
     return names
 
 
-def _in_dual(lattice: "FormModule") -> "Module":
+def _in_dual(lattice: "FormModule") -> "FormMorphism":
     r"""Return $c: L\to L^\vee$, for writing a vector the way the literature does.
 
     Sterk's vectors are written as sums of generators and
