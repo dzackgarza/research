@@ -372,19 +372,6 @@ class BiproductCategory(ProductCategory, CoproductCategory):
 DirectSumCategory = BiproductCategory
 
 
-# Installed onto Sage's ``Category``: these constructions are the preamble's,
-# so they are attached here rather than declared on the Sage class.
-setattr(Category, "Diagram", lambda self, objects, morphisms=(): DiagramCategory(self, objects, morphisms))
-setattr(Category, "DirectedSystem", lambda self, index_set, objects, morphisms=(): DirectedSystem(self, index_set, objects, morphisms))
-setattr(Category, "InverseSystem", lambda self, index_set, objects, morphisms=(): InverseSystem(self, index_set, objects, morphisms))
-setattr(Category, "Cone", lambda self, index_set, objects, morphisms=(): ConeCategory(self, index_set, objects, morphisms))
-setattr(Category, "Cocone", lambda self, index_set, objects, morphisms=(): CoconeCategory(self, index_set, objects, morphisms))
-setattr(Category, "Product", lambda self, factors: ProductCategory(self, factors))
-setattr(Category, "Coproduct", lambda self, cofactors: CoproductCategory(self, cofactors))
-setattr(Category, "Biproduct", lambda self, factors: BiproductCategory(self, factors))
-setattr(Category, "DirectSum", lambda self, factors: DirectSumCategory(self, factors))
-
-
 def Cone(structure_morphisms: "tuple[Morphism, ...]") -> Parent:
     r"""Construct a cone: an apex \(A\) with projections \(\pi_i:A\to X_i\)."""
     projections = tuple(structure_morphisms)
@@ -701,6 +688,3 @@ class TensorProductCategory(CoconeCategory):
                 codomain,
             )
             return factorization
-
-
-setattr(Category, "TensorProduct", lambda self, factors: TensorProductCategory(self, factors))

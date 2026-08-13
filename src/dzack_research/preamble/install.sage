@@ -105,6 +105,9 @@ def install_preamble(namespace: dict) -> None:
             "categories.abstract_categories.slice_categories",
             "categories.abstract_categories.arrow_categories",
             "categories.abstract_categories.products",
+            # After the three above: ``Cat`` imports the constructions they
+            # define, and is where they are attached to Sage's ``Category``.
+            "categories.abstract_categories.cat",
             "categories.modules.pure.modules",
             "categories.modules.graded_modules",
             "categories.modules.pure.finitely_generated.finitely_generated_modules",

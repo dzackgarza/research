@@ -262,18 +262,6 @@ class CokernelCategory(CoveredObjectCategory):
         return [CoveredObjectCategory(self._ambient_category, map_taken.codomain())]
 
 
-# Installed onto Sage's ``Category``: these constructions are the preamble's,
-# so they are attached here rather than declared on the Sage class.
-setattr(Category, "SliceOver", lambda self, X: SliceOverCategory(self, X))
-setattr(Category, "CosliceUnder", lambda self, X: CosliceUnderCategory(self, X))
-setattr(Category, "SubObject", lambda self, X: SubobjectCategory(self, X))
-setattr(Category, "SuperObject", lambda self, X: SuperobjectCategory(self, X))
-setattr(Category, "CoveringObject", lambda self, X: CoveringObjectCategory(self, X))
-setattr(Category, "CoveredObject", lambda self, X: CoveredObjectCategory(self, X))
-setattr(Category, "Kernel", lambda self, f: KernelCategory(self, f))
-setattr(Category, "Cokernel", lambda self, f: CokernelCategory(self, f))
-
-
 def Slice(structure_morphism: Morphism, is_mono: bool = False, is_epi: bool = False) -> Parent:
     r"""Construct the slice object represented by a morphism \(A\to X\).
 

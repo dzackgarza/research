@@ -21,6 +21,8 @@ from typing import TYPE_CHECKING
 
 import pytest
 
+from sage.categories.category import Category
+
 if TYPE_CHECKING:
     from dzack_research.preamble.categories.algebras.framed_free_algebras import (
         AlternatingAlgebraOnSet,
@@ -174,6 +176,20 @@ def test_the_core_of_a_category_has_the_same_objects() -> None:
     assert algebra in core
     assert QQ in core
     assert core.ambient_category() is Rings()
+
+
+def test_a_category_performs_its_constructions_as_an_object_of_Cat() -> None:
+    r"""$\mathbf{Cat}$ holds the categories, and the constructions built out
+    of a category are the methods it has there."""
+    _ensure_preamble()
+
+    assert Rings() in Cat()
+    assert QQ not in Cat()
+
+    over_the_rationals = Rings().SliceOver(QQ)
+
+    assert over_the_rationals is SliceOverCategory(Rings(), QQ)
+    assert Category.SliceOver is Cat.ParentMethods.SliceOver
 
 
 def test_the_centre_functor_transports_an_isomorphism() -> None:

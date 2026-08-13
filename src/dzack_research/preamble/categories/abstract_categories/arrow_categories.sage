@@ -206,13 +206,6 @@ class Core(Category):
         return morphism
 
 
-# Installed onto Sage's ``Category``: these constructions are the preamble's,
-# so they are attached here rather than declared on the Sage class.
-setattr(Category, "Arrow", lambda self: ArrowCategory(self))
-setattr(Category, "IsoArrow", lambda self: IsoArrowCategory(self))
-setattr(Category, "core", lambda self: Core(self))
-
-
 def Ar(source: Parent, target: Parent) -> "Homset":
     r"""Return \(\operatorname{Ar}(X,Y)\), the arrows \(X\to Y\), as one object.
 
