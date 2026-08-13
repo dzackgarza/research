@@ -37,7 +37,7 @@ if TYPE_CHECKING:
     from sage.categories.morphism import Morphism
     from sage.rings.ring import Ring
 
-from collections.abc import Iterable as _Iterable
+from collections.abc import Iterable as _Iterable, Mapping
 from typing import Any, Protocol, TYPE_CHECKING
 
 from sage.categories.homset import Hom
@@ -169,7 +169,7 @@ if TYPE_CHECKING:
 
         def parent(self) -> "FreeAlgebraOnSet": ...
         def base_ring(self) -> "Ring": ...
-        def coefficients(self) -> dict["Element", "RingElement"]: ...
+        def coefficients(self) -> Mapping["Element", "RingElement"]: ...
         def degree(self) -> "Integer": ...
         def coefficient(self, monomial: "Element") -> "RingElement": ...
         def leading_coefficient(self) -> "RingElement": ...
@@ -250,7 +250,9 @@ class MonomialSystem:
         def one(self) -> "Element": ...
         def generator(self, label: "Element") -> "Element": ...
         def factors(self, monomial: "Element") -> tuple: ...
-        def product(self, left: "Element", right: "Element") -> tuple: ...
+        def product(
+            self, left: "Element", right: "Element"
+        ) -> tuple["Integer", "Element"]: ...
         def monomials_of_degree(
             self, degree: "Integer | int"
         ) -> Parent | tuple: ...
@@ -353,7 +355,9 @@ class CommutativeMonomials(MonomialSystem):
     def factors(self, monomial: "Element") -> tuple:
         return tuple(monomial.dict().items())
 
-    def product(self, left: "Element", right: "Element") -> tuple:
+    def product(
+        self, left: "Element", right: "Element"
+    ) -> tuple["Integer", "Element"]:
         return (1, left * right)
 
     def monomials_of_degree(self, degree: "Integer | int") -> Parent | tuple:
@@ -383,7 +387,9 @@ class WordMonomials(MonomialSystem):
     def factors(self, monomial: "Element") -> tuple:
         return tuple((letter, 1) for letter in monomial.to_word_list())
 
-    def product(self, left: "Element", right: "Element") -> tuple:
+    def product(
+        self, left: "Element", right: "Element"
+    ) -> tuple["Integer", "Element"]:
         return (1, left * right)
 
     def monomials_of_degree(self, degree: "Integer | int") -> Parent | tuple:
@@ -457,7 +463,9 @@ class AlternatingMonomials(MonomialSystem):
     def basis_monomial(self, index: "Element") -> "Element":
         return self._subset(tuple(index))
 
-    def product(self, left: "Element", right: "Element") -> tuple:
+    def product(
+        self, left: "Element", right: "Element"
+    ) -> tuple["Integer", "Element"]:
         if set(left) & set(right):
             return (0, self.one())
         inversions = sum(
@@ -502,7 +510,9 @@ class DividedMonomials(MonomialSystem):
     def factors(self, monomial: "Element") -> tuple:
         return tuple(monomial.dict().items())
 
-    def product(self, left: "Element", right: "Element") -> tuple:
+    def product(
+        self, left: "Element", right: "Element"
+    ) -> tuple["Integer", "Element"]:
         from sage.arith.misc import binomial
 
         left_exponents = left.dict()
@@ -1134,8 +1144,9 @@ class FreeAlgebraOnSetElement(FreeModuleOnSetElement):
                 )
                 if sign == 0:
                     continue
-                coefficients[monomial] = coefficients.get(monomial, zero) + (
-                    sign * left_coefficient * right_coefficient
+                coefficients[monomial] = parent.base_ring()(
+                    coefficients.get(monomial, zero)
+                    + sign * left_coefficient * right_coefficient
                 )
         product: "FreeAlgebraOnSetElement" = parent.element_class(
             parent, coefficients

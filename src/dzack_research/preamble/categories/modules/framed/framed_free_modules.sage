@@ -39,6 +39,7 @@ from sage.rings.integer import Integer as SageInteger
 from sage.structure.parent import Parent
 from sage.structure.element import Element as SageElement
 from sage.structure.unique_representation import UniqueRepresentation
+from collections.abc import Mapping
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -174,13 +175,13 @@ class FreeModuleOnSetElement(ModuleElement):
             element_of_S in parent.module_generating_set()
             for element_of_S in coefficients
         ), f"the coefficient function is not supported on {parent.module_generating_set()}"
-        self._coefficients = {
+        self._coefficients: dict["Element", "RingElement"] = {
             element_of_S: coefficient
             for element_of_S, value in coefficients.items()
             if (coefficient := parent.base_ring()(value)) != 0
         }
 
-    def coefficients(self) -> dict:
+    def coefficients(self) -> Mapping["Element", "RingElement"]:
         return dict(self._coefficients)
 
     def _add_(self, other: "FreeModuleOnSetElement") -> "FreeModuleOnSetElement":

@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreeModuleOnSet
 from dzack_research.preamble.categories.rings.rings import ℤ
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
-from collections.abc import Iterable, Iterator, Sequence
+from collections.abc import Iterable, Iterator, Mapping, Sequence
 from typing import Any, Self, TYPE_CHECKING
 
 from sage.rings.integer import Integer
@@ -218,7 +218,7 @@ class BasedFreeModuleElement(ModuleElement):
     def _coordinates(self) -> "Vector":
         return self._coordinates_
 
-    def coefficients(self) -> dict:
+    def coefficients(self) -> Mapping["Element", "RingElement"]:
         return {
             element_of_S: coefficient
             for element_of_S, coefficient in zip(
