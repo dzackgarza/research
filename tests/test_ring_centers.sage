@@ -189,7 +189,7 @@ def test_a_category_performs_its_constructions_as_an_object_of_Cat() -> None:
     over_the_rationals = Rings().SliceOver(QQ)
 
     assert over_the_rationals is SliceOverCategory(Rings(), QQ)
-    assert Category.SliceOver is Cat.ParentMethods.SliceOver
+    assert vars(Category)["SliceOver"] is Cat.ParentMethods.SliceOver
 
 
 def test_the_centre_functor_transports_an_isomorphism() -> None:
