@@ -298,7 +298,7 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
         nonzero ideal, so it has a generator.
         """
 
-        def order(self: "TorsionModuleElement") -> "Integer":
+        def additive_order(self: "TorsionModuleElement") -> "Integer":
             r"""Return the generator of $\operatorname{Ann}(a)\subseteq\mathbb Z$.
 
             The least $k\ge 1$ with $ka=0$, which exists because this module is
