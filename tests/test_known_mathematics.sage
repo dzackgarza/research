@@ -59,6 +59,7 @@ from sage.rings.rational_field import QQ as SageRationals
 # declaration registry the preamble consumes on intake, not the node these
 # assertions ask about.
 from dzack_research.preamble.categories.group.groups import OwnedFinitelyGeneratedGroups
+from dzack_research.preamble.refine import refine
 
 FINITELY_GENERATED = OwnedFinitelyGeneratedGroups()
 
@@ -159,17 +160,17 @@ def test_the_free_group_on_two_generators_is_the_definitional_case() -> None:
 def test_refinement_repairs_an_undeclared_axiom_without_loss() -> None:
     r"""Refining supplies the fact Sage never declared, and costs nothing.
 
-    This is the whole bridge in one assertion: the category is the
-    preamble's own, the admission mechanism is Sage's ``_refine_category_``,
-    the evidence is Sage's own ``ngens``, and the object keeps every answer
-    it had before.  If this fails, the preamble cannot repair category
-    membership by refinement and needs a different mechanism.
+    This is the whole bridge in one assertion: the category and the
+    ``refine`` mechanism are the preamble's own, the evidence is Sage's
+    own ``ngens``, and the object keeps every answer it had before.  If
+    this fails, the preamble cannot repair category membership by
+    refinement and needs a different mechanism.
     """
     group = GL(3, SageIntegers)
     generators_before = group.ngens()
     assert generators_before == 4
 
-    group._refine_category_(FINITELY_GENERATED)
+    refine(group, FINITELY_GENERATED)
 
     assert group in FINITELY_GENERATED
     assert group.ngens() == generators_before, (

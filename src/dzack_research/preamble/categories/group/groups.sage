@@ -632,13 +632,15 @@ class OwnedFinitelyPresentedGroups(Category):
 
         def presenting_free_group(self: Self) -> "Group":
             r"""Return \(F(S)\), the free group the relations are words in."""
+            from dzack_research.preamble.refine import refine
+
             free_group, _ = _presentation_of(self)
             # Finitely generated with no probe needed: the alphabet is finite
             # by construction, and it is the surjection's own generating set.
             if not free_group.category().is_subcategory(
                 OwnedFinitelyGeneratedGroups()
             ):
-                free_group._refine_category_(OwnedFinitelyGeneratedGroups())
+                refine(free_group, OwnedFinitelyGeneratedGroups())
             return free_group
 
         def defining_relations(self: Self) -> "OrderedSet":
