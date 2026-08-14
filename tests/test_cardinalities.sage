@@ -89,10 +89,12 @@ def test_cardinal_homsets_are_the_provable_cardinal_order() -> None:
     r"""A hom-set is singleton exactly when its inequality is provable."""
     cardinalities = Cardinalities()
 
+    assert aleph(1) != continuum
     assert cardinalities.compare(aleph(1), continuum) is (
         CardinalComparison.LESS_OR_EQUAL
     )
     assert cardinalities.hom(aleph(1), continuum).cardinality() == 1
+    assert cardinalities.hom(continuum, aleph(1)).cardinality() == 0
 
     assert cardinalities.compare(aleph(2), continuum) is (
         CardinalComparison.INCOMPARABLE
