@@ -601,7 +601,14 @@ class OwnedRing(Parent):
         return finite
 
     def cardinality(self) -> "Cardinal":
-        return self._engine.cardinality()
+        from dzack_research.preamble.categories.sets.cardinals import (
+            cardinal,
+            continuum,
+        )
+
+        if not self._engine.is_exact():
+            return continuum
+        return cardinal(self._engine.cardinality())
 
     def fraction_field(self) -> "Parent":
         r"""Return \(\operatorname{Frac}(R)\), owned as this ring is."""

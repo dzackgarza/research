@@ -99,6 +99,8 @@ def install_preamble(namespace: dict) -> None:
             "refine",
             "utilities",
             "categories.forms.gram_matrices",
+            "categories.sets.ordinals",
+            "categories.sets.cardinals",
             "categories.sets.sets",
             "categories.rings.rings",
             "categories.rings.predicate_subrings",
