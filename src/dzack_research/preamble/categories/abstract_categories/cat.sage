@@ -17,6 +17,8 @@ first.
 """
 
 from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from sage.structure.parent import MembershipInput
 
 from sage.categories.category import Category
 from sage.categories.morphism import Morphism
@@ -68,7 +70,7 @@ class Cat(Category):
         # A category is not a set, so nothing above this holds its objects.
         return []
 
-    def __contains__(self, candidate: object) -> bool:
+    def __contains__(self, candidate: "MembershipInput") -> bool:
         r"""Return whether ``candidate`` is a category, hence an object here."""
         return isinstance(candidate, Category)
 

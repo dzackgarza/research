@@ -18,8 +18,8 @@ And the triangle identities (zigzag equations):
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from dzack_research.preamble.lexicon import Group
-    from dzack_research.preamble.lexicon import Module
+    from sage.categories.groups import Group
+    from sage.categories.modules import Module
 
 if TYPE_CHECKING:
     from dzack_research.preamble.categories.sets.sets import Set
@@ -177,7 +177,7 @@ def DividedPowerAlgebraFunctor(base_ring: "Ring") -> FreeAlgebraFunctor:
 class FreeModuleFunctorClass(Functor):
     r"""The free module functor F_R: Set -> Mod_R."""
 
-    def __init__(self, base_ring: "Ring"):
+    def __init__(self, base_ring: "Ring") -> None:
         # Local: importing the ring node here would close a cycle, and the
         # module is built by the time this constructor runs.
         from dzack_research.preamble.categories.rings.rings import owned_ring_view
@@ -346,7 +346,7 @@ class FreeModuleOnGroupFunctor(Functor):
 class ForgetfulFunctorClass(Functor):
     r"""The forgetful functor U: Mod_R -> Set."""
 
-    def __init__(self, base_ring: "Ring"):
+    def __init__(self, base_ring: "Ring") -> None:
         # Local: importing the ring node here would close a cycle, and the
         # module is built by the time this constructor runs.
         from dzack_research.preamble.categories.rings.rings import owned_ring_view
@@ -372,7 +372,7 @@ class ForgetfulFunctorClass(Functor):
 class Adjunction(SageObject):
     r"""An adjunction (F, U, \eta, \varepsilon) between categories C and D."""
 
-    def __init__(self, left_adjoint: Functor, right_adjoint: Functor):
+    def __init__(self, left_adjoint: Functor, right_adjoint: Functor) -> None:
         self._left_adjoint = left_adjoint
         self._right_adjoint = right_adjoint
 
@@ -406,7 +406,7 @@ class Adjunction(SageObject):
 class FreeForgetfulAdjunction(Adjunction):
     r"""The free/forgetful adjunction F_R \dashv U between Set and R-Mod."""
 
-    def __init__(self, base_ring: "Ring"):
+    def __init__(self, base_ring: "Ring") -> None:
         # Local: importing the ring node here would close a cycle, and the
         # module is built by the time this constructor runs.
         from dzack_research.preamble.categories.rings.rings import owned_ring_view

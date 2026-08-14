@@ -4,10 +4,12 @@ r"""Bilinear and quadratic forms as native Sage morphisms."""
 from sage.rings.rational_field import QQ as SageQQ
 from collections.abc import Callable
 from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from sage.structure.parent import ElementConstructorInput, MembershipInput
 from dzack_research.preamble.lexicon import Element
 if TYPE_CHECKING:
-    from dzack_research.preamble.lexicon import Module
-    from dzack_research.preamble.lexicon import Ring
+    from sage.categories.modules import Module
+    from sage.categories.rings import Ring
 
 if TYPE_CHECKING:
     from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormMorphism
@@ -426,7 +428,10 @@ class QuadraticMapMorphism(SetMorphism):
         # below subtract them; a set map in general promises no more than
         # elements.
         def __call__(
-            self, x: object, *args: object, **kwds: object
+            self,
+            x: "ElementConstructorInput",
+            *args: "ElementConstructorInput",
+            **kwds: "ElementConstructorInput",
         ) -> "Element": ...
 
 
@@ -519,7 +524,10 @@ class BilinearFormHomset(Homset):
         # Conversion into this homset builds the form ``_element_constructor_``
         # below builds; Sage routes ``__call__`` there.
         def __call__(
-            self, x: object = ..., *args: object, **kwds: object
+            self,
+            x: "ElementConstructorInput" = ...,
+            *args: "ElementConstructorInput",
+            **kwds: "ElementConstructorInput",
         ) -> "BilinearFormMorphism": ...
 
     def module(self) -> "Module":
@@ -557,7 +565,10 @@ class QuadraticFormHomset(Homset):
         # Conversion into this homset builds the form ``_element_constructor_``
         # below builds.
         def __call__(
-            self, x: object = ..., *args: object, **kwds: object
+            self,
+            x: "ElementConstructorInput" = ...,
+            *args: "ElementConstructorInput",
+            **kwds: "ElementConstructorInput",
         ) -> "QuadraticFormMorphism": ...
 
     def module(self) -> "Module":
@@ -703,7 +714,10 @@ class BilinearFormMorphism(Morphism):
         return GramMatrix(self._gram_matrix)
 
     def __call__(
-        self, x: object, *args: object, **kwds: object
+        self,
+        x: "ElementConstructorInput",
+        *args: "ElementConstructorInput",
+        **kwds: "ElementConstructorInput",
     ) -> "Element":
         # Local: the morphism node imports this module, so a module-level
         # import would close that cycle; it is built by call time.
@@ -814,7 +828,7 @@ class BilinearFormMorphism(Morphism):
         """
         return _value_submodule(self)
 
-    def __eq__(self, other: object) -> bool:
+    def __eq__(self, other: "MembershipInput") -> bool:
         return (
             isinstance(other, BilinearFormMorphism)
             and self.parent() is other.parent()
@@ -868,7 +882,10 @@ class QuadraticFormMorphism(Morphism):
         return self.codomain()
 
     def __call__(
-        self, x: object, *args: object, **kwds: object
+        self,
+        x: "ElementConstructorInput",
+        *args: "ElementConstructorInput",
+        **kwds: "ElementConstructorInput",
     ) -> "Element":
         # Local: the morphism node imports this module, so a module-level
         # import would close that cycle; it is built by call time.
@@ -990,7 +1007,7 @@ class QuadraticFormMorphism(Morphism):
         """
         return _value_submodule(self)
 
-    def __eq__(self, other: object) -> bool:
+    def __eq__(self, other: "MembershipInput") -> bool:
         return (
             isinstance(other, QuadraticFormMorphism)
             and self.parent() is other.parent()

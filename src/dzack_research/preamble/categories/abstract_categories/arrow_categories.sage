@@ -27,6 +27,8 @@ track \(M'\) separately.
 
 from sage.categories.sets_cat import Sets
 from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from sage.structure.parent import MembershipInput
 from sage.categories.category import Category
 from sage.categories.morphism import IdentityMorphism
 from sage.categories.morphism import Morphism
@@ -180,7 +182,7 @@ class Core(Category):
     def ambient_category(self) -> Category:
         return self._ambient_category
 
-    def __contains__(self, candidate: object) -> bool:
+    def __contains__(self, candidate: "MembershipInput") -> bool:
         r"""Return whether ``candidate`` is an object of \(\mathbf{C}\): the core keeps them all."""
         return candidate in self._ambient_category
 
@@ -246,7 +248,7 @@ class IsomorphismSet(Parent):
         r"""Return \(\operatorname{Ar}(X,Y)\), the arrow set this sits inside."""
         return Ar(self._source, self._target)
 
-    def __contains__(self, arrow: object) -> bool:
+    def __contains__(self, arrow: "MembershipInput") -> bool:
         match arrow:
             case IsoArrowCategory.MorphismMethods():
                 # An object of Ar(C) is an arrow of C, and its source and

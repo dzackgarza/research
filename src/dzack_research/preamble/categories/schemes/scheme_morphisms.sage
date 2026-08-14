@@ -31,11 +31,11 @@ class SchemeMorphism(Morphism):
             Morphism.__init__(self, parent)
 
     @abstract_method
-    def domain(self) -> object:
+    def domain(self) -> Parent:
         r"""Return the domain scheme of this morphism."""
 
     @abstract_method
-    def codomain(self) -> object:
+    def codomain(self) -> Parent:
         r"""Return the codomain scheme of this morphism."""
 
     @abstract_method
@@ -43,7 +43,7 @@ class SchemeMorphism(Morphism):
         r"""Return composition (g o self): X -> Z for g: Y -> Z."""
 
     @abstract_method
-    def pullback(self, Z: object) -> object:
+    def pullback(self, Z: "SchemeMorphism | Parent") -> Parent:
         r"""Return pullback / fiber product X \times_Y Z for a morphism or subobject Z -> Y."""
 
     def evaluate_at(self, p: SchemeMorphism) -> SchemeMorphism:
@@ -54,7 +54,7 @@ class SchemeMorphism(Morphism):
         )
         return evaluated
 
-    def fiber_over(self, y: SchemeMorphism) -> object:
+    def fiber_over(self, y: SchemeMorphism) -> Parent:
         r"""Return the fiber X \times_Y S over an S-point y: S -> Y via pullback."""
         return self.pullback(y)
 

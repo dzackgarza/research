@@ -21,6 +21,8 @@ say the same thing about two structures.
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
+    from sage.structure.parent import MembershipInput
+if TYPE_CHECKING:
     from typing import Callable
 
 if TYPE_CHECKING:
@@ -99,7 +101,7 @@ class PredicateSubring(Parent):
     def __hash__(self) -> int:
         return hash((type(self), self._ambient_ring, self._description))
 
-    def __eq__(self, other: object) -> bool:
+    def __eq__(self, other: "MembershipInput") -> bool:
         return (
             type(other) is type(self)
             and self._ambient_ring == other._ambient_ring

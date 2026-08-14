@@ -2,8 +2,8 @@ r"""Free modules on finite totally ordered sets."""
 
 from typing import Protocol, TYPE_CHECKING
 if TYPE_CHECKING:
-    from dzack_research.preamble.lexicon import Module
-    from dzack_research.preamble.lexicon import Vector
+    from sage.categories.modules import Module
+    from sage.structure.element import Vector
 
 from sage.rings.integer_ring import ZZ as SageZZ
 from dzack_research.preamble.categories.sets.sets import _as_set
@@ -19,7 +19,9 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
 from dzack_research.preamble.categories.rings.rings import ℤ
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
 from collections.abc import Iterable, Iterator, Mapping, Sequence
-from typing import Any, Self, TYPE_CHECKING
+from typing import Self, TYPE_CHECKING
+if TYPE_CHECKING:
+    from sage.structure.parent import ElementConstructorInput, MembershipInput
 
 from sage.rings.integer import Integer
 from sage.categories.morphism import SetMorphism
@@ -266,7 +268,7 @@ class BasedFreeModuleElement(ModuleElement):
         return bool(richcmp(self._coordinates_, other._coordinates_, op))
 
 
-    def __eq__(self, other: object) -> bool:
+    def __eq__(self, other: "MembershipInput") -> bool:
         # Identification across parents is a stated morphism, never coercion
         # (AGENTS.md: coercion must not erase the element/image distinction),
         # so equality outside this parent is plain False and Sage's
@@ -275,13 +277,13 @@ class BasedFreeModuleElement(ModuleElement):
             return False
         return bool(richcmp(self._coordinates_, other._coordinates_, op_EQ))
 
-    def __ne__(self, other: object) -> bool:
+    def __ne__(self, other: "MembershipInput") -> bool:
         return not self.__eq__(other)
 
     def __hash__(self) -> int:
         return hash(tuple(self._coordinates_))
 
-    def __iter__(self) -> Iterator[Any]:
+    def __iter__(self) -> Iterator["RingElement"]:
         return iter(self._coordinates_)
 
     def _repr_(self) -> str:
@@ -355,7 +357,10 @@ class BasedFreeModule(FreeModuleOnSet):
     def rank(self) -> "Cardinal":
         return self.module_generating_set().cardinality()
 
-    def _element_constructor_(self, value: object) -> BasedFreeModuleElement:
+    def _element_constructor_(
+        self,
+        value: "ElementConstructorInput",
+    ) -> BasedFreeModuleElement:
         if isinstance(value, BasedFreeModuleElement) and value.parent() is self:
             return value
         match value:
@@ -374,7 +379,7 @@ class BasedFreeModule(FreeModuleOnSet):
             return self.zero()
         assert False, f"{value} is not an element of {self}"
 
-    def __contains__(self, value: object) -> bool:
+    def __contains__(self, value: "MembershipInput") -> bool:
         match value:
             case BasedFreeModuleElement() if value.parent() is self:
                 return True
@@ -402,7 +407,7 @@ class BasedFreeModule(FreeModuleOnSet):
         )
         return module_generating_set
 
-    def __eq__(self, other: object) -> bool:
+    def __eq__(self, other: "MembershipInput") -> bool:
         return (
             type(other) is type(self)
             and self.base_ring() == other.base_ring()

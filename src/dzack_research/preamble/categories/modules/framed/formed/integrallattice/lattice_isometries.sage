@@ -4,11 +4,12 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from typing import Iterable
+    from sage.structure.parent import MembershipInput
 
 from dzack_research.preamble.categories.modules.module_morphisms.morphism_matrices import MorphismMatrix
 if TYPE_CHECKING:
     from dzack_research.preamble.lexicon import Element
-    from dzack_research.preamble.lexicon import Group
+    from sage.categories.groups import Group
     from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModule
 
 if TYPE_CHECKING:
@@ -65,7 +66,7 @@ if TYPE_CHECKING:
         def _matrix_group(self) -> "FinitelyGeneratedMatrixGroup_gap": ...
         def _defining_matrix_group(self) -> "FinitelyGeneratedMatrixGroup_gap": ...
         def __call__(self, images: "dict | FormMorphism") -> "FormMorphism": ...
-        def __contains__(self, candidate: object) -> bool: ...
+        def __contains__(self, candidate: "MembershipInput") -> bool: ...
 
     class IsometryMorphism(Protocol):
         r"""What one isometry offers."""

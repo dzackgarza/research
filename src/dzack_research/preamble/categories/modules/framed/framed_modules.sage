@@ -14,7 +14,7 @@ datum.  No finiteness, countability, or orderability hypothesis is imposed on
 from typing import Protocol, TYPE_CHECKING
 if TYPE_CHECKING:
     from dzack_research.preamble.lexicon import Element
-    from dzack_research.preamble.lexicon import Module
+    from sage.categories.modules import Module
     from dzack_research.preamble.lexicon import ModuleElement
 
 from sage.categories.morphism import SetMorphism
@@ -25,8 +25,8 @@ if TYPE_CHECKING:
     from sage.categories.homset import Homset
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import FramingMorphism
 
-from collections.abc import Iterable
-from typing import Any, Self, TYPE_CHECKING
+from collections.abc import Iterable, MutableMapping, Sequence
+from typing import Self, TYPE_CHECKING
 
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
 from sage.misc.abstract_method import abstract_method
@@ -43,10 +43,14 @@ if TYPE_CHECKING:
     # The mathematical ``Set`` noun must not bind at runtime: these files
     # load into one shared namespace where Sage's ``Set()`` constructor
     # lives under the same name.
-    from dzack_research.preamble.lexicon import Set
+    from sage.categories.sets_cat import Set
+    from dzack_research.preamble.lexicon import Element, ModuleElement, RingElement
 
 
-def _finite_coefficient_function(module: "Module", coefficients: Iterable) -> dict:
+def _finite_coefficient_function(
+    module: "Module",
+    coefficients: Iterable["RingElement"],
+) -> dict["Element", "RingElement"]:
     r"""Pair a coordinate vector with the module's ordered generating set."""
     ordered_coefficients = tuple(coefficients)
     assert len(ordered_coefficients) == module.number_of_module_generators(), (
@@ -64,9 +68,9 @@ def _finite_coefficient_function(module: "Module", coefficients: Iterable) -> di
 
 def _finite_module_generator_assignment(
     module: "Module",
-    images: list | tuple,
+    images: Sequence["ModuleElement"],
     codomain: "Module",
-) -> tuple[Any, dict]:
+) -> tuple["Module", dict["Element", "ModuleElement"]]:
     r"""Return the codomain and finite generator assignment."""
     images = tuple(images)
     assert len(images) == module.number_of_module_generators(), (
@@ -218,7 +222,11 @@ class FramedModules(OwnedCategoryOverBaseRing):
                     self.module_generating_set(),
                 )
 
-        def inject_variables(self: "FramedModuleParent", scope: object = None, verbose: bool = True) -> None:
+        def inject_variables(
+            self: "FramedModuleParent",
+            scope: "MutableMapping[str, Element] | None" = None,
+            verbose: bool = True,
+        ) -> None:
             r"""Bind this module's named generators into ``scope``.
 
             Sage's version of this method zips ``variable_names()`` against

@@ -18,6 +18,8 @@ from dzack_research.preamble.categories.sets.owned_sets import Sets
 from dzack_research.preamble.refine import refine
 from collections.abc import Callable, Iterable, Iterator
 from typing import Self, TYPE_CHECKING
+if TYPE_CHECKING:
+    from sage.structure.parent import ElementConstructorInput, MembershipInput
 
 from sage.categories.category import Category
 from sage.categories.morphism import Morphism
@@ -31,7 +33,8 @@ if TYPE_CHECKING:
 
     # The ordered-set noun is type-only: the preamble loads into one
     # shared namespace and nothing named OrderedSet may bind there.
-    from dzack_research.preamble.lexicon import Module, OrderedSet
+    from sage.categories.modules import Module
+    from dzack_research.preamble.lexicon import OrderedSet
 
     # What an object gets from sitting in each of these categories.  Placement
     # is what supplies these, not the class an object was constructed from, so
@@ -74,7 +77,9 @@ class DiagramCategory(Category):
 
     @staticmethod
     def __classcall_private__(
-        cls: type, *arguments: object, **keywords: object
+        cls: type,
+        *arguments: "ElementConstructorInput",
+        **keywords: "ElementConstructorInput",
     ) -> "DiagramCategory":
         # Sage reads this slot out of ``cls.__dict__`` and never inherits it,
         # so it is protocol plumbing; the mathematics is on the normalizer.
@@ -121,7 +126,9 @@ class DirectedSystem(DiagramCategory):
 
     @staticmethod
     def __classcall_private__(
-        cls: type, *arguments: object, **keywords: object
+        cls: type,
+        *arguments: "ElementConstructorInput",
+        **keywords: "ElementConstructorInput",
     ) -> "DirectedSystem":
         # Sage reads this slot out of ``cls.__dict__`` and never inherits it,
         # so it is protocol plumbing; the mathematics is on the normalizer.
@@ -164,7 +171,9 @@ class InverseSystem(DiagramCategory):
 
     @staticmethod
     def __classcall_private__(
-        cls: type, *arguments: object, **keywords: object
+        cls: type,
+        *arguments: "ElementConstructorInput",
+        **keywords: "ElementConstructorInput",
     ) -> "InverseSystem":
         # Sage reads this slot out of ``cls.__dict__`` and never inherits it,
         # so it is protocol plumbing; the mathematics is on the normalizer.
@@ -265,7 +274,9 @@ class ProductCategory(ConeCategory):
 
     @staticmethod
     def __classcall_private__(
-        cls: type, *arguments: object, **keywords: object
+        cls: type,
+        *arguments: "ElementConstructorInput",
+        **keywords: "ElementConstructorInput",
     ) -> "ProductCategory":
         # Sage reads this slot out of ``cls.__dict__`` and never inherits it,
         # so it is protocol plumbing; the mathematics is on the normalizer.
@@ -301,7 +312,9 @@ class CoproductCategory(CoconeCategory):
 
     @staticmethod
     def __classcall_private__(
-        cls: type, *arguments: object, **keywords: object
+        cls: type,
+        *arguments: "ElementConstructorInput",
+        **keywords: "ElementConstructorInput",
     ) -> "CoproductCategory":
         # Sage reads this slot out of ``cls.__dict__`` and never inherits it,
         # so it is protocol plumbing; the mathematics is on the normalizer.
@@ -342,7 +355,9 @@ class BiproductCategory(ProductCategory, CoproductCategory):
 
     @staticmethod
     def __classcall_private__(
-        cls: type, *arguments: object, **keywords: object
+        cls: type,
+        *arguments: "ElementConstructorInput",
+        **keywords: "ElementConstructorInput",
     ) -> "BiproductCategory":
         # Sage reads this slot out of ``cls.__dict__`` and never inherits it,
         # so it is protocol plumbing; the mathematics is on the normalizer.
@@ -539,7 +554,7 @@ class CartesianProductOfSets(CartesianProductParent):
 
         return iter(_product(*self._factors))
 
-    def __contains__(self, element: object) -> bool:
+    def __contains__(self, element: "MembershipInput") -> bool:
         return (
             isinstance(element, tuple)
             and len(element) == len(self._factors)
@@ -564,7 +579,10 @@ class CartesianProductOfSets(CartesianProductParent):
         return components
 
     def __call__(
-        self, x: object = (), *arguments: object, **keywords: object
+        self,
+        x: "ElementConstructorInput" = (),
+        *arguments: "ElementConstructorInput",
+        **keywords: "ElementConstructorInput",
     ) -> "tuple[Element, ...]":
         r"""Return the tuple, without Sage's default conversion.
 
@@ -656,7 +674,9 @@ class TensorProductCategory(CoconeCategory):
 
     @staticmethod
     def __classcall_private__(
-        cls: type, *arguments: object, **keywords: object
+        cls: type,
+        *arguments: "ElementConstructorInput",
+        **keywords: "ElementConstructorInput",
     ) -> "TensorProductCategory":
         # Sage reads this slot out of ``cls.__dict__`` and never inherits it,
         # so it is protocol plumbing; the mathematics is on the normalizer.

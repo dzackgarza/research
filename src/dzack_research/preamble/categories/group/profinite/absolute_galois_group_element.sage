@@ -16,6 +16,8 @@ normal-extension theorem (Stacks 0BME).
 """
 
 from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from sage.structure.parent import MembershipInput
 
 from sage.categories.fields import Fields as SageFields
 from sage.categories.homset import Hom
@@ -28,7 +30,7 @@ from dzack_research.preamble.categories.group.profinite.galois_quotient import (
 )
 
 if TYPE_CHECKING:
-    from dzack_research.preamble.lexicon import Ring
+    from sage.categories.rings import Ring
 
 
 class AbsoluteGaloisGroupElement(Morphism):
@@ -112,7 +114,7 @@ class AbsoluteGaloisGroupElement(Morphism):
     def __hash__(self) -> int:
         return hash((type(self), self._parent, self._stage, self._action))
 
-    def __eq__(self, other: object) -> bool:
+    def __eq__(self, other: "MembershipInput") -> bool:
         return (
             type(other) is type(self)
             and self._parent == other._parent
@@ -145,7 +147,7 @@ class ElementConjugacyClass:
     def __hash__(self) -> int:
         return hash((type(self), self._ambient))
 
-    def __eq__(self, other: object) -> bool:
+    def __eq__(self, other: "MembershipInput") -> bool:
         return type(other) is type(self) and self._ambient == other._ambient
 
     def _repr_(self) -> str:

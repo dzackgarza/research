@@ -30,7 +30,6 @@ if TYPE_CHECKING:
 
 from dzack_research.preamble.categories.modules.framed.formed.integrallattice.integral_lattices import _integral_lattice_with_names
 from dzack_research.preamble.catalogue import Lattices
-from typing import Any, TYPE_CHECKING
 
 from sage.rings.rational_field import QQ as SageQQ
 from sage.sets.integer_range import IntegerRange
@@ -153,7 +152,7 @@ class Sterk:
     """
 
     @staticmethod
-    def roots_18_2_0() -> dict[str, Any]:
+    def roots_18_2_0() -> dict[str, "ModuleElement"]:
         r"""Return the $22$ generating vectors $v_1,\ldots,v_{22}$ in $T_{\mathrm{dP}}$."""
         TdP = Lattices.TdP
         b = _named_module_generators(TdP)
@@ -191,7 +190,7 @@ class Sterk:
         return v
 
     @staticmethod
-    def roots_18_0_0() -> dict[str, Any]:
+    def roots_18_0_0() -> dict[str, "ModuleElement"]:
         r"""Return the $19$ generating vectors $w_1,\ldots,w_{19}$ in $T_{\mathrm{dP}}$."""
         TdP = Lattices.TdP
         b = _named_module_generators(TdP)
@@ -226,7 +225,7 @@ class Sterk:
         return w
 
     @staticmethod
-    def sterk_roots() -> dict[str, tuple[Any, ...]]:
+    def sterk_roots() -> dict[str, tuple["ModuleElement", ...]]:
         r"""Return Sterk's five cusp root configurations in $T_{\mathrm{dP}}$.
 
         EXAMPLES::
@@ -251,7 +250,7 @@ class Sterk:
         def involute(x: "ModuleElement") -> "ModuleElement":
             return x + reflect(x)
 
-        configurations: dict[str, tuple[Any, ...]] = {
+        configurations: dict[str, tuple["ModuleElement", ...]] = {
             "Sterk_1": (
                 v["v3"] + v["v11"],
                 v["v4"] + v["v12"],
@@ -334,7 +333,7 @@ class Sterk:
         return configurations
 
     @staticmethod
-    def selected_isotropic_vectors() -> dict[str, Any]:
+    def selected_isotropic_vectors() -> dict[str, "ModuleElement"]:
         r"""Return Sterk's five generating isotropic lines in $T_{\mathrm{En}}$."""
         TEn = Lattices.TEn
         b = _named_module_generators(TEn)
@@ -367,7 +366,10 @@ class Sterk:
         return Embeddings.E8_2_into_TdP
 
     @staticmethod
-    def sterk5_in_U_E8_2() -> tuple[Any, tuple[Any, ...]]:
+    def sterk5_in_U_E8_2() -> tuple[
+        "FormModule",
+        tuple["ModuleElement", ...],
+    ]:
         r"""Return Sterk $5$'s $14$ roots inside $U\oplus E_8(2)$."""
         lattice = Lattices.U.direct_sum([Lattices.E8_2])
         module_generators = list(lattice.module_generators())
@@ -399,7 +401,7 @@ class Sterk:
         return lattice, vectors
 
     @staticmethod
-    def sterks_in_ten() -> dict[str, tuple[Any, ...]]:
+    def sterks_in_ten() -> dict[str, tuple["ModuleElement", ...]]:
         r"""Return Sterk configurations $1$–$3$ in $T_{\mathrm{En}}$ coordinates."""
         TEn = Lattices.TEn
         b = _named_module_generators(TEn)
@@ -430,7 +432,7 @@ class Sterk:
         return {"sterks1": sterks1, "sterks2": sterks2, "sterks3": sterks3}
 
     @staticmethod
-    def isotropic_vectors() -> dict[str, Any]:
+    def isotropic_vectors() -> dict[str, "ModuleElement"]:
         r"""Return the recorded isotropic cusp $s_{4,12}=v_{22}+v_{21}$."""
         TdP = Lattices.TdP
         v = Sterk.roots_18_2_0()

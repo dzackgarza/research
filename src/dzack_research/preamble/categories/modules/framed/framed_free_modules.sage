@@ -13,9 +13,11 @@ ordered.  Finite ordered free modules are the specialization implemented by
 
 
 from typing import Protocol, TYPE_CHECKING
+if TYPE_CHECKING:
+    from sage.structure.parent import ElementConstructorInput, MembershipInput
 from dzack_research.preamble.lexicon import Element
 if TYPE_CHECKING:
-    from dzack_research.preamble.lexicon import Module
+    from sage.categories.modules import Module
 
 from sage.categories.modules import Modules
 from dzack_research.preamble.categories.sets.sets import _as_set
@@ -45,7 +47,8 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleHomset
-    from dzack_research.preamble.lexicon import OrderedSet, Set
+    from sage.categories.sets_cat import Set
+    from dzack_research.preamble.lexicon import OrderedSet
 
     # The admissible ways to name a map out of a free framing, in the order
     # ``hom`` matches them: the generator morphism itself, a finite assignment
@@ -261,8 +264,8 @@ class FreeModuleOnSet(UniqueRepresentation, OwnedBaseRing, Parent):
         cls: type["FreeModuleOnSet"],
         base_ring: "Ring",
         module_generating_set: "OrderedSet",
-        *arguments: object,
-        **keywords: object,
+        *arguments: "ElementConstructorInput",
+        **keywords: "ElementConstructorInput",
     ) -> "FreeModuleOnSet":
         r"""Return *the* free module on \((R,S)\).
 
@@ -364,10 +367,10 @@ class FreeModuleOnSet(UniqueRepresentation, OwnedBaseRing, Parent):
         )
         return value
 
-    def __contains__(self, value: object) -> bool:
+    def __contains__(self, value: "MembershipInput") -> bool:
         return isinstance(value, FreeModuleOnSetElement) and value.parent() is self
 
-    def __eq__(self, other: object) -> bool:
+    def __eq__(self, other: "MembershipInput") -> bool:
         return (
             isinstance(other, FreeModuleOnSet)
             and self.base_ring() == other.base_ring()

@@ -17,9 +17,10 @@ The exposed *algebra* generating set is ``S``; the module generators are
 from typing import Callable
 from typing import TYPE_CHECKING
 from dzack_research.preamble.lexicon import Element
-from dzack_research.preamble.lexicon import Module
 if TYPE_CHECKING:
+    from sage.categories.modules import Module
     from dzack_research.preamble.categories.sets.cardinals import Cardinal
+    from sage.structure.parent import ElementConstructorInput
 
 from dzack_research.preamble.categories.algebras.algebras import FramedAlgebras
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules
@@ -38,7 +39,7 @@ if TYPE_CHECKING:
     from sage.rings.ring import Ring
 
 from collections.abc import Iterable as _Iterable, Mapping
-from typing import Any, Protocol, TYPE_CHECKING
+from typing import Protocol, TYPE_CHECKING
 
 from sage.categories.homset import Hom
 from sage.categories.morphism import SetMorphism
@@ -1011,7 +1012,10 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
                 total = total + term
             return total
 
-        def __call__(self: "FreeAlgebraElement", *values: object) -> "Element":
+        def __call__(
+            self: "FreeAlgebraElement",
+            *values: "ElementConstructorInput",
+        ) -> "Element":
             r"""Evaluate at the generators in their framing's order."""
             labels = tuple(self.parent().algebra_generating_set())
             assert len(values) == len(labels), (
@@ -1130,7 +1134,10 @@ class FreeAlgebraOnSetElement(FreeModuleOnSetElement):
         )
         return divides
 
-    def _mul_(self, other: object) -> "FreeAlgebraOnSetElement":
+    def _mul_(
+        self,
+        other: "ElementConstructorInput",
+    ) -> "FreeAlgebraOnSetElement":
         assert (
             isinstance(other, FreeAlgebraOnSetElement)
             and other.parent() is self.parent()
@@ -1623,7 +1630,11 @@ class FreeAlgebraOnSet(FreeModuleOnSet):
 
         return image_of_monomial
 
-    def _from_algebra_generator_values(self, codomain: "Module", values: tuple[Any, ...]) -> dict:
+    def _from_algebra_generator_values(
+        self,
+        codomain: "Module",
+        values: tuple["ModuleElement", ...],
+    ) -> dict["Element", "ModuleElement"]:
         assert self._algebra_generating_set in Sets().Finite(), (
             "a finite assignment requires a finite algebra generating set"
         )
@@ -1691,8 +1702,8 @@ def FreeAlgebraOn(base_ring: "Ring", algebra_generating_set: "OrderedSet") -> Fr
 
 def polynomial_ring(
     base_ring: "Ring",
-    *arguments: object,
-    **keywords: object,
+    *arguments: "ElementConstructorInput",
+    **keywords: "ElementConstructorInput",
 ) -> FreeAlgebraOnSet:
     r"""Return \(R[x_s:s\in S]\) as the free \(R\)-algebra on \(S\).
 

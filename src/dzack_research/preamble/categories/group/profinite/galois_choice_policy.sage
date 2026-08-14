@@ -25,13 +25,15 @@ normal-extension algorithm, etc.
 """
 
 from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from sage.structure.parent import MembershipInput
 
 from sage.structure.sage_object import SageObject
 
 if TYPE_CHECKING:
     from sage.categories.morphism import Morphism
     from sage.rings.number_field.number_field_ideal import NumberFieldFractionalIdeal
-    from dzack_research.preamble.lexicon import Ring
+    from sage.categories.rings import Ring
 
 
 class GaloisChoicePolicy(SageObject):
@@ -96,7 +98,7 @@ class GaloisChoicePolicy(SageObject):
     def __hash__(self) -> int:
         return hash((type(self), self._name))
 
-    def __eq__(self, other: object) -> bool:
+    def __eq__(self, other: "MembershipInput") -> bool:
         return (
             isinstance(other, GaloisChoicePolicy)
             and type(other) is type(self)

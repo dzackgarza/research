@@ -31,6 +31,7 @@ from collections.abc import Callable, Iterator
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from typing import Protocol
+    from sage.structure.parent import ElementConstructorInput, MembershipInput
 
     class BaseRingParent(Protocol):
         r"""What this mixin's parents have from ``CategoryObject``: ``base()``
@@ -40,8 +41,8 @@ if TYPE_CHECKING:
 
     from dzack_research.preamble.categories.sets.cardinals import Cardinal
     from dzack_research.preamble.lexicon import Element
-    from dzack_research.preamble.lexicon import Group
-    from dzack_research.preamble.lexicon import Module
+    from sage.categories.groups import Group
+    from sage.categories.modules import Module
     from dzack_research.preamble.lexicon import OrderedSet
 
 if TYPE_CHECKING:
@@ -281,7 +282,9 @@ _PLACEMENTS = (
 )
 
 
-def _owning(constructor: "Callable[..., Ring]") -> "Callable[..., OwnedRing]":
+def _owning[**P](
+    constructor: "Callable[P, Ring]",
+) -> "Callable[P, OwnedRing]":
     r"""Return ``constructor``, handing out the owned view of the ring it builds.
 
     Owned and not refined.  Sage's ring constructors are cached by
@@ -292,7 +295,7 @@ def _owning(constructor: "Callable[..., Ring]") -> "Callable[..., OwnedRing]":
     computing.  The wrapper leaves the engine's ring alone.
     """
 
-    def build(*arguments: object, **keywords: object) -> OwnedRing:
+    def build(*arguments: "P.args", **keywords: "P.kwargs") -> OwnedRing:
         return own_ring(constructor(*arguments, **keywords))
 
     build.__name__ = getattr(constructor, "__name__", "constructor")
@@ -316,8 +319,8 @@ class OwnedCategoryOverBaseRing(Category_over_base_ring):
     def __classcall__(
         cls: type["OwnedCategoryOverBaseRing"],
         base_ring: "Ring",
-        *arguments: object,
-        **keywords: object,
+        *arguments: "ElementConstructorInput",
+        **keywords: "ElementConstructorInput",
     ) -> Category:
         over_the_owned_base: Category = Category_over_base_ring.__classcall__(
             cls, owned_ring_view(base_ring), *arguments, **keywords
@@ -325,7 +328,9 @@ class OwnedCategoryOverBaseRing(Category_over_base_ring):
         return over_the_owned_base
 
 
-def _over_the_engine(constructor: "Callable[..., object]") -> "Callable[..., object]":
+def _over_the_engine[**P, T](
+    constructor: "Callable[P, T]",
+) -> "Callable[P, T]":
     r"""Return ``constructor`` reading an owned ring as the ring it is.
 
     A session says ``matrix(ZZ, ...)`` and means a matrix of integers.  Sage
@@ -338,7 +343,7 @@ def _over_the_engine(constructor: "Callable[..., object]") -> "Callable[..., obj
     if getattr(constructor, "_crosses_to_the_engine", False):
         return constructor
 
-    def build(*arguments: object, **keywords: object) -> object:
+    def build(*arguments: "P.args", **keywords: "P.kwargs") -> T:
         return constructor(
             *(engine_ring(argument) for argument in arguments), **keywords
         )
@@ -496,7 +501,10 @@ class OwnedRing(Parent):
             return True
         return bool(self._engine.has_coerce_map_from(engine_ring(other)))
 
-    def coerce_map_from(self, other: object) -> "Morphism | None":
+    def coerce_map_from(
+        self,
+        other: "ElementConstructorInput",
+    ) -> "Morphism | None":
         r"""Return the coercion \(S\to R\), named between the rings it joins.
 
         Answered here rather than by Sage, and this is the whole of the
@@ -521,20 +529,20 @@ class OwnedRing(Parent):
         renamed: "Morphism" = OwnedRingMap(engine_map, owned_ring_view(crossed), self)
         return renamed
 
-    def has_coerce_map_from(self, other: object) -> bool:
+    def has_coerce_map_from(self, other: "ElementConstructorInput") -> bool:
         return bool(self._engine.has_coerce_map_from(engine_ring(other)))
 
     def _element_constructor_(self, value: "Element") -> "Element":
         return self._engine(value)
 
-    def __contains__(self, value: object) -> bool:
+    def __contains__(self, value: "MembershipInput") -> bool:
         return value in self._engine
 
     def __pow__(self, exponent: "Integer") -> "Module":
         r"""Return \(R^n\), the free \(R\)-module on the canonical framing."""
         return OwnedRings.ParentMethods.__pow__(self, exponent)
 
-    def __truediv__(self, ideal: object) -> "Parent":
+    def __truediv__(self, ideal: "Parent") -> "Parent":
         r"""Return \(K/\mathfrak a\), which is the engine's quotient.
 
         ``QQ/ZZ`` and ``QQ/(2*ZZ)`` are Sage's own spelling of
@@ -571,7 +579,7 @@ class OwnedRing(Parent):
         """
         return iter(self._engine)
 
-    def some_elements(self) -> tuple:
+    def some_elements(self) -> tuple["Element", ...]:
         r"""Return a few elements, which are the engine's."""
         return tuple(self._engine.some_elements())
 
@@ -615,17 +623,17 @@ class OwnedRing(Parent):
         fraction_field: "Parent" = own_ring(self._engine.fraction_field())
         return fraction_field
 
-    def _first_ngens(self, count: int) -> tuple:
+    def _first_ngens(self, count: int) -> tuple["Element", ...]:
         r"""Return the first ``count`` generators, for ``K.<a> = ...`` syntax.
 
         Sage's preparser lowers a generator-naming assignment to this call, so
         a ring a session names that way has to answer it.  The generators are
         the engine's elements, which are this ring's own.
         """
-        first: tuple = self._engine._first_ngens(count)
+        first: tuple["Element", ...] = self._engine._first_ngens(count)
         return first
 
-    def gens(self) -> tuple:
+    def gens(self) -> tuple["Element", ...]:
         r"""Return the generators, which are the engine's elements."""
         return tuple(self._engine.gens())
 
@@ -636,22 +644,26 @@ class OwnedRing(Parent):
         r"""Return \(\mathcal O_K\), owned as this ring is."""
         return own_ring(self._engine.ring_of_integers())
 
-    def ideal(self, *generators: object, **keywords: object) -> "Parent":
+    def ideal(
+        self,
+        *ideal_generators: "ElementConstructorInput",
+        **keywords: "ElementConstructorInput",
+    ) -> "Parent":
         r"""Return the ideal generated by ``generators``.
 
         The engine's object: an ideal is not a ring, so it has no owned view
         of its own, and ``own_ideal`` is the preamble's word for one.
         """
-        ideal: "Parent" = self._engine.ideal(*generators, **keywords)
+        ideal: "Parent" = self._engine.ideal(*ideal_generators, **keywords)
         return ideal
 
-    def embeddings(self, codomain: "Ring") -> list:
+    def embeddings(self, codomain: "Ring") -> list["Morphism"]:
         r"""Return the field maps \(R\to\Omega\), which the engine computes.
 
         Both ends cross: an embedding is a computation, and the engine has
         never heard of either wrapper.
         """
-        maps: list = self._engine.embeddings(engine_ring(codomain))
+        maps: list["Morphism"] = self._engine.embeddings(engine_ring(codomain))
         return maps
 
     def algebraic_closure(self) -> "Parent":
@@ -668,7 +680,7 @@ class OwnedRing(Parent):
     def __hash__(self) -> int:
         return hash((type(self), self._engine))
 
-    def __eq__(self, other: object) -> bool:
+    def __eq__(self, other: "MembershipInput") -> bool:
         r"""Return whether ``other`` is this owned ring.
 
         Not equal to the engine it views, however tempting: Sage sorts its

@@ -41,8 +41,9 @@ if TYPE_CHECKING:
     from dzack_research.preamble.lexicon import Element
     from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModule
     from dzack_research.preamble.lexicon import LatticeName
-    from dzack_research.preamble.lexicon import Module
+    from sage.categories.modules import Module
     from dzack_research.preamble.lexicon import ModuleElement
+    from sage.structure.parent import ElementConstructorInput
 
 from sage.categories.morphism import SetMorphism
 from sage.quadratic_forms.genera.genus import Genus
@@ -1139,11 +1140,17 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
                 for slot in spec
             )
 
-        def __add__(self: "LatticeParent", other: object) -> "FormModule":
+        def __add__(
+            self: "LatticeParent",
+            other: "ElementConstructorInput",
+        ) -> "FormModule":
             r"""``L + M`` as the orthogonal direct sum (for ``sum([...])``)."""
             return self.direct_sum([other])
 
-        def __radd__(self: "LatticeParent", other: object) -> "FormModule":
+        def __radd__(
+            self: "LatticeParent",
+            other: "ElementConstructorInput",
+        ) -> "FormModule":
             """Allow ``sum([L, M, ...])`` (Python starts from ``0``)."""
             if other == 0:
                 return self
@@ -1398,7 +1405,10 @@ def _direct_sum_framing_set(left: "Element", right: "Element") -> "OrderedSet":
     )
     return finite_ordered_set(labels)
 
-def _discriminant_lift_row(element: "Element", rank: int) -> list[Any]:
+def _discriminant_lift_row(
+    element: "Element",
+    rank: int,
+) -> list["RingElement"]:
     r"""Return a representative of a discriminant class, in $L$'s framing.
 
     The target is quadratic for even lattices and bilinear otherwise.
@@ -1709,7 +1719,7 @@ def refine_one_lattice(lattice: "FormModule") -> None:
     if pos == 0 or neg == 0:
         refine(lattice, DefiniteLattices())
 
-_NAMED_GRAM_MATRICES: dict[str, Any] = {
+_NAMED_GRAM_MATRICES: dict[str, Matrix] = {
     # The two names for the hyperbolic plane; the ADE names are read below.
     "U": matrix(SageZZ, [[0, 1], [1, 0]]),
     "H": matrix(SageZZ, [[0, 1], [1, 0]]),

@@ -32,11 +32,14 @@ from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.sets.owned_sets import Sets
 
+from collections.abc import Sequence
 from typing import Self, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from sage.geometry.fan import RationalPolyhedralFan
-    from dzack_research.preamble.lexicon import Ring, RingElement
+    from sage.categories.rings import Ring
+    from dzack_research.preamble.lexicon import RingElement
+    from sage.structure.parent import ElementConstructorInput
 
     from typing import Protocol
 
@@ -46,7 +49,11 @@ if TYPE_CHECKING:
 
         def base_ring(self) -> "Ring": ...
         def category(self) -> Category: ...
-        def subscheme(self, equations: object, **keywords: object) -> Parent: ...
+        def subscheme(
+            self,
+            equations: "RingElement | Sequence[RingElement]",
+            **keywords: "ElementConstructorInput",
+        ) -> Parent: ...
         def gen(self, i: "Integer") -> Element: ...
         def dimension_relative(self) -> "Integer": ...
         def base_scheme(self) -> "Ring": ...
@@ -175,7 +182,10 @@ class AffineSpaces(OwnedCategoryOverBaseRing):
             divisor_classes: "ClassGroup" = ClassGroup(Free_ZZ(Sets.Δ[-1]))
             return divisor_classes
 
-        def closed_subscheme(self: "SchemeParent", *equations: object) -> Parent:
+        def closed_subscheme(
+            self: "SchemeParent",
+            *equations: "RingElement",
+        ) -> Parent:
             r"""Return V(f1,...,fk) subset AA^n refined into ClosedSubschemes(R)."""
             # Local: a module-level import would close a cycle; the module is built by the time this runs.
             from dzack_research.preamble.categories.schemes.subschemes import ClosedSubschemes
@@ -247,7 +257,10 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
             hyperplane: Parent = refine(sub, ClosedSubschemes(self.base_ring()))
             return hyperplane
 
-        def closed_subscheme(self: "SchemeParent", *equations: object) -> Parent:
+        def closed_subscheme(
+            self: "SchemeParent",
+            *equations: "RingElement",
+        ) -> Parent:
             r"""Return V(f1,...,fk) subset PP^n refined into ClosedSubschemes(R)."""
             # Local: a module-level import would close a cycle; the module is built by the time this runs.
             from dzack_research.preamble.categories.schemes.subschemes import ClosedSubschemes

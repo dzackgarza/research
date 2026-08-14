@@ -4,8 +4,9 @@ r"""Modules equipped with a bilinear or quadratic form."""
 from sage.rings.integer_ring import ZZ as SageZZ
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from dzack_research.preamble.lexicon import Module
-    from dzack_research.preamble.lexicon import Vector
+    from sage.categories.modules import Module
+    from sage.structure.element import Vector
+    from sage.structure.parent import ElementConstructorInput, MembershipInput
 
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import FramingMorphism
 from sage.categories.groups import Groups
@@ -1050,7 +1051,7 @@ class FormModule(OwnedBaseRing, Parent):
         )
         return element
 
-    def __contains__(self, element: object) -> bool:
+    def __contains__(self, element: "MembershipInput") -> bool:
         # ``in`` is asked of an arbitrary value: the question membership
         # answers is whether that value is one of ours.
         return (
@@ -1125,7 +1126,7 @@ class FormHomset(_FormHomsetBase):
                 )
         return FormMorphism(self, module_morphism)
 
-    def __contains__(self, morphism: object) -> bool:
+    def __contains__(self, morphism: "MembershipInput") -> bool:
         # ``in`` is asked of an arbitrary value.
         return (
             isinstance(morphism, FormMorphism)
@@ -1168,7 +1169,7 @@ class FormMorphism(Morphism):
     def matrix(self) -> MorphismMatrix:
         return self._module_morphism.matrix()
 
-    def _call_(self, element: object) -> "Element":
+    def _call_(self, element: "ElementConstructorInput") -> "Element":
         # Sage calls a morphism on an arbitrary value and lets the underlying
         # map decide; the parameter is unrestricted for that reason.
         image: "Element" = self._module_morphism(element)
@@ -1216,7 +1217,7 @@ class FormMorphism(Morphism):
             )
         return composite
 
-    def __mul__(self, other: object) -> "FormMorphism":
+    def __mul__(self, other: "ElementConstructorInput") -> "FormMorphism":
         assert (
             isinstance(other, FormMorphism)
             and other.parent() is self.parent()
@@ -1235,7 +1236,7 @@ class FormMorphism(Morphism):
                 )
             )
 
-    def __eq__(self, other: object) -> bool:
+    def __eq__(self, other: "MembershipInput") -> bool:
         return (
             isinstance(other, FormMorphism)
             and self.parent() is other.parent()
@@ -1291,7 +1292,7 @@ class FormAutomorphismGroup(FormHomset):
     def one(self) -> FormMorphism:
         return self(self.domain().module_generator_morphism())
 
-    def __contains__(self, morphism: object) -> bool:
+    def __contains__(self, morphism: "MembershipInput") -> bool:
         # ``in`` is asked of an arbitrary value.
         return (
             isinstance(morphism, FormMorphism)

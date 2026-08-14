@@ -18,8 +18,10 @@ condition on \(\rho\), not a different endomorphism ring.
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
+    from sage.structure.parent import MembershipInput
+if TYPE_CHECKING:
     from dzack_research.preamble.lexicon import Element
-    from dzack_research.preamble.lexicon import Module
+    from sage.categories.modules import Module
 
 from dzack_research.preamble.categories.rings.rings import OwnedBaseRing
 from sage.categories.modules import Modules
@@ -109,7 +111,7 @@ class ModuleOverRing(OwnedBaseRing, Parent):
         # different actions on one \(M\) collide, which is legal.
         return hash((type(self), self._underlying))
 
-    def __eq__(self, other: object) -> bool:
+    def __eq__(self, other: "MembershipInput") -> bool:
         return (
             type(other) is type(self)
             and self._underlying == other._underlying

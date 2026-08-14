@@ -7,8 +7,10 @@ R-module on S.
 
 from typing import Protocol, TYPE_CHECKING
 if TYPE_CHECKING:
+    from sage.structure.parent import ElementConstructorInput, MembershipInput
+if TYPE_CHECKING:
     from dzack_research.preamble.lexicon import Element
-    from dzack_research.preamble.lexicon import Module
+    from sage.categories.modules import Module
     from dzack_research.preamble.lexicon import OrderedSet
 
 from sage.categories.morphism import Morphism
@@ -43,7 +45,10 @@ if TYPE_CHECKING:
         """
 
         def base_ring(self) -> "Ring": ...
-        def coerce_map_from(self, S: object) -> "Morphism | None": ...
+        def coerce_map_from(
+            self,
+            S: "ElementConstructorInput",
+        ) -> "Morphism | None": ...
         def change_ring(self, ring: "Ring") -> "AlgebraParent": ...
 
     class FramedAlgebraParent(AlgebraParent, Protocol):
@@ -65,7 +70,7 @@ class Algebras(OwnedCategoryOverBaseRing):
     def _repr_object_names(cls) -> str:
         return "algebras"
 
-    def __contains__(self, algebra: object) -> bool:
+    def __contains__(self, algebra: "MembershipInput") -> bool:
         """Return whether ``algebra`` is an explicit ``R``-algebra witness."""
         # Asked of Sage's category, not of its method with this category as
         # ``self``: this one is not one of Sage's, so its ``super()`` is not
@@ -260,7 +265,7 @@ class OwnedAlgebra(OwnedBaseRing, Parent):
     def __hash__(self) -> int:
         return hash((type(self), self._structure_map))
 
-    def __eq__(self, other: object) -> bool:
+    def __eq__(self, other: "MembershipInput") -> bool:
         return (
             type(other) is type(self)
             and other._structure_map == self._structure_map

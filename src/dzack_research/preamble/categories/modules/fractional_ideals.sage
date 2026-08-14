@@ -12,8 +12,10 @@ this object exists so that reading is a fact rather than a coincidence.
 
 from typing import Protocol, TYPE_CHECKING
 if TYPE_CHECKING:
+    from sage.structure.parent import MembershipInput
+if TYPE_CHECKING:
     from dzack_research.preamble.lexicon import Element
-    from dzack_research.preamble.lexicon import Module
+    from sage.categories.modules import Module
     from dzack_research.preamble.lexicon import OrderedSet
 
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import BasedFreeModule
@@ -162,7 +164,7 @@ class FractionalIdeal(OwnedBaseRing, Parent):
     def __hash__(self) -> int:
         return hash((type(self), self._ring, self._generators))
 
-    def __eq__(self, other: object) -> bool:
+    def __eq__(self, other: "MembershipInput") -> bool:
         return (
             type(other) is type(self)
             and other._ring is self._ring

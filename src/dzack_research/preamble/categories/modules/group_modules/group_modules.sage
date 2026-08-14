@@ -3,10 +3,11 @@ r"""Finite-group representations on finitely generated free modules."""
 from typing import TYPE_CHECKING
 from dzack_research.preamble.lexicon import Element
 if TYPE_CHECKING:
-    from dzack_research.preamble.lexicon import Group
-    from dzack_research.preamble.lexicon import GroupElement
-    from dzack_research.preamble.lexicon import Module
-    from dzack_research.preamble.lexicon import Vector
+    from sage.categories.groups import Group
+    from sage.categories.groups import GroupElement
+    from sage.categories.modules import Module
+    from sage.structure.element import Vector
+    from sage.structure.parent import ElementConstructorInput, MembershipInput
 
 from sage.rings.number_field.number_field import CyclotomicField
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import FramingMorphism
@@ -451,7 +452,7 @@ class GroupModuleElement(ModuleElement):
     def _richcmp_(self, other: "GroupModuleElement", op: int) -> bool:
         return richcmp(self._underlying, other._underlying, op)
 
-    def __eq__(self, other: object) -> bool:
+    def __eq__(self, other: "MembershipInput") -> bool:
         # Identification across parents is a stated morphism, never coercion
         # (AGENTS.md: coercion must not erase the element/image distinction),
         # so equality outside this parent is plain False and Sage's
@@ -463,7 +464,7 @@ class GroupModuleElement(ModuleElement):
             return False
         return bool(richcmp(self._underlying, other._underlying, op_EQ))
 
-    def __ne__(self, other: object) -> bool:
+    def __ne__(self, other: "MembershipInput") -> bool:
         return not self.__eq__(other)
 
     def __hash__(self) -> int:
@@ -569,7 +570,10 @@ class GroupModule(Parent):
     def _from_coordinates(self, coordinates: "Vector") -> GroupModuleElement:
         return self._over(self._module._from_coordinates(coordinates))
 
-    def _element_constructor_(self, element: object) -> GroupModuleElement:
+    def _element_constructor_(
+        self,
+        element: "ElementConstructorInput",
+    ) -> GroupModuleElement:
         # Conversion, not just recognition: coordinate data converts through
         # the module's own coordinate route; an element of this parent passes
         # through unchanged.
@@ -580,7 +584,7 @@ class GroupModule(Parent):
         )
         return self._over(self._module(element))
 
-    def __contains__(self, element: object) -> bool:
+    def __contains__(self, element: "MembershipInput") -> bool:
         return (
             isinstance(element, GroupModuleElement)
             and element.parent() is self
@@ -589,7 +593,7 @@ class GroupModule(Parent):
     def __hash__(self) -> int:
         return hash((type(self), self._module, self._action))
 
-    def __eq__(self, other: object) -> bool:
+    def __eq__(self, other: "MembershipInput") -> bool:
         return (
             isinstance(other, GroupModule)
             and type(other) is type(self)

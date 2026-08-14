@@ -2,9 +2,13 @@ r"""Owned categories of groups."""
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
+    from sage.structure.parent import ElementConstructorInput, MembershipInput
     from dzack_research.preamble.categories.sets.cardinals import Cardinal
-    from dzack_research.preamble.lexicon import CartanType, Group, GroupElement, Matrix, Ring
-    from dzack_research.preamble.lexicon import OrderedSet, Set
+    from sage.categories.groups import Group, GroupElement
+    from sage.categories.rings import Ring
+    from dzack_research.preamble.lexicon import CartanType, Matrix
+    from sage.categories.sets_cat import Set
+    from dzack_research.preamble.lexicon import OrderedSet
 
 if TYPE_CHECKING:
     from typing import Callable
@@ -92,7 +96,10 @@ def _owned_group_constructor(
     from functools import wraps
 
     @wraps(constructor)
-    def construct(*arguments: object, **keywords: object) -> "Group":
+    def construct(
+        *arguments: "ElementConstructorInput",
+        **keywords: "ElementConstructorInput",
+    ) -> "Group":
         return refine_group(constructor(*arguments, **keywords))
 
     return staticmethod(construct)
@@ -102,8 +109,8 @@ def _group_over_engine_ring(
     constructor: "Callable[..., Group]",
     degree: "Integer",
     ring: "Ring",
-    *arguments: object,
-    **keywords: object,
+    *arguments: "ElementConstructorInput",
+    **keywords: "ElementConstructorInput",
 ) -> "Group":
     r"""Construct through Sage using the engine view of the scalar ring."""
     from dzack_research.preamble.categories.rings.rings import engine_ring
@@ -838,7 +845,7 @@ class AbelianGroupEndomorphismRing(EndomorphismRingParent):
     def __hash__(self) -> int:
         return hash((type(self), self._group))
 
-    def __eq__(self, other: object) -> bool:
+    def __eq__(self, other: "MembershipInput") -> bool:
         return (
             isinstance(other, AbelianGroupEndomorphismRing)
             and type(other) is type(self)

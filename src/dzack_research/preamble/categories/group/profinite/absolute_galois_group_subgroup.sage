@@ -26,12 +26,14 @@ group operation             field computation
 """
 
 from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from sage.structure.parent import MembershipInput
 
 from sage.structure.sage_object import SageObject
 
 if TYPE_CHECKING:
     from sage.categories.morphism import Morphism
-    from dzack_research.preamble.lexicon import Ring
+    from sage.categories.rings import Ring
 
 
 class OpenAbsoluteGaloisSubgroup(SageObject):
@@ -98,7 +100,7 @@ class OpenAbsoluteGaloisSubgroup(SageObject):
     def __hash__(self) -> int:
         return hash((type(self), self._ambient, self._extension))
 
-    def __eq__(self, other: object) -> bool:
+    def __eq__(self, other: "MembershipInput") -> bool:
         return (
             type(other) is type(self)
             and self._ambient == other._ambient
@@ -141,7 +143,7 @@ class OpenGaloisSubgroupConjugacyClass(SageObject):
     def __hash__(self) -> int:
         return hash((type(self), self._ambient, self._extension))
 
-    def __eq__(self, other: object) -> bool:
+    def __eq__(self, other: "MembershipInput") -> bool:
         return (
             type(other) is type(self)
             and self._ambient == other._ambient

@@ -9,10 +9,11 @@ declaring ``FinitelyGeneratedModules(R)`` in its supercategories.
 from typing import Protocol, TYPE_CHECKING
 from dzack_research.preamble.utilities import zipsum
 if TYPE_CHECKING:
-    from dzack_research.preamble.lexicon import Module
+    from sage.categories.modules import Module
     from dzack_research.preamble.lexicon import ModuleElement
     from dzack_research.preamble.lexicon import OrderedSet
-    from dzack_research.preamble.lexicon import Vector
+    from sage.structure.element import Vector
+    from sage.structure.parent import MembershipInput
 
 from dzack_research.preamble.categories.sets.sets import finite_ordered_set
 from dzack_research.preamble.refine import refine
@@ -525,7 +526,7 @@ class FinitelyPresentedModule(OwnedBaseRing, Parent):
         )
         return x
 
-    def __contains__(self, x: object) -> bool:
+    def __contains__(self, x: "MembershipInput") -> bool:
         return isinstance(x, FinitelyPresentedModuleElement) and x.parent() is self
 
     def _repr_(self) -> str:

@@ -19,11 +19,13 @@ as are normalizers, stabilizers of a sublattice, and the kernel of
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
+    from sage.structure.parent import MembershipInput
+if TYPE_CHECKING:
     from typing import Callable
 
 if TYPE_CHECKING:
     from dzack_research.preamble.lexicon import Element
-    from dzack_research.preamble.lexicon import Group
+    from sage.categories.groups import Group
 
 from sage.categories.groups import Groups
 from sage.categories.category import Category
@@ -81,7 +83,7 @@ class PredicateSubgroup(Parent):
     def __hash__(self) -> int:
         return hash((type(self), self._containing_group, self._description))
 
-    def __eq__(self, other: object) -> bool:
+    def __eq__(self, other: "MembershipInput") -> bool:
         return (
             type(other) is type(self)
             and self._containing_group == other._containing_group

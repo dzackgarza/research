@@ -22,6 +22,8 @@ concrete objects, not the only interface.
 
 from collections.abc import Iterator
 from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from sage.structure.parent import MembershipInput
 
 from sage.rings.integer_ring import ZZ as SageZZ
 from dzack_research.preamble.lexicon import Element
@@ -34,7 +36,8 @@ if TYPE_CHECKING:
         GaloisChoicePolicy,
     )
     from dzack_research.preamble.categories.sets.cardinals import Cardinal
-    from dzack_research.preamble.lexicon import Ring, RingElement
+    from sage.categories.rings import Ring
+    from dzack_research.preamble.lexicon import RingElement
 from dzack_research.preamble.categories.group.profinite.absolute_galois_group_element import AbsoluteGaloisGroupElement
 from sage.categories.fields import Fields as SageFields
 from sage.categories.homset import Hom
@@ -68,7 +71,7 @@ class FrobeniusElement(Morphism):
     def __hash__(self) -> int:
         return hash((type(self), self._p))
 
-    def __eq__(self, other: object) -> bool:
+    def __eq__(self, other: "MembershipInput") -> bool:
         return (
             type(other) is type(self)
             and self._p == other._p
@@ -276,7 +279,7 @@ class AbsoluteGaloisGroup(UniqueRepresentation, Parent):
     def cardinality(self) -> "Cardinal":
         return self.order()
 
-    def __contains__(self, element: object) -> bool:
+    def __contains__(self, element: "MembershipInput") -> bool:
         r"""Return whether ``element`` is a field automorphism of the base field."""
         if not isinstance(element, Morphism):
             return False
@@ -330,7 +333,7 @@ class AbsoluteGaloisGroup(UniqueRepresentation, Parent):
     def __hash__(self) -> int:
         return hash((type(self), self._field))
 
-    def __eq__(self, other: object) -> bool:
+    def __eq__(self, other: "MembershipInput") -> bool:
         return type(other) is type(self) and self._field == other._field
 
     def _repr_(self) -> str:
@@ -406,7 +409,7 @@ class LiftCoset:
     def __hash__(self) -> int:
         return hash((type(self), self._ambient, self._sigma))
 
-    def __eq__(self, other: object) -> bool:
+    def __eq__(self, other: "MembershipInput") -> bool:
         return (
             type(other) is type(self)
             and self._ambient == other._ambient

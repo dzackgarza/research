@@ -42,6 +42,8 @@ element generating it -- so the ring is asked, and refuses.
 
 from sage.rings.integer_ring import ZZ as SageZZ
 from typing import Protocol, Self, TYPE_CHECKING
+if TYPE_CHECKING:
+    from sage.structure.parent import ElementConstructorInput
 
 from sage.arith.functions import lcm
 from sage.arith.misc import gcd
@@ -58,9 +60,9 @@ from dzack_research.preamble.categories.rings.rings import owned_ring_view
 if TYPE_CHECKING:
     from sage.categories.morphism import Morphism
     from dzack_research.preamble.lexicon import Element
-    from dzack_research.preamble.lexicon import Module
+    from sage.categories.modules import Module
     from dzack_research.preamble.lexicon import OrderedSet
-    from dzack_research.preamble.lexicon import Ring
+    from sage.categories.rings import Ring
     from dzack_research.preamble.categories.modules.framed.formed.integrallattice.subobjects import Subobject
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import FramingMorphism
 
@@ -83,7 +85,12 @@ if TYPE_CHECKING:
         def _chain_class(self, index: "Element") -> "Element": ...
         def lift(self, element: "Element") -> "Element": ...
         def subobject_on(self, module_generators: "OrderedSet") -> "Subobject": ...
-        def __call__(self, x: object = ..., *args: object, **kwds: object) -> "Element": ...
+        def __call__(
+            self,
+            x: "ElementConstructorInput" = ...,
+            *args: "ElementConstructorInput",
+            **kwds: "ElementConstructorInput",
+        ) -> "Element": ...
 
 
 class FractionFieldQuotients(OwnedCategoryOverBaseRing):

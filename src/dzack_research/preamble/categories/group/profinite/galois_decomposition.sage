@@ -29,6 +29,8 @@ finite-level ``decomposition_group``, ``inertia_group``, and
 """
 
 from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from sage.structure.parent import MembershipInput
 
 from sage.structure.sage_object import SageObject
 
@@ -77,7 +79,7 @@ class AbsoluteDecompositionGroup(SageObject):
     def __hash__(self) -> int:
         return hash((type(self), self._ambient, self._prime))
 
-    def __eq__(self, other: object) -> bool:
+    def __eq__(self, other: "MembershipInput") -> bool:
         return (
             type(other) is type(self)
             and self._ambient == other._ambient
@@ -116,7 +118,7 @@ class AbsoluteInertiaGroup(SageObject):
     def __hash__(self) -> int:
         return hash((type(self), self._ambient, self._prime))
 
-    def __eq__(self, other: object) -> bool:
+    def __eq__(self, other: "MembershipInput") -> bool:
         return (
             type(other) is type(self)
             and self._ambient == other._ambient
@@ -160,7 +162,7 @@ class FrobeniusConjugacyClass(SageObject):
     def __hash__(self) -> int:
         return hash((type(self), self._ambient, self._prime))
 
-    def __eq__(self, other: object) -> bool:
+    def __eq__(self, other: "MembershipInput") -> bool:
         return (
             type(other) is type(self)
             and self._ambient == other._ambient
@@ -195,7 +197,7 @@ class DecompositionGroupConjugacyClass(SageObject):
     def __hash__(self) -> int:
         return hash((type(self), self._ambient, self._prime))
 
-    def __eq__(self, other: object) -> bool:
+    def __eq__(self, other: "MembershipInput") -> bool:
         return (
             type(other) is type(self)
             and self._ambient == other._ambient
@@ -228,7 +230,7 @@ class InertiaGroupConjugacyClass(SageObject):
     def __hash__(self) -> int:
         return hash((type(self), self._ambient, self._prime))
 
-    def __eq__(self, other: object) -> bool:
+    def __eq__(self, other: "MembershipInput") -> bool:
         return (
             type(other) is type(self)
             and self._ambient == other._ambient
