@@ -149,6 +149,7 @@ def install_preamble(namespace: dict) -> None:
             "categories.functors.trivial_action",
             "categories.functors.free_forgetful_adjunction",
             "categories.functors.ring_centers",
+            "categories.functors.cardinality",
             "categories.functors.base_change_adjunction",
             "categories.modules.framed.formed.integrallattice.lattice_homomorphisms",
             "categories.modules.framed.formed.integrallattice.lattice_isometries",

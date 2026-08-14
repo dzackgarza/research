@@ -25,6 +25,7 @@ from __future__ import annotations
 from collections.abc import Iterator
 from typing import TYPE_CHECKING
 
+from sage.categories.cartesian_product import CartesianProductsCategory
 from sage.categories.category import Category
 from sage.categories.category_with_axiom import CategoryWithAxiom, all_axioms
 from sage.categories.sets_cat import Sets as SageSets
@@ -118,6 +119,23 @@ class Sets(Category):
         def CartesianProducts(self) -> Category: ...
 
     SubcategoryMethods = CountabilitySubcategoryMethods
+
+    class CartesianProducts(CartesianProductsCategory):
+        r"""Cartesian products in the owned category of sets."""
+
+        def extra_super_categories(self) -> list[Category]:
+            return [Sets()]
+
+        class ParentMethods:
+            def cardinality(self) -> Cardinal:
+                r"""Return ``prod(#X_i)`` for the cartesian factors ``X_i``."""
+                from dzack_research.preamble.categories.sets.cardinals import (
+                    Cardinalities,
+                )
+
+                return Cardinalities().product(
+                    *(factor.cardinality() for factor in self.cartesian_factors())
+                )
 
     class ParentMethods:
         def is_countable(self) -> bool:

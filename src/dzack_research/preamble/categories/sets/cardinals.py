@@ -1,236 +1,696 @@
-r"""Cardinals: exact cardinal arithmetic for the owned category of sets.
+r"""Cardinal numbers, their arithmetic, and their thin category.
 
-Sage has no cardinal arithmetic — ``cardinality()`` conflates ``aleph_0``
-with ``2^aleph_0`` as ``+Infinity``, erasing exactly the distinction the
-owned ``Countable``/``Uncountable`` axioms encode — and sympy owns only
-ORDINAL arithmetic (probed 2026-07-16: no aleph/cardinal surface). The
-graph therefore owns this vocabulary, adapted from the ``integral_lattice``
-spike reference implementation.
+``Cardinalities`` is the category associated to the cardinal order.  Its
+objects are cardinals.  ``Hom(kappa, lambda)`` is a singleton when
+``kappa <= lambda`` and is empty otherwise.
 
-The representable cardinals are the ones realized by objects of the owned
-graph: exact naturals, ``aleph_0`` (countably infinite), and ``2^aleph_0``
-(the continuum). Every uncountable object constructible here (``RR``-like
-facades and their finite products and disjoint unions) has continuum
-cardinality, so identifying "uncountable" with ``2^aleph_0`` is exact for
-this graph, not an approximation; a cardinal beyond the continuum fails
-loudly instead of being misrepresented.
-
-Arithmetic is standard cardinal arithmetic: exact on the naturals, with
-absorption ``kappa + lam == kappa * lam == max(kappa, lam)`` once an
-infinite cardinal is involved (and ``0 * kappa == 0`` always), and powers
-following ``kappa ^ aleph_0 == 2^aleph_0`` for ``2 <= kappa <= 2^aleph_0``.
+The objects are closed under cardinal addition, multiplication, and
+exponentiation.  A finite supremum records the maximum of infinite cardinals
+when the represented order does not compare the inputs.  This keeps
+expressions such as ``aleph(2) + continuum`` defined without adding a
+continuum-hypothesis assumption.  The arithmetic follows the definitions and
+normalization theorems in Mathlib's ``SetTheory/Cardinal/Defs.lean``,
+``Arithmetic.lean``, and ``Continuum.lean``.
 """
 
 from __future__ import annotations
 
+from collections.abc import Iterator
+from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from sage.rings.infinity import Infinity
+from sage.categories.category import Category
+from sage.categories.homset import Hom, Homset
+from sage.categories.morphism import Morphism
+from sage.categories.objects import Objects
+from sage.categories.sets_cat import EmptySetError
+from sage.misc.cachefunc import cached_method
+from sage.rings.infinity import Infinity, PlusInfinity
+from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
-from sage.structure.element import Element
-
-# From the defining module, not the ``..lexicon`` aggregator: the aggregator
-# imports this module, and an aggregator import here is a cycle that only
-# survives under one hand-arranged import order no formatter preserves.
-from dzack_research.preamble.lexicon.foundations import Integer
+from sage.structure.parent import Parent
+from sage.structure.unique_representation import UniqueRepresentation
 
 if TYPE_CHECKING:
-    from sage.rings.infinity import PlusInfinity
+    from sage.rings.rational import Rational
     from sage.rings.ring import Ring
 
 
-class Cardinal:
-    r"""A cardinal number: an exact natural, ``aleph_0``, or the continuum.
+type CardinalScalar = Integer | int | PlusInfinity
 
-    Immutable value object. Equality and order are cardinal comparisons and
-    accept plain naturals and ``+Infinity`` on the other side (``+Infinity``
-    normalizes to ``aleph_0``, Sage's countable-blind infinity being read in
-    its weakest sense)."""
 
-    __slots__ = ("_value", "_countable")
+@dataclass(frozen=True)
+class _FiniteCardinal:
+    value: Integer
 
-    _value: Integer | PlusInfinity
-    _countable: bool
 
-    def __init__(self, value: object, countable: bool = True) -> None:
-        # An integer is never Infinity, and asking whether it is coerces it
-        # into Sage's infinity ring -- which every count in the graph would
-        # then pay for on construction.
-        if not isinstance(value, (int, Integer)) and value == Infinity:
-            self._value = Infinity
-            self._countable = countable
-            return
-        exact = ZZ(value)
-        assert exact >= 0, f"a cardinal is a nonnegative count; found {exact}"
-        self._value = exact
-        self._countable = True
+@dataclass(frozen=True)
+class _AlephCardinal:
+    index: Integer
+
+
+@dataclass(frozen=True)
+class _PowerCardinal:
+    base: Cardinal
+    exponent: Cardinal
+
+
+@dataclass(frozen=True)
+class _SupremumCardinal:
+    terms: tuple[Cardinal, ...]
+
+
+type _CardinalExpression = (
+    _FiniteCardinal | _AlephCardinal | _PowerCardinal | _SupremumCardinal
+)
+type CardinalInput = CardinalScalar | _CardinalExpression
+
+
+class Cardinalities(Category):
+    r"""The thin category associated to the represented cardinal order."""
+
+    def super_categories(self) -> list[Category]:
+        return [Objects()]
+
+    def _repr_(self) -> str:
+        return "Category of cardinalities"
+
+    def __contains__(self, candidate: Parent) -> bool:
+        return isinstance(candidate, Cardinal)
+
+    def zero(self) -> Cardinal:
+        r"""Return the additive identity."""
+        return cardinal(0)
+
+    def one(self) -> Cardinal:
+        r"""Return the multiplicative identity."""
+        return cardinal(1)
+
+    def sum(
+        self,
+        *summands: Cardinal | CardinalScalar,
+    ) -> Cardinal:
+        r"""Return the cardinal sum of ``summands``."""
+        result = self.zero()
+        for summand in map(cardinal, summands):
+            if result.is_finite() and summand.is_finite():
+                result = cardinal(
+                    result.finite_value() + summand.finite_value()
+                )
+            elif result.is_finite():
+                result = summand
+            elif summand.is_infinite():
+                result = self.supremum(result, summand)
+        return result
+
+    def product(
+        self,
+        *factors: Cardinal | CardinalScalar,
+    ) -> Cardinal:
+        r"""Return the cardinal product of ``factors``."""
+        result = self.one()
+        for factor in map(cardinal, factors):
+            if result == 0 or factor == 0:
+                return cardinal(0)
+            if result.is_finite() and factor.is_finite():
+                result = cardinal(
+                    result.finite_value() * factor.finite_value()
+                )
+            elif result.is_finite():
+                result = factor
+            elif factor.is_infinite():
+                result = self.supremum(result, factor)
+        return result
+
+    def power(
+        self,
+        base: Cardinal | CardinalScalar,
+        exponent: Cardinal | CardinalScalar,
+    ) -> Cardinal:
+        r"""Return cardinal exponentiation ``base ^ exponent``."""
+        cardinal_base = cardinal(base)
+        cardinal_exponent = cardinal(exponent)
+
+        if cardinal_exponent == 0:
+            return cardinal(1)
+        if cardinal_base == 0:
+            return cardinal(0)
+        if cardinal_base == 1:
+            return cardinal(1)
+
+        if cardinal_exponent.is_finite():
+            if cardinal_base.is_finite():
+                return cardinal(
+                    cardinal_base.finite_value()
+                    ** cardinal_exponent.finite_value()
+                )
+            return cardinal_base
+
+        if cardinal_base.is_finite():
+            cardinal_base = cardinal(2)
+
+        if (
+            cardinal_base.is_countably_infinite()
+            and cardinal_exponent.is_countably_infinite()
+        ):
+            cardinal_base = cardinal(2)
+
+        exponent_expression = cardinal_exponent.expression()
+        if isinstance(exponent_expression, _SupremumCardinal):
+            return self.supremum(
+                *(
+                    self.power(cardinal_base, term)
+                    for term in exponent_expression.terms
+                )
+            )
+
+        expression = cardinal_base.expression()
+        if isinstance(expression, _SupremumCardinal):
+            return self.supremum(
+                *(
+                    self.power(term, cardinal_exponent)
+                    for term in expression.terms
+                )
+            )
+        if isinstance(expression, _PowerCardinal):
+            return self.power(
+                expression.base,
+                self.product(expression.exponent, cardinal_exponent),
+            )
+        return Cardinal(_PowerCardinal(cardinal_base, cardinal_exponent))
+
+    def sum_morphism(
+        self,
+        *morphisms: CardinalityMorphism,
+    ) -> CardinalityMorphism:
+        r"""Apply cardinal addition to a finite family of morphisms."""
+        source = self.sum(*(morphism.domain() for morphism in morphisms))
+        target = self.sum(*(morphism.codomain() for morphism in morphisms))
+        return self.hom(source, target).unique_morphism()
+
+    def product_morphism(
+        self,
+        *morphisms: CardinalityMorphism,
+    ) -> CardinalityMorphism:
+        r"""Apply cardinal multiplication to a finite family of morphisms."""
+        source = self.product(*(morphism.domain() for morphism in morphisms))
+        target = self.product(*(morphism.codomain() for morphism in morphisms))
+        return self.hom(source, target).unique_morphism()
+
+    def power_morphism(
+        self,
+        base_morphism: CardinalityMorphism,
+        exponent_morphism: CardinalityMorphism,
+    ) -> CardinalityMorphism:
+        r"""Apply cardinal exponentiation when the source base is nonzero."""
+        assert self.le(1, base_morphism.domain()), (
+            "exponentiation is monotone in the exponent for nonzero bases"
+        )
+        source = self.power(
+            base_morphism.domain(),
+            exponent_morphism.domain(),
+        )
+        target = self.power(
+            base_morphism.codomain(),
+            exponent_morphism.codomain(),
+        )
+        return self.hom(source, target).unique_morphism()
+
+    def supremum(
+        self,
+        *cardinal_numbers: Cardinal | CardinalScalar,
+    ) -> Cardinal:
+        r"""Return the finite supremum of ``cardinal_numbers``."""
+        terms: list[Cardinal] = []
+        for cardinal_number in map(cardinal, cardinal_numbers):
+            expression = cardinal_number.expression()
+            if isinstance(expression, _SupremumCardinal):
+                terms.extend(expression.terms)
+            else:
+                terms.append(cardinal_number)
+
+        assert terms, "a finite supremum needs at least one cardinal"
+        maximal_terms: list[Cardinal] = []
+        for candidate in sorted(set(terms), key=Cardinal.sort_key):
+            if any(self.le(candidate, term) for term in maximal_terms):
+                continue
+            maximal_terms = [
+                term for term in maximal_terms if not self.le(term, candidate)
+            ]
+            maximal_terms.append(candidate)
+
+        maximal_terms.sort(key=Cardinal.sort_key)
+        if len(maximal_terms) == 1:
+            return maximal_terms[0]
+        return Cardinal(_SupremumCardinal(tuple(maximal_terms)))
+
+    def le(
+        self,
+        source: Cardinal | CardinalScalar,
+        target: Cardinal | CardinalScalar,
+    ) -> bool:
+        r"""Return whether the represented theory proves ``source <= target``."""
+        left = cardinal(source)
+        right = cardinal(target)
+        if left == right:
+            return True
+
+        left_expression = left.expression()
+        right_expression = right.expression()
+        if isinstance(left_expression, _SupremumCardinal):
+            return all(self.le(term, right) for term in left_expression.terms)
+        if isinstance(right_expression, _SupremumCardinal):
+            return any(self.le(left, term) for term in right_expression.terms)
+
+        if left.is_finite():
+            if right.is_finite():
+                return left.finite_value() <= right.finite_value()
+            return True
+        if right.is_finite():
+            return False
+
+        if left.is_aleph() and right.is_aleph():
+            return left.aleph_index() <= right.aleph_index()
+        if left.is_countably_infinite():
+            return True
+        if (
+            left.is_aleph()
+            and left.aleph_index() == 1
+            and right.is_uncountable()
+        ):
+            return True
+
+        if isinstance(right_expression, _PowerCardinal):
+            if self.le(left, right_expression.base):
+                return True
+            if self.le(cardinal(2), right_expression.base) and self.le(
+                left, right_expression.exponent
+            ):
+                return True
+            if isinstance(left_expression, _PowerCardinal):
+                return self.le(left_expression.base, right_expression.base) and self.le(
+                    left_expression.exponent,
+                    right_expression.exponent,
+                )
+        return False
+
+    def lt(
+        self,
+        source: Cardinal | CardinalScalar,
+        target: Cardinal | CardinalScalar,
+    ) -> bool:
+        r"""Return whether the represented theory proves ``source < target``."""
+        left = cardinal(source)
+        right = cardinal(target)
+        if left == right:
+            return False
+
+        left_expression = left.expression()
+        right_expression = right.expression()
+        if isinstance(left_expression, _SupremumCardinal):
+            return all(self.lt(term, right) for term in left_expression.terms)
+        if isinstance(right_expression, _SupremumCardinal):
+            return any(self.lt(left, term) for term in right_expression.terms)
+
+        if left.is_finite():
+            if right.is_finite():
+                return left.finite_value() < right.finite_value()
+            return True
+        if right.is_finite():
+            return False
+        if left.is_aleph() and right.is_aleph():
+            return left.aleph_index() < right.aleph_index()
+        if left.is_countably_infinite() and right.is_uncountable():
+            return True
+
+        if isinstance(right_expression, _PowerCardinal):
+            return self.le(cardinal(2), right_expression.base) and self.le(
+                left, right_expression.exponent
+            )
+        return False
+
+    def ge(
+        self,
+        source: Cardinal | CardinalScalar,
+        target: Cardinal | CardinalScalar,
+    ) -> bool:
+        return self.le(target, source)
+
+    def gt(
+        self,
+        source: Cardinal | CardinalScalar,
+        target: Cardinal | CardinalScalar,
+    ) -> bool:
+        return self.lt(target, source)
+
+    def are_incomparable(
+        self,
+        source: Cardinal | CardinalScalar,
+        target: Cardinal | CardinalScalar,
+    ) -> bool:
+        return not self.le(source, target) and not self.le(target, source)
+
+    def hom(
+        self,
+        source: Cardinal,
+        target: Cardinal,
+    ) -> CardinalityHomset:
+        homset = Hom(source, target, self)
+        assert isinstance(homset, CardinalityHomset)
+        return homset
+
+
+class Cardinal(UniqueRepresentation, Parent):
+    r"""A cardinal object in :class:`Cardinalities`."""
+
+    @staticmethod
+    def __classcall_private__(
+        cls: type[Cardinal],
+        value: Cardinal | CardinalInput,
+        countable: bool = True,
+        *,
+        aleph_index: Integer | int | None = None,
+    ) -> Cardinal:
+        if isinstance(value, Cardinal):
+            return value
+        if isinstance(
+            value,
+            (
+                _FiniteCardinal,
+                _AlephCardinal,
+                _PowerCardinal,
+                _SupremumCardinal,
+            ),
+        ):
+            expression = value
+        elif aleph_index is not None:
+            assert value == Infinity, "an aleph cardinal is infinite"
+            index = ZZ(aleph_index)
+            assert index >= 0, f"an aleph index is nonnegative; found {index}"
+            expression = _AlephCardinal(index)
+        elif not isinstance(value, (Integer, int)) and value == Infinity:
+            expression = (
+                _AlephCardinal(ZZ.zero())
+                if countable
+                else _PowerCardinal(cardinal(2), aleph0)
+            )
+        else:
+            finite_value = ZZ(value)
+            assert finite_value >= 0, (
+                f"a cardinal is a nonnegative integer; found {finite_value}"
+            )
+            expression = _FiniteCardinal(finite_value)
+        cardinal_number: Cardinal = super().__classcall__(cls, expression)
+        return cardinal_number
+
+    def __init__(self, expression: _CardinalExpression) -> None:
+        self._expression = expression
+        Parent.__init__(self, category=Cardinalities())
+
+    def expression(self) -> _CardinalExpression:
+        return self._expression
+
+    def sort_key(self) -> tuple[int, str]:
+        expression = self.expression()
+        if isinstance(expression, _FiniteCardinal):
+            return (0, str(expression.value))
+        if isinstance(expression, _AlephCardinal):
+            return (1, str(expression.index))
+        if isinstance(expression, _PowerCardinal):
+            return (2, repr(self))
+        return (3, repr(self))
+
+    def _repr_(self) -> str:
+        expression = self.expression()
+        if isinstance(expression, _FiniteCardinal):
+            return repr(expression.value)
+        if isinstance(expression, _AlephCardinal):
+            return f"\N{HEBREW LETTER ALEF}_{expression.index}"
+        if isinstance(expression, _PowerCardinal):
+            return f"({expression.base})^({expression.exponent})"
+        return "sup(" + ", ".join(map(str, expression.terms)) + ")"
+
+    def __hash__(self) -> int:
+        if self.is_finite():
+            return hash(self.finite_value())
+        if self.is_countably_infinite():
+            return hash(Infinity)
+        return hash(self.expression())
+
+    def __eq__(
+        self,
+        other: Cardinal | CardinalScalar,
+    ) -> bool:
+        return self.expression() == cardinal(other).expression()
+
+    def __ne__(
+        self,
+        other: Cardinal | CardinalScalar,
+    ) -> bool:
+        return not self.__eq__(other)
+
+    def __lt__(
+        self,
+        other: Cardinal | CardinalScalar,
+    ) -> bool:
+        return Cardinalities().lt(self, other)
+
+    def __le__(
+        self,
+        other: Cardinal | CardinalScalar,
+    ) -> bool:
+        return Cardinalities().le(self, other)
+
+    def __gt__(
+        self,
+        other: Cardinal | CardinalScalar,
+    ) -> bool:
+        return Cardinalities().gt(self, other)
+
+    def __ge__(
+        self,
+        other: Cardinal | CardinalScalar,
+    ) -> bool:
+        return Cardinalities().ge(self, other)
+
+    def __add__(
+        self,
+        other: Cardinal | CardinalScalar,
+    ) -> Cardinal:
+        return Cardinalities().sum(self, other)
+
+    def __radd__(
+        self,
+        other: Cardinal | CardinalScalar,
+    ) -> Cardinal:
+        return self.__add__(other)
+
+    def __mul__(
+        self,
+        other: Cardinal | CardinalScalar,
+    ) -> Cardinal:
+        return Cardinalities().product(self, other)
+
+    def __rmul__(
+        self,
+        other: Cardinal | CardinalScalar,
+    ) -> Cardinal:
+        return self.__mul__(other)
+
+    def __pow__(
+        self,
+        exponent: Cardinal | CardinalScalar,
+    ) -> Cardinal:
+        return Cardinalities().power(self, exponent)
+
+    def __rpow__(
+        self,
+        base: Cardinal | CardinalScalar,
+    ) -> Cardinal:
+        return Cardinalities().power(base, self)
 
     def is_finite(self) -> bool:
-        # ``__init__`` stores either an exact ``ZZ`` element or the infinity
-        # object itself, so identity decides this without asking Sage's
-        # coercion machinery for a comparison on every count.
-        return self._value is not Infinity
+        return isinstance(self.expression(), _FiniteCardinal)
 
     def is_infinite(self) -> bool:
-        return self._value is Infinity
+        return not self.is_finite()
+
+    def is_aleph(self) -> bool:
+        return isinstance(self.expression(), _AlephCardinal)
+
+    def is_continuum(self) -> bool:
+        expression = self.expression()
+        return bool(
+            isinstance(expression, _PowerCardinal)
+            and expression.base == 2
+            and expression.exponent.is_countably_infinite()
+        )
 
     def is_countable(self) -> bool:
-        return self._countable
+        return self.is_finite() or self.is_countably_infinite()
 
     def is_uncountable(self) -> bool:
-        return not self._countable
+        if self.is_finite() or self.is_countably_infinite():
+            return False
+        expression = self.expression()
+        if isinstance(expression, _SupremumCardinal):
+            return any(term.is_uncountable() for term in expression.terms)
+        return True
 
     def is_countably_infinite(self) -> bool:
-        return self.is_infinite() and self._countable
+        expression = self.expression()
+        return bool(
+            isinstance(expression, _AlephCardinal)
+            and expression.index == 0
+        )
 
     def is_uncountably_infinite(self) -> bool:
-        return self.is_infinite() and not self._countable
+        return self.is_infinite() and self.is_uncountable()
+
+    def aleph_index(self) -> Integer:
+        expression = self.expression()
+        assert isinstance(expression, _AlephCardinal), (
+            f"{self} is not an aleph cardinal"
+        )
+        return expression.index
 
     def finite_value(self) -> Integer:
-        assert self.is_finite(), f"{self} is not a finite cardinal"
-        return ZZ(self._value)
+        expression = self.expression()
+        assert isinstance(expression, _FiniteCardinal), (
+            f"{self} is not a finite cardinal"
+        )
+        return expression.value
 
     def __int__(self) -> int:
-        if not self.is_finite() or not isinstance(self._value, (int, Integer)):
+        if not self.is_finite():
             raise TypeError(f"cannot convert infinite cardinal {self} to integer")
-        return int(self._value)
+        return int(self.finite_value())
 
     def __index__(self) -> int:
-        if not self.is_finite() or not isinstance(self._value, (int, Integer)):
-            raise TypeError(f"cannot convert infinite cardinal {self} to integer index")
-        return int(self._value)
-
-    def _integer_(self, R: Ring | None = None) -> Integer:
         if not self.is_finite():
-            raise TypeError(f"cannot convert infinite cardinal {self} to Sage Integer")
-        return ZZ(self._value)
+            raise TypeError(
+                f"cannot convert infinite cardinal {self} to integer index"
+            )
+        return int(self.finite_value())
+
+    def _integer_(self, ring: Ring | None = None) -> Integer:
+        if not self.is_finite():
+            raise TypeError(
+                f"cannot convert infinite cardinal {self} to Sage Integer"
+            )
+        return self.finite_value()
 
     def _rational_(self) -> Rational:
         if not self.is_finite():
-            raise TypeError(f"cannot convert infinite cardinal {self} to Sage Rational")
-        return QQ(self._value)
+            raise TypeError(
+                f"cannot convert infinite cardinal {self} to Sage Rational"
+            )
+        return QQ(self.finite_value())
 
-    def __repr__(self) -> str:
-        if self.is_finite():
-            return repr(self._value)
-        return "\N{HEBREW LETTER ALEF}_0" if self._countable else "2^\N{HEBREW LETTER ALEF}_0"
+    def _Hom_(
+        self,
+        codomain: Cardinal,
+        category: Category | None = None,
+    ) -> CardinalityHomset:
+        if not isinstance(codomain, Cardinal):
+            raise TypeError(
+                "a cardinality morphism has cardinal objects at both ends"
+            )
+        if category is not None and category != Cardinalities():
+            raise TypeError("the requested hom-set is not in Cardinalities")
+        return CardinalityHomset(self, codomain)
 
-    def __hash__(self) -> int:
-        # The Python hash law: equality normalizes through cardinal(), so
-        # aleph_0 == oo and finite cardinals equal their exact values —
-        # hashes must follow (the uncountable cardinal equals neither).
-        if self.is_finite():
-            return hash(self._value)
-        return hash(Infinity) if self._countable else hash(("continuum",))
 
-    def __eq__(self, other: object) -> bool:
-        other_cardinal = cardinal(other)
-        if self._countable and other_cardinal._countable:
-            return bool(self._value == other_cardinal._value)
-        return self.is_uncountably_infinite() == other_cardinal.is_uncountably_infinite()
+class CardinalityHomset(Homset[Cardinal, Cardinal]):
+    r"""The empty or singleton hom-set between two cardinal objects."""
 
-    def __ne__(self, other: object) -> bool:
-        return not self == other
+    def __init__(self, source: Cardinal, target: Cardinal) -> None:
+        Homset.__init__(self, source, target, category=Cardinalities())
 
-    def __lt__(self, other: object) -> bool:
-        other_cardinal = cardinal(other)
-        if self._countable and other_cardinal._countable:
-            return bool(self._value < other_cardinal._value)
-        if self.is_uncountably_infinite():
-            return False
-        return other_cardinal.is_uncountably_infinite()
+    def _repr_(self) -> str:
+        return f"Hom({self.domain()}, {self.codomain()}) in Cardinalities"
 
-    def __le__(self, other: object) -> bool:
-        return self < other or self == other
+    def __bool__(self) -> bool:
+        return Cardinalities().le(self.domain(), self.codomain())
 
-    def __gt__(self, other: object) -> bool:
-        return not self <= other
+    def __len__(self) -> int:
+        return 1 if self else 0
 
-    def __ge__(self, other: object) -> bool:
-        return not self < other
+    def cardinality(self) -> Integer:
+        return ZZ(len(self))
 
-    @staticmethod
-    def _as_cardinal_operand(other: object, operation: str) -> Cardinal:
-        r"""Cardinal arithmetic is CLOSED over counts: the operand must be
-        a Cardinal, an integer, or the two-valued infinity (read as
-        ``aleph_0``). There is no scalar action of a larger ring on the
-        cardinals — a rational times a cardinal does not typecheck
-        mathematically, so it fails loudly here. Formulas that mix a
-        finite-or-infinite count into scalar arithmetic (the determinant
-        law ``|det L| = |det O| * [O : L]^2``) live in the EXTENDED
-        scalars ``ZZ u {oo}`` and consume the extended-scalar spelling
-        (``index()``), never a Cardinal."""
-        if isinstance(other, Cardinal):
-            return other
-        assert other == Infinity or other in ZZ, (
-            f"cardinal {operation} takes a count (a Cardinal, an integer, or oo); "
-            f"found the non-count scalar {other!r} — extended-scalar formulas consume the extended-scalar spelling instead"
+    def is_finite(self) -> bool:
+        return True
+
+    def __iter__(self) -> Iterator[CardinalityMorphism]:
+        if self:
+            yield self.unique_morphism()
+
+    def __contains__(self, candidate: Morphism) -> bool:
+        return (
+            isinstance(candidate, CardinalityMorphism)
+            and candidate.parent() is self
         )
-        return cardinal(other)
 
-    def __add__(self, other: object) -> Cardinal:
-        other_cardinal = self._as_cardinal_operand(other, "addition")
-        if self.is_finite() and other_cardinal.is_finite():
-            return Cardinal(self.finite_value() + other_cardinal.finite_value())
-        return max(self, other_cardinal)
+    @cached_method
+    def unique_morphism(self) -> CardinalityMorphism:
+        if not self:
+            raise EmptySetError(
+                f"there is no cardinality morphism {self.domain()} -> {self.codomain()}"
+            )
+        return CardinalityMorphism(self)
 
-    def __radd__(self, other: object) -> Cardinal:
-        return self + other
+    def _an_element_(self) -> CardinalityMorphism:
+        return self.unique_morphism()
 
-    def __mul__(self, other: object) -> Cardinal:
-        other_cardinal = self._as_cardinal_operand(other, "multiplication")
-        if self == 0 or other_cardinal == 0:
-            return Cardinal(ZZ(0))
-        if self.is_finite() and other_cardinal.is_finite():
-            return Cardinal(self.finite_value() * other_cardinal.finite_value())
-        return max(self, other_cardinal)
+    def _element_constructor_(
+        self,
+        morphism: CardinalityMorphism | None = None,
+    ) -> CardinalityMorphism:
+        if morphism is not None and morphism not in self:
+            raise ValueError(f"{morphism} is not in {self}")
+        return self.unique_morphism()
 
-    def __rmul__(self, other: object) -> object:
-        if isinstance(other, (Cardinal, Integer, int)):
-            return self * other
-        # Only a Sage element can be the infinity; asking a plain Python
-        # object whether it equals it runs the whole coercion search, and
-        # ``list * cardinal`` (repetition by a count) arrives here.
-        if isinstance(other, Element) and other == Infinity:
-            return self * other
-        return NotImplemented
-
-    def __pow__(self, exponent: object) -> Cardinal:
-        r"""Cardinal exponentiation within the representable range.
-
-        ``0^0 == 1``; ``0^n == 0`` for ``n >= 1``; ``1^kappa == 1``;
-        exact on naturals; ``kappa^n == kappa`` for infinite ``kappa`` and
-        finite ``n >= 1``; ``kappa^aleph_0 == 2^aleph_0`` for
-        ``2 <= kappa <= 2^aleph_0``. A continuum exponent on a base ``>= 2``
-        exceeds the continuum and is refused rather than misrepresented."""
-        exponent_cardinal = cardinal(exponent)
-        if self == 0:
-            return Cardinal(ZZ(1)) if exponent_cardinal == 0 else Cardinal(ZZ(0))
-        if self == 1:
-            return self
-        if exponent_cardinal == 0:
-            return Cardinal(ZZ(1))
-        if exponent_cardinal.is_finite():
-            if self.is_finite():
-                return Cardinal(self.finite_value() ** exponent_cardinal.finite_value())
-            return self
-        assert not exponent_cardinal.is_uncountably_infinite(), f"{self}^{exponent_cardinal} exceeds the continuum and is not representable in this graph"
-        return continuum
+    def identity(self) -> CardinalityMorphism:
+        if not self.is_endomorphism_set():
+            raise TypeError("identity is defined only for an endomorphism set")
+        return self.unique_morphism()
 
 
-def cardinal(value: object) -> Cardinal:
-    r"""Normalize a cardinal-like value: a ``Cardinal``, a nonnegative
-    integer, or ``+Infinity`` (read as ``aleph_0``, its weakest sense)."""
+class CardinalityMorphism(Morphism):
+    r"""The unique morphism witnessing one represented cardinal inequality."""
+
+    def __init__(self, parent: CardinalityHomset) -> None:
+        Morphism.__init__(self, parent)
+
+    def _repr_(self) -> str:
+        return f"{self.domain()} <= {self.codomain()}"
+
+    def _composition_(
+        self,
+        right: Morphism,
+        homset: Homset[Cardinal, Cardinal],
+    ) -> CardinalityMorphism:
+        assert isinstance(right, CardinalityMorphism)
+        assert isinstance(homset, CardinalityHomset)
+        return homset.unique_morphism()
+
+
+def cardinal(value: Cardinal | CardinalScalar) -> Cardinal:
+    r"""Return a cardinal object."""
     if isinstance(value, Cardinal):
         return value
     return Cardinal(value)
 
 
-aleph0 = Cardinal(Infinity, countable=True)
-r"""The first infinite cardinal: the cardinality of every countably
-infinite set."""
+def aleph(index: Integer | int) -> Cardinal:
+    r"""Return the ``index``-th infinite initial cardinal."""
+    return Cardinal(Infinity, aleph_index=index)
 
-continuum = Cardinal(Infinity, countable=False)
-r"""``2^aleph_0``: the cardinality of every uncountable object
-constructible in the owned graph."""
+
+aleph0 = aleph(0)
+r"""The first infinite cardinal."""
+
+continuum = cardinal(2) ** aleph0
+r"""The cardinal ``2^aleph_0``."""
