@@ -5,9 +5,7 @@
 # mathematically true MRO edge on each set implementation it stubs
 # (TotallyOrderedFiniteSet, ImageSubobject, ...), so those satisfy the noun
 # without a migration.
-from typing import Generic
-
-from typing_extensions import TypeVar
+from typing import Generic, TypeVar
 
 from sage.categories.category import Category
 from sage.structure.element import Element
@@ -31,3 +29,9 @@ class Sets(Category):
         def some_elements(self) -> list[_E]: ...
 
     class ElementMethods: ...
+
+# Canonical short name for "a mathematical set" (a Sage object, so it
+# belongs with the Sage typing, not with preamble vocabulary). Type-only:
+# Sage's runtime sage.categories.sets_cat exports ``Sets``, not ``Set`` —
+# code that imports this name does so under TYPE_CHECKING.
+Set = Sets.ParentMethods
