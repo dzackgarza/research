@@ -15,13 +15,23 @@ written here is which of those readings is a mathematical question.
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from sage.groups.class_function import ClassFunction
+from sage.structure.parent import ElementConstructorInput
+
+if TYPE_CHECKING:
+    from sage.categories.groups import Group, GroupElement
+    from sage.rings.integer import Integer
+    from sage.structure.element import RingElement
 
 __all__ = ["Character"]
 
 
 class Character:
     r"""A class function $\chi:G\to K$ afforded by a representation of $G$."""
+
+    _class_function: ClassFunction
 
     def __init__(self, class_function: ClassFunction | Character) -> None:
         match class_function:
@@ -38,7 +48,7 @@ class Character:
         r"""Return the group $G$ this character is a class function on."""
         return self._class_function.domain()
 
-    def __call__(self, element: GroupElement) -> Element:
+    def __call__(self, element: GroupElement) -> RingElement:
         r"""Return $\chi(g)$, the trace of $g$ in a representation affording $\chi$."""
         return self._class_function(element)
 
@@ -46,7 +56,7 @@ class Character:
         r"""Return $\chi(1)$, the dimension of a representation affording $\chi$."""
         return self._class_function.degree()
 
-    def class_values(self) -> tuple:
+    def class_values(self) -> tuple[RingElement, ...]:
         r"""Return the values of $\chi$ on the conjugacy classes of $G$.
 
         A character is constant on a conjugacy class, so this family is the
@@ -56,7 +66,7 @@ class Character:
         """
         return tuple(self._class_function.values())
 
-    def irreducible_constituents(self) -> tuple:
+    def irreducible_constituents(self) -> tuple[Character, ...]:
         r"""Return the absolutely irreducible characters occurring in $\chi$.
 
         Each with multiplicity one in the tuple: what is returned is the set
@@ -69,14 +79,14 @@ class Character:
             for constituent in self._class_function.irreducible_constituents()
         )
 
-    def __add__(self, other: object) -> Character:
+    def __add__(self, other: ElementConstructorInput) -> Character:
         r"""Return $\chi+\psi$, the character of a direct sum."""
         assert isinstance(other, Character), (
             "a character is added to another character of the same group"
         )
         return Character(self._class_function + other._class_function)
 
-    def __eq__(self, other: object) -> bool:
+    def __eq__(self, other: ElementConstructorInput) -> bool:
         return (
             isinstance(other, Character)
             and self.group() is other.group()
