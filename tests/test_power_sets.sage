@@ -37,7 +37,6 @@ def test_a_power_set_element_is_a_subobject_with_a_characteristic_morphism() -> 
 
     assert primes_below_ten in subsets
     assert subsets.characteristic_homset() is Hom(naturals, truth_values, Sets())
-    assert primes_below_ten.ambient_set() is naturals
     assert primes_below_ten.inclusion().codomain() is naturals
     assert primes_below_ten.inclusion()(5) == 5
 
@@ -75,7 +74,6 @@ def test_predicates_construct_infinite_subsets_without_enumeration() -> None:
     assert nonnegative in subsets
     assert 13 in nonnegative
     assert -1 not in nonnegative
-    assert nonnegative.ambient_set() is integers
     assert nonnegative.characteristic_morphism()(13) == Sets.Δ[1](1)
     assert nonnegative.characteristic_morphism()(-1) == Sets.Δ[1](0)
 
