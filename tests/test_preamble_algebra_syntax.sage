@@ -124,21 +124,6 @@ def test_delta_countable_alias_for_aleph_zero() -> None:
     assert Sets.Δ[Sets.ℵ[0]] == NN
 
 
-def test_aleph_indices_are_cardinalities() -> None:
-    """`ℵ[n]` returns expected cardinalities for supported indices."""
-    _ensure_preamble()
-    assert Sets.ℵ[0] == NN.cardinality()
-    assert Sets.ℵ[1] == RR.cardinality()
-
-
-def test_aleph_index_two_is_undefined() -> None:
-    """`ℵ[n]` is only defined for `n=0` and `n=1`."""
-    _ensure_preamble()
-
-    with pytest.raises(AssertionError):
-        _ = Sets.ℵ[2]
-
-
 def test_free_algebra_on_delta_aleph_zero_is_free_algebra_on_naturals() -> None:
     """`Δ[ℵ[0]]` constructs the same free algebra as `NN`."""
     _ensure_preamble()

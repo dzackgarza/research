@@ -1,0 +1,125 @@
+r"""Mathematical tests for ordinals, cardinals, and the cardinality functor."""
+
+import dzack_research.preamble.categories.abstract_categories.cat
+
+from sage.rings.real_mpfr import RealField
+
+from dzack_research.preamble.categories.abstract_categories.products import (
+    CartesianProductOfSets,
+    CoproductOfSets,
+)
+from dzack_research.preamble.categories.functors.cardinality import (
+    cardinality_functor,
+)
+from dzack_research.preamble.categories.rings.rings import own_ring
+from dzack_research.preamble.categories.sets.cardinals import (
+    CardinalComparison,
+    Cardinalities,
+    aleph,
+    aleph0,
+    cardinal,
+    continuum,
+)
+from dzack_research.preamble.categories.sets.ordinals import Ordinals, omega
+from dzack_research.preamble.categories.sets.owned_sets import Sets
+from dzack_research.preamble.categories.sets.sets import PowerSet, Set
+
+
+def test_initial_ordinals_have_the_corresponding_aleph_cardinals() -> None:
+    r"""The cardinal of ω_α is ℵ_α, also for transfinite α."""
+    assert omega(0).cardinality() == aleph(0)
+    assert omega(3).cardinality() == aleph(3)
+    assert omega(omega(1)).cardinality() == aleph(omega(1))
+    assert aleph(omega(1)).initial_ordinal() == omega(omega(1))
+
+
+def test_natural_ordinal_operations_form_the_owned_semiring() -> None:
+    r"""Natural sum and product are commutative and distributive."""
+    alpha = omega(0)
+    beta = omega(1)
+    gamma = omega(2)
+
+    assert alpha + beta == beta + alpha
+    assert alpha * beta == beta * alpha
+    assert (alpha + beta) + gamma == alpha + (beta + gamma)
+    assert (alpha * beta) * gamma == alpha * (beta * gamma)
+    assert (alpha + beta) * gamma == alpha * gamma + beta * gamma
+    assert Ordinals()(2).ordinal_sum(3) == 5
+    assert alpha.ordinal_sum(1) != Ordinals()(1).ordinal_sum(alpha)
+
+
+def test_cardinal_arithmetic_satisfies_semiring_laws_and_order_bounds() -> None:
+    r"""Finite, countable, and uncountable cardinals obey the same laws."""
+    finite = cardinal(3)
+    specimens = (
+        (finite, cardinal(5)),
+        (aleph0, continuum),
+        (continuum, aleph(2)),
+    )
+
+    assert finite + cardinal(5) == cardinal(8)
+    assert finite * cardinal(5) == cardinal(15)
+    assert finite ** cardinal(5) == cardinal(243)
+    assert aleph0 + continuum == continuum
+    assert aleph0 * continuum == continuum
+    assert aleph0 ** aleph0 == continuum
+
+    for left, right in specimens:
+        assert left + right == right + left
+        assert left * right == right * left
+        assert left * (right + continuum) == left * right + left * continuum
+        assert left <= left + right
+        assert left <= left * right
+        assert left <= left ** right
+
+
+def test_cardinal_homsets_are_the_provable_cardinal_order() -> None:
+    r"""A hom-set is singleton exactly when its inequality is provable."""
+    cardinalities = Cardinalities()
+
+    assert cardinalities.compare(aleph(1), continuum) is (
+        CardinalComparison.LESS_OR_EQUAL
+    )
+    assert cardinalities.hom(aleph(1), continuum).cardinality() == 1
+
+    assert cardinalities.compare(aleph(2), continuum) is (
+        CardinalComparison.INCOMPARABLE
+    )
+    assert cardinalities.hom(aleph(2), continuum).cardinality() == 0
+    assert cardinalities.hom(continuum, aleph(2)).cardinality() == 0
+
+    assert cardinalities.hom(aleph0, continuum).cardinality() == 1
+    assert cardinalities.hom(continuum, aleph0).cardinality() == 0
+
+
+def test_cardinality_functor_preserves_set_coproducts_and_products() -> None:
+    r"""Cardinality sends disjoint unions to sums and products to products."""
+    left = Set([1, 2])
+    right = Set([3, 4, 5])
+    coproduct = CoproductOfSets((left, right))
+    product = CartesianProductOfSets((left, right))
+    cardinality = cardinality_functor()
+
+    assert cardinality(coproduct) == cardinality(left) + cardinality(right) == 5
+    assert cardinality(product) == cardinality(left) * cardinality(right) == 6
+
+    coproduct_comparison = cardinality.coproduct_comparison(coproduct)
+    assert coproduct_comparison.domain() == coproduct_comparison.codomain() == 5
+
+    product_comparison = cardinality.cartesian_product_comparison(product)
+    assert product_comparison.domain() == product_comparison.codomain() == 6
+
+
+def test_power_set_of_naturals_and_real_line_have_the_continuum() -> None:
+    r"""|P(N)| = 2^ℵ₀ = |R|, independently of CH."""
+    naturals = Sets.Δ[aleph0]
+    subsets = PowerSet(naturals)
+    real_line = own_ring(RealField())
+    cardinality = cardinality_functor()
+
+    assert cardinality(naturals) == aleph0
+    assert cardinality(subsets) == cardinal(2) ** aleph0 == continuum
+    assert cardinality(subsets) == cardinality(real_line)
+
+    comparison = cardinality.power_set_comparison(subsets)
+    assert comparison.domain() == comparison.codomain() == continuum
