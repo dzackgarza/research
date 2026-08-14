@@ -22,10 +22,16 @@ from sage.categories.modules import Modules
 from dzack_research.preamble.categories.sets.sets import finite_ordered_set
 from dzack_research.preamble.refine import refine
 if TYPE_CHECKING:
+    from typing import Protocol, TypeGuard
     from sage.categories.category import Category
     from dzack_research.preamble.categories.sets.sets import Set
+    from dzack_research.preamble.categories.modules.framed.framed_modules import FramedModuleParent
     from dzack_research.preamble.categories.modules.framed.formed.integrallattice.subobjects import Subobject
     from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModule
+    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import PresentedModuleParent
+
+    class AutomorphismModuleParent(FramedModuleParent, Protocol):
+        def Aut(self) -> "ModuleAutomorphismGroup": ...
 
 from collections.abc import Iterator
 from typing import Any, TYPE_CHECKING
@@ -66,7 +72,9 @@ if TYPE_CHECKING:
     # class is a Cython extension type and cannot be subscripted, so the
     # binding goes through an alias, per the note in
     # ``typings/sage/structure/parent.pyi``.
-    ModuleHomsetBase = Homset["ModuleMorphism"]
+    ModuleHomsetBase = Homset[
+        "ModuleMorphism", "FramedModuleParent", "FramedModuleParent"
+    ]
     GroupActionHomsetBase = Homset["GroupAction"]
 else:
     ModuleHomsetBase = Homset
@@ -80,10 +88,15 @@ class ModuleHomset(ModuleHomsetBase):
         # Both ends of a module homset are modules; ``Homset`` states only
         # that they are parents.  Declared, never defined: the inherited
         # implementations are the ones that run.
-        def domain(self) -> "Module": ...
-        def codomain(self) -> "Module": ...
+        def domain(self) -> "FramedModuleParent": ...
+        def codomain(self) -> "FramedModuleParent": ...
 
-    def __init__(self, domain: "Module", codomain: "Module", category: "Category") -> None:
+    def __init__(
+        self,
+        domain: "Module",
+        codomain: "Module",
+        category: "Category",
+    ) -> None:
         assert domain.base_ring() == codomain.base_ring(), (
             "module morphisms require the same base ring"
         )
@@ -249,7 +262,16 @@ def _is_torsion(module: "Module") -> bool:
     return isinstance(module, FinitelyPresentedModule) and module.is_torsion()
 
 
-def _independent_module_generators(module: "Module", module_generators: "OrderedSet") -> list:
+def _is_presented_module(module: "Module") -> "TypeGuard[PresentedModuleParent]":
+    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModules
+
+    return module in FinitelyPresentedModules(module.base_ring())
+
+
+def _independent_module_generators(
+    module: "FramedModuleParent",
+    module_generators: "OrderedSet",
+) -> list:
     r"""Return a basis of the submodule spanned by finite input.
 
     Each input element has finite support in the framing.  Independence is
@@ -497,12 +519,10 @@ class ModuleMorphism(Morphism):
     def _check_relations(self) -> None:
         # Local: at module level this closes an import cycle; the presented
         # category is built by the time relations are checked.
-        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModules
-
         domain = _underlying_module(self.domain())
-        if domain not in FinitelyPresentedModules(domain.base_ring()):
+        if not _is_presented_module(domain):
             return
-        module_generating_set = tuple(domain.module_generating_set())
+        module_generating_set = tuple(self.domain().module_generating_set())
         zero = self.codomain().zero()
         assert all(
             zipsum(
@@ -732,7 +752,7 @@ class ModuleMorphism(Morphism):
 
         codomain = _underlying_module(self.codomain())
         image = self.matrix()
-        width = len(tuple(codomain.module_generating_set()))
+        width = len(tuple(self.codomain().module_generating_set()))
 
         if not isinstance(codomain, FinitelyPresentedModule) and (
             engine_ring(codomain.base_ring()) is not SageZZ
@@ -957,7 +977,7 @@ class FiniteAutomorphismSubgroup:
         # module it is the automorphisms of, whether it is a literal finite
         # subgroup, that subgroup's generators, and its elements.  Declared,
         # never defined -- the host supplies every one.
-        def domain(self) -> "Module": ...
+        def domain(self) -> "AutomorphismModuleParent": ...
         def is_finite(self) -> bool: ...
         def group_generators(self) -> TotallyOrderedFiniteSet["ModuleAutomorphism"]: ...
         def __iter__(self) -> Iterator["ModuleAutomorphism"]: ...
@@ -1085,7 +1105,11 @@ class ModuleAutomorphismGroup(FiniteAutomorphismSubgroup, ModuleHomset):
             self, x: object = ..., *args: object, **kwds: object
         ) -> ModuleAutomorphism: ...
 
-    def __init__(self, module: "Module", group_generators: "OrderedSet" = None) -> None:
+    def __init__(
+        self,
+        module: "Module",
+        group_generators: "OrderedSet" = None,
+    ) -> None:
         ModuleHomset.__init__(
             self,
             module,
@@ -1110,7 +1134,7 @@ class ModuleAutomorphismGroup(FiniteAutomorphismSubgroup, ModuleHomset):
     def _element_constructor_(self, images: "ModuleMorphismData") -> ModuleAutomorphism:
         return ModuleAutomorphism(self, images)
 
-    def module(self) -> "Module":
+    def module(self) -> "FramedModuleParent":
         return self.domain()
 
     def one(self) -> ModuleAutomorphism:

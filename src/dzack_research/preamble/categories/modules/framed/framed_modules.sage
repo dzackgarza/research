@@ -24,6 +24,7 @@ if TYPE_CHECKING:
     from sage.categories.category import Category
     from sage.categories.homset import Homset
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import FramingMorphism
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleHomset
 
 from collections.abc import Iterable
 from typing import Any, Self, TYPE_CHECKING
@@ -97,7 +98,10 @@ if TYPE_CHECKING:
 
         def base_ring(self) -> "Ring": ...
         def zero(self) -> "ModuleElement": ...
+        def __call__(self, value: "Element") -> "ModuleElement": ...
         def variable_names(self) -> tuple[str, ...]: ...
+        def framing_morphism(self) -> "FramingMorphism": ...
+        def module_generator_morphism(self) -> SetMorphism: ...
         def module_generators(self) -> "OrderedSet": ...
         def module_generator(self, label: "Element") -> "ModuleElement": ...
         def module_generating_set(self) -> "OrderedSet": ...
@@ -306,7 +310,7 @@ class FramedModules(OwnedCategoryOverBaseRing):
             from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 
             if codomain in FramedModules(self.base_ring()):
-                homset: "Homset" = module_homset(self, codomain)
+                homset: "ModuleHomset" = module_homset(self, codomain)
                 return homset
             return Parent.Hom(self, codomain, category)
 
@@ -328,5 +332,4 @@ class FramedModules(OwnedCategoryOverBaseRing):
             from dzack_research.preamble.categories.functors.base_change_adjunction import fraction_field_base_change
 
             return fraction_field_base_change(self.base_ring())(self)
-
 
