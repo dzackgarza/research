@@ -46,6 +46,69 @@ agent-memory maintain move <key> --to global/advice
 - Skip test, QC, build, execution, and rendered-result verification for changes confined to `computations/notebooks/` or `src/dzack_research/preamble/`.
 - Commit those changes with verification hooks skipped; do not let unrelated repository failures block notebook or preamble work.
 
+# Goal-integrity routing (always-on)
+
+<!-- Verbatim copy of the global section in ~/ai/AGENTS.md (authoritative); keep in sync. -->
+
+On 2026-08-13/14 an agent fleet lost ~24 hours in this repo and lean-categories
+to one pathology: substituting a legible artifact for the goal and then
+optimizing the artifact — the goal file itself, an error count, reviewer
+verdicts, a "blocked" label, metadata self-consistency. The rules below are
+tripwires, not guarantees: each names a red-flag moment and forces a
+stop-and-reground at that moment. The reground is cheap; skipping it is how a
+24-hour loss starts.
+
+**The reground act** (referenced below): stop and state (1) the user's original
+goal in the user's own words, (2) the artifact or number the current action
+improves, and (3) whether improving (2) IS (1). If it is not, the next action
+must be on (1), or a one-message report to the user explaining exactly why that
+is impossible.
+
+- **The goal source is read-only while you execute it.** TODO files, plan
+  cards, issue bodies, and acceptance criteria may change only to record
+  completion that the delivered artifact itself proves, or on explicit user
+  instruction in the current session. Deferring, relabeling, splitting, or
+  re-scoping an item you were asked to finish changes the problem instead of
+  solving it — reward hacking in its purest form. Wanting to edit the goal
+  source is itself the red flag: perform the reground act, then either do the
+  work or send the one-message report.
+
+- **Difficulty is calibrated by throughput, not intuition.** Before calling any
+  item "hard", "research-scale", or worth deferring, read the repo's recent git
+  log and find comparable completed work. If comparable items landed in hours,
+  this item is hours. A model prior about what is hard is stale evidence; the
+  repo's own demonstrated history is current evidence.
+
+- **A number measured twice is being optimized.** The second time one scalar
+  (error count, test count, finding count, checkbox count) is re-measured to
+  judge an edit inside one work unit: perform the reground act, write down the
+  actual claim the edit makes true, and verify that claim on a concrete
+  specimen. An edit justified only by "the number moved" is unjustified, and
+  moving a checker's number by asserting something false is strictly worse than
+  the original error. (The mypy rule under *Work-selection discipline* below is
+  the type-checking instance; the specimen standard there governs.)
+
+- **"Blocked" requires a new external fact.** Your own unanswered messages and
+  automatic goal continuations are not evidence of an impasse; they show only
+  that no reply arrived, and repeating a request cannot create evidence. Before
+  declaring a blocker, re-read the mandate for authority already delegated to
+  you: a mandate to orchestrate and decide IS the approval you are waiting for.
+
+- **Review verdicts do not define done.** Acceptance of a work unit is a
+  falsifiable statement about the work itself. A reviewer finding outside the
+  current unit is recorded and deferred, never blocking. A second consecutive
+  review round on one unit that adds no new falsifiable content means the loop
+  is the defect: perform the reground act against the unit's own acceptance
+  statement.
+
+- **Two consecutive administrative turns is a tripwire.** If the previous turn
+  produced only administrative artifacts (plans, audits, status edits,
+  registries, validation of validation) and the current turn is about to do the
+  same, perform the reground act first. Paperwork produced to justify further
+  paperwork is the signature of the failure this section exists to stop. (The
+  displacement-pattern index at `.agents/references/displacement-pattern-index.md`
+  catalogues the work shapes.)
+
 # Banned-language replacement index (always-on)
 
 The terms below have demonstrated **strong priors**: they re-emitted even after being catalogued in the terminology dictionary — in one case inside the anti-drift doctrine itself, as its self-chosen name.
