@@ -7,7 +7,7 @@ The Lean formalization in `lean-categories` treats these as defects to fix, neve
 
 ### False statements and wrong values
 
-- [ ] `categories/sets/sets.sage:463` — `ℵ[1]` returns the continuum.
+- [x] `categories/sets/sets.sage:463` — `ℵ[1]` returns the continuum.
   This hard-codes the continuum hypothesis into the cardinal vocabulary; `ℵ₁` and `2^ℵ₀` are provably-distinct notions whose equality is independent of ZFC. Also asserts false for every index `n ≥ 2`.
 
 - [ ] `categories/group/profinite/absolute_galois_group.sage:262` — `is_abelian` returns `True` whenever `char K > 0`. False: the absolute Galois group of `𝔽_p(t)` is nonabelian.
