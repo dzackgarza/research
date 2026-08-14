@@ -354,7 +354,7 @@ def test_the_subsets_of_a_countable_set_are_uncountable() -> None:
     assert subsets in Sets().Infinite()
     assert subsets in Sets().Uncountable()
     assert subsets not in Sets().Countable()
-    assert subsets.cardinality() == Sets.ℵ[1]
+    assert subsets.cardinality() == 2 ** Sets.ℵ[0]
     assert Set((0, 2, 4)) in subsets
 
 
