@@ -978,8 +978,17 @@ class AutomorphismSubgroup:
         def group_generators(self) -> TotallyOrderedFiniteSet["ModuleAutomorphism"]: ...
         def __iter__(self) -> Iterator["ModuleAutomorphism"]: ...
 
+    def supergroup(self: "FramedAutomorphismSubgroup") -> "Group":
+        return self.__dict__.get("_supergroup", self.domain().Aut())
+
     def inclusion(self: "FramedAutomorphismSubgroup") -> "GroupAction":
-        r"""Return the canonical inclusion \(\rho:G\hookrightarrow\operatorname{Aut}(M)\).
+        from dzack_research.preamble.categories.group.groups import OwnedGroups
+
+        inclusion: "GroupAction" = OwnedGroups.ParentMethods.inclusion(self)
+        return inclusion
+
+    def _subgroup_inclusion(self: "FramedAutomorphismSubgroup") -> "GroupAction":
+        r"""Construct the canonical inclusion \(\rho:G\hookrightarrow\operatorname{Aut}(M)\).
 
         A subgroup of \(\operatorname{Aut}(M)\) determines one
         representation with no choice left to anyone: \(G\) is these elements
@@ -1145,7 +1154,9 @@ class ModuleAutomorphismGroup(
         assert all(generator in self for generator in group_generators), (
             "each subgroup generator must belong to this automorphism group"
         )
-        return ModuleAutomorphismGroup(self.module(), group_generators)
+        subgroup = ModuleAutomorphismGroup(self.module(), group_generators)
+        subgroup._supergroup = self
+        return refine(subgroup, Groups().Subobjects())
 
     def group_generators(
         self,

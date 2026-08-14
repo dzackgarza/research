@@ -453,6 +453,7 @@ class LatticeIsometrySubgroup(
                 LatticeHomomorphisms(),
                 LatticeIsometries(),
                 SageGroups().FinitelyGenerated(),
+                SageGroups().Subobjects(),
             ],
         )
         assert group_generators, "a generated subgroup needs a generator"
@@ -470,6 +471,7 @@ class LatticeIsometrySubgroup(
                 for generator in group_generators
             ]
         )
+        self._supergroup = supergroup
 
     def __contains__(self, element: "Element") -> bool:
         r"""Return whether ``element`` lies in this subgroup.

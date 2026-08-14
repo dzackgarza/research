@@ -25,6 +25,7 @@ from sage.categories.homset import Hom
 from sage.categories.morphism import SetMorphism
 from sage.categories.rings import Rings
 from sage.groups.abelian_gps.abelian_group import AbelianGroup_class
+from sage.groups.abelian_gps.element_base import AbelianGroupElementBase
 from sage.groups.finitely_presented import FinitelyPresentedGroup
 from sage.groups.free_group import FreeGroup_class
 from sage.groups.matrix_gps.finitely_generated import (
@@ -45,6 +46,33 @@ from sage.categories.sets_cat import Sets as SageSets
 from sage.sets.totally_ordered_finite_set import TotallyOrderedFiniteSet
 from sage.structure.element import Element, RingElement
 from sage.structure.parent import Parent
+
+
+class SubgroupInclusion(SetMorphism):
+    r"""The canonical inclusion homomorphism \(H\hookrightarrow G\)."""
+
+    def is_injective(self) -> bool:
+        return True
+
+
+def _group_inclusion_image(
+    subgroup: "Group",
+    containing_group: "Group",
+    element: "GroupElement",
+) -> "GroupElement":
+    r"""Return the element as an element of the containing group."""
+    if element.parent() is containing_group:
+        return element
+    if isinstance(element, AbelianGroupElementBase):
+        image = containing_group.one()
+        for group_generator, exponent in zip(
+            subgroup.gens(),
+            element.exponents(),
+            strict=True,
+        ):
+            image *= group_generator**exponent
+        return image
+    return containing_group(element)
 
 
 if TYPE_CHECKING:
@@ -368,6 +396,41 @@ class OwnedGroups(Category):
         return [SageSets()]
 
     class ParentMethods:
+        def supergroup(self: Self) -> "Group":
+            r"""Return the containing group; every group includes into itself by identity."""
+            try:
+                containing_group: "Group" = super(
+                    OwnedGroups.ParentMethods,
+                    self,
+                ).supergroup()
+                return containing_group
+            except AttributeError:
+                try:
+                    containing_group = super(
+                        OwnedGroups.ParentMethods,
+                        self,
+                    ).ambient_group()
+                    return containing_group
+                except AttributeError:
+                    group: "Group" = self
+                    return group
+
+        def inclusion(self: Self) -> SetMorphism:
+            r"""Return the canonical inclusion homomorphism into the containing group."""
+            specialized = getattr(self, "_subgroup_inclusion", None)
+            if specialized is not None:
+                inclusion: SetMorphism = specialized()
+                return inclusion
+            containing_group = self.supergroup()
+            return SubgroupInclusion(
+                Hom(self, containing_group, SageGroups()),
+                lambda element: _group_inclusion_image(
+                    self,
+                    containing_group,
+                    element,
+                ),
+            )
+
         def group_generators(self: Self) -> "OrderedSet":
             r"""Return \(S\), the images in \(G\) of the generating morphism.
 

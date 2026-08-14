@@ -53,6 +53,30 @@ def test_groups_refine_on_witnesses_only() -> None:
         )
 
 
+def test_every_subgroup_has_its_inclusion_homomorphism() -> None:
+    r"""Every \(H\leq G\) has the canonical monomorphism \(H\hookrightarrow G\)."""
+    symmetric = SymmetricGroup(4)
+    abelian = AbelianGroup([4, 2])
+    centralizer_of_generator = centralizer(symmetric, symmetric.gen(0))
+    subgroups = (
+        (symmetric, tuple(symmetric)),
+        (symmetric.subgroup([symmetric.gen(0)]), None),
+        (abelian.subgroup([abelian.gen(0)]), None),
+        (
+            centralizer_of_generator,
+            (centralizer_of_generator.one(), symmetric.gen(0)),
+        ),
+        (Involutions.I_dP.cyclic_subgroup(), None),
+    )
+    for subgroup, specified_elements in subgroups:
+        inclusion = subgroup.inclusion()
+        assert inclusion.domain() is subgroup
+        assert inclusion.codomain() is subgroup.supergroup()
+        assert inclusion.is_injective()
+        elements = tuple(subgroup) if specified_elements is None else specified_elements
+        assert all(inclusion(element) in inclusion.codomain() for element in elements)
+
+
 def test_endomorphisms_of_an_abelian_group_form_a_ring() -> None:
     r"""$\operatorname{End}(A)$ satisfies the ring axioms on real elements."""
     for name, group in _abelian_groups():
