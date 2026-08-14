@@ -1,13 +1,14 @@
 # Repo-scoped stubs; see lexicon/README.md.
-from collections.abc import Iterable
-from typing import Any, Generic, TypeVar
+from collections.abc import Callable, Iterable
+from typing import Generic, TypeVar
 
 from sage.categories.category import Category
 from sage.categories.category_types import Category_over_base_ring
 from sage.categories.morphism import Morphism
+from sage.categories.rings import Rings
 from sage.rings.infinity import PlusInfinity
 from sage.rings.integer import Integer
-from sage.structure.element import Element
+from sage.structure.element import Element, RingElement
 from sage.structure.parent import Parent
 
 # A module parent IS a Sage Parent; the element parameter is bound like
@@ -16,9 +17,23 @@ from sage.structure.parent import Parent
 # (see structure/parent.pyi) and stay assignable to the bare noun
 # ``Modules.ParentMethods``.
 _E = TypeVar("_E", default=Element, covariant=True)
+_CategoryScalar = TypeVar(
+    "_CategoryScalar",
+    bound=RingElement,
+    default=RingElement,
+    covariant=True,
+)
+_ParentScalar = TypeVar(
+    "_ParentScalar",
+    bound=RingElement,
+    default=RingElement,
+    covariant=True,
+)
+_CodomainElement = TypeVar("_CodomainElement", default=Element)
 
-class Modules(Category_over_base_ring):
-    def __init__(self, base_ring: Any = ...) -> None: ...
+class Modules(Category_over_base_ring, Generic[_CategoryScalar]):
+    def __init__(self, base_ring: Rings.ParentMethods[_CategoryScalar]) -> None: ...
+    def base_ring(self) -> Rings.ParentMethods[_CategoryScalar]: ...
     def FiniteDimensional(self) -> Category: ...
     def WithBasis(self) -> Category: ...
 
@@ -31,8 +46,10 @@ class Modules(Category_over_base_ring):
     # edge on each implementation class it stubs (FreeModule_generic,
     # FGP_Module_class, ...); the noun's type is the category's surface,
     # never an enumeration of today's implementation classes.
-    class ParentMethods(Parent[_E], Generic[_E]):
-        # Element construction, membership and base_ring come from Parent.
+    class ParentMethods(Parent[_E], Generic[_E, _ParentScalar]):
+        # Element construction and membership come from Parent. Placement in
+        # Modules(R) narrows the optional Parent base ring to R.
+        def base_ring(self) -> Rings.ParentMethods[_ParentScalar]: ...
         # The operations below are the common module surface, verified
         # against the FreeModule_generic and FGP_Module_class representatives
         # and against the runtime dir of Modules(ZZ).ParentMethods.
@@ -50,18 +67,22 @@ class Modules(Category_over_base_ring):
         # module); _E stays in return position for covariance.
         def linear_combination(
             self,
-            iter_of_elements: Iterable[Element],
-            iter_of_coeffs: Iterable[Element] | None = ...,
+            iter_of_elements: Iterable[_E],
+            iter_of_coeffs: Iterable[_ParentScalar] | None = ...,
             check: bool = ...,
         ) -> _E: ...
         def module_morphism(
             self,
-            on_generators: object = ...,
-            codomain: Modules.ParentMethods[Any] | None = ...,
-            **kwds: object,
-        ) -> Morphism: ...
-        def quotient(self, sub: object, **kwds: Any) -> Modules.ParentMethods[Any]: ...
-        def tensor_square(self) -> Modules.ParentMethods[Any]: ...
+            function: Callable[[_E], _CodomainElement],
+            *,
+            codomain: Modules.ParentMethods[_CodomainElement, _ParentScalar],
+            category: Category | None = ...,
+        ) -> Morphism[_E, _CodomainElement]: ...
+        def quotient(
+            self,
+            submodule: Modules.ParentMethods[_E, _ParentScalar],
+        ) -> Modules.ParentMethods[Element, _ParentScalar]: ...
+        def tensor_square(self) -> Modules.ParentMethods[Element, _ParentScalar]: ...
 
 # Canonical short name for "a module parent" (a Sage object, so it belongs
 # with the Sage typing, not with preamble vocabulary). Type-only: Sage's

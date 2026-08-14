@@ -3,6 +3,7 @@
 # structure/element.pyi). Verified by lexicon/verify_against_sage.py.
 from typing import Any, Generic, TypeVar, overload
 
+from sage.modules.free_module import FreeModule_generic
 from sage.rings.integer import Integer
 from sage.rings.rational import Rational
 from sage.structure.element import Matrix, RingElement, Vector
@@ -10,6 +11,7 @@ from sage.structure.element import Matrix, RingElement, Vector
 _Scalar = TypeVar("_Scalar", bound=RingElement, default=RingElement)
 
 class FreeModuleElement(Vector[_Scalar], Generic[_Scalar]):
+    def parent(self) -> FreeModule_generic[_Scalar]: ...
     # Arithmetic is closed on concrete free-module elements.
     def __neg__(self) -> FreeModuleElement[_Scalar]: ...
     def __add__(self, other: Vector[_Scalar]) -> FreeModuleElement[_Scalar]: ...
