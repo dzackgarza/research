@@ -14,19 +14,23 @@ from sage.groups.finitely_presented import (
     FinitelyPresentedGroupElement,
 )
 from sage.groups.matrix_gps.finitely_generated import (
+    MatrixGroup,
     FinitelyGeneratedMatrixGroup_generic,
 )
+from sage.groups.matrix_gps.finitely_generated_gap import FinitelyGeneratedMatrixGroup_gap
 from sage.groups.matrix_gps.group_element import MatrixGroupElement_base
-from sage.groups.perm_gps.permgroup import PermutationGroup_generic
+from sage.groups.perm_gps.permgroup import PermutationGroup, PermutationGroup_generic
 from sage.groups.perm_gps.permgroup_element import PermutationGroupElement
 from sage.modules.free_module import FreeModule, FreeModule_generic
-from sage.modules.free_module_element import FreeModuleElement
+from sage.modules.free_module_element import FreeModuleElement, vector
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ
+from sage.rings.rational import Rational
+from sage.rings.rational_field import QQ
 from sage.sets.condition_set import ConditionSet
 from sage.sets.image_set import ImageSubobject
 from sage.sets.set import Set, Set_object_enumerated
-from sage.structure.element import Element
+from sage.structure.element import Element, Matrix
 from sage.structure.parent import Parent
 
 
@@ -73,6 +77,30 @@ def set_homsets_construct_set_morphisms(
     ] = Hom(domain, codomain, Sets())
     morphism = SetMorphism(homset, function)
     return morphism(element)
+
+
+def parent_set_homsets_construct_set_morphisms(
+    domain: Parent[_DomainElement],
+    codomain: Parent[_CodomainElement],
+    function: Callable[[_DomainElement], _CodomainElement],
+    element: _DomainElement,
+) -> _CodomainElement:
+    homset: Homset[
+        SetMorphism[_DomainElement, _CodomainElement],
+        _DomainElement,
+        _CodomainElement,
+    ] = domain.Hom(codomain, Sets())
+    return SetMorphism(homset, function)(element)
+
+
+def maps_are_elements_of_their_homsets(
+    homset: Homset[
+        Map[_DomainElement, _CodomainElement],
+        _DomainElement,
+        _CodomainElement,
+    ],
+) -> Map[_DomainElement, _CodomainElement]:
+    return Map(homset)
 
 
 def arbitrary_set_members_remain_typed(
@@ -124,6 +152,16 @@ def concrete_group_parents_preserve_elements(
     presented_parent: FinitelyPresentedGroup = presented_element.parent()
 
 
+def concrete_group_constructors_preserve_group_types(
+    permutation_generators: list[PermutationGroupElement],
+    matrix_generators: list[Matrix[Integer]],
+) -> tuple[
+    PermutationGroup_generic,
+    FinitelyGeneratedMatrixGroup_gap | FinitelyGeneratedMatrixGroup_generic,
+]:
+    return PermutationGroup(permutation_generators), MatrixGroup(matrix_generators)
+
+
 def integer_modules_preserve_scalars() -> None:
     module: FreeModule_generic[Integer] = FreeModule(ZZ, 2)
     scalar_ring: Rings.ParentMethods[Integer] = module.base_ring()
@@ -134,3 +172,12 @@ def integer_modules_preserve_scalars() -> None:
         FreeModuleElement[Integer],
     ] = module.module_morphism(function=lambda x: -x, codomain=module)
     image: FreeModuleElement[Integer] = negation(zero)
+
+
+def scalar_change_and_vector_construction_preserve_scalars(
+    integer_matrix: Matrix[Integer],
+    integer_entries: list[Integer],
+) -> tuple[Matrix[Rational], FreeModuleElement[Integer]]:
+    rational_matrix = integer_matrix.change_ring(QQ)
+    integer_vector = vector(ZZ, integer_entries)
+    return rational_matrix, integer_vector

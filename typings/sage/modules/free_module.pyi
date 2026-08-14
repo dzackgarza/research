@@ -2,7 +2,7 @@
 # bound RingElement — the elements of a free module over R are elements of R
 # (see structure/element.pyi). Verified by lexicon/verify_against_sage.py.
 from collections.abc import Callable, Iterable, Sequence
-from typing import Any, Generic, Literal, TypeVar
+from typing import Generic, Literal, TypeVar
 
 from sage.categories.category import Category
 from sage.categories.modules import Modules
@@ -13,7 +13,7 @@ from sage.modules.free_module_morphism import FreeModuleMorphism
 from sage.rings.infinity import PlusInfinity
 from sage.rings.integer import Integer
 from sage.structure.element import Element, Matrix, RingElement, Vector
-from sage.structure.parent import Parent
+from sage.structure.parent import MembershipInput, Parent
 
 _Scalar = TypeVar("_Scalar", bound=RingElement, default=RingElement)
 
@@ -65,8 +65,15 @@ class FreeModule_generic(
         self,
         v: Sequence[_Scalar] | Vector[_Scalar],
     ) -> FreeModuleElement[_Scalar]: ...
-    def span(self, gens: object, base_ring: object = ...) -> FreeModule_generic[_Scalar]: ...
-    def submodule(self, gens: object) -> FreeModule_generic[_Scalar]: ...
+    def span(
+        self,
+        module_generators: Iterable[Sequence[_Scalar] | Vector[_Scalar]],
+        base_ring: Rings.ParentMethods[_Scalar] | None = ...,
+    ) -> FreeModule_generic[_Scalar]: ...
+    def submodule(
+        self,
+        module_generators: Iterable[Sequence[_Scalar] | Vector[_Scalar]],
+    ) -> FreeModule_generic[_Scalar]: ...
     def saturation(self) -> FreeModule_generic[_Scalar]: ...
     def intersection(self, other: FreeModule_generic[_Scalar]) -> FreeModule_generic[_Scalar]: ...
     def is_submodule(self, other: FreeModule_generic[_Scalar]) -> bool: ...
@@ -76,7 +83,7 @@ class FreeModule_generic(
         submodule: Modules.ParentMethods[FreeModuleElement[_Scalar], _Scalar],
     ) -> FGP_Module_class[_Scalar]: ...
     def complement(self) -> FreeModule_generic[_Scalar]: ...
-    def __contains__(self, x: object) -> bool: ...
+    def __contains__(self, x: MembershipInput) -> bool: ...
     # Module sum M + N inside a common ambient.
     def __add__(self, other: FreeModule_generic[_Scalar]) -> FreeModule_generic[_Scalar]: ...
 

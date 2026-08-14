@@ -1,13 +1,14 @@
 import builtins
 
 # Repo-scoped stubs; see lexicon/README.md.
-from collections.abc import Iterator
-from typing import Any, Literal, TypeVar, overload
+from collections.abc import Iterable, Iterator
+from typing import Literal, TypeVar, overload
 
 from sage.categories.groups import Groups
 from sage.groups.finitely_presented import FinitelyPresentedGroup
 from sage.groups.perm_gps.permgroup_element import PermutationGroupElement
 from sage.rings.integer import Integer
+from sage.structure.parent import ElementConstructorInput
 
 _Point = TypeVar("_Point")
 
@@ -38,4 +39,12 @@ class PermutationGroup_generic(Groups.ParentMethods[PermutationGroupElement]):
         maps: Literal[True] = True,
     ) -> tuple[PermutationGroup_generic, ...]: ...
 
-def PermutationGroup(gens: Any = ..., *args: Any, **kwds: Any) -> PermutationGroup_generic: ...
+type PermutationGroupGeneratorInput = (
+    PermutationGroupElement | list[int] | tuple[int, ...] | ElementConstructorInput
+)
+
+def PermutationGroup(
+    group_generators: Iterable[PermutationGroupGeneratorInput] | None = ...,
+    *args: ElementConstructorInput,
+    **kwds: ElementConstructorInput,
+) -> PermutationGroup_generic: ...

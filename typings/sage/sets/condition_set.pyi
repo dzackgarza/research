@@ -8,7 +8,7 @@ from typing import Generic, TypeVar
 
 from sage.categories.category import Category
 from sage.categories.sets_cat import Sets
-from sage.structure.parent import Parent
+from sage.structure.parent import MembershipInput, Parent
 
 _E = TypeVar("_E")
 
@@ -20,4 +20,4 @@ class ConditionSet(Sets.ParentMethods[_E], Generic[_E]):
         names: Sequence[str] | None = ...,
         category: Category | None = ...,
     ) -> None: ...
-    def __contains__(self, x: object) -> bool: ...
+    def __contains__(self, x: MembershipInput) -> bool: ...

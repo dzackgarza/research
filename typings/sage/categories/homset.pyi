@@ -5,7 +5,7 @@ from sage.categories.map import Map
 from sage.categories.morphism import SetMorphism
 from sage.categories.sets_cat import Sets
 from sage.structure.element import Element
-from sage.structure.parent import Parent
+from sage.structure.parent import ElementConstructorInput, Parent
 
 # A homset is a parent whose elements are maps between its two objects
 # (Homset._element_constructor_, homset.py:806). Most are Morphism
@@ -23,7 +23,7 @@ class Homset(Parent[_M], Generic[_M, _DomainElement, _CodomainElement]):
         domain: Parent[_DomainElement],
         codomain: Parent[_CodomainElement],
         category: Category | None = ...,
-        base: object = ...,
+        base: Parent[ElementConstructorInput] | None = ...,
         check: bool = ...,
     ) -> None: ...
     def an_element(self) -> _M: ...

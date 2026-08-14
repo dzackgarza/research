@@ -1,12 +1,13 @@
 # Repo-scoped stubs; see lexicon/README.md.
 from collections.abc import MutableMapping
-from typing import Any, Generic, TypeVar
+from typing import Any, Generic, TypeVar, overload
 
 from sage.categories.category import Category
 from sage.categories.homset import Homset
 from sage.categories.map import Map
-from sage.categories.morphism import Morphism
+from sage.categories.morphism import Morphism, SetMorphism
 from sage.categories.rings import Rings
+from sage.categories.sets_cat import Sets
 from sage.structure.element import Element, RingElement
 
 # Sage permits arbitrary Python values at its conversion and membership
@@ -73,6 +74,17 @@ class Parent(Generic[_E]):
     # category_object.pyx:631 — Hom(self, codomain, category=None).
     # category_object.pyx:625 — the ``base=`` this parent was built with.
     def base(self) -> Parent[ElementConstructorInput] | None: ...
+    @overload
+    def Hom(
+        self,
+        codomain: Parent[_CodomainElement],
+        category: Sets,
+    ) -> Homset[
+        SetMorphism[_E, _CodomainElement],
+        _E,
+        _CodomainElement,
+    ]: ...
+    @overload
     def Hom(
         self,
         codomain: Parent[_CodomainElement],
