@@ -6,6 +6,7 @@
 # implementations that fail to opt into their category get a documented union
 # fallback instead. Method claims here are verified against representative
 # ring parents (ZZ, QQ) by lexicon/verify_against_sage.py.
+
 from typing import Any
 
 from sage.categories.category import Category
@@ -24,6 +25,10 @@ class Rings(Category):
     class ParentMethods(Parent):
         def __call__(self, x: object = ..., *args: object, **kwds: object) -> RingElement: ...
         def __contains__(self, x: object) -> bool: ...
+        # R^n is the free module over R with entries in R. The scalar is Any
+        # here only because FreeModule_generic's _Scalar is invariant, which
+        # forbids narrowing in overrides; the concrete rings give the precise
+        # scalar (ZZ^n has Integer entries, QQ^n Rational).
         def __pow__(self, n: int | Integer) -> FreeModule_generic[Any]: ...
         def zero(self) -> RingElement: ...
         def one(self) -> RingElement: ...
@@ -33,3 +38,9 @@ class Rings(Category):
         def is_field(self, proof: bool = ...) -> bool: ...
 
     class ElementMethods: ...
+
+# Canonical short name for "a ring parent" (a Sage object, so it belongs
+# with the Sage typing, not with preamble vocabulary). Type-only: Sage's
+# runtime sage.categories.rings exports ``Rings``, not ``Ring`` — code that
+# imports this name does so under TYPE_CHECKING.
+Ring = Rings.ParentMethods
