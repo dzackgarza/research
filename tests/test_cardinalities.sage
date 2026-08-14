@@ -13,8 +13,11 @@ from sage.all import (
     QuadraticField,
     Qp,
     RR,
+    Primes,
     ZZ,
 )
+from sage.categories.homset import Hom
+from sage.categories.morphism import SetMorphism
 
 from dzack_research.preamble.categories.abstract_categories.products import (
     CartesianProductOfSets,
@@ -34,7 +37,7 @@ from dzack_research.preamble.categories.sets.cardinals import (
 )
 from dzack_research.preamble.categories.sets.ordinals import Ordinals, omega
 from dzack_research.preamble.categories.sets.owned_sets import Sets
-from dzack_research.preamble.categories.sets.sets import PowerSet, Set
+from dzack_research.preamble.categories.sets.sets import ImageSet, PowerSet, Set
 
 
 def test_initial_ordinals_have_the_corresponding_aleph_cardinals() -> None:
@@ -125,17 +128,26 @@ def test_cardinality_functor_preserves_set_coproducts_and_products() -> None:
 
 
 def test_power_set_of_naturals_and_real_line_have_the_continuum() -> None:
-    r"""|P(N)| = 2^ℵ₀ = |R|, independently of CH."""
+    r"""Power sets construct over countable and continuum-sized sets."""
     naturals = Sets.Δ[aleph0]
-    subsets = PowerSet(naturals)
+    doubling = SetMorphism(Hom(naturals, naturals, Sets()), lambda n: 2 * n)
+    even_naturals = ImageSet(doubling, naturals, is_injective=True)
+    subsets_of_naturals = PowerSet(naturals)
+    subsets_of_even_naturals = PowerSet(even_naturals)
+    subsets_of_primes = PowerSet(Primes())
     real_line = own_ring(RR)
+    subsets_of_reals = PowerSet(real_line)
     cardinality = cardinality_functor()
 
     assert cardinality(naturals) == aleph0
-    assert cardinality(subsets) == cardinal(2) ** aleph0 == continuum
-    assert cardinality(subsets) == cardinality(real_line)
+    assert cardinality(subsets_of_naturals) == cardinal(2) ** aleph0 == continuum
+    assert cardinality(subsets_of_even_naturals) == continuum
+    assert cardinality(subsets_of_primes) == continuum
+    assert cardinality(subsets_of_naturals) == cardinality(real_line)
+    assert cardinality(subsets_of_reals) == cardinal(2) ** continuum
+    assert cardinality(PowerSet(subsets_of_naturals)) == cardinal(2) ** continuum
 
-    comparison = cardinality.power_set_comparison(subsets)
+    comparison = cardinality.power_set_comparison(subsets_of_naturals)
     assert comparison.domain() == comparison.codomain() == continuum
 
 

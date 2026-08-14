@@ -93,22 +93,16 @@ else:
     SubsetsParent = Parent
 
 
-class PowerSetParent(UniqueRepresentation, SubsetsParent):
-    r"""The set of all subsets of a finite or countable set."""
+class PowerSetParent(SubsetsParent):
+    r"""The set of all subsets of a set."""
 
     element_class = Set_object_enumerated
 
     def __init__(self, source: "lexicon.Set") -> None:
-        if source not in Sets().Countable():
-            source = _as_set(source)
-        assert source in Sets().Countable(), (
-            "the owned cardinal graph currently represents power sets only "
-            "for finite or countably infinite sets"
-        )
         self._source = source
         category = (
             Sets().Finite()
-            if source in Sets().Finite()
+            if self.cardinality().is_finite()
             else Sets().Uncountable()
         )
         Parent.__init__(self, category=category)
@@ -302,7 +296,6 @@ class FiniteSubsetsParent(UniqueRepresentation, SubsetsParent):
         return f"Finite subsets of {self._source}"
 
 
-@cached_function
 def PowerSet(source: "lexicon.Set") -> PowerSetParent:
     return PowerSetParent(source)
 
