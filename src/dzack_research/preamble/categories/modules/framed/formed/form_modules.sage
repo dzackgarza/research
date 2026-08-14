@@ -705,7 +705,7 @@ class FinitelyGeneratedFreeFormModules(OwnedCategoryOverBaseRing):
         ]
 
     class ParentMethods:
-        def Aut(self: "FiniteFreeFormedParent") -> "ModuleAutomorphismGroup":
+        def Aut(self: "FiniteFreeFormedParent") -> "FormAutomorphismGroup":
             cached = self.__dict__.get("_preamble_Aut")
             if cached is None:
                 cached = FormAutomorphismGroup(self)

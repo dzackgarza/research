@@ -986,7 +986,7 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             endset: "Homset" = self.Hom(self)
             return endset
 
-        def Aut(self: "LatticeParent") -> "ModuleAutomorphismGroup":
+        def Aut(self: "LatticeParent") -> "FormAutomorphismGroup":
             r"""Return $\mathrm{Aut}(L)=O(L)$, the units of $\mathrm{End}(L)$.
 
             One object, reached one way.  ``orthogonal_group`` and
