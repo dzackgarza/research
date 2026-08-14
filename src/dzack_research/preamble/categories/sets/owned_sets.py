@@ -313,14 +313,6 @@ class UncountableSets(CategoryWithAxiom):
         def is_uncountable(self) -> bool:
             return True
 
-        def cardinality(self) -> Cardinal:
-            r"""The continuum, ``2^aleph_0``: exact for every uncountable
-            object constructible in this graph (see ``objects/cardinals``)."""
-            from dzack_research.preamble.categories.sets.cardinals import continuum
-
-            return continuum
-
-
 class TotallyOrderedSets(CategoryWithAxiom):
     r"""Totally ordered sets."""
 

@@ -17,6 +17,7 @@ if TYPE_CHECKING:
     from dzack_research.preamble import lexicon
     from dzack_research.preamble.categories.abstract_categories.products import (
         CartesianProductOfSets,
+        CoproductOfSets,
     )
     from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
         Core,
@@ -61,6 +62,18 @@ class CardinalityFunctor(Functor):
             *(self._apply_functor(factor) for factor in product.factors())
         )
         assert source == target, "#(prod X_i) equals prod #X_i"
+        return self.codomain().hom(source, target).identity()
+
+    def coproduct_comparison(
+        self,
+        coproduct: "CoproductOfSets",
+    ) -> CardinalityMorphism:
+        r"""Return the equality arrow ``#(coprod X_i) -> sum #X_i``."""
+        source = self._apply_functor(coproduct)
+        target = self.codomain().sum(
+            *(self._apply_functor(cofactor) for cofactor in coproduct.cofactors())
+        )
+        assert source == target, "#(coprod X_i) equals sum #X_i"
         return self.codomain().hom(source, target).identity()
 
     def power_set_comparison(

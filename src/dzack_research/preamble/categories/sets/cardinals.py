@@ -17,6 +17,7 @@ from __future__ import annotations
 
 from collections.abc import Iterator
 from dataclasses import dataclass
+from enum import Enum
 from typing import TYPE_CHECKING
 
 from sage.categories.category import Category
@@ -33,6 +34,7 @@ from sage.structure.parent import Parent
 from sage.structure.unique_representation import UniqueRepresentation
 
 if TYPE_CHECKING:
+    from dzack_research.preamble.categories.sets.ordinals import Ordinal, OrdinalInput
     from sage.rings.rational import Rational
     from sage.rings.ring import Ring
 
@@ -47,7 +49,7 @@ class _FiniteCardinal:
 
 @dataclass(frozen=True)
 class _AlephCardinal:
-    index: Integer
+    index: Ordinal
 
 
 @dataclass(frozen=True)
@@ -65,6 +67,17 @@ type _CardinalExpression = (
     _FiniteCardinal | _AlephCardinal | _PowerCardinal | _SupremumCardinal
 )
 type CardinalInput = CardinalScalar | _CardinalExpression
+
+
+class CardinalComparison(Enum):
+    r"""The comparison in the poset of provable cardinal relations."""
+
+    LESS = -1
+    EQUAL = 0
+    GREATER = 1
+    LESS_OR_EQUAL = 2
+    GREATER_OR_EQUAL = 3
+    INCOMPARABLE = 4
 
 
 class Cardinalities(Category):
@@ -312,7 +325,6 @@ class Cardinalities(Category):
             return all(self.lt(term, right) for term in left_expression.terms)
         if isinstance(right_expression, _SupremumCardinal):
             return any(self.lt(left, term) for term in right_expression.terms)
-
         if left.is_finite():
             if right.is_finite():
                 return left.finite_value() < right.finite_value()
@@ -323,7 +335,6 @@ class Cardinalities(Category):
             return left.aleph_index() < right.aleph_index()
         if left.is_countably_infinite() and right.is_uncountable():
             return True
-
         if isinstance(right_expression, _PowerCardinal):
             return self.le(cardinal(2), right_expression.base) and self.le(
                 left, right_expression.exponent
@@ -343,6 +354,26 @@ class Cardinalities(Category):
         target: Cardinal | CardinalScalar,
     ) -> bool:
         return self.lt(target, source)
+
+    def compare(
+        self,
+        source: Cardinal | CardinalScalar,
+        target: Cardinal | CardinalScalar,
+    ) -> CardinalComparison:
+        r"""Compare two objects using only provable cardinal inequalities."""
+        left = cardinal(source)
+        right = cardinal(target)
+        if left == right:
+            return CardinalComparison.EQUAL
+        if self.lt(left, right):
+            return CardinalComparison.LESS
+        if self.lt(right, left):
+            return CardinalComparison.GREATER
+        if self.le(left, right):
+            return CardinalComparison.LESS_OR_EQUAL
+        if self.le(right, left):
+            return CardinalComparison.GREATER_OR_EQUAL
+        return CardinalComparison.INCOMPARABLE
 
     def are_incomparable(
         self,
@@ -370,7 +401,7 @@ class Cardinal(UniqueRepresentation, Parent):
         value: Cardinal | CardinalInput,
         countable: bool = True,
         *,
-        aleph_index: Integer | int | None = None,
+        aleph_index: OrdinalInput | None = None,
     ) -> Cardinal:
         if isinstance(value, Cardinal):
             return value
@@ -385,13 +416,15 @@ class Cardinal(UniqueRepresentation, Parent):
         ):
             expression = value
         elif aleph_index is not None:
+            from dzack_research.preamble.categories.sets.ordinals import ordinal
+
             assert value == Infinity, "an aleph cardinal is infinite"
-            index = ZZ(aleph_index)
-            assert index >= 0, f"an aleph index is nonnegative; found {index}"
-            expression = _AlephCardinal(index)
+            expression = _AlephCardinal(ordinal(aleph_index))
         elif not isinstance(value, (Integer, int)) and value == Infinity:
+            from dzack_research.preamble.categories.sets.ordinals import ordinal
+
             expression = (
-                _AlephCardinal(ZZ.zero())
+                _AlephCardinal(ordinal(0))
                 if countable
                 else _PowerCardinal(cardinal(2), aleph0)
             )
@@ -548,12 +581,18 @@ class Cardinal(UniqueRepresentation, Parent):
     def is_uncountably_infinite(self) -> bool:
         return self.is_infinite() and self.is_uncountable()
 
-    def aleph_index(self) -> Integer:
+    def aleph_index(self) -> Ordinal:
         expression = self.expression()
         assert isinstance(expression, _AlephCardinal), (
             f"{self} is not an aleph cardinal"
         )
         return expression.index
+
+    def initial_ordinal(self) -> Ordinal:
+        r"""Return the initial ordinal represented by this aleph cardinal."""
+        from dzack_research.preamble.categories.sets.ordinals import omega
+
+        return omega(self.aleph_index())
 
     def finite_value(self) -> Integer:
         expression = self.expression()
@@ -684,7 +723,7 @@ def cardinal(value: Cardinal | CardinalScalar) -> Cardinal:
     return Cardinal(value)
 
 
-def aleph(index: Integer | int) -> Cardinal:
+def aleph(index: OrdinalInput) -> Cardinal:
     r"""Return the ``index``-th infinite initial cardinal."""
     return Cardinal(Infinity, aleph_index=index)
 

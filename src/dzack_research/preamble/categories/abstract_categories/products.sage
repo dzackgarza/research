@@ -580,6 +580,53 @@ class CartesianProductOfSets(CartesianProductParent):
         return " x ".join(str(factor) for factor in self._factors)
 
 
+class CoproductOfSets(Parent):
+    r"""The tagged disjoint union of a finite family of sets."""
+
+    def __init__(self, cofactors: tuple) -> None:
+        self._cofactors = tuple(cofactors)
+        Parent.__init__(self, category=Sets())
+
+    def cofactors(self) -> "tuple[Parent, ...]":
+        return self._cofactors
+
+    def cardinality(self) -> "Cardinal":
+        r"""Return ``sum(#X_i)`` for the cofactors ``X_i``."""
+        from dzack_research.preamble.categories.sets.cardinals import Cardinalities
+
+        return Cardinalities().sum(
+            *(cofactor.cardinality() for cofactor in self._cofactors)
+        )
+
+    def __iter__(self) -> "Iterator[tuple[int, Element]]":
+        for index, cofactor in enumerate(self._cofactors):
+            for element in cofactor:
+                yield (index, element)
+
+    def __contains__(self, tagged_element: tuple[int, Element]) -> bool:
+        if not isinstance(tagged_element, tuple) or len(tagged_element) != 2:
+            return False
+        index, element = tagged_element
+        return (
+            isinstance(index, int)
+            and 0 <= index < len(self._cofactors)
+            and element in self._cofactors[index]
+        )
+
+    def injection(self, index: int, element: Element) -> "tuple[int, Element]":
+        r"""Return the value of the ``index``-th coproduct injection."""
+        if index < 0 or index >= len(self._cofactors):
+            raise IndexError(f"no coproduct cofactor has index {index}")
+        if element not in self._cofactors[index]:
+            raise ValueError(f"{element} is not in cofactor {index}")
+        return (index, element)
+
+    def _repr_(self) -> str:
+        if not self._cofactors:
+            return "Empty coproduct of sets"
+        return " + ".join(str(cofactor) for cofactor in self._cofactors)
+
+
 class TensorProductCategory(CoconeCategory):
     r"""A tensor product \(X_1\otimes\cdots\otimes X_n\).
 
