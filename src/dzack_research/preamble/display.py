@@ -23,12 +23,12 @@ untouched.
 
 from __future__ import annotations
 
-from typing import Any
-
+from IPython.core.interactiveshell import InteractiveShell
 from sage.misc.latex import latex
+from sage.structure.parent import ElementConstructorInput
 
 
-def typesets_itself(obj: Any) -> bool:
+def typesets_itself(obj: ElementConstructorInput) -> bool:
     r"""Return whether ``obj`` can render itself as LaTeX.
 
     The capability is ``_latex_`` on the type. Asked of the type rather than
@@ -45,14 +45,14 @@ def typesets_itself(obj: Any) -> bool:
     return False
 
 
-def latex_if_typesettable(obj: Any) -> str | None:
+def latex_if_typesettable(obj: ElementConstructorInput) -> str | None:
     r"""Return ``obj`` as displayed LaTeX, or ``None`` to leave it plain."""
     if not typesets_itself(obj):
         return None
     return "$\\displaystyle " + str(latex(obj)) + "$"
 
 
-def install_implicit_typesetting(shell: Any) -> None:
+def install_implicit_typesetting(shell: InteractiveShell) -> None:
     r"""Register the rule on ``shell``, an IPython session.
 
     Takes the shell rather than calling ``get_ipython()`` so this is callable

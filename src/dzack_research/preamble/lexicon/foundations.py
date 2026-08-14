@@ -10,14 +10,12 @@ from __future__ import annotations
 from collections.abc import Sequence
 from typing import TYPE_CHECKING, Literal, NewType
 
-from sage.categories.sets_cat import Sets as SageSets
 from sage.rings.integer import Integer
 from sage.rings.qqbar import AlgebraicReal
 from sage.rings.rational import Rational
 from sage.rings.real_mpfr import RealNumber as RealApproximation
 from sage.sets.totally_ordered_finite_set import TotallyOrderedFiniteSet
-from sage.matrix.matrix0 import Matrix
-from sage.structure.element import Element
+from sage.structure.element import Element, Matrix
 from sage.symbolic.expression import Expression as SymbolicExpression
 
 __all__ = [
@@ -31,7 +29,6 @@ __all__ = [
     "OrderedSet",
     "Rational",
     "RawMorphismMatrix",
-    "Set",
     "SignaturePair",
     "SymbolicExpression",
 ]
@@ -49,14 +46,6 @@ type LatticeName = str | CartanType
 construction data: resolving it yields both the Gram matrix and, for A/D/E
 names, the Cartan provenance certificate — so named construction routes to
 the root-generated subcategory while a raw Gram never does."""
-
-Set = SageSets.ParentMethods
-"""An unordered mathematical set: a parent placed in ``Sets()``.
-
-Typed category-first, like ``Ring`` (INVENTORY.md II.2).  Not
-``collections.abc.Set``, which a ``frozenset`` satisfies and a Sage set parent
-need not: that protocol describes a Python container, and a set here is an
-object of a category."""
 
 if TYPE_CHECKING:
 

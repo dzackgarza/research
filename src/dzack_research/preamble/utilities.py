@@ -1,8 +1,9 @@
 """Reusable helpers for the Sage preamble."""
 
 from collections.abc import Callable, Iterable
-
-from typing import Any
+from functools import reduce
+from operator import add, mul
+from typing import cast
 
 __all__ = ["lmap", "lzip", "to_var_names", "zipsum"]
 
@@ -12,7 +13,7 @@ def lmap[T, U](f: Callable[[T], U], ls: Iterable[T]) -> list[U]:
     return list(map(f, ls))
 
 
-def lzip(*iterables: Iterable[Any]) -> list[tuple[Any, ...]]:
+def lzip[T](*iterables: Iterable[T]) -> list[tuple[T, ...]]:
     """Return ``zip(*iterables)`` as a list."""
     return list(zip(*iterables))
 
@@ -36,11 +37,9 @@ def zipsum[C, G, T](
     define.
     """
     if term is None:
-        term = lambda coefficient, element: coefficient * element
-    return sum(
-        (
-            term(coefficient, element)
-            for coefficient, element in zip(coefficients, elements, strict=True)
-        ),
-        zero,
+        term = cast(Callable[[C, G], T], mul)
+    summands = (
+        term(coefficient, element)
+        for coefficient, element in zip(coefficients, elements, strict=True)
     )
+    return reduce(cast(Callable[[T, T], T], add), summands, zero)

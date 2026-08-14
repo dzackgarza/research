@@ -35,11 +35,12 @@ EXAMPLES::
     0
 """
 
-from typing import Any, Callable, Self
+from collections.abc import Callable, Iterable
 
 from sage.categories.category import Category
 from sage.categories.morphism import Morphism
 from sage.structure.parent import Parent
+from sage.structure.parent import ElementConstructorInput
 from sage.structure.sage_object import SageObject
 from sage.cpython.type import can_assign_class
 from sage.misc.abstract_method import AbstractMethod
@@ -53,10 +54,13 @@ __all__ = [
     "refine",
 ]
 
-_HOOKS: dict[type, list[tuple[Any, Callable[[Any], bool] | None]]] = {}
-_ORIGINAL_INIT: dict[type, Any] = {}
-_AFTER: dict[type, list[Callable[[Any], None]]] = {}
-_BEFORE: dict[type, list[Callable[[Any], None]]] = {}
+_HOOKS: dict[
+    type[SageObject],
+    list[tuple[Category, Callable[[SageObject], bool] | None]],
+] = {}
+_ORIGINAL_INIT: dict[type[SageObject], Callable[..., None]] = {}
+_AFTER: dict[type[SageObject], list[Callable[[SageObject], None]]] = {}
+_BEFORE: dict[type[SageObject], list[Callable[[SageObject], None]]] = {}
 _IMPLEMENTED_MIXINS: dict[type, type] = {}
 _PY_SET = set
 
@@ -132,7 +136,7 @@ _PREAMBLE_PACKAGE = __name__.rpartition(".")[0] + "."
 assert _PREAMBLE_PACKAGE != ".", (
     "refine.sage must be imported as a module of the preamble package"
 )
-_MIXIN_CACHE: dict[tuple[Any, str], tuple[type, ...]] = {}
+_MIXIN_CACHE: dict[tuple[Category, str], tuple[type, ...]] = {}
 
 
 def _is_owned_category(category_type: type) -> bool:
@@ -288,7 +292,7 @@ def _assert_preamble_obligations_are_met(
         f"{sorted(missing)}"
     )
 
-def _refine_morphism(obj: "Morphism", category: "Category") -> "Morphism":
+def _refine_morphism[M: Morphism](obj: M, category: "Category") -> M:
     """Reassign a morphism's class so ``MorphismMethods`` precede it."""
     mixins = _method_mixins(category, "MorphismMethods")
     if not mixins:
@@ -308,7 +312,10 @@ def _refine_morphism(obj: "Morphism", category: "Category") -> "Morphism":
     obj.__class__ = new_cls
     return obj
 
-def refine(obj: "SageObject", category: "Category") -> "SageObject":
+def refine[S: SageObject](
+    obj: S,
+    category: "Category | Iterable[Category]",
+) -> S:
     r"""Refine ``obj`` so ``category``'s methods precede concrete class methods.
 
     Joins ``category`` into ``obj.category()`` as Sage does, then rebuilds
@@ -321,37 +328,38 @@ def refine(obj: "SageObject", category: "Category") -> "SageObject":
     assignment; they are *not* passed through Sage's ``_refine_category_``
     (they do not store ``_category`` — membership lives on the Hom).
     """
-    if isinstance(category, (list, tuple)):
-        from sage.categories.category import Category
-
-        category = Category.join(category)
+    target_category = (
+        category
+        if isinstance(category, Category)
+        else Category.join(category)
+    )
 
     if _is_morphism(obj):
-        return _refine_morphism(obj, category)
+        return _refine_morphism(obj, target_category)
 
     from sage.structure.parent import Parent
 
     # Objects of the category — parents, homsets, and standalone category
     # objects alike — receive ``ParentMethods`` before their concrete class.
-    CategoryObject._refine_category_(obj, category)
-    _rebuild_parent_class(obj, category)
+    CategoryObject._refine_category_(obj, target_category)
+    _rebuild_parent_class(obj, target_category)
 
     # An element-bearing parent manufactures elements; homsets manufacture
     # morphisms (their ``ParentMethods.__call__`` refines each one) and
     # standalone category objects manufacture neither.
     if isinstance(obj, Parent) and not _is_homset(obj):
-        _rebuild_element_class(obj, category)
-    _assert_preamble_obligations_are_met(obj, category)
-    _assert_certifying_predicates_hold(obj, category)
+        _rebuild_element_class(obj, target_category)
+    _assert_preamble_obligations_are_met(obj, target_category)
+    _assert_certifying_predicates_hold(obj, target_category)
     return obj
 
 def hook_post_init(
-    cls: type,
+    cls: type[SageObject],
     category: "Category",
     *,
-    predicate: Callable[[Any], bool] | None = None,
-    before: Callable[[Any], None] | None = None,
-    after: Callable[[Any], None] | None = None,
+    predicate: Callable[[SageObject], bool] | None = None,
+    before: Callable[[SageObject], None] | None = None,
+    after: Callable[[SageObject], None] | None = None,
 ) -> None:
     r"""After ``cls.__init__``, :func:`refine` the instance into ``category``.
 
@@ -375,7 +383,11 @@ def hook_post_init(
         # ``cls`` resolves today, its own or an inherited one.
         _ORIGINAL_INIT[cls] = getattr(cls, "__init__")
 
-        def _init(self: "SageObject", *args: Any, **kwargs: Any) -> None:
+        def _init(
+            self: "SageObject",
+            *args: ElementConstructorInput,
+            **kwargs: ElementConstructorInput,
+        ) -> None:
             _ORIGINAL_INIT[cls](self, *args, **kwargs)
             for hook in _BEFORE.get(cls, ()):
                 hook(self)

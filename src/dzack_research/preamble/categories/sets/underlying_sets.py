@@ -13,7 +13,7 @@ subcategory inclusion (a forgetful functor is faithful, not monic).
 from __future__ import annotations
 
 from collections.abc import Iterator
-from typing import TYPE_CHECKING
+from typing import cast, Generic, TYPE_CHECKING, TypeVar
 
 from dzack_research.preamble.lexicon.interop import SageParent, SageUniqueRepresentation
 from dzack_research.preamble.categories.sets.cardinals import Cardinal
@@ -21,9 +21,23 @@ from dzack_research.preamble.categories.sets.owned_sets import Sets, placement_o
 
 if TYPE_CHECKING:
     from sage.categories.morphism import SetMorphism
-    from sage.structure.element import Element
+    from sage.rings.integer import Integer
+    from sage.structure.parent import ElementConstructorInput
 
-class UnderlyingSet(SageUniqueRepresentation, SageParent):
+_E = TypeVar("_E")
+
+if TYPE_CHECKING:
+    class _StructuredParent(SageParent[_E], Generic[_E]):
+        _underlying_set: UnderlyingSet[_E]
+        def cardinality(self) -> Cardinal: ...
+        def __iter__(self) -> Iterator[_E]: ...
+
+    _UnderlyingSetParent = SageParent[_E]
+else:
+    _StructuredParent = SageParent
+    _UnderlyingSetParent = SageParent
+
+class UnderlyingSet(SageUniqueRepresentation, _UnderlyingSetParent, Generic[_E]):
     r"""The underlying set ``U(X)`` of a structured parent: same elements,
     structure forgotten.
 
@@ -37,13 +51,17 @@ class UnderlyingSet(SageUniqueRepresentation, SageParent):
     """
 
     @staticmethod
-    def __classcall__(cls, structured: SageParent) -> UnderlyingSet:
-        stored = getattr(structured, "_underlying_set", None)
+    def __classcall__(
+        cls: type[UnderlyingSet[_E]],
+        structured: SageParent[_E],
+    ) -> UnderlyingSet[_E]:
+        structured_parent = cast(_StructuredParent[_E], structured)
+        stored = getattr(structured_parent, "_underlying_set", None)
         if stored is not None:
-            return stored
+            return cast(UnderlyingSet[_E], stored)
         underlying = super().__classcall__(cls, structured)
         try:
-            structured._underlying_set = underlying
+            structured_parent._underlying_set = underlying
         except AttributeError:
             # A Cython parent carries no instance dictionary and so cannot
             # hold the answer; it also cannot be refined, which is the only
@@ -55,15 +73,14 @@ class UnderlyingSet(SageUniqueRepresentation, SageParent):
         # The generic set surface is injected by the owned Sets() axiom
         # categories at parent construction; every UnderlyingSet lives in
         # those axioms, so the surface is a real invariant of the class.
-        def is_finite(self) -> bool: ...
         def is_countable(self) -> bool: ...
         def is_uncountable(self) -> bool: ...
-        def index(self, element: Element) -> int: ...
-        def __getitem__(self, n: int) -> Element: ...
-        def enumeration_injection(self) -> SetMorphism: ...
+        def index(self, element: _E) -> int: ...
+        def __getitem__(self, n: int) -> _E: ...
+        def enumeration_injection(self) -> SetMorphism[_E, Integer]: ...
 
-    def __init__(self, structured: SageParent) -> None:
-        self._structured = structured
+    def __init__(self, structured: SageParent[_E]) -> None:
+        self._structured = cast(_StructuredParent[_E], structured)
         SageParent.__init__(self, facade=structured, category=placement_of(structured).Facade())
 
     def cardinality(self) -> Cardinal:
@@ -73,7 +90,7 @@ class UnderlyingSet(SageUniqueRepresentation, SageParent):
         The former fallbacks read a generating set instead -- which counts
         generators, not elements, and answers a different question.
         """
-        return Cardinal(self._structured.cardinality())
+        return self._structured.cardinality()
 
     def is_finite(self) -> bool:
         r"""Return whether $U(X)$ is finite.
@@ -89,38 +106,38 @@ class UnderlyingSet(SageUniqueRepresentation, SageParent):
     def _repr_(self) -> str:
         return f"Underlying set of {self._structured}"
 
-    def structured_parent(self) -> SageParent:
+    def structured_parent(self) -> _StructuredParent[_E]:
         r"""The structured parent this set underlies."""
         return self._structured
 
-    def _element_constructor_(self, element: object) -> object:
+    def _element_constructor_(self, element: ElementConstructorInput) -> _E:
         r"""U(X) has the same elements as X: conversion into the facade IS
         the host's conversion. Without this, Sage's generic conversion
         discovery wanders into the structured parent's homset machinery
         (surfaced by the #197 route audit's morphism-action check)."""
         return self._structured(element)
 
-    def __iter__(self) -> Iterator[object]:
+    def __iter__(self) -> Iterator[_E]:
         # The structured parent's enumeration is its witness data, supplied
         # dynamically; the static Parent surface cannot see it.
         return iter(self._structured)
 
-    def __contains__(self, x: object) -> bool:
+    def __contains__(self, x: ElementConstructorInput) -> bool:
         return x in self._structured
 
 
-class ViaUnderlyingSet:
+class ViaUnderlyingSet(Generic[_E]):
     r"""The forwarding owner's parent methods: every generic set behavior
     of a structured parent is the corresponding behavior of its underlying
     set. Installed at each structured root (the operation roots, the G-set root) and nowhere below."""
 
-    def underlying_set(self) -> UnderlyingSet:
+    def underlying_set(self) -> UnderlyingSet[_E]:
         r"""The set ``U(X)`` underlying this structured parent: the same
         elements with the operations forgotten — the single functorial
         obligation everything else rolls up through."""
         # Runtime Sage copies these methods onto structured parent classes,
         # so ``self`` is a Parent there.
-        return UnderlyingSet(self)
+        return UnderlyingSet(cast(_StructuredParent[_E], self))
 
     def cardinality(self) -> Cardinal:
         return self.underlying_set().cardinality()
@@ -137,5 +154,5 @@ class ViaUnderlyingSet:
     def is_uncountable(self) -> bool:
         return self.underlying_set().is_uncountable()
 
-    def index(self, element: Element) -> int:
+    def index(self, element: _E) -> int:
         return self.underlying_set().index(element)

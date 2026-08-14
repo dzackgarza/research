@@ -26,7 +26,7 @@ from sage.sets.integer_range import IntegerRange
 from sage.sets.set import Set as SageSet
 from sage.sets.totally_ordered_finite_set import TotallyOrderedFiniteSet
 from sage.structure.element import Element
-from sage.structure.parent import Parent
+from sage.structure.parent import ElementConstructorInput, Parent
 from sage.structure.unique_representation import UniqueRepresentation
 from sage.misc.cachefunc import cached_function
 
@@ -515,7 +515,10 @@ class FixedCardinalitySubsetsParent(UniqueRepresentation, SubsetsParent):
         cardinality: SageInteger = self._subset_cardinality
         return cardinality
 
-    def _element_constructor_(self, members: Iterable) -> Set_object_enumerated:
+    def _element_constructor_(
+        self,
+        members: Iterable[Element],
+    ) -> Set_object_enumerated:
         subset = self.element_class(members)
         assert len(subset) == self._subset_cardinality, (
             f"a member has cardinality {self._subset_cardinality}"
@@ -526,12 +529,15 @@ class FixedCardinalitySubsetsParent(UniqueRepresentation, SubsetsParent):
         return subset
 
     def __call__(
-        self, x: object = (), *arguments: object, **keywords: object
+        self,
+        x: ElementConstructorInput = (),
+        *arguments: ElementConstructorInput,
+        **keywords: ElementConstructorInput,
     ) -> Set_object_enumerated:
         assert isinstance(x, Iterable), "a subset is built from its members"
         return self._element_constructor_(x)
 
-    def __contains__(self, candidate: object) -> bool:
+    def __contains__(self, candidate: ElementConstructorInput) -> bool:
         if not isinstance(candidate, Iterable):
             return False
         subset = SageSet(candidate)
@@ -540,7 +546,7 @@ class FixedCardinalitySubsetsParent(UniqueRepresentation, SubsetsParent):
             and all(member in self._source for member in subset)
         )
 
-    def __iter__(self) -> "Iterator[lexicon.Set]":
+    def __iter__(self) -> Iterator[Set_object_enumerated]:
         from sage.combinat.subset import Subsets as SageSubsets
 
         if self._source in Sets().Finite():
@@ -593,7 +599,10 @@ class FiniteSubsetsParent(UniqueRepresentation, SubsetsParent):
     def source(self) -> "lexicon.Set":
         return self._source
 
-    def _element_constructor_(self, members: Iterable) -> Set_object_enumerated:
+    def _element_constructor_(
+        self,
+        members: Iterable[Element],
+    ) -> Set_object_enumerated:
         subset = self.element_class(members)
         assert all(member in self._source for member in subset), (
             "every member of a subset must lie in its source set"
@@ -601,18 +610,21 @@ class FiniteSubsetsParent(UniqueRepresentation, SubsetsParent):
         return subset
 
     def __call__(
-        self, x: object = (), *arguments: object, **keywords: object
+        self,
+        x: ElementConstructorInput = (),
+        *arguments: ElementConstructorInput,
+        **keywords: ElementConstructorInput,
     ) -> Set_object_enumerated:
         assert isinstance(x, Iterable), "a subset is built from its members"
         return self._element_constructor_(x)
 
-    def __contains__(self, candidate: object) -> bool:
+    def __contains__(self, candidate: ElementConstructorInput) -> bool:
         if not isinstance(candidate, Iterable):
             return False
         subset = SageSet(candidate)
         return all(member in self._source for member in subset)
 
-    def __iter__(self) -> "Iterator[lexicon.Set]":
+    def __iter__(self) -> Iterator[Set_object_enumerated]:
         from sage.combinat.subset import Subsets as SageSubsets
 
         if self._source in Sets().Finite():
@@ -707,7 +719,9 @@ def finite_ordered_set(
     return _ordered_set_on(tuple(_owned_members(source)))
 
 
-def _owned_members(members: "Iterable[Element | int]") -> tuple:
+def _owned_members(
+    members: "Iterable[Element | int]",
+) -> tuple[Element, ...]:
     r"""Return the members as this preamble's objects.
 
     A Python ``int`` and a Sage ``Integer`` print alike, compare equal and
@@ -724,7 +738,9 @@ def _owned_members(members: "Iterable[Element | int]") -> tuple:
     )
 
 
-def ordered_set_owned_by(elements: "Iterable[Element]") -> "lexicon.OrderedSet":
+def ordered_set_owned_by[E: Element](
+    elements: "Iterable[E]",
+) -> "lexicon.OrderedSet[E]":
     r"""Return the ordered set on ``elements``, in their given order.
 
     Not a *fresh* set: ``TotallyOrderedFiniteSet`` is a unique

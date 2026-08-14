@@ -23,7 +23,7 @@ through the join and are never reimplemented here.
 from __future__ import annotations
 
 from collections.abc import Iterator
-from typing import TYPE_CHECKING
+from typing import cast, Generic, TYPE_CHECKING, TypeVar
 
 from sage.categories.cartesian_product import CartesianProductsCategory
 from sage.categories.category import Category
@@ -42,10 +42,17 @@ if TYPE_CHECKING:
     # abc.abstractmethod (typed, and permits the empty abstract bodies
     # below). Runtime uses Sage's.
     from abc import abstractmethod as abstract_method
+    from sage.categories.morphism import SetMorphism
+    from sage.structure.parent import ElementConstructorInput
 
     from dzack_research.preamble.categories.sets.cardinals import Cardinal
+
+    class _ParentWithIsFinite(SageParent[_E], Generic[_E]):
+        def is_finite(self) -> bool: ...
 else:
     from sage.misc.abstract_method import abstract_method
+
+_E = TypeVar("_E")
 
 _SET_AXIOMS = ("Countable", "Uncountable", "TotallyOrdered")
 
@@ -75,7 +82,7 @@ class CountabilitySubcategoryMethods:
     def Countable(self) -> Category:
         r"""Objects whose underlying set has a chosen computable,
         exhaustive, duplicate-free enumeration."""
-        category = self
+        category = cast(Category, self)
         assert "Uncountable" not in category.axioms(), "Countable and Uncountable are disjoint"
         return category._with_axiom("Countable")
 
@@ -84,13 +91,13 @@ class CountabilitySubcategoryMethods:
         trusted declaration. (The reverse contradiction, ``Uncountable``
         then ``Finite``, is refused by Sage's native finite/infinite
         incompatibility because ``Uncountable`` implies ``Infinite``.)"""
-        category = self
+        category = cast(Category, self)
         assert "Countable" not in category.axioms(), "Countable and Uncountable are disjoint"
         return category._with_axiom("Uncountable")
 
     def TotallyOrdered(self) -> Category:
         r"""Objects whose underlying set is equipped with a total order."""
-        category = self
+        category = cast(Category, self)
         return category._with_axiom("TotallyOrdered")
 
 
@@ -113,11 +120,6 @@ class Sets(Category):
         def Finite(self) -> Sets: ...
         def Infinite(self) -> Sets: ...
         def Facade(self) -> Sets: ...
-        # Sage synthesizes the construction category from the Sage Sets
-        # SubcategoryMethods (covariant-construction machinery), for every
-        # subcategory of Sets; not an axiom, so it does not return Sets.
-        def CartesianProducts(self) -> Category: ...
-
     SubcategoryMethods = CountabilitySubcategoryMethods
 
     class CartesianProducts(CartesianProductsCategory):
@@ -127,6 +129,9 @@ class Sets(Category):
             return [Sets()]
 
         class ParentMethods:
+            if TYPE_CHECKING:
+                def cartesian_factors(self) -> tuple[Sets.ParentMethods, ...]: ...
+
             def cardinality(self) -> Cardinal:
                 r"""Return ``prod(#X_i)`` for the cartesian factors ``X_i``."""
                 from dzack_research.preamble.categories.sets.cardinals import (
@@ -138,6 +143,9 @@ class Sets(Category):
                 )
 
     class ParentMethods:
+        if TYPE_CHECKING:
+            def cardinality(self) -> Cardinal: ...
+
         def is_countable(self) -> bool:
             r"""Whether $|X| \le \aleph_0$.
 
@@ -161,9 +169,9 @@ class FiniteSets(CategoryWithAxiom):
     _base_category_class_and_axiom = (Sets, "Finite")
 
     def extra_super_categories(self) -> list[Category]:
-        return [self.base_category().Countable()]
+        return [cast(Sets, self.base_category()).Countable()]
 
-    def __contains__(self, parent: object) -> bool:
+    def __contains__(self, parent: ElementConstructorInput) -> bool:
         r"""Return whether ``parent`` is a finite set.
 
         Sage's default answers from category placement alone, so an object
@@ -178,9 +186,14 @@ class FiniteSets(CategoryWithAxiom):
 
         if super().__contains__(parent):
             return True
-        return isinstance(parent, Parent) and bool(parent.is_finite())
+        return isinstance(parent, Parent) and bool(
+            cast(_ParentWithIsFinite[ElementConstructorInput], parent).is_finite()
+        )
 
     class ParentMethods:
+        if TYPE_CHECKING:
+            def __iter__(self) -> Iterator[_E]: ...
+
         def cardinality(self) -> Cardinal:
             r"""The exact count, by materializing the chosen enumeration —
             finite sets own the termination-dependent implementation,
@@ -191,15 +204,15 @@ class FiniteSets(CategoryWithAxiom):
             unions).  This is the one-time evaluation witness for a finite
             set whose construction does not: the enumeration runs once and
             the cardinal it yields is the set's stored count from then on."""
-            stored = self.__dict__.get("_owned_cardinality")
+            stored = cast(Cardinal | None, self.__dict__.get("_owned_cardinality"))
             if stored is not None:
                 return stored
 
             from sage.rings.integer_ring import ZZ
 
-            from dzack_research.preamble.categories.sets.cardinals import Cardinal
+            from dzack_research.preamble.categories.sets.cardinals import cardinal
 
-            stored = Cardinal(ZZ(sum(1 for _ in self)))
+            stored = cardinal(ZZ(sum(1 for _ in self)))
             self._owned_cardinality = stored
             return stored
 
@@ -235,12 +248,15 @@ class CountableSets(CategoryWithAxiom):
 
         return [EnumeratedSets()]
 
-    class ParentMethods:
+    class ParentMethods(Generic[_E]):
+        if TYPE_CHECKING:
+            def __iter__(self) -> Iterator[_E]: ...
+
         # Operations of a CHOSEN enumeration, available where one exists;
         # never obligations of countability.  ponytail: they read the
         # enumeration through iteration rather than through the slice object
         # that properly holds it -- see the module note on Slice(f).
-        def __getitem__(self, n: int) -> object:
+        def __getitem__(self, n: int) -> _E:
             r"""The ``n``-th element of the chosen enumeration, ``n >= 0``."""
             assert n >= 0, f"enumeration indices are nonnegative; found {n}"
             for position, element in enumerate(self):
@@ -248,7 +264,7 @@ class CountableSets(CategoryWithAxiom):
                     return element
             assert False, f"index {n} exceeds the enumeration of {self}"
 
-        def index(self, element: object) -> int:
+        def index(self, element: _E) -> int:
             r"""Reverse lookup in the chosen enumeration: terminates for
             members and satisfies ``X[X.index(x)] == x``. No termination
             promise for a nonmember of an infinite parent."""
@@ -257,20 +273,22 @@ class CountableSets(CategoryWithAxiom):
                     return position
             assert False, f"{element} is not in the enumeration of {self}"
 
-        def enumeration_injection(self) -> object:
+        def enumeration_injection(self) -> SetMorphism[_E, Integer]:
             r"""The monomorphism into the SET of nonnegative integers
             realized by the chosen enumeration, ``x -> index(x)``, as an
             element of the actual homset — the constructed effective
             witness of countability. (The codomain is the underlying set of
             the naturals: the injection is a set map, so it forgets the
             semiring structure of its codomain.)"""
-            from sage.categories.homset import Hom  # type: ignore[attr-defined]
+            from sage.categories.homset import Hom
             from sage.categories.morphism import SetMorphism
 
             from dzack_research.preamble.categories.sets.underlying_sets import UnderlyingSet
 
-            target = UnderlyingSet(NonNegativeIntegers())
-            homset = Hom(self, target, SageSets())
+            domain = cast(SageParent[_E], self)
+            naturals = cast(SageParent[Integer], NonNegativeIntegers())
+            target: UnderlyingSet[Integer] = UnderlyingSet(naturals)
+            homset = Hom(domain, target, SageSets())
             # target[n] IS the natural number n (identity enumeration),
             # already normalized into the host parent.
             return SetMorphism(homset, lambda element: target[self.index(element)])
@@ -322,7 +340,7 @@ class TotallyOrderedSets(CategoryWithAxiom):
 _SET_AXIOM_NAMES = ("Finite", "Infinite", "Countable", "Uncountable", "TotallyOrdered")
 
 
-def placement_of(parent: SageParent) -> Sets:
+def placement_of(parent: SageParent[_E]) -> Sets:
     r"""The owned ``Sets()`` placement a parent's declared axioms carry.
 
     Countability, finiteness and order are answers this parent already

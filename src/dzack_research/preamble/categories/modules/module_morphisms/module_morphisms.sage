@@ -12,10 +12,10 @@ if TYPE_CHECKING:
 
 from dzack_research.preamble.utilities import zipsum
 if TYPE_CHECKING:
-    from dzack_research.preamble.lexicon import Group
-    from dzack_research.preamble.lexicon import Module
+    from sage.categories.groups import Group
+    from sage.categories.modules import Module
     from dzack_research.preamble.lexicon import ModuleElement
-    from dzack_research.preamble.lexicon import Vector
+    from sage.structure.element import Vector
 
 from sage.categories.groups import Groups
 from sage.categories.modules import Modules
@@ -37,7 +37,7 @@ if TYPE_CHECKING:
         def group_generators(self) -> TotallyOrderedFiniteSet[ModuleAutomorphism]: ...
 
 from collections.abc import Iterator
-from typing import Any, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 from sage.misc.cachefunc import cached_method
 from sage.categories.homset import Hom, Homset
@@ -48,8 +48,8 @@ from sage.matrix.matrix0 import Matrix
 from sage.modules.free_module_element import FreeModuleElement, vector
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.sets.totally_ordered_finite_set import TotallyOrderedFiniteSet
-from sage.structure.element import Element
-from sage.structure.parent import Parent
+from sage.structure.element import Element, MultiplicativeGroupElement, RingElement
+from sage.structure.parent import ElementConstructorInput, Parent
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.sets.cardinals import Cardinal
@@ -68,7 +68,15 @@ if TYPE_CHECKING:
     # ``ModuleMorphism.__init__`` matches them: the generator morphism itself,
     # a finite dictionary of generator images, or any function on the
     # generating set.  Type-only: nothing constructs it.
-    ModuleMorphismData = SetMorphism | dict | Callable
+    type ModuleMorphismAssignment = dict[
+        ElementConstructorInput,
+        ElementConstructorInput,
+    ]
+    type ModuleMorphismData = (
+        SetMorphism[Element, ModuleElement]
+        | ModuleMorphismAssignment
+        | Callable[[Element], ModuleElement]
+    )
 
     # A homset is a parent whose elements are its morphisms.  The runtime
     # class is a Cython extension type and cannot be subscripted, so the
@@ -131,7 +139,7 @@ class ModuleHomset(ModuleHomsetBase):
             self.domain().module_generator_morphism(),
         )
 
-    def __contains__(self, morphism: object) -> bool:
+    def __contains__(self, morphism: ElementConstructorInput) -> bool:
         return (
             isinstance(morphism, ModuleMorphism)
             and morphism.parent() is self
@@ -219,7 +227,7 @@ def _coordinate_vector(element: "Element") -> FreeModuleElement:
             )
 
 
-def _coefficients(element: "Element") -> dict:
+def _coefficients(element: "Element") -> dict[ElementConstructorInput, RingElement]:
     r"""Return the finite coefficient function of a framed-module element."""
     # Local: at module level these close an import cycle; every element module
     # is built by the time an element is handed over for coefficients.
@@ -261,8 +269,8 @@ def _is_torsion(module: "Module") -> bool:
 
 def _independent_module_generators(
     module: "FramedModuleParent",
-    module_generators: "OrderedSet",
-) -> list:
+    module_generators: "OrderedSet[ModuleElement]",
+) -> list[ModuleElement]:
     r"""Return a basis of the submodule spanned by finite input.
 
     Each input element has finite support in the framing.  Independence is
@@ -304,8 +312,8 @@ def _independent_module_generators(
 
 def _expand_subobject_dict(
     parent: ModuleHomset,
-    images: dict,
-) -> dict:
+    images: "ModuleMorphismAssignment",
+) -> dict[ElementConstructorInput, ModuleElement]:
     r"""Expand a summand-level assignment onto the domain's framed labels.
 
     Both sides are ordered generating sets. A key is a framed module (which
@@ -448,7 +456,7 @@ class ModuleMorphism(Morphism):
             )
         )
 
-    def __add__(self, other: object) -> "ModuleMorphism":
+    def __add__(self, other: ElementConstructorInput) -> "ModuleMorphism":
         r"""Return the pointwise sum \(f+g\).
 
         This is what makes \(\operatorname{Hom}(M,N)\) an abelian group and
@@ -478,7 +486,7 @@ class ModuleMorphism(Morphism):
     def __sub__(self, other: "ModuleMorphism") -> "ModuleMorphism":
         return self + (-other)
 
-    def __mul__(self, other: object) -> "ModuleMorphism":
+    def __mul__(self, other: ElementConstructorInput) -> "ModuleMorphism":
         r"""Return the composite \(f\circ g\).
 
         Sage's generic ``Morphism.__mul__`` builds a formal composite map,
@@ -530,7 +538,7 @@ class ModuleMorphism(Morphism):
             for relation in domain.relation_matrix().rows()
         ), "the assignment does not kill every relation"
 
-    def module_generator_morphism(self) -> SetMorphism:
+    def module_generator_morphism(self) -> SetMorphism[Element, ModuleElement]:
         r"""Return the set morphism whose linear extension is this morphism."""
         return self._generator_morphism
 
@@ -538,7 +546,7 @@ class ModuleMorphism(Morphism):
         r"""Evaluate the generator map on an element already in its domain."""
         return self.module_generator_morphism()._call_(element_of_S)
 
-    def images(self) -> tuple:
+    def images(self) -> tuple[ModuleElement, ...]:
         module_generating_set = self.domain().module_generating_set()
         assert module_generating_set in Sets().Finite(), (
             "listing all images requires a finite framing set"
@@ -572,8 +580,8 @@ class ModuleMorphism(Morphism):
             self._matrix = MorphismMatrix(m)
             return self._matrix
 
-    def _call_(self, element: object) -> "Element":
-        # ``object`` because ``Map._call_`` declares it; the hook runs only
+    def _call_(self, element: ElementConstructorInput) -> "Element":
+        # This hook runs only
         # after ``__call__`` has converted its argument into the domain,
         # which is what the narrowing states.
         assert isinstance(element, Element), f"{element} is not an element"
@@ -818,7 +826,7 @@ class ModuleMorphism(Morphism):
             for element_of_S in module_generating_set
         )
 
-    def __eq__(self, other: object) -> bool:
+    def __eq__(self, other: ElementConstructorInput) -> bool:
         if not isinstance(other, ModuleMorphism) or self.parent() is not other.parent():
             return False
         module_generating_set = self.domain().module_generating_set()
@@ -889,7 +897,7 @@ class ModuleAutomorphism(ModuleMorphism):
             f"the determinant {determinant} is not a unit"
         )
 
-    def __mul__(self, other: object) -> "ModuleAutomorphism":
+    def __mul__(self, other: ElementConstructorInput) -> "ModuleAutomorphism":
         assert (
             isinstance(other, ModuleAutomorphism)
             and other.parent() is self.parent()
@@ -1029,11 +1037,13 @@ class AutomorphismSubgroup:
         )
 
     @cached_method
-    def _by_matrix(self) -> dict:
+    def _by_matrix(self) -> dict[MorphismMatrix, ModuleAutomorphism]:
         r"""Index this group's own elements by their matrices."""
         return {element.matrix(): element for element in self}
 
-    def conjugacy_classes_representatives(self) -> tuple:
+    def conjugacy_classes_representatives(
+        self,
+    ) -> tuple[ModuleAutomorphism, ...]:
         r"""Return one element of this group from each conjugacy class.
 
         In this group's own elements, and in the order the character table is
@@ -1055,7 +1065,7 @@ class AutomorphismSubgroup:
         )
         return representatives
 
-    def irreducible_characters(self) -> tuple:
+    def irreducible_characters(self) -> tuple[Character, ...]:
         r"""Return the absolutely irreducible characters of this group.
 
         Class functions on this group, whatever module it goes on to act on:
@@ -1101,9 +1111,9 @@ class ModuleAutomorphismGroup(
         # this homset's element constructor.
         def __call__(
             self,
-            x: object = ...,
-            *args: object,
-            **kwds: object,
+            x: ElementConstructorInput = ...,
+            *args: ElementConstructorInput,
+            **kwds: ElementConstructorInput,
         ) -> ModuleAutomorphism: ...
 
     def __init__(
@@ -1184,13 +1194,13 @@ class ModuleAutomorphismGroup(
             return Sets.ℵ[0]
         return Cardinal(len(self._elements))
 
-    def __iter__(self) -> Iterator[Any]:
+    def __iter__(self) -> Iterator[ModuleAutomorphism]:
         assert self._elements is not None, (
             "the full automorphism group is not enumerable"
         )
         return iter(self._elements)
 
-    def __contains__(self, element: object) -> bool:
+    def __contains__(self, element: ElementConstructorInput) -> bool:
         return (
             isinstance(element, ModuleAutomorphism)
             and element.parent() is self
@@ -1198,7 +1208,7 @@ class ModuleAutomorphismGroup(
 
     def _close(
         self,
-    ) -> tuple:
+    ) -> tuple[ModuleAutomorphism, ...]:
         identity = self.one()
         elements = set((identity,))
         frontier = [identity]
@@ -1268,7 +1278,10 @@ class GroupActionHomset(GroupActionHomsetBase):
             case _:
                 return GroupAction(self, self._values_on_generators(tuple(images)))
 
-    def _values_on_generators(self, images: "OrderedSet") -> dict:
+    def _values_on_generators(
+        self,
+        images: "OrderedSet[ModuleAutomorphism]",
+    ) -> dict[MultiplicativeGroupElement, ModuleAutomorphism]:
         r"""Extend generator images over \(G\), refusing a broken relation.
 
         The extension is the closure of the assignment over the Cayley graph
@@ -1307,7 +1320,7 @@ class GroupActionHomset(GroupActionHomsetBase):
                         frontier.append(product)
         return values
 
-    def __contains__(self, action: object) -> bool:
+    def __contains__(self, action: ElementConstructorInput) -> bool:
         return (
             isinstance(action, GroupAction)
             and action.parent() is self
@@ -1338,7 +1351,11 @@ class GroupAction(Morphism):
         # inherited implementation is the one that runs.
         def parent(self) -> GroupActionHomset: ...
 
-    def __init__(self, parent: GroupActionHomset, values: dict) -> None:
+    def __init__(
+        self,
+        parent: GroupActionHomset,
+        values: dict[MultiplicativeGroupElement, ModuleAutomorphism],
+    ) -> None:
         Morphism.__init__(self, parent)
         group = parent.domain()
         automorphisms = parent.codomain()
@@ -1362,21 +1379,21 @@ class GroupAction(Morphism):
     def module(self) -> "Module":
         return self.parent().module()
 
-    def _call_(self, element: object) -> ModuleAutomorphism:
+    def _call_(self, element: ElementConstructorInput) -> ModuleAutomorphism:
         assert element in self._values, (
             f"{element} is not an element of this action's group"
         )
         automorphism: ModuleAutomorphism = self._values[element]
         return automorphism
 
-    def values(self) -> dict:
+    def values(self) -> dict[MultiplicativeGroupElement, ModuleAutomorphism]:
         return dict(self._values)
 
     def is_injective(self) -> bool:
         r"""Return whether distinct group elements have distinct images."""
         return len(set(self._values.values())) == len(self._values)
 
-    def __eq__(self, other: object) -> bool:
+    def __eq__(self, other: ElementConstructorInput) -> bool:
         r"""Return whether these are the same homomorphism.
 
         Two homomorphisms out of one group into one \(\operatorname{Aut}\)
@@ -1403,7 +1420,7 @@ class AutomorphismSubgroupInclusion(GroupAction):
     def __init__(self, parent: GroupActionHomset) -> None:
         Morphism.__init__(self, parent)
 
-    def _call_(self, element: object) -> ModuleAutomorphism:
+    def _call_(self, element: ElementConstructorInput) -> ModuleAutomorphism:
         assert element in self.domain(), f"{element} is not in {self.domain()}"
         module = self.module()
         return self.codomain()(
@@ -1416,13 +1433,13 @@ class AutomorphismSubgroupInclusion(GroupAction):
     def is_injective(self) -> bool:
         return True
 
-    def values(self) -> dict:
+    def values(self) -> dict[MultiplicativeGroupElement, ModuleAutomorphism]:
         assert self.domain().is_finite(), (
             "the values of an infinite-group inclusion cannot be enumerated"
         )
         return {element: self(element) for element in self.domain()}
 
-    def __eq__(self, other: object) -> bool:
+    def __eq__(self, other: ElementConstructorInput) -> bool:
         return (
             isinstance(other, AutomorphismSubgroupInclusion)
             and other.parent() is self.parent()

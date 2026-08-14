@@ -15,6 +15,7 @@ and cardinal implementation in ``SetTheory/Ordinal/Arithmetic.lean`` and
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 from sage.categories.semirings import Semirings
 from sage.rings.integer import Integer
@@ -22,6 +23,14 @@ from sage.rings.integer_ring import ZZ
 from sage.structure.element import Element
 from sage.structure.parent import Parent
 from sage.structure.unique_representation import UniqueRepresentation
+
+if TYPE_CHECKING:
+    from dzack_research.preamble.categories.sets.cardinals import Cardinal
+    from sage.structure.parent import ElementConstructorInput
+
+    class _OrdinalParent(Parent[Ordinal]): ...
+else:
+    _OrdinalParent = Parent
 
 
 @dataclass(frozen=True)
@@ -74,7 +83,7 @@ type _OrdinalExpression = (
 type OrdinalInput = Ordinal | Integer | int
 
 
-class Ordinals(UniqueRepresentation, Parent):
+class Ordinals(UniqueRepresentation, _OrdinalParent):
     r"""The Sage parent of ordinals with natural semiring arithmetic."""
 
     def __init__(self) -> None:
@@ -188,10 +197,12 @@ class Ordinal(Element):
     def __hash__(self) -> int:
         return hash(self.expression())
 
-    def __eq__(self, other: OrdinalInput) -> bool:
+    def __eq__(self, other: ElementConstructorInput) -> bool:
+        if not isinstance(other, (Ordinal, Integer, int)):
+            return False
         return self.expression() == Ordinals()(other).expression()
 
-    def __ne__(self, other: OrdinalInput) -> bool:
+    def __ne__(self, other: ElementConstructorInput) -> bool:
         return not self == other
 
     def __le__(self, other: OrdinalInput) -> bool:
@@ -278,7 +289,7 @@ class Ordinal(Element):
             raise ValueError(f"{self} is not an initial ordinal")
         return expression.index
 
-    def cardinality(self):
+    def cardinality(self) -> Cardinal:
         r"""Return the cardinal of this ordinal."""
         from dzack_research.preamble.categories.sets.cardinals import (
             Cardinalities,

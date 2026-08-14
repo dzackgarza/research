@@ -29,18 +29,27 @@ holds the invariant: an operation exists here or it does not exist at all.
 
 from __future__ import annotations
 
+import builtins
+from collections.abc import Iterable
 from copy import copy
-from typing import TYPE_CHECKING, Any
+from typing import overload, TYPE_CHECKING
 
 from sage.matrix.constructor import matrix as _matrix
 from sage.matrix.matrix_integer_dense import Matrix_integer_dense
 from sage.rings.integer_ring import ZZ as _ZZ
-from sage.structure.element import Matrix
+from sage.structure.element import Matrix, RingElement, Vector
+from sage.structure.parent import ElementConstructorInput
 
 if TYPE_CHECKING:
     from dzack_research.preamble.lexicon.algebra import BaseRing, Element, Ring
     from dzack_research.preamble.lexicon.foundations import Integer, Rational, RawMorphismMatrix
     from dzack_research.preamble.categories.sets.cardinals import Cardinal
+    from sage.groups.matrix_gps.finitely_generated import (
+        FinitelyGeneratedMatrixGroup_generic,
+    )
+    from sage.groups.matrix_gps.finitely_generated_gap import (
+        FinitelyGeneratedMatrixGroup_gap,
+    )
 
 __all__ = ["MorphismMatrix"]
 
@@ -48,7 +57,14 @@ __all__ = ["MorphismMatrix"]
 class MorphismMatrix:
     r"""The matrix of a morphism of free $R$-modules in chosen generating sets."""
 
-    def __init__(self, entries: RawMorphismMatrix, base_ring: BaseRing = None) -> None:
+    _matrix: Matrix[RingElement]
+
+    def __init__(
+        self,
+        entries: RawMorphismMatrix | MorphismMatrix,
+        base_ring: BaseRing | None = None,
+    ) -> None:
+        built: Matrix[RingElement]
         match entries:
             case MorphismMatrix():
                 built = entries._matrix
@@ -74,7 +90,7 @@ class MorphismMatrix:
         r"""Return the underlying Sage matrix. DSL-internal."""
         return self._matrix
 
-    def _matrix_(self, base_ring: Ring = None) -> Matrix:
+    def _matrix_(self, base_ring: Ring | None = None) -> Matrix:
         r"""Sage's conversion protocol, so ``M in G`` works as containment.
 
         Asking whether a morphism matrix lies in a matrix group is ordinary
@@ -96,14 +112,16 @@ class MorphismMatrix:
     def ncols(self) -> int:
         return self._matrix.ncols()
 
-    def dimensions(self) -> tuple:
+    def dimensions(self) -> tuple[int, int]:
         r"""Return ``(nrows, ncols)``: the sizes of the two framings."""
         return (self.nrows(), self.ncols())
 
     def rank(self) -> Cardinal:
-        return self._matrix.rank()
+        from dzack_research.preamble.categories.sets.cardinals import cardinal
 
-    def det(self) -> Rational:
+        return cardinal(self._matrix.rank())
+
+    def det(self) -> RingElement:
         return self._matrix.det()
 
     def trace(self) -> Element:
@@ -128,13 +146,16 @@ class MorphismMatrix:
         """
         return bool(self._matrix.is_one())
 
-    def rows(self) -> list:
+    def rows(self) -> builtins.list[Vector]:
         return self._matrix.rows()
 
-    def list(self) -> list:
+    def list(self) -> builtins.list[RingElement]:
         return self._matrix.list()
 
-    def __getitem__(self, key: Integer) -> Element:
+    def __getitem__(
+        self,
+        key: tuple[int | Integer, int | Integer],
+    ) -> RingElement:
         return self._matrix[key]
 
     # -- operations that stay morphism matrices ----------------------------
@@ -154,12 +175,14 @@ class MorphismMatrix:
     def change_ring(self, ring: Ring) -> MorphismMatrix:
         return MorphismMatrix(self._matrix.change_ring(ring))
 
-    def stack(self, other: object) -> MorphismMatrix:
+    def stack(self, other: MorphismMatrix | Matrix) -> MorphismMatrix:
         return MorphismMatrix(self._matrix.stack(_underlying(other)))
 
     def hermite_form(
-        self, transformation: bool = False, **kwargs: Any
-    ) -> MorphismMatrix | tuple:
+        self,
+        transformation: bool = False,
+        **kwargs: ElementConstructorInput,
+    ) -> MorphismMatrix | tuple[MorphismMatrix, MorphismMatrix]:
         r"""Return the Hermite form, with its transformation when asked.
 
         ``transformation=True`` makes Sage return the pair $(H,U)$ with
@@ -194,7 +217,9 @@ class MorphismMatrix:
             self._matrix.hermite_form(include_zero_rows=include_zero_rows)
         )
 
-    def smith_form(self) -> tuple:
+    def smith_form(
+        self,
+    ) -> tuple[MorphismMatrix, MorphismMatrix, MorphismMatrix]:
         normal, left, right = self._matrix.smith_form()
         return (
             MorphismMatrix(normal),
@@ -217,13 +242,21 @@ class MorphismMatrix:
         integral: Matrix_integer_dense = self._matrix.change_ring(_ZZ)
         return MorphismMatrix(integral.LLL())
 
-    def __mul__(self, other: object) -> MorphismMatrix:
+    def __mul__(
+        self,
+        other: MorphismMatrix | Matrix | RingElement | int,
+    ) -> MorphismMatrix:
         product = self._matrix * _underlying(other)
-        return MorphismMatrix(product) if isinstance(product, Matrix) else product
+        assert isinstance(product, Matrix), "matrix multiplication must return a matrix"
+        return MorphismMatrix(product)
 
-    def __rmul__(self, other: object) -> MorphismMatrix:
+    def __rmul__(
+        self,
+        other: MorphismMatrix | Matrix | RingElement | int,
+    ) -> MorphismMatrix:
         product = _underlying(other) * self._matrix
-        return MorphismMatrix(product) if isinstance(product, Matrix) else product
+        assert isinstance(product, Matrix), "matrix multiplication must return a matrix"
+        return MorphismMatrix(product)
 
     # -- nullspaces: private, and matrices ---------------------------------
 
@@ -237,15 +270,17 @@ class MorphismMatrix:
 
     # -- subdivisions are display data -------------------------------------
 
-    def subdivide(self, *args: Any) -> None:
+    def subdivide(self, *args: ElementConstructorInput) -> None:
         self._matrix.subdivide(*args)
 
-    def subdivisions(self) -> tuple:
+    def subdivisions(
+        self,
+    ) -> tuple[builtins.list[int], builtins.list[int]]:
         return self._matrix.subdivisions()
 
     # -- identity ----------------------------------------------------------
 
-    def __eq__(self, other: object) -> bool:
+    def __eq__(self, other: ElementConstructorInput) -> bool:
         return isinstance(other, MorphismMatrix) and self._matrix == other._matrix
 
     def __hash__(self) -> int:
@@ -262,10 +297,12 @@ class MorphismMatrix:
     def _latex_(self) -> str:
         from sage.misc.latex import latex
 
-        return latex(self._matrix)
+        return str(latex(self._matrix))
 
 
-def matrix_group(generators: Iterable[MorphismMatrix]) -> Any:
+def matrix_group(
+    group_generators: Iterable[MorphismMatrix],
+) -> FinitelyGeneratedMatrixGroup_gap | FinitelyGeneratedMatrixGroup_generic:
     r"""Return the GAP-backed matrix group these generate.
 
     Handing a group to GAP is the one legitimate reason to unwrap these
@@ -277,13 +314,26 @@ def matrix_group(generators: Iterable[MorphismMatrix]) -> Any:
     """
     from sage.groups.matrix_gps.finitely_generated import MatrixGroup
 
-    generators = tuple(generators)
-    assert generators, "a matrix group needs a generator"
+    group_generators = tuple(group_generators)
+    assert group_generators, "a matrix group needs a generator"
     assert all(
-        isinstance(generator, MorphismMatrix) for generator in generators
+        isinstance(group_generator, MorphismMatrix)
+        for group_generator in group_generators
     ), "a matrix group here is generated by morphism matrices"
-    return MatrixGroup([generator._matrix for generator in generators])
+    return MatrixGroup(
+        [group_generator._matrix for group_generator in group_generators]
+    )
 
 
-def _underlying(value: Element) -> Matrix:
+@overload
+def _underlying(value: MorphismMatrix | Matrix) -> Matrix: ...
+
+
+@overload
+def _underlying(value: RingElement | int) -> RingElement | int: ...
+
+
+def _underlying(
+    value: MorphismMatrix | Matrix | RingElement | int,
+) -> Matrix | RingElement | int:
     return value._sage_matrix() if isinstance(value, MorphismMatrix) else value
