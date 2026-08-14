@@ -11,7 +11,7 @@ from sage.categories.category import Category
 from sage.structure.element import Element
 from sage.structure.parent import Parent
 
-_E = TypeVar("_E", bound=Element, default=Element, covariant=True)
+_E = TypeVar("_E", default=Element, covariant=True)
 
 class Sets(Category):
     def __init__(self) -> None: ...
