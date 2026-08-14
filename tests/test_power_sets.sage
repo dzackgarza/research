@@ -51,8 +51,9 @@ def test_characteristic_morphisms_construct_power_set_elements() -> None:
     integers = own_ring(ZZ)
     truth_values = Sets.Δ[1]
     subsets = PowerSet(integers)
+    integer_set = subsets.source()
     characteristic_of_evens = SetMorphism(
-        Hom(integers, truth_values, Sets()),
+        Hom(integer_set, truth_values, Sets()),
         lambda n: truth_values(1 if n % 2 == 0 else 0),
     )
 
@@ -62,13 +63,14 @@ def test_characteristic_morphisms_construct_power_set_elements() -> None:
     assert 24 in evens
     assert 25 not in evens
     assert evens.characteristic_morphism() is characteristic_of_evens
-    assert evens.inclusion().codomain() is integers
+    assert evens.inclusion().codomain() is integer_set
 
 
 def test_predicates_construct_infinite_subsets_without_enumeration() -> None:
     r"""A decidable predicate presents a first-class infinite subobject."""
     integers = own_ring(ZZ)
     subsets = PowerSet(integers)
+    integer_set = subsets.source()
     nonnegative = subsets.from_predicate(lambda n: n >= 0)
 
     assert nonnegative in subsets
@@ -145,8 +147,12 @@ def test_inverse_image_makes_power_set_contravariant() -> None:
     r"""A map f: X -> Y induces f^-1: P(Y) -> P(X)."""
     naturals = Sets.Δ[aleph0]
     integers = own_ring(ZZ)
-    inclusion = SetMorphism(Hom(naturals, integers, Sets()), lambda n: integers(n))
     integer_subsets = PowerSet(integers)
+    integer_set = integer_subsets.source()
+    inclusion = SetMorphism(
+        Hom(naturals, integer_set, Sets()),
+        lambda n: integer_set(n),
+    )
     natural_subsets = PowerSet(naturals)
     even_integers = integer_subsets.from_predicate(lambda n: n % 2 == 0)
 
