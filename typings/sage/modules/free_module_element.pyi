@@ -1,15 +1,13 @@
-# General vector-element contract; generic in the scalar with the exact
-# ZZ/QQ regime as default (see structure/element.pyi). Verified by
-# lexicon/verify_against_sage.py.
-from typing import Any, Generic, overload
-
-from typing_extensions import TypeVar
+# General vector-element contract; generic in the scalar, defaulting to its
+# bound RingElement — the entries of a vector over R are elements of R (see
+# structure/element.pyi). Verified by lexicon/verify_against_sage.py.
+from typing import Any, Generic, TypeVar, overload
 
 from sage.rings.integer import Integer
 from sage.rings.rational import Rational
 from sage.structure.element import Matrix, RingElement, Vector
 
-_Scalar = TypeVar("_Scalar", bound=RingElement, default=Integer | Rational)
+_Scalar = TypeVar("_Scalar", bound=RingElement, default=RingElement)
 
 class FreeModuleElement(Vector[_Scalar], Generic[_Scalar]):
     # Arithmetic is closed on concrete free-module elements.
@@ -26,7 +24,6 @@ class FreeModuleElement(Vector[_Scalar], Generic[_Scalar]):
     def __floordiv__(self, other: int | _Scalar) -> FreeModuleElement[_Scalar]: ...
     def norm(self) -> _Scalar: ...
 
-# The exact ZZ/QQ regime is this repo's default scalar union (INVENTORY III):
-# entries of exact vectors are Integer | Rational whichever exact base ring
-# built them, so composition with default-parametrized Matrix/Vector is seamless.
+# The exact ZZ/QQ regime, stated explicitly (INVENTORY III): entries of exact
+# vectors are Integer | Rational whichever exact base ring built them.
 def vector(*args: Any, **kwds: Any) -> FreeModuleElement[Integer | Rational]: ...

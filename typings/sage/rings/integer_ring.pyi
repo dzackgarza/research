@@ -1,12 +1,11 @@
 # Repo-scoped stubs; see lexicon/README.md.
 from collections.abc import Iterator
-from typing import Any
 
 from sage.categories.rings import Rings
 from sage.modules.free_module import FreeModule_generic
+from sage.rings.finite_rings.integer_mod_ring import IntegerModRing_generic
 from sage.rings.ideal import Ideal_pid
 from sage.rings.integer import Integer
-from sage.rings.finite_rings.integer_mod_ring import IntegerModRing_generic
 from sage.structure.parent import Parent
 
 class IntegerRing_class(Rings.ParentMethods, Parent):
@@ -21,7 +20,9 @@ class IntegerRing_class(Rings.ParentMethods, Parent):
     def __iter__(self) -> Iterator[Integer]: ...
     def __contains__(self, x: object) -> bool: ...
     def __rmul__(self, other: int | Integer) -> Ideal_pid: ...
-    def __pow__(self, n: int | Integer) -> FreeModule_generic[Any]: ...
+    # ZZ^n is the free module over ZZ, entries in ZZ (verified: ZZ**2 is a
+    # FreeModule_ambient_pid over the Integer Ring).
+    def __pow__(self, n: int | Integer) -> FreeModule_generic[Integer]: ...
     def ideal(self, *args: object, **kwds: object) -> Ideal_pid[Integer]: ...
     def quotient(
         self,

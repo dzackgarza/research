@@ -1,11 +1,10 @@
 # Repo-scoped stubs; see lexicon/README.md.
 from collections.abc import Iterator
-from typing import Any
 
 from sage.categories.fields import Fields
 from sage.modules.free_module import FreeModule_generic
-from sage.rings.rational import Rational
 from sage.rings.integer import Integer
+from sage.rings.rational import Rational
 from sage.structure.parent import Parent
 
 class RationalField(Fields.ParentMethods, Parent):
@@ -17,6 +16,8 @@ class RationalField(Fields.ParentMethods, Parent):
     # Native height-ordered enumeration 0, 1, -1, 1/2, -1/2, 2, -2, ...
     def __iter__(self) -> Iterator[Rational]: ...
     def __contains__(self, x: object) -> bool: ...
-    def __pow__(self, n: int | Integer) -> FreeModule_generic[Any]: ...
+    # QQ^n is the free module over QQ, entries in QQ (verified: QQ**2 is a
+    # free module over the Rational Field).
+    def __pow__(self, n: int | Integer) -> FreeModule_generic[Rational]: ...
 
 QQ: RationalField
