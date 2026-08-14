@@ -155,8 +155,8 @@ def test_inverse_image_makes_power_set_contravariant() -> None:
     inverse_image = integer_subsets.inverse_image_morphism(inclusion)
     even_naturals = inverse_image(even_integers)
 
-    assert inverse_image.domain() is integer_subsets
-    assert inverse_image.codomain() is natural_subsets
+    assert inverse_image.domain() == integer_subsets
+    assert inverse_image.codomain() == natural_subsets
     assert even_naturals in natural_subsets
     assert 12 in even_naturals
     assert 13 not in even_naturals
@@ -208,8 +208,8 @@ def test_direct_and_inverse_images_satisfy_the_subset_adjunction() -> None:
     direct_image = source_subsets.direct_image_morphism(residue)
     inverse_image = target_subsets.inverse_image_morphism(residue)
 
-    assert direct_image.domain() is source_subsets
-    assert direct_image.codomain() is target_subsets
+    assert direct_image.domain() == source_subsets
+    assert direct_image.codomain() == target_subsets
     assert direct_image(selected) == target_subsets({0, 1})
     assert direct_image(selected) <= upper_bound
     assert selected <= inverse_image(upper_bound)
@@ -248,7 +248,7 @@ def test_cantor_inequality_holds_for_the_standard_catalogue() -> None:
     )
 
     for source in specimens:
-        assert source.cardinality() < PowerSet(source).cardinality()
+        assert cardinal(source.cardinality()) < PowerSet(source).cardinality()
 
 
 def test_iterated_power_sets_contain_subsets_of_the_previous_power_set() -> None:
