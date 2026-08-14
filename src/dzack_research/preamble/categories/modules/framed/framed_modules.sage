@@ -310,7 +310,9 @@ class FramedModules(OwnedCategoryOverBaseRing):
             from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 
             if codomain in FramedModules(self.base_ring()):
-                homset: "ModuleHomset" = module_homset(self, codomain)
+                homset: "ModuleHomset[Self, Module]" = module_homset(
+                    self, codomain
+                )
                 return homset
             return Parent.Hom(self, codomain, category)
 
@@ -332,4 +334,3 @@ class FramedModules(OwnedCategoryOverBaseRing):
             from dzack_research.preamble.categories.functors.base_change_adjunction import fraction_field_base_change
 
             return fraction_field_base_change(self.base_ring())(self)
-
