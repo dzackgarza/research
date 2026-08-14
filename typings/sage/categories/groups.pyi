@@ -1,22 +1,29 @@
 # Repo-scoped stubs; see lexicon/README.md.
 from collections.abc import Iterable
+from typing import Generic, TypeVar
 
 from sage.categories.category import Category
 from sage.categories.category_with_axiom import CategoryWithAxiom
-from sage.structure.element import Element
+from sage.structure.element import MultiplicativeGroupElement
+from sage.structure.parent import Parent
+
+_E = TypeVar(
+    "_E",
+    bound=MultiplicativeGroupElement,
+    default=MultiplicativeGroupElement,
+    covariant=True,
+)
 
 class Groups(Category):
     def Commutative(self) -> Category: ...
     # Registered by the TopologicalSpaces functorial construction.
     def Topological(self) -> Category: ...
 
-    class ParentMethods:
-        # sage/categories/groups.py — the default implementations the owned
-        # category calls explicitly before refining placement. The explicit
-        # ``self: object`` admits unbound calls on any refined parent, which
-        # is how dynamic_class applies these mixins.
-        def group_generators(self: object) -> Iterable[Element]: ...
-        def one(self: object) -> Element: ...
+    class ParentMethods(Parent[_E], Generic[_E]):
+        # sage/categories/groups.py supplies these methods to each group
+        # parent through Sage's dynamic category classes.
+        def group_generators(self) -> Iterable[_E]: ...
+        def one(self) -> _E: ...
 
     # The element-side surface (lexicon ``GroupElement``); element classes
     # declare their own arithmetic, so the category marker stays empty like
