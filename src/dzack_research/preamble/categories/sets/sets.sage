@@ -145,12 +145,9 @@ class PowerSetParent(UniqueRepresentation, SubsetsParent):
         yield from SageSubsets(self._source)
 
     def cardinality(self) -> Cardinal:
-        from dzack_research.preamble.categories.sets.cardinals import Cardinal as OwnedCardinal
-        from dzack_research.preamble.categories.sets.cardinals import continuum
+        from dzack_research.preamble.categories.sets.cardinals import cardinal
 
-        if self._source not in Sets().Finite():
-            return continuum
-        return OwnedCardinal(2 ** int(self._source.cardinality()))
+        return cardinal(2) ** self._source.cardinality()
 
     def _repr_(self) -> str:
         return f"Power set of {self._source}"
@@ -452,20 +449,14 @@ setattr(Sets, "Δ", _DELTA)
 
 
 class _Aleph:
-    r"""Selected aleph cardinal symbols used as ordinal indices."""
+    r"""The finite-index aleph cardinals."""
 
     def __getitem__(self, n: "Integer | int") -> "Cardinal":
         match n:
             case int() | SageInteger():
-                if n == 0:
-                    from dzack_research.preamble.categories.sets.cardinals import aleph0
+                from dzack_research.preamble.categories.sets.cardinals import aleph
 
-                    return aleph0
-                if n == 1:
-                    from dzack_research.preamble.categories.sets.cardinals import continuum
-
-                    return continuum
-                assert False, "aleph index is only defined for 0 and 1"
+                return aleph(n)
             case _:
                 assert False, f"aleph expects an integer, got {n!r}"
 

@@ -27,6 +27,8 @@ from sage.structure.parent import Parent
 if TYPE_CHECKING:
     from typing import Protocol
 
+    from dzack_research.preamble.categories.sets.cardinals import Cardinal
+
     # The ordered-set noun is type-only: the preamble loads into one
     # shared namespace and nothing named OrderedSet may bind there.
     from dzack_research.preamble.lexicon import Module, OrderedSet
@@ -521,6 +523,16 @@ class CartesianProductOfSets(CartesianProductParent):
 
     def factors(self) -> "tuple[Parent, ...]":
         return self._factors
+
+    def cardinality(self) -> "Cardinal":
+        r"""Return ``prod(#X_i)`` for the factors ``X_i``."""
+        from dzack_research.preamble.categories.sets.cardinals import (
+            Cardinalities,
+        )
+
+        return Cardinalities().product(
+            *(factor.cardinality() for factor in self._factors)
+        )
 
     def __iter__(self) -> "Iterator[tuple[Element, ...]]":
         from itertools import product as _product
