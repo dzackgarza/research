@@ -4,8 +4,8 @@ import builtins
 from collections.abc import Iterator
 from typing import Any, Literal, TypeVar, overload
 
-from sage.rings.integer import Integer
 from sage.groups.finitely_presented import FinitelyPresentedGroup
+from sage.rings.integer import Integer
 from sage.structure.parent import Parent
 
 _Point = TypeVar("_Point")
