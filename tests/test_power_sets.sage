@@ -20,8 +20,10 @@ def test_power_set_accepts_finite_and_canonical_infinite_subsets() -> None:
     r"""A member of P(X) is a subset of X, not only a finite enumeration."""
     naturals = Sets.Δ[aleph0]
     integers = own_ring(ZZ)
+    natural_subsets = PowerSet(naturals)
 
-    assert {1, 2, 3} in PowerSet(naturals)
+    assert {1, 2, 3} in natural_subsets
+    assert natural_subsets({1, 2, 3}) == natural_subsets({3, 2, 1})
     assert naturals in PowerSet(integers)
     assert {2, 3, 5} in PowerSet(Primes())
     assert {2, 4} not in PowerSet(Primes())
