@@ -53,7 +53,7 @@ def test_characteristic_morphisms_construct_power_set_elements() -> None:
     integers = own_ring(ZZ)
     truth_values = Sets.Δ[1]
     subsets = PowerSet(integers)
-    integer_set = subsets.source()
+    integer_set = subsets.base_set()
     characteristic_of_evens = SetMorphism(
         Hom(integer_set, truth_values, Sets()),
         lambda n: truth_values(1 if n % 2 == 0 else 0),
@@ -69,10 +69,10 @@ def test_characteristic_morphisms_construct_power_set_elements() -> None:
 
 
 def test_predicates_construct_infinite_subsets_without_enumeration() -> None:
-    r"""A decidable predicate presents a first-class infinite subobject."""
+    r"""A decidable predicate defines an infinite subset."""
     integers = own_ring(ZZ)
     subsets = PowerSet(integers)
-    integer_set = subsets.source()
+    integer_set = subsets.base_set()
     nonnegative = subsets.from_predicate(lambda n: n >= 0)
 
     assert nonnegative in subsets
@@ -151,7 +151,7 @@ def test_inverse_image_makes_power_set_contravariant() -> None:
     naturals = Sets.Δ[aleph0]
     integers = own_ring(ZZ)
     integer_subsets = PowerSet(integers)
-    integer_set = integer_subsets.source()
+    integer_set = integer_subsets.base_set()
     inclusion = SetMorphism(
         Hom(naturals, integer_set, Sets()),
         lambda n: integer_set(n),
@@ -199,7 +199,7 @@ def test_inverse_image_respects_identity_composition_and_boolean_operations() ->
     ).complement()
 
 
-def test_direct_and_inverse_images_satisfy_the_subset_adjunction() -> None:
+def test_direct_image_is_left_adjoint_to_inverse_image() -> None:
     r"""For f: X -> Y, direct image is left adjoint to inverse image."""
     source = Sets.Δ[5]
     target = Sets.Δ[2]
@@ -259,7 +259,7 @@ def test_cantor_inequality_holds_for_the_standard_catalogue() -> None:
 
 
 def test_iterated_power_sets_contain_subsets_of_the_previous_power_set() -> None:
-    r"""P(P(X)) contains families of subsets of X as first-class elements."""
+    r"""P(P(X)) contains families of subsets of X."""
     naturals = Sets.Δ[aleph0]
     subsets = PowerSet(naturals)
     families = PowerSet(subsets)

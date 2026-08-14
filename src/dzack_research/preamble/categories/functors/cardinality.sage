@@ -84,7 +84,7 @@ class CardinalityFunctor(Functor):
         source = self._apply_functor(power_set)
         target = self.codomain().power(
             2,
-            self._apply_functor(power_set.source()),
+            self._apply_functor(power_set.base_set()),
         )
         assert source == target, "#P(X) equals 2 ^ #X"
         return self.codomain().hom(source, target).identity()
