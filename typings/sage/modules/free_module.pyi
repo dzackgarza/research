@@ -1,24 +1,22 @@
-# General free-module contract; generic in the scalar with the exact ZZ/QQ
-# regime as default (see structure/element.pyi). Verified by
-# lexicon/verify_against_sage.py.
+# General free-module contract; generic in the scalar, defaulting to its
+# bound RingElement — the elements of a free module over R are elements of R
+# (see structure/element.pyi). Verified by lexicon/verify_against_sage.py.
 from collections.abc import Callable, Iterable, Sequence
-from typing import Any, Generic, Literal
-
-from typing_extensions import TypeVar
+from typing import Any, Generic, Literal, TypeVar
 
 from sage.categories.category import Category
+from sage.categories.modules import Modules
 from sage.modules.fg_pid.fgp_module import FGP_Module_class
 from sage.modules.free_module_element import FreeModuleElement
 from sage.modules.free_module_morphism import FreeModuleMorphism
 from sage.rings.infinity import PlusInfinity
 from sage.rings.integer import Integer
-from sage.rings.rational import Rational
 from sage.structure.element import Element, Matrix, RingElement, Vector
 from sage.structure.parent import Parent
 
-_Scalar = TypeVar("_Scalar", bound=RingElement, default=Integer | Rational)
+_Scalar = TypeVar("_Scalar", bound=RingElement, default=RingElement)
 
-class FreeModule_generic(Parent[FreeModuleElement[_Scalar]], Generic[_Scalar]):
+class FreeModule_generic(Modules.ParentMethods[FreeModuleElement[_Scalar]], Generic[_Scalar]):
     def zero(self) -> FreeModuleElement[_Scalar]: ...
     def rank(self) -> Integer: ...
     def dimension(self) -> Integer: ...

@@ -5,15 +5,15 @@
 # coordinate bridge to Sage goes through them.
 from collections.abc import Iterable, Iterator
 
+from sage.categories.modules import Modules
 from sage.modules.fg_pid.fgp_element import FGP_Element
 from sage.modules.fg_pid.fgp_morphism import FGP_Morphism
 from sage.modules.free_module import FreeModule_generic
 from sage.rings.ideal import Ideal_pid
 from sage.rings.integer import Integer
 from sage.structure.element import Element
-from sage.structure.parent import Parent
 
-class FGP_Module_class(Parent[FGP_Element]):
+class FGP_Module_class(Modules.ParentMethods[FGP_Element]):
     def V(self) -> FreeModule_generic: ...
     def W(self) -> FreeModule_generic: ...
     def gens(self) -> tuple[FGP_Element, ...]: ...
