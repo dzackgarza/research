@@ -76,6 +76,7 @@ def test_predicates_construct_infinite_subsets_without_enumeration() -> None:
     assert nonnegative in subsets
     assert 13 in nonnegative
     assert -1 not in nonnegative
+    assert nonnegative.inclusion().codomain() is integer_set
     assert nonnegative.characteristic_morphism()(13) == Sets.Δ[1](1)
     assert nonnegative.characteristic_morphism()(-1) == Sets.Δ[1](0)
 
@@ -267,5 +268,5 @@ def test_iterated_power_sets_contain_subsets_of_the_previous_power_set() -> None
     assert family in families
     assert small_primes in family
     assert small_squares in family
-    assert subsets.top() in families
+    assert subsets.top() in families.top()
     assert families.cardinality() == cardinal(2) ** continuum
