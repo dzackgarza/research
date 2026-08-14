@@ -2,7 +2,19 @@ r"""Mathematical tests for ordinals, cardinals, and the cardinality functor."""
 
 import dzack_research.preamble.categories.abstract_categories.cat
 
-from sage.rings.real_mpfr import RealField
+from sage.all import (
+    CC,
+    GF,
+    MatrixSpace,
+    PolynomialRing,
+    PowerSeriesRing,
+    QQ,
+    QQbar,
+    QuadraticField,
+    Qp,
+    RR,
+    ZZ,
+)
 
 from dzack_research.preamble.categories.abstract_categories.products import (
     CartesianProductOfSets,
@@ -114,7 +126,7 @@ def test_power_set_of_naturals_and_real_line_have_the_continuum() -> None:
     r"""|P(N)| = 2^ℵ₀ = |R|, independently of CH."""
     naturals = Sets.Δ[aleph0]
     subsets = PowerSet(naturals)
-    real_line = own_ring(RealField())
+    real_line = own_ring(RR)
     cardinality = cardinality_functor()
 
     assert cardinality(naturals) == aleph0
@@ -123,3 +135,45 @@ def test_power_set_of_naturals_and_real_line_have_the_continuum() -> None:
 
     comparison = cardinality.power_set_comparison(subsets)
     assert comparison.domain() == comparison.codomain() == continuum
+
+
+def test_standard_mathematical_objects_have_their_exact_cardinals() -> None:
+    r"""Standard finite, countable, and continuum objects retain their sizes."""
+    finite_objects = (
+        (Set([]), cardinal(0)),
+        (Sets.Δ[4], cardinal(5)),
+        (own_ring(GF(7)), cardinal(7)),
+    )
+    countable_objects = (
+        own_ring(ZZ),
+        own_ring(QQ),
+        own_ring(QQbar),
+        own_ring(PolynomialRing(QQ, "x")),
+        own_ring(QuadraticField(2, "a")),
+        own_ring(MatrixSpace(QQ, 2)),
+    )
+    continuum_objects = (
+        own_ring(RR),
+        own_ring(CC),
+        own_ring(Qp(5)),
+        own_ring(PowerSeriesRing(QQ, "t")),
+        own_ring(MatrixSpace(RR, 2)),
+        PowerSet(Sets.Δ[aleph0]),
+    )
+
+    for mathematical_object, expected in finite_objects:
+        assert mathematical_object.cardinality() == expected
+    for mathematical_object in countable_objects:
+        assert mathematical_object.cardinality() == aleph0
+    for mathematical_object in continuum_objects:
+        assert mathematical_object.cardinality() == continuum
+
+    countable_product = CartesianProductOfSets(
+        (own_ring(ZZ), own_ring(PolynomialRing(QQ, "y")))
+    )
+    continuum_product = CartesianProductOfSets((own_ring(ZZ), own_ring(RR)))
+    continuum_coproduct = CoproductOfSets((own_ring(QQbar), own_ring(CC)))
+
+    assert countable_product.cardinality() == aleph0
+    assert continuum_product.cardinality() == continuum
+    assert continuum_coproduct.cardinality() == continuum
