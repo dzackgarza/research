@@ -3,6 +3,7 @@ from collections.abc import Callable
 from typing import Generic, Self, TypeVar
 
 from sage.categories.category import Category
+from sage.categories.homset import Homset
 from sage.categories.map import Map
 from sage.structure.element import Element
 from sage.structure.parent import Parent
@@ -13,7 +14,14 @@ _SourceElement = TypeVar("_SourceElement")
 _IdentityElement = TypeVar("_IdentityElement", default=Element)
 
 class Morphism(Map[_DomainElement, _CodomainElement], Generic[_DomainElement, _CodomainElement]):
-    def __init__(self, parent: Parent[Self]) -> None: ...
+    def __init__(
+        self,
+        parent: Homset[
+            Map[_DomainElement, _CodomainElement],
+            _DomainElement,
+            _CodomainElement,
+        ],
+    ) -> None: ...
     # The domain and codomain of a morphism are objects of its category,
     # realized as Sage parents (verified on ring homomorphisms).
     def domain(self) -> Parent[_DomainElement]: ...
@@ -32,7 +40,11 @@ class IdentityMorphism(Morphism[_IdentityElement, _IdentityElement]): ...
 
 class SetMorphism(Morphism[_DomainElement, _CodomainElement]):
     def __init__(
-        self: Self,
-        parent: Parent[Self],
+        self,
+        parent: Homset[
+            Map[_DomainElement, _CodomainElement],
+            _DomainElement,
+            _CodomainElement,
+        ],
         function: Callable[[_DomainElement], _CodomainElement],
     ) -> None: ...

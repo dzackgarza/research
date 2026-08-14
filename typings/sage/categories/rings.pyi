@@ -13,7 +13,7 @@ from sage.categories.category import Category
 from sage.modules.free_module import FreeModule_generic
 from sage.rings.integer import Integer
 from sage.structure.element import RingElement
-from sage.structure.parent import Parent
+from sage.structure.parent import ElementConstructorInput, MembershipInput, Parent
 
 _E = TypeVar("_E", bound=RingElement, default=RingElement, covariant=True)
 
@@ -25,8 +25,13 @@ class Rings(Category):
     # verifier checks it extensionally through representative parents, never
     # by issubclass).
     class ParentMethods(Parent[_E], Generic[_E]):
-        def __call__(self, x: object = ..., *args: object, **kwds: object) -> _E: ...
-        def __contains__(self, x: object) -> bool: ...
+        def __call__(
+            self,
+            x: ElementConstructorInput = ...,
+            *args: ElementConstructorInput,
+            **kwds: ElementConstructorInput,
+        ) -> _E: ...
+        def __contains__(self, x: MembershipInput) -> bool: ...
         # R^n is the free module over R with entries in R.
         def __pow__(self, n: int | Integer) -> FreeModule_generic[_E]: ...
         def zero(self) -> _E: ...

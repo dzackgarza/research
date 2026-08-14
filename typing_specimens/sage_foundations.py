@@ -1,10 +1,12 @@
-from collections.abc import Callable
+from collections.abc import Callable, Iterator
 from typing import TypeVar
 
+from sage.categories.enumerated_sets import EnumeratedSets
+from sage.categories.finite_enumerated_sets import FiniteEnumeratedSets
 from sage.categories.groups import Groups
-from sage.categories.homset import Hom
+from sage.categories.homset import Hom, Homset
 from sage.categories.map import Map
-from sage.categories.morphism import Morphism
+from sage.categories.morphism import Morphism, SetMorphism
 from sage.categories.rings import Rings
 from sage.categories.sets_cat import Sets
 from sage.groups.finitely_presented import (
@@ -58,6 +60,21 @@ def morphism_composition_preserves_domain_and_codomain_types(
     return composite(element)
 
 
+def set_homsets_construct_set_morphisms(
+    domain: Parent[_DomainElement],
+    codomain: Parent[_CodomainElement],
+    function: Callable[[_DomainElement], _CodomainElement],
+    element: _DomainElement,
+) -> _CodomainElement:
+    homset: Homset[
+        SetMorphism[_DomainElement, _CodomainElement],
+        _DomainElement,
+        _CodomainElement,
+    ] = Hom(domain, codomain, Sets())
+    morphism = SetMorphism(homset, function)
+    return morphism(element)
+
+
 def arbitrary_set_members_remain_typed(
     pairs: list[tuple[int, int]],
     predicate: Callable[[tuple[int, int]], bool],
@@ -66,6 +83,21 @@ def arbitrary_set_members_remain_typed(
     subset: ConditionSet[tuple[int, int]] = ConditionSet(finite, predicate)
     mathematical_set: Sets.ParentMethods[tuple[int, int]] = subset
     return mathematical_set.an_element()
+
+
+def enumerated_sets_preserve_member_types(
+    enumerated_set: EnumeratedSets.ParentMethods[_DomainElement],
+) -> _DomainElement:
+    iterator: Iterator[_DomainElement] = iter(enumerated_set)
+    element = next(iterator)
+    rank: int | Integer | None = enumerated_set.rank(element)
+    return enumerated_set.unrank(0 if rank is None else rank)
+
+
+def finite_enumerated_sets_have_integer_cardinality(
+    finite_set: FiniteEnumeratedSets.ParentMethods[_DomainElement],
+) -> Integer:
+    return finite_set.cardinality()
 
 
 def image_sets_preserve_map_domain_and_codomain_types(

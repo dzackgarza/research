@@ -1,7 +1,9 @@
-from typing import Generic, TypeVar
+from typing import Generic, TypeVar, overload
 
 from sage.categories.category import Category
 from sage.categories.map import Map
+from sage.categories.morphism import SetMorphism
+from sage.categories.sets_cat import Sets
 from sage.structure.element import Element
 from sage.structure.parent import Parent
 
@@ -30,6 +32,18 @@ class Homset(Parent[_M], Generic[_M, _DomainElement, _CodomainElement]):
 
 # The homset constructor: Hom(X, Y) in the given category (the meet of the
 # parents' categories when none is named).
+@overload
+def Hom(
+    X: Parent[_HomDomainElement],
+    Y: Parent[_HomCodomainElement],
+    category: Sets,
+    check: bool = ...,
+) -> Homset[
+    SetMorphism[_HomDomainElement, _HomCodomainElement],
+    _HomDomainElement,
+    _HomCodomainElement,
+]: ...
+@overload
 def Hom(
     X: Parent[_HomDomainElement],
     Y: Parent[_HomCodomainElement],

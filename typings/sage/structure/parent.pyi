@@ -1,4 +1,5 @@
 # Repo-scoped stubs; see lexicon/README.md.
+from collections.abc import MutableMapping
 from typing import Any, Generic, TypeVar
 
 from sage.categories.category import Category
@@ -6,7 +7,13 @@ from sage.categories.homset import Homset
 from sage.categories.map import Map
 from sage.categories.morphism import Morphism
 from sage.categories.rings import Rings
-from sage.structure.element import Element
+from sage.structure.element import Element, RingElement
+
+# Sage permits arbitrary Python values at its conversion and membership
+# boundaries.  Keep that dynamic input localized here; algebraic outputs stay
+# parameterized by the mathematical element type of the parent.
+type ElementConstructorInput = Any
+type MembershipInput = ElementConstructorInput
 
 # Unbounded: Sage does not constrain _element_constructor_ to Element —
 # facade and set-theoretic parents return tuples or other parents' elements.
@@ -28,12 +35,15 @@ class Parent(Generic[_E]):
     element_class: type[_E]
     def __init__(
         self,
-        base: object = ...,
+        base: Parent[ElementConstructorInput] | None = ...,
         *,
-        category: object = ...,
-        names: object = ...,
+        category: Category | None = ...,
+        names: str | tuple[str, ...] | None = ...,
         normalize: bool = ...,
-        facade: object = ...,
+        facade: Parent[ElementConstructorInput]
+        | tuple[Parent[ElementConstructorInput], ...]
+        | bool
+        | None = ...,
     ) -> None: ...
     # NOTE: facade_for is NOT stubbed here: it is injected by the Facade
     # axiom's ParentMethods, not defined on the base Parent class.
@@ -45,16 +55,24 @@ class Parent(Generic[_E]):
     # Generator-naming surface (inherited from CategoryObject): the preparser
     # protocol behind ``L.<e,f> = ...``.
     def variable_names(self) -> tuple[str, ...]: ...
-    def _first_ngens(self, n: int) -> tuple[Any, ...]: ...
-    def inject_variables(self, scope: object = ..., verbose: bool = ...) -> None: ...
+    def _first_ngens(self, n: int) -> tuple[_E, ...]: ...
+    def inject_variables(
+        self,
+        scope: MutableMapping[str, _E] | None = ...,
+        verbose: bool = ...,
+    ) -> None: ...
     # Element construction: the conversion map into this parent.
-    def __call__(self, x: object = ..., *args: object, **kwds: object) -> _E: ...
+    def __call__(
+        self,
+        x: ElementConstructorInput = ...,
+        *args: ElementConstructorInput,
+        **kwds: ElementConstructorInput,
+    ) -> _E: ...
     # The homspace out of this parent: Hom(self, codomain, category)
-    # (sage/structure/parent.pyx). Typed Any because the concrete homset
-    # class depends on the resolved category.
+    # (sage/structure/parent.pyx).
     # category_object.pyx:631 — Hom(self, codomain, category=None).
     # category_object.pyx:625 — the ``base=`` this parent was built with.
-    def base(self) -> Parent: ...
+    def base(self) -> Parent[ElementConstructorInput] | None: ...
     def Hom(
         self,
         codomain: Parent[_CodomainElement],
@@ -67,4 +85,4 @@ class Parent(Generic[_E]):
         source: Parent[_SourceElement],
     ) -> Morphism[_SourceElement, _E] | None: ...
     def has_coerce_map_from(self, source: Parent[_SourceElement]) -> bool: ...
-    def __contains__(self, x: object) -> bool: ...
+    def __contains__(self, x: MembershipInput) -> bool: ...

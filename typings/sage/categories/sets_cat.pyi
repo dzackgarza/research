@@ -9,7 +9,7 @@ from typing import Generic, TypeVar
 
 from sage.categories.category import Category
 from sage.structure.element import Element
-from sage.structure.parent import Parent
+from sage.structure.parent import MembershipInput, Parent
 
 _E = TypeVar("_E", default=Element, covariant=True)
 
@@ -23,8 +23,8 @@ class Sets(Category):
     # counting operation. A site that counts is typed by the set kind that
     # can count (INVENTORY.md II.1).
     class ParentMethods(Parent[_E], Generic[_E]):
-        def __contains__(self, x: object) -> bool: ...
-        def is_parent_of(self, element: object) -> bool: ...
+        def __contains__(self, x: MembershipInput) -> bool: ...
+        def is_parent_of(self, element: MembershipInput) -> bool: ...
         def an_element(self) -> _E: ...
         def some_elements(self) -> list[_E]: ...
 
