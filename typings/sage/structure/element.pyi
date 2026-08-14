@@ -1,23 +1,21 @@
 # General mathematical contract for Sage's element hierarchy, verified by
 # lexicon/verify_against_sage.py. The linear-algebra classes are generic in
 # their scalar (any RingElement regime: exact, symbolic, p-adic, real, ...);
-# the type parameter DEFAULTS to the exact ZZ/QQ regime this repo computes in,
-# so bare `Matrix`/`Vector` mean exact matrices and future regimes are spelled
-# `Matrix[Expression]` etc. rather than re-golfed (lexicon/INVENTORY.md III).
+# the type parameter DEFAULTS to its bound RingElement — the mathematically
+# true statement that the entries of any Sage matrix/vector are elements of
+# its base ring. Exact regimes are never assumed by the bare name: they are
+# spelled where known (`Matrix[Integer | Rational]`).
 import builtins
 from collections.abc import Iterator, Sequence
-from typing import Any, Generic, Literal, overload
+from typing import Any, Generic, Literal, Self, TypeVar, overload
 
-from typing_extensions import Self, TypeVar
-
-from sage.modules.free_module_element import FreeModuleElement
-from sage.rings.polynomial.polynomial_element import Polynomial
-
+from cypari2.gen import Gen
 from sage.categories.rings import Rings
 from sage.modules.free_module import FreeModule_generic
+from sage.modules.free_module_element import FreeModuleElement
 from sage.rings.integer import Integer
+from sage.rings.polynomial.polynomial_element import Polynomial
 from sage.rings.rational import Rational
-from cypari2.gen import Gen
 from sage.structure.parent import Parent
 
 class Element:
@@ -45,7 +43,6 @@ class ModuleElement(Element):
     def additive_order(self) -> Integer: ...
 
 class MonoidElement(Element): ...
-
 class MultiplicativeGroupElement(MonoidElement): ...
 
 class RingElement(ModuleElement):
@@ -70,10 +67,9 @@ class RingElement(ModuleElement):
     def __ge__(self, other: object) -> bool: ...
 
 class CommutativeRingElement(RingElement): ...
-
 class FieldElement(CommutativeRingElement): ...
 
-_Scalar = TypeVar("_Scalar", bound=RingElement, default=Integer | Rational)
+_Scalar = TypeVar("_Scalar", bound=RingElement, default=RingElement)
 
 class Vector(ModuleElement, Generic[_Scalar]):
     # Sage vectors iterate through the legacy __getitem__/__len__ protocol;

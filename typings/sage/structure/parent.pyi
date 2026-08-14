@@ -1,8 +1,10 @@
 # Repo-scoped stubs; see lexicon/README.md.
-from typing import Any, ClassVar, Generic, TypeVar
+from typing import Any, Generic, TypeVar
 
 from sage.categories.category import Category
 from sage.categories.homset import Homset
+from sage.categories.morphism import Morphism
+from sage.categories.rings import Rings
 from sage.structure.element import Element
 
 # Unbounded: Sage does not constrain _element_constructor_ to Element —
@@ -17,8 +19,10 @@ class Parent(Generic[_E]):
     # TYPE_CHECKING-conditional base alias.
     #
     # The category framework injects element_class at parent construction
-    # (a class-level attribute on the dynamic parent class).
-    element_class: Any
+    # (a class-level attribute on the dynamic parent class); constructing an
+    # element is element_class(parent, *args). Bound to the element
+    # parameter, so element construction returns the parent's element type.
+    element_class: type[_E]
     def __init__(
         self,
         base: object = ...,
@@ -30,8 +34,11 @@ class Parent(Generic[_E]):
     ) -> None: ...
     # NOTE: facade_for is NOT stubbed here: it is injected by the Facade
     # axiom's ParentMethods, not defined on the base Parent class.
-    def category(self) -> Any: ...
-    def base_ring(self) -> Any: ...
+    def category(self) -> Category: ...
+    # The base ring, when the parent has one: a bare set has none and Sage
+    # answers None there (verified on Set([1, 2])), so the honest type is
+    # ring-or-None; algebraic parents narrow it in their own declarations.
+    def base_ring(self) -> Rings.ParentMethods | None: ...
     # Generator-naming surface (inherited from CategoryObject): the preparser
     # protocol behind ``L.<e,f> = ...``.
     def variable_names(self) -> tuple[str, ...]: ...
@@ -46,6 +53,8 @@ class Parent(Generic[_E]):
     # category_object.pyx:625 — the ``base=`` this parent was built with.
     def base(self) -> Parent: ...
     def Hom(self, codomain: Parent, category: Category | None = ...) -> Homset: ...
-    def coerce_map_from(self, S: object) -> Any: ...
+    # A coercion into this parent is a morphism, or none when no coercion
+    # exists.
+    def coerce_map_from(self, S: object) -> Morphism | None: ...
     def has_coerce_map_from(self, S: object) -> bool: ...
     def __contains__(self, x: object) -> bool: ...
