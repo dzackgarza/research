@@ -1,6 +1,7 @@
 from typing import Generic, TypeVar
 
 from sage.categories.category import Category
+from sage.categories.map import Map
 from sage.structure.element import Element
 from sage.structure.parent import Parent
 
@@ -34,4 +35,8 @@ def Hom(
     Y: Parent[_HomCodomainElement],
     category: Category | None = ...,
     check: bool = ...,
-) -> Homset[Element, _HomDomainElement, _HomCodomainElement]: ...
+) -> Homset[
+    Map[_HomDomainElement, _HomCodomainElement],
+    _HomDomainElement,
+    _HomCodomainElement,
+]: ...

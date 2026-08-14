@@ -6,13 +6,14 @@
 # and each is read as the matrix of its action on the generators.
 from collections.abc import Iterator
 
+from sage.categories.groups import Groups
 from sage.groups.abelian_gps.abelian_aut import AbelianGroupAutomorphism
 from sage.rings.integer import Integer
-from sage.structure.parent import Parent
 
-class FqfIsometry(AbelianGroupAutomorphism): ...
+class FqfIsometry(AbelianGroupAutomorphism):
+    def parent(self) -> FqfOrthogonalGroup: ...
 
-class FqfOrthogonalGroup(Parent[FqfIsometry]):
+class FqfOrthogonalGroup(Groups.ParentMethods[FqfIsometry]):
     def gens(self) -> tuple[FqfIsometry, ...]: ...
     def ngens(self) -> int: ...
     def order(self) -> Integer: ...

@@ -32,13 +32,13 @@ class FreeModule_generic(
     # Parent.hom.
     def hom(
         self,
-        im_gens: Sequence[Element] | Matrix[_Scalar] | FreeModuleMorphism,
-        codomain: Parent | None = ...,
+        im_gens: Sequence[Element] | Matrix[_Scalar] | FreeModuleMorphism[_Scalar],
+        codomain: Parent[FreeModuleElement[_Scalar]] | None = ...,
         *,
         side: Literal["left", "right"] = ...,
         category: Category | None = ...,
         check: bool = ...,
-    ) -> FreeModuleMorphism: ...
+    ) -> FreeModuleMorphism[_Scalar]: ...
     def is_finite(self) -> bool: ...
     # free_module.py:2595 — "either an integer or +Infinity".
     def cardinality(self) -> Integer | PlusInfinity: ...

@@ -10,6 +10,7 @@ from collections.abc import Iterator, Sequence
 from typing import Any, Generic, Literal, Self, TypeVar, overload
 
 from cypari2.gen import Gen
+from sage.categories.groups import Groups
 from sage.categories.rings import Rings
 from sage.modules.free_module import FreeModule_generic
 from sage.modules.free_module_element import FreeModuleElement
@@ -23,7 +24,7 @@ class Element:
     def parent(self: Self) -> Parent[Self]: ...
     # Every element knows the ring its parent is based over
     # (sage/structure/element.pyx: Element.base_ring delegates to the parent).
-    def base_ring(self) -> Rings.ParentMethods: ...
+    def base_ring(self) -> Rings.ParentMethods[RingElement]: ...
     def is_zero(self) -> bool: ...
     # Arithmetic enters through the coercion model on Element itself; negation
     # is parent-preserving.
@@ -43,7 +44,8 @@ class ModuleElement(Element):
     def additive_order(self) -> Integer: ...
 
 class MonoidElement(Element): ...
-class MultiplicativeGroupElement(MonoidElement): ...
+class MultiplicativeGroupElement(MonoidElement):
+    def parent(self: Self) -> Groups.ParentMethods[Self]: ...
 
 class RingElement(ModuleElement):
     # An element of a ring has a ring parent (category-first: the parent's

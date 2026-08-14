@@ -36,10 +36,7 @@ class Groups(Category):
     # the stub names the ones this tree asks for.
     def FinitelyGenerated(self) -> CategoryWithAxiom: ...
 
-# Canonical short names for "a group parent" and "a group element" (Sage
-# objects, so they belong with the Sage typing, not with preamble
-# vocabulary). Type-only: Sage's runtime sage.categories.groups exports
-# ``Groups``, not ``Group``/``GroupElement`` — code that imports these names
-# does so under TYPE_CHECKING.
+# Canonical short names for a group parent and a multiplicative group element.
+# Type-only: Sage's runtime module exports ``Groups``, not these aliases.
 Group = Groups.ParentMethods
-GroupElement = Groups.ElementMethods
+GroupElement = MultiplicativeGroupElement

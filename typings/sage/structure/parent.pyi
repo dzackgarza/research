@@ -3,6 +3,7 @@ from typing import Any, Generic, TypeVar
 
 from sage.categories.category import Category
 from sage.categories.homset import Homset
+from sage.categories.map import Map
 from sage.categories.morphism import Morphism
 from sage.categories.rings import Rings
 from sage.structure.element import Element
@@ -11,6 +12,7 @@ from sage.structure.element import Element
 # facade and set-theoretic parents return tuples or other parents' elements.
 _E = TypeVar("_E", default=Element, covariant=True)
 _CodomainElement = TypeVar("_CodomainElement")
+_SourceElement = TypeVar("_SourceElement")
 
 class Parent(Generic[_E]):
     # Generic over the element type: Parent.__call__ (conversion into the
@@ -39,7 +41,7 @@ class Parent(Generic[_E]):
     # The base ring, when the parent has one: a bare set has none and Sage
     # answers None there (verified on Set([1, 2])), so the honest type is
     # ring-or-None; algebraic parents narrow it in their own declarations.
-    def base_ring(self) -> Rings.ParentMethods | None: ...
+    def base_ring(self) -> Rings.ParentMethods[RingElement] | None: ...
     # Generator-naming surface (inherited from CategoryObject): the preparser
     # protocol behind ``L.<e,f> = ...``.
     def variable_names(self) -> tuple[str, ...]: ...
@@ -57,9 +59,12 @@ class Parent(Generic[_E]):
         self,
         codomain: Parent[_CodomainElement],
         category: Category | None = ...,
-    ) -> Homset[Element, _E, _CodomainElement]: ...
+    ) -> Homset[Map[_E, _CodomainElement], _E, _CodomainElement]: ...
     # A coercion into this parent is a morphism, or none when no coercion
     # exists.
-    def coerce_map_from(self, S: object) -> Morphism | None: ...
-    def has_coerce_map_from(self, S: object) -> bool: ...
+    def coerce_map_from(
+        self,
+        source: Parent[_SourceElement],
+    ) -> Morphism[_SourceElement, _E] | None: ...
+    def has_coerce_map_from(self, source: Parent[_SourceElement]) -> bool: ...
     def __contains__(self, x: object) -> bool: ...
