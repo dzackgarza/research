@@ -10,6 +10,7 @@ from sage.structure.element import Element
 # Unbounded: Sage does not constrain _element_constructor_ to Element —
 # facade and set-theoretic parents return tuples or other parents' elements.
 _E = TypeVar("_E", default=Element, covariant=True)
+_CodomainElement = TypeVar("_CodomainElement")
 
 class Parent(Generic[_E]):
     # Generic over the element type: Parent.__call__ (conversion into the
@@ -52,7 +53,11 @@ class Parent(Generic[_E]):
     # category_object.pyx:631 — Hom(self, codomain, category=None).
     # category_object.pyx:625 — the ``base=`` this parent was built with.
     def base(self) -> Parent: ...
-    def Hom(self, codomain: Parent, category: Category | None = ...) -> Homset: ...
+    def Hom(
+        self,
+        codomain: Parent[_CodomainElement],
+        category: Category | None = ...,
+    ) -> Homset[Element, _E, _CodomainElement]: ...
     # A coercion into this parent is a morphism, or none when no coercion
     # exists.
     def coerce_map_from(self, S: object) -> Morphism | None: ...

@@ -8,9 +8,11 @@ from sage.structure.parent import Parent
 # (Homset._element_constructor_, homset.py:806). Most are Morphism
 # subclasses. Some historical Sage families, such as scheme morphisms, are
 # direct Element subclasses.
-_DomainElement = TypeVar("_DomainElement", bound=Element, default=Element, covariant=True)
-_CodomainElement = TypeVar("_CodomainElement", bound=Element, default=Element, covariant=True)
+_DomainElement = TypeVar("_DomainElement", default=Element, covariant=True)
+_CodomainElement = TypeVar("_CodomainElement", default=Element, covariant=True)
 _M = TypeVar("_M", bound=Element, default=Element, covariant=True)
+_HomDomainElement = TypeVar("_HomDomainElement")
+_HomCodomainElement = TypeVar("_HomCodomainElement")
 
 class Homset(Parent[_M], Generic[_M, _DomainElement, _CodomainElement]):
     def __init__(
@@ -28,8 +30,8 @@ class Homset(Parent[_M], Generic[_M, _DomainElement, _CodomainElement]):
 # The homset constructor: Hom(X, Y) in the given category (the meet of the
 # parents' categories when none is named).
 def Hom(
-    X: Parent,
-    Y: Parent,
+    X: Parent[_HomDomainElement],
+    Y: Parent[_HomCodomainElement],
     category: Category | None = ...,
     check: bool = ...,
-) -> Homset: ...
+) -> Homset[Element, _HomDomainElement, _HomCodomainElement]: ...

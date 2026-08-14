@@ -6,8 +6,8 @@ from sage.categories.category import Category
 from sage.structure.element import Element
 from sage.structure.parent import Parent
 
-_DomainElement = TypeVar("_DomainElement", bound=Element, default=Element)
-_CodomainElement = TypeVar("_CodomainElement", bound=Element, default=Element)
+_DomainElement = TypeVar("_DomainElement", default=Element)
+_CodomainElement = TypeVar("_CodomainElement", default=Element)
 
 class Morphism(Element, Generic[_DomainElement, _CodomainElement]):
     def __init__(self, parent: Parent[Self]) -> None: ...
