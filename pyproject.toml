@@ -21,8 +21,12 @@ build-backend = "setuptools.build_meta"
 where = ["src"]
 
 [tool.uv.sources]
+sage-stubs = { git = "https://github.com/dzackgarza/sage-stubs.git" }
 sage-lattice-category-spike = { workspace = true }
 sage-lattice-feature-spike = { workspace = true }
+
+[dependency-groups]
+dev = ["sage-stubs"]
 
 [tool.uv.workspace]
 members = [
