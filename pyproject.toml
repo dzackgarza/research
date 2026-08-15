@@ -25,6 +25,7 @@ where = ["src"]
 dzack_research = ["py.typed"]
 
 [tool.uv.sources]
+sage-stubs = { git = "https://github.com/dzackgarza/sage-stubs.git" }
 sage-lattice-category-spike = { workspace = true }
 sage-lattice-feature-spike = { workspace = true }
 tree-sitter-sage = { git = "https://github.com/dzackgarza/tree-sitter-sage", rev = "fd5c72bafb61d67fedb0f6860eeb48f6c1616dbd" }
@@ -57,4 +58,5 @@ log_file_level = "DEBUG"
 [dependency-groups]
 dev = [
     "ipython>=9.16.1",
+    "sage-stubs",
 ]
