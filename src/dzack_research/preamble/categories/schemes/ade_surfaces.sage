@@ -182,6 +182,24 @@ class LogPairs(Category):
         """
         Generic geometric and algebraic methods for log pairs (Y, C).
         """
+        def is_log_pair(self: _ADESurfaceInterface) -> bool:
+            """
+            Return True since self belongs to the category of Log Pairs.
+            """
+            return True
+
+        def log_pair(self: _ADESurfaceInterface) -> tuple[ToricVariety_field, object]:
+            """
+            Return the underlying log pair (Variety, Divisor).
+            """
+            return (self.del_pezzo_surface(), self.blue_line_divisor())
+
+        def pair(self: _ADESurfaceInterface) -> tuple[ToricVariety_field, object]:
+            """
+            Alias for log_pair().
+            """
+            return self.log_pair()
+
         def del_pezzo_pair(self: _ADESurfaceInterface) -> tuple[ToricVariety_field, object]:
             """
             Return the log del Pezzo pair (Y, C) where Y = V_Q and C is the blue-line boundary divisor.
@@ -823,12 +841,52 @@ class ADEBaseSurface(Parent):
         super().__init__(base=QQ, category=ADELogPairs())
 
     def cover(self) -> object:
-        """Return the covering ADE surface pair (X, D)."""
+        """Return the covering ADE surface log pair (X, D + eps*R)."""
         return self._cover
 
     def cover_surface(self) -> object:
         """Alias for cover()."""
         return self.cover()
+
+    def cover_pair(self) -> object:
+        """Alias for cover()."""
+        return self.cover()
+
+    def covering_pair(self) -> object:
+        """Alias for cover()."""
+        return self.cover()
+
+    def base(self) -> object:
+        """Return self (the base log pair)."""
+        return self
+
+    def base_surface(self) -> object:
+        """Return self (the base log pair)."""
+        return self
+
+    def base_pair(self) -> object:
+        """Return self (the base log pair)."""
+        return self
+
+    def is_log_pair(self) -> bool:
+        """Return True: ADEBaseSurface is a log pair (Y, C + 1/2(1+eps)B)."""
+        return True
+
+    def variety(self) -> ToricVariety_field:
+        """Return the base toric del Pezzo variety Y = V_Q."""
+        return self._cover.variety()
+
+    def boundary_divisor(self) -> object:
+        """Return the distinguished boundary divisor C."""
+        return self._cover.boundary_divisor()
+
+    def log_pair(self) -> tuple[ToricVariety_field, object]:
+        """Return the base log pair (Y, C)."""
+        return (self.variety(), self.boundary_divisor())
+
+    def pair(self) -> tuple[ToricVariety_field, object]:
+        """Alias for log_pair()."""
+        return self.log_pair()
 
     def polygon(self) -> LatticePolygon:
         """Return the base 2D lattice polygon Q in category LatticePolygons()."""
@@ -1360,8 +1418,20 @@ class ADESurface(Parent):
         return self.base()
 
     def cover(self) -> _ADESurfaceInterface:
-        """Return self (the covering ADE surface)."""
+        """Return self (the covering ADE surface log pair (X, D + eps*R))."""
         return self
+
+    def cover_surface(self) -> _ADESurfaceInterface:
+        """Alias for cover()."""
+        return self.cover()
+
+    def cover_pair(self) -> _ADESurfaceInterface:
+        """Alias for cover()."""
+        return self.cover()
+
+    def covering_pair(self) -> _ADESurfaceInterface:
+        """Alias for cover()."""
+        return self.cover()
 
     def covering_polytope(self) -> LatticePolytope:
         r"""Return the 3-dimensional integral lattice polytope P \subset \mathbb{R}^3."""
