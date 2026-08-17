@@ -193,10 +193,10 @@ class ConvexPolytopes(Category):
         def plot3d(self: _LatticePolytopeInterface, **kwds: object) -> object:
             """
             Render an interactive 3D graphics visualization of a 3-dimensional polytope,
-            including a bounded ambient ZZ^3 grid distinguishing points in the polytope or on its faces,
+            including a bounded ambient ZZ^3 grid of spheres distinguishing points in the polytope or on its faces,
             plus standard XYZ coordinate axes.
             """
-            from sage.plot.plot3d.shapes2 import point3d, line3d, text3d
+            from sage.plot.plot3d.shapes2 import sphere, line3d, text3d
             from sage.plot.plot3d.shapes import arrow3d
             from sage.plot.plot3d.index_face_set import IndexFaceSet
 
@@ -212,6 +212,7 @@ class ConvexPolytopes(Category):
             show_grid = kwds.get('show_grid', True)
 
             verts = [list(v) for v in poly.vertices()]
+            vert_set = set(tuple(int(c) for c in v) for v in verts)
             faces = [[verts.index(list(v)) for v in f.vertices()] for f in poly.facets()]
 
             g3d = IndexFaceSet(faces, verts, opacity=face_opacity, color=face_color)
@@ -234,8 +235,9 @@ class ConvexPolytopes(Category):
             poly_pts = set(tuple(p) for p in self.integral_points())
             int_pts = set(tuple(p) for p in self.interior_integral_points())
             bnd_pts = poly_pts - int_pts
+            facet_pts = bnd_pts - vert_set
 
-            # Draw bounded ambient ZZ^3 grid
+            # Draw bounded ambient ZZ^3 grid (small gray spheres at each lattice point)
             if show_grid:
                 grid_pts = [
                     (x, y, z)
@@ -244,14 +246,20 @@ class ConvexPolytopes(Category):
                     for z in range(min_z, max_z + 2)
                 ]
                 ext_pts = [p for p in grid_pts if p not in poly_pts]
-                if ext_pts:
-                    g3d += point3d(ext_pts, size=6, color='#94A3B8', opacity=0.45)
+                for p in ext_pts:
+                    g3d += sphere(p, size=0.035, color='#94A3B8', opacity=0.45)
 
-            # Draw interior and boundary lattice points of P
-            if int_pts:
-                g3d += point3d(list(int_pts), size=16, color='#0D9488')
-            if bnd_pts:
-                g3d += point3d(list(bnd_pts), size=12, color='black')
+            # Draw interior lattice points of P (teal spheres)
+            for p in int_pts:
+                g3d += sphere(p, size=0.08, color='#0D9488')
+
+            # Draw facet/edge boundary points on faces of P (black spheres)
+            for p in facet_pts:
+                g3d += sphere(p, size=0.065, color='black')
+
+            # Draw vertices of P (prominent black spheres)
+            for p in vert_set:
+                g3d += sphere(p, size=0.09, color='black')
 
             # Draw standard XYZ coordinate axes
             if show_axes:
