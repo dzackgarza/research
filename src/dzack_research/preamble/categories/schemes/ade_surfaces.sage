@@ -156,11 +156,17 @@ class _ADESurfaceInterface(Protocol):
 
 class LogPairs(Category):
     """
-    The category of algebraic log pairs (Y, Δ).
+    The category of algebraic log pairs (X, Δ).
+
+    A log pair consists of:
+    - An underlying scheme or variety X (accessed via .scheme() or .variety())
+    - An associated boundary divisor Δ (accessed via .associated_divisor() or .boundary_divisor())
+    - An ambient scheme or projective toric variety V (accessed via .ambient_variety())
+    - An ambient toric log pair (V, Δ_toric) (accessed via .ambient_pair())
 
     EXAMPLES::
 
-        sage: from dzack_research.preamble.categories.schemes.ade_surfaces import LogPairs
+        sage: from dzack_research.preamble.categories.schemes.ade_surfaces import LogPairs, ToricLogPair
         sage: LogPairs()
         Category of log pairs
         sage: LogPairs().super_categories()
@@ -180,43 +186,25 @@ class LogPairs(Category):
 
     class ParentMethods:
         """
-        Generic geometric and algebraic methods for log pairs (Y, C).
+        Generic geometric and algebraic methods for log pairs (X, Δ).
         """
-        def is_log_pair(self: _ADESurfaceInterface) -> bool:
+        def scheme(self: _ADESurfaceInterface) -> object:
             """
-            Return True since self belongs to the category of Log Pairs.
+            Return the underlying scheme or variety X of the log pair (X, Δ).
             """
-            return True
+            return self.variety()
 
-        def log_pair(self: _ADESurfaceInterface) -> tuple[ToricVariety_field, object]:
+        def variety(self: _ADESurfaceInterface) -> object:
             """
-            Return the underlying log pair (Variety, Divisor).
-            """
-            return (self.del_pezzo_surface(), self.blue_line_divisor())
-
-        def pair(self: _ADESurfaceInterface) -> tuple[ToricVariety_field, object]:
-            """
-            Alias for log_pair().
-            """
-            return self.log_pair()
-
-        def del_pezzo_pair(self: _ADESurfaceInterface) -> tuple[ToricVariety_field, object]:
-            """
-            Return the log del Pezzo pair (Y, C) where Y = V_Q and C is the blue-line boundary divisor.
-            """
-            return (self.del_pezzo_surface(), self.blue_line_divisor())
-
-        def del_pezzo_surface(self: _ADESurfaceInterface) -> ToricVariety_field:
-            """
-            Return the polarized toric del Pezzo surface Y = V_Q.
-            """
-            return self._del_pezzo_variety
-
-        def variety(self: _ADESurfaceInterface) -> ToricVariety_field:
-            """
-            Alias for del_pezzo_surface().
+            Return the underlying scheme or variety X of the log pair (X, Δ).
             """
             return self.del_pezzo_surface()
+
+        def associated_divisor(self: _ADESurfaceInterface) -> object:
+            """
+            Return the underlying associated boundary divisor Δ of the log pair (X, Δ).
+            """
+            return self.boundary_divisor()
 
         def boundary_divisor(self: _ADESurfaceInterface) -> object:
             """
@@ -224,13 +212,56 @@ class LogPairs(Category):
             """
             return self.blue_line_divisor()
 
+        def divisor(self: _ADESurfaceInterface) -> object:
+            """
+            Alias for associated_divisor().
+            """
+            return self.associated_divisor()
+
+        def ambient_space(self: _ADESurfaceInterface) -> object:
+            """
+            Return the ambient scheme or projective toric variety V.
+            """
+            return self.del_pezzo_surface()
+
+        def ambient_variety(self: _ADESurfaceInterface) -> object:
+            """
+            Alias for ambient_space().
+            """
+            return self.ambient_space()
+
+        def ambient_pair(self: _ADESurfaceInterface) -> "ToricLogPair":
+            """
+            Return the ambient projective toric variety as a toric log pair (V, Δ_toric)
+            where Δ_toric is the full toric boundary divisor.
+            """
+            return ToricLogPair(self.ambient_variety())
+
+        def ambient_log_pair(self: _ADESurfaceInterface) -> "ToricLogPair":
+            """
+            Alias for ambient_pair().
+            """
+            return self.ambient_pair()
+
+        def codimension(self: _ADESurfaceInterface) -> int:
+            """
+            Return the codimension of the underlying scheme in its ambient variety.
+            """
+            return 0
+
+        def del_pezzo_surface(self: _ADESurfaceInterface) -> ToricVariety_field:
+            """
+            Return the polarized toric del Pezzo surface Y = V_Q.
+            """
+            return self._del_pezzo_variety
+
         def blue_line_divisor(self: _ADESurfaceInterface) -> object:
             """
             Return the distinguished boundary divisor C (the 'blue line') on Y = V_Q.
             """
             y_variety = self.del_pezzo_surface()
             poly_q = self.polyhedron()
-            p_star = self.ambient_space()(list(self.p_star()))
+            p_star = self._lattice.vector_space(QQ)(list(self.p_star()))
 
             blue_ray_indices: list[int] = []
             for idx, f in enumerate(poly_q.facets()):
@@ -244,12 +275,12 @@ class LogPairs(Category):
         def _blue_facets(self: _ADESurfaceInterface) -> list[_PolyhedronFace]:
             """Return the list of facets of Q passing through p*."""
             poly_q = self.polyhedron()
-            p_star = self.ambient_space()(list(self.p_star()))
+            p_star = self._lattice.vector_space(QQ)(list(self.p_star()))
             return [f for f in poly_q.facets() if f.as_polyhedron().contains(p_star)]
 
         def is_on_blue_boundary(self: _ADESurfaceInterface, pt: Sequence[LatticeCoord]) -> bool:
             """Return True if pt lies on the distinguished boundary divisor C."""
-            pt_vec = self.ambient_space()(list(pt))
+            pt_vec = self._lattice.vector_space(QQ)(list(pt))
             return any(f.as_polyhedron().contains(pt_vec) for f in self._blue_facets())
 
         def polygon(self: _ADESurfaceInterface) -> LatticePolygon:
@@ -359,7 +390,7 @@ class LogPairs(Category):
 
         def invariants(self: _ADESurfaceInterface) -> dict[str, object]:
             """Return geometric and combinatorial invariants of the ADE surface pair."""
-            p_star_vec = self.ambient_space()(list(self.p_star()))
+            p_star_vec = self._lattice.vector_space(QQ)(list(self.p_star()))
             poly = self.polyhedron()
             return {
                 "letter": self.letter(),
@@ -429,6 +460,89 @@ class LogPairs(Category):
 
         def is_toric_base(self: _ADESurfaceInterface) -> bool:
             return True
+
+
+class ToricLogPair(Parent):
+    r"""
+    A toric log pair (V, Δ_toric) consisting of a normal toric variety V
+    and a torus-invariant boundary divisor (by default, the full toric boundary Δ_toric = ∑ D_ρ).
+
+    EXAMPLES::
+
+        sage: from dzack_research.preamble.categories.schemes.ade_surfaces import ToricLogPair, LogPairs
+        sage: from sage.schemes.toric.variety import ToricVariety
+        sage: V = ToricVariety(Polyhedron([(0,2), (0,0), (2,0)]).normal_fan())
+        sage: P = ToricLogPair(V)
+        sage: P in LogPairs()
+        True
+        sage: P.scheme()
+        2-d toric variety covered by 3 affine patches
+        sage: P.associated_divisor()
+        V(z0) + V(z1) + V(z2)
+        sage: P.codimension()
+        0
+    """
+    _variety: ToricVariety_field
+    _divisor: object
+
+    def __init__(self, variety: ToricVariety_field, divisor: Optional[object] = None) -> None:
+        self._variety = variety
+        if divisor is None:
+            nrays = variety.fan().nrays()
+            self._divisor = sum((variety.divisor(i) for i in range(nrays)), variety.divisor_group().zero())
+        else:
+            self._divisor = divisor
+        super().__init__(base=variety.base_ring(), category=LogPairs())
+
+    def scheme(self) -> ToricVariety_field:
+        """Return the underlying toric variety V."""
+        return self._variety
+
+    def variety(self) -> ToricVariety_field:
+        """Return the underlying toric variety V."""
+        return self._variety
+
+    def associated_divisor(self) -> object:
+        """Return the toric boundary divisor Δ_toric."""
+        return self._divisor
+
+    def boundary_divisor(self) -> object:
+        """Return the toric boundary divisor Δ_toric."""
+        return self._divisor
+
+    def divisor(self) -> object:
+        """Return the toric boundary divisor Δ_toric."""
+        return self._divisor
+
+    def ambient_space(self) -> ToricVariety_field:
+        """Return the ambient toric variety V."""
+        return self._variety
+
+    def ambient_variety(self) -> ToricVariety_field:
+        """Return the ambient toric variety V."""
+        return self._variety
+
+    def ambient_pair(self) -> "ToricLogPair":
+        """Return self (already a toric log pair)."""
+        return self
+
+    def ambient_log_pair(self) -> "ToricLogPair":
+        """Return self."""
+        return self
+
+    def codimension(self) -> int:
+        """Return 0 (variety is its own ambient space)."""
+        return 0
+
+    def _repr_(self) -> str:
+        return f"Toric Log Pair ({self._variety}, toric boundary)"
+
+    def _latex_(self) -> str:
+        from sage.misc.latex import latex as _latex
+        return rf"\left({_latex(self._variety)},\, \Delta_{{\text{{toric}}}}\right)"
+
+    def _repr_latex_(self) -> str:
+        return "$\\displaystyle " + self._latex_() + "$"
 
 
 class ADELogPairs(LogPairs):
@@ -566,12 +680,13 @@ class ADELogPairs(LogPairs):
             Extract internal Dynkin tree root nodes from the polygon Q.
             """
             poly_q = self.polyhedron()
-            p_star = self.ambient_space()(list(self.p_star()))
+            v_space = self._lattice.vector_space(QQ)
+            p_star = v_space(list(self.p_star()))
 
             blue_facets: list[_PolyhedronFace] = []
             non_blue_facets: list[_PolyhedronFace] = []
             for f in poly_q.facets():
-                facet_pts = [self.ambient_space()(list(v)) for v in f.vertices()]
+                facet_pts = [v_space(list(v)) for v in f.vertices()]
                 if p_star in facet_pts:
                     blue_facets.append(f)
                 else:
@@ -582,7 +697,7 @@ class ADELogPairs(LogPairs):
                 for pt in f_blue.as_polyhedron().integral_points():
                     c_points.add(tuple(pt))
 
-            corners = [self.ambient_space()(list(v)) for v in poly_q.vertices()]
+            corners = [v_space(list(v)) for v in poly_q.vertices()]
 
             boundary_nodes: list[LatticePoint2D] = []
             corner_nodes: list[LatticePoint2D] = []
@@ -651,9 +766,9 @@ class ADELogPairs(LogPairs):
             return self.area()
 
         def p_star_index(self: _ADESurfaceInterface) -> Optional[int]:
-            p = self.p_star()
+            p = tuple(self.p_star())
             for i, v in enumerate(self.vertices()):
-                if self.ambient_space()(v) == p:
+                if tuple(v) == p:
                     return i
             return None
 
@@ -828,7 +943,7 @@ class ADEBaseSurface(Parent):
         sage: s = ADESurface('A', 3, variant=('long', 'long'))
         sage: B = s.base()
         sage: B
-        ADE Base Pair for A_3 (Y = V_Q, C + ½(1+ε)B, p*=(0, 2))
+        ADE Base Log Pair for A_3 (Y = V_Q, C + ½(1+ε)B, p*=(0, 2))
         sage: B.polygon()
         Lattice Polygon with 3 vertices
         sage: B.area()
@@ -872,21 +987,59 @@ class ADEBaseSurface(Parent):
         """Return True: ADEBaseSurface is a log pair (Y, C + 1/2(1+eps)B)."""
         return True
 
+    def scheme(self) -> ToricVariety_field:
+        """Return the underlying toric del Pezzo variety Y = V_Q."""
+        return self._cover.del_pezzo_surface()
+
     def variety(self) -> ToricVariety_field:
-        """Return the base toric del Pezzo variety Y = V_Q."""
-        return self._cover.variety()
+        """Return the underlying toric del Pezzo variety Y = V_Q."""
+        return self._cover.del_pezzo_surface()
+
+    def del_pezzo_surface(self) -> ToricVariety_field:
+        """Return the polarized toric del Pezzo surface Y = V_Q."""
+        return self._cover.del_pezzo_surface()
+
+    def associated_divisor(self) -> object:
+        r"""
+        Return the associated boundary divisor Δ_Y = C + ½(1+ε)B on Y.
+        """
+        return self._cover.blue_line_divisor()
 
     def boundary_divisor(self) -> object:
-        """Return the distinguished boundary divisor C."""
-        return self._cover.boundary_divisor()
+        """Return the distinguished boundary divisor C (the 'blue line') on Y."""
+        return self._cover.blue_line_divisor()
 
-    def log_pair(self) -> tuple[ToricVariety_field, object]:
-        """Return the base log pair (Y, C)."""
-        return (self.variety(), self.boundary_divisor())
+    def divisor(self) -> object:
+        """Alias for associated_divisor()."""
+        return self.associated_divisor()
 
-    def pair(self) -> tuple[ToricVariety_field, object]:
-        """Alias for log_pair()."""
-        return self.log_pair()
+    def blue_line_divisor(self) -> object:
+        """Return the distinguished boundary divisor C (the 'blue line') on Y."""
+        return self._cover.blue_line_divisor()
+
+    def branch_divisor(self) -> object:
+        """Return the branch divisor B = div(f) on Y."""
+        return self.defining_polynomial()
+
+    def ambient_space(self) -> ToricVariety_field:
+        """Return the ambient projective toric variety Y = V_Q."""
+        return self._cover.del_pezzo_surface()
+
+    def ambient_variety(self) -> ToricVariety_field:
+        """Return the ambient projective toric variety Y = V_Q."""
+        return self._cover.del_pezzo_surface()
+
+    def ambient_pair(self) -> ToricLogPair:
+        """Return the ambient toric variety as a toric log pair (V_Q, Δ_toric)."""
+        return ToricLogPair(self.ambient_variety())
+
+    def ambient_log_pair(self) -> ToricLogPair:
+        """Alias for ambient_pair()."""
+        return self.ambient_pair()
+
+    def codimension(self) -> int:
+        """Return 0 (base del Pezzo surface is the ambient toric surface V_Q)."""
+        return 0
 
     def polygon(self) -> LatticePolygon:
         """Return the base 2D lattice polygon Q in category LatticePolygons()."""
@@ -968,10 +1121,10 @@ class ADEBaseSurface(Parent):
         return self._cover.tikz(**kwds)
 
     def _repr_(self) -> str:
-        return f"ADE Base Pair for {self._cover._key} (Y = V_Q, C + ½(1+ε)B, p*={self.p_star()})"
+        return f"ADE Base Log Pair for {self._cover._key} (Y = V_Q, C + ½(1+ε)B, p*={self.p_star()})"
 
     def _latex_(self) -> str:
-        r"""LaTeX representation of the 2D base del Pezzo pair."""
+        r"""LaTeX representation of the 2D base del Pezzo log pair."""
         from sage.misc.latex import latex as _latex
         f0_latex = _latex(self.defining_polynomial())
         c_latex = _latex(self.blue_line_divisor())
@@ -979,7 +1132,8 @@ class ADEBaseSurface(Parent):
         eol = "\\\\"
         lines = [
             r"\begin{aligned}",
-            rf"&\mathbf{{ADE\ Base\ Pair\ }} \left(Y = V_Q,\, C + \tfrac{{1+\varepsilon}}{{2}}B\right) \text{{ for }} {self._cover._latex_label} \quad \left(p^* = {p_latex}\right) {eol}",
+            rf"&\mathbf{{ADE\ Base\ Log\ Pair\ }} \left(Y = V_Q,\, C + \tfrac{{1+\varepsilon}}{{2}}B\right) \text{{ for }} {self._cover._latex_label} \quad \left(p^* = {p_latex}\right) {eol}",
+            rf"&\text{{Underlying Variety: }} Y = V_Q,\quad \text{{Associated Divisor: }} \Delta_Y = C + \tfrac{{1+\varepsilon}}{{2}}B {eol}",
             rf"&\text{{Boundary Divisor: }} C = {c_latex},\quad \text{{Branch Divisor: }} B = \operatorname{{div}}\left({f0_latex}\right) {eol}",
             rf"&\text{{Base Polygon }} Q \subset N_\mathbb{{R}} \colon \operatorname{{Area}}(Q) = {self.area()},\, |Q \cap N| = {self.n_integral_points()},\, |\partial Q \cap N| = {self.n_boundary_points()},\, |\operatorname{{Int}}(Q) \cap N| = {self.n_interior_points()},\, |C \cap N| = {self.n_distinguished_points()}",
             r"\end{aligned}",
@@ -1046,9 +1200,9 @@ class ADESurface(Parent):
         sage: from dzack_research.preamble.categories.schemes.ade_surfaces import ADESurface
         sage: s = ADESurface('A', 3, variant=('long', 'long'))
         sage: s
-        ADE Surface A_3 (del Pezzo Y=V_Q, anticanonical X=Z(z² + f), p*=(0, 2))
+        ADE Cover Log Pair for A_3 (X ⊂ V_P, D + εR, p*=(0, 2))
         sage: s.base()
-        ADE Base Pair for A_3 (Y = V_Q, C + ½(1+ε)B, p*=(0, 2))
+        ADE Base Log Pair for A_3 (Y = V_Q, C + ½(1+ε)B, p*=(0, 2))
         sage: s.covering_polytope()
         Lattice Polytope of dimension 3 with 4 vertices
     """
@@ -1286,8 +1440,7 @@ class ADESurface(Parent):
         return key, latex, vertices, p_star, {}
 
     def _repr_(self) -> str:
-        return (f"ADE Surface {self._key} (del Pezzo Y=V_Q, "
-                f"anticanonical X=Z(z² + f), p*={self._p_star})")
+        return f"ADE Cover Log Pair for {self._key} (X ⊂ V_P, D + εR, p*={self._p_star})"
 
     def tikz(self: _ADESurfaceInterface, scale: float = 0.8, show_dynkin_diagram: bool = False) -> str:
         r"""
@@ -1433,6 +1586,68 @@ class ADESurface(Parent):
         """Alias for cover()."""
         return self.cover()
 
+    def ambient_variety(self) -> ToricVariety_field:
+        r"""
+        Return the ambient projective toric threefold V_P defined by the 3D pyramid P.
+        """
+        return ToricVariety(self.cover_polytope().normal_fan())
+
+    def ambient_space(self) -> ToricVariety_field:
+        """Return the ambient toric threefold V_P."""
+        return self.ambient_variety()
+
+    def ambient_pair(self) -> ToricLogPair:
+        r"""
+        Return the ambient toric variety as a toric log pair (V_P, Δ_toric)
+        where Δ_toric = ∑ D_ρ is the full toric boundary divisor.
+        """
+        return ToricLogPair(self.ambient_variety())
+
+    def ambient_log_pair(self) -> ToricLogPair:
+        """Alias for ambient_pair()."""
+        return self.ambient_pair()
+
+    def scheme(self) -> object:
+        r"""
+        Return the underlying anticanonical surface variety X \subset V_P,
+        a codimension 1 subscheme of the ambient toric threefold V_P.
+        """
+        VP = self.ambient_variety()
+        try:
+            return VP.subscheme([])
+        except Exception:
+            return VP
+
+    def variety(self) -> object:
+        r"""Alias for scheme(): the codimension 1 hypersurface X \subset V_P."""
+        return self.scheme()
+
+    def codimension(self) -> int:
+        """Return 1 (hypersurface of codimension 1 in the toric threefold V_P)."""
+        return 1
+
+    def associated_divisor(self) -> object:
+        r"""
+        Return the associated boundary divisor Δ_X = D + εR on X.
+        """
+        return self.blue_line_divisor()
+
+    def boundary_divisor(self) -> object:
+        r"""
+        Return the preimage boundary divisor D = π*(C) on X.
+        """
+        return self.blue_line_divisor()
+
+    def divisor(self) -> object:
+        """Alias for associated_divisor()."""
+        return self.associated_divisor()
+
+    def ramification_divisor(self) -> object:
+        r"""
+        Return the ramification divisor R on X.
+        """
+        return self.defining_polynomial()
+
     def covering_polytope(self) -> LatticePolytope:
         r"""Return the 3-dimensional integral lattice polytope P \subset \mathbb{R}^3."""
         return self.cover_polytope()
@@ -1461,7 +1676,7 @@ class ADESurface(Parent):
 
     def _latex_(self) -> str:
         r"""
-        Return mathematical LaTeX representation of the 3D covering ADE hypersurface.
+        Return mathematical LaTeX representation of the 3D covering ADE anticanonical log pair.
         """
         from sage.misc.latex import latex as _latex
         f0_latex = _latex(self.defining_polynomial())
@@ -1471,9 +1686,11 @@ class ADESurface(Parent):
 
         lines = [
             r"\begin{aligned}",
-            rf"&\mathbf{{ADE\ Surface\ }} X \subset V_P \colon X = Z\left(z^2 + \left({f0_latex}\right)\right) \text{{ of type }} {self._latex_label} \quad \left(p^* = {p_latex}\right) {eol}",
+            rf"&\mathbf{{ADE\ Cover\ Log\ Pair\ }} \left(X \subset V_P,\, D + \varepsilon R\right) \text{{ of type }} {self._latex_label} \quad \left(p^* = {p_latex}\right) {eol}",
+            rf"&\text{{Underlying Scheme: }} X = Z\left(z^2 + \left({f0_latex}\right)\right) \subset V_P \text{{ (codimension 1)}} {eol}",
+            rf"&\text{{Associated Divisor: }} \Delta_X = D + \varepsilon R,\quad \text{{Ambient Toric Pair: }} \left(V_P,\, \Delta_{{\text{{toric}}}}\right) {eol}",
             rf"&\text{{Cover Polytope }} P \subset N \oplus \mathbb{{Z}} \colon \operatorname{{Vol}}(P) = {P.volume()},\, \operatorname{{Vol}}_\mathbb{{Z}}(P) = {P.normalized_volume()},\, |P \cap N_3| = {P.n_integral_points()} {eol}",
-            rf"&\text{{Base Del Pezzo Pair: }} \left(Y = V_Q,\, C + \tfrac{{1+\varepsilon}}{{2}}B\right) \quad [\text{{call }} \texttt{{.base()}} \text{{ to inspect}}]",
+            rf"&\text{{Base Del Pezzo Log Pair: }} \left(Y = V_Q,\, C + \tfrac{{1+\varepsilon}}{{2}}B\right) \quad [\text{{call }} \texttt{{.base()}} \text{{ for 2D log pair}}]",
             r"\end{aligned}",
         ]
         return "\n".join(lines)
