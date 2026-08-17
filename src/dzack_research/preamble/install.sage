@@ -179,6 +179,8 @@ def install_preamble(namespace: dict) -> None:
             "categories.schemes.ambient_spaces",
             "categories.schemes.subschemes",
             "categories.schemes.varieties",
+            "categories.schemes.polytopes",
+            "categories.schemes.ade_surfaces",
             "catalogue",
             "sterk",
         )
