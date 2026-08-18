@@ -244,6 +244,23 @@ class CombinatorialVinbergInvariantMatrix(Parent):
         r"""Return the dictionary of entries."""
         return dict(self._entries)
 
+    def __eq__(self, other: object) -> bool:
+        r"""Return True if other is a CombinatorialVinbergInvariantMatrix with equal projective entries."""
+        if not isinstance(other, CombinatorialVinbergInvariantMatrix):
+            return False
+        if self._rank != other._rank:
+            return False
+        n = self._rank
+        for i in range(n):
+            for j in range(n):
+                pt1, pt2 = self[i, j], other[i, j]
+                if pt1[0] * pt2[1] != pt2[0] * pt1[1]:
+                    return False
+        return True
+
+    def __ne__(self, other: object) -> bool:
+        return not (self == other)
+
     def is_infinity(self, i: int, j: int) -> bool:
         r"""Return True if $t_{ij} = \infty$ (denominator coordinate is 0)."""
         return self[i, j][1] == 0
@@ -666,6 +683,26 @@ class ProjectiveWeightedDiGraph(Parent):
             if wt[0] != 0:  # Non-zero projective point
                 result.append((u, v, wt))
         return result
+
+    def __eq__(self, other: object) -> bool:
+        r"""Return True if other is a ProjectiveWeightedDiGraph with equal vertices and weights."""
+        if not isinstance(other, ProjectiveWeightedDiGraph):
+            return False
+        if self._vertices != other._vertices:
+            return False
+        for v in self._vertices:
+            pt1, pt2 = self.vertex_weight(v), other.vertex_weight(v)
+            if pt1[0] * pt2[1] != pt2[0] * pt1[1]:
+                return False
+        for u in self._vertices:
+            for v in self._vertices:
+                pt1, pt2 = self.edge_weight(u, v), other.edge_weight(u, v)
+                if pt1[0] * pt2[1] != pt2[0] * pt1[1]:
+                    return False
+        return True
+
+    def __ne__(self, other: object) -> bool:
+        return not (self == other)
 
     def to_combinatorial_matrix(self) -> CombinatorialVinbergInvariantMatrix:
         r"""

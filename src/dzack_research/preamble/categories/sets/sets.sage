@@ -26,7 +26,7 @@ from sage.sets.integer_range import IntegerRange
 from sage.sets.set import Set as SageSet
 from sage.sets.totally_ordered_finite_set import TotallyOrderedFiniteSet
 from sage.structure.element import Element
-from sage.structure.parent import ElementConstructorInput, Parent
+from sage.structure.parent import Parent
 from sage.structure.unique_representation import UniqueRepresentation
 from sage.misc.cachefunc import cached_function
 
@@ -38,6 +38,7 @@ if TYPE_CHECKING:
     # Type-only: the preamble loads into one shared namespace and nothing
     # named OrderedSet may bind there.
     from dzack_research.preamble.lexicon import OrderedSet
+    from sage.structure.parent import ElementConstructorInput
     from dzack_research.preamble.categories.sets.cardinals import Cardinal
 
 
