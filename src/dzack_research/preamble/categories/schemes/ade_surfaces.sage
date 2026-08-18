@@ -29,10 +29,10 @@ Mathematical Foundations (Alexeev-Thompson [AT21], arXiv:1712.07932):
 3. Anticanonical ADE Surface Pair (X, D + eps * R):
    - 3D Pyramidal Polytope P = cone(Q) + (p*, 2) in N_3.
    - Ambient Toric Threefold V_P.
-   - Anticanonical ADE Surface X = Z(w^2 + f(x, y)) \subset V_P.
+   - Anticanonical ADE Surface X = Z(z^2 + f(x, y)) \subset V_P.
      The branched double cover pi: X -> Y branched along B.
    - Boundary Divisor D = pi^*(C) on X.
-   - Del Pezzo Involution iota_dP: w |-> -w with quotient X / iota_dP = Y.
+   - Del Pezzo Involution iota_dP: z |-> -z with quotient X / iota_dP = Y.
 
 EXAMPLES::
 
@@ -346,7 +346,7 @@ class ADELogPair(ToricSubscheme, Parent):
         return matrix(ZZ, verts)
 
     def ramification_divisor(self) -> "ToricSubscheme":
-        r"""Return the ramification divisor R = V(w, f(x, y)) ⊂ V_P as a ToricSubscheme."""
+        r"""Return the ramification divisor R = V(z, f(x, y)) ⊂ V_P as a ToricSubscheme."""
         return self.cover().ramification_divisor()
 
     def branch_divisor(self) -> "ToricSubscheme":
@@ -880,12 +880,12 @@ class ADESurface(ADELogPair):
         r"""Return the explicit computed preimage boundary divisor D = pi^*(C) on X."""
         c_div = self.blue_line_divisor()
         f0 = self.defining_polynomial()
-        w_var = SR.var('w')
+        z_var = SR.var('z')
         d_terms = []
         for coeff, poly in c_div:
             sub = ToricSubscheme(
                 ambient=self.ambient_space(),
-                equations=(poly, w_var**2 + f0),
+                equations=(poly, z_var**2 + f0),
                 dim=1,
                 base_ring=self.base_ring(),
             )
@@ -893,11 +893,11 @@ class ADESurface(ADELogPair):
         return FormalDivisor(d_terms, ambient=self.ambient_space())
 
     def ramification_divisor(self) -> ToricSubscheme:
-        r"""Return the ramification divisor R = V(w, f(x, y)) ⊂ V_P as a ToricSubscheme."""
+        r"""Return the ramification divisor R = V(z, f(x, y)) ⊂ V_P as a ToricSubscheme."""
         f0 = self.defining_polynomial()
         return ToricSubscheme(
             ambient=self.ambient_space(),
-            equations=(SR.var('w'), f0),
+            equations=(SR.var('z'), f0),
             dim=1,
             base_ring=self.base_ring(),
         )
@@ -1002,9 +1002,9 @@ class ADESurface(ADELogPair):
 
     def anticanonical_equation(self) -> object:
         f_0 = self.defining_polynomial()
-        ring_3d = PolynomialRing(QQ, names=['x', 'y', 'w'])
-        x, y, w = ring_3d.gens()
-        return w**2 + f_0(x, y)
+        ring_3d = PolynomialRing(QQ, names=['x', 'y', 'z'])
+        x, y, z = ring_3d.gens()
+        return z**2 + f_0(x, y)
 
     def parametric_branch_polynomial(self) -> object:
         letter = self.letter()
@@ -1293,7 +1293,7 @@ class ADESurface(ADELogPair):
 
         lines = [
             r"\begin{aligned}",
-            rf"&(X, D + \varepsilon R) \colon X = \mathrm{{V}}\left(w^2 + \left({f0_latex}\right)\right) \subset {amb_ident} \text{{ of type }} {self._latex_label} {eol}",
+            rf"&(X, D + \varepsilon R) \colon X = \mathrm{{V}}\left(z^2 + \left({f0_latex}\right)\right) \subset {amb_ident} \text{{ of type }} {self._latex_label} {eol}",
             rf"&D + \varepsilon R = {delta_x_latex} {eol}",
             inv_line,
             r"\end{aligned}",
@@ -1304,7 +1304,7 @@ class ADESurface(ADELogPair):
         amb = self.ambient_identification()
         f0 = self.defining_polynomial()
         delta_x = repr(self.log_divisor())
-        return f"Log Pair (X, D + eps*R) where X = V(w^2 + ({f0})) ⊂ {amb} of type {self._key} (D + eps*R = {delta_x})"
+        return f"Log Pair (X, D + eps*R) where X = V(z^2 + ({f0})) ⊂ {amb} of type {self._key} (D + eps*R = {delta_x})"
 
     def _repr_html_(self) -> Optional[str]:
         try:
