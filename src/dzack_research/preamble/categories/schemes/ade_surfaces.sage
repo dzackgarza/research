@@ -272,6 +272,23 @@ class LogPairs(Category):
                 return y_variety.divisor_group().zero()
             return sum((y_variety.divisor(idx) for idx in blue_ray_indices), y_variety.divisor_group().zero())
 
+        def complementary_divisor(self: _ADESurfaceInterface) -> object:
+            """
+            Return the complementary boundary divisor C' on Y = V_Q supported on facets not passing through p*.
+            """
+            y_variety = self.del_pezzo_surface()
+            poly_q = self.polyhedron()
+            p_star = self._lattice.vector_space(QQ)(list(self.p_star()))
+
+            non_blue_ray_indices: list[int] = []
+            for idx, f in enumerate(poly_q.facets()):
+                if not f.as_polyhedron().contains(p_star):
+                    non_blue_ray_indices.append(idx)
+
+            if not non_blue_ray_indices:
+                return y_variety.divisor_group().zero()
+            return sum((y_variety.divisor(idx) for idx in non_blue_ray_indices), y_variety.divisor_group().zero())
+
         def _blue_facets(self: _ADESurfaceInterface) -> list[_PolyhedronFace]:
             """Return the list of facets of Q passing through p*."""
             poly_q = self.polyhedron()
@@ -1061,6 +1078,10 @@ class ADEBaseSurface(Parent):
         """Return boundary divisor C."""
         return self._cover.blue_line_divisor()
 
+    def complementary_divisor(self) -> object:
+        """Return complementary boundary divisor C'."""
+        return self._cover.complementary_divisor()
+
     def defining_polynomial(self) -> object:
         """Return branch polynomial f(x, y)."""
         return self._cover.defining_polynomial()
@@ -1124,18 +1145,22 @@ class ADEBaseSurface(Parent):
         return f"ADE Base Log Pair for {self._cover._key} (Y = V_Q, C + ½(1+ε)B, p*={self.p_star()})"
 
     def _latex_(self) -> str:
-        r"""LaTeX representation of the 2D base del Pezzo log pair."""
+        r"""LaTeX representation of the 2D base del Pezzo surface pair (Y, C)."""
         from sage.misc.latex import latex as _latex
         f0_latex = _latex(self.defining_polynomial())
         c_latex = _latex(self.blue_line_divisor())
+        c_prime = self.complementary_divisor()
+        c_prime_latex = _latex(c_prime) if c_prime != 0 else "0"
         p_latex = _latex(self.p_star())
+        area_val = self.area()
+        l_sq = 4 * area_val
         eol = "\\\\"
         lines = [
             r"\begin{aligned}",
-            rf"&\mathbf{{ADE\ Base\ Log\ Pair\ }} \left(Y = V_Q,\, C + \tfrac{{1+\varepsilon}}{{2}}B\right) \text{{ for }} {self._cover._latex_label} \quad \left(p^* = {p_latex}\right) {eol}",
-            rf"&\text{{Underlying Variety: }} Y = V_Q,\quad \text{{Associated Divisor: }} \Delta_Y = C + \tfrac{{1+\varepsilon}}{{2}}B {eol}",
-            rf"&\text{{Boundary Divisor: }} C = {c_latex},\quad \text{{Branch Divisor: }} B = \operatorname{{div}}\left({f0_latex}\right) {eol}",
-            rf"&\text{{Base Polygon }} Q \subset N_\mathbb{{R}} \colon \operatorname{{Area}}(Q) = {self.area()},\, |Q \cap N| = {self.n_integral_points()},\, |\partial Q \cap N| = {self.n_boundary_points()},\, |\operatorname{{Int}}(Q) \cap N| = {self.n_interior_points()},\, |C \cap N| = {self.n_distinguished_points()}",
+            rf"&\mathbf{{Del\ Pezzo\ Base\ Pair\ }} (Y, C) \text{{ for }} {self._cover._latex_label} \quad \left(p^* = {p_latex}\right) {eol}",
+            rf"&\text{{Polarization: }} L = -2(K_Y + C) \sim 2C',\quad L^2 = 4\operatorname{{Area}}(Q) = {l_sq} {eol}",
+            rf"&\text{{Boundary Divisors: }} C = {c_latex},\quad C' = {c_prime_latex},\quad B = Z\left({f0_latex}\right) {eol}",
+            rf"&\text{{Polygon }} Q \subset \mathbb{{R}}^2 \colon \operatorname{{Area}}(Q) = {area_val},\, |Q \cap \mathbb{{Z}}^2| = {self.n_integral_points()},\, |\partial Q \cap \mathbb{{Z}}^2| = {self.n_boundary_points()},\, |\operatorname{{Int}}(Q) \cap \mathbb{{Z}}^2| = {self.n_interior_points()}",
             r"\end{aligned}",
         ]
         return "\n".join(lines)
@@ -1683,23 +1708,33 @@ class ADESurface(Parent):
 
     def _latex_(self) -> str:
         r"""
-        Return mathematical LaTeX representation of the 3D covering ADE anticanonical log pair.
+        Return mathematical LaTeX representation of the 3D hypersurface ADE covering surface X.
         """
         from sage.misc.latex import latex as _latex
         f0_latex = _latex(self.defining_polynomial())
         p_latex = _latex(self.p_star())
-        P = self.cover_polytope()
         eol = "\\\\"
 
-        lines = [
-            r"\begin{aligned}",
-            rf"&\mathbf{{ADE\ Cover\ Log\ Pair\ }} \left(X \subset V_P,\, D + \varepsilon R\right) \text{{ of type }} {self._latex_label} \quad \left(p^* = {p_latex}\right) {eol}",
-            rf"&\text{{Underlying Scheme: }} X = Z\left(z^2 + \left({f0_latex}\right)\right) \subset V_P \text{{ (codimension 1)}} {eol}",
-            rf"&\text{{Associated Divisor: }} \Delta_X = D + \varepsilon R,\quad \text{{Ambient Toric Pair: }} \left(V_P,\, \Delta_{{\text{{toric}}}}\right) {eol}",
-            rf"&\text{{Cover Polytope }} P \subset N \oplus \mathbb{{Z}} \colon \operatorname{{Vol}}(P) = {P.volume()},\, \operatorname{{Vol}}_\mathbb{{Z}}(P) = {P.normalized_volume()},\, |P \cap N_3| = {P.n_integral_points()} {eol}",
-            rf"&\text{{Base Del Pezzo Log Pair: }} \left(Y = V_Q,\, C + \tfrac{{1+\varepsilon}}{{2}}B\right)",
-            r"\end{aligned}",
-        ]
+        if self.is_affine():
+            lines = [
+                r"\begin{aligned}",
+                rf"&\mathbf{{Affine\ ADE\ Surface\ }} X \text{{ of type }} {self._latex_label} \quad \left(p^* = {p_latex}\right) {eol}",
+                rf"&\text{{Equation: }} w^2 + \left({f0_latex}\right) = 0 \quad \text{{with involution }} \iota_{{\mathrm{{dP}}}} \colon w \mapsto -w {eol}",
+                rf"&\text{{Branch Curve: }} B = Z\left({f0_latex}\right) \subset Y, \quad \text{{Singularity over }} p^* \colon {self._latex_label} \text{{ (Simple Elliptic / Cusp)}} {eol}",
+                rf"&\text{{Newton Polygon: }} Q \subset \mathbb{{R}}^2 \colon \operatorname{{Area}}(Q) = {self.area()},\, |Q \cap \mathbb{{Z}}^2| = {self.n_integral_points()},\, |\operatorname{{Int}}(Q) \cap \mathbb{{Z}}^2| = {self.n_interior_points()}",
+                r"\end{aligned}",
+            ]
+        else:
+            P = self.cover_polytope()
+            vol_z = P.normalized_volume()
+            lines = [
+                r"\begin{aligned}",
+                rf"&\mathbf{{ADE\ Surface\ Hypersurface\ }} X \subset V_P \text{{ of type }} {self._latex_label} {eol}",
+                rf"&\text{{Equation: }} w^2 + \left({f0_latex}\right) = 0 \quad \text{{with involution }} \iota_{{\mathrm{{dP}}}} \colon w \mapsto -w {eol}",
+                rf"&\text{{Branch Curve: }} B = Z\left({f0_latex}\right) \subset Y, \quad \text{{Singularity over }} p^* \colon {self._latex_label} \text{{ Du Val}} {eol}",
+                rf"&\text{{Newton Polytope: }} P \subset \mathbb{{R}}^3, \quad \operatorname{{Vol}}_\mathbb{{Z}}(P) = {vol_z},\, |P \cap \mathbb{{Z}}^3| = {P.n_integral_points()},\, |\operatorname{{Int}}(P) \cap \mathbb{{Z}}^3| = {P.n_interior_points()}",
+                r"\end{aligned}",
+            ]
         return "\n".join(lines)
 
     def _repr_latex_(self) -> str:
