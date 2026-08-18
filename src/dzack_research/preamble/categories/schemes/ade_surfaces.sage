@@ -452,25 +452,15 @@ class ADELogPair(ToricSubscheme, Parent):
         return "$\\displaystyle " + self._latex_() + "$"
 
     def _rich_repr_(self, dm: object) -> object:
-        # With BackendSimple (only OutputPlainText supported), return None
-        # so IPython falls through to _repr_mimebundle_ which provides
-        # image/svg+xml, text/html, and text/latex.
         supported = dm.supported_output()
-        if supported == frozenset({dm.types.OutputPlainText}):
-            return None
-        # Rich backends: prefer image, then html, then latex
         svg_fn = getattr(self, '_repr_svg_', None)
-        if svg_fn and dm.types.OutputImageSvg in supported:
+        if svg_fn:
             s = svg_fn()
-            if s:
+            if s and dm.types.OutputImageSvg in supported:
                 return dm.types.OutputImageSvg(s)
         html = self._repr_html_()
         if html and dm.types.OutputHtml in supported:
             return dm.types.OutputHtml(html)
-        if dm.types.OutputLatex in supported:
-            return dm.types.OutputLatex(self._latex_())
-        if dm.types.OutputPlainText in supported:
-            return dm.types.OutputPlainText(repr(self))
         return None
 
     def _repr_mimebundle_(self, include: object = None, exclude: object = None) -> dict[str, str]:
