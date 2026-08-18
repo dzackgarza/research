@@ -23,8 +23,13 @@ untouched.
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from IPython.core.interactiveshell import InteractiveShell
 from sage.misc.latex import latex
+
+if TYPE_CHECKING:
+    from sage.structure.parent import ElementConstructorInput
 
 
 def typesets_itself(obj: object) -> bool:

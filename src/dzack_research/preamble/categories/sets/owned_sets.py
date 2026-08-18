@@ -423,12 +423,13 @@ class PosetHomset(SageHomset):
 class PosetTikz:
     r"""TikZ Hasse diagram representation."""
 
-    def __init__(self, poset: Any, label_map: Any = None, scale: float = 1.0, width: int = 550, height: int = 420) -> None:
+    def __init__(self, poset: Any, label_map: Any = None, scale: float = 1.0, width: int = 580, height: int = 440, theme: str = "dark") -> None:
         self._poset = poset
         self._label_map = label_map
         self._scale = scale
         self._width = width
         self._height = height
+        self._theme = theme
         self._coords = self._compute_layout()
 
     def _compute_layout(self) -> dict[Any, tuple[float, float]]:
@@ -497,11 +498,15 @@ class PosetTikz:
         return f"$$\n{self.tikz_code()}\n$$"
 
     def _repr_html_(self) -> str:
+        import uuid
+        uid = f"hasse_{uuid.uuid4().hex[:8]}"
+
         if not self._coords:
-            return "<div>Empty Poset</div>"
-        margin = 45
-        xs = [pt[0] for pt in self._coords.values()]
-        ys = [pt[1] for pt in self._coords.values()]
+            return f'<div id="{uid}">Empty Poset</div>'
+
+        margin = 50
+        xs = [float(pt[0]) for pt in self._coords.values()]
+        ys = [float(pt[1]) for pt in self._coords.values()]
         min_x, max_x = min(xs), max(xs)
         min_y, max_y = min(ys), max(ys)
         span_x = (max_x - min_x) if max_x > min_x else 1.0
@@ -509,36 +514,121 @@ class PosetTikz:
 
         px_coords = {}
         for v, (x, y) in self._coords.items():
-            px_x = margin + (x - min_x) / span_x * (self._width - 2 * margin)
-            px_y = (self._height - margin) - (y - min_y) / span_y * (self._height - 2 * margin)
+            px_x = margin + (float(x) - min_x) / span_x * (self._width - 2 * margin)
+            px_y = (self._height - margin) - (float(y) - min_y) / span_y * (self._height - 2 * margin)
             px_coords[v] = (px_x, px_y)
 
         node_radius = 16
-        svg_lines = [
-            '<div style="display: flex; justify-content: center; margin: 12px 0;">',
-            f'<svg width="{self._width}" height="{self._height}" viewBox="0 0 {self._width} {self._height}" xmlns="http://www.w3.org/2000/svg">',
+        initial_theme = self._theme if self._theme in ("dark", "light") else "dark"
+        btn_label = "🌙 Dark" if initial_theme == "dark" else "☀️ Light"
+
+        lines = [
+            f'<div id="{uid}" class="hasse-container" data-theme="{initial_theme}" style="display: inline-block; font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, sans-serif; border-radius: 12px; overflow: hidden; margin: 12px 0; box-shadow: 0 4px 20px rgba(0,0,0,0.15); transition: background-color 0.25s, border-color 0.25s;">',
             "  <style>",
-            "    .hasse-edge { stroke: #5f6368; stroke-width: 2; stroke-linecap: round; }",
-            "    .hasse-node { fill: #f8f9fa; stroke: #1a73e8; stroke-width: 2; transition: all 0.2s; }",
-            "    .hasse-node:hover { fill: #e8f0fe; stroke: #174ea6; stroke-width: 3; }",
-            '    .hasse-text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 11px; font-weight: 600; fill: #202124; text-anchor: middle; dominant-baseline: central; pointer-events: none; }',
+            f"    #{uid}[data-theme=\"dark\"] {{",
+            "      background: #0f172a;",
+            "      border: 1px solid #1e293b;",
+            "      color: #f8fafc;",
+            "    }",
+            f"    #{uid}[data-theme=\"light\"] {{",
+            "      background: #ffffff;",
+            "      border: 1px solid #e2e8f0;",
+            "      color: #0f172a;",
+            "    }",
+            f"    #{uid} .hasse-header {{",
+            "      display: flex;",
+            "      justify-content: space-between;",
+            "      align-items: center;",
+            "      padding: 8px 14px;",
+            "      font-size: 12px;",
+            "      font-weight: 600;",
+            "      border-bottom: 1px solid rgba(128,128,128,0.15);",
+            "    }",
+            f"    #{uid} .theme-btn {{",
+            "      background: rgba(128,128,128,0.15);",
+            "      border: none;",
+            "      border-radius: 6px;",
+            "      padding: 4px 8px;",
+            "      font-size: 11px;",
+            "      font-weight: 500;",
+            "      cursor: pointer;",
+            "      color: inherit;",
+            "      display: flex;",
+            "      align-items: center;",
+            "      gap: 4px;",
+            "      transition: background 0.15s;",
+            "    }",
+            f"    #{uid} .theme-btn:hover {{",
+            "      background: rgba(128,128,128,0.28);",
+            "    }",
+            f"    #{uid}[data-theme=\"dark\"] .hasse-edge {{",
+            "      stroke: #475569;",
+            "      stroke-width: 2;",
+            "    }",
+            f"    #{uid}[data-theme=\"light\"] .hasse-edge {{",
+            "      stroke: #94a3b8;",
+            "      stroke-width: 2;",
+            "    }",
+            f"    #{uid}[data-theme=\"dark\"] .hasse-node {{",
+            "      fill: #1e293b;",
+            "      stroke: #38bdf8;",
+            "      stroke-width: 2;",
+            "      transition: all 0.2s;",
+            "    }",
+            f"    #{uid}[data-theme=\"dark\"] .hasse-node:hover {{",
+            "      fill: #0284c7;",
+            "      stroke: #7dd3fc;",
+            "      stroke-width: 3;",
+            "    }",
+            f"    #{uid}[data-theme=\"light\"] .hasse-node {{",
+            "      fill: #f8fafc;",
+            "      stroke: #2563eb;",
+            "      stroke-width: 2;",
+            "      transition: all 0.2s;",
+            "    }",
+            f"    #{uid}[data-theme=\"light\"] .hasse-node:hover {{",
+            "      fill: #dbeafe;",
+            "      stroke: #1d4ed8;",
+            "      stroke-width: 3;",
+            "    }",
+            f"    #{uid}[data-theme=\"dark\"] .hasse-text {{",
+            "      fill: #f8fafc;",
+            "      font-size: 11px;",
+            "      font-weight: 600;",
+            "      text-anchor: middle;",
+            "      dominant-baseline: central;",
+            "      pointer-events: none;",
+            "    }",
+            f"    #{uid}[data-theme=\"light\"] .hasse-text {{",
+            "      fill: #0f172a;",
+            "      font-size: 11px;",
+            "      font-weight: 600;",
+            "      text-anchor: middle;",
+            "      dominant-baseline: central;",
+            "      pointer-events: none;",
+            "    }",
             "  </style>",
+            '  <div class="hasse-header">',
+            f'    <span>Hasse Diagram ({len(self._coords)} elements)</span>',
+            f'    <button class="theme-btn" onclick="(function(){{ var el = document.getElementById(\'{uid}\'); var cur = el.getAttribute(\'data-theme\'); var next = cur === \'dark\' ? \'light\' : \'dark\'; el.setAttribute(\'data-theme\', next); document.getElementById(\'{uid}_btn_text\').innerText = next === \'dark\' ? \'🌙 Dark\' : \'☀️ Light\'; }})()"><span id="{uid}_btn_text">{btn_label}</span></button>',
+            "  </div>",
+            f'  <svg width="{self._width}" height="{self._height}" viewBox="0 0 {self._width} {self._height}" xmlns="http://www.w3.org/2000/svg">',
         ]
 
         for u, v in self._poset.cover_relations():
             x1, y1 = px_coords[u]
             x2, y2 = px_coords[v]
-            svg_lines.append(f'  <line class="hasse-edge" x1="{x1:.1f}" y1="{y1:.1f}" x2="{y2:.1f}" y2="{y2:.1f}" />')
+            lines.append(f'    <line class="hasse-edge" x1="{x1:.1f}" y1="{y1:.1f}" x2="{x2:.1f}" y2="{y2:.1f}" />')
 
         for v, (x, y) in px_coords.items():
             lbl = str(self._label_map(v) if self._label_map else v)
             if len(lbl) > 12:
                 lbl = lbl[:10] + ".."
-            svg_lines.append(f'  <circle class="hasse-node" cx="{x:.1f}" cy="{y:.1f}" r="{node_radius}" />')
-            svg_lines.append(f'  <text class="hasse-text" x="{x:.1f}" y="{y:.1f}">{lbl}</text>')
+            lines.append(f'    <circle class="hasse-node" cx="{x:.1f}" cy="{y:.1f}" r="{node_radius}" />')
+            lines.append(f'    <text class="hasse-text" x="{x:.1f}" y="{y:.1f}">{lbl}</text>')
 
-        svg_lines.append("</svg></div>")
-        return "\n".join(svg_lines)
+        lines.append("  </svg>\n</div>")
+        return "\n".join(lines)
 
 
 def _poset_repr_html(poset: Any) -> str:
