@@ -36,7 +36,7 @@ EXAMPLES::
     sage: from dzack_research.preamble.categories.schemes.ade_surfaces import ADESurface, LogPairs, ADELogPairs
     sage: S = ADESurface('A', 3, variant=('long', 'long'))
     sage: S.category()
-    Category of a d e log pairs (Y, C + ½(1+ε)B)
+    Category of a d e surfaces (Y, C)
     sage: S in LogPairs()
     True
     sage: S.del_pezzo_surface()
@@ -564,13 +564,13 @@ class ToricLogPair(Parent):
 
 class ADELogPairs(LogPairs):
     """
-    The category of ADE del Pezzo log pairs (Y, C + ½(1+ε)B).
+    The category of ADE surface log pairs (Y, C).
 
     EXAMPLES::
 
         sage: from dzack_research.preamble.categories.schemes.ade_surfaces import ADELogPairs, LogPairs
         sage: ADELogPairs()
-        Category of a d e log pairs (Y, C + ½(1+ε)B)
+        Category of a d e surfaces (Y, C)
         sage: ADELogPairs().super_categories()
         [Category of log pairs]
     """
@@ -578,10 +578,10 @@ class ADELogPairs(LogPairs):
         return [LogPairs()]
 
     def _repr_object_names(self) -> str:
-        return "a d e log pairs (Y, C + ½(1+ε)B)"
+        return "a d e surfaces (Y, C)"
 
     def _latex_(self) -> str:
-        return r"\mathbf{Cat}\left(\text{ADE Log Pairs } \left(Y, C + \frac{1+\varepsilon}{2}B\right)\right)"
+        return r"\mathbf{Cat}\left(\text{ADE Surfaces } (Y, C)\right)"
 
     def _repr_latex_(self) -> str:
         return "$\\displaystyle " + self._latex_() + "$"
@@ -952,7 +952,7 @@ class ADELogPairs(LogPairs):
 
 class ADEBaseSurface(Parent):
     r"""
-    The base del Pezzo log pair (Y = V_Q, C + 1/2(1+eps) B) for an ADE surface.
+    The base del Pezzo surface pair (Y = V_Q, C) for an ADE surface.
 
     EXAMPLES::
 
@@ -960,7 +960,7 @@ class ADEBaseSurface(Parent):
         sage: s = ADESurface('A', 3, variant=('long', 'long'))
         sage: B = s.base()
         sage: B
-        ADE Base Log Pair for A_3 (Y = V_Q, C + ½(1+ε)B, p*=(0, 2))
+        Del Pezzo Base Surface for A_3 (Y = V_Q, C = V(z0) + V(z2), p* = (0, 2))
         sage: B.polygon()
         Lattice Polygon with 3 vertices
         sage: B.area()
@@ -1017,8 +1017,8 @@ class ADEBaseSurface(Parent):
         return self._cover.del_pezzo_surface()
 
     def associated_divisor(self) -> object:
-        r"""
-        Return the associated boundary divisor Δ_Y = C + ½(1+ε)B on Y.
+        """
+        Return the boundary divisor C (the 'blue line') on Y.
         """
         return self._cover.blue_line_divisor()
 
@@ -1142,25 +1142,22 @@ class ADEBaseSurface(Parent):
         return self._cover.tikz(**kwds)
 
     def _repr_(self) -> str:
-        return f"ADE Base Log Pair for {self._cover._key} (Y = V_Q, C + ½(1+ε)B, p*={self.p_star()})"
+        return f"Del Pezzo Base Surface for {self._cover._key} (Y = V_Q, C = {self.blue_line_divisor()}, p* = {self.p_star()})"
 
     def _latex_(self) -> str:
         r"""LaTeX representation of the 2D base del Pezzo surface pair (Y, C)."""
         from sage.misc.latex import latex as _latex
         f0_latex = _latex(self.defining_polynomial())
         c_latex = _latex(self.blue_line_divisor())
-        c_prime = self.complementary_divisor()
-        c_prime_latex = _latex(c_prime) if c_prime != 0 else "0"
         p_latex = _latex(self.p_star())
         area_val = self.area()
         l_sq = 4 * area_val
+        verts_latex = ",\\, ".join(f"({v[0]}, {v[1]})" for v in self.vertices())
         eol = "\\\\"
         lines = [
             r"\begin{aligned}",
-            rf"&\mathbf{{Del\ Pezzo\ Base\ Pair\ }} (Y, C) \text{{ for }} {self._cover._latex_label} \quad \left(p^* = {p_latex}\right) {eol}",
-            rf"&\text{{Polarization: }} L = -2(K_Y + C) \sim 2C',\quad L^2 = 4\operatorname{{Area}}(Q) = {l_sq} {eol}",
-            rf"&\text{{Boundary Divisors: }} C = {c_latex},\quad C' = {c_prime_latex},\quad B = Z\left({f0_latex}\right) {eol}",
-            rf"&\text{{Polygon }} Q \subset \mathbb{{R}}^2 \colon \operatorname{{Area}}(Q) = {area_val},\, |Q \cap \mathbb{{Z}}^2| = {self.n_integral_points()},\, |\partial Q \cap \mathbb{{Z}}^2| = {self.n_boundary_points()},\, |\operatorname{{Int}}(Q) \cap \mathbb{{Z}}^2| = {self.n_interior_points()}",
+            rf"&(Y, C) \text{{ for }} {self._cover._latex_label} \colon C = {c_latex}, \quad B = Z\left({f0_latex}\right) \quad \left(p^* = {p_latex}\right) {eol}",
+            rf"&Q = \operatorname{{conv}}\left(\{{{verts_latex}\}}\right) \colon \operatorname{{Area}}(Q) = {area_val},\; L^2 = {l_sq},\; |Q \cap \mathbb{{Z}}^2| = {self.n_integral_points()},\; |\operatorname{{Int}}(Q)| = {self.n_interior_points()}",
             r"\end{aligned}",
         ]
         return "\n".join(lines)
@@ -1232,9 +1229,9 @@ class ADESurface(Parent):
         sage: from dzack_research.preamble.categories.schemes.ade_surfaces import ADESurface
         sage: s = ADESurface('A', 3, variant=('long', 'long'))
         sage: s
-        ADE Cover Log Pair for A_3 (X ⊂ V_P, D + εR, p*=(0, 2))
+        ADE Surface of type A_3 (hypersurface X ⊂ V_P, p* = (0, 2))
         sage: s.base()
-        ADE Base Log Pair for A_3 (Y = V_Q, C + ½(1+ε)B, p*=(0, 2))
+        Del Pezzo Base Surface for A_3 (Y = V_Q, C = V(z0) + V(z2), p* = (0, 2))
         sage: s.covering_polytope()
         Lattice Polytope of dimension 3 with 4 vertices
     """
@@ -1472,7 +1469,9 @@ class ADESurface(Parent):
         return key, latex, vertices, p_star, {}
 
     def _repr_(self) -> str:
-        return f"ADE Cover Log Pair for {self._key} (X ⊂ V_P, D + εR, p*={self._p_star})"
+        if self.is_affine():
+            return f"Affine ADE Surface of type {self._key} (hypersurface X, p* = {self.p_star()})"
+        return f"ADE Surface of type {self._key} (hypersurface X ⊂ V_P, p* = {self.p_star()})"
 
     def tikz(self: _ADESurfaceInterface, scale: float = 0.8, show_dynkin_diagram: bool = False) -> str:
         r"""
@@ -1659,8 +1658,8 @@ class ADESurface(Parent):
         return 1
 
     def associated_divisor(self) -> object:
-        r"""
-        Return the associated boundary divisor Δ_X = D + εR on X.
+        """
+        Return the preimage boundary divisor D = π*(C) on X.
         """
         return self.blue_line_divisor()
 
@@ -1716,23 +1715,21 @@ class ADESurface(Parent):
         eol = "\\\\"
 
         if self.is_affine():
+            verts_latex = ",\\, ".join(f"({v[0]}, {v[1]})" for v in self.vertices())
             lines = [
                 r"\begin{aligned}",
-                rf"&\mathbf{{Affine\ ADE\ Surface\ }} X \text{{ of type }} {self._latex_label} \quad \left(p^* = {p_latex}\right) {eol}",
-                rf"&\text{{Equation: }} w^2 + \left({f0_latex}\right) = 0 \quad \text{{with involution }} \iota_{{\mathrm{{dP}}}} \colon w \mapsto -w {eol}",
-                rf"&\text{{Branch Curve: }} B = Z\left({f0_latex}\right) \subset Y, \quad \text{{Singularity over }} p^* \colon {self._latex_label} \text{{ (Simple Elliptic / Cusp)}} {eol}",
-                rf"&\text{{Newton Polygon: }} Q \subset \mathbb{{R}}^2 \colon \operatorname{{Area}}(Q) = {self.area()},\, |Q \cap \mathbb{{Z}}^2| = {self.n_integral_points()},\, |\operatorname{{Int}}(Q) \cap \mathbb{{Z}}^2| = {self.n_interior_points()}",
+                rf"&X \colon w^2 + \left({f0_latex}\right) = 0 \quad \text{{of type }} {self._latex_label} \quad \left(p^* = {p_latex}\right) {eol}",
+                rf"&Q = \operatorname{{conv}}\left(\{{{verts_latex}\}}\right) \colon \operatorname{{Area}}(Q) = {self.area()},\; |Q \cap \mathbb{{Z}}^2| = {self.n_integral_points()},\; |\operatorname{{Int}}(Q)| = {self.n_interior_points()}",
                 r"\end{aligned}",
             ]
         else:
             P = self.cover_polytope()
             vol_z = P.normalized_volume()
+            p_verts_latex = ",\\, ".join(f"({v[0]}, {v[1]}, {v[2]})" for v in P.vertices())
             lines = [
                 r"\begin{aligned}",
-                rf"&\mathbf{{ADE\ Surface\ Hypersurface\ }} X \subset V_P \text{{ of type }} {self._latex_label} {eol}",
-                rf"&\text{{Equation: }} w^2 + \left({f0_latex}\right) = 0 \quad \text{{with involution }} \iota_{{\mathrm{{dP}}}} \colon w \mapsto -w {eol}",
-                rf"&\text{{Branch Curve: }} B = Z\left({f0_latex}\right) \subset Y, \quad \text{{Singularity over }} p^* \colon {self._latex_label} \text{{ Du Val}} {eol}",
-                rf"&\text{{Newton Polytope: }} P \subset \mathbb{{R}}^3, \quad \operatorname{{Vol}}_\mathbb{{Z}}(P) = {vol_z},\, |P \cap \mathbb{{Z}}^3| = {P.n_integral_points()},\, |\operatorname{{Int}}(P) \cap \mathbb{{Z}}^3| = {P.n_interior_points()}",
+                rf"&X \colon w^2 + \left({f0_latex}\right) = 0 \quad \text{{of type }} {self._latex_label} \quad \left(p^* = {p_latex}\right) {eol}",
+                rf"&P = \operatorname{{conv}}\left(\{{{p_verts_latex}\}}\right) \colon \operatorname{{Vol}}_\mathbb{{Z}}(P) = {vol_z},\; |P \cap \mathbb{{Z}}^3| = {P.n_integral_points()},\; |\operatorname{{Int}}(P)| = {P.n_interior_points()}",
                 r"\end{aligned}",
             ]
         return "\n".join(lines)
