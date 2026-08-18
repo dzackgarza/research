@@ -3,7 +3,7 @@ r"""Finitely presented algebras as framed free-algebra quotients."""
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from dzack_research.preamble.lexicon import Element
-    from dzack_research.preamble.lexicon import Module
+    from sage.categories.modules import Module
     from dzack_research.preamble.categories.modules.module_morphisms.morphism_matrices import MorphismMatrix
 
 if TYPE_CHECKING:

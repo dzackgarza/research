@@ -22,7 +22,7 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from typing import Protocol, TYPE_CHECKING
 from dzack_research.preamble.utilities import zipsum
 if TYPE_CHECKING:
-    from dzack_research.preamble.lexicon import Group
+    from sage.categories.groups import Group
 
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModule
 from dzack_research.preamble.categories.sets.sets import finite_ordered_set
@@ -55,7 +55,7 @@ if TYPE_CHECKING:
     # The ordered-set noun is type-only: the preamble loads into one
     # shared namespace and nothing named OrderedSet may bind there.
     from dzack_research.preamble.lexicon import OrderedSet
-    from dzack_research.preamble.lexicon import Vector
+    from sage.structure.element import Vector
 
 
 def _is_additive(group: "Group") -> bool:

@@ -3,7 +3,7 @@ r"""Discriminant bilinear modules."""
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from dzack_research.preamble.lexicon import ModuleElement
-    from dzack_research.preamble.lexicon import Module
+    from sage.categories.modules import Module
 
 from sage.rings.integer_ring import ZZ as SageZZ
 if TYPE_CHECKING:

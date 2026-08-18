@@ -47,7 +47,8 @@ if TYPE_CHECKING:
     from sage.rings.number_field.number_field_ideal import NumberFieldFractionalIdeal
     from sage.sets.family import Family
     from sage.categories.morphism import Morphism
-    from dzack_research.preamble.lexicon import Ring, RingElement
+    from sage.categories.rings import Ring
+    from dzack_research.preamble.lexicon import RingElement
 
     from typing import Protocol
 

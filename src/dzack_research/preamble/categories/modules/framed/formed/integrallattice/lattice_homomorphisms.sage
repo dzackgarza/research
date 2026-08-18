@@ -2,7 +2,7 @@ r"""Form-preserving homomorphisms of integral lattices."""
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from dzack_research.preamble.lexicon import Module
+    from sage.categories.modules import Module
 
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormHomset
 if TYPE_CHECKING:

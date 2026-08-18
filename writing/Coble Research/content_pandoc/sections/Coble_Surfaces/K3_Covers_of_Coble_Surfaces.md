@@ -27,7 +27,7 @@ $$
 T_{\Co} \da S_{\Co}^{\perp \lkt} = (11, 11, 1)_2 \cong \latI_{2, 9}(2) \cong \gens{2} \oplus E_{10}(2)
 .
 $$
-The lattices $S_{\Co}$ and $T_{\Co}$ will be used to construct  the Hodge-theoretic period domain for Coble surfaces, yielding a coarse space for the corresponding moduli space; the identifications above are derived in the section on period domains.
+The lattices $S_{\Co}$ and $T_{\Co}$ will be used to construct the Hodge-theoretic period domain for Coble surfaces, yielding a coarse space for the corresponding moduli space; the identifications above are derived in the section on period domains.
 :::
 
 ::: {.proposition ref="prop:coble-invariant-lattice"}

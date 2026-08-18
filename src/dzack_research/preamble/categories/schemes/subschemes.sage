@@ -17,7 +17,7 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from typing import Self, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from dzack_research.preamble.lexicon import Ring
+    from sage.categories.rings import Ring
 
     from typing import Protocol
 

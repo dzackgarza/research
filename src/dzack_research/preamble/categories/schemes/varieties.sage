@@ -35,7 +35,8 @@ from typing import Self
 if TYPE_CHECKING:
     # The ordered-set noun is type-only: the preamble loads into one
     # shared namespace and nothing named OrderedSet may bind there.
-    from dzack_research.preamble.lexicon import OrderedSet, Ring
+    from sage.categories.rings import Ring
+    from dzack_research.preamble.lexicon import OrderedSet
 
     from typing import Protocol
 

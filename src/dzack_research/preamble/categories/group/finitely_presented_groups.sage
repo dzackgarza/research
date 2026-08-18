@@ -3,7 +3,7 @@ r"""Finitely presented groups."""
 from dzack_research.preamble.lexicon import Element
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from dzack_research.preamble.lexicon import Group
+    from sage.categories.groups import Group
 
 from dzack_research.preamble.categories.group.groups import OwnedFinitelyPresentedGroups
 from dzack_research.preamble.refine import hook_post_init

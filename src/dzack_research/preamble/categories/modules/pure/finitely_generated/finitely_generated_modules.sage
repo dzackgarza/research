@@ -8,7 +8,7 @@ the framing.
 from typing import Protocol, TYPE_CHECKING
 from dzack_research.preamble.utilities import zipsum
 if TYPE_CHECKING:
-    from dzack_research.preamble.lexicon import Module
+    from sage.categories.modules import Module
 
 if TYPE_CHECKING:
     from sage.structure.element import Matrix

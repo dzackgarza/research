@@ -4,9 +4,9 @@ from typing import Protocol, TYPE_CHECKING
 if TYPE_CHECKING:
     from dzack_research.preamble.categories.modules.group_modules.characters import Character
     from dzack_research.preamble.lexicon import Element
-    from dzack_research.preamble.lexicon import Group
+    from sage.categories.groups import Group
     from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModule
-    from dzack_research.preamble.lexicon import Module
+    from sage.categories.modules import Module
     from dzack_research.preamble.lexicon import ModuleElement
     from dzack_research.preamble.categories.modules.module_morphisms.morphism_matrices import MorphismMatrix
 

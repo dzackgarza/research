@@ -20,8 +20,8 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from dzack_research.preamble.lexicon import Element
     from dzack_research.preamble.categories.functors.algebra_base_change import AlgebraBaseChangeFunctor
-    from dzack_research.preamble.lexicon import Group
-    from dzack_research.preamble.lexicon import Vector
+    from sage.categories.groups import Group
+    from sage.structure.element import Vector
 
 from sage.rings.rational_field import QQ as SageQQ
 if TYPE_CHECKING:

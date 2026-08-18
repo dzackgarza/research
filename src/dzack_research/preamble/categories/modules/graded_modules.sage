@@ -22,7 +22,8 @@ from sage.rings.infinity import MinusInfinity
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
 
 if TYPE_CHECKING:
-    from dzack_research.preamble.lexicon import Element, Module, OrderedSet
+    from sage.categories.modules import Module
+    from dzack_research.preamble.lexicon import Element, OrderedSet
 
 
 if TYPE_CHECKING:

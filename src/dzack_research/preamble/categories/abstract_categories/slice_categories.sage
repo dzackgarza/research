@@ -48,7 +48,9 @@ class MonoCapableArrow(Protocol):
 if TYPE_CHECKING:
     # The ordered-set noun is type-only: the preamble loads into one
     # shared namespace and nothing named OrderedSet may bind there.
-    from dzack_research.preamble.lexicon import Group, Module, OrderedSet
+    from sage.categories.groups import Group
+    from sage.categories.modules import Module
+    from dzack_research.preamble.lexicon import OrderedSet
 
     # The algebra noun, taken the way the lexicon takes ``Ring`` and
     # ``Group``: the category's own ``ParentMethods``.

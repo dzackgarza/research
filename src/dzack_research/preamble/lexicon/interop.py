@@ -66,5 +66,5 @@ type SageFreeModule = FreeModule_generic | FGP_Module_class
 """Dev-facing union over Sage's module implementation classes, as flexible as
 the seams require (extend with CombinatorialFreeModule etc. on first use).
 ``FreeModule_generic`` is Sage implementation vocabulary — user-facing
-signatures say ``algebra.FreeModule``; this name exists for seams that must
+signatures say ``algebra.Module``; this name exists for seams that must
 accept whichever implementation Sage hands back."""

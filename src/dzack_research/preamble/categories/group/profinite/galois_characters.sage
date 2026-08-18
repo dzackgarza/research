@@ -35,7 +35,8 @@ from sage.categories.homset import Hom
 from sage.categories.morphism import Morphism
 
 if TYPE_CHECKING:
-    from dzack_research.preamble.lexicon import Group, Ring
+    from sage.categories.groups import Group
+    from sage.categories.rings import Ring
 
 
 class CyclotomicCharacter(Morphism):

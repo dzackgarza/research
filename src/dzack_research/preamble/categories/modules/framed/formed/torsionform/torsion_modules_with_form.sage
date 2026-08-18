@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from dzack_research.preamble.lexicon import Element
 if TYPE_CHECKING:
     from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModule
-    from dzack_research.preamble.lexicon import Module
+    from sage.categories.modules import Module
     from dzack_research.preamble.lexicon import ModuleElement
 
 from dzack_research.preamble.categories.modules.framed.formed.integrallattice.subobjects import Subobject

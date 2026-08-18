@@ -17,7 +17,7 @@ from dzack_research.preamble.categories.rings.rings import ℤ
 from sage.rings.integer_ring import ZZ as SageZZ
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from dzack_research.preamble.lexicon import Module
+    from sage.categories.modules import Module
     from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormMorphism
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
     from dzack_research.preamble.categories.modules.module_morphisms.morphism_matrices import MorphismMatrix

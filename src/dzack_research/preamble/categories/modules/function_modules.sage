@@ -51,7 +51,8 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
     from sage.rings.polynomial.polynomial_element import Polynomial
-    from dzack_research.preamble.lexicon import Element, Module
+    from sage.categories.modules import Module
+    from dzack_research.preamble.lexicon import Element
 
 from typing import Self
 

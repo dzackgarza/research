@@ -31,7 +31,8 @@ from sage.categories.category_singleton import Category_singleton
 from sage.categories.groups import Groups as SageGroups
 
 if TYPE_CHECKING:
-    from dzack_research.preamble.lexicon import GroupElement, OrderedSet
+    from sage.categories.groups import GroupElement
+    from dzack_research.preamble.lexicon import OrderedSet
 
     from typing import Protocol
 

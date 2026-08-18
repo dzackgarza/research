@@ -24,7 +24,7 @@ from dzack_research.preamble.categories.sets.owned_sets import Sets
 from typing import Self, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from dzack_research.preamble.lexicon import Ring
+    from sage.categories.rings import Ring
 
 # Register LocallyRinged axiom in Sage's axiom registry if not already present
 if "LocallyRinged" not in all_axioms:

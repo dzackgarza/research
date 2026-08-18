@@ -3,7 +3,7 @@ r"""Objects equipped with a chosen ordered direct-sum decomposition."""
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from dzack_research.preamble.lexicon import Element
-    from dzack_research.preamble.lexicon import Module
+    from sage.categories.modules import Module
 
 from dzack_research.preamble.categories.sets.sets import finite_ordered_set
 from collections.abc import Iterable

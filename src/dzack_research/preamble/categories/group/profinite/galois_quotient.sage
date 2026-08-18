@@ -38,7 +38,8 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
-    from dzack_research.preamble.lexicon import Group, Ring
+    from sage.categories.groups import Group
+    from sage.categories.rings import Ring
 
 
 def restrict_along(automorphism: Morphism, embedding: Morphism) -> Morphism:

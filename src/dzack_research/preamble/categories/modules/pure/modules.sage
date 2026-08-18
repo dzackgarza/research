@@ -24,7 +24,7 @@ category dispatches, since a vector space is what a module over a field is.
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from dzack_research.preamble.lexicon import Module
+    from sage.categories.modules import Module
 
 from typing import Self
 

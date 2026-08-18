@@ -3,7 +3,7 @@ r"""Divisor groups as framed free \(\mathbb Z\)-modules."""
 from sage.rings.integer_ring import ZZ as SageZZ
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from dzack_research.preamble.lexicon import Module
+    from sage.categories.modules import Module
 
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules
 from dzack_research.preamble.refine import refine

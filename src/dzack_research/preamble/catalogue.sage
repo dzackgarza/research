@@ -32,7 +32,8 @@ from sage.structure.parent import Parent
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from dzack_research.preamble.lexicon import Module, OrderedSet
+    from sage.categories.modules import Module
+    from dzack_research.preamble.lexicon import OrderedSet
 from sage.matrix.special import diagonal_matrix
 from sage.rings.integer_ring import ZZ as SageZZ
 

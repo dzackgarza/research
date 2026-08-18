@@ -25,7 +25,8 @@ slots are up.
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from dzack_research.preamble.lexicon import Element, Module
+    from sage.categories.modules import Module
+    from dzack_research.preamble.lexicon import Element
 
 from itertools import product as _index_product
 from typing import ClassVar, Self

@@ -15,7 +15,7 @@ EXAMPLES::
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from dzack_research.preamble.lexicon import Module
+    from sage.categories.modules import Module
 
 from typing import Protocol, TYPE_CHECKING
 
