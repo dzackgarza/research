@@ -547,8 +547,8 @@ class ADEBaseSurface(ADELogPair):
         eol = "\\\\"
         lines = [
             r"\begin{aligned}",
-            rf"&(Y, \Delta_Y) \colon Y = {amb_ident} \text{{ of type }} {self._cover._latex_label} \quad \left(p^* = {p_latex}\right) {eol}",
-            rf"&\Delta_Y = C + \tfrac{{1+\varepsilon}}{{2}} B = {delta_y_latex} {eol}",
+            rf"&(Y, C + \tfrac{{1+\varepsilon}}{{2}} B) \colon Y = {amb_ident} \text{{ of type }} {self._cover._latex_label} \quad \left(p^* = {p_latex}\right) {eol}",
+            rf"&C + \tfrac{{1+\varepsilon}}{{2}} B = {delta_y_latex} {eol}",
             rf"&Q = \operatorname{{conv}}\left(\{{{verts_latex}\}}\right) \subset \mathbb{{R}}^2 \colon \operatorname{{Vol}}_\mathbb{{Z}}(Q) = {norm_vol},\; \operatorname{{Vol}}(Q) = {vol_val},\; |Q \cap \mathbb{{Z}}^2| = {n_pts},\; |\operatorname{{Int}}(Q)| = {int_pts}",
             r"\end{aligned}",
         ]
@@ -557,7 +557,7 @@ class ADEBaseSurface(ADELogPair):
     def __repr__(self) -> str:
         amb = self.ambient_identification()
         delta_y = repr(self.log_divisor())
-        return f"Log Pair (Y, Delta_Y) where Y = {amb} of type {self._cover._key} (Delta_Y = C + 1/2(1+eps)B = {delta_y}, p* = {self.p_star()})"
+        return f"Log Pair (Y, C + 1/2(1+eps)B) where Y = {amb} of type {self._cover._key} (C + 1/2(1+eps)B = {delta_y}, p* = {self.p_star()})"
 
     def _repr_html_(self) -> str:
         """Render high-definition 2D vector SVG representation for Jupyter."""
@@ -1278,8 +1278,8 @@ class ADESurface(ADELogPair):
             vol_val = self.volume()
             lines = [
                 r"\begin{aligned}",
-                rf"&(X, \Delta_X) \colon X = \mathrm{{V}}\left(w^2 + \left({f0_latex}\right)\right) \subset {amb_ident} \text{{ of type }} {self._latex_label} \quad \left(p^* = {p_latex}\right) {eol}",
-                rf"&\Delta_X = D + \varepsilon R = {delta_x_latex} {eol}",
+                rf"&(X, D + \varepsilon R) \colon X = \mathrm{{V}}\left(w^2 + \left({f0_latex}\right)\right) \subset {amb_ident} \text{{ of type }} {self._latex_label} \quad \left(p^* = {p_latex}\right) {eol}",
+                rf"&D + \varepsilon R = {delta_x_latex} {eol}",
                 rf"&Q = \operatorname{{conv}}\left(\{{{verts_latex}\}}\right) \subset \mathbb{{R}}^2 \colon \operatorname{{Vol}}_\mathbb{{Z}}(Q) = {norm_vol},\; \operatorname{{Vol}}(Q) = {vol_val},\; |Q \cap \mathbb{{Z}}^2| = {self.n_integral_points()},\; |\operatorname{{Int}}(Q)| = {self.n_interior_points()}",
                 r"\end{aligned}",
             ]
@@ -1290,8 +1290,8 @@ class ADESurface(ADELogPair):
             p_verts_latex = r",\, ".join(f"({v[0]}, {v[1]}, {v[2]})" for v in P.vertices())
             lines = [
                 r"\begin{aligned}",
-                rf"&(X, \Delta_X) \colon X = \mathrm{{V}}\left(w^2 + \left({f0_latex}\right)\right) \subset {amb_ident} \text{{ of type }} {self._latex_label} \quad \left(p^* = {p_latex}\right) {eol}",
-                rf"&\Delta_X = D + \varepsilon R = {delta_x_latex} {eol}",
+                rf"&(X, D + \varepsilon R) \colon X = \mathrm{{V}}\left(w^2 + \left({f0_latex}\right)\right) \subset {amb_ident} \text{{ of type }} {self._latex_label} \quad \left(p^* = {p_latex}\right) {eol}",
+                rf"&D + \varepsilon R = {delta_x_latex} {eol}",
                 rf"&P = \operatorname{{conv}}\left(\{{{p_verts_latex}\}}\right) \subset \mathbb{{R}}^3 \colon \operatorname{{Vol}}_\mathbb{{Z}}(P) = {vol_z},\; \operatorname{{Vol}}(P) = {vol_val},\; |P \cap \mathbb{{Z}}^3| = {P.n_integral_points()},\; |\operatorname{{Int}}(P)| = {P.n_interior_points()}",
                 r"\end{aligned}",
             ]
@@ -1301,7 +1301,7 @@ class ADESurface(ADELogPair):
         amb = self.ambient_identification()
         f0 = self.defining_polynomial()
         delta_x = repr(self.log_divisor())
-        return f"Log Pair (X, Delta_X) where X = V(w^2 + ({f0})) ⊂ {amb} of type {self._key} (Delta_X = D + eps*R = {delta_x}, p* = {self.p_star()})"
+        return f"Log Pair (X, D + eps*R) where X = V(w^2 + ({f0})) ⊂ {amb} of type {self._key} (D + eps*R = {delta_x}, p* = {self.p_star()})"
 
     def _repr_html_(self) -> Optional[str]:
         try:
