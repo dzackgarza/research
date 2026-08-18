@@ -315,52 +315,64 @@ class ProjectiveWeightedGraphs(Category):
             return False
 
         def subdiagram_poset(self) -> Poset:
-            r"""Return the Boolean inclusion poset of all vertex subsets (subdiagrams)."""
+            r"""Return the Boolean inclusion poset of all induced subdiagram objects."""
             n, verts = self._get_n_and_verts()
-            elements = [tuple(s) for size in range(n + 1) for s in combinations(range(n), size)]
+            subdiagrams = [
+                self.subdiagram(s) for size in range(n + 1) for s in combinations(range(n), size)
+            ]
 
-            def leq(a: tuple[int, ...], b: tuple[int, ...]) -> bool:
-                return set(a).issubset(set(b))
+            def leq(D1: object, D2: object) -> bool:
+                v1 = getattr(D1, "vertices", None) or getattr(D1, "variable_names", None)
+                v2 = getattr(D2, "vertices", None) or getattr(D2, "variable_names", None)
+                names1 = set(v1()) if v1 is not None else set()
+                names2 = set(v2()) if v2 is not None else set()
+                return names1.issubset(names2)
 
-            return Poset((elements, leq))
+            return Poset((subdiagrams, leq))
 
         def parabolic_subdiagram_poset(self) -> Poset:
-            r"""Return the induced subposet of parabolic subdiagrams."""
+            r"""Return the induced subposet of parabolic subdiagram objects."""
             if not self.is_symmetric():
                 return Poset(([], lambda a, b: True))
             full_P = self.subdiagram_poset()
-            parabolics = [elem for elem in full_P if len(elem) > 0 and self.is_parabolic(indices=elem)]
+            parabolics = [
+                D for D in full_P
+                if (D.num_vertices() if hasattr(D, "num_vertices") else D.rank()) > 0 and D.is_parabolic()
+            ]
             return full_P.subposet(parabolics)
 
         def maximal_parabolic_subdiagram_poset(self) -> Poset:
-            r"""Return the subposet of maximal parabolic subdiagrams."""
+            r"""Return the subposet of maximal parabolic subdiagram objects."""
             p_poset = self.parabolic_subdiagram_poset()
             max_elems = p_poset.maximal_elements()
             return p_poset.subposet(max_elems)
 
         def elliptic_subdiagram_poset(self) -> Poset:
-            r"""Return the induced subposet of elliptic subdiagrams."""
+            r"""Return the induced subposet of elliptic subdiagram objects."""
             if not self.is_symmetric():
                 return Poset(([], lambda a, b: True))
             full_P = self.subdiagram_poset()
-            elliptics = [elem for elem in full_P if self.is_elliptic(indices=elem)]
+            elliptics = [D for D in full_P if D.is_elliptic()]
             return full_P.subposet(elliptics)
 
         def hyperbolic_subdiagram_poset(self) -> Poset:
-            r"""Return the induced subposet of hyperbolic subdiagrams."""
+            r"""Return the induced subposet of hyperbolic subdiagram objects."""
             if not self.is_symmetric():
                 return Poset(([], lambda a, b: True))
             full_P = self.subdiagram_poset()
-            hyperbolics = [elem for elem in full_P if len(elem) > 0 and self.is_hyperbolic(indices=elem)]
+            hyperbolics = [
+                D for D in full_P
+                if (D.num_vertices() if hasattr(D, "num_vertices") else D.rank()) > 0 and D.is_hyperbolic()
+            ]
             return full_P.subposet(hyperbolics)
 
-        def find_all_parabolics(self) -> list[list[int]]:
-            r"""Find all vertex index subsets that form parabolic subdiagrams."""
-            return [list(elem) for elem in self.parabolic_subdiagram_poset()]
+        def find_all_parabolics(self) -> list[object]:
+            r"""Find all parabolic subdiagram objects."""
+            return list(self.parabolic_subdiagram_poset())
 
-        def find_maximal_parabolics(self) -> list[list[int]]:
-            r"""Find all maximal parabolic subdiagrams."""
-            return [list(elem) for elem in self.parabolic_subdiagram_poset().maximal_elements()]
+        def find_maximal_parabolics(self) -> list[object]:
+            r"""Find all maximal parabolic subdiagram objects."""
+            return self.parabolic_subdiagram_poset().maximal_elements()
 
 
 class SymmetricProjectiveWeightedGraphs(Category):
@@ -604,9 +616,16 @@ class CombinatorialVinbergInvariantMatrix(Parent):
         ]
         return SageCoxeterMatrix(raw_entries)
 
-    def submatrix(self, indices: Sequence[int]) -> "CombinatorialVinbergInvariantMatrix":
-        r"""Return the induced sub-invariant matrix on the specified vertex subset."""
-        idx_list = list(indices)
+    def __hash__(self) -> int:
+        canon_entries = tuple(
+            sorted((k, (pt[0] / pt[1], 1) if pt[1] != 0 else (1, 0)) for k, pt in self._entries.items())
+        )
+        return hash((self.__class__, self._names, self._rank, canon_entries))
+
+    def subdiagram(self, indices: Sequence[int | str]) -> "CombinatorialVinbergInvariantMatrix":
+        r"""Return the induced subdiagram on the specified vertex indices or names."""
+        name_to_idx = {name: i for i, name in enumerate(self._names)}
+        idx_list = [name_to_idx[str(x)] if str(x) in name_to_idx else int(x) for x in indices]
         n_sub = len(idx_list)
         sub_entries = {}
         for new_i, old_i in enumerate(idx_list):
@@ -614,6 +633,10 @@ class CombinatorialVinbergInvariantMatrix(Parent):
                 sub_entries[(new_i, new_j)] = self[old_i, old_j]
         sub_names = tuple(self._names[i] for i in idx_list)
         return CombinatorialVinbergInvariantMatrix(self.base_ring(), sub_entries, n_sub, names=sub_names)
+
+    def submatrix(self, indices: Sequence[int | str]) -> "CombinatorialVinbergInvariantMatrix":
+        r"""Alias for :meth:`subdiagram`."""
+        return self.subdiagram(indices)
 
     def to_digraph(self) -> "ProjectiveWeightedDiGraph":
         r"""Construct a ProjectiveWeightedDiGraph with node and edge weights in P^1(R)."""
@@ -859,6 +882,32 @@ class ProjectiveWeightedDiGraph(Parent):
 
     def __ne__(self, other: object) -> bool:
         return not (self == other)
+
+    def __hash__(self) -> int:
+        v_wts = tuple(
+            sorted((v, (wt[0] / wt[1], 1) if wt[1] != 0 else (1, 0)) for v, wt in self._vertex_weights.items())
+        )
+        e_wts = tuple(
+            sorted((k, (wt[0] / wt[1], 1) if wt[1] != 0 else (1, 0)) for k, wt in self._edge_weights.items())
+        )
+        return hash((self.__class__, self._vertices, v_wts, e_wts))
+
+    def subdiagram(self, vertices: Sequence[str | int]) -> "ProjectiveWeightedDiGraph":
+        r"""Return the induced subdiagram (subgraph) on the specified vertex subset."""
+        target_v = tuple(str(self._vertices[v]) if isinstance(v, (int, Integer)) else str(v) for v in vertices)
+        v_set = set(target_v)
+        sub_v_weights = {v: self.vertex_weight(v) for v in target_v}
+        sub_edges = [
+            (u, v, wt) for (u, v), wt in self._edge_weights.items()
+            if u in v_set and v in v_set and wt[0] != 0
+        ]
+        return ProjectiveWeightedDiGraph(
+            self.base_ring(), target_v, vertex_weights=sub_v_weights, edges=sub_edges
+        )
+
+    def subgraph(self, vertices: Sequence[str | int]) -> "ProjectiveWeightedDiGraph":
+        r"""Alias for :meth:`subdiagram`."""
+        return self.subdiagram(vertices)
 
     def to_combinatorial_matrix(self) -> CombinatorialVinbergInvariantMatrix:
         r"""
