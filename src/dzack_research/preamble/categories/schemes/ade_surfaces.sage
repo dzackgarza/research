@@ -1,9 +1,15 @@
 r"""Category hierarchy and model for ADE surfaces as del Pezzo and anticanonical log pairs.
 
 Hierarchy:
-  Objects()
-    └── LogPairs()
-          └── ADELogPairs()
+  Schemes(S)
+    └── Varieties(S)
+          ├── ToricSchemes(S) ─────────────> ToricScheme (V_P, V_Q)
+          │     └── .Subobject ────────────> ToricSubscheme (X ⊂ V_P, Y = V_Q)
+          │
+          └── LogPairs(S)
+                └── ADELogPairs(S) ────────> ADELogPair (Cover & Base)
+                                              ├── ADESurface (X ⊂ V_P, D)
+                                              └── ADEBaseSurface (Y ⊂ V_Q, C)
 
 Mathematical Foundations (Alexeev-Thompson [AT21], arXiv:1712.07932):
 ---------------------------------------------------------------------
@@ -17,9 +23,6 @@ Mathematical Foundations (Alexeev-Thompson [AT21], arXiv:1712.07932):
      The torus-invariant 1-cycle supported strictly on the sides of Q passing through p*.
    - Complementary Divisor C':
      Supported on sides not passing through p*. Satisfies L ~ 2*C'.
-   - Adjunction:
-     K_Y + C + C' ~ 0  ==>  -2(K_Y + C) ~ L is ample and Cartier.
-     (Y, C) is a log del Pezzo surface with log canonical singularities.
    - Branch Divisor B = div(f):
      Defined by section f(x, y) with Newton polygon Q (Eq. 3.4-3.6 in [AT21]).
 
@@ -39,15 +42,15 @@ EXAMPLES::
     Category of a d e surfaces (Y, C)
     sage: S in LogPairs()
     True
-    sage: S.del_pezzo_surface()
-    2-d toric variety covered by 3 affine patches
-    sage: S.blue_line_divisor()
-    V(z0) + V(z2)
-    sage: S.defining_polynomial()
-    -1/4*x^2*y^2 + x^2 + y
+    sage: S.ambient_identification()
+    'V_P'
+    sage: S.base().ambient_identification()
+    'V_Q'
+    sage: S.base().cover() is S
+    True
 """
 
-from typing import NamedTuple, Optional, Callable, Sequence, Protocol, TYPE_CHECKING
+from typing import Any, Callable, NamedTuple, Optional, Protocol, Sequence, TYPE_CHECKING
 from sage.categories.category import Category
 from sage.categories.objects import Objects
 from sage.structure.parent import Parent
@@ -59,6 +62,7 @@ from sage.combinat.root_system.cartan_type import CartanType
 from sage.rings.rational_field import QQ, RationalField
 from sage.rings.integer_ring import ZZ
 from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+from sage.matrix.constructor import matrix
 from sage.plot.graphics import Graphics
 from sage.plot.line import line
 from sage.plot.polygon import polygon
@@ -71,6 +75,10 @@ from dzack_research.preamble.categories.schemes.polytopes import (
     LatticePolygon, LatticePolytope, LatticePolygons, LatticePolytopes,
     ConvexPolygon, ConvexPolytope, ConvexPolygons, ConvexPolytopes
 )
+from dzack_research.preamble.categories.schemes.toric.toric_schemes import (
+    ToricSchemes, ToricScheme, ToricSubscheme
+)
+from dzack_research.preamble.refine import refine
 
 # Valid side decorations for distinguished edges incident to p*
 VALID_DECORATIONS = frozenset({
@@ -157,20 +165,6 @@ class _ADESurfaceInterface(Protocol):
 class LogPairs(Category):
     """
     The category of algebraic log pairs (X, Δ).
-
-    A log pair consists of:
-    - An underlying scheme or variety X (accessed via .scheme() or .variety())
-    - An associated boundary divisor Δ (accessed via .associated_divisor() or .boundary_divisor())
-    - An ambient scheme or projective toric variety V (accessed via .ambient_variety())
-    - An ambient toric log pair (V, Δ_toric) (accessed via .ambient_pair())
-
-    EXAMPLES::
-
-        sage: from dzack_research.preamble.categories.schemes.ade_surfaces import LogPairs, ToricLogPair
-        sage: LogPairs()
-        Category of log pairs
-        sage: LogPairs().super_categories()
-        [Category of objects]
     """
     def super_categories(self) -> list[Category]:
         return [Objects()]
@@ -185,319 +179,16 @@ class LogPairs(Category):
         return "$\\displaystyle " + self._latex_() + "$"
 
     class ParentMethods:
-        """
-        Generic geometric and algebraic methods for log pairs (X, Δ).
-        """
-        def scheme(self: _ADESurfaceInterface) -> object:
-            """
-            Return the underlying scheme or variety X of the log pair (X, Δ).
-            """
-            return self.variety()
+        """Generic methods for log pairs (X, Δ)."""
 
-        def variety(self: _ADESurfaceInterface) -> object:
-            """
-            Return the underlying scheme or variety X of the log pair (X, Δ).
-            """
-            return self.del_pezzo_surface()
-
-        def associated_divisor(self: _ADESurfaceInterface) -> object:
-            """
-            Return the underlying associated boundary divisor Δ of the log pair (X, Δ).
-            """
-            return self.boundary_divisor()
-
-        def boundary_divisor(self: _ADESurfaceInterface) -> object:
-            """
-            Return the distinguished boundary divisor C (the 'blue line') on Y.
-            """
-            return self.blue_line_divisor()
-
-        def divisor(self: _ADESurfaceInterface) -> object:
-            """
-            Alias for associated_divisor().
-            """
-            return self.associated_divisor()
-
-        def ambient_space(self: _ADESurfaceInterface) -> object:
-            """
-            Return the ambient scheme or projective toric variety V.
-            """
-            return self.del_pezzo_surface()
-
-        def ambient_variety(self: _ADESurfaceInterface) -> object:
-            """
-            Alias for ambient_space().
-            """
-            return self.ambient_space()
-
-        def ambient_pair(self: _ADESurfaceInterface) -> "ToricLogPair":
-            """
-            Return the ambient projective toric variety as a toric log pair (V, Δ_toric)
-            where Δ_toric is the full toric boundary divisor.
-            """
-            return ToricLogPair(self.ambient_variety())
-
-        def ambient_log_pair(self: _ADESurfaceInterface) -> "ToricLogPair":
-            """
-            Alias for ambient_pair().
-            """
-            return self.ambient_pair()
-
-        def codimension(self: _ADESurfaceInterface) -> int:
-            """
-            Return the codimension of the underlying scheme in its ambient variety.
-            """
-            return 0
-
-        def del_pezzo_surface(self: _ADESurfaceInterface) -> ToricVariety_field:
-            """
-            Return the polarized toric del Pezzo surface Y = V_Q.
-            """
-            return self._del_pezzo_variety
-
-        def blue_line_divisor(self: _ADESurfaceInterface) -> object:
-            """
-            Return the distinguished boundary divisor C (the 'blue line') on Y = V_Q.
-            """
-            y_variety = self.del_pezzo_surface()
-            poly_q = self.polyhedron()
-            p_star = self._lattice.vector_space(QQ)(list(self.p_star()))
-
-            blue_ray_indices: list[int] = []
-            for idx, f in enumerate(poly_q.facets()):
-                if f.as_polyhedron().contains(p_star):
-                    blue_ray_indices.append(idx)
-
-            if not blue_ray_indices:
-                return y_variety.divisor_group().zero()
-            return sum((y_variety.divisor(idx) for idx in blue_ray_indices), y_variety.divisor_group().zero())
-
-        def complementary_divisor(self: _ADESurfaceInterface) -> object:
-            """
-            Return the complementary boundary divisor C' on Y = V_Q supported on facets not passing through p*.
-            """
-            y_variety = self.del_pezzo_surface()
-            poly_q = self.polyhedron()
-            p_star = self._lattice.vector_space(QQ)(list(self.p_star()))
-
-            non_blue_ray_indices: list[int] = []
-            for idx, f in enumerate(poly_q.facets()):
-                if not f.as_polyhedron().contains(p_star):
-                    non_blue_ray_indices.append(idx)
-
-            if not non_blue_ray_indices:
-                return y_variety.divisor_group().zero()
-            return sum((y_variety.divisor(idx) for idx in non_blue_ray_indices), y_variety.divisor_group().zero())
-
-        def _blue_facets(self: _ADESurfaceInterface) -> list[_PolyhedronFace]:
-            """Return the list of facets of Q passing through p*."""
-            poly_q = self.polyhedron()
-            p_star = self._lattice.vector_space(QQ)(list(self.p_star()))
-            return [f for f in poly_q.facets() if f.as_polyhedron().contains(p_star)]
-
-        def is_on_blue_boundary(self: _ADESurfaceInterface, pt: Sequence[LatticeCoord]) -> bool:
-            """Return True if pt lies on the distinguished boundary divisor C."""
-            pt_vec = self._lattice.vector_space(QQ)(list(pt))
-            return any(f.as_polyhedron().contains(pt_vec) for f in self._blue_facets())
-
-        def polygon(self: _ADESurfaceInterface) -> LatticePolygon:
-            """
-            Return the base 2-dimensional integral lattice polygon Q in category LatticePolygons().
-            """
-            return LatticePolygon(vertices=self.vertices(), lattice=self._lattice)
-
-        def base_polygon(self: _ADESurfaceInterface) -> LatticePolygon:
-            """
-            Alias for polygon(): return the base 2-dimensional integral lattice polygon Q.
-            """
-            return self.polygon()
-
-        def cover_polytope(self: _ADESurfaceInterface) -> LatticePolytope:
-            r"""
-            Return the 3-dimensional integral lattice polytope P \subset N \oplus \ZZ
-            formed as the pyramid over Q \times {0} with apex (p^*_x, p^*_y, 2),
-            corresponding to the monomial z^2 in the covering equation z^2 + f(x, y) = 0.
-
-            EXAMPLES::
-
-                sage: from dzack_research.preamble.categories.schemes.ade_surfaces import ADESurface
-                sage: s = ADESurface('A', 3, variant=('long', 'long'))
-                sage: P = s.cover_polytope()
-                sage: P.dimension()
-                3
-                sage: P.category()
-                Category of lattice polytopes
-                sage: P.volume()
-                8/3
-                sage: P.normalized_volume()
-                16
-            """
-            p_star = self.p_star()
-            verts_3d = [(v[0], v[1], 0) for v in self.vertices()] + [(p_star[0], p_star[1], 2)]
-            return LatticePolytope(verts_3d)
-
-        def newton_polytope(self: _ADESurfaceInterface) -> LatticePolytope:
-            r"""
-            Alias for cover_polytope(): the 3-dimensional Newton polytope of z^2 + f(x, y).
-            """
-            return self.cover_polytope()
-
-        def integral_points(self: _ADESurfaceInterface) -> tuple[LatticePoint2D, ...]:
-            """Return all integral lattice points in Q."""
-            return self.polygon().integral_points()
-
-        def interior_integral_points(self: _ADESurfaceInterface) -> tuple[LatticePoint2D, ...]:
-            """Return all strictly interior integral lattice points of Q."""
-            return self.polygon().interior_integral_points()
-
-        def boundary_integral_points(self: _ADESurfaceInterface) -> tuple[LatticePoint2D, ...]:
-            """Return all boundary integral lattice points of Q."""
-            return self.polygon().boundary_integral_points()
-
-        def distinguished_boundary_points(self: _ADESurfaceInterface) -> tuple[LatticePoint2D, ...]:
-            """Return all integral lattice points lying on the distinguished divisor C."""
-            return tuple(p for p in self.boundary_integral_points() if self.is_on_blue_boundary(p))
-
-        def n_integral_points(self: _ADESurfaceInterface) -> int:
-            """Total number of integral lattice points in Q."""
-            return self.polygon().n_integral_points()
-
-        def n_interior_points(self: _ADESurfaceInterface) -> int:
-            """Number of interior integral lattice points in Q."""
-            return self.polygon().n_interior_points()
-
-        def n_boundary_points(self: _ADESurfaceInterface) -> int:
-            """Number of boundary integral lattice points in Q."""
-            return self.polygon().n_boundary_points()
-
-        def invariants(self: _ADESurfaceInterface) -> dict[str, object]:
-            """
-            Return a dictionary of fundamental geometric invariants for this ADE surface.
-            """
-            poly_inv = self.polygon().invariants()
-            cover_inv = self.cover_polytope().invariants()
-            return {
-                "key": self.key(),
-                "latex_label": self.latex_label(),
-                "dynkin_type": self.dynkin_type(),
-                "rank": self.rank(),
-                "p_star": self.p_star(),
-                "area": self.area(),
-                "normalized_volume": self.normalized_volume(),
-                "n_integral_points": self.n_integral_points(),
-                "n_boundary_points": self.n_boundary_points(),
-                "n_interior_points": self.n_interior_points(),
-                "n_distinguished_points": len(self.distinguished_boundary_points()),
-                "cover_volume": cover_inv["volume"],
-                "cover_normalized_volume": cover_inv["normalized_volume"],
-                "cover_integral_points": cover_inv["n_integral_points"],
-            }
-
-        def n_distinguished_points(self: _ADESurfaceInterface) -> int:
-            """Number of integral lattice points on the distinguished divisor C."""
-            return len(self.distinguished_boundary_points())
-
-        def area(self: _ADESurfaceInterface) -> Rational:
-            """Return Euclidean area of Q."""
-            return self.polygon().area()
-
-        def normalized_volume(self: _ADESurfaceInterface) -> Integer:
-            """Return normalized lattice volume 2 * Area(Q)."""
-            return self.polygon().normalized_volume()
-
-        def invariants(self: _ADESurfaceInterface) -> dict[str, object]:
-            """Return geometric and combinatorial invariants of the ADE surface pair."""
-            p_star_vec = self._lattice.vector_space(QQ)(list(self.p_star()))
-            poly = self.polyhedron()
-            return {
-                "letter": self.letter(),
-                "rank": self.rank(),
-                "affine": self.is_affine(),
-                "p_star": tuple(self.p_star()),
-                "p_star_in_polytope": poly.contains(p_star_vec),
-                "p_star_in_interior": poly.interior_contains(p_star_vec),
-                "area": self.area(),
-                "normalized_volume": self.normalized_volume(),
-                "n_integral_points": self.n_integral_points(),
-                "n_boundary_points": self.n_boundary_points(),
-                "n_interior_points": self.n_interior_points(),
-                "n_distinguished_points": self.n_distinguished_points(),
-            }
-
-        def defining_polynomial(self: _ADESurfaceInterface) -> object:
-            """
-            Return the canonical unperturbed branch polynomial f_0(x, y) = f(x, y; c=0)
-            from Alexeev-Thompson [AT21], Section 3, Equations (3.4)--(3.6).
-            """
-            letter = self.letter()
-            rank = self.rank()
-            affine = self.is_affine()
-
-            if letter == 'A':
-                ring_a = PolynomialRing(QQ, names=['x', 'y'])
-                x, y = ring_a.gens()
-                if affine:
-                    return -QQ(1)/QQ(4) * (x * y)**2 + x**(rank + 1) + y**2
-                return -QQ(1)/QQ(4) * (x * y)**2 + y + x**(rank - 1)
-            elif letter == 'D':
-                ring_d = PolynomialRing(QQ, names=['x', 'y'])
-                x, y = ring_d.gens()
-                if affine:
-                    return -QQ(1)/QQ(4) * (x * y)**2 + x**4 + y**(rank - 2)
-                return -QQ(1)/QQ(4) * (x * y)**2 + y**2 + x**(rank - 2)
-            elif letter == 'E':
-                ring_e = PolynomialRing(QQ, names=['x', 'y'])
-                x, y = ring_e.gens()
-                if affine:
-                    if rank == 6:
-                        return -QQ(1)/QQ(4) * (x * y)**2 + x**3 + y**3
-                    elif rank == 7:
-                        return -QQ(1)/QQ(4) * (x * y)**2 + x**4 + y**3
-                    elif rank == 8:
-                        return -QQ(1)/QQ(4) * (x * y)**2 + x**6 + y**3
-                return -QQ(1)/QQ(4) * (x * y)**2 + y**3 + x**(rank - 3)
-            else:
-                ring_gen = PolynomialRing(QQ, names=['x', 'y'])
-                x, y = ring_gen.gens()
-                return -QQ(1)/QQ(4) * (x * y)**2 + y**2 + x**2
-
-        def anticanonical_equation(self: _ADESurfaceInterface) -> object:
-            """
-            Return the global anticanonical double cover defining equation z^2 + f_0(x, y) = 0
-            in the anticanonical toric threefold V_P.
-            """
-            f_0 = self.defining_polynomial()
-            ring_3d = PolynomialRing(QQ, names=['x', 'y', 'z'])
-            x, y, z = ring_3d.gens()
-            f_in_3d = f_0(x, y) # pyright: ignore[reportCallIssue]
-            return z**2 + f_in_3d
-
-        def is_toric(self: _ADESurfaceInterface) -> bool:
-            return False
-
-        def is_toric_base(self: _ADESurfaceInterface) -> bool:
+        def is_log_pair(self) -> bool:
             return True
 
 
 class ToricLogPair(Parent):
     r"""
     A toric log pair (V, Δ_toric) consisting of a normal toric variety V
-    and a torus-invariant boundary divisor (by default, the full toric boundary Δ_toric = ∑ D_ρ).
-
-    EXAMPLES::
-
-        sage: from dzack_research.preamble.categories.schemes.ade_surfaces import ToricLogPair, LogPairs
-        sage: from sage.schemes.toric.variety import ToricVariety
-        sage: V = ToricVariety(Polyhedron([(0,2), (0,0), (2,0)]).normal_fan())
-        sage: P = ToricLogPair(V)
-        sage: P in LogPairs()
-        True
-        sage: P.scheme()
-        2-d toric variety covered by 3 affine patches
-        sage: P.associated_divisor()
-        V(z0) + V(z1) + V(z2)
-        sage: P.codimension()
-        0
+    and a torus-invariant boundary divisor.
     """
     _variety: ToricVariety_field
     _divisor: object
@@ -512,43 +203,33 @@ class ToricLogPair(Parent):
         super().__init__(base=variety.base_ring(), category=LogPairs())
 
     def scheme(self) -> ToricVariety_field:
-        """Return the underlying toric variety V."""
         return self._variety
 
     def variety(self) -> ToricVariety_field:
-        """Return the underlying toric variety V."""
         return self._variety
 
     def associated_divisor(self) -> object:
-        """Return the toric boundary divisor Δ_toric."""
         return self._divisor
 
     def boundary_divisor(self) -> object:
-        """Return the toric boundary divisor Δ_toric."""
         return self._divisor
 
     def divisor(self) -> object:
-        """Return the toric boundary divisor Δ_toric."""
         return self._divisor
 
     def ambient_space(self) -> ToricVariety_field:
-        """Return the ambient toric variety V."""
         return self._variety
 
     def ambient_variety(self) -> ToricVariety_field:
-        """Return the ambient toric variety V."""
         return self._variety
 
     def ambient_pair(self) -> "ToricLogPair":
-        """Return self (already a toric log pair)."""
         return self
 
     def ambient_log_pair(self) -> "ToricLogPair":
-        """Return self."""
         return self
 
     def codimension(self) -> int:
-        """Return 0 (variety is its own ambient space)."""
         return 0
 
     def _repr_(self) -> str:
@@ -564,15 +245,7 @@ class ToricLogPair(Parent):
 
 class ADELogPairs(LogPairs):
     """
-    The category of ADE surface log pairs (Y, C).
-
-    EXAMPLES::
-
-        sage: from dzack_research.preamble.categories.schemes.ade_surfaces import ADELogPairs, LogPairs
-        sage: ADELogPairs()
-        Category of a d e surfaces (Y, C)
-        sage: ADELogPairs().super_categories()
-        [Category of log pairs]
+    The category of ADE surface log pairs.
     """
     def super_categories(self) -> list[Category]:
         return [LogPairs()]
@@ -586,528 +259,199 @@ class ADELogPairs(LogPairs):
     def _repr_latex_(self) -> str:
         return "$\\displaystyle " + self._latex_() + "$"
 
-    class ParentMethods:
-        """
-        Domain methods for ADE log pairs following Alexeev-Thompson [AT21].
-        """
-        def letter(self: _ADESurfaceInterface) -> str:
-            return self._letter
 
-        def rank(self: _ADESurfaceInterface) -> int:
-            return self._rank
+class ADELogPair(ToricSubscheme, Parent):
+    """
+    Common base class for ADE log pairs (both cover X and base Y).
+    """
 
-        def variant(self: _ADESurfaceInterface) -> tuple[str, ...]:
-            return self._variant
+    def cover(self) -> "ADESurface":
+        """Return the covering ADE surface log pair (X, D + eps*R)."""
+        raise NotImplementedError
 
-        def is_affine(self: _ADESurfaceInterface) -> bool:
-            return self._affine
+    def base(self) -> "ADEBaseSurface":
+        """Return the base del Pezzo log pair (Y = V_Q, C + 1/2(1+eps)B)."""
+        raise NotImplementedError
 
-        def key(self: _ADESurfaceInterface) -> str:
-            return self._key
+    def is_cover(self) -> bool:
+        """Return True if this is the covering hypersurface X ⊂ V_P."""
+        raise NotImplementedError
 
-        def latex_label(self: _ADESurfaceInterface) -> str:
-            return self._latex_label
+    def is_base(self) -> bool:
+        """Return True if this is the base del Pezzo surface Y = V_Q."""
+        raise NotImplementedError
 
-        def cartan_type(self: _ADESurfaceInterface) -> CartanType:
-            if self._affine:
-                return CartanType([self._letter, self._rank, 1])
-            return CartanType([self._letter, self._rank])
+    def cover_surface(self) -> "ADESurface":
+        return self.cover()
 
-        def dynkin_diagram(self: _ADESurfaceInterface) -> object:
-            return self.cartan_type().dynkin_diagram()
+    def base_surface(self) -> "ADEBaseSurface":
+        return self.base()
 
-        def vertices(self: _ADESurfaceInterface) -> tuple[LatticePoint2D, ...]:
-            return self._vertices
+    def cover_pair(self) -> "ADESurface":
+        return self.cover()
 
-        def p_star(self: _ADESurfaceInterface) -> LatticePoint2D:
-            return self._p_star
+    def base_pair(self) -> "ADEBaseSurface":
+        return self.base()
 
-        def side_decorations(self: _ADESurfaceInterface) -> dict[tuple[int, int], SideDecoration]:
-            return dict(self._sides_info)
+    def covering_pair(self) -> "ADESurface":
+        return self.cover()
 
-        def ambient_space(self: _ADESurfaceInterface) -> Callable[[Sequence[LatticeCoord]], LatticePoint2D]:
-            return self._ambient_space
+    def ade_type(self) -> str:
+        """Return the ADE singularity type key."""
+        return self.cover().key()
 
-        def normal_fan(self: _ADESurfaceInterface) -> object:
-            return self.polyhedron().normal_fan()
+    def letter(self) -> str:
+        return self.cover()._letter
 
-        def polyhedron(self: _ADESurfaceInterface) -> _Polyhedron:
-            verts = [list(v) for v in self.vertices()]
-            return Polyhedron(vertices=verts, base_ring=ZZ)
+    def rank(self) -> int:
+        return self.cover()._rank
 
-        def parametric_branch_polynomial(self: _ADESurfaceInterface) -> object:
-            """
-            Return the universal parametric polynomial f(x, y; c) from [AT21] Eq (3.4)--(3.6).
-            """
-            letter = self.letter()
-            rank = self.rank()
+    def variant(self) -> tuple[str, ...]:
+        return self.cover()._variant
 
-            if letter == 'A':
-                c_names = [f'c{i}' for i in range(1, rank)] + ['c_pp']
-                c_latex = [f'c_{{{i}}}' for i in range(1, rank)] + [r"c''"]
-                ring_a = PolynomialRing(QQ, names=['x', 'y'] + c_names)
-                ring_a._latex_names = ['x', 'y'] + c_latex
-                gens = ring_a.gens()
-                x, y = gens[0], gens[1]
-                coeffs = gens[2:-1]
-                c_pp = gens[-1]
-                px = x**(rank - 1) + sum(coeffs[i] * x**(rank - 2 - i) for i in range(rank - 1))
-                return -QQ(1)/QQ(4) * (x * y - c_pp)**2 + px + y
-            elif letter == 'D':
-                deg_p = rank - 2
-                deg_q = 2
-                c_p_names = [f'c{i}' for i in range(1, deg_p + 1)]
-                c_p_latex = [f'c_{{{i}}}' for i in range(1, deg_p + 1)]
-                c_q_names = [f'cp{j}' for j in range(1, deg_q)]
-                c_q_latex = [f"c'_{{{j}}}" for j in range(1, deg_q)]
-                all_c_names = c_p_names + c_q_names + ['c_pp']
-                all_c_latex = c_p_latex + c_q_latex + [r"c''"]
-                ring_d = PolynomialRing(QQ, names=['x', 'y'] + all_c_names)
-                ring_d._latex_names = ['x', 'y'] + all_c_latex
-                gens = ring_d.gens()
-                x, y = gens[0], gens[1]
-                px = x**deg_p + sum(gens[2 + i] * x**(deg_p - 1 - i) for i in range(deg_p))
-                qy = y**deg_q + gens[2 + deg_p] * y
-                c_pp = gens[-1]
-                return -QQ(1)/QQ(4) * (x * y - c_pp)**2 + px + qy
-            elif letter == 'E':
-                deg_p = rank - 3
-                deg_q = 3
-                c_p_names = [f'c{i}' for i in range(1, deg_p + 1)]
-                c_p_latex = [f'c_{{{i}}}' for i in range(1, deg_p + 1)]
-                c_q_names = [f'cp{j}' for j in range(1, deg_q)]
-                c_q_latex = [f"c'_{{{j}}}" for j in range(1, deg_q)]
-                all_c_names = c_p_names + c_q_names + ['c_pp']
-                all_c_latex = c_p_latex + c_q_latex + [r"c''"]
-                ring_e = PolynomialRing(QQ, names=['x', 'y'] + all_c_names)
-                ring_e._latex_names = ['x', 'y'] + all_c_latex
-                gens = ring_e.gens()
-                x, y = gens[0], gens[1]
-                px = x**deg_p + sum(gens[2 + i] * x**(deg_p - 1 - i) for i in range(deg_p))
-                qy = y**deg_q + sum(gens[2 + deg_p + j - 1] * y**(deg_q - j) for j in range(1, deg_q))
-                c_pp = gens[-1]
-                return -QQ(1)/QQ(4) * (x * y - c_pp)**2 + px + qy
-            else:
-                ring_gen = PolynomialRing(QQ, names=['x', 'y'])
-                x, y = ring_gen.gens()
-                return -QQ(1)/QQ(4) * (x * y)**2 + y**2 + x**2
+    def is_affine(self) -> bool:
+        return self.cover()._affine
 
-        def dynkin_diagram_data(self: _ADESurfaceInterface) -> dict[str, object]:
-            """
-            Extract internal Dynkin tree root nodes from the polygon Q.
-            """
-            poly_q = self.polyhedron()
-            v_space = self._lattice.vector_space(QQ)
-            p_star = v_space(list(self.p_star()))
+    def key(self) -> str:
+        return self.cover()._key
 
-            blue_facets: list[_PolyhedronFace] = []
-            non_blue_facets: list[_PolyhedronFace] = []
-            for f in poly_q.facets():
-                facet_pts = [v_space(list(v)) for v in f.vertices()]
-                if p_star in facet_pts:
-                    blue_facets.append(f)
-                else:
-                    non_blue_facets.append(f)
+    def latex_label(self) -> str:
+        return self.cover()._latex_label
 
-            c_points: set[tuple[LatticeCoord, ...]] = set()
-            for f_blue in blue_facets:
-                for pt in f_blue.as_polyhedron().integral_points():
-                    c_points.add(tuple(pt))
+    def cartan_type(self) -> CartanType:
+        return self.cover().cartan_type()
 
-            corners = [v_space(list(v)) for v in poly_q.vertices()]
+    def dynkin_diagram(self) -> object:
+        return self.cartan_type().dynkin_diagram()
 
-            boundary_nodes: list[LatticePoint2D] = []
-            corner_nodes: list[LatticePoint2D] = []
-            boundary_edges: list[tuple[LatticePoint2D, LatticePoint2D]] = []
+    def p_star(self) -> LatticePoint2D:
+        return self.cover()._p_star
 
-            for f_non_blue in non_blue_facets:
-                f_poly = f_non_blue.as_polyhedron()
-                pts = list(f_poly.integral_points())
-                if len(pts) > 1:
-                    pts.sort(key=lambda p: (p[0], p[1]))
-                    for i in range(len(pts) - 1):
-                        p1, p2 = pts[i], pts[i+1]
-                        if tuple(p1) not in c_points and tuple(p2) not in c_points:
-                            boundary_edges.append((p1, p2))
-                for pt in pts:
-                    if tuple(pt) not in c_points and pt not in boundary_nodes:
-                        boundary_nodes.append(pt)
-                        if pt in corners:
-                            corner_nodes.append(pt)
+    def polytope_matrix(self) -> matrix:
+        """Return integer matrix whose rows are the vertices of the ambient polytope."""
+        poly = self.polytope()
+        if hasattr(poly, 'polyhedron'):
+            poly = poly.polyhedron()
+        verts = [[ZZ(c) for c in v] for v in poly.vertices()]
+        return matrix(ZZ, verts)
 
-            internal_nodes: list[tuple[int, int]] = []
-            internal_edges: list[tuple[LatticePoint2D, tuple[int, int]]] = []
-            for c in corner_nodes:
-                int_pt = (int(c[0]) + 1, int(c[1]) + 1)
-                internal_nodes.append(int_pt)
-                internal_edges.append((c, int_pt))
+    def integral_invariants(self) -> dict[str, Any]:
+        """Return dictionary of integral invariants of the ambient polytope."""
+        P = self.polytope()
+        poly = P.polyhedron() if hasattr(P, 'polyhedron') else P
+        pts = poly.integral_points()
+        n_pts = len(pts)
+        
+        # Count interior points
+        if hasattr(P, 'n_interior_points') and callable(P.n_interior_points):
+            int_pts = P.n_interior_points()
+        else:
+            int_pts = sum(1 for pt in pts if all(h.eval(pt) > 0 for h in poly.Hrepresentation()))
+        
+        bnd_pts = n_pts - int_pts
+        if hasattr(P, 'normalized_volume'):
+            norm_vol = P.normalized_volume()
+        else:
+            mult = 6 if self.ambient_dimension() == 3 else (2 if self.ambient_dimension() == 2 else 1)
+            norm_vol = poly.volume() * mult
 
-            all_nodes: Sequence[object] = list(boundary_nodes) + list(internal_nodes)
-            all_edges: Sequence[object] = list(boundary_edges) + list(internal_edges)
+        res = {
+            "dimension": int(self.ambient_dimension()),
+            "normalized_volume": int(norm_vol),
+            "n_integral_points": int(n_pts),
+            "n_interior_points": int(int_pts),
+            "n_boundary_points": int(bnd_pts),
+        }
+        if self.ambient_dimension() == 2:
+            res["area"] = poly.volume()
+        return res
 
-            node_types: dict[object, str] = {}
-            for n_int in internal_nodes:
-                node_types[n_int] = 'circled_white'
+    def _repr_latex_(self) -> str:
+        return "$\\displaystyle " + self._latex_() + "$"
 
-            for n_bnd in boundary_nodes:
-                d = abs(n_bnd[0] - p_star[0]) + abs(n_bnd[1] - p_star[1])
-                if n_bnd in corner_nodes:
-                    node_types[n_bnd] = 'black'
-                else:
-                    node_types[n_bnd] = 'black' if d % 2 == 0 else 'white'
+    def _rich_repr_(self, dm: object) -> object:
+        if dm.types.OutputHtml in dm.supported_output():
+            html_content = self._repr_html_()
+            latex_html = f"\\(\\displaystyle {self._latex_()}\\)"
+            combined_html = f'<div style="font-family: sans-serif; line-height: 1.4;"><div>{latex_html}</div><div style="margin-top: 14px;">{html_content}</div></div>'
+            return dm.types.OutputHtml(combined_html)
+        elif dm.types.OutputLatex in dm.supported_output():
+            return dm.types.OutputLatex(self._latex_())
+        elif dm.types.OutputPlainText in dm.supported_output():
+            return dm.types.OutputPlainText(repr(self))
+        return None
 
-            return {
-                'nodes': all_nodes,
-                'edges': all_edges,
-                'node_types': node_types,
-            }
-
-        def pyramid_polytope(self: _ADESurfaceInterface) -> Polyhedron_base:
-            """
-            Return the 3D anticanonical pyramidal polytope P in N_3.
-            """
-            if self.is_affine():
-                raise ValueError("Anticanonical pyramidal 3D cone is only defined for Type III classical ADE surfaces with p* on boundary")
-
-            q_verts = [list(v) for v in self.vertices()]
-            p_star = list(self.p_star())
-            p_apex = [p_star[0], p_star[1], 2]
-            p_base_verts = [[v[0], v[1], 0] for v in q_verts]
-            all_3d_verts = p_base_verts + [p_apex]
-            return Polyhedron(vertices=all_3d_verts, base_ring=ZZ)
-
-        def area(self: _ADESurfaceInterface) -> LatticeCoord:
-            return self.polyhedron().volume()
-
-        def volume(self: _ADESurfaceInterface) -> LatticeCoord:
-            return self.area()
-
-        def p_star_index(self: _ADESurfaceInterface) -> Optional[int]:
-            p = tuple(self.p_star())
-            for i, v in enumerate(self.vertices()):
-                if tuple(v) == p:
-                    return i
-            return None
-
-        def plot2d(self: _ADESurfaceInterface, **kwds: object) -> Graphics:
-            """
-            Return a publication-quality Sage Graphics object adhering to
-            Alexeev-Thompson visual conventions for the 2D polygon Q.
-            """
-            grid_line_color = kwds.get('grid_line_color', '#CBD5E1')
-            grid_line_width = kwds.get('grid_line_width', 0.75)
-            fill_color = kwds.get('fill_color', '#E0F2FE')
-            fill_alpha = kwds.get('fill_alpha', 0.75)
-            boundary_color = kwds.get('boundary_color', '#1E293B')
-            boundary_width = kwds.get('boundary_width', 2.0)
-            blue_line_color = kwds.get('blue_line_color', '#2563EB')
-            blue_line_width = kwds.get('blue_line_width', 4.2)
-            p_star_size = kwds.get('p_star_size', 220)
-            p_star_color = kwds.get('p_star_color', '#DC2626')
-            label_fontsize = kwds.get('label_fontsize', 14)
-            label_y_offset = kwds.get('label_y_offset', -0.1)
-            side_label_fontsize = kwds.get('side_label_fontsize', 10)
-
-            vertices = [tuple(v) for v in self.vertices()]
-            p_star = tuple(self.p_star())
-            sides = self.side_decorations()
-            label = self.latex_label()
-            poly = self.polyhedron()
-
-            all_pts = list(vertices) + [p_star]
-            min_x = int(min(p[0] for p in all_pts) - 1)
-            max_x = int(max(p[0] for p in all_pts) + 1)
-            min_y = int(min(p[1] for p in all_pts) - 1)
-            max_y = int(max(p[1] for p in all_pts) + 1)
-
-            g_plot = Graphics()
-
-            # Render integer lattice grid lines
-            for gx in range(min_x, max_x + 1):
-                g_plot += line([(gx, min_y), (gx, max_y)],
-                               color=grid_line_color, thickness=grid_line_width,
-                               linestyle=':', zorder=1)
-            for gy in range(min_y, max_y + 1):
-                g_plot += line([(min_x, gy), (max_x, gy)],
-                               color=grid_line_color, thickness=grid_line_width,
-                               linestyle=':', zorder=1)
-
-            # Classify all lattice points in the bounding box
-            all_grid = [(gx, gy) for gx in range(min_x, max_x + 1)
-                        for gy in range(min_y, max_y + 1)]
-            int_pts = set(tuple(p) for p in self.interior_integral_points())
-            bnd_pts = set(tuple(p) for p in self.boundary_integral_points())
-            dist_pts = set(tuple(p) for p in self.distinguished_boundary_points())
-            amb_pts = [pt for pt in all_grid if pt not in int_pts and pt not in bnd_pts]
-
-            # Ambient background lattice points outside Q
-            g_plot += point(amb_pts, pointsize=24, color='#94A3B8', alpha=0.5, zorder=2)
-
-            # Polygon interior
-            g_plot += polygon(vertices, color=fill_color, alpha=fill_alpha, zorder=3)
-
-            # Boundary edges: distinguish blue line facets (passing through p*) vs non-blue facets
-            blue_facets = self._blue_facets()
-            for f in poly.facets():
-                v_facet = [tuple(v) for v in f.vertices()]
-                if len(v_facet) >= 2:
-                    p1, p2 = v_facet[0], v_facet[1]
-                    if f in blue_facets:
-                        g_plot += line([p1, p2], color=blue_line_color, thickness=blue_line_width, zorder=6)
-                    else:
-                        g_plot += line([p1, p2], color=boundary_color, thickness=boundary_width, zorder=4)
-
-            # Interior lattice points (teal/emerald)
-            if int_pts:
-                g_plot += point(list(int_pts), pointsize=44, color='#059669', zorder=8)
-
-            # Non-blue boundary lattice points (solid black)
-            other_bnd = [p for p in bnd_pts if p not in dist_pts]
-            if other_bnd:
-                g_plot += point(other_bnd, pointsize=48, color='#0F172A', zorder=9)
-
-            # Distinguished boundary points on blue line (bright blue)
-            if dist_pts:
-                g_plot += point(list(dist_pts), pointsize=55, color=blue_line_color, zorder=10)
-
-            # Long-side white vertex markers for A-types
-            for deco in sides.values():
-                if deco.vertex_color == 'white':
-                    for vi in deco.edge:
-                        v_coord = vertices[vi]
-                        g_plot += point(v_coord, pointsize=52, color='black', zorder=11)
-                        g_plot += point(v_coord, pointsize=30, color='white', zorder=12)
-
-            # Distinguished point p* marked with red star
-            g_plot += point(p_star, pointsize=p_star_size, color=p_star_color, marker='*', zorder=15)
-
-            # Center of polygon for LaTeX label placement
-            center_x = sum(p[0] for p in vertices) / len(vertices)
-            center_y = sum(p[1] for p in vertices) / len(vertices)
-
-            # Long/Short Side Annotation Labels
-            for deco in sides.values():
-                v1, v2 = vertices[deco.edge[0]], vertices[deco.edge[1]]
-                mid_x = (v1[0] + v2[0]) / 2
-                mid_y = (v1[1] + v2[1]) / 2
-                dx = float(v2[0] - v1[0])
-                dy = float(v2[1] - v1[1])
-                length = (dx**2 + dy**2)**0.5
-                perp_x = -dy / length * 0.25 if length > 0 else 0
-                perp_y = dx / length * 0.25 if length > 0 else 0.25
-                g_plot += text(deco.decoration_type, (float(mid_x) + perp_x, float(mid_y) + perp_y),
-                               fontsize=side_label_fontsize, color='black', fontweight='bold', zorder=16)
-            # Render centered LaTeX label
-            g_plot += text(fr'${label}$', (float(center_x), float(center_y + label_y_offset)),
-                           fontsize=label_fontsize, color='black', fontweight='bold', zorder=16)
-
-            # Optional interior Dynkin diagram visualization (Notation 821--838 in [AT21])
-            show_dynkin_diagram = kwds.get('show_dynkin_diagram', False)
-            if show_dynkin_diagram:
-                dynkin = self.dynkin_diagram_data()
-                dynkin_edge_color = kwds.get('dynkin_edge_color', '#3182ce')
-                dynkin_edge_width = kwds.get('dynkin_edge_width', 3)
-                dynkin_edges = dynkin.get('edges', [])
-                if isinstance(dynkin_edges, list):
-                    for e in dynkin_edges:
-                        if isinstance(e, tuple) and len(e) >= 2:
-                            p1, p2 = e[0], e[1]
-                            g_plot += line([(p1[0], p1[1]), (p2[0], p2[1])],
-                                           color=dynkin_edge_color, thickness=dynkin_edge_width, zorder=6)
-                node_types_dict = dynkin.get('node_types', {})
-                if isinstance(node_types_dict, dict):
-                    for n, ntype in node_types_dict.items():
-                        if isinstance(n, (tuple, list)) and len(n) >= 2:
-                            coord = (n[0], n[1])
-                            if ntype == 'black':
-                                g_plot += point(coord, pointsize=35, color='black', zorder=13)
-                            elif ntype == 'white':
-                                g_plot += point(coord, pointsize=40, color='black', zorder=13)
-                                g_plot += point(coord, pointsize=24, color='white', zorder=14)
-                            elif ntype == 'circled_white':
-                                g_plot += point(coord, pointsize=55, color=dynkin_edge_color, zorder=12)
-                                g_plot += point(coord, pointsize=40, color='white', zorder=13)
-                                g_plot += point(coord, pointsize=30, color='black', zorder=14)
-                                g_plot += point(coord, pointsize=18, color='white', zorder=15)
-
-            # Configure axes with strictly integer ticks
-            show_axes = kwds.get('axes', False)
-            x_ticks = list(range(min_x, max_x + 1))
-            y_ticks = list(range(min_y, max_y + 1))
-            g_plot.axes(show_axes)
-            g_plot.set_axes_range(min_x - 0.2, max_x + 0.2, min_y - 0.2, max_y + 0.2)
-            g_plot.SHOW_OPTIONS['ticks'] = [x_ticks, y_ticks]
-            g_plot.SHOW_OPTIONS['ticks_integer'] = True
-
-            return g_plot
-
-        def _plot_2d(self: _LatticePolytopeInterface, **kwds: object) -> Graphics:
-            """Alias for plot2d."""
-            return self.plot2d(**kwds)
-
-        def _plot_(self: _LatticePolytopeInterface, **kwds: object) -> Graphics:
-            """Internal hook for Sage plot(S)."""
-            return self.plot(**kwds)
+    def _repr_mimebundle_(self, include: object = None, exclude: object = None) -> dict[str, str]:
+        html_content = self._repr_html_() or ""
+        latex_html = f"\\(\\displaystyle {self._latex_()}\\)"
+        combined_html = f'<div style="font-family: sans-serif; line-height: 1.4;"><div>{latex_html}</div><div style="margin-top: 14px;">{html_content}</div></div>'
+        return {
+            'text/html': combined_html,
+            'text/latex': self._repr_latex_(),
+            'text/plain': repr(self),
+        }
 
 
-class ADEBaseSurface(Parent):
+class ADEBaseSurface(ADELogPair):
     r"""
     The base del Pezzo surface pair (Y = V_Q, C) for an ADE surface.
-
-    EXAMPLES::
-
-        sage: from dzack_research.preamble.categories.schemes.ade_surfaces import ADESurface
-        sage: s = ADESurface('A', 3, variant=('long', 'long'))
-        sage: B = s.base()
-        sage: B
-        Del Pezzo Base Surface for A_3 (Y = V_Q, C = V(z0) + V(z2), p* = (0, 2))
-        sage: B.polygon()
-        Lattice Polygon with 3 vertices
-        sage: B.area()
-        4
     """
-    _cover: object
+    _cover: "ADESurface"
 
-    def __init__(self, cover: object) -> None:
+    def __init__(self, cover: "ADESurface") -> None:
         self._cover = cover
-        super().__init__(base=QQ, category=ADELogPairs())
+        amb_ident = cover._identify_Y_ambient()
+        amb_scheme = ToricScheme(cover.polygon().polyhedron(), dim=2, identification=amb_ident)
+        ToricSubscheme.__init__(self, ambient=amb_scheme, equations=(0,), dim=2, base_ring=QQ)
+        Parent.__init__(self, base=QQ, category=ADELogPairs())
 
-    def cover(self) -> object:
-        """Return the covering ADE surface log pair (X, D + eps*R)."""
+    def cover(self) -> "ADESurface":
         return self._cover
 
-    def cover_surface(self) -> object:
-        """Alias for cover()."""
-        return self.cover()
-
-    def cover_pair(self) -> object:
-        """Alias for cover()."""
-        return self.cover()
-
-    def covering_pair(self) -> object:
-        """Alias for cover()."""
-        return self.cover()
-
-    def base(self) -> object:
-        """Return self (the base log pair)."""
+    def base(self) -> "ADEBaseSurface":
         return self
 
-    def base_surface(self) -> object:
-        """Return self (the base log pair)."""
-        return self
+    def is_cover(self) -> bool:
+        return False
 
-    def base_pair(self) -> object:
-        """Return self (the base log pair)."""
-        return self
-
-    def is_log_pair(self) -> bool:
-        """Return True: ADEBaseSurface is a log pair (Y, C + 1/2(1+eps)B)."""
+    def is_base(self) -> bool:
         return True
 
-    def scheme(self) -> ToricVariety_field:
-        """Return the underlying toric del Pezzo variety Y = V_Q."""
-        return self._cover.del_pezzo_surface()
-
-    def variety(self) -> ToricVariety_field:
-        """Return the underlying toric del Pezzo variety Y = V_Q."""
-        return self._cover.del_pezzo_surface()
-
-    def del_pezzo_surface(self) -> ToricVariety_field:
-        """Return the polarized toric del Pezzo surface Y = V_Q."""
-        return self._cover.del_pezzo_surface()
-
-    def associated_divisor(self) -> object:
-        """
-        Return the boundary divisor C (the 'blue line') on Y.
-        """
-        return self._cover.blue_line_divisor()
-
-    def boundary_divisor(self) -> object:
-        """Return the distinguished boundary divisor C (the 'blue line') on Y."""
-        return self._cover.blue_line_divisor()
-
-    def divisor(self) -> object:
-        """Alias for associated_divisor()."""
-        return self.associated_divisor()
-
-    def blue_line_divisor(self) -> object:
-        """Return the distinguished boundary divisor C (the 'blue line') on Y."""
-        return self._cover.blue_line_divisor()
-
-    def branch_divisor(self) -> object:
-        """Return the branch divisor B = div(f) on Y."""
-        return self.defining_polynomial()
-
-    def ambient_space(self) -> ToricVariety_field:
-        """Return the ambient projective toric variety Y = V_Q."""
-        return self._cover.del_pezzo_surface()
-
-    def ambient_variety(self) -> ToricVariety_field:
-        """Return the ambient projective toric variety Y = V_Q."""
-        return self._cover.del_pezzo_surface()
-
-    def ambient_pair(self) -> ToricLogPair:
-        """Return the ambient toric variety as a toric log pair (V_Q, Δ_toric)."""
-        return ToricLogPair(self.ambient_variety())
-
-    def ambient_log_pair(self) -> ToricLogPair:
-        """Alias for ambient_pair()."""
-        return self.ambient_pair()
-
-    def codimension(self) -> int:
-        """Return 0 (base del Pezzo surface is the ambient toric surface V_Q)."""
-        return 0
-
     def polygon(self) -> LatticePolygon:
-        """Return the base 2D lattice polygon Q in category LatticePolygons()."""
         return self._cover.polygon()
 
+    def polytope(self) -> LatticePolygon:
+        return self.polygon()
+
     def polyhedron(self) -> Polyhedron_base:
-        """Return the Sage Polyhedron for Q."""
         return self._cover.polyhedron()
 
     def vertices(self) -> tuple[LatticePoint2D, ...]:
-        """Return vertices of Q."""
         return self._cover.vertices()
 
-    def p_star(self) -> LatticePoint2D:
-        """Return distinguished point p*."""
-        return self._cover.p_star()
-
     def blue_line_divisor(self) -> object:
-        """Return boundary divisor C."""
         return self._cover.blue_line_divisor()
 
     def complementary_divisor(self) -> object:
-        """Return complementary boundary divisor C'."""
         return self._cover.complementary_divisor()
 
+    def branch_divisor(self) -> object:
+        return self.defining_polynomial()
+
     def defining_polynomial(self) -> object:
-        """Return branch polynomial f(x, y)."""
         return self._cover.defining_polynomial()
 
     def parametric_branch_polynomial(self) -> object:
-        """Return parametric polynomial f(x, y; c_i)."""
         return self._cover.parametric_branch_polynomial()
 
     def dynkin_diagram_data(self) -> dict[str, object]:
-        """Return Dynkin diagram embedded in Q."""
         return self._cover.dynkin_diagram_data()
 
     def area(self) -> Rational:
-        """Area of Q."""
         return self._cover.area()
 
     def volume(self) -> Rational:
-        """Volume of Q."""
         return self._cover.volume()
-
-    def normalized_volume(self) -> Integer:
-        """Normalized volume of Q (2*Area)."""
-        return self._cover.normalized_volume()
-
-    def integral_points(self) -> tuple[LatticePoint2D, ...]:
-        return self._cover.integral_points()
 
     def interior_integral_points(self) -> tuple[LatticePoint2D, ...]:
         return self._cover.interior_integral_points()
@@ -1127,43 +471,38 @@ class ADEBaseSurface(Parent):
     def n_boundary_points(self) -> int:
         return self._cover.n_boundary_points()
 
-    def n_distinguished_points(self) -> int:
-        return self._cover.n_distinguished_points()
+    def plot(self, **kwds: object) -> Graphics:
+        return self._cover.plot2d(**kwds)
 
-    def invariants(self) -> dict[str, object]:
-        return self._cover.invariants()
-
-    def plot(self, **kwds: object) -> object:
-        """Render the 2D publication plot of Q."""
-        return ADELogPairs.ParentMethods.plot2d(self._cover, **kwds)
-
-    def tikz(self, **kwds: object) -> str:
-        """Render TikZ code for Q."""
-        return self._cover.tikz(**kwds)
-
-    def _repr_(self) -> str:
-        return f"Del Pezzo Base Surface for {self._cover._key} (Y = V_Q, C = {self.blue_line_divisor()}, p* = {self.p_star()})"
+    def plot2d(self, **kwds: object) -> Graphics:
+        return self.plot(**kwds)
 
     def _latex_(self) -> str:
-        r"""LaTeX representation of the 2D base del Pezzo surface pair (Y, C)."""
         from sage.misc.latex import latex as _latex
         f0_latex = _latex(self.defining_polynomial())
         c_latex = _latex(self.blue_line_divisor())
         p_latex = _latex(self.p_star())
-        area_val = self.area()
+        Q = self.polygon()
+        area_val = Q.area()
         l_sq = 4 * area_val
-        verts_latex = ",\\, ".join(f"({v[0]}, {v[1]})" for v in self.vertices())
+        n_pts = Q.n_integral_points()
+        int_pts = Q.n_interior_points()
+        verts_latex = ",\\, ".join(f"({v[0]}, {v[1]})" for v in Q.vertices())
+        amb_ident = self.ambient_identification_latex()
         eol = "\\\\"
         lines = [
             r"\begin{aligned}",
-            rf"&(Y, C) \text{{ for }} {self._cover._latex_label} \colon C = {c_latex}, \quad B = \mathrm{{V}}\left({f0_latex}\right) \quad \left(p^* = {p_latex}\right) {eol}",
-            rf"&Q = \operatorname{{conv}}\left(\{{{verts_latex}\}}\right) \colon \operatorname{{Area}}(Q) = {area_val},\; L^2 = {l_sq},\; |Q \cap \mathbb{{Z}}^2| = {self.n_integral_points()},\; |\operatorname{{Int}}(Q)| = {self.n_interior_points()}",
+            rf"&(Y, C) \colon Y = {amb_ident} \text{{ of type }} {self._cover._latex_label} \colon C = {c_latex}, \quad B = \mathrm{{V}}\left({f0_latex}\right) \quad \left(p^* = {p_latex}\right) {eol}",
+            rf"&Q = \operatorname{{conv}}\left(\{{{verts_latex}\}}\right) \subset \mathbb{{R}}^2 \colon \operatorname{{Area}}(Q) = {area_val},\; L^2 = {l_sq},\; |Q \cap \mathbb{{Z}}^2| = {n_pts},\; |\operatorname{{Int}}(Q)| = {int_pts}",
             r"\end{aligned}",
         ]
         return "\n".join(lines)
 
-    def _repr_latex_(self) -> str:
-        return "$\\displaystyle " + self._latex_() + "$"
+    def __repr__(self) -> str:
+        amb = self.ambient_identification()
+        f0 = self.defining_polynomial()
+        c_str = str(self.blue_line_divisor())
+        return f"Del Pezzo Base Surface Y = {amb} of type {self._cover._key} (C = {c_str}, B = V({f0}), p* = {self.p_star()})"
 
     def _repr_html_(self) -> str:
         """Render high-definition 2D vector SVG representation for Jupyter."""
@@ -1192,48 +531,11 @@ class ADEBaseSurface(Parent):
         except Exception:
             return ""
 
-    def _rich_repr_(self, dm: object) -> object:
-        if dm.types.OutputHtml in dm.supported_output():
-            svg_html = self._repr_html_()
-            latex_html = f"\\(\\displaystyle {self._latex_()}\\)"
-            html_out = f'<div style="font-family: sans-serif; line-height: 1.4;"><div>{latex_html}</div><div style="margin-top: 14px; max-width: 520px;">{svg_html}</div></div>'
-            return dm.types.OutputHtml(html_out)
-        elif dm.types.OutputLatex in dm.supported_output():
-            return dm.types.OutputLatex(self._latex_())
-        elif dm.types.OutputImagePng in dm.supported_output():
-            p = self.plot()
-            if hasattr(p, '_rich_repr_'):
-                return p._rich_repr_(dm)
-        elif dm.types.OutputPlainText in dm.supported_output():
-            return dm.types.OutputPlainText(repr(self))
-        return None
 
-    def _repr_mimebundle_(self, include: object = None, exclude: object = None) -> dict[str, str]:
-        svg_html = self._repr_html_()
-        latex_html = f"\\(\\displaystyle {self._latex_()}\\)"
-        html_out = f'<div style="font-family: sans-serif; line-height: 1.4;"><div>{latex_html}</div><div style="margin-top: 14px; max-width: 520px;">{svg_html}</div></div>'
-        return {
-            'text/html': html_out,
-            'text/latex': self._repr_latex_(),
-            'text/plain': repr(self),
-        }
-
-
-class ADESurface(Parent):
+class ADESurface(ADELogPair):
     """
     An ADE surface defined by Dynkin letter, rank, and variant following
     Table 1 of Alexeev-Thompson ("ADE surfaces and their moduli", 2021).
-
-    EXAMPLES::
-
-        sage: from dzack_research.preamble.categories.schemes.ade_surfaces import ADESurface
-        sage: s = ADESurface('A', 3, variant=('long', 'long'))
-        sage: s
-        ADE Surface of type A_3 (hypersurface X ⊂ V_P, p* = (0, 2))
-        sage: s.base()
-        Del Pezzo Base Surface for A_3 (Y = V_Q, C = V(z0) + V(z2), p* = (0, 2))
-        sage: s.covering_polytope()
-        Lattice Polytope of dimension 3 with 4 vertices
     """
     _letter: str
     _rank: int
@@ -1275,24 +577,39 @@ class ADESurface(Parent):
         self._n = self._resolve_parameter_n(n)
         self._key, self._latex_label, self._vertices, self._p_star, self._sides_info = self._construct_geometry()
 
-        # Initialize Parent with base field and ADELogPairs category
-        super().__init__(base=QQ, category=ADELogPairs())
+        # Construct ambient toric threefold V_P
+        pyr_poly = self._construct_pyramid_polyhedron()
+        amb_scheme = ToricScheme(pyr_poly, dim=3, identification="V_P")
+
+        # Initialize ToricSubscheme and Parent
+        eqs = (self.anticanonical_equation(),)
+        ToricSubscheme.__init__(self, ambient=amb_scheme, equations=eqs, dim=2, base_ring=QQ)
+        Parent.__init__(self, base=QQ, category=ADELogPairs())
 
         # Construct underlying toric del Pezzo variety Y = V_Q and base surface
         self._del_pezzo_variety = ToricVariety(self.normal_fan())
         self._base_surface = ADEBaseSurface(self)
+
+    def cover(self) -> "ADESurface":
+        return self
+
+    def base(self) -> ADEBaseSurface:
+        return self._base_surface
+
+    def is_cover(self) -> bool:
+        return True
+
+    def is_base(self) -> bool:
+        return False
 
     def _resolve_parameter_n(self, explicit_n: Optional[int]) -> int:
         if explicit_n is not None:
             return int(explicit_n)
         if self._letter == 'A':
             if len(self._variant) >= 1 and self._variant[0] == 'short':
-                # ^-A_{2n-3} has rank = 2n-3 ==> n = (rank + 3) // 2
                 return (self._rank + 3) // 2
             elif len(self._variant) >= 2 and self._variant[1] == 'short':
-                # A_{2n-2}^- has rank = 2n-2 ==> n = (rank + 2) // 2
                 return (self._rank + 2) // 2
-            # A_{2n-1} has rank = 2n-1 ==> n = (rank + 1) // 2
             return (self._rank + 1) // 2
         if self._letter == 'D':
             return (self._rank + 1) // 2
@@ -1310,13 +627,6 @@ class ADESurface(Parent):
         raise ValueError(f"Unknown Dynkin type: '{self._letter}_{self._rank}'")
 
     def _build_A_family(self) -> tuple[str, str, tuple[LatticePoint2D, ...], LatticePoint2D, dict[tuple[int, int], SideDecoration]]:
-        """
-        Pure and Toric Primed A-shapes from Table 1 and Table 4 of Alexeev-Thompson [AT21]:
-        - A_{2n-1} (n>=1): p* = (0,2), vertices: (0,2), (0,0), (2n,0)
-        - A_{2n-2}^- (n>=1): p* = (0,2), vertices: (0,2), (0,0), (2n-1,0)
-        - ^-A_{2n-3}^- (n>=2): p* = (0,2), vertices: (0,2), (1,0), (2n-1,0)
-        - 'A_{2n-1} (n>=2, Table 4): p* = (2,2), vertices: (2,2), (0,1), (0,0), (2n-2,0)
-        """
         n = self._n
         rank = self._rank
         variant = self._variant
@@ -1364,12 +674,6 @@ class ADESurface(Parent):
         return key, latex, vertices, p_star, sides
 
     def _build_D_family(self) -> tuple[str, str, tuple[LatticePoint2D, ...], LatticePoint2D, dict[tuple[int, int], SideDecoration]]:
-        """
-        Pure and Toric Primed D-shapes from Table 1 and Table 4 of Alexeev-Thompson [AT21]:
-        - D_{2n} (n>=2): p* = (2,2), vertices: (2,2), (0,2), (0,0), (2n-2,0)
-        - D_{2n-1}^- (n>=3): p* = (2,2), vertices: (2,2), (0,2), (0,0), (2n-3,0)
-        - D_{2n}' (n>=3, Table 4): p* = (2,2), vertices: (2,2), (0,2), (0,0), (2n-4,0), (n,1)
-        """
         n = self._n
         rank = self._rank
         variant = self._variant
@@ -1394,12 +698,6 @@ class ADESurface(Parent):
         return key, latex, vertices, p_star, {}
 
     def _build_E_family(self) -> tuple[str, str, tuple[LatticePoint2D, ...], LatticePoint2D, dict[tuple[int, int], SideDecoration]]:
-        """
-        Pure E-shapes from Table 1 of Alexeev-Thompson [AT21]:
-        - ^-E_6^-: p* = (2,2), vertices: (2,2), (0,3), (0,0), (3,0)
-        - ^-E_7:   p* = (2,2), vertices: (2,2), (0,3), (0,0), (4,0)
-        - ^-E_8^-: p* = (2,2), vertices: (2,2), (0,3), (0,0), (5,0)
-        """
         rank = self._rank
         variant = self._variant
         if rank == 6:
@@ -1422,13 +720,6 @@ class ADESurface(Parent):
         return key, latex, vertices, p_star, {}
 
     def _build_affine_family(self) -> tuple[str, str, tuple[LatticePoint2D, ...], LatticePoint2D, dict[tuple[int, int], SideDecoration]]:
-        """
-        Type II pure affine shapes from Table 1 of Alexeev-Thompson [AT21]:
-        - ~D_{2n} (n>=2): p* = (2,2), vertices: (0,2), (0,0), (2n-4,0), (4,2)
-        - ~E_7:           p* = (2,2), vertices: (0,4), (0,0), (4,0)
-        - ~E_8^-:         p* = (2,2), vertices: (0,3), (0,0), (6,0)
-        - ~A_{2n-1}:      p* = (n/2, 1), vertices: (0,2), (0,0), (2n,0), (n,2)
-        """
         letter = self._letter
         rank = self._rank
         n = self._n
@@ -1468,247 +759,415 @@ class ADESurface(Parent):
         p_star = self._ambient_space(raw_p)
         return key, latex, vertices, p_star, {}
 
-    def _repr_(self) -> str:
-        if self.is_affine():
-            return f"Affine ADE Surface of type {self._key} (hypersurface X, p* = {self.p_star()})"
-        return f"ADE Surface of type {self._key} (hypersurface X ⊂ V_P, p* = {self.p_star()})"
+    def _identify_Y_ambient(self) -> str:
+        """Identify the base ambient toric surface V_Q."""
+        poly = self.polyhedron()
+        verts = [tuple(v) for v in poly.vertices()]
+        v_set = set(verts)
+        for k in range(1, 10):
+            if v_set == {(0, 0), (k, 0), (0, k)} or v_set == {(0, 0), (0, k), (k, 0)}:
+                return r"\mathbb{P}^2" if k == 1 else rf"\mathbb{{P}}^2 \text{{ (deg }} {k}\text{{)}}"
+        return "V_Q"
 
-    def tikz(self: _ADESurfaceInterface, scale: float = 0.8, show_dynkin_diagram: bool = False) -> str:
-        r"""
-        Return standard TikZ picture LaTeX code representing the ADE surface polytope Q.
-        """
+    def _construct_pyramid_polyhedron(self) -> Polyhedron_base:
+        """Construct the 3D pyramidal polyhedron P in N_3."""
+        q_verts = [list(v) for v in self.vertices()]
+        p_star = list(self.p_star())
+        p_apex = [p_star[0], p_star[1], 2]
+        p_base_verts = [[v[0], v[1], 0] for v in q_verts]
+        all_3d_verts = p_base_verts + [p_apex]
+        return Polyhedron(vertices=all_3d_verts, base_ring=ZZ)
+
+    def pyramid_polytope(self) -> Polyhedron_base:
+        return self._construct_pyramid_polyhedron()
+
+    def cover_polytope(self) -> LatticePolytope:
+        return LatticePolytope(self.pyramid_polytope())
+
+    def covering_polytope(self) -> LatticePolytope:
+        return self.cover_polytope()
+
+    def polytope(self) -> LatticePolytope:
+        return self.cover_polytope()
+
+    def polygon(self) -> LatticePolygon:
+        return LatticePolygon(self.vertices())
+
+    def polyhedron(self) -> Polyhedron_base:
+        verts = [list(v) for v in self.vertices()]
+        return Polyhedron(vertices=verts, base_ring=ZZ)
+
+    def vertices(self) -> tuple[LatticePoint2D, ...]:
+        return self._vertices
+
+    def side_decorations(self) -> dict[tuple[int, int], SideDecoration]:
+        return dict(self._sides_info)
+
+    def normal_fan(self) -> object:
+        return self.polyhedron().normal_fan()
+
+    def area(self) -> Rational:
+        return self.polyhedron().volume()
+
+    def volume(self) -> Rational:
+        return self.area()
+
+    def del_pezzo_surface(self) -> ToricVariety_field:
+        return self._del_pezzo_variety
+
+    def variety(self) -> ToricVariety_field:
+        return self._del_pezzo_variety
+
+    def scheme(self) -> ToricVariety_field:
+        return self._del_pezzo_variety
+
+    def blue_line_divisor(self) -> object:
+        y_variety = self.del_pezzo_surface()
+        poly_q = self.polyhedron()
+        p_star = self._lattice.vector_space(QQ)(list(self.p_star()))
+
+        blue_ray_indices: list[int] = []
+        for idx, f in enumerate(poly_q.facets()):
+            if f.as_polyhedron().contains(p_star):
+                blue_ray_indices.append(idx)
+
+        if not blue_ray_indices:
+            return y_variety.divisor_group().zero()
+        return sum((y_variety.divisor(idx) for idx in blue_ray_indices), y_variety.divisor_group().zero())
+
+    def complementary_divisor(self) -> object:
+        y_variety = self.del_pezzo_surface()
+        poly_q = self.polyhedron()
+        p_star = self._lattice.vector_space(QQ)(list(self.p_star()))
+
+        non_blue_ray_indices: list[int] = []
+        for idx, f in enumerate(poly_q.facets()):
+            if not f.as_polyhedron().contains(p_star):
+                non_blue_ray_indices.append(idx)
+
+        if not non_blue_ray_indices:
+            return y_variety.divisor_group().zero()
+        return sum((y_variety.divisor(idx) for idx in non_blue_ray_indices), y_variety.divisor_group().zero())
+
+    def _blue_facets(self) -> list[_PolyhedronFace]:
+        poly_q = self.polyhedron()
+        p_star = self._lattice.vector_space(QQ)(list(self.p_star()))
+        return [f for f in poly_q.facets() if f.as_polyhedron().contains(p_star)]
+
+    def defining_polynomial(self) -> object:
+        letter = self._letter
+        rank = self._rank
+        variant = self._variant
+        affine = self._affine
+
+        if letter == 'A':
+            ring_a = PolynomialRing(QQ, names=['x', 'y'])
+            x, y = ring_a.gens()
+            if any(v in ('primed', 'prime', 'p') for v in variant):
+                return -QQ(1)/QQ(4) * (x * y)**2 + x**2 + y
+            is_right_short = len(variant) >= 2 and variant[1] == 'short'
+            is_left_short = len(variant) >= 1 and variant[0] == 'short'
+            if is_left_short and is_right_short:
+                return -QQ(1)/QQ(4) * (x * y)**2 + x**2 + x + y
+            elif is_left_short:
+                return -QQ(1)/QQ(4) * (x * y)**2 + x**2 + y
+            elif is_right_short:
+                return -QQ(1)/QQ(4) * (x * y)**2 + x**2 + y
+            return -QQ(1)/QQ(4) * (x * y)**2 + x**2 + y
+        elif letter == 'D':
+            ring_d = PolynomialRing(QQ, names=['x', 'y'])
+            x, y = ring_d.gens()
+            if affine:
+                return -QQ(1)/QQ(4) * (x * y)**2 + y**2 + x**(rank - 2)
+            if any(v in ('primed', 'prime', 'p') for v in variant):
+                return -QQ(1)/QQ(4) * (x * y)**2 + x**2 + y**2
+            return -QQ(1)/QQ(4) * (x * y)**2 + x**2 + y**2
+        elif letter == 'E':
+            ring_e = PolynomialRing(QQ, names=['x', 'y'])
+            x, y = ring_e.gens()
+            if affine:
+                if rank == 6:
+                    return -QQ(1)/QQ(4) * (x * y)**2 + x**3 + y**3
+                elif rank == 7:
+                    return -QQ(1)/QQ(4) * (x * y)**2 + x**4 + y**3
+                elif rank == 8:
+                    return -QQ(1)/QQ(4) * (x * y)**2 + x**6 + y**3
+            return -QQ(1)/QQ(4) * (x * y)**2 + y**3 + x**(rank - 3)
+        else:
+            ring_gen = PolynomialRing(QQ, names=['x', 'y'])
+            x, y = ring_gen.gens()
+            return -QQ(1)/QQ(4) * (x * y)**2 + y**2 + x**2
+
+    def anticanonical_equation(self) -> object:
+        f_0 = self.defining_polynomial()
+        ring_3d = PolynomialRing(QQ, names=['x', 'y', 'w'])
+        x, y, w = ring_3d.gens()
+        return w**2 + f_0(x, y)
+
+    def parametric_branch_polynomial(self) -> object:
+        letter = self.letter()
+        rank = self.rank()
+
+        if letter == 'A':
+            c_names = [f'c{i}' for i in range(1, rank)] + ['c_pp']
+            c_latex = [f'c_{{{i}}}' for i in range(1, rank)] + [r"c''"]
+            ring_a = PolynomialRing(QQ, names=['x', 'y'] + c_names)
+            ring_a._latex_names = ['x', 'y'] + c_latex
+            gens = ring_a.gens()
+            x, y = gens[0], gens[1]
+            c = gens[2:]
+
+            poly = -QQ(1)/QQ(4) * (x * y)**2 + QQ(1)/QQ(2) * (x * y) * c[-1] - QQ(1)/QQ(4) * (c[-1])**2
+            poly += x**2 + x * c[0]
+            for i in range(1, rank - 1):
+                poly += c[i] * x**(i + 1)
+            poly += y + c[1] if rank >= 3 else y
+            return poly
+
+        elif letter == 'D':
+            c_names = [f'c{i}' for i in range(1, rank - 1)] + ['cp1', 'c_pp']
+            ring_d = PolynomialRing(QQ, names=['x', 'y'] + c_names)
+            gens = ring_d.gens()
+            x, y = gens[0], gens[1]
+            c = gens[2:]
+
+            poly = -QQ(1)/QQ(4) * (x * y)**2 + QQ(1)/QQ(2) * (x * y) * c[-1] - QQ(1)/QQ(4) * (c[-1])**2
+            poly += x**2 + y**2 + x * c[0] + y * c[-2]
+            if len(c) >= 3:
+                poly += c[1]
+            return poly
+
+        elif letter == 'E':
+            if rank == 6:
+                c_names = ['c1', 'c2', 'c3', 'cp1', 'cp2', 'c_pp']
+                ring_e = PolynomialRing(QQ, names=['x', 'y'] + c_names)
+                gens = ring_e.gens()
+                x, y = gens[0], gens[1]
+                c1, c2, c3, cp1, cp2, c_pp = gens[2:]
+                return (-QQ(1)/QQ(4) * (x * y)**2 + x**3 + y**3 +
+                        x**2 * c1 + y**2 * cp1 + QQ(1)/QQ(2) * x * y * c_pp +
+                        x * c2 + y * cp2 - QQ(1)/QQ(4) * c_pp**2 + c3)
+            elif rank == 8:
+                c_names = ['c1', 'c2', 'c3', 'c4', 'c5', 'cp1', 'cp2', 'c_pp']
+                ring_e = PolynomialRing(QQ, names=['x', 'y'] + c_names)
+                gens = ring_e.gens()
+                x, y = gens[0], gens[1]
+                c1, c2, c3, c4, c5, cp1, cp2, c_pp = gens[2:]
+                return (x**5 + x**4 * c1 - QQ(1)/QQ(4) * (x * y)**2 +
+                        x**3 * c2 + y**3 + x**2 * c3 + y**2 * cp1 +
+                        QQ(1)/QQ(2) * x * y * c_pp + x * c4 + y * cp2 -
+                        QQ(1)/QQ(4) * c_pp**2 + c5)
+
+        return self.defining_polynomial()
+
+    def dynkin_diagram_data(self) -> dict[str, object]:
+        poly_q = self.polyhedron()
+        v_space = self._lattice.vector_space(QQ)
+        p_star = v_space(list(self.p_star()))
+
+        blue_facets: list[_PolyhedronFace] = []
+        non_blue_facets: list[_PolyhedronFace] = []
+        for f in poly_q.facets():
+            facet_pts = [v_space(list(v)) for v in f.vertices()]
+            if p_star in facet_pts:
+                blue_facets.append(f)
+            else:
+                non_blue_facets.append(f)
+
+        c_points: set[tuple[LatticeCoord, ...]] = set()
+        for f_blue in blue_facets:
+            for pt in f_blue.as_polyhedron().integral_points():
+                c_points.add(tuple(pt))
+
+        corners = [v_space(list(v)) for v in poly_q.vertices()]
+
+        boundary_nodes: list[LatticePoint2D] = []
+        corner_nodes: list[LatticePoint2D] = []
+        boundary_edges: list[tuple[LatticePoint2D, LatticePoint2D]] = []
+
+        for f_non_blue in non_blue_facets:
+            f_poly = f_non_blue.as_polyhedron()
+            pts = list(f_poly.integral_points())
+            if len(pts) > 1:
+                pts.sort(key=lambda p: (p[0], p[1]))
+                for i in range(len(pts) - 1):
+                    p1, p2 = pts[i], pts[i+1]
+                    if tuple(p1) not in c_points and tuple(p2) not in c_points:
+                        boundary_edges.append((p1, p2))
+            for pt in pts:
+                if tuple(pt) not in c_points and pt not in boundary_nodes:
+                    boundary_nodes.append(pt)
+                    if pt in corners:
+                        corner_nodes.append(pt)
+
+        internal_nodes: list[tuple[int, int]] = []
+        internal_edges: list[tuple[LatticePoint2D, tuple[int, int]]] = []
+        for c in corner_nodes:
+            int_pt = (int(c[0]) + 1, int(c[1]) + 1)
+            internal_nodes.append(int_pt)
+            internal_edges.append((c, int_pt))
+
+        all_nodes: Sequence[object] = list(boundary_nodes) + list(internal_nodes)
+        all_edges: Sequence[object] = list(boundary_edges) + list(internal_edges)
+
+        node_types: dict[object, str] = {}
+        for n_int in internal_nodes:
+            node_types[n_int] = 'circled_white'
+
+        for n_bnd in boundary_nodes:
+            d = abs(n_bnd[0] - p_star[0]) + abs(n_bnd[1] - p_star[1])
+            if n_bnd in corner_nodes:
+                node_types[n_bnd] = 'black'
+            else:
+                node_types[n_bnd] = 'black' if d % 2 == 0 else 'white'
+
+        return {
+            'nodes': all_nodes,
+            'edges': all_edges,
+            'node_types': node_types,
+        }
+
+    def interior_integral_points(self) -> tuple[LatticePoint2D, ...]:
+        poly = self.polyhedron()
+        int_pts = [pt for pt in poly.integral_points() if all(h.eval(pt) > 0 for h in poly.Hrepresentation())]
+        return tuple(self._lattice([p[0], p[1]]) for p in int_pts)
+
+    def boundary_integral_points(self) -> tuple[LatticePoint2D, ...]:
+        poly = self.polyhedron()
+        all_pts = set(tuple(p) for p in poly.integral_points())
+        int_pts = set(tuple(p) for p in self.interior_integral_points())
+        bnd = sorted(all_pts - int_pts)
+        return tuple(self._lattice([p[0], p[1]]) for p in bnd)
+
+    def distinguished_boundary_points(self) -> tuple[LatticePoint2D, ...]:
+        blue_facets = self._blue_facets()
+        pts: set[tuple[LatticeCoord, ...]] = set()
+        for f in blue_facets:
+            for pt in f.as_polyhedron().integral_points():
+                pts.add(tuple(pt))
+        return tuple(self._lattice([p[0], p[1]]) for p in sorted(pts))
+
+    def n_integral_points(self) -> int:
+        return len(self.polyhedron().integral_points())
+
+    def n_interior_points(self) -> int:
+        return len(self.interior_integral_points())
+
+    def n_boundary_points(self) -> int:
+        return self.n_integral_points() - self.n_interior_points()
+
+    def plot(self, **kwds: object) -> object:
+        return self.cover_polytope().plot3d(**kwds)
+
+    def plot3d(self, **kwds: object) -> object:
+        return self.cover_polytope().plot3d(**kwds)
+
+    def plot2d(self, **kwds: object) -> Graphics:
+        """2D polygon plot of Q."""
+        grid_line_color = kwds.get('grid_line_color', '#CBD5E1')
+        grid_line_width = kwds.get('grid_line_width', 0.75)
+        fill_color = kwds.get('fill_color', '#E0F2FE')
+        fill_alpha = kwds.get('fill_alpha', 0.75)
+        boundary_color = kwds.get('boundary_color', '#1E293B')
+        boundary_width = kwds.get('boundary_width', 2.0)
+        blue_line_color = kwds.get('blue_line_color', '#2563EB')
+        blue_line_width = kwds.get('blue_line_width', 4.2)
+        p_star_size = kwds.get('p_star_size', 220)
+        p_star_color = kwds.get('p_star_color', '#DC2626')
+        label_fontsize = kwds.get('label_fontsize', 14)
+        label_y_offset = kwds.get('label_y_offset', -0.1)
+        side_label_fontsize = kwds.get('side_label_fontsize', 10)
+
         vertices = [tuple(v) for v in self.vertices()]
         p_star = tuple(self.p_star())
         sides = self.side_decorations()
         label = self.latex_label()
-        p_idx = self.p_star_index()
-        nv = len(vertices)
+        poly = self.polyhedron()
 
         all_pts = list(vertices) + [p_star]
-        min_x = min(int(p[0]) for p in all_pts) - 1
-        max_x = max(int(p[0]) for p in all_pts) + 1
-        min_y = min(int(p[1]) for p in all_pts) - 1
-        max_y = max(int(p[1]) for p in all_pts) + 1
+        min_x = int(min(p[0] for p in all_pts) - 1)
+        max_x = int(max(p[0] for p in all_pts) + 1)
+        min_y = int(min(p[1] for p in all_pts) - 1)
+        max_y = int(max(p[1] for p in all_pts) + 1)
+
+        g_plot = Graphics()
+
+        for gx in range(min_x, max_x + 1):
+            g_plot += line([(gx, min_y), (gx, max_y)],
+                           color=grid_line_color, thickness=grid_line_width,
+                           linestyle=':', zorder=1)
+        for gy in range(min_y, max_y + 1):
+            g_plot += line([(min_x, gy), (max_x, gy)],
+                           color=grid_line_color, thickness=grid_line_width,
+                           linestyle=':', zorder=1)
+
+        all_grid = [(gx, gy) for gx in range(min_x, max_x + 1)
+                    for gy in range(min_y, max_y + 1)]
+        int_pts = set(tuple(p) for p in self.interior_integral_points())
+        bnd_pts = set(tuple(p) for p in self.boundary_integral_points())
+        dist_pts = set(tuple(p) for p in self.distinguished_boundary_points())
+        amb_pts = [pt for pt in all_grid if pt not in int_pts and pt not in bnd_pts]
+
+        g_plot += point(amb_pts, pointsize=24, color='#94A3B8', alpha=0.5, zorder=2)
+        g_plot += polygon(vertices, color=fill_color, alpha=fill_alpha, zorder=3)
+
+        blue_facets = self._blue_facets()
+        for f in poly.facets():
+            v_facet = [tuple(v) for v in f.vertices()]
+            if len(v_facet) >= 2:
+                p1, p2 = v_facet[0], v_facet[1]
+                if f in blue_facets:
+                    g_plot += line([p1, p2], color=blue_line_color, thickness=blue_line_width, zorder=6)
+                else:
+                    g_plot += line([p1, p2], color=boundary_color, thickness=boundary_width, zorder=4)
+
+        if int_pts:
+            g_plot += point(list(int_pts), pointsize=44, color='#059669', zorder=8)
+
+        other_bnd = [p for p in bnd_pts if p not in dist_pts]
+        if other_bnd:
+            g_plot += point(other_bnd, pointsize=48, color='#0F172A', zorder=9)
+
+        if dist_pts:
+            g_plot += point(list(dist_pts), pointsize=55, color=blue_line_color, zorder=10)
+
+        for deco in sides.values():
+            if deco.vertex_color == 'white':
+                for vi in deco.edge:
+                    v_coord = vertices[vi]
+                    g_plot += point(v_coord, pointsize=52, color='black', zorder=11)
+                    g_plot += point(v_coord, pointsize=30, color='white', zorder=12)
+
+        g_plot += point(p_star, pointsize=p_star_size, color=p_star_color, marker='*', zorder=15)
 
         center_x = sum(p[0] for p in vertices) / len(vertices)
         center_y = sum(p[1] for p in vertices) / len(vertices)
 
-        header = [
-            rf"\begin{{tikzpicture}}[scale={scale}, baseline]",
-            r"\definecolor{blueLine}{HTML}{3182CE}",
-            r"\definecolor{starRed}{HTML}{E53E3E}",
-            r"\tikzset{ade vertex white/.style={circle, draw=black, fill=white, inner sep=1.8pt, thick}}",
-            r"\tikzset{ade vertex black/.style={circle, fill=black, inner sep=2pt}}",
-            r"\tikzset{ade star/.style={star, star points=5, star point ratio=2.25, fill=starRed, inner sep=2.5pt}}",
-        ]
-
-        grid_lines = [
-            rf"\draw[dotted, lightgray] ({min_x},{min_y}) grid ({max_x},{max_y});",
-            rf"\foreach \x in {{{min_x},...,{max_x}}} \foreach \y in {{{min_y},...,{max_y}}} \fill[darkgray] (\x,\y) circle (1pt);",
-        ]
-
-        poly_path = " -- ".join(f"({v[0]},{v[1]})" for v in vertices) + " -- cycle"
-        poly_lines = [
-            rf"\fill[fill=gray!12] {poly_path};",
-            rf"\draw[black, thick] {poly_path};",
-        ]
-
-        # Blue Line: distinguished boundary facets passing through p*
-        blue_lines: list[str] = []
-        blue_facets = self._blue_facets()
-        poly = self.polyhedron()
-        for f in poly.facets():
-            v_facet = [tuple(v) for v in f.vertices()]
-            if len(v_facet) >= 2 and f in blue_facets:
-                p1, p2 = v_facet[0], v_facet[1]
-                blue_lines.append(rf"\draw[blueLine, line width=2.8pt] ({p1[0]},{p1[1]}) -- ({p2[0]},{p2[1]});")
-
-        # Vertex nodes
-        vert_lines: list[str] = []
-        for i, v in enumerate(vertices):
-            if p_idx is not None and i == p_idx:
-                continue
-            v_style = "ade vertex black"
-            for deco in sides.values():
-                if i in deco.edge and deco.vertex_color == 'white':
-                    v_style = "ade vertex white"
-                    break
-            vert_lines.append(rf"\node[{v_style}] at ({v[0]},{v[1]}) {{}};")
-
-        # Distinguished point p*
-        star_line = rf"\node[ade star] at ({p_star[0]},{p_star[1]}) {{}};"
-
-        # Centered mathematical label
-        label_line = rf"\node at ({float(center_x):.2f},{float(center_y):.2f}) {{$\mathbf{{{label}}}$}};"
-
-        # Side decoration text labels
-        side_lines: list[str] = []
         for deco in sides.values():
             v1, v2 = vertices[deco.edge[0]], vertices[deco.edge[1]]
-            mid_x = float(v1[0] + v2[0]) / 2.0
-            mid_y = float(v1[1] + v2[1]) / 2.0
+            mid_x = (v1[0] + v2[0]) / 2
+            mid_y = (v1[1] + v2[1]) / 2
             dx = float(v2[0] - v1[0])
             dy = float(v2[1] - v1[1])
             length = (dx**2 + dy**2)**0.5
-            perp_x = -dy / length * 0.3 if length > 0 else 0
-            perp_y = dx / length * 0.3 if length > 0 else 0.3
-            side_lines.append(
-                rf"\node[font=\footnotesize\bfseries] at ({mid_x + perp_x:.2f},{mid_y + perp_y:.2f}) {{{deco.decoration_type}}};"
-            )
+            perp_x = -dy / length * 0.25 if length > 0 else 0
+            perp_y = dx / length * 0.25 if length > 0 else 0.25
+            g_plot += text(deco.decoration_type, (float(mid_x) + perp_x, float(mid_y) + perp_y),
+                           fontsize=side_label_fontsize, color='black', fontweight='bold', zorder=16)
+        g_plot += text(fr'${label}$', (float(center_x), float(center_y + label_y_offset)),
+                       fontsize=label_fontsize, color='black', fontweight='bold', zorder=16)
 
-        dynkin_lines: list[str] = []
-        if show_dynkin_diagram:
-            dynkin = self.dynkin_diagram_data()
-            edges = dynkin.get('edges', [])
-            if isinstance(edges, list):
-                for e in edges:
-                    if isinstance(e, tuple) and len(e) >= 2:
-                        p1, p2 = e[0], e[1]
-                        dynkin_lines.append(rf"\draw[blueLine, thick] ({p1[0]},{p1[1]}) -- ({p2[0]},{p2[1]});")
-            node_types_dict = dynkin.get('node_types', {})
-            if isinstance(node_types_dict, dict):
-                for n, ntype in node_types_dict.items():
-                    if isinstance(n, (tuple, list)) and len(n) >= 2:
-                        if ntype == 'black':
-                            dynkin_lines.append(rf"\node[ade vertex black] at ({n[0]},{n[1]}) {{}};")
-                        elif ntype == 'white':
-                            dynkin_lines.append(rf"\node[ade vertex white] at ({n[0]},{n[1]}) {{}};")
-                        elif ntype == 'circled_white':
-                            dynkin_lines.append(rf"\node[circle, draw=blueLine, fill=white, inner sep=2.5pt, thick] at ({n[0]},{n[1]}) {{}};")
+        show_axes = kwds.get('axes', False)
+        x_ticks = list(range(min_x, max_x + 1))
+        y_ticks = list(range(min_y, max_y + 1))
+        g_plot.axes(show_axes)
+        g_plot.set_axes_range(min_x - 0.2, max_x + 0.2, min_y - 0.2, max_y + 0.2)
+        g_plot.SHOW_OPTIONS['ticks'] = [x_ticks, y_ticks]
+        g_plot.SHOW_OPTIONS['ticks_integer'] = True
 
-        return "\n".join([
-            *header,
-            *grid_lines,
-            *poly_lines,
-            *blue_lines,
-            *vert_lines,
-            star_line,
-            label_line,
-            *side_lines,
-            *dynkin_lines,
-            r"\end{tikzpicture}",
-        ])
-
-    def base(self) -> ADEBaseSurface:
-        """Return the base del Pezzo log pair (Y = V_Q, C + 1/2(1+eps) B)."""
-        return self._base_surface
-
-    def base_surface(self) -> ADEBaseSurface:
-        """Alias for base()."""
-        return self.base()
-
-    def base_pair(self) -> ADEBaseSurface:
-        """Alias for base()."""
-        return self.base()
-
-    def cover(self) -> _ADESurfaceInterface:
-        """Return self (the covering ADE surface log pair (X, D + eps*R))."""
-        return self
-
-    def cover_surface(self) -> _ADESurfaceInterface:
-        """Alias for cover()."""
-        return self.cover()
-
-    def cover_pair(self) -> _ADESurfaceInterface:
-        """Alias for cover()."""
-        return self.cover()
-
-    def covering_pair(self) -> _ADESurfaceInterface:
-        """Alias for cover()."""
-        return self.cover()
-
-    def ambient_variety(self) -> ToricVariety_field:
-        r"""
-        Return the ambient projective toric threefold V_P defined by the 3D pyramid P.
-        """
-        return ToricVariety(self.cover_polytope().normal_fan())
-
-    def ambient_space(self) -> ToricVariety_field:
-        """Return the ambient toric threefold V_P."""
-        return self.ambient_variety()
-
-    def ambient_pair(self) -> ToricLogPair:
-        r"""
-        Return the ambient toric variety as a toric log pair (V_P, Δ_toric)
-        where Δ_toric = ∑ D_ρ is the full toric boundary divisor.
-        """
-        return ToricLogPair(self.ambient_variety())
-
-    def ambient_log_pair(self) -> ToricLogPair:
-        """Alias for ambient_pair()."""
-        return self.ambient_pair()
-
-    def scheme(self) -> object:
-        r"""
-        Return the underlying anticanonical surface variety X \subset V_P,
-        a codimension 1 subscheme of the ambient toric threefold V_P.
-        """
-        VP = self.ambient_variety()
-        try:
-            return VP.subscheme([])
-        except Exception:
-            return VP
-
-    def variety(self) -> object:
-        r"""Alias for scheme(): the codimension 1 hypersurface X \subset V_P."""
-        return self.scheme()
-
-    def codimension(self) -> int:
-        """Return 1 (hypersurface of codimension 1 in the toric threefold V_P)."""
-        return 1
-
-    def associated_divisor(self) -> object:
-        """
-        Return the preimage boundary divisor D = π*(C) on X.
-        """
-        return self.blue_line_divisor()
-
-    def boundary_divisor(self) -> object:
-        r"""
-        Return the preimage boundary divisor D = π*(C) on X.
-        """
-        return self.blue_line_divisor()
-
-    def divisor(self) -> object:
-        """Alias for associated_divisor()."""
-        return self.associated_divisor()
-
-    def ramification_divisor(self) -> object:
-        r"""
-        Return the ramification divisor R on X.
-        """
-        return self.defining_polynomial()
-
-    def covering_polytope(self) -> LatticePolytope:
-        r"""Return the 3-dimensional integral lattice polytope P \subset \mathbb{R}^3."""
-        return self.cover_polytope()
-
-    def polytope(self) -> LatticePolytope:
-        """Alias for cover_polytope(): the 3D lattice polytope P."""
-        return self.cover_polytope()
-
-    def plot(self, **kwds: object) -> object:
-        """
-        Plot the 3-dimensional covering polytope P for the ADE surface.
-        """
-        return self.cover_polytope().plot3d(**kwds)
-
-    def plot3d(self, **kwds: object) -> object:
-        """Plot the 3-dimensional covering polytope P."""
-        return self.cover_polytope().plot3d(**kwds)
-
-    def plot2d(self, **kwds: object) -> object:
-        """Plot the 2-dimensional base polygon Q."""
-        return self.base().plot(**kwds)
-
-    def _plot_(self: _ADESurfaceInterface, **kwds: object) -> object:
-        """Sage standard plotting hook."""
-        return self.plot(**kwds)
+        return g_plot
 
     def _latex_(self) -> str:
-        r"""
-        Return mathematical LaTeX representation of the 3D hypersurface ADE covering surface X.
-        """
         from sage.misc.latex import latex as _latex
         f0_latex = _latex(self.defining_polynomial())
         p_latex = _latex(self.p_star())
@@ -1718,44 +1177,29 @@ class ADESurface(Parent):
             verts_latex = ",\\, ".join(f"({v[0]}, {v[1]})" for v in self.vertices())
             lines = [
                 r"\begin{aligned}",
-                rf"&X \colon w^2 + \left({f0_latex}\right) = 0 \quad \text{{of type }} {self._latex_label} \quad \left(p^* = {p_latex}\right) {eol}",
-                rf"&Q = \operatorname{{conv}}\left(\{{{verts_latex}\}}\right) \colon \operatorname{{Area}}(Q) = {self.area()},\; |Q \cap \mathbb{{Z}}^2| = {self.n_integral_points()},\; |\operatorname{{Int}}(Q)| = {self.n_interior_points()}",
+                rf"&X \colon w^2 + \left({f0_latex}\right) = 0 \subset V_P \quad \text{{of type }} {self._latex_label} \quad \left(p^* = {p_latex}\right) {eol}",
+                rf"&Q = \operatorname{{conv}}\left(\{{{verts_latex}\}}\right) \subset \mathbb{{R}}^2 \colon \operatorname{{Area}}(Q) = {self.area()},\; |Q \cap \mathbb{{Z}}^2| = {self.n_integral_points()},\; |\operatorname{{Int}}(Q)| = {self.n_interior_points()}",
                 r"\end{aligned}",
             ]
         else:
             P = self.cover_polytope()
             vol_z = P.normalized_volume()
             p_verts_latex = ",\\, ".join(f"({v[0]}, {v[1]}, {v[2]})" for v in P.vertices())
+            amb_ident = self.ambient_identification_latex()
             lines = [
                 r"\begin{aligned}",
-                rf"&X \colon w^2 + \left({f0_latex}\right) = 0 \quad \text{{of type }} {self._latex_label} \quad \left(p^* = {p_latex}\right) {eol}",
-                rf"&P = \operatorname{{conv}}\left(\{{{p_verts_latex}\}}\right) \colon \operatorname{{Vol}}_\mathbb{{Z}}(P) = {vol_z},\; |P \cap \mathbb{{Z}}^3| = {P.n_integral_points()},\; |\operatorname{{Int}}(P)| = {P.n_interior_points()}",
+                rf"&X \colon w^2 + \left({f0_latex}\right) = 0 \subset {amb_ident} \quad \text{{of type }} {self._latex_label} \quad \left(p^* = {p_latex}\right) {eol}",
+                rf"&P = \operatorname{{conv}}\left(\{{{p_verts_latex}\}}\right) \subset \mathbb{{R}}^3 \colon \operatorname{{Vol}}_\mathbb{{Z}}(P) = {vol_z},\; |P \cap \mathbb{{Z}}^3| = {P.n_integral_points()},\; |\operatorname{{Int}}(P)| = {P.n_interior_points()}",
                 r"\end{aligned}",
             ]
         return "\n".join(lines)
 
-    def _repr_latex_(self) -> str:
-        """Return MathJax LaTeX for IPython/Jupyter display."""
-        return "$\\displaystyle " + self._latex_() + "$"
+    def __repr__(self) -> str:
+        amb = self.ambient_identification()
+        f0 = self.defining_polynomial()
+        return f"ADE Surface X ⊂ {amb} of type {self._key} (equation: w^2 + ({f0}) = 0, p* = {self.p_star()})"
 
-    def _rich_repr_(self: _ADESurfaceInterface, dm: object) -> object:
-        """Rich display hook for Sage display manager: renders the 3D Three.js model."""
-        if dm.types.OutputHtml in dm.supported_output():
-            html = self._repr_html_()
-            if html:
-                latex_html = f"\\(\\displaystyle {self._latex_()}\\)"
-                combined_html = f'<div style="font-family: sans-serif; line-height: 1.4;"><div>{latex_html}</div><div style="margin-top: 14px;">{html}</div></div>'
-                return dm.types.OutputHtml(combined_html)
-        elif dm.types.OutputSceneThreejs in dm.supported_output():
-            return self.cover_polytope()._rich_repr_(dm)
-        elif dm.types.OutputLatex in dm.supported_output():
-            return dm.types.OutputLatex(self._latex_())
-        elif dm.types.OutputPlainText in dm.supported_output():
-            return dm.types.OutputPlainText(repr(self))
-        return None
-
-    def _repr_html_(self: _ADESurfaceInterface) -> Optional[str]:
-        """HTML representation hook for Jupyter Notebooks: renders the 3D Three.js interactive canvas."""
+    def _repr_html_(self) -> Optional[str]:
         try:
             from dzack_research.preamble.categories.schemes.threejs_viewer import generate_threejs_polytope_html
             P = self.cover_polytope()
@@ -1764,7 +1208,7 @@ class ADESurface(Parent):
             facets = [[verts.index(list(v)) for v in f.vertices()] for f in poly.facets()]
             int_pts = [list(p) for p in P.interior_integral_points()]
             bnd_pts = [list(p) for p in P.boundary_integral_points()]
-            p_star_3d = [self.p_star()[0], self.p_star()[1], 0]
+            p_star_3d = [self.p_star()[0], self.p_star()[1], 2]
             return generate_threejs_polytope_html(
                 verts,
                 facets,
@@ -1777,14 +1221,3 @@ class ADESurface(Parent):
             )
         except Exception:
             return self.cover_polytope()._repr_html_()
-
-    def _repr_mimebundle_(self: _ADESurfaceInterface, include: object = None, exclude: object = None) -> dict[str, str]:
-        """IPython / Jupyter display bundle showing 3D LaTeX summary and 3D Three.js canvas."""
-        html_3d = self._repr_html_() or ""
-        latex_html = f"\\(\\displaystyle {self._latex_()}\\)"
-        combined_html = f'<div style="font-family: sans-serif; line-height: 1.4;"><div>{latex_html}</div><div style="margin-top: 14px;">{html_3d}</div></div>'
-        return {
-            'text/html': combined_html,
-            'text/latex': self._repr_latex_(),
-            'text/plain': repr(self),
-        }

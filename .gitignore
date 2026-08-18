@@ -20,3 +20,7 @@ docs/references.bib
 
 # Per-run test reports: a log, not source.
 tests/.report/
+
+# Jupyter collaboration runtime databases
+.jupyter_ystore.db
+.jupyter/

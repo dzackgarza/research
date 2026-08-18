@@ -40,7 +40,10 @@ from collections.abc import Callable, Iterable
 from sage.categories.category import Category
 from sage.categories.morphism import Morphism
 from sage.structure.parent import Parent
-from sage.structure.parent import ElementConstructorInput
+try:
+    from sage.structure.parent import ElementConstructorInput
+except ImportError:
+    ElementConstructorInput = object
 from sage.structure.sage_object import SageObject
 from sage.cpython.type import can_assign_class
 from sage.misc.abstract_method import AbstractMethod

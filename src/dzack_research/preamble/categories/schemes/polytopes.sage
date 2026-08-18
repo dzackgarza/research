@@ -669,18 +669,25 @@ class ConvexPolytope(Parent):
     """
     def __init__(
         self,
-        vertices: Sequence[Sequence[LatticeCoord]],
+        vertices: Sequence[Sequence[LatticeCoord]] | Polyhedron_base,
         lattice: Optional[ToricLattice_generic] = None,
         base_ring: object = QQ,
         category: Optional[Category] = None,
     ) -> None:
-        dim = len(vertices[0]) if vertices else 0
+        if isinstance(vertices, Polyhedron_base) or hasattr(vertices, 'vertices'):
+            poly = vertices if isinstance(vertices, Polyhedron_base) else vertices.polyhedron()
+            raw_verts = [list(v) for v in poly.vertices()]
+            self._polyhedron = poly
+        else:
+            raw_verts = [list(v) for v in vertices]
+            self._polyhedron = Polyhedron(vertices=raw_verts, base_ring=base_ring)
+
+        dim = len(raw_verts[0]) if raw_verts else 0
         if lattice is None:
             lattice = ToricLattice(dim, 'N')
         self._lattice = lattice
         self._ambient_space = lattice
-        self._raw_vertices = tuple(tuple(v) for v in vertices)
-        self._polyhedron = Polyhedron(vertices=[list(v) for v in vertices], base_ring=base_ring)
+        self._raw_vertices = tuple(tuple(v) for v in raw_verts)
 
         if category is None:
             if dim == 2:
@@ -732,12 +739,17 @@ class LatticePolytope(ConvexPolytope):
     """
     def __init__(
         self,
-        vertices: Sequence[Sequence[LatticeCoord]],
+        vertices: Sequence[Sequence[LatticeCoord]] | Polyhedron_base,
         lattice: Optional[ToricLattice_generic] = None,
         base_ring: object = ZZ,
         category: Optional[Category] = None,
     ) -> None:
-        dim = len(vertices[0]) if vertices else 0
+        if isinstance(vertices, Polyhedron_base) or hasattr(vertices, 'vertices'):
+            poly = vertices if isinstance(vertices, Polyhedron_base) else vertices.polyhedron()
+            raw_verts = [list(v) for v in poly.vertices()]
+        else:
+            raw_verts = [list(v) for v in vertices]
+        dim = len(raw_verts[0]) if raw_verts else 0
         if category is None:
             if dim == 2:
                 category = LatticePolygons()
@@ -755,7 +767,7 @@ class LatticePolygon(ConvexPolygon, LatticePolytope):
     """
     def __init__(
         self,
-        vertices: Sequence[Sequence[LatticeCoord]],
+        vertices: Sequence[Sequence[LatticeCoord]] | Polyhedron_base,
         lattice: Optional[ToricLattice_generic] = None,
     ) -> None:
         super().__init__(vertices=vertices, lattice=lattice, base_ring=ZZ, category=LatticePolygons())

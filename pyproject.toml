@@ -58,5 +58,5 @@ log_file_level = "DEBUG"
 [dependency-groups]
 dev = [
     "ipython>=9.16.1",
-    "sage-stubs",
+    "sage-stubs @ git+https://github.com/dzackgarza/sage-stubs.git",
 ]

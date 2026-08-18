@@ -20,8 +20,8 @@ from typing import Any, Mapping, Optional, Sequence, Tuple
 
 def _format_monomial_2d(x: float, y: float, var_x: str = "x", var_y: str = "y") -> str:
     """Format an integer lattice point (x, y) into its corresponding standard Laurent character/monomial."""
-    ix = int(round(x))
-    iy = int(round(y))
+    ix = int(round(float(x)))
+    iy = int(round(float(y)))
     superscripts = {
         '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴',
         '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹',

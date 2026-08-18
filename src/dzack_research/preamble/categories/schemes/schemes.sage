@@ -136,17 +136,23 @@ class Schemes(OwnedCategoryOverBaseRing):
 
         def is_affine(self: "SchemeParent") -> bool:
             r"""Return whether the scheme is affine."""
-            affine: bool = self.category().is_subcategory(
-                Schemes(self.base_scheme()).Affine()
-            )
-            return affine
+            try:
+                base = self.base_ring()
+                return self.category().is_subcategory(
+                    Schemes(base).Affine()
+                )
+            except Exception:
+                return False
 
         def is_projective(self: "SchemeParent") -> bool:
             r"""Return whether the scheme is projective."""
-            projective: bool = self.category().is_subcategory(
-                Schemes(self.base_scheme()).Projective()
-            )
-            return projective
+            try:
+                base = self.base_ring()
+                return self.category().is_subcategory(
+                    Schemes(base).Projective()
+                )
+            except Exception:
+                return False
 
 
 class AffineSpaces(OwnedCategoryOverBaseRing):
