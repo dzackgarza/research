@@ -256,19 +256,36 @@ def generate_2d_polygon_svg(
     # 7. Blue Line Boundary Facets (C)
     if blue_facets:
         svg_parts.append('<g id="blue_facets">')
+        deco_map = {}
+        if side_decorations:
+            for deco in side_decorations.values():
+                edge = getattr(deco, 'edge', ())
+                dtype = getattr(deco, 'decoration_type', '')
+                if len(edge) >= 2 and edge[0] < len(vertices) and edge[1] < len(vertices):
+                    v1_t = (float(vertices[edge[0]][0]), float(vertices[edge[0]][1]))
+                    v2_t = (float(vertices[edge[1]][0]), float(vertices[edge[1]][1]))
+                    deco_map[frozenset([v1_t, v2_t])] = dtype
+
         for facet in blue_facets:
             if len(facet) >= 2:
-                p1 = to_svg(facet[0][0], facet[0][1])
-                p2 = to_svg(facet[1][0], facet[1][1])
+                p1_val = (float(facet[0][0]), float(facet[0][1]))
+                p2_val = (float(facet[1][0]), float(facet[1][1]))
+                p1 = to_svg(p1_val[0], p1_val[1])
+                p2 = to_svg(p2_val[0], p2_val[1])
+                dtype = deco_map.get(frozenset([p1_val, p2_val]), "")
+                title_elem = f'<title>{dtype}</title>' if dtype else ''
+
                 # Glow underlay
                 svg_parts.append(
                     f'<line x1="{p1[0]:.1f}" y1="{p1[1]:.1f}" x2="{p2[0]:.1f}" y2="{p2[1]:.1f}" '
-                    f'stroke="{blue_line_stroke}" stroke-width="7" stroke-opacity="0.3" stroke-linecap="round" filter="url(#blueLineGlow)" />'
+                    f'stroke="{blue_line_stroke}" stroke-width="7" stroke-opacity="0.3" stroke-linecap="round" filter="url(#blueLineGlow)">'
+                    f'{title_elem}</line>'
                 )
                 # Core vibrant line
                 svg_parts.append(
                     f'<line x1="{p1[0]:.1f}" y1="{p1[1]:.1f}" x2="{p2[0]:.1f}" y2="{p2[1]:.1f}" '
-                    f'stroke="{blue_line_stroke}" stroke-width="3.6" stroke-linecap="round" />'
+                    f'stroke="{blue_line_stroke}" stroke-width="3.6" stroke-linecap="round">'
+                    f'{title_elem}</line>'
                 )
         svg_parts.append('</g>')
 
@@ -348,33 +365,7 @@ def generate_2d_polygon_svg(
             )
     svg_parts.append('</g>')
 
-    # 12. Side Annotation Badges ('long' / 'short')
-    if side_decorations:
-        svg_parts.append('<g id="side_labels">')
-        for deco in side_decorations.values():
-            edge_idx = getattr(deco, 'edge', ())
-            label_text = getattr(deco, 'decoration_type', '')
-            if len(edge_idx) >= 2 and edge_idx[0] < len(vertices) and edge_idx[1] < len(vertices):
-                v1 = vertices[edge_idx[0]]
-                v2 = vertices[edge_idx[1]]
-                mid_x = (float(v1[0]) + float(v2[0])) / 2.0
-                mid_y = (float(v1[1]) + float(v2[1])) / 2.0
-                dx = float(v2[0]) - float(v1[0])
-                dy = float(v2[1]) - float(v1[1])
-                length = math.sqrt(dx**2 + dy**2)
-                perp_x = -dy / length * 0.35 if length > 0 else 0.0
-                perp_y = dx / length * 0.35 if length > 0 else 0.35
-                sx, sy = to_svg(mid_x + perp_x, mid_y + perp_y)
-
-                badge_w = 42 if label_text == "short" else 36
-                svg_parts.append(
-                    f'<rect x="{sx - badge_w/2:.1f}" y="{sy - 9:.1f}" width="{badge_w}" height="18" rx="9" '
-                    f'fill="rgba(15, 23, 42, 0.85)" stroke="rgba(255,255,255,0.12)" stroke-width="1" />'
-                    f'<text x="{sx:.1f}" y="{sy + 3.5:.1f}" fill="#38BDF8" font-size="9.5" font-weight="600" text-anchor="middle">{label_text}</text>'
-                )
-        svg_parts.append('</g>')
-
-    # 13. Distinguished Point p* (Radiant Crimson Star)
+    # 12. Distinguished Point p* (Radiant Crimson Star)
     if p_star:
         px, py = to_svg(p_star[0], p_star[1])
         star_d = _star_path(px, py, r_outer=10.0, r_inner=4.5, points=5)
