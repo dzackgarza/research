@@ -49,7 +49,7 @@ from sage.modules.free_module_element import FreeModuleElement, vector
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.sets.totally_ordered_finite_set import TotallyOrderedFiniteSet
 from sage.structure.element import Element, MultiplicativeGroupElement, RingElement
-from sage.structure.parent import ElementConstructorInput, Parent
+from sage.structure.parent import Parent
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.sets.cardinals import Cardinal
@@ -63,6 +63,7 @@ if TYPE_CHECKING:
     # The ordered-set noun is type-only: the preamble loads into one
     # shared namespace and nothing named OrderedSet may bind there.
     from dzack_research.preamble.lexicon import OrderedSet
+    from sage.structure.parent import ElementConstructorInput
 
     # The three admissible ways to name a module morphism, in the order
     # ``ModuleMorphism.__init__`` matches them: the generator morphism itself,

@@ -77,6 +77,7 @@ from itertools import combinations
 import math
 from typing import TYPE_CHECKING
 
+from sage.categories.category import Category
 from sage.categories.objects import Objects
 from sage.categories.sets_cat import Sets
 from sage.combinat.root_system.coxeter_matrix import CoxeterMatrix as SageCoxeterMatrix
@@ -168,7 +169,46 @@ X_ref = ReflectionCosineSet()
 
 
 # ---------------------------------------------------------------------------
-# 2. Helper: Coerce to Projective Space Point in P^1(R)
+# 2. Categories of Projective Weighted Graphs and Arrangements
+# ---------------------------------------------------------------------------
+
+
+class ProjectiveWeightedGraphs(Category):
+    r"""Category of finite directed graphs with node and edge weights in P^1(R)."""
+
+    def _repr_object_names(self) -> str:
+        return "projective weighted graphs"
+
+    def super_categories(self) -> list[Category]:
+        return [Sets().Finite()]
+
+    def Symmetric(self) -> "SymmetricProjectiveWeightedGraphs":
+        return SymmetricProjectiveWeightedGraphs(self)
+
+
+class SymmetricProjectiveWeightedGraphs(Category):
+    r"""Category of symmetric projective weighted graphs (undirected / symmetric intersection matrices)."""
+
+    def __init__(self, base_category: Category | None = None) -> None:
+        self._base = base_category if base_category is not None else ProjectiveWeightedGraphs()
+        Category.__init__(self)
+
+    def _repr_object_names(self) -> str:
+        return "symmetric projective weighted graphs"
+
+    def super_categories(self) -> list[Category]:
+        return [self._base]
+
+    def Coxeter(self) -> Category:
+        r"""Return the category of Coxeter diagrams (symmetric projective weighted graphs with reflection angles)."""
+        from dzack_research.preamble.categories.modules.framed.formed.integrallattice.coxeter_diagrams import (
+            CoxeterDiagrams,
+        )
+        return CoxeterDiagrams()
+
+
+# ---------------------------------------------------------------------------
+# 3. Helper: Coerce to Projective Space Point in P^1(R)
 # ---------------------------------------------------------------------------
 
 
@@ -186,7 +226,7 @@ def to_projective_point(P1: ProjectiveSpace, val: object) -> SchemeMorphism_poin
 
 
 # ---------------------------------------------------------------------------
-# 3. Combinatorial Vinberg Invariant Matrix
+# 4. Combinatorial Vinberg Invariant Matrix
 # ---------------------------------------------------------------------------
 
 
@@ -204,6 +244,7 @@ class CombinatorialVinbergInvariantMatrix(Parent):
         entries: dict[tuple[int, int], SchemeMorphism_point_projective_ring],
         rank: int,
         names: Sequence[str] | None = None,
+        category: Category | None = None,
     ) -> None:
         self._rank = int(rank)
         self._projective_space = ProjectiveSpace(base_ring, 1, "x,y")
@@ -219,7 +260,8 @@ class CombinatorialVinbergInvariantMatrix(Parent):
                 sym_entries[(j, i)] = pt
         self._entries = sym_entries
 
-        Parent.__init__(self, base=base_ring, category=Objects())
+        cat = category if category is not None else ProjectiveWeightedGraphs().Symmetric()
+        Parent.__init__(self, base=base_ring, category=cat)
 
     def rank(self) -> int:
         r"""Return the number of vertices / generators."""
@@ -627,6 +669,7 @@ class ProjectiveWeightedDiGraph(Parent):
         vertices: Sequence[str | int],
         vertex_weights: Mapping[object, object] | Sequence[object] | None = None,
         edges: Sequence[tuple[object, object, object]] | None = None,
+        category: Category | None = None,
     ) -> None:
         self._projective_space = ProjectiveSpace(base_ring, 1, "x,y")
         self._vertices = tuple(str(v) for v in vertices)
@@ -654,9 +697,8 @@ class ProjectiveWeightedDiGraph(Parent):
                 u_str, v_str = str(e[0]), str(e[1])
                 wt = to_projective_point(self._projective_space, e[2])
                 e_weights[(u_str, v_str)] = wt
-        self._edge_weights = e_weights
-
-        Parent.__init__(self, base=base_ring, category=Objects())
+        cat = category if category is not None else ProjectiveWeightedGraphs()
+        Parent.__init__(self, base=base_ring, category=cat)
 
     def vertices(self) -> tuple[str, ...]:
         r"""Return the tuple of vertex labels."""

@@ -55,7 +55,7 @@ class UnderlyingSet(SageUniqueRepresentation, _UnderlyingSetParent, Generic[_E])
         cls: type[UnderlyingSet[_E]],
         structured: SageParent[_E],
     ) -> UnderlyingSet[_E]:
-        structured_parent = cast(_StructuredParent[_E], structured)
+        structured_parent = cast(_StructuredParent, structured)
         stored = getattr(structured_parent, "_underlying_set", None)
         if stored is not None:
             return cast(UnderlyingSet[_E], stored)
@@ -80,7 +80,7 @@ class UnderlyingSet(SageUniqueRepresentation, _UnderlyingSetParent, Generic[_E])
         def enumeration_injection(self) -> SetMorphism[_E, Integer]: ...
 
     def __init__(self, structured: SageParent[_E]) -> None:
-        self._structured = cast(_StructuredParent[_E], structured)
+        self._structured = cast(_StructuredParent, structured)
         SageParent.__init__(self, facade=structured, category=placement_of(structured).Facade())
 
     def cardinality(self) -> Cardinal:
@@ -135,9 +135,7 @@ class ViaUnderlyingSet(Generic[_E]):
         r"""The set ``U(X)`` underlying this structured parent: the same
         elements with the operations forgotten — the single functorial
         obligation everything else rolls up through."""
-        # Runtime Sage copies these methods onto structured parent classes,
-        # so ``self`` is a Parent there.
-        return UnderlyingSet(cast(_StructuredParent[_E], self))
+        return UnderlyingSet(cast(_StructuredParent, self))
 
     def cardinality(self) -> Cardinal:
         return self.underlying_set().cardinality()

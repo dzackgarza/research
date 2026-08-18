@@ -18,9 +18,9 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from sage.groups.class_function import ClassFunction
-from sage.structure.parent import ElementConstructorInput
 
 if TYPE_CHECKING:
+    from sage.structure.parent import ElementConstructorInput
     from sage.categories.groups import Group, GroupElement
     from sage.rings.integer import Integer
     from sage.structure.element import RingElement

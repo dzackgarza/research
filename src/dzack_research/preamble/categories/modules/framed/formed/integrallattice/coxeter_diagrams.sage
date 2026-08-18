@@ -86,7 +86,8 @@ class CoxeterDiagrams(Category):
         return "finite Coxeter diagrams"
 
     def super_categories(self) -> list[Category]:
-        return [Sets().Finite()]
+        from dzack_research.preamble.categories.modules.projective_tensors import ProjectiveWeightedGraphs
+        return [ProjectiveWeightedGraphs().Symmetric()]
 
     @staticmethod
     def minimal_edge_lattices() -> dict[str, "FormModule"]:

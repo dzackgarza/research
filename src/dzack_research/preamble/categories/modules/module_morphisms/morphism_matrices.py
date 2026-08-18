@@ -36,11 +36,10 @@ from typing import overload, TYPE_CHECKING
 
 from sage.matrix.constructor import matrix as _matrix
 from sage.matrix.matrix_integer_dense import Matrix_integer_dense
-from sage.rings.integer_ring import ZZ as _ZZ
 from sage.structure.element import Matrix, RingElement, Vector
-from sage.structure.parent import ElementConstructorInput
 
 if TYPE_CHECKING:
+    from sage.structure.parent import ElementConstructorInput
     from dzack_research.preamble.lexicon.algebra import BaseRing, Element, Ring
     from dzack_research.preamble.lexicon.foundations import Integer, Rational, RawMorphismMatrix
     from dzack_research.preamble.categories.sets.cardinals import Cardinal

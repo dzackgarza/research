@@ -25,10 +25,9 @@ from __future__ import annotations
 
 from IPython.core.interactiveshell import InteractiveShell
 from sage.misc.latex import latex
-from sage.structure.parent import ElementConstructorInput
 
 
-def typesets_itself(obj: ElementConstructorInput) -> bool:
+def typesets_itself(obj: object) -> bool:
     r"""Return whether ``obj`` can render itself as LaTeX.
 
     The capability is ``_latex_`` on the type. Asked of the type rather than

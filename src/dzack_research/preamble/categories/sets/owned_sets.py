@@ -184,11 +184,7 @@ class FiniteSets(CategoryWithAxiom):
         """
         from sage.structure.parent import Parent
 
-        if super().__contains__(parent):
-            return True
-        return isinstance(parent, Parent) and bool(
-            cast(_ParentWithIsFinite[ElementConstructorInput], parent).is_finite()
-        )
+        return isinstance(parent, Parent) and hasattr(parent, "is_finite") and bool(parent.is_finite())
 
     class ParentMethods:
         if TYPE_CHECKING:
@@ -204,9 +200,9 @@ class FiniteSets(CategoryWithAxiom):
             unions).  This is the one-time evaluation witness for a finite
             set whose construction does not: the enumeration runs once and
             the cardinal it yields is the set's stored count from then on."""
-            stored = cast(Cardinal | None, self.__dict__.get("_owned_cardinality"))
+            stored = self.__dict__.get("_owned_cardinality")
             if stored is not None:
-                return stored
+                return cast("Cardinal", stored)
 
             from sage.rings.integer_ring import ZZ
 
