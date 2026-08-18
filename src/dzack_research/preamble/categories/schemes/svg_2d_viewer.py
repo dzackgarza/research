@@ -18,6 +18,30 @@ import re
 from typing import Any, Mapping, Optional, Sequence, Tuple
 
 
+def _format_monomial_2d(x: float, y: float, var_x: str = "x", var_y: str = "y") -> str:
+    """Format an integer lattice point (x, y) into its corresponding standard Laurent character/monomial."""
+    ix = int(round(x))
+    iy = int(round(y))
+    superscripts = {
+        '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴',
+        '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹',
+        '-': '⁻'
+    }
+    def sup(n: int) -> str:
+        if n == 1:
+            return ""
+        return "".join(superscripts.get(c, c) for c in str(n))
+
+    parts = []
+    if ix != 0:
+        parts.append(f"{var_x}{sup(ix)}")
+    if iy != 0:
+        parts.append(f"{var_y}{sup(iy)}")
+    if not parts:
+        return "1"
+    return "".join(parts)
+
+
 def _star_path(cx: float, cy: float, r_outer: float, r_inner: float, points: int = 5) -> str:
     """Generate SVG path data for a regular star centered at (cx, cy)."""
     coords = []
@@ -138,9 +162,33 @@ def generate_2d_polygon_svg(
         f'border: 1px solid {border_color}; box-shadow: 0 10px 30px rgba(0,0,0,0.4); font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, sans-serif;">'
     )
 
-    # SVG Defs (Gradients, Filters, Markers)
+    # SVG Defs (Gradients, Filters, Markers, CSS Hover Lighting)
     svg_parts.append(
         """<defs>
+            <style>
+                .lattice-node {
+                    cursor: pointer;
+                    transition: transform 0.15s ease, r 0.15s ease, filter 0.15s ease, stroke 0.15s ease, stroke-width 0.15s ease;
+                    transform-origin: center;
+                    transform-box: fill-box;
+                }
+                .lattice-node:hover {
+                    r: 7.5px !important;
+                    filter: drop-shadow(0 0 6px #38BDF8) brightness(1.35);
+                    stroke: #38BDF8 !important;
+                    stroke-width: 2.4px !important;
+                }
+                .pstar-node {
+                    cursor: pointer;
+                    transition: transform 0.15s ease, filter 0.15s ease;
+                    transform-origin: center;
+                    transform-box: fill-box;
+                }
+                .pstar-node:hover {
+                    transform: scale(1.35);
+                    filter: drop-shadow(0 0 10px #EF4444) brightness(1.35);
+                }
+            </style>
             <filter id="pStarGlow" x="-50%" y="-50%" width="200%" height="200%">
                 <feGaussianBlur stdDeviation="3.5" result="blur" />
                 <feMerge>
@@ -240,8 +288,8 @@ def generate_2d_polygon_svg(
             if pt not in int_set and pt not in bnd_set and pt not in v_set:
                 px, py = to_svg(gx, gy)
                 svg_parts.append(
-                    f'<circle cx="{px:.1f}" cy="{py:.1f}" r="2.4" fill="{amb_point_color}" opacity="0.4">'
-                    f'<title>({gx}, {gy})</title></circle>'
+                    f'<circle class="lattice-node" cx="{px:.1f}" cy="{py:.1f}" r="2.4" fill="{amb_point_color}" opacity="0.4">'
+                    f'<title>({gx}, {gy}) : {_format_monomial_2d(gx, gy)}</title></circle>'
                 )
     svg_parts.append('</g>')
 
@@ -317,17 +365,18 @@ def generate_2d_polygon_svg(
     svg_parts.append('<g id="boundary_points">')
     for p in boundary_points:
         pt = (float(p[0]), float(p[1]))
+        mon_str = _format_monomial_2d(p[0], p[1])
         if pt in dist_set:
             px, py = to_svg(p[0], p[1])
             svg_parts.append(
-                f'<circle cx="{px:.1f}" cy="{py:.1f}" r="5.2" fill="{dist_point_color}" stroke="#0F172A" stroke-width="1.4">'
-                f'<title>({p[0]}, {p[1]})</title></circle>'
+                f'<circle class="lattice-node" cx="{px:.1f}" cy="{py:.1f}" r="5.2" fill="{dist_point_color}" stroke="#0F172A" stroke-width="1.4">'
+                f'<title>({p[0]}, {p[1]}) : {mon_str}</title></circle>'
             )
         elif pt not in v_set:
             px, py = to_svg(p[0], p[1])
             svg_parts.append(
-                f'<circle cx="{px:.1f}" cy="{py:.1f}" r="4.5" fill="{bnd_point_color}" stroke="#334155" stroke-width="1.2">'
-                f'<title>({p[0]}, {p[1]})</title></circle>'
+                f'<circle class="lattice-node" cx="{px:.1f}" cy="{py:.1f}" r="4.5" fill="{bnd_point_color}" stroke="#334155" stroke-width="1.2">'
+                f'<title>({p[0]}, {p[1]}) : {mon_str}</title></circle>'
             )
     svg_parts.append('</g>')
 
@@ -335,9 +384,10 @@ def generate_2d_polygon_svg(
     svg_parts.append('<g id="interior_points">')
     for p in interior_points:
         px, py = to_svg(p[0], p[1])
+        mon_str = _format_monomial_2d(p[0], p[1])
         svg_parts.append(
-            f'<circle cx="{px:.1f}" cy="{py:.1f}" r="4.8" fill="{int_point_color}" stroke="#065F46" stroke-width="1.4">'
-            f'<title>({p[0]}, {p[1]})</title></circle>'
+            f'<circle class="lattice-node" cx="{px:.1f}" cy="{py:.1f}" r="4.8" fill="{int_point_color}" stroke="#065F46" stroke-width="1.4">'
+            f'<title>({p[0]}, {p[1]}) : {mon_str}</title></circle>'
         )
     svg_parts.append('</g>')
 
@@ -353,15 +403,16 @@ def generate_2d_polygon_svg(
 
     for v in vertices:
         vx, vy = to_svg(v[0], v[1])
+        mon_str = _format_monomial_2d(v[0], v[1])
         if (float(v[0]), float(v[1])) in white_vertices:
             svg_parts.append(
-                f'<circle cx="{vx:.1f}" cy="{vy:.1f}" r="6.0" fill="#FFFFFF" stroke="#0F172A" stroke-width="2.2">'
-                f'<title>({v[0]}, {v[1]})</title></circle>'
+                f'<circle class="lattice-node" cx="{vx:.1f}" cy="{vy:.1f}" r="6.0" fill="#FFFFFF" stroke="#0F172A" stroke-width="2.2">'
+                f'<title>({v[0]}, {v[1]}) : {mon_str}</title></circle>'
             )
         else:
             svg_parts.append(
-                f'<circle cx="{vx:.1f}" cy="{vy:.1f}" r="5.2" fill="{bnd_point_color}" stroke="#0F172A" stroke-width="1.6">'
-                f'<title>({v[0]}, {v[1]})</title></circle>'
+                f'<circle class="lattice-node" cx="{vx:.1f}" cy="{vy:.1f}" r="5.2" fill="{bnd_point_color}" stroke="#0F172A" stroke-width="1.6">'
+                f'<title>({v[0]}, {v[1]}) : {mon_str}</title></circle>'
             )
     svg_parts.append('</g>')
 
@@ -369,10 +420,11 @@ def generate_2d_polygon_svg(
     if p_star:
         px, py = to_svg(p_star[0], p_star[1])
         star_d = _star_path(px, py, r_outer=10.0, r_inner=4.5, points=5)
+        p_mon_str = _format_monomial_2d(p_star[0], p_star[1])
         svg_parts.append(
             f'<g id="p_star" filter="url(#pStarGlow)">'
-            f'<path d="{star_d}" fill="{p_star_color}" stroke="#FFFFFF" stroke-width="1.2">'
-            f'<title>p* = ({p_star[0]}, {p_star[1]})</title></path>'
+            f'<path class="pstar-node" d="{star_d}" fill="{p_star_color}" stroke="#FFFFFF" stroke-width="1.2">'
+            f'<title>p* = ({p_star[0]}, {p_star[1]}) : {p_mon_str}</title></path>'
             f'</g>'
         )
 

@@ -375,6 +375,24 @@ _HTML_PAGE_TEMPLATE = """<!DOCTYPE html>
             const polyEdges = new THREE.LineSegments(edgeGeo, edgeMat);
             polyGroup.add(polyEdges);
 
+            // Helper to format 3D point into standard character monomial x^i y^j w^k
+            function formatMonomial3D(x, y, z) {
+                const sup = (n) => {
+                    if (n === 1) return "";
+                    const map = {'0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','-':'⁻'};
+                    return String(n).split('').map(c => map[c] || c).join('');
+                };
+                const ix = Math.round(x);
+                const iy = Math.round(y);
+                const iz = Math.round(z);
+                let parts = [];
+                if (ix !== 0) parts.push("x" + sup(ix));
+                if (iy !== 0) parts.push("y" + sup(iy));
+                if (iz !== 0) parts.push("w" + sup(iz));
+                if (parts.length === 0) return "1";
+                return parts.join("");
+            }
+
             // Polytope Nodes
             const nodeSpheres = [];
 
@@ -384,7 +402,13 @@ _HTML_PAGE_TEMPLATE = """<!DOCTYPE html>
                 const m = new THREE.Mesh(sphereGeo, vertMat);
                 m.position.set(v[0], v[1], v[2]);
                 m.scale.set(0.10, 0.10, 0.10);
-                m.userData = { coord: v, isPStar: false };
+                m.userData = {
+                    coord: v,
+                    isPStar: false,
+                    monomial: formatMonomial3D(v[0], v[1], v[2]),
+                    origScale: m.scale.clone(),
+                    origMat: vertMat
+                };
                 polyGroup.add(m);
                 nodeSpheres.push(m);
             });
@@ -400,7 +424,13 @@ _HTML_PAGE_TEMPLATE = """<!DOCTYPE html>
                 const m = new THREE.Mesh(sphereGeo, intMat);
                 m.position.set(p[0], p[1], p[2]);
                 m.scale.set(0.085, 0.085, 0.085);
-                m.userData = { coord: p, isPStar: false };
+                m.userData = {
+                    coord: p,
+                    isPStar: false,
+                    monomial: formatMonomial3D(p[0], p[1], p[2]),
+                    origScale: m.scale.clone(),
+                    origMat: intMat
+                };
                 polyGroup.add(m);
                 nodeSpheres.push(m);
             });
@@ -413,7 +443,13 @@ _HTML_PAGE_TEMPLATE = """<!DOCTYPE html>
                     const m = new THREE.Mesh(sphereGeo, bndMat);
                     m.position.set(p[0], p[1], p[2]);
                     m.scale.set(0.07, 0.07, 0.07);
-                    m.userData = { coord: p, isPStar: false };
+                    m.userData = {
+                        coord: p,
+                        isPStar: false,
+                        monomial: formatMonomial3D(p[0], p[1], p[2]),
+                        origScale: m.scale.clone(),
+                        origMat: bndMat
+                    };
                     polyGroup.add(m);
                     nodeSpheres.push(m);
                 }
@@ -431,7 +467,13 @@ _HTML_PAGE_TEMPLATE = """<!DOCTYPE html>
                 const pMesh = new THREE.Mesh(sphereGeo, pMat);
                 pMesh.position.set(p[0], p[1], p[2]);
                 pMesh.scale.set(0.12, 0.12, 0.12);
-                pMesh.userData = { coord: p, isPStar: true };
+                pMesh.userData = {
+                    coord: p,
+                    isPStar: true,
+                    monomial: formatMonomial3D(p[0], p[1], p[2]),
+                    origScale: pMesh.scale.clone(),
+                    origMat: pMat
+                };
                 polyGroup.add(pMesh);
                 nodeSpheres.push(pMesh);
             }
@@ -487,9 +529,33 @@ _HTML_PAGE_TEMPLATE = """<!DOCTYPE html>
                 }
             }
 
-            // 11. Raycasting Inspector
+            // 11. Raycasting Inspector & Interactive Hover Lighting
             const raycaster = new THREE.Raycaster();
             const mouse = new THREE.Vector2();
+            let hoveredMesh = null;
+
+            const highlightMat = new THREE.MeshStandardMaterial({
+                color: 0x38BDF8,
+                emissive: 0x0284C7,
+                emissiveIntensity: 1.0,
+                roughness: 0.1,
+                metalness: 0.2
+            });
+            const pStarHighlightMat = new THREE.MeshStandardMaterial({
+                color: 0xFCA5A5,
+                emissive: 0xEF4444,
+                emissiveIntensity: 1.2,
+                roughness: 0.1,
+                metalness: 0.1
+            });
+
+            function resetHovered() {
+                if (hoveredMesh) {
+                    hoveredMesh.scale.copy(hoveredMesh.userData.origScale);
+                    hoveredMesh.material = hoveredMesh.userData.origMat;
+                    hoveredMesh = null;
+                }
+            }
 
             container.addEventListener('mousemove', (ev) => {
                 const rect = container.getBoundingClientRect();
@@ -500,12 +566,31 @@ _HTML_PAGE_TEMPLATE = """<!DOCTYPE html>
                 const intersects = raycaster.intersectObjects(nodeSpheres);
 
                 if (intersects.length > 0) {
-                    const hit = intersects[0].object.userData;
+                    const hitObj = intersects[0].object;
+                    if (hoveredMesh !== hitObj) {
+                        resetHovered();
+                        hoveredMesh = hitObj;
+                        hoveredMesh.scale.set(
+                            hoveredMesh.userData.origScale.x * 1.45,
+                            hoveredMesh.userData.origScale.y * 1.45,
+                            hoveredMesh.userData.origScale.z * 1.45
+                        );
+                        hoveredMesh.material = hoveredMesh.userData.isPStar ? pStarHighlightMat : highlightMat;
+                    }
+                    const hit = hitObj.userData;
+                    const coordStr = hit.coord.map(c => Math.round(c)).join(', ');
+                    const mon = hit.monomial;
                     inspector.style.display = 'block';
-                    inspector.textContent = hit.isPStar ? `p* = (${hit.coord.join(', ')})` : `(${hit.coord.join(', ')})`;
+                    inspector.textContent = hit.isPStar ? `p* = (${coordStr}) : ${mon}` : `(${coordStr}) : ${mon}`;
                 } else {
+                    resetHovered();
                     inspector.style.display = 'none';
                 }
+            });
+
+            container.addEventListener('mouseleave', () => {
+                resetHovered();
+                inspector.style.display = 'none';
             });
 
             // 12. Toolbar Actions
