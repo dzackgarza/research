@@ -80,6 +80,7 @@ from typing import TYPE_CHECKING
 from sage.categories.category import Category
 from sage.categories.objects import Objects
 from sage.categories.sets_cat import Sets
+from sage.combinat.posets.posets import Poset
 from sage.combinat.root_system.coxeter_matrix import CoxeterMatrix as SageCoxeterMatrix
 from sage.functions.other import sqrt
 from sage.functions.trig import cos
@@ -313,27 +314,53 @@ class ProjectiveWeightedGraphs(Category):
                         return True
             return False
 
+        def subdiagram_poset(self) -> Poset:
+            r"""Return the Boolean inclusion poset of all vertex subsets (subdiagrams)."""
+            n, verts = self._get_n_and_verts()
+            elements = [tuple(s) for size in range(n + 1) for s in combinations(range(n), size)]
+
+            def leq(a: tuple[int, ...], b: tuple[int, ...]) -> bool:
+                return set(a).issubset(set(b))
+
+            return Poset((elements, leq))
+
+        def parabolic_subdiagram_poset(self) -> Poset:
+            r"""Return the induced subposet of parabolic subdiagrams."""
+            if not self.is_symmetric():
+                return Poset(([], lambda a, b: True))
+            full_P = self.subdiagram_poset()
+            parabolics = [elem for elem in full_P if len(elem) > 0 and self.is_parabolic(indices=elem)]
+            return full_P.subposet(parabolics)
+
+        def maximal_parabolic_subdiagram_poset(self) -> Poset:
+            r"""Return the subposet of maximal parabolic subdiagrams."""
+            p_poset = self.parabolic_subdiagram_poset()
+            max_elems = p_poset.maximal_elements()
+            return p_poset.subposet(max_elems)
+
+        def elliptic_subdiagram_poset(self) -> Poset:
+            r"""Return the induced subposet of elliptic subdiagrams."""
+            if not self.is_symmetric():
+                return Poset(([], lambda a, b: True))
+            full_P = self.subdiagram_poset()
+            elliptics = [elem for elem in full_P if self.is_elliptic(indices=elem)]
+            return full_P.subposet(elliptics)
+
+        def hyperbolic_subdiagram_poset(self) -> Poset:
+            r"""Return the induced subposet of hyperbolic subdiagrams."""
+            if not self.is_symmetric():
+                return Poset(([], lambda a, b: True))
+            full_P = self.subdiagram_poset()
+            hyperbolics = [elem for elem in full_P if len(elem) > 0 and self.is_hyperbolic(indices=elem)]
+            return full_P.subposet(hyperbolics)
+
         def find_all_parabolics(self) -> list[list[int]]:
             r"""Find all vertex index subsets that form parabolic subdiagrams."""
-            if not self.is_symmetric():
-                return []
-            n, verts = self._get_n_and_verts()
-            parabolics = []
-            for size in range(1, n + 1):
-                for subset in combinations(range(n), size):
-                    if self.is_parabolic(indices=subset):
-                        parabolics.append(list(subset))
-            return parabolics
+            return [list(elem) for elem in self.parabolic_subdiagram_poset()]
 
         def find_maximal_parabolics(self) -> list[list[int]]:
-            r"""Find all maximal parabolic subdiagrams (not properly contained in any larger parabolic)."""
-            all_parabolics = self.find_all_parabolics()
-            maximal = []
-            for p in all_parabolics:
-                p_set = set(p)
-                if not any(set(q) > p_set for q in all_parabolics):
-                    maximal.append(p)
-            return maximal
+            r"""Find all maximal parabolic subdiagrams."""
+            return [list(elem) for elem in self.parabolic_subdiagram_poset().maximal_elements()]
 
 
 class SymmetricProjectiveWeightedGraphs(Category):
