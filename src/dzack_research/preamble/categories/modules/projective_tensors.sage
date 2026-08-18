@@ -57,6 +57,19 @@ EXAMPLES::
     5
     sage: 1/3 in X_ref
     False
+
+TODOs & Architectural Roadmap
+=============================
+- [ ] Generalize to combinatorial intersection matrices for arbitrary hyperplane arrangements
+      in an ambient space (not just reflection hyperplanes).
+- [ ] Formalize "Hyperplane arrangement in an ambient space" as a first-class category.
+- [ ] Make crystallographic, non-crystallographic, and hyperbolic properties axiomatic
+      refinements of reflection arrangements.
+- [ ] Ensure all root lattice objects in the preamble can canonically produce their associated
+      CombinatorialVinbergInvariantMatrix / hyperplane arrangement.
+- [ ] Make the Gram tensor reconstruction return an entire abstract root lattice parent
+      instead of just the bare Gram matrix.
+- [ ] Rename `gram_matrix` to `gram_tensor` across the entire preamble codebase.
 """
 
 from collections.abc import Sequence
