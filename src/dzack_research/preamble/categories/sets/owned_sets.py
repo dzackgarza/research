@@ -332,6 +332,94 @@ class UncountableSets(CategoryWithAxiom):
         def is_uncountable(self) -> bool:
             return True
 
+from sage.structure.element import Element as SageElement
+from sage.categories.homset import Homset as SageHomset
+
+
+class PosetMorphism(SageElement):
+    r"""Morphism of partially ordered sets (order-preserving map)."""
+
+    def __init__(self, parent: "PosetHomset", function: Any) -> None:
+        SageElement.__init__(self, parent)
+        self._function = function
+
+    def __call__(self, x: Any) -> Any:
+        return self._function(x)
+
+    def domain(self) -> Any:
+        return self.parent().domain()
+
+    def codomain(self) -> Any:
+        return self.parent().codomain()
+
+    def is_order_preserving(self) -> bool:
+        r"""Return True if x <= y implies f(x) <= f(y)."""
+        dom = self.domain()
+        codom = self.codomain()
+        for x, y in dom.cover_relations():
+            if not codom.is_lequal(self(x), self(y)):
+                return False
+        return True
+
+    def is_order_reflecting(self) -> bool:
+        r"""Return True if f(x) <= f(y) implies x <= y."""
+        dom = self.domain()
+        codom = self.codomain()
+        for x in dom:
+            for y in dom:
+                if codom.is_lequal(self(x), self(y)) and not dom.is_lequal(x, y):
+                    return False
+        return True
+
+    def is_order_embedding(self) -> bool:
+        r"""Return True if x <= y iff f(x) <= f(y)."""
+        return self.is_order_preserving() and self.is_order_reflecting()
+
+    def is_injective(self) -> bool:
+        r"""Return True if f is one-to-one."""
+        images = [self(x) for x in self.domain()]
+        return len(images) == len(set(images))
+
+    def is_surjective(self) -> bool:
+        r"""Return True if f maps onto the codomain."""
+        images = set(self(x) for x in self.domain())
+        return images == set(self.codomain())
+
+    def is_bijective(self) -> bool:
+        return self.is_injective() and self.is_surjective()
+
+    def is_order_isomorphism(self) -> bool:
+        r"""Return True if f is a bijective order embedding."""
+        return self.is_order_embedding() and self.is_bijective()
+
+    def inverse(self) -> "PosetMorphism":
+        r"""Return the inverse poset isomorphism."""
+        if not self.is_order_isomorphism():
+            raise ValueError("Inverse only exists for order isomorphisms")
+        inv_map = {self(x): x for x in self.domain()}
+        return PosetHomset(self.codomain(), self.domain())(lambda y: inv_map[y])
+
+    def __mul__(self, other: "PosetMorphism") -> "PosetMorphism":
+        if self.domain() != other.codomain():
+            raise ValueError("Domains and codomains do not match for composition")
+        return PosetHomset(other.domain(), self.codomain())(lambda x: self(other(x)))
+
+    def _repr_(self) -> str:
+        return f"Poset morphism from {self.domain()} to {self.codomain()}"
+
+
+class PosetHomset(SageHomset):
+    r"""Set of morphisms between partially ordered sets."""
+
+    Element = PosetMorphism
+
+    def _element_constructor_(self, f: Any) -> PosetMorphism:
+        mor = PosetMorphism(self, f)
+        if not mor.is_order_preserving():
+            raise ValueError(f"Function {f} does not preserve partial order (not a poset homomorphism)")
+        return mor
+
+
 class PartiallyOrderedSets(CategoryWithAxiom):
     r"""Partially ordered sets."""
 
