@@ -273,6 +273,10 @@ class ADELogPair(ToricSubscheme, Parent):
         """Return the base del Pezzo log pair (Y = V_Q, C + 1/2(1+eps)B)."""
         raise NotImplementedError
 
+    def base_ring(self) -> Any:
+        """Return the base field of definition (QQ)."""
+        return QQ
+
     def is_cover(self) -> bool:
         """Return True if this is the covering hypersurface X ⊂ V_P."""
         raise NotImplementedError
@@ -340,6 +344,26 @@ class ADELogPair(ToricSubscheme, Parent):
         verts = [[ZZ(c) for c in v] for v in poly.vertices()]
         return matrix(ZZ, verts)
 
+    def ramification_divisor(self) -> "ToricSubscheme":
+        r"""Return the ramification divisor R = V(w, f(x, y)) ⊂ V_P as a ToricSubscheme."""
+        return self.cover().ramification_divisor()
+
+    def branch_divisor(self) -> "ToricSubscheme":
+        r"""Return the branch divisor B = V(f(x, y)) ⊂ V_Q as a ToricSubscheme."""
+        return self.base().branch_divisor()
+
+    def boundary_divisor(self) -> object:
+        r"""Return the distinguished boundary divisor (D on X, C on Y)."""
+        raise NotImplementedError
+
+    def log_pair(self) -> tuple[Any, ...]:
+        r"""Return the constituents of the log pair."""
+        raise NotImplementedError
+
+    def log_pair_label(self) -> str:
+        r"""Return LaTeX label for the log pair."""
+        raise NotImplementedError
+
     def integral_invariants(self) -> dict[str, Any]:
         """Return dictionary of integral invariants of the ambient polytope."""
         P = self.polytope()
@@ -360,16 +384,14 @@ class ADELogPair(ToricSubscheme, Parent):
             mult = 6 if self.ambient_dimension() == 3 else (2 if self.ambient_dimension() == 2 else 1)
             norm_vol = poly.volume() * mult
 
-        res = {
+        return {
             "dimension": int(self.ambient_dimension()),
+            "volume": poly.volume(),
             "normalized_volume": int(norm_vol),
             "n_integral_points": int(n_pts),
             "n_interior_points": int(int_pts),
             "n_boundary_points": int(bnd_pts),
         }
-        if self.ambient_dimension() == 2:
-            res["area"] = poly.volume()
-        return res
 
     def _repr_latex_(self) -> str:
         return "$\\displaystyle " + self._latex_() + "$"
@@ -440,8 +462,24 @@ class ADEBaseSurface(ADELogPair):
     def complementary_divisor(self) -> object:
         return self._cover.complementary_divisor()
 
-    def branch_divisor(self) -> object:
-        return self.defining_polynomial()
+    def boundary_divisor(self) -> object:
+        return self.blue_line_divisor()
+
+    def branch_divisor(self) -> ToricSubscheme:
+        r"""Return the branch divisor B = V(f(x, y)) ⊂ V_Q as a ToricSubscheme."""
+        f0 = self.defining_polynomial()
+        return ToricSubscheme(
+            ambient=self.ambient_space(),
+            equations=(f0,),
+            dim=1,
+            base_ring=self.base_ring(),
+        )
+
+    def log_pair(self) -> tuple[Any, ...]:
+        return (self, self.boundary_divisor(), self.branch_divisor())
+
+    def log_pair_label(self) -> str:
+        return r"(Y, C + \tfrac{1+\varepsilon}{2} B)"
 
     def defining_polynomial(self) -> object:
         return self._cover.defining_polynomial()
@@ -451,9 +489,6 @@ class ADEBaseSurface(ADELogPair):
 
     def dynkin_diagram_data(self) -> dict[str, object]:
         return self._cover.dynkin_diagram_data()
-
-    def area(self) -> Rational:
-        return self._cover.area()
 
     def volume(self) -> Rational:
         return self._cover.volume()
@@ -488,8 +523,8 @@ class ADEBaseSurface(ADELogPair):
         c_latex = _latex(self.blue_line_divisor())
         p_latex = _latex(self.p_star())
         Q = self.polygon()
-        area_val = Q.area()
-        l_sq = 4 * area_val
+        vol_val = Q.volume()
+        norm_vol = 2 * vol_val
         n_pts = Q.n_integral_points()
         int_pts = Q.n_interior_points()
         verts_latex = ",\\, ".join(f"({v[0]}, {v[1]})" for v in Q.vertices())
@@ -497,8 +532,8 @@ class ADEBaseSurface(ADELogPair):
         eol = "\\\\"
         lines = [
             r"\begin{aligned}",
-            rf"&(Y, C) \colon Y = {amb_ident} \text{{ of type }} {self._cover._latex_label} \colon C = {c_latex}, \quad B = \mathrm{{V}}\left({f0_latex}\right) \quad \left(p^* = {p_latex}\right) {eol}",
-            rf"&Q = \operatorname{{conv}}\left(\{{{verts_latex}\}}\right) \subset \mathbb{{R}}^2 \colon \operatorname{{Area}}(Q) = {area_val},\; L^2 = {l_sq},\; |Q \cap \mathbb{{Z}}^2| = {n_pts},\; |\operatorname{{Int}}(Q)| = {int_pts}",
+            rf"&(Y, C + \tfrac{{1+\varepsilon}}{{2}} B) \colon Y = {amb_ident} \text{{ of type }} {self._cover._latex_label} \colon C = {c_latex}, \quad B = \mathrm{{V}}\left({f0_latex}\right) \quad \left(p^* = {p_latex}\right) {eol}",
+            rf"&Q = \operatorname{{conv}}\left(\{{{verts_latex}\}}\right) \subset \mathbb{{R}}^2 \colon \operatorname{{Vol}}_\mathbb{{Z}}(Q) = {norm_vol},\; \operatorname{{Vol}}(Q) = {vol_val},\; |Q \cap \mathbb{{Z}}^2| = {n_pts},\; |\operatorname{{Int}}(Q)| = {int_pts}",
             r"\end{aligned}",
         ]
         return "\n".join(lines)
@@ -507,7 +542,7 @@ class ADEBaseSurface(ADELogPair):
         amb = self.ambient_identification()
         f0 = self.defining_polynomial()
         c_str = str(self.blue_line_divisor())
-        return f"Del Pezzo Base Surface Y = {amb} of type {self._cover._key} (C = {c_str}, B = V({f0}), p* = {self.p_star()})"
+        return f"Log Pair (Y, C + 1/2(1+eps)B) where Y = {amb} of type {self._cover._key} (C = {c_str}, B = V({f0}), p* = {self.p_star()})"
 
     def _repr_html_(self) -> str:
         """Render high-definition 2D vector SVG representation for Jupyter."""
@@ -811,11 +846,37 @@ class ADESurface(ADELogPair):
     def normal_fan(self) -> object:
         return self.polyhedron().normal_fan()
 
-    def area(self) -> Rational:
-        return self.polyhedron().volume()
-
     def volume(self) -> Rational:
-        return self.area()
+        if self.is_affine():
+            return self.polygon().volume()
+        return self.cover_polytope().polyhedron().volume()
+
+    def normalized_volume(self) -> int:
+        if self.is_affine():
+            return int(2 * self.polygon().volume())
+        return int(self.cover_polytope().normalized_volume())
+
+    def boundary_divisor(self) -> object:
+        r"""Return the preimage boundary divisor D = pi^*(C) on X."""
+        return self.base().boundary_divisor()
+
+    def ramification_divisor(self) -> ToricSubscheme:
+        r"""Return the ramification divisor R = V(w, f(x, y)) ⊂ V_P as a ToricSubscheme."""
+        ring_3d = PolynomialRing(QQ, names=['x', 'y', 'w'])
+        x, y, w = ring_3d.gens()
+        f_0 = self.defining_polynomial()(x, y)
+        return ToricSubscheme(
+            ambient=self.ambient_space(),
+            equations=(w, f_0),
+            dim=1,
+            base_ring=self.base_ring(),
+        )
+
+    def log_pair(self) -> tuple[Any, ...]:
+        return (self, self.boundary_divisor(), self.ramification_divisor())
+
+    def log_pair_label(self) -> str:
+        return r"(X, D + \varepsilon R)"
 
     def del_pezzo_surface(self) -> ToricVariety_field:
         return self._del_pezzo_variety
@@ -1180,21 +1241,24 @@ class ADESurface(ADELogPair):
 
         if self.is_affine():
             verts_latex = ",\\, ".join(f"({v[0]}, {v[1]})" for v in self.vertices())
+            norm_vol = 2 * self.volume()
+            vol_val = self.volume()
             lines = [
                 r"\begin{aligned}",
-                rf"&X \colon w^2 + \left({f0_latex}\right) = 0 \subset V_P \quad \text{{of type }} {self._latex_label} \quad \left(p^* = {p_latex}\right) {eol}",
-                rf"&Q = \operatorname{{conv}}\left(\{{{verts_latex}\}}\right) \subset \mathbb{{R}}^2 \colon \operatorname{{Area}}(Q) = {self.area()},\; |Q \cap \mathbb{{Z}}^2| = {self.n_integral_points()},\; |\operatorname{{Int}}(Q)| = {self.n_interior_points()}",
+                rf"&(X, D + \varepsilon R) \colon X = \mathrm{{V}}\left(w^2 + \left({f0_latex}\right)\right) \subset V_P \text{{ of type }} {self._latex_label} \colon D = \pi^*(C), \quad R = \mathrm{{V}}\left(w, {f0_latex}\right) \quad \left(p^* = {p_latex}\right) {eol}",
+                rf"&Q = \operatorname{{conv}}\left(\{{{verts_latex}\}}\right) \subset \mathbb{{R}}^2 \colon \operatorname{{Vol}}_\mathbb{{Z}}(Q) = {norm_vol},\; \operatorname{{Vol}}(Q) = {vol_val},\; |Q \cap \mathbb{{Z}}^2| = {self.n_integral_points()},\; |\operatorname{{Int}}(Q)| = {self.n_interior_points()}",
                 r"\end{aligned}",
             ]
         else:
             P = self.cover_polytope()
             vol_z = P.normalized_volume()
+            vol_val = P.volume()
             p_verts_latex = ",\\, ".join(f"({v[0]}, {v[1]}, {v[2]})" for v in P.vertices())
             amb_ident = self.ambient_identification_latex()
             lines = [
                 r"\begin{aligned}",
-                rf"&X \colon w^2 + \left({f0_latex}\right) = 0 \subset {amb_ident} \quad \text{{of type }} {self._latex_label} \quad \left(p^* = {p_latex}\right) {eol}",
-                rf"&P = \operatorname{{conv}}\left(\{{{p_verts_latex}\}}\right) \subset \mathbb{{R}}^3 \colon \operatorname{{Vol}}_\mathbb{{Z}}(P) = {vol_z},\; |P \cap \mathbb{{Z}}^3| = {P.n_integral_points()},\; |\operatorname{{Int}}(P)| = {P.n_interior_points()}",
+                rf"&(X, D + \varepsilon R) \colon X = \mathrm{{V}}\left(w^2 + \left({f0_latex}\right)\right) \subset {amb_ident} \text{{ of type }} {self._latex_label} \colon D = \pi^*(C), \quad R = \mathrm{{V}}\left(w, {f0_latex}\right) \quad \left(p^* = {p_latex}\right) {eol}",
+                rf"&P = \operatorname{{conv}}\left(\{{{p_verts_latex}\}}\right) \subset \mathbb{{R}}^3 \colon \operatorname{{Vol}}_\mathbb{{Z}}(P) = {vol_z},\; \operatorname{{Vol}}(P) = {vol_val},\; |P \cap \mathbb{{Z}}^3| = {P.n_integral_points()},\; |\operatorname{{Int}}(P)| = {P.n_interior_points()}",
                 r"\end{aligned}",
             ]
         return "\n".join(lines)
@@ -1202,7 +1266,7 @@ class ADESurface(ADELogPair):
     def __repr__(self) -> str:
         amb = self.ambient_identification()
         f0 = self.defining_polynomial()
-        return f"ADE Surface X ⊂ {amb} of type {self._key} (equation: w^2 + ({f0}) = 0, p* = {self.p_star()})"
+        return f"Log Pair (X, D + eps*R) where X = V(w^2 + ({f0})) ⊂ {amb} of type {self._key} (D = pi*(C), R = V(w, {f0}), p* = {self.p_star()})"
 
     def _repr_html_(self) -> Optional[str]:
         try:
