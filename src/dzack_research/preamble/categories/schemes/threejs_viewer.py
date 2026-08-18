@@ -31,50 +31,27 @@ _HTML_PAGE_TEMPLATE = """<!DOCTYPE html>
         <!-- Three.js Canvas Container -->
         <div id="__UID___container" style="width: 100%; height: 100%; cursor: grab;"></div>
 
-        <!-- HUD Overlay: Top Left Title & Info -->
-        <div style="position: absolute; top: 14px; left: 16px; pointer-events: none; z-index: 10;">
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <span style="font-size: 15px; font-weight: 700; color: #F8FAFC; letter-spacing: 0.5px; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">__TITLE__</span>
-                <span style="background: rgba(59, 130, 246, 0.2); border: 1px solid rgba(59, 130, 246, 0.4); color: #93C5FD; font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 9999px;">3D Interactive</span>
-            </div>
-            <div id="__UID___subtitle" style="font-size: 12px; color: #94A3B8; margin-top: 4px; text-shadow: 0 1px 3px rgba(0,0,0,0.8);">
-                Lattice Polytope in N ⊕ ℤ | WASD + QE to Fly
-            </div>
-        </div>
-
-        <!-- HUD Overlay: Top Right Action Toolbar -->
-        <div style="position: absolute; top: 14px; right: 16px; display: flex; gap: 6px; z-index: 10;">
-            <button id="__UID___btn_orbit" title="Toggle Auto-Rotation" style="background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.12); color: #E2E8F0; padding: 6px 10px; border-radius: 6px; font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.2s;">
-                ↻ Auto-Spin
+        <!-- Minimal Action Controls (Top Right) -->
+        <div style="position: absolute; top: 10px; right: 12px; display: flex; gap: 5px; z-index: 10;">
+            <button id="__UID___btn_orbit" title="Auto-Rotation" style="background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(6px); border: 1px solid rgba(255,255,255,0.1); color: #94A3B8; padding: 4px 8px; border-radius: 4px; font-size: 11px; cursor: pointer;">
+                ↻
             </button>
-            <button id="__UID___btn_grid" title="Toggle ZZ^3 Lattice Grid" style="background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.12); color: #E2E8F0; padding: 6px 10px; border-radius: 6px; font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.2s;">
-                ▦ Grid
+            <button id="__UID___btn_grid" title="Toggle Grid" style="background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(6px); border: 1px solid rgba(255,255,255,0.1); color: #94A3B8; padding: 4px 8px; border-radius: 4px; font-size: 11px; cursor: pointer;">
+                ▦
             </button>
-            <button id="__UID___btn_axes" title="Toggle Coordinate Axes" style="background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.12); color: #E2E8F0; padding: 6px 10px; border-radius: 6px; font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.2s;">
+            <button id="__UID___btn_axes" title="Toggle Axes" style="background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(6px); border: 1px solid rgba(255,255,255,0.1); color: #94A3B8; padding: 4px 8px; border-radius: 4px; font-size: 11px; cursor: pointer;">
                 XYZ
             </button>
-            <button id="__UID___btn_reset" title="Reset Camera View" style="background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.12); color: #E2E8F0; padding: 6px 10px; border-radius: 6px; font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.2s;">
-                ⌂ Reset
+            <button id="__UID___btn_reset" title="Reset View" style="background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(6px); border: 1px solid rgba(255,255,255,0.1); color: #94A3B8; padding: 4px 8px; border-radius: 4px; font-size: 11px; cursor: pointer;">
+                ⌂
             </button>
-            <button id="__UID___btn_fs" title="Toggle Fullscreen" style="background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.12); color: #E2E8F0; padding: 6px 10px; border-radius: 6px; font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.2s;">
+            <button id="__UID___btn_fs" title="Fullscreen" style="background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(6px); border: 1px solid rgba(255,255,255,0.1); color: #94A3B8; padding: 4px 8px; border-radius: 4px; font-size: 11px; cursor: pointer;">
                 ⛶
             </button>
         </div>
 
-        <!-- HUD Overlay: Bottom Left Flight Navigation Guide -->
-        <div style="position: absolute; bottom: 14px; left: 16px; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.08); padding: 8px 12px; border-radius: 8px; font-size: 11px; color: #94A3B8; pointer-events: none; z-index: 10;">
-            <div style="display: flex; gap: 12px; align-items: center;">
-                <div><kbd style="background: #1E293B; color: #F1F5F9; padding: 1px 5px; border-radius: 3px; font-family: monospace; border: 1px solid #334155;">W A S D</kbd> Move</div>
-                <div><kbd style="background: #1E293B; color: #F1F5F9; padding: 1px 5px; border-radius: 3px; font-family: monospace; border: 1px solid #334155;">Q / E</kbd> Up / Down</div>
-                <div><kbd style="background: #1E293B; color: #F1F5F9; padding: 1px 5px; border-radius: 3px; font-family: monospace; border: 1px solid #334155;">Shift</kbd> Turbo</div>
-                <div><kbd style="background: #1E293B; color: #F1F5F9; padding: 1px 5px; border-radius: 3px; font-family: monospace; border: 1px solid #334155;">Drag</kbd> Orbit/Pan</div>
-            </div>
-        </div>
-
-        <!-- HUD Overlay: Bottom Right Inspector Tooltip -->
-        <div id="__UID___inspector" style="position: absolute; bottom: 14px; right: 16px; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px); border: 1px solid rgba(59, 130, 246, 0.3); padding: 8px 14px; border-radius: 8px; font-size: 11.5px; color: #E2E8F0; pointer-events: none; z-index: 10; min-width: 140px; text-align: right;">
-            <span style="color: #38BDF8; font-weight: 600;">Hover Inspector:</span> Ready
-        </div>
+        <!-- Coordinate Inspector (Bottom Right) -->
+        <div id="__UID___inspector" style="position: absolute; bottom: 10px; right: 12px; background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(6px); border: 1px solid rgba(255,255,255,0.08); padding: 4px 10px; border-radius: 5px; font-size: 11px; font-family: monospace; color: #64748B; pointer-events: none; z-index: 10; display: none;"></div>
     </div>
 
     <script>
@@ -452,9 +429,10 @@ _HTML_PAGE_TEMPLATE = """<!DOCTYPE html>
 
                 if (intersects.length > 0) {
                     const hit = intersects[0].object.userData;
-                    inspector.innerHTML = `<span style="color: #38BDF8; font-weight: 700;">${hit.type}:</span> (${hit.coord.join(', ')})`;
+                    inspector.style.display = 'block';
+                    inspector.textContent = `${hit.type} (${hit.coord.join(', ')})`;
                 } else {
-                    inspector.innerHTML = `<span style="color: #94A3B8;">Inspector:</span> Ready`;
+                    inspector.style.display = 'none';
                 }
             });
 
