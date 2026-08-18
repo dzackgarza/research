@@ -1,4 +1,4 @@
-r"""Combinatorial Vinberg invariant matrices, projective reflection geometry, and exact X_ref validation.
+r"""Combinatorial Vinberg invariant matrices, projective reflection geometry, and X_ref validation.
 
 Mathematical Framework
 ======================
@@ -60,6 +60,8 @@ EXAMPLES::
 """
 
 from collections.abc import Sequence
+from itertools import combinations
+import math
 from typing import TYPE_CHECKING
 
 from sage.categories.objects import Objects
@@ -67,6 +69,7 @@ from sage.categories.sets_cat import Sets
 from sage.combinat.root_system.coxeter_matrix import CoxeterMatrix as SageCoxeterMatrix
 from sage.functions.other import sqrt
 from sage.functions.trig import cos
+from sage.graphs.graph import Graph
 from sage.matrix.constructor import matrix
 from sage.rings.infinity import Infinity, PlusInfinity, infinity
 from sage.rings.integer import Integer
@@ -178,7 +181,8 @@ class CombinatorialVinbergInvariantMatrix(Parent):
     r"""
     A Combinatorial Vinberg Invariant Matrix $T = (t_{ij}) \in \mathbb{P}^1(R)^{n \times n}$.
 
-    Encodes the normalized projective angles and mirror distances of a reflection group.
+    Encodes the normalized projective angles, mirror distances, and parabolic classifications
+    of a reflection group natively without relying on Sage's flawed CoxeterMatrix.
     """
 
     def __init__(
@@ -274,7 +278,7 @@ class CombinatorialVinbergInvariantMatrix(Parent):
         return True
 
     def to_sage_coxeter_matrix(self) -> SageCoxeterMatrix:
-        r"""Export to Sage's native :class:`CoxeterMatrix`."""
+        r"""Export to Sage's native :class:`CoxeterMatrix` (optional adapter)."""
         n = self._rank
         raw_entries = [
             [self.coxeter_order(i, j) for j in range(n)]
@@ -352,6 +356,8 @@ class CombinatorialVinbergInvariantMatrix(Parent):
     def is_elliptic(self, indices: Sequence[int] | None = None) -> bool:
         r"""Check if the system (or sub-system) is elliptic (positive definite Schläfli matrix)."""
         target = self if indices is None else self.submatrix(indices)
+        if target.rank() == 0:
+            return True
         try:
             S = target.schlafli_matrix()
             return S.is_positive_definite()
@@ -361,6 +367,8 @@ class CombinatorialVinbergInvariantMatrix(Parent):
     def is_parabolic(self, indices: Sequence[int] | None = None) -> bool:
         r"""Check if the system (or sub-system) is parabolic (positive semi-definite with rank n-1)."""
         target = self if indices is None else self.submatrix(indices)
+        if target.rank() == 0:
+            return False
         try:
             S = target.schlafli_matrix()
             return S.is_positive_semidefinite() and S.rank() == target.rank() - 1
@@ -370,11 +378,111 @@ class CombinatorialVinbergInvariantMatrix(Parent):
     def is_hyperbolic(self, indices: Sequence[int] | None = None) -> bool:
         r"""Check if the system (or sub-system) is hyperbolic (signature (n-1, 1))."""
         target = self if indices is None else self.submatrix(indices)
+        if target.rank() == 0:
+            return False
         try:
             S = target.schlafli_matrix()
             return not S.is_positive_semidefinite() and S.det() < 0
         except ValueError:
             return True
+
+    def is_compact_hyperbolic(self, indices: Sequence[int] | None = None) -> bool:
+        r"""Check if the system is compact hyperbolic (Lannér simplex: hyperbolic, and all proper sub-systems elliptic)."""
+        target = self if indices is None else self.submatrix(indices)
+        if not target.is_hyperbolic():
+            return False
+        n = target.rank()
+        for size in range(1, n):
+            for subset in combinations(range(n), size):
+                if not target.is_elliptic(subset):
+                    return False
+        return True
+
+    def is_paracompact_hyperbolic(self, indices: Sequence[int] | None = None) -> bool:
+        r"""Check if the system is paracompact hyperbolic (hyperbolic and contains at least one parabolic subdiagram)."""
+        target = self if indices is None else self.submatrix(indices)
+        if not target.is_hyperbolic():
+            return False
+        n = target.rank()
+        for size in range(1, n):
+            for subset in combinations(range(n), size):
+                if target.is_parabolic(subset):
+                    return True
+        return False
+
+    def find_all_parabolics(self) -> list[list[int]]:
+        r"""Find all vertex subsets that form parabolic subdiagrams."""
+        n = self._rank
+        parabolics = []
+        for size in range(1, n + 1):
+            for subset in combinations(range(n), size):
+                if self.is_parabolic(subset):
+                    parabolics.append(list(subset))
+        return parabolics
+
+    def find_maximal_parabolics(self) -> list[list[int]]:
+        r"""Find all maximal parabolic subdiagrams (not properly contained in any larger parabolic)."""
+        all_parabolics = self.find_all_parabolics()
+        maximal = []
+        for p in all_parabolics:
+            p_set = set(p)
+            if not any(set(q) > p_set for q in all_parabolics):
+                maximal.append(p)
+        return maximal
+
+    def graph(self) -> Graph:
+        r"""Construct a Sage Graph representing the Coxeter diagram."""
+        G = Graph()
+        G.add_vertices(range(self._rank))
+        for i in range(self._rank):
+            for j in range(i + 1, self._rank):
+                m = self.coxeter_order(i, j)
+                if m > 2 or m is infinity:
+                    G.add_edge(i, j, m)
+        return G
+
+    def tikz(self, title: str = "", labels: Sequence[str] | None = None) -> str:
+        r"""Generate standalone LaTeX TikZ markup for the Coxeter diagram."""
+        n = self._rank
+        if labels is None:
+            labels = [f"\\alpha_{{{i+1}}}" for i in range(n)]
+
+        if n <= 4:
+            pos = [(2 * i, 0) for i in range(n)]
+        else:
+            angles = [2 * math.pi * i / n for i in range(n)]
+            pos = [(3 * math.cos(a), 3 * math.sin(a)) for a in angles]
+
+        tikz = ["\\begin{tikzpicture}[scale=1.2]"]
+        tikz.append("\\tikzstyle{vertex}=[circle,draw,minimum size=8mm,inner sep=2pt,fill=white]")
+
+        for i in range(n):
+            x, y = pos[i]
+            tikz.append(f"\\node[vertex] (n{i}) at ({float(x):.2f},{float(y):.2f}) {{${labels[i]}$}};")
+
+        for i in range(n):
+            for j in range(i + 1, n):
+                m = self.coxeter_order(i, j)
+                if m == 3:
+                    tikz.append(f"\\draw (n{i}) -- (n{j});")
+                elif m == 4:
+                    tikz.append(f"\\draw[double,double distance=1.5pt] (n{i}) -- (n{j});")
+                elif m == 5:
+                    tikz.append(f"\\draw[decorate,decoration={{zigzag,segment length=4mm,amplitude=1mm}}] (n{i}) -- (n{j});")
+                elif m == 6:
+                    tikz.append(f"\\draw[double,double distance=3pt] (n{i}) -- (n{j});")
+                    tikz.append(f"\\draw (n{i}) -- (n{j});")
+                elif m is infinity:
+                    tikz.append(f"\\draw[dashed,thick] (n{i}) -- (n{j});")
+                elif m > 6:
+                    tikz.append(f"\\draw (n{i}) -- (n{j}) node[midway,above] {{\\small {m}}};")
+
+        if title:
+            avg_x = sum(p[0] for p in pos) / n
+            tikz.append(f"\\node at ({avg_x:.2f},2.5) {{\\Large \\textbf{{{title}}}}};")
+
+        tikz.append("\\end{tikzpicture}")
+        return "\n".join(tikz)
 
     def _repr_(self) -> str:
         n = self._rank
