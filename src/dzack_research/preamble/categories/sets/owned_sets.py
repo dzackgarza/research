@@ -541,6 +541,38 @@ class PosetTikz:
         return "\n".join(svg_lines)
 
 
+def _poset_repr_html(poset: Any) -> str:
+    return PosetTikz(poset)._repr_html_()
+
+
+def _poset_latex(poset: Any) -> str:
+    return PosetTikz(poset).tikz_code()
+
+
+def _poset_repr_latex(poset: Any) -> str:
+    return rf"\(\displaystyle {_poset_latex(poset)}\)"
+
+
+def _poset_rich_repr(poset: Any, dm: Any) -> Any:
+    if hasattr(dm, "types") and hasattr(dm, "supported_output"):
+        if dm.types.OutputHtml in dm.supported_output():
+            html_content = _poset_repr_html(poset)
+            return dm.types.OutputHtml(html_content)
+        elif dm.types.OutputLatex in dm.supported_output():
+            return dm.types.OutputLatex(_poset_latex(poset))
+        elif dm.types.OutputPlainText in dm.supported_output():
+            return dm.types.OutputPlainText(repr(poset))
+    return None
+
+
+def _poset_repr_mimebundle(poset: Any, include: Any = None, exclude: Any = None) -> dict[str, str]:
+    return {
+        "text/html": _poset_repr_html(poset),
+        "text/latex": _poset_repr_latex(poset),
+        "text/plain": repr(poset),
+    }
+
+
 class PartiallyOrderedSets(CategoryWithAxiom):
     r"""Partially ordered sets."""
 
@@ -562,7 +594,19 @@ class PartiallyOrderedSets(CategoryWithAxiom):
 
         def _repr_html_(self) -> str:
             r"""Render clean inline SVG in Jupyter notebook without dot2tex warnings."""
-            return PosetTikz(self)._repr_html_()
+            return _poset_repr_html(self)
+
+        def _latex_(self) -> str:
+            return _poset_latex(self)
+
+        def _repr_latex_(self) -> str:
+            return _poset_repr_latex(self)
+
+        def _rich_repr_(self, dm: Any) -> Any:
+            return _poset_rich_repr(self, dm)
+
+        def _repr_mimebundle_(self, include: Any = None, exclude: Any = None) -> dict[str, str]:
+            return _poset_repr_mimebundle(self, include=include, exclude=exclude)
 
 
 def install_poset_display() -> None:
@@ -572,7 +616,11 @@ def install_poset_display() -> None:
         FinitePoset.hasse_layout = lambda self: PosetTikz(self)._coords
         FinitePoset.hasse_tikz = lambda self, label_map=None, scale=1.0: PosetTikz(self, label_map=label_map, scale=scale)
         FinitePoset.tikz = lambda self, label_map=None, scale=1.0: PosetTikz(self, label_map=label_map, scale=scale)
-        FinitePoset._repr_html_ = lambda self: PosetTikz(self)._repr_html_()
+        FinitePoset._repr_html_ = _poset_repr_html
+        FinitePoset._latex_ = _poset_latex
+        FinitePoset._repr_latex_ = _poset_repr_latex
+        FinitePoset._rich_repr_ = _poset_rich_repr
+        FinitePoset._repr_mimebundle_ = _poset_repr_mimebundle
     except Exception:
         pass
 
