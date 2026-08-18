@@ -420,10 +420,164 @@ class PosetHomset(SageHomset):
         return mor
 
 
+class PosetTikz:
+    r"""TikZ Hasse diagram representation."""
+
+    def __init__(self, poset: Any, label_map: Any = None, scale: float = 1.0, width: int = 550, height: int = 420) -> None:
+        self._poset = poset
+        self._label_map = label_map
+        self._scale = scale
+        self._width = width
+        self._height = height
+        self._coords = self._compute_layout()
+
+    def _compute_layout(self) -> dict[Any, tuple[float, float]]:
+        heights: dict[Any, int] = {}
+        for v in self._poset.linear_extension():
+            low = self._poset.lower_covers(v)
+            if not low:
+                heights[v] = 0
+            else:
+                heights[v] = max(heights[u] for u in low) + 1
+
+        max_h = max(heights.values()) if heights else 0
+        levels: dict[int, list[Any]] = {h: [] for h in range(max_h + 1)}
+        for v, h in heights.items():
+            levels[h].append(v)
+
+        coords: dict[Any, tuple[float, float]] = {}
+        for h in range(max_h + 1):
+            elems = list(levels[h])
+            if h > 0:
+                def avg_pred_x(v: Any) -> float:
+                    preds = self._poset.lower_covers(v)
+                    if preds and any(u in coords for u in preds):
+                        return sum(coords[u][0] for u in preds if u in coords) / len(preds)
+                    return 0.0
+                try:
+                    elems.sort(key=lambda v: (avg_pred_x(v), str(v)))
+                except Exception:
+                    pass
+
+            m = len(elems)
+            for i, v in enumerate(elems):
+                x = (i - (m - 1) / 2.0) * 2.0
+                y = float(h * 2.0)
+                coords[v] = (x, y)
+
+        return coords
+
+    def tikz_code(self) -> str:
+        node_id_map = {v: f"node_{i}" for i, v in enumerate(self._poset)}
+        lines = [
+            r"\begin{tikzpicture}[",
+            f"  scale={self._scale:.2f},",
+            r"  every node/.style={circle, draw=black!80, fill=blue!10, inner sep=2pt, minimum size=18pt, font=\small},",
+            r"  edge/.style={draw=black!70, thick, -}",
+            r"]",
+        ]
+        for v, (x, y) in self._coords.items():
+            lbl = str(self._label_map(v) if self._label_map else v)
+            nid = node_id_map[v]
+            lines.append(f"  \\node ({nid}) at ({x:.2f}, {y:.2f}) {{{lbl}}};")
+        for u, v in self._poset.cover_relations():
+            nid_u = node_id_map[u]
+            nid_v = node_id_map[v]
+            lines.append(f"  \\draw[edge] ({nid_u}) -- ({nid_v});")
+        lines.append(r"\end{tikzpicture}")
+        return "\n".join(lines)
+
+    def _repr_(self) -> str:
+        return self.tikz_code()
+
+    def _latex_(self) -> str:
+        return self.tikz_code()
+
+    def _repr_latex_(self) -> str:
+        return f"$$\n{self.tikz_code()}\n$$"
+
+    def _repr_html_(self) -> str:
+        if not self._coords:
+            return "<div>Empty Poset</div>"
+        margin = 45
+        xs = [pt[0] for pt in self._coords.values()]
+        ys = [pt[1] for pt in self._coords.values()]
+        min_x, max_x = min(xs), max(xs)
+        min_y, max_y = min(ys), max(ys)
+        span_x = (max_x - min_x) if max_x > min_x else 1.0
+        span_y = (max_y - min_y) if max_y > min_y else 1.0
+
+        px_coords = {}
+        for v, (x, y) in self._coords.items():
+            px_x = margin + (x - min_x) / span_x * (self._width - 2 * margin)
+            px_y = (self._height - margin) - (y - min_y) / span_y * (self._height - 2 * margin)
+            px_coords[v] = (px_x, px_y)
+
+        node_radius = 16
+        svg_lines = [
+            '<div style="display: flex; justify-content: center; margin: 12px 0;">',
+            f'<svg width="{self._width}" height="{self._height}" viewBox="0 0 {self._width} {self._height}" xmlns="http://www.w3.org/2000/svg">',
+            "  <style>",
+            "    .hasse-edge { stroke: #5f6368; stroke-width: 2; stroke-linecap: round; }",
+            "    .hasse-node { fill: #f8f9fa; stroke: #1a73e8; stroke-width: 2; transition: all 0.2s; }",
+            "    .hasse-node:hover { fill: #e8f0fe; stroke: #174ea6; stroke-width: 3; }",
+            '    .hasse-text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 11px; font-weight: 600; fill: #202124; text-anchor: middle; dominant-baseline: central; pointer-events: none; }',
+            "  </style>",
+        ]
+
+        for u, v in self._poset.cover_relations():
+            x1, y1 = px_coords[u]
+            x2, y2 = px_coords[v]
+            svg_lines.append(f'  <line class="hasse-edge" x1="{x1:.1f}" y1="{y1:.1f}" x2="{y2:.1f}" y2="{y2:.1f}" />')
+
+        for v, (x, y) in px_coords.items():
+            lbl = str(self._label_map(v) if self._label_map else v)
+            if len(lbl) > 12:
+                lbl = lbl[:10] + ".."
+            svg_lines.append(f'  <circle class="hasse-node" cx="{x:.1f}" cy="{y:.1f}" r="{node_radius}" />')
+            svg_lines.append(f'  <text class="hasse-text" x="{x:.1f}" y="{y:.1f}">{lbl}</text>')
+
+        svg_lines.append("</svg></div>")
+        return "\n".join(svg_lines)
+
+
 class PartiallyOrderedSets(CategoryWithAxiom):
     r"""Partially ordered sets."""
 
     _base_category_class_and_axiom = (Sets, "PartiallyOrdered")
+
+    class ParentMethods:
+        def hasse_layout(self) -> dict[Any, tuple[float, float]]:
+            r"""Compute ranked (x, y) coordinates for the Hasse diagram without dot2tex."""
+            pt = PosetTikz(self)
+            return pt._coords
+
+        def hasse_tikz(self, label_map: Any = None, scale: float = 1.0) -> PosetTikz:
+            r"""Return a PosetTikz representation of the Hasse diagram."""
+            return PosetTikz(self, label_map=label_map, scale=scale)
+
+        def tikz(self, label_map: Any = None, scale: float = 1.0) -> PosetTikz:
+            r"""Alias for :meth:`hasse_tikz`."""
+            return self.hasse_tikz(label_map=label_map, scale=scale)
+
+        def _repr_html_(self) -> str:
+            r"""Render clean inline SVG in Jupyter notebook without dot2tex warnings."""
+            return PosetTikz(self)._repr_html_()
+
+
+def install_poset_display() -> None:
+    r"""Install clean Hasse diagram TikZ/SVG display methods onto Sage's FinitePoset."""
+    try:
+        from sage.combinat.posets.posets import FinitePoset
+        FinitePoset.hasse_layout = lambda self: PosetTikz(self)._coords
+        FinitePoset.hasse_tikz = lambda self, label_map=None, scale=1.0: PosetTikz(self, label_map=label_map, scale=scale)
+        FinitePoset.tikz = lambda self, label_map=None, scale=1.0: PosetTikz(self, label_map=label_map, scale=scale)
+        FinitePoset._repr_html_ = lambda self: PosetTikz(self)._repr_html_()
+    except Exception:
+        pass
+
+
+install_poset_display()
 
 
 class TotallyOrderedSets(CategoryWithAxiom):
