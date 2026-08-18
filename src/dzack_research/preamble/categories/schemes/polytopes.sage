@@ -410,16 +410,31 @@ class ConvexPolytopes(Category):
                     except Exception:
                         pass
             elif self.dimension() == 2:
-                import tempfile, base64
-                g = self.plot()
                 try:
-                    with tempfile.NamedTemporaryFile(suffix=".png") as tf:
-                        g.save(tf.name)
-                        data = open(tf.name, "rb").read()
-                        img_b64 = base64.b64encode(data).decode("ascii")
-                        return f'<img src="data:image/png;base64,{img_b64}" style="max-width: 420px; height: auto;" />'
+                    from dzack_research.preamble.categories.schemes.svg_2d_viewer import generate_2d_polygon_svg
+                    verts = [list(v) for v in self.vertices()]
+                    int_pts = [list(p) for p in self.interior_integral_points()]
+                    bnd_pts = [list(p) for p in self.boundary_integral_points()]
+                    return generate_2d_polygon_svg(
+                        verts,
+                        interior_points=int_pts,
+                        boundary_points=bnd_pts,
+                        latex_label=f"P \\subset \\mathbb{{R}}^2",
+                        theme="dark",
+                        width=480,
+                        height=380,
+                    )
                 except Exception:
-                    pass
+                    import tempfile, base64
+                    g = self.plot()
+                    try:
+                        with tempfile.NamedTemporaryFile(suffix=".png") as tf:
+                            g.save(tf.name)
+                            data = open(tf.name, "rb").read()
+                            img_b64 = base64.b64encode(data).decode("ascii")
+                            return f'<img src="data:image/png;base64,{img_b64}" style="max-width: 420px; height: auto;" />'
+                    except Exception:
+                        pass
             return None
 
         def _repr_mimebundle_(self: _LatticePolytopeInterface, include: object = None, exclude: object = None) -> object:
@@ -528,12 +543,12 @@ class ConvexPolygons(ConvexPolytopes):
             """
             Render a publication-quality Sage Graphics plot of the 2D polygon.
             """
-            grid_line_color = kwds.get('grid_line_color', '#E2E8F0')
-            grid_line_width = kwds.get('grid_line_width', 0.5)
-            fill_color = kwds.get('fill_color', '#F8FAFC')
-            fill_alpha = kwds.get('fill_alpha', 0.9)
-            boundary_color = kwds.get('boundary_color', 'black')
-            boundary_width = kwds.get('boundary_width', 1.6)
+            grid_line_color = kwds.get('grid_line_color', '#CBD5E1')
+            grid_line_width = kwds.get('grid_line_width', 0.75)
+            fill_color = kwds.get('fill_color', '#E0F2FE')
+            fill_alpha = kwds.get('fill_alpha', 0.75)
+            boundary_color = kwds.get('boundary_color', '#1E293B')
+            boundary_width = kwds.get('boundary_width', 2.0)
 
             vertices = [tuple(v) for v in self.vertices()]
             all_pts = list(vertices)
@@ -562,7 +577,7 @@ class ConvexPolygons(ConvexPolytopes):
             amb_pts = [pt for pt in all_grid if pt not in int_pts and pt not in bnd_pts]
 
             # Ambient points
-            g_plot += point(amb_pts, pointsize=20, color='#94A3B8', alpha=0.6, zorder=2)
+            g_plot += point(amb_pts, pointsize=24, color='#94A3B8', alpha=0.5, zorder=2)
 
             # Polygon interior fill
             g_plot += polygon(vertices, color=fill_color, alpha=fill_alpha, zorder=3)
@@ -574,13 +589,13 @@ class ConvexPolygons(ConvexPolytopes):
                 if len(v_facet) >= 2:
                     g_plot += line([v_facet[0], v_facet[1]], color=boundary_color, thickness=boundary_width, zorder=4)
 
-            # Interior points
+            # Interior points (emerald)
             if int_pts:
-                g_plot += point(list(int_pts), pointsize=38, color='#0D9488', zorder=8)
+                g_plot += point(list(int_pts), pointsize=44, color='#059669', zorder=8)
 
-            # Boundary points
+            # Boundary points (obsidian)
             if bnd_pts:
-                g_plot += point(list(bnd_pts), pointsize=42, color='black', zorder=9)
+                g_plot += point(list(bnd_pts), pointsize=48, color='#0F172A', zorder=9)
 
             # Configure axes with strictly integer ticks
             show_axes = kwds.get('axes', False)

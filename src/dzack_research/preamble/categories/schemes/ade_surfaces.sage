@@ -777,15 +777,15 @@ class ADELogPairs(LogPairs):
             Return a publication-quality Sage Graphics object adhering to
             Alexeev-Thompson visual conventions for the 2D polygon Q.
             """
-            grid_line_color = kwds.get('grid_line_color', '#E2E8F0')
-            grid_line_width = kwds.get('grid_line_width', 0.5)
-            fill_color = kwds.get('fill_color', '#F8FAFC')
-            fill_alpha = kwds.get('fill_alpha', 0.9)
-            boundary_color = kwds.get('boundary_color', 'black')
-            boundary_width = kwds.get('boundary_width', 1.6)
+            grid_line_color = kwds.get('grid_line_color', '#CBD5E1')
+            grid_line_width = kwds.get('grid_line_width', 0.75)
+            fill_color = kwds.get('fill_color', '#E0F2FE')
+            fill_alpha = kwds.get('fill_alpha', 0.75)
+            boundary_color = kwds.get('boundary_color', '#1E293B')
+            boundary_width = kwds.get('boundary_width', 2.0)
             blue_line_color = kwds.get('blue_line_color', '#2563EB')
-            blue_line_width = kwds.get('blue_line_width', 3.8)
-            p_star_size = kwds.get('p_star_size', 180)
+            blue_line_width = kwds.get('blue_line_width', 4.2)
+            p_star_size = kwds.get('p_star_size', 220)
             p_star_color = kwds.get('p_star_color', '#DC2626')
             label_fontsize = kwds.get('label_fontsize', 14)
             label_y_offset = kwds.get('label_y_offset', -0.1)
@@ -824,7 +824,7 @@ class ADELogPairs(LogPairs):
             amb_pts = [pt for pt in all_grid if pt not in int_pts and pt not in bnd_pts]
 
             # Ambient background lattice points outside Q
-            g_plot += point(amb_pts, pointsize=20, color='#94A3B8', alpha=0.6, zorder=2)
+            g_plot += point(amb_pts, pointsize=24, color='#94A3B8', alpha=0.5, zorder=2)
 
             # Polygon interior
             g_plot += polygon(vertices, color=fill_color, alpha=fill_alpha, zorder=3)
@@ -842,16 +842,16 @@ class ADELogPairs(LogPairs):
 
             # Interior lattice points (teal/emerald)
             if int_pts:
-                g_plot += point(list(int_pts), pointsize=38, color='#0D9488', zorder=8)
+                g_plot += point(list(int_pts), pointsize=44, color='#059669', zorder=8)
 
             # Non-blue boundary lattice points (solid black)
             other_bnd = [p for p in bnd_pts if p not in dist_pts]
             if other_bnd:
-                g_plot += point(other_bnd, pointsize=42, color='black', zorder=9)
+                g_plot += point(other_bnd, pointsize=48, color='#0F172A', zorder=9)
 
             # Distinguished boundary points on blue line (bright blue)
             if dist_pts:
-                g_plot += point(list(dist_pts), pointsize=48, color=blue_line_color, zorder=10)
+                g_plot += point(list(dist_pts), pointsize=55, color=blue_line_color, zorder=10)
 
             # Long-side white vertex markers for A-types
             for deco in sides.values():
@@ -1143,21 +1143,48 @@ class ADEBaseSurface(Parent):
     def _repr_latex_(self) -> str:
         return "$\\displaystyle " + self._latex_() + "$"
 
-    def _rich_repr_(self, dm: object) -> object:
-        if dm.types.OutputHtml in dm.supported_output():
+    def _repr_html_(self) -> str:
+        """Render high-definition 2D SVG representation for Jupyter."""
+        try:
+            from dzack_research.preamble.categories.schemes.svg_2d_viewer import generate_2d_polygon_svg
+            verts = [list(v) for v in self.vertices()]
+            int_pts = [list(p) for p in self.interior_integral_points()]
+            bnd_pts = [list(p) for p in self.boundary_integral_points()]
+            dist_pts = [list(p) for p in self.distinguished_boundary_points()]
+            blue_facets = [[[float(c) for c in v] for v in f.vertices()] for f in self._cover._blue_facets()]
+            p_star = [float(c) for c in self.p_star()]
+            sides = self._cover.side_decorations()
+            svg_code = generate_2d_polygon_svg(
+                verts,
+                interior_points=int_pts,
+                boundary_points=bnd_pts,
+                distinguished_points=dist_pts,
+                blue_facets=blue_facets,
+                p_star=p_star,
+                side_decorations=sides,
+                latex_label=self._cover._latex_label,
+                theme="dark",
+                width=480,
+                height=380,
+            )
+            return svg_code
+        except Exception:
             import tempfile, base64
             g = self.plot(figsize=[4.5, 4.5])
-            img_tag = ""
             try:
                 with tempfile.NamedTemporaryFile(suffix=".png") as tf:
                     g.save(tf.name)
                     data = open(tf.name, "rb").read()
                     img_b64 = base64.b64encode(data).decode("ascii")
-                    img_tag = f'<div style="margin-top: 10px;"><img src="data:image/png;base64,{img_b64}" style="max-width: 420px; height: auto;" /></div>'
+                    return f'<img src="data:image/png;base64,{img_b64}" style="max-width: 420px; height: auto;" />'
             except Exception:
-                pass
+                return ""
+
+    def _rich_repr_(self, dm: object) -> object:
+        if dm.types.OutputHtml in dm.supported_output():
+            svg_html = self._repr_html_()
             latex_html = f"\\(\\displaystyle {self._latex_()}\\)"
-            html_out = f'<div style="font-family: sans-serif; line-height: 1.4;"><div>{latex_html}</div>{img_tag}</div>'
+            html_out = f'<div style="font-family: sans-serif; line-height: 1.4;"><div>{latex_html}</div><div style="margin-top: 14px; max-width: 520px;">{svg_html}</div></div>'
             return dm.types.OutputHtml(html_out)
         elif dm.types.OutputLatex in dm.supported_output():
             return dm.types.OutputLatex(self._latex_())
@@ -1170,19 +1197,9 @@ class ADEBaseSurface(Parent):
         return None
 
     def _repr_mimebundle_(self, include: object = None, exclude: object = None) -> dict[str, str]:
-        import tempfile, base64
-        g = self.plot(figsize=[4.5, 4.5])
-        img_tag = ""
-        try:
-            with tempfile.NamedTemporaryFile(suffix=".png") as tf:
-                g.save(tf.name)
-                data = open(tf.name, "rb").read()
-                img_b64 = base64.b64encode(data).decode("ascii")
-                img_tag = f'<div style="margin-top: 10px;"><img src="data:image/png;base64,{img_b64}" style="max-width: 420px; height: auto;" /></div>'
-        except Exception:
-            pass
+        svg_html = self._repr_html_()
         latex_html = f"\\(\\displaystyle {self._latex_()}\\)"
-        html_out = f'<div style="font-family: sans-serif; line-height: 1.4;"><div>{latex_html}</div>{img_tag}</div>'
+        html_out = f'<div style="font-family: sans-serif; line-height: 1.4;"><div>{latex_html}</div><div style="margin-top: 14px; max-width: 520px;">{svg_html}</div></div>'
         return {
             'text/html': html_out,
             'text/latex': self._repr_latex_(),

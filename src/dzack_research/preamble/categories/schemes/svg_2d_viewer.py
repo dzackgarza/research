@@ -1,0 +1,369 @@
+r"""
+High-definition 2D SVG Generator for Lattice Polygons and ADE Base Log Pairs.
+
+Provides crisp vector graphics matching the visual aesthetic of the 3D Three.js viewer:
+- Anti-aliased integer lattice grid with coordinate axes and ticks
+- Glassmorphic polygon fill with subtle gradient and glowing boundary edges
+- Distinguished Blue Line boundary divisor C
+- Radiant crimson star for distinguished point p*
+- Colored lattice point classification (Emerald interior, Obsidian boundary, Azure C-points, Slate ambient)
+- Long/Short side pill badges and centered LaTeX labels
+- Embedded Dynkin diagram visualization support
+- Interactive SVG tooltips for all lattice points
+"""
+
+import math
+from typing import Any, Mapping, Optional, Sequence, Tuple
+
+
+def _star_path(cx: float, cy: float, r_outer: float, r_inner: float, points: int = 5) -> str:
+    """Generate SVG path data for a regular star centered at (cx, cy)."""
+    coords = []
+    angle_step = math.pi / points
+    start_angle = -math.pi / 2
+    for i in range(2 * points):
+        r = r_outer if i % 2 == 0 else r_inner
+        angle = start_angle + i * angle_step
+        x = cx + r * math.cos(angle)
+        y = cy + r * math.sin(angle)
+        coords.append(f"{x:.2f},{y:.2f}")
+    return "M " + " L ".join(coords) + " Z"
+
+
+def generate_2d_polygon_svg(
+    vertices: Sequence[Sequence[float]],
+    *,
+    interior_points: Sequence[Sequence[float]] = (),
+    boundary_points: Sequence[Sequence[float]] = (),
+    distinguished_points: Sequence[Sequence[float]] = (),
+    blue_facets: Sequence[Sequence[Sequence[float]]] = (),
+    p_star: Optional[Sequence[float]] = None,
+    side_decorations: Optional[Mapping[str, Any]] = None,
+    latex_label: str = "",
+    dynkin_data: Optional[Mapping[str, Any]] = None,
+    theme: str = "dark",
+    width: int = 520,
+    height: int = 420,
+    padding: float = 1.2,
+) -> str:
+    """
+    Generate an ultra-crisp, publication-grade SVG for a 2D lattice polygon.
+    """
+    # 1. Compute Coordinate Bounds
+    all_x = [float(v[0]) for v in vertices]
+    all_y = [float(v[1]) for v in vertices]
+    if p_star:
+        all_x.append(float(p_star[0]))
+        all_y.append(float(p_star[1]))
+
+    min_x_val = min(all_x) if all_x else 0.0
+    max_x_val = max(all_x) if all_x else 1.0
+    min_y_val = min(all_y) if all_y else 0.0
+    max_y_val = max(all_y) if all_y else 1.0
+
+    x_min = int(math.floor(min_x_val - padding))
+    x_max = int(math.ceil(max_x_val + padding))
+    y_min = int(math.floor(min_y_val - padding))
+    y_max = int(math.ceil(max_y_val + padding))
+
+    span_x = max(1, x_max - x_min)
+    span_y = max(1, y_max - y_min)
+
+    margin = 44.0
+    usable_w = width - 2 * margin
+    usable_h = height - 2 * margin
+
+    scale_x = usable_w / span_x
+    scale_y = usable_h / span_y
+    scale = min(scale_x, scale_y)
+
+    origin_x = margin + (usable_w - span_x * scale) / 2.0 - x_min * scale
+    origin_y = height - margin - (usable_h - span_y * scale) / 2.0 + y_min * scale
+
+    def to_svg(x: float, y: float) -> Tuple[float, float]:
+        return (origin_x + float(x) * scale, origin_y - float(y) * scale)
+
+    # 2. Palette Definitions
+    is_dark = (theme == "dark")
+    bg_color = "#07090E" if is_dark else "#FFFFFF"
+    border_color = "#1E293B" if is_dark else "#E2E8F0"
+    grid_color = "rgba(51, 65, 85, 0.45)" if is_dark else "rgba(226, 232, 240, 0.9)"
+    axis_color = "#475569" if is_dark else "#94A3B8"
+    axis_text_color = "#64748B" if is_dark else "#64748B"
+
+    poly_stroke = "#0284C7" if is_dark else "#0369A1"
+    blue_line_stroke = "#38BDF8" if is_dark else "#2563EB"
+
+    amb_point_color = "#334155" if is_dark else "#CBD5E1"
+    bnd_point_color = "#F8FAFC" if is_dark else "#0F172A"
+    int_point_color = "#10B981"
+    dist_point_color = "#38BDF8" if is_dark else "#2563EB"
+    p_star_color = "#EF4444"
+
+    svg_parts = []
+    svg_parts.append(
+        f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {width} {height}" '
+        f'width="100%" height="{height}" style="background: {bg_color}; border-radius: 12px; '
+        f'border: 1px solid {border_color}; box-shadow: 0 10px 30px rgba(0,0,0,0.4); font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, sans-serif;">'
+    )
+
+    # SVG Defs (Gradients, Filters, Markers)
+    svg_parts.append(
+        """<defs>
+            <filter id="pStarGlow" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="3.5" result="blur" />
+                <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                </feMerge>
+            </filter>
+            <filter id="blueLineGlow" x="-30%" y="-30%" width="160%" height="160%">
+                <feGaussianBlur stdDeviation="2.0" result="blur" />
+                <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                </feMerge>
+            </filter>
+            <linearGradient id="polyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#38BDF8" stop-opacity="0.22" />
+                <stop offset="100%" stop-color="#0284C7" stop-opacity="0.06" />
+            </linearGradient>
+            <marker id="axisArrowX" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 1 L 10 5 L 0 9 z" fill="#EF4444" />
+            </marker>
+            <marker id="axisArrowY" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 1 L 10 5 L 0 9 z" fill="#22C55E" />
+            </marker>
+        </defs>"""
+    )
+
+    # 3. Grid Lines
+    svg_parts.append('<g id="grid_lines">')
+    for gx in range(x_min, x_max + 1):
+        x1, y1 = to_svg(gx, y_min)
+        x2, y2 = to_svg(gx, y_max)
+        svg_parts.append(
+            f'<line x1="{x1:.1f}" y1="{y1:.1f}" x2="{x2:.1f}" y2="{y2:.1f}" '
+            f'stroke="{grid_color}" stroke-width="1" stroke-dasharray="2 3" />'
+        )
+    for gy in range(y_min, y_max + 1):
+        x1, y1 = to_svg(x_min, gy)
+        x2, y2 = to_svg(x_max, gy)
+        svg_parts.append(
+            f'<line x1="{x1:.1f}" y1="{y1:.1f}" x2="{x2:.1f}" y2="{y2:.1f}" '
+            f'stroke="{grid_color}" stroke-width="1" stroke-dasharray="2 3" />'
+        )
+    svg_parts.append('</g>')
+
+    # 4. Coordinate Axes (X in red, Y in green)
+    ax_x1, ax_y0 = to_svg(x_min, 0)
+    ax_x2, _ = to_svg(x_max + 0.35, 0)
+    ax_x0, ax_y1 = to_svg(0, y_min)
+    _, ax_y2 = to_svg(0, y_max + 0.35)
+
+    svg_parts.append(
+        f'<line x1="{ax_x1:.1f}" y1="{ax_y0:.1f}" x2="{ax_x2:.1f}" y2="{ax_y0:.1f}" '
+        f'stroke="#EF4444" stroke-width="1.6" stroke-opacity="0.8" marker-end="url(#axisArrowX)" />'
+    )
+    svg_parts.append(
+        f'<line x1="{ax_x0:.1f}" y1="{ax_y1:.1f}" x2="{ax_x0:.1f}" y2="{ax_y2:.1f}" '
+        f'stroke="#22C55E" stroke-width="1.6" stroke-opacity="0.8" marker-end="url(#axisArrowY)" />'
+    )
+
+    # Axis Labels
+    svg_parts.append(
+        f'<text x="{ax_x2 + 8:.1f}" y="{ax_y0 + 4:.1f}" fill="#EF4444" font-size="12" font-weight="700">X</text>'
+    )
+    svg_parts.append(
+        f'<text x="{ax_x0 - 4:.1f}" y="{ax_y2 - 8:.1f}" fill="#22C55E" font-size="12" font-weight="700">Y</text>'
+    )
+
+    # Tick Numbers
+    for gx in range(x_min, x_max + 1):
+        if gx == 0:
+            continue
+        tx, ty = to_svg(gx, 0)
+        svg_parts.append(
+            f'<line x1="{tx:.1f}" y1="{ty - 3:.1f}" x2="{tx:.1f}" y2="{ty + 3:.1f}" stroke="{axis_color}" stroke-width="1.2" />'
+            f'<text x="{tx:.1f}" y="{ty + 15:.1f}" fill="{axis_text_color}" font-size="10" font-family="monospace" text-anchor="middle">{gx}</text>'
+        )
+    for gy in range(y_min, y_max + 1):
+        if gy == 0:
+            continue
+        tx, ty = to_svg(0, gy)
+        svg_parts.append(
+            f'<line x1="{tx - 3:.1f}" y1="{ty:.1f}" x2="{tx + 3:.1f}" y2="{ty:.1f}" stroke="{axis_color}" stroke-width="1.2" />'
+            f'<text x="{tx - 8:.1f}" y="{ty + 3.5:.1f}" fill="{axis_text_color}" font-size="10" font-family="monospace" text-anchor="end">{gy}</text>'
+        )
+
+    # 5. Ambient Lattice Points
+    int_set = set((float(p[0]), float(p[1])) for p in interior_points)
+    bnd_set = set((float(p[0]), float(p[1])) for p in boundary_points)
+    v_set = set((float(v[0]), float(v[1])) for v in vertices)
+    dist_set = set((float(p[0]), float(p[1])) for p in distinguished_points)
+
+    svg_parts.append('<g id="ambient_points">')
+    for gx in range(x_min, x_max + 1):
+        for gy in range(y_min, y_max + 1):
+            pt = (float(gx), float(gy))
+            if pt not in int_set and pt not in bnd_set and pt not in v_set:
+                px, py = to_svg(gx, gy)
+                svg_parts.append(
+                    f'<circle cx="{px:.1f}" cy="{py:.1f}" r="2.4" fill="{amb_point_color}" opacity="0.4">'
+                    f'<title>({gx}, {gy}) Ambient Point</title></circle>'
+                )
+    svg_parts.append('</g>')
+
+    # 6. Polygon Interior & Standard Edges
+    if vertices:
+        poly_pts_str = " ".join(f"{to_svg(v[0], v[1])[0]:.1f},{to_svg(v[0], v[1])[1]:.1f}" for v in vertices)
+        svg_parts.append(
+            f'<polygon points="{poly_pts_str}" fill="url(#polyGrad)" stroke="{poly_stroke}" stroke-width="1.8" '
+            f'stroke-linejoin="round" />'
+        )
+
+    # 7. Blue Line Boundary Facets (C)
+    if blue_facets:
+        svg_parts.append('<g id="blue_facets">')
+        for facet in blue_facets:
+            if len(facet) >= 2:
+                p1 = to_svg(facet[0][0], facet[0][1])
+                p2 = to_svg(facet[1][0], facet[1][1])
+                # Glow underlay
+                svg_parts.append(
+                    f'<line x1="{p1[0]:.1f}" y1="{p1[1]:.1f}" x2="{p2[0]:.1f}" y2="{p2[1]:.1f}" '
+                    f'stroke="{blue_line_stroke}" stroke-width="7" stroke-opacity="0.3" stroke-linecap="round" filter="url(#blueLineGlow)" />'
+                )
+                # Core vibrant line
+                svg_parts.append(
+                    f'<line x1="{p1[0]:.1f}" y1="{p1[1]:.1f}" x2="{p2[0]:.1f}" y2="{p2[1]:.1f}" '
+                    f'stroke="{blue_line_stroke}" stroke-width="3.6" stroke-linecap="round" />'
+                )
+        svg_parts.append('</g>')
+
+    # 8. Dynkin Diagram Visualization (if present)
+    if dynkin_data:
+        edges = dynkin_data.get('edges', [])
+        node_types = dynkin_data.get('node_types', {})
+        svg_parts.append('<g id="dynkin_diagram">')
+        for e in edges:
+            if len(e) >= 2:
+                dp1 = to_svg(e[0][0], e[0][1])
+                dp2 = to_svg(e[1][0], e[1][1])
+                svg_parts.append(
+                    f'<line x1="{dp1[0]:.1f}" y1="{dp1[1]:.1f}" x2="{dp2[0]:.1f}" y2="{dp2[1]:.1f}" '
+                    f'stroke="#6366F1" stroke-width="2.8" stroke-linecap="round" />'
+                )
+        for n, ntype in node_types.items():
+            nx, ny = to_svg(n[0], n[1])
+            if ntype == 'black':
+                svg_parts.append(f'<circle cx="{nx:.1f}" cy="{ny:.1f}" r="5.0" fill="#0F172A" stroke="#6366F1" stroke-width="1.5" />')
+            elif ntype == 'white':
+                svg_parts.append(f'<circle cx="{nx:.1f}" cy="{ny:.1f}" r="5.5" fill="#FFFFFF" stroke="#0F172A" stroke-width="2" />')
+            elif ntype == 'circled_white':
+                svg_parts.append(f'<circle cx="{nx:.1f}" cy="{ny:.1f}" r="8.0" fill="none" stroke="#6366F1" stroke-width="1.8" />')
+                svg_parts.append(f'<circle cx="{nx:.1f}" cy="{ny:.1f}" r="4.5" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.8" />')
+        svg_parts.append('</g>')
+
+    # 9. Boundary Integral Points
+    svg_parts.append('<g id="boundary_points">')
+    for p in boundary_points:
+        pt = (float(p[0]), float(p[1]))
+        if pt in dist_set:
+            px, py = to_svg(p[0], p[1])
+            svg_parts.append(
+                f'<circle cx="{px:.1f}" cy="{py:.1f}" r="5.2" fill="{dist_point_color}" stroke="#0F172A" stroke-width="1.4">'
+                f'<title>({p[0]}, {p[1]}) Distinguished Boundary Point on C</title></circle>'
+            )
+        elif pt not in v_set:
+            px, py = to_svg(p[0], p[1])
+            svg_parts.append(
+                f'<circle cx="{px:.1f}" cy="{py:.1f}" r="4.5" fill="{bnd_point_color}" stroke="#334155" stroke-width="1.2">'
+                f'<title>({p[0]}, {p[1]}) Boundary Point</title></circle>'
+            )
+    svg_parts.append('</g>')
+
+    # 10. Interior Integral Points (Emerald)
+    svg_parts.append('<g id="interior_points">')
+    for p in interior_points:
+        px, py = to_svg(p[0], p[1])
+        svg_parts.append(
+            f'<circle cx="{px:.1f}" cy="{py:.1f}" r="4.8" fill="{int_point_color}" stroke="#065F46" stroke-width="1.4">'
+            f'<title>({p[0]}, {p[1]}) Interior Point</title></circle>'
+        )
+    svg_parts.append('</g>')
+
+    # 11. Vertices
+    svg_parts.append('<g id="vertices">')
+    white_vertices = set()
+    if side_decorations:
+        for deco in side_decorations.values():
+            if getattr(deco, 'vertex_color', '') == 'white' or getattr(deco, 'decoration_type', '') == 'long':
+                for vi in getattr(deco, 'edge', ()):
+                    if vi < len(vertices):
+                        white_vertices.add((float(vertices[vi][0]), float(vertices[vi][1])))
+
+    for v in vertices:
+        vx, vy = to_svg(v[0], v[1])
+        if (float(v[0]), float(v[1])) in white_vertices:
+            svg_parts.append(
+                f'<circle cx="{vx:.1f}" cy="{vy:.1f}" r="6.0" fill="#FFFFFF" stroke="#0F172A" stroke-width="2.2">'
+                f'<title>({v[0]}, {v[1]}) Long-Edge Vertex</title></circle>'
+            )
+        else:
+            svg_parts.append(
+                f'<circle cx="{vx:.1f}" cy="{vy:.1f}" r="5.2" fill="{bnd_point_color}" stroke="#0F172A" stroke-width="1.6">'
+                f'<title>({v[0]}, {v[1]}) Vertex</title></circle>'
+            )
+    svg_parts.append('</g>')
+
+    # 12. Side Annotation Badges ('long' / 'short')
+    if side_decorations:
+        svg_parts.append('<g id="side_labels">')
+        for deco in side_decorations.values():
+            edge_idx = getattr(deco, 'edge', ())
+            label_text = getattr(deco, 'decoration_type', '')
+            if len(edge_idx) >= 2 and edge_idx[0] < len(vertices) and edge_idx[1] < len(vertices):
+                v1 = vertices[edge_idx[0]]
+                v2 = vertices[edge_idx[1]]
+                mid_x = (float(v1[0]) + float(v2[0])) / 2.0
+                mid_y = (float(v1[1]) + float(v2[1])) / 2.0
+                dx = float(v2[0]) - float(v1[0])
+                dy = float(v2[1]) - float(v1[1])
+                length = math.sqrt(dx**2 + dy**2)
+                perp_x = -dy / length * 0.35 if length > 0 else 0.0
+                perp_y = dx / length * 0.35 if length > 0 else 0.35
+                sx, sy = to_svg(mid_x + perp_x, mid_y + perp_y)
+
+                badge_w = 42 if label_text == "short" else 36
+                svg_parts.append(
+                    f'<rect x="{sx - badge_w/2:.1f}" y="{sy - 9:.1f}" width="{badge_w}" height="18" rx="9" '
+                    f'fill="rgba(15, 23, 42, 0.85)" stroke="rgba(255,255,255,0.12)" stroke-width="1" />'
+                    f'<text x="{sx:.1f}" y="{sy + 3.5:.1f}" fill="#38BDF8" font-size="9.5" font-weight="600" text-anchor="middle">{label_text}</text>'
+                )
+        svg_parts.append('</g>')
+
+    # 13. Distinguished Point p* (Radiant Crimson Star)
+    if p_star:
+        px, py = to_svg(p_star[0], p_star[1])
+        star_d = _star_path(px, py, r_outer=10.0, r_inner=4.5, points=5)
+        svg_parts.append(
+            f'<g id="p_star" filter="url(#pStarGlow)">'
+            f'<path d="{star_d}" fill="{p_star_color}" stroke="#FFFFFF" stroke-width="1.2">'
+            f'<title>p* = ({p_star[0]}, {p_star[1]}) Distinguished Point</title></path>'
+            f'</g>'
+        )
+
+    # 14. Centered Label
+    if latex_label and vertices:
+        cx_val = sum(float(v[0]) for v in vertices) / len(vertices)
+        cy_val = sum(float(v[1]) for v in vertices) / len(vertices)
+        lx, ly = to_svg(cx_val, cy_val)
+        clean_lbl = latex_label.replace("$", "")
+        svg_parts.append(
+            f'<text x="{lx:.1f}" y="{ly + 4.5:.1f}" fill="#F8FAFC" font-size="14" font-weight="700" text-anchor="middle" '
+            f'style="text-shadow: 0 2px 6px rgba(0,0,0,0.9);">{clean_lbl}</text>'
+        )
+
+    svg_parts.append('</svg>')
+    return "\n".join(svg_parts)
