@@ -1697,7 +1697,7 @@ class ADESurface(Parent):
             rf"&\text{{Underlying Scheme: }} X = Z\left(z^2 + \left({f0_latex}\right)\right) \subset V_P \text{{ (codimension 1)}} {eol}",
             rf"&\text{{Associated Divisor: }} \Delta_X = D + \varepsilon R,\quad \text{{Ambient Toric Pair: }} \left(V_P,\, \Delta_{{\text{{toric}}}}\right) {eol}",
             rf"&\text{{Cover Polytope }} P \subset N \oplus \mathbb{{Z}} \colon \operatorname{{Vol}}(P) = {P.volume()},\, \operatorname{{Vol}}_\mathbb{{Z}}(P) = {P.normalized_volume()},\, |P \cap N_3| = {P.n_integral_points()} {eol}",
-            rf"&\text{{Base Del Pezzo Log Pair: }} \left(Y = V_Q,\, C + \tfrac{{1+\varepsilon}}{{2}}B\right) \quad [\text{{call }} \texttt{{.base()}} \text{{ for 2D log pair}}]",
+            rf"&\text{{Base Del Pezzo Log Pair: }} \left(Y = V_Q,\, C + \tfrac{{1+\varepsilon}}{{2}}B\right)",
             r"\end{aligned}",
         ]
         return "\n".join(lines)
