@@ -384,7 +384,7 @@ _HTML_PAGE_TEMPLATE = """<!DOCTYPE html>
                 const m = new THREE.Mesh(sphereGeo, vertMat);
                 m.position.set(v[0], v[1], v[2]);
                 m.scale.set(0.10, 0.10, 0.10);
-                m.userData = { type: 'Vertex', coord: v };
+                m.userData = { coord: v, isPStar: false };
                 polyGroup.add(m);
                 nodeSpheres.push(m);
             });
@@ -400,7 +400,7 @@ _HTML_PAGE_TEMPLATE = """<!DOCTYPE html>
                 const m = new THREE.Mesh(sphereGeo, intMat);
                 m.position.set(p[0], p[1], p[2]);
                 m.scale.set(0.085, 0.085, 0.085);
-                m.userData = { type: 'Interior Point', coord: p };
+                m.userData = { coord: p, isPStar: false };
                 polyGroup.add(m);
                 nodeSpheres.push(m);
             });
@@ -413,7 +413,7 @@ _HTML_PAGE_TEMPLATE = """<!DOCTYPE html>
                     const m = new THREE.Mesh(sphereGeo, bndMat);
                     m.position.set(p[0], p[1], p[2]);
                     m.scale.set(0.07, 0.07, 0.07);
-                    m.userData = { type: 'Boundary Point', coord: p };
+                    m.userData = { coord: p, isPStar: false };
                     polyGroup.add(m);
                     nodeSpheres.push(m);
                 }
@@ -431,7 +431,7 @@ _HTML_PAGE_TEMPLATE = """<!DOCTYPE html>
                 const pMesh = new THREE.Mesh(sphereGeo, pMat);
                 pMesh.position.set(p[0], p[1], p[2]);
                 pMesh.scale.set(0.12, 0.12, 0.12);
-                pMesh.userData = { type: 'Distinguished Point p*', coord: p };
+                pMesh.userData = { coord: p, isPStar: true };
                 polyGroup.add(pMesh);
                 nodeSpheres.push(pMesh);
             }
@@ -502,7 +502,7 @@ _HTML_PAGE_TEMPLATE = """<!DOCTYPE html>
                 if (intersects.length > 0) {
                     const hit = intersects[0].object.userData;
                     inspector.style.display = 'block';
-                    inspector.textContent = `${hit.type} (${hit.coord.join(', ')})`;
+                    inspector.textContent = hit.isPStar ? `p* = (${hit.coord.join(', ')})` : `(${hit.coord.join(', ')})`;
                 } else {
                     inspector.style.display = 'none';
                 }

@@ -410,31 +410,20 @@ class ConvexPolytopes(Category):
                     except Exception:
                         pass
             elif self.dimension() == 2:
+                import tempfile
+                g = self.plot(figsize=[4.8, 4.8])
                 try:
-                    from dzack_research.preamble.categories.schemes.svg_2d_viewer import generate_2d_polygon_svg
-                    verts = [list(v) for v in self.vertices()]
-                    int_pts = [list(p) for p in self.interior_integral_points()]
-                    bnd_pts = [list(p) for p in self.boundary_integral_points()]
-                    return generate_2d_polygon_svg(
-                        verts,
-                        interior_points=int_pts,
-                        boundary_points=bnd_pts,
-                        latex_label=f"P \\subset \\mathbb{{R}}^2",
-                        theme="dark",
-                        width=480,
-                        height=380,
-                    )
+                    with tempfile.NamedTemporaryFile(suffix=".svg") as tf:
+                        g.save(tf.name)
+                        svg_content = open(tf.name).read()
+                        if svg_content.startswith("<?xml"):
+                            svg_content = svg_content[svg_content.find("<svg"):]
+                        return (
+                            f'<div style="max-width: 480px; background: #07090E; border: 1px solid #1E293B; '
+                            f'border-radius: 12px; padding: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.4);">{svg_content}</div>'
+                        )
                 except Exception:
-                    import tempfile, base64
-                    g = self.plot()
-                    try:
-                        with tempfile.NamedTemporaryFile(suffix=".png") as tf:
-                            g.save(tf.name)
-                            data = open(tf.name, "rb").read()
-                            img_b64 = base64.b64encode(data).decode("ascii")
-                            return f'<img src="data:image/png;base64,{img_b64}" style="max-width: 420px; height: auto;" />'
-                    except Exception:
-                        pass
+                    pass
             return None
 
         def _repr_mimebundle_(self: _LatticePolytopeInterface, include: object = None, exclude: object = None) -> object:

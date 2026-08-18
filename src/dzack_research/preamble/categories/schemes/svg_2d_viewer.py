@@ -210,7 +210,7 @@ def generate_2d_polygon_svg(
                 px, py = to_svg(gx, gy)
                 svg_parts.append(
                     f'<circle cx="{px:.1f}" cy="{py:.1f}" r="2.4" fill="{amb_point_color}" opacity="0.4">'
-                    f'<title>({gx}, {gy}) Ambient Point</title></circle>'
+                    f'<title>({gx}, {gy})</title></circle>'
                 )
     svg_parts.append('</g>')
 
@@ -273,13 +273,13 @@ def generate_2d_polygon_svg(
             px, py = to_svg(p[0], p[1])
             svg_parts.append(
                 f'<circle cx="{px:.1f}" cy="{py:.1f}" r="5.2" fill="{dist_point_color}" stroke="#0F172A" stroke-width="1.4">'
-                f'<title>({p[0]}, {p[1]}) Distinguished Boundary Point on C</title></circle>'
+                f'<title>({p[0]}, {p[1]})</title></circle>'
             )
         elif pt not in v_set:
             px, py = to_svg(p[0], p[1])
             svg_parts.append(
                 f'<circle cx="{px:.1f}" cy="{py:.1f}" r="4.5" fill="{bnd_point_color}" stroke="#334155" stroke-width="1.2">'
-                f'<title>({p[0]}, {p[1]}) Boundary Point</title></circle>'
+                f'<title>({p[0]}, {p[1]})</title></circle>'
             )
     svg_parts.append('</g>')
 
@@ -289,7 +289,7 @@ def generate_2d_polygon_svg(
         px, py = to_svg(p[0], p[1])
         svg_parts.append(
             f'<circle cx="{px:.1f}" cy="{py:.1f}" r="4.8" fill="{int_point_color}" stroke="#065F46" stroke-width="1.4">'
-            f'<title>({p[0]}, {p[1]}) Interior Point</title></circle>'
+            f'<title>({p[0]}, {p[1]})</title></circle>'
         )
     svg_parts.append('</g>')
 
@@ -308,12 +308,12 @@ def generate_2d_polygon_svg(
         if (float(v[0]), float(v[1])) in white_vertices:
             svg_parts.append(
                 f'<circle cx="{vx:.1f}" cy="{vy:.1f}" r="6.0" fill="#FFFFFF" stroke="#0F172A" stroke-width="2.2">'
-                f'<title>({v[0]}, {v[1]}) Long-Edge Vertex</title></circle>'
+                f'<title>({v[0]}, {v[1]})</title></circle>'
             )
         else:
             svg_parts.append(
                 f'<circle cx="{vx:.1f}" cy="{vy:.1f}" r="5.2" fill="{bnd_point_color}" stroke="#0F172A" stroke-width="1.6">'
-                f'<title>({v[0]}, {v[1]}) Vertex</title></circle>'
+                f'<title>({v[0]}, {v[1]})</title></circle>'
             )
     svg_parts.append('</g>')
 
@@ -350,7 +350,7 @@ def generate_2d_polygon_svg(
         svg_parts.append(
             f'<g id="p_star" filter="url(#pStarGlow)">'
             f'<path d="{star_d}" fill="{p_star_color}" stroke="#FFFFFF" stroke-width="1.2">'
-            f'<title>p* = ({p_star[0]}, {p_star[1]}) Distinguished Point</title></path>'
+            f'<title>p* = ({p_star[0]}, {p_star[1]})</title></path>'
             f'</g>'
         )
 
