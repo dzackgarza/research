@@ -1,4 +1,4 @@
-r"""Type-$(p,q)$ projective tensors on a module and projective bilinear forms.
+r"""Type-$(p,q)$ projective tensors on a module and Bilinear Form Tensors.
 
 Mathematical Framework
 ======================
@@ -59,10 +59,10 @@ Mathematical Comparison: Supported vs. Excluded Operations
 
 EXAMPLES::
 
-    sage: from dzack_research.preamble.categories.modules.projective_tensors import ProjectiveBilinearForm, projective_tensor
+    sage: from dzack_research.preamble.categories.modules.projective_tensors import BilinearFormTensor, bilinear_form_tensor
     sage: from sage.rings.integer_ring import ZZ
     sage: from sage.rings.infinity import infinity
-    sage: B = projective_tensor(ZZ, [[-2, 1, 0], [1, -2, infinity], [0, infinity, -2]])
+    sage: B = bilinear_form_tensor(ZZ, [[-2, 1, 0], [1, -2, infinity], [0, infinity, -2]])
     sage: B[0, 1]
     (1 : 1)
     sage: B[1, 2]
@@ -172,11 +172,11 @@ class ProjectiveTensor(Parent):
 
 
 # ---------------------------------------------------------------------------
-# 3. Projective Bilinear Form Tensor ((0, 2)-Form)
+# 3. Bilinear Form Tensor ((0, 2)-Tensor with entries in P^1(R))
 # ---------------------------------------------------------------------------
 
 
-class ProjectiveBilinearForm(ProjectiveTensor):
+class BilinearFormTensor(ProjectiveTensor):
     r"""
     A symmetric bilinear $(0, 2)$-tensor $B \colon M \times M \to \mathbb{P}^1(R)$
     using Sage's native :class:`ProjectiveSpace`.
@@ -227,7 +227,7 @@ class ProjectiveBilinearForm(ProjectiveTensor):
         return self._names
 
     def is_symmetric(self) -> bool:
-        r"""Return True (projective bilinear forms are symmetric)."""
+        r"""Return True (bilinear form tensors are symmetric)."""
         return True
 
     def vinberg_ratio(self, i: int, j: int) -> SchemeMorphism_point_projective_ring:
@@ -305,8 +305,8 @@ class ProjectiveBilinearForm(ProjectiveTensor):
         ]
         return matrix(ring, n, n, mat_data)
 
-    def subdiagram(self, indices: Sequence[int]) -> "ProjectiveBilinearForm":
-        r"""Return the induced sub-form on the specified basis subset."""
+    def subdiagram(self, indices: Sequence[int]) -> "BilinearFormTensor":
+        r"""Return the induced sub-form tensor on the specified basis subset."""
         idx_list = list(indices)
         n_sub = len(idx_list)
         sub_entries = {}
@@ -315,10 +315,10 @@ class ProjectiveBilinearForm(ProjectiveTensor):
                 sub_entries[(new_i, new_j)] = self[old_i, old_j]
         sub_names = tuple(self._names[i] for i in idx_list)
         sub_module = FreeModule(self.base_ring(), n_sub)
-        return ProjectiveBilinearForm(sub_module, sub_entries, names=sub_names)
+        return BilinearFormTensor(sub_module, sub_entries, names=sub_names)
 
     def is_elliptic(self, indices: Sequence[int] | None = None) -> bool:
-        r"""Check if the form (or subdiagram) is elliptic (positive definite)."""
+        r"""Check if the form tensor (or subdiagram) is elliptic (positive definite)."""
         target = self if indices is None else self.subdiagram(indices)
         if not target.is_all_finite():
             return False
@@ -326,7 +326,7 @@ class ProjectiveBilinearForm(ProjectiveTensor):
         return gram.is_positive_definite()
 
     def is_parabolic(self, indices: Sequence[int] | None = None) -> bool:
-        r"""Check if the form (or subdiagram) is parabolic (positive semi-definite with rank n-1)."""
+        r"""Check if the form tensor (or subdiagram) is parabolic (positive semi-definite with rank n-1)."""
         target = self if indices is None else self.subdiagram(indices)
         if not target.is_all_finite():
             return False
@@ -337,7 +337,7 @@ class ProjectiveBilinearForm(ProjectiveTensor):
             return False
 
     def is_hyperbolic(self, indices: Sequence[int] | None = None) -> bool:
-        r"""Check if the form (or subdiagram) is hyperbolic (signature (n-1, 1))."""
+        r"""Check if the form tensor (or subdiagram) is hyperbolic (signature (n-1, 1))."""
         target = self if indices is None else self.subdiagram(indices)
         try:
             gram = target.to_gram_matrix()
@@ -352,7 +352,7 @@ class ProjectiveBilinearForm(ProjectiveTensor):
             row_str = "  ".join(str(self[i, j]) for j in range(n))
             grid_rows.append(f"[{row_str}]")
         grid_repr = "\n".join(grid_rows)
-        return f"Projective Bilinear Form of rank {n} over {self.base_ring()}:\n{grid_repr}"
+        return f"Bilinear Form Tensor of rank {n} over {self.base_ring()}:\n{grid_repr}"
 
     def _latex_(self) -> str:
         n = self._rank
@@ -370,9 +370,38 @@ class ProjectiveBilinearForm(ProjectiveTensor):
         return "$\\displaystyle " + self._latex_() + "$"
 
 
+# Aliases
+ProjectiveBilinearForm = BilinearFormTensor
+ProjectiveBilinearFormTensor = BilinearFormTensor
+
+
 # ---------------------------------------------------------------------------
-# 4. Constructor Function
+# 4. Constructor Functions
 # ---------------------------------------------------------------------------
+
+
+def bilinear_form_tensor(
+    base_ring: object,
+    components: Sequence[Sequence[object]],
+    module: object = None,
+    names: Sequence[str] | None = None,
+) -> BilinearFormTensor:
+    r"""
+    Construct a BilinearFormTensor with components in $\mathbb{P}^1(R)$.
+
+    EXAMPLES::
+
+        sage: from dzack_research.preamble.categories.modules.projective_tensors import bilinear_form_tensor
+        sage: from sage.rings.integer_ring import ZZ
+        sage: from sage.rings.infinity import infinity
+        sage: B = bilinear_form_tensor(ZZ, [[-2, 1], [1, -2]])
+        sage: B[0, 0]
+        (-2 : 1)
+        sage: B_hyp = bilinear_form_tensor(ZZ, [[-2, infinity], [infinity, -2]])
+        sage: B_hyp[0, 1]
+        (1 : 0)
+    """
+    return projective_tensor(base_ring, components, valence=(0, 2), module=module, names=names)
 
 
 def projective_tensor(
@@ -393,9 +422,6 @@ def projective_tensor(
         sage: B = projective_tensor(ZZ, [[-2, 1], [1, -2]])
         sage: B[0, 0]
         (-2 : 1)
-        sage: B_hyp = projective_tensor(ZZ, [[-2, infinity], [infinity, -2]])
-        sage: B_hyp[0, 1]
-        (1 : 0)
     """
     assert isinstance(components, (list, tuple)), "Components must be a list or tuple"
     n_rows = len(components)
@@ -413,7 +439,7 @@ def projective_tensor(
             for j in range(n_rows):
                 val = row[j]
                 entries[(i, j)] = to_projective_point(P1, val)
-        return ProjectiveBilinearForm(module, entries, names=names)
+        return BilinearFormTensor(module, entries, names=names)
 
     # General (p, q) projective tensor
     entries_gen = {}
