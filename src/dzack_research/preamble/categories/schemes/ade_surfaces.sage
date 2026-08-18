@@ -435,6 +435,19 @@ class ADELogPair(ToricSubscheme, Parent):
             n_boundary_points=int(bnd_pts),
         )
 
+    def cartan_type_latex(self) -> object:
+        r"""Return LaTeX expression for the Cartan type with label."""
+        from sage.misc.latex import LatexExpr, latex as _latex
+        return LatexExpr(r"\text{Cartan type: }\," + _latex(self.cartan_type()))
+
+    def ambient_latex(self) -> object:
+        r"""Return LaTeX expression for the ambient variety with dimension and codimension."""
+        from sage.misc.latex import LatexExpr
+        return LatexExpr(
+            r"\text{Ambient: }\," + self.ambient_identification_latex()
+            + r"\quad (\dim=%d,\,\operatorname{codim}=%d)" % (self.ambient_dimension(), self.codimension())
+        )
+
     def _repr_latex_(self) -> str:
         return "$\\displaystyle " + self._latex_() + "$"
 
