@@ -71,12 +71,13 @@ from sage.plot.text import text
 
 from sage.rings.rational import Rational
 from sage.rings.integer import Integer
+from sage.symbolic.ring import SR
 from dzack_research.preamble.categories.schemes.polytopes import (
     LatticePolygon, LatticePolytope, LatticePolygons, LatticePolytopes,
     ConvexPolygon, ConvexPolytope, ConvexPolygons, ConvexPolytopes
 )
 from dzack_research.preamble.categories.schemes.toric.toric_schemes import (
-    ToricSchemes, ToricScheme, ToricSubscheme
+    ToricSchemes, ToricScheme, ToricSubscheme, FormalDivisor
 )
 from dzack_research.preamble.refine import refine
 
@@ -356,6 +357,10 @@ class ADELogPair(ToricSubscheme, Parent):
         r"""Return the distinguished boundary divisor (D on X, C on Y)."""
         raise NotImplementedError
 
+    def log_divisor(self) -> object:
+        r"""Return the full expanded log pair divisor (Delta_X on X, Delta_Y on Y)."""
+        raise NotImplementedError
+
     def log_pair(self) -> tuple[Any, ...]:
         r"""Return the constituents of the log pair."""
         raise NotImplementedError
@@ -461,8 +466,14 @@ class ADEBaseSurface(ADELogPair):
     def complementary_divisor(self) -> object:
         return self._cover.complementary_divisor()
 
-    def boundary_divisor(self) -> object:
-        return self.blue_line_divisor()
+    def boundary_divisor(self) -> FormalDivisor:
+        r"""Return the explicit computed boundary divisor C on Y = V_Q."""
+        c_div = self.blue_line_divisor()
+        c_terms = []
+        for coeff, poly in c_div:
+            sub = ToricSubscheme(ambient=self.ambient_space(), equations=(poly,), dim=1, base_ring=self.base_ring())
+            c_terms.append((coeff, sub))
+        return FormalDivisor(c_terms, ambient=self.ambient_space())
 
     def branch_divisor(self) -> ToricSubscheme:
         r"""Return the branch divisor B = V(f(x, y)) ⊂ V_Q as a ToricSubscheme."""
@@ -474,8 +485,14 @@ class ADEBaseSurface(ADELogPair):
             base_ring=self.base_ring(),
         )
 
+    def log_divisor(self) -> FormalDivisor:
+        r"""Return the full expanded log pair divisor Delta_Y = C + 1/2(1+eps)B on Y."""
+        c_div = self.boundary_divisor()
+        b_sub = self.branch_divisor()
+        return FormalDivisor(c_div.terms() + [('1/2(1+eps)', b_sub)], ambient=self.ambient_space())
+
     def log_pair(self) -> tuple[Any, ...]:
-        return (self, self.boundary_divisor(), self.branch_divisor())
+        return (self, self.log_divisor())
 
     def log_pair_label(self) -> str:
         return r"(Y, C + \tfrac{1+\varepsilon}{2} B)"
@@ -518,20 +535,20 @@ class ADEBaseSurface(ADELogPair):
 
     def _latex_(self) -> str:
         from sage.misc.latex import latex as _latex
-        f0_latex = _latex(self.defining_polynomial())
-        c_latex = _latex(self.blue_line_divisor())
         p_latex = _latex(self.p_star())
         Q = self.polygon()
         vol_val = Q.volume()
         norm_vol = 2 * vol_val
         n_pts = Q.n_integral_points()
         int_pts = Q.n_interior_points()
-        verts_latex = ",\\, ".join(f"({v[0]}, {v[1]})" for v in Q.vertices())
+        verts_latex = r",\, ".join(f"({v[0]}, {v[1]})" for v in Q.vertices())
         amb_ident = self.ambient_identification_latex()
+        delta_y_latex = self.log_divisor()._latex_()
         eol = "\\\\"
         lines = [
             r"\begin{aligned}",
-            rf"&(Y, C + \tfrac{{1+\varepsilon}}{{2}} B) \colon Y = {amb_ident} \text{{ of type }} {self._cover._latex_label} \colon C = {c_latex}, \quad B = \mathrm{{V}}\left({f0_latex}\right) \quad \left(p^* = {p_latex}\right) {eol}",
+            rf"&(Y, \Delta_Y) \colon Y = {amb_ident} \text{{ of type }} {self._cover._latex_label} \quad \left(p^* = {p_latex}\right) {eol}",
+            rf"&\Delta_Y = C + \tfrac{{1+\varepsilon}}{{2}} B = {delta_y_latex} {eol}",
             rf"&Q = \operatorname{{conv}}\left(\{{{verts_latex}\}}\right) \subset \mathbb{{R}}^2 \colon \operatorname{{Vol}}_\mathbb{{Z}}(Q) = {norm_vol},\; \operatorname{{Vol}}(Q) = {vol_val},\; |Q \cap \mathbb{{Z}}^2| = {n_pts},\; |\operatorname{{Int}}(Q)| = {int_pts}",
             r"\end{aligned}",
         ]
@@ -539,9 +556,8 @@ class ADEBaseSurface(ADELogPair):
 
     def __repr__(self) -> str:
         amb = self.ambient_identification()
-        f0 = self.defining_polynomial()
-        c_str = str(self.blue_line_divisor())
-        return f"Log Pair (Y, C + 1/2(1+eps)B) where Y = {amb} of type {self._cover._key} (C = {c_str}, B = V({f0}), p* = {self.p_star()})"
+        delta_y = repr(self.log_divisor())
+        return f"Log Pair (Y, Delta_Y) where Y = {amb} of type {self._cover._key} (Delta_Y = C + 1/2(1+eps)B = {delta_y}, p* = {self.p_star()})"
 
     def _repr_html_(self) -> str:
         """Render high-definition 2D vector SVG representation for Jupyter."""
@@ -855,24 +871,40 @@ class ADESurface(ADELogPair):
             return int(2 * self.polygon().volume())
         return int(self.cover_polytope().normalized_volume())
 
-    def boundary_divisor(self) -> object:
-        r"""Return the preimage boundary divisor D = pi^*(C) on X."""
-        return self.base().boundary_divisor()
+    def boundary_divisor(self) -> FormalDivisor:
+        r"""Return the explicit computed preimage boundary divisor D = pi^*(C) on X."""
+        c_div = self.blue_line_divisor()
+        f0 = self.defining_polynomial()
+        w_var = SR.var('w')
+        d_terms = []
+        for coeff, poly in c_div:
+            sub = ToricSubscheme(
+                ambient=self.ambient_space(),
+                equations=(poly, w_var**2 + f0),
+                dim=1,
+                base_ring=self.base_ring(),
+            )
+            d_terms.append((coeff, sub))
+        return FormalDivisor(d_terms, ambient=self.ambient_space())
 
     def ramification_divisor(self) -> ToricSubscheme:
         r"""Return the ramification divisor R = V(w, f(x, y)) ⊂ V_P as a ToricSubscheme."""
-        ring_3d = PolynomialRing(QQ, names=['x', 'y', 'w'])
-        x, y, w = ring_3d.gens()
-        f_0 = self.defining_polynomial()(x, y)
+        f0 = self.defining_polynomial()
         return ToricSubscheme(
             ambient=self.ambient_space(),
-            equations=(w, f_0),
+            equations=(SR.var('w'), f0),
             dim=1,
             base_ring=self.base_ring(),
         )
 
+    def log_divisor(self) -> FormalDivisor:
+        r"""Return the full expanded log pair divisor Delta_X = D + eps*R on X."""
+        d_div = self.boundary_divisor()
+        r_sub = self.ramification_divisor()
+        return FormalDivisor(d_div.terms() + [('eps', r_sub)], ambient=self.ambient_space())
+
     def log_pair(self) -> tuple[Any, ...]:
-        return (self, self.boundary_divisor(), self.ramification_divisor())
+        return (self, self.log_divisor())
 
     def log_pair_label(self) -> str:
         return r"(X, D + \varepsilon R)"
@@ -1236,16 +1268,18 @@ class ADESurface(ADELogPair):
         from sage.misc.latex import latex as _latex
         f0_latex = _latex(self.defining_polynomial())
         p_latex = _latex(self.p_star())
+        amb_ident = self.ambient_identification_latex()
+        delta_x_latex = self.log_divisor()._latex_()
         eol = "\\\\"
 
         if self.is_affine():
-            verts_latex = ",\\, ".join(f"({v[0]}, {v[1]})" for v in self.vertices())
+            verts_latex = r",\, ".join(f"({v[0]}, {v[1]})" for v in self.vertices())
             norm_vol = 2 * self.volume()
             vol_val = self.volume()
-            amb_ident = self.ambient_identification_latex()
             lines = [
                 r"\begin{aligned}",
-                rf"&(X, D + \varepsilon R) \colon X = \mathrm{{V}}\left(w^2 + \left({f0_latex}\right)\right) \subset {amb_ident} \text{{ of type }} {self._latex_label} \colon D = \pi^*(C), \quad R = \mathrm{{V}}\left(w, {f0_latex}\right) \quad \left(p^* = {p_latex}\right) {eol}",
+                rf"&(X, \Delta_X) \colon X = \mathrm{{V}}\left(w^2 + \left({f0_latex}\right)\right) \subset {amb_ident} \text{{ of type }} {self._latex_label} \quad \left(p^* = {p_latex}\right) {eol}",
+                rf"&\Delta_X = D + \varepsilon R = {delta_x_latex} {eol}",
                 rf"&Q = \operatorname{{conv}}\left(\{{{verts_latex}\}}\right) \subset \mathbb{{R}}^2 \colon \operatorname{{Vol}}_\mathbb{{Z}}(Q) = {norm_vol},\; \operatorname{{Vol}}(Q) = {vol_val},\; |Q \cap \mathbb{{Z}}^2| = {self.n_integral_points()},\; |\operatorname{{Int}}(Q)| = {self.n_interior_points()}",
                 r"\end{aligned}",
             ]
@@ -1253,11 +1287,11 @@ class ADESurface(ADELogPair):
             P = self.cover_polytope()
             vol_z = P.normalized_volume()
             vol_val = P.volume()
-            p_verts_latex = ",\\, ".join(f"({v[0]}, {v[1]}, {v[2]})" for v in P.vertices())
-            amb_ident = self.ambient_identification_latex()
+            p_verts_latex = r",\, ".join(f"({v[0]}, {v[1]}, {v[2]})" for v in P.vertices())
             lines = [
                 r"\begin{aligned}",
-                rf"&(X, D + \varepsilon R) \colon X = \mathrm{{V}}\left(w^2 + \left({f0_latex}\right)\right) \subset {amb_ident} \text{{ of type }} {self._latex_label} \colon D = \pi^*(C), \quad R = \mathrm{{V}}\left(w, {f0_latex}\right) \quad \left(p^* = {p_latex}\right) {eol}",
+                rf"&(X, \Delta_X) \colon X = \mathrm{{V}}\left(w^2 + \left({f0_latex}\right)\right) \subset {amb_ident} \text{{ of type }} {self._latex_label} \quad \left(p^* = {p_latex}\right) {eol}",
+                rf"&\Delta_X = D + \varepsilon R = {delta_x_latex} {eol}",
                 rf"&P = \operatorname{{conv}}\left(\{{{p_verts_latex}\}}\right) \subset \mathbb{{R}}^3 \colon \operatorname{{Vol}}_\mathbb{{Z}}(P) = {vol_z},\; \operatorname{{Vol}}(P) = {vol_val},\; |P \cap \mathbb{{Z}}^3| = {P.n_integral_points()},\; |\operatorname{{Int}}(P)| = {P.n_interior_points()}",
                 r"\end{aligned}",
             ]
@@ -1266,7 +1300,8 @@ class ADESurface(ADELogPair):
     def __repr__(self) -> str:
         amb = self.ambient_identification()
         f0 = self.defining_polynomial()
-        return f"Log Pair (X, D + eps*R) where X = V(w^2 + ({f0})) ⊂ {amb} of type {self._key} (D = pi*(C), R = V(w, {f0}), p* = {self.p_star()})"
+        delta_x = repr(self.log_divisor())
+        return f"Log Pair (X, Delta_X) where X = V(w^2 + ({f0})) ⊂ {amb} of type {self._key} (Delta_X = D + eps*R = {delta_x}, p* = {self.p_star()})"
 
     def _repr_html_(self) -> Optional[str]:
         try:

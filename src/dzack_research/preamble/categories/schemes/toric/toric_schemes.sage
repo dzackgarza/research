@@ -17,6 +17,8 @@ from sage.matrix.constructor import matrix
 from sage.modules.free_module_element import vector
 from sage.geometry.polyhedron.constructor import Polyhedron
 from sage.geometry.polyhedron.base import Polyhedron_base
+from sage.structure.sage_object import SageObject
+from sage.misc.latex import latex
 from sage.schemes.toric.variety import ToricVariety_field, ToricVariety as NativeToricVariety
 
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
@@ -24,6 +26,90 @@ from dzack_research.preamble.categories.schemes.schemes import SchemeElement, Sc
 from dzack_research.preamble.categories.schemes.varieties import Varieties, Variety
 from dzack_research.preamble.categories.schemes.subschemes import Subscheme
 from dzack_research.preamble.refine import refine
+
+
+class FormalDivisor(SageObject):
+    r"""
+    A formal linear combination of subschemes / prime divisors with coefficients
+    in QQ or the rational polynomial ring QQ[eps] / field of fractions.
+    """
+    _terms: list[tuple[Any, Any]]
+    _ambient: Optional[Any]
+
+    def __init__(self, terms: Sequence[tuple[Any, Any]], ambient: Optional[Any] = None) -> None:
+        self._terms = list(terms)
+        self._ambient = ambient
+
+    def terms(self) -> list[tuple[Any, Any]]:
+        return list(self._terms)
+
+    def components(self) -> list[Any]:
+        return [sub for _, sub in self._terms]
+
+    def coefficients(self) -> list[Any]:
+        return [coeff for coeff, _ in self._terms]
+
+    def ambient_space(self) -> Optional[Any]:
+        return self._ambient
+
+    def __len__(self) -> int:
+        return len(self._terms)
+
+    def __getitem__(self, idx: int) -> tuple[Any, Any]:
+        return self._terms[idx]
+
+    def __iter__(self) -> Any:
+        return iter(self._terms)
+
+    def __add__(self, other: Any) -> "FormalDivisor":
+        if isinstance(other, FormalDivisor):
+            return FormalDivisor(self._terms + other._terms, ambient=self._ambient or other._ambient)
+        raise TypeError(f"Cannot add FormalDivisor and {type(other)}")
+
+    def _latex_(self) -> str:
+        pieces = []
+        for coeff, sub in self._terms:
+            if hasattr(sub, 'equations') and sub.equations():
+                eqs_lat = r",\, ".join(latex(eq) for eq in sub.equations())
+                sub_lat = rf"\mathrm{{V}}\left({eqs_lat}\right)"
+            elif hasattr(sub, '_latex_'):
+                sub_lat = sub._latex_()
+            else:
+                sub_lat = str(latex(sub))
+
+            if coeff == 1:
+                pieces.append(sub_lat)
+            elif coeff == -1:
+                pieces.append(f"- {sub_lat}")
+            elif coeff in ('eps', r'\varepsilon', 'e'):
+                pieces.append(rf"\varepsilon\, {sub_lat}")
+            elif coeff in ('1/2(1+eps)', r'\tfrac{1+\varepsilon}{2}', '(1+eps)/2'):
+                pieces.append(rf"\tfrac{{1+\varepsilon}}{{2}}\, {sub_lat}")
+            else:
+                c_lat = latex(coeff)
+                pieces.append(rf"{c_lat}\, {sub_lat}")
+        return " + ".join(pieces).replace("+ -", "- ")
+
+    def __repr__(self) -> str:
+        pieces = []
+        for coeff, sub in self._terms:
+            if hasattr(sub, 'equations'):
+                eqs = ", ".join(str(eq) for eq in sub.equations())
+                sub_str = f"V({eqs})"
+            else:
+                sub_str = str(sub)
+
+            if coeff == 1:
+                pieces.append(sub_str)
+            elif coeff == -1:
+                pieces.append(f"-{sub_str}")
+            elif coeff in ('eps', r'\varepsilon', 'e'):
+                pieces.append(f"eps*{sub_str}")
+            elif coeff in ('1/2(1+eps)', r'\tfrac{1+\varepsilon}{2}', '(1+eps)/2'):
+                pieces.append(f"1/2(1+eps)*{sub_str}")
+            else:
+                pieces.append(f"{coeff}*{sub_str}")
+        return " + ".join(pieces).replace("+ -", "- ")
 
 
 class ToricSchemes(OwnedCategoryOverBaseRing):
@@ -148,6 +234,18 @@ class ToricSubscheme(Subscheme):
             return self._ambient_toric.ambient_identification_latex()
         return self.ambient_identification()
 
+    def _repr_(self) -> str:
+        if not self._equations or self._equations == (0,):
+            return f"{self.ambient_identification()}"
+        eqs_str = ", ".join(str(eq) for eq in self._equations)
+        return f"V({eqs_str}) ⊂ {self.ambient_identification()}"
+
+    def _latex_(self) -> str:
+        if not self._equations or self._equations == (0,):
+            return self.ambient_identification_latex()
+        eqs_lat = r",\, ".join(latex(eq) for eq in self._equations)
+        return rf"\mathrm{{V}}\left({eqs_lat}\right) \subset {self.ambient_identification_latex()}"
+
 
 class ToricScheme(Variety):
     r"""
@@ -251,7 +349,7 @@ class ToricScheme(Variety):
         try:
             rays = [vector(SageZZ, [int(c) for c in r]) for r in fan.rays()]
         except Exception:
-            return f"V(\Sigma)", rf"V(\Sigma)"
+            return r"V(\Sigma)", r"V(\Sigma)"
 
         n_rays = len(rays)
         d = self._dim
