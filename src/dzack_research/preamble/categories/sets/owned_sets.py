@@ -474,7 +474,7 @@ class PosetTikz:
             r"\begin{tikzpicture}[",
             f"  scale={self._scale:.2f},",
             r"  every node/.style={circle, draw=black!80, fill=blue!10, inner sep=2pt, minimum size=18pt, font=\small},",
-            r"  edge/.style={draw=black!70, thick, -}",
+            r"  edge/.style={draw=black!70, thick, ->, >=stealth}",
             r"]",
         ]
         for v, (x, y) in self._coords.items():
@@ -484,7 +484,7 @@ class PosetTikz:
         for u, v in self._poset.cover_relations():
             nid_u = node_id_map[u]
             nid_v = node_id_map[v]
-            lines.append(f"  \\draw[edge] ({nid_u}) -- ({nid_v});")
+            lines.append(f"  \\draw[edge] ({nid_u}) -> ({nid_v});")
         lines.append(r"\end{tikzpicture}")
         return "\n".join(lines)
 
@@ -498,6 +498,7 @@ class PosetTikz:
         return f"$$\n{self.tikz_code()}\n$$"
 
     def _repr_html_(self) -> str:
+        import math
         import uuid
         uid = f"hasse_{uuid.uuid4().hex[:8]}"
 
@@ -564,10 +565,12 @@ class PosetTikz:
             f"    #{uid}[data-theme=\"dark\"] .hasse-edge {{",
             "      stroke: #475569;",
             "      stroke-width: 2;",
+            f"      marker-end: url(#{uid}_arrow_dark);",
             "    }",
             f"    #{uid}[data-theme=\"light\"] .hasse-edge {{",
             "      stroke: #94a3b8;",
             "      stroke-width: 2;",
+            f"      marker-end: url(#{uid}_arrow_light);",
             "    }",
             f"    #{uid}[data-theme=\"dark\"] .hasse-node {{",
             "      fill: #1e293b;",
@@ -613,12 +616,32 @@ class PosetTikz:
             f'    <button class="theme-btn" onclick="(function(){{ var el = document.getElementById(\'{uid}\'); var cur = el.getAttribute(\'data-theme\'); var next = cur === \'dark\' ? \'light\' : \'dark\'; el.setAttribute(\'data-theme\', next); document.getElementById(\'{uid}_btn_text\').innerText = next === \'dark\' ? \'🌙 Dark\' : \'☀️ Light\'; }})()"><span id="{uid}_btn_text">{btn_label}</span></button>',
             "  </div>",
             f'  <svg width="{self._width}" height="{self._height}" viewBox="0 0 {self._width} {self._height}" xmlns="http://www.w3.org/2000/svg">',
+            "    <defs>",
+            f'      <marker id="{uid}_arrow_dark" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto">',
+            '        <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#38bdf8" />',
+            "      </marker>",
+            f'      <marker id="{uid}_arrow_light" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto">',
+            '        <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#2563eb" />',
+            "      </marker>",
+            "    </defs>",
         ]
 
         for u, v in self._poset.cover_relations():
             x1, y1 = px_coords[u]
             x2, y2 = px_coords[v]
-            lines.append(f'    <line class="hasse-edge" x1="{x1:.1f}" y1="{y1:.1f}" x2="{x2:.1f}" y2="{y2:.1f}" />')
+            dx = x2 - x1
+            dy = y2 - y1
+            dist = math.hypot(dx, dy)
+            if dist > 34:
+                ux = dx / dist
+                uy = dy / dist
+                sx = x1 + ux * (node_radius + 1)
+                sy = y1 + uy * (node_radius + 1)
+                ex = x2 - ux * (node_radius + 5)
+                ey = y2 - uy * (node_radius + 5)
+            else:
+                sx, sy, ex, ey = x1, y1, x2, y2
+            lines.append(f'    <line class="hasse-edge" x1="{sx:.1f}" y1="{sy:.1f}" x2="{ex:.1f}" y2="{ey:.1f}" />')
 
         for v, (x, y) in px_coords.items():
             lbl = str(self._label_map(v) if self._label_map else v)
