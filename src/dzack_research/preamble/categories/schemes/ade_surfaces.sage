@@ -1156,7 +1156,7 @@ class ADEBaseSurface(Parent):
         eol = "\\\\"
         lines = [
             r"\begin{aligned}",
-            rf"&(Y, C) \text{{ for }} {self._cover._latex_label} \colon C = {c_latex}, \quad B = Z\left({f0_latex}\right) \quad \left(p^* = {p_latex}\right) {eol}",
+            rf"&(Y, C) \text{{ for }} {self._cover._latex_label} \colon C = {c_latex}, \quad B = \mathrm{{V}}\left({f0_latex}\right) \quad \left(p^* = {p_latex}\right) {eol}",
             rf"&Q = \operatorname{{conv}}\left(\{{{verts_latex}\}}\right) \colon \operatorname{{Area}}(Q) = {area_val},\; L^2 = {l_sq},\; |Q \cap \mathbb{{Z}}^2| = {self.n_integral_points()},\; |\operatorname{{Int}}(Q)| = {self.n_interior_points()}",
             r"\end{aligned}",
         ]
