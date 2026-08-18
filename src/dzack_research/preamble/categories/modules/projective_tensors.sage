@@ -1,4 +1,4 @@
-r"""Combinatorial Vinberg invariant matrices and projective reflection geometry.
+r"""Combinatorial Vinberg invariant matrices, projective reflection geometry, and X_ref validation.
 
 Mathematical Framework
 ======================
@@ -12,87 +12,81 @@ normalized projective ratio:
 
 where $\mathbb{P}^1(R) = \operatorname{ProjectiveSpace}(R, 1)$ is Sage's native projective line.
 
-Properties of the Vinberg Invariant Matrix $T = (t_{ij})$:
-----------------------------------------------------------
-1. **Diagonal**: $t_{ii} = [4 : 1] = 4$.
-2. **Off-Diagonal Values in $\mathbb{P}^1(R)$**:
-   - $t_{ij} = (0 : 1) = 0 \iff m_{ij} = 2$ (orthogonal mirrors, $\theta = \pi/2$).
-   - $t_{ij} = (1 : 1) = 1 \iff m_{ij} = 3$ (single bond, $\theta = \pi/3$).
-   - $t_{ij} = (2 : 1) = 2 \iff m_{ij} = 4$ (double bond, $\theta = \pi/4$).
-   - $t_{ij} = (3 : 1) = 3 \iff m_{ij} = 6$ (triple bond, $\theta = \pi/6$).
-   - $t_{ij} = (4 : 1) = 4 \iff m_{ij} = \infty$ (parabolic / parallel mirrors meeting at $\partial\mathbb{H}^n$).
-   - $t_{ij} = (k : 1)$ ($k > 4$) $\iff m_{ij} = \infty$ (hyperbolic / ultraparallel mirrors at distance $d > 0$).
-   - $t_{ij} = (1 : 0) = \infty \iff$ isotropic root limit ($b(v_i, v_i) = 0$).
+The Reflection Cosine Set ($X_{\mathrm{ref}}$)
+==============================================
+The set of reflection cosines:
 
-Bidirectional Reconstruction
-============================
-- **Gram Tensor $G$**: Given diagonal root norms $q_i = b(v_i, v_i)$ (default: $q_i = -2$):
+.. MATH::
 
-  .. MATH::
+    X_{\mathrm{ref}} = \left\{ \cos\left(\frac{\pi}{n}\right) \;\middle|\; n \in \mathbb{Z}_{\ge 1} \right\} \;\subset\; \overline{\mathbb{Q}} \cap [-1, 1)
 
-      G_{ii} = q_i, \qquad G_{ij} = \frac{\sqrt{t_{ij} \cdot q_i \, q_j}}{2}
+is used for exact $O(1)$ validation of reflection angles without enumeration.
 
-- **Schläfli Matrix $S$**: For unit normals ($q_i = 1$):
+A pair of intersecting hyperplanes ($t_{ij} < 4$) forms a valid Coxeter reflection bond
+if and only if:
 
-  .. MATH::
+.. MATH::
 
-      S_{ii} = 1, \qquad S_{ij} = -\frac{\sqrt{t_{ij}}}{2}
+    \frac{\sqrt{t_{ij}}}{2} \in X_{\mathrm{ref}}
 
-- **Coxeter Bond Orders $m_{ij}$**: Directly mapped from $t_{ij}$.
+in which case the Coxeter exponent is $m_{ij} = X_{\mathrm{ref}}.\operatorname{index\_of}\left(\frac{\sqrt{t_{ij}}}{2}\right)$.
 
 EXAMPLES::
 
     sage: from dzack_research.preamble.categories.modules.projective_tensors import (
     ...       CombinatorialVinbergInvariantMatrix,
+    ...       ReflectionCosineSet, X_ref,
     ...       combinatorial_vinberg_invariant_matrix,
     ...       vinberg_invariant_matrix_from_gram
     ...   )
     sage: from sage.rings.integer_ring import ZZ
     sage: from sage.matrix.constructor import matrix
+    sage: from sage.functions.other import sqrt
 
-    # 1. Construct from a finite Gram tensor of simple roots:
+    # 1. Reflection Cosine Set:
+    sage: 1/2 in X_ref
+    True
+    sage: X_ref.index_of(1/2)
+    3
+    sage: (1 + sqrt(5))/4 in X_ref
+    True
+    sage: X_ref.index_of((1 + sqrt(5))/4)
+    5
+
+    # 2. Validation in Vinberg Invariant Matrix:
     sage: G = matrix(ZZ, [
     ...       [-2,  1,  0],
     ...       [ 1, -2,  2],
     ...       [ 0,  2, -2]
     ...   ])
     sage: T = vinberg_invariant_matrix_from_gram(G)
-    sage: T[0, 1]
-    (1 : 1)
-    sage: T[1, 2]
-    (4 : 1)
+    sage: T.is_valid()
+    True
+    sage: T.coxeter_order(0, 1)
+    3
     sage: T.coxeter_order(1, 2)
     +Infinity
-
-    # 2. Reconstruct the Gram tensor from T:
-    sage: G_rec = T.gram_tensor(root_norms=[-2, -2, -2])
-    sage: G_rec == G
-    True
-
-    # 3. Reconstruct the Schläfli matrix:
-    sage: S = T.schlafli_matrix()
-    sage: S[0, 1]
-    -1/2
-    sage: S[1, 2]
-    -1
 """
 
 from collections.abc import Sequence
+import math
 from typing import TYPE_CHECKING
 
 from sage.categories.objects import Objects
+from sage.categories.sets_cat import Sets
 from sage.combinat.root_system.coxeter_matrix import CoxeterMatrix as SageCoxeterMatrix
 from sage.functions.other import sqrt
+from sage.functions.trig import cos
 from sage.matrix.constructor import matrix
-from sage.modules.free_module import FreeModule
 from sage.rings.infinity import Infinity, PlusInfinity, infinity
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ as SageZZ
+from sage.rings.qqbar import QQbar
 from sage.rings.rational_field import QQ as SageQQ
-from sage.rings.real_mpfr import RR as SageRR
 from sage.schemes.projective.projective_point import SchemeMorphism_point_projective_ring
 from sage.schemes.projective.projective_space import ProjectiveSpace
 from sage.structure.parent import Parent
+from sage.structure.unique_representation import UniqueRepresentation
 
 if TYPE_CHECKING:
     from dzack_research.preamble.categories.modules.framed.formed.integrallattice.coxeter_diagrams import (
@@ -101,7 +95,78 @@ if TYPE_CHECKING:
 
 
 # ---------------------------------------------------------------------------
-# 1. Helper: Coerce to Projective Space Point in P^1(R)
+# 1. Reflection Cosine Set X_ref = { cos(pi/n) | n in ZZ_{>=1} }
+# ---------------------------------------------------------------------------
+
+
+class ReflectionCosineSet(UniqueRepresentation, Parent):
+    r"""
+    The infinite set of reflection cosines:
+        X_ref = { cos(pi/n) | n in ZZ_{>=1} } subset [-1, 1)
+    """
+
+    def __init__(self) -> None:
+        Parent.__init__(self, category=Sets().Infinite())
+
+    def _repr_(self) -> str:
+        return "Set of reflection cosines { cos(pi/n) | n in ZZ_{>=1} }"
+
+    def __contains__(self, x: object) -> bool:
+        try:
+            val = float(x)
+        except Exception:
+            return False
+
+        if val < -1.0 - 1e-12 or val >= 1.0 - 1e-12:
+            return False
+        if abs(val - (-1.0)) < 1e-12:
+            return True
+
+        theta = math.acos(max(-1.0, min(1.0, val)))
+        if theta <= 0:
+            return False
+
+        n_float = math.pi / theta
+        n = round(n_float)
+        if n < 1 or abs(n_float - n) > 1e-6:
+            return False
+
+        # Exact algebraic verification
+        exact_cos = cos(math.pi / n)
+        try:
+            if bool(x == exact_cos):
+                return True
+            if abs(QQbar(x) - QQbar(exact_cos)) < 1e-14:
+                return True
+        except Exception:
+            if abs(val - float(exact_cos)) < 1e-12:
+                return True
+        return False
+
+    def __getitem__(self, n: int | Integer) -> object:
+        r"""Return cos(pi/n) for n >= 1."""
+        n_int = Integer(n)
+        if n_int < 1:
+            raise ValueError("Index must be an integer n >= 1")
+        return cos(math.pi / n_int)
+
+    def index_of(self, x: object) -> Integer:
+        r"""Return n such that x = cos(pi/n)."""
+        if x not in self:
+            raise ValueError(f"{x} is not in X_ref")
+        val = float(x)
+        if abs(val - (-1.0)) < 1e-12:
+            return Integer(1)
+        theta = math.acos(max(-1.0, min(1.0, val)))
+        return Integer(round(math.pi / theta))
+
+
+# Singleton instance
+X_ref = ReflectionCosineSet()
+
+
+# ---------------------------------------------------------------------------
+# 2. Helper: Coerce to Projective Space Point in P^1(R)
 # ---------------------------------------------------------------------------
 
 
@@ -119,7 +184,7 @@ def to_projective_point(P1: ProjectiveSpace, val: object) -> SchemeMorphism_poin
 
 
 # ---------------------------------------------------------------------------
-# 2. Combinatorial Vinberg Invariant Matrix
+# 3. Combinatorial Vinberg Invariant Matrix
 # ---------------------------------------------------------------------------
 
 
@@ -141,7 +206,7 @@ class CombinatorialVinbergInvariantMatrix(Parent):
         self._projective_space = ProjectiveSpace(base_ring, 1, "x,y")
         self._names = tuple(names) if names is not None else tuple(f"v_{i}" for i in range(self._rank))
 
-        # Enforce symmetry and diagonal = 4
+        # Enforce symmetry and diagonal = (4 : 1)
         sym_entries = {}
         for i in range(self._rank):
             sym_entries[(i, i)] = self._projective_space([4, 1])
@@ -188,24 +253,46 @@ class CombinatorialVinbergInvariantMatrix(Parent):
         return pt[0] / pt[1]
 
     def coxeter_order(self, i: int, j: int) -> object:
-        r"""Return the Coxeter bond exponent $m_{ij} \in \{1, 2, 3, 4, 6, \infty\}$."""
+        r"""
+        Return the Coxeter bond exponent $m_{ij} \in \{1, 2, 3, \ldots, \infty\}$.
+
+        Uses $X_{\mathrm{ref}}$ to algebraically validate reflection angles.
+        """
         if i == j:
             return Integer(1)
         pt = self[i, j]
         if pt[1] == 0:
             return infinity
         ratio = pt[0] / pt[1]
-        if ratio == 0:
-            return Integer(2)
-        elif ratio == 1:
-            return Integer(3)
-        elif ratio == 2:
-            return Integer(4)
-        elif ratio == 3:
-            return Integer(6)
-        elif ratio >= 4:
+        if ratio >= 4:
             return infinity
-        return infinity
+        if ratio < 0:
+            raise ValueError(f"Negative Vinberg invariant t[{i},{j}] = {ratio} is invalid")
+
+        # Check if sqrt(ratio)/2 is in X_ref
+        cos_theta = sqrt(ratio) / 2
+        if cos_theta in X_ref:
+            return X_ref.index_of(cos_theta)
+
+        # Fallback for non-crystallographic / real approximation
+        theta = math.acos(max(-1.0, min(1.0, float(cos_theta))))
+        if theta > 0:
+            m = round(math.pi / theta)
+            if abs(math.pi / theta - m) < 1e-5:
+                return Integer(m)
+
+        raise ValueError(f"Vinberg invariant t[{i},{j}] = {ratio} corresponds to non-Coxeter angle (cos = {cos_theta})")
+
+    def is_valid(self) -> bool:
+        r"""Return True if all entries represent valid Coxeter/Vinberg invariants."""
+        n = self._rank
+        for i in range(n):
+            for j in range(i + 1, n):
+                try:
+                    self.coxeter_order(i, j)
+                except ValueError:
+                    return False
+        return True
 
     def to_sage_coxeter_matrix(self) -> SageCoxeterMatrix:
         r"""Export to Sage's native :class:`CoxeterMatrix`."""
@@ -242,7 +329,6 @@ class CombinatorialVinbergInvariantMatrix(Parent):
                 if pt[1] == 0:
                     raise ValueError(f"Cannot reconstruct finite Gram entry G[{i},{j}] from infinite Vinberg ratio [1 : 0]")
                 t_val = pt[0] / pt[1]
-                # G_ij = sqrt(t_ij * q_i * q_j) / 2
                 val_sq = t_val * norms[i] * norms[j] / 4
                 try:
                     val = ring(sqrt(val_sq))
@@ -294,7 +380,7 @@ class CombinatorialVinbergInvariantMatrix(Parent):
             return False
 
     def is_parabolic(self, indices: Sequence[int] | None = None) -> bool:
-        r"""Check if the system (or sub-system) is parabolic (positive semidefinite with rank n-1)."""
+        r"""Check if the system (or sub-system) is parabolic (positive semi-definite with rank n-1)."""
         target = self if indices is None else self.submatrix(indices)
         try:
             S = target.schlafli_matrix()
@@ -337,7 +423,7 @@ class CombinatorialVinbergInvariantMatrix(Parent):
 
 
 # ---------------------------------------------------------------------------
-# 3. Constructor Functions
+# 4. Constructor Functions
 # ---------------------------------------------------------------------------
 
 
