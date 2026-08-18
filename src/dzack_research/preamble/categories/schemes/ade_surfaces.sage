@@ -427,8 +427,7 @@ class ADEBaseSurface(ADELogPair):
 
     def __init__(self, cover: "ADESurface") -> None:
         self._cover = cover
-        amb_ident = cover._identify_Y_ambient()
-        amb_scheme = ToricScheme(cover.polygon().polyhedron(), dim=2, identification=amb_ident)
+        amb_scheme = ToricScheme(cover.polygon().polyhedron(), dim=2)
         ToricSubscheme.__init__(self, ambient=amb_scheme, equations=(0,), dim=2, base_ring=QQ)
         Parent.__init__(self, base=QQ, category=ADELogPairs())
 
@@ -619,7 +618,7 @@ class ADESurface(ADELogPair):
 
         # Construct ambient toric threefold V_P
         pyr_poly = self._construct_pyramid_polyhedron()
-        amb_scheme = ToricScheme(pyr_poly, dim=3, identification="V_P")
+        amb_scheme = ToricScheme(pyr_poly, dim=3)
 
         # Initialize ToricSubscheme and Parent
         eqs = (self.anticanonical_equation(),)
@@ -1243,9 +1242,10 @@ class ADESurface(ADELogPair):
             verts_latex = ",\\, ".join(f"({v[0]}, {v[1]})" for v in self.vertices())
             norm_vol = 2 * self.volume()
             vol_val = self.volume()
+            amb_ident = self.ambient_identification_latex()
             lines = [
                 r"\begin{aligned}",
-                rf"&(X, D + \varepsilon R) \colon X = \mathrm{{V}}\left(w^2 + \left({f0_latex}\right)\right) \subset V_P \text{{ of type }} {self._latex_label} \colon D = \pi^*(C), \quad R = \mathrm{{V}}\left(w, {f0_latex}\right) \quad \left(p^* = {p_latex}\right) {eol}",
+                rf"&(X, D + \varepsilon R) \colon X = \mathrm{{V}}\left(w^2 + \left({f0_latex}\right)\right) \subset {amb_ident} \text{{ of type }} {self._latex_label} \colon D = \pi^*(C), \quad R = \mathrm{{V}}\left(w, {f0_latex}\right) \quad \left(p^* = {p_latex}\right) {eol}",
                 rf"&Q = \operatorname{{conv}}\left(\{{{verts_latex}\}}\right) \subset \mathbb{{R}}^2 \colon \operatorname{{Vol}}_\mathbb{{Z}}(Q) = {norm_vol},\; \operatorname{{Vol}}(Q) = {vol_val},\; |Q \cap \mathbb{{Z}}^2| = {self.n_integral_points()},\; |\operatorname{{Int}}(Q)| = {self.n_interior_points()}",
                 r"\end{aligned}",
             ]

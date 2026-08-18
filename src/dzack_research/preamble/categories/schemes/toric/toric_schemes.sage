@@ -14,6 +14,7 @@ from sage.categories.morphism import Morphism
 from sage.rings.rational_field import QQ as SageQQ
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.matrix.constructor import matrix
+from sage.modules.free_module_element import vector
 from sage.geometry.polyhedron.constructor import Polyhedron
 from sage.geometry.polyhedron.base import Polyhedron_base
 from sage.schemes.toric.variety import ToricVariety_field, ToricVariety as NativeToricVariety
@@ -213,6 +214,8 @@ class ToricScheme(Variety):
 
     def ambient_identification_latex(self) -> str:
         r"""Return LaTeX formatted identification."""
+        if hasattr(self, '_identification_latex') and self._identification_latex:
+            return self._identification_latex
         ident = self._identification
         if ident == "P^2" or ident == "PP^2":
             return r"\mathbb{P}^2"
@@ -223,48 +226,91 @@ class ToricScheme(Variety):
         if ident.startswith("P(") or ident.startswith("PP("):
             weights = ident[ident.index("(") + 1 : ident.index(")")]
             return rf"\mathbb{{P}}({weights})"
-        return rf"V_{{{ident}}}" if not ident.startswith("V_") else rf"{ident}"
+        return rf"{ident}"
 
     def _identify_ambient(self) -> str:
         r"""Compute standard geometric identification from fan rays or polytope shape."""
-        if self._polytope is not None:
-            verts = [tuple(v) for v in self._polytope.vertices()]
+        ident_str, ident_latex = self._classify_fan_or_poly()
+        self._identification_latex = ident_latex
+        return ident_str
+
+    def _classify_fan_or_poly(self) -> tuple[str, str]:
+        r"""Classify the toric variety from its normal fan or polytope."""
+        fan = self._fan
+        poly = self._polytope
+        if fan is None and poly is not None and hasattr(poly, 'normal_fan'):
+            try:
+                fan = poly.normal_fan()
+            except Exception:
+                pass
+
+        if fan is None:
             d = self._dim
-            if d == 2:
-                # Standard P^2 simplices: conv((0,0), (k, 0), (0, k))
-                v_set = set(verts)
-                for k in range(1, 10):
-                    if v_set == {(0, 0), (k, 0), (0, k)} or v_set == {(0, 0), (0, k), (k, 0)}:
-                        return r"\mathbb{P}^2" if k == 1 else rf"\mathbb{{P}}^2 \text{{ (deg {k})}}"
-                # P^1 x P^1 rectangles: [0, a] x [0, b]
-                for a in range(1, 6):
-                    for b in range(1, 6):
-                        if v_set == {(0, 0), (a, 0), (0, b), (a, b)}:
-                            return r"\mathbb{P}^1 \times \mathbb{P}^1"
-                # Check 3 rays for weighted projective planes P(a, b, c)
-                if self._fan is not None and hasattr(self._fan, 'rays'):
-                    rays = list(self._fan.rays())
-                    if len(rays) == 3:
-                        # Find kernel vector
-                        M = matrix(SageZZ, [[r[0], r[1]] for r in rays]).transpose()
-                        ker = M.right_kernel().basis()
-                        if ker:
-                            w = ker[0]
-                            if all(c > 0 for c in w):
-                                return rf"\mathbb{{P}}({w[0]},{w[1]},{w[2]})"
-                            if all(c < 0 for c in w):
-                                return rf"\mathbb{{P}}({-w[0]},{-w[1]},{-w[2]})"
-                return r"V_Q"
-            elif d == 3:
-                # 3D simplex: conv((0,0,0), (k,0,0), (0,k,0), (0,0,k))
-                v_set = set(verts)
-                for k in range(1, 6):
-                    if v_set == {(0, 0, 0), (k, 0, 0), (0, k, 0), (0, 0, k)}:
-                        return r"\mathbb{P}^3" if k == 1 else rf"\mathbb{{P}}^3 \text{{ (deg {k})}}"
-                return r"V_P"
-            else:
-                return rf"V_P \subset \mathbb{{R}}^{{{d}}}"
-        return rf"V(\Sigma) \subset \mathbb{{R}}^{self._dim}"
+            return f"V_P(dim={d})", rf"V_P \subset \mathbb{{R}}^{{{d}}}"
+
+        try:
+            rays = [vector(SageZZ, [int(c) for c in r]) for r in fan.rays()]
+        except Exception:
+            return f"V(\Sigma)", rf"V(\Sigma)"
+
+        n_rays = len(rays)
+        d = self._dim
+
+        if d == 2:
+            if n_rays == 3:
+                M = matrix(SageZZ, [list(r) for r in rays]).transpose()
+                ker = M.right_kernel().basis()
+                if ker:
+                    v = ker[0]
+                    w = sorted([abs(int(c)) for c in v])
+                    if w == [1, 1, 1]:
+                        return "PP^2", r"\mathbb{P}^2"
+                    return f"PP({w[0]},{w[1]},{w[2]})", rf"\mathbb{{P}}({w[0]},{w[1]},{w[2]})"
+            elif n_rays == 4:
+                pts = set((int(r[0]), int(r[1])) for r in rays)
+                if pts == {(1,0), (0,1), (-1,0), (0,-1)}:
+                    return "PP^1 x PP^1", r"\mathbb{P}^1 \times \mathbb{P}^1"
+                if pts in ({(1,0), (0,1), (-1,0), (1,-2)}, {(1,0), (-1,2), (-1,0), (0,-1)}):
+                    return "FF_2", r"\mathbb{F}_2"
+                if pts in ({(1,0), (0,-1), (-1,-1), (0,1)}, {(1,0), (0,1), (-1,-1), (0,-1)}):
+                    return "FF_1", r"\mathbb{F}_1"
+                if pts in ({(1,0), (-1,-2), (-2,-1), (0,1)}, {(1,0), (-1,-2), (-1,-1), (0,1)}, {(1,0), (0,-1), (-2,-1), (0,1)}):
+                    return "Bl_1(PP(1,1,2))", r"\operatorname{Bl}_1(\mathbb{P}(1,1,2))"
+                if pts == {(1,0), (-1,-2), (-2,-3), (0,1)}:
+                    return "Bl_1(PP(1,2,3))", r"\operatorname{Bl}_1(\mathbb{P}(1,2,3))"
+                return "ToricSurface(4-rays)", r"V_Q"
+            return f"ToricSurface({n_rays}-rays)", r"V_Q"
+
+        elif d == 3:
+            if n_rays == 4:
+                M = matrix(SageZZ, [list(r) for r in rays]).transpose()
+                ker = M.right_kernel().basis()
+                if ker:
+                    v = ker[0]
+                    w = sorted([abs(int(c)) for c in v])
+                    if w == [1, 1, 1, 1]:
+                        return "PP^3", r"\mathbb{P}^3"
+                    return f"PP({w[0]},{w[1]},{w[2]},{w[3]})", rf"\mathbb{{P}}({w[0]},{w[1]},{w[2]},{w[3]})"
+            elif n_rays == 5:
+                # 3D pyramid over a 2D quadrangle: projective cone / anticanonical bundle
+                side_rays = [vector(SageZZ, [r[0], r[1]]) for r in rays if not (r[0] == 0 and r[1] == 0)]
+                pts = set((int(r[0]), int(r[1])) for r in side_rays)
+                if pts == {(1,0), (0,1), (-1,0), (0,-1)}:
+                    base_id, base_latex = "PP^1 x PP^1", r"\mathbb{P}^1 \times \mathbb{P}^1"
+                elif pts in ({(1,0), (0,1), (-1,0), (1,-2)}, {(1,0), (-1,2), (-1,0), (0,-1)}):
+                    base_id, base_latex = "FF_2", r"\mathbb{F}_2"
+                elif pts in ({(1,0), (0,-1), (-1,-1), (0,1)}, {(1,0), (0,1), (-1,-1), (0,-1)}):
+                    base_id, base_latex = "FF_1", r"\mathbb{F}_1"
+                elif pts in ({(1,0), (-1,-2), (-2,-1), (0,1)}, {(1,0), (-1,-2), (-1,-1), (0,1)}, {(1,0), (0,-1), (-2,-1), (0,1)}):
+                    base_id, base_latex = "Bl_1(PP(1,1,2))", r"\operatorname{Bl}_1(\mathbb{P}(1,1,2))"
+                elif pts == {(1,0), (-1,-2), (-2,-3), (0,1)}:
+                    base_id, base_latex = "Bl_1(PP(1,2,3))", r"\operatorname{Bl}_1(\mathbb{P}(1,2,3))"
+                else:
+                    base_id, base_latex = "Y", r"Y"
+                return f"Cone_P(1,2)({base_id})", rf"\mathbb{{P}}_{{{base_latex}}}(\mathcal{{O}} \oplus \mathcal{{O}}(-K))"
+            return f"ToricThreefold({n_rays}-rays)", r"V_P"
+
+        return f"ToricVariety(dim={d})", rf"V_P \subset \mathbb{{R}}^{{{d}}}"
 
     def to_native_toric_variety(self) -> ToricVariety_field:
         r"""Construct or return the native Sage ToricVariety."""
