@@ -366,17 +366,18 @@ def generate_2d_polygon_svg(
     for p in boundary_points:
         pt = (float(p[0]), float(p[1]))
         mon_str = _format_monomial_2d(p[0], p[1])
+        px, py = to_svg(p[0], p[1])
         if pt in dist_set:
-            px, py = to_svg(p[0], p[1])
             svg_parts.append(
-                f'<circle class="lattice-node" cx="{px:.1f}" cy="{py:.1f}" r="5.2" fill="{dist_point_color}" stroke="#0F172A" stroke-width="1.4">'
-                f'<title>({p[0]}, {p[1]}) : {mon_str}</title></circle>'
+                f'<circle class="lattice-node" cx="{px:.1f}" cy="{py:.1f}" r="5.2" fill="{dist_point_color}" stroke="#0F172A" stroke-width="1.4" '
+                f'onmouseenter="showSvgTip(evt, \'({p[0]}, {p[1]})\', \'{mon_str}\', false)" onmouseleave="hideSvgTip(evt)">'
+                f'<title>({p[0]}, {p[1]}) ⟶ {mon_str}</title></circle>'
             )
         elif pt not in v_set:
-            px, py = to_svg(p[0], p[1])
             svg_parts.append(
-                f'<circle class="lattice-node" cx="{px:.1f}" cy="{py:.1f}" r="4.5" fill="{bnd_point_color}" stroke="#334155" stroke-width="1.2">'
-                f'<title>({p[0]}, {p[1]}) : {mon_str}</title></circle>'
+                f'<circle class="lattice-node" cx="{px:.1f}" cy="{py:.1f}" r="4.5" fill="{bnd_point_color}" stroke="#334155" stroke-width="1.2" '
+                f'onmouseenter="showSvgTip(evt, \'({p[0]}, {p[1]})\', \'{mon_str}\', false)" onmouseleave="hideSvgTip(evt)">'
+                f'<title>({p[0]}, {p[1]}) ⟶ {mon_str}</title></circle>'
             )
     svg_parts.append('</g>')
 
@@ -386,8 +387,9 @@ def generate_2d_polygon_svg(
         px, py = to_svg(p[0], p[1])
         mon_str = _format_monomial_2d(p[0], p[1])
         svg_parts.append(
-            f'<circle class="lattice-node" cx="{px:.1f}" cy="{py:.1f}" r="4.8" fill="{int_point_color}" stroke="#065F46" stroke-width="1.4">'
-            f'<title>({p[0]}, {p[1]}) : {mon_str}</title></circle>'
+            f'<circle class="lattice-node" cx="{px:.1f}" cy="{py:.1f}" r="4.8" fill="{int_point_color}" stroke="#065F46" stroke-width="1.4" '
+            f'onmouseenter="showSvgTip(evt, \'({p[0]}, {p[1]})\', \'{mon_str}\', false)" onmouseleave="hideSvgTip(evt)">'
+            f'<title>({p[0]}, {p[1]}) ⟶ {mon_str}</title></circle>'
         )
     svg_parts.append('</g>')
 
@@ -406,13 +408,15 @@ def generate_2d_polygon_svg(
         mon_str = _format_monomial_2d(v[0], v[1])
         if (float(v[0]), float(v[1])) in white_vertices:
             svg_parts.append(
-                f'<circle class="lattice-node" cx="{vx:.1f}" cy="{vy:.1f}" r="6.0" fill="#FFFFFF" stroke="#0F172A" stroke-width="2.2">'
-                f'<title>({v[0]}, {v[1]}) : {mon_str}</title></circle>'
+                f'<circle class="lattice-node" cx="{vx:.1f}" cy="{vy:.1f}" r="6.0" fill="#FFFFFF" stroke="#0F172A" stroke-width="2.2" '
+                f'onmouseenter="showSvgTip(evt, \'({v[0]}, {v[1]})\', \'{mon_str}\', false)" onmouseleave="hideSvgTip(evt)">'
+                f'<title>({v[0]}, {v[1]}) ⟶ {mon_str}</title></circle>'
             )
         else:
             svg_parts.append(
-                f'<circle class="lattice-node" cx="{vx:.1f}" cy="{vy:.1f}" r="5.2" fill="{bnd_point_color}" stroke="#0F172A" stroke-width="1.6">'
-                f'<title>({v[0]}, {v[1]}) : {mon_str}</title></circle>'
+                f'<circle class="lattice-node" cx="{vx:.1f}" cy="{vy:.1f}" r="5.2" fill="{bnd_point_color}" stroke="#0F172A" stroke-width="1.6" '
+                f'onmouseenter="showSvgTip(evt, \'({v[0]}, {v[1]})\', \'{mon_str}\', false)" onmouseleave="hideSvgTip(evt)">'
+                f'<title>({v[0]}, {v[1]}) ⟶ {mon_str}</title></circle>'
             )
     svg_parts.append('</g>')
 
@@ -423,8 +427,10 @@ def generate_2d_polygon_svg(
         p_mon_str = _format_monomial_2d(p_star[0], p_star[1])
         svg_parts.append(
             f'<g id="p_star" filter="url(#pStarGlow)">'
-            f'<path class="pstar-node" d="{star_d}" fill="{p_star_color}" stroke="#FFFFFF" stroke-width="1.2">'
-            f'<title>p* = ({p_star[0]}, {p_star[1]}) : {p_mon_str}</title></path>'
+            f'<path class="pstar-node" d="{star_d}" fill="{p_star_color}" stroke="#FFFFFF" stroke-width="1.2" '
+            f'data-cx="{px:.1f}" data-cy="{py:.1f}" '
+            f'onmouseenter="showSvgTip(evt, \'({p_star[0]}, {p_star[1]})\', \'{p_mon_str}\', true)" onmouseleave="hideSvgTip(evt)">'
+            f'<title>p* = ({p_star[0]}, {p_star[1]}) ⟶ {p_mon_str}</title></path>'
             f'</g>'
         )
 
@@ -436,6 +442,55 @@ def generate_2d_polygon_svg(
         lbl_svg = _latex_to_svg_group(latex_label, lx, ly, color="#F8FAFC", fontsize=15)
         if lbl_svg:
             svg_parts.append(lbl_svg)
+
+    # 15. Dynamic Floating SVG Tooltip Card
+    svg_parts.append(
+        """<g id="svg_tip_overlay" visibility="hidden" pointer-events="none">
+            <rect id="svg_tip_box" x="0" y="0" width="118" height="28" rx="6" fill="#0F172A" fill-opacity="0.94" stroke="#38BDF8" stroke-width="1.2" filter="url(#blueLineGlow)"/>
+            <text id="svg_tip_coord" x="10" y="19" fill="#F8FAFC" font-size="12" font-weight="700" font-family="monospace">(0, 0)</text>
+            <text id="svg_tip_arrow" x="58" y="19" fill="#64748B" font-size="12">⟶</text>
+            <text id="svg_tip_mon" x="76" y="19" fill="#38BDF8" font-size="14" font-weight="700" font-style="italic" font-family="serif">1</text>
+        </g>
+        <script type="text/javascript">
+        <![CDATA[
+        function showSvgTip(evt, coord, mon, isPStar) {
+            var svg = evt.target.ownerSVGElement;
+            if (!svg) return;
+            var tip = svg.getElementById('svg_tip_overlay');
+            var tCoord = svg.getElementById('svg_tip_coord');
+            var tArrow = svg.getElementById('svg_tip_arrow');
+            var tMon = svg.getElementById('svg_tip_mon');
+            var tBox = svg.getElementById('svg_tip_box');
+            if (!tip || !tCoord || !tMon || !tBox) return;
+
+            tCoord.textContent = isPStar ? 'p* ' + coord : coord;
+            tMon.textContent = mon;
+            tMon.setAttribute('fill', isPStar ? '#F87171' : '#38BDF8');
+            tBox.setAttribute('stroke', isPStar ? '#EF4444' : '#38BDF8');
+
+            var coordLen = tCoord.textContent.length;
+            var monLen = mon.length;
+            var arrowX = 10 + coordLen * 7.5 + 4;
+            tArrow.setAttribute('x', arrowX);
+            var monX = arrowX + 18;
+            tMon.setAttribute('x', monX);
+            var boxW = monX + monLen * 9 + 12;
+            tBox.setAttribute('width', Math.max(90, boxW));
+
+            var cx = parseFloat(evt.target.getAttribute('cx') || evt.target.getAttribute('data-cx') || 0);
+            var cy = parseFloat(evt.target.getAttribute('cy') || evt.target.getAttribute('data-cy') || 0);
+            tip.setAttribute('transform', 'translate(' + Math.max(10, cx - boxW / 2) + ',' + (cy - 36) + ')');
+            tip.setAttribute('visibility', 'visible');
+        }
+        function hideSvgTip(evt) {
+            var svg = evt.target.ownerSVGElement;
+            if (!svg) return;
+            var tip = svg.getElementById('svg_tip_overlay');
+            if (tip) tip.setAttribute('visibility', 'hidden');
+        }
+        ]]>
+        </script>"""
+    )
 
     svg_parts.append('</svg>')
     return "\n".join(svg_parts)

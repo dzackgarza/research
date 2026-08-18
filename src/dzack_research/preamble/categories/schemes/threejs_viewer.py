@@ -50,8 +50,8 @@ _HTML_PAGE_TEMPLATE = """<!DOCTYPE html>
             </button>
         </div>
 
-        <!-- Coordinate Inspector (Bottom Right) -->
-        <div id="__UID___inspector" style="position: absolute; bottom: 10px; right: 12px; background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(6px); border: 1px solid rgba(255,255,255,0.08); padding: 4px 10px; border-radius: 5px; font-size: 11px; font-family: monospace; color: #64748B; pointer-events: none; z-index: 10; display: none;"></div>
+        <!-- Dynamic Floating Coordinate Inspector -->
+        <div id="__UID___inspector" style="position: absolute; pointer-events: none; z-index: 50; display: none; background: rgba(15, 23, 42, 0.92); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(56, 189, 248, 0.35); border-radius: 7px; padding: 6px 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.6); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; white-space: nowrap;"></div>
     </div>
 
     <script>
@@ -580,8 +580,32 @@ _HTML_PAGE_TEMPLATE = """<!DOCTYPE html>
                     const hit = hitObj.userData;
                     const coordStr = hit.coord.map(c => Math.round(c)).join(', ');
                     const mon = hit.monomial;
+
+                    inspector.style.borderColor = hit.isPStar ? 'rgba(239, 68, 68, 0.6)' : 'rgba(56, 189, 248, 0.45)';
+                    if (hit.isPStar) {
+                        inspector.innerHTML = `
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span style="background: rgba(239,68,68,0.25); color: #FCA5A5; font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px;">p* Apex</span>
+                                <span style="font-family: monospace; font-size: 13px; font-weight: 700; color: #F8FAFC;">(${coordStr})</span>
+                                <span style="color: #64748B; font-size: 13px;">⟶</span>
+                                <span style="font-family: 'Cambria Math', 'STIX Two Math', 'Times New Roman', serif; font-size: 16px; font-style: italic; font-weight: 700; color: #F87171; letter-spacing: 0.5px;">${mon}</span>
+                            </div>
+                        `;
+                    } else {
+                        inspector.innerHTML = `
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span style="font-family: monospace; font-size: 13px; font-weight: 700; color: #F8FAFC;">(${coordStr})</span>
+                                <span style="color: #64748B; font-size: 13px;">⟶</span>
+                                <span style="font-family: 'Cambria Math', 'STIX Two Math', 'Times New Roman', serif; font-size: 16px; font-style: italic; font-weight: 700; color: #38BDF8; letter-spacing: 0.5px;">${mon}</span>
+                            </div>
+                        `;
+                    }
                     inspector.style.display = 'block';
-                    inspector.textContent = hit.isPStar ? `p* = (${coordStr}) : ${mon}` : `(${coordStr}) : ${mon}`;
+
+                    const tooltipX = Math.min(ev.clientX - rect.left + 16, container.clientWidth - 190);
+                    const tooltipY = Math.max(ev.clientY - rect.top - 40, 10);
+                    inspector.style.left = `${tooltipX}px`;
+                    inspector.style.top = `${tooltipY}px`;
                 } else {
                     resetHovered();
                     inspector.style.display = 'none';
