@@ -361,7 +361,11 @@ class ConvexPolytopes(Category):
 
         def _rich_repr_(self: _LatticePolytopeInterface, dm: object) -> object:
             """Rich display hook for SageMath and Jupyter, defaulting 3D polytopes to threejs."""
-            if dm.types.OutputSceneThreejs in dm.supported_output() and self.dimension() == 3:
+            if dm.types.OutputHtml in dm.supported_output():
+                html = self._repr_html_()
+                if html:
+                    return dm.types.OutputHtml(html)
+            elif dm.types.OutputSceneThreejs in dm.supported_output() and self.dimension() == 3:
                 p = self.plot3d()
                 if hasattr(p, '_rich_repr_threejs'):
                     try:
@@ -371,10 +375,6 @@ class ConvexPolytopes(Category):
                             return p._rich_repr_threejs()
                         except Exception:
                             pass
-            elif dm.types.OutputHtml in dm.supported_output():
-                html = self._repr_html_()
-                if html:
-                    return dm.types.OutputHtml(html)
             elif dm.types.OutputImagePng in dm.supported_output() and self.dimension() == 2:
                 p = self.plot()
                 if hasattr(p, '_rich_repr_'):

@@ -1701,12 +1701,14 @@ class ADESurface(Parent):
 
     def _rich_repr_(self: _ADESurfaceInterface, dm: object) -> object:
         """Rich display hook for Sage display manager: renders the 3D Three.js model."""
-        if dm.types.OutputSceneThreejs in dm.supported_output():
-            return self.cover_polytope()._rich_repr_(dm)
-        elif dm.types.OutputHtml in dm.supported_output():
+        if dm.types.OutputHtml in dm.supported_output():
             html = self._repr_html_()
             if html:
-                return dm.types.OutputHtml(html)
+                latex_html = f"\\(\\displaystyle {self._latex_()}\\)"
+                combined_html = f'<div style="font-family: sans-serif; line-height: 1.4;"><div>{latex_html}</div><div style="margin-top: 14px;">{html}</div></div>'
+                return dm.types.OutputHtml(combined_html)
+        elif dm.types.OutputSceneThreejs in dm.supported_output():
+            return self.cover_polytope()._rich_repr_(dm)
         elif dm.types.OutputLatex in dm.supported_output():
             return dm.types.OutputLatex(self._latex_())
         elif dm.types.OutputPlainText in dm.supported_output():
@@ -1739,9 +1741,9 @@ class ADESurface(Parent):
 
     def _repr_mimebundle_(self: _ADESurfaceInterface, include: object = None, exclude: object = None) -> dict[str, str]:
         """IPython / Jupyter display bundle showing 3D LaTeX summary and 3D Three.js canvas."""
-        html_3d = self.cover_polytope()._repr_html_() or ""
+        html_3d = self._repr_html_() or ""
         latex_html = f"\\(\\displaystyle {self._latex_()}\\)"
-        combined_html = f'<div style="font-family: sans-serif; line-height: 1.4;"><div>{latex_html}</div><div style="margin-top: 10px;">{html_3d}</div></div>'
+        combined_html = f'<div style="font-family: sans-serif; line-height: 1.4;"><div>{latex_html}</div><div style="margin-top: 14px;">{html_3d}</div></div>'
         return {
             'text/html': combined_html,
             'text/latex': self._repr_latex_(),
