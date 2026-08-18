@@ -452,31 +452,26 @@ class ADELogPair(ToricSubscheme, Parent):
         return "$\\displaystyle " + self._latex_() + "$"
 
     def _rich_repr_(self, dm: object) -> object:
-        supported = dm.supported_output()
-        svg_fn = getattr(self, '_repr_svg_', None)
-        if svg_fn:
-            s = svg_fn()
-            if s and dm.types.OutputImageSvg in supported:
-                return dm.types.OutputImageSvg(s)
-        html = self._repr_html_()
-        if html and dm.types.OutputHtml in supported:
-            return dm.types.OutputHtml(html)
+        if dm.types.OutputHtml in dm.supported_output():
+            html_content = self._repr_html_()
+            latex_html = f"\\(\\displaystyle {self._latex_()}\\)"
+            combined_html = f'<div style="font-family: sans-serif; line-height: 1.4;"><div>{latex_html}</div><div style="margin-top: 14px;">{html_content}</div></div>'
+            return dm.types.OutputHtml(combined_html)
+        elif dm.types.OutputLatex in dm.supported_output():
+            return dm.types.OutputLatex(self._latex_())
+        elif dm.types.OutputPlainText in dm.supported_output():
+            return dm.types.OutputPlainText(repr(self))
         return None
 
     def _repr_mimebundle_(self, include: object = None, exclude: object = None) -> dict[str, str]:
-        bundle: dict[str, str] = {
+        html_content = self._repr_html_() or ""
+        latex_html = f"\\(\\displaystyle {self._latex_()}\\)"
+        combined_html = f'<div style="font-family: sans-serif; line-height: 1.4;"><div>{latex_html}</div><div style="margin-top: 14px;">{html_content}</div></div>'
+        return {
+            'text/html': combined_html,
             'text/latex': self._repr_latex_(),
             'text/plain': repr(self),
         }
-        svg_fn = getattr(self, '_repr_svg_', None)
-        if svg_fn:
-            svg = svg_fn()
-            if svg:
-                bundle['image/svg+xml'] = svg
-        html = self._repr_html_()
-        if html:
-            bundle['text/html'] = html
-        return bundle
 
 
 class ADEBaseSurface(ADELogPair):
@@ -619,41 +614,30 @@ class ADEBaseSurface(ADELogPair):
         delta_y = repr(self.log_divisor())
         return f"Log Pair (Y, C + 1/2(1+eps)B) where Y = {amb} of type {self._cover._key} (C + 1/2(1+eps)B = {delta_y}, p* = {self.p_star()})"
 
-    def _generate_svg(self) -> str:
-        """Generate the 2D polygon SVG string."""
-        from dzack_research.preamble.categories.schemes.svg_2d_viewer import generate_2d_polygon_svg
-        verts = [list(v) for v in self.vertices()]
-        int_pts = [list(p) for p in self.interior_integral_points()]
-        bnd_pts = [list(p) for p in self.boundary_integral_points()]
-        dist_pts = [list(p) for p in self.distinguished_boundary_points()]
-        blue_facets = [[[float(c) for c in v] for v in f.vertices()] for f in self._cover._blue_facets()]
-        p_star = [float(c) for c in self.p_star()]
-        sides = self._cover.side_decorations()
-        return generate_2d_polygon_svg(
-            verts,
-            interior_points=int_pts,
-            boundary_points=bnd_pts,
-            distinguished_points=dist_pts,
-            blue_facets=blue_facets,
-            p_star=p_star,
-            side_decorations=sides,
-            latex_label=self._cover._latex_label,
-            theme="dark",
-            width=480,
-            height=380,
-        )
-
-    def _repr_svg_(self) -> str:
-        """Return SVG for Jupyter image rendering (image/svg+xml mime)."""
-        try:
-            return self._generate_svg()
-        except Exception:
-            return None
-
     def _repr_html_(self) -> str:
         """Render high-definition 2D vector SVG representation for Jupyter."""
         try:
-            return self._generate_svg()
+            from dzack_research.preamble.categories.schemes.svg_2d_viewer import generate_2d_polygon_svg
+            verts = [list(v) for v in self.vertices()]
+            int_pts = [list(p) for p in self.interior_integral_points()]
+            bnd_pts = [list(p) for p in self.boundary_integral_points()]
+            dist_pts = [list(p) for p in self.distinguished_boundary_points()]
+            blue_facets = [[[float(c) for c in v] for v in f.vertices()] for f in self._cover._blue_facets()]
+            p_star = [float(c) for c in self.p_star()]
+            sides = self._cover.side_decorations()
+            return generate_2d_polygon_svg(
+                verts,
+                interior_points=int_pts,
+                boundary_points=bnd_pts,
+                distinguished_points=dist_pts,
+                blue_facets=blue_facets,
+                p_star=p_star,
+                side_decorations=sides,
+                latex_label=self._cover._latex_label,
+                theme="dark",
+                width=480,
+                height=380,
+            )
         except Exception:
             return ""
 
