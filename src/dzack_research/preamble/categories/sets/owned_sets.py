@@ -54,11 +54,11 @@ else:
 
 _E = TypeVar("_E")
 
-_SET_AXIOMS = ("Countable", "Uncountable", "TotallyOrdered")
+_SET_AXIOMS = ("Countable", "Uncountable", "PartiallyOrdered", "TotallyOrdered")
 
 
 def register_set_axioms() -> None:
-    r"""Register exactly ``Countable``, ``Uncountable``, and
+    r"""Register exactly ``Countable``, ``Uncountable``, ``PartiallyOrdered``, and
     ``TotallyOrdered`` in Sage's global
     axiom registry. Idempotent: after the first registration, repeated calls
     leave the registry unchanged."""
@@ -72,10 +72,9 @@ register_set_axioms()
 
 
 class CountabilitySubcategoryMethods:
-    r"""The ``Countable``/``Uncountable`` axiom requests with their
-    disjointness guards. Shared by the owned ``Sets()`` root and by every
-    owned structured root whose objects carry set axioms (magmas, additive
-    magmas, and their descendants)."""
+    r"""The ``Countable``/``Uncountable``/``PartiallyOrdered``/``TotallyOrdered``
+    axiom requests with their disjointness guards. Shared by the owned ``Sets()``
+    root and by every owned structured root whose objects carry set axioms."""
 
     # Runtime Sage mixes this class into every subcategory, so ``self``
     # is a Category there; the casts state that fact for the checker.
@@ -94,6 +93,11 @@ class CountabilitySubcategoryMethods:
         category = cast(Category, self)
         assert "Countable" not in category.axioms(), "Countable and Uncountable are disjoint"
         return category._with_axiom("Uncountable")
+
+    def PartiallyOrdered(self) -> Category:
+        r"""Objects whose underlying set is equipped with a partial order."""
+        category = cast(Category, self)
+        return category._with_axiom("PartiallyOrdered")
 
     def TotallyOrdered(self) -> Category:
         r"""Objects whose underlying set is equipped with a total order."""
@@ -116,6 +120,7 @@ class Sets(Category):
         # class-resolution shortcut and is runtime-only.
         def Countable(self) -> Sets: ...
         def Uncountable(self) -> Sets: ...
+        def PartiallyOrdered(self) -> Sets: ...
         def TotallyOrdered(self) -> Sets: ...
         def Finite(self) -> Sets: ...
         def Infinite(self) -> Sets: ...
@@ -327,13 +332,29 @@ class UncountableSets(CategoryWithAxiom):
         def is_uncountable(self) -> bool:
             return True
 
+class PartiallyOrderedSets(CategoryWithAxiom):
+    r"""Partially ordered sets."""
+
+    _base_category_class_and_axiom = (Sets, "PartiallyOrdered")
+
+
 class TotallyOrderedSets(CategoryWithAxiom):
     r"""Totally ordered sets."""
 
     _base_category_class_and_axiom = (Sets, "TotallyOrdered")
 
+    def extra_super_categories(self) -> list[Category]:
+        return [self.base_category().PartiallyOrdered()]
 
-_SET_AXIOM_NAMES = ("Finite", "Infinite", "Countable", "Uncountable", "TotallyOrdered")
+
+_SET_AXIOM_NAMES = (
+    "Finite",
+    "Infinite",
+    "Countable",
+    "Uncountable",
+    "PartiallyOrdered",
+    "TotallyOrdered",
+)
 
 
 def placement_of(parent: SageParent[_E]) -> Sets:
@@ -363,6 +384,12 @@ def placement_of(parent: SageParent[_E]) -> Sets:
         placement = placement.Infinite()
     if "TotallyOrdered" in axioms:
         placement = placement.TotallyOrdered()
+    elif "PartiallyOrdered" in axioms:
+        placement = placement.PartiallyOrdered()
+    else:
+        from sage.categories.posets import Posets as SagePosets
+        if parent.category().is_subcategory(SagePosets()):
+            placement = placement.PartiallyOrdered()
     return placement
 
 
@@ -400,5 +427,6 @@ if not TYPE_CHECKING:
     Sets.Infinite = InfiniteSets
     Sets.Countable = CountableSets
     Sets.Uncountable = UncountableSets
+    Sets.PartiallyOrdered = PartiallyOrderedSets
     Sets.TotallyOrdered = TotallyOrderedSets
     CountableSets.Infinite = CountablyInfiniteSets
