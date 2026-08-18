@@ -112,6 +112,44 @@ class _Polyhedron(Protocol):
     def normal_fan(self) -> object: ...
 
 
+class IntegralInvariants(NamedTuple):
+    r"""
+    Integral invariants of the ambient polytope of an ADE log pair.
+
+    Attributes:
+        dimension: Dimension of the ambient toric variety.
+        volume: Euclidean volume of the ambient polytope.
+        normalized_volume: Normalized lattice volume.
+        n_integral_points: Total lattice points in the polytope.
+        n_interior_points: Interior lattice points.
+        n_boundary_points: Boundary lattice points.
+    """
+    dimension: int
+    volume: Rational
+    normalized_volume: int
+    n_integral_points: int
+    n_interior_points: int
+    n_boundary_points: int
+
+    def __repr__(self) -> str:
+        return (f"dim={self.dimension}, Vol={self.volume}, "
+                f"Vol_Z={self.normalized_volume}, "
+                f"|P∩Z|={self.n_integral_points}, "
+                f"|Int(P)|={self.n_interior_points}, "
+                f"|∂P|={self.n_boundary_points}")
+
+    def _latex_(self) -> str:
+        return (rf"\dim={self.dimension},\; "
+                rf"\operatorname{{Vol}}(P)={self.volume},\; "
+                rf"\operatorname{{Vol}}_\mathbb{{Z}}(P)={self.normalized_volume},\; "
+                rf"|P \cap \mathbb{{Z}}|={self.n_integral_points},\; "
+                rf"|\operatorname{{Int}}(P)|={self.n_interior_points},\; "
+                rf"|\partial P|={self.n_boundary_points}")
+
+    def _repr_latex_(self) -> str:
+        return "$\\displaystyle " + self._latex_() + "$"
+
+
 class SideDecoration(NamedTuple):
     """
     Metadata for a distinguished side of an ADE polygon Q adjacent to p*.
@@ -369,19 +407,18 @@ class ADELogPair(ToricSubscheme, Parent):
         r"""Return LaTeX label for the log pair."""
         raise NotImplementedError
 
-    def integral_invariants(self) -> dict[str, Any]:
-        """Return dictionary of integral invariants of the ambient polytope."""
+    def integral_invariants(self) -> IntegralInvariants:
+        """Return integral invariants of the ambient polytope."""
         P = self.polytope()
         poly = P.polyhedron() if hasattr(P, 'polyhedron') else P
         pts = poly.integral_points()
         n_pts = len(pts)
-        
-        # Count interior points
+
         if hasattr(P, 'n_interior_points') and callable(P.n_interior_points):
             int_pts = P.n_interior_points()
         else:
             int_pts = sum(1 for pt in pts if all(h.eval(pt) > 0 for h in poly.Hrepresentation()))
-        
+
         bnd_pts = n_pts - int_pts
         if hasattr(P, 'normalized_volume'):
             norm_vol = P.normalized_volume()
@@ -389,14 +426,14 @@ class ADELogPair(ToricSubscheme, Parent):
             mult = 6 if self.ambient_dimension() == 3 else (2 if self.ambient_dimension() == 2 else 1)
             norm_vol = poly.volume() * mult
 
-        return {
-            "dimension": int(self.ambient_dimension()),
-            "volume": poly.volume(),
-            "normalized_volume": int(norm_vol),
-            "n_integral_points": int(n_pts),
-            "n_interior_points": int(int_pts),
-            "n_boundary_points": int(bnd_pts),
-        }
+        return IntegralInvariants(
+            dimension=int(self.ambient_dimension()),
+            volume=poly.volume(),
+            normalized_volume=int(norm_vol),
+            n_integral_points=int(n_pts),
+            n_interior_points=int(int_pts),
+            n_boundary_points=int(bnd_pts),
+        )
 
     def _repr_latex_(self) -> str:
         return "$\\displaystyle " + self._latex_() + "$"
