@@ -31,8 +31,12 @@ from sage.structure.unique_representation import UniqueRepresentation
 from sage.misc.cachefunc import cached_function
 
 from dzack_research.preamble.categories.sets.cardinals import Cardinal
-from dzack_research.preamble import lexicon
-from dzack_research.preamble.categories.sets.owned_sets import Sets, placement_of
+from dzack_research.preamble.categories.sets.owned_sets import (
+    Sets,
+    placement_of,
+    PosetHomset,
+    PosetMorphism,
+)
 
 if TYPE_CHECKING:
     # Type-only: the preamble loads into one shared namespace and nothing
