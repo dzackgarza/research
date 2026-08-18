@@ -386,13 +386,29 @@ class ConvexPolytopes(Category):
         def _repr_html_(self: _LatticePolytopeInterface) -> Optional[str]:
             """HTML representation hook for Jupyter Notebooks."""
             if self.dimension() == 3:
-                p = self.plot3d()
                 try:
-                    res = p._rich_repr_threejs(online=True)
-                    if res is not None and hasattr(res, 'html'):
-                        return res.html.get()
+                    from dzack_research.preamble.categories.schemes.threejs_viewer import generate_threejs_polytope_html
+                    poly = self.polyhedron()
+                    verts = [list(v) for v in poly.vertices()]
+                    facets = [[verts.index(list(v)) for v in f.vertices()] for f in poly.facets()]
+                    int_pts = [list(p) for p in self.interior_integral_points()]
+                    bnd_pts = [list(p) for p in self.boundary_integral_points()]
+                    return generate_threejs_polytope_html(
+                        verts,
+                        facets,
+                        interior_points=int_pts,
+                        boundary_points=bnd_pts,
+                        title="3D Lattice Polytope P ⊂ N ⊕ ℤ",
+                        invariants=self.invariants(),
+                    )
                 except Exception:
-                    pass
+                    p = self.plot3d()
+                    try:
+                        res = p._rich_repr_threejs(online=True)
+                        if res is not None and hasattr(res, 'html'):
+                            return res.html.get()
+                    except Exception:
+                        pass
             elif self.dimension() == 2:
                 import tempfile, base64
                 g = self.plot()

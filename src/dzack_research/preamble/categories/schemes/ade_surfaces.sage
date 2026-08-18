@@ -1715,7 +1715,27 @@ class ADESurface(Parent):
 
     def _repr_html_(self: _ADESurfaceInterface) -> Optional[str]:
         """HTML representation hook for Jupyter Notebooks: renders the 3D Three.js interactive canvas."""
-        return self.cover_polytope()._repr_html_()
+        try:
+            from dzack_research.preamble.categories.schemes.threejs_viewer import generate_threejs_polytope_html
+            P = self.cover_polytope()
+            poly = P.polyhedron()
+            verts = [list(v) for v in poly.vertices()]
+            facets = [[verts.index(list(v)) for v in f.vertices()] for f in poly.facets()]
+            int_pts = [list(p) for p in P.interior_integral_points()]
+            bnd_pts = [list(p) for p in P.boundary_integral_points()]
+            p_star_3d = [self.p_star()[0], self.p_star()[1], 0]
+            return generate_threejs_polytope_html(
+                verts,
+                facets,
+                interior_points=int_pts,
+                boundary_points=bnd_pts,
+                p_star=p_star_3d,
+                title=f"ADE Cover Hypersurface {self._key} (X ⊂ V_P)",
+                latex_label=self._latex_label,
+                invariants=P.invariants(),
+            )
+        except Exception:
+            return self.cover_polytope()._repr_html_()
 
     def _repr_mimebundle_(self: _ADESurfaceInterface, include: object = None, exclude: object = None) -> dict[str, str]:
         """IPython / Jupyter display bundle showing 3D LaTeX summary and 3D Three.js canvas."""
