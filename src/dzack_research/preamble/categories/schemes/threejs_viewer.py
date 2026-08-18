@@ -162,12 +162,12 @@ _HTML_PAGE_TEMPLATE = """<!DOCTYPE html>
             infiniteGrid.position.z = 0;
             scene.add(infiniteGrid);
 
-            // 7. Infinite Glowing Axis Rays (X=Red, Y=Green, Z=Blue)
+            // 7. Infinite Glowing Axis Rays & Labels (X=Red, Y=Green, Z=Blue)
             const axesGroup = new THREE.Group();
             const axisRadius = 0.022;
             const axisLength = 300.0;
 
-            function createAxisRay(direction, colorHex, labelText) {
+            function createAxisRay(direction, colorHex) {
                 const group = new THREE.Group();
                 const geom = new THREE.CylinderGeometry(axisRadius, axisRadius, axisLength, 16);
                 geom.translate(0, axisLength / 2, 0);
@@ -200,12 +200,84 @@ _HTML_PAGE_TEMPLATE = """<!DOCTYPE html>
                 return group;
             }
 
-            const xAxis = createAxisRay('x', 0xEF4444, 'X');
-            const yAxis = createAxisRay('y', 0x22C55E, 'Y');
-            const zAxis = createAxisRay('z', 0x3B82F6, 'Z');
+            const xAxis = createAxisRay('x', 0xEF4444);
+            const yAxis = createAxisRay('y', 0x22C55E);
+            const zAxis = createAxisRay('z', 0x3B82F6);
             axesGroup.add(xAxis);
             axesGroup.add(yAxis);
             axesGroup.add(zAxis);
+
+            // High-resolution Billboard Text Sprites for Axes
+            function createAxisLabel(labelText, colorCss) {
+                const canvas = document.createElement('canvas');
+                canvas.width = 128;
+                canvas.height = 128;
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, 128, 128);
+
+                ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+                ctx.beginPath();
+                ctx.arc(64, 64, 52, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.lineWidth = 6;
+                ctx.strokeStyle = colorCss;
+                ctx.stroke();
+
+                ctx.fillStyle = colorCss;
+                ctx.font = 'bold 56px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(labelText, 64, 64);
+
+                const texture = new THREE.CanvasTexture(canvas);
+                texture.minFilter = THREE.LinearFilter;
+                const mat = new THREE.SpriteMaterial({ map: texture, transparent: true, depthTest: false });
+                const sprite = new THREE.Sprite(mat);
+                sprite.scale.set(0.65, 0.65, 1.0);
+                return sprite;
+            }
+
+            // Determine axis label anchor distances
+            const maxVx = payload.vertices.reduce((m, v) => Math.max(m, Math.abs(v[0])), 0);
+            const maxVy = payload.vertices.reduce((m, v) => Math.max(m, Math.abs(v[1])), 0);
+            const maxVz = payload.vertices.reduce((m, v) => Math.max(m, Math.abs(v[2])), 0);
+
+            const xDist = Math.max(5.5, maxVx + 1.5);
+            const yDist = Math.max(5.5, maxVy + 1.5);
+            const zDist = Math.max(3.5, maxVz + 1.2);
+
+            // Arrowheads
+            const coneGeo = new THREE.ConeGeometry(0.12, 0.35, 16);
+            coneGeo.translate(0, 0.175, 0);
+
+            const xCone = new THREE.Mesh(coneGeo, new THREE.MeshStandardMaterial({ color: 0xEF4444, emissive: 0xEF4444, emissiveIntensity: 0.5 }));
+            xCone.position.set(xDist, 0, 0);
+            xCone.rotation.z = -Math.PI / 2;
+            axesGroup.add(xCone);
+
+            const yCone = new THREE.Mesh(coneGeo, new THREE.MeshStandardMaterial({ color: 0x22C55E, emissive: 0x22C55E, emissiveIntensity: 0.5 }));
+            yCone.position.set(0, yDist, 0);
+            axesGroup.add(yCone);
+
+            const zCone = new THREE.Mesh(coneGeo, new THREE.MeshStandardMaterial({ color: 0x3B82F6, emissive: 0x3B82F6, emissiveIntensity: 0.5 }));
+            zCone.position.set(0, 0, zDist);
+            zCone.rotation.x = Math.PI / 2;
+            axesGroup.add(zCone);
+
+            // Axis Label Sprites
+            const xSprite = createAxisLabel('X', '#EF4444');
+            xSprite.position.set(xDist + 0.55, 0, 0);
+            axesGroup.add(xSprite);
+
+            const ySprite = createAxisLabel('Y', '#22C55E');
+            ySprite.position.set(0, yDist + 0.55, 0);
+            axesGroup.add(ySprite);
+
+            const zSprite = createAxisLabel('Z', '#3B82F6');
+            zSprite.position.set(0, 0, zDist + 0.55);
+            axesGroup.add(zSprite);
+
             scene.add(axesGroup);
 
             // 8. Vast 3D Lattice Grid ZZ^3 via InstancedMesh
