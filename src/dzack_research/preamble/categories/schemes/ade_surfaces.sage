@@ -541,15 +541,20 @@ class ADEBaseSurface(ADELogPair):
         norm_vol = 2 * vol_val
         n_pts = Q.n_integral_points()
         int_pts = Q.n_interior_points()
-        verts_latex = r",\, ".join(f"({v[0]}, {v[1]})" for v in Q.vertices())
         amb_ident = self.ambient_identification_latex()
         delta_y_latex = self.log_divisor()._latex_()
         eol = "\\\\"
+        dim_y = self.ambient_dimension()
+        if dim_y in (2, 3):
+            inv_line = rf"&\operatorname{{Vol}}_\mathbb{{Z}}(Q) = {norm_vol},\; \operatorname{{Vol}}(Q) = {vol_val},\; |Q \cap \mathbb{{Z}}^2| = {n_pts},\; |\operatorname{{Int}}(Q)| = {int_pts}"
+        else:
+            mat_lat = _latex(self.polytope_matrix())
+            inv_line = rf"&Q = \operatorname{{conv}}\left({mat_lat}\right) \colon \operatorname{{Vol}}_\mathbb{{Z}}(Q) = {norm_vol},\; \operatorname{{Vol}}(Q) = {vol_val},\; |Q \cap \mathbb{{Z}}^{{{dim_y}}}| = {n_pts},\; |\operatorname{{Int}}(Q)| = {int_pts}"
         lines = [
             r"\begin{aligned}",
             rf"&(Y, C + \tfrac{{1+\varepsilon}}{{2}} B) \colon Y = {amb_ident} \text{{ of type }} {self._cover._latex_label} \quad \left(p^* = {p_latex}\right) {eol}",
             rf"&C + \tfrac{{1+\varepsilon}}{{2}} B = {delta_y_latex} {eol}",
-            rf"&Q = \operatorname{{conv}}\left(\{{{verts_latex}\}}\right) \subset \mathbb{{R}}^2 \colon \operatorname{{Vol}}_\mathbb{{Z}}(Q) = {norm_vol},\; \operatorname{{Vol}}(Q) = {vol_val},\; |Q \cap \mathbb{{Z}}^2| = {n_pts},\; |\operatorname{{Int}}(Q)| = {int_pts}",
+            inv_line,
             r"\end{aligned}",
         ]
         return "\n".join(lines)
@@ -1267,41 +1272,39 @@ class ADESurface(ADELogPair):
     def _latex_(self) -> str:
         from sage.misc.latex import latex as _latex
         f0_latex = _latex(self.defining_polynomial())
-        p_latex = _latex(self.p_star())
         amb_ident = self.ambient_identification_latex()
         delta_x_latex = self.log_divisor()._latex_()
         eol = "\\\\"
 
         if self.is_affine():
-            verts_latex = r",\, ".join(f"({v[0]}, {v[1]})" for v in self.vertices())
             norm_vol = 2 * self.volume()
             vol_val = self.volume()
-            lines = [
-                r"\begin{aligned}",
-                rf"&(X, D + \varepsilon R) \colon X = \mathrm{{V}}\left(w^2 + \left({f0_latex}\right)\right) \subset {amb_ident} \text{{ of type }} {self._latex_label} \quad \left(p^* = {p_latex}\right) {eol}",
-                rf"&D + \varepsilon R = {delta_x_latex} {eol}",
-                rf"&Q = \operatorname{{conv}}\left(\{{{verts_latex}\}}\right) \subset \mathbb{{R}}^2 \colon \operatorname{{Vol}}_\mathbb{{Z}}(Q) = {norm_vol},\; \operatorname{{Vol}}(Q) = {vol_val},\; |Q \cap \mathbb{{Z}}^2| = {self.n_integral_points()},\; |\operatorname{{Int}}(Q)| = {self.n_interior_points()}",
-                r"\end{aligned}",
-            ]
+            inv_line = rf"&\operatorname{{Vol}}_\mathbb{{Z}}(Q) = {norm_vol},\; \operatorname{{Vol}}(Q) = {vol_val},\; |Q \cap \mathbb{{Z}}^2| = {self.n_integral_points()},\; |\operatorname{{Int}}(Q)| = {self.n_interior_points()}"
         else:
             P = self.cover_polytope()
             vol_z = P.normalized_volume()
             vol_val = P.volume()
-            p_verts_latex = r",\, ".join(f"({v[0]}, {v[1]}, {v[2]})" for v in P.vertices())
-            lines = [
-                r"\begin{aligned}",
-                rf"&(X, D + \varepsilon R) \colon X = \mathrm{{V}}\left(w^2 + \left({f0_latex}\right)\right) \subset {amb_ident} \text{{ of type }} {self._latex_label} \quad \left(p^* = {p_latex}\right) {eol}",
-                rf"&D + \varepsilon R = {delta_x_latex} {eol}",
-                rf"&P = \operatorname{{conv}}\left(\{{{p_verts_latex}\}}\right) \subset \mathbb{{R}}^3 \colon \operatorname{{Vol}}_\mathbb{{Z}}(P) = {vol_z},\; \operatorname{{Vol}}(P) = {vol_val},\; |P \cap \mathbb{{Z}}^3| = {P.n_integral_points()},\; |\operatorname{{Int}}(P)| = {P.n_interior_points()}",
-                r"\end{aligned}",
-            ]
+            dim_p = self.ambient_dimension()
+            if dim_p in (2, 3):
+                inv_line = rf"&\operatorname{{Vol}}_\mathbb{{Z}}(P) = {vol_z},\; \operatorname{{Vol}}(P) = {vol_val},\; |P \cap \mathbb{{Z}}^3| = {P.n_integral_points()},\; |\operatorname{{Int}}(P)| = {P.n_interior_points()}"
+            else:
+                mat_lat = _latex(self.polytope_matrix())
+                inv_line = rf"&P = \operatorname{{conv}}\left({mat_lat}\right) \colon \operatorname{{Vol}}_\mathbb{{Z}}(P) = {vol_z},\; \operatorname{{Vol}}(P) = {vol_val},\; |P \cap \mathbb{{Z}}^{{{dim_p}}}| = {P.n_integral_points()},\; |\operatorname{{Int}}(P)| = {P.n_interior_points()}"
+
+        lines = [
+            r"\begin{aligned}",
+            rf"&(X, D + \varepsilon R) \colon X = \mathrm{{V}}\left(w^2 + \left({f0_latex}\right)\right) \subset {amb_ident} \text{{ of type }} {self._latex_label} {eol}",
+            rf"&D + \varepsilon R = {delta_x_latex} {eol}",
+            inv_line,
+            r"\end{aligned}",
+        ]
         return "\n".join(lines)
 
     def __repr__(self) -> str:
         amb = self.ambient_identification()
         f0 = self.defining_polynomial()
         delta_x = repr(self.log_divisor())
-        return f"Log Pair (X, D + eps*R) where X = V(w^2 + ({f0})) ⊂ {amb} of type {self._key} (D + eps*R = {delta_x}, p* = {self.p_star()})"
+        return f"Log Pair (X, D + eps*R) where X = V(w^2 + ({f0})) ⊂ {amb} of type {self._key} (D + eps*R = {delta_x})"
 
     def _repr_html_(self) -> Optional[str]:
         try:
