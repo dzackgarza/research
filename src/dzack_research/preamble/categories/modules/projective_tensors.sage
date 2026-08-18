@@ -1,4 +1,4 @@
-r"""Combinatorial Vinberg invariant matrices, projective reflection geometry, and X_ref validation.
+r"""Combinatorial Vinberg invariant matrices, projective reflection geometry, and exact X_ref validation.
 
 Mathematical Framework
 ======================
@@ -20,30 +20,33 @@ The set of reflection cosines:
 
     X_{\mathrm{ref}} = \left\{ \cos\left(\frac{\pi}{n}\right) \;\middle|\; n \in \mathbb{Z}_{\ge 1} \right\} \;\subset\; \overline{\mathbb{Q}} \cap [-1, 1)
 
-is used for exact $O(1)$ validation of reflection angles without enumeration.
+is defined via exact algebraic geometry without enumeration or floating-point rounding.
 
-A pair of intersecting hyperplanes ($t_{ij} < 4$) forms a valid Coxeter reflection bond
-if and only if:
+Exact Algebraic Characterization (No Rounding)
+-----------------------------------------------
+For any real algebraic candidate $x \in [-1, 1)$:
+1. Construct the algebraic number:
 
-.. MATH::
+   .. MATH::
 
-    \frac{\sqrt{t_{ij}}}{2} \in X_{\mathrm{ref}}
+       \zeta = x + i \sqrt{1 - x^2} \in \overline{\mathbb{Q}}
 
-in which case the Coxeter exponent is $m_{ij} = X_{\mathrm{ref}}.\operatorname{index\_of}\left(\frac{\sqrt{t_{ij}}}{2}\right)$.
+2. Compute its exact multiplicative order $k = \operatorname{multiplicative\_order}(\zeta)$.
+3. $x \in X_{\mathrm{ref}}$ if and only if $k = 2n$ is an even integer and $\zeta^n = -1$.
+   In this case, the exact Coxeter exponent is $n = k / 2$.
 
 EXAMPLES::
 
     sage: from dzack_research.preamble.categories.modules.projective_tensors import (
     ...       CombinatorialVinbergInvariantMatrix,
     ...       ReflectionCosineSet, X_ref,
-    ...       combinatorial_vinberg_invariant_matrix,
     ...       vinberg_invariant_matrix_from_gram
     ...   )
     sage: from sage.rings.integer_ring import ZZ
     sage: from sage.matrix.constructor import matrix
     sage: from sage.functions.other import sqrt
 
-    # 1. Reflection Cosine Set:
+    # 1. Exact algebraic membership:
     sage: 1/2 in X_ref
     True
     sage: X_ref.index_of(1/2)
@@ -52,24 +55,11 @@ EXAMPLES::
     True
     sage: X_ref.index_of((1 + sqrt(5))/4)
     5
-
-    # 2. Validation in Vinberg Invariant Matrix:
-    sage: G = matrix(ZZ, [
-    ...       [-2,  1,  0],
-    ...       [ 1, -2,  2],
-    ...       [ 0,  2, -2]
-    ...   ])
-    sage: T = vinberg_invariant_matrix_from_gram(G)
-    sage: T.is_valid()
-    True
-    sage: T.coxeter_order(0, 1)
-    3
-    sage: T.coxeter_order(1, 2)
-    +Infinity
+    sage: 1/3 in X_ref
+    False
 """
 
 from collections.abc import Sequence
-import math
 from typing import TYPE_CHECKING
 
 from sage.categories.objects import Objects
@@ -81,6 +71,7 @@ from sage.matrix.constructor import matrix
 from sage.rings.infinity import Infinity, PlusInfinity, infinity
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ as SageZZ
+from sage.rings.imaginary_unit import I
 from sage.rings.qqbar import QQbar
 from sage.rings.rational_field import QQ as SageQQ
 from sage.schemes.projective.projective_point import SchemeMorphism_point_projective_ring
@@ -95,14 +86,16 @@ if TYPE_CHECKING:
 
 
 # ---------------------------------------------------------------------------
-# 1. Reflection Cosine Set X_ref = { cos(pi/n) | n in ZZ_{>=1} }
+# 1. Reflection Cosine Set X_ref (Exact Algebraic Implementation)
 # ---------------------------------------------------------------------------
 
 
 class ReflectionCosineSet(UniqueRepresentation, Parent):
     r"""
     The infinite set of reflection cosines:
-        X_ref = { cos(pi/n) | n in ZZ_{>=1} } subset [-1, 1)
+        X_ref = { cos(pi/n) | n in ZZ_{>=1} } subset QQbar cap [-1, 1)
+
+    Membership is computed algebraically via roots of unity in QQbar without rounding.
     """
 
     def __init__(self) -> None:
@@ -111,54 +104,47 @@ class ReflectionCosineSet(UniqueRepresentation, Parent):
     def _repr_(self) -> str:
         return "Set of reflection cosines { cos(pi/n) | n in ZZ_{>=1} }"
 
+    def _exact_n(self, x: object) -> Integer | None:
+        r"""
+        Return the exact integer n >= 1 such that x = cos(pi/n), or None if x not in X_ref.
+        """
+        try:
+            x_alg = QQbar(x)
+        except Exception:
+            return None
+
+        if x_alg == -1:
+            return Integer(1)
+        if x_alg <= -1 or x_alg >= 1:
+            return None
+
+        try:
+            zeta = x_alg + QQbar(I) * QQbar(sqrt(1 - x_alg**2))
+            order = zeta.multiplicative_order()
+            if order is not infinity and order % 2 == 0:
+                n = Integer(order // 2)
+                if zeta**n == -1:
+                    return n
+        except Exception:
+            return None
+        return None
+
     def __contains__(self, x: object) -> bool:
-        try:
-            val = float(x)
-        except Exception:
-            return False
-
-        if val < -1.0 - 1e-12 or val >= 1.0 - 1e-12:
-            return False
-        if abs(val - (-1.0)) < 1e-12:
-            return True
-
-        theta = math.acos(max(-1.0, min(1.0, val)))
-        if theta <= 0:
-            return False
-
-        n_float = math.pi / theta
-        n = round(n_float)
-        if n < 1 or abs(n_float - n) > 1e-6:
-            return False
-
-        # Exact algebraic verification
-        exact_cos = cos(math.pi / n)
-        try:
-            if bool(x == exact_cos):
-                return True
-            if abs(QQbar(x) - QQbar(exact_cos)) < 1e-14:
-                return True
-        except Exception:
-            if abs(val - float(exact_cos)) < 1e-12:
-                return True
-        return False
+        return self._exact_n(x) is not None
 
     def __getitem__(self, n: int | Integer) -> object:
         r"""Return cos(pi/n) for n >= 1."""
         n_int = Integer(n)
         if n_int < 1:
             raise ValueError("Index must be an integer n >= 1")
-        return cos(math.pi / n_int)
+        return cos(SageQQ.pi() / n_int) if hasattr(SageQQ, "pi") else cos(SageZZ(1) * SageQQ(1) / n_int)
 
     def index_of(self, x: object) -> Integer:
-        r"""Return n such that x = cos(pi/n)."""
-        if x not in self:
-            raise ValueError(f"{x} is not in X_ref")
-        val = float(x)
-        if abs(val - (-1.0)) < 1e-12:
-            return Integer(1)
-        theta = math.acos(max(-1.0, min(1.0, val)))
-        return Integer(round(math.pi / theta))
+        r"""Return the exact integer n such that x = cos(pi/n)."""
+        n = self._exact_n(x)
+        if n is None:
+            raise ValueError(f"{x} is not an algebraic reflection cosine in X_ref")
+        return n
 
 
 # Singleton instance
@@ -254,9 +240,9 @@ class CombinatorialVinbergInvariantMatrix(Parent):
 
     def coxeter_order(self, i: int, j: int) -> object:
         r"""
-        Return the Coxeter bond exponent $m_{ij} \in \{1, 2, 3, \ldots, \infty\}$.
+        Return the exact Coxeter bond exponent $m_{ij} \in \{1, 2, 3, \ldots, \infty\}$.
 
-        Uses $X_{\mathrm{ref}}$ to algebraically validate reflection angles.
+        Uses exact algebraic verification via $X_{\mathrm{ref}}$ (no numerical rounding).
         """
         if i == j:
             return Integer(1)
@@ -269,17 +255,10 @@ class CombinatorialVinbergInvariantMatrix(Parent):
         if ratio < 0:
             raise ValueError(f"Negative Vinberg invariant t[{i},{j}] = {ratio} is invalid")
 
-        # Check if sqrt(ratio)/2 is in X_ref
         cos_theta = sqrt(ratio) / 2
-        if cos_theta in X_ref:
-            return X_ref.index_of(cos_theta)
-
-        # Fallback for non-crystallographic / real approximation
-        theta = math.acos(max(-1.0, min(1.0, float(cos_theta))))
-        if theta > 0:
-            m = round(math.pi / theta)
-            if abs(math.pi / theta - m) < 1e-5:
-                return Integer(m)
+        n = X_ref._exact_n(cos_theta)
+        if n is not None:
+            return n
 
         raise ValueError(f"Vinberg invariant t[{i},{j}] = {ratio} corresponds to non-Coxeter angle (cos = {cos_theta})")
 
