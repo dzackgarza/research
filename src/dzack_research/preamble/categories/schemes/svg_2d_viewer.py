@@ -12,7 +12,9 @@ Provides crisp vector graphics matching the visual aesthetic of the 3D Three.js 
 - Interactive SVG tooltips for all lattice points
 """
 
+import io
 import math
+import re
 from typing import Any, Mapping, Optional, Sequence, Tuple
 
 
@@ -28,6 +30,35 @@ def _star_path(cx: float, cy: float, r_outer: float, r_inner: float, points: int
         y = cy + r * math.sin(angle)
         coords.append(f"{x:.2f},{y:.2f}")
     return "M " + " L ".join(coords) + " Z"
+
+
+def _latex_to_svg_group(tex_str: str, cx: float, cy: float, color: str = "#F8FAFC", fontsize: float = 14) -> str:
+    """Render a LaTeX math formula into an embedded vector SVG group centered at (cx, cy)."""
+    if not tex_str:
+        return ""
+    try:
+        import matplotlib.pyplot as plt
+        math_str = "$" + tex_str.strip("$") + "$"
+        fig = plt.figure(figsize=(2, 0.8))
+        fig.text(0.5, 0.5, math_str, fontsize=fontsize, color=color, ha="center", va="center")
+        buf = io.StringIO()
+        fig.savefig(buf, format="svg", transparent=True, bbox_inches="tight", pad_inches=0.01)
+        plt.close(fig)
+        svg_data = buf.getvalue()
+
+        w_match = re.search(r'width="([^"]+)"', svg_data)
+        h_match = re.search(r'height="([^"]+)"', svg_data)
+        w = float(re.sub(r'[^\d.]', '', w_match.group(1))) if w_match else 30.0
+        h = float(re.sub(r'[^\d.]', '', h_match.group(1))) if h_match else 20.0
+
+        start_idx = svg_data.find("<svg")
+        if start_idx != -1:
+            inner_svg = svg_data[start_idx:]
+            return f'<g transform="translate({cx - w/2:.1f}, {cy - h/2:.1f})">{inner_svg}</g>'
+        return ""
+    except Exception:
+        clean = tex_str.replace("$", "")
+        return f'<text x="{cx:.1f}" y="{cy + 4.5:.1f}" fill="{color}" font-size="{fontsize}" font-weight="700" text-anchor="middle">{clean}</text>'
 
 
 def generate_2d_polygon_svg(
@@ -354,16 +385,14 @@ def generate_2d_polygon_svg(
             f'</g>'
         )
 
-    # 14. Centered Label
+    # 14. Centered Math Label
     if latex_label and vertices:
         cx_val = sum(float(v[0]) for v in vertices) / len(vertices)
         cy_val = sum(float(v[1]) for v in vertices) / len(vertices)
         lx, ly = to_svg(cx_val, cy_val)
-        clean_lbl = latex_label.replace("$", "")
-        svg_parts.append(
-            f'<text x="{lx:.1f}" y="{ly + 4.5:.1f}" fill="#F8FAFC" font-size="14" font-weight="700" text-anchor="middle" '
-            f'style="text-shadow: 0 2px 6px rgba(0,0,0,0.9);">{clean_lbl}</text>'
-        )
+        lbl_svg = _latex_to_svg_group(latex_label, lx, ly, color="#F8FAFC", fontsize=15)
+        if lbl_svg:
+            svg_parts.append(lbl_svg)
 
     svg_parts.append('</svg>')
     return "\n".join(svg_parts)

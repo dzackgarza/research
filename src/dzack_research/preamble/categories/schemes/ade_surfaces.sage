@@ -1144,19 +1144,29 @@ class ADEBaseSurface(Parent):
         return "$\\displaystyle " + self._latex_() + "$"
 
     def _repr_html_(self) -> str:
-        """Render high-definition 2D vector SVG representation for Jupyter with compiled MathText."""
-        import tempfile
-        g = self.plot(figsize=[4.8, 4.8])
+        """Render high-definition 2D vector SVG representation for Jupyter."""
         try:
-            with tempfile.NamedTemporaryFile(suffix=".svg") as tf:
-                g.save(tf.name)
-                svg_content = open(tf.name).read()
-                if svg_content.startswith("<?xml"):
-                    svg_content = svg_content[svg_content.find("<svg"):]
-                return (
-                    f'<div style="max-width: 480px; background: #07090E; border: 1px solid #1E293B; '
-                    f'border-radius: 12px; padding: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.4);">{svg_content}</div>'
-                )
+            from dzack_research.preamble.categories.schemes.svg_2d_viewer import generate_2d_polygon_svg
+            verts = [list(v) for v in self.vertices()]
+            int_pts = [list(p) for p in self.interior_integral_points()]
+            bnd_pts = [list(p) for p in self.boundary_integral_points()]
+            dist_pts = [list(p) for p in self.distinguished_boundary_points()]
+            blue_facets = [[[float(c) for c in v] for v in f.vertices()] for f in self._cover._blue_facets()]
+            p_star = [float(c) for c in self.p_star()]
+            sides = self._cover.side_decorations()
+            return generate_2d_polygon_svg(
+                verts,
+                interior_points=int_pts,
+                boundary_points=bnd_pts,
+                distinguished_points=dist_pts,
+                blue_facets=blue_facets,
+                p_star=p_star,
+                side_decorations=sides,
+                latex_label=self._cover._latex_label,
+                theme="dark",
+                width=480,
+                height=380,
+            )
         except Exception:
             return ""
 
