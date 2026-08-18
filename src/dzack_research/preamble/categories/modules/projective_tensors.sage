@@ -185,6 +185,156 @@ class ProjectiveWeightedGraphs(Category):
     def Symmetric(self) -> "SymmetricProjectiveWeightedGraphs":
         return SymmetricProjectiveWeightedGraphs(self)
 
+    class ParentMethods:
+        r"""Universal methods and predicates for all projective weighted graphs."""
+
+        def _get_n_and_verts(self) -> tuple[int, tuple[str, ...]]:
+            n = self.num_vertices() if hasattr(self, "num_vertices") else self.rank()
+            verts = self.vertices() if hasattr(self, "vertices") else tuple(str(v) for v in range(n))
+            return n, verts
+
+        def is_symmetric(self) -> bool:
+            r"""Return True if the directed edge weights are symmetric."""
+            n, verts = self._get_n_and_verts()
+            for i in range(n):
+                for j in range(i + 1, n):
+                    u, v = verts[i], verts[j]
+                    w1 = self.edge_weight(u, v) if hasattr(self, "edge_weight") else self[i, j]
+                    w2 = self.edge_weight(v, u) if hasattr(self, "edge_weight") else self[j, i]
+                    if w1[0] * w2[1] != w2[0] * w1[1]:
+                        return False
+            return True
+
+        def is_coxeter(self) -> bool:
+            r"""Return True if node weights are (4 : 1) and off-diagonal weights satisfy reflection angles."""
+            if not self.is_symmetric():
+                return False
+            n, verts = self._get_n_and_verts()
+            for i in range(n):
+                u = verts[i]
+                diag = self.vertex_weight(u) if hasattr(self, "vertex_weight") else self[i, i]
+                if diag[0] * 1 != 4 * diag[1]:
+                    return False
+                for j in range(i + 1, n):
+                    v = verts[j]
+                    wt = self.edge_weight(u, v) if hasattr(self, "edge_weight") else self[i, j]
+                    if wt[1] == 0:
+                        continue
+                    ratio = wt[0] / wt[1]
+                    if ratio >= 4:
+                        continue
+                    if ratio < 0 or (sqrt(ratio) / 2 not in X_ref):
+                        return False
+            return True
+
+        def is_crystallographic(self) -> bool:
+            r"""Return True if all finite Coxeter bonds belong to {2, 3, 4, 6}."""
+            if not self.is_coxeter():
+                return False
+            n, verts = self._get_n_and_verts()
+            for i in range(n):
+                for j in range(i + 1, n):
+                    m = self.coxeter_order(i, j) if hasattr(self, "coxeter_order") else None
+                    if m is not None and m is not infinity:
+                        if m not in (2, 3, 4, 6):
+                            return False
+            return True
+
+        def is_simply_laced(self) -> bool:
+            r"""Return True if all finite Coxeter bonds belong to {2, 3} (types A, D, E)."""
+            if not self.is_coxeter():
+                return False
+            n, verts = self._get_n_and_verts()
+            for i in range(n):
+                for j in range(i + 1, n):
+                    m = self.coxeter_order(i, j) if hasattr(self, "coxeter_order") else None
+                    if m is not None and m is not infinity:
+                        if m not in (2, 3):
+                            return False
+            return True
+
+        def is_elliptic(self, indices: Sequence[int] | None = None) -> bool:
+            r"""Check if the system (or sub-system) is elliptic (positive definite Schläfli matrix)."""
+            if not self.is_symmetric():
+                return False
+            try:
+                S = self.schlafli_matrix(indices=indices)
+                return bool(S.is_positive_definite())
+            except Exception:
+                return False
+
+        def is_parabolic(self, indices: Sequence[int] | None = None) -> bool:
+            r"""Check if the system (or sub-system) is parabolic (positive semi-definite with corank 1)."""
+            if not self.is_symmetric():
+                return False
+            try:
+                S = self.schlafli_matrix(indices=indices)
+                if S.nrows() == 0:
+                    return False
+                return bool(S.is_positive_semidefinite() and S.rank() == S.nrows() - 1)
+            except Exception:
+                return False
+
+        def is_hyperbolic(self, indices: Sequence[int] | None = None) -> bool:
+            r"""Check if the system (or sub-system) is hyperbolic (signature (n-1, 1))."""
+            if not self.is_symmetric():
+                return False
+            try:
+                S = self.schlafli_matrix(indices=indices)
+                if S.nrows() == 0:
+                    return False
+                return bool(not S.is_positive_semidefinite() and (S.det() < 0))
+            except Exception:
+                return False
+
+        def is_compact_hyperbolic(self, indices: Sequence[int] | None = None) -> bool:
+            r"""Check if the system is compact hyperbolic (Lannér simplex: hyperbolic with all proper minors elliptic)."""
+            if not self.is_hyperbolic(indices=indices):
+                return False
+            n, verts = self._get_n_and_verts()
+            target_indices = list(range(n)) if indices is None else list(indices)
+            k = len(target_indices)
+            for size in range(1, k):
+                for subset in combinations(target_indices, size):
+                    if not self.is_elliptic(indices=subset):
+                        return False
+            return True
+
+        def is_paracompact_hyperbolic(self, indices: Sequence[int] | None = None) -> bool:
+            r"""Check if the system is paracompact hyperbolic (hyperbolic and contains at least one parabolic minor)."""
+            if not self.is_hyperbolic(indices=indices):
+                return False
+            n, verts = self._get_n_and_verts()
+            target_indices = list(range(n)) if indices is None else list(indices)
+            k = len(target_indices)
+            for size in range(1, k):
+                for subset in combinations(target_indices, size):
+                    if self.is_parabolic(indices=subset):
+                        return True
+            return False
+
+        def find_all_parabolics(self) -> list[list[int]]:
+            r"""Find all vertex index subsets that form parabolic subdiagrams."""
+            if not self.is_symmetric():
+                return []
+            n, verts = self._get_n_and_verts()
+            parabolics = []
+            for size in range(1, n + 1):
+                for subset in combinations(range(n), size):
+                    if self.is_parabolic(indices=subset):
+                        parabolics.append(list(subset))
+            return parabolics
+
+        def find_maximal_parabolics(self) -> list[list[int]]:
+            r"""Find all maximal parabolic subdiagrams (not properly contained in any larger parabolic)."""
+            all_parabolics = self.find_all_parabolics()
+            maximal = []
+            for p in all_parabolics:
+                p_set = set(p)
+                if not any(set(q) > p_set for q in all_parabolics):
+                    maximal.append(p)
+            return maximal
+
 
 class SymmetricProjectiveWeightedGraphs(Category):
     r"""Category of symmetric projective weighted graphs (undirected / symmetric intersection matrices)."""
@@ -205,6 +355,76 @@ class SymmetricProjectiveWeightedGraphs(Category):
             CoxeterDiagrams,
         )
         return CoxeterDiagrams()
+
+    class ParentMethods:
+        r"""Methods for symmetric projective weighted graphs and combinatorial intersection matrices."""
+
+        def schlafli_matrix(self, indices: Sequence[int] | None = None) -> matrix:
+            r"""
+            Reconstruct the Schläfli matrix $S = (s_{ij})$ where $s_{ii} = 1$ and $s_{ij} = -\sqrt{t_{ij}}/2$.
+            """
+            n = self.num_vertices() if hasattr(self, "num_vertices") else self.rank()
+            idx_list = list(range(n)) if indices is None else list(indices)
+            k = len(idx_list)
+            verts = self.vertices() if hasattr(self, "vertices") else tuple(str(v) for v in range(n))
+            S_mat = [[SageQQ.zero() for _ in range(k)] for _ in range(k)]
+
+            for i_idx, i in enumerate(idx_list):
+                S_mat[i_idx][i_idx] = SageQQ.one()
+                for j_idx in range(i_idx + 1, k):
+                    j = idx_list[j_idx]
+                    u, v = verts[i], verts[j]
+                    pt = self.edge_weight(u, v) if hasattr(self, "edge_weight") else self[i, j]
+                    if pt[1] == 0:
+                        raise ValueError(f"Cannot reconstruct finite Schläfli entry from infinite ratio [1 : 0]")
+                    t_val = pt[0] / pt[1]
+                    val = -sqrt(t_val) / 2
+                    S_mat[i_idx][j_idx] = val
+                    S_mat[j_idx][i_idx] = val
+
+            return matrix(S_mat)
+
+        def gram_tensor(
+            self,
+            root_norms: Sequence[object] | object = -2,
+            indices: Sequence[int] | None = None,
+        ) -> matrix:
+            r"""
+            Reconstruct the Gram matrix $G = (b(v_i, v_j))$ given diagonal root norms $q_i = b(v_i, v_i)$.
+            """
+            n = self.num_vertices() if hasattr(self, "num_vertices") else self.rank()
+            idx_list = list(range(n)) if indices is None else list(indices)
+            k = len(idx_list)
+            verts = self.vertices() if hasattr(self, "vertices") else tuple(str(v) for v in range(n))
+
+            ring = self.base_ring()
+            if isinstance(root_norms, (int, Integer)):
+                norms = [ring(root_norms)] * k
+            elif isinstance(root_norms, Sequence):
+                assert len(root_norms) == k, f"Expected {k} root norms, got {len(root_norms)}"
+                norms = [ring(q) for q in root_norms]
+            else:
+                norms = [ring(-2)] * k
+
+            G_mat = [[ring.zero() for _ in range(k)] for _ in range(k)]
+            for i_idx, i in enumerate(idx_list):
+                G_mat[i_idx][i_idx] = norms[i_idx]
+                for j_idx in range(i_idx + 1, k):
+                    j = idx_list[j_idx]
+                    u, v = verts[i], verts[j]
+                    pt = self.edge_weight(u, v) if hasattr(self, "edge_weight") else self[i, j]
+                    if pt[1] == 0:
+                        raise ValueError(f"Cannot reconstruct finite Gram entry from infinite Vinberg ratio [1 : 0]")
+                    t_val = pt[0] / pt[1]
+                    val_sq = t_val * norms[i_idx] * norms[j_idx] / 4
+                    try:
+                        val = ring(sqrt(val_sq))
+                    except Exception:
+                        val = sqrt(val_sq)
+                    G_mat[i_idx][j_idx] = val
+                    G_mat[j_idx][i_idx] = val
+
+            return matrix(G_mat)
 
 
 # ---------------------------------------------------------------------------
@@ -246,6 +466,8 @@ class CombinatorialVinbergInvariantMatrix(Parent):
         names: Sequence[str] | None = None,
         category: Category | None = None,
     ) -> None:
+        cat = category if category is not None else ProjectiveWeightedGraphs().Symmetric()
+        Parent.__init__(self, base=base_ring, category=cat)
         self._rank = int(rank)
         self._projective_space = ProjectiveSpace(base_ring, 1, "x,y")
         self._names = tuple(names) if names is not None else tuple(f"v_{i}" for i in range(self._rank))
@@ -259,9 +481,6 @@ class CombinatorialVinbergInvariantMatrix(Parent):
                 sym_entries[(i, j)] = pt
                 sym_entries[(j, i)] = pt
         self._entries = sym_entries
-
-        cat = category if category is not None else ProjectiveWeightedGraphs().Symmetric()
-        Parent.__init__(self, base=base_ring, category=cat)
 
     def rank(self) -> int:
         r"""Return the number of vertices / generators."""
@@ -358,62 +577,6 @@ class CombinatorialVinbergInvariantMatrix(Parent):
         ]
         return SageCoxeterMatrix(raw_entries)
 
-    def gram_tensor(self, root_norms: Sequence[object] | object = -2) -> matrix:
-        r"""
-        Reconstruct the Gram matrix $G = (b(v_i, v_j))$ given diagonal root norms $q_i = b(v_i, v_i)$.
-
-        Args:
-            root_norms: A sequence of diagonal norms $(q_1, \dots, q_n)$, or a scalar (default: -2).
-        """
-        n = self._rank
-        if isinstance(root_norms, (int, Integer)):
-            norms = [self.base_ring()(root_norms)] * n
-        elif isinstance(root_norms, Sequence):
-            assert len(root_norms) == n, f"Expected {n} root norms, got {len(root_norms)}"
-            norms = [self.base_ring()(q) for q in root_norms]
-        else:
-            norms = [self.base_ring()(-2)] * n
-
-        ring = self.base_ring()
-        G_mat = [[ring.zero() for _ in range(n)] for _ in range(n)]
-
-        for i in range(n):
-            G_mat[i][i] = norms[i]
-            for j in range(i + 1, n):
-                pt = self[i, j]
-                if pt[1] == 0:
-                    raise ValueError(f"Cannot reconstruct finite Gram entry G[{i},{j}] from infinite Vinberg ratio [1 : 0]")
-                t_val = pt[0] / pt[1]
-                val_sq = t_val * norms[i] * norms[j] / 4
-                try:
-                    val = ring(sqrt(val_sq))
-                except Exception:
-                    val = sqrt(val_sq)
-                G_mat[i][j] = val
-                G_mat[j][i] = val
-
-        return matrix(G_mat)
-
-    def schlafli_matrix(self) -> matrix:
-        r"""
-        Reconstruct the Schläfli matrix $S = (s_{ij})$ where $s_{ii} = 1$ and $s_{ij} = -\sqrt{t_{ij}}/2$.
-        """
-        n = self._rank
-        S_mat = [[SageQQ.zero() for _ in range(n)] for _ in range(n)]
-
-        for i in range(n):
-            S_mat[i][i] = SageQQ.one()
-            for j in range(i + 1, n):
-                pt = self[i, j]
-                if pt[1] == 0:
-                    raise ValueError(f"Cannot reconstruct finite Schläfli entry from infinite ratio [1 : 0]")
-                t_val = pt[0] / pt[1]
-                val = -sqrt(t_val) / 2
-                S_mat[i][j] = val
-                S_mat[j][i] = val
-
-        return matrix(S_mat)
-
     def submatrix(self, indices: Sequence[int]) -> "CombinatorialVinbergInvariantMatrix":
         r"""Return the induced sub-invariant matrix on the specified vertex subset."""
         idx_list = list(indices)
@@ -424,83 +587,6 @@ class CombinatorialVinbergInvariantMatrix(Parent):
                 sub_entries[(new_i, new_j)] = self[old_i, old_j]
         sub_names = tuple(self._names[i] for i in idx_list)
         return CombinatorialVinbergInvariantMatrix(self.base_ring(), sub_entries, n_sub, names=sub_names)
-
-    def is_elliptic(self, indices: Sequence[int] | None = None) -> bool:
-        r"""Check if the system (or sub-system) is elliptic (positive definite Schläfli matrix)."""
-        target = self if indices is None else self.submatrix(indices)
-        if target.rank() == 0:
-            return True
-        try:
-            S = target.schlafli_matrix()
-            return S.is_positive_definite()
-        except ValueError:
-            return False
-
-    def is_parabolic(self, indices: Sequence[int] | None = None) -> bool:
-        r"""Check if the system (or sub-system) is parabolic (positive semi-definite with rank n-1)."""
-        target = self if indices is None else self.submatrix(indices)
-        if target.rank() == 0:
-            return False
-        try:
-            S = target.schlafli_matrix()
-            return S.is_positive_semidefinite() and S.rank() == target.rank() - 1
-        except ValueError:
-            return False
-
-    def is_hyperbolic(self, indices: Sequence[int] | None = None) -> bool:
-        r"""Check if the system (or sub-system) is hyperbolic (signature (n-1, 1))."""
-        target = self if indices is None else self.submatrix(indices)
-        if target.rank() == 0:
-            return False
-        try:
-            S = target.schlafli_matrix()
-            return not S.is_positive_semidefinite() and S.det() < 0
-        except ValueError:
-            return True
-
-    def is_compact_hyperbolic(self, indices: Sequence[int] | None = None) -> bool:
-        r"""Check if the system is compact hyperbolic (Lannér simplex: hyperbolic, and all proper sub-systems elliptic)."""
-        target = self if indices is None else self.submatrix(indices)
-        if not target.is_hyperbolic():
-            return False
-        n = target.rank()
-        for size in range(1, n):
-            for subset in combinations(range(n), size):
-                if not target.is_elliptic(subset):
-                    return False
-        return True
-
-    def is_paracompact_hyperbolic(self, indices: Sequence[int] | None = None) -> bool:
-        r"""Check if the system is paracompact hyperbolic (hyperbolic and contains at least one parabolic subdiagram)."""
-        target = self if indices is None else self.submatrix(indices)
-        if not target.is_hyperbolic():
-            return False
-        n = target.rank()
-        for size in range(1, n):
-            for subset in combinations(range(n), size):
-                if target.is_parabolic(subset):
-                    return True
-        return False
-
-    def find_all_parabolics(self) -> list[list[int]]:
-        r"""Find all vertex subsets that form parabolic subdiagrams."""
-        n = self._rank
-        parabolics = []
-        for size in range(1, n + 1):
-            for subset in combinations(range(n), size):
-                if self.is_parabolic(subset):
-                    parabolics.append(list(subset))
-        return parabolics
-
-    def find_maximal_parabolics(self) -> list[list[int]]:
-        r"""Find all maximal parabolic subdiagrams (not properly contained in any larger parabolic)."""
-        all_parabolics = self.find_all_parabolics()
-        maximal = []
-        for p in all_parabolics:
-            p_set = set(p)
-            if not any(set(q) > p_set for q in all_parabolics):
-                maximal.append(p)
-        return maximal
 
     def to_digraph(self) -> "ProjectiveWeightedDiGraph":
         r"""Construct a ProjectiveWeightedDiGraph with node and edge weights in P^1(R)."""
@@ -671,6 +757,8 @@ class ProjectiveWeightedDiGraph(Parent):
         edges: Sequence[tuple[object, object, object]] | None = None,
         category: Category | None = None,
     ) -> None:
+        cat = category if category is not None else ProjectiveWeightedGraphs()
+        Parent.__init__(self, base=base_ring, category=cat)
         self._projective_space = ProjectiveSpace(base_ring, 1, "x,y")
         self._vertices = tuple(str(v) for v in vertices)
         self._v_to_idx = {v: i for i, v in enumerate(self._vertices)}
@@ -697,8 +785,7 @@ class ProjectiveWeightedDiGraph(Parent):
                 u_str, v_str = str(e[0]), str(e[1])
                 wt = to_projective_point(self._projective_space, e[2])
                 e_weights[(u_str, v_str)] = wt
-        cat = category if category is not None else ProjectiveWeightedGraphs()
-        Parent.__init__(self, base=base_ring, category=cat)
+        self._edge_weights = e_weights
 
     def vertices(self) -> tuple[str, ...]:
         r"""Return the tuple of vertex labels."""
