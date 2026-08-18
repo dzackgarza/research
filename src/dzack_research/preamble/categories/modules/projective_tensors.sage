@@ -370,10 +370,6 @@ class BilinearFormTensor(ProjectiveTensor):
         return "$\\displaystyle " + self._latex_() + "$"
 
 
-# Aliases
-ProjectiveBilinearForm = BilinearFormTensor
-ProjectiveBilinearFormTensor = BilinearFormTensor
-
 
 # ---------------------------------------------------------------------------
 # 4. Constructor Functions
