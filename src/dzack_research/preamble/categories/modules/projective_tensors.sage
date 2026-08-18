@@ -72,7 +72,7 @@ TODOs & Architectural Roadmap
 - [ ] Rename `gram_matrix` to `gram_tensor` across the entire preamble codebase.
 """
 
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from itertools import combinations
 import math
 from typing import TYPE_CHECKING
@@ -443,6 +443,10 @@ class CombinatorialVinbergInvariantMatrix(Parent):
                 maximal.append(p)
         return maximal
 
+    def to_digraph(self) -> "ProjectiveWeightedDiGraph":
+        r"""Construct a ProjectiveWeightedDiGraph with node and edge weights in P^1(R)."""
+        return ProjectiveWeightedDiGraph.from_combinatorial_matrix(self)
+
     def graph(self) -> Graph:
         r"""Construct a Sage Graph representing the Coxeter diagram."""
         G = Graph()
@@ -584,3 +588,154 @@ def combinatorial_vinberg_invariant_matrix(
             entries[(i, j)] = to_projective_point(P1, val)
 
     return CombinatorialVinbergInvariantMatrix(base_ring, entries, n_rows, names=names)
+
+
+# ---------------------------------------------------------------------------
+# 5. Projective Weighted Directed Graphs (Node and Edge Weights in P^1(R))
+# ---------------------------------------------------------------------------
+
+
+class ProjectiveWeightedDiGraph(Parent):
+    r"""
+    A Directed Graph with both node weights and edge weights in $\mathbb{P}^1(R)$.
+
+    Bidirectionally dual to :class:`CombinatorialVinbergInvariantMatrix`:
+    - Node weights correspond to diagonal invariants $t_{ii} \in \mathbb{P}^1(R)$.
+    - Directed edge weights correspond to off-diagonal invariants $t_{ij} \in \mathbb{P}^1(R)$.
+    """
+
+    def __init__(
+        self,
+        base_ring: object,
+        vertices: Sequence[str | int],
+        vertex_weights: Mapping[object, object] | Sequence[object] | None = None,
+        edges: Sequence[tuple[object, object, object]] | None = None,
+    ) -> None:
+        self._projective_space = ProjectiveSpace(base_ring, 1, "x,y")
+        self._vertices = tuple(str(v) for v in vertices)
+        self._v_to_idx = {v: i for i, v in enumerate(self._vertices)}
+
+        # 1. Initialize vertex weights
+        v_weights = {}
+        if isinstance(vertex_weights, Mapping):
+            for v in self._vertices:
+                wt = vertex_weights.get(v, vertex_weights.get(self._v_to_idx[v], [4, 1]))
+                v_weights[v] = to_projective_point(self._projective_space, wt)
+        elif isinstance(vertex_weights, Sequence):
+            for i, v in enumerate(self._vertices):
+                wt = vertex_weights[i] if i < len(vertex_weights) else [4, 1]
+                v_weights[v] = to_projective_point(self._projective_space, wt)
+        else:
+            for v in self._vertices:
+                v_weights[v] = self._projective_space([4, 1])
+        self._vertex_weights = v_weights
+
+        # 2. Initialize directed edge weights
+        e_weights = {}
+        if edges is not None:
+            for e in edges:
+                u_str, v_str = str(e[0]), str(e[1])
+                wt = to_projective_point(self._projective_space, e[2])
+                e_weights[(u_str, v_str)] = wt
+        self._edge_weights = e_weights
+
+        Parent.__init__(self, base=base_ring, category=Objects())
+
+    def vertices(self) -> tuple[str, ...]:
+        r"""Return the tuple of vertex labels."""
+        return self._vertices
+
+    def num_vertices(self) -> int:
+        r"""Return the number of vertices."""
+        return len(self._vertices)
+
+    def vertex_weight(self, v: object) -> SchemeMorphism_point_projective_ring:
+        r"""Return the weight of vertex $v$ in $\mathbb{P}^1(R)$."""
+        v_str = str(v)
+        return self._vertex_weights.get(v_str, self._projective_space([4, 1]))
+
+    def edge_weight(self, u: object, v: object) -> SchemeMorphism_point_projective_ring:
+        r"""Return the directed edge weight $(u \to v)$ in $\mathbb{P}^1(R)$."""
+        u_str, v_str = str(u), str(v)
+        return self._edge_weights.get((u_str, v_str), self._projective_space([0, 1]))
+
+    def edges(self) -> list[tuple[str, str, SchemeMorphism_point_projective_ring]]:
+        r"""Return all directed edges with non-zero weight."""
+        result = []
+        for (u, v), wt in self._edge_weights.items():
+            if wt[0] != 0:  # Non-zero projective point
+                result.append((u, v, wt))
+        return result
+
+    def to_combinatorial_matrix(self) -> CombinatorialVinbergInvariantMatrix:
+        r"""
+        Convert to the dual CombinatorialVinbergInvariantMatrix.
+        """
+        n = len(self._vertices)
+        entries = {}
+        for i, u in enumerate(self._vertices):
+            entries[(i, i)] = self.vertex_weight(u)
+            for j, v in enumerate(self._vertices):
+                if i != j:
+                    wt_uv = self.edge_weight(u, v)
+                    wt_vu = self.edge_weight(v, u)
+                    wt = wt_uv if wt_uv[0] != 0 else wt_vu
+                    entries[(i, j)] = wt
+        return CombinatorialVinbergInvariantMatrix(
+            self.base_ring(), entries, n, names=self._vertices
+        )
+
+    def to_vinberg_matrix(self) -> CombinatorialVinbergInvariantMatrix:
+        r"""Alias for :meth:`to_combinatorial_matrix`."""
+        return self.to_combinatorial_matrix()
+
+    @classmethod
+    def from_combinatorial_matrix(
+        cls, T: CombinatorialVinbergInvariantMatrix
+    ) -> "ProjectiveWeightedDiGraph":
+        r"""
+        Construct a ProjectiveWeightedDiGraph from a CombinatorialVinbergInvariantMatrix.
+        """
+        ring = T.base_ring()
+        verts = list(T.variable_names())
+        n = T.rank()
+        v_weights = {verts[i]: T[i, i] for i in range(n)}
+        edges = []
+        for i in range(n):
+            for j in range(n):
+                if i != j:
+                    wt = T[i, j]
+                    if wt[0] != 0:
+                        edges.append((verts[i], verts[j], wt))
+        return cls(ring, verts, vertex_weights=v_weights, edges=edges)
+
+    def underlying_digraph(self) -> object:
+        r"""Construct a native Sage DiGraph carrying the projective weights as attributes."""
+        from sage.graphs.digraph import DiGraph
+        D = DiGraph(multiedges=False)
+        for v in self._vertices:
+            D.add_vertex(v)
+            D.set_vertex(v, self.vertex_weight(v))
+        for u, v, wt in self.edges():
+            D.add_edge(u, v, wt)
+        return D
+
+    def _repr_(self) -> str:
+        return (
+            f"Projective Weighted DiGraph on {self.num_vertices()} vertices over {self.base_ring()}:\n"
+            f"  Vertices: {self._vertices}\n"
+            f"  Edges: {[(u, v, str(wt)) for u, v, wt in self.edges()]}"
+        )
+
+
+def projective_weighted_digraph(
+    base_ring: object,
+    vertices: Sequence[str | int],
+    vertex_weights: Mapping[object, object] | Sequence[object] | None = None,
+    edges: Sequence[tuple[object, object, object]] | None = None,
+) -> ProjectiveWeightedDiGraph:
+    r"""Construct a ProjectiveWeightedDiGraph."""
+    return ProjectiveWeightedDiGraph(
+        base_ring, vertices, vertex_weights=vertex_weights, edges=edges
+    )
+
