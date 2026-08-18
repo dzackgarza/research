@@ -319,7 +319,12 @@ class ADELogPair(ToricSubscheme, Parent):
         return self.cover()._latex_label
 
     def cartan_type(self) -> CartanType:
-        return self.cover().cartan_type()
+        cov = self.cover()
+        if cov is not self:
+            return cov.cartan_type()
+        if self._affine:
+            return CartanType([self._letter, self._rank, 1])
+        return CartanType([self._letter, self._rank])
 
     def dynkin_diagram(self) -> object:
         return self.cartan_type().dynkin_diagram()

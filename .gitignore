@@ -24,3 +24,4 @@ tests/.report/
 # Jupyter collaboration runtime databases
 .jupyter_ystore.db
 .jupyter/
+.virtual_documents/
