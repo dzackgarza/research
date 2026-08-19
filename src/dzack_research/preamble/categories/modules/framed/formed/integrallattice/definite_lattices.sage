@@ -144,6 +144,280 @@ class DefiniteLattices(Category):
             positive, negative = self.signature_pair()
             return self.vectors_of_square(2 if negative == 0 else -2)
 
+        def vectors_of_square_and_divisibility(
+            self: "Module", square: "RingElement", divisibility: "RingElement"
+        ) -> "Set":
+            r"""Return $\{x\in L: b(x,x)=\text{square},\ \operatorname{div}(x)=\text{divisibility}\}$.
+
+            The divisibility of $x$ is the positive generator of the pairing
+            ideal $b(x, L)\subseteq\mathbb Z$ -- the owned
+            :meth:`IntegralLattices.ElementMethods.div` -- so this set is
+            the square's vectors filtered by their own divisibility, which
+            is the definition (reference operation: Hecke
+            ``vectors_of_square_and_divisibility``).
+            """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.sets.sets import finite_ordered_set
+
+            return finite_ordered_set(
+                tuple(
+                    element
+                    for element in self.vectors_of_square(square)
+                    if element.div() == divisibility
+                )
+            )
+
+        def close_vectors(
+            self: "Module", target: "Element", square_bound: "RingElement"
+        ) -> tuple:
+            r"""Return the $(x, b(x-t,x-t))$ with $x\in L$ within the bound of $t$.
+
+            Enumeration of the lattice points in a ball about a rational
+            point $t\in L\otimes\mathbb Q$ -- the affine counterpart of
+            :meth:`vectors_of_square`, and the engine behind coset
+            questions: the vectors of $t + L$ of a given square are the
+            $x - t$ over this enumeration.  Fincke--Pohst around a target,
+            reached through PARI's ``qfcvp`` on the length Gram matrix;
+            every returned displacement is re-verified exactly, so the
+            engine's floating bound cannot admit a stray point.  The sign
+            regime is the lattice's own, as in :meth:`vectors_of_square`:
+            the bound and the returned squares carry the definite form's
+            sign.  (Reference operations: Hecke ``close_vectors`` /
+            ``enumerate_quadratic_triples``.)
+            """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.utilities import zipsum
+
+            point = self._target_coordinates(target)
+            positive, negative = self.signature_pair()
+            sign = 1 if negative == 0 else -1
+            length_bound = sign * square_bound
+            assert length_bound >= 0, (
+                f"a definite form takes values of one sign only; "
+                f"square_bound={square_bound}, signature={self.signature_pair()}"
+            )
+            length_gram = matrix(SageZZ, self._length_gram_matrix())
+            _count, _largest, coordinates = length_gram.__pari__().qfcvp(
+                point.__pari__().Col(), length_bound + SageQQ(1) / 2
+            )
+            pairs = []
+            for column in matrix(SageQQ, coordinates).columns():
+                displacement = column - point
+                length = displacement * length_gram * displacement
+                if length > length_bound:
+                    continue  # the engine bound is floating; the filter is exact
+                pairs.append(
+                    (
+                        zipsum(
+                            (SageZZ(entry) for entry in column),
+                            self.module_generators(),
+                            self.zero(),
+                        ),
+                        sign * length,
+                    )
+                )
+            return tuple(pairs)
+
+        def root_sublattice(self: "Module") -> "Module":
+            r"""Return $R(L)\hookrightarrow L$: the sublattice the roots
+            generate, recognized and refined into ``RootLattices``.
+
+            Root-lattice recognition, computed from the definitions rather
+            than from determinant tables (reference implementation: Hecke
+            ``root_lattice_recognition``, ``QuadForm/Quad/ZLattices.jl``):
+
+            1. The roots are finite (definiteness), and any group order on
+               the coordinate module splits them into positive and negative
+               halves; lexicographic order is used.  A positive root is
+               *simple* exactly when it is not the sum of two positive
+               roots, so the simple system is read off by membership.
+            2. All roots have square $\pm 2$, so the root system is simply
+               laced and its irreducible components are of type $A$, $D$,
+               or $E$ -- the classification supplies the candidates, and
+               each component is matched to its type by graph isomorphism
+               of Dynkin diagrams (Sage's certificate orders the component's
+               simple roots into the type's standard labelling).
+            3. The decisive check: the reordered simple system's matrix
+               $\bigl(2\,b(\alpha_i,\alpha_j)/b(\alpha_j,\alpha_j)\bigr)$
+               must equal the recognized type's Cartan matrix, and the
+               recognized type must have exactly as many roots as $L$ does.
+
+            The returned subobject's domain is framed on the reordered
+            simple system and refined by ``refine_root_lattice``, so
+            ``cartan_type``, ``coxeter_number``, ``highest_root`` and the
+            root-system vocabulary answer natively on it.
+
+            Stated absence: a lattice without roots has the zero lattice as
+            its root sublattice, and the zero subobject is not constructed
+            here -- the empty case is asserted by name.
+            """
+            from sage.combinat.root_system.cartan_type import CartanType
+            from sage.graphs.graph import Graph
+
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.root_lattices import refine_root_lattice
+            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.subobjects import Subobject
+            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _coordinate_vector
+
+            roots = tuple(self.roots())
+            assert roots, (
+                f"{self} has no roots; its root sublattice is the zero "
+                "lattice, which this method does not construct"
+            )
+            coordinates = {
+                root: tuple(_coordinate_vector(root)) for root in roots
+            }
+            positive_roots = [
+                root
+                for root in roots
+                if coordinates[root] > tuple([0] * len(coordinates[root]))
+            ]
+            positive_set = set(
+                coordinates[root] for root in positive_roots
+            )
+            simple_roots = [
+                candidate
+                for candidate in positive_roots
+                if not any(
+                    tuple(
+                        left - right
+                        for left, right in zip(
+                            coordinates[candidate], coordinates[other]
+                        )
+                    )
+                    in positive_set
+                    for other in positive_roots
+                    if other is not candidate
+                )
+            ]
+
+            def cartan_entry(row: "Element", column: "Element") -> "Element":
+                return 2 * row.b(column) / column.b(column)
+
+            adjacency = Graph(
+                [
+                    (i, j)
+                    for i in range(len(simple_roots))
+                    for j in range(i + 1, len(simple_roots))
+                    if cartan_entry(simple_roots[i], simple_roots[j]) != 0
+                ]
+            )
+            adjacency.add_vertices(range(len(simple_roots)))
+
+            ordered_simple_roots: list = []
+            component_types: list = []
+            for component_vertices in adjacency.connected_components(sort=True):
+                size = len(component_vertices)
+                candidates = [CartanType(["A", size])]
+                if size >= 4:
+                    candidates.append(CartanType(["D", size]))
+                if size in (6, 7, 8):
+                    candidates.append(CartanType(["E", size]))
+                component_graph = adjacency.subgraph(component_vertices)
+                for candidate in candidates:
+                    standard_graph = Graph(
+                        candidate.dynkin_diagram().to_undirected(),
+                        multiedges=False,
+                    )
+                    isomorphic, certificate = component_graph.is_isomorphic(
+                        standard_graph, certificate=True
+                    )
+                    if isomorphic:
+                        break
+                else:
+                    assert False, (
+                        "a root system of vectors of square ±2 is simply "
+                        "laced, so every component is of type A, D, or E; "
+                        f"a component of size {size} matched none"
+                    )
+                by_standard_label = {
+                    certificate[vertex]: vertex for vertex in component_vertices
+                }
+                ordered_simple_roots.extend(
+                    simple_roots[by_standard_label[label]]
+                    for label in candidate.index_set()
+                )
+                component_types.append(candidate)
+
+            recognized = (
+                component_types[0]
+                if len(component_types) == 1
+                else CartanType(component_types)
+            )
+            cartan_rows = matrix(
+                SageZZ,
+                [
+                    [
+                        cartan_entry(row_root, column_root)
+                        for column_root in ordered_simple_roots
+                    ]
+                    for row_root in ordered_simple_roots
+                ],
+            )
+            assert cartan_rows == recognized.cartan_matrix(), (
+                "the reordered simple system does not carry the recognized "
+                "type's Cartan matrix"
+            )
+            assert 2 * len(
+                recognized.root_system().root_lattice().positive_roots()
+            ) == len(roots), (
+                "the recognized type's root count disagrees with the "
+                "lattice's roots"
+            )
+
+            sublattice = self._induced_lattice(
+                matrix(
+                    SageZZ,
+                    [coordinates[root] for root in ordered_simple_roots],
+                )
+            )
+            assert sublattice is not None, "the simple system is nonempty"
+            refine_root_lattice(sublattice, recognized)
+            embedding = sublattice.Hom(self)(
+                {
+                    label: label
+                    for label in sublattice.module_generating_set()
+                }
+            )
+            return Subobject(embedding)
+
+        def roots_of_square(self: "Module", square: "RingElement") -> "Set":
+            r"""Return the roots of the given square: the vectors $r$ with
+            $q(r)=\text{square}$ whose reflection preserves $L$.
+
+            The general root criterion -- the one ``reflection`` on
+            ``IntegralLattices`` asserts -- used as a filter: $r$ is a root
+            exactly when $2\,b(x,r)/q(r)$ is integral for every $x$, decided
+            on the module generators.  At square $\pm2$ every vector of that
+            square passes (the pairing bound makes the coefficient
+            integral), which is why :meth:`roots` needs no filter; at square
+            $\pm4$ the criterion asks every pairing to be even and does real
+            work.  The Coxeter configurations of this program mix square
+            $-2$ and $-4$ roots, and the sources selected the $-4$ ones by
+            primitivizing and testing the square, which omits the
+            reflection-integrality that makes a vector a root.
+
+            Enumeration is definite-regime (finite, via
+            :meth:`vectors_of_square`); for a hyperbolic lattice the
+            fundamental roots come from ``vinberg_algorithm`` and
+            ``allcock_edgewalk`` on ``HyperbolicLattices``.
+            """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.sets.sets import finite_ordered_set
+
+            square = SageZZ(square)
+            assert square != 0, "a root is anisotropic; square 0 names no root"
+            return finite_ordered_set(
+                tuple(
+                    candidate
+                    for candidate in self.vectors_of_square(square)
+                    if all(
+                        2 * generator.b(candidate) / square in self.base_ring()
+                        for generator in self.module_generators()
+                    )
+                )
+            )
+
         def _target_coordinates(self: "Module", target: "Element") -> "FreeModuleElement":
             r"""Read a CVP target as rational coordinates in this framing."""
             from sage.modules.free_module_element import vector

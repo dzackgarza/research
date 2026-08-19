@@ -500,11 +500,237 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
         def Emb(self: "LatticeParent", codomain: "FormModule") -> "Homset":
             r"""Return $\operatorname{Emb}(L, M)$ as a first-class parent:
             the form-preserving monomorphisms, enumerated by module-generator
-            placement where the codomain is integral definite (indefinite
-            existence is issue #24's Nikulin engine, a stated absence)."""
+            placement where the codomain is integral definite.  For an even
+            unimodular indefinite codomain, existence is Nikulin's criterion
+            and the witness is the engine-backed construction (issue #24,
+            closed): see :meth:`embeds_in_even_unimodular` and
+            :meth:`embed_in_even_unimodular`.  Other indefinite codomains
+            remain a stated absence at the homset boundary."""
             # Local: a module-level import here would close a cycle; by call time this module is built.
             from dzack_research.preamble.categories.modules.framed.formed.integrallattice.lattice_homomorphisms import EmbeddingHomset
             return EmbeddingHomset(self, codomain)
+
+        def embeds_in_even_unimodular(
+            self: "LatticeParent", positive: "Integer", negative: "Integer"
+        ) -> bool:
+            r"""Decide whether $L$ embeds primitively into $\mathrm{II}_{p,q}$.
+
+            Nikulin's criterion (Nik80 Thm 1.12.2, Zotero TTY9FFJS): an even
+            lattice $S$ with signature $(p_S, n_S)$ and discriminant form
+            $q_S$ embeds primitively into an even unimodular lattice of
+            signature $(p, q)$ exactly when an even lattice with signature
+            $(p - p_S,\, q - n_S)$ and discriminant form $-q_S$ exists --
+            the complement: necessity is Cor 1.6.2 (complementary primitive
+            sublattices of an even unimodular lattice have anti-isometric
+            discriminant forms), sufficiency is the glue along the full
+            anti-isometry.  Decided natively on the owned :class:`Genus`
+            existence question -- no engine.
+            """
+            assert self.is_even(), (
+                "Nikulin's primitive-embedding criterion is stated for even "
+                f"lattices; {self} is odd"
+            )
+            assert self.is_nondegenerate(), (
+                f"{self} is degenerate; a primitive embedding question is "
+                "asked of a nondegenerate lattice (the radical is the "
+                "obstruction, and the question is probably about the "
+                "quotient by it)"
+            )
+            domain_positive, domain_negative = self.signature_pair()
+            if (positive - negative) % 8 != 0:
+                return False  # no even unimodular lattice of this signature
+            if positive < domain_positive or negative < domain_negative:
+                return False  # the complement would need negative rank
+            complement_genus = Genus(
+                (positive - domain_positive, negative - domain_negative),
+                self.discriminant_group().twist(-1),
+            )
+            return complement_genus.exists()
+
+        def embed_in_even_unimodular(
+            self: "LatticeParent", positive: "Integer", negative: "Integer"
+        ) -> "FormMorphism":
+            r"""Return a primitive embedding $L\hookrightarrow M$, $M$ even
+            unimodular of signature ``(positive, negative)``.
+
+            Existence is decided first, natively, by
+            :meth:`embeds_in_even_unimodular` (Nik80 Thm 1.12.2); the witness
+            is then produced by the OSCAR/Hecke engine behind
+            :func:`engines.oscar_even_unimodular_primitive_embedding` --
+            Nikulin's complement construction, gluing $L$ to a
+            representative of the complement's genus along an anti-isometry
+            of discriminant forms.  Everything the engine returns is
+            verified at this boundary: the homset constructor checks form
+            preservation, the codomain is asserted even unimodular of the
+            stated signature, and primitivity is asserted through the owned
+            inclusion (cokernel torsion-freeness), never re-derived from
+            matrix invariants.
+
+            For indefinite $M$ of rank $\ge 3$ the even unimodular genus
+            holds one isometry class, so the codomain is *the*
+            $\mathrm{II}_{p,q}$ up to isometry; it is returned in the
+            framing the construction produced.
+            """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.engines import oscar_even_unimodular_primitive_embedding
+            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.lattice_homomorphisms import lattice_homset
+            from dzack_research.preamble.utilities import zipsum
+
+            assert self.embeds_in_even_unimodular(positive, negative), (
+                f"no primitive embedding of {self} into an even unimodular "
+                f"lattice of signature ({positive}, {negative}) exists "
+                "(Nik80 Thm 1.12.2: the complement's genus is empty)"
+            )
+            codomain_gram, embedding_rows = (
+                oscar_even_unimodular_primitive_embedding(
+                    matrix(SageZZ, self.gram_matrix()), positive, negative
+                )
+            )
+            codomain = _lattice_with_gram(codomain_gram)
+            assert codomain.signature_pair() == (positive, negative), (
+                "the engine's codomain has the wrong signature"
+            )
+            embedding = lattice_homset(self, codomain)(
+                [
+                    zipsum(row, codomain.module_generators(), codomain.zero())
+                    for row in embedding_rows.rows()
+                ]
+            )
+            assert Subobject(embedding).is_primitive(), (
+                "the engine's embedding is not primitive: its cokernel has "
+                "torsion"
+            )
+            return embedding
+
+        def glue_map(
+            self: "LatticeParent", first: "Module", second: "Module"
+        ) -> "FormMorphism":
+            r"""Return the glue isometry $\gamma: H_S\to H_R(-1)$ of the
+            primitive extension $S\oplus R\subseteq L$.
+
+            ``first`` and ``second`` are subobjects $S, R$ of this lattice
+            (each carrying its inclusion), primitive, mutually orthogonal,
+            with $\operatorname{rk} S + \operatorname{rk} R =
+            \operatorname{rk} L$.  Nikulin's primitive-extension
+            correspondence (Nik80 §1.5, Zotero TTY9FFJS): $L/(S\oplus R)$
+            embeds into $A_S\oplus A_R$ as the graph of an anti-isometry
+            $\gamma$ between subgroups $H_S\le A_S$ and $H_R\le A_R$.  An
+            anti-isometry *is* an isometry onto the $(-1)$-twist of the
+            codomain, so $\gamma$ comes back as an owned ``FormMorphism``
+            into the twisted restricted form -- the homset constructor is
+            the verification that $\gamma$ anti-preserves the discriminant
+            form.  Reference implementation: Hecke ``glue_map``
+            (``QuadForm/Quad/ZLattices.jl``), computed here natively on the
+            owned discriminant vocabulary.
+
+            The subgroups are recovered from the inclusions alone: an
+            element $x\in L$ pairs integrally with $S$, so its orthogonal
+            projection to $S\otimes\mathbb Q$ lies in $S^\vee$, with dual
+            coordinates $x\,G_L\,B_S^{\mathsf T}$ (integral); its class in
+            $A_S$ is that combination of $A_S$'s dual-basis generators.
+
+            Stated absence: the odd case.  For odd lattices the glue runs
+            on discriminant *bilinear* forms; this method asserts $L$ even,
+            where Nikulin's theory (and every catalogue caller) lives.
+            """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormMorphism
+
+            assert self.is_even(), (
+                "the glue map is computed on discriminant quadratic forms; "
+                f"{self} is odd, a stated absence"
+            )
+            for subobject in (first, second):
+                assert subobject.embedding().codomain() is self, (
+                    "glue_map is asked of two subobjects of this lattice"
+                )
+                assert subobject.is_primitive(), (
+                    "the glue map of a primitive extension needs primitive "
+                    f"sublattices; {subobject} is not primitive in {self}"
+                )
+            gram = matrix(SageZZ, self.gram_matrix())
+            first_rows = matrix(SageZZ, first.embedding().matrix())
+            second_rows = matrix(SageZZ, second.embedding().matrix())
+            assert first_rows * gram * second_rows.transpose() == 0, (
+                "the glue map needs orthogonal sublattices"
+            )
+            assert first.rank() + second.rank() == self.rank(), (
+                "the glue map needs a finite-index extension: "
+                "rk(S) + rk(R) must equal rk(L)"
+            )
+
+            first_discriminant = first.discriminant_group()
+            second_discriminant_twisted = second.discriminant_group().twist(-1)
+            first_duals = gram * first_rows.transpose()
+            second_duals = gram * second_rows.transpose()
+
+            def discriminant_class(form: "FormModule", dual_row: "Element") -> "Element":
+                module_generators = form.module_generators()
+                total = form.zero()
+                for coefficient, generator in zip(dual_row, module_generators):
+                    total = total + SageZZ(coefficient) * generator
+                return total
+
+            graph: dict = {}
+            for index in range(self.rank()):
+                source_class = discriminant_class(
+                    first_discriminant, first_duals.row(index)
+                )
+                target_class = discriminant_class(
+                    second_discriminant_twisted, second_duals.row(index)
+                )
+                if source_class == first_discriminant.zero():
+                    # Primitivity of the complement forces the pair to
+                    # vanish together: x with pr_S(x) in S has
+                    # x - pr_S(x) in L cap (R tensor QQ) = R.
+                    assert target_class == second_discriminant_twisted.zero(), (
+                        "a generator of L glues the zero class of A_S to a "
+                        "nonzero class of A_R; the extension data is "
+                        "inconsistent with primitivity"
+                    )
+                    continue
+                if source_class in graph:
+                    assert graph[source_class] == target_class, (
+                        "two generators of L glue one class of A_S to "
+                        "different classes of A_R"
+                    )
+                    continue
+                graph[source_class] = target_class
+
+            source_subobject = first_discriminant.subobject_generated_by(
+                tuple(graph.keys())
+            )
+            target_subobject = second_discriminant_twisted.subobject_generated_by(
+                tuple(graph.values())
+            )
+            domain = source_subobject.embedding().domain()
+            codomain = target_subobject.embedding().domain()
+            glue: "FormMorphism" = domain.Hom(codomain)(
+                {
+                    label: codomain.module_generator(graph[label])
+                    for label in domain.module_generating_set()
+                }
+            )
+            def order(form: "FormModule") -> "Integer":
+                return reduce(
+                    lambda product, invariant: product * invariant,
+                    form.invariants(),
+                    SageZZ(1),
+                )
+
+            extension_index = order(domain)
+            assert extension_index == order(codomain), (
+                "the glue map of a primitive extension is bijective"
+            )
+            assert (
+                first_rows * gram * first_rows.transpose()
+            ).determinant() * (
+                second_rows * gram * second_rows.transpose()
+            ).determinant() == gram.determinant() * extension_index**2, (
+                "det(S) det(R) = det(L) [L : S + R]^2 fails; the glue "
+                "subgroups do not carry the whole extension"
+            )
+            return glue
 
         def is_isometric(self: "LatticeParent", other: "FormModule") -> "bool | Unknown":
             r"""Decide whether two integral lattices are isometric.
@@ -555,6 +781,103 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
                 )
                 images[label] = generator - self.base_ring()(coefficient) * element
             return self.Aut()(images)
+
+        def eichler_transvection(
+            self: "LatticeParent",
+            isotropic: "Element",
+            orthogonal: "Element",
+        ) -> "ModuleMorphism":
+            r"""Return $t(e,a)\in O(L)$,
+            $t(e,a)(x)=x-b(a,x)\,e+b(e,x)\,a-\tfrac12 q(a)\,b(e,x)\,e$,
+            for isotropic $e$ and $a\in e^\perp$.
+
+            The Eichler transvection (Dawes 2021 sec. 2 eq. (7), transcribed
+            in ``notes/topics/coble-enriques-lattice-theory/``
+            ``reflective-two-elementary-lattices.md``); these generate the
+            stable orthogonal group $\widetilde O(L)$ and put vectors in
+            normal form, which is how Eichler's criterion -- the consumer
+            :meth:`div` names -- realizes its orbit equivalences.  Built as
+            an element of $\mathrm{Aut}(L)$ by its images on the framing
+            labels, the same way :meth:`reflection` is.
+
+            $t(e,a)$ preserves $L$ exactly when every coefficient
+            $\tfrac12 q(a)\,b(e,x)$ is integral -- automatic on an even
+            lattice, and asserted rather than hypothesized so the odd case
+            answers honestly.
+            """
+            from sage.structure.element import Element as SageElement
+
+            def held(value: "Element") -> "Element":
+                return (
+                    value
+                    if isinstance(value, SageElement) and value.parent() is self
+                    else self(value)
+                )
+
+            e = held(isotropic)
+            a = held(orthogonal)
+            assert e.q() == 0, (
+                f"an Eichler transvection is taken in an isotropic vector; q(e)={e.q()} for e={e}"
+            )
+            assert e.b(a) == 0, (
+                f"an Eichler transvection needs a in the isotropic vector's "
+                f"orthogonal complement; b(e,a)={e.b(a)}"
+            )
+            norm = a.q()
+            images = {}
+            for label in self.module_generating_set():
+                generator = self.module_generator(label)
+                half_coefficient = norm * generator.b(e) / 2
+                assert half_coefficient in self.base_ring(), (
+                    f"t(e,a) does not preserve the lattice: q(a) b(e,{generator})/2 "
+                    f"= {half_coefficient} is not integral (the lattice is odd "
+                    f"and b(e,{generator}) is odd)"
+                )
+                images[label] = (
+                    generator
+                    - generator.b(a) * e
+                    + generator.b(e) * a
+                    - self.base_ring()(half_coefficient) * e
+                )
+            return self.Aut()(images)
+
+        def possible_root_lengths(self: "LatticeParent") -> "OrderedSet":
+            r"""Return the positive divisors of $2d_n$: $|q(r)|$ lies here for
+            every root $r$ of $L$.
+
+            Vinberg's criterion, as Bogachev--Kolpakov state it
+            (arXiv:2112.14642v4 sec. 6.2): $q(r)$ divides twice the last
+            invariant factor $d_n$ of the Gram matrix.  Divisibility is a
+            relation between ideals and says nothing about sign, so what comes
+            back is the set of positive divisors and a root of the
+            negative-definite convention matches by $|q(r)|$.  Containment,
+            not equality -- a divisor need not be attained, and excluding the
+            ones that are not is the work this criterion makes *finite*: it
+            turns "$L$ has no roots" from an unbounded search over $L$ into a
+            check of finitely many lengths, which is exactly how
+            Bogachev--Kolpakov settle their rootless ternary lattice.
+
+            Where the roots are, this does not say; :meth:`reflection` holds
+            the condition that decides a candidate, and ``vinberg_algorithm``
+            on ``HyperbolicLattices`` enumerates them.
+            The criterion is about the invariant factors of $G$ alone, so it
+            is an integral-lattice fact and sits here, not on the hyperbolic
+            subcategory that consumes it.
+
+            Degenerate lattices are excluded: a degenerate Gram matrix has
+            last invariant factor zero, which bounds nothing.
+            """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.sets.sets import finite_ordered_set
+
+            assert self.is_nondegenerate(), (
+                f"{self} is degenerate, and the last invariant factor of a "
+                "degenerate Gram matrix is zero, which bounds no root length. "
+                "The question is probably about the quotient by the radical."
+            )
+            gram = matrix(SageZZ, self.gram_matrix())
+            last_invariant_factor = SageZZ(gram.elementary_divisors()[-1])
+            return finite_ordered_set(tuple((2 * last_invariant_factor).divisors()))
 
         def _sub_form_module(
             self: "LatticeParent",
@@ -714,6 +1037,26 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
                 "genus of an odd lattice is a stated gap on this surface"
             )
             return Genus(self.signature_pair(), self.discriminant_group())
+
+        def is_locally_isometric(
+            self: "LatticeParent", other: "FormModule", prime: "Integer"
+        ) -> bool:
+            r"""Decide whether $L\otimes\mathbb Z_p\cong M\otimes\mathbb Z_p$.
+
+            The local question the genus is assembled from: the
+            Conway--Sloane $p$-adic symbol is a complete invariant of
+            $\mathbb Z_p$-lattices (CS10 ch. 15), so local isometry at
+            ``prime`` is equality of the two genera's local symbols there --
+            asked through the owned :class:`Genus`, whose evenness gate this
+            question inherits (the odd case is the same stated gap as
+            :meth:`genus`).  Signatures must also agree at the archimedean
+            place for the *global* genus; this method answers only the one
+            finite place it names.
+            """
+            return bool(
+                self.genus().local_symbol(prime)
+                == other.genus().local_symbol(prime)
+            )
 
         def discriminant(self: "LatticeParent") -> "RingElement":
             r"""Return $d_\pm(b)=(-1)^{n(n-1)/2}\det G$, the signed determinant.
@@ -1244,24 +1587,19 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             r"""Return $\tilde O(L):=\ker(\rho_L)$, the stable orthogonal group.
 
             The kernel of the discriminant representation (Nik80 §§3°–4°,
-            Zotero TTY9FFJS): the isometries acting trivially on $A_L$.
-            Computed by listing $O(L)$, which a finite group admits; for an
-            infinite $O(L)$ no generating set of the kernel is in hand, and
-            the absence is stated rather than approximated.
+            Zotero TTY9FFJS): the isometries acting trivially on $A_L$.  A
+            kernel is a preimage, so this is
+            ``Aut().discriminant_preimage`` of the trivial subgroup of
+            $O(A_L)$ -- a predicate subgroup, whose membership is decided on
+            the finite discriminant form.  No generating set of $O(L)$ is
+            enumerated and no finiteness is asserted, which is what makes
+            $\tilde O(L)$ available where it is used: on indefinite
+            lattices, where $O(L)$ is infinite.
             """
-            isometries = self.Aut()
-            assert isometries.is_finite(), (
-                f"O({self}) is infinite; no generating set of the kernel of "
-                "rho is in hand.  Name a subgroup by generators and ask "
-                "whether each acts trivially on the discriminant form."
+            automorphism_group = self.discriminant_group().automorphism_group()
+            return self.Aut().discriminant_preimage(
+                automorphism_group.subgroup_on(())
             )
-            identity = self.discriminant_group().automorphism_group().one()
-            kernel_generators = tuple(
-                isometry
-                for isometry in isometries
-                if isometry.discriminant_morphism() == identity
-            )
-            return isometries.subgroup_on(kernel_generators)
 
         def with_action(self: "LatticeParent", action: "GroupAction") -> "Module":
             r"""Return $L$ carrying the already-constructed $\rho:G\to O(L)$.
@@ -1740,6 +2078,36 @@ class Genus:
     def class_number(self) -> "RingElement":
         r"""Return $h$, the number of isometry classes in the genus."""
         return SageZZ(len(self._engine().representatives()))
+
+    def representatives(self) -> tuple:
+        r"""Return one lattice per isometry class in this genus.
+
+        Kneser's neighbor method behind Sage's genus engine; each Gram
+        matrix comes back as an owned lattice.  The classes of a definite
+        genus are finitely many (finiteness of the class number), which is
+        what makes this a tuple.
+        """
+        return tuple(
+            _lattice_with_gram(matrix(SageZZ, representative))
+            for representative in self._engine().representatives()
+        )
+
+    def mass(self) -> "RingElement":
+        r"""Return $\sum_i 1/|O(L_i)|$ over the isometry classes of the genus.
+
+        The Smith--Minkowski--Siegel mass formula (CS10 ch. 15), computed by
+        Sage's genus engine from the local symbols.  A definite-genus
+        notion: each class is weighted by its isometry group, which is
+        finite exactly in the definite case.  The mass is an independent
+        check on :meth:`representatives`: the weighted count of the classes
+        found must add up to it.
+        """
+        positive, negative = self._signature_pair
+        assert positive == 0 or negative == 0, (
+            "the mass sums 1/|O(L)| over the classes of a definite genus; "
+            f"signature {self._signature_pair} names infinite isometry groups"
+        )
+        return SageQQ(self._engine().mass())
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Genus):

@@ -13,9 +13,10 @@ the Sage classes once, process-wide: a second set of category classes would
 leave objects refined into one ``DirectSumObjects`` and tested against
 another.
 
-Callers that also want the named specimens continue with ``sterk.sage`` and
-``Lattices.install(namespace)``; ``utilities`` and ``catalogue`` are in the
-module list below, so their names arrive with everything else.
+Callers that also want the named specimens continue with ``sterk.sage``,
+``coble.sage`` and ``Lattices.install(namespace)``; ``utilities`` and
+``catalogue`` are in the module list below, so their names arrive with
+everything else.
 """
 
 # The preamble's files import each other by module path.  ``.sage`` is an
@@ -160,8 +161,10 @@ def install_preamble(namespace: dict) -> None:
             "categories.functors.ring_centers",
             "categories.functors.cardinality",
             "categories.functors.base_change_adjunction",
+            "categories.modules.framed.formed.integrallattice.engines",
             "categories.modules.framed.formed.integrallattice.lattice_homomorphisms",
             "categories.modules.framed.formed.integrallattice.lattice_isometries",
+            "categories.modules.framed.formed.integrallattice.isotropic_orbits",
             "categories.modules.framed.formed.integrallattice.root_lattices",
             "categories.modules.framed.formed.integrallattice.coxeter_diagrams",
             "categories.modules.framed.formed.integrallattice.hyperbolic_lattices",
@@ -191,6 +194,7 @@ def install_preamble(namespace: dict) -> None:
             "categories.schemes.ade_surfaces",
             "catalogue",
             "sterk",
+            "coble",
         )
 
         _exports = {}

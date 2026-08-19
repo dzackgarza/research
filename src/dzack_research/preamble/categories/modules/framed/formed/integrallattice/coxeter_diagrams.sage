@@ -24,6 +24,7 @@ from dzack_research.preamble.categories.sets.sets import finite_ordered_set
 from sage.combinat.root_system.cartan_type import CartanType
 if TYPE_CHECKING:
     from sage.groups.perm_gps.permgroup import PermutationGroup_generic
+    from sage.groups.perm_gps.permgroup_element import PermutationGroupElement
 
 from collections import Counter
 from collections.abc import Hashable, Iterable, Iterator, Mapping, Sequence
@@ -473,6 +474,45 @@ class FiniteCoxeterDiagram(CoxeterDiagramParent):
             component.coxeter_matrix().is_affine() for component in components
         )
 
+    def coxeter_group(self) -> "Parent":
+        r"""Return the Coxeter group $W$ of this diagram, in Sage's
+        reflection representation.
+
+        Delegated to Sage's ``CoxeterGroup`` on this diagram's own
+        ``CoxeterMatrix``, which already carries $m=\infty$ natively (its
+        internal encoding is $-1$; no caller re-encodes).  Infinite groups
+        are ordinary outputs: the representation is by matrices, not by an
+        enumeration.
+        """
+        from sage.combinat.root_system.coxeter_group import CoxeterGroup
+
+        return CoxeterGroup(self._coxeter_matrix)
+
+    def finitely_presented_coxeter_group(self) -> "Parent":
+        r"""Return $\langle s_v \mid s_v^2,\ (s_v s_w)^{m_{vw}}
+        \text{ for finite } m_{vw}\rangle$.
+
+        The Coxeter presentation read off this diagram's Coxeter matrix: one
+        generator per vertex, named by the vertex; an $m=\infty$ bond
+        contributes no relation.  What comes back is a finitely presented
+        group -- the chosen-presentation *data*, where
+        :meth:`coxeter_group` is the represented group.
+        """
+        from sage.groups.free_group import FreeGroup
+
+        free = FreeGroup(names=self.variable_names())
+        generators = free.gens()
+        indices = tuple(self._index_set)
+        relations = [generator**2 for generator in generators]
+        for i in range(len(indices)):
+            for j in range(i + 1, len(indices)):
+                exponent = self._coxeter_matrix[indices[i], indices[j]]
+                if exponent != infinity:
+                    relations.append(
+                        (generators[i] * generators[j]) ** Integer(exponent)
+                    )
+        return free / relations
+
     def Aut(self) -> "PermutationGroup_generic":
         r"""Return the finite group of Coxeter-diagram automorphisms.
 
@@ -796,6 +836,106 @@ class FiniteCoxeterDiagram(CoxeterDiagramParent):
             layout = self.graph().layout()
             self._computed_positions = {vertex: (coordinates[0], coordinates[1]) for vertex, coordinates in layout.items()}
         return dict(self._computed_positions)
+
+    def equivariant_positions(
+        self,
+        automorphism: "PermutationGroupElement",
+    ) -> dict[Hashable, tuple["RingElement", "RingElement"]]:
+        r"""Return exact vertex positions intertwining ``automorphism`` with
+        a plane isometry, so the drawing carries the diagram's symmetry.
+
+        For $\sigma$ of order $2$ the intertwined isometry is complex
+        conjugation: the two vertices of each $2$-orbit sit at $z$ and
+        $\bar z$, and each fixed vertex sits on the real axis.  Such a
+        layout always exists.
+
+        For $\sigma$ of order $n\ge3$ it is the rotation
+        $z\mapsto\zeta_n z$: the $k$-th member of each orbit sits at
+        $\zeta_n^k$ times its representative, one circle per orbit.  Here
+        existence is constrained: an orbit of length $d<n$ forces
+        $\zeta_n^d z=z$, so $z=0$ -- hence every orbit must be free except
+        for at most one fixed vertex, at the origin, and that is asserted.
+
+        Coordinates are exact real algebraic numbers (``AA``), computed in
+        the cyclotomic field the way the source notebook's exact $n$-gon
+        did; the intertwining $f(\sigma v)=\rho(f(v))$ is asserted on every
+        vertex, in ``QQbar``, before anything is returned.  The map is
+        injective by construction: distinct radii per orbit, distinct
+        abscissae per conjugation pair.  Positions are returned, not
+        stored: which automorphism to display by is the caller's choice,
+        where :meth:`preferred_positions` is the diagram's own.
+
+        The harder sibling notion is a stated absence: an equivariant
+        injection of the vertex set into the *vertex set of a lattice
+        polytope* $P$ realizing a subgroup of the diagram's automorphisms
+        inside $P$'s restricted automorphism group.  The source notebook
+        (``Coble Lattice Invariants``) explored it by brute force over
+        subgroups of $\mathrm{Aut}(P)$ and over all vertex bijections,
+        which is enumeration this codebase does not admit; no owned
+        construction exists.
+        """
+        from sage.rings.qqbar import QQbar
+        from sage.rings.number_field.number_field import CyclotomicField
+
+        order = Integer(automorphism.order())
+        assert order >= 2, (
+            "the identity carries no symmetry to intertwine; pass a "
+            "nontrivial element of Aut()"
+        )
+        orbits = [
+            tuple(cycle)
+            for cycle in automorphism.cycle_tuples(singletons=True)
+            if all(vertex in self._index_set for vertex in cycle)
+        ]
+        assert sorted(
+            vertex for orbit in orbits for vertex in orbit
+        ) == sorted(self._index_set), (
+            "the automorphism must permute exactly this diagram's vertices"
+        )
+
+        complex_positions: dict[Hashable, "Element"] = {}
+        zeta = QQbar(CyclotomicField(order).gen())
+        if order == 2:
+            imaginary = QQbar(CyclotomicField(4).gen())
+            place = Integer(0)
+            for orbit in sorted(orbits, key=lambda cycle: len(cycle)):
+                if len(orbit) == 1:
+                    complex_positions[orbit[0]] = QQbar(place)
+                else:
+                    complex_positions[orbit[0]] = QQbar(place) + imaginary
+                    complex_positions[orbit[1]] = QQbar(place) - imaginary
+                place += 1
+        else:
+            fixed = [orbit for orbit in orbits if len(orbit) == 1]
+            assert all(len(orbit) in (1, order) for orbit in orbits) and len(fixed) <= 1, (
+                f"a rotation by a primitive order-{order} root of unity fixes "
+                f"only the origin, so every orbit must be free except at most "
+                f"one fixed vertex; orbit lengths are "
+                f"{sorted(len(orbit) for orbit in orbits)}"
+            )
+            radius = Integer(1)
+            for orbit in orbits:
+                if len(orbit) == 1:
+                    complex_positions[orbit[0]] = QQbar(0)
+                    continue
+                for exponent, vertex in enumerate(orbit):
+                    complex_positions[vertex] = QQbar(radius) * zeta**exponent
+                radius += 1
+
+        for vertex in self._index_set:
+            image_vertex = automorphism(vertex)
+            expected = (
+                complex_positions[vertex].conjugate()
+                if order == 2
+                else zeta * complex_positions[vertex]
+            )
+            assert complex_positions[image_vertex] == expected, (
+                f"the layout does not intertwine the automorphism at {vertex}"
+            )
+        return {
+            vertex: (value.real(), value.imag())
+            for vertex, value in complex_positions.items()
+        }
 
     def node_color(self, vertex: Hashable) -> str:
         r"""Return the TikZ fill color for ``vertex`` from its root square.

@@ -78,6 +78,9 @@ def _constructions() -> dict:
     """
     _ensure_preamble()
     e = list(Lattices.E8.module_generators())
+    u = list(Lattices.U.module_generators())
+    uu = Lattices.U + Lattices.U
+    g = list(uu.module_generators())
     return {
         "Lattices(ring)": Lattices(ZZ),
         "Lattices(name)": Lattices("LK3"),
@@ -91,6 +94,10 @@ def _constructions() -> dict:
             ["A", 2], scale=2
         ),
         "dual lattice": Lattices.A2.dual_lattice(),
+        "hyperkaehler lattice": Lattices.hyperkaehler_lattice("Kum", 2),
+        "leech lattice": Lattices.leech_lattice(),
+        "root sublattice": Lattices.A2.root_sublattice(),
+        "symmetric group of a finite set": Sets.Δ[2].symmetric_group(),
         "subobject": Lattices.E8.subobject_on([2 * e[0]]),
         "discriminant group": Lattices.A2.discriminant_group(),
         "discriminant bilinear form": Lattices.A2.discriminant_bilinear_form(),
@@ -106,6 +113,24 @@ def _constructions() -> dict:
         "isometry homset": Lattices.A2.Isom(Lattices.A2),
         "embedding homset": Lattices.A1.Emb(Lattices.E8),
         "discriminant image subgroup": Lattices.A2.Aut().discriminant_image(),
+        "special orthogonal subgroup": Lattices.A2.Aut().special_orthogonal_subgroup(),
+        "spinor kernel subgroup": Lattices.U.Aut().spinor_kernel_subgroup(),
+        "stable orthogonal group": Lattices.A2.stable_orthogonal_group(),
+        "vector stabilizer subgroup": Lattices.A2.Aut().stabilizer_of_vector(
+            list(Lattices.A2.module_generators())[0]
+        ),
+        "isotropic line stabilizer subgroup": Lattices.U.Aut().stabilizer_of_isotropic_line(
+            u[0]
+        ),
+        "isotropic plane stabilizer subgroup": uu.Aut().stabilizer_of_isotropic_plane(
+            (g[0], g[2])
+        ),
+        "isotropic flag stabilizer subgroup": uu.Aut().stabilizer_of_isotropic_flag(
+            (g[0], g[2])
+        ),
+        "structured subgroup intersection": Lattices.U.Aut()
+        .special_orthogonal_subgroup()
+        .intersection(Lattices.U.Aut().spinor_kernel_subgroup()),
         "free algebra": FreeAlgebraOn(QQ, Sets.Δ[1]),
         "tensor algebra": TensorAlgebraOn(QQ, Sets.Δ[1]),
         "alternating algebra": AlternatingAlgebraOn(QQ, Sets.Δ[1]),

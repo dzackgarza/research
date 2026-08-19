@@ -27,15 +27,19 @@ top would close the cycle, so the specimens are built at the bottom of this
 module, once ``Lattices`` already names the class.
 """
 
+from functools import cache
 from typing import TYPE_CHECKING, ClassVar, TypeAlias
 
 from sage.categories.category_with_axiom import (
     CategoryWithAxiom_over_base_ring,
     all_axioms,
 )
+from sage.matrix.constructor import matrix
 from sage.matrix.special import diagonal_matrix
+from sage.modules.free_module_element import vector
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ as SageZZ
+from sage.rings.rational_field import QQ as SageQQ
 
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
     SymmetricBilinearFormModules,
@@ -155,6 +159,12 @@ class Lattices(CategoryWithAxiom_over_base_ring):
         TEn: ClassVar["FormModule"]
         TdP: ClassVar["FormModule"]
         L_20_2_0: ClassVar["FormModule"]
+        BogachevKolpakovNonReflective: ClassVar["FormModule"]
+        BogachevKolpakovWithoutRoots: ClassVar["FormModule"]
+        Mukai: ClassVar["FormModule"]
+        MukaiExtended: ClassVar["FormModule"]
+        MukaiAbelian: ClassVar["FormModule"]
+        MukaiAbelianExtended: ClassVar["FormModule"]
 
     @staticmethod
     def __classcall_private__(
@@ -263,6 +273,72 @@ class Lattices(CategoryWithAxiom_over_base_ring):
         return Lattices._lattice_with_names(diagonal_matrix(SageZZ, [1] * p + [-1] * q))
 
     @staticmethod
+    def IIPQ(p: "Integer", q: "Integer") -> "FormModule":
+        r"""Return the even unimodular lattice $\mathrm{II}_{p,q}$ (indefinite).
+
+        Milnor's classification (the same fact the indecomposable registry
+        cites): an indefinite even unimodular lattice of signature $(p,q)$
+        exists exactly when $p \equiv q \pmod 8$, and is then unique,
+        $\mathrm{II}_{p,q} \cong U^{\min(p,q)} \oplus (\pm E_8)^{|p-q|/8}$ --
+        with this catalogue's $E_8$ negative definite, the positive-definite
+        summand is its $(-1)$-twist.  Definite even unimodular lattices are
+        deliberately outside this constructor: their genera hold several
+        classes from rank $16$ on, so a signature does not name one.
+        """
+        assert p >= 1 and q >= 1, (
+            f"II_({p},{q}) names the indefinite even unimodular lattice; a "
+            "definite even unimodular genus holds several classes from rank "
+            "16 on, so a signature does not name one"
+        )
+        assert (p - q) % 8 == 0, (
+            f"an even unimodular lattice has signature divisible by 8; "
+            f"({p}, {q}) has p - q = {p - q}"
+        )
+        hyperbolic_copies = Lattices.U ** min(p, q)
+        if p == q:
+            return hyperbolic_copies
+        if p < q:
+            return hyperbolic_copies + Lattices.E8 ** ((q - p) // 8)
+        return hyperbolic_copies + Lattices.E8.twist(-1) ** ((p - q) // 8)
+
+    @staticmethod
+    def IIPQ(p: "Integer", q: "Integer") -> "FormModule":
+        r"""Return the even unimodular lattice $II_{p,q}$, for indefinite
+        $(p, q)$ with $p\equiv q\pmod 8$.
+
+        $II_{p,q}\cong U^{\min(p,q)}\oplus E_8(\pm1)^{|p-q|/8}$ by Milnor --
+        the hypothesis the catalogue's ``register_indecomposable`` header
+        records: both unimodular families are unique only when *indefinite*.
+        The definite case is refused by the same fact: uniqueness fails from
+        rank $16$ on ($E_8^2$ and $D_{16}^+$ share signature $(16,0)$, and
+        rank $24$ has the $24$ Niemeier classes), so no single constructor
+        may answer there.  Existence needs $p\equiv q\pmod 8$, the signature
+        of an even unimodular lattice being divisible by $8$; the source
+        notebook's filter mis-parenthesized this as ``p - q % 8 == 0``,
+        which is $p-(q\bmod 8)$ and selects the wrong signatures.
+
+        This repo's convention makes $E_8$ negative definite, so the
+        $q>p$ excess is filled by ``Lattices.E8`` and the $p>q$ excess by
+        its twist by $-1$.
+        """
+        assert p >= 1 and q >= 1, (
+            f"II_({p},{q}) is definite, where even unimodular lattices are "
+            "not unique from rank 16 on (E8^2 and D16+ at (16,0); 24 "
+            "Niemeier classes at rank 24) -- no constructor decides which"
+        )
+        assert (p - q) % 8 == 0, (
+            f"no even unimodular lattice has signature ({p}, {q}): "
+            "the signature of an even unimodular lattice is divisible by 8"
+        )
+        hyperbolic_count = min(p, q)
+        excess = abs(p - q) // 8
+        planes = Lattices.U ** hyperbolic_count if hyperbolic_count > 1 else Lattices.U
+        if excess == 0:
+            return planes
+        block = Lattices.E8 if q > p else Lattices.E8.twist(-1)
+        return planes + (block ** excess if excess > 1 else block)
+
+    @staticmethod
     def LK3_2d(degree: "Integer") -> "FormModule":
         r"""Return $\langle -2d\rangle \oplus U^2 \oplus E_8^2$."""
         assert degree >= 1, f"degree must be positive, got {degree}"
@@ -272,6 +348,152 @@ class Lattices(CategoryWithAxiom_over_base_ring):
     def rank_one_negative(scale: "Integer") -> "FormModule":
         r"""Return the rank-one lattice \(\langle-2\,\mathrm{scale}\rangle\)."""
         return Lattices.Z.twist(-2 * scale)
+
+    @staticmethod
+    def hyperkaehler_lattice(
+        deformation_type: str, n: "Integer | int" = 2
+    ) -> "FormModule":
+        r"""Return the Beauville--Bogomolov--Fujiki lattice of a
+        hyperkähler deformation type.
+
+        $H^2(X,\mathbb Z)$ with the BBF form, per deformation type
+        (reference construction: Hecke ``hyperkaehler_lattice``,
+        ``QuadForm/Quad/ZLattices.jl``; its $-E_8$ and $-A_2$ summands are
+        this catalogue's $E_8$ and $A_2$ under the negative-definite
+        convention):
+
+        - ``"K3"``: $K3^{[n]}$-type, $U^3\oplus E_8^2\oplus\langle 2-2n\rangle$;
+        - ``"Kum"``: generalized Kummer, $U^3\oplus\langle -2-2n\rangle$;
+        - ``"OG6"``: O'Grady dimension six, $U^3\oplus\langle-2\rangle^2$;
+        - ``"OG10"``: O'Grady dimension ten, $U^3\oplus E_8^2\oplus A_2$.
+
+        ``n`` names the deformation family for the two infinite series and
+        is ignored by the O'Grady types; ``n = 1`` in the $K3^{[n]}$ series
+        is the K3 lattice itself, reached as ``Lattices.LK3``.
+        """
+        assert deformation_type in {"K3", "Kum", "OG6", "OG10"}, (
+            f"unknown hyperkähler deformation type {deformation_type!r}"
+        )
+        match deformation_type:
+            case "K3":
+                assert n >= 2, f"the K3^[n] series needs n >= 2, got {n}"
+                return (
+                    Lattices.U**3 + Lattices.E8**2 + Lattices.Z.twist(2 - 2 * n)
+                )
+            case "Kum":
+                assert n >= 2, f"the Kummer series needs n >= 2, got {n}"
+                return Lattices.U**3 + Lattices.Z.twist(-2 - 2 * n)
+            case "OG6":
+                return Lattices.U**3 + Lattices.Z.twist(-2) ** 2
+            case _:
+                return Lattices.U**3 + Lattices.E8**2 + Lattices.A2
+
+    @staticmethod
+    @cache
+    def leech_lattice() -> "FormModule":
+        r"""Return the Leech lattice $\Lambda_{24}$ (negative definite).
+
+        Built through a Niemeier lattice, in the owned vocabulary, and
+        cached (the enumeration below is paid once):
+
+        1. $N(A_1^{24})$: the catalogue's $A_1^{24}$ glued along the
+           extended binary Golay code -- each codeword names the
+           discriminant class $\sum_i c_i\,e_i^\vee$, isotropic because the
+           code is doubly even ($q = -\mathrm{wt}/2 \bmod 2\mathbb Z$
+           vanishes for weights divisible by $8$).  The glue is even
+           unimodular of rank $24$ with roots, so it is a Niemeier lattice.
+        2. The holy construction (CS10 ch. 24; reference implementation
+           Hecke ``leech_lattice(::ZZLat)``, ``QuadForm/Quad/ZLattices.jl``):
+           with $h = 2$ the Coxeter number of $A_1$ and $\rho$ the sum of
+           the components' Weyl vectors, the Leech lattice is spanned by
+           the zero-coefficient-sum combinations of the extended root
+           system's simple roots together with the vectors of the coset
+           $\rho/h + N$ of square $2 + 2/h$ (their count squared is
+           $|\!\det A_1^{24}| = 2^{24}$, asserted).  The coset enumeration
+           is Fincke--Pohst, reached through PARI's ``qfcvp`` on the
+           positive-regime Gram, and every returned vector is re-verified
+           exactly.
+
+        The result is asserted even, unimodular, of rank $24$, with no
+        vectors of square $-2$ -- which characterizes $\Lambda_{24}$ among
+        rank-$24$ even unimodular lattices (the Niemeier classification:
+        every other class has roots).
+        """
+        from sage.coding.golay_code import GolayCode
+        from sage.rings.finite_rings.finite_field_constructor import GF
+
+        from dzack_research.preamble.utilities import zipsum
+
+        ambient = Lattices.A1**24
+        discriminant = ambient.discriminant_group()
+        generators = discriminant.module_generators()
+        glue_classes = [
+            zipsum(
+                (Integer(entry) for entry in codeword),
+                generators,
+                discriminant.zero(),
+            )
+            for codeword in GolayCode(GF(2), extended=True).generator_matrix().rows()
+        ]
+        niemeier = ambient.glue(*glue_classes)
+        niemeier_gram = matrix(SageZZ, niemeier.gram_matrix())
+        assert niemeier_gram.determinant() == 1 and niemeier.is_even(), (
+            "the Golay glue of A1^24 must be even unimodular"
+        )
+
+        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _coordinate_vector
+
+        # The glue's framing labels are its basis rows in A1^24 coordinates,
+        # where the positive-regime form is Q(x) = 2 sum x_i^2.
+        basis = matrix(
+            SageQQ, [list(label) for label in niemeier.module_generating_set()]
+        )
+        # rho = sum of the A1 Weyl vectors = (1/2, ..., 1/2); v = rho / h.
+        coxeter_number = Integer(2)
+        coset_shift = vector(SageQQ, [SageQQ(1) / 4] * 24)
+        target = basis.solve_left(-coset_shift)
+        coset_square = 2 + 2 / coxeter_number
+        # The vectors of the coset v + N of square 2 + 2/h are the close
+        # vectors of N about -v, displaced back by v; the owned enumeration
+        # answers in this repo's negative regime, so the square is -(2+2/h).
+        coset_rows = [
+            vector(SageQQ, _coordinate_vector(element)) * basis + coset_shift
+            for element, square in niemeier.close_vectors(
+                list(target), -coset_square
+            )
+            if square == -coset_square
+        ]
+        assert len(coset_rows) ** 2 == 2**24, (
+            "the holy construction's coset count squared is |det A1^24|"
+        )
+
+        simple_root_rows = [
+            vector(SageQQ, [1 if j == i else 0 for j in range(24)])
+            for i in range(24)
+        ]
+        extended_rows = (
+            simple_root_rows
+            + [-row for row in simple_root_rows]
+            + coset_rows
+        )
+        first = extended_rows[0]
+        differences = matrix(
+            SageZZ,
+            [[4 * entry for entry in row - first] for row in extended_rows[1:]],
+        )
+        hermite = differences.hermite_form(include_zero_rows=False)
+        assert hermite.nrows() == 24, (
+            "the zero-sum combinations of the extended system span rank 24"
+        )
+        leech_basis = matrix(SageQQ, hermite) / 4
+        leech_gram = -2 * leech_basis * leech_basis.transpose()
+        leech = Lattices._lattice_with_names(matrix(SageZZ, leech_gram))
+        assert (
+            matrix(SageZZ, leech_gram).determinant() == 1
+            and leech.is_even()
+            and not tuple(leech.vectors_of_square(-2))
+        ), "even unimodular of rank 24 without roots is the Leech lattice"
+        return leech
 
     @classmethod
     def namespace(cls) -> "dict[str, FormModule]":

@@ -222,6 +222,40 @@ class FiniteSets(CategoryWithAxiom):
         if TYPE_CHECKING:
             def __iter__(self) -> Iterator[_E]: ...
 
+        def symmetric_group(self) -> SageParent:
+            r"""Return :math:`\operatorname{Sym}(X)`: the automorphism group
+            of this set *in* ``Set``.
+
+            Named for which automorphism group it is.  In ``Set`` every
+            bijection is an automorphism, so this is the full symmetric
+            group on the members.  For a *totally ordered* finite set the
+            automorphism group in its own category is trivial — an
+            order-preserving bijection of a finite total order fixes every
+            element — and :math:`\operatorname{Sym}(X)` instead acts simply
+            transitively on the set of total orderings of :math:`X` (the
+            torsor of orderings); a bare ``Aut`` on an ordered parent would
+            conflate the two, which is the recorded error of the source
+            corpus this method was migrated from (PLAN-corpora-audit-registry,
+            ``FiniteOrderedSet.py`` error row).  Sage's ``SymmetricGroup``
+            on the members is the engine.
+
+            The permutation-matrix representation is not stored here: it is
+            the free-module functor applied on morphisms
+            (``FreeModuleFunctorClass._apply_functor_to_morphism`` in
+            ``categories/functors/free_forgetful_adjunction.sage``), which
+            sends :math:`\operatorname{Sym}(X)` into
+            :math:`\operatorname{Aut}(F(X))` as the permutation matrices of
+            the chosen enumeration.
+            """
+            cached = self.__dict__.get("_preamble_symmetric_group")
+            if cached is not None:
+                return cast(SageParent, cached)
+            from sage.groups.perm_gps.permgroup_named import SymmetricGroup
+
+            automorphisms = SymmetricGroup(domain=tuple(self))
+            self._preamble_symmetric_group = automorphisms
+            return cast(SageParent, automorphisms)
+
         def cardinality(self) -> Cardinal:
             r"""The exact count, by materializing the chosen enumeration —
             finite sets own the termination-dependent implementation,

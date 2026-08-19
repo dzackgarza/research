@@ -87,22 +87,52 @@ class HyperbolicLattices(Category):
             the roots Vinberg's algorithm enumerates.
             """
 
-        @abstract_method
         def is_reflective(self: "HyperbolicLatticeParent") -> bool:
             r"""Return whether $W(L)$ has finite index in $O(L)$ --
             equivalently, whether the fundamental polyhedron has finite
             volume.
 
-            The category's stated contract: Vinberg's criterion decides it
-            when the root enumeration terminates, and that wiring is the
-            open work.
+            Decided by Allcock's edgewalk (the
+            ``LORENTZ_FundDomain_AllcockEdgewalk`` engine behind
+            :func:`engines.lorentz_edgewalk_fundamental_domain`), which
+            terminates on every input -- unlike Vinberg root enumeration
+            (:meth:`vinberg_algorithm`), which halts only when the lattice
+            *is* reflective.  The engine's convention is signature
+            $(n, 1)$; this repo's negative-definite convention makes its
+            hyperbolic lattices $(1, n)$, and the twist by $-1$ is the
+            transport between the two, written out rather than assumed.
+            Reflectivity is twist-invariant: $O(L) = O(L(-1))$ and the
+            reflections correspond.
 
             Hypothesis on the signature: in signature $(1,1)$ the domain is
-            a half-line in $H^1$, of infinite covolume, so a
-            fundamental-polyhedron termination check can never fire
-            (observed on the vendored ``vinal`` fork, commit ``c817ecc``);
-            :meth:`vinberg_algorithm` warns rather than terminates there.
+            a half-line in $H^1$, of infinite covolume, so no
+            fundamental-polyhedron criterion can fire (observed on the
+            vendored ``vinal`` fork, commit ``c817ecc``); the same guard
+            applies here.
             """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.engines import lorentz_edgewalk_fundamental_domain
+
+            positive, negative = self.signature_pair()
+            match positive, negative:
+                case _, 1:
+                    source = self
+                case 1, _:
+                    source = self.twist(-1)
+                case _:
+                    assert False, (
+                        f"reflectivity is a hyperbolic question; "
+                        f"this lattice has signature ({positive}, {negative})"
+                    )
+            assert source.signature_pair() != (1, 1), (
+                "in signature (1,1) the domain is a half-line in H^1, of "
+                "infinite covolume; reflectivity is not decided here"
+            )
+            return bool(
+                lorentz_edgewalk_fundamental_domain(
+                    source.gram_matrix()
+                )["is_reflective"]
+            )
 
         def vinberg_algorithm(
             self: "HyperbolicLatticeParent",
@@ -198,6 +228,79 @@ class HyperbolicLattices(Category):
                 for root in algorithm.roots
             ]
             return [-root for root in roots] if negate_roots else roots
+
+        def allcock_edgewalk(self: "HyperbolicLatticeParent") -> dict:
+            r"""Return fundamental-domain data for $W(L)$ from Allcock's
+            edgewalk (the ``polyhedral_common`` engine).
+
+            A second producer of the object :meth:`vinberg_algorithm`
+            enumerates: the engine walks the edges of a fundamental
+            polyhedron of the reflection subgroup $W(L)\le O(L)$, and --
+            unlike Vinberg root enumeration -- terminates on every input, so
+            the ``is_reflective`` field is a decision rather than a wait.
+            The signature transport matches :meth:`vinberg_algorithm`: the
+            engine wants $(n,1)$, this repo's hyperbolic lattices are
+            $(1,n)$, and the twist relates the two.  Root signs are returned
+            as the engine chose them; $s_r=s_{-r}$, so the reflection group,
+            the chamber, and reflectivity do not depend on that choice.
+
+            Returned keys:
+
+            * ``simple_roots`` -- the simple roots as elements of this
+              lattice;
+            * ``vertices`` -- triples ``(generator, incident_roots, square)``
+              per polyhedron vertex, the square recomputed by this lattice's
+              own form (an ideal vertex has square $0$ in either convention);
+            * ``is_reflective`` -- whether $W(L)$ has finite index in
+              $O(L)$, the engine's decision;
+            * ``polyhedron_isometry_generators`` -- generators of the finite
+              isometry group of the polyhedron, as elements of
+              $\mathrm{Aut}(L)$ (an isometry of $L(-1)$ is an isometry of
+              $L$ on the same images, so no transport applies to them).
+            """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.engines import lorentz_edgewalk_fundamental_domain
+            from dzack_research.preamble.utilities import zipsum
+
+            pos, neg = self.signature_pair()
+            match pos, neg:
+                case _, 1:
+                    source = self
+                case 1, _:
+                    source = self.twist(-1)
+                case _:
+                    assert False, (
+                        f"the edgewalk needs signature (1, n) or (n, 1); "
+                        f"this lattice has ({pos}, {neg})"
+                    )
+
+            record = lorentz_edgewalk_fundamental_domain(source.gram_matrix())
+
+            def element_of(row: tuple) -> "Element":
+                return zipsum(row, self.module_generators(), self.zero())
+
+            simple_roots = tuple(
+                element_of(row) for row in record["simple_root_rows"]
+            )
+            vertices = tuple(
+                (
+                    element_of(generator_row),
+                    tuple(element_of(row) for row in incident_rows),
+                    element_of(generator_row).q(),
+                )
+                for generator_row, incident_rows, _engine_norm in record["vertices"]
+            )
+            automorphisms = self.Aut()
+            polyhedron_isometry_generators = tuple(
+                automorphisms._isometry_on_rows(generator.rows())
+                for generator in record["isometry_generator_rows"]
+            )
+            return {
+                "simple_roots": simple_roots,
+                "vertices": vertices,
+                "is_reflective": record["is_reflective"],
+                "polyhedron_isometry_generators": polyhedron_isometry_generators,
+            }
 
         @staticmethod
         def _vinberg_progress(

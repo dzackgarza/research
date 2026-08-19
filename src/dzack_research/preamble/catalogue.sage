@@ -68,6 +68,7 @@ else:
         "Lattices",
         "NegativeDefTwoElementary",
         "TwoElementary",
+        "signature_orthogonal_sums",
         "two_elementary_orthogonal_sums",
     ]
 
@@ -123,6 +124,38 @@ else:
     Lattices.TEn = Lattices.U.direct_sum([Lattices.E10_2])
     Lattices.TdP = Lattices.U.direct_sum([Lattices.U_2, Lattices.E8, Lattices.E8])
     Lattices.L_20_2_0 = Lattices.TdP
+
+    # Bogachev--Kolpakov, arXiv:2112.14642v4 section 6: two ternary Lorentzian
+    # lattices over $\mathbb Q$.  The paper prints the quadratic form
+    # $f(x)=(x,x)$ and works in signature $(2,1)$; the Gram matrices written
+    # here halve the printed cross coefficients ($14\to7$, $98\to49$, both
+    # exact, so both Gram matrices are integral).  Each specimen is the twist
+    # by $-1$ that puts it in this repo's negative-definite convention, where a
+    # rank-three hyperbolic lattice has signature $(1,2)$ -- the twist is the
+    # relation between the two conventions, written out rather than assumed,
+    # and the specimen rows assert it.  The source extract is
+    # ``tests/coxeter_tdd_specs/literature/papers/bogachev_kolpakov_thin_hyperbolic_2024.md``.
+    #
+    # Section 6.1: non-reflective, and Vinberg's algorithm does find roots.
+    Lattices.BogachevKolpakovNonReflective = _with(
+        matrix(SageZZ, [[3, 7, 49], [7, 0, 0], [49, 0, 49]])
+    ).twist(-1)
+    # Section 6.2, communicated to the authors by Gael Collinet: no roots at all.
+    Lattices.BogachevKolpakovWithoutRoots = _with(
+        matrix(SageZZ, [[0, 0, 49], [0, 49, 7], [49, 7, 3]])
+    ).twist(-1)
+
+    # Mukai lattices (reference construction: Hecke ``mukai_lattice``,
+    # ``QuadForm/Quad/ZLattices.jl``; Hecke writes the summand as $-E_8$,
+    # which is this catalogue's $E_8$ under the negative-definite
+    # convention).  ``Mukai`` is the full cohomology $H^*(S,\mathbb Z)$ of a
+    # K3 surface with the Mukai pairing, signature $(4, 20)$;
+    # ``MukaiAbelian`` its abelian-surface counterpart $U^4$; the extended
+    # forms adjoin one further hyperbolic plane.
+    Lattices.Mukai = Lattices.U**4 + Lattices.E8**2
+    Lattices.MukaiExtended = Lattices.U**5 + Lattices.E8**2
+    Lattices.MukaiAbelian = Lattices.U**4
+    Lattices.MukaiAbelianExtended = Lattices.U**5
 
     # Registry of specimens, what ``Lattices.namespace`` and ``Lattices.install``
     # read -- not a scan for attributes that look like lattices.
@@ -396,6 +429,85 @@ else:
                 count += 1
 
         extend(0, positive_target, negative_target, target_a, SageZZ(0), ())
+        return tuple(realizations)
+
+
+    def signature_orthogonal_sums(
+        signature_pair: tuple[Integer, Integer],
+        blocks: tuple[Parent, ...],
+    ) -> tuple[Parent, ...]:
+        r"""Return the orthogonal sums of ``blocks`` realizing
+        ``signature_pair``.
+
+        The signature-pair generalization of
+        :func:`two_elementary_orthogonal_sums`: the signature pair of an
+        orthogonal sum is the sum of the summands' pairs (Sylvester), so the
+        multisets of blocks whose pairs add to the target enumerate every
+        candidate decomposition, and each block's positive rank bounds the
+        search.  Identifying a candidate against a given lattice is the
+        caller's question, asked through ``is_isometric``, whose
+        three-valued answer is routed as it stands.
+
+        The caller names the block library -- named root lattices, twists,
+        ``Lattices.IPQ`` and ``Lattices.IIPQ`` in the source notebook's
+        isometry search.  That notebook enumerated *subsets* of distinct
+        signature pairs with one block each, which misses every
+        decomposition repeating a signature (already $A_1\oplus A_1$); this
+        enumeration is over multisets.
+        """
+        positive_target = SageZZ(signature_pair[0])
+        negative_target = SageZZ(signature_pair[1])
+        assert positive_target >= 0 and negative_target >= 0, (
+            "a signature pair counts the positive and negative indices of inertia"
+        )
+        assert positive_target + negative_target >= 1, (
+            "the zero signature names the zero lattice, which is no sum of blocks"
+        )
+        block_data = []
+        for block in blocks:
+            positive, negative = block.signature_pair()
+            assert positive + negative >= 1, (
+                f"{block} has rank zero and bounds nothing; sum blocks have "
+                "positive rank"
+            )
+            block_data.append((block, SageZZ(positive), SageZZ(negative)))
+
+        realizations: list[Parent] = []
+
+        def block_sum(counts: tuple) -> Parent:
+            summands = [
+                block ** count if count > 1 else block
+                for (block, _positive, _negative), count
+                in zip(block_data, counts, strict=True)
+                if count > 0
+            ]
+            return sum(summands)
+
+        def extend(
+            index: int,
+            remaining_positive: Integer,
+            remaining_negative: Integer,
+            counts: tuple,
+        ) -> None:
+            if index == len(block_data):
+                if remaining_positive == 0 and remaining_negative == 0:
+                    realizations.append(block_sum(counts))
+                return
+            _block, positive, negative = block_data[index]
+            count = 0
+            while (
+                count * positive <= remaining_positive
+                and count * negative <= remaining_negative
+            ):
+                extend(
+                    index + 1,
+                    remaining_positive - count * positive,
+                    remaining_negative - count * negative,
+                    counts + (count,),
+                )
+                count += 1
+
+        extend(0, positive_target, negative_target, ())
         return tuple(realizations)
 
 
@@ -839,4 +951,33 @@ else:
         )
         TdP_into_LK3 = Lattices.LK3.coinvariant_lattice(
             Involutions.I_dP.cyclic_subgroup().inclusion()
+        )
+
+        # The Isometry Searching notebook's adapted basis
+        # $\tilde e=e+e'+f'-a_1$, $\tilde f=f+e'+f'-a_1$,
+        # $\tilde a_1=e'-f'$, $\tilde a_3=f'+a_3$, $\tilde a_i=a_i$
+        # otherwise: its Gram is exactly $U\oplus E_8(2)$ inside
+        # $T_{\mathrm{En}}$, and the coordinate matrix has a unimodular
+        # $10\times10$ minor on the columns $e,f,e',a_2,\ldots,a_8$, so the
+        # embedding is primitive.  Both facts were re-verified by exact
+        # integer arithmetic at migration (2026-08-20).  This arrow is what
+        # makes Sterk 5's fourteen roots in the standalone $U\oplus E_8(2)$
+        # (``sterk.sage`` ``sterk5_in_U_E8_2``) the same configuration as
+        # their $T_{\mathrm{En}}$ presentation.
+        _e, _f = e1.embedded_module_generators()
+        _ep, _fp = e2.embedded_module_generators()
+        _a1, _a2, _a3, _a4, _a5, _a6, _a7, _a8 = e3.embedded_module_generators()
+        U_E8_2_into_TEn = (Lattices.U + Lattices.E8_2).Hom(Lattices.TEn)(
+            (
+                _e + _ep + _fp - _a1,
+                _f + _ep + _fp - _a1,
+                _ep - _fp,
+                _a2,
+                _fp + _a3,
+                _a4,
+                _a5,
+                _a6,
+                _a7,
+                _a8,
+            )
         )

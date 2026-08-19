@@ -172,6 +172,43 @@ def _module_morphism(domain: "Module", codomain: "Module", images: "ModuleMorphi
     return module_homset(domain, codomain)(images)
 
 
+def _one_sided_inverse_matrix(forward: "Matrix", left: bool) -> "Matrix":
+    r"""Return $X$ with $FX=I$ (``left=True``) or $XF=I$ (``left=False``).
+
+    Smith normal form gives $D=UFV$, so $X=VD^{+}U$ with $D^{+}$ the
+    diagonal of unit inverses -- integral over the base ring exactly when
+    the relevant invariant factors are units, which the caller's split
+    criterion guarantees and this helper re-asserts, along with the
+    inverse identity itself.
+    """
+    smith, row_transform, column_transform = forward.smith_form()
+    required = forward.nrows() if left else forward.ncols()
+    diagonal = [
+        smith[index, index]
+        for index in range(min(smith.nrows(), smith.ncols()))
+    ]
+    assert len(diagonal) >= required and all(
+        entry.is_unit() for entry in diagonal[:required]
+    ), "a split morphism has unit invariant factors"
+    pseudo_inverse = matrix(
+        forward.base_ring(),
+        forward.ncols(),
+        forward.nrows(),
+        {
+            (index, index): diagonal[index].inverse_of_unit()
+            for index in range(required)
+        },
+    )
+    candidate = column_transform * pseudo_inverse * row_transform
+    identity_check = (
+        forward * candidate if left else candidate * forward
+    )
+    assert identity_check.is_one(), (
+        "the Smith-form one-sided inverse does not compose to the identity"
+    )
+    return candidate
+
+
 def endomorphism_ring(module: "Module") -> ModuleHomset:
     r"""Return \(\operatorname{End}_R(M)\): the endset, as a ring.
 
@@ -671,6 +708,93 @@ class ModuleMorphism(Morphism):
 
     def image(self) -> "Subobject":
         return self.codomain().subobject_on(list(self.images()))
+
+    def coimage(self) -> "FinitelyPresentedModule":
+        r"""Return $\operatorname{coim}(f)=M/\ker(f)$, presented by the kernel's inclusion.
+
+        The dual of :meth:`cokernel`, computed as one: the coimage is the
+        cokernel of $\ker(f)\hookrightarrow M$.  $R$-Mod is abelian, so the
+        induced arrow $\operatorname{coim}(f)\to\operatorname{im}(f)$ is an
+        isomorphism -- which is why no separate construction lives here.
+        """
+        return self.kernel().embedding().cokernel()
+
+    def equalizer(self, other: "ModuleMorphism") -> "Subobject":
+        r"""Return $\operatorname{Eq}(f,g)\hookrightarrow M$ for a parallel pair.
+
+        $R$-Mod is additive, so the equalizer of $f, g: M\to N$ is
+        $\ker(f-g)$.  This subobject *is* the proof object for morphism
+        equality: $f = g$ exactly when the equalizer is all of $M$, and a
+        module generator outside it is a counterexample in hand -- equality
+        of framed module morphisms is decided on the framing, and the
+        witness or counterexample is returned as data rather than wrapped
+        in a bespoke proof-carrying truth value (the source corpus's
+        layered equality procedure collapses to this one definition on
+        framed domains).
+        """
+        return (self - other).kernel()
+
+    def retraction(self) -> "ModuleMorphism":
+        r"""Return $r: N\to M$ with $r\circ f=\mathrm{id}_M$, for a split mono.
+
+        A retraction exists exactly when $f$ is a split monomorphism --
+        over a PID, for finitely generated modules, exactly when
+        $\operatorname{coker}(f)$ is torsion free -- and that owned
+        question gates the construction.  The matrix is produced by
+        solving $F R = I$ over the base ring and the identity
+        $r\circ f=\mathrm{id}$ is asserted on the composite.
+
+        The source corpus also carried a Moore--Penrose pseudoinverse; that
+        is a framing-dependent $\mathbb Q$-linear datum (the presentation
+        matrix's own ``pseudoinverse()``), not owned vocabulary, and it is
+        deliberately not re-landed here.
+        """
+        assert self.is_injective(), (
+            "a retraction is a left inverse; only a monomorphism has one"
+        )
+        assert self.cokernel().is_torsion_free(), (
+            "a monomorphism of finitely generated modules over a PID "
+            "splits exactly when its cokernel is torsion free"
+        )
+        domain, codomain = self.domain(), self.codomain()
+        backward = _one_sided_inverse_matrix(
+            matrix(domain.base_ring(), self.matrix()), left=True
+        )
+        retraction = _module_morphism(
+            codomain,
+            domain,
+            [
+                zipsum(row, domain.module_generators(), domain.zero())
+                for row in backward.rows()
+            ],
+        )
+        return retraction
+
+    def section(self) -> "ModuleMorphism":
+        r"""Return $s: N\to M$ with $f\circ s=\mathrm{id}_N$, for a split epi.
+
+        Every epimorphism onto a free module splits; more generally a
+        section exists exactly when $f$ is a split epimorphism, and the
+        construction is the transpose problem of :meth:`retraction`:
+        solve $S F = I$ over the base ring, then assert
+        $f\circ s=\mathrm{id}$ on the composite.
+        """
+        assert self.is_surjective(), (
+            "a section is a right inverse; only an epimorphism has one"
+        )
+        domain, codomain = self.domain(), self.codomain()
+        backward = _one_sided_inverse_matrix(
+            matrix(domain.base_ring(), self.matrix()), left=False
+        )
+        section = _module_morphism(
+            codomain,
+            domain,
+            [
+                zipsum(row, domain.module_generators(), domain.zero())
+                for row in backward.rows()
+            ],
+        )
+        return section
 
     def image_contains(self, element: "Element") -> bool:
         r"""Return whether ``element`` lies in this morphism's image.

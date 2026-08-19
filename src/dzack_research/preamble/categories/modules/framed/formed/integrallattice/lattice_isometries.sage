@@ -10,7 +10,10 @@ if TYPE_CHECKING:
 from dzack_research.preamble.categories.modules.module_morphisms.morphism_matrices import MorphismMatrix
 if TYPE_CHECKING:
     from dzack_research.preamble.lexicon import Element
+    from dzack_research.preamble.lexicon import RingElement
     from sage.categories.groups import Group
+    from sage.rings.integer import Integer
+    from sage.structure.parent import Parent
     from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModule
 
 if TYPE_CHECKING:
@@ -98,13 +101,16 @@ def _definite_isometry_group_generator_matrices(lattice: "FormModule") -> tuple:
     on getting that right silently: a morphism is built from these matrices
     below, and its constructor rejects a map that does not preserve the form.
 
-    Definite is the hypothesis and not a preference.  For an indefinite
-    lattice no generating set is in hand: the engine has no algorithm, and
-    :mod:`predicate_subgroups` exists because computing one for a common
-    indefinite lattice runs for days.  That \(O(L)\) is nevertheless finitely
-    generated is Borel and Harish-Chandra's theorem, which is why the group is
-    placed in the category of finitely generated groups without being asked to exhibit
-    anything.
+    Definite is the hypothesis and not a preference: Plesken--Souvignier is a
+    definite-forms algorithm.  The indefinite regime has its own engine --
+    polyhedral_common's ``INDEF_FORM_AutomorphismGroup`` behind
+    :mod:`engines`, routed by :func:`_isometry_group_generator_matrices` --
+    and when that engine is unprovisioned no generating set is in hand:
+    :mod:`predicate_subgroups` exists because computing one by search for a
+    common indefinite lattice runs for days.  That \(O(L)\) is nevertheless
+    finitely generated is Borel and Harish-Chandra's theorem, which is why
+    the group is placed in the category of finitely generated groups without
+    being asked to exhibit anything.
     """
     positive, negative = lattice.signature_pair()
     assert positive + negative == lattice.rank() and 0 in (positive, negative), (
@@ -121,6 +127,35 @@ def _definite_isometry_group_generator_matrices(lattice: "FormModule") -> tuple:
     return tuple(
         generator.matrix().transpose().change_ring(SageZZ)
         for generator in quadratic_form.automorphism_group().gens()
+    )
+
+
+def _isometry_group_generator_matrices(lattice: "FormModule") -> tuple:
+    r"""Return matrices generating \(O(L)\), routed by signature.
+
+    One question, two engines: Plesken--Souvignier (PARI, through Sage's
+    quadratic forms) on the definite regime,
+    polyhedral_common's ``INDEF_FORM_AutomorphismGroup`` (behind
+    :mod:`engines`) on the indefinite one.  Either engine's output is
+    row-convention generator matrices verified against the Gram matrix
+    before an isometry is built from them.
+    """
+    # Local: a module-level import here would close a cycle; by call time this module is built.
+    from dzack_research.preamble.categories.modules.framed.formed.integrallattice.engines import (
+        indefinite_orthogonal_group_generator_matrices,
+        polyhedral_engine,
+    )
+    positive, negative = lattice.signature_pair()
+    if 0 in (positive, negative):
+        return _definite_isometry_group_generator_matrices(lattice)
+    assert polyhedral_engine() is not None, (
+        f"O({lattice}) is indefinite; its generating set is the "
+        "polyhedral_common engine's (INDEF_FORM_AutomorphismGroup), which is "
+        "not provisioned -- see engines.sage.  Name a subgroup by its "
+        "generators, or cut one out by a membership predicate"
+    )
+    return indefinite_orthogonal_group_generator_matrices(
+        matrix(SageZZ, lattice.gram_matrix())
     )
 
 
@@ -263,6 +298,334 @@ class LatticeIsometries(Category):
                 )
             )
 
+        # ---- characters' kernels and stabilizers, as predicate subgroups ----
+        #
+        # A subgroup of O(L) for an indefinite L cannot be handed over by
+        # generators, so each of these is the predicate that decides
+        # membership (predicate_subgroups.sage), together with the character
+        # data the finite-quotient orbit machinery consumes
+        # (isotropic_orbits.sage).
+
+        def special_orthogonal_subgroup(self: "IsometryGroupParent") -> "Parent":
+            r"""Return $SO(L)=\ker(\det: O(L)\to\{\pm1\})$.
+
+            The special orthogonal group: the index-2 subgroup of isometries
+            of determinant $+1$ (Dawes 2021 §1.2, via the migrated glossary).
+            Cut out by the determinant character on
+            :meth:`MorphismMethods.determinant`.
+            """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.isotropic_orbits import OrthogonalPredicateSubgroup
+            return OrthogonalPredicateSubgroup(
+                self,
+                lambda isometry: isometry.determinant() == 1,
+                "det(g) = 1",
+                determinant_kernel=True,
+            )
+
+        def spinor_kernel_subgroup(self: "IsometryGroupParent") -> "Parent":
+            r"""Return $O^+(L)$: the kernel of the real spinor norm.
+
+            $O^+(L\otimes\mathbb R)$ is the kernel of the spinor norm on
+            $O(L\otimes\mathbb R)$, and for a hyperbolic lattice it is the
+            index-2 subgroup preserving the positive cone (Dawes 2021 §1.2,
+            via the migrated glossary); $O^+(L)$ is its intersection with
+            $O(L)$.  Cut out by
+            :meth:`MorphismMethods.real_spinor_norm_sign`, whose docstring
+            states the convention and its relation to
+            :meth:`MorphismMethods.preserves_positive_cone`.
+            """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.isotropic_orbits import OrthogonalPredicateSubgroup
+            return OrthogonalPredicateSubgroup(
+                self,
+                lambda isometry: isometry.real_spinor_norm_sign() == 1,
+                "the real spinor norm of g is positive",
+                spinor_kernel=True,
+            )
+
+        def discriminant_preimage(
+            self: "IsometryGroupParent", subgroup: "Parent"
+        ) -> "Parent":
+            r"""Return $\rho_L^{-1}(H)$ for $H\le O(A_L)$, as a predicate subgroup.
+
+            The preimage under the discriminant representation -- the shape
+            of every arithmetic group in the Enriques/Coble program (the
+            degree-two Enriques group is
+            $\rho^{-1}(\operatorname{Stab}(h/2))\cap O^+$).  Membership is
+            $\rho_L(g)\in H$, decided on the finite $O(A_L)$; no generating
+            set of the preimage is needed, or claimed.
+            """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.isotropic_orbits import OrthogonalPredicateSubgroup
+            from dzack_research.preamble.categories.modules.framed.formed.torsionform.torsion_modules_with_form import (
+                TorsionFormAutomorphismGroup,
+                TorsionFormAutomorphismSubgroup,
+            )
+            assert isinstance(
+                subgroup,
+                (TorsionFormAutomorphismGroup, TorsionFormAutomorphismSubgroup),
+            ), "the preimage is taken of a subgroup of O(A_L)"
+            assert subgroup.domain() is self.domain().discriminant_group(), (
+                "the subgroup must live on this lattice's discriminant form"
+            )
+            return OrthogonalPredicateSubgroup(
+                self,
+                lambda isometry: isometry.discriminant_morphism() in subgroup,
+                f"rho(g) lies in {subgroup}",
+                discriminant_preimages=(subgroup,),
+            )
+
+        def stabilizer_of_vector(
+            self: "IsometryGroupParent", element: "Element"
+        ) -> "Parent":
+            r"""Return $\{g: g(v)=v\}$, the pointwise stabilizer of a vector."""
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.isotropic_orbits import OrthogonalPredicateSubgroup
+            lattice = self.domain()
+            vector = element if element.parent() is lattice else lattice(element)
+            return OrthogonalPredicateSubgroup(
+                self,
+                lambda isometry: isometry(vector) == vector,
+                f"g fixes {vector}",
+            )
+
+        def stabilizer_of_isotropic_line(
+            self: "IsometryGroupParent", element: "Element"
+        ) -> "Parent":
+            r"""Return the setwise stabilizer of the isotropic line $\mathbb Zv$.
+
+            A 0-cusp datum: the lines are the rank-1 primitive totally
+            isotropic sublattices.  $g$ preserving $\mathbb Zv$ sends $v$ to
+            $\pm v$ ($v$ primitive; the units of $\mathbb Z$).
+            """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.isotropic_orbits import OrthogonalPredicateSubgroup
+            lattice = self.domain()
+            vector = element if element.parent() is lattice else lattice(element)
+            assert vector.q() == 0, (
+                f"{vector} is not isotropic; this stabilizer is 0-cusp vocabulary"
+            )
+            return OrthogonalPredicateSubgroup(
+                self,
+                lambda isometry: isometry(vector) in (vector, -vector),
+                f"g preserves the line through {vector}",
+            )
+
+        def stabilizer_of_isotropic_plane(
+            self: "IsometryGroupParent", elements: "OrderedSet"
+        ) -> "Parent":
+            r"""Return the setwise stabilizer of a totally isotropic plane.
+
+            A 1-cusp datum.  The plane is the subobject the two vectors
+            span; $g$ stabilizes it exactly when $g$ maps the subobject into
+            itself -- into suffices, since $g(S)\subseteq S$ for invertible
+            $g$ forces $g(S)=S$ (the chain $f^{-n}S$ ascends in the finite-
+            index saturation, so the index is 1).
+            """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.isotropic_orbits import OrthogonalPredicateSubgroup
+            lattice = self.domain()
+            vectors = tuple(
+                element if element.parent() is lattice else lattice(element)
+                for element in elements
+            )
+            assert len(vectors) == 2, "a plane is spanned by two vectors"
+            plane = lattice.subobject_on(vectors)
+            assert all(
+                left.b(right) == 0 for left in vectors for right in vectors
+            ), "the plane is not totally isotropic"
+            return OrthogonalPredicateSubgroup(
+                self,
+                lambda isometry: isometry.preserves(plane),
+                f"g preserves the plane on {vectors}",
+            )
+
+        def stabilizer_of_isotropic_flag(
+            self: "IsometryGroupParent", elements: "OrderedSet"
+        ) -> "Parent":
+            r"""Return the stabilizer of the full isotropic flag the vectors generate.
+
+            The flag is the chain $S_1\subset S_2\subset\cdots$ of subobjects
+            spanned by the initial segments; the stabilizer preserves *every*
+            stratum, which is strictly finer than preserving the total span
+            (the source corpus's flag validation compared total spans only, a
+            recorded error corrected here).
+            """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.isotropic_orbits import OrthogonalPredicateSubgroup
+            lattice = self.domain()
+            vectors = tuple(
+                element if element.parent() is lattice else lattice(element)
+                for element in elements
+            )
+            assert vectors, "a flag has at least one stratum"
+            assert all(
+                left.b(right) == 0 for left in vectors for right in vectors
+            ), "the flag is not totally isotropic"
+            strata = tuple(
+                lattice.subobject_on(vectors[: depth + 1])
+                for depth in range(len(vectors))
+            )
+            return OrthogonalPredicateSubgroup(
+                self,
+                lambda isometry: all(
+                    isometry.preserves(stratum) for stratum in strata
+                ),
+                f"g preserves every stratum of the flag on {vectors}",
+            )
+
+        # ---- orbits of isotropic subobjects, engine behind the seam ----
+
+        def vector_orbit_representatives(
+            self: "IsometryGroupParent", square: "RingElement"
+        ) -> tuple:
+            r"""Return one lattice element per $O(L)$-orbit of vectors of the
+            given square, as the engine enumerates them.
+
+            Finitely many for an indefinite lattice (the migrated finiteness
+            note is ``notes/topics/coble-enriques-lattice-theory/``
+            ``finiteness-orbits-indefinite-lattices.md``); each
+            representative's square is verified at the seam
+            (:func:`engines.indefinite_vector_orbit_representative_rows`).
+            Orbits of *vectors*, not of lines: $v$ and $-v$ may or may not
+            share an orbit, and :meth:`isotropic_line_orbit_representatives`
+            is the line-level question at square $0$.  Implemented on the
+            full $O(L)$; a structured predicate subgroup splits these ambient
+            orbits by double cosets in its finite quotient.
+            """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.engines import indefinite_vector_orbit_representative_rows
+            assert self is self.domain().Aut(), (
+                "ambient orbit enumeration is O(L)'s; ask a structured "
+                "predicate subgroup for its own splitting"
+            )
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.utilities import zipsum
+            lattice = self.domain()
+            return tuple(
+                zipsum(row, lattice.module_generators(), lattice.zero())
+                for row in indefinite_vector_orbit_representative_rows(
+                    lattice.gram_matrix(), square
+                )
+            )
+
+        def isotropic_line_orbit_representatives(
+            self: "IsometryGroupParent",
+        ) -> tuple:
+            r"""Return one primitive isotropic vector per $O(L)$-orbit of lines.
+
+            The 0-cusps of the Baily--Borel boundary for this group.  The
+            engine's representatives are validated against the owned lattice
+            (isotropy, primitivity) before they leave
+            (:func:`isotropic_orbits.ambient_isotropic_orbit_representatives`).
+            Implemented on the full $O(L)$; a structured predicate subgroup
+            splits these ambient orbits by double cosets in its finite
+            quotient, and an opaque subgroup states the absence.
+            """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.isotropic_orbits import ambient_isotropic_orbit_representatives
+            assert self is self.domain().Aut(), (
+                "ambient orbit enumeration is O(L)'s; ask a structured "
+                "predicate subgroup for its own splitting"
+            )
+            return tuple(
+                flag[0]
+                for flag in ambient_isotropic_orbit_representatives(
+                    self.domain(), 1, "plane"
+                )
+            )
+
+        def isotropic_plane_orbit_representatives(
+            self: "IsometryGroupParent",
+        ) -> tuple:
+            r"""Return one basis pair per $O(L)$-orbit of totally isotropic planes.
+
+            The 1-cusps.  Each representative is a pair of lattice elements
+            spanning the plane, validated at the seam.
+            """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.isotropic_orbits import ambient_isotropic_orbit_representatives
+            assert self is self.domain().Aut(), (
+                "ambient orbit enumeration is O(L)'s; ask a structured "
+                "predicate subgroup for its own splitting"
+            )
+            return ambient_isotropic_orbit_representatives(
+                self.domain(), 2, "plane"
+            )
+
+        def isotropic_flag_orbit_representatives(
+            self: "IsometryGroupParent", depth: "Integer"
+        ) -> tuple:
+            r"""Return one ordered basis per $O(L)$-orbit of isotropic ``depth``-flags."""
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.isotropic_orbits import ambient_isotropic_orbit_representatives
+            assert self is self.domain().Aut(), (
+                "ambient orbit enumeration is O(L)'s; ask a structured "
+                "predicate subgroup for its own splitting"
+            )
+            return ambient_isotropic_orbit_representatives(
+                self.domain(), depth, "flag"
+            )
+
+        def isotropic_lines_are_equivalent(
+            self: "IsometryGroupParent", left: "Element", right: "Element"
+        ) -> bool:
+            r"""Decide whether two primitive isotropic lines lie in one $O(L)$-orbit."""
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.isotropic_orbits import ambient_line_equivalence_witness
+            assert self is self.domain().Aut(), (
+                "ambient equivalence is O(L)'s; ask a structured predicate "
+                "subgroup for the double-coset decision"
+            )
+            return (
+                ambient_line_equivalence_witness(self.domain(), left, right)
+                is not None
+            )
+
+        def isotropic_planes_are_equivalent(
+            self: "IsometryGroupParent",
+            left: "OrderedSet",
+            right: "OrderedSet",
+        ) -> bool:
+            r"""Decide whether two totally isotropic planes lie in one $O(L)$-orbit."""
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.isotropic_orbits import ambient_subspace_equivalence_witness
+            assert self is self.domain().Aut(), (
+                "ambient equivalence is O(L)'s; ask a structured predicate "
+                "subgroup for the double-coset decision"
+            )
+            return (
+                ambient_subspace_equivalence_witness(
+                    self.domain(), left, right, "plane"
+                )
+                is not None
+            )
+
+        def isotropic_flags_are_equivalent(
+            self: "IsometryGroupParent",
+            left: "OrderedSet",
+            right: "OrderedSet",
+        ) -> bool:
+            r"""Decide whether two isotropic flags lie in one $O(L)$-orbit.
+
+            Flag equivalence, not total-span equivalence: the witness must
+            carry every stratum to its counterpart, which the seam checks
+            stratum by stratum.
+            """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.isotropic_orbits import ambient_subspace_equivalence_witness
+            assert self is self.domain().Aut(), (
+                "ambient equivalence is O(L)'s; ask a structured predicate "
+                "subgroup for the double-coset decision"
+            )
+            return (
+                ambient_subspace_equivalence_witness(
+                    self.domain(), left, right, "flag"
+                )
+                is not None
+            )
+
         def _isometry_on_rows(self: "IsometryGroupParent", rows: "Iterable") -> "FormMorphism":
             r"""Return the isometry sending each framing label to a row's combination.
 
@@ -302,7 +665,7 @@ class LatticeIsometries(Category):
                     tuple(
                         self._isometry_on_rows(entries.rows())
                         for entries in
-                        _definite_isometry_group_generator_matrices(self.domain())
+                        _isometry_group_generator_matrices(self.domain())
                     )
                 )
                 self._group_generators = stored
@@ -407,6 +770,101 @@ class LatticeIsometries(Category):
         def is_involution(self: "IsometryMorphism") -> bool:
             involution: bool = (self * self).is_identity()
             return involution
+
+        def determinant(self: "IsometryMorphism") -> "Integer":
+            r"""Return $\det(g)\in\{\pm1\}$: the determinant character.
+
+            A character $O(L)\to\{\pm1\}$ whose kernel is the special
+            orthogonal group $SO(L)$
+            (:meth:`ParentMethods.special_orthogonal_subgroup`).  An
+            integral isometry has unit determinant, asserted at
+            construction, so the value is $\pm1$ by membership.
+            """
+            value: "Integer" = SageZZ(self.matrix().det())
+            return value
+
+        def real_spinor_norm_sign(self: "IsometryMorphism") -> "Integer":
+            r"""Return the sign of the real spinor norm of this isometry.
+
+            Writing $g=\sigma_{w_1}\cdots\sigma_{w_m}$ as a product of
+            reflections over $\mathbb R$, the real spinor norm is
+            $\prod_i[-(w_i,w_i)/2]\in\mathbb R^*/(\mathbb R^*)^2$,
+            well-defined independently of the decomposition (Dawes 2021
+            §1.2, transcribed in the migrated glossary).  Its kernel is
+            $O^+(L)$, and for a hyperbolic lattice that kernel is exactly
+            the positive-cone-preserving subgroup -- so for signature
+            $(1,n)$ this character and
+            :meth:`preserves_positive_cone` agree, a theorem and not a
+            shared implementation.
+
+            Computed through the OSCAR seam
+            (:func:`engines.oscar_rational_spinor_norm_sign`), whose
+            ``rational_spinor_norm`` values $\sigma_w$ at $[(w,w)]$ instead
+            -- the two conventions differ by the determinant character
+            (on $U$: $\sigma_{e+f}$ has $(w,w)=2$, OSCAR sign $+1$, and
+            reverses the cone; $\sigma_{e-f}$ has $(w,w)=-2$, OSCAR sign
+            $-1$, and preserves it) -- so the seam's sign is multiplied by
+            $\det(g)$ here.  The source corpus computed the two characters
+            in two branches of one function under one name, a recorded
+            error this separation corrects.
+            """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.engines import oscar_rational_spinor_norm_sign
+            lattice = self.domain()
+            oscar_sign = oscar_rational_spinor_norm_sign(
+                matrix(SageZZ, lattice.gram_matrix()),
+                matrix(SageZZ, self.matrix()),
+            )
+            sign: "Integer" = SageZZ(oscar_sign) * self.determinant()
+            return sign
+
+        def preserves_positive_cone(self: "IsometryMorphism") -> bool:
+            r"""Return whether this isometry preserves the positive cone.
+
+            For signature $(1,n)$ the set $\{v\in L\otimes\mathbb R:
+            (v,v)>0\}$ has two connected components (the two cones), and an
+            isometry either preserves each or swaps them, decided by the
+            sign of $(v, g(v))$ for any one positive-norm $v$: the pairing
+            cannot vanish there, and its sign is constant on the component.
+            The subgroup this character cuts out is $O^+(L)$, equal to the
+            kernel of :meth:`real_spinor_norm_sign` -- computed
+            independently, so the equality stays falsifiable.  For
+            $p\ge 2$ the positivity domain is connected and there is no
+            cone character, which is why the hypothesis is asserted rather
+            than widened.
+            """
+            from sage.rings.rational_field import QQ as SageQQ
+            from sage.quadratic_forms.quadratic_form import QuadraticForm
+
+            lattice = self.domain()
+            positive, negative = lattice.signature_pair()
+            assert positive == 1 and negative >= 1, (
+                "the positive cone has two components exactly for signature "
+                f"(1, n); {lattice} has signature {(positive, negative)}"
+            )
+            gram = matrix(SageQQ, lattice.gram_matrix())
+            _diagonal_form, change = QuadraticForm(
+                SageQQ, 2 * gram
+            ).rational_diagonal_form(return_matrix=True)
+            positive_columns = [
+                index
+                for index in range(gram.nrows())
+                if (
+                    change.column(index) * gram * change.column(index)
+                ) > 0
+            ]
+            assert len(positive_columns) == 1, (
+                "rational diagonalization must exhibit exactly one positive "
+                "direction for signature (1, n)"
+            )
+            cone_vector = change.column(positive_columns[0])
+            image = cone_vector * matrix(SageQQ, self.matrix())
+            pairing = cone_vector * gram * image
+            assert pairing != 0, (
+                "the pairing of a positive-norm vector with its image never "
+                "vanishes for an isometry"
+            )
+            return bool(pairing > 0)
 
         def __mul__(self: "IsometryMorphism", other: "Element") -> "Element":
             # Local: a module-level import here would close a cycle; by call time this module is built.

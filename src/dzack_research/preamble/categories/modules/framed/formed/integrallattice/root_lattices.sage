@@ -116,6 +116,55 @@ class RootLattices(Category):
             """
             return self.module_generators()
 
+        def coxeter_number(self: Self) -> "RingElement":
+            r"""Return $h$, the Coxeter number of the root system.
+
+            The order of a Coxeter element -- an invariant of the
+            irreducible root system, so the hypothesis is irreducibility,
+            asserted by name.  Answered by Sage's Cartan-type data on the
+            type this lattice was presented by.
+            """
+            cartan_type = self.cartan_type()
+            assert cartan_type.is_irreducible(), (
+                "the Coxeter number is an invariant of an irreducible root "
+                f"system; {cartan_type} is reducible, and each component "
+                "has its own"
+            )
+            return cartan_type.coxeter_number()
+
+        def highest_root(self: Self) -> "ModuleElement":
+            r"""Return $\theta=\sum_i c_i\,\alpha_i$, the highest root.
+
+            The unique root whose coefficients on any simple system are
+            maximal -- an element of *this* lattice: the coefficients come
+            from Sage's root system for the recorded type, and the framing
+            is that type's simple system (``refine_root_lattice``'s
+            contract), so they apply to the module generators directly.
+            Irreducibility is the hypothesis, asserted by name.
+            """
+            from sage.combinat.root_system.root_system import RootSystem
+
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.utilities import zipsum
+
+            cartan_type = self.cartan_type()
+            assert cartan_type.is_irreducible(), (
+                "the highest root is an invariant of an irreducible root "
+                f"system; {cartan_type} is reducible"
+            )
+            coefficients = (
+                RootSystem(cartan_type).root_lattice().highest_root().to_vector()
+            )
+            highest = zipsum(
+                coefficients, self.module_generators(), self.zero()
+            )
+            norm = self.simple_roots()[0].norm()
+            assert highest.norm() == norm, (
+                "the highest root of a simply laced system has the common "
+                f"root square; got {highest.norm()} against {norm}"
+            )
+            return highest
+
         def simple_reflections(self: Self) -> "tuple[ModuleMorphism, ...]":
             r"""Return $(s_{\alpha_1},\dots,s_{\alpha_n})$, the reflections in
             the simple roots, as elements of $\mathrm{Aut}(L)$.
