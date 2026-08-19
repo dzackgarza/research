@@ -2276,10 +2276,10 @@ class PresentedFreeAlgebra(UniqueRepresentation, _PresentedAlgebraBase):
         )
 
     def graded_piece(self, degree: int) -> "Module":
-        from dzack_research.preamble.categories.forms.forms import AlternatingPower
-        from dzack_research.preamble.categories.forms.forms import DividedPower
-        from dzack_research.preamble.categories.forms.forms import SymmetricPower
-        from dzack_research.preamble.categories.forms.forms import TensorPower
+        from dzack_research.preamble.categories.modules.tensors import AlternatingPower
+        from dzack_research.preamble.categories.modules.tensors import DividedPower
+        from dzack_research.preamble.categories.modules.tensors import SymmetricPower
+        from dzack_research.preamble.categories.modules.tensors import TensorPower
 
         constructions = {
             "tensor": TensorPower,
@@ -2292,7 +2292,7 @@ class PresentedFreeAlgebra(UniqueRepresentation, _PresentedAlgebraBase):
     def _class_in_degree(
         self, degree: int, representative: "_SageElement"
     ) -> "_SageElement":
-        from dzack_research.preamble.categories.forms.forms import _element_of_degree_piece
+        from dzack_research.preamble.categories.modules.tensors import _element_of_degree_piece
 
         in_degree: "_SageElement" = _element_of_degree_piece(
             self.graded_piece(degree), representative

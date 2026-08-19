@@ -27,8 +27,10 @@ from sage.structure.parent import Parent
 
 from dzack_research.preamble.categories.forms.forms import (
     BilinearFormMorphism,
-    DividedSquare,
     QuadraticFormMorphism,
+)
+from dzack_research.preamble.categories.modules.tensors import (
+    DividedSquare,
     TensorSquare,
 )
 
