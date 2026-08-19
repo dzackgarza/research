@@ -96,6 +96,12 @@ class HyperbolicLattices(Category):
             The category's stated contract: Vinberg's criterion decides it
             when the root enumeration terminates, and that wiring is the
             open work.
+
+            Hypothesis on the signature: in signature $(1,1)$ the domain is
+            a half-line in $H^1$, of infinite covolume, so a
+            fundamental-polyhedron termination check can never fire
+            (observed on the vendored ``vinal`` fork, commit ``c817ecc``);
+            :meth:`vinberg_algorithm` warns rather than terminates there.
             """
 
         def vinberg_algorithm(
