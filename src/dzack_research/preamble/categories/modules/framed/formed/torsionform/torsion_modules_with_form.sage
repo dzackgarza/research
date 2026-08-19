@@ -1138,11 +1138,11 @@ class TorsionFormAutomorphismGroup(FormHomset):
 class TorsionFormAutomorphismSubgroup(FormHomset):
     r"""A generated subgroup of $O(A)$ for a finite torsion form $A$.
 
-    A group in its own right, whose elements *are* elements of the ambient
-    $O(A)$ -- the subgroup relation is element inclusion, so nothing is
-    re-wrapped.  Because $O(A)$ is finite, every element has finite order
-    and the closure of the generating set under composition alone is the
-    subgroup; that closure is computed once at construction and carried.
+    A group in its own right, whose elements *are* elements of $O(A)$ --
+    the subgroup relation is element inclusion, so nothing is re-wrapped.
+    Because $O(A)$ is finite, every element has finite order and the
+    closure of the generating set under composition alone is the subgroup;
+    that closure is computed once at construction and carried.
     """
 
     def __init__(

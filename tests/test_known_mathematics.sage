@@ -1443,3 +1443,375 @@ def test_splag_forms_51a_and_51b_share_a_genus_but_not_a_class() -> None:
     assert a.is_isometric(b) is not True, (
         "distinct spinor genera are distinct classes (CS10 ch. 15 Thm 14)"
     )
+
+
+# ---------------------------------------------------------------------------
+# The p-adic invariants of the genus against Conway-Sloane's own existence
+# formulae (CS10, Zotero T2WVLTDB, ch. 15): an INDEPENDENT oracle, derived
+# from the cited formulae and pinned against the engine's local data, so the
+# agreement is never the engine checked against itself.
+# ---------------------------------------------------------------------------
+
+
+def _cs99_local_excess(tuples: tuple, p: int) -> int:
+    r"""The p-excess ($p\ge3$) / oddity ($p=2$) from the canonical Jordan
+    symbol, via the Conway--Sloane existence formulae [CS10 ch. 15 sec 7.7]:
+
+        p-excess = sum_q n_q (q - 1) + 4 k_p   (mod 8)   for p >= 3,
+        oddity   = sum_q t_q         + 4 k_2   (mod 8)   for p  = 2,
+
+    where a canonical constituent tuple is ``(v, n, eps)`` at odd $p$ and
+    ``(v, n, eps, type, t)`` at $p=2$, the scale is $q=p^v$ [sec 7.1], and
+    $k_p$ counts the p-adic *antisquare* constituents [sec 5.1]: those with
+    $q$ not a square ($v$ odd) and sign $\varepsilon=-1$.
+    """
+    running_total = 0
+    antisquares = 0
+    for constituent in tuples:
+        valuation, dimension, sign = (
+            constituent[0], constituent[1], constituent[2],
+        )
+        scale = p ** valuation                    # q, the Jordan scale (7.1)
+        if valuation % 2 == 1 and sign == -1:     # antisquare (5.1)
+            antisquares += 1
+        if p == 2:
+            running_total += constituent[4]       # oddity marker t_q (7.4)
+        else:
+            running_total += dimension * (scale - 1)   # n_q (q - 1) (7.7)
+    return (running_total + 4 * antisquares) % 8
+
+
+def test_local_excess_matches_the_conway_sloane_existence_formula() -> None:
+    r"""CS10 ch. 15 sec 7.7: the p-excess / oddity of each local genus
+    symbol, re-derived from the canonical Jordan constituent tuples by the
+    cited formula and matched against the engine's local excess.  The
+    positive-definite root-lattice rows carry the values the source's
+    tables reproduce (E8 unimodular: trivial symbols everywhere)."""
+    rows = (
+        (Lattices.A1.twist(-1), 2, 1),
+        (Lattices.D4.twist(-1), 2, 4),
+        (Lattices.E7.twist(-1), 2, 7),
+        (Lattices.E8.twist(-1), 2, 0),
+        (Lattices.A2.twist(-1), 3, 6),
+        (Lattices.E6.twist(-1), 3, 2),
+        (Lattices.E8.twist(-1), 5, 0),
+        (Lattices.U, 2, 0),
+        (Lattices.U + IntegralLattice(matrix(ZZ, [[2]])), 2, 1),
+    )
+    for lattice, p, expected in rows:
+        genus = lattice.genus()
+        tuples = tuple(
+            tuple(int(entry) for entry in constituent)
+            for constituent in genus.local_symbol(p).canonical_symbol()
+        )
+        assert _cs99_local_excess(tuples, p) == expected, (lattice, p)
+        assert genus.excess(p) % 8 == expected, (lattice, p)
+
+
+def test_a_genus_datum_exists_exactly_when_nikulin_admits_it() -> None:
+    r"""Nik80 (Zotero TTY9FFJS) Thm 1.10.1: existence of an even lattice
+    with signature $(t_+,t_-)$ and discriminant form $q$; Thm 1.3.3*
+    (Gauss--Milgram) gives the necessary congruence
+    $t_+-t_-\equiv\operatorname{Br}(q)\pmod 8$.  For $q_{A_2}$ (the AG
+    negative-definite $A_2$; $\operatorname{Br}=6$, see the Milgram row)
+    the congruence is also sufficient at these signatures, each admissible
+    one witnessed by an actual lattice: $(0,2)$ by $A_2$, $(1,3)$ by
+    $A_2\oplus U$, $(2,4)$ by $A_2\oplus U^2$."""
+    from dzack_research.preamble.categories.modules.framed.formed.integrallattice.integral_lattices import (
+        Genus as LatticeGenus,
+    )
+
+    q = Lattices.A2.discriminant_group()
+    brown = q.brown_invariant()
+    assert brown == 6
+    existence = {
+        (0, 2): True,
+        (2, 0): False,
+        (1, 3): True,
+        (3, 1): False,
+        (2, 4): True,
+        (0, 6): False,
+    }
+    for signature, expected in existence.items():
+        assert LatticeGenus(signature, q).exists() == expected, signature
+        congruent = (signature[0] - signature[1]) % 8 == brown % 8
+        assert congruent == expected, signature
+
+    # Nik80 Thm 1.10.1, the reconstruction half: the genus datum built from
+    # (signature, q_L) IS the genus of a lattice carrying that data ($U$ is
+    # unimodular, so adding it leaves the discriminant form unchanged).
+    assert LatticeGenus((1, 3), q) == (Lattices.A2 + Lattices.U).genus()
+    assert LatticeGenus((2, 4), q) == (
+        Lattices.A2 + Lattices.U + Lattices.U
+    ).genus()
+
+
+# ---------------------------------------------------------------------------
+# Gluing and discriminant actions (CS10, Zotero T2WVLTDB, ch. 4): glue
+# groups of the root lattices, the induced action of O(L) on them, and the
+# glue construction reaching E8.
+# ---------------------------------------------------------------------------
+
+
+def test_a4_isometries_act_on_the_cyclic_glue_group_by_negation() -> None:
+    r"""CS10 ch. 4 sec 6.1: $A_n$ has cyclic glue group $C_{n+1}$ and the
+    order-two diagram automorphism sends $[i]$ to $[n+1-i]$ -- negation.
+    For $A_4$: $|O(A_4)| = 2\cdot5! = 240$, the image of
+    $\rho:O(A_4)\to O(q_{A_4})$ has order two, and the orbits on $C_5$ are
+    $\{0\}$, $\{\pm[1]\}$, $\{\pm[2]\}$."""
+    lattice = Lattices.A4
+    isometries = lattice.Aut()
+    assert isometries.cardinality() == 240
+    image = isometries.discriminant_image()
+    assert image.cardinality() == 2
+    form = lattice.discriminant_group()
+    assert tuple(form.invariants()) == (5,)
+    generator = tuple(form.module_generators())[0]
+    assert form.orbit(generator, group=image) == frozenset(
+        (generator, -generator)
+    )
+    assert sorted(
+        len(orbit) for orbit in form.orbits(group=image)
+    ) == [1, 2, 2]
+
+
+def test_d4_weyl_group_fixes_the_glue_while_triality_permutes_it() -> None:
+    r"""CS10 ch. 4 secs 7.1-7.2: $D_4$ has glue group $V_4$, Weyl subgroup
+    of order $2^3\cdot4! = 192$ acting trivially on the glue, full
+    $|O(D_4)| = 192\cdot3! = 1152$ with the order-six symmetric group
+    acting on the three nonzero glue cosets -- so the subgroup orbits are
+    the trivial subgroup, the three order-two subgroups in one orbit, and
+    the full glue group, while the only isotropic subgroup is trivial."""
+    lattice = Lattices.D4
+    isometries = lattice.Aut()
+    reflections = tuple(
+        lattice.reflection(root) for root in lattice.module_generators()
+    )
+    weyl = isometries.subgroup_on(reflections)
+    assert weyl.cardinality() == 192
+    assert isometries.cardinality() == 1152
+    assert weyl.discriminant_image().cardinality() == 1
+    triality_image = isometries.discriminant_image()
+    assert triality_image.cardinality() == 6
+    form = lattice.discriminant_group()
+    assert form.automorphism_group().cardinality() == 6
+    zero = form.zero()
+    nonzero = frozenset(
+        element for element in form if element != zero
+    )
+    generator = tuple(form.module_generators())[0]
+    assert form.orbit(generator, group=triality_image) == nonzero
+    assert sorted(
+        len(orbit)
+        for orbit in form.orbits_on_subobjects(group=triality_image)
+    ) == [1, 1, 3]
+    isotropic_orbits = form.orbits_on_isotropic_subobjects(
+        group=triality_image
+    )
+    assert len(isotropic_orbits) == 1
+    assert len(isotropic_orbits[0]) == 1
+
+
+def test_a4_a4_order_five_glue_reconstructs_e8() -> None:
+    r"""CS10 ch. 4: glue vectors live in $L^\vee/L$ (sec 3), $A_4$ has glue
+    group $C_5$ (sec 6.1), and the order-five isotropic glue between two
+    $A_4$ components reaches the even unimodular rank-eight lattice with
+    the 240 roots of $E_8$ (sec 8.1).  The index is asserted on the
+    inclusion arrow."""
+    doubled = Lattices.A4 + Lattices.A4
+    form = doubled.discriminant_group()
+    assert tuple(form.invariants()) == (5, 5)
+    first, second = tuple(form.module_generators())
+    glue_class = first + 2 * second
+    assert glue_class.q() == 0, "the [1,2] glue class is isotropic"
+    subgroup = form.subobject_generated_by((glue_class,))
+    assert form.orthogonal_quotient(subgroup).cardinality() == 1
+    inclusion = form.overlattice_from_isotropic_subobject(subgroup)
+    assert inclusion.index() == 5, "[glued : A4 + A4] = |glue group|"
+    glued = inclusion.codomain()
+    assert glued.is_even() and glued.is_unimodular()
+    assert glued.twist(-1).enumerate_short_vectors(2).cardinality() == 120, (
+        "CS10 ch. 4 sec 8.1: E8 has 240 roots, counted modulo sign"
+    )
+    assert glued.is_isometric(Lattices.E8) is True
+
+
+def test_a2_diagram_automorphism_inverts_the_glue_group() -> None:
+    r"""CS10 ch. 4 sec 6.1: $A_n^\vee/A_n \cong C_{n+1}$ and the order-two
+    diagram automorphism sends $[i]$ to $[n+1-i]$; for $A_2$ the induced
+    action on $C_3$ is inversion."""
+    lattice = Lattices.A2
+    first, second = tuple(lattice.module_generators())
+    swap = lattice.Aut()(
+        dict(zip(lattice.module_generating_set(), (second, first)))
+    )
+    induced = swap.discriminant_morphism()
+    form = lattice.discriminant_group()
+    assert tuple(form.invariants()) == (3,)
+    for element in form:
+        assert induced(element) == -element
+
+
+# ---------------------------------------------------------------------------
+# K3 and Enriques lattice theory (Kondo, *K3 Surfaces*, Zotero F288JVXK;
+# Nik80, Zotero TTY9FFJS; Dolgachev, *Enriques Surfaces II*, Zotero
+# 7RZTF9AQ): the K3 lattice, polarizations and their transcendental
+# complements, and the Enriques lattice as a unimodular summand.
+# ---------------------------------------------------------------------------
+
+
+def test_the_k3_lattice_is_the_unique_even_unimodular_lattice_of_its_signature() -> None:
+    r"""Kon20 Thm 1.27: the indefinite even unimodular lattice of signature
+    $(p,q)$ is unique, and $H^2(K3,\mathbb Z) = U^3\oplus E_8(-1)^2$ has
+    rank 22 and signature $(3,19)$ [Cor 1.26: $3-19=-16$ is divisible by
+    8].  Uniqueness is witnessed by the genus-level isometry of a genuinely
+    regrouped block sum with $L_{K3}$."""
+    k3 = Lattices.LK3
+    assert k3.rank() == 22
+    assert k3.signature_pair() == (3, 19)
+    assert k3.is_even() and k3.is_unimodular()
+    regrouped = (Lattices.U + Lattices.E8) + (
+        Lattices.U + Lattices.E8
+    ) + Lattices.U
+    assert regrouped.is_isometric(k3) is True
+
+
+def test_degree_two_polarization_splits_ns_and_transcendental_anti_isometrically() -> None:
+    r"""Kon20 Def 6.4 and the period section: a degree-$2d$ polarized K3
+    has $\mathrm{NS}\supseteq\mathbb ZH=\langle2d\rangle$ primitive in
+    $L_{K3}$ with transcendental complement of signature $(2,19)$; Nik80
+    Cor 1.6.2: the discriminant forms of the primitive complement pair are
+    anti-isometric.  For $d=1$, $H = e+f$ in a hyperbolic plane and
+    $H^\perp \cong U^2\oplus E_8(-1)^2\oplus\langle-2\rangle$."""
+    k3 = Lattices.LK3
+    plane_generators = tuple(k3.module_generators())
+    h = plane_generators[0] + plane_generators[1]
+    ns = k3.subobject_on([h])
+    assert tuple(matrix(ZZ, ns.gram_matrix()).list()) == (2,)
+    assert ns.is_primitive()
+    transcendental = ns.embedding().orthogonal_complement()
+    assert transcendental.rank() == 21
+    assert transcendental.is_even()
+    assert abs(matrix(ZZ, transcendental.gram_matrix()).det()) == 2
+    assert tuple(
+        transcendental.discriminant_group().invariants()
+    ) == (2,)
+    assert transcendental.discriminant_group().is_anti_isometric(
+        ns.discriminant_group()
+    )
+    abstract = (
+        Lattices.U + Lattices.U + Lattices.E8 + Lattices.E8
+        + IntegralLattice(matrix(ZZ, [[-2]]))
+    )
+    assert abstract.signature_pair() == (2, 19)
+    assert transcendental.is_isometric(abstract) is True
+
+
+def test_degree_four_polarization_has_order_four_transcendental_discriminant() -> None:
+    r"""Kon20 Def 6.4, period section; Nik80 Cor 1.6.2: for $d=2$ the class
+    $H=2e+f$ has $H^2=4$, and $H^\perp$ carries a $\mathbb Z/4$
+    discriminant form anti-isometric to $q_{\langle4\rangle}$ -- content
+    the shared signature $(2,19)$ cannot see, separating the two
+    polarization degrees."""
+    k3 = Lattices.LK3
+    plane_generators = tuple(k3.module_generators())
+    h4 = 2 * plane_generators[0] + plane_generators[1]
+    ns4 = k3.subobject_on([h4])
+    assert tuple(matrix(ZZ, ns4.gram_matrix()).list()) == (4,)
+    assert ns4.is_primitive()
+    t4 = ns4.embedding().orthogonal_complement()
+    assert t4.rank() == 21 and t4.is_even()
+    assert tuple(t4.discriminant_group().invariants()) == (4,)
+    assert t4.discriminant_group().is_anti_isometric(
+        ns4.discriminant_group()
+    )
+    h2 = plane_generators[0] + plane_generators[1]
+    t2 = k3.subobject_on([h2]).embedding().orthogonal_complement()
+    assert not t4.discriminant_group().is_isomorphic(
+        t2.discriminant_group()
+    )
+
+
+def test_a_root_class_in_the_k3_lattice_and_its_complement() -> None:
+    r"""Nik80 Cor 1.6.2/1.6.3: the $(-2)$-class $r=e-f$ spans a primitive
+    $A_1(-1)=\langle-2\rangle$ in $L_{K3}$; its orthogonal complement has
+    signature $(3,18)$, determinant $\pm2$, and anti-isometric
+    discriminant form on $\mathbb Z/2$."""
+    k3 = Lattices.LK3
+    plane_generators = tuple(k3.module_generators())
+    root = k3.subobject_on([plane_generators[0] - plane_generators[1]])
+    assert tuple(matrix(ZZ, root.gram_matrix()).list()) == (-2,)
+    assert root.is_primitive()
+    complement = root.embedding().orthogonal_complement()
+    assert complement.rank() == 21
+    assert complement.is_even()
+    assert abs(matrix(ZZ, complement.gram_matrix()).det()) == 2
+    assert tuple(complement.discriminant_group().invariants()) == (2,)
+    assert complement.discriminant_group().is_anti_isometric(
+        root.discriminant_group()
+    )
+
+
+def test_the_enriques_lattice_is_a_unimodular_summand_of_the_k3_lattice() -> None:
+    r"""Kon20 Cor 1.26 / Thm 1.27 and introduction; Dol24 sec 1.5/9.2: the
+    Enriques lattice $E_{10}=U\oplus E_8(-1)$ is the even unimodular
+    lattice of signature $(1,9)$, and $L_{K3}\cong E_{10}\oplus
+    (U^2\oplus E_8(-1))$ -- the unimodular instance of Nik80 Cor 1.6.2,
+    both discriminant forms trivial."""
+    e10 = Lattices.E10
+    assert e10.rank() == 10
+    assert e10.signature_pair() == (1, 9)
+    assert e10.is_even() and e10.is_unimodular()
+    rest = Lattices.U + Lattices.U + Lattices.E8
+    assert rest.signature_pair() == (2, 10)
+    assert rest.is_even() and rest.is_unimodular()
+    assert tuple(e10.discriminant_group().invariants()) == ()
+    assert tuple(rest.discriminant_group().invariants()) == ()
+    assert (e10 + rest).is_isometric(Lattices.LK3) is True
+
+
+def test_dickson_ross_ternary_forms_are_isometric_with_the_splag_witness() -> None:
+    r"""CS10 ch. 15 sec 11: the Dickson--Ross indefinite ternary forms lie
+    in a one-class genus, and the displayed unimodular transform carries
+    the first Gram matrix to the second; the owned isometry decision
+    (Eichler, single spinor genus) confirms the class equality."""
+    first_gram = matrix(ZZ, [[3, 1, 0], [1, 23, 0], [0, 0, -1]])
+    second_gram = matrix(ZZ, [[7, 3, 0], [3, 11, 0], [0, 0, -1]])
+    witness = matrix(ZZ, [[-3, 2, 10], [-2, 3, 14], [-1, 1, 5]])
+    assert witness.det() == -1
+    assert witness * first_gram * witness.transpose() == second_gram
+    first = IntegralLattice(first_gram)
+    second = IntegralLattice(second_gram)
+    assert first.signature_pair() == second.signature_pair() == (2, 1)
+    assert first.is_isometric(second) is True
+
+
+def test_a_similarity_is_an_isometry_from_the_twist() -> None:
+    r"""Definitional: a similarity of scale $a$ multiplies the form by $a$,
+    so it IS an isometry $L(a)\to M$.  The identity assignment is a
+    similarity of scale $-1$ from the AG $A_2$ onto the positive-definite
+    $A_2$, and the predicate reads the same composition."""
+    positive = Lattices.A2.twist(-1)
+    assert Lattices.A2.is_similar(positive, -1) is True
+    sigma = Lattices.A2.similarity(
+        -1, list(positive.module_generators()), codomain=positive
+    )
+    assert sigma.matrix().is_one()
+    assert Lattices.A2.is_similar(Lattices.A2.twist(3), 3) is True
+
+
+def test_the_isometry_torsor_transporter_recovers_the_acting_element() -> None:
+    r"""Definitional (torsor structure of a nonempty isometry homset): for
+    isometries $f$ and $g\circ f$ the transporter answers $g$ -- the free
+    transitive $O(M)$-action makes it unique."""
+    homset = Lattices.A2.Isom(Lattices.A2)
+    witness = homset.an_element()
+    acting = Lattices.A2.Aut()
+    moved_by = None
+    for automorphism in acting:
+        if not automorphism.is_identity():
+            moved_by = automorphism
+            break
+    assert moved_by is not None, "O(A2) has 12 elements, most not identity"
+    moved = witness.then(moved_by)
+    assert homset.transporter(witness, moved) == moved_by

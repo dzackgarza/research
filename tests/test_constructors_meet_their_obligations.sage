@@ -95,6 +95,7 @@ def _constructions() -> dict:
         "isometry group": Lattices.A2.Aut(),
         "isometry homset": Lattices.A2.Isom(Lattices.A2),
         "embedding homset": Lattices.A1.Emb(Lattices.E8),
+        "discriminant image subgroup": Lattices.A2.Aut().discriminant_image(),
         "free algebra": FreeAlgebraOn(QQ, Sets.Δ[1]),
         "tensor algebra": TensorAlgebraOn(QQ, Sets.Δ[1]),
         "alternating algebra": AlternatingAlgebraOn(QQ, Sets.Δ[1]),
