@@ -278,6 +278,29 @@ class IsometryHomset(FormHomset):
         for automorphism in aut:
             yield witness.then(automorphism)
 
+    def transporter(self, source: "Morphism", target: "Morphism") -> "Morphism":
+        r"""Return the unique $g\in O(M)$ with $g\circ\mathrm{source}=\mathrm{target}$.
+
+        The nonempty homset is an $O(M)$-torsor by postcomposition, and a
+        torsor's action is free and transitive, so the transporter exists,
+        is unique, and is $g=\mathrm{target}\circ\mathrm{source}^{-1}$ --
+        constructed in $O(M)$ by its images on the codomain's framing
+        labels, with no search.  An isometry is invertible, so ``lift``
+        through ``source`` is total and *is* $\mathrm{source}^{-1}$.
+        """
+        assert source in self and target in self, (
+            "the transporter carries one isometry of this homset to another"
+        )
+        codomain = self.codomain()
+        return self.acting_group()(
+            {
+                label: target(
+                    source.lift(codomain.module_generator(label))
+                )
+                for label in codomain.module_generating_set()
+            }
+        )
+
     def __contains__(self, candidate: "MembershipInput") -> bool:
         # Local: a module-level import here would close a cycle; by call time this module is built.
         from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormMorphism

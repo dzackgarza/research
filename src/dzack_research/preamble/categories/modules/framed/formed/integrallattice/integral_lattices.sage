@@ -1033,6 +1033,43 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             )
             return _apply_optional_names(result, names)
 
+        def is_similar(
+            self: "LatticeParent",
+            other: "FormModule",
+            scale: "RingElement",
+        ) -> "bool | Unknown":
+            r"""Return whether a similarity $L\to M$ of the given scale exists.
+
+            A similarity of scale $a$ is a bijection multiplying the form by
+            $a$, so it *is* an isometry from the twist: $\sigma:L\to M$ with
+            $b_M(\sigma x,\sigma y)=a\,b_L(x,y)$ is exactly an isometry
+            $L(a)\to M$.  Spelled through the owned twist and the category's
+            own isometry decision -- no new primitive (the same composition
+            that states ``is_anti_isometric`` on the torsion-form surface).
+            """
+            return self.twist(scale).is_isometric(other)
+
+        def similarity(
+            self: "LatticeParent",
+            scale: "RingElement",
+            images: "dict | list | tuple",
+            codomain: "FormModule | None" = None,
+        ) -> "FormMorphism":
+            r"""Return the similarity of the given scale as the morphism it is.
+
+            A similarity $L\to M$ of scale $a$ pulls $b_M$ back to
+            $a\,b_L$, which is precisely a form-preserving morphism
+            $L(a)\to M$; so the constructed object is that morphism, built
+            in its own homset, whose constructor asserts the scaled
+            form-preservation.  The framing labels of $L$ and $L(a)$
+            coincide (a twist scales the form and touches nothing else),
+            so ``images`` is read on them unchanged.
+            """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.lattice_homomorphisms import lattice_homset
+            target = self if codomain is None else codomain
+            return lattice_homset(self.twist(scale), target)(images)
+
         # ---- morphisms / automorphisms ----
 
         def Hom(
@@ -1554,14 +1591,13 @@ class Genus:
         r"""Return $(A_L, q)$, the finite datum of the genus."""
         return self._discriminant_quadratic_form
 
-    def _engine(self) -> "GenusSymbol_global_ring":
-        r"""Return Sage's genus symbol, rebuilt from this genus's own data.
+    def _engine_form(self) -> "TorsionQuadraticModule":
+        r"""Return the engine's torsion quadratic module for this genus's form.
 
         The one boundary crossing: the discriminant quadratic form is
         written out on its generators ($q$ lifted from $\mathbb Q/2\mathbb Z$
         on the diagonal, $b$ lifted from $\mathbb Q/\mathbb Z$ off it), and
-        Sage's torsion-module constructor reconstructs the local symbols
-        from it and the signature.
+        Sage's torsion-module constructor consumes that matrix.
         """
         from sage.modules.torsion_quadratic_module import TorsionQuadraticForm
 
@@ -1572,8 +1608,7 @@ class Genus:
             # Sage builds from any representative Gram matrix -- here the
             # even unimodular one of this signature does not need finding,
             # because the empty torsion form constructor handles it.
-            engine_form = TorsionQuadraticForm(matrix(SageQQ, 0, 0))
-            return engine_form.genus(self._signature_pair)
+            return TorsionQuadraticForm(matrix(SageQQ, 0, 0))
         written = matrix(
             SageQQ,
             [
@@ -1589,7 +1624,28 @@ class Genus:
             "the engine torsion module must carry the whole discriminant "
             f"group: {engine_form.cardinality()} != {form.cardinality()}"
         )
-        return engine_form.genus(self._signature_pair)
+        return engine_form
+
+    def _engine(self) -> "GenusSymbol_global_ring":
+        r"""Return Sage's genus symbol, rebuilt from this genus's own data."""
+        return self._engine_form().genus(self._signature_pair)
+
+    def exists(self) -> bool:
+        r"""Return whether an even lattice realizes this genus datum.
+
+        The existence question for the pair (signature, discriminant
+        quadratic form): Nikulin's Thm 1.10.1 (Nik80, Zotero TTY9FFJS)
+        characterizes exactly when an even lattice with signature
+        $(t_+,t_-)$ and discriminant form $q$ exists; the Gauss--Milgram
+        congruence $t_+-t_-\equiv\operatorname{Br}(q)\pmod 8$ (Thm 1.3.3)
+        is the necessary condition it refines.  Decided by the engine's
+        even-genus existence test behind the boundary, on this object's own
+        data -- a ``Genus`` is the datum pair, and asking it whether any
+        lattice realizes it is the honest spelling of the question.
+        """
+        return bool(
+            self._engine_form().is_genus(self._signature_pair, even=True)
+        )
 
     def determinant(self) -> "RingElement":
         r"""Return the determinant of any lattice in the genus."""

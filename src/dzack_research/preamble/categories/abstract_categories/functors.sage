@@ -29,6 +29,8 @@ from sage.structure.unique_representation import UniqueRepresentation
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from sage.categories.category import Category
     from sage.categories.morphism import Morphism
     from sage.structure.parent import Parent
@@ -170,3 +172,79 @@ class FunctorSpace(UniqueRepresentation, SageHomset):
             f"found Fun({self.domain()}, {self.codomain()})"
         )
         return IdentityFunctor(self.domain())
+
+
+class NaturalIsomorphism:
+    r"""A natural isomorphism between parallel functors, as its component data.
+
+    The 2-cells of \(\mathbf{Cat}\): for parallel functors
+    \(F, G: C \to D\), a natural isomorphism \(\eta\) assigns each object
+    \(X\) an isomorphism \(\eta_X: F(X)\to G(X)\).  The components are the
+    *data*; the naturality squares
+    \(G(f)\circ\eta_X = \eta_Y\circ F(f)\) are the stated contract the
+    supplier of the components owes -- a theorem about the family, carried,
+    never re-proved at runtime (a CAS is not a proof assistant).  No
+    universal bijectivity decision procedure exists either, so the inverse
+    components are declared at construction: a component family with no
+    declared inverse is a natural transformation, not an isomorphism.
+    """
+
+    def __init__(
+        self,
+        source: SageFunctor,
+        target: SageFunctor,
+        components: "Callable",
+        inverse_components: "Callable",
+    ) -> None:
+        parallel = (
+            source.domain() == target.domain()
+            and source.codomain() == target.codomain()
+        )
+        assert parallel, (
+            f"natural transformations require parallel functors; found "
+            f"{source.domain()} -> {source.codomain()} and "
+            f"{target.domain()} -> {target.codomain()}"
+        )
+        assert inverse_components is not None, (
+            "a natural isomorphism declares its inverse components at "
+            "construction"
+        )
+        self._source = source
+        self._target = target
+        self._components = components
+        self._inverse_components = inverse_components
+
+    def source(self) -> SageFunctor:
+        r"""Return \(F\), the functor the components leave."""
+        return self._source
+
+    def target(self) -> SageFunctor:
+        r"""Return \(G\), the functor the components land in."""
+        return self._target
+
+    def component(self, obj: "Parent") -> "Morphism":
+        r"""Return \(\eta_X: F(X)\to G(X)\), the component at ``obj``."""
+        morphism = self._components(obj)
+        assert morphism.domain() == self._source(obj), (
+            f"the component at {obj} must start at the source image; "
+            f"found {morphism.domain()}"
+        )
+        assert morphism.codomain() == self._target(obj), (
+            f"the component at {obj} must land in the target image; "
+            f"found {morphism.codomain()}"
+        )
+        return morphism
+
+    def inverse(self) -> "NaturalIsomorphism":
+        r"""Return \(\eta^{-1}: G \Rightarrow F\), from the declared inverses."""
+        return NaturalIsomorphism(
+            self._target,
+            self._source,
+            self._inverse_components,
+            self._components,
+        )
+
+    def __repr__(self) -> str:
+        return (
+            f"Natural isomorphism from {self._source} to {self._target}"
+        )
