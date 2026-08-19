@@ -16,11 +16,14 @@ if TYPE_CHECKING:
     from dzack_research.preamble.lexicon import Element
     from sage.categories.modules import Module
 
+from sage.matrix.constructor import matrix
 from sage.rings.integer_ring import ZZ as SageZZ
 if TYPE_CHECKING:
     from dzack_research.preamble.categories.forms.forms import BilinearFormMorphism
+    from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormHomset
     from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModule
     from sage.categories.morphism import Morphism
+    from sage.rings.integer import Integer
     from dzack_research.preamble.categories.forms.forms import QuadraticFormMorphism
 
 from typing import Protocol, TYPE_CHECKING
@@ -144,7 +147,6 @@ class DiscriminantQuadraticModules(Category):
         # Local: a module-level import here would close a cycle; by call time this module is built.
         from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormMorphism
         from dzack_research.preamble.categories.forms.forms import QuadraticForm
-        from dzack_research.preamble.categories.forms.forms import QuadraticForms
         from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_torsion_modules import TorsionModule
         from dzack_research.preamble.categories.modules.framed.formed.torsionform.torsion_modules_with_form import cokernel_categories
         from dzack_research.preamble.refine import refine
@@ -154,10 +156,6 @@ class DiscriminantQuadraticModules(Category):
         )
         module = TorsionModule(morphism)
         gram = morphism.codomain().form().gram_matrix()
-        quadratic_form = QuadraticForms(
-            morphism.codomain().forget_form(),
-            QmodnZ(2),
-        )(gram)
         # The hypothesis of the quadratic refinement is that L is even: then
         # q(y + x) = q(y) + 2b(y,x) + q(x) reduces to q(y) in K/2R, so q
         # descends.  That is the branch this method is reached through --

@@ -96,6 +96,7 @@ if TYPE_CHECKING:
     # The ordered-set noun is type-only: the preamble loads into one
     # shared namespace and nothing named OrderedSet may bind there.
     from dzack_research.preamble.lexicon import OrderedSet
+    from sage.misc.unknown import Unknown
 
     from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
         FiniteFreeFormedParent,
@@ -179,7 +180,7 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
         # ---- bilinear / quadratic API ----
 
         @cached_method
-        def decomposition(self: "LatticeParent") -> "DirectSumObject":
+        def decomposition(self: "LatticeParent") -> "DirectSumObject | None":
             r"""Return the chosen block decomposition, or ``None``.
 
             Computed when asked, and not while the lattice is being built.
@@ -192,12 +193,12 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             """
             return _decompose_lattice(self)
 
-        def summands(self: "LatticeParent") -> tuple:
+        def summands(self: "LatticeParent") -> tuple["Subobject", ...]:
             decomposition = self.decomposition()
             assert decomposition is not None, (
                 "this lattice has no chosen nontrivial block decomposition"
             )
-            summands: tuple = decomposition.summands()
+            summands: tuple["Subobject", ...] = decomposition.summands()
             return summands
 
         def is_decomposable(self: "LatticeParent") -> bool:
@@ -602,7 +603,7 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
 
         # ---- invariants of the form, computed by the realization ----
 
-        def signature_pair(self: "LatticeParent") -> tuple:
+        def signature_pair(self: "LatticeParent") -> tuple[Integer, Integer]:
             r"""Return $(p,q)$: the positive and negative indices of inertia.
 
             Sylvester's law over $\mathbb Q$, which is a fact about the form
@@ -808,7 +809,7 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             return DiscriminantQuadraticModules().cokernel(self.correlation())
 
         def discriminant_group(
-            self: "LatticeParent", s: "Element" = 0, *, reduce_trivial: bool = False
+            self: "LatticeParent", p: "Integer" = 0, *, reduce_trivial: bool = False
         ) -> "FormModule":
             r"""Return $A_L=\operatorname{coker}(c: L\to L^\vee)$ with the form $L$ supports.
 
@@ -845,7 +846,7 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             from dzack_research.preamble.categories.modules.framed.formed.torsionform.discriminant_quadratic_modules import DiscriminantQuadraticModules
             cache = f"_preamble_discriminant_group_{bool(reduce_trivial)}"
             cached = self.__dict__.get(cache)
-            if s == 0 and cached is not None:
+            if p == 0 and cached is not None:
                 return cached
 
             correlation = self.correlation()
@@ -864,13 +865,18 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
                     generator for generator in form.module_generators() if generator.order() != 1
                 ]
                 form = form.regenerate(surviving)
-            if s != 0:
-                return form.primary_part(s)
+            if p != 0:
+                return form.primary_part(p)
             setattr(self, cache, form)
             return form
 
         def is_coeven(self: "LatticeParent") -> bool:
             r"""Return whether the discriminant form is integer-valued ($\delta=0$)."""
+            assert self.is_even(), (
+                "coevenness reads the discriminant quadratic form q, which "
+                "only an even lattice's discriminant group carries; "
+                f"{self} is odd"
+            )
             disc = self.discriminant_group()
             assert disc.cardinality() < Sets.ℵ[0], (
                 "discriminant quadratic module is infinite; the lattice must be nondegenerate"
@@ -949,7 +955,7 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
                     assert False, "a tuple is empty or it is not"
 
         @property
-        def sublattices(self: "LatticeParent") -> dict:
+        def sublattices(self: "LatticeParent") -> dict[str, "Subobject"]:
             r"""Return the per-instance dictionary of named sublattices."""
             existing = self.__dict__.get("_sublattices")
             if existing is None:
@@ -1251,7 +1257,7 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             r"""Return $(L^G)^{\perp L}\hookrightarrow L$ for the representation $\rho$."""
             return self.with_action(action).formed_coinvariants()
 
-        def _induced_lattice(self: "LatticeParent", coordinate_basis: "MorphismMatrix") -> "FormModule":
+        def _induced_lattice(self: "LatticeParent", coordinate_basis: "MorphismMatrix") -> "FormModule | None":
             """Return the integral lattice with Gram form induced on ``coordinate_basis``."""
             # Local: a module-level import here would close a cycle; by call time this module is built.
             from dzack_research.preamble.categories.sets.sets import finite_ordered_set
@@ -1369,7 +1375,7 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
                 self.zero(),
             )
 
-        def __pow__(self: "LatticeParent", exponent: "Integer", names: "OrderedSet" = None) -> "Element":
+        def __pow__(self: "LatticeParent", exponent: "Integer", names: "OrderedSet" = None) -> "FormModule":
             r"""``L ^ n`` as the ``n``-fold orthogonal direct sum."""
             n = int(exponent)
             assert n >= 1, f"lattice power needs a positive exponent, got {exponent}"
@@ -1583,7 +1589,7 @@ class Genus:
         )
         self._discriminant_quadratic_form = discriminant_quadratic_form
 
-    def signature_pair(self) -> tuple:
+    def signature_pair(self) -> tuple[Integer, Integer]:
         r"""Return $(p, q)$, the archimedean datum of the genus."""
         return self._signature_pair
 
@@ -1836,7 +1842,7 @@ def _subdivide_gram(L: "FormModule", *cuts: list["Integer"]) -> None:
         form._gram_matrix = gram
     gram.subdivide(*cuts)
 
-def _decompose_lattice(L: "FormModule") -> "DirectSumObject":
+def _decompose_lattice(L: "FormModule") -> "DirectSumObject | None":
     r"""Split \(L\) along its generators and record the summands.
 
     Decomposability here is a property of the chosen generating set: \(L\)

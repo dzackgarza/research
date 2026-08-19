@@ -2,6 +2,7 @@ r"""Finite torsion modules equipped with a bilinear or quadratic form."""
 
 
 from sage.rings.rational_field import QQ as SageQQ
+from sage.matrix.constructor import matrix
 from sage.rings.integer_ring import ZZ as SageZZ
 from typing import TYPE_CHECKING
 from dzack_research.preamble.lexicon import Element
@@ -53,14 +54,14 @@ if TYPE_CHECKING:
         def module_generators(self) -> tuple: ...
         def module_generating_set(self) -> "OrderedSet": ...
         def smith_form_module_generators(self) -> "OrderedSet": ...
-        def invariants(self) -> tuple: ...
+        def invariants(self) -> tuple["Integer", ...]: ...
         def cardinality(self) -> "Cardinal": ...
         def annihilator(self) -> "Ideal_pid": ...
         def zero(self) -> "Element": ...
         def regenerate(self, module_generators: "OrderedSet") -> "FormModule": ...
         def form_vanishes_on(self, elements: "OrderedSet") -> bool: ...
         def subobject_generated_by(self, elements: "OrderedSet") -> Subobject: ...
-        def primary_decomposition(self) -> dict: ...
+        def primary_decomposition(self) -> dict["Integer", tuple["Integer", ...]]: ...
         def _isotropic_subgroups(self) -> "Iterator[frozenset]": ...
         def gram_matrix(self) -> GramMatrix: ...
         def _form_matrix_latex_label(self) -> str: ...
@@ -150,7 +151,15 @@ class TorsionModulesWithForm(OwnedCategoryOverBaseRing):
             however it was built.  Which matrix it is, is the form's business:
             $b$'s matrix for a bilinear module, $q$'s upper-triangular one for
             a quadratic module.
+
+            :func:`subdivide_form_gram_matrix` stores the partitioned matrix
+            once as instance data; when present, that datum is the answer.
             """
+            stored: GramMatrix | None = self.__dict__.get(
+                "_subdivided_gram_matrix"
+            )
+            if stored is not None:
+                return stored
             form = self.form()
             target = form.value_module()
             reduced = GramMatrix(matrix(
@@ -178,7 +187,7 @@ class TorsionModulesWithForm(OwnedCategoryOverBaseRing):
             """
             return self.forget_form().presentation()
 
-        def invariants(self: "TorsionFormParent") -> tuple:
+        def invariants(self: "TorsionFormParent") -> tuple["Integer", ...]:
             r"""Return the invariant factors of the underlying module."""
             return tuple(self.forget_form().invariants())
 
@@ -669,9 +678,13 @@ class TorsionModulesWithForm(OwnedCategoryOverBaseRing):
             elementary: bool = self.forget_form().is_p_elementary(p)
             return elementary
 
-        def primary_decomposition(self: "TorsionFormParent") -> dict:
+        def primary_decomposition(
+            self: "TorsionFormParent",
+        ) -> dict["Integer", tuple["Integer", ...]]:
             r"""Return the underlying group's primary decomposition."""
-            decomposition: dict = self.forget_form().primary_decomposition()
+            decomposition: dict["Integer", tuple["Integer", ...]] = (
+                self.forget_form().primary_decomposition()
+            )
             return decomposition
 
         def _latex_(self: "TorsionFormParent") -> str:
@@ -1502,14 +1515,19 @@ def _form_gram_matrix_latex(module: "Module") -> str:
     if not module.invariants():
         return "()"
     gram_str = str(_latex_fn(module.gram_matrix()))
-    zero_dots = globals().get("_zero_dots", lambda: False)
-    if zero_dots():
+    # Local: a module-level import here would close a cycle; by call time this module is built.
+    from dzack_research.preamble.categories.modules.framed.formed.integrallattice.integral_lattices import _zero_dots
+    if _zero_dots():
         gram_str = re.sub(r"\b0\b", lambda m: r"\cdot", gram_str)
     return gram_str
 
 
 def subdivide_form_gram_matrix(module: "Module") -> None:
-    r"""Partition ``module``'s Gram matrix once and replace ``gram_matrix``."""
+    r"""Partition ``module``'s Gram matrix once and store it as instance data.
+
+    The category's ``gram_matrix`` reads the stored matrix when present; the
+    method stays the one public reader.
+    """
     raw = module.gram_matrix()
     cuts = _form_gram_matrix_cuts(module, raw)
     match cuts:
@@ -1518,7 +1536,7 @@ def subdivide_form_gram_matrix(module: "Module") -> None:
         case [_, *_]:
             G = raw.parent()(raw)
             G.subdivide(cuts, cuts)
-    module.gram_matrix = lambda: G
+    module._subdivided_gram_matrix = G
 
 
 def _form_gram_matrix_cuts(module: "Module", raw: "GramMatrix") -> list[int]:

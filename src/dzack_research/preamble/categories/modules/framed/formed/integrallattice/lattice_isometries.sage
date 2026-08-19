@@ -1,5 +1,6 @@
 r"""Isometries of integral lattices."""
 
+from sage.matrix.constructor import matrix
 from sage.rings.integer_ring import ZZ as SageZZ
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -324,6 +325,23 @@ class LatticeIsometries(Category):
                 generator.matrix() for generator in self.group_generators()
             )
             return gap_group
+
+        def _defining_matrix_group(
+            self: "IsometryGroupParent",
+        ) -> "FinitelyGeneratedMatrixGroup_gap":
+            r"""Return the GAP model ``_libgap_`` converts through.
+
+            On the full \(O(L)\) this is the matrix model itself, admissible
+            exactly where the group is finite -- GAP's character machinery is
+            finite-group vocabulary.  ``LatticeIsometrySubgroup`` inherits a
+            finer version from ``AutomorphismSubgroup``, which precedes this
+            one in the MRO.
+            """
+            assert self.is_finite(), (
+                "the GAP model backing _libgap_ is finite-group vocabulary; "
+                f"{self} is not known finite"
+            )
+            return self._matrix_group()
 
         @cached_method
         def presenting_free_group(self: "IsometryGroupParent") -> "Group":

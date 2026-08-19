@@ -14,6 +14,7 @@ needs cosets, hence an abelian ambient category -- see
 """
 
 from dzack_research.preamble.categories.rings.rings import ℤ
+from sage.matrix.constructor import matrix
 from sage.rings.integer_ring import ZZ as SageZZ
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:

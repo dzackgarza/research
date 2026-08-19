@@ -464,6 +464,10 @@ class DefiniteLattices(Category):
                     "an inclusion into it are coordinates and not vectors"
                 )
                 rows = matrix(SageZZ, inclusion.matrix())
+                if rows.nrows() < 2:
+                    # fpylll rejects block_size < 2, and on one row BKZ is
+                    # LLL anyway: block reduction has no block to work on.
+                    return self.LLL()
                 basis = fpylll.IntegerMatrix.from_matrix(rows)
                 # fpylll requires a block size of at least 2 and no more
                 # than the number of rows being reduced.

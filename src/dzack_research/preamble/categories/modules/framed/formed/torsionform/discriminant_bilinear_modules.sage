@@ -7,9 +7,13 @@ if TYPE_CHECKING:
 
 from sage.rings.integer_ring import ZZ as SageZZ
 if TYPE_CHECKING:
+    from dzack_research.preamble.categories.forms.forms import BilinearFormMorphism
+    from dzack_research.preamble.categories.forms.forms import QuadraticFormMorphism
+    from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormHomset
     from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModule
     from sage.categories.morphism import Morphism
-    from dzack_research.preamble.categories.forms.forms import QuadraticFormMorphism
+    from sage.rings.integer import Integer
+    from sage.structure.element import Element
 
 from typing import Protocol, TYPE_CHECKING
 
@@ -187,18 +191,32 @@ class DiscriminantBilinearModules(Category):
             passage goes back through the lattice, unlike
             :meth:`~DiscriminantQuadraticModules.ParentMethods.associated_bilinear_form`,
             which polarizes $q$ and needs nothing else.
+
+            So the passage is defined exactly on a discriminant form -- a
+            bilinear module carrying its source lattice -- and only when that
+            lattice is even.  A bare bilinear torsion module's stored Gram
+            entries are defined only mod $1$; they are not data of the form,
+            and reading them as $q$-values in $\mathbb Q/2\mathbb Z$ would
+            fabricate a refinement the object does not determine.
             """
             # Local: a module-level import here would close a cycle; by call time this module is built.
-            from dzack_research.preamble.categories.modules.framed.formed.torsionform.discriminant_quadratic_modules import DiscriminantQuadraticModules
-            # The lift matrix of the refinement is b's own matrix of
-            # representatives, read in Q/2Z: q(x) = b(x,x) on a lift, which is
-            # exactly the x2 passage of Def 25.4 run backwards.  Not
-            # ``polar_form``: the polarization of b's norm is 2b, a different
-            # form.
-            return DiscriminantQuadraticModules().from_module(
-                self.forget_form(),
-                self.form().gram_matrix(),
+            from dzack_research.preamble.categories.modules.framed.formed.torsionform.torsion_modules_with_form import DiscriminantForms
+            assert self in DiscriminantForms(), (
+                "b does not determine q: a bare bilinear torsion module's "
+                "representative entries are defined only mod 1, so the "
+                "quadratic refinement is reachable only through a source "
+                "lattice (Def 25.4)"
             )
+            lattice = self.source_lattice()
+            assert lattice.is_even(), (
+                "the quadratic refinement q: A_L -> Q/2Z exists exactly when "
+                f"the source lattice is even; {lattice} is odd"
+            )
+            # The refinement is the quadratic cokernel of the same
+            # correlation: the construction goes back through the lattice,
+            # never through this object's mod-1 representative entries.
+            from dzack_research.preamble.categories.modules.framed.formed.torsionform.discriminant_quadratic_modules import DiscriminantQuadraticModules
+            return DiscriminantQuadraticModules().cokernel(self.correlation())
 
         def _form_matrix_latex_label(self: "DiscriminantBilinearParent") -> str:
             r"""Return the LaTeX label for the bilinear Gram matrix."""
