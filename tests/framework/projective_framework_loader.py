@@ -15,8 +15,12 @@ from typing import Any
 _SKIP_REGRESSIONS_ENV = "PROJECTIVE_SCHEME_FRAMEWORK_SKIP_REGRESSIONS"
 _FRAMEWORK_NOTEBOOK_RELATIVE = Path("computations/notebooks/Projective_Scheme_Framework.ipynb")
 
-_NOT_LOADED = object()
-_loaded_namespace: dict[str, Any] | object = _NOT_LOADED
+NotebookNamespace = dict[str, Any]
+"""The namespace produced by executing notebook cells; cell outputs are
+arbitrary Sage objects, so the value type is genuinely unconstrained — the
+ambiguity is quarantined to this one alias."""
+
+_loaded_namespace: NotebookNamespace | None = None
 
 
 def _repo_root() -> Path:
@@ -33,7 +37,7 @@ def _framework_notebook_path() -> Path:
     return path
 
 
-def load_projective_framework(*, run_regressions: bool = False, force_reload: bool = False) -> dict[str, Any]:
+def load_projective_framework(*, run_regressions: bool = False, force_reload: bool = False) -> NotebookNamespace:
     """Load framework extensions into an executable namespace.
 
     Parameters
@@ -45,8 +49,8 @@ def load_projective_framework(*, run_regressions: bool = False, force_reload: bo
     """
 
     global _loaded_namespace
-    if _loaded_namespace is not _NOT_LOADED and not force_reload:
-        return _loaded_namespace  # type: ignore[return-value]
+    if _loaded_namespace is not None and not force_reload:
+        return _loaded_namespace
 
     notebook_path = _framework_notebook_path()
     notebook_payload = json.loads(notebook_path.read_text(encoding="utf-8"))
@@ -57,7 +61,7 @@ def load_projective_framework(*, run_regressions: bool = False, force_reload: bo
     else:
         os.environ[_SKIP_REGRESSIONS_ENV] = "1"
 
-    namespace: dict[str, Any] = {"__name__": "__main__", "__file__": str(notebook_path)}
+    namespace: NotebookNamespace = {"__name__": "__main__", "__file__": str(notebook_path)}
     try:
         for idx, cell in enumerate(notebook_payload.get("cells", [])):
             if cell.get("cell_type") != "code":
