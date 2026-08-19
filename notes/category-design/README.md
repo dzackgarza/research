@@ -31,11 +31,19 @@ error cannot be re-derived from the document by a later reader.
 | `core-category-theory/` | Abelian and concrete categories, diagram/cone machinery, limits and colimits as Kan extensions, internal algebraic objects, symmetric monoidal structure. |
 | `conventions/` | The sign, notation, and construction conventions the corpora were written under, chiefly the negative-definite Gram convention $B_{ij} = 2\cos(\pi/m_{ij})$. |
 | `n-category-tower/` | A specification tower for a toy model of $(\infty,n)$-categories from `gitclones/integral_lattice/cat/` (landed 2026-08-20, PLAN-corpora-audit-registry R4): the dimension shift (n-morphisms as 0-morphisms of iterated hom-categories), Hom/End/Aut and functor-category families, named categories, the homotopy toolkit, and the proof-carrying truth-value design. Candidacy for `categories/abstract_categories/` and the audit's error catalogue are in its INDEX. |
+| `chain-complexes/` | The category $\mathrm{Ch}(\mathcal{C})$ as a Sage category — exactness, homology, cone and shift asked of the complex — plus the attempt to carry a bilinear form at each degree. The prerequisite for any $\mathrm{Ext}$ or $\mathrm{Tor}$ here; nothing of it is built. |
+| `prior-art-hott/` | Two formalized category-theory libraries (Coq-HoTT, Lean 3 HoTT) read for design: hom-types indexed by object pairs, truncation levels, comma categories, Kan extensions, and universal properties that carry their witness. |
+| `sage-gaps/` | The survey the preamble was built against: what SageMath's $R$-modules and notation lack. Most rows are now owned; $\mathrm{Ext}$/$\mathrm{Tor}$, exact-sequence tooling and syzygies are the ones that are not. |
 | `fp-modules-axiom-scheme/` | Two drafts of a finitely-presented-modules category organized by declared axioms (Free/Torsion/Cyclic/Finite, Endset/Autset on homsets) with the standard functors as functors, from `gitclones/integral_lattice/FPModules{,PID}/` (landed 2026-08-20, PLAN-corpora-audit-registry R3). The axiom scheme is the recorded candidacy; the functor tier is owned prior art. |
 
 The corrected roster of lattice-theoretic categories from that corpus's
 `sage_integration.md` is `lattice-categories-roster.md` in this directory,
 restated as a coverage check against the owned lattice tree.
+
+`integral-lattice-bridge-residue.md` closes the same corpus's bridge layer
+(`gitclones/integral_lattice/*.py`): the lattice expression grammar and the
+random-lattice construction, which stay records rather than preamble code,
+plus a table naming where every other notion of that layer landed.
 
 Three source generations appear under `bilinear-module-tower/`, named by
 origin tree rather than by date:

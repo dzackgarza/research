@@ -907,33 +907,105 @@ class LatticeIsometries(Category):
             torsion-form category -- an element of $O(A_L)$, constructed in
             that group.
 
-            On a class $\pi(y)$ with $y\in L^\vee$ it is $\pi(f^\vee(y))$,
-            where $f^\vee(\varphi)=\varphi\circ f^{-1}$ is the dual isometry;
-            in the dual framing $f^\vee$'s matrix is $(U^{-1})^{\mathsf T}$
-            for $U$ the matrix of $f$.  That the result preserves the
-            discriminant form is functoriality, and the receiving homset's
-            constructor checks it on this finite object rather than trusting
-            the transcription.
+            The functor's value on a morphism is
+            :meth:`~LatticeHomomorphisms.MorphismMethods.discriminant_isometry`,
+            which is where the formula lives and where the receiving homset
+            checks that the result preserves the form.  What this adds is the
+            *parent*: at $L=M$ the value is an element of $O(A_L)$, which is
+            what lets :meth:`ParentMethods.discriminant_image` generate a
+            subgroup of $O(A_L)$ from it.
             """
-            # Local: a module-level import here would close a cycle; by call time this module is built.
-            from dzack_research.preamble.utilities import zipsum
-            lattice = self.domain()
-            form = lattice.discriminant_group()
-            projection = form.projection()
-            dual = projection.domain()
-            dual_matrix = (
-                matrix(SageZZ, self.matrix()).inverse().transpose().change_ring(SageZZ)
-            )
+            form = self.domain().discriminant_group()
+            induced = self.discriminant_isometry()
             return form.automorphism_group()(
                 {
-                    label: projection(
-                        zipsum(row, dual.module_generators(), dual.zero())
-                    )
-                    for label, row in zip(
-                        dual.module_generating_set(), dual_matrix.rows()
-                    )
+                    label: induced(form.module_generator(label))
+                    for label in form.module_generating_set()
                 }
             )
+
+        def centralizer_discriminant_image(self: "IsometryMorphism") -> "Parent":
+            r"""Return $\rho_L\bigl(Z_{O(L)}(f)\bigr)\le O(A_L)$.
+
+            The centralizer $Z_{O(L)}(f)$ itself is
+            ``predicate_subgroups.centralizer(L.Aut(), f)``: a membership
+            predicate, because an arithmetic group carries no generating set
+            on offer.  Its *image* under the discriminant representation is
+            nevertheless computable, and not by generating the centralizer:
+            hermitian Miranda--Morrison theory computes it directly, which is
+            what Hecke's ``image_centralizer_in_Oq`` runs (behind
+            :func:`engines.oscar_centralizer_discriminant_image`).  Even
+            lattices only -- the theory's own hypothesis.
+
+            The subgroup is what this returns, and four things are checked at
+            the boundary before it does: every crossed-back generator is an
+            isometry of the owned $A_L$ (the engine's element constructor
+            says so, or fails); every one commutes with $\rho_L(f)$, which
+            it must, the image of a centralizer lying in the centralizer of
+            the image; the generated subgroup has the order the engine
+            reports; and the engine's own invariant and coinvariant ranks
+            agree with the owned $L^{\langle f\rangle}$ and its orthogonal
+            complement, computed here natively.
+
+            Stated residual: the crossing identifies the engine's smith
+            generators of $A_L$ with the owned ones in order.  The four
+            checks above are what stands behind that identification --
+            together they pin the subgroup up to an isometry of $A_L$
+            commuting with $\rho_L(f)$ -- and they do not by themselves
+            prove the two presentations are the same one.  A caller needing
+            that certainty compares $\rho_L$-images of concrete isometries.
+            """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.engines import oscar_centralizer_discriminant_image
+            from dzack_research.preamble.categories.sets.cardinals import Cardinal
+            lattice = self.domain()
+            assert lattice.is_even(), (
+                "the image of a centralizer in O(A_L) is computed by "
+                f"hermitian Miranda-Morrison theory, which needs L even; "
+                f"{lattice} is odd, a stated absence"
+            )
+            form = lattice.discriminant_group()
+            automorphism_group = form.automorphism_group()
+            (
+                generator_matrices,
+                order,
+                invariant_rank,
+                coinvariant_rank,
+            ) = oscar_centralizer_discriminant_image(
+                matrix(SageZZ, lattice.gram_matrix()),
+                matrix(SageZZ, self.matrix()),
+            )
+            action = self.cyclic_subgroup().inclusion()
+            assert lattice.invariant_lattice(action).rank() == invariant_rank, (
+                "the engine's invariant lattice and the owned L^<f> differ in "
+                "rank"
+            )
+            assert (
+                lattice.coinvariant_lattice(action).rank() == coinvariant_rank
+            ), (
+                "the engine's coinvariant lattice and the owned "
+                "(L^<f>)-perp differ in rank"
+            )
+            generators = tuple(
+                automorphism_group._from_engine(
+                    automorphism_group._engine_group(generator_matrix)
+                )
+                for generator_matrix in generator_matrices
+            )
+            induced = self.discriminant_morphism()
+            assert all(
+                generator * induced == induced * generator
+                for generator in generators
+            ), (
+                "an engine generator of the centralizer's image does not "
+                "commute with rho_L(f)"
+            )
+            image = automorphism_group.subgroup_on(generators)
+            assert image.cardinality() == Cardinal(order), (
+                "the crossed-back generators do not generate a group of the "
+                "order the engine reports"
+            )
+            return image
 
         def cyclic_subgroup(self: "IsometryMorphism") -> "Group":
             r"""Return \(\langle f\rangle\le O(L)\), the subgroup this generates.

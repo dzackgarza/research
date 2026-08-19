@@ -113,6 +113,15 @@ def _constructions() -> dict:
         "isometry homset": Lattices.A2.Isom(Lattices.A2),
         "embedding homset": Lattices.A1.Emb(Lattices.E8),
         "discriminant image subgroup": Lattices.A2.Aut().discriminant_image(),
+        # The stabilizer of one class in O(A): for A2 the discriminant form is
+        # ZZ/3 with O(A) = {+-1}, so the stabilizer of a nonzero class is
+        # trivial -- which also puts the empty generating set through the
+        # subgroup constructor.
+        "discriminant class stabilizer": Lattices.A2.discriminant_group()
+        .automorphism_group()
+        .stabilizer_of_element(
+            list(Lattices.A2.discriminant_group().module_generators())[0]
+        ),
         "special orthogonal subgroup": Lattices.A2.Aut().special_orthogonal_subgroup(),
         "spinor kernel subgroup": Lattices.U.Aut().spinor_kernel_subgroup(),
         "stable orthogonal group": Lattices.A2.stable_orthogonal_group(),

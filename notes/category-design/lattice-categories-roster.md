@@ -72,3 +72,42 @@ The same audit row also recorded the self-contradiction
 `DefiniteLattice` as one of its specializations; the corrected table above
 defines the class by integrality alone and lets signature be the
 subcategory datum.
+
+## The one signature class with no category: parabolic
+
+Added 2026-08-20 from the Coxeter deletion audit
+(PLAN-coxeter-deletion-audit-registry, readers T and P1), where two
+independent corpora built this node and the preamble has none.
+
+The signature trichotomy a Coxeter diagram induces on its root lattice is
+three-way, and the table above holds only two of the three:
+
+| type | signature of the Gram matrix | owner |
+|---|---|---|
+| elliptic (spherical) | $(0,n,0)$ — negative definite | `definite_lattices.sage` |
+| parabolic (euclidean) | $(0,n-1,1)$ — negative semidefinite of corank 1 | **none** |
+| hyperbolic | $(1,n-1,0)$ — Lorentzian | `hyperbolic_lattices.sage` |
+
+At diagram level all three exist: `coxeter_diagrams.sage` has `is_elliptic`
+and `is_parabolic`, and `vinberg_invariants.sage` has all of `is_elliptic`,
+`is_parabolic`, `is_hyperbolic`. At lattice level the parabolic row has no
+category, and `integral_lattices.sage`'s `refine_one_lattice` drops a
+negative semidefinite lattice out of `IntegralLattices` rather than routing
+it anywhere, because these lattices are degenerate: the radical is the
+rank-1 kernel of the correlation, and its quotient is the negative definite
+finite part. So $\tilde A_1$ with Gram $[[-2,2],[2,-2]]$ and $\tilde A_2$
+with Gram $[[-2,1,1],[1,-2,1],[1,1,-2]]$ — signatures $(0,1,1)$ and
+$(0,2,1)$ — are the smallest specimens the owned tree cannot place.
+
+The predicate the routing edge would use already exists
+(`is_negative_semidefinite`, `integral_lattices.sage`). What is missing is
+the category and its refinement edge, and above it the degenerate node the
+design corpora put parabolic under (radical, radical complement,
+split-degeneracy, the stabilizer of the radical in $O(L)$; then null root,
+level, real and imaginary roots, height grading, affine Weyl group). The
+design is written out in
+`bilinear-module-tower/api-planning/categories/bilinear_Rmod/symmetric_Rmod/degenerate_lattices/`
+and in the `sage-planning-modules-bak` generation beside it.
+
+**This is a category-tree change, so it is a decision, not an edit.** It is
+recorded here rather than made.

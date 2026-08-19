@@ -140,6 +140,38 @@ specifies that the preamble does not own; the corpus is their design source:
     search restricted to generating morphisms; composition-order
     convention conflict; an uncalled-method comparison bug; completion
     non-termination unstated).
+12. **Kernel and cokernel by fibre over a terminal object**
+    (`w_categories/hom_categories/abstract_arrows.py`, repeated at
+    `partial_implementation_bases/cat_w.py` `kernel_C`) — writes
+    $\ker(f) = \{x \in X : f(x) = *\}$ for "the terminal object of $Y$",
+    and $\operatorname{coker}(f) = Y/\operatorname{im}(f) = * +_X Y$. A
+    kernel is defined only in a pointed category, as the pullback of $f$
+    along $0 \to Y$; the fibre over a terminal object is a preimage, and
+    in $\mathbf{Set}$ the fibre over a point is nonempty for every point
+    of the image. "The terminal object of $Y$" is also a category error —
+    $Y$ is an object, not a category. The cokernel formula holds in an
+    abelian category, not generally.
+13. **Forgetting structure realised as inheritance**
+    (`w_categories/one_categories/rings.py`, same pattern in `mod_R.py`
+    and `groups.py`) — a ring object is declared a subtype of a group
+    object and of a set object, with `as_set` and `as_additive_group`
+    returning `self`. A forgetful functor is a functor, not a subtype
+    relation. The consequence is concrete: the ring inherits `centre`,
+    `commutator_subgroup`, `is_abelian`, `order` and `quotient_by` from
+    the group layer, so `R.center()` denotes the centre of $(R,+)$, which
+    is all of $R$, rather than the centre of the ring. The corpus's own
+    `docs/abc_hierarchy_analysis.md` Part VII states the correct model
+    ("WRONG (inheritance-based) … CORRECT (functor-based)") and its
+    summary then reinstates inheritance.
+14. **Mediating-morphism condition on the wrong legs**
+    (`abc_specs/structures.py`) — the pullback clause requires
+    $f \cdot \pi_1 = g \cdot \pi_2$ for $f: B \to X_1$, $g: B \to X_2$,
+    using the pullback projections; the condition is on the cospan legs
+    $p_1: X_1 \to Z$, $p_2: X_2 \to Z$, namely $p_1 \cdot f = p_2 \cdot
+    g$, and as written the composites are not even composable. The
+    pushout clause carries the dual mistake, writing $\iota_1 \cdot f =
+    \iota_2 \cdot g$ with the pushout injections instead of
+    $f \cdot i_1 = g \cdot i_2$ with the span legs.
 
 ## Vocabulary rule
 

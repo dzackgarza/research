@@ -15,7 +15,7 @@ tree is the durable home.
 | --- | --- |
 | `method-inventories/` | The `lattice_interface` documentation tree, verbatim: per-system research readmes, per-system coverage checklists, and the upstream documentation snapshots the readmes cite. |
 | `system-references/` | The `lattice_extension` documentation tree, verbatim: one short method-level reference per system, indexed by its own `INDEX.md`, plus `DEFINITENESS_NOTES.md`. |
-| `design/` | The locally-authored doctrine and procedure behind the corpus: its scope statement, the three agent playbooks, the plan that produced the typed contract, the coverage-audit changelog, and the extension clone's code-style ruling. |
+| `design/` | The locally-authored doctrine and procedure behind the corpus: its scope statement, the three agent playbooks, the plan that produced the typed contract, the coverage-audit changelog, and the extension clone's code-style ruling. `design/audit-procedures/` holds the three audit procedures the corpus was written against — documentation coverage, test coverage, interface design — whose worked tasks state the mathematical contract taxonomy every reference here is tagged by: domain constraint, ring or field restriction, nondegeneracy requirement, signature constraint, integrality constraint. |
 | `polyhedral-common/` | Provisioning material for the indefinite-forms engine the preamble's `engines.sage` seam calls (migrated 2026-08-20 from `~/gitclones/lattice-research`): the capability table and exact build recipe for the `INDEF_FORM_*` binaries, including which binaries did not build on this machine and why, plus the locally-authored C++ adapter exposing polyhedral_common's isotropic k-plane/k-flag equivalence, which upstream ships only as a library API. |
 | `integral-lattice-refactor/` | The `integral_lattice` clone's parity ledgers (migrated 2026-08-20, PLAN-corpora-audit-registry R3): `checklist.md` and `checklist_1.md` map Hecke's `ZZLat` and `ZZLatWithIsom` surfaces row by row, each row citing the Oscar signature and its definiteness hypothesis (`checklist_1.md` adds the clone's architectural ruling: nothing outside the module may be referenced except by extending existing Sage classes); `checklist2.md` covers Sage's `free_module_integer` reduction/CVP surface; `free_quadratic_module_integer_symmetric_refactor_checklist.md` is the 113-item plan mapping every function of Sage's integral-lattice module to a destination. |
 
@@ -59,6 +59,13 @@ subdirectories of their own.
   directions make $\{v : |q(v)| \le B\}$ infinite for every bound $B$. What
   replaces it for indefinite lattices is genus symbols, discriminant forms,
   orbits of isotropic vectors, and Vinberg's algorithm.
+
+- `method-inventories/quad_forms_signature_list_from_docs.txt` (143 lines) — the
+  raw call-signature list extracted from the Hecke/Oscar quadratic-forms manual
+  before the typed inventories were written: constructors for quadratic and
+  hermitian spaces and lattices, the named lattices (root, hyperbolic plane, K3,
+  Mukai, hyperkähler), the invariants, the genus and with-isometry entry points.
+  It is the unedited surface the checklists were built by grouping.
 
 - `method-inventories/GAPS.md`, `method-inventories/TODO.md` — the corpus's own
   honest account of what is unverified: which upstream snapshots are cited but
@@ -130,16 +137,50 @@ representation, the definite-lattice metric algorithms, and Vinberg's algorithm
 with Coxeter diagrams — the last strictly more richly than any source catalogued
 here.
 
-The capabilities this corpus catalogues that the preamble does **not** own, as
-read at migration: the Minkowski–Siegel mass of a genus; Hasse and Witt
-invariants at a place; a form module over a field (quadratic spaces) and hence
-local isotropy and representation predicates; the lattice-with-isometry pair as a
-first-class object with its type classification and equivariant primitive
-extensions; quadratic and hermitian lattices over number fields with pseudo-bases
-and coefficient ideals; the trace-form functor $G_{ij} = \operatorname{Tr}_{K/\mathbb{Q}}(b_i b_j)$
-from orders and fractional ideals to integral lattices; kissing number and theta
-series; Nikulin-style enumeration of primitive embeddings; orbits of totally
-isotropic $k$-planes and flags under $O(L)$; and $p$-neighbours.
+The capabilities this corpus catalogues that the preamble does **not** own,
+re-read against the preamble on 2026-08-20:
+
+- **Hasse and Witt invariants at a place**, and with them the whole local
+  classification of the rational quadratic space. Nothing in the preamble names
+  either invariant.
+- **A form module over a field** (the quadratic space), hence orthogonal basis
+  and diagonalization, local isotropy and hyperbolicity, representation
+  predicates, restriction of scalars. The base-change functor exists; the
+  field-coefficient form category on the far side of it does not.
+- **The lattice-with-isometry pair as a first-class object**, with its type
+  classification, admissible triples, equivariant primitive extensions,
+  splittings, hermitian structure, and the image of the centraliser in $O(q)$.
+  `with_action` and the invariant/coinvariant lattices exist; the pair object
+  does not.
+- **Quadratic and hermitian lattices over number-field orders**: pseudo-bases,
+  coefficient ideals, hermitian genera, Jordan decomposition at a prime. Number
+  fields and fractional ideals are owned; no form-bearing module over an order is.
+- **The trace-form functor** $G_{ij} = \operatorname{Tr}_{K/\mathbb{Q}}(b_i b_j)$
+  from orders and fractional ideals to integral lattices — the bridge the
+  capability checklist opens with, and the source of its whole number-field
+  section.
+- **Nikulin-style enumeration of primitive embeddings** of a lattice into a
+  lattice, into a genus, or into a discriminant form plus a signature. The
+  `EmbeddingHomset` and the gluing machinery it would be built from are owned.
+- **Orbits of totally isotropic $k$-planes and $k$-flags under $O(L)$** for
+  indefinite $L$, with their stabilisers and cosets (the `INDEF_FORM_*` surface).
+- **$p$-neighbours**: `neighbor(L, v, p)` and the random walk on a genus.
+- **Eichler's criterion as a decision**: the preamble owns the triple the
+  criterion consumes — `div`, the class in the discriminant group, the isotropic
+  type — and the Eichler transvection itself, but no method decides that two
+  primitive vectors share an $O(L)$-orbit, or returns an orbit representative.
+  Its own docstring (`integral_lattices.sage`, at `div`) records this.
+- **Integer-matrix primitives on the owned surface**: Hermite normal form with
+  transform, integer nullspace, and the complement of an integer row lattice.
+  Smith-form data reaches the owned surface through presentations, and the sum
+  and intersection of subobjects are owned; these three are consumed from the
+  engines without being named on the preamble.
+
+Four capabilities this list carried at migration have since been landed and are
+no longer gaps: the Minkowski–Siegel mass (`Genus.mass`), the theta series and
+the kissing number (`definite_lattices.sage`), the root sublattice of a lattice,
+and the Coxeter number and highest root of a root lattice
+(`root_lattices.sage`).
 
 Conformance suites that run these engines and record what they actually provide:
 `computations/scripts/conformance_lattice_engines/`.

@@ -881,7 +881,9 @@ def test_delta_is_zero_on_the_two_elementary_lattices() -> None:
 def test_definiteness_predicates() -> None:
     catalogue, _, _ = _preamble()
     assert catalogue.Lattices.E8.is_elliptic()
-    assert catalogue.Lattices.E8.is_parabolic()
+    # Elliptic and parabolic are exclusive: E8 is negative definite, so its
+    # radical is zero and the euclidean corank-1 condition fails.
+    assert not catalogue.Lattices.E8.is_parabolic()
     assert not catalogue.Lattices.U.is_elliptic()
     assert type(catalogue.Lattices.E8).is_elliptic.__qualname__ == (
         "IntegralLattices.ParentMethods.is_elliptic"

@@ -71,6 +71,29 @@
 - **Status**: Geometric intuition and visual examples
 - **Coverage**: Lower-dimensional groups, symmetry, visual representations
 
+### Source assignment by subject (recorded 2026-08-20, entries not yet resolved)
+
+The v1 Coxeter corpus assigned one governing source per class of assertion.
+The assignment is recorded here because it is the mathematical decision; the
+bibliographic entries themselves are **not** written below, because no copy of
+these works was open while this section was written and a citation key must
+never be transcribed from memory. Resolve each against the library and add a
+full entry above before citing it in a test.
+
+| assertion class | source named by the corpus |
+|---|---|
+| parabolic (affine) lattices: null root, imaginary roots, level | Kac, *Infinite dimensional Lie algebras*, with Humphreys, *Reflection Groups*, ch. 4 |
+| hyperbolic reflection groups, fundamental domains, Vinberg's algorithm | Vinberg, *Hyperbolic reflection groups*; Ratcliffe, *Foundations of Hyperbolic Manifolds* |
+| definite lattices: short vectors, packings, named specimens | Conway and Sloane, *Sphere Packings, Lattices and Groups* (1999), ch. 4; Ebeling, *Lattices and Codes* |
+| degenerate forms and affine root systems | Serre, *A Course in Arithmetic* |
+| general bilinear form operations; radical inside its orthogonal complement | Jacobson, *Basic Algebra II*, ch. 6; Serre, *Linear Representations of Finite Groups* |
+| Coxeter systems, presentations, classification | Humphreys and Bourbaki — both already entered above |
+
+Every author-title pair above is transcribed from the corpus's own prompts and
+test comments, not recalled. Of the works named, only Humphreys, Bourbaki and
+Conway–Burgiel have entries above; Kac, Vinberg, Ratcliffe, Ebeling, Serre,
+Jacobson and Conway–Sloane do not.
+
 ## Citation Floor (No Citation Required)
 
 ### Level 0: Basic Mathematics

@@ -165,6 +165,7 @@ def install_preamble(namespace: dict) -> None:
             "categories.modules.framed.formed.integrallattice.lattice_homomorphisms",
             "categories.modules.framed.formed.integrallattice.lattice_isometries",
             "categories.modules.framed.formed.integrallattice.isotropic_orbits",
+            "categories.modules.framed.formed.integrallattice.vector_orbits",
             "categories.modules.framed.formed.integrallattice.root_lattices",
             "categories.modules.framed.formed.integrallattice.coxeter_diagrams",
             "categories.modules.framed.formed.integrallattice.hyperbolic_lattices",

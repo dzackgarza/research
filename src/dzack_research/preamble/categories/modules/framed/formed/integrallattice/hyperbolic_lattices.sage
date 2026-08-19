@@ -27,7 +27,7 @@ from sage.misc.abstract_method import abstract_method
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-    from dzack_research.preamble.lexicon import GramMatrix, RingElement, SignaturePair
+    from dzack_research.preamble.lexicon import GramMatrix, OrderedSet, RingElement, SignaturePair
     from tqdm.auto import tqdm
 
     from typing import Protocol
@@ -85,6 +85,48 @@ class HyperbolicLattices(Category):
 
             The category's stated contract; the walls are the mirrors of
             the roots Vinberg's algorithm enumerates.
+            """
+
+        @abstract_method
+        def dominant_cone(self: "HyperbolicLatticeParent") -> "Parent":
+            r"""Return the dominant cone of $W(L)$ inside $L\otimes\mathbb R$.
+
+            The closed cone cut out by the walls of
+            :meth:`fundamental_chamber`: the vectors whose pairing against
+            every simple root has the sign the convention fixes.  The
+            category's stated contract.  The object lives in the
+            base-changed parent $L\otimes\mathbb R$, not in $L$ -- a cone is
+            closed under positive real scaling, so $L$ has no cone in it,
+            only the rank-one sublattices $\mathbb Z v$ that meet one.
+            """
+
+        @abstract_method
+        def chamber_complex(self: "HyperbolicLatticeParent") -> "Parent":
+            r"""Return the chamber complex of $W(L)$ acting on
+            $L\otimes\mathbb R$.
+
+            The $W(L)$-translates of :meth:`fundamental_chamber`, with their
+            faces, as one complex.  The category's stated contract; the union
+            of the translates is the Tits cone, and $W(L)$ acts properly
+            discontinuously on its interior.
+            """
+
+        @abstract_method
+        def isotropic_elements_below_height(
+            self: "HyperbolicLatticeParent",
+            timelike: "Element",
+            height: "RingElement",
+        ) -> "OrderedSet":
+            r"""Return the isotropic elements $v$ of $L$ with
+            $\lvert b(v, \mathrm{timelike})\rvert \le \mathrm{height}$.
+
+            The category's stated contract, and the enumeration a light-cone
+            walk needs.  It is not covered by
+            ``IntegralLattices.enumerate_short_vectors``, which is a
+            positive-definite algorithm: on a Lorentzian lattice the set
+            $\{v : q(v) = 0\}$ is infinite, and a bound on the norm bounds
+            nothing.  The chosen timelike element is what makes the set
+            finite, so it is a required argument rather than a default.
             """
 
         def is_reflective(self: "HyperbolicLatticeParent") -> bool:
@@ -301,6 +343,41 @@ class HyperbolicLattices(Category):
                 "is_reflective": record["is_reflective"],
                 "polyhedron_isometry_generators": polyhedron_isometry_generators,
             }
+
+        def is_cocompact(self: "HyperbolicLatticeParent") -> bool:
+            r"""Return whether $W(L)$ acts cocompactly on the hyperbolic
+            space of $L\otimes\mathbb R$.
+
+            A vertex of the fundamental polyhedron is either an ordinary
+            point of $H^n$ -- inside the light cone, so of nonzero square --
+            or an ideal point on $\partial H^n$, which is isotropic.  The
+            polyhedron is compact exactly when it has finite volume and no
+            ideal vertex, so this reads the two facts off one edgewalk:
+            reflectivity (finite covolume) and the absence of an isotropic
+            vertex.  Stated on the squares rather than on their sign, the
+            criterion is convention-free: the twist by $-1$ that carries
+            this repo's $(1,n)$ lattices into the engine's $(n,1)$ negates
+            every vertex square and fixes which of them vanish.
+
+            Not cocompact does not mean infinite covolume: a reflective
+            lattice with an ideal vertex has a finite-volume noncompact
+            fundamental domain, which is the generic hyperbolic case.
+
+            The signature hypothesis is :meth:`is_reflective`'s: in
+            signature $(1,1)$ the domain is a half-line in $H^1$ and no
+            fundamental-polyhedron criterion fires, so the question is
+            refused rather than answered.
+            """
+            assert self.signature_pair() != (1, 1), (
+                "in signature (1,1) the domain is a half-line in H^1; "
+                "cocompactness is not decided here"
+            )
+            domain = self.allcock_edgewalk()
+            if not domain["is_reflective"]:
+                return False
+            return all(
+                square != 0 for _generator, _incident_roots, square in domain["vertices"]
+            )
 
         @staticmethod
         def _vinberg_progress(

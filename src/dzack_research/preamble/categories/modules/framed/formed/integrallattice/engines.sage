@@ -19,11 +19,14 @@ nothing an engine returns leaves this module unverified over $\mathbb Z$.
   edgewalk), deciding reflectivity.
 
 * **OSCAR/Hecke** computes the rational spinor norm of an isometry
-  (``rational_spinor_norm`` on a lattice with isometry) and Nikulin's
+  (``rational_spinor_norm`` on a lattice with isometry), Nikulin's
   primitive embedding into an even unimodular lattice
-  (``embed_in_unimodular``), reached as ``julia`` subprocesses.  The spinor
-  program is transcribed from the source corpus's backend (lattice-research
-  ``dawes_orbit_backend``), which ran it green.
+  (``embed_in_unimodular``), and the image in $O(A_L)$ of the centralizer
+  of an isometry (``image_centralizer_in_Oq``, hermitian
+  Miranda--Morrison), reached as ``julia`` subprocesses.  The spinor and
+  centralizer programs are transcribed from the source corpus's backends
+  (lattice-research ``dawes_orbit_backend`` and ``oscar_centralizer``),
+  which ran them green.
 
 * **VinbergsAlgorithmNF** (Bottinelli) enumerates Vinberg roots over
   totally real number fields; the seam runs it over $\mathbb Q$ as a second
@@ -211,7 +214,7 @@ def isotropic_subspace_stabilizer_generator_matrices(
     return generators
 
 
-def isotropic_vector_equivalence_witness(
+def vector_equivalence_witness(
     gram: "Matrix_integer_dense",
     source_row: list,
     target_row: list,
@@ -222,6 +225,9 @@ def isotropic_vector_equivalence_witness(
     orientation (recorded by the source corpus's validated normalizer); the
     seam inverts once and asserts the row-convention identities on the
     result, so a convention drift upstream fails loudly here.
+
+    Any two vectors: the engine's decision does not ask for isotropy, and
+    the non-isotropic case is the one Dawes' vector-orbit theory consumes.
     """
     engine = polyhedral_engine()
     assert engine is not None, _POLYHEDRAL_PROVISIONING
@@ -243,6 +249,38 @@ def isotropic_vector_equivalence_witness(
         "the engine's vector witness does not carry the source to the target"
     )
     return witness
+
+
+def vector_stabilizer_generator_matrices(
+    gram: "Matrix_integer_dense", vector_row: list
+) -> tuple:
+    r"""Return generators of $\operatorname{Stab}_{O(L)}(v)$, row convention.
+
+    ``INDEF_FORM_StabilizerVector``: a generating set for the *pointwise*
+    stabilizer of one vector -- the group whose finite-quotient image turns
+    an ambient equivalence witness into a decision about a structured
+    subgroup.  Each generator is verified here to preserve the form and to
+    fix the vector; that the set generates the whole stabilizer is the
+    engine's contract, stated and not re-derived.
+    """
+    engine = polyhedral_engine()
+    assert engine is not None, _POLYHEDRAL_PROVISIONING
+    gram_z = matrix(SageZZ, gram)
+    row = matrix(SageZZ, [[int(entry) for entry in vector_row]])
+    generators = tuple(
+        matrix(SageZZ, rows)
+        for rows in engine.indefinite_form_stabilizer_vector(
+            _integer_rows(gram), [int(entry) for entry in vector_row]
+        )
+    )
+    assert all(
+        generator * gram_z * generator.transpose() == gram_z
+        for generator in generators
+    ), "an engine stabilizer generator does not preserve the form"
+    assert all(row * generator == row for generator in generators), (
+        "an engine stabilizer generator moves the vector it must fix"
+    )
+    return generators
 
 
 def isotropic_subspace_equivalence_witness(
@@ -406,6 +444,83 @@ def oscar_even_unimodular_primitive_embedding(
         "the engine's codomain is not even"
     )
     return codomain_gram, embedding_rows
+
+
+def oscar_centralizer_discriminant_image(
+    gram: "Matrix_integer_dense", isometry_rows: "Matrix_integer_dense"
+) -> tuple:
+    r"""Return the image of $Z_{O(L)}(f)$ in $O(A_L)$, with its cross-checks.
+
+    Hecke's ``image_centralizer_in_Oq`` on a lattice with isometry: the image
+    of the centralizer of $f$ in the discriminant orthogonal group,
+    computed by hermitian Miranda--Morrison theory, which is what makes it
+    available at all -- the centralizer itself is an infinite arithmetic
+    group with no generating set on offer.  Even lattices only, which is
+    the hypothesis of that theory and is asserted by the owned caller.
+
+    Returned: ``(generator_rows, order, invariant_rank, coinvariant_rank)``.
+    The generator matrices are the engine's, on *its* smith generators of
+    $A_L$; crossing them into the owned $O(A_L)$ and checking that they land
+    where they must is the caller's step, not this seam's.  The two ranks
+    are the engine's own $L^f$ and $L_f$ (the latter the orthogonal
+    complement of the former, which is what OSCAR computes -- the source
+    corpus's script commented it as $\ker(f+1)$, true only for an
+    involution), carried so the owned invariant and coinvariant lattices
+    have something to disagree with.
+    """
+    assert shutil.which("julia") is not None, (
+        "the OSCAR seam runs julia; no julia executable is on PATH"
+    )
+    julia_program = """
+        gram = read_int_matrix(ARGS[1])
+        isometry = read_int_matrix(ARGS[2])
+        L = integer_lattice(; gram = change_base_ring(QQ, gram))
+        Lf = integer_lattice_with_isometry(L, change_base_ring(QQ, isometry); check = true)
+        println("ranks ", nrows(basis_matrix(invariant_lattice(Lf))),
+                " ", nrows(basis_matrix(coinvariant_lattice(Lf))))
+        G, _ = image_centralizer_in_Oq(Lf)
+        println("order ", order(G))
+        for g in gens(G)
+            M = matrix(g)
+            println("generator")
+            for i in 1:nrows(M)
+                println("row ", join([M[i, j] for j in 1:ncols(M)], " "))
+            end
+        end
+        """
+    lines = _julia_stdout_lines(
+        _JULIA_READ_INT_MATRIX + julia_program, (gram, isometry_rows)
+    )
+    # Keyed lines, so that anything julia prints on its own account -- a
+    # package banner, a warning -- is not parsed as data.
+    keyed = [line.split(maxsplit=1) for line in lines if line.split()]
+    ranks = [entry for entry in keyed if entry[0] == "ranks"]
+    orders = [entry for entry in keyed if entry[0] == "order"]
+    assert len(ranks) == 1 and len(orders) == 1, (
+        f"the engine did not report one rank line and one order line: {lines}"
+    )
+    invariant_rank, coinvariant_rank = (int(entry) for entry in ranks[0][1].split())
+    order = SageZZ(orders[0][1])
+    generator_rows: list = []
+    for entry in keyed:
+        match entry[0]:
+            case "generator":
+                generator_rows.append([])
+            case "row":
+                assert generator_rows, (
+                    "the engine emitted a matrix row before any generator"
+                )
+                generator_rows[-1].append(
+                    [SageZZ(coordinate) for coordinate in entry[1].split()]
+                )
+            case _:
+                continue
+    generators = tuple(matrix(SageZZ, rows) for rows in generator_rows)
+    assert all(
+        generator.is_square() and generator.determinant() != 0
+        for generator in generators
+    ), "an engine centralizer-image generator is not invertible"
+    return generators, order, invariant_rank, coinvariant_rank
 
 
 # ---- the polyhedral_common Lorentzian seam ----

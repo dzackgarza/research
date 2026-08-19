@@ -3,6 +3,8 @@
 **Source**: https://en.wikipedia.org/wiki/Coxeter%E2%80%93Dynkin_diagram
 **Retrieved**: 2025-07-26
 **Citation Key**: `wikipedia_coxeter_dynkin_2025`
+**Revision**: oldid 1290398091 (last edited 14 May 2025), permanent link
+https://en.wikipedia.org/w/index.php?title=Coxeter%E2%80%93Dynkin_diagram&oldid=1290398091
 
 **Cited by**: `tests/coxeter_tdd_specs/system/test_classification_examples.py`.
 

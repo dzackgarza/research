@@ -3,6 +3,8 @@
 **Source**: https://en.wikipedia.org/wiki/Coxeter_group
 **Retrieved**: 2025-07-26
 **Citation Key**: `wikipedia_coxeter_groups_2025`
+**Revision**: oldid 1300325012 (last edited 13 July 2025), permanent link
+https://en.wikipedia.org/w/index.php?title=Coxeter_group&oldid=1300325012
 
 **Cited by**: `literature/citations/CITATION_INDEX.md`; the finite-type orders it lists are the
 oracle behind the bracket-notation and Weyl-order tables in

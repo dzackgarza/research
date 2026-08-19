@@ -417,6 +417,40 @@ class FiniteCoxeterDiagram(CoxeterDiagramParent):
     def coxeter_matrix(self) -> CoxeterMatrix:
         return self._coxeter_matrix
 
+    def schlafli_matrix(self) -> "GramMatrix":
+        r"""Return the Schläfli matrix $C_{ij} = -2\cos(\pi/m_{ij})$ over $AA$.
+
+        The literature's form: the Gram matrix of the unit normals to the
+        mirrors, with $C_{ii} = -2\cos\pi = 2$ and $C_{ij} = -2$ on a bond
+        $m_{ij} = \infty$.  Under it, elliptic reads as positive definite and
+        parabolic as positive semidefinite.
+
+        **This repository's sign is the opposite one.**  The convention fixed
+        by ``tests/coxeter_tdd_specs/literature/PROJECT_CONVENTIONS.md`` and
+        realized by :meth:`root_intersection_matrix` is
+        $B_{ij} = +2\cos(\pi/m_{ij})$, so $B = -C$: roots have square $-2$ and
+        $-4$, elliptic is negative definite, and a single edge is
+        $[[-2,1],[1,-2]]$.  The two differ by negating a subset of basis
+        vectors on a tree diagram, and $\det B = (-1)^n \det C$, so
+        determinant claims transfer unchanged in even rank only.  This method
+        is where the literature's spelling is available; every other matrix on
+        this class is in the repository's sign.
+
+        Exact throughout: $2\cos(\pi/m) = \zeta + \zeta^{-1}$ for $\zeta$ a
+        primitive $2m$-th root of unity, so no floating cosine is taken.
+        """
+        # Local: AA/QQbar are needed only here, and the module otherwise
+        # stays inside ZZ and QQ.
+        from sage.rings.qqbar import AA
+
+        return matrix(
+            AA,
+            [
+                [_schlafli_entry(exponent) for exponent in row]
+                for row in self._matrix_entries()
+            ],
+        )
+
     def graph(self) -> Graph:
         return self._coxeter_matrix.coxeter_graph()
 
@@ -1109,6 +1143,26 @@ def _normalize_positions(
         vertex: (coordinates[0r], coordinates[1r])
         for vertex, coordinates in positions.items()
     }
+
+
+def _schlafli_entry(exponent: "Integer | PlusInfinity") -> "Element":
+    r"""Entry $-2\cos(\pi/m)$ of the Schläfli matrix at Coxeter bond $m$.
+
+    $\zeta + \zeta^{-1} = 2\cos(\pi/m)$ for $\zeta = e^{i\pi/m}$ a primitive
+    $2m$-th root of unity, which keeps the entry algebraic and exact.  At
+    $m = \infty$ the mirrors are parallel, $\cos 0 = 1$, and the entry is
+    $-2$.
+    """
+    # Local: AA/QQbar are needed only here, and the module otherwise stays
+    # inside ZZ and QQ.
+    from sage.rings.qqbar import AA, QQbar
+
+    if exponent is infinity:
+        return AA(-2)
+    bond = Integer(exponent)
+    assert bond >= 1, f"a Coxeter bond is an integer at least 1 or infinity; exponent={exponent}"
+    zeta = QQbar.zeta(2 * bond)
+    return AA(-(zeta + zeta ** -1))
 
 
 def _coxeter_exponent(

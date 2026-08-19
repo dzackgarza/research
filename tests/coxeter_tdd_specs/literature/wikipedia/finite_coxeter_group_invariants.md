@@ -4,6 +4,8 @@
 **Retrieved**: 2025-07-26 (transcribed from the full-article capture made by
 `literature/tools/webpage_to_markdown.py`)
 **Citation Key**: `wikipedia_coxeter_groups_2025`
+**Revision**: oldid 1300325012 (last edited 13 July 2025), permanent link
+https://en.wikipedia.org/w/index.php?title=Coxeter_group&oldid=1300325012
 
 This is the oracle table behind the bracket-notation orders and Weyl-group orders asserted in
 `tests/coxeter_tdd_specs/system/test_literature_examples.py`

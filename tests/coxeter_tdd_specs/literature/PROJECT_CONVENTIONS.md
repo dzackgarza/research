@@ -75,4 +75,24 @@ def test_finite_classification():
 - Scale matrices to have integral entries when possible
 - Use exact arithmetic for all mathematical computations
 
+### Specimen Sourcing (recorded 2026-08-20)
+
+A test specimen is obtained from a canonical construction, never entered by
+hand. Build the root system (`RootSystem(['E', 8])`, `root_lattice()`,
+`cartan_matrix()`, `simple_roots()`) and take the simple roots and their
+pairings from it; then apply this document's Gram convention. Manual matrix
+construction, hardcoded entries, and non-canonical examples are excluded.
+
+The reason is that a hand-entered matrix asserts two things at once — the
+mathematical claim under test and the transcription of the specimen — and a
+failure cannot distinguish them. Sourcing the specimen from the construction
+leaves only the claim. Every recorded transcription error in this corpus
+(the $H_3$ Gram matrix with its off-diagonal entries swapped, the doubled
+Cartan matrix in `helpers/sage_extraction.py`, the $E_8$ adjacency claim) is
+an instance of the failure this rule prevents.
+
+The rule is about specimens only. It does not make Sage the oracle: the
+mathematics and the cited literature are what a test asserts against, and
+Sage is the compute engine that produces the specimen.
+
 This document provides the mathematical foundation that distinguishes our project's approach from standard textbook presentations.

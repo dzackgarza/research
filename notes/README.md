@@ -14,6 +14,10 @@ Human-readable research notes live here.
 
 - `category-design/`: the design corpora behind the preamble's category tree (its own README indexes them), including the n-category specification tower and the corrected lattice-category roster.
 
+- `homotopy-bilinear-modules/`: the stable-homotopy research program over modules with a bilinear form, preserved as program design with its obstruction stated.
+
+- `topics/coxeter-reflection-groups/`: the research prose of the two Coxeter working trees — classification theory, hyperbolic geometry, open questions, and the two design histories.
+
 These folders are conveniences for existing material, not required categories.
 New notes may start as loose scratch notes and be named after the problem, calculation, or thread when a useful shape emerges.
 
