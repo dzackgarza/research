@@ -9,7 +9,6 @@ dependencies = [
     "sage-julia-bridge @ git+https://github.com/dzackgarza/sage-julia-bridge",
     "streamlit>=1.59.2",
     "tree-sitter-sage",
-    "z3-solver>=4.16.0.0",
 ]
 
 [build-system]

@@ -24,6 +24,10 @@ Sources (Zotero item | Better-BibTeX key):
     Aut(V_4) = GL_2(F_2) = S_3; Aut(S_n) = Inn(S_n) = S_n for n != 6 and
     [Aut(S_6) : Inn(S_6)] = 2; Aut(Q_8) = S_4), Corollary 15 with the
     remark following it (Inn(G) = G/Z(G)).
+  - A. Gathmann, *Plane algebraic curves* (2023). Gat23. Example 2.13
+    computes mu_0(y^2 - x^3, x^2 - y^3) = 4; Proposition 2.17 says the
+    intersection multiplicity is 1 exactly when the linear parts of the two
+    curves are linearly independent.
   - Conway, Curtis, Norton, Parker & Wilson, *Atlas of Finite Groups*
     (1985). CCN+85.  The M12 page: Order = 95040 = 2^6.3^3.5.11, Mult = 2,
     Out = 2.
@@ -2035,4 +2039,33 @@ def test_s6_has_outer_automorphisms_of_index_two() -> None:
     conjugation = s6.conjugation_morphism()
     assert conjugation.kernel().order() == 1
     assert conjugation.image().order() == 720
+
+
+# ---------------------------------------------------------------------------
+# Intersection multiplicity of two plane curves at a point (Gat23 sec. 2).
+#
+# The owned name sits on the closed-subscheme category, which is where the
+# notion lives: the multiplicity is a property of the pair of subschemes of
+# one ambient space at one of its points, not of the dimension-one axiom.  A
+# plane curve is placed there by its own constructor, so a session asks the
+# curve directly.
+# ---------------------------------------------------------------------------
+
+
+def test_the_two_cuspidal_cubics_meet_to_order_four_at_the_origin() -> None:
+    r"""Gat23 Example 2.13: \(\mu_0(y^2-x^3,\; x^2-y^3)=4\).
+
+    The second point is Gat23 Prop. 2.17: the multiplicity is one exactly
+    when the linear parts are linearly independent.  At \((1,1)\) they are
+    \(-3(x-1)+2(y-1)\) and \(2(x-1)-3(y-1)\), of determinant \(5\neq0\), so
+    the two curves cross transversally there.  Four and one separate the
+    tangential contact at the cusp from the transverse crossing, which a
+    method returning either constant would fail.
+    """
+    plane = AffineSpace(2, QQ, "x,y")
+    x, y = plane.gens()
+    first = Curve(y**2 - x**3, plane)
+    second = Curve(x**2 - y**3, plane)
+    assert first.intersection_multiplicity(second, plane([0, 0])) == 4
+    assert first.intersection_multiplicity(second, plane([1, 1])) == 1
     assert s6.Aut().order() == 1440, "[Aut(S6) : Inn(S6)] = 2 doubles 6!"

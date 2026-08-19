@@ -10,6 +10,7 @@ Hierarchy:
 
 from typing import TYPE_CHECKING
 from dzack_research.preamble.categories.schemes.schemes import Schemes
+from dzack_research.preamble.categories.schemes.subschemes import ClosedSubschemes
 from dzack_research.preamble.refine import refine
 if TYPE_CHECKING:
     from sage.rings.ring import Field
@@ -129,9 +130,16 @@ def ToricVariety(
 
 
 def Curve(F: "Parent", A: "Parent | None" = None) -> "Parent":
-    r"""Construct the curve cut out by ``F``, placing it in ``Curves(R)``."""
+    r"""Construct the curve cut out by ``F``, placing it in ``Curves(R)``.
+
+    ``F`` cuts the curve out of an ambient space, so what is built is also a
+    closed subscheme of that space, and it is placed there too.  Codimension
+    and intersection multiplicity are read off that placement; dimension one
+    is what ``Curves(R)`` states.
+    """
     obj = _NativeCurve(F, A)
-    curve: "Parent" = refine(obj, Curves(obj.base_ring()))
+    base_ring = obj.base_ring()
+    curve: "Parent" = refine(obj, [Curves(base_ring), ClosedSubschemes(base_ring)])
     return curve
 
 

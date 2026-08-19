@@ -18,6 +18,7 @@ from typing import Self, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from sage.categories.rings import Ring
+    from sage.schemes.generic.morphism import SchemeMorphism_point
 
     from typing import Protocol
 
@@ -72,6 +73,39 @@ class ClosedSubschemes(OwnedCategoryOverBaseRing):
             amb = self.ambient_space()
             dim_amb = amb.dimension_relative()
             return dim_amb - self.dimension()
+
+        def intersection_multiplicity(
+            self: "SubschemeParent",
+            other: "SubschemeParent",
+            point: "SchemeMorphism_point",
+        ) -> "Integer":
+            r"""Return $i(p;\, V\cdot W)$, the multiplicity of $V\cap W$ at $p$.
+
+            The length of the stalk at $p$ of the structure sheaf of the
+            scheme-theoretic intersection $V\cap W$, taken over the local
+            ring $\mathcal O_{X,p}$ of the ambient scheme both sit in.
+
+            The definition is not yet sayable on this surface: ``stalk``
+            stands as a declared, unmet obligation on
+            ``LocallyRingedSpaces`` (``categories/schemes/ringed_spaces.sage``),
+            while ``length`` is already there on a finitely generated module.
+            Once ``stalk`` answers, this body becomes that definition --
+            ``self.intersection(other).stalk(point).length()`` -- and the
+            delegation below goes away.  Until then the engine computes it by
+            Serre's Tor formula on the two defining ideals, which is the same
+            number whenever the intersection is proper and finite; that
+            hypothesis is the engine's to state and to check.
+
+            ``super()`` reaches the engine because override-refine puts these
+            ``ParentMethods`` ahead of the concrete class
+            (``dzack_research.preamble.refine``).
+            """
+            assert self.ambient_space() == other.ambient_space(), (
+                "an intersection multiplicity is read inside one ambient "
+                f"scheme; {self} sits in {self.ambient_space()} and {other} "
+                f"sits in {other.ambient_space()}"
+            )
+            return super().intersection_multiplicity(other, point)
 
 class OpenSubschemes(OwnedCategoryOverBaseRing):
     r"""Category of open subschemes U -> X."""

@@ -103,6 +103,14 @@ class DefiniteLattices(Category):
             Fincke--Pohst, reached through PARI's ``qfminim`` (up to sign),
             with both signs restored: an embedding search places module generators
             on vectors, and $x$ and $-x$ are different placements.
+
+            The indefinite case is a stated gap.  For indefinite $L$ of rank
+            at least three this set is infinite, so the question is whether
+            $k$ is represented at all, and that is decided adelically: the
+            local conditions at every place, together with Eichler's theorem
+            that such a lattice's spinor genus holds one class, so the genus
+            answer descends to the class.  PARI's ``qfsolve`` is the engine
+            candidate; no method here calls it.
             """
             # Local: a module-level import here would close a cycle; by call time this module is built.
             from dzack_research.preamble.categories.sets.sets import finite_ordered_set

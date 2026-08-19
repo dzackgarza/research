@@ -222,6 +222,15 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             invariant: in $\langle 2\rangle$ the generator has content $1$ and
             divisibility $2$.  Divisibility is what classifies isotropic
             vectors, so the two must not be swapped.
+
+            What the divisibility classifies is a stated gap.  When $L$ holds
+            two orthogonal hyperbolic planes, Eichler's criterion says the
+            $O(L)$-orbit of a primitive $x$ is fixed by three data: its square
+            $q(x)$, its divisibility $\operatorname{div}(x)$, and the class of
+            $x/\operatorname{div}(x)$ in the discriminant group, which
+            ``divided_discriminant_class`` computes.  No method here decides
+            that two vectors share an orbit, or produces an orbit
+            representative, from the three.
             """
             pairings = [self.b(x, v) for v in self.module_generators()]
             return abs(gcd(pairings))
