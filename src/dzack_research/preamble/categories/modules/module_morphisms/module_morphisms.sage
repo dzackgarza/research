@@ -64,6 +64,8 @@ if TYPE_CHECKING:
     # The ordered-set noun is type-only: the preamble loads into one
     # shared namespace and nothing named OrderedSet may bind there.
     from dzack_research.preamble.lexicon import OrderedSet
+    from sage.rings.infinity import PlusInfinity
+    from sage.rings.ring import Ring
     from sage.structure.parent import ElementConstructorInput
 
     # The three admissible ways to name a module morphism, in the order
@@ -613,11 +615,15 @@ class ModuleMorphism(Morphism):
         assert element.parent() is self.codomain(), (
             f"{element} is not an element of {self.codomain()}"
         )
+        # Local: at module level this closes an import cycle; the ring module
+        # is built by the time a lift is asked for.
+        from dzack_research.preamble.categories.rings.rings import engine_ring
         system = self.matrix()
         relations = self._codomain_relations()
         coefficients = _solve_left_integrally(
             system.stack(relations) if relations.nrows() else system,
             _coordinate_vector(element),
+            engine_ring(self.domain().base_ring()),
         )
         coefficients = coefficients[: system.nrows()]
         preimage = zipsum(
@@ -741,15 +747,17 @@ class ModuleMorphism(Morphism):
         )
         return bool(len(independent_images) == domain.rank())
 
-    def index(self) -> "Integer":
-        r"""Return $[N:f(M)]=|\operatorname{coker} f|$.
+    def index(self) -> "Integer | PlusInfinity":
+        r"""Return $[N:f(M)]=|\operatorname{coker} f|\in\mathbb Z_{\ge 1}\cup\{\infty\}$.
 
         The definition: the index is the cardinality of the cokernel, and the
         cokernel is a finitely presented module that owns its invariant
         factors over the honest engine ring -- so it is asked, over every
         base.  Over a field a full-rank image is everything and the index is
-        $1$, which is the one fast path kept.
+        $1$, which is the one fast path kept.  An infinite index is an
+        answer, $+\infty$, per the cardinal contract.
         """
+        from sage.rings.infinity import Infinity
         # Local: at module level these close an import cycle; the presented
         # module and ring modules are built by the time an index is asked for.
         from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModule
@@ -762,15 +770,13 @@ class ModuleMorphism(Morphism):
         if not isinstance(codomain, FinitelyPresentedModule) and (
             engine_ring(codomain.base_ring()).is_field()
         ):
-            assert image.rank() == width, (
-                "the image does not have finite index in the codomain"
-            )
+            if image.rank() != width:
+                return Infinity
             return SageZZ.one()
 
         cardinality = self.cokernel().cardinality()
-        assert cardinality.is_finite(), (
-            "the image does not have finite index in the codomain"
-        )
+        if not cardinality.is_finite():
+            return Infinity
         index: "Integer" = cardinality._integer_(SageZZ)
         return index
 
@@ -1065,7 +1071,12 @@ class ModuleAutomorphism(ModuleMorphism):
         )
 
     def inverse(self) -> "ModuleAutomorphism":
-        inverse_matrix = self.matrix().inverse().change_ring(SageZZ)
+        # The engine view of the actual base ring: an automorphism's inverse
+        # matrix lives over the module's own ring, not over Z regardless.
+        from dzack_research.preamble.categories.rings.rings import engine_ring
+        inverse_matrix = self.matrix().inverse().change_ring(
+            engine_ring(self.domain().base_ring())
+        )
         images = [
             zipsum(
             row,
@@ -1319,8 +1330,8 @@ class ModuleAutomorphismGroup(
 
     def group_generators(
         self,
-    ) -> TotallyOrderedFiniteSet[ModuleAutomorphism]:
-        generators: TotallyOrderedFiniteSet[ModuleAutomorphism] = (
+    ) -> "OrderedSet[ModuleAutomorphism]":
+        generators: "OrderedSet[ModuleAutomorphism]" = (
             finite_ordered_set(())
             if self._group_generators is None
             else finite_ordered_set(self._group_generators)
@@ -1444,6 +1455,11 @@ class GroupActionHomset(GroupActionHomsetBase):
         be supplied, because the group states its own generators.
         """
         group = self.domain()
+        assert group.is_finite(), (
+            "extending generator images closes the Cayley graph of G, which "
+            "terminates exactly when G is finite; name the action by a "
+            "dictionary of values instead"
+        )
         automorphisms = self.codomain()
         generators = tuple(group.group_generators())
         assert len(images) == len(generators), (
@@ -1598,25 +1614,31 @@ class AutomorphismSubgroupInclusion(GroupAction):
         return hash((type(self), id(self.parent())))
 
 
-def _solve_left_integrally(system: MorphismMatrix, target: "Vector") -> "Vector":
-    r"""Return an integral solution of \(aS=t\), or fail.
+def _solve_left_integrally(
+    system: MorphismMatrix, target: "Vector", ring: "Ring"
+) -> "Vector":
+    r"""Return a solution of \(aS=t\) over ``ring``, or fail.
 
     The caller hands over a morphism matrix -- the matrix of the morphism
-    being lifted along, stacked with the codomain's relations -- and the
-    coordinate vector of the element to hit, not the module it lies in.
+    being lifted along, stacked with the codomain's relations -- the
+    coordinate vector of the element to hit (not the module it lies in), and
+    the engine view of the domain's base ring, which is where the Smith form
+    and the divisibility questions live: over a field every nonzero pivot
+    divides, over \(\mathbb Z\) divisibility is the integrality condition.
     """
     smith, left, right = system.transpose().smith_form()
-    shifted = left * vector(SageZZ, target)
+    shifted = left * vector(ring, target)
     width = smith.ncols()
-    solution = [0] * width
+    solution = [ring.zero()] * width
     for index, value in enumerate(shifted):
-        divisor = smith[index, index] if index < width else 0
+        divisor = smith[index, index] if index < width else ring.zero()
         assert divisor != 0 or value == 0, (
             f"no solution: row {index} is zero but asks for {value}"
         )
         if divisor != 0:
-            assert value % divisor == 0, (
-                f"no integral solution: row {index} asks for {value}/{divisor}"
+            assert divisor.divides(value), (
+                f"no solution over {ring}: row {index} asks for "
+                f"{value}/{divisor}"
             )
-            solution[index] = value // divisor
-    return right * vector(SageZZ, solution)
+            solution[index] = ring(value / divisor)
+    return right * vector(ring, solution)
