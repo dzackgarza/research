@@ -24,7 +24,7 @@ if TYPE_CHECKING:
     )
 
 from sage.categories.commutative_rings import CommutativeRings
-from sage.categories.functor import Functor
+from dzack_research.preamble.categories.abstract_categories.functors import Functor
 from sage.categories.homset import Hom
 from sage.categories.morphism import Morphism
 from sage.categories.morphism import SetMorphism

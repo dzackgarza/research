@@ -28,7 +28,7 @@ if TYPE_CHECKING:
     from sage.rings.ring import Ring
 
 from sage.misc.cachefunc import cached_function, cached_method
-from sage.categories.functor import Functor
+from dzack_research.preamble.categories.abstract_categories.functors import Functor
 from sage.categories.homset import Hom
 from sage.categories.modules import Modules
 from sage.categories.sets_cat import Sets
@@ -262,6 +262,10 @@ class FreeModuleFunctorClass(Functor):
 class UnderlyingSetOfGroupFunctor(Functor):
     r"""The forgetful functor \(U:\mathrm{Grp}\to\mathrm{Set}\)."""
 
+    # Faithful by declaration: concreteness — a group morphism is
+    # determined by its underlying set map.
+    _faithful = True
+
     def __init__(self) -> None:
         from sage.categories.groups import Groups
 
@@ -382,6 +386,10 @@ class FreeModuleOnGroupFunctor(Functor):
 
 class ForgetfulFunctorClass(Functor):
     r"""The forgetful functor U: Mod_R -> Set."""
+
+    # Faithful by declaration: concreteness — a module morphism is
+    # determined by its underlying set map.
+    _faithful = True
 
     def __init__(self, base_ring: "Ring") -> None:
         # Local: importing the ring node here would close a cycle, and the

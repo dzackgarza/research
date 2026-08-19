@@ -35,7 +35,7 @@ if TYPE_CHECKING:
 
 from sage.misc.cachefunc import cached_function
 from sage.misc.cachefunc import cached_method
-from sage.categories.functor import Functor
+from dzack_research.preamble.categories.abstract_categories.functors import Functor
 
 
 class TrivialActionFunctor(Functor):

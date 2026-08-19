@@ -33,7 +33,7 @@ if TYPE_CHECKING:
     from sage.rings.ring import Ring
 
 from dzack_research.preamble.categories.functors.free_forgetful_adjunction import Adjunction
-from sage.categories.functor import Functor
+from dzack_research.preamble.categories.abstract_categories.functors import Functor
 from sage.structure.parent import Parent
 from sage.structure.unique_representation import UniqueRepresentation
 

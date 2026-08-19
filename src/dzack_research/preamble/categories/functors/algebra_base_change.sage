@@ -22,7 +22,7 @@ if TYPE_CHECKING:
     # category's own ``ParentMethods``.
     from dzack_research.preamble.categories.algebras.algebras import Algebras
 
-from sage.categories.functor import Functor
+from dzack_research.preamble.categories.abstract_categories.functors import Functor
 
 
 class AlgebraBaseChangeFunctor(Functor):

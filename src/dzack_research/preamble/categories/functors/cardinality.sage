@@ -2,7 +2,7 @@ r"""The cardinality functor ``# : core(Sets) -> Cardinalities``."""
 
 from typing import TYPE_CHECKING
 
-from sage.categories.functor import Functor
+from dzack_research.preamble.categories.abstract_categories.functors import Functor
 from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_function
 

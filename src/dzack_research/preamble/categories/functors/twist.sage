@@ -13,7 +13,7 @@ it does not add a second implementation of the scaling.
 
 from typing import TYPE_CHECKING
 
-from sage.categories.functor import Functor
+from dzack_research.preamble.categories.abstract_categories.functors import Functor
 from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
 
@@ -25,6 +25,10 @@ if TYPE_CHECKING:
 
 class TwistFunctor(Functor):
     r"""\(L\mapsto L(a)\): the form scaled by \(a\), morphisms unchanged."""
+
+    # Faithful by declaration: the morphism action keeps the matrix, so it
+    # is injective on homsets.
+    _faithful = True
 
     def __init__(self, scale: "RingElement") -> None:
         assert scale in SageZZ and scale != 0, (

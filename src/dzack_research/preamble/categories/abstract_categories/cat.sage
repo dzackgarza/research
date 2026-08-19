@@ -212,11 +212,25 @@ class Cat(Category):
             cokernels: Category = CokernelCategory(self, f)
             return cokernels
 
+        def _Hom_(self, codomain: Category, category: "Category | None" = None) -> "Parent":
+            r"""Return \(\operatorname{Hom}_{\mathbf{Cat}}(\mathbf{C},\mathbf{D})=\operatorname{Fun}(\mathbf{C},\mathbf{D})\).
+
+            Sage's ``Hom(C, D)`` between two categories dispatches here, so
+            the homset of \(\mathbf{Cat}\) is the functor space rather than
+            the generic id-equality fallback.
+            """
+            # Local: the functor-space module imports this one for ``Cat``,
+            # so a module-level import here would close that cycle.
+            from dzack_research.preamble.categories.abstract_categories.functors import FunctorSpace
+
+            functor_space: "Parent" = FunctorSpace(self, codomain)
+            return functor_space
+
 
 # The one crossing of the Sage boundary.  Every construction above is declared
 # in ``Cat.ParentMethods``, which is its home; a session reaches a category
 # through Sage's ``Category``, so what is declared there is attached to that
 # class here, exactly once, and nowhere else.
 for _construction_name, _construction in vars(Cat.ParentMethods).items():
-    if not _construction_name.startswith("_"):
+    if not _construction_name.startswith("_") or _construction_name == "_Hom_":
         setattr(Category, _construction_name, _construction)
