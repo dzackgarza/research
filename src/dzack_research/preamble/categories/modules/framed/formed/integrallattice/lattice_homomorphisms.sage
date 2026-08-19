@@ -95,7 +95,15 @@ class LatticeHomomorphisms(Category):
                         "a lattice morphism is declared by images of the "
                         "domain's framing labels"
                     )
-            declared: "Morphism" = FormHomset._element_constructor_(self, assignment)
+            # Refined, so that this category's ``MorphismMethods`` reach the
+            # morphisms it is the category of.  ``LatticeIsometries`` refines
+            # its own on top, and has this category as a super category, so
+            # the second pass keeps what this one installed.
+            from dzack_research.preamble.refine import refine
+            declared: "Morphism" = refine(
+                FormHomset._element_constructor_(self, assignment),
+                LatticeHomomorphisms(),
+            )
             return declared
 
     class MorphismMethods:
@@ -133,6 +141,7 @@ class LatticeHomomorphisms(Category):
             )
             source = domain.discriminant_group()
             target = codomain.discriminant_group()
+            source_dual = source.projection().domain()
             target_projection = target.projection()
             target_dual = target_projection.domain()
             dual_matrix = (
@@ -141,6 +150,9 @@ class LatticeHomomorphisms(Category):
                 .transpose()
                 .change_ring(SageZZ)
             )
+            # $A_L$ is the cokernel of $c$ presented on $L^{\vee}$'s
+            # generators, so its framing labels are the dual's; the images are
+            # read on those.
             return source.Hom(target)(
                 {
                     label: target_projection(
@@ -151,7 +163,7 @@ class LatticeHomomorphisms(Category):
                         )
                     )
                     for label, row in zip(
-                        source.module_generating_set(),
+                        source_dual.module_generating_set(),
                         dual_matrix.rows(),
                         strict=True,
                     )

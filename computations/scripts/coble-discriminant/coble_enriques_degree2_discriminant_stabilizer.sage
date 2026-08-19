@@ -16,6 +16,18 @@ The group computed below is the full finite automorphism group of this discrimin
 quadratic form, realized as the subgroup of ``GL(B/2B)`` preserving all fibers of
 ``Q``.  The final stabilizer is the stabilizer of the discriminant class ``h/2``.
 
+The same two groups are owned operations of the preamble, and this script is the
+independent check on them rather than their implementation: ``O(A)`` is
+``A.automorphism_group()`` and the stabilizer of a class is
+``A.automorphism_group().stabilizer_of_element(x)``
+(``torsionform/torsion_modules_with_form.sage``, GAP orbit-stabilizer behind the
+engine).  Over there the degree-two Enriques group itself is one composition,
+``L.Aut().discriminant_preimage(stab).intersection(L.Aut().spinor_kernel_subgroup())``.
+What this script adds that the owned surface does not is the *bitmask* model of
+``B/2B`` and the explicit integral-image generators, which is what makes the
+finite-container indices below computable here; the orders it prints are the
+falsifiable comparison for the owned method.
+
 This computes the finite stabilizer target for the discriminant-action description of
 ``Gamma_En,2``.  The integral stabilizer of ``h`` in ``O(S_En)=O(B)`` has complement
 ``h^perp = <e-f> + E_8(-1)``, so it has order ``2 |W(E_8)|``.  The finite stabilizer

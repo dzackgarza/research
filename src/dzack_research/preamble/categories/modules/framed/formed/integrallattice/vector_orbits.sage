@@ -202,9 +202,13 @@ class VectorPrimitiveExtension:
     Nikulin's data (Nik80 §§1.4--1.5, Zotero TTY9FFJS) for one anisotropic
     primitive $w$: the line $S=\mathbb Zw$ and its orthogonal complement
     $R=w^{\perp}$ are primitive and mutually orthogonal of complementary
-    rank, so $M=S\oplus R$ sits in $L$ with finite index and $L$ is the even
-    overlattice of $M$ glued along the isotropic subgroup $H=L/M\le A_M$,
-    with $A_L\cong H^{\perp}/H$.
+    rank, so $M=S\oplus R$ sits in $L$ with finite index and $L$ is the
+    integral overlattice of $M$ glued along the isotropic subgroup
+    $H=L/M\le A_M$, with $A_L\cong H^{\perp}/H$.  Which form $A_M$ carries
+    follows $M$ -- $q$ when $L$ is even, $b$ alone when it is odd -- and the
+    correspondence covers the integral overlattices either way; only the
+    gluing *route* below asks for evenness, where it ranges over isometries
+    of discriminant quadratic forms.
 
     Everything below is computed once at construction and asserted there.
     The attributes are the mathematics: two summands, their sum, the
@@ -224,11 +228,6 @@ class VectorPrimitiveExtension:
         from dzack_research.preamble.utilities import zipsum
 
         vector = _validated_anisotropic_vector(lattice, element)
-        assert lattice.is_even(), (
-            "the gluing theory this extension carries runs on discriminant "
-            f"quadratic forms; {lattice} is odd, the stated absence "
-            "IntegralLattices.glue_map also declares"
-        )
         line = lattice.subobject_on((vector,))
         complement = line.embedding().orthogonal_complement()
         assert complement.rank() >= 1, (
@@ -463,14 +462,14 @@ def definite_complement_extensions(
     that way.  For an indefinite complement that group is infinite and the
     question moves to :func:`gluing_route_discriminant_classes`.
     """
+    if _held(lattice, left).q() != _held(lattice, right).q():
+        return
     source = vector_primitive_extension(lattice, left)
     target = vector_primitive_extension(lattice, right)
     assert source.complement_is_definite(), (
         f"{source.complement} is indefinite, so its isometries are not "
         "enumerable; the gluing route is what decides that regime"
     )
-    if source.vector.q() != target.vector.q():
-        return
     inverse_rows = matrix(SageQQ, source.inclusion_rows).inverse()
     for restriction in source.complement.Isom(target.complement):
         block = matrix(SageZZ, 1, 1, [1]).block_sum(
@@ -539,6 +538,15 @@ def gluing_route_discriminant_classes(
     actual isometry of $L$, asked of the lattice by
     :meth:`IntegralLattices.ParentMethods.discriminant_representation_is_surjective`.
     """
+    from sage.misc.unknown import Unknown
+
+    assert lattice.is_even(), (
+        "this route ranges over isometries of discriminant *quadratic* "
+        f"forms; {lattice} is odd, the stated absence "
+        "IntegralLattices.glue_map also declares"
+    )
+    if _held(lattice, left).q() != _held(lattice, right).q():
+        return
     source = vector_primitive_extension(lattice, left)
     target = vector_primitive_extension(lattice, right)
     assert not source.complement_is_definite(), (
@@ -549,9 +557,16 @@ def gluing_route_discriminant_classes(
         f"the gluing route reads an isometry of {lattice} off a class of "
         "O(A_L), which needs rho_L surjective; it is not for this lattice"
     )
-    if source.vector.q() != target.vector.q():
-        return
-    if not source.complement.is_isometric(target.complement):
+    # An isometry of $L$ carrying $w_1$ to $w_2$ restricts to one of the
+    # complements, so their being isometric is necessary.  The three-valued
+    # answer is kept three-valued: an undecided regime is not a negative.
+    complements_agree = source.complement.is_isometric(target.complement)
+    assert complements_agree is not Unknown, (
+        f"whether {source.complement} and {target.complement} are isometric "
+        "is undecided (indefinite binary, or a genus splitting into several "
+        "improper spinor genera), so this route cannot answer either"
+    )
+    if complements_agree is False:
         return
 
     # Both line factors are the discriminant form of the same rank-one
