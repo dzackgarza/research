@@ -245,7 +245,15 @@ class ProjectiveWeightedGraphs(Category):
             return True
 
         def is_crystallographic(self) -> bool:
-            r"""Return True if all finite Coxeter bonds belong to {2, 3, 4, 6}."""
+            r"""Return True if all finite Coxeter bonds belong to {2, 3, 4, 6}.
+
+            A property the diagram either has or lacks, decided on the bonds.
+            The Schläfli entry $-\cos(\pi/m)$ is irrational for $m=4,6$, and
+            the way to a lattice there is to rescale a *root* -- which moves
+            the diagonal too, taking $B_2$ to Gram $((2,-2),(-2,4))$ -- never
+            to multiply one off-diagonal entry by a constant.  That is not a
+            change of basis and does not yield an integral matrix.
+            """
             if not self.is_coxeter():
                 return False
             n, verts = self._get_n_and_verts()
@@ -287,7 +295,16 @@ class ProjectiveWeightedGraphs(Category):
             return bool(S.is_positive_semidefinite() and S.rank() == S.nrows() - 1)
 
         def is_hyperbolic(self, indices: Sequence[int] | None = None) -> bool:
-            r"""Check if the system (or sub-system) is hyperbolic (signature (n-1, 1))."""
+            r"""Check if the system (or sub-system) is hyperbolic (signature (n-1, 1)).
+
+            Sound on Schläfli matrices, and only there: $\det<0$ says the
+            number of negative eigenvalues is *odd*, so on an arbitrary
+            symmetric matrix this would also admit signature $(n-3,3)$.  What
+            excludes that here is the Schläfli domain -- diagonal $1$, entries
+            $-\cos(\pi/m)\in(-1,0]$, hence trace $n$ against a bounded spectral
+            radius.  Do not lift this test to a general Gram matrix; ask
+            ``signature_pair`` there.
+            """
             if not self.is_symmetric():
                 return False
             S = self.schlafli_matrix(indices=indices)

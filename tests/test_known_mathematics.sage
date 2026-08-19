@@ -1033,6 +1033,42 @@ def test_rank_one_sign_pair_separates_quadratic_from_bilinear_isometry() -> None
     )
 
 
+def test_the_level_of_an_even_lattice_exceeds_the_exponent_of_its_discriminant_group() -> None:
+    r"""$\langle2\rangle$ has level $4$ while $A_L=\mathbb Z/2$ has exponent $2$.
+
+    The level is the smallest $N$ killing the form on $A_L$.  For an even
+    lattice that form is $q$, valued in $\mathbb Q/2\mathbb Z$ rather than
+    $\mathbb Q/\mathbb Z$ (Nik80, Zotero TTY9FFJS, section 1.3 -- the repo's
+    established citation, stated in ``lattice_axioms.sage``), and the extra
+    factor of two is exactly what separates the level from the exponent.
+
+    Sage offers neither quantity under this name: its genus symbol's ``level``
+    is "the denominator of the inverse Gram matrix of a representative"
+    (``sage.quadratic_forms.genera.genus``), which is the *exponent*, and
+    ``QuadraticForm.level`` normalizes against the Hessian $2G$ instead.  The
+    separation below is what makes the owned ``level`` a different method and
+    not an alias, so it is asserted on the specimen that distinguishes them.
+    """
+    even = IntegralLattice(matrix(ZZ, [[2]]))
+    assert even.is_even()
+    exponent = even.discriminant_group().annihilator().gen()
+    assert exponent == 2, "A_L = ZZ/2 for <2>"
+    assert even.level() == 4, (
+        "q(g) = 1/2 in QQ/2ZZ, so N q = 0 needs N = 4 -- not the exponent 2"
+    )
+    assert even.level() != exponent, (
+        "the even level is not the exponent of the discriminant group"
+    )
+
+    odd = IntegralLattice(matrix(ZZ, [[3]]))
+    assert not odd.is_even()
+    assert odd.level() == odd.discriminant_group().annihilator().gen() == 3, (
+        "an odd lattice has only b, valued in QQ/ZZ, so level = exponent"
+    )
+
+    assert IntegralLattice("E8").level() == 1, "A_L is trivial for E8"
+
+
 def test_elementary_2adic_form_u_k_has_brown_invariant_zero() -> None:
     r"""$\operatorname{Br}(u_k)=0$ and $u_k$ is isotropic.
 

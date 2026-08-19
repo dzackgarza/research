@@ -73,6 +73,7 @@ from collections.abc import Iterable
 from functools import reduce
 from typing import Protocol, TYPE_CHECKING
 
+from sage.arith.functions import lcm
 from sage.arith.misc import gcd
 from sage.categories.category import Category
 from sage.categories.category_with_axiom import CategoryWithAxiom_over_base_ring
@@ -213,7 +214,15 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             return x.b(y)
 
         def div(self: "LatticeParent", x: "Element") -> "Integer":
-            r"""Return the positive generator of $\{\langle x, y\rangle : y \in L\}$."""
+            r"""Return the positive generator of $\{\langle x, y\rangle : y \in L\}$.
+
+            The gcd below is of the *pairings* $b(x,e_i)$, not of $x$'s
+            coordinates.  The gcd of the coordinates is the content of $x$ --
+            the index of $\mathbb Z x$ in its saturation -- and is a different
+            invariant: in $\langle 2\rangle$ the generator has content $1$ and
+            divisibility $2$.  Divisibility is what classifies isotropic
+            vectors, so the two must not be swapped.
+            """
             pairings = [self.b(x, v) for v in self.module_generators()]
             return abs(gcd(pairings))
 
@@ -610,6 +619,11 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             and needs nothing else -- in particular not nondegeneracy, so a
             degenerate lattice has one too, with a radical of dimension
             $n-p-q$.
+
+            Not eigenvalues.  Counting the signs of ``gram_matrix().eigenvalues()``
+            gets the same pair for a real symmetric matrix, but it leaves exact
+            arithmetic for algebraic numbers to answer a question rational
+            diagonalization already decides.
             """
             from sage.quadratic_forms.quadratic_form import QuadraticForm
 
@@ -627,6 +641,46 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             exactly when every $q(e_i)$ is.
             """
             return all(generator.q() % 2 == 0 for generator in self.module_generators())
+
+        def level(self: "LatticeParent") -> "Integer":
+            r"""Return the level: the smallest $N>0$ killing the form on $A_L$.
+
+            For an even lattice $q$ takes values in $\mathbb Q/2\mathbb Z$, so
+            the level is the smallest $N$ with $Nq=0$ there; for an odd lattice
+            there is no $q$ and the condition is $Nb=0$ in $\mathbb Q/\mathbb Z$
+            instead.  That is the convention Sage's genus symbol uses -- its
+            level is "the denominator of the inverse Gram matrix"
+            (``sage.quadratic_forms.genera.genus``) -- and the two agree
+            exactly when $L$ is odd.
+
+            Read on the generators, which decides it: for
+            $x=\sum a_i g_i$, $q(x)=\sum a_i^2q(g_i)+2\sum_{i<j}a_ia_jb(g_i,g_j)$,
+            so $Nq(x)\in 2\mathbb Z$ for every $x$ exactly when
+            $Nq(g_i)\in 2\mathbb Z$ and $Nb(g_i,g_j)\in\mathbb Z$.
+
+            The level is *not* the exponent of $A_L$, which is what the
+            denominators of $G^{-1}$ give and what Sage's genus symbol returns.
+            The even case carries a further factor of two from $q$ living in
+            $\mathbb Q/2\mathbb Z$ rather than $\mathbb Q/\mathbb Z$: for
+            $L=\langle 2\rangle$ the group $A_L=\mathbb Z/2$ has exponent $2$
+            while the level is $4$, which is the level of the modular form
+            $\theta$ that $\langle 2\rangle$ carries.  Asserted in
+            ``tests/test_known_mathematics.sage``.
+            """
+            form = self.discriminant_group()
+            generators = tuple(form.module_generators())
+            denominators = [
+                left.b(right).lift().denominator()
+                for left in generators
+                for right in generators
+            ]
+            if self.is_even():
+                denominators.extend(
+                    (generator.q().lift() / 2).denominator()
+                    for generator in generators
+                )
+            level: "Integer" = SageZZ(lcm(denominators)) if denominators else SageZZ.one()
+            return level
 
         def genus(self: "LatticeParent") -> "Genus":
             r"""Return the genus: the adelic isometry class of this lattice.
