@@ -1180,3 +1180,20 @@ def test_lattices_install_binds_specimens_and_lk3_generators() -> None:
     e = ns["e"]
     assert e.parent() is Lattices.TdP
 
+
+
+def test_subobject_sum_and_intersection_are_the_lattice_operations() -> None:
+    r"""In $\mathbb Z^2$: $2\mathbb Z^2\cap3\mathbb Z^2=6\mathbb Z^2$
+    (index 36) and $2\mathbb Z^2+3\mathbb Z^2=\mathbb Z^2$ (index 1).
+
+    Moved from ``test_known_mathematics.sage``: that file's admission rule
+    requires an independent citation per row, and this row's content is
+    ordinary submodule arithmetic with no single honest source to cite.
+    """
+    catalogue, _, _ = _preamble()
+    square = catalogue.Lattices.Z**2
+    e1, e2 = square.module_generators()
+    left = square.subobject_on([2 * e1, 2 * e2])
+    right = square.subobject_on([3 * e1, 3 * e2])
+    assert left.intersection(right).index() == 36
+    assert left.sum(right).index() == 1
