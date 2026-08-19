@@ -51,8 +51,13 @@ class Modules(Category_over_base_ring):
         return "modules"
 
     def super_categories(self) -> list:
+        # A module is an additively commutative group with a ring action,
+        # so the additive structure files at the owned additive spine.
+        from dzack_research.preamble.categories.group.magmas import AdditiveGroups as OwnedAdditiveGroups
+
         return [
             SageModules(self.base_ring()),
+            OwnedAdditiveGroups(),
             AdditiveGroups().AdditiveCommutative(),
         ]
 

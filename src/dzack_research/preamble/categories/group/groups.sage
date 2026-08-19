@@ -46,7 +46,6 @@ from sage.groups.perm_gps.permgroup_named import SymmetricGroup
 from sage.misc.unknown import Unknown
 from dzack_research.preamble.categories.rings.rings import ℤ
 from sage.rings.integer_ring import ZZ as SageZZ
-from sage.categories.sets_cat import Sets as SageSets
 from sage.sets.totally_ordered_finite_set import TotallyOrderedFiniteSet
 from sage.structure.element import Element, RingElement
 from sage.structure.parent import Parent
@@ -400,7 +399,14 @@ class OwnedGroups(Category):
         return "groups"
 
     def super_categories(self) -> list:
-        return [SageSets()]
+        # Seated over the owned Monoids node (user ruling 2026-08-19): a
+        # group is a monoid with inverses, and the owned operation spine
+        # Magmas -> Semigroups -> Monoids in ``magmas.sage`` is where
+        # operation-level declarations file.  ``Sets()`` stays reachable
+        # through the spine.
+        from dzack_research.preamble.categories.group.magmas import Monoids as OwnedMonoids
+
+        return [OwnedMonoids()]
 
     class ParentMethods:
         def supergroup(self: Self) -> "Group":
