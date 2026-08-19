@@ -66,6 +66,27 @@ tests assert against. The literature statement is the same row with all signs re
   - Source: `research/papers/bogachev_kolpakov_thin_hyperbolic_2024.md`
   - Tests: (To be added in system tests)
 
+### Roots of a Lorentzian Lattice
+- **Vinberg's root-length divisibility criterion**: for a root `r` of an integral lattice,
+  `f(r)` divides twice the last invariant factor of the Gram matrix. This is the finiteness
+  bound that turns "this lattice has no roots" into a check of finitely many lengths.
+  - Source: `research/papers/bogachev_kolpakov_thin_hyperbolic_2024.md` §6.2
+    (arXiv:2112.14642v4, citing Vinberg)
+  - Owned surface: `IntegralLattices.ParentMethods.possible_root_lengths`
+  - Tests: `tests/test_known_mathematics.sage::test_vinbergs_criterion_bounds_the_root_lengths_of_both_specimens`
+- **Non-reflective ternary Lorentzian lattice with roots**: `f(x) = 3x_0² + 14x_0x_1 +
+  98x_0x_2 + 49x_2²`, Gram `[[3,7,49],[7,0,0],[49,0,49]]`, det `-7^4`, signature `(2,1)`;
+  sixteen roots listed, of lengths 49 and 98.
+  - Source: `research/papers/bogachev_kolpakov_thin_hyperbolic_2024.md` §6.1
+  - Specimen: `Lattices.BogachevKolpakovNonReflective` (repo convention, signature `(1,2)`)
+  - Tests: `tests/test_known_mathematics.sage::test_the_sixteen_printed_vinberg_roots_are_roots_of_the_lattice`
+- **Ternary Lorentzian lattice with empty root set** (Gaël Collinet): `f(x) = 49x_1² +
+  98x_0x_2 + 14x_1x_2 + 3x_2²`, Gram `[[0,0,49],[0,49,7],[49,7,3]]`, det `-7^6`, invariant
+  factors `1, 49, 2401`, so every root length divides `4802`.
+  - Source: `research/papers/bogachev_kolpakov_thin_hyperbolic_2024.md` §6.2
+  - Specimen: `Lattices.BogachevKolpakovWithoutRoots`
+  - Tests: `tests/test_known_mathematics.sage::test_the_root_length_49_case_is_excluded_by_a_local_obstruction`
+
 ## Source Files → Mathematical Facts
 
 Paths written `research/<dir>/<file>.md` in this index and in the `# CITATION:` comments of
@@ -78,6 +99,10 @@ the test corpus resolve in-tree to `tests/coxeter_tdd_specs/literature/<dir>/<fi
 3. Signature-based type classification
 4. Thin group enumeration theorems
 5. Vinberg algorithm produces infinite sequences
+6. §6.1 non-reflective ternary Lorentzian lattice, with its sixteen Vinberg roots
+7. §6.2 ternary Lorentzian lattice with empty root set, and Vinberg's root-length
+   divisibility criterion (the two are the same argument: the criterion is what makes
+   the emptiness check finite)
 
 **Test Coverage**:
 - Eigenvalue classification tests

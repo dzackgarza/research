@@ -1,0 +1,395 @@
+[
+  {
+    "id": "K3_lattice_L",
+    "object_type": "lattice",
+    "object_name": "K3 lattice L",
+    "source_type": "primary_literature_extraction",
+    "sources": [
+      {
+        "file": "theory/references/literature/aegs_2023.md",
+        "lines": "120-124",
+        "bibliographic_key": "aegs2023compact"
+      }
+    ],
+    "properties": {
+      "literature_notation": "II_{3,19} = U^3 + E8^2 ~= H^2(X,Z)",
+      "even": true,
+      "unimodular": true,
+      "signature": [3, 19]
+    }
+  },
+  {
+    "id": "S_dP",
+    "object_type": "lattice",
+    "object_name": "del Pezzo invariant lattice S_dP",
+    "source_type": "primary_literature_extraction",
+    "sources": [
+      {
+        "file": "theory/references/literature/aegs_2023.md",
+        "lines": "136-151",
+        "bibliographic_key": "aegs2023compact"
+      }
+    ],
+    "properties": {
+      "eigenspace_description": "L_dP^+ = Delta(U)",
+      "isomorphic_lattice": "U(2)",
+      "nikulin_notation": "(2,2,0)_1",
+      "even": true,
+      "two_elementary": true
+    },
+    "derived_properties": {
+      "derivation_note": "Decoded from the paper's (r,a,delta)_{n_+} notation at the cited lines.",
+      "rank": 2,
+      "signature": [1, 1],
+      "nikulin_invariants": {
+        "r": 2,
+        "a": 2,
+        "delta": 0
+      },
+      "discriminant_group": "(Z/2Z)^2"
+    }
+  },
+  {
+    "id": "T_dP",
+    "object_type": "lattice",
+    "object_name": "del Pezzo anti-invariant lattice T_dP",
+    "source_type": "primary_literature_extraction",
+    "sources": [
+      {
+        "file": "theory/references/literature/aegs_2023.md",
+        "lines": "136-151",
+        "bibliographic_key": "aegs2023compact"
+      }
+    ],
+    "properties": {
+      "eigenspace_description": "L_dP^- = U + Delta^-(U) + E8^2",
+      "isomorphic_lattice": "U + U(2) + E8^2",
+      "nikulin_notation": "(20,2,0)_2",
+      "even": true,
+      "two_elementary": true
+    },
+    "derived_properties": {
+      "derivation_note": "Decoded from the paper's (r,a,delta)_{n_+} notation at the cited lines.",
+      "rank": 20,
+      "signature": [2, 18],
+      "nikulin_invariants": {
+        "r": 20,
+        "a": 2,
+        "delta": 0
+      },
+      "discriminant_group": "(Z/2Z)^2"
+    }
+  },
+  {
+    "id": "S_En",
+    "object_type": "lattice",
+    "object_name": "Enriques invariant lattice S_En",
+    "source_type": "primary_literature_extraction",
+    "sources": [
+      {
+        "file": "theory/references/literature/aegs_2023.md",
+        "lines": "136-151",
+        "bibliographic_key": "aegs2023compact"
+      }
+    ],
+    "properties": {
+      "eigenspace_description": "L_En^+ = Delta(U) + Delta(E8)",
+      "isomorphic_lattice": "U(2) + E8(2)",
+      "nikulin_notation": "(10,10,0)_1",
+      "even": true,
+      "two_elementary": true
+    },
+    "derived_properties": {
+      "derivation_note": "Decoded from the paper's (r,a,delta)_{n_+} notation at the cited lines.",
+      "rank": 10,
+      "signature": [1, 9],
+      "nikulin_invariants": {
+        "r": 10,
+        "a": 10,
+        "delta": 0
+      },
+      "discriminant_group": "(Z/2Z)^10"
+    }
+  },
+  {
+    "id": "T_En",
+    "object_type": "lattice",
+    "object_name": "Enriques anti-invariant lattice T_En",
+    "source_type": "primary_literature_extraction",
+    "sources": [
+      {
+        "file": "theory/references/literature/aegs_2023.md",
+        "lines": "136-151",
+        "bibliographic_key": "aegs2023compact"
+      },
+      {
+        "file": "theory/references/literature/aegs_2023.md",
+        "lines": "186-187",
+        "bibliographic_key": "aegs2023compact"
+      }
+    ],
+    "properties": {
+      "eigenspace_description": "L_En^- = U + Delta^-(U) + Delta^-(E8)",
+      "isomorphic_lattice": "U + U(2) + E8(2)",
+      "nikulin_notation": "(12,10,0)_2",
+      "even": true,
+      "two_elementary": true,
+      "moduli_role": "The complement of the discriminant divisor in F_{En,2} = D(T_En) / Gamma_{En,2} is the coarse moduli space of Enriques surfaces with a numerical polarization of degree 2."
+    },
+    "derived_properties": {
+      "derivation_note": "Decoded from the paper's (r,a,delta)_{n_+} notation at the cited lines.",
+      "rank": 12,
+      "signature": [2, 10],
+      "nikulin_invariants": {
+        "r": 12,
+        "a": 10,
+        "delta": 0
+      },
+      "discriminant_group": "(Z/2Z)^10"
+    }
+  },
+  {
+    "id": "L_Nik_plus",
+    "object_type": "lattice",
+    "object_name": "Nikulin +1 eigenspace lattice",
+    "source_type": "primary_literature_extraction",
+    "sources": [
+      {
+        "file": "theory/references/literature/aegs_2023.md",
+        "lines": "136-151",
+        "bibliographic_key": "aegs2023compact"
+      }
+    ],
+    "properties": {
+      "isomorphic_lattice": "U^3 + E8(2)",
+      "nikulin_notation": "(14,8,0)_3",
+      "even": true,
+      "two_elementary": true
+    },
+    "derived_properties": {
+      "derivation_note": "Decoded from the paper's (r,a,delta)_{n_+} notation at the cited lines.",
+      "rank": 14,
+      "signature": [3, 11],
+      "nikulin_invariants": {
+        "r": 14,
+        "a": 8,
+        "delta": 0
+      },
+      "discriminant_group": "(Z/2Z)^8"
+    }
+  },
+  {
+    "id": "L_Nik_minus",
+    "object_type": "lattice",
+    "object_name": "Nikulin -1 eigenspace lattice",
+    "source_type": "primary_literature_extraction",
+    "sources": [
+      {
+        "file": "theory/references/literature/aegs_2023.md",
+        "lines": "136-151",
+        "bibliographic_key": "aegs2023compact"
+      }
+    ],
+    "properties": {
+      "isomorphic_lattice": "E8(2)",
+      "nikulin_notation": "(8,8,0)_0",
+      "even": true,
+      "two_elementary": true
+    },
+    "derived_properties": {
+      "derivation_note": "Decoded from the paper's (r,a,delta)_{n_+} notation at the cited lines.",
+      "rank": 8,
+      "signature": [0, 8],
+      "nikulin_invariants": {
+        "r": 8,
+        "a": 8,
+        "delta": 0
+      },
+      "discriminant_group": "(Z/2Z)^8"
+    }
+  },
+  {
+    "id": "coble_surface_definition",
+    "object_type": "surface_class",
+    "object_name": "Coble surface",
+    "source_type": "primary_literature_extraction",
+    "sources": [
+      {
+        "file": "theory/references/literature/pieroni_2026_coble_surfaces.md",
+        "lines": "79-90",
+        "bibliographic_key": "pieroni2026coble"
+      }
+    ],
+    "properties": {
+      "rational": true,
+      "anti_canonical_effective": false,
+      "anti_bicanonical_unique_effective_divisor": true,
+      "coble_curve_notation": "C = C_1 + ... + C_n",
+      "original_coble_definition_corresponds_to": "irreducibility of the curve C"
+    }
+  },
+  {
+    "id": "classical_coble_surface_example",
+    "object_type": "surface_construction",
+    "object_name": "classical Coble surface from a ten-nodal plane sextic",
+    "source_type": "primary_literature_extraction",
+    "sources": [
+      {
+        "file": "theory/references/literature/dolgachev_kondo_2013.md",
+        "lines": "89-94",
+        "bibliographic_key": "dolgachev2013rationality"
+      }
+    ],
+    "properties": {
+      "construction": "blow-up of P^2 at the ten nodes of an irreducible plane curve C of degree 6",
+      "ambient_space": "P^2",
+      "curve_degree": 6,
+      "node_count": 10,
+      "curve_irreducible": true,
+      "surface_role": "classical example of a Coble surface"
+    }
+  },
+  {
+    "id": "coble_moduli_period_quotient",
+    "object_type": "period_quotient",
+    "object_name": "period quotient for the moduli of Coble surfaces",
+    "source_type": "primary_literature_extraction",
+    "sources": [
+      {
+        "file": "theory/references/literature/dolgachev_kondo_2013.md",
+        "lines": "103-110",
+        "bibliographic_key": "dolgachev2013rationality"
+      }
+    ],
+    "properties": {
+      "governing_lattice_name": "N",
+      "governing_lattice_isomorphism": "<2> + E(2)",
+      "quotient": "D(N) / O(N)",
+      "quotient_dimension": 9,
+      "moduli_interpretation": "M_Co is isomorphic to an open subset of D(N) / O(N)",
+      "heegner_divisor_relation": "This quotient is birationally isomorphic to the quotient of the (-2)-Heegner divisor in the Enriques period domain."
+    }
+  },
+  {
+    "id": "smooth_irreducible_coble_surface_blowup_model",
+    "object_type": "surface_classification_fact",
+    "object_name": "smooth Coble surface with smooth irreducible boundary",
+    "source_type": "primary_literature_extraction",
+    "sources": [
+      {
+        "file": "theory/references/literature/pieroni_2026_coble_surfaces.md",
+        "lines": "737-738",
+        "bibliographic_key": "pieroni2026coble"
+      }
+    ],
+    "properties": {
+      "hypothesis": "|-2K_X| is smooth and irreducible",
+      "conclusion": "X is the blow up of P^2 at 10 distinct points"
+    }
+  },
+  {
+    "id": "ten_nodal_plane_sextic",
+    "object_type": "plane_curve",
+    "object_name": "10-nodal plane sextic",
+    "source_type": "primary_literature_extraction",
+    "sources": [
+      {
+        "file": "theory/references/literature/pieroni_2026_coble_surfaces.md",
+        "lines": "1227-1234",
+        "bibliographic_key": "pieroni2026coble"
+      },
+      {
+        "file": "theory/references/literature/pieroni_2026_coble_surfaces.md",
+        "lines": "1271-1283",
+        "bibliographic_key": "pieroni2026coble"
+      },
+      {
+        "file": "theory/references/literature/pieroni_2026_coble_surfaces.md",
+        "lines": "1891-1892",
+        "bibliographic_key": "pieroni2026coble"
+      }
+    ],
+    "properties": {
+      "ambient_space": "P^2",
+      "degree": 6,
+      "node_count": 10,
+      "rational": true,
+      "birational_parametrization": "gamma(u,v) = [F0(u,v), F1(u,v), F2(u,v)]",
+      "parametrizing_forms": "F0, F1, F2 are linearly independent homogeneous polynomials of degree 6 on P^1 with no common zeroes",
+      "moduli_construction": "U // PGL(2,C)",
+      "parameter_space": "U is an open subset of Gr(3, H^0(O_{P^1}(6))) ~= Gr(3,7)",
+      "dimension_of_U": 12
+    }
+  },
+  {
+    "id": "desargues_configuration_sextic",
+    "object_type": "plane_curve_construction",
+    "object_name": "sextic attached to a Desargues configuration",
+    "source_type": "primary_literature_extraction",
+    "sources": [
+      {
+        "file": "theory/references/literature/thas_1994.md",
+        "lines": "730-732",
+        "bibliographic_key": "thas1994"
+      }
+    ],
+    "properties": {
+      "configuration": "a Desargues configuration in which each line contains exactly three points",
+      "conclusion": "determines a sextic with a node at each of the ten points"
+    }
+  },
+  {
+    "id": "T_En_cusp_orbits_sterk",
+    "object_type": "computation_result",
+    "object_name": "O(T_En)-orbits of isotropic k-planes in T_En (Sterk 1991)",
+    "source_type": "computation",
+    "sources": [
+      {
+        "file": "theory/references/literature/aegs_2023.md",
+        "lines": "244-249",
+        "bibliographic_key": "aegs2023compact",
+        "claim": "F_{(10,10,0)} has two 0-cusps and two 1-cusps"
+      },
+      {
+        "bibliographic_key": "sterk1991",
+        "claim": "Sterk (1991) original computation of the cusp diagram"
+      }
+    ],
+    "computation": {
+      "binary": "INDEF_FORM_GetOrbit_IsotropicKplane",
+      "arithmetic": "gmp",
+      "lattice": "T_En = U + U(2) + E8(2)",
+      "gram_matrix_order": "U block first, then U(2) block, then E8(2) block",
+      "date": "2026-04-07",
+      "script": "computations/sterk_cusps.py"
+    },
+    "results": {
+      "zero_cusps": {
+        "k": 1,
+        "orbit_count": 2,
+        "runtime_seconds": 33,
+        "representatives": [
+          [[0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0]],
+          [[-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+        ],
+        "note": "Two orbits distinguished by div(e) in {1,2} in T_En* (AEGS23 §3.2)"
+      },
+      "one_cusps": {
+        "k": 2,
+        "orbit_count": 2,
+        "runtime_seconds": 2807,
+        "representatives": [
+          [
+            [0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [-2, -1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0]
+          ],
+          [
+            [0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [-2, -2, 0, 0, -1, 0, 0, 0, -1, 0, 0, 0]
+          ]
+        ],
+        "note": "Each entry is a basis (two vectors) for one representative isotropic plane"
+      }
+    }
+  }
+]

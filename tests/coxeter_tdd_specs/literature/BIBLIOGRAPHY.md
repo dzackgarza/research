@@ -128,8 +128,8 @@ def test_finiteness_via_bilinear_form():
 # DEFINITION: Hyperbolic Coxeter group classification by matrix signature
 def test_hyperbolic_classification():
 
-# CITATION: [BogachevKolpakov2024] Section 2, Example 1
-# EXAMPLE: Non-reflective Lorentzian lattice with specific Gram matrix
+# CITATION: [BogachevKolpakov2024] Section 6.1
+# EXAMPLE: Non-reflective ternary Lorentzian lattice, quadratic form and Gram matrix
 def test_bogachev_kolpakov_example():
 ```
 
