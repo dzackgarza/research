@@ -87,6 +87,9 @@ def _constructions() -> dict:
         "direct sum": Lattices.A1 + Lattices.A2,
         "tensor product": Lattices.U @ Lattices.A2,
         "twist": Lattices.E8.twist(2),
+        "rooted Coxeter diagram from a scaled Cartan type": FiniteCoxeterDiagram.from_cartan_type(
+            ["A", 2], scale=2
+        ),
         "dual lattice": Lattices.A2.dual_lattice(),
         "subobject": Lattices.E8.subobject_on([2 * e[0]]),
         "discriminant group": Lattices.A2.discriminant_group(),

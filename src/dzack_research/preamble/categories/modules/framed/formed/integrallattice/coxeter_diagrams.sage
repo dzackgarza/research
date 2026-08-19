@@ -21,11 +21,13 @@ if TYPE_CHECKING:
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormMorphism
 from dzack_research.preamble.categories.modules.framed.formed.integrallattice.integral_lattices import _integral_lattice_with_names
 from dzack_research.preamble.categories.sets.sets import finite_ordered_set
+from sage.combinat.root_system.cartan_type import CartanType
 if TYPE_CHECKING:
-    from sage.combinat.root_system.cartan_type import CartanType
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleAutomorphismGroup
+    from sage.groups.perm_gps.permgroup import PermutationGroup_generic
 
+from collections import Counter
 from collections.abc import Hashable, Iterable, Iterator, Mapping, Sequence
+from itertools import combinations
 from typing import TYPE_CHECKING, ClassVar, cast
 
 from sage.categories.category import Category
@@ -158,9 +160,16 @@ class CoxeterDiagrams(Category):
         self,
         cartan_type: "CartanType",
         names: Sequence[str] | str | None = None,
+        scale: "Integer | int | None" = None,
     ) -> FiniteCoxeterDiagram:
-        r"""Construct the diagram of a crystallographic Cartan type."""
-        return self.from_coxeter_matrix(CoxeterMatrix(cartan_type), names=names)
+        r"""Construct the diagram of a crystallographic Cartan type.
+
+        With ``scale``, the reference rooted realization of that scaled type;
+        see :meth:`FiniteCoxeterDiagram.from_cartan_type`.
+        """
+        return FiniteCoxeterDiagram.from_cartan_type(
+            cartan_type, names=names, scale=scale
+        )
 
 
 class CoxeterVertex(ElementWrapper):
@@ -245,9 +254,29 @@ class FiniteCoxeterDiagram(CoxeterDiagramParent):
         cls,
         cartan_type: "CartanType",
         names: Sequence[str] | str | None = None,
+        scale: "Integer | int | None" = None,
     ) -> FiniteCoxeterDiagram:
-        r"""Construct the diagram of a crystallographic Cartan type."""
-        return cls(CoxeterMatrix(cartan_type), names=names)
+        r"""Construct the diagram of a crystallographic Cartan type.
+
+        Without ``scale`` the diagram is unrooted: it carries the type's
+        Coxeter matrix and nothing else.  With ``scale`` it is the reference
+        rooted realization of ``(type, scale)``: the roots are the simple
+        roots of the type read with this project's sign convention, so the
+        root Gram matrix is ``-scale`` times the symmetrized Cartan matrix,
+        normalized -- as Sage's symmetrizer normalizes it -- so that the
+        short roots have square `2`.  The Gram data is delegated to Sage's
+        root-system machinery; there is no per-type matrix table, and these
+        outputs *are* the identification catalogue that
+        :meth:`scaled_cartan_type` verifies against.
+        """
+        if scale is None:
+            return cls(CoxeterMatrix(cartan_type), names=names)
+        scale = Integer(scale)
+        assert scale >= 1, f"a lattice scale is a positive integer; scale={scale}"
+        cartan = CartanType(cartan_type)
+        gram = -scale * cartan.cartan_matrix().symmetrized_matrix()
+        realization = _integral_lattice_with_names(gram)
+        return cls.from_roots(tuple(realization.module_generators()), names=names)
 
     @classmethod
     def from_roots(
@@ -389,9 +418,118 @@ class FiniteCoxeterDiagram(CoxeterDiagramParent):
     def graph(self) -> Graph:
         return self._coxeter_matrix.coxeter_graph()
 
-    def Aut(self) -> "ModuleAutomorphismGroup":
-        r"""Return the finite group of Coxeter-diagram automorphisms."""
-        return self.graph().automorphism_group(edge_labels=True)
+    def is_connected(self) -> bool:
+        r"""Return whether the Coxeter graph of this diagram is connected.
+
+        A thin delegation to :meth:`graph`.  Sage's convention that the empty
+        graph is connected stands: the empty subdiagram is a legitimate member
+        of the induced-subdiagram enumeration, and it is connected.
+        """
+        return bool(self.graph().is_connected())
+
+    def connected_components(self) -> tuple[FiniteCoxeterDiagram, ...]:
+        r"""Return the connected components as induced subdiagrams.
+
+        Each component is the induced subdiagram on one connected component
+        of :meth:`graph`, with its vertices in this diagram's index-set
+        order, so rootedness is preserved where present.  The empty diagram
+        has no components.
+        """
+        components = [
+            set(component)
+            for component in self.graph().connected_components(sort=False)
+        ]
+        return tuple(
+            self.subdiagram(
+                [vertex for vertex in self._index_set if vertex in component]
+            )
+            for component in components
+        )
+
+    def is_elliptic(self) -> bool:
+        r"""Return whether this diagram is elliptic (spherical).
+
+        Coxeter's classification, asked of Sage exactly: a diagram is
+        elliptic when its Coxeter group is finite, which is
+        ``coxeter_matrix().is_finite()``.  The empty diagram is elliptic --
+        its Coxeter group is trivial -- and is answered directly, because
+        Sage's rank-zero Coxeter matrix carries no recognized Coxeter type
+        and its stored ``is_finite`` flag reports ``False``.
+        """
+        if self._index_set.cardinality() == 0:
+            return True
+        return bool(self._coxeter_matrix.is_finite())
+
+    def is_parabolic(self) -> bool:
+        r"""Return whether this diagram is parabolic (euclidean).
+
+        The standard definition: the diagram is nonempty and every connected
+        component is affine, asked componentwise of Sage's classification
+        through ``is_affine()`` on each component's Coxeter matrix.
+        """
+        components = self.connected_components()
+        return bool(components) and all(
+            component.coxeter_matrix().is_affine() for component in components
+        )
+
+    def Aut(self) -> "PermutationGroup_generic":
+        r"""Return the finite group of Coxeter-diagram automorphisms.
+
+        On a rooted diagram the group preserves the full root Gram data: it
+        is the automorphism group of :meth:`root_intersection_graph` with its
+        edge labels (root pairings) and loop labels (root squares).  The
+        bond-only group -- automorphisms of :meth:`graph` -- is blind to root
+        squares: it can send a square ``-2`` root to a square ``-4`` root
+        across a symmetric bond pattern, fusing subdiagram orbits that the
+        Gram data keeps apart.  An unrooted diagram has only its bonds and
+        gets the bond-preserving group.
+        """
+        if self._root_morphism is None:
+            return self.graph().automorphism_group(edge_labels=True)
+        return self.root_intersection_graph().automorphism_group(edge_labels=True)
+
+    def elliptic_subdiagram_orbits(
+        self,
+    ) -> dict[FiniteCoxeterDiagram, frozenset[FiniteCoxeterDiagram]]:
+        r"""Return the :meth:`Aut`-orbits of the elliptic induced subdiagrams.
+
+        The group acts on vertex sets, and the action is computed by GAP
+        through ``PermutationGroup.orbit(..., action="OnSets")``.  Every
+        elliptic induced subdiagram participates -- disconnected ones and the
+        empty one included.  Ellipticity is decided once per orbit: a diagram
+        automorphism preserves the Coxeter matrix, and on a rooted diagram
+        the root Gram data, so it preserves ellipticity.
+
+        Each orbit is returned as a set of subdiagrams, keyed by its
+        representative: the subdiagram on the orbit's lexicographically least
+        vertex tuple.
+        """
+        group = self.Aut()
+        labels = tuple(self._index_set)
+        orbits: dict[FiniteCoxeterDiagram, frozenset[FiniteCoxeterDiagram]] = {}
+        # The empty subdiagram is elliptic and fixed by every automorphism,
+        # so its orbit needs no group computation.
+        empty = self.subdiagram(())
+        orbits[empty] = frozenset((empty,))
+        seen: set[frozenset[Hashable]] = set()
+        for size in range(1, len(labels) + 1):
+            for selection in combinations(labels, size):
+                if frozenset(selection) in seen:
+                    continue
+                if not self.subdiagram(selection).is_elliptic():
+                    continue
+                orbit_vertex_tuples = [
+                    tuple(sorted(member))
+                    for member in group.orbit(selection, action="OnSets")
+                ]
+                seen.update(frozenset(member) for member in orbit_vertex_tuples)
+                members = {
+                    vertex_tuple: self.subdiagram(vertex_tuple)
+                    for vertex_tuple in orbit_vertex_tuples
+                }
+                representative = members[min(orbit_vertex_tuples)]
+                orbits[representative] = frozenset(members.values())
+        return orbits
 
     def drawing_conventions(self) -> dict[str, str]:
         r"""Return the node, edge, and self-loop drawing conventions.
@@ -470,6 +608,85 @@ class FiniteCoxeterDiagram(CoxeterDiagramParent):
         )
         return graph
 
+    def scaled_cartan_type(self) -> "tuple[CartanType, Integer] | None":
+        r"""Return the Cartan type and scale that this rooted diagram realizes.
+
+        Defined on connected elliptic rooted diagrams.  The normalization:
+        scale `1` means the root Gram matrix equals the *negated* symmetrized
+        Cartan matrix of the type with short roots of square `2`; scale `2`
+        means twice that, and so on.  The rank-two double-bond pair is
+        returned as ``(C2, 1)`` -- `B_2` and `C_2` name one root system, and
+        this method fixes the `C` spelling once, here.  The empty diagram
+        returns ``None``, the distinguished empty value: it realizes no
+        Cartan type, and no fake type is invented for it.
+
+        Recognition reads the Coxeter type off Sage's classification and the
+        scale and the `B`-versus-`C` decoration off the root squares: the
+        shortest root square is `-2` times the scale, and on a bond-``4``
+        chain `B_n` has exactly one short root where `C_n` has `n - 1`.  The
+        recognized pair is then *verified*: the reference rooted diagram of
+        ``(type, scale)`` is built by :meth:`from_cartan_type`, and the two
+        root-intersection graphs must be isomorphic with their edge labels --
+        loops carry root squares and edges carry pairings, so this is Gram
+        equality up to relabeling.
+        """
+        if self._index_set.cardinality() == 0:
+            return None
+        assert self.is_connected(), (
+            "a Cartan type names a connected diagram; ask "
+            "component_scaled_cartan_types() for the components"
+        )
+        assert self.is_elliptic(), (
+            "only an elliptic diagram realizes a finite root system"
+        )
+        intersections = self.root_intersection_matrix()
+        rank = intersections.nrows()
+        squares = [-intersections[i, i] for i in range(rank)]
+        shortest = min(squares)
+        scale = Integer(shortest) // 2
+        assert 2 * scale == shortest, (
+            f"the shortest root square must be -2 times the scale; squares={squares!r}"
+        )
+        coxeter_type = self._coxeter_matrix.coxeter_type()
+        assert coxeter_type is not self._coxeter_matrix, (
+            "Sage recognizes every finite Coxeter type, so an elliptic "
+            f"diagram's type is never unknown; matrix={self._coxeter_matrix!r}"
+        )
+        cartan = coxeter_type.cartan_type()
+        if cartan.type() == "B":
+            short_count = sum(1 for square in squares if square == 2 * scale)
+            if rank == 2:
+                # One root system, two names: the fixed spelling is C2.
+                cartan = CartanType(["C", 2])
+            elif short_count == 1:
+                cartan = CartanType(["B", rank])
+            else:
+                assert short_count == rank - 1, (
+                    "a bond-4 chain has one short root (B) or one long root "
+                    f"(C); squares={squares!r}"
+                )
+                cartan = CartanType(["C", rank])
+        reference = FiniteCoxeterDiagram.from_cartan_type(cartan, scale=scale)
+        assert self.root_intersection_graph().is_isomorphic(
+            reference.root_intersection_graph(), edge_labels=True
+        ), (
+            f"recognition promised {cartan} at scale {scale}, but the root "
+            "Gram data is not that reference's up to relabeling"
+        )
+        return (cartan, scale)
+
+    def component_scaled_cartan_types(self) -> "Counter[tuple[CartanType, Integer]]":
+        r"""Return the multiset of ``(Cartan type, scale)`` over the components.
+
+        Each connected component of an elliptic rooted diagram realizes one
+        scaled Cartan type; the multiset collects them with multiplicity.
+        The empty diagram has no components and returns the empty multiset.
+        """
+        return Counter(
+            component.scaled_cartan_type()
+            for component in self.connected_components()
+        )
+
     def preferred_positions(
         self,
     ) -> dict[Hashable, tuple["RingElement | float", "RingElement | float"]]:
@@ -500,7 +717,9 @@ class FiniteCoxeterDiagram(CoxeterDiagramParent):
         entries = [[self._coxeter_matrix[left, right] for right in selected] for left in selected]
         names = tuple(self.variable_names()[self._index_set.index(vertex)] for vertex in selected)
         positions = None if self._preferred_positions is None else {vertex: self._preferred_positions[vertex] for vertex in selected}
-        if self._root_morphism is not None:
+        # The empty subdiagram carries no root: an empty selection has no
+        # realization to be rooted in, so it is the unrooted empty diagram.
+        if self._root_morphism is not None and selected:
             roots = tuple(
                 self.roots()[self._index_set.index(vertex)]
                 for vertex in selected

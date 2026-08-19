@@ -362,6 +362,17 @@ class ProjectiveWeightedGraphs(Category):
             elliptics = [D for D in full_P if D.is_elliptic()]
             return full_P.subposet(elliptics)
 
+        def maximal_elliptic_subdiagram_poset(self) -> Poset:
+            r"""Return the subposet of maximal elliptic subdiagram objects.
+
+            Maximality is among *all* elliptic subdiagrams, disconnected ones
+            included; a caller wanting the maximal connected ones filters
+            with ``is_connected()``.
+            """
+            e_poset = self.elliptic_subdiagram_poset()
+            max_elems = e_poset.maximal_elements()
+            return e_poset.subposet(max_elems)
+
         def hyperbolic_subdiagram_poset(self) -> Poset:
             r"""Return the induced subposet of hyperbolic subdiagram objects."""
             if not self.is_symmetric():
