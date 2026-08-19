@@ -888,6 +888,25 @@ def test_definiteness_predicates() -> None:
     )
 
 
+def test_isotropy_on_the_hyperbolic_plane_is_the_exact_norm() -> None:
+    r"""The framing vectors of $U$ are isotropic -- norm exactly $0$ in the
+    value module -- and their sum is not: $q(e+f)=2$.  Isotropy of an
+    element is its norm being zero, asked exactly, through the owned
+    ``FormModules`` element predicate."""
+    catalogue, _, _ = _preamble()
+    e, f = catalogue.Lattices.U.module_generators()
+    assert e.norm() == 0
+    assert f.norm() == 0
+    assert e.is_isotropic()
+    assert f.is_isotropic()
+    assert e.b(f) == 1
+    assert (e + f).norm() == 2
+    assert not (e + f).is_isotropic()
+    assert type(e).is_isotropic.__qualname__ == (
+        "FormModules.ElementMethods.is_isotropic"
+    )
+
+
 def test_coxeter_diagram_uses_the_owned_sage_parent() -> None:
     """The diagram is a parent in the preamble's own category, not the spike's."""
     _preamble()

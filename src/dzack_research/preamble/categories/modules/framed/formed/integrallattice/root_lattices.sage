@@ -7,7 +7,7 @@ category -- and the category is what makes $O(L)$ answer from $W(R)$ and the
 Dynkin diagram instead of from a search over the Gram matrix.
 """
 
-from typing import Self, TYPE_CHECKING
+from typing import Protocol, Self, TYPE_CHECKING
 
 from sage.categories.category import Category
 from sage.combinat.root_system.weyl_group import WeylGroup
@@ -17,9 +17,15 @@ from dzack_research.preamble.categories.sets.cardinals import Cardinal
 if TYPE_CHECKING:
     from sage.combinat.root_system.cartan_type import CartanType
     from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModule
+    from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormedElement
+    from dzack_research.preamble.lexicon import ModuleElement
     from dzack_research.preamble.lexicon import RingElement
     from dzack_research.preamble.lexicon import OrderedSet
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleAutomorphismGroup
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
+
+    class RootLatticeElement(FormedElement, Protocol):
+        r"""What an element of a root lattice offers."""
 
 
 def refine_root_lattice(lattice: "FormModule", cartan_type: "CartanType") -> "FormModule":
@@ -98,6 +104,116 @@ class RootLattices(Category):
 
         orthogonal_group = Aut
         automorphisms = Aut
+
+        def simple_roots(self: Self) -> "OrderedSet":
+            r"""Return the simple roots: the framing generators, under their name.
+
+            ``refine_root_lattice`` is the statement that the Cartan matrix
+            became the Gram matrix, so the module generators *are* a simple
+            system for the root system this lattice presents.  No choice is
+            made here -- the choice was made once, at construction, and this
+            is its name.
+            """
+            return self.module_generators()
+
+        def simple_reflections(self: Self) -> "tuple[ModuleMorphism, ...]":
+            r"""Return $(s_{\alpha_1},\dots,s_{\alpha_n})$, the reflections in
+            the simple roots, as elements of $\mathrm{Aut}(L)$.
+
+            Each $s_\alpha(x)=x-\dfrac{2\,b(x,\alpha)}{q(\alpha)}\,\alpha$ is
+            built by :meth:`IntegralLattices.ParentMethods.reflection` from
+            its images on the framing, with the form -- never a matrix
+            assembled entrywise -- so each is an isometry by construction and
+            an involution by the mathematics.
+            """
+            return tuple(self.reflection(root) for root in self.simple_roots())
+
+        def fundamental_weights(self: Self) -> "OrderedSet":
+            r"""Return $(\omega_1,\dots,\omega_n)\subset L^\vee$, defined by
+            $\langle\alpha_i^\vee,\omega_j\rangle=\delta_{ij}$.
+
+            The defining pairing is against the *coroots*, not the roots.
+            This category holds the simply laced types, where
+            $q(\alpha)=2\varepsilon$ with $\varepsilon=\pm1$ the convention
+            sign, so $\alpha^\vee=\varepsilon\,\alpha$ and the weights are the
+            dual generators up to that one sign:
+            $\omega_j=\varepsilon\,e_j^\vee$.  Like the dual generators
+            (:meth:`IntegralLattices.ParentMethods.dual_basis`) they are
+            elements of $L^\vee$ -- for a simply laced root system the weight
+            lattice *is* the dual of the root lattice.
+            """
+            norm = self.simple_roots()[0].norm()
+            assert norm in (2, -2), (
+                f"the simply laced normalization has q(alpha) = ±2; "
+                f"this framing has q(alpha) = {norm}"
+            )
+            duals = self.dual_basis()
+            if norm == 2:
+                return duals
+            return tuple(-weight for weight in duals)
+
+    class ElementMethods:
+        r"""The root-system vocabulary of a vector of a root lattice.
+
+        Everything here reads the framing as the simple system, which is what
+        membership in this category records.
+        """
+
+        def is_root(self: "RootLatticeElement") -> bool:
+            r"""Return whether $x$ is a root.
+
+            In a simply laced root lattice the root system is exactly the set
+            of vectors of the simple roots' square (CS10 ch. 4 tabulates the
+            root lattices this way): norm $-2$ in this project's sign and
+            $+2$ after ``twist(-1)``.  Asked of the norm, in the framing's own
+            regime, with no enumeration.
+            """
+            return bool(self.norm() == self.parent().simple_roots()[0].norm())
+
+        def is_positive_root(self: "RootLatticeElement") -> bool:
+            r"""Return whether $x$ is a positive root of the simple system.
+
+            A root is positive when its coefficients over the simple roots
+            are all nonnegative; every root is positive or negative, never
+            mixed, which is the dichotomy the simple system grants.
+            """
+            return bool(
+                self.is_root()
+                and all(entry >= 0 for entry in self._coordinates())
+            )
+
+        def is_negative_root(self: "RootLatticeElement") -> bool:
+            r"""Return whether $-x$ is a positive root."""
+            return bool((-self).is_positive_root())
+
+        def height(self: "RootLatticeElement") -> "RingElement":
+            r"""Return $\operatorname{ht}(x)=\sum_i c_i$ for $x=\sum_i c_i\,\alpha_i$.
+
+            The coefficient sum over the simple roots.  The framing is the
+            simple system, so the sum is read off the coordinates and the
+            simple roots have height $1$.
+            """
+            return sum(self._coordinates())
+
+        def coroot(self: "RootLatticeElement") -> "ModuleElement":
+            r"""Return $\alpha^\vee=\dfrac{2}{q(\alpha)}\,\alpha$, transported to $L^\vee$.
+
+            $L$ and $L^\vee$ share no containing space here, so the classical
+            $2\alpha/(\alpha,\alpha)$ is read through the correlation: the
+            coroot is $\dfrac{2}{q(\alpha)}\,c(\alpha)$, the element of
+            $L^\vee$ pairing each $x\in L$ to
+            $\dfrac{2\,b(x,\alpha)}{q(\alpha)}$ -- so
+            $\langle\alpha,\alpha^\vee\rangle=2$ always.  Defined for
+            anisotropic $\alpha$; integrality of the result is exactly the
+            root condition, the same one :meth:`reflection` asserts, and the
+            division asserts it.
+            """
+            norm = self.norm()
+            assert norm != 0, (
+                f"the coroot is defined for an anisotropic vector; "
+                f"q(v)=0 for v={self}"
+            )
+            return (self.parent().correlation()(self) * 2) / norm
 
 
 class RootLatticeIsometries(Category):

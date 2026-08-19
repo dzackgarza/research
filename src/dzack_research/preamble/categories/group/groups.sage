@@ -235,6 +235,23 @@ def _Heisenberg(degree: "Integer" = 1, ring: "Ring | Integer" = 0) -> "Group":
     return refine_group(Heisenberg(degree, scalar_ring))
 
 
+def _SmallGroup(order: "Integer", index: "Integer") -> "Group":
+    r"""Return the group ``SmallGroup(order, index)`` of GAP's small-groups library.
+
+    The library (Besche--Eick--O'Brien, reached through GAP's ``SmallGroup``)
+    catalogues the groups of each admitted order up to isomorphism, and
+    ``index`` selects one isomorphism class; GAP validates both arguments.
+    GAP hands back a pc-presented model, which is normalized here to a
+    permutation group through ``IsomorphismPermGroup`` -- so the intake
+    models the catalogued group up to isomorphism, the same contract as the
+    normalizing arms of ``_gap_model``.
+    """
+    from sage.groups.perm_gps.permgroup import PermutationGroup
+
+    permutation_model = libgap.SmallGroup(order, index).IsomorphismPermGroup().Image()
+    return refine_group(PermutationGroup(gap_group=permutation_model))
+
+
 def _Coxeter(
     data: "CartanType | Matrix | str",
     implementation: str = "reflection",
@@ -388,6 +405,7 @@ class OwnedGroups(Category):
     Affine = staticmethod(_Affine)
     Euclidean = staticmethod(_Euclidean)
     Nilpotent = _owned_group_constructor(_SageNilpotent)
+    SmallGroup = staticmethod(_SmallGroup)
 
     ComplexReflection = _owned_group_constructor(_SageComplexReflection)
     Mathieu = _owned_group_constructor(_SageMathieu)
@@ -693,6 +711,29 @@ class OwnedGroups(Category):
                 for generator in self.group_generators()
             }
             return group_homset(self, automorphisms)(images)
+
+        def is_isomorphic_to(self: Self, other: "Group") -> "bool | Unknown":
+            r"""Return whether \(G\cong H\) as groups, as a value.
+
+            One spelling across every owned presentation: two finite groups
+            given as permutation groups, finitely presented groups, abelian
+            groups, or matrix groups are compared through their GAP models,
+            so the question does not depend on which constructor built each
+            side.  Decided by GAP's ``IsomorphismGroups``, which searches for
+            an isomorphism and answers ``fail`` when none exists -- a
+            decision procedure for finite groups, and the same engine Sage's
+            ``PermutationGroup_generic.is_isomorphic`` calls.
+
+            Groups not decidably finite answer ``Unknown``: the isomorphism
+            problem for finitely presented groups is undecidable
+            (Adian--Rabin), so no loop or bounded probe stands in for the
+            missing algorithm, and ``Unknown`` is not ``False`` -- nothing
+            here decides the infinite case either way.
+            """
+            if _finiteness(self) is not True or _finiteness(other) is not True:
+                return Unknown
+            found = _gap_model(self).IsomorphismGroups(_gap_model(other))
+            return str(found) != "fail"
 
 
 class OwnedFinitelyGeneratedGroups(Category):

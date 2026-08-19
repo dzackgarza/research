@@ -1421,13 +1421,16 @@ def test_is_isometric_decides_the_definite_case_by_the_engine() -> None:
 
 
 def test_the_reflection_in_a_root_of_a2_acts_by_the_definition() -> None:
-    r"""Hum90 sec 1.1: $s_v(x)=x-\dfrac{2b(x,v)}{q(v)}v$.  On the $A_2$
-    framing, $s_{e_1}(e_1)=-e_1$ and $s_{e_1}(e_2)=e_1+e_2$."""
+    r"""Hum90 sec 1.1: $s_v(x)=x-\dfrac{2b(x,v)}{q(v)}v$, an involution --
+    substituting the formula into itself cancels, so $s_v^2=1$.  On the
+    $A_2$ framing, $s_{e_1}(e_1)=-e_1$ and $s_{e_1}(e_2)=e_1+e_2$."""
     lattice = IntegralLattice("A2")
     e1, e2 = lattice.module_generators()
     reflection = lattice.reflection(e1)
     assert reflection(e1) == -e1
     assert reflection(e2) == e1 + e2
+    witness = 2 * e1 - 3 * e2
+    assert reflection(reflection(witness)) == witness
 
 
 def test_nikulin_complement_pair_discriminant_forms_are_anti_isometric() -> None:

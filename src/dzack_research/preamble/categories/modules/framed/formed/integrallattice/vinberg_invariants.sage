@@ -372,7 +372,18 @@ class ProjectiveWeightedGraphs(Category):
             return p_poset.subposet(max_elems)
 
         def elliptic_subdiagram_poset(self) -> Poset:
-            r"""Return the induced subposet of elliptic subdiagram objects."""
+            r"""Return the induced subposet of elliptic subdiagram objects.
+
+            The elliptic subdiagrams form an order ideal in
+            :meth:`subdiagram_poset`: a subdiagram's Schläfli matrix is a
+            principal submatrix -- the Gram matrix of the restricted form --
+            and a positive definite form restricts positive definite
+            (equivalently, Cauchy interlacing bounds each eigenvalue of a
+            principal submatrix below by one of the full matrix).  So every
+            subdiagram of an elliptic diagram is elliptic, and an
+            enumeration may prune every superdiagram of a non-elliptic
+            subdiagram.
+            """
             if not self.is_symmetric():
                 return Poset(([], lambda a, b: True))
             full_P = self.subdiagram_poset()

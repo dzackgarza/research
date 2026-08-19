@@ -33,6 +33,7 @@ from typing import TYPE_CHECKING, ClassVar, cast
 from sage.categories.category import Category
 from sage.categories.homset import Homset
 from sage.categories.morphism import Morphism
+from sage.combinat.posets.posets import Poset
 from sage.matrix.constructor import matrix
 from sage.rings.infinity import infinity, PlusInfinity
 from sage.rings.integer import Integer
@@ -531,6 +532,83 @@ class FiniteCoxeterDiagram(CoxeterDiagramParent):
                 orbits[representative] = frozenset(members.values())
         return orbits
 
+    def parabolic_subdiagram_orbits(
+        self,
+    ) -> dict[FiniteCoxeterDiagram, frozenset[FiniteCoxeterDiagram]]:
+        r"""Return the :meth:`Aut`-orbits of the parabolic induced subdiagrams.
+
+        The sibling of :meth:`elliptic_subdiagram_orbits`, with parabolicity
+        in place of ellipticity: a diagram automorphism preserves the Coxeter
+        matrix, and on a rooted diagram the root Gram data, so it preserves
+        parabolicity, and the property is decided once per orbit.  The empty
+        subdiagram is not parabolic -- :meth:`is_parabolic` asks for a
+        nonempty diagram with every component affine -- so no empty orbit
+        appears.
+
+        Each orbit is returned as a set of subdiagrams, keyed by its
+        representative: the subdiagram on the orbit's lexicographically least
+        vertex tuple.
+        """
+        group = self.Aut()
+        labels = tuple(self._index_set)
+        orbits: dict[FiniteCoxeterDiagram, frozenset[FiniteCoxeterDiagram]] = {}
+        seen: set[frozenset[Hashable]] = set()
+        for size in range(1, len(labels) + 1):
+            for selection in combinations(labels, size):
+                if frozenset(selection) in seen:
+                    continue
+                if not self.subdiagram(selection).is_parabolic():
+                    continue
+                orbit_vertex_tuples = [
+                    tuple(sorted(member))
+                    for member in group.orbit(selection, action="OnSets")
+                ]
+                seen.update(frozenset(member) for member in orbit_vertex_tuples)
+                members = {
+                    vertex_tuple: self.subdiagram(vertex_tuple)
+                    for vertex_tuple in orbit_vertex_tuples
+                }
+                representative = members[min(orbit_vertex_tuples)]
+                orbits[representative] = frozenset(members.values())
+        return orbits
+
+    def subdiagram_orbit_poset(
+        self,
+        orbits: Mapping[FiniteCoxeterDiagram, frozenset[FiniteCoxeterDiagram]],
+    ) -> Poset:
+        r"""Return the inclusion order on subdiagram orbits, on representatives.
+
+        Consumes what :meth:`elliptic_subdiagram_orbits` and
+        :meth:`parabolic_subdiagram_orbits` return.  The order is the orbit
+        order, not literal containment of the representatives:
+        $[H]\le[K]$ when some member of $[H]$ is an induced subdiagram of
+        some member of $[K]$.  Because :meth:`Aut` acts transitively on each
+        orbit, that holds exactly when some member of $[H]$ has its vertices
+        inside the representative of $[K]$, which is what is checked.  A
+        partial order: reflexive because a representative is a member of its
+        own orbit; antisymmetric because both containments force equal vertex
+        counts, hence equal vertex sets; transitive because an automorphism
+        carrying the containing member of $[K]$ onto its representative
+        carries the contained member of $[H]$ along.
+        """
+        vertex_sets = {
+            representative: tuple(
+                frozenset(member.index_set()) for member in members
+            )
+            for representative, members in orbits.items()
+        }
+
+        def orbit_below(
+            below: FiniteCoxeterDiagram, above: FiniteCoxeterDiagram
+        ) -> bool:
+            target = frozenset(above.index_set())
+            return any(
+                member_vertices <= target
+                for member_vertices in vertex_sets[below]
+            )
+
+        return Poset((tuple(orbits), orbit_below))
+
     def drawing_conventions(self) -> dict[str, str]:
         r"""Return the node, edge, and self-loop drawing conventions.
 
@@ -770,6 +848,7 @@ class FiniteCoxeterDiagram(CoxeterDiagramParent):
         self,
         positions: Mapping[Hashable, Sequence["RingElement | float"]] | None = None,
         scale: "RingElement | float" = 1,
+        highlight: Iterable[Hashable] | None = None,
     ) -> str:
         r"""Return TikZ code for the rooted Coxeter diagram.
 
@@ -779,6 +858,14 @@ class FiniteCoxeterDiagram(CoxeterDiagramParent):
         deliberately omits the loops and draws only edges between distinct
         vertices: single, double, or triple according to Coxeter exponent
         ``3``, ``4``, or ``6``.
+
+        ``highlight`` names vertices of *this* diagram -- an induced
+        subdiagram's vertex selection, e.g. a key of
+        :meth:`elliptic_subdiagram_orbits` read through ``index_set()`` --
+        and renders that subdiagram highlighted inside this diagram's own
+        picture: a halo behind each named vertex and behind each bond both
+        of whose endpoints are named.  The subdiagram is induced, so the
+        haloed bonds are exactly its bonds.
         """
         selected_positions = _normalize_positions(self._index_set, positions) if positions is not None else self.preferred_positions()
         assert selected_positions is not None
@@ -787,12 +874,43 @@ class FiniteCoxeterDiagram(CoxeterDiagramParent):
             rf"\begin{{tikzpicture}}[scale={scale}]",
             r"\definecolor{coxeterNegativeFour}{HTML}{F8F9FE}",
             r"\definecolor{coxeterNegativeTwo}{HTML}{BFC9CA}",
+            r"\definecolor{coxeterHighlight}{HTML}{B3E5FC}",
             r"\tikzset{coxeter node/.style={circle,draw,minimum size=6mm,inner sep=0pt}}",
             r"\tikzset{coxeter double/.style={double,double distance=1.4pt}}",
             r"\tikzset{coxeter triple/.style={double,double distance=2.6pt,postaction={draw}}}",
             r"\tikzset{coxeter parallel/.style={line width=1.6pt}}",
             r"\tikzset{coxeter divergent/.style={dashed}}",
+            r"\tikzset{coxeter highlight/.style={coxeterHighlight,line width=12pt,line cap=round}}",
         ]
+
+        highlighted: tuple[Hashable, ...] = ()
+        if highlight is not None:
+            highlighted = tuple(
+                self._element_constructor_(vertex).value for vertex in highlight
+            )
+            assert len(highlighted) == len(set(highlighted)), (
+                f"a highlighted subdiagram selects distinct vertices; highlight={highlighted!r}"
+            )
+
+        def halo_edge(left: Hashable, right: Hashable) -> str:
+            x_left, y_left = selected_positions[left]
+            x_right, y_right = selected_positions[right]
+            return (
+                rf"\draw[coxeter highlight] ({x_left},{y_left}) -- ({x_right},{y_right});"
+            )
+
+        def halo_node(vertex: Hashable) -> str:
+            x, y = selected_positions[vertex]
+            return rf"\fill[coxeterHighlight] ({x},{y}) circle (6mm);"
+
+        halo_lines = [
+            halo_edge(left, self._index_set[j])
+            for i, left in enumerate(self._index_set)
+            for j in range(i + 1, self._index_set.cardinality())
+            if left in highlighted
+            and self._index_set[j] in highlighted
+            and intersections[i, j] != 0
+        ] + [halo_node(vertex) for vertex in highlighted]
 
         def edge(i: int, left: "Element", j: int) -> str:
             right = self._index_set[j]
@@ -826,6 +944,7 @@ class FiniteCoxeterDiagram(CoxeterDiagramParent):
         return "\n".join(
             [
                 *header,
+                *halo_lines,
                 *edge_lines,
                 *node_lines,
                 r"\end{tikzpicture}",

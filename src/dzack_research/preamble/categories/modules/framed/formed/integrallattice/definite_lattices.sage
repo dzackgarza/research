@@ -382,6 +382,209 @@ class DefiniteLattices(Category):
                 SageQQ(1) / n
             )
 
+        def theta_series(self: "Module", prec: "RingElement") -> "Element":
+            r"""Return $\theta_L(q)=\sum_{x\in L}q^{\pm b(x,x)}$ to $O(q^{\text{prec}})$.
+
+            Exponents read the length Gram matrix $\pm G$, so for a negative
+            definite lattice this is the theta series of $L(-1)$ -- the same
+            transport every method of this category makes.  The series
+            converges for $|q|<1$ exactly because the form is definite
+            (Conway--Sloane, SPLAG ch. 2): each coefficient counts the finite
+            set :meth:`vectors_of_square` returns, and an indefinite lattice
+            has infinitely many vectors of one square, so the vocabulary sits
+            on this category.
+
+            Engine: Sage's ``QuadraticForm.theta_series`` (PARI ``qfrep``
+            behind it) on the quadratic form $x\mapsto x(\pm G)x^t$, whose
+            Hessian is $2(\pm G)$.
+            """
+            from sage.quadratic_forms.quadratic_form import QuadraticForm
+
+            gram = matrix(SageZZ, self._length_gram_matrix())
+            return QuadraticForm(SageZZ, 2 * gram).theta_series(prec)
+
+        def kissing_number(self: "Module") -> "RingElement":
+            r"""Return the number of vectors of minimal nonzero length.
+
+            The kissing number of the sphere packing on $L$: each minimal
+            vector names one sphere touching the sphere at the origin
+            (Conway--Sloane, SPLAG ch. 1).  Both signs are counted -- $x$ and
+            $-x$ touch at antipodal points -- and PARI's count already
+            includes both: $E_8$ answers $240$.
+
+            Fincke--Pohst, reached through PARI's ``qfminim`` on the length
+            Gram matrix.
+            """
+            gram = matrix(SageZZ, self._length_gram_matrix())
+            assert gram.nrows() > 0, (
+                "the rank-0 lattice has no nonzero vector"
+            )
+            count, _minimal, _vectors = gram.__pari__().qfminim(None, 0)
+            return SageZZ(count)
+
+        def packing_radius(self: "Module") -> "Element":
+            r"""Return $\rho=\lambda_1/2$, exact and symbolic.
+
+            Half the minimal distance between distinct lattice points: open
+            balls of this radius centered at lattice points are disjoint, and
+            it is the largest radius with that property (Conway--Sloane,
+            SPLAG ch. 1).  The length is $\sqrt{\min b(x,x)}$ on the length
+            Gram matrix, returned symbolic and exact, never a float.
+            """
+            from sage.symbolic.ring import SR
+
+            gram = matrix(SageZZ, self._length_gram_matrix())
+            assert gram.nrows() > 0, (
+                "the rank-0 lattice has no pair of distinct points"
+            )
+            minimal = SageZZ(gram.__pari__().qfminim(None, 0)[1])
+            return SR(minimal).sqrt() / 2
+
+        def covering_radius(self: "Module") -> "Element":
+            r"""Return the covering radius, exact and symbolic.
+
+            The least $R$ with $L\otimes\mathbb R=\bigcup_{v\in L}\bar B(v,R)$:
+            the distance from the origin to a deepest hole.  Every deep hole
+            is a vertex of the Voronoi cell (Conway--Sloane, SPLAG ch. 2), so
+            the covering radius is the circumradius of :meth:`voronoi_cell` --
+            the largest length among its vertices, whose coordinates are
+            rational, so the squared radius is exact and the length is its
+            symbolic square root.
+            """
+            from sage.modules.free_module_element import vector
+            from sage.symbolic.ring import SR
+
+            gram = self._length_gram_matrix()
+            squared = max(
+                point * gram * point
+                for point in (
+                    vector(SageQQ, vertex)
+                    for vertex in self.voronoi_cell().vertices_list()
+                )
+            )
+            return SR(squared).sqrt()
+
+        def successive_minima(self: "Module") -> "tuple[Element, ...]":
+            r"""Return $(\lambda_1,\dots,\lambda_n)$, exact and symbolic.
+
+            $\lambda_i$ is the least length $r$ such that $L$ holds $i$
+            linearly independent vectors of length at most $r$ (Cassels,
+            *An Introduction to the Geometry of Numbers*, ch. VIII), read on
+            the length Gram matrix.  Greedy attains every $\lambda_i$: scan
+            the vectors in increasing length and keep each one independent of
+            those kept so far -- any $i$ independent vectors of length at most
+            $r$ include one outside the span of the first $i-1$ kept, so the
+            $i$-th kept length is at most $\lambda_i$, and the $i$ kept
+            vectors witness $\lambda_i$ at most that length.
+
+            The enumeration bound is the largest diagonal entry of the LLL
+            reduced Gram matrix: its rows are $n$ independent vectors, so
+            $\lambda_n^2$ is at most that entry.  Fincke--Pohst through
+            PARI's ``qfminim``.
+            """
+            from sage.symbolic.ring import SR
+
+            gram = matrix(SageZZ, self._length_gram_matrix())
+            n = gram.nrows()
+            assert n > 0, "the rank-0 lattice has no successive minima"
+            transformation = matrix(SageZZ, gram.LLL_gram())
+            reduced = transformation.transpose() * gram * transformation
+            bound = max(reduced[i, i] for i in range(n))
+            _count, _largest, coordinates = gram.__pari__().qfminim(bound, None)
+            columns = sorted(
+                matrix(SageZZ, coordinates).columns(),
+                key=lambda column: column * gram * column,
+            )
+            independent: "list[FreeModuleElement]" = []
+            for column in columns:
+                if matrix(SageZZ, independent + [column]).rank() == len(independent) + 1:
+                    independent.append(column)
+                    if len(independent) == n:
+                        break
+            assert len(independent) == n, (
+                f"the LLL reduced generators of {self} are {n} independent "
+                f"vectors of squared length at most {bound}, so the "
+                "enumeration up to that bound holds a full independent set"
+            )
+            return tuple(
+                SR(column * gram * column).sqrt() for column in independent
+            )
+
+        def contact_polytope(self: "Module") -> "Polyhedron":
+            r"""Return the convex hull of the minimal vectors, a rational polytope.
+
+            The vertices are the vectors of minimal nonzero length -- the
+            sphere centers touching the sphere at the origin (Conway--Sloane,
+            SPLAG ch. 1) -- in coordinates against the module generators,
+            the same coordinates :meth:`voronoi_cell` speaks.
+            """
+            from sage.geometry.polyhedron.constructor import Polyhedron as polyhedron
+
+            gram = matrix(SageZZ, self._length_gram_matrix())
+            assert gram.nrows() > 0, (
+                "the rank-0 lattice has no nonzero vector"
+            )
+            minimal = SageZZ(gram.__pari__().qfminim(None, 0)[1])
+            positive, negative = self.signature_pair()
+            sign = 1 if negative == 0 else -1
+            return polyhedron(
+                vertices=[
+                    element._coordinates()
+                    for element in self.vectors_of_square(sign * minimal)
+                ],
+                base_ring=SageQQ,
+            )
+
+        def hermite_invariant(self: "Module") -> "Element":
+            r"""Return $\gamma(L)=\lambda_1^2/\det(\pm G)^{1/n}$, exact and symbolic.
+
+            The Hermite *constant* $\gamma_n$ is the supremum of this
+            invariant over the rank-$n$ lattices (Conway--Sloane, SPLAG
+            ch. 1); this method returns the invariant of one lattice, so it
+            is named for what it computes.  $E_8$ answers $2$, which is
+            $\gamma_8$.  The $n$-th root uses the rational exponent
+            $1/n\in\mathbb Q$ -- see :meth:`gaussian_heuristic` on why
+            ``1 / n`` is banned here.
+            """
+            from sage.symbolic.ring import SR
+
+            gram = matrix(SageZZ, self._length_gram_matrix())
+            n = gram.nrows()
+            assert n > 0, "the rank-0 lattice has no minimal nonzero vector"
+            minimal = SageZZ(gram.__pari__().qfminim(None, 0)[1])
+            return minimal / SR(gram.determinant()) ** (SageQQ(1) / n)
+
+        def center_density(self: "Module") -> "Element":
+            r"""Return $\delta=\rho^n/\sqrt{\det(\pm G)}$, exact and symbolic.
+
+            The number of sphere centers per unit volume when the spheres
+            have the packing radius $\rho$: the packing density with the ball
+            volume factored out (Conway--Sloane, SPLAG ch. 1), which is why
+            it is the column lattice tables print.
+            """
+            from sage.symbolic.ring import SR
+
+            gram = matrix(SageZZ, self._length_gram_matrix())
+            n = gram.nrows()
+            assert n > 0, "the rank-0 lattice packs no spheres"
+            return self.packing_radius() ** n / SR(gram.determinant()).sqrt()
+
+        def packing_density(self: "Module") -> "Element":
+            r"""Return $\Delta=V_n\,\delta$, the fraction of space the packing fills.
+
+            $V_n=\pi^{n/2}/\Gamma(1+n/2)$ is the volume of the unit ball, and
+            $\delta$ is :meth:`center_density` (Conway--Sloane, SPLAG ch. 1).
+            Exact and symbolic: $\pi$ stays $\pi$.
+            """
+            from sage.functions.gamma import gamma
+            from sage.symbolic.constants import pi
+
+            gram = matrix(SageZZ, self._length_gram_matrix())
+            n = gram.nrows()
+            assert n > 0, "the rank-0 lattice packs no spheres"
+            ball_volume = pi ** (SageQQ(n) / 2) / gamma(1 + SageQQ(n) / 2)
+            return ball_volume * self.center_density()
+
     class Subobjects(SubobjectsCategory):
         r"""Submodules of a definite lattice, framed by their inclusion."""
 

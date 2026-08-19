@@ -391,6 +391,43 @@ class FormModules(OwnedCategoryOverBaseRing):
             )
             return value
 
+        def is_isotropic(self: "FormedElement") -> bool:
+            r"""Return whether the norm of $x$ is $0$ in the value module.
+
+            The norm is the form's own: $b(x,x)$ for a bilinear form and
+            $q(x)$ for a quadratic one, which differ exactly where isotropy
+            definitions differ (characteristic $2$), so asking the form's
+            norm asks the right question in both.  Isotropy of a *subobject*
+            is a different statement -- the form vanishing on all of
+            $S\times S$ -- and is asked of the subobject, not of a spanning
+            element.
+            """
+            return bool(self.norm().is_zero())
+
+        def is_orthogonal_to(self: "FormedElement", other: "Element") -> bool:
+            r"""Return whether $b(x,y)=0$ in the value module.
+
+            Left orthogonality: $x$ in the first argument, ``other`` in the
+            second.  For a form that is not symmetric this relation is not
+            symmetric -- $b(x,y)=0$ says nothing about $b(y,x)$ -- so the
+            method states its argument order and a caller who means the
+            two-sided relation asks both ways.
+            """
+            return bool(self.b(other).is_zero())
+
+        def represents(self: "FormedElement", value: "Element") -> bool:
+            r"""Return whether the norm of $x$ equals ``value`` in the value module.
+
+            The statement about one element, on the form's own norm --
+            $b(x,x)$ for a bilinear form, $q(x)$ for a quadratic one.
+            Whether the *module* represents a value -- $\exists x$ of norm
+            $k$ -- is an existence question over an infinite set and lives
+            where it is decidable: on definite lattices
+            ``vectors_of_square`` answers it, and the indefinite case is the
+            stated adelic gap recorded there.
+            """
+            return bool(self.norm() == self.parent().value_module()(value))
+
         def span(self: "FormedElement") -> "Subobject":
             return self.parent().subobject_on([self])
 
