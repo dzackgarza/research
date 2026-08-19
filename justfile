@@ -193,18 +193,16 @@ review-packet:
     # Review focus: mathematical research repository
 
     This repository is a mathematical research monorepo. The active code
-    surface is the lattice spike under
-    `computations/archives/sage_lattice_category_spike/` (plus its
-    feature-spike fork). Reviews here are advisory: they feed a triage
-    ledger and never block work. An empty report is always preferable to
-    a stretched finding.
+    surface is the preamble under `src/dzack_research/preamble/` (the
+    earlier lattice spikes were absorbed into it and deleted). Reviews
+    here are advisory: they feed a triage ledger and never block work. An
+    empty report is always preferable to a stretched finding.
 
     Prioritize, in order:
 
     1. **Mathematical correctness.** Claims in code, tests, and notebooks
-       must be consistent with the synthetic lattice model specification
-       (`spec/SYNTHETIC_LATTICE_MODEL.md` in this packet). Expected values
-       must come from the Sage reference or the mapped doctest corpus,
+       must be consistent with the cited mathematical literature; expected
+       values come from cited sources or an independent oracle,
        never from memory. Flag any test asserting a mathematically wrong
        value, any invariant checked in the wrong category, and any
        conflation of near-synonym lattice terms (see the vault traps in
@@ -252,9 +250,8 @@ review-packet:
     lint/type/coverage concerns.
     PROMPT
 
-    mkdir -p "$staging/policies" "$staging/spec" "$staging/references"
+    mkdir -p "$staging/policies" "$staging/references"
     cp STYLE.md "$staging/policies/STYLE.md"
-    cp computations/archives/sage_lattice_category_spike/SYNTHETIC_LATTICE_MODEL.md "$staging/spec/"
     cp .agents/references/terminology-dictionary.md "$staging/references/"
     cp .agents/references/slop-pattern-index.md "$staging/references/"
 

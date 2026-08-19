@@ -13,16 +13,9 @@ After checkout or after `.envrc` changes, run:
 direnv allow
 ```
 
-The exploratory spikes are archived reference material under `computations/archives/` — small sprints the preamble cannibalizes; they stay importable in a session for reference and are imported by nothing:
+The exploratory spikes that preceded the preamble were fully absorbed into it and deleted (2026-08-19); git history is their record. The active code surface is the preamble, `src/dzack_research/preamble/`.
 
-```sage
-import sage_lattice_feature_spike as feature   # reference only
-
-L.<v> = feature.base.Lattice([[2]], label="<2>")
-v * v   # 2
-```
-
-`just test` runs the repository hygiene sweep and then delegates to the base-spike test gate.
+`just test` runs the repository hygiene sweep and the experiment test gates.
 
 ## Repository Layout
 
