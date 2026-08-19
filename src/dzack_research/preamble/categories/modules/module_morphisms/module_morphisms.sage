@@ -47,6 +47,7 @@ from sage.matrix.constructor import matrix
 from sage.matrix.matrix0 import Matrix
 from sage.modules.free_module_element import FreeModuleElement, vector
 from sage.rings.integer_ring import ZZ as SageZZ
+from sage.rings.rational_field import QQ as SageQQ
 from sage.sets.totally_ordered_finite_set import TotallyOrderedFiniteSet
 from sage.structure.element import Element, MultiplicativeGroupElement, RingElement
 from sage.structure.parent import Parent
@@ -741,12 +742,13 @@ class ModuleMorphism(Morphism):
         return bool(len(independent_images) == domain.rank())
 
     def index(self) -> "Integer":
-        r"""Return $[N:f(M)]$.
+        r"""Return $[N:f(M)]=|\operatorname{coker} f|$.
 
-        Over $\mathbb Z$ the index is the determinant of the sublattice the
-        image spans, read off one reduction; a presented codomain contributes
-        its relations to the same reduction rather than to a second one.  Over
-        a field a full-rank image is everything, so the index is 1.
+        The definition: the index is the cardinality of the cokernel, and the
+        cokernel is a finitely presented module that owns its invariant
+        factors over the honest engine ring -- so it is asked, over every
+        base.  Over a field a full-rank image is everything and the index is
+        $1$, which is the one fast path kept.
         """
         # Local: at module level these close an import cycle; the presented
         # module and ring modules are built by the time an index is asked for.
@@ -758,22 +760,18 @@ class ModuleMorphism(Morphism):
         width = len(tuple(self.codomain().module_generating_set()))
 
         if not isinstance(codomain, FinitelyPresentedModule) and (
-            engine_ring(codomain.base_ring()) is not SageZZ
+            engine_ring(codomain.base_ring()).is_field()
         ):
             assert image.rank() == width, (
                 "the image does not have finite index in the codomain"
             )
             return SageZZ.one()
 
-        spanning = image
-        if isinstance(codomain, FinitelyPresentedModule):
-            relations = codomain.relation_matrix()
-            spanning = relations.stack(image) if image.nrows() else relations
-        reduced = spanning.normal_form()
-        assert reduced.nrows() == width, (
+        cardinality = self.cokernel().cardinality()
+        assert cardinality.is_finite(), (
             "the image does not have finite index in the codomain"
         )
-        index: "Integer" = abs(reduced.det())
+        index: "Integer" = cardinality._integer_(SageZZ)
         return index
 
     def orthogonal_complement(self) -> "Subobject":
@@ -792,6 +790,156 @@ class ModuleMorphism(Morphism):
             for row in pairing._left_kernel_matrix().rows()
         ]
         )
+
+    def restrict(self, subobject: "Subobject") -> "ModuleMorphism":
+        r"""Return $f\circ\iota$: precomposition with a subobject's embedding.
+
+        Restriction *is* composition with the chosen monomorphism the
+        subobject carries; nothing else is consulted.
+        """
+        embedding = subobject.embedding()
+        assert embedding.codomain() == self.domain(), (
+            "restriction needs a subobject of this morphism's domain; "
+            f"the embedding lands in {embedding.codomain()}, not {self.domain()}"
+        )
+        return subobject.Hom(self.codomain())(
+            {
+                label: self(embedding(subobject.module_generator(label)))
+                for label in subobject.module_generating_set()
+            }
+        )
+
+    def preserves(self, subobject: "Subobject") -> bool:
+        r"""Return whether this endomorphism maps the subobject into itself.
+
+        The factorization question: does $f\circ\iota$ factor through
+        $\iota$ again -- i.e. does every generator image land back in the
+        embedding's image?  Asked of the embedding, which owns membership in
+        its image.
+        """
+        assert self.domain() == self.codomain(), (
+            "preservation is an endomorphism question; "
+            f"domain={self.domain()}, codomain={self.codomain()}"
+        )
+        embedding = subobject.embedding()
+        return all(
+            embedding.image_contains(self(embedding(generator)))
+            for generator in subobject.module_generators()
+        )
+
+    def saturation_factorization(self) -> "ModuleMorphism":
+        r"""Return the monomorphism $M\to\overline{f(M)}$ an injective $f$ factors through.
+
+        $\overline{f(M)}$ is the saturation (primitive closure) of the image
+        subobject; the returned arrow is the witness of the factorization
+        $f=\iota_{\overline{f(M)}}\circ g$, and its index is
+        $[\overline{f(M)}:f(M)]$ -- $1$ exactly when $f$ is a primitive
+        embedding.  The one coordinate solve lives here, on the arrow.
+        """
+        assert self.is_injective(), (
+            "the saturation factorization is monomorphism vocabulary"
+        )
+        saturated = self.image().saturation()
+        embedding_rows = matrix(SageQQ, saturated.embedding().matrix())
+        factor_rows = embedding_rows.solve_left(matrix(SageQQ, self.matrix()))
+        base_ring = self.domain().base_ring()
+        assert all(entry in base_ring for entry in factor_rows.list()), (
+            "the factorization through the saturation is integral by "
+            "construction; a non-integral solve means the saturation is wrong"
+        )
+        factor = self.domain().Hom(saturated)(
+            {
+                label: zipsum(
+                    (base_ring(entry) for entry in row),
+                    saturated.module_generators(),
+                    saturated.zero(),
+                )
+                for label, row in zip(
+                    self.domain().module_generating_set(),
+                    factor_rows.rows(),
+                )
+            }
+        )
+        embedding = saturated.embedding()
+        assert all(
+            embedding(factor(generator)) == self(generator)
+            for generator in self.domain().module_generators()
+        ), "the factorization must compose back to the morphism it factors"
+        return factor
+
+    def direct_sum(self, summands: "Iterable") -> "ModuleMorphism":
+        r"""Return $f\oplus g\oplus\cdots$: the direct sum acting on morphisms.
+
+        The functor's action on arrows, completing the object-level
+        ``direct_sum``: the domain and codomain are the object direct sums,
+        and each summand's generator images are included into the matching
+        summand of the codomain sum.  Folded pairwise exactly as the object
+        construction folds, so the two spellings label their coproducts the
+        same way.
+        """
+        from functools import reduce
+
+        def orthogonal_sum(
+            left: "ModuleMorphism", right: "ModuleMorphism"
+        ) -> "ModuleMorphism":
+            domain = left.domain().direct_sum([right.domain()])
+            codomain = left.codomain().direct_sum([right.codomain()])
+            images = {}
+            for side, inner in ((0, left), (1, right)):
+                inner_labels = tuple(inner.codomain().module_generating_set())
+                for label in inner.domain().module_generating_set():
+                    image = inner(inner.domain().module_generator(label))
+                    images[(side, label)] = zipsum(
+                        _coordinate_vector(image),
+                        tuple(
+                            codomain.module_generator((side, inner_label))
+                            for inner_label in inner_labels
+                        ),
+                        codomain.zero(),
+                    )
+            return domain.Hom(codomain)(images)
+
+        return reduce(orthogonal_sum, tuple(summands), self)
+
+    # ---- endomorphism vocabulary ----
+
+    def multiplicative_order(self) -> "RingElement":
+        r"""Return the multiplicative order of this endomorphism;
+        ``+Infinity`` for infinite order.  Computed by Sage on the matrix,
+        which is a faithful picture of the endomorphism on a framed module."""
+        assert self.domain() == self.codomain(), (
+            "multiplicative order is endomorphism vocabulary; "
+            f"domain={self.domain()}, codomain={self.codomain()}"
+        )
+        return matrix(self.matrix()).multiplicative_order()
+
+    def is_nilpotent(self) -> bool:
+        r"""Return whether $f^n=0$ for some $n$ ($n\le\mathrm{rk}$ suffices)."""
+        assert self.domain() == self.codomain(), (
+            "nilpotence is endomorphism vocabulary; "
+            f"domain={self.domain()}, codomain={self.codomain()}"
+        )
+        engine = matrix(self.matrix())
+        return bool((engine ** engine.nrows()).is_zero())
+
+    def is_idempotent(self) -> bool:
+        r"""Return whether $f\circ f=f$ (a projection onto its image)."""
+        assert self.domain() == self.codomain(), (
+            "idempotence is endomorphism vocabulary; "
+            f"domain={self.domain()}, codomain={self.codomain()}"
+        )
+        engine = matrix(self.matrix())
+        return bool(engine * engine == engine)
+
+    def is_unipotent(self) -> bool:
+        r"""Return whether $f-\mathrm{id}$ is nilpotent (parabolic type)."""
+        assert self.domain() == self.codomain(), (
+            "unipotence is endomorphism vocabulary; "
+            f"domain={self.domain()}, codomain={self.codomain()}"
+        )
+        engine = matrix(self.matrix())
+        difference = engine - engine.parent().identity_matrix()
+        return bool((difference ** engine.nrows()).is_zero())
 
     def _codomain_relations(self) -> MorphismMatrix:
         # Local: at module level this closes an import cycle; the presented

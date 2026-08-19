@@ -46,7 +46,6 @@ if TYPE_CHECKING:
     from sage.structure.parent import ElementConstructorInput
 
 from sage.categories.morphism import SetMorphism
-from sage.quadratic_forms.genera.genus import Genus
 from sage.categories.homset import Hom
 from sage.structure.parent import Parent
 from dzack_research.preamble.categories.modules.framed.formed.integrallattice.subobjects import Subobject
@@ -418,9 +417,28 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
 
         # ---- isometry ----
 
-        def is_isometric(self: "LatticeParent", other: "FormModule") -> bool:
-            r"""Return whether two integral lattices are isometric."""
-            from sage.quadratic_forms.binary_qf import BinaryQF
+        def is_isometric(self: "LatticeParent", other: "FormModule") -> "bool | Unknown":
+            r"""Decide whether two integral lattices are isometric.
+
+            A decision, so every branch states the theorem it runs on.
+
+            * Rank or signature mismatch: not isometric, unconditionally.
+            * Definite: the engine decision on the *doubled* Gram matrices.
+              Sage's ``QuadraticForm`` reads its matrix as the Hessian
+              $2G$, so $2G$ is what it is handed -- the undoubled matrix is
+              ill-formed for odd lattices.
+            * Indefinite of rank $\ge 3$: Eichler.  Under the hypotheses
+              *indefinite*, *rank at least 3*, and *not spinor-exceptional*,
+              the genus contains one isometry class, so genus equality is
+              the answer.  The spinor-exceptional case is not excluded here,
+              which is the stated gap of this branch.
+            * Everything else (indefinite rank $\le 2$): no theorem this
+              method owns decides it -- indefinite binary classes are Gauss
+              composition territory -- so the answer is the three-valued
+              ``Unknown``, which collapses to ``False`` in boolean context.
+            """
+            from sage.misc.unknown import Unknown
+            from sage.quadratic_forms.genera.genus import Genus as _sage_genus
             from sage.quadratic_forms.quadratic_form import QuadraticForm
 
             if self.rank() != other.rank():
@@ -432,22 +450,58 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             if pos == 0 or neg == 0:
                 sign = 1 if neg == 0 else -1
                 return bool(
-                    QuadraticForm(sign * self.gram_matrix())
-                    .is_globally_equivalent_to(
-                        QuadraticForm(sign * other.gram_matrix())
+                    QuadraticForm(
+                        SageZZ, 2 * sign * matrix(SageZZ, self.gram_matrix())
+                    ).is_globally_equivalent_to(
+                        QuadraticForm(
+                            SageZZ, 2 * sign * matrix(SageZZ, other.gram_matrix())
+                        )
                     )
                 )
 
-            if self.rank() == 2:
+            if self.rank() >= 3:
+                # Eichler: indefinite, rank >= 3 -- one class per genus
+                # outside the spinor-exceptional genera.
+                if self.is_even() and other.is_even():
+                    return bool(self.genus() == other.genus())
+                return bool(
+                    _sage_genus(matrix(SageZZ, self.gram_matrix()))
+                    == _sage_genus(matrix(SageZZ, other.gram_matrix()))
+                )
 
-                def _binary(L: "LatticeParent") -> "BinaryQF":
-                    g = L.gram_matrix()
-                    assert g[0, 0] % 2 == 0 and g[1, 1] % 2 == 0
-                    return BinaryQF([g[0, 0] // 2, g[0, 1], g[1, 1] // 2])
+            return Unknown
 
-                return bool(_binary(self).is_equivalent(_binary(other)))
+        def reflection(self: "LatticeParent", vector: "Element") -> "ModuleMorphism":
+            r"""Return $s_v\in O(L)$, $s_v(x)=x-\dfrac{2\,b(x,v)}{q(v)}\,v$.
 
-            return bool(self.genus() == other.genus())
+            The reflection in the hyperplane $v^\perp$, an element of
+            $\mathrm{Aut}(L)$ constructed by its images on the framing
+            labels.  Defined for anisotropic $v$; it preserves $L$ exactly
+            when every coefficient $2\,b(e_i,v)/q(v)$ is integral, which is
+            what makes $v$ a root, and that integrality is asserted rather
+            than assumed.
+            """
+            from sage.structure.element import Element as SageElement
+
+            element = (
+                vector
+                if isinstance(vector, SageElement) and vector.parent() is self
+                else self(vector)
+            )
+            norm = element.q()
+            assert norm != 0, (
+                f"reflection is defined in an anisotropic vector; q(v)=0 for v={element}"
+            )
+            images = {}
+            for label in self.module_generating_set():
+                generator = self.module_generator(label)
+                coefficient = 2 * generator.b(element) / norm
+                assert coefficient in self.base_ring(), (
+                    f"s_v does not preserve the lattice: 2 b({generator}, {element})/q({element}) "
+                    f"= {coefficient} is not integral, so {element} is not a root"
+                )
+                images[label] = generator - self.base_ring()(coefficient) * element
+            return self.Aut()(images)
 
         def _sub_form_module(
             self: "LatticeParent",
@@ -539,22 +593,29 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             """
             return all(generator.q() % 2 == 0 for generator in self.module_generators())
 
-        def genus(self: "LatticeParent") -> "GenusSymbol_global_ring":
-            r"""Return the genus symbol: the local data of the form at every place.
+        def genus(self: "LatticeParent") -> "Genus":
+            r"""Return the genus: the adelic isometry class of this lattice.
 
-            Conway and Sloane's symbol, computed by Sage from the Gram matrix.
-            An algorithm, and a matrix is all it takes -- so this is a call to
-            it, not a passage into Sage's lattice objects.
+            Two lattices share a genus exactly when they become isometric
+            after base change to the adeles, $L_1\otimes\mathbb A\cong
+            L_2\otimes\mathbb A$ (FOUNDATIONS Def. 29.2) -- that is the
+            definition.  For an *even* lattice the genus is determined by
+            the signature pair together with the discriminant quadratic
+            form (Nik80, section 1.9, Cor. 1.9.4), and those two data are
+            what the returned object holds; everything else it answers is
+            delegated to Sage's genus engine behind that boundary.
             """
-            from sage.quadratic_forms.genera.genus import Genus
-
-            gram = matrix(SageZZ, self.gram_matrix())
-            assert gram.det() != 0, (
+            assert self.is_nondegenerate(), (
                 f"{self} is degenerate, and a genus is the data of a "
                 "nondegenerate form at each place. A degenerate form has a "
                 "radical, and the question is probably about the quotient by it."
             )
-            return Genus(gram)
+            assert self.is_even(), (
+                "the (signature, discriminant quadratic form) parameterization "
+                "realizes the genus for even lattices (Nik80 Cor. 1.9.4); the "
+                "genus of an odd lattice is a stated gap on this surface"
+            )
+            return Genus(self.signature_pair(), self.discriminant_group())
 
         def discriminant(self: "LatticeParent") -> "RingElement":
             r"""Return $d_\pm(b)=(-1)^{n(n-1)/2}\det G$, the signed determinant.
@@ -980,9 +1041,10 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             isometry node -- which is a group node -- and the words a group
             answers follow from that rather than from anything written here.
             Finitely *presented* is claimed outright, indefinite $L$ included:
-            $O(L)$ is an arithmetic group, and Borel and Harish-Chandra prove
-            every arithmetic group has a finite presentation, whether or not
-            this session can produce one.  The axiom is claimed on this object
+            $O(L)$ is an arithmetic group (Borel--Harish-Chandra), and
+            Borel--Serre / Raghunathan prove every arithmetic group is
+            finitely presented, whether or not this session can produce a
+            presentation.  The axiom is claimed on this object
             and not on the isometry category, because that category holds the
             subgroups too, and a finitely generated subgroup of a finitely
             presented group need not be finitely presented.  Finiteness is not
@@ -1258,7 +1320,10 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             r"""Multi-line LaTeX with rank, signature, discriminant, Gram, discriminant module."""
             rank = self.rank()
             pos, neg = self.signature_pair()
-            disc = self.gram_matrix().det()
+            # One word, one number: the displayed discriminant is
+            # :meth:`discriminant`, the signed determinant, never bare
+            # $\det G$ under the same name.
+            disc = self.discriminant()
             disc_latex = _format_disc_latex(disc)
             gram_latex = str(_latex_fn(self.gram_matrix()))
             if _zero_dots():
@@ -1396,6 +1461,10 @@ def _lattice_with_gram(
     from dzack_research.preamble.categories.forms.forms import BilinearForm
     from dzack_research.preamble.categories.sets.sets import finite_ordered_set
     gram = GramMatrix(matrix(SageZZ, gram))
+    assert gram.is_symmetric(), (
+        "a bilinear form on a lattice is symmetric; this Gram matrix is not"
+    )
+    gram.set_immutable()
     match module_generating_set:
         case None:
             module_generating_set = Sets.Δ[gram.nrows() - 1]
@@ -1417,6 +1486,126 @@ def _lattice_with_gram(
         gram,
     )
     return lattice
+
+
+class Genus:
+    r"""The genus of an even nondegenerate integral lattice.
+
+    Two lattices share a genus exactly when they become isometric after
+    base change to the adeles, $L_1\otimes\mathbb A\cong L_2\otimes\mathbb A$
+    (FOUNDATIONS Def. 29.2) -- the definition.  For even lattices the genus
+    is determined placewise by the signature pair together with the
+    discriminant quadratic form (Nik80, section 1.9, Cor. 1.9.4), and that
+    pair of data is what this object holds.  Representatives, class
+    numbers, and the local symbols are delegated to Sage's genus engine,
+    rebuilt from this object's own data behind the boundary.
+    """
+
+    def __init__(
+        self,
+        signature_pair: tuple,
+        discriminant_quadratic_form: "FormModule",
+    ) -> None:
+        self._signature_pair = (
+            SageZZ(signature_pair[0]),
+            SageZZ(signature_pair[1]),
+        )
+        self._discriminant_quadratic_form = discriminant_quadratic_form
+
+    def signature_pair(self) -> tuple:
+        r"""Return $(p, q)$, the archimedean datum of the genus."""
+        return self._signature_pair
+
+    def discriminant_form(self) -> "FormModule":
+        r"""Return $(A_L, q)$, the finite datum of the genus."""
+        return self._discriminant_quadratic_form
+
+    def _engine(self) -> "GenusSymbol_global_ring":
+        r"""Return Sage's genus symbol, rebuilt from this genus's own data.
+
+        The one boundary crossing: the discriminant quadratic form is
+        written out on its generators ($q$ lifted from $\mathbb Q/2\mathbb Z$
+        on the diagonal, $b$ lifted from $\mathbb Q/\mathbb Z$ off it), and
+        Sage's torsion-module constructor reconstructs the local symbols
+        from it and the signature.
+        """
+        from sage.modules.torsion_quadratic_module import TorsionQuadraticForm
+
+        form = self._discriminant_quadratic_form
+        generators = tuple(form.module_generators())
+        if not generators:
+            # Unimodular: the empty discriminant form, whose genus symbol
+            # Sage builds from any representative Gram matrix -- here the
+            # even unimodular one of this signature does not need finding,
+            # because the empty torsion form constructor handles it.
+            engine_form = TorsionQuadraticForm(matrix(SageQQ, 0, 0))
+            return engine_form.genus(self._signature_pair)
+        written = matrix(
+            SageQQ,
+            [
+                [
+                    left.q().lift() if i == j else left.b(right).lift()
+                    for j, right in enumerate(generators)
+                ]
+                for i, left in enumerate(generators)
+            ],
+        )
+        engine_form = TorsionQuadraticForm(written)
+        assert engine_form.cardinality() == form.cardinality(), (
+            "the engine torsion module must carry the whole discriminant "
+            f"group: {engine_form.cardinality()} != {form.cardinality()}"
+        )
+        return engine_form.genus(self._signature_pair)
+
+    def determinant(self) -> "RingElement":
+        r"""Return the determinant of any lattice in the genus."""
+        return SageZZ(self._engine().determinant())
+
+    def local_symbol(self, prime: "RingElement") -> "Genus_Symbol_p_adic_ring":
+        r"""Return the $p$-adic symbol at ``prime`` (Conway--Sloane)."""
+        return self._engine().local_symbol(SageZZ(prime))
+
+    def excess(self, prime: "RingElement") -> "RingElement":
+        r"""Return the $p$-excess at ``prime`` (CS10 ch. 15 sec. 7.5; the
+        oddity at $p=2$)."""
+        return self.local_symbol(prime).excess()
+
+    def level(self, prime: "RingElement") -> "RingElement":
+        r"""Return the level of the $p$-adic symbol at ``prime``."""
+        return SageZZ(self.local_symbol(prime).level())
+
+    def representative(self) -> "FormModule":
+        r"""Return one lattice in this genus, from Sage's genus engine."""
+        return _lattice_with_gram(matrix(SageZZ, self._engine().representative()))
+
+    def class_number(self) -> "RingElement":
+        r"""Return $h$, the number of isometry classes in the genus."""
+        return SageZZ(len(self._engine().representatives()))
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Genus):
+            return NotImplemented
+        if self._signature_pair != other._signature_pair:
+            return False
+        return bool(self._engine() == other._engine())
+
+    def __ne__(self, other: object) -> bool:
+        result = self.__eq__(other)
+        if result is NotImplemented:
+            return result
+        return not result
+
+    def __hash__(self) -> int:
+        return hash(
+            (self._signature_pair, self._discriminant_quadratic_form.invariants())
+        )
+
+    def __repr__(self) -> str:
+        return (
+            f"Genus of even lattices with signature {self._signature_pair} and "
+            f"discriminant group invariants "
+            f"{self._discriminant_quadratic_form.invariants()}"
+        )
 
 
 def _direct_sum_framing_set(left: "Element", right: "Element") -> "OrderedSet":
@@ -1776,19 +1965,31 @@ def _cartan_type_of_name(name: str) -> "CartanType | None":
 def _gram_from_name(name: str) -> GramMatrix:
     r"""Return the Gram matrix a lattice name stands for.
 
-    The Cartan matrix of the root system the name names, and the lattice is
-    built from it here like every other one.
-
-    The convention is the root system's -- $A_n$ comes out positive definite,
-    with $2$ on the diagonal -- and the catalogue twists by $-1$ where this
-    project wants the negative definite one.
+    Constructed from the root realization: the entries are the inner
+    products of the simple roots in the root system's ambient realization,
+    with the AG sign convention applied here, at the single construction
+    site -- $A_n$ comes out *negative* definite, with $-2$ on the diagonal,
+    and the catalogue does not re-twist it.  Not a negated Cartan matrix:
+    the Cartan matrix is $\langle\alpha_i,\alpha_j^\vee\rangle$ and is not
+    symmetric outside the simply-laced types; the Gram matrix of a root
+    lattice is $(\alpha_i,\alpha_j)$, read off the realization.
     """
     cartan_type = _cartan_type_of_name(name)
     if cartan_type is None:
         return _NAMED_GRAM_MATRICES[name]
-    from sage.combinat.root_system.cartan_matrix import CartanMatrix
+    from sage.combinat.root_system.root_system import RootSystem
 
-    return matrix(SageZZ, CartanMatrix(cartan_type))
+    realization = RootSystem(cartan_type).ambient_space()
+    simple_roots = [
+        realization.simple_root(index) for index in realization.index_set()
+    ]
+    return matrix(
+        SageZZ,
+        [
+            [-left.inner_product(right) for right in simple_roots]
+            for left in simple_roots
+        ],
+    )
 
 
 def _integral_lattice_with_names(

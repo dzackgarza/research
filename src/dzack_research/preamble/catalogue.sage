@@ -88,14 +88,17 @@ else:
     Lattices.U = Lattices.H
     Lattices.U_2 = Lattices.H_2
 
+    # The named root lattices arrive negative definite from the single
+    # construction site (``_gram_from_name`` applies the AG convention to
+    # the root realization); nothing here re-twists them.
     for _rank in range(1, 22):
-        setattr(Lattices, f"A{_rank}", _with(f"A{_rank}").twist(-1))
+        setattr(Lattices, f"A{_rank}", _with(f"A{_rank}"))
     for _rank in range(2, 23):
-        setattr(Lattices, f"D{_rank}", _with(f"D{_rank}").twist(-1))
+        setattr(Lattices, f"D{_rank}", _with(f"D{_rank}"))
 
-    Lattices.E6 = _with("E6").twist(-1)
-    Lattices.E7 = _with("E7").twist(-1)
-    Lattices.E8 = _with("E8").twist(-1)
+    Lattices.E6 = _with("E6")
+    Lattices.E7 = _with("E7")
+    Lattices.E8 = _with("E8")
     Lattices.E8_2 = Lattices.E8.twist(2)
 
     Lattices.E10 = Lattices.U + Lattices.E8

@@ -20,7 +20,7 @@ The Lean formalization in `lean-categories` treats these as defects to fix, neve
 - [ ] `categories/modules/fractional_ideals.sage:156` — `__contains__` tests `x/g ∈ R` for *some* generator, which is membership in the union of the principal ideals `(g_i)`, not in their sum.
   Over `ℤ`, `1 ∈ (2,3)` is reported false.
 
-- [ ] `categories/modules/module_morphisms/module_morphisms.sage:720` — `index` returns `1` for any full-rank image over a non-`ℤ` base with a non-presented codomain.
+- [x] `categories/modules/module_morphisms/module_morphisms.sage:720` — `index` returns `1` for any full-rank image over a non-`ℤ` base with a non-presented codomain.
   Correct over a field; wrong over every other PID (over `k[t]`, `[N : f(M)]` is not `1` for a proper full-rank sublattice).
 
 - [ ] `categories/modules/framed/finitely_generated/finitely_presented_modules.sage:437` — `is_torsion_free` returns `True` unconditionally when the base ring is not `ℤ`.
@@ -30,7 +30,7 @@ The Lean formalization in `lean-categories` treats these as defects to fix, neve
 
 - [ ] `categories/modules/framed/finitely_generated/finitely_presented_modules.sage:471` — `exponent` returns `1` when there are no invariant factors, so a nonzero free module is reported to be annihilated by `1`.
 
-- [ ] `categories/modules/framed/formed/integrallattice/lattice_isometries.sage:163` — `is_countable` reads countability off finiteness, answering `False` for an infinite `O(L)`. Every `O(L) ≤ GL_n(ℤ)` is countable.
+- [x] `categories/modules/framed/formed/integrallattice/lattice_isometries.sage:163` — `is_countable` reads countability off finiteness, answering `False` for an infinite `O(L)`. Every `O(L) ≤ GL_n(ℤ)` is countable.
 
 - [x] `categories/forms/forms.sage:741` — `BilinearFormMorphism.polar_form` returns the form itself.
   The polar form of the norm `q(x) = b(x,x)` is `2b`, not `b`; as written the method is the identity under a false name.
@@ -41,7 +41,7 @@ The Lean formalization in `lean-categories` treats these as defects to fix, neve
   True over a regular (resp.
   UFD) base; over general `S`, `Pic(ℙⁿ_S) ≅ Pic(S) × ℤ`. The four groups are also built as unrelated free modules with no `Pic → Cl` comparison and no `𝒪(1)` generator identified.
 
-- [ ] `categories/modules/framed/formed/integrallattice/integral_lattices.sage:443-470` — `is_isometric` fuses three wrong or overreaching branches: the definite branch feeds `QuadraticForm(±G)` with the undoubled Gram matrix (ill-formed for odd lattices; `lattice_isometries.sage` doubles to `2G` for the same engine); the rank-2 branch asserts even diagonals, rejecting odd binary lattices; the fallback `genus() == genus()` concludes isometry from genus equality, valid only under Eichler's hypotheses (indefinite, rank ≥ 3, not spinor-exceptional).
+- [x] `categories/modules/framed/formed/integrallattice/integral_lattices.sage:443-470` — `is_isometric` fuses three wrong or overreaching branches: the definite branch feeds `QuadraticForm(±G)` with the undoubled Gram matrix (ill-formed for odd lattices; `lattice_isometries.sage` doubles to `2G` for the same engine); the rank-2 branch asserts even diagonals, rejecting odd binary lattices; the fallback `genus() == genus()` concludes isometry from genus equality, valid only under Eichler's hypotheses (indefinite, rank ≥ 3, not spinor-exceptional).
 
 ### Wrong constructions (the object produced is not the object named)
 
@@ -63,7 +63,7 @@ The Lean formalization in `lean-categories` treats these as defects to fix, neve
 
 ### Internal contradictions (one of the two sides must yield)
 
-- [ ] `categories/modules/framed/formed/integrallattice/integral_lattices.sage` — `discriminant` computes the signed determinant `(−1)^{n(n−1)/2} det G` while `_latex_` displays `det G`; one word denotes two numbers in one file.
+- [x] `categories/modules/framed/formed/integrallattice/integral_lattices.sage` — `discriminant` computes the signed determinant `(−1)^{n(n−1)/2} det G` while `_latex_` displays `det G`; one word denotes two numbers in one file.
 
 - [ ] `categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage` — `minimal_edge_lattices` proves there is no triple edge for roots of norms `−2`/`−4` (correct: `b² ∈ {3, 6, 12}` has no integer solution), yet the drawing convention and `_tikz_edge_style` still render a triple edge for `m = 6`. The vestigial rendering contradicts the theorem.
 
@@ -72,10 +72,10 @@ The Lean formalization in `lean-categories` treats these as defects to fix, neve
 - [ ] `categories/modules/module_morphisms/module_morphisms.sage` (`GroupAction`) asserts `G` finite and stores a complete value table, while `group_lattices.sage` documents support for infinite-order isometries and checks equivariance on generators precisely so that finiteness is unnecessary.
   The promised infinite-group generality is unreachable through the only action constructor.
 
-- [ ] `categories/modules/framed/formed/integrallattice/integral_lattices.sage` (`_gram_from_name`) builds ADE root lattices positive definite (diagonal `+2`) while `catalogue.sage` twists every named root lattice to negative definite; both signs circulate under the same names.
+- [x] `categories/modules/framed/formed/integrallattice/integral_lattices.sage` (`_gram_from_name`) builds ADE root lattices positive definite (diagonal `+2`) while `catalogue.sage` twists every named root lattice to negative definite; both signs circulate under the same names.
   The decided convention (negative definite, constructed from root realizations) must be enforced at the single construction site.
 
-- [ ] `categories/modules/framed/formed/integrallattice/integral_lattices.sage` (`Aut` docstring) — finite presentation of `O(L)` for indefinite `L` is attributed to Borel–Harish-Chandra, which gives arithmeticity and finite generation; finite presentation is Borel–Serre / Raghunathan.
+- [x] `categories/modules/framed/formed/integrallattice/integral_lattices.sage` (`Aut` docstring) — finite presentation of `O(L)` for indefinite `L` is attributed to Borel–Harish-Chandra, which gives arithmeticity and finite generation; finite presentation is Borel–Serre / Raghunathan.
 
 ## Gaps
 

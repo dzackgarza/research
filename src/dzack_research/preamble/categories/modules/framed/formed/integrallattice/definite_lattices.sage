@@ -359,16 +359,31 @@ class DefiniteLattices(Category):
                     f"{ambient} is not $I_(n,0)$ or $I_(0,n)$, so the rows of "
                     "an inclusion into it are coordinates and not vectors"
                 )
-                # A new subobject and not a new arrow out of $S$: the reduced
-                # generators induce a different form on the domain, so the
-                # old domain is not one this arrow could preserve.  A row of
-                # the reduced matrix is one generator's image in the ambient.
-                #
-                # Not ``subobject_on``: it puts a generating set into the
-                # normal form of its rows, which is the framing this replaces.
+                return self._subobject_on_reduced_rows(
+                    inclusion.matrix().LLL().rows()
+                )
+
+            def _subobject_on_reduced_rows(
+                self: "DefiniteSubobjectParent", rows: "Iterable"
+            ) -> "Module":
+                r"""Return this subobject reframed on the given generator rows.
+
+                A new subobject and not a new arrow out of $S$: the reduced
+                generators induce a different form on the domain, so the old
+                domain is not one this arrow could preserve.  A row is one
+                generator's image in the ambient.
+
+                Not ``subobject_on``: it puts a generating set into the
+                normal form of its rows, which is the framing this replaces.
+                """
+                # Local: a module-level import here would close a cycle; by call time this module is built.
+                from dzack_research.preamble.categories.modules.framed.formed.integrallattice.subobjects import Subobject
+                from dzack_research.preamble.categories.sets.sets import finite_ordered_set
+                from dzack_research.preamble.utilities import zipsum
+                ambient = self.embedding().codomain()
                 reduced = finite_ordered_set(tuple(
                     zipsum(row, ambient.module_generators(), ambient.zero())
-                    for row in inclusion.matrix().LLL().rows()
+                    for row in rows
                 ))
                 sub = ambient._sub_form_module(
                     matrix([[left.b(right) for right in reduced] for left in reduced]),
@@ -377,3 +392,45 @@ class DefiniteLattices(Category):
                 return Subobject(sub.Hom(ambient)({
                     generator: generator for generator in reduced
                 }))
+
+            def BKZ(
+                self: "DefiniteSubobjectParent", block_size: int = 10
+            ) -> "Module":
+                r"""Return this subobject on a BKZ reduced framing.
+
+                Block Korkine--Zolotarev reduction (Schnorr--Euchner, through
+                ``fpylll``): stronger than :meth:`LLL`, the same contract --
+                the same submodule of the same ambient on shorter, more
+                nearly orthogonal generators, with the same $I_{n,0}$ /
+                $I_{0,n}$ gate on the ambient, for the same reason: the
+                reducer reads rows as vectors and compares lengths.
+                """
+                import fpylll
+
+                inclusion = self.embedding()
+                ambient = inclusion.codomain()
+                gram = matrix(SageZZ, ambient.gram_matrix())
+                standard = identity_matrix(SageZZ, gram.nrows())
+                assert gram == standard or gram == -standard, (
+                    f"{ambient} is not $I_(n,0)$ or $I_(0,n)$, so the rows of "
+                    "an inclusion into it are coordinates and not vectors"
+                )
+                rows = matrix(SageZZ, inclusion.matrix())
+                basis = fpylll.IntegerMatrix.from_matrix(rows)
+                # fpylll requires a block size of at least 2 and no more
+                # than the number of rows being reduced.
+                clamped = max(2r, min(int(block_size), rows.nrows()))
+                fpylll.BKZ.reduction(
+                    basis, fpylll.BKZ.Param(block_size=clamped)
+                )
+                reduced_rows = matrix(SageZZ, basis.nrows, basis.ncols)
+                basis.to_matrix(reduced_rows)
+                return self._subobject_on_reduced_rows(reduced_rows.rows())
+
+            def HKZ(self: "DefiniteSubobjectParent") -> "Module":
+                r"""Return this subobject on an HKZ reduced framing.
+
+                Hermite--Korkine--Zolotarev reduction is full-block BKZ: the
+                block is the whole rank.
+                """
+                return self.BKZ(block_size=self.rank())

@@ -202,6 +202,67 @@ class Subobjects(Category):
             )
             return index
 
+        def sum(self: "SubobjectParent", other: "SubobjectParent") -> "SubobjectParent":
+            r"""Return $S+T\subseteq B$, the join in the subobject lattice.
+
+            The smallest subobject containing both, which is the span of both
+            images: the ambient is handed every embedded generator of each and
+            builds the subobject on them the way it builds every subobject.
+            """
+            assert self.embedding_codomain() == other.embedding_codomain(), (
+                "the subobject sum lives in one common codomain; "
+                f"left={self.embedding_codomain()}, right={other.embedding_codomain()}"
+            )
+            joined: "SubobjectParent" = self.ambient().subobject_on(
+                list(self.embedded_module_generators())
+                + list(other.embedded_module_generators())
+            )
+            return joined
+
+        def intersection(self: "SubobjectParent", other: "SubobjectParent") -> "SubobjectParent":
+            r"""Return $S\cap T\subseteq B$, the meet in the subobject lattice.
+
+            An element of the intersection is $xA=-yB$ for $(x,y)$ in the
+            kernel of the stacked embedding rows, so the meet is the image of
+            that kernel under the first block -- the same kernel construction
+            :meth:`saturation` routes through, never a rational span cleared
+            by hand.
+            """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _coordinate_vector
+            from dzack_research.preamble.utilities import zipsum
+            assert self.embedding_codomain() == other.embedding_codomain(), (
+                "the subobject intersection lives in one common codomain; "
+                f"left={self.embedding_codomain()}, right={other.embedding_codomain()}"
+            )
+            ambient = self.ambient()
+            left_rows = matrix(
+                SageZZ,
+                [
+                    _coordinate_vector(image)
+                    for image in self.embedded_module_generators()
+                ],
+            )
+            right_rows = matrix(
+                SageZZ,
+                [
+                    _coordinate_vector(image)
+                    for image in other.embedded_module_generators()
+                ],
+            )
+            stacked = left_rows.stack(right_rows)
+            kernel_rows = stacked.left_kernel().basis_matrix()
+            met_rows = kernel_rows.matrix_from_columns(
+                range(left_rows.nrows())
+            ) * left_rows
+            met: "SubobjectParent" = ambient.subobject_on(
+                [
+                    zipsum(row, ambient.module_generators(), ambient.zero())
+                    for row in met_rows.rows()
+                ]
+            )
+            return met
+
         def embedded_module_generators(self: "SubobjectParent") -> "OrderedSet":
             r"""Return the images $\iota(e_i)$ of this subobject's generators.
 

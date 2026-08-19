@@ -162,18 +162,31 @@ class LatticeIsometries(Category):
 
     class ParentMethods:
         def is_countable(self: "IsometryGroupParent") -> bool:
-            r"""Whether the isometries admit an enumeration.
+            r"""Whether the isometries admit an enumeration.  Always.
 
-            Read off finiteness, which this category already decides: a
-            finite group is enumerated by listing it.  An indefinite lattice
-            has an infinite isometry group, and countability of that is not
-            settled here -- it is left to whatever decides it.
+            $O(L)$ is a subgroup of $\mathrm{GL}_n(\mathbb Z)$, which is a
+            countable set (integer matrices are tuples of integers), so
+            every isometry group here is countable -- finite or not.
             """
-            return bool(self.is_finite())
+            return True
 
         def is_uncountable(self: "IsometryGroupParent") -> bool:
             r"""Whether the isometries are beyond every enumeration."""
             return not self.is_countable()
+
+        def structure_description(self: "IsometryGroupParent") -> str:
+            r"""Return GAP's structure description of a finite isometry group.
+
+            A human-readable isomorphism type (``"C2 x S5"``), computed by
+            GAP behind the matrix-group boundary.  Descriptive, not
+            canonical: GAP documents that non-isomorphic groups can share a
+            description, so this is a label for the mathematician, never a
+            datum an equality is decided on.
+            """
+            assert self.is_finite(), (
+                "GAP's StructureDescription is finite-group vocabulary"
+            )
+            return str(self._matrix_group().structure_description())
 
         def __call__(self: "IsometryGroupParent", images: "dict | FormMorphism") -> "Morphism":
             # Local: a module-level import here would close a cycle; by call time this module is built.
