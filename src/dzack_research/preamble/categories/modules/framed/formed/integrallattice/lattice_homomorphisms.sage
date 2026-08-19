@@ -22,6 +22,7 @@ if TYPE_CHECKING:
     from typing import TypeAlias
 
     from sage.categories.morphism import SetMorphism
+    from sage.misc.unknown import Unknown
     from sage.structure.element import Element
     from sage.structure.parent import MembershipInput
 
@@ -58,7 +59,7 @@ class LatticeHomomorphisms(Category):
             # Local: a module-level import here would close a cycle; by call time this module is built.
             from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormMorphism
             from dzack_research.preamble.categories.modules.framed.formed.integrallattice.subobjects import Subobjects
-            from dzack_research.preamble.categories.modules.direct_sum_objects import _expand_direct_sum_hom_dict
+            from dzack_research.preamble.categories.abstract_categories.direct_sum_objects import _expand_direct_sum_hom_dict
             match images:
                 case FormMorphism():
                     assert images.parent() is self, (
@@ -257,11 +258,14 @@ class IsometryHomset(FormHomset):
         r"""$O(M)$: the nonempty homset is an $O(M)$-torsor by postcomposition."""
         return self.codomain().Aut()
 
-    def cardinality(self) -> "Element":
-        r"""$0$ when empty; $|O(M)|$ otherwise (the torsor contract)."""
-        if self.is_empty() is True:
+    def cardinality(self) -> "Element | Unknown":
+        r"""$0$ when empty; $|O(M)|$ when nonempty; ``Unknown`` propagates."""
+        empty = self.is_empty()
+        if empty is True:
             return SageZZ(0)
-        return self.acting_group().cardinality()
+        if empty is False:
+            return self.acting_group().cardinality()
+        return empty
 
     def __iter__(self) -> "Iterator":
         r"""Torsor enumeration $\{g\circ f_0 : g\in O(M)\}$; implemented

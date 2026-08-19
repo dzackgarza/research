@@ -52,7 +52,7 @@ from dzack_research.preamble.categories.modules.framed.formed.integrallattice.su
 from sage.matrix.special import block_diagonal_matrix
 from sage.modules.free_module_element import vector
 if TYPE_CHECKING:
-    from dzack_research.preamble.categories.modules.direct_sum_objects import DirectSumObject
+    from dzack_research.preamble.categories.abstract_categories.direct_sum_objects import DirectSumObject
     from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModule
     from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormMorphism
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import GroupAction
@@ -71,7 +71,7 @@ from sage.matrix.matrix0 import Matrix
 import re
 from collections.abc import Iterable
 from functools import reduce
-from typing import Protocol, TYPE_CHECKING, assert_never
+from typing import Protocol, TYPE_CHECKING
 
 from sage.arith.misc import gcd
 from sage.categories.category import Category
@@ -242,12 +242,12 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             )
             if divisibility == 1:
                 return "Odd"
-            if divisibility == 2:
+            elif divisibility == 2:
                 divided_class = self.divided_discriminant_class(isotropic_element)
                 if divided_class.is_characteristic():
                     return "Even characteristic"
                 return "Even ordinary"
-            assert_never(divisibility)
+            assert False, f"divisibility {divisibility} already excluded above"
 
         # ---- dual basis ----
 
@@ -1849,7 +1849,7 @@ def _decompose_lattice(L: "FormModule") -> "DirectSumObject":
     \(L\), so another decomposition may coexist with this one.
     """
     # Local: a module-level import here would close a cycle; by call time this module is built.
-    from dzack_research.preamble.categories.modules.direct_sum_objects import DirectSumDecomposition
+    from dzack_research.preamble.categories.abstract_categories.direct_sum_objects import DirectSumDecomposition
     from dzack_research.preamble.categories.forms.gram_matrices import _matrix_connected_component_cuts
     from dzack_research.preamble.categories.sets.sets import finite_ordered_set
     gram = L.gram_matrix()

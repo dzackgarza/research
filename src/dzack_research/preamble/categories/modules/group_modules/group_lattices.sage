@@ -16,7 +16,7 @@ from dzack_research.preamble.categories.modules.framed.formed.form_modules impor
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import GroupAction
 from sage.structure.parent import Parent
 if TYPE_CHECKING:
-    from dzack_research.preamble.categories.modules.direct_sum_objects import DirectSumObject
+    from dzack_research.preamble.categories.abstract_categories.direct_sum_objects import DirectSumObject
     from dzack_research.preamble.categories.modules.framed.formed.integrallattice.subobjects import Subobject
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
     from sage.categories.homset import Homset

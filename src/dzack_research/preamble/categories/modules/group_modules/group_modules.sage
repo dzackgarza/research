@@ -983,7 +983,7 @@ def _isotypic_sum(
     is computed from it rather than stored.
     """
     # Local: a module-level import would close a cycle; the module is built by the time this runs.
-    from dzack_research.preamble.categories.modules.direct_sum_objects import DirectSumObjects
+    from dzack_research.preamble.categories.abstract_categories.direct_sum_objects import DirectSumObjects
     from dzack_research.preamble.refine import refine
 
     summed._summands = tuple(components)

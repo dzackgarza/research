@@ -114,7 +114,7 @@ class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
     def super_categories(self) -> list:
         # Local: the graded node reaches the algebra node, so a module-level
         # import here would close that cycle.
-        from dzack_research.preamble.categories.modules.graded_modules import GradedAlgebras
+        from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
 
         return [FreeAlgebras(self.base_ring()), GradedAlgebras(self.base_ring())]
 
