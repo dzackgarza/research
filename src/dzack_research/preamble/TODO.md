@@ -32,7 +32,7 @@ The Lean formalization in `lean-categories` treats these as defects to fix, neve
 
 - [ ] `categories/modules/framed/formed/integrallattice/lattice_isometries.sage:163` — `is_countable` reads countability off finiteness, answering `False` for an infinite `O(L)`. Every `O(L) ≤ GL_n(ℤ)` is countable.
 
-- [ ] `categories/forms/forms.sage:741` — `BilinearFormMorphism.polar_form` returns the form itself.
+- [x] `categories/forms/forms.sage:741` — `BilinearFormMorphism.polar_form` returns the form itself.
   The polar form of the norm `q(x) = b(x,x)` is `2b`, not `b`; as written the method is the identity under a false name.
 
 - [ ] `categories/schemes/varieties.sage:154` — `arithmetic_genus` and `geometric_genus` both return the engine's `genus()`. The two invariants differ exactly on singular curves, which is the case that makes them two notions.
@@ -45,7 +45,7 @@ The Lean formalization in `lean-categories` treats these as defects to fix, neve
 
 ### Wrong constructions (the object produced is not the object named)
 
-- [ ] `categories/functors/base_change_adjunction.sage` — `RestrictionOfScalarsFunctor._apply_functor` returns `BasedFreeModule(R, module.module_generating_set())`: the free `R`-module on the module's generating labels, not the module read over `R` through the ring map.
+- [x] `categories/functors/base_change_adjunction.sage` — `RestrictionOfScalarsFunctor._apply_functor` returns `BasedFreeModule(R, module.module_generating_set())`: the free `R`-module on the module's generating labels, not the module read over `R` through the ring map.
   Its own docstring says `G(F(L))` is `L ⊗ ℚ` read additively over `ℤ` "and explicitly not `L`"; the code returns exactly the free module on `L`'s labels.
   The adjunction `F ⊣ G` in the same file is stated over this broken `G`.
 
@@ -54,7 +54,7 @@ The Lean formalization in `lean-categories` treats these as defects to fix, neve
 - [ ] `categories/algebras/framed_free_algebras.sage:980` (`subs`, and the same pattern in `_extend_to_monomials`) — substitution raises generator images to plain powers.
   For the divided-power flavor this is wrong: `γ_e(s) ↦ f(s)^e = e!·γ_e(f(s)) ≠ γ_e(f(s))`, so the extension is not the divided-power extension it must be.
 
-- [ ] `categories/functors/free_forgetful_adjunction.sage` — `DividedPowerAlgebraFunctor` is grouped with `T`, `Sym`, `Λ` as a "free algebra functor" carrying the same unit `M → U(Γ M)`. `Γ` is not left adjoint to any forgetful functor to modules (it is the graded dual of `Sym`, coinciding with it only in characteristic 0), so the shared unit and the adjunction framing are wrong for this flavor.
+- [x] `categories/functors/free_forgetful_adjunction.sage` — `DividedPowerAlgebraFunctor` is grouped with `T`, `Sym`, `Λ` as a "free algebra functor" carrying the same unit `M → U(Γ M)`. `Γ` is not left adjoint to any forgetful functor to modules (it is the graded dual of `Sym`, coinciding with it only in characteristic 0), so the shared unit and the adjunction framing are wrong for this flavor.
 
 - [ ] `categories/forms/forms.sage` (`_degree_construction`) — `Γ^n` of a presented module is computed by the generators-modulo-relations quotient formula, which is a right-exactness argument.
   `Γ^n` is not right exact, so for a non-free presented module the constructed object is not `Γ^n M`.

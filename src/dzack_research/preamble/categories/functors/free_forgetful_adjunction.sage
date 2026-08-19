@@ -38,8 +38,16 @@ from sage.categories.morphism import SetMorphism
 from dzack_research.preamble.categories.sets.underlying_sets import UnderlyingSet
 
 
-class FreeAlgebraFunctor(Functor):
-    r"""One of the four free-algebra functors on (R)-modules."""
+class ModuleAlgebraFunctor(Functor):
+    r"""A functor \(\mathbf{Mod}(R)\to\mathbf{Alg}(R)\) built degreewise on a framing.
+
+    The shared machinery of \(T\), \(\operatorname{Sym}\), \(\Lambda\) and
+    \(\Gamma\): an algebra on the module's generating labels, and a morphism
+    action by extending a linear lift multiplicatively in the flavor's own
+    sense.  What is *not* shared is an adjunction -- only the three free
+    flavors are left adjoint to the forgetful functor, so the unit lives on
+    :class:`FreeAlgebraFunctor` below and nowhere here.
+    """
 
     def __init__(self, base_ring: "Ring", construction: str) -> None:
         from dzack_research.preamble.categories.algebras.algebras import Algebras
@@ -63,24 +71,6 @@ class FreeAlgebraFunctor(Functor):
             "divided": DividedPowerAlgebraOf,
         }
         return constructors[self._construction](module)
-
-    @cached_method
-    def unit(self, module: "Module") -> "ModuleMorphism":
-        r"""Return the canonical map \(M\to U(A(M))\).
-
-        This is the unit component of the free-algebra adjunction.  For a
-        presented module, the defining relations vanish in ``A(M)``, so the
-        same formula on generators descends from the chosen presentation.
-        """
-        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
-
-        algebra = self._apply_functor(module)
-        return module_homset(module, algebra)(
-            {
-                label: algebra.algebra_generator(label)
-                for label in module.module_generating_set()
-            }
-        )
 
     def _apply_functor_to_morphism(
         self,
@@ -153,6 +143,44 @@ class FreeAlgebraFunctor(Functor):
         )
 
 
+class FreeAlgebraFunctor(ModuleAlgebraFunctor):
+    r"""One of the three free-algebra functors on \(R\)-modules.
+
+    \(T\), \(\operatorname{Sym}\), \(\Lambda\): each is left adjoint to the
+    forgetful functor from its algebra category to \(\mathbf{Mod}(R)\), and
+    the unit below is that adjunction's.  \(\Gamma\) is deliberately not
+    admitted here: it is the graded dual of \(\operatorname{Sym}\), not a
+    free construction, and carries no such unit -- see
+    :func:`DividedPowerAlgebraFunctor`.
+    """
+
+    def __init__(self, base_ring: "Ring", construction: str) -> None:
+        assert construction in ("tensor", "symmetric", "alternating"), (
+            f"{construction!r} is not one of the free-algebra flavors: the "
+            "divided-power algebra is not left adjoint to a forgetful "
+            "functor, so it is a ModuleAlgebraFunctor without a unit"
+        )
+        super().__init__(base_ring, construction)
+
+    @cached_method
+    def unit(self, module: "Module") -> "ModuleMorphism":
+        r"""Return the canonical map \(M\to U(A(M))\).
+
+        This is the unit component of the free-algebra adjunction.  For a
+        presented module, the defining relations vanish in ``A(M)``, so the
+        same formula on generators descends from the chosen presentation.
+        """
+        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
+
+        algebra = self._apply_functor(module)
+        return module_homset(module, algebra)(
+            {
+                label: algebra.algebra_generator(label)
+                for label in module.module_generating_set()
+            }
+        )
+
+
 @cached_function
 def _free_algebra_functor(base_ring: "Ring", construction: str) -> FreeAlgebraFunctor:
     return FreeAlgebraFunctor(base_ring, construction)
@@ -170,8 +198,17 @@ def AlternatingAlgebraFunctor(base_ring: "Ring") -> FreeAlgebraFunctor:
     return _free_algebra_functor(base_ring, "alternating")
 
 
-def DividedPowerAlgebraFunctor(base_ring: "Ring") -> FreeAlgebraFunctor:
-    return _free_algebra_functor(base_ring, "divided")
+@cached_function
+def DividedPowerAlgebraFunctor(base_ring: "Ring") -> ModuleAlgebraFunctor:
+    r"""Return \(\Gamma:\mathbf{Mod}(R)\to\mathbf{Alg}(R)\), the divided-power algebra functor.
+
+    A functor, not a free construction: \(\Gamma\) is the graded dual of
+    \(\operatorname{Sym}\), coinciding with it only in characteristic
+    \(0\), and is not left adjoint to any forgetful functor to modules --
+    so it shares the object and morphism actions of the algebra functors
+    and carries no adjunction unit.
+    """
+    return ModuleAlgebraFunctor(base_ring, "divided")
 
 
 class FreeModuleFunctorClass(Functor):
