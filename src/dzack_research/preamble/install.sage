@@ -137,6 +137,7 @@ def install_preamble(namespace: dict) -> None:
             "categories.forms.forms",
             "categories.group.magmas",
             "categories.group.groups",
+            "categories.group.group_morphisms",
             "categories.group.g_sets",
             "categories.group.profinite.profinite_groups",
             "categories.group.profinite.galois_choice_policy",

@@ -98,6 +98,11 @@ def _constructions() -> dict:
         "based free module": BasedFreeModule(ZZ, Sets.Δ[2]),
         "R^n": ZZ**3,
         "isometry group": Lattices.A2.Aut(),
+        # A finite abstract group's automorphism group, and the stated-gap
+        # specimen: Aut of a free group constructs -- the object exists --
+        # while enumeration and order state the algorithmic gap when asked.
+        "abstract group automorphism group": QuaternionGroup().Aut(),
+        "free group automorphism group": FreeGroup(2).Aut(),
         "isometry homset": Lattices.A2.Isom(Lattices.A2),
         "embedding homset": Lattices.A1.Emb(Lattices.E8),
         "discriminant image subgroup": Lattices.A2.Aut().discriminant_image(),

@@ -17,6 +17,12 @@ if TYPE_CHECKING:
 from dzack_research.preamble.categories.sets.owned_sets import Sets, placement_of
 if TYPE_CHECKING:
     from sage.categories.morphism import Morphism
+    from sage.libs.gap.element import GapElement
+    from dzack_research.preamble.categories.group.group_morphisms import (
+        GroupAutomorphismGroup,
+        GroupHomomorphism,
+        GroupHomset,
+    )
 
 from typing import Self
 
@@ -32,6 +38,7 @@ from sage.groups.abelian_gps.abelian_group import AbelianGroup_class
 from sage.groups.abelian_gps.element_base import AbelianGroupElementBase
 from sage.groups.finitely_presented import FinitelyPresentedGroup
 from sage.groups.free_group import FreeGroup_class
+from sage.groups.libgap_wrapper import ParentLibGAP
 from sage.groups.matrix_gps.finitely_generated import (
     FinitelyGeneratedMatrixGroup_generic,
 )
@@ -43,6 +50,7 @@ from sage.groups.matrix_gps.named_group_gap import NamedMatrixGroup_gap
 from sage.groups.perm_gps.permgroup import PermutationGroup_generic
 from sage.groups.perm_gps.permgroup_named import AlternatingGroup
 from sage.groups.perm_gps.permgroup_named import SymmetricGroup
+from sage.libs.gap.libgap import libgap
 from sage.misc.unknown import Unknown
 from dzack_research.preamble.categories.rings.rings import ℤ
 from sage.rings.integer_ring import ZZ as SageZZ
@@ -592,6 +600,100 @@ class OwnedGroups(Category):
                     return True
             return Unknown
 
+        def End(self: Self) -> "GroupHomset":
+            r"""Return \(\operatorname{End}(G)=\operatorname{Hom}(G,G)\).
+
+            The endset, which is where \(\operatorname{Aut}(G)\) comes from:
+            an automorphism is an invertible endomorphism, so the group is
+            the units of this monoid.  Sited here and not built here -- an
+            endset is the homset whose two objects coincide, and asking for
+            it any other way would produce a second object with the same
+            elements.
+
+            Reached through the owned homset constructor rather than by
+            re-routing ``Hom`` on this category: the owned module tree seats
+            its finitely presented torsion modules in the abelian-groups
+            node, and those objects' ``Hom`` is the module homset their own
+            categories supply.  The group placement adds group vocabulary; it
+            never re-routes module morphisms.
+            """
+            # Local: a module-level import would close a cycle; the module is built by the time this runs.
+            from dzack_research.preamble.categories.group.group_morphisms import (
+                group_homset,
+            )
+
+            return group_homset(self, self)
+
+        def Aut(self: Self) -> "GroupAutomorphismGroup":
+            r"""Return \(\operatorname{Aut}(G)\), the units of \(\operatorname{End}(G)\).
+
+            One object, reached one way, and cached on the parent so a
+            generating set computed once stays computed.
+            \(\operatorname{Aut}(G)\) exists for every group; what some
+            groups lack is an algorithm, and that absence is stated where it
+            is met, at the engine.
+
+            Finiteness is claimed exactly when the group itself is decidably
+            finite: an automorphism permutes the underlying finite set, so
+            \(\operatorname{Aut}(G)\le\operatorname{Sym}(G)\) is finite with
+            \(G\).  Nothing stronger is claimed -- finite presentation of
+            \(\operatorname{Aut}(F_2)\) is a theorem this method does not
+            state.
+            """
+            # Local: a module-level import would close a cycle; the module is built by the time this runs.
+            from dzack_research.preamble.categories.group.group_morphisms import (
+                GroupAutomorphismGroup,
+            )
+            from dzack_research.preamble.refine import refine
+
+            cached = self.__dict__.get("_preamble_Aut")
+            if cached is not None:
+                return cached
+            automorphisms = GroupAutomorphismGroup(self)
+            placements: list[Category] = [OwnedGroups()]
+            if _finiteness(self) is True:
+                placements.append(OwnedFiniteGroups())
+            refine(automorphisms, placements)
+            self._preamble_Aut = automorphisms
+            return automorphisms
+
+        def conjugation_morphism(self: Self) -> "GroupHomomorphism":
+            r"""Return \(c:G\to\operatorname{Aut}(G)\), \(g\mapsto(x\mapsto gxg^{-1})\).
+
+            The one representation \(G\) carries on itself with no choice
+            made.  \(\ker c=Z(G)\) and \(\operatorname{im}c=
+            \operatorname{Inn}(G)\), so \(G/Z(G)\cong\operatorname{Inn}(G)\)
+            by the first isomorphism theorem (Dummit--Foote, DF04, sec. 4.4
+            Cor. 15 with the remark following it), and
+            \(|\operatorname{Out}(G)|=[\operatorname{Aut}(G):
+            \operatorname{Inn}(G)]\) follows (DF04 sec. 4.4 Exercise 1
+            defines \(\operatorname{Out}\)) -- theorems carried, never
+            re-verified at runtime.  The repo owns no general quotient of
+            groups yet, so \(\operatorname{Out}(G)\) as an *object* is a
+            stated gap; its order is derived.
+
+            Built as any homomorphism is built: an element of
+            \(\operatorname{Hom}(G,\operatorname{Aut}(G))\), named by the
+            images of the distinguished generators.
+            """
+            # Local: a module-level import would close a cycle; the module is built by the time this runs.
+            from dzack_research.preamble.categories.group.group_morphisms import (
+                _element_to_engine,
+                group_homset,
+            )
+
+            automorphisms = self.Aut()
+            model = _gap_model(self)
+            images = {
+                generator: automorphisms(
+                    libgap.ConjugatorAutomorphism(
+                        model, _element_to_engine(self, generator)
+                    )
+                )
+                for generator in self.group_generators()
+            }
+            return group_homset(self, automorphisms)(images)
+
 
 class OwnedFinitelyGeneratedGroups(Category):
     r"""Groups admitting a surjection \(F(S)\twoheadrightarrow G\), \(S\) finite.
@@ -681,6 +783,49 @@ def _presentation_of(group: "Group") -> tuple:
             assert False, (
                 f"{group} does not supply finite-presentation data"
             )
+
+
+def _gap_model(group: "Group") -> "GapElement":
+    r"""Return the GAP group the engine computes with for ``group``.
+
+    Sibling of :func:`_presentation_of`, and the same kind of boundary: this
+    function only records how each Sage type reaches a GAP-computable form.
+    A type that cannot supply one is rejected here, with the gap stated.
+
+    The permutation-normalization arms (``AbelianGroup_class`` and the
+    generic matrix groups) model the group only up to isomorphism -- the
+    correspondence between elements is forgotten -- so they support the
+    group-level questions and leave element-level transport a stated gap
+    (``_element_to_engine`` in ``group_morphisms``).  Normalizing an
+    infinite group would not terminate, so those arms are gated on decidable
+    finiteness rather than run silently.
+    """
+    # Local: a module-level import would close a cycle; the module is built by the time this runs.
+    from dzack_research.preamble.categories.group.group_morphisms import (
+        GroupAutomorphismGroup,
+    )
+
+    match group:
+        case GroupAutomorphismGroup():
+            return group._libgap_()
+        case PermutationGroup_generic():
+            return libgap(group)
+        case ParentLibGAP():
+            return group.gap()
+        case AbelianGroup_class():
+            assert _finiteness(group) is True, (
+                f"normalizing {group} to a permutation model requires "
+                "finiteness, which the group cannot decide"
+            )
+            return libgap(group.permutation_group())
+        case NamedMatrixGroup_generic() | FinitelyGeneratedMatrixGroup_generic():
+            assert _finiteness(group) is True, (
+                f"normalizing {group} to a permutation model requires "
+                "finiteness, which the group cannot decide"
+            )
+            return libgap(group.as_permutation_group())
+        case _:
+            assert False, f"{group} has no GAP model in this engine"
 
 
 class OwnedFinitelyPresentedGroups(Category):
