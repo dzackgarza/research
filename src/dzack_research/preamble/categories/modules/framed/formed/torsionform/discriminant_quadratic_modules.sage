@@ -344,6 +344,23 @@ class DiscriminantQuadraticModules(Category):
                 scalar * self.form().polar_form().gram_matrix(),
             )
 
+        def is_anti_isometric(
+            self: "DiscriminantQuadraticParent",
+            other: "DiscriminantQuadraticParent",
+        ) -> bool:
+            r"""Return whether some group isomorphism $f:A_1\to A_2$ has
+            $q_2(f(x))=-q_1(x)$.
+
+            An anti-isometry *is* an isometry onto the $(-1)$-twist of the
+            codomain, so the question is spelled through the owned twist and
+            the category's own isometry decision -- no new primitive.  This
+            is the relation Nikulin's complement-pair theory runs on
+            (Nik80, Zotero TTY9FFJS, Cor 1.6.2: the discriminant quadratic
+            forms of a primitive complement pair in an even unimodular
+            lattice are anti-isometric).
+            """
+            return bool(self.is_isomorphic(other.twist(-1)))
+
 
     class ElementMethods:
         r"""Methods available on elements of discriminant quadratic modules."""

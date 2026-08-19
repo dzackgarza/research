@@ -1382,3 +1382,64 @@ def test_subobject_sum_and_intersection_are_the_lattice_operations() -> None:
     right = square.subobject_on([3 * e1, 3 * e2])
     assert left.intersection(right).index() == 36
     assert left.sum(right).index() == 1
+
+
+def test_nikulin_complement_pair_discriminant_forms_are_anti_isometric() -> None:
+    r"""Nik80 Cor 1.6.2 (Zotero TTY9FFJS): the discriminant quadratic forms
+    of a primitive complement pair in an even unimodular lattice are
+    anti-isometric, $q_K \cong -q_S$.  In $E_8$: a framing root spans a
+    primitive $A_1$ with complement $E_7$, and an adjacent pair spans a
+    primitive $A_2$ with complement $E_6$ (CS10 ch. 4)."""
+    e8 = Lattices.E8
+    a1 = e8.subobject_on([e8.module_generators()[0]])
+    e7 = a1.embedding().orthogonal_complement()
+    assert e7.discriminant_group().is_anti_isometric(a1.discriminant_group())
+
+    a2 = e8.subobject_on(list(_first_adjacent_pair(e8)))
+    e6 = a2.embedding().orthogonal_complement()
+    assert e6.discriminant_group().is_anti_isometric(a2.discriminant_group())
+
+
+def test_an_anti_isometry_needs_the_sign_a2_versus_its_twist() -> None:
+    r"""Nik80 sec 1.3 (Zotero TTY9FFJS): $q_{A_2}$ takes the value $-2/3$
+    and $-q_{A_2}$ the value $2/3$ in $\mathbb Q/2\mathbb Z$, so the AG
+    $A_2$ discriminant form is anti-isometric to the form of the
+    positive-definite $A_2$ and NOT anti-isometric to itself."""
+    negative = Lattices.A2.discriminant_group()
+    positive = Lattices.A2.twist(-1).discriminant_group()
+    assert negative.is_anti_isometric(positive)
+    assert not negative.is_anti_isometric(negative)
+
+
+# ---------------------------------------------------------------------------
+# Genus versus class: the SPLAG split-spinor-genus specimen (CS10, Zotero
+# T2WVLTDB, attachment TCJKXU3D).  Chapter 15 section 11 gives the ternary
+# forms (51a) and (51b) of determinant -128; chapter 15 Theorem 14 (Eichler)
+# makes class = spinor genus for indefinite forms of rank >= 3.
+
+
+def test_splag_forms_51a_and_51b_share_a_genus_but_not_a_class() -> None:
+    r"""CS10 ch. 15 sec. 11: one genus, two spinor genera, two classes.
+
+    The forms (51a) and (51b) of determinant $-128$ lie in a single genus
+    that splits into two spinor genera.  By Theorem 14 the class of an
+    indefinite ternary form is its spinor genus, so the genus contains
+    exactly two classes and the two forms are not isometric.
+    """
+    a = IntegralLattice(matrix(ZZ, 3, 3, [-1, 1, 0, 1, 63, 0, 0, 0, 2]))
+    b = IntegralLattice(matrix(ZZ, 3, 3, [-9, 1, 0, 1, 7, 0, 0, 0, 2]))
+
+    assert matrix(ZZ, a.gram_matrix()).det() == -128, "CS10 ch. 15 sec. 11"
+    assert matrix(ZZ, b.gram_matrix()).det() == -128, "CS10 ch. 15 sec. 11"
+    assert a.genus() == b.genus(), "(51a) and (51b) lie in one genus"
+    assert a.genus().class_number() == 2, (
+        "the genus splits into two spinor genera, hence two classes "
+        "(CS10 ch. 15 sec. 11 with Theorem 14)"
+    )
+    # The two forms are not isometric (distinct spinor genera, Thm 14).
+    # The owned decision procedure cannot PLACE a form into its spinor
+    # genus, so a split genus is a stated gap: Isom-emptiness answers the
+    # three-valued Unknown here, never a false True.
+    assert a.is_isometric(b) is not True, (
+        "distinct spinor genera are distinct classes (CS10 ch. 15 Thm 14)"
+    )

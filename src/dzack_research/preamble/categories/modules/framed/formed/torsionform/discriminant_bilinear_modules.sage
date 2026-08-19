@@ -283,6 +283,56 @@ class DiscriminantBilinearModules(Category):
                 scalar * self.form().gram_matrix(),
             )
 
+        def pontryagin_dual_identification(self: "DiscriminantBilinearParent") -> "Morphism":
+            r"""Return $A\to\operatorname{Hom}(A, K/R)$, $x\mapsto b(x,-)$.
+
+            Pontryagin duality identifies a finite abelian group with its
+            character group, and a *nondegenerate* torsion bilinear form
+            realizes the identification through $b$: $x\mapsto b(x,-)$ is
+            injective exactly when the form is nondegenerate, and an
+            injective map of a finite group into a group of the same order
+            is an isomorphism.  Nondegeneracy is therefore asserted -- on a
+            degenerate form the map is not the identification it names.
+
+            Each character is an honest module morphism into the value
+            module, declared by its values on the module generators; the
+            identification itself is the set morphism sending an element to
+            its character.  The dual vocabulary names its functor
+            (``pontryagin_dual_identification``), never a bare ``dual``.
+            """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from sage.categories.homset import Hom as sage_hom
+            from sage.categories.morphism import SetMorphism
+            from sage.categories.sets_cat import Sets as SageSets
+
+            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
+
+            zero = self.zero()
+            assert all(
+                any(
+                    element.b(self.module_generator(label)) != 0
+                    for label in self.module_generating_set()
+                )
+                for element in self
+                if element != zero
+            ), (
+                "the Pontryagin identification along b exists exactly on "
+                "nondegenerate torsion bilinear forms; this form has a "
+                "nonzero element pairing to zero with everything"
+            )
+            characters = module_homset(self, self.value_module())
+
+            def character(element: "ModuleElement") -> "Morphism":
+                element = self(element)
+                return characters(
+                    dict(
+                        (label, element.b(self.module_generator(label)))
+                        for label in self.module_generating_set()
+                    )
+                )
+
+            return SetMorphism(sage_hom(self, characters, SageSets()), character)
+
 
     class ElementMethods:
         r"""Methods available on elements of discriminant bilinear modules.

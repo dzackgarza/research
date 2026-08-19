@@ -415,61 +415,95 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
                 next(form.maximal_isotropic_subobjects())
             )
 
+        def overlattice(
+            self: "LatticeParent", *elements: "OrderedSet"
+        ) -> "FormMorphism":
+            r"""Return $L\hookrightarrow L'$ glued along discriminant classes.
+
+            The same Nik80 Prop. 1.4.1 correspondence as :meth:`glue`,
+            morphism-valued: the constructor is the once-only place the
+            presentation crosses the boundary, so it is where the inclusion
+            witness is minted.  Callers wanting the object alone take
+            ``.codomain()``; the index is the arrow's own ``.index()``.  For
+            a direct-sum $L$, the summand inclusions carried into $L'$ are
+            the decomposition's own witnesses composed with this inclusion:
+            ``summand.embedding().then(inclusion)`` per entry of
+            :meth:`summands`.
+            """
+            form = self.discriminant_group()
+            return form.overlattice_from_isotropic_subobject(
+                form.subobject_generated_by(
+                    tuple(form(element) for element in elements)
+                )
+            )
+
+        def local_modification(
+            self: "LatticeParent", p: "Integer", *elements: "OrderedSet"
+        ) -> "FormMorphism":
+            r"""Return $L\hookrightarrow L'$ glued along a $p$-primary
+            isotropic subgroup of $A_L$.
+
+            The local-modification vocabulary (Nik80, Zotero TTY9FFJS,
+            section 1.4): an overlattice differing from $L$ only over $p$
+            is glued along an isotropic subgroup of the $p$-primary part of
+            the discriminant form.  $p$-primality of each class is its
+            order being a power of $p$, asserted by name; the glue itself
+            is the same morphism-valued correspondence as
+            :meth:`overlattice`, whose construction asserts isotropy.
+            """
+            form = self.discriminant_group()
+            for element in elements:
+                order = form(element).order()
+                assert order == p ** order.valuation(p), (
+                    f"local modification at p={p} glues along the p-primary "
+                    f"part of the discriminant form; the class {element} has "
+                    f"order {order}"
+                )
+            return self.overlattice(*elements)
+
+        # There is no separate ``summand_embeddings``: :meth:`summands`
+        # already returns subobjects, each carrying its inclusion as
+        # ``summand.embedding()`` (minted by ``_decompose_lattice``).
+
         # ---- isometry ----
+
+        def Isom(self: "LatticeParent", codomain: "FormModule") -> "Homset":
+            r"""Return $\operatorname{Isom}(L, M)$ as a first-class parent.
+
+            Existence, witness, cardinality, and enumeration of isometries
+            are the homset's own questions (ratified method placement);
+            :meth:`is_isometric` is its emptiness router.
+            """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.lattice_homomorphisms import IsometryHomset
+            return IsometryHomset(self, codomain)
+
+        def Emb(self: "LatticeParent", codomain: "FormModule") -> "Homset":
+            r"""Return $\operatorname{Emb}(L, M)$ as a first-class parent:
+            the form-preserving monomorphisms, enumerated by module-generator
+            placement where the codomain is integral definite (indefinite
+            existence is issue #24's Nikulin engine, a stated absence)."""
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.lattice_homomorphisms import EmbeddingHomset
+            return EmbeddingHomset(self, codomain)
 
         def is_isometric(self: "LatticeParent", other: "FormModule") -> "bool | Unknown":
             r"""Decide whether two integral lattices are isometric.
 
-            A decision, so every branch states the theorem it runs on.
-
-            * Rank or signature mismatch: not isometric, unconditionally.
-            * Definite: the engine decision on the *doubled* Gram matrices.
-              Sage's ``QuadraticForm`` reads its matrix as the Hessian
-              $2G$, so $2G$ is what it is handed -- the undoubled matrix is
-              ill-formed for odd lattices.
-            * Indefinite of rank $\ge 3$: Eichler.  Under the hypotheses
-              *indefinite*, *rank at least 3*, and *not spinor-exceptional*,
-              the genus contains one isometry class, so genus equality is
-              the answer.  The spinor-exceptional case is not excluded here,
-              which is the stated gap of this branch.
-            * Everything else (indefinite rank $\le 2$): no theorem this
-              method owns decides it -- indefinite binary classes are Gauss
-              composition territory -- so the answer is the three-valued
-              ``Unknown``, which collapses to ``False`` in boolean context.
+            Existence of an isometry is the emptiness question of
+            $\operatorname{Isom}(L, M)$, so the decision table -- and every
+            theorem it runs on -- lives on that homset
+            (:class:`IsometryHomset`); this method is its router.  The
+            undecided regimes (indefinite binary; a genus splitting into
+            several improper spinor genera) come back as the three-valued
+            ``Unknown``, which collapses to ``False`` in boolean context.
             """
             from sage.misc.unknown import Unknown
-            from sage.quadratic_forms.genera.genus import Genus as _sage_genus
-            from sage.quadratic_forms.quadratic_form import QuadraticForm
 
-            if self.rank() != other.rank():
-                return False
-            if self.signature_pair() != other.signature_pair():
-                return False
-
-            pos, neg = self.signature_pair()
-            if pos == 0 or neg == 0:
-                sign = 1 if neg == 0 else -1
-                return bool(
-                    QuadraticForm(
-                        SageZZ, 2 * sign * matrix(SageZZ, self.gram_matrix())
-                    ).is_globally_equivalent_to(
-                        QuadraticForm(
-                            SageZZ, 2 * sign * matrix(SageZZ, other.gram_matrix())
-                        )
-                    )
-                )
-
-            if self.rank() >= 3:
-                # Eichler: indefinite, rank >= 3 -- one class per genus
-                # outside the spinor-exceptional genera.
-                if self.is_even() and other.is_even():
-                    return bool(self.genus() == other.genus())
-                return bool(
-                    _sage_genus(matrix(SageZZ, self.gram_matrix()))
-                    == _sage_genus(matrix(SageZZ, other.gram_matrix()))
-                )
-
-            return Unknown
+            empty = self.Isom(other).is_empty()
+            if empty is Unknown:
+                return Unknown
+            return not empty
 
         def reflection(self: "LatticeParent", vector: "Element") -> "ModuleMorphism":
             r"""Return $s_v\in O(L)$, $s_v(x)=x-\dfrac{2\,b(x,v)}{q(v)}\,v$.
@@ -1925,6 +1959,11 @@ def refine_one_lattice(lattice: "FormModule") -> None:
         case True:
             pass
     refine(lattice, IntegralLattices())
+    # The Even axiom is admitted by its certifying predicate: ``refine``
+    # re-asks ``is_even()`` and refuses a ``False``, so the routing here is
+    # the same question the gate asks, not a diagonal proxy of its own.
+    if lattice.is_even():
+        refine(lattice, Lattices(ℤ).Even())
     pos, neg = lattice.signature_pair()
     if pos > 0 and neg > 0 and min(pos, neg) == 1:
         refine(lattice, HyperbolicLattices())

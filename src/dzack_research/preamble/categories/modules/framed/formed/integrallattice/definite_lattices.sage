@@ -88,6 +88,54 @@ class DefiniteLattices(Category):
             )
             return gram if negative == 0 else -gram
 
+        def vectors_of_square(self: "Module", square: "RingElement") -> "Set":
+            r"""Return $\{x\in L: b(x,x)=\text{square}\}$, both signs included.
+
+            Finite exactly because the form is definite, which is why the
+            vocabulary sits on this category.  The sign regime is the
+            lattice's own: a positive definite form takes no negative
+            values and a negative definite one no positive values, and a
+            square of the wrong sign is a caller error, asserted by name.
+            Negative definite is *by definition* the $L(-1)$ transport of
+            the positive regime -- the engine runs on the length Gram
+            matrix $\pm G$, so no caller twists anything.
+
+            Fincke--Pohst, reached through PARI's ``qfminim`` (up to sign),
+            with both signs restored: an embedding search places module generators
+            on vectors, and $x$ and $-x$ are different placements.
+            """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.sets.sets import finite_ordered_set
+            from dzack_research.preamble.utilities import zipsum
+
+            positive, negative = self.signature_pair()
+            sign = 1 if negative == 0 else -1
+            length = sign * SageZZ(square)
+            assert length >= 0, (
+                f"a definite form takes values of one sign only; "
+                f"square={square}, signature={self.signature_pair()}"
+            )
+            if length == 0:
+                return finite_ordered_set((self.zero(),))
+            gram = matrix(SageZZ, self._length_gram_matrix())
+            _count, _largest, coordinates = gram.__pari__().qfminim(length, None)
+            halves = tuple(
+                zipsum(column, self.module_generators(), self.zero())
+                for column in matrix(SageZZ, coordinates).columns()
+                if column * gram * column == length
+            )
+            return finite_ordered_set(
+                halves + tuple(-element for element in halves)
+            )
+
+        def roots(self: "Module") -> "Set":
+            r"""Return the roots: the vectors of square $2$ in the positive
+            definite regime and of square $-2$ in the negative definite one
+            (the AG convention this repo writes root lattices with -- the
+            $L(-1)$ transport of the norm-2 convention)."""
+            positive, negative = self.signature_pair()
+            return self.vectors_of_square(2 if negative == 0 else -2)
+
         def _target_coordinates(self: "Module", target: "Element") -> "FreeModuleElement":
             r"""Read a CVP target as rational coordinates in this framing."""
             from sage.modules.free_module_element import vector

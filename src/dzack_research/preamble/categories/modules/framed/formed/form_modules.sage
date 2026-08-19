@@ -809,6 +809,17 @@ class FinitelyGeneratedFreeFormModules(OwnedCategoryOverBaseRing):
             """
             return self.correlation_morphism().kernel()
 
+        def radical_quotient(self: "FiniteFreeFormedParent") -> "FormModule":
+            r"""Return $L/\operatorname{rad}(L)$ with the descended form.
+
+            The radical is isotropic ($b$ vanishes on it by definition) and
+            $\operatorname{rad}(L)^{\perp}=L$ (everything pairs to zero with
+            the radical), so the nondegenerate quotient *is* the isotropic
+            reduction $S^{\perp}/S$ of the radical subobject -- one owned
+            construction, no second quotient machinery.
+            """
+            return self.radical().isotropic_reduction()
+
         def is_nondegenerate(self: "FiniteFreeFormedParent") -> bool:
             r"""Return whether $\operatorname{rad}(L)=0$, i.e. $c$ is injective.
 

@@ -161,16 +161,16 @@ def test_pow_is_repeated_direct_sum() -> None:
     IntegralLattice = _lattice_constructor()
     assert (IntegralLattice("H") ** 3).rank() == 6
 
-    # Sage's E8 is POSITIVE definite; this repo's convention is negative definite,
-    # so the K3 lattice must be built from the twisted E8 to get signature (3,19).
-    # Rank alone would not have caught the flipped convention.
-    E8 = IntegralLattice("E8").twist(-1)
-    k3 = IntegralLattice("H") ** 3 + E8 ** 2
+    # Named ADE lattices are NEGATIVE definite -- the enforced AG convention,
+    # built from root realizations at the single construction site -- so the
+    # K3 lattice is U^3 + E8^2 directly, no twist.  Rank alone would not
+    # catch a flipped convention; the signature pair does.
+    k3 = IntegralLattice("H") ** 3 + IntegralLattice("E8") ** 2
     assert k3.rank() == 22, k3.rank()
     assert k3.signature_pair() == (3, 19), k3.signature_pair()
 
-    raw = IntegralLattice("H") ** 3 + IntegralLattice("E8") ** 2
-    assert raw.signature_pair() == (19, 3), raw.signature_pair()
+    flipped = IntegralLattice("H") ** 3 + IntegralLattice("E8").twist(-1) ** 2
+    assert flipped.signature_pair() == (19, 3), flipped.signature_pair()
 
 
 def test_named_lattice_helper_gives_the_intended_sugar() -> None:

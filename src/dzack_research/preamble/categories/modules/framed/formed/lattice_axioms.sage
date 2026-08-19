@@ -25,7 +25,7 @@ from dzack_research.preamble.categories.modules.pure.finitely_generated.finitely
     FinitelyGeneratedModules,
 )
 
-for _axiom_name in ("FinitelyGenerated", "Integral", "Nondegenerate"):
+for _axiom_name in ("FinitelyGenerated", "Integral", "Nondegenerate", "Even"):
     if _axiom_name not in cwa.all_axioms:
         cwa.all_axioms.add(_axiom_name)
 
@@ -44,6 +44,7 @@ class _LatticeSubcategoryMethods:
     FinitelyGenerated = axiom("FinitelyGenerated")
     Integral = axiom("Integral")
     Nondegenerate = axiom("Nondegenerate")
+    Even = axiom("Even")
 
 
 setattr(Lattices, "SubcategoryMethods", _LatticeSubcategoryMethods)
@@ -129,9 +130,45 @@ class NondegenerateLattices(CategoryWithAxiom_over_base_ring):
             r"""Return whether $\operatorname{rad}(L)=0$."""
 
 
+class EvenLattices(CategoryWithAxiom_over_base_ring):
+    r"""Lattices whose form has even norms: $b(x,x)\in 2R$ for every $x$.
+
+    Even-ness is the home of the discriminant *quadratic* form: only an even
+    lattice's $q$ descends to $A_L$ with values in $K/2R$ rather than $K/R$
+    (Nik80, Zotero TTY9FFJS, section 1.3).  The axiom therefore refines
+    ``Integral`` -- an even form is in particular integral-valued, said in
+    ``extra_super_categories`` so the integral vocabulary reaches every even
+    lattice without restatement.
+
+    Admission is by predicate: ``refine`` evaluates ``is_even()``, which a
+    finitely generated formed module computes from its Gram diagonal; any
+    other participant answers for itself, and that answer is the
+    participant's auditable claim.
+    """
+
+    _base_category_class_and_axiom = (Lattices, "Even")
+    _certifying_predicate = "is_even"
+
+    def extra_super_categories(self) -> list:
+        r"""An even lattice is integral-valued: $2\mid b(x,x)$ forces
+        $b(x,y)=\tfrac12(q(x+y)-q(x)-q(y))\in R$ once the norms are in $2R$
+        and the form is $R$-valued on a generating set."""
+        return [IntegralValuedLattices(self.base_ring())]
+
+    @classmethod
+    def _repr_object_names(cls) -> str:
+        return "even lattices"
+
+    class ParentMethods:
+        @abstract_method
+        def is_even(self) -> bool:
+            r"""Return whether every norm $b(x,x)$ lies in $2R$."""
+
+
 # ``IntegralLattices`` is ``Lattices(R).FinitelyGenerated().Integral()``, and
 # declares itself so in its own file; the binding happens there, once that
 # class exists.
 setattr(Lattices, "FinitelyGenerated", FinitelyGeneratedLattices)
 setattr(Lattices, "Integral", IntegralValuedLattices)
 setattr(Lattices, "Nondegenerate", NondegenerateLattices)
+setattr(Lattices, "Even", EvenLattices)

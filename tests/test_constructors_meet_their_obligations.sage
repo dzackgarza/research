@@ -93,6 +93,8 @@ def _constructions() -> dict:
         "based free module": BasedFreeModule(ZZ, Sets.Δ[2]),
         "R^n": ZZ**3,
         "isometry group": Lattices.A2.Aut(),
+        "isometry homset": Lattices.A2.Isom(Lattices.A2),
+        "embedding homset": Lattices.A1.Emb(Lattices.E8),
         "free algebra": FreeAlgebraOn(QQ, Sets.Δ[1]),
         "tensor algebra": TensorAlgebraOn(QQ, Sets.Δ[1]),
         "alternating algebra": AlternatingAlgebraOn(QQ, Sets.Δ[1]),

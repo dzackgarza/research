@@ -80,3 +80,7 @@ The Lean formalization in `lean-categories` treats these as defects to fix, neve
 ## Gaps
 
 New mathematical gaps belong here only after a concrete object, morphism, or property is shown to be absent from the current preamble.
+
+- `Isom(L, M)` emptiness (`integrallattice/lattice_homomorphisms.sage`) answers `Unknown` for indefinite binary lattices (Gauss-composition territory) and for a shared genus splitting into several improper spinor genera: Sage's spinor stack enumerates spinor genera but cannot place a given form into one.
+- `Emb(L, M)` enumerates only for integral definite codomains (module-generator placement over short vectors); indefinite embedding existence is Nikulin's engine, issue #24, a stated absence at the homset boundary.
+- `is_anti_isometric` lives on the quadratic torsion-form surface only; the bilinear surface has no twist-composed spelling yet.
