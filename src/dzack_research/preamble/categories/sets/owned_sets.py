@@ -182,13 +182,21 @@ class FiniteSets(CategoryWithAxiom):
         Sage's default answers from category placement alone, so an object
         that has *computed* its finiteness — and says so through
         ``is_finite`` — is reported infinite merely because nothing refined
-        it afterwards. Finiteness is a property of the object, and this
-        category is the place that asks for it, so a caller writing the
-        membership question gets the object's own answer rather than a
-        record of how it was constructed.
+        it afterwards. Placement in this category is itself a legitimate
+        proof of finiteness, so the membership question first accepts the
+        placement answer, then falls through to the object's own computed
+        answer. A caller writing the membership question therefore gets the
+        stronger of the two, never only a record of how the object was
+        constructed.
         """
+        if super().__contains__(parent):
+            return True
+
         from sage.structure.parent import Parent
 
+        # ponytail: hasattr stays until it is checked that every Sage Parent
+        # exposes is_finite; the placement branch above already handles the
+        # placed-but-methodless case.
         return isinstance(parent, Parent) and hasattr(parent, "is_finite") and bool(parent.is_finite())
 
     class ParentMethods:

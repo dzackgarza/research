@@ -717,9 +717,24 @@ class CardinalityMorphism(Morphism):
 
 
 def cardinal(value: Cardinal | CardinalScalar) -> Cardinal:
-    r"""Return a cardinal object."""
+    r"""Return a cardinal object.
+
+    Cardinal arithmetic is closed over counts: the value must be a
+    ``Cardinal``, an integer, or ``Infinity`` (read as ``aleph_0``).  There
+    is no scalar action of a larger ring on the cardinals — a rational
+    times a cardinal does not typecheck mathematically.  Formulas that mix
+    a finite-or-infinite count into scalar arithmetic (the determinant law
+    ``|det L| = |det O| * [O : L]^2``) live in the extended scalars
+    ``ZZ ∪ {oo}`` and consume the extended-scalar spelling (``index()``),
+    never a cardinal.
+    """
     if isinstance(value, Cardinal):
         return value
+    assert value == Infinity or value in ZZ, (
+        f"a cardinal is a count (a Cardinal, an integer, or oo); found the "
+        f"non-count scalar {value!r} — extended-scalar formulas consume the "
+        f"extended-scalar spelling (index()) instead"
+    )
     return Cardinal(value)
 
 
