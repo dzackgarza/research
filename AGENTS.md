@@ -496,9 +496,9 @@ Practical consequences: when picking up a topic, search discussions as well as i
 When a discussion has stabilized, the next action is to file the issue, not to keep commenting.
 When a discussion is still moving, do not manufacture an issue to make it look tracked.
 
-# QC integration for spikes
+# QC integration
 
-This repo delegates all test/QC to the global QC in `~/ai-review-ci` (`dzackgarza/ai-review-ci`). The pre-commit hook runs the root `just test`; pre-push runs `just test-ci`. The root recipes run umbrella hygiene, then every `computations/experiments/*/justfile` — a spike with a justfile is on QC rails automatically; adding one never requires editing the root justfile.
+This repo delegates all test/QC to the global QC in `~/ai-review-ci` (`dzackgarza/ai-review-ci`). The root justfile's three gates delegate directly to the Sage tier: `test-commit`/`test-push`/`test-ci` → `just -f ~/ai-review-ci/justfiles/sage.just -d . <gate>` (pre-commit runs `test-commit`, pre-push `test-push`). The Sage tier preparses `.sage` sources into a tempdir via the sageparse lowering (never `sage --preparse` artifacts in-tree) and runs mypy on the lowered Python in an ephemeral CPython 3.14 with the project installed editable — `sage.*` types come from the `sage-stubs` package declared in this repo's `[dependency-groups] dev`, which the QC recipes pass `--with` into the mypy environment. Sage's venv is used only for lowering and for running tests. `computations/experiments/*` justfiles are NOT run by the root gates; each is invoked on its own.
 
 ## Adding a new spike
 

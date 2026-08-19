@@ -10,5 +10,17 @@
 # and that is a ``.sage`` module.  Without the finder here it raises
 # ModuleNotFoundError before the preamble exists, so every session and every
 # notebook comes up bare.
-import sageparse.preparser.importer  # noqa: F401
-import sageparse.preparser.research  # noqa: F401
+#
+# Guard: this file rides sys.path into EVERY interpreter (the editable
+# install's .pth and the repo .envrc both expose src/), including plain
+# CPython tools that can never load the preamble.  The hook is meaningful
+# exactly where ``sage`` is importable: there, a missing ``sageparse`` must
+# stay loud (a bare kernel is the failure this file exists to prevent);
+# elsewhere the hook is vacuous and erroring on every unrelated python
+# process is pure noise.
+import importlib
+import importlib.util
+
+if importlib.util.find_spec("sage") is not None:
+    importlib.import_module("sageparse.preparser.importer")
+    importlib.import_module("sageparse.preparser.research")
