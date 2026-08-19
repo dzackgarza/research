@@ -24,7 +24,6 @@ from sage.categories.category import Category
 from sage.categories.homset import Hom, Homset
 from sage.categories.morphism import Morphism
 from sage.categories.objects import Objects
-from sage.categories.sets_cat import EmptySetError
 from sage.misc.cachefunc import cached_method
 from sage.rings.infinity import Infinity, PlusInfinity
 from sage.rings.integer import Integer
@@ -160,12 +159,13 @@ class Cardinalities(Category):
                 )
             return cardinal_base
 
-        if cardinal_base.is_finite():
-            cardinal_base = cardinal(2)
-
-        if (
-            cardinal_base.is_countably_infinite()
-            and cardinal_exponent.is_countably_infinite()
+        # Normalization: the exponent is infinite here, and for any base with
+        # 2 <= base <= exponent, base ^ exponent = 2 ^ exponent (Mathlib
+        # ``Cardinal.power_eq_two_power``).  A finite base was not 0 or 1
+        # above, so it qualifies; an infinite base qualifies exactly when the
+        # represented order compares it below the exponent.
+        if cardinal_base.is_finite() or Cardinalities().le(
+            cardinal_base, cardinal_exponent
         ):
             cardinal_base = cardinal(2)
 
@@ -632,16 +632,26 @@ class Cardinal(UniqueRepresentation, Parent):
         codomain: Cardinal,
         category: Category | None = None,
     ) -> CardinalityHomset:
-        if not isinstance(codomain, Cardinal):
-            raise TypeError(
-                "a cardinality morphism has cardinal objects at both ends"
-            )
-        if category is not None and category != Cardinalities():
-            raise TypeError("the requested hom-set is not in Cardinalities")
+        assert isinstance(codomain, Cardinal), (
+            "a cardinality morphism has cardinal objects at both ends"
+        )
+        assert category is None or category == Cardinalities(), (
+            "the requested hom-set is not in Cardinalities"
+        )
         return CardinalityHomset(self, codomain)
 
 
-class CardinalityHomset(Homset[Cardinal, Cardinal]):
+# A homset is a parent whose elements are its morphisms.  The runtime class
+# is a Cython extension type and cannot be subscripted at class-creation
+# time, so the binding goes through an alias, per the note in
+# ``typings/sage/structure/parent.pyi``.
+if TYPE_CHECKING:
+    CardinalityHomsetBase = Homset[Cardinal, Cardinal]
+else:
+    CardinalityHomsetBase = Homset
+
+
+class CardinalityHomset(CardinalityHomsetBase):
     r"""The empty or singleton hom-set between two cardinal objects."""
 
     def __init__(self, source: Cardinal, target: Cardinal) -> None:
@@ -674,10 +684,9 @@ class CardinalityHomset(Homset[Cardinal, Cardinal]):
 
     @cached_method
     def unique_morphism(self) -> CardinalityMorphism:
-        if not self:
-            raise EmptySetError(
-                f"there is no cardinality morphism {self.domain()} -> {self.codomain()}"
-            )
+        assert self, (
+            f"there is no cardinality morphism {self.domain()} -> {self.codomain()}"
+        )
         return CardinalityMorphism(self)
 
     def _an_element_(self) -> CardinalityMorphism:
@@ -687,13 +696,15 @@ class CardinalityHomset(Homset[Cardinal, Cardinal]):
         self,
         morphism: CardinalityMorphism | None = None,
     ) -> CardinalityMorphism:
-        if morphism is not None and morphism not in self:
-            raise ValueError(f"{morphism} is not in {self}")
+        assert morphism is None or morphism in self, (
+            f"{morphism} is not in {self}"
+        )
         return self.unique_morphism()
 
     def identity(self) -> CardinalityMorphism:
-        if not self.is_endomorphism_set():
-            raise TypeError("identity is defined only for an endomorphism set")
+        assert self.is_endomorphism_set(), (
+            "identity is defined only for an endomorphism set"
+        )
         return self.unique_morphism()
 
 

@@ -47,6 +47,15 @@ if TYPE_CHECKING:
 
     from dzack_research.preamble.categories.sets.cardinals import Cardinal
 
+    from collections.abc import Callable, Hashable, Iterable
+    from sage.combinat.posets.posets import FinitePoset
+    from sage.repl.rich_output.display_manager import DisplayManager
+    from sage.repl.rich_output.output_basic import OutputBase
+
+    # A finite poset's elements are arbitrary hashable objects; this alias
+    # names that genuine generality once, instead of scattering ``Any``.
+    type PosetElement = Hashable
+
     class _ParentWithIsFinite(SageParent[_E], Generic[_E]):
         def is_finite(self) -> bool: ...
 else:
@@ -197,7 +206,17 @@ class FiniteSets(CategoryWithAxiom):
         # ponytail: hasattr stays until it is checked that every Sage Parent
         # exposes is_finite; the placement branch above already handles the
         # placed-but-methodless case.
-        return isinstance(parent, Parent) and hasattr(parent, "is_finite") and bool(parent.is_finite())
+        if not (isinstance(parent, Parent) and hasattr(parent, "is_finite")):
+            return False
+        # The documented engine boundary (the `_engine_answer` pattern in
+        # groups.sage): Sage says "I cannot decide" by raising
+        # ``NotImplementedError``.  Membership is a predicate, so an
+        # undecided finiteness answers False here; any other exception is a
+        # defect and is left to raise.
+        try:
+            return bool(parent.is_finite())
+        except NotImplementedError:
+            return False
 
     class ParentMethods:
         if TYPE_CHECKING:
@@ -347,17 +366,21 @@ from sage.categories.homset import Homset as SageHomset
 class PosetMorphism(SageElement):
     r"""Morphism of partially ordered sets (order-preserving map)."""
 
-    def __init__(self, parent: "PosetHomset", function: Any) -> None:
+    def __init__(
+        self,
+        parent: PosetHomset,
+        function: Callable[[PosetElement], PosetElement],
+    ) -> None:
         SageElement.__init__(self, parent)
         self._function = function
 
-    def __call__(self, x: Any) -> Any:
+    def __call__(self, x: PosetElement) -> PosetElement:
         return self._function(x)
 
-    def domain(self) -> Any:
+    def domain(self) -> FinitePoset:
         return self.parent().domain()
 
-    def codomain(self) -> Any:
+    def codomain(self) -> FinitePoset:
         return self.parent().codomain()
 
     def is_order_preserving(self) -> bool:
@@ -402,14 +425,16 @@ class PosetMorphism(SageElement):
 
     def inverse(self) -> "PosetMorphism":
         r"""Return the inverse poset isomorphism."""
-        if not self.is_order_isomorphism():
-            raise ValueError("Inverse only exists for order isomorphisms")
+        assert self.is_order_isomorphism(), (
+            "inverse only exists for order isomorphisms"
+        )
         inv_map = {self(x): x for x in self.domain()}
         return PosetHomset(self.codomain(), self.domain())(lambda y: inv_map[y])
 
     def __mul__(self, other: "PosetMorphism") -> "PosetMorphism":
-        if self.domain() != other.codomain():
-            raise ValueError("Domains and codomains do not match for composition")
+        assert self.domain() == other.codomain(), (
+            "domains and codomains do not match for composition"
+        )
         return PosetHomset(other.domain(), self.codomain())(lambda x: self(other(x)))
 
     def _repr_(self) -> str:
@@ -421,17 +446,29 @@ class PosetHomset(SageHomset):
 
     Element = PosetMorphism
 
-    def _element_constructor_(self, f: Any) -> PosetMorphism:
+    def _element_constructor_(
+        self, f: Callable[[PosetElement], PosetElement]
+    ) -> PosetMorphism:
         mor = PosetMorphism(self, f)
-        if not mor.is_order_preserving():
-            raise ValueError(f"Function {f} does not preserve partial order (not a poset homomorphism)")
+        assert mor.is_order_preserving(), (
+            f"function {f} does not preserve the partial order "
+            "(not a poset homomorphism)"
+        )
         return mor
 
 
 class PosetTikz:
     r"""TikZ Hasse diagram representation."""
 
-    def __init__(self, poset: Any, label_map: Any = None, scale: float = 1.0, width: int = 580, height: int = 440, theme: str = "dark") -> None:
+    def __init__(
+        self,
+        poset: FinitePoset,
+        label_map: Callable[[PosetElement], str] | None = None,
+        scale: float = 1.0,
+        width: int = 580,
+        height: int = 440,
+        theme: str = "dark",
+    ) -> None:
         self._poset = poset
         self._label_map = label_map
         self._scale = scale
@@ -440,8 +477,8 @@ class PosetTikz:
         self._theme = theme
         self._coords = self._compute_layout()
 
-    def _compute_layout(self) -> dict[Any, tuple[float, float]]:
-        heights: dict[Any, int] = {}
+    def _compute_layout(self) -> dict[PosetElement, tuple[float, float]]:
+        heights: dict[PosetElement, int] = {}
         for v in self._poset.linear_extension():
             low = self._poset.lower_covers(v)
             if not low:
@@ -450,23 +487,20 @@ class PosetTikz:
                 heights[v] = max(heights[u] for u in low) + 1
 
         max_h = max(heights.values()) if heights else 0
-        levels: dict[int, list[Any]] = {h: [] for h in range(max_h + 1)}
+        levels: dict[int, list[PosetElement]] = {h: [] for h in range(max_h + 1)}
         for v, h in heights.items():
             levels[h].append(v)
 
-        coords: dict[Any, tuple[float, float]] = {}
+        coords: dict[PosetElement, tuple[float, float]] = {}
         for h in range(max_h + 1):
             elems = list(levels[h])
             if h > 0:
-                def avg_pred_x(v: Any) -> float:
+                def avg_pred_x(v: PosetElement) -> float:
                     preds = self._poset.lower_covers(v)
                     if preds and any(u in coords for u in preds):
                         return sum(coords[u][0] for u in preds if u in coords) / len(preds)
                     return 0.0
-                try:
-                    elems.sort(key=lambda v: (avg_pred_x(v), str(v)))
-                except Exception:
-                    pass
+                elems.sort(key=lambda v: (avg_pred_x(v), str(v)))
 
             m = len(elems)
             for i, v in enumerate(elems):
@@ -662,19 +696,21 @@ class PosetTikz:
         return "\n".join(lines)
 
 
-def _poset_repr_html(poset: Any) -> str:
+def _poset_repr_html(poset: FinitePoset) -> str:
     return PosetTikz(poset)._repr_html_()
 
 
-def _poset_latex(poset: Any) -> str:
+def _poset_latex(poset: FinitePoset) -> str:
     return PosetTikz(poset).tikz_code()
 
 
-def _poset_repr_latex(poset: Any) -> str:
+def _poset_repr_latex(poset: FinitePoset) -> str:
     return rf"\(\displaystyle {_poset_latex(poset)}\)"
 
 
-def _poset_rich_repr(poset: Any, dm: Any) -> Any:
+def _poset_rich_repr(
+    poset: FinitePoset, dm: DisplayManager
+) -> OutputBase | None:
     if hasattr(dm, "types") and hasattr(dm, "supported_output"):
         if dm.types.OutputHtml in dm.supported_output():
             html_content = _poset_repr_html(poset)
@@ -686,7 +722,11 @@ def _poset_rich_repr(poset: Any, dm: Any) -> Any:
     return None
 
 
-def _poset_repr_mimebundle(poset: Any, include: Any = None, exclude: Any = None) -> dict[str, str]:
+def _poset_repr_mimebundle(
+    poset: FinitePoset,
+    include: Iterable[str] | None = None,
+    exclude: Iterable[str] | None = None,
+) -> dict[str, str]:
     return {
         "text/html": _poset_repr_html(poset),
         "text/latex": _poset_repr_latex(poset),
@@ -700,16 +740,24 @@ class PartiallyOrderedSets(CategoryWithAxiom):
     _base_category_class_and_axiom = (Sets, "PartiallyOrdered")
 
     class ParentMethods:
-        def hasse_layout(self) -> dict[Any, tuple[float, float]]:
+        def hasse_layout(self) -> dict[PosetElement, tuple[float, float]]:
             r"""Compute ranked (x, y) coordinates for the Hasse diagram without dot2tex."""
             pt = PosetTikz(self)
             return pt._coords
 
-        def hasse_tikz(self, label_map: Any = None, scale: float = 1.0) -> PosetTikz:
+        def hasse_tikz(
+            self,
+            label_map: Callable[[PosetElement], str] | None = None,
+            scale: float = 1.0,
+        ) -> PosetTikz:
             r"""Return a PosetTikz representation of the Hasse diagram."""
             return PosetTikz(self, label_map=label_map, scale=scale)
 
-        def tikz(self, label_map: Any = None, scale: float = 1.0) -> PosetTikz:
+        def tikz(
+            self,
+            label_map: Callable[[PosetElement], str] | None = None,
+            scale: float = 1.0,
+        ) -> PosetTikz:
             r"""Alias for :meth:`hasse_tikz`."""
             return self.hasse_tikz(label_map=label_map, scale=scale)
 
@@ -723,27 +771,31 @@ class PartiallyOrderedSets(CategoryWithAxiom):
         def _repr_latex_(self) -> str:
             return _poset_repr_latex(self)
 
-        def _rich_repr_(self, dm: Any) -> Any:
+        def _rich_repr_(self, dm: DisplayManager) -> OutputBase | None:
             return _poset_rich_repr(self, dm)
 
-        def _repr_mimebundle_(self, include: Any = None, exclude: Any = None) -> dict[str, str]:
+        def _repr_mimebundle_(
+            self,
+            include: Iterable[str] | None = None,
+            exclude: Iterable[str] | None = None,
+        ) -> dict[str, str]:
             return _poset_repr_mimebundle(self, include=include, exclude=exclude)
 
 
 def install_poset_display() -> None:
-    r"""Install clean Hasse diagram TikZ/SVG display methods onto Sage's FinitePoset."""
-    try:
-        from sage.combinat.posets.posets import FinitePoset
-        FinitePoset.hasse_layout = lambda self: PosetTikz(self)._coords
-        FinitePoset.hasse_tikz = lambda self, label_map=None, scale=1.0: PosetTikz(self, label_map=label_map, scale=scale)
-        FinitePoset.tikz = lambda self, label_map=None, scale=1.0: PosetTikz(self, label_map=label_map, scale=scale)
-        FinitePoset._repr_html_ = _poset_repr_html
-        FinitePoset._latex_ = _poset_latex
-        FinitePoset._repr_latex_ = _poset_repr_latex
-        FinitePoset._rich_repr_ = _poset_rich_repr
-        FinitePoset._repr_mimebundle_ = _poset_repr_mimebundle
-    except Exception:
-        pass
+    r"""Route Sage's ``FinitePoset`` into ``PartiallyOrderedSets``.
+
+    The category owns the Hasse-diagram display methods
+    (``PartiallyOrderedSets.ParentMethods`` above); this hook refines every
+    finite poset Sage constructs into that category after ``__init__`` -- the
+    sanctioned refinement route, never a monkey-patch onto Sage's class, and
+    a failure here is loud.
+    """
+    from sage.combinat.posets.posets import FinitePoset
+
+    from dzack_research.preamble.refine import hook_post_init
+
+    hook_post_init(FinitePoset, Sets().PartiallyOrdered())
 
 
 install_poset_display()
