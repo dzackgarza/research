@@ -192,10 +192,12 @@ class TestSchlaefliMatrixExamples:
     
     # CITATION: research/wikiwand/coxeter_schlaefli_matrices.md, [PROJECT_CONVENTIONS.md]
     # EXAMPLE: A₂ triangle with Coxeter matrix [[1,3],[3,1]]
-    # CONVENTION: Our Gram matrix B = [[-2,1],[1,-2]] with eigenvalues [-3,-1]
-    # NOTE: This matches literature Schläfli matrix due to our specific convention
+    # CONVENTION: Our Gram matrix B = 2cos(π/M_ij) = [[-2,1],[1,-2]], eigenvalues [-3,-1]
+    # FACT: the literature Schläfli matrix is C_ij = -2cos(π/M_ij) = [[2,-1],[-1,2]],
+    #       eigenvalues [3,1]. Our B is the NEGATIVE of C, not equal to it: finite type
+    #       reads as negative definite here and as positive definite in the literature.
     def test_A2_gram_construction(self):
-        """Test A₂ Gram matrix construction matches literature Schläfli matrix."""
+        """Test A₂ Gram matrix construction: B is the negative of the literature Schläfli matrix."""
         try:
             from coxeter_matrices import CoxeterMatrix, GramMatrix
             

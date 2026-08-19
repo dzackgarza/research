@@ -293,9 +293,13 @@ class TestGramMatrixValidation:
 class TestGramMatrixLiteratureExamples:
     """Test GramMatrix using literature examples."""
     
-    # CITATION: research/wikiwand/coxeter_schlaefli_matrices.md
+    # CITATION: research/wikiwand/coxeter_schlaefli_matrices.md, [PROJECT_CONVENTIONS.md]
     # EXAMPLE: A2 triangle group with angles π/3, π/3, π/3
-    # FACT: Coxeter matrix M=[[1,3],[3,1]] gives Schläfli matrix C=[[-2,1],[1,-2]]
+    # FACT: the Coxeter matrix M=[[1,3],[3,1]] has literature Schläfli matrix
+    #       C_ij = -2cos(π/M_ij), so C = [[2,-1],[-1,2]] with eigenvalues 1 and 3.
+    # CONVENTION: this project's Gram matrix is B = 2cos(π/M_ij) = -C = [[-2,1],[1,-2]],
+    #       with eigenvalues -1 and -3. B is the NEGATIVE of the Schläfli matrix;
+    #       determinants agree (det = 3) only because the rank is even.
     def test_wikiwand_triangle_example(self):
         """Test triangle example from Wikiwand Schläfli matrix article."""
         try:
