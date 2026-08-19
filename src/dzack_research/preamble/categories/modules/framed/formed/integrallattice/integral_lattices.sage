@@ -411,31 +411,10 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             unique and need not glue to isometric lattices, so a maximal
             overlattice is what this is, not the maximal one.
             """
-            # Local: a module-level import here would close a cycle; by call time this module is built.
-            from dzack_research.preamble.utilities import zipsum
-            inclusion = next(
-                self.discriminant_group().maximal_isotropic_subobjects()
-            ).embedding()
-            overlattice = self.glue(*(
-                inclusion(generator)
-                for generator in inclusion.domain().module_generators()
-            ))
-            # The generating set glue chose is its rows in L's own framing, so
-            # inverting them writes L's generators in the overlattice's -- the
-            # matrix of the inclusion, which is integral exactly because L
-            # sits inside what was glued from it.
-            coordinates = matrix(
-                SageQQ,
-                [list(row) for row in overlattice.module_generating_set()],
-            ).inverse()
-            assert all(entry in SageZZ for entry in coordinates.list()), (
-                f"{overlattice} was glued from {self} and does not contain it"
+            form = self.discriminant_group()
+            return form.overlattice_from_isotropic_subobject(
+                next(form.maximal_isotropic_subobjects())
             )
-            coordinates = coordinates.change_ring(SageZZ)
-            return self.Hom(overlattice)([
-                zipsum(row, overlattice.module_generators(), overlattice.zero())
-                for row in coordinates.rows()
-            ])
 
         # ---- isometry ----
 
@@ -1035,6 +1014,52 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
 
         orthogonal_group = Aut
         automorphisms = Aut
+
+        def discriminant_representation(self: "LatticeParent") -> "Morphism":
+            r"""Return $\rho_L: O(L)\to O(A_L)$, the discriminant representation.
+
+            Obtained by applying the discriminant functor to automorphisms
+            (FOUNDATIONS Defs 26.1/26.3; Nik80 §§3°–4°, Zotero TTY9FFJS): the
+            value on an isometry is its
+            :meth:`~LatticeIsometries.MorphismMethods.discriminant_morphism`.
+            For an even $L$ the codomain is $O(A_L, q_L)$; for an odd one it
+            is $O(A_L, b_L)$, which is which form $A_L$ carries.  That $\rho_L$
+            is a homomorphism is the functoriality of $\operatorname{Disc}$
+            -- a theorem, carried, not re-proved at runtime.  No surjectivity
+            is assumed.
+            """
+            from sage.categories.groups import Groups as SageGroups
+            return SetMorphism(
+                Hom(
+                    self.Aut(),
+                    self.discriminant_group().automorphism_group(),
+                    SageGroups(),
+                ),
+                lambda isometry: isometry.discriminant_morphism(),
+            )
+
+        def stable_orthogonal_group(self: "LatticeParent") -> "Group":
+            r"""Return $\tilde O(L):=\ker(\rho_L)$, the stable orthogonal group.
+
+            The kernel of the discriminant representation (Nik80 §§3°–4°,
+            Zotero TTY9FFJS): the isometries acting trivially on $A_L$.
+            Computed by listing $O(L)$, which a finite group admits; for an
+            infinite $O(L)$ no generating set of the kernel is in hand, and
+            the absence is stated rather than approximated.
+            """
+            isometries = self.Aut()
+            assert isometries.is_finite(), (
+                f"O({self}) is infinite; no generating set of the kernel of "
+                "rho is in hand.  Name a subgroup by generators and ask "
+                "whether each acts trivially on the discriminant form."
+            )
+            identity = self.discriminant_group().automorphism_group().one()
+            kernel_generators = tuple(
+                isometry
+                for isometry in isometries
+                if isometry.discriminant_morphism() == identity
+            )
+            return isometries.subgroup_on(kernel_generators)
 
         def with_action(self: "LatticeParent", action: "GroupAction") -> "Module":
             r"""Return $L$ carrying the already-constructed $\rho:G\to O(L)$.

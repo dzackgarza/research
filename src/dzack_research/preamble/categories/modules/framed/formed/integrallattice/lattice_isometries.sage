@@ -388,6 +388,43 @@ class LatticeIsometries(Category):
                 }
             )
 
+        def discriminant_morphism(self: "IsometryMorphism") -> "FormMorphism":
+            r"""Return $\operatorname{Disc}(f)$: the induced automorphism of $A_L$.
+
+            The discriminant construction is a functor on cores (FOUNDATIONS
+            Def 26.1; Nik80 §§3°–4°, Zotero TTY9FFJS), so it acts on
+            isometries, and its value on this one is a morphism of the
+            torsion-form category -- an element of $O(A_L)$, constructed in
+            that group.
+
+            On a class $\pi(y)$ with $y\in L^\vee$ it is $\pi(f^\vee(y))$,
+            where $f^\vee(\varphi)=\varphi\circ f^{-1}$ is the dual isometry;
+            in the dual framing $f^\vee$'s matrix is $(U^{-1})^{\mathsf T}$
+            for $U$ the matrix of $f$.  That the result preserves the
+            discriminant form is functoriality, and the receiving homset's
+            constructor checks it on this finite object rather than trusting
+            the transcription.
+            """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.utilities import zipsum
+            lattice = self.domain()
+            form = lattice.discriminant_group()
+            projection = form.projection()
+            dual = projection.domain()
+            dual_matrix = (
+                matrix(SageZZ, self.matrix()).inverse().transpose().change_ring(SageZZ)
+            )
+            return form.automorphism_group()(
+                {
+                    label: projection(
+                        zipsum(row, dual.module_generators(), dual.zero())
+                    )
+                    for label, row in zip(
+                        dual.module_generating_set(), dual_matrix.rows()
+                    )
+                }
+            )
+
         def cyclic_subgroup(self: "IsometryMorphism") -> "Group":
             r"""Return \(\langle f\rangle\le O(L)\), the subgroup this generates.
 

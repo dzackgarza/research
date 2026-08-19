@@ -27,6 +27,12 @@ from typing import Protocol, TYPE_CHECKING
 
 from sage.categories.category import Category
 from sage.groups.additive_abelian.qmodnz import QmodnZ
+
+# The one sanctioned crossing to Sage's private per-block Brown engine
+# (ruled in by the spike's sage_patches note, absorbed here): the per-block
+# Brown invariant has no public Sage surface, and this import site IS the
+# boundary -- no wrapper module stands between.
+from sage.modules.torsion_quadratic_module import _brown_indecomposable
 from sage.matrix.matrix0 import Matrix
 from sage.rings.rational_field import QQ as SageQQ
 
@@ -246,6 +252,97 @@ class DiscriminantQuadraticModules(Category):
             # Local: a module-level import here would close a cycle; by call time this module is built.
             from dzack_research.preamble.categories.modules.framed.formed.torsionform.torsion_modules_with_form import p_adic_jordan_module_generators
             return self.regenerate(p_adic_jordan_module_generators(self))
+
+        def brown_invariant(self: "DiscriminantQuadraticParent") -> "Element":
+            r"""Return $\operatorname{Br}(q)\in\mathbb Z/8$.
+
+            The definition is the argument of the normalized Gauss sum of the
+            finite quadratic form: $\gamma_q(1)=\exp(\pi i\operatorname{Br}(q)/4)$
+            (MM09 Thm 5.1, Zotero ACX7WF7L) -- a property of $(A,q)$ alone.
+            That $\operatorname{Br}(q_L)$ equals the signature of an even
+            lattice mod $8$ is *Milgram's theorem* (Nik80 Thm 1.3.3, Zotero
+            TTY9FFJS), a theorem about lattices and never the definition.
+
+            Computed over the orthogonal splitting $q=\bigoplus_p q_p$ into
+            primary parts (Nik80 Prop 1.2.2), each written in $p$-adic Jordan
+            form; the value of each indecomposable block is Shimada's table,
+            delegated to Sage's per-block engine behind this boundary.
+            """
+            from sage.quadratic_forms.genera.normal_form import collect_small_blocks
+            from sage.rings.finite_rings.integer_mod_ring import IntegerModRing
+
+            brown = IntegerModRing(8).zero()
+            for p in self.annihilator().gen().prime_divisors():
+                normal = self.primary_part(p).normal_form()
+                generators = tuple(normal.module_generators())
+                # The symmetric matrix of canonical representatives: q on the
+                # diagonal read in Q/2Z, b off it read in Q/Z -- the entries
+                # the per-block table is written in.
+                reduced = matrix(
+                    SageQQ,
+                    [
+                        [
+                            left.q().lift() if i == j else left.b(right).lift()
+                            for j, right in enumerate(generators)
+                        ]
+                        for i, left in enumerate(generators)
+                    ],
+                )
+                for block in collect_small_blocks(reduced):
+                    brown += _brown_indecomposable(block, p)
+            return brown
+
+        def is_isomorphic(self: "DiscriminantQuadraticParent", other: "DiscriminantQuadraticParent") -> bool:
+            r"""Return whether the two finite quadratic forms are isometric.
+
+            The category answers its own isomorphism question: both objects
+            carry $q$, and the decision is normal-form comparison behind the
+            boundary -- the engine's stated contract is that torsion quadratic
+            modules are isomorphic exactly when they share value modules and
+            normal form.  Finiteness is what makes this decidable at all.
+            That quadratic isomorphism refines bilinear refines group
+            isomorphism is then a theorem (MM09, Zotero ACX7WF7L), not an API
+            flag.
+            """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.framed.formed.torsionform.torsion_modules_with_form import _engine_normal_form_key
+            assert other in DiscriminantQuadraticModules(), (
+                "quadratic isometry is decided between quadratic torsion "
+                "forms; ask the bilinear category about polarizations"
+            )
+            return bool(
+                _engine_normal_form_key(self, quadratic=True)
+                == _engine_normal_form_key(other, quadratic=True)
+            )
+
+        def automorphism_group(self: "DiscriminantQuadraticParent") -> "FormHomset":
+            r"""Return $O(A,q):=\operatorname{Aut}_{\mathbf{DiscQuad}}(A,q)$.
+
+            FOUNDATIONS Def 26.2: a value of the generic automorphism
+            construction in this category, not a separate primitive.  The
+            elements are this homset's own form-preserving morphisms;
+            generator data and order are the engine's, translated back
+            (Remark 26.5 rules out the matrix-subgroup description outside
+            the homocyclic case, so no matrix group is built).
+            """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.framed.formed.torsionform.torsion_modules_with_form import _torsion_form_automorphism_group
+            return _torsion_form_automorphism_group(self, quadratic=True)
+
+        def twist(self: "DiscriminantQuadraticParent", scalar: "Integer") -> "FormModule":
+            r"""Return $(A, s\cdot q)$: the same group, the form rescaled.
+
+            Restated here the way :meth:`regenerate` is, so the twist of a
+            quadratic torsion form is constructed *as one*: the general
+            notion rescales the form morphism (MM09, Zotero ACX7WF7L, whose
+            negation rules are the $s=-1$ case), and this category's own
+            constructor is what writes the rescaled form on the same
+            presented group.
+            """
+            return DiscriminantQuadraticModules().from_module(
+                self.forget_form(),
+                scalar * self.form().polar_form().gram_matrix(),
+            )
 
 
     class ElementMethods:

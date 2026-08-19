@@ -751,7 +751,24 @@ class BilinearFormMorphism(Morphism):
         return self(element, element)
 
     def polar_form(self) -> "BilinearFormMorphism":
-        return self
+        r"""Return $\operatorname{polar}(\operatorname{diag}(b))=2b$.
+
+        The polar form of the norm $q(x)=b(x,x)$: the bilinear expansion
+        $q(x+y)-q(x)-q(y)=2b(x,y)$ (FOUNDATIONS Lemma 17.2, following the
+        polarization convention of Nik80 §2°), valued where $b$ is.  Not
+        $b$ itself: as previously written this method was the identity
+        under a false name (TODO 2026-08-14), and the finite quadratic
+        case (FOUNDATIONS Def 25.4) reads the same factor of two through
+        the canonical $\times 2$ isomorphism
+        $\mathbb Q/\mathbb Z\to\mathbb Q/2\mathbb Z$.
+        """
+        assert self._gram_matrix is not None, (
+            f"{self.module()} has no finite generating set, so its polar "
+            "form has no Gram matrix; polarize the pairing instead"
+        )
+        return BilinearForms(self.module(), self.codomain())(
+            2 * self._gram_matrix
+        )
 
     def on_module(self, module: "Module") -> "BilinearFormMorphism":
         return BilinearForms(module, self.codomain())(self._gram_matrix)

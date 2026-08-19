@@ -970,3 +970,247 @@ def test_a_ring_raised_to_a_rank_is_the_preamble_free_module(name: str) -> None:
     assert module.number_of_module_generators() == 3, (
         f"{name}^3 is free of rank 3"
     )
+
+
+# ---------------------------------------------------------------------------
+# Discriminant and torsion forms: the literature corpus, on the owned surface.
+#
+# Sources (Zotero item | Better-BibTeX key):
+#   - V. V. Nikulin, *Integral symmetric bilinear forms and some of their
+#     applications* (1980).  Nik80; Zotero TTY9FFJS, attachment D7BP5F7Z.
+#   - R. Miranda & D. R. Morrison, *Embeddings of integral quadratic forms*
+#     (2009).  MM09; Zotero ACX7WF7L.
+#   - Conway & Sloane, *Sphere Packings, Lattices and Groups*, 3rd ed.  CS10;
+#     Zotero T2WVLTDB, attachment TCJKXU3D.
+#
+# Every lattice here is constructed from an explicit Gram matrix or the
+# positive-definite named constructor, so no sign convention is imported from
+# the catalogue; assertions the sources state only up to a sign convention
+# are written in convention-independent form.
+# ---------------------------------------------------------------------------
+
+
+def _subobject_images(subobject) -> frozenset:
+    r"""The subobject's elements seen in the ambient discriminant form."""
+    embedding = subobject.embedding()
+    return frozenset(embedding(element) for element in subobject)
+
+
+def test_rank_one_sign_pair_separates_quadratic_from_bilinear_isometry() -> None:
+    r"""$\langle2\rangle$ and $\langle-2\rangle$ share $b$ but not $q$.
+
+    Nik80 (TTY9FFJS) Prop 1.8.2 gives the bilinear isomorphism; Thm 1.11.3
+    separates the quadratic forms by their signatures mod 8.  MM09 (ACX7WF7L)
+    Thm 5.1 defines the Brown invariant as the argument of the normalized
+    Gauss sum, so the values 1 and 7 are finite-form facts.
+    """
+    plus = IntegralLattice(matrix(ZZ, [[2]])).discriminant_group()
+    minus = IntegralLattice(matrix(ZZ, [[-2]])).discriminant_group()
+    assert plus.invariants() == (2,) and minus.invariants() == (2,)
+    assert plus.associated_bilinear_form().is_isomorphic(
+        minus.associated_bilinear_form()
+    ), "Nik80 Prop 1.8.2: the bilinear discriminant forms are isomorphic"
+    assert not plus.is_isomorphic(minus), (
+        "Nik80 Thm 1.11.3: the quadratic forms differ, their signatures "
+        "disagree mod 8"
+    )
+    assert (plus.brown_invariant(), minus.brown_invariant()) == (1, 7), (
+        "MM09 Thm 5.1: Br is the Gauss-sum argument of the finite form"
+    )
+
+
+def test_elementary_2adic_form_u_k_has_brown_invariant_zero() -> None:
+    r"""$\operatorname{Br}(u_k)=0$ and $u_k$ is isotropic.
+
+    MM09 (ACX7WF7L) defines $U_k$ by the Gram matrix $((0,2^k),(2^k,0))$;
+    Prop 2.7 gives $\gamma_{u_k}(1)=1$, so $\operatorname{Br}(u_k)=0$ by
+    Thm 5.1, and (7.7.1) exhibits a nonzero isotropic vector.
+    """
+    for k in (1, 2, 3):
+        form = IntegralLattice(
+            matrix(ZZ, 2, [0, 2**k, 2**k, 0])
+        ).discriminant_group()
+        assert tuple(form.invariants()) == (2**k, 2**k)
+        assert form.brown_invariant() == 0, "MM09 Prop 2.7 with Thm 5.1"
+        assert not form.is_anisotropic(), "MM09 (7.7.1)"
+
+
+def test_elementary_2adic_form_v_1_has_brown_invariant_four_and_is_anisotropic() -> None:
+    r"""$\operatorname{Br}(v_1)=4$ and $v_1$ is anisotropic.
+
+    $v_1=q_{D_4}$; MM09 (ACX7WF7L) Prop 2.7 gives $\gamma_{v_k}(1)=(-1)^k$,
+    so $\operatorname{Br}(v_1)=4$ by Thm 5.1, and (7.7.2) shows $V_k$ has no
+    nonzero isotropic vector.
+    """
+    form = IntegralLattice("D4").discriminant_group()
+    assert tuple(form.invariants()) == (2, 2)
+    assert form.brown_invariant() == 4, "MM09 Prop 2.7 with Thm 5.1"
+    assert form.is_anisotropic(), "MM09 (7.7.2)"
+
+
+def test_brown_invariant_is_additive_over_the_primary_splitting() -> None:
+    r"""$q=\bigoplus_p q_p$ and $\operatorname{Br}$ adds over the parts.
+
+    Nik80 (TTY9FFJS) Prop 1.2.2: the finite form splits orthogonally over
+    the $p$-primary parts of $A$.  The Brown invariant is the Gauss-sum
+    argument (MM09 Thm 5.1), and a Gauss sum of an orthogonal sum factors,
+    so the invariant adds.  $A_5$ has $A_L=\mathbb Z/6$, a genuinely
+    non-prime-power group.
+    """
+    form = IntegralLattice("A5").discriminant_group()
+    assert tuple(form.invariants()) == (6,)
+    two_part = form.primary_part(2)
+    three_part = form.primary_part(3)
+    assert (two_part.cardinality(), three_part.cardinality()) == (2, 3), (
+        "Nik80 Prop 1.2.2: the primary parts realize the factorization of 6"
+    )
+    assert form.brown_invariant() == (
+        two_part.brown_invariant() + three_part.brown_invariant()
+    ), "Br is additive over the primary splitting"
+
+
+def test_milgram_identifies_brown_with_the_signature_mod_eight() -> None:
+    r"""$\operatorname{Br}(q_L)\equiv\operatorname{sign}(L)\pmod 8$.
+
+    Milgram's theorem, Nik80 (TTY9FFJS) Thm 1.3.3 -- a theorem about even
+    lattices, checked as one, never the definition of $\operatorname{Br}$.
+    """
+    for lattice in (
+        IntegralLattice("A5"),
+        IntegralLattice("D4"),
+        IntegralLattice(matrix(ZZ, 2, [0, 2, 2, 0])),
+        IntegralLattice(matrix(ZZ, [[-2]])),
+    ):
+        positive, negative = lattice.signature_pair()
+        assert lattice.discriminant_group().brown_invariant() == (
+            positive - negative
+        ), "Nik80 Thm 1.3.3 (Milgram)"
+
+
+def test_lagrangian_glue_of_the_rank_one_sign_pair_is_unimodular() -> None:
+    r"""The diagonal class of $\langle2\rangle\oplus\langle-2\rangle$ glues to a unimodular lattice.
+
+    Nik80 (TTY9FFJS) Prop 1.4.1: isotropic subgroups of $A_L$ correspond to
+    even overlattices, with the new discriminant form $S^{\perp}/S$; a
+    lagrangian $S$ gives a unimodular overlattice.  The diagonal element has
+    $q=1/2+3/2=0$ in $\mathbb Q/2\mathbb Z$.
+    """
+    lattice = IntegralLattice(matrix(ZZ, [[2]])) + IntegralLattice(
+        matrix(ZZ, [[-2]])
+    )
+    form = lattice.discriminant_group()
+    assert tuple(form.invariants()) == (2, 2)
+    first, second = tuple(form.module_generators())
+    diagonal = first + second
+    assert diagonal.q() == 0, "the diagonal class is isotropic"
+    subgroup = form.subobject_generated_by((diagonal,))
+    assert any(
+        _subobject_images(lagrangian) == _subobject_images(subgroup)
+        for lagrangian in form.lagrangian_subobjects()
+    ), "the diagonal subgroup equals its own perpendicular"
+    assert form.orthogonal_quotient(subgroup).cardinality() == 1, (
+        "Nik80 Prop 1.4.1: the glued discriminant form is S-perp/S, trivial "
+        "for a lagrangian"
+    )
+    inclusion = form.overlattice_from_isotropic_subobject(subgroup)
+    assert inclusion.index() == 2, (
+        "an isotropic class of order 2 glues with index 2 -- asserted on the "
+        "inclusion arrow"
+    )
+    glued = inclusion.codomain()
+    assert glued.is_even() and glued.is_unimodular(), "Nik80 Prop 1.4.1"
+
+
+def test_d8_isotropic_self_glue_reconstructs_e8() -> None:
+    r"""$D_8^{+}=E_8$: the isotropic $D_8$ glue class gives $E_8$.
+
+    CS10 (T2WVLTDB) Ch. 4 lists $D_8^{+}$ as the even unimodular lattice
+    obtained by adjoining isotropic glue, with 240 roots; Nik80 (TTY9FFJS)
+    Prop 1.4.1 is the correspondence the construction runs through.  The
+    index is asserted on the inclusion arrow.
+    """
+    d8 = IntegralLattice("D8")
+    inclusion = d8.maximal_overlattice()
+    assert inclusion.index() == 2, "[E8 : D8] = 2"
+    glued = inclusion.codomain()
+    assert glued.is_even() and glued.is_unimodular()
+    assert glued.enumerate_short_vectors(2).cardinality() == 120, (
+        "CS10 ch. 4: E8 has 240 roots, counted modulo sign"
+    )
+    assert glued.is_isometric(IntegralLattice("E8"))
+
+
+def test_a2_discriminant_form_is_anisotropic_and_not_metabolic() -> None:
+    r"""$q_{A_2}$ on $\mathbb Z/3$ has no nonzero isotropic element.
+
+    CS10 (T2WVLTDB) Ch. 4 lists the $A_2$ glue group as cyclic of order
+    three; with Nik80's (TTY9FFJS) definitions the form is anisotropic, so
+    it has no lagrangian and $A_2$ admits no proper even overlattice.
+    """
+    form = IntegralLattice("A2").discriminant_group()
+    assert tuple(form.invariants()) == (3,)
+    assert form.is_anisotropic()
+    assert not form.is_metabolic()
+    assert list(form.lagrangian_subobjects()) == []
+
+
+def test_form_negation_via_twist_matches_the_negation_rules() -> None:
+    r"""$-q_L=q_{L(-1)}$, and the negation rules classify $q\cong-q$.
+
+    MM09 (ACX7WF7L) lists the negation rules for the elementary forms:
+    $-u_k\cong u_k$, $-v_k\cong v_k$, but $-w^{\epsilon}_{p,k}\cong
+    w^{-\epsilon}_{p,k}$.  So $v_1=q_{D_4}$ is self-negative while
+    $q_{E_7}=w^{\epsilon}_{2,1}$ is not; the Brown invariants of $q_{E_7}$
+    and $-q_{E_7}$ are distinct and opposite mod 8 (Nik80 Thm 1.11.3).
+    """
+    d4 = IntegralLattice("D4")
+    form = d4.discriminant_group()
+    assert form.twist(-1).is_isomorphic(
+        d4.twist(-1).discriminant_group()
+    ), "negating the lattice negates its discriminant form"
+    assert form.is_isomorphic(form.twist(-1)), "MM09: -v_1 is v_1"
+
+    e7_form = IntegralLattice("E7").discriminant_group()
+    negated = e7_form.twist(-1)
+    assert not e7_form.is_isomorphic(negated), "MM09: -w is w^{-eps}, not w"
+    assert e7_form.brown_invariant() + negated.brown_invariant() == 0, (
+        "negation negates the Gauss-sum argument"
+    )
+    assert e7_form.brown_invariant() != negated.brown_invariant()
+
+
+def test_quadratic_isomorphism_refines_bilinear_refines_group() -> None:
+    r"""$u_1$ and $v_1$ share group and bilinear form, not $q$.
+
+    Nik80 (TTY9FFJS) Prop 1.8.2: the bilinear forms of $u_1$ and $v_1$ are
+    isomorphic; Thm 1.11.3 separates the quadratic forms by signature mod 8,
+    and MM09 (ACX7WF7L) (7.7.3) separates them by discriminant characters.
+    Each category answers its own isomorphism question; the refinement is
+    this theorem, not an API flag.
+    """
+    u1 = IntegralLattice(matrix(ZZ, 2, [0, 2, 2, 0])).discriminant_group()
+    v1 = IntegralLattice("D4").discriminant_group()
+    assert tuple(u1.invariants()) == tuple(v1.invariants()) == (2, 2), (
+        "one group underlies both forms"
+    )
+    assert u1.associated_bilinear_form().is_isomorphic(
+        v1.associated_bilinear_form()
+    ), "Nik80 Prop 1.8.2"
+    assert not u1.is_isomorphic(v1), "MM09 (7.7.3); Br 0 vs 4"
+    assert (u1.brown_invariant(), v1.brown_invariant()) == (0, 4)
+
+
+def test_rank_one_2adic_form_separates_the_two_orthogonal_groups() -> None:
+    r"""On $A_{\langle8\rangle}=\mathbb Z/8$, $O(b)$ has order 4 and $O(q)$ order 2.
+
+    MM09 (ACX7WF7L): every unit $u$ with $u^2\equiv1\pmod 8$ preserves the
+    bilinear pairing, while preserving the quadratic refinement narrows the
+    action to $u=\pm1$.  Each category answers with its own automorphism
+    group (FOUNDATIONS Def 26.2), and the two orders separate them.
+    """
+    lattice = IntegralLattice(matrix(ZZ, [[8]]))
+    form = lattice.discriminant_group()
+    assert tuple(form.invariants()) == (8,)
+    assert form.brown_invariant() == 1, "Milgram cross-check: sign (1,0)"
+    assert form.automorphism_group().order() == 2
+    assert form.associated_bilinear_form().automorphism_group().order() == 4

@@ -206,6 +206,34 @@ class FormModules(OwnedCategoryOverBaseRing):
             r"""Return the underlying module, forgetting the form."""
             return self._module
 
+        def twist(self: "FormedParent", scalar: "RingElement") -> "FormModule":
+            r"""Return $M(s)$: the same underlying module, the form rescaled by ``scalar``.
+
+            The general notion, stated where any formed module can answer it:
+            rescaling the classifying form morphism by a scalar of the value
+            module's ring of operators.  Negation, $-q$ via ``twist(-1)``, is
+            the case MM09's negation rules classify (Zotero ACX7WF7L).
+            Refinements whose objects carry more construction data -- lattices,
+            discriminant forms -- restate this with their own constructors so
+            the twist stays in its category.
+            """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.forms.forms import BilinearForms, QuadraticForms
+            from dzack_research.preamble.categories.forms.forms import QuadraticFormMorphism
+            morphism = self._form_morphism()
+            match morphism:
+                case QuadraticFormMorphism():
+                    # The lift is what records a quadratic form, and
+                    # ``lift_form`` is where it is read off.
+                    rescaled = QuadraticForms(
+                        morphism.module(), morphism.value_module()
+                    )(scalar * morphism.lift_form().gram_matrix())
+                case _:
+                    rescaled = BilinearForms(
+                        morphism.module(), morphism.value_module()
+                    )(scalar * morphism.gram_matrix())
+            return FormModule(rescaled)
+
         def framing_morphism(self: "FormedParent") -> "FramingMorphism":
             r"""Return the framing \(F_R(S)\to M\)."""
             return self._framing_morphism

@@ -190,9 +190,14 @@ class DiscriminantBilinearModules(Category):
             """
             # Local: a module-level import here would close a cycle; by call time this module is built.
             from dzack_research.preamble.categories.modules.framed.formed.torsionform.discriminant_quadratic_modules import DiscriminantQuadraticModules
+            # The lift matrix of the refinement is b's own matrix of
+            # representatives, read in Q/2Z: q(x) = b(x,x) on a lift, which is
+            # exactly the x2 passage of Def 25.4 run backwards.  Not
+            # ``polar_form``: the polarization of b's norm is 2b, a different
+            # form.
             return DiscriminantQuadraticModules().from_module(
                 self.forget_form(),
-                self.form().polar_form().gram_matrix(),
+                self.form().gram_matrix(),
             )
 
         def _form_matrix_latex_label(self: "DiscriminantBilinearParent") -> str:
@@ -228,6 +233,55 @@ class DiscriminantBilinearModules(Category):
             # Local: a module-level import here would close a cycle; by call time this module is built.
             from dzack_research.preamble.categories.modules.framed.formed.torsionform.torsion_modules_with_form import p_adic_jordan_module_generators
             return self.regenerate(p_adic_jordan_module_generators(self))
+
+        def is_isomorphic(self: "DiscriminantBilinearParent", other: "DiscriminantBilinearParent") -> bool:
+            r"""Return whether the two finite symmetric bilinear forms are isometric.
+
+            The category answers its own isomorphism question -- the bilinear
+            one, which quadratic isomorphism strictly refines (Nik80 Prop
+            1.8.2 gives isomorphic bilinear forms under non-isomorphic $q$;
+            Zotero TTY9FFJS).  Decided behind the boundary by the engine's
+            normal form at the bilinear modulus, its complete invariant for
+            the pairing alone; the owned $p$-adic normal form is *a* normal
+            form, not *the* one, at $p=2$, which is why the decision is not a
+            comparison of that object.
+            """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.framed.formed.torsionform.torsion_modules_with_form import _engine_normal_form_key
+            assert other in DiscriminantBilinearModules(), (
+                "bilinear isometry is decided between bilinear torsion forms; "
+                "polarize a quadratic form first"
+            )
+            return bool(
+                _engine_normal_form_key(self, quadratic=False)
+                == _engine_normal_form_key(other, quadratic=False)
+            )
+
+        def automorphism_group(self: "DiscriminantBilinearParent") -> "FormHomset":
+            r"""Return $O(A,b):=\operatorname{Aut}$ in this category.
+
+            The bilinear orthogonal group, which contains $O(A,q)$ of any
+            quadratic refinement -- the two separate already on rank-one
+            2-adic forms (MM09, Zotero ACX7WF7L).  Elements are this homset's
+            own form-preserving morphisms; generator data is the engine's, at
+            the bilinear modulus.
+            """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.framed.formed.torsionform.torsion_modules_with_form import _torsion_form_automorphism_group
+            return _torsion_form_automorphism_group(self, quadratic=False)
+
+        def twist(self: "DiscriminantBilinearParent", scalar: "Integer") -> "FormModule":
+            r"""Return $(A, s\cdot b)$: the same group, the pairing rescaled.
+
+            Restated here the way :meth:`regenerate` is, so the twist stays a
+            bilinear torsion form: this category's own constructor writes the
+            rescaled pairing on the same presented group (MM09's negation
+            rules, Zotero ACX7WF7L, are the $s=-1$ case).
+            """
+            return DiscriminantBilinearModules().from_module(
+                self.forget_form(),
+                scalar * self.form().gram_matrix(),
+            )
 
 
     class ElementMethods:
