@@ -30,6 +30,12 @@ error cannot be re-derived from the document by a later reader.
 | `bilinear-module-tower/` | The tower $R\text{-Mod} \to$ bilinear form modules $\to$ symmetric $\to$ integral lattices, with the definite / indefinite / hyperbolic / degenerate / parabolic subcategory scheme, the 2-elementary and Coxeter-lattice branches, and the form-morphism hierarchy. |
 | `core-category-theory/` | Abelian and concrete categories, diagram/cone machinery, limits and colimits as Kan extensions, internal algebraic objects, symmetric monoidal structure. |
 | `conventions/` | The sign, notation, and construction conventions the corpora were written under, chiefly the negative-definite Gram convention $B_{ij} = 2\cos(\pi/m_{ij})$. |
+| `n-category-tower/` | A specification tower for a toy model of $(\infty,n)$-categories from `gitclones/integral_lattice/cat/` (landed 2026-08-20, PLAN-corpora-audit-registry R4): the dimension shift (n-morphisms as 0-morphisms of iterated hom-categories), Hom/End/Aut and functor-category families, named categories, the homotopy toolkit, and the proof-carrying truth-value design. Candidacy for `categories/abstract_categories/` and the audit's error catalogue are in its INDEX. |
+| `fp-modules-axiom-scheme/` | Two drafts of a finitely-presented-modules category organized by declared axioms (Free/Torsion/Cyclic/Finite, Endset/Autset on homsets) with the standard functors as functors, from `gitclones/integral_lattice/FPModules{,PID}/` (landed 2026-08-20, PLAN-corpora-audit-registry R3). The axiom scheme is the recorded candidacy; the functor tier is owned prior art. |
+
+The corrected roster of lattice-theoretic categories from that corpus's
+`sage_integration.md` is `lattice-categories-roster.md` in this directory,
+restated as a coverage check against the owned lattice tree.
 
 Three source generations appear under `bilinear-module-tower/`, named by
 origin tree rather than by date:

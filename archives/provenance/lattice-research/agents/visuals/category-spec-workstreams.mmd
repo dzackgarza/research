@@ -1,0 +1,35 @@
+flowchart TD
+  Docs["Canonical docs, theory sources, curated references, anti-staleness"]
+  Spec["Spec vocabulary and mathematical definitions"]
+  Core["Category core: Hom/End/Aut, ownership, type packages"]
+  Uniform["Audit and uniformity: variadic closure, wrappers, anti-slop"]
+  Construct["Constructor routing and Sage mapping"]
+  Research["Research sources and upstream/library evidence"]
+  Decisions["Open mathematical and organizational decisions"]
+  Domains{"Domain workstreams"}
+  Rings["Rings, fields, algebras, q-adic precision, matrices"]
+  Modules["Modules, tensors, lattices, forms, discriminant groups"]
+  Sets["Sets, topology, RealSet, ImageSets, Primes"]
+  Posets["Posets, partitions, set partitions, combinatorial subclasses"]
+  Smoke["Smoke-frontier implementation and recovery"]
+  Review["Independent audit, validation, card retirement"]
+
+  Docs --> Spec
+  Research --> Spec
+  Decisions --> Spec
+  Spec --> Core
+  Core --> Uniform
+  Core --> Construct
+  Uniform --> Construct
+  Spec --> Domains
+  Construct --> Domains
+  Domains --> Rings
+  Domains --> Modules
+  Domains --> Sets
+  Domains --> Posets
+  Rings --> Smoke
+  Modules --> Smoke
+  Sets --> Smoke
+  Posets --> Smoke
+  Smoke --> Review
+  Review --> Docs

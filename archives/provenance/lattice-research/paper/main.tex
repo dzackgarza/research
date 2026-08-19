@@ -1,0 +1,42 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1.15in, marginparwidth=1.1in]{geometry}
+\usepackage{amsmath, amsthm, amssymb}
+\usepackage[colorlinks=true, linkcolor=blue, citecolor=blue, urlcolor=blue]{hyperref}
+\usepackage{enumitem}
+
+\input{macros/research-notes}
+
+\title{Coble Moduli Project Working Paper}
+\author{Research workspace}
+\date{\today}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+This is the living working paper for the Coble moduli research workspace. It is not a
+publication draft by default. It records the current mathematical narrative, provenance,
+uncertainty, and failed explorations in a format that can be reviewed by mathematicians.
+\end{abstract}
+
+\tableofcontents
+
+\input{sections/current-program}
+\input{sections/workstreams}
+\input{sections/claims}
+\input{sections/uncertainty}
+\input{sections/failed-explorations}
+
+\end{document}

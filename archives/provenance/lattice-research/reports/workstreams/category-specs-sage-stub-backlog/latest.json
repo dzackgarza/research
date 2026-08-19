@@ -1,0 +1,257 @@
+{
+  "external_issue": "dzackgarza/sage-stubs#5",
+  "families": [
+    {
+      "acceptance": "Covered rows disappear after the stub surface is fixed.",
+      "evidence": "Source/runtime evidence is recorded in the task card.",
+      "falsifier": "The task card states the family-specific falsifier.",
+      "family": "STUB-LAZYIMPORT-CALLABLE",
+      "row_count": 208,
+      "selector": "Exact selector is recorded in the stub task card.",
+      "surface": "LazyImport callable factory behavior"
+    },
+    {
+      "acceptance": "Covered rows disappear after the stub surface is fixed.",
+      "evidence": "Source/runtime evidence is recorded in the task card.",
+      "falsifier": "The task card states the family-specific falsifier.",
+      "family": "STUB-RECURSIVELY-ENUMERATED-EXPORTS",
+      "row_count": 2,
+      "selector": "Exact selector is recorded in the stub task card.",
+      "surface": "recursively enumerated set exports"
+    },
+    {
+      "acceptance": "Covered rows disappear after the stub surface is fixed.",
+      "evidence": "Source/runtime evidence is recorded in the task card.",
+      "falsifier": "The task card states the family-specific falsifier.",
+      "family": "STUB-SUBSETS-INTEGER-K",
+      "row_count": 1,
+      "selector": "Exact selector is recorded in the stub task card.",
+      "surface": "Subsets accepts Sage Integer for k"
+    },
+    {
+      "acceptance": "Covered rows disappear after the stub surface is fixed.",
+      "evidence": "Source/runtime evidence is recorded in the task card.",
+      "falsifier": "The task card states the family-specific falsifier.",
+      "family": "STUB-ABSTRACTFAMILY-KEYS",
+      "row_count": 2,
+      "selector": "Exact selector is recorded in the stub task card.",
+      "surface": "AbstractFamily.keys"
+    },
+    {
+      "acceptance": "Covered rows disappear after the stub surface is fixed.",
+      "evidence": "Source/runtime evidence is recorded in the task card.",
+      "falsifier": "The task card states the family-specific falsifier.",
+      "family": "STUB-CATEGORY-JOIN-MEET-AND",
+      "row_count": 7,
+      "selector": "Exact selector is recorded in the stub task card.",
+      "surface": "Category join, meet, and operator surface"
+    },
+    {
+      "acceptance": "Covered rows disappear after the stub surface is fixed.",
+      "evidence": "Source/runtime evidence is recorded in the task card.",
+      "falsifier": "The task card states the family-specific falsifier.",
+      "family": "STUB-CATEGORY-TYPES-BASE-OBJECTS",
+      "row_count": 4,
+      "selector": "Exact selector is recorded in the stub task card.",
+      "surface": "category_types base-object initializers"
+    },
+    {
+      "acceptance": "Covered rows disappear after the stub surface is fixed.",
+      "evidence": "Source/runtime evidence is recorded in the task card.",
+      "falsifier": "The task card states the family-specific falsifier.",
+      "family": "STUB-COMBINATORIAL-FREE-MODULE-CONSTRUCTOR",
+      "row_count": 3,
+      "selector": "Exact selector is recorded in the stub task card.",
+      "surface": "CombinatorialFreeModule constructor"
+    },
+    {
+      "acceptance": "Covered rows disappear after the stub surface is fixed.",
+      "evidence": "Source/runtime evidence is recorded in the task card.",
+      "falsifier": "The task card states the family-specific falsifier.",
+      "family": "STUB-MATRIXSPACE-IMPLEMENTATION",
+      "row_count": 1,
+      "selector": "Exact selector is recorded in the stub task card.",
+      "surface": "MatrixSpace implementation argument"
+    },
+    {
+      "acceptance": "Covered rows disappear after the stub surface is fixed.",
+      "evidence": "Source/runtime evidence is recorded in the task card.",
+      "falsifier": "The task card states the family-specific falsifier.",
+      "family": "STUB-POSETS-PARENTMETHODS-ORDER",
+      "row_count": 8,
+      "selector": "Exact selector is recorded in the stub task card.",
+      "surface": "Posets.ParentMethods order methods"
+    },
+    {
+      "acceptance": "Covered rows disappear after the stub surface is fixed.",
+      "evidence": "Source/runtime evidence is recorded in the task card.",
+      "falsifier": "The task card states the family-specific falsifier.",
+      "family": "STUB-INTEGER-CONSTRUCTOR-AND-PROTOCOL",
+      "row_count": 26,
+      "selector": "Exact selector is recorded in the stub task card.",
+      "surface": "Integer constructor and numeric protocol"
+    },
+    {
+      "acceptance": "Covered rows disappear after the stub surface is fixed.",
+      "evidence": "Source/runtime evidence is recorded in the task card.",
+      "falsifier": "The task card states the family-specific falsifier.",
+      "family": "STUB-MATRIX-CONSTRUCTOR-AND-BASE-TYPE",
+      "row_count": 30,
+      "selector": "Exact selector is recorded in the stub task card.",
+      "surface": "matrix constructor and runtime base type"
+    },
+    {
+      "acceptance": "Covered rows disappear after the stub surface is fixed.",
+      "evidence": "Source/runtime evidence is recorded in the task card.",
+      "falsifier": "The task card states the family-specific falsifier.",
+      "family": "STUB-FREEMODULE-VECTORSPACE-CONSTRUCTORS",
+      "row_count": 6,
+      "selector": "Exact selector is recorded in the stub task card.",
+      "surface": "FreeModule and VectorSpace constructors"
+    },
+    {
+      "acceptance": "Covered rows disappear after the stub surface is fixed.",
+      "evidence": "Source/runtime evidence is recorded in the task card.",
+      "falsifier": "The task card states the family-specific falsifier.",
+      "family": "STUB-CONDITIONSET-UNIVERSE-PREDICATES",
+      "row_count": 4,
+      "selector": "Exact selector is recorded in the stub task card.",
+      "surface": "ConditionSet universe and predicates"
+    },
+    {
+      "acceptance": "Covered rows disappear after the stub surface is fixed.",
+      "evidence": "Source/runtime evidence is recorded in the task card.",
+      "falsifier": "The task card states the family-specific falsifier.",
+      "family": "STUB-MATRIXSPACE-MATRIX-SPACE-INTEGER-DIMS",
+      "row_count": 4,
+      "selector": "Exact selector is recorded in the stub task card.",
+      "surface": "MatrixSpace Integer dimensions"
+    },
+    {
+      "acceptance": "Covered rows disappear after the stub surface is fixed.",
+      "evidence": "Source/runtime evidence is recorded in the task card.",
+      "falsifier": "The task card states the family-specific falsifier.",
+      "family": "STUB-FINITEPOSETS-SEMILATTICE-AND-CERTIFICATES",
+      "row_count": 8,
+      "selector": "Exact selector is recorded in the stub task card.",
+      "surface": "FinitePoset semilattice and certificates"
+    },
+    {
+      "acceptance": "Covered rows disappear after the stub surface is fixed.",
+      "evidence": "Source/runtime evidence is recorded in the task card.",
+      "falsifier": "The task card states the family-specific falsifier.",
+      "family": "STUB-INFINITY-NEGATION",
+      "row_count": 3,
+      "selector": "Exact selector is recorded in the stub task card.",
+      "surface": "infinity singleton negation"
+    },
+    {
+      "acceptance": "Covered rows disappear after the stub surface is fixed.",
+      "evidence": "Source/runtime evidence is recorded in the task card.",
+      "falsifier": "The task card states the family-specific falsifier.",
+      "family": "STUB-SETPARTITION-DIRECT-CLASSCALL",
+      "row_count": 2,
+      "selector": "Exact selector is recorded in the stub task card.",
+      "surface": "SetPartition direct classcall"
+    },
+    {
+      "acceptance": "Covered rows disappear after the stub surface is fixed.",
+      "evidence": "Source/runtime evidence is recorded in the task card.",
+      "falsifier": "The task card states the family-specific falsifier.",
+      "family": "STUB-RATIONALFIELD-MISSING-PUBLIC-METHODS",
+      "row_count": 10,
+      "selector": "Exact selector is recorded in the stub task card.",
+      "surface": "RationalField public methods"
+    },
+    {
+      "acceptance": "Covered rows disappear after the stub surface is fixed.",
+      "evidence": "Source/runtime evidence is recorded in the task card.",
+      "falsifier": "The task card states the family-specific falsifier.",
+      "family": "STUB-REALSET-PARENT-AN-ELEMENT",
+      "row_count": 1,
+      "selector": "Exact selector is recorded in the stub task card.",
+      "surface": "RealSet._an_element_"
+    },
+    {
+      "acceptance": "Covered rows disappear after the stub surface is fixed.",
+      "evidence": "Source/runtime evidence is recorded in the task card.",
+      "falsifier": "The task card states the family-specific falsifier.",
+      "family": "STUB-IMAGESUBOBJECT-PARENT-AN-ELEMENT",
+      "row_count": 1,
+      "selector": "Exact selector is recorded in the stub task card.",
+      "surface": "ImageSubobject._an_element_"
+    },
+    {
+      "acceptance": "Covered rows disappear after the stub surface is fixed.",
+      "evidence": "Source/runtime evidence is recorded in the task card.",
+      "falsifier": "The task card states the family-specific falsifier.",
+      "family": "STUB-REAL-ABC-TO-PREC",
+      "row_count": 3,
+      "selector": "Exact selector is recorded in the stub task card.",
+      "surface": "real-field to_prec protocol"
+    },
+    {
+      "acceptance": "Covered rows disappear after the stub surface is fixed.",
+      "evidence": "Source/runtime evidence is recorded in the task card.",
+      "falsifier": "The task card states the family-specific falsifier.",
+      "family": "STUB-MATRIXSPACE-PARENT-BASE",
+      "row_count": 1,
+      "selector": "Exact selector is recorded in the stub task card.",
+      "surface": "MatrixSpace inherits Parent"
+    },
+    {
+      "acceptance": "Covered rows disappear after the stub surface is fixed.",
+      "evidence": "Source/runtime evidence is recorded in the task card.",
+      "falsifier": "The task card states the family-specific falsifier.",
+      "family": "STUB-SAGE-CATEGORY-MEMBERSHIP-SURFACES",
+      "row_count": 23,
+      "selector": "Exact selector is recorded in the stub task card.",
+      "surface": "Sage category membership"
+    },
+    {
+      "acceptance": "Covered rows disappear after the stub surface is fixed.",
+      "evidence": "Source/runtime evidence is recorded in the task card.",
+      "falsifier": "The task card states the family-specific falsifier.",
+      "family": "STUB-TENSORPRODUCTFUNCTOR-CALLABLE",
+      "row_count": 3,
+      "selector": "Exact selector is recorded in the stub task card.",
+      "surface": "TensorProductFunctor callable surface"
+    },
+    {
+      "acceptance": "Covered rows disappear after the stub surface is fixed.",
+      "evidence": "Source/runtime evidence is recorded in the task card.",
+      "falsifier": "The task card states the family-specific falsifier.",
+      "family": "STUB-CATEGORY-BASE-ADDITIONAL-STRUCTURE",
+      "row_count": 1,
+      "selector": "Exact selector is recorded in the stub task card.",
+      "surface": "Category.additional_structure"
+    },
+    {
+      "acceptance": "Covered rows disappear after the stub surface is fixed.",
+      "evidence": "Source/runtime evidence is recorded in the task card.",
+      "falsifier": "The task card states the family-specific falsifier.",
+      "family": "STUB-FINITE-RANK-FREE-MODULE-METHODS",
+      "row_count": 5,
+      "selector": "Exact selector is recorded in the stub task card.",
+      "surface": "finite-rank free-module methods"
+    },
+    {
+      "acceptance": "Covered rows disappear after the stub surface is fixed.",
+      "evidence": "Source/runtime evidence is recorded in the task card.",
+      "falsifier": "The task card states the family-specific falsifier.",
+      "family": "STUB-COMMUTATIVE-RING-EXTENSION-AND-POLYNOMIAL-COMPLETION",
+      "row_count": 3,
+      "selector": "Exact selector is recorded in the stub task card.",
+      "surface": "ring extension and polynomial completion"
+    }
+  ],
+  "non_sage_stubs_row_count": 1347,
+  "ordinary_error_count": 1717,
+  "sage_stubs_owned_row_count": 370,
+  "source_ledger": "reports/workstreams/category-specs-mypy-ledger/latest.json",
+  "toolchain": {
+    "plugin_sha": "322c1eb9174ca779c8d833ea855e6305d19cff04",
+    "research_sha": "f4463040cde2a44ff83266a5e0887750f6ae42e6",
+    "sidecar_sha": "1bd762a0227ca87eb863c266eb59679c45fdf2e4"
+  }
+}

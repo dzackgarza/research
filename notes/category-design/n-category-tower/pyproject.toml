@@ -1,0 +1,131 @@
+# Origin: gitclones/integral_lattice/cat/pyproject.toml
+# Copied 2026-08-20 by the integral_lattice enrichment migration
+# (PLAN-corpora-audit-registry, sections R3/R4). Content below is unmodified.
+#
+# This is a DESIGN RECORD: it states an intended interface, not the built
+# preamble. Divergences and recorded errors are listed in the INDEX.md of
+# this corpus.
+
+[project]
+name = "cat"
+version = "0.1.0"
+description = "An implementation of n-categories for n = -1, 0, 1, 2, 3 and infinity categories"
+readme = "docs/background_theory.md"
+requires-python = ">=3.14"
+dependencies = [
+    # Type safety and data validation
+    "pydantic>=2.0",
+    "attrs>=24.0",
+    
+    # Testing
+    "pytest>=8.0",
+    "hypothesis>=6.100",
+    "deal>=4.24",
+    "crosshair-tool>=0.0.77",
+    
+    # Typing extensions
+    "typing-protocol-intersection>=0.3",
+    
+    # Multiple dispatch
+    "plum-dispatch>=2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    # Formatting
+    "black>=24.0",
+    "autopep8>=2.0",
+    
+    # Linting
+    "flake8>=7.0",
+    "ruff>=0.5",
+    
+    # Type checking
+    "mypy>=1.11",
+    "basedpyright>=1.18",
+    
+    # Test generation
+    "pynguin>=0.39",
+    
+    # Coverage
+    "coverage>=7.0",
+    "sage-stubs",
+]
+
+[tool.uv.sources]
+sage-stubs = { git = "https://github.com/dzackgarza/sage-stubs.git" }
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["cat_w.py", "utils"]
+
+[tool.black]
+line-length = 100
+target-version = ["py314"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py314"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "ANN", "B", "C4", "SIM", "TCH"]
+ignore = [
+    "ANN401",  # Any type annotations
+    "E501",    # Line length
+    "TCH001",  # Move app imports to TYPE_CHECKING (conflicts with runtime needs)
+    "TCH002",  # Type-checking imports (sage types needed at runtime)
+    "TCH003",  # Move stdlib imports to TYPE_CHECKING 
+    "N801",    # Class names - _ABC suffix is intentional
+    "N802",    # Function names - math conventions (Hom_C, End_C, Aut_C)
+    "N803",    # Argument names - math conventions (G for graph)
+    "N806",    # Variable names - math conventions
+    "N812",    # Lowercase imported as non-lowercase (cells as CellTypes)
+    "N815",    # Class scope variable names - math conventions (wCategory = ω-category)
+    "SIM108",  # Ternary operator suggestion
+    "SIM110",  # all() builtin suggestion
+]
+
+[tool.flake8]
+max-line-length = 100
+extend-ignore = ["E501"]
+
+
+[tool.pyright]
+pythonVersion = "3.14"
+typeCheckingMode = "strict"
+reportMissingTypeStubs = false
+reportMissingModuleSource = false  # Cython packages have .pyi stubs but .so runtime - type checking still works
+reportUnknownMemberType = false
+reportUnknownVariableType = false
+reportUnknownArgumentType = false
+reportUnknownLambdaType = false  # deal decorators use untyped lambdas by design
+reportUnusedImport = false
+reportUnusedClass = false
+extraPaths = [
+    "typings",
+    "/home/dzack/gitclones/sage/src",
+    "/home/dzack/gitclones/integral_lattice",
+    "/home/dzack/gitclones/sage/src/sage",
+    "/home/dzack/gitclones/sage/src",
+    "/home/dzack/gitclones/sage/build/cp313/src",
+    "/home/dzack/gitclones/sage/build/cp313/src/sage"
+]
+
+[tool.mypy]
+python_version = "3.14"
+strict = true
+plugins = [
+    "typing_protocol_intersection.mypy_plugin",
+    "pydantic.mypy",
+    "deal.mypy",
+]
+mypy_path = "typings:/home/dzack/gitclones/sage/src"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+addopts = "-v --strict-markers"
+filterwarnings = ["error"]

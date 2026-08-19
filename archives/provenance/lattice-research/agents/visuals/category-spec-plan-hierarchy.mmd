@@ -1,0 +1,43 @@
+%% Owned by: .agents/plans/phase-01-category-specs/category-core/pln-category-spec-program.md
+flowchart TD
+    R[PLN-RESEARCH-000<br/>Research staged program] --> P1[PLN-PHASE-01<br/>Category specs and vocabulary]
+    P1 --> P0[PLN-CAT-000<br/>Category-spec program]
+    P0 --> SM[PLN-CAT-010<br/>Source maps and admission]
+    P0 --> F[PLN-CAT-100<br/>Foundation kernel]
+    P0 --> A[PLN-AUDIT-000<br/>Smoke and audit stabilization]
+
+    F --> F1[PLN-CAT-110<br/>Static refinement order]
+    F --> F2[PLN-CAT-120<br/>Hom / End / Aut admission]
+    F --> L[PLN-LAT-000<br/>Lattice / ModulesWithForms roadmap]
+    F --> CS[SPR-CAT-SURFACE-01KQN9<br/>Cat surface leaf]
+    F --> MW[SPR-MODULE-WRAPPER-01KQN9<br/>Module wrapper leaf]
+
+    L --> L0[PLN-LAT-010<br/>Phase 0 Sage prerequisites]
+    L --> L2[PLN-LAT-020<br/>Phase 2 category and carriers]
+    L --> L3[PLN-LAT-030<br/>Phase 3 morphisms and cokernels]
+    L --> L4[PLN-LAT-040<br/>Phase 4 duals and discriminant descent]
+    L --> L5[PLN-LAT-050<br/>Phase 5 orthogonal / Coxeter layer]
+    L0 --> L2 --> L3 --> L4 --> L5
+
+    SM --> S[PLN-SAGE-000<br/>Sage surface admission]
+    SM --> G[PLN-GEO-000<br/>Geometric expansion]
+
+    S --> SR[SPR-RINGS-PADIC-01KQN9<br/>Rings / p-adics / matrix rings leaf]
+    S --> SS[SPR-SETS-TOPO-01KQN9<br/>Sets / topology / RealSet / ImageSets leaf]
+    S --> SA[SPR-ALG-TENSOR-01KQN9<br/>Algebras / tensors leaf]
+    S --> SP[SPR-POSETS-PART-01KQN9<br/>Posets / partitions leaf]
+    S --> SE[test_spec*.sage executable spec corpus]
+
+    G --> GS[PLN-GEO-010<br/>Geometry source admission leaf]
+    G --> GM[PLN-GEO-020<br/>Curve complement / monodromy backend leaf]
+
+    A --> AU[SPR-VARIADIC-AUDIT-01KQN9<br/>Uniformity and variadic audit leaf]
+    A --> AV[vulture_whitelist.py tooling support]
+
+    classDef plan fill:#dbeafe,stroke:#2563eb,color:#111827;
+    classDef task fill:#dcfce7,stroke:#16a34a,color:#111827;
+    classDef source fill:#fef3c7,stroke:#d97706,color:#111827;
+    classDef audit fill:#fee2e2,stroke:#dc2626,color:#111827;
+
+    class R,P1,P0,SM,F,L,S,G,A,F1,F2,L0,L2,L3,L4,L5,CS,MW,SR,SS,SA,SP,GS,GM,AU plan;
+    class SE,AV source;

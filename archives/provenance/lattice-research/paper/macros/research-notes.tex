@@ -1,0 +1,14 @@
+\newcommand{\statusnote}[2]{\marginpar{\raggedright\footnotesize\textbf{#1}\\#2}}
+\newcommand{\sourcebacked}[1]{\statusnote{source-backed}{#1}}
+\newcommand{\computationsupported}[1]{\statusnote{computation}{#1}}
+\newcommand{\conjecturalnote}[1]{\statusnote{conjectural}{#1}}
+\newcommand{\disputednote}[1]{\statusnote{disputed}{#1}}
+\newcommand{\humanreviewnote}[1]{\statusnote{human review}{#1}}
+\newcommand{\failedpathnote}[1]{\statusnote{failed path}{#1}}
+\newcommand{\workstreamnote}[1]{\statusnote{workstream}{#1}}
+
+\newenvironment{claimledger}
+  {\begin{description}[leftmargin=2.8cm, style=nextline]}
+  {\end{description}}
+
+\newcommand{\claimitem}[4]{\item[#1] \textbf{#2}. #3\par\emph{Evidence:} #4}
