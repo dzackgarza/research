@@ -9,8 +9,9 @@ lattice element by itself. Build an element only by extracting
 The named specimens (``Lattices.E8``, ``Lattices.U``, ...) live on the
 ``Lattices`` category itself, defined inline in ``lattices.sage`` -- this
 module only holds what is catalogue-specific: the ``TwoElementary`` and
-``NegativeDefTwoElementary`` tables, the named involutions and embeddings, and
-the ``register_indecomposable`` calls.  Call :meth:`Lattices.install` (``init.sage``
+``NegativeDefTwoElementary`` tables, the classification search
+``two_elementary_orthogonal_sums`` that certifies ``TwoElementary`` rows, the
+named involutions and embeddings, and the ``register_indecomposable`` calls.  Call :meth:`Lattices.install` (``init.sage``
 does this) to bind specimens and the $\Lambda_{K3}$ module_generators into the
 session namespace.
 
@@ -31,6 +32,7 @@ from dzack_research.preamble.categories.modules.framed.formed.integrallattice.in
 from sage.matrix.constructor import matrix
 from sage.sets.integer_range import IntegerRange
 from sage.structure.parent import Parent
+from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ as SageZZ
 
 import sys as _sys
@@ -66,6 +68,7 @@ else:
         "Lattices",
         "NegativeDefTwoElementary",
         "TwoElementary",
+        "two_elementary_orthogonal_sums",
     ]
 
     from dzack_research.preamble.categories.modules.framed.formed.lattices import (
@@ -248,6 +251,152 @@ else:
             (19, 3, 1): Lattices.U_2 + Lattices.E8**2 + Lattices.A1,
             (20, 2, 1): Lattices.U + Lattices.E8**2 + Lattices.A1**2,
     }
+
+
+    def two_elementary_orthogonal_sums(
+        signature_pair: tuple[Integer, Integer],
+        a: Integer,
+        delta: Integer,
+    ) -> tuple[Parent, ...]:
+        r"""Return the orthogonal sums of indecomposable two-elementary
+        blocks realizing ``signature_pair`` and Nikulin's $(a, \delta)$.
+
+        The derivation that certifies a ``TwoElementary`` row.  The blocks
+        are the ten owned specimens $A_1$, $D_4$, $D_6$, $D_8$, $E_7$,
+        $E_8$, $E_8(2)$, $\langle2\rangle$, $U$, $U(2)$ -- the root blocks
+        negative definite per the AG convention -- and a realization is a
+        block multiset whose orthogonal sum has the requested invariants.
+
+        The enumeration prunes arithmetically *before* any lattice is
+        constructed.  The correlation of an orthogonal sum is the block sum
+        of the summands' correlations, so its cokernel splits,
+        $A_{L\oplus M}\cong A_L\oplus A_M$ with
+        $q_{L\oplus M}=q_L\oplus q_M$.  Hence, over the multiset,
+
+        * the rank and the signature pair are additive (Sylvester),
+        * $a=\ell(A_L)$, the number of invariant factors, is additive,
+          because each block's discriminant group is 2-elementary,
+        * $\delta$ is the maximum: $q$ is integer-valued exactly when it
+          is on every summand,
+
+        and $\ell(A_L)\le\operatorname{rk}L$ blockwise bounds what any
+        completion can still contribute.  For a hyperbolic target
+        $(1, r-1)$ this arithmetic -- no special case -- admits exactly one
+        block of positive inertia index, since the blocks' positive indices
+        are $0$ or $1$ and they add.
+
+        Nothing is re-verified on the constructed sums: the invariants hold
+        by the additivity above, and re-deriving them per candidate would
+        restate the theorem at runtime.  Identifying a realization against
+        a table row is the caller's question, asked through
+        ``is_isometric``, whose three-valued answer is routed as it stands:
+        ``Unknown`` is an answer to report, never to coerce (the
+        classification check in the ``TwoElementary`` header above states
+        when Nikulin uniqueness applies).
+
+        Rows realizable only as glued overlattices -- the starred
+        Alexeev--Engel entries deliberately not encoded here -- are outside
+        this enumeration's reach: a stated boundary, not a failure.
+        """
+        positive_target = SageZZ(signature_pair[0])
+        negative_target = SageZZ(signature_pair[1])
+        target_a = SageZZ(a)
+        target_delta = SageZZ(delta)
+        assert positive_target >= 0 and negative_target >= 0, (
+            "a signature pair counts the positive and negative indices of inertia"
+        )
+        assert positive_target + negative_target >= 1, (
+            "the zero signature names the zero lattice, which is no sum of blocks"
+        )
+        assert target_a >= 0, "a = ell(A_L) counts invariant factors"
+        assert target_delta in (SageZZ(0), SageZZ(1)), (
+            "Nikulin's delta is 0 (coeven) or 1 (coodd)"
+        )
+
+        # The block invariants are read off the owned surface, not
+        # tabulated here.  ``discriminant_group`` is cached per specimen,
+        # so repeated calls re-read, they do not re-derive.
+        blocks = (
+            Lattices.A1,
+            Lattices.D4,
+            Lattices.D6,
+            Lattices.D8,
+            Lattices.E7,
+            Lattices.E8,
+            Lattices.E8_2,
+            Lattices.Z_2,
+            Lattices.U,
+            Lattices.U_2,
+        )
+        block_data = []
+        for block in blocks:
+            assert block.is_even() and block.is_p_elementary(SageZZ(2)), (
+                f"{block} is not an even 2-elementary block; the additivity "
+                "arithmetic below is stated for even 2-elementary summands"
+            )
+            positive, negative = block.signature_pair()
+            # $\ell(A_L)$, the minimal number of generators of the
+            # discriminant group: the number of invariant factors.  For a
+            # 2-elementary lattice this is Nikulin's $a$.
+            length = SageZZ(len(block.discriminant_group().invariants()))
+            block_data.append(
+                (block, positive, negative, length, block.delta())
+            )
+
+        realizations: list[Parent] = []
+
+        def block_sum(counts: tuple) -> Parent:
+            summands = [
+                block ** count if count > 1 else block
+                for (block, _positive, _negative, _length, _delta), count
+                in zip(block_data, counts, strict=True)
+                if count > 0
+            ]
+            return sum(summands)
+
+        def extend(
+            index: int,
+            remaining_positive: Integer,
+            remaining_negative: Integer,
+            remaining_a: Integer,
+            realized_delta: Integer,
+            counts: tuple,
+        ) -> None:
+            if remaining_a > remaining_positive + remaining_negative:
+                # $\ell(A_L)\le\operatorname{rk}L$ blockwise: no completion
+                # can close this gap.
+                return
+            if index == len(block_data):
+                if (
+                    remaining_positive == 0
+                    and remaining_negative == 0
+                    and remaining_a == 0
+                    and realized_delta == target_delta
+                ):
+                    realizations.append(block_sum(counts))
+                return
+            _block, positive, negative, length, block_delta = block_data[index]
+            count = 0
+            while (
+                count * positive <= remaining_positive
+                and count * negative <= remaining_negative
+                and count * length <= remaining_a
+                # $\delta$ is the maximum over summands, so a coodd block
+                # cannot enter a coeven target at all.
+                and (count == 0 or block_delta <= target_delta)
+            ):
+                extend(
+                    index + 1,
+                    remaining_positive - count * positive,
+                    remaining_negative - count * negative,
+                    remaining_a - count * length,
+                    max(realized_delta, block_delta) if count > 0 else realized_delta,
+                    counts + (count,),
+                )
+                count += 1
+
+        extend(0, positive_target, negative_target, target_a, SageZZ(0), ())
+        return tuple(realizations)
 
 
     # Alexeev--Engel Table 2: even negative-definite 2-elementary lattices

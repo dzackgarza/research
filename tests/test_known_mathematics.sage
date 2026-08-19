@@ -1858,6 +1858,87 @@ def test_the_isometry_torsor_transporter_recovers_the_acting_element() -> None:
 
 
 # ---------------------------------------------------------------------------
+# The two-elementary classification search: orthogonal sums of the owned
+# indecomposable 2-elementary blocks, pruned arithmetically, certify rows of
+# the catalogue's TwoElementary table.
+#
+# Citation: Nikulin's uniqueness theorem for even indefinite 2-elementary
+# lattices (Nik80, Zotero TTY9FFJS), cited here the way the catalogue's own
+# ``TwoElementary`` header records it -- that header is the in-repo statement
+# of the classification check, and no theorem number is recalled from memory.
+# The table itself follows Alexeev--Engel et al., arXiv:2208.10383 Fig. 1.
+# ---------------------------------------------------------------------------
+
+from dzack_research.preamble.catalogue import (
+    TwoElementary,
+    two_elementary_orthogonal_sums,
+)
+
+# $(r, a, \delta)$ -> how many block multisets the additivity arithmetic
+# admits at hyperbolic signature $(1, r-1)$, derived by hand:
+#
+#   * (2, 2, 0): $U(2)$ alone -- $U$ has $a = 0$, and
+#     $\langle2\rangle \oplus A_1$ has $\delta = 1$.
+#   * (10, 10, 0): $U(2) \oplus E_8(2)$ alone -- $\delta = 0$ excludes every
+#     coodd block, and $a = 10$ forces $\ell = \mathrm{rk}$ on the
+#     negative-definite remainder, which among the coeven blocks only
+#     $E_8(2)$ satisfies.
+#   * (10, 10, 1): three realizations -- after the one positive-index block,
+#     $a = 10$ forces $\ell = \mathrm{rk}$ on every negative-definite block
+#     ($A_1$ and $E_8(2)$ only), leaving $U(2) \oplus A_1^8$,
+#     $\langle2\rangle \oplus A_1^9$ and
+#     $\langle2\rangle \oplus A_1 \oplus E_8(2)$; every $U$ completion dies
+#     because the rank-8 remainder cannot carry $a = 10$, and
+#     $U(2) \oplus E_8(2)$ has $\delta = 0$.
+TWO_ELEMENTARY_SEARCH_ROWS = {
+    (2, 2, 0): 1,
+    (10, 10, 0): 1,
+    (10, 10, 1): 3,
+}
+
+
+@pytest.mark.parametrize("key", sorted(TWO_ELEMENTARY_SEARCH_ROWS))
+def test_every_two_elementary_realization_is_the_nikulin_table_row(
+    key: tuple,
+) -> None:
+    r"""The search's realizations exist and each lands in the table's class.
+
+    Nikulin uniqueness for even indefinite 2-elementary lattices (Nik80,
+    Zotero TTY9FFJS, as the catalogue's ``TwoElementary`` header records
+    it): the signature pair and $(a, \delta)$ determine the isometry class,
+    so every orthogonal-sum realization the arithmetic admits must be
+    isometric to the lattice the table names.  Rows realizable only as
+    glued overlattices are outside the orthogonal-sum enumeration's reach
+    -- a boundary of this method, not a failure; the catalogue deliberately
+    does not encode the starred glued entries.
+
+    The realization count is asserted first, and exactly: an empty answer
+    would certify nothing (a dead search passes every for-loop), and the
+    counts are derived by hand in the row comments above.  Identification
+    routes the three-valued isometry decision honestly: an identical
+    object needs no decision (the rank-2 row's unique realization IS the
+    catalogue specimen, and indefinite binary comparison is the decision
+    procedure's stated Unknown regime), while any ``Unknown`` on a genuine
+    comparison fails with the answer named, never coerced to a boolean.
+    """
+    rank, a, delta = key
+    candidates = two_elementary_orthogonal_sums((1, rank - 1), a, delta)
+    assert len(candidates) == TWO_ELEMENTARY_SEARCH_ROWS[key], (
+        f"the additivity arithmetic admits exactly "
+        f"{TWO_ELEMENTARY_SEARCH_ROWS[key]} realizations of {key}"
+    )
+    table_row = TwoElementary[key]
+    for candidate in candidates:
+        if candidate is table_row:
+            continue
+        answer = candidate.is_isometric(table_row)
+        assert answer is True, (
+            f"a realization of {key} answered {answer!r} against the "
+            "table row; Unknown is reported, never coerced"
+        )
+
+
+# ---------------------------------------------------------------------------
 # Automorphism groups of abstract finite groups (DF04 sec. 4.4; CCN+85).
 #
 # The owned surface is one spelling, ``G.Aut()``, for every group a session
