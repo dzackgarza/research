@@ -8,7 +8,6 @@ dependencies = [
     "python-dotenv>=1.2.2",
     "sage-julia-bridge @ https://github.com/dzackgarza/sage-julia-bridge/archive/21d579a14b4b28420b1ca823a354237f507c2f94.tar.gz",
     "sage-lattice-category-spike==0.0.1",
-    "sage-lattice-feature-spike==0.1.0",
     "streamlit>=1.59.2",
     "tree-sitter-sage",
     "z3-solver>=4.16.0.0",
@@ -27,13 +26,11 @@ dzack_research = ["py.typed"]
 [tool.uv.sources]
 sage-stubs = { git = "https://github.com/dzackgarza/sage-stubs.git" }
 sage-lattice-category-spike = { workspace = true }
-sage-lattice-feature-spike = { workspace = true }
 tree-sitter-sage = { git = "https://github.com/dzackgarza/tree-sitter-sage", rev = "fd5c72bafb61d67fedb0f6860eeb48f6c1616dbd" }
 
 [tool.uv.workspace]
 members = [
     "computations/archives/sage_lattice_category_spike",
-    "computations/archives/sage_lattice_feature_spike",
 ]
 
 [tool.pytest.ini_options]
