@@ -410,23 +410,21 @@ class OwnedGroups(Category):
 
     class ParentMethods:
         def supergroup(self: Self) -> "Group":
-            r"""Return the containing group; every group includes into itself by identity."""
-            try:
-                containing_group: "Group" = super(
-                    OwnedGroups.ParentMethods,
-                    self,
-                ).supergroup()
-                return containing_group
-            except AttributeError:
-                try:
-                    containing_group = super(
-                        OwnedGroups.ParentMethods,
-                        self,
-                    ).ambient_group()
+            r"""Return the containing group; every group includes into itself by identity.
+
+            Probed by attribute lookup on the bound super object -- no
+            exception control flow: a class that spells the containing group
+            ``supergroup`` or ``ambient_group`` answers through that name,
+            and a group with neither name contains itself.
+            """
+            bound = super(OwnedGroups.ParentMethods, self)
+            for name in ("supergroup", "ambient_group"):
+                accessor = getattr(bound, name, None)
+                if accessor is not None:
+                    containing_group: "Group" = accessor()
                     return containing_group
-                except AttributeError:
-                    group: "Group" = self
-                    return group
+            group: "Group" = self
+            return group
 
         def inclusion(self: Self) -> SetMorphism:
             r"""Return the canonical inclusion homomorphism into the containing group."""
@@ -615,7 +613,7 @@ class OwnedFinitelyGeneratedGroups(Category):
             r"""Return ``True`` because membership states this property."""
             return True
 
-        def group_generators(self: "GroupParent") -> TotallyOrderedFiniteSet:
+        def group_generators(self: "GroupParent") -> "OrderedSet":
             r"""Return \(S\), which the axiom makes a *finite* ordered set.
 
             The same generating set, with the finiteness the axiom supplies.
