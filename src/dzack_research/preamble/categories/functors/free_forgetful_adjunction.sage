@@ -16,10 +16,12 @@ And the triangle identities (zigzag equations):
     2) \varepsilon_{F_R(S)} \circ F_R(\eta_S) = id_{F_R(S)}  \in End_{Mod_R}(F_R(S))
 """
 
+from collections.abc import Callable
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from sage.categories.groups import Group
     from sage.categories.modules import Module
+    from dzack_research.preamble.lexicon import Element
 
 if TYPE_CHECKING:
     from dzack_research.preamble.categories.sets.sets import Set
@@ -36,6 +38,23 @@ from sage.misc.abstract_method import abstract_method
 from sage.structure.sage_object import SageObject
 from sage.categories.morphism import SetMorphism
 from dzack_research.preamble.categories.sets.underlying_sets import UnderlyingSet
+
+
+def _value_lookup(mapping: dict) -> "Callable[[Element], Element]":
+    r"""Read a finite assignment as the function a ``SetMorphism`` carries.
+
+    A ``SetMorphism`` calls its datum; a dict is subscripted, not called, so
+    the assignment is wrapped as the lookup it means, refusing loudly off its
+    domain.
+    """
+
+    def value_of(element: "Element") -> "Element":
+        assert element in mapping, (
+            f"{element!r} is not in the domain of this set morphism"
+        )
+        return mapping[element]
+
+    return value_of
 
 
 class ModuleAlgebraFunctor(Functor):
@@ -411,7 +430,9 @@ class ForgetfulFunctorClass(Functor):
             s: codomain_set.element_class(codomain_set, module_morphism(s.value))
             for s in domain_set
         }
-        return SetMorphism(Hom(domain_set, codomain_set, Sets()), mapping)
+        return SetMorphism(
+            Hom(domain_set, codomain_set, Sets()), _value_lookup(mapping)
+        )
 
 
 class Adjunction(SageObject):
@@ -468,7 +489,9 @@ class FreeForgetfulAdjunction(Adjunction):
         free_mod = self._left_adjoint(set_object)
         target_set = self._right_adjoint(free_mod)
         mapping = {s: free_mod.module_generator(s) for s in set_object}
-        return SetMorphism(Hom(set_object, target_set, Sets()), mapping)
+        return SetMorphism(
+            Hom(set_object, target_set, Sets()), _value_lookup(mapping)
+        )
 
     def counit(self, module_object: "Module") -> "Morphism":
         r"""Return the counit module epimorphism \varepsilon_M: F_R(U(M)) \twoheadrightarrow M."""

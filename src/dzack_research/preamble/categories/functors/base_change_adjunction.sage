@@ -25,6 +25,9 @@ saturation does.
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from sage.categories.modules import Module
+    from sage.structure.parent import MembershipInput
+
+from dzack_research.preamble.lexicon import Element
 
 from sage.categories.modules import Modules
 if TYPE_CHECKING:
@@ -203,14 +206,42 @@ class RestrictedScalarsModule(UniqueRepresentation, Parent):
     def scalar_multiple(self, scalar: "Element", element: "Element") -> "Element":
         return self._ring_map(scalar) * element
 
+    def _coordinate_module(self) -> "Module":
+        r"""\(N\)'s coordinate module: restriction does not move coordinates."""
+        return self._module._coordinate_module()
+
     def zero(self) -> "Element":
-        return self._module.zero()
+        return self(self._module.zero())
 
     def _element_constructor_(self, element: "Element") -> "Element":
-        r"""Same elements as \(N\): conversion into the facade IS \(N\)'s."""
-        return self._module(element)
+        r"""Same elements as \(N\), answering to this parent.
 
-    def __contains__(self, element: object) -> bool:
+        Restriction of scalars does not move elements, so conversion first
+        runs \(N\)'s and then re-homes the result: the element's class and
+        coordinates are unchanged, and only the parent it answers to is this
+        restricted reading.  That identification is what makes an image
+        \(g\otimes1\in F(M)\) an element *of* \(G(F(M))\), which is the
+        codomain-parent equality a module morphism into this facade checks.
+        """
+        # Local: the module node imports this module through the functor
+        # tower; it is built by call time.
+        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import BasedFreeModuleElement
+
+        member = self._module(element)
+        if member.parent() is self:
+            return member
+        assert isinstance(member, BasedFreeModuleElement), (
+            f"restriction of scalars re-homes coordinate elements; "
+            f"{member!r} is not one"
+        )
+        reparented: "Element" = type(member)(self, member._coordinates_)
+        return reparented
+
+    def __contains__(self, element: "MembershipInput") -> bool:
+        # An element already re-homed here belongs here; otherwise the
+        # facade's members are exactly \(N\)'s.
+        if isinstance(element, Element) and element.parent() is self:
+            return True
         return element in self._module
 
     def _repr_(self) -> str:

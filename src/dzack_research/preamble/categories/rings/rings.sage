@@ -41,6 +41,8 @@ if TYPE_CHECKING:
 
     from dzack_research.preamble.categories.sets.cardinals import Cardinal
     from dzack_research.preamble.lexicon import Element
+    from sage.categories.map import Map
+    from sage.rings.integer import Integer
     from sage.categories.groups import Group
     from sage.categories.modules import Module
     from dzack_research.preamble.lexicon import OrderedSet
