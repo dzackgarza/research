@@ -410,7 +410,7 @@ Top-level directories (this is a navigational map; each tree owns its own README
 
   - `archive/` → `archives/notebooks/` — the retired notebooks, still live reference material
 
-  - `spike-demos/` → `computations/experiments/sage_lattice_category_spike/notebooks/`
+  - `spike-demos/` → `computations/archives/sage_lattice_category_spike/notebooks/`
 
   Symlinking is preferred over moving: the originals stay in the tree that owns them (archive stays QC-exempt, spike demos stay beside the spike whose test suite runs them), while the control plane can see everything.
 
