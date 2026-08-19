@@ -6,7 +6,6 @@ preparser (the ``tree-sitter-sage`` distribution, a hard runtime
 dependency). Import it inside a Sage environment: ``src/sitecustomize.py``
 installs the import hook into every process.
 
-The exploratory spikes that once re-exported here are archived reference
-material under ``computations/archives/`` — importable in a session for
-reference, imported by nothing.
+The exploratory spikes that preceded the preamble were fully absorbed into
+it and deleted (2026-08-19); git history is their record.
 """

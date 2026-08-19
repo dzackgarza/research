@@ -410,9 +410,7 @@ Top-level directories (this is a navigational map; each tree owns its own README
 
   - `archive/` → `archives/notebooks/` — the retired notebooks, still live reference material
 
-  - `spike-demos/` → `computations/archives/sage_lattice_category_spike/notebooks/`
-
-  Symlinking is preferred over moving: the originals stay in the tree that owns them (archive stays QC-exempt, spike demos stay beside the spike whose test suite runs them), while the control plane can see everything.
+  Symlinking is preferred over moving: the originals stay in the tree that owns them (archive stays QC-exempt), while the control plane can see everything.
 
   **Implicit typesetting:** a bare `X` at the end of a cell renders as LaTeX when Sage can genuinely typeset `X`, so `show()` is not needed for ordinary inspection.
   Explicit `show()` still works and is still worth writing where the intent is presentation rather than inspection.
@@ -462,23 +460,13 @@ Editable installs point at the working tree, so a rebuilt or reinstalled Sage is
 
 - **`archives/`** — retired material (`provenance/`).
 
-## category_specs vs. the spikes (two attempts at the same substrate)
+## category_specs and the absorbed spikes (prior attempts at the same substrate)
 
-Both implement the same goal — a mathematically-semantic, Sage-compatible substrate for exact lattice/surface computation (`projects/lattice-research/GOAL.md`) — but are **two distinct attempts**, and it matters which one a given task targets:
+The goal — a mathematically-semantic, Sage-compatible substrate for exact lattice/surface computation — had two earlier attempts. Both are finished as separate surfaces; **the preamble (`src/dzack_research/preamble/`) is the single active surface**, and "the repo owns X" or "X is a gap" resolves against it:
 
-- **`projects/lattice-research/category_specs/`** — the **older, more ambitious attempt**, now **stalled and frozen / on the backburner**. It aimed at the full category/refinement language up front (its `src.bak/`, `tests.bak/` are relics of that).
-  Treat it as **frozen prior art**: read it for design intent, but it is not where active generalization happens.
-  Parity-audit issues (#26/#84/#85 …) that cite `category_specs/…` paths are pointing at this frozen surface.
+- **`projects/lattice-research/category_specs/`** — the older, more ambitious attempt, **frozen prior art**: read it for design intent only. Parity-audit issues (#26/#84/#85 …) citing `category_specs/…` paths point at this frozen surface.
 
-- **`computations/experiments/*` (the spikes)** — the **current, active attempt**: the same work **broken up and made modular**, deliberately **starting from provably-working lattices and generalizing outward** rather than specifying the whole category tree first.
-
-  - **`sage_lattice_category_spike/`** — the **maintained base spike**: Sage parity, normalization, literature-backed behavior with a known reference surface.
-    The lexicon (`lexicon/` + `typings/`) is its single type surface.
-    This is where the root-datum, form, morphism, and category interfaces actually live — a repo-wide grep that skips `computations/experiments/` will falsely conclude "no repo surface exists."
-
-  - **`sage_lattice_feature_spike/`** — the **fork** carrying genuinely new mathematics with no Sage analogue, gap-ledger gated; it *imports* the base spike.
-
-When a task says "the repo owns X" or "X is a gap," resolve it against the **active spikes**, not the frozen `category_specs`.
+- **The spikes** (`sage_lattice_category_spike`, `sage_lattice_feature_spike`) — the second attempt — were **fully absorbed into the preamble and deleted on 2026-08-19** (PLAN-spike-absorption-workstreams; the migration commits' bodies record each notion's origin and synthesis). Git history is their archive; do not expect their directories to exist.
 
 # Issue-tree and milestone policy (research repo)
 
