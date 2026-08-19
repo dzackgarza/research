@@ -99,7 +99,7 @@ class DirectSumObject(Parent):
 def DirectSumDecomposition(
     underlying_object: "Module",
     summands: "OrderedSet",
-    summand_index_set: "OrderedSet" = None,
+    summand_index_set: "OrderedSet | None" = None,
 ) -> DirectSumObject:
     r"""Return the decomposition \(M=\bigoplus_i M_i\) of an object already in hand.
 

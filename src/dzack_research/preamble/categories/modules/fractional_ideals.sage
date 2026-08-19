@@ -2,8 +2,11 @@ r"""Ideals and fractional ideals of a commutative ring, as \(R\)-modules.
 
 An ideal \(I\subseteq R\) is an \(R\)-submodule of \(R\); a fractional ideal
 is an \(R\)-submodule of \(\operatorname{Frac}(R)\) admitting a common
-denominator.  Both are the same object with a different ambient, which is
-why one class carries them: what changes is where the generators live.
+denominator.  Both are carried by one class because each is the pair
+\((I,\iota)\) for an inclusion \(\iota\): what changes between them is the
+codomain of \(\iota\) -- \(R\) for an integral ideal,
+\(\operatorname{Frac}(R)\) for a fractional one -- read off the ring on
+demand, never stored beside it.
 
 The generating family is the ideal's own -- ``gens`` and
 ``module_generators`` are the same family read in the two vocabularies, and
@@ -65,7 +68,6 @@ class FractionalIdeal(OwnedBaseRing, Parent):
     def __init__(self, ring: "Ring", generators: "OrderedSet") -> None:
         ring = engine_ring(ring)
         self._ring = ring
-        self._ambient = ring.fraction_field()
         # The generating family is kept as given, and kept as a tuple.  An
         # integral ideal's generators are elements of R and a fractional
         # ideal's are not; moving them all into Frac(R) would replace the
@@ -123,7 +125,9 @@ class FractionalIdeal(OwnedBaseRing, Parent):
         """
         generator = self.principal_generator()
         assert not generator.is_zero(), "the zero ideal is not invertible"
-        return FractionalIdeal(self._ring, (~self._ambient(generator),))
+        return FractionalIdeal(
+            self._ring, (~self._ring.fraction_field()(generator),)
+        )
 
     def _dividing_generator(self) -> tuple:
         r"""Return the generators that divide the whole family.
@@ -156,8 +160,11 @@ class FractionalIdeal(OwnedBaseRing, Parent):
         return dividing[0]
 
     def __contains__(self, element: "Element") -> bool:
-        return element in self._ambient and any(
-            (self._ambient(element) / generator) in self._ring
+        # The codomain of the inclusion \(I\hookrightarrow\operatorname{Frac}(R)\),
+        # read off the ring on demand.
+        fraction_field = self._ring.fraction_field()
+        return element in fraction_field and any(
+            (fraction_field(element) / generator) in self._ring
             for generator in self._generators
         )
 

@@ -23,6 +23,10 @@ if TYPE_CHECKING:
     from dzack_research.preamble.lexicon import Element
     from sage.categories.modules import Module
 
+    # \(\rho\) is a morphism in ``Rings()``: whichever morphism class its
+    # homset built, so the noun is the categorical one.
+    from sage.categories.morphism import Morphism as RingMorphism
+
 from dzack_research.preamble.categories.rings.rings import OwnedBaseRing
 from sage.categories.modules import Modules
 from sage.categories.rings import Rings

@@ -23,6 +23,7 @@ from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBase
 
 if TYPE_CHECKING:
     from sage.categories.modules import Module
+    from sage.rings.integer import Integer
     from dzack_research.preamble.lexicon import Element, OrderedSet
 
 
