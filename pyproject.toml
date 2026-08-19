@@ -6,7 +6,7 @@ dependencies = [
     "haystack-ai>=2.31.0",
     "pandoc-config @ https://github.com/dzackgarza/pandoc-config/archive/b567314b56b11326fdba05041afdccd11adee5b3.tar.gz",
     "python-dotenv>=1.2.2",
-    "sage-julia-bridge @ https://github.com/dzackgarza/sage-julia-bridge/archive/21d579a14b4b28420b1ca823a354237f507c2f94.tar.gz",
+    "sage-julia-bridge @ git+https://github.com/dzackgarza/sage-julia-bridge",
     "streamlit>=1.59.2",
     "tree-sitter-sage",
     "z3-solver>=4.16.0.0",
@@ -24,7 +24,7 @@ dzack_research = ["py.typed"]
 
 [tool.uv.sources]
 sage-stubs = { git = "https://github.com/dzackgarza/sage-stubs.git" }
-tree-sitter-sage = { git = "https://github.com/dzackgarza/tree-sitter-sage", rev = "fd5c72bafb61d67fedb0f6860eeb48f6c1616dbd" }
+tree-sitter-sage = { git = "https://github.com/dzackgarza/tree-sitter-sage" }
 
 
 [tool.pytest.ini_options]
