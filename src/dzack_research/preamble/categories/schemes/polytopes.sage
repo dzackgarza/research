@@ -47,8 +47,9 @@ from sage.categories.category import Category
 from sage.categories.objects import Objects
 from sage.structure.parent import Parent
 from sage.geometry.toric_lattice import ToricLattice, ToricLattice_generic
-from sage.geometry.polyhedron.constructor import Polyhedron
-from sage.geometry.polyhedron.base import Polyhedron_base
+from sage.geometry.polyhedron.constructor import Polyhedron as polyhedron
+
+from dzack_research.preamble.lexicon import Polyhedron
 from sage.rings.rational_field import QQ
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational import Rational
@@ -65,11 +66,11 @@ LatticePoint = Sequence[LatticeCoord]
 
 class _PolyhedronFace(Protocol):
     def vertices(self) -> Sequence[Sequence[LatticeCoord]]: ...
-    def as_polyhedron(self) -> Polyhedron_base: ...
+    def as_polyhedron(self) -> Polyhedron: ...
 
 
 class _LatticePolytopeInterface(Protocol):
-    def polyhedron(self) -> Polyhedron_base: ...
+    def polyhedron(self) -> Polyhedron: ...
     def vertices(self) -> tuple[LatticePoint, ...]: ...
     def ambient_space(self) -> Callable[[Sequence[LatticeCoord]], LatticePoint]: ...
     def dimension(self) -> int: ...
@@ -486,7 +487,7 @@ class LatticePolytopes(ConvexPolytopes):
             """Return True if the normal fan of P is smooth (Delzant polytope)."""
             return self.polyhedron().is_smooth()
 
-        def polar_dual(self: _LatticePolytopeInterface) -> Polyhedron_base:
+        def polar_dual(self: _LatticePolytopeInterface) -> Polyhedron:
             """Return the polar dual polytope P*."""
             return self.polyhedron().polar()
 
@@ -669,18 +670,18 @@ class ConvexPolytope(Parent):
     """
     def __init__(
         self,
-        vertices: Sequence[Sequence[LatticeCoord]] | Polyhedron_base,
+        vertices: Sequence[Sequence[LatticeCoord]] | Polyhedron,
         lattice: Optional[ToricLattice_generic] = None,
         base_ring: object = QQ,
         category: Optional[Category] = None,
     ) -> None:
-        if isinstance(vertices, Polyhedron_base) or hasattr(vertices, 'vertices'):
-            poly = vertices if isinstance(vertices, Polyhedron_base) else vertices.polyhedron()
+        if isinstance(vertices, Polyhedron) or hasattr(vertices, 'vertices'):
+            poly = vertices if isinstance(vertices, Polyhedron) else vertices.polyhedron()
             raw_verts = [list(v) for v in poly.vertices()]
             self._polyhedron = poly
         else:
             raw_verts = [list(v) for v in vertices]
-            self._polyhedron = Polyhedron(vertices=raw_verts, base_ring=base_ring)
+            self._polyhedron = polyhedron(vertices=raw_verts, base_ring=base_ring)
 
         dim = len(raw_verts[0]) if raw_verts else 0
         if lattice is None:
@@ -697,7 +698,7 @@ class ConvexPolytope(Parent):
 
         super().__init__(base=base_ring, category=category)
 
-    def polyhedron(self) -> Polyhedron_base:
+    def polyhedron(self) -> Polyhedron:
         return self._polyhedron
 
     def ambient_space(self) -> Callable[[Sequence[LatticeCoord]], LatticePoint]:
@@ -739,13 +740,13 @@ class LatticePolytope(ConvexPolytope):
     """
     def __init__(
         self,
-        vertices: Sequence[Sequence[LatticeCoord]] | Polyhedron_base,
+        vertices: Sequence[Sequence[LatticeCoord]] | Polyhedron,
         lattice: Optional[ToricLattice_generic] = None,
         base_ring: object = ZZ,
         category: Optional[Category] = None,
     ) -> None:
-        if isinstance(vertices, Polyhedron_base) or hasattr(vertices, 'vertices'):
-            poly = vertices if isinstance(vertices, Polyhedron_base) else vertices.polyhedron()
+        if isinstance(vertices, Polyhedron) or hasattr(vertices, 'vertices'):
+            poly = vertices if isinstance(vertices, Polyhedron) else vertices.polyhedron()
             raw_verts = [list(v) for v in poly.vertices()]
         else:
             raw_verts = [list(v) for v in vertices]
@@ -767,7 +768,7 @@ class LatticePolygon(ConvexPolygon, LatticePolytope):
     """
     def __init__(
         self,
-        vertices: Sequence[Sequence[LatticeCoord]] | Polyhedron_base,
+        vertices: Sequence[Sequence[LatticeCoord]] | Polyhedron,
         lattice: Optional[ToricLattice_generic] = None,
     ) -> None:
         super().__init__(vertices=vertices, lattice=lattice, base_ring=ZZ, category=LatticePolygons())

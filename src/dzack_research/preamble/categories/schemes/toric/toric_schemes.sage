@@ -15,12 +15,11 @@ from sage.rings.rational_field import QQ as SageQQ
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.matrix.constructor import matrix
 from sage.modules.free_module_element import vector
-from sage.geometry.polyhedron.constructor import Polyhedron
-from sage.geometry.polyhedron.base import Polyhedron_base
 from sage.structure.sage_object import SageObject
 from sage.misc.latex import latex
 from sage.schemes.toric.variety import ToricVariety_field, ToricVariety as NativeToricVariety
 
+from dzack_research.preamble.lexicon import Polyhedron
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
 from dzack_research.preamble.categories.schemes.schemes import SchemeElement, Schemes
 from dzack_research.preamble.categories.schemes.varieties import Varieties, Variety
@@ -269,7 +268,7 @@ class ToricScheme(Variety):
         Variety.__init__(self, base_ring=base_ring)
         refine(self, ToricSchemes(base_ring))
 
-        if isinstance(polytope_or_fan, Polyhedron_base) or hasattr(polytope_or_fan, 'vertices'):
+        if isinstance(polytope_or_fan, Polyhedron) or hasattr(polytope_or_fan, 'vertices'):
             self._polytope = polytope_or_fan
             self._dim = int(polytope_or_fan.dimension()) if dim is None else int(dim)
             self._fan = getattr(polytope_or_fan, 'normal_fan', lambda: None)()

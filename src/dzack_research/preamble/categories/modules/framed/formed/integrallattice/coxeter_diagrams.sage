@@ -36,12 +36,11 @@ from sage.rings.infinity import infinity, PlusInfinity
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
-from sage.combinat.root_system.coxeter_matrix import CoxeterMatrix
-from sage.graphs.graph import Graph
 from sage.structure.category_object import normalize_names
 from sage.structure.element_wrapper import ElementWrapper
 from sage.structure.parent import Parent
 
+from dzack_research.preamble.lexicon import CoxeterMatrix, Graph
 from dzack_research.preamble.categories.sets.cardinals import Cardinal
 from dzack_research.preamble.categories.sets.owned_sets import Sets
 

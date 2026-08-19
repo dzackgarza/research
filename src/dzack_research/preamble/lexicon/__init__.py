@@ -32,6 +32,11 @@ from .foundations import (
     SignaturePair,
     SymbolicExpression,
 )
+from .geometry import (
+    CoxeterMatrix,
+    Graph,
+    Polyhedron,
+)
 from .interop import (
     SageCategory,
     SageElement,
@@ -59,6 +64,10 @@ __all__ = [
     "Matrix",
     "ModuleElement",
     "RingElement",
+    # geometry and combinatorics
+    "CoxeterMatrix",
+    "Graph",
+    "Polyhedron",
     # Sage interop
     "SageCategory",
     "SageElement",

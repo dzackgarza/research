@@ -55,8 +55,9 @@ from sage.categories.category import Category
 from sage.categories.objects import Objects
 from sage.structure.parent import Parent
 from sage.geometry.toric_lattice import ToricLattice, ToricLattice_generic
-from sage.geometry.polyhedron.constructor import Polyhedron
-from sage.geometry.polyhedron.base import Polyhedron_base
+from sage.geometry.polyhedron.constructor import Polyhedron as polyhedron
+
+from dzack_research.preamble.lexicon import Polyhedron
 from sage.schemes.toric.variety import ToricVariety, ToricVariety_field
 from sage.combinat.root_system.cartan_type import CartanType
 from sage.rings.rational_field import QQ, RationalField
@@ -93,7 +94,7 @@ LatticePoint2D = Sequence[LatticeCoord]
 
 
 class _PolyhedronFace(Protocol):
-    def as_polyhedron(self) -> Polyhedron_base: ...
+    def as_polyhedron(self) -> Polyhedron: ...
     def vertices(self) -> Sequence[LatticePoint2D]: ...
     def integral_points(self) -> Sequence[LatticePoint2D]: ...
     def ambient_Hrepresentation(self) -> Sequence[_HRepresentation]: ...
@@ -195,7 +196,7 @@ class _ADESurfaceInterface(Protocol):
     def ambient_space(self) -> Callable[[Sequence[LatticeCoord]], LatticePoint2D]: ...
     def polyhedron(self) -> _Polyhedron: ...
     def dynkin_diagram_data(self) -> dict[str, object]: ...
-    def pyramid_polytope(self) -> Polyhedron_base: ...
+    def pyramid_polytope(self) -> Polyhedron: ...
     def area(self) -> LatticeCoord: ...
     def volume(self) -> LatticeCoord: ...
     def plot(self, **kwds: object) -> Graphics: ...
@@ -504,7 +505,7 @@ class ADEBaseSurface(ADELogPair):
     def polytope(self) -> LatticePolygon:
         return self.polygon()
 
-    def polyhedron(self) -> Polyhedron_base:
+    def polyhedron(self) -> Polyhedron:
         return self._cover.polyhedron()
 
     def vertices(self) -> tuple[LatticePoint2D, ...]:
@@ -879,16 +880,16 @@ class ADESurface(ADELogPair):
                 return r"\mathbb{P}^2" if k == 1 else rf"\mathbb{{P}}^2 \text{{ (deg }} {k}\text{{)}}"
         return "V_Q"
 
-    def _construct_pyramid_polyhedron(self) -> Polyhedron_base:
+    def _construct_pyramid_polyhedron(self) -> Polyhedron:
         """Construct the 3D pyramidal polyhedron P in N_3."""
         q_verts = [list(v) for v in self.vertices()]
         p_star = list(self.p_star())
         p_apex = [p_star[0], p_star[1], 2]
         p_base_verts = [[v[0], v[1], 0] for v in q_verts]
         all_3d_verts = p_base_verts + [p_apex]
-        return Polyhedron(vertices=all_3d_verts, base_ring=ZZ)
+        return polyhedron(vertices=all_3d_verts, base_ring=ZZ)
 
-    def pyramid_polytope(self) -> Polyhedron_base:
+    def pyramid_polytope(self) -> Polyhedron:
         return self._construct_pyramid_polyhedron()
 
     def cover_polytope(self) -> LatticePolytope:
@@ -903,9 +904,9 @@ class ADESurface(ADELogPair):
     def polygon(self) -> LatticePolygon:
         return LatticePolygon(self.vertices())
 
-    def polyhedron(self) -> Polyhedron_base:
+    def polyhedron(self) -> Polyhedron:
         verts = [list(v) for v in self.vertices()]
-        return Polyhedron(vertices=verts, base_ring=ZZ)
+        return polyhedron(vertices=verts, base_ring=ZZ)
 
     def vertices(self) -> tuple[LatticePoint2D, ...]:
         return self._vertices
