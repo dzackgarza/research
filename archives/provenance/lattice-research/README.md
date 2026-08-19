@@ -40,4 +40,29 @@ Where the mathematics landed:
 - Isometry screens, characters, predicate subgroups, and isotropic-orbit
   machinery → the preamble
   (`lattice_homomorphisms.sage`, `lattice_isometries.sage`, `engines.sage`,
-  `isotropic_orbits.sage`, `integral_lattices.sage`).
+  `isotropic_orbits.sage`, `integral_lattices.sage`, `vector_orbits.sage`).
+- The code corpus — backend implementations, the executable specifications,
+  and the written design specification →
+  `computations/scripts/lattice-research/`, which has its own map.
+- The reading of that design, and where the preamble differs from it →
+  `notes/category-design/lattice-dsl-prior-attempt.md`.
+- The two Lean files →
+  `notes/topics/coble-enriques-lattice-theory/lean/`; the proved Hessian rank
+  bound is stated there, and the sorry'd isotropic-plane claim is corrected at
+  `notes/topics/isotropic-vector-orbits/tco-isotropic-plane-orbit-claim.md`.
+- Hodge-theoretic monodromy of a one-parameter hypersurface family →
+  `notes/computations/hypersurface-family-monodromy.md` (a note beside a
+  stated gap: the preamble has no surface for it).
+- The Coble discriminant-orbit computations →
+  `computations/scripts/coble-discriminant/`.
+
+Also here, added with this receipt: `agents/agents/` (21 auditor role
+definitions, several encoding mathematical review criteria — representation
+collapse, missing base categories, the Sage boundary, spec weakening),
+`agents/skills/`, `agents/plans/` (the twenty feature cards naming the
+research program, plus the plan DAG and its diagrams).
+
+Deliberately not migrated, because they are administration rather than
+mathematics: the 323 per-task SPEC cards under each feature, the
+`category_specs` mypy-ledger generator scripts, the issue-tracker templates,
+and the repository's own QC and packaging configuration.

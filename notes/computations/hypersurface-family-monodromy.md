@@ -152,3 +152,9 @@ beside it. What of it is worth reimplementing is analysed in
 `notes/computations/extraction-specs/foliation_extraction_spec.md`, and the two
 period-computation approaches are compared in
 `notes/computations/comparisons/foliation_vs_lefschetz.md`.
+
+The corpus's own driver — the Python that assembles the pipeline above — is
+`computations/scripts/lattice-research/backends/foliation_backend.py`, with its
+Legendre-family test at `.../specs/tests/test_foliation_backend.py`. It is
+source material, not a maintained surface; it is kept because it is the
+reference implementation for whatever eventually owns the computation.

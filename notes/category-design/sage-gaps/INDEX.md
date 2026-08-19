@@ -60,6 +60,18 @@ an object sits in several categories, and the preamble names the duality
 functor instead. The document is kept because the divergence is legible only
 against it.
 
+## The complementary survey
+
+This corpus says what Sage *lacks*. What Sage *has*, and where, is surveyed by
+the atlas from the lattice-research tree at
+`computations/scripts/lattice-research/specs/sage_spec/`: which named Sage
+categories equal which chained subcategories
+(`Rings().Fields() == Rings().Commutative().Fields()`,
+`GcdDomains == IntegralDomains().Gcd()`, and so on), the containment hierarchy
+among them, and where `ZZ`, `QQ`, `AA`, `QQbar`, `RR`, `CC`, $\mathbb Z_p$,
+$\mathbb F_p$ and localizations sit in that graph. It is data for the
+fiber/capability map of the Sage bridge, and has no owner in the preamble yet.
+
 ## Errors recorded
 
 None recorded against these four files by the audit. Note that

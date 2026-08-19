@@ -40,6 +40,14 @@ The corrected roster of lattice-theoretic categories from that corpus's
 `sage_integration.md` is `lattice-categories-roster.md` in this directory,
 restated as a coverage check against the owned lattice tree.
 
+`lattice-dsl-prior-attempt.md` reads the written specification of the *first*
+lattice DSL (`~/gitclones/lattice-research`, landed 2026-08-20,
+PLAN-corpora-audit-registry R2): its own definition of a bilinear $R$-module,
+its ruling that lattices live in a product category $R\text{-Mod} \times
+\mathrm{Bil}_R$ — which the preamble rejects in favour of added structure —
+and the four design rulings that survived. The files it reads are at
+`computations/scripts/lattice-research/written-spec/`.
+
 `integral-lattice-bridge-residue.md` closes the same corpus's bridge layer
 (`gitclones/integral_lattice/*.py`): the lattice expression grammar and the
 random-lattice construction, which stay records rather than preamble code,

@@ -49,3 +49,7 @@ Related landings:
   `computations/scripts/coble-discriminant/`.
 - The open T_Co isotropic-plane claim, with its recorded errors corrected:
   `notes/topics/isotropic-vector-orbits/tco-isotropic-plane-orbit-claim.md`.
+- The corpus's two Lean files, and the proved Hessian rank bound at a node of
+  a plane sextic: `lean/` in this directory.
+- The corpus's code — backend implementations, executable specifications, the
+  written design specification: `computations/scripts/lattice-research/`.
