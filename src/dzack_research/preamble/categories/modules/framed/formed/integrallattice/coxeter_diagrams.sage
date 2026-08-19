@@ -85,7 +85,7 @@ class CoxeterDiagrams(Category):
         return "finite Coxeter diagrams"
 
     def super_categories(self) -> list[Category]:
-        from dzack_research.preamble.categories.modules.projective_tensors import ProjectiveWeightedGraphs
+        from dzack_research.preamble.categories.modules.framed.formed.integrallattice.vinberg_invariants import ProjectiveWeightedGraphs
         return [ProjectiveWeightedGraphs().Symmetric()]
 
     @staticmethod

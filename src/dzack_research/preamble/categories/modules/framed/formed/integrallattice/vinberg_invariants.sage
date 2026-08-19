@@ -37,7 +37,7 @@ For any real algebraic candidate $x \in [-1, 1)$:
 
 EXAMPLES::
 
-    sage: from dzack_research.preamble.categories.modules.projective_tensors import (
+    sage: from dzack_research.preamble.categories.modules.framed.formed.integrallattice.vinberg_invariants import (
     ...       CombinatorialVinbergInvariantMatrix,
     ...       ReflectionCosineSet, X_ref,
     ...       vinberg_invariant_matrix_from_gram
@@ -86,6 +86,7 @@ from sage.functions.other import sqrt
 from sage.functions.trig import cos
 from sage.graphs.graph import Graph
 from sage.matrix.constructor import matrix
+from sage.matrix.matrix0 import Matrix
 from sage.rings.infinity import Infinity, PlusInfinity, infinity
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ as SageZZ
@@ -98,8 +99,29 @@ from sage.structure.parent import Parent
 from sage.structure.unique_representation import UniqueRepresentation
 
 if TYPE_CHECKING:
+    from sage.graphs.digraph import DiGraph
+    from sage.rings.qqbar import AlgebraicNumber
+    from sage.rings.ring import Ring
+    from sage.structure.parent import MembershipInput
+    from sage.symbolic.expression import Expression
+    from dzack_research.preamble.lexicon import Element
     from dzack_research.preamble.categories.modules.framed.formed.integrallattice.coxeter_diagrams import (
         FiniteCoxeterDiagram,
+    )
+
+    # A vertex of a projective weighted graph is named by a label; the
+    # constructors accept either the label or its index.
+    VertexLabel = str | int | Integer
+    # What a point of P^1(R) may be handed over as: a scalar (read as
+    # [x : 1]), infinity (read as [1 : 0]), a coordinate pair, or a point
+    # already in the projective space.
+    ProjectivePointDatum = (
+        Element
+        | int
+        | PlusInfinity
+        | tuple
+        | list
+        | SchemeMorphism_point_projective_ring
     )
 
 
@@ -122,46 +144,40 @@ class ReflectionCosineSet(UniqueRepresentation, Parent):
     def _repr_(self) -> str:
         return "Set of reflection cosines { cos(pi/n) | n in ZZ_{>=1} }"
 
-    def _exact_n(self, x: object) -> Integer | None:
+    def _exact_n(self, x: "AlgebraicNumber | Element") -> Integer | None:
         r"""
         Return the exact integer n >= 1 such that x = cos(pi/n), or None if x not in X_ref.
         """
-        try:
-            x_alg = QQbar(x)
-        except Exception:
-            return None
+        x_alg = QQbar(x)
 
         if x_alg == -1:
             return Integer(1)
         if x_alg <= -1 or x_alg >= 1:
             return None
 
-        try:
-            zeta = x_alg + QQbar(I) * QQbar(sqrt(1 - x_alg**2))
-            order = zeta.multiplicative_order()
-            if order is not infinity and order % 2 == 0:
-                n = Integer(order // 2)
-                if zeta**n == -1:
-                    return n
-        except Exception:
-            return None
+        zeta = x_alg + QQbar(I) * QQbar(sqrt(1 - x_alg**2))
+        order = zeta.multiplicative_order()
+        if order is not infinity and order % 2 == 0:
+            n = Integer(order // 2)
+            if zeta**n == -1:
+                return n
         return None
 
-    def __contains__(self, x: object) -> bool:
+    def __contains__(self, x: "AlgebraicNumber | Element") -> bool:
         return self._exact_n(x) is not None
 
-    def __getitem__(self, n: int | Integer) -> object:
+    def __getitem__(self, n: int | Integer) -> "Expression":
         r"""Return cos(pi/n) for n >= 1."""
         n_int = Integer(n)
-        if n_int < 1:
-            raise ValueError("Index must be an integer n >= 1")
+        assert n_int >= 1, "Index must be an integer n >= 1"
         return cos(SageQQ.pi() / n_int) if hasattr(SageQQ, "pi") else cos(SageZZ(1) * SageQQ(1) / n_int)
 
-    def index_of(self, x: object) -> Integer:
+    def index_of(self, x: "AlgebraicNumber | Element") -> Integer:
         r"""Return the exact integer n such that x = cos(pi/n)."""
         n = self._exact_n(x)
-        if n is None:
-            raise ValueError(f"{x} is not an algebraic reflection cosine in X_ref")
+        assert n is not None, (
+            f"{x} is not an algebraic reflection cosine in X_ref"
+        )
         return n
 
 
@@ -258,35 +274,26 @@ class ProjectiveWeightedGraphs(Category):
             r"""Check if the system (or sub-system) is elliptic (positive definite Schläfli matrix)."""
             if not self.is_symmetric():
                 return False
-            try:
-                S = self.schlafli_matrix(indices=indices)
-                return bool(S.is_positive_definite())
-            except Exception:
-                return False
+            S = self.schlafli_matrix(indices=indices)
+            return bool(S.is_positive_definite())
 
         def is_parabolic(self, indices: Sequence[int] | None = None) -> bool:
             r"""Check if the system (or sub-system) is parabolic (positive semi-definite with corank 1)."""
             if not self.is_symmetric():
                 return False
-            try:
-                S = self.schlafli_matrix(indices=indices)
-                if S.nrows() == 0:
-                    return False
-                return bool(S.is_positive_semidefinite() and S.rank() == S.nrows() - 1)
-            except Exception:
+            S = self.schlafli_matrix(indices=indices)
+            if S.nrows() == 0:
                 return False
+            return bool(S.is_positive_semidefinite() and S.rank() == S.nrows() - 1)
 
         def is_hyperbolic(self, indices: Sequence[int] | None = None) -> bool:
             r"""Check if the system (or sub-system) is hyperbolic (signature (n-1, 1))."""
             if not self.is_symmetric():
                 return False
-            try:
-                S = self.schlafli_matrix(indices=indices)
-                if S.nrows() == 0:
-                    return False
-                return bool(not S.is_positive_semidefinite() and (S.det() < 0))
-            except Exception:
+            S = self.schlafli_matrix(indices=indices)
+            if S.nrows() == 0:
                 return False
+            return bool(not S.is_positive_semidefinite() and (S.det() < 0))
 
         def is_compact_hyperbolic(self, indices: Sequence[int] | None = None) -> bool:
             r"""Check if the system is compact hyperbolic (Lannér simplex: hyperbolic with all proper minors elliptic)."""
@@ -321,7 +328,7 @@ class ProjectiveWeightedGraphs(Category):
                 self.subdiagram(s) for size in range(n + 1) for s in combinations(range(n), size)
             ]
 
-            def leq(D1: object, D2: object) -> bool:
+            def leq(D1: Parent, D2: Parent) -> bool:
                 v1 = getattr(D1, "vertices", None) or getattr(D1, "variable_names", None)
                 v2 = getattr(D2, "vertices", None) or getattr(D2, "variable_names", None)
                 names1 = set(v1()) if v1 is not None else set()
@@ -366,11 +373,11 @@ class ProjectiveWeightedGraphs(Category):
             ]
             return full_P.subposet(hyperbolics)
 
-        def find_all_parabolics(self) -> list[object]:
+        def find_all_parabolics(self) -> list[Parent]:
             r"""Find all parabolic subdiagram objects."""
             return list(self.parabolic_subdiagram_poset())
 
-        def find_maximal_parabolics(self) -> list[object]:
+        def find_maximal_parabolics(self) -> list[Parent]:
             r"""Find all maximal parabolic subdiagram objects."""
             return self.parabolic_subdiagram_poset().maximal_elements()
 
@@ -398,7 +405,7 @@ class SymmetricProjectiveWeightedGraphs(Category):
     class ParentMethods:
         r"""Methods for symmetric projective weighted graphs and combinatorial intersection matrices."""
 
-        def schlafli_matrix(self, indices: Sequence[int] | None = None) -> matrix:
+        def schlafli_matrix(self, indices: Sequence[int] | None = None) -> Matrix:
             r"""
             Reconstruct the Schläfli matrix $S = (s_{ij})$ where $s_{ii} = 1$ and $s_{ij} = -\sqrt{t_{ij}}/2$.
             """
@@ -414,8 +421,10 @@ class SymmetricProjectiveWeightedGraphs(Category):
                     j = idx_list[j_idx]
                     u, v = verts[i], verts[j]
                     pt = self.edge_weight(u, v) if hasattr(self, "edge_weight") else self[i, j]
-                    if pt[1] == 0:
-                        raise ValueError(f"Cannot reconstruct finite Schläfli entry from infinite ratio [1 : 0]")
+                    assert pt[1] != 0, (
+                        "Cannot reconstruct finite Schläfli entry from "
+                        "infinite ratio [1 : 0]"
+                    )
                     t_val = pt[0] / pt[1]
                     val = -sqrt(t_val) / 2
                     S_mat[i_idx][j_idx] = val
@@ -425,9 +434,9 @@ class SymmetricProjectiveWeightedGraphs(Category):
 
         def gram_tensor(
             self,
-            root_norms: Sequence[object] | object = -2,
+            root_norms: "Sequence[Element] | Element | int" = -2,
             indices: Sequence[int] | None = None,
-        ) -> matrix:
+        ) -> Matrix:
             r"""
             Reconstruct the Gram matrix $G = (b(v_i, v_j))$ given diagonal root norms $q_i = b(v_i, v_i)$.
             """
@@ -437,13 +446,11 @@ class SymmetricProjectiveWeightedGraphs(Category):
             verts = self.vertices() if hasattr(self, "vertices") else tuple(str(v) for v in range(n))
 
             ring = self.base_ring()
-            if isinstance(root_norms, (int, Integer)):
-                norms = [ring(root_norms)] * k
-            elif isinstance(root_norms, Sequence):
+            if isinstance(root_norms, Sequence):
                 assert len(root_norms) == k, f"Expected {k} root norms, got {len(root_norms)}"
                 norms = [ring(q) for q in root_norms]
             else:
-                norms = [ring(-2)] * k
+                norms = [ring(root_norms)] * k
 
             G_mat = [[ring.zero() for _ in range(k)] for _ in range(k)]
             for i_idx, i in enumerate(idx_list):
@@ -452,14 +459,14 @@ class SymmetricProjectiveWeightedGraphs(Category):
                     j = idx_list[j_idx]
                     u, v = verts[i], verts[j]
                     pt = self.edge_weight(u, v) if hasattr(self, "edge_weight") else self[i, j]
-                    if pt[1] == 0:
-                        raise ValueError(f"Cannot reconstruct finite Gram entry from infinite Vinberg ratio [1 : 0]")
+                    assert pt[1] != 0, (
+                        "Cannot reconstruct finite Gram entry from infinite "
+                        "Vinberg ratio [1 : 0]"
+                    )
                     t_val = pt[0] / pt[1]
                     val_sq = t_val * norms[i_idx] * norms[j_idx] / 4
-                    try:
-                        val = ring(sqrt(val_sq))
-                    except Exception:
-                        val = sqrt(val_sq)
+                    root = sqrt(val_sq)
+                    val = ring(root) if root in ring else root
                     G_mat[i_idx][j_idx] = val
                     G_mat[j_idx][i_idx] = val
 
@@ -471,7 +478,7 @@ class SymmetricProjectiveWeightedGraphs(Category):
 # ---------------------------------------------------------------------------
 
 
-def to_projective_point(P1: ProjectiveSpace, val: object) -> SchemeMorphism_point_projective_ring:
+def to_projective_point(P1: ProjectiveSpace, val: "ProjectivePointDatum") -> SchemeMorphism_point_projective_ring:
     r"""Coerce a scalar, infinity, or coordinate pair into a point in Sage's native ProjectiveSpace."""
     if isinstance(val, SchemeMorphism_point_projective_ring) and val.scheme() == P1:
         return val
@@ -499,7 +506,7 @@ class CombinatorialVinbergInvariantMatrix(Parent):
 
     def __init__(
         self,
-        base_ring: object,
+        base_ring: "Ring",
         entries: dict[tuple[int, int], SchemeMorphism_point_projective_ring],
         rank: int,
         names: Sequence[str] | None = None,
@@ -544,7 +551,7 @@ class CombinatorialVinbergInvariantMatrix(Parent):
         r"""Return the dictionary of entries."""
         return dict(self._entries)
 
-    def __eq__(self, other: object) -> bool:
+    def __eq__(self, other: "MembershipInput") -> bool:
         r"""Return True if other is a CombinatorialVinbergInvariantMatrix with equal projective entries."""
         if not isinstance(other, CombinatorialVinbergInvariantMatrix):
             return False
@@ -558,21 +565,21 @@ class CombinatorialVinbergInvariantMatrix(Parent):
                     return False
         return True
 
-    def __ne__(self, other: object) -> bool:
+    def __ne__(self, other: "MembershipInput") -> bool:
         return not (self == other)
 
     def is_infinity(self, i: int, j: int) -> bool:
         r"""Return True if $t_{ij} = \infty$ (denominator coordinate is 0)."""
         return self[i, j][1] == 0
 
-    def affine_ratio(self, i: int, j: int) -> object:
+    def affine_ratio(self, i: int, j: int) -> "Element | PlusInfinity":
         r"""Return the affine scalar $t_{ij} = x/y$ if finite, else infinity."""
         pt = self[i, j]
         if pt[1] == 0:
             return infinity
         return pt[0] / pt[1]
 
-    def coxeter_order(self, i: int, j: int) -> object:
+    def coxeter_order(self, i: int, j: int) -> "Integer | PlusInfinity":
         r"""
         Return the exact Coxeter bond exponent $m_{ij} \in \{1, 2, 3, \ldots, \infty\}$.
 
@@ -586,24 +593,36 @@ class CombinatorialVinbergInvariantMatrix(Parent):
         ratio = pt[0] / pt[1]
         if ratio >= 4:
             return infinity
-        if ratio < 0:
-            raise ValueError(f"Negative Vinberg invariant t[{i},{j}] = {ratio} is invalid")
+        assert ratio >= 0, (
+            f"Negative Vinberg invariant t[{i},{j}] = {ratio} is invalid"
+        )
 
         cos_theta = sqrt(ratio) / 2
         n = X_ref._exact_n(cos_theta)
-        if n is not None:
-            return n
-
-        raise ValueError(f"Vinberg invariant t[{i},{j}] = {ratio} corresponds to non-Coxeter angle (cos = {cos_theta})")
+        assert n is not None, (
+            f"Vinberg invariant t[{i},{j}] = {ratio} corresponds to "
+            f"non-Coxeter angle (cos = {cos_theta})"
+        )
+        return n
 
     def is_valid(self) -> bool:
-        r"""Return True if all entries represent valid Coxeter/Vinberg invariants."""
+        r"""Return True if all entries represent valid Coxeter/Vinberg invariants.
+
+        The same conditions :meth:`coxeter_order` asserts, computed as the
+        predicate they are: an entry is valid when it is infinite, at least
+        four, or a nonnegative ratio whose half square root is a reflection
+        cosine.
+        """
         n = self._rank
         for i in range(n):
             for j in range(i + 1, n):
-                try:
-                    self.coxeter_order(i, j)
-                except ValueError:
+                pt = self[i, j]
+                if pt[1] == 0:
+                    continue
+                ratio = pt[0] / pt[1]
+                if ratio >= 4:
+                    continue
+                if ratio < 0 or sqrt(ratio) / 2 not in X_ref:
                     return False
         return True
 
@@ -727,7 +746,7 @@ class CombinatorialVinbergInvariantMatrix(Parent):
 
 
 def vinberg_invariant_matrix_from_gram(
-    G: matrix,
+    G: Matrix,
     names: Sequence[str] | None = None,
 ) -> CombinatorialVinbergInvariantMatrix:
     r"""
@@ -763,8 +782,8 @@ def vinberg_invariant_matrix_from_gram(
 
 
 def combinatorial_vinberg_invariant_matrix(
-    base_ring: object,
-    components: Sequence[Sequence[object]],
+    base_ring: "Ring",
+    components: "Sequence[Sequence[ProjectivePointDatum]]",
     names: Sequence[str] | None = None,
 ) -> CombinatorialVinbergInvariantMatrix:
     r"""
@@ -801,10 +820,10 @@ class ProjectiveWeightedDiGraph(Parent):
 
     def __init__(
         self,
-        base_ring: object,
-        vertices: Sequence[str | int],
-        vertex_weights: Mapping[object, object] | Sequence[object] | None = None,
-        edges: Sequence[tuple[object, object, object]] | None = None,
+        base_ring: "Ring",
+        vertices: "Sequence[VertexLabel]",
+        vertex_weights: "Mapping[VertexLabel, ProjectivePointDatum] | Sequence[ProjectivePointDatum] | None" = None,
+        edges: "Sequence[tuple[VertexLabel, VertexLabel, ProjectivePointDatum]] | None" = None,
         category: Category | None = None,
     ) -> None:
         cat = category if category is not None else ProjectiveWeightedGraphs()
@@ -845,12 +864,12 @@ class ProjectiveWeightedDiGraph(Parent):
         r"""Return the number of vertices."""
         return len(self._vertices)
 
-    def vertex_weight(self, v: object) -> SchemeMorphism_point_projective_ring:
+    def vertex_weight(self, v: "VertexLabel") -> SchemeMorphism_point_projective_ring:
         r"""Return the weight of vertex $v$ in $\mathbb{P}^1(R)$."""
         v_str = str(v)
         return self._vertex_weights.get(v_str, self._projective_space([4, 1]))
 
-    def edge_weight(self, u: object, v: object) -> SchemeMorphism_point_projective_ring:
+    def edge_weight(self, u: "VertexLabel", v: "VertexLabel") -> SchemeMorphism_point_projective_ring:
         r"""Return the directed edge weight $(u \to v)$ in $\mathbb{P}^1(R)$."""
         u_str, v_str = str(u), str(v)
         return self._edge_weights.get((u_str, v_str), self._projective_space([0, 1]))
@@ -863,7 +882,7 @@ class ProjectiveWeightedDiGraph(Parent):
                 result.append((u, v, wt))
         return result
 
-    def __eq__(self, other: object) -> bool:
+    def __eq__(self, other: "MembershipInput") -> bool:
         r"""Return True if other is a ProjectiveWeightedDiGraph with equal vertices and weights."""
         if not isinstance(other, ProjectiveWeightedDiGraph):
             return False
@@ -880,7 +899,7 @@ class ProjectiveWeightedDiGraph(Parent):
                     return False
         return True
 
-    def __ne__(self, other: object) -> bool:
+    def __ne__(self, other: "MembershipInput") -> bool:
         return not (self == other)
 
     def __hash__(self) -> int:
@@ -951,7 +970,7 @@ class ProjectiveWeightedDiGraph(Parent):
                         edges.append((verts[i], verts[j], wt))
         return cls(ring, verts, vertex_weights=v_weights, edges=edges)
 
-    def underlying_digraph(self) -> object:
+    def underlying_digraph(self) -> "DiGraph":
         r"""Construct a native Sage DiGraph carrying the projective weights as attributes."""
         from sage.graphs.digraph import DiGraph
         D = DiGraph(multiedges=False)
@@ -971,10 +990,10 @@ class ProjectiveWeightedDiGraph(Parent):
 
 
 def projective_weighted_digraph(
-    base_ring: object,
-    vertices: Sequence[str | int],
-    vertex_weights: Mapping[object, object] | Sequence[object] | None = None,
-    edges: Sequence[tuple[object, object, object]] | None = None,
+    base_ring: "Ring",
+    vertices: "Sequence[VertexLabel]",
+    vertex_weights: "Mapping[VertexLabel, ProjectivePointDatum] | Sequence[ProjectivePointDatum] | None" = None,
+    edges: "Sequence[tuple[VertexLabel, VertexLabel, ProjectivePointDatum]] | None" = None,
 ) -> ProjectiveWeightedDiGraph:
     r"""Construct a ProjectiveWeightedDiGraph."""
     return ProjectiveWeightedDiGraph(
