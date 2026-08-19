@@ -1,7 +1,6 @@
 r"""Bilinear and quadratic forms as native Sage morphisms."""
 
 
-from sage.rings.rational_field import QQ as SageQQ
 from collections.abc import Callable
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -20,6 +19,7 @@ from sage.categories.homset import Hom
 from sage.categories.morphism import Morphism, SetMorphism
 from sage.structure.element import ModuleElement
 from dzack_research.preamble.categories.sets.underlying_sets import UnderlyingSet
+from sage.matrix.constructor import matrix
 from sage.matrix.matrix0 import Matrix
 from sage.structure.parent import Parent
 from dzack_research.preamble.lexicon import GramMatrix
@@ -141,6 +141,12 @@ def _degree_construction(
         algebra_relations,
         degree,
     )
+    if not degree_relations:
+        # No relation reaches this degree, so the graded piece of the free
+        # algebra already presents the construction -- the same statement as
+        # the relation-free branch above.
+        cache[(cache_key, degree)] = piece
+        return piece
     monomials = tuple(
         next(iter(generator.coefficients()))
         for generator in algebra.graded_piece_monomials(degree)
@@ -771,9 +777,17 @@ class BilinearFormMorphism(Morphism):
         )
 
     def on_module(self, module: "Module") -> "BilinearFormMorphism":
+        assert self._gram_matrix is not None, (
+            f"{self.module()} has no finite generating set, so its form has "
+            "no Gram matrix; the form is its pairing"
+        )
         return BilinearForms(module, self.codomain())(self._gram_matrix)
 
     def reduced(self, value_module: "Module") -> "BilinearFormMorphism":
+        assert self._gram_matrix is not None, (
+            f"{self.module()} has no finite generating set, so its form has "
+            "no Gram matrix; the form is its pairing"
+        )
         return BilinearForms(self.module(), value_module)(self._gram_matrix)
 
     def base_changed(self, module: "Module") -> "BilinearFormMorphism":
@@ -812,14 +826,40 @@ class BilinearFormMorphism(Morphism):
             )
         )
 
-    def descends_along(self, morphism: "ModuleMorphism") -> bool:
+    def descends_along(
+        self, morphism: "ModuleMorphism", value_projection: "Morphism"
+    ) -> bool:
+        r"""Whether this form descends to \(\operatorname{coker}(f)\).
+
+        For \(f:N\hookrightarrow M\) with \(M\) this form's module, the
+        induced form on \(M/N\) valued in \(W'\) exists exactly when every
+        pairing of \(f(N)\) against \(M\) lies in
+        \(\ker(\pi:W\twoheadrightarrow W')\) -- the target quotient's defining
+        submodule, read off ``value_projection`` as the values it kills.
+        """
+        domain, codomain = morphism.domain(), morphism.codomain()
+        # The compatibility the pairing loop below silently assumes: the
+        # inclusion lands in this form's module, which is where both the
+        # images of N and the generating family of M are paired.
+        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _underlying_module
+
+        assert _underlying_module(codomain) is self.module(), (
+            f"the inclusion lands in {codomain}, but this form pairs "
+            f"elements of {self.module()}"
+        )
+        assert value_projection.domain() is self.codomain(), (
+            f"the value projection starts at {value_projection.domain()}, "
+            f"but this form takes values in {self.codomain()}"
+        )
+        target_zero = value_projection.codomain().zero()
         return all(
-            self(
-                _forget_form_element(morphism(domain.module_generator(label))),
-                _forget_form_element(codomain.module_generator(target_label)),
+            value_projection(
+                self(
+                    _forget_form_element(morphism(domain.module_generator(label))),
+                    _forget_form_element(codomain.module_generator(target_label)),
+                )
             )
-            in SageZZ
-            for domain, codomain in [(morphism.domain(), morphism.codomain())]
+            == target_zero
             for label in domain.module_generating_set()
             for target_label in codomain.module_generating_set()
         )
@@ -929,7 +969,10 @@ class QuadraticFormMorphism(Morphism):
         return self(element)
 
     def lift_form(self) -> BilinearFormMorphism:
-        return BilinearForms(self.module(), SageQQ)(self._lift_matrix)
+        r"""Return the symmetric bilinear lift, valued where its entries live."""
+        return BilinearForms(self.module(), self._lift_matrix.base_ring())(
+            self._lift_matrix
+        )
 
     def _polar_value_module(self) -> "Module":
         from sage.groups.additive_abelian.qmodnz import QmodnZ
@@ -998,12 +1041,39 @@ class QuadraticFormMorphism(Morphism):
             * matrix_of_map.transpose()
         )
 
-    def descends_along(self, morphism: "ModuleMorphism") -> bool:
-        if not self.lift_form().descends_along(morphism):
+    def descends_along(
+        self, morphism: "ModuleMorphism", value_projection: "Morphism"
+    ) -> bool:
+        r"""Whether this quadratic form descends to \(\operatorname{coker}(f)\).
+
+        Nikulin's two conditions: the polar pairings of \(f(N)\) against
+        \(M\) descend along the polar quotient of ``value_projection``'s
+        target, and the values \(q(f(N))\) lie in
+        \(\ker(\pi:W\twoheadrightarrow W')\), read off ``value_projection``
+        as the values it kills.
+        """
+        from sage.groups.additive_abelian.qmodnz import QmodnZ
+
+        quadratic_target = value_projection.codomain()
+        assert isinstance(quadratic_target, QmodnZ), (
+            "halving the value modulus is defined here only for Q/nZ"
+        )
+        polar_target = QmodnZ(quadratic_target.n / 2)
+        polar_projection = polar_target.coerce_map_from(
+            value_projection.domain()
+        )
+        if not self.lift_form().descends_along(morphism, polar_projection):
             return False
+        assert value_projection.domain() is self.codomain(), (
+            f"the value projection starts at {value_projection.domain()}, "
+            f"but this form takes values in {self.codomain()}"
+        )
+        target_zero = quadratic_target.zero()
         return all(
-            self(_forget_form_element(morphism(morphism.domain().module_generator(label))))
-            == self.codomain().zero()
+            value_projection(
+                self(_forget_form_element(morphism(morphism.domain().module_generator(label))))
+            )
+            == target_zero
             for label in morphism.domain().module_generating_set()
         )
 
