@@ -482,12 +482,66 @@ class OwnedRing(Parent):
             # completion (\(\mathbb R\), \(\mathbb C\), \(\mathbb Q_p\), a
             # power series ring), and every such completion is of the
             # continuum: a point is an infinite sequence of digits and every
-            # sequence is a point.  Refined rather than joined, so the owned
+            # sequence is a point.  Uncountability of the reals is Mathlib's
+            # ``Cardinal.not_countable_real``.  Inexactness is used here only
+            # as that statement about completions, never as a cardinality
+            # criterion in itself.  Refined rather than joined, so the owned
             # cardinality precedes Sage's countable-blind one.
             from dzack_research.preamble.categories.sets.owned_sets import Sets as OwnedSets
             from dzack_research.preamble.refine import refine
 
             refine(self, OwnedSets().Uncountable())
+        else:
+            # Countability is per-engine, never ``exact => countable``: SR is
+            # exact with continuum cardinality.  The engines the session
+            # catalogue names whose countability is a theorem: \(\mathbb Z\),
+            # \(\mathbb Q\), every number field (finite over \(\mathbb Q\)),
+            # and \(\overline{\mathbb Q}\).
+            from sage.categories.number_fields import NumberFields
+            from sage.rings.qqbar import QQbar as SageQQbar
+
+            countable_engine = (
+                engine is SageZZ
+                or engine is SageQQ
+                or engine in NumberFields()
+                or engine is SageQQbar
+            )
+            if countable_engine:
+                from dzack_research.preamble.categories.sets.owned_sets import Sets as OwnedSets
+                from dzack_research.preamble.refine import refine
+
+                refine(self, OwnedSets().Countable().Infinite())
+
+    def index(self, element: "Element") -> SageInteger:
+        r"""Reverse lookup in the chosen enumeration of a countable ring.
+
+        For \(\ZZ\) the answer is the closed zigzag form of Sage's native
+        ``iter(ZZ)`` order \(0, 1, -1, 2, -2, \dots\): index \(0\) at \(0\),
+        \(2n-1\) at \(n>0\), \(-2n\) at \(n<0\) — a formula, because a scan
+        for the value the formula already names is waste.  Every other
+        countable engine answers by the generic terminating scan the owned
+        ``Countable`` sets declare.
+        """
+        from dzack_research.preamble.categories.sets.owned_sets import (
+            CountableSets,
+            Sets as OwnedSets,
+        )
+
+        assert self.category().is_subcategory(OwnedSets().Countable()), (
+            f"{self} is not placed countable, so it has no enumeration to "
+            "look an index up in"
+        )
+        if self._engine is SageZZ:
+            member = SageZZ(element)
+            if member == 0:
+                return SageZZ.zero()
+            if member > 0:
+                return 2 * member - 1
+            return -2 * member
+        position: SageInteger = SageInteger(
+            CountableSets.ParentMethods.index(self, element)
+        )
+        return position
 
     def _coerce_map_from_(self, other: "Parent") -> bool:
         r"""Return whether ``other`` coerces here, which is the engine's answer.

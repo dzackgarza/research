@@ -49,7 +49,7 @@ class Functor(SageFunctor):
         return self._faithful
 
     def __mul__(self, first: SageFunctor) -> "Functor":
-        return compose(self, first)
+        return compose_functors(self, first)
 
 
 class IdentityFunctor(Functor):
@@ -70,7 +70,7 @@ class IdentityFunctor(Functor):
         return f"Identity functor of {self.domain()}"
 
 
-def compose(second: SageFunctor, first: SageFunctor) -> Functor:
+def compose_functors(second: SageFunctor, first: SageFunctor) -> Functor:
     r"""The composite ``second . first``, with exact boundary agreement.
 
     Identities are absorbed exactly (the other operand is returned itself)

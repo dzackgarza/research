@@ -104,6 +104,7 @@ def _constructions() -> dict:
         "mixed tensor": Tensor(BasedFreeModule(QQ, Sets.Δ[1]), (1, 1)),
         "smooth function module": smooth_functions(RR),
         "square-integrable function module": square_integrable_functions(RR),
+        "cartesian product of sets": CartesianProductOfSets((Sets.Δ[1], Sets.Δ[2])),
         "polynomial ring": QQ["x"],
         "a ring as an algebra over itself": ZZ,
     }

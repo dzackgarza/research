@@ -110,6 +110,8 @@ def install_preamble(namespace: dict) -> None:
             # After the three above: ``Cat`` imports the constructions they
             # define, and is where they are attached to Sage's ``Category``.
             "categories.abstract_categories.cat",
+            # The morphisms of Cat: the owned functor base and Fun(C, D).
+            "categories.abstract_categories.functors",
             "categories.modules.pure.modules",
             "categories.modules.graded_modules",
             "categories.modules.pure.finitely_generated.finitely_generated_modules",
@@ -133,7 +135,9 @@ def install_preamble(namespace: dict) -> None:
             "categories.modules.framed.finitely_generated.finitely_presented_torsion_modules",
             "categories.modules.group_modules.group_modules",
             "categories.forms.forms",
+            "categories.group.magmas",
             "categories.group.groups",
+            "categories.group.g_sets",
             "categories.group.profinite.profinite_groups",
             "categories.group.profinite.galois_choice_policy",
             "categories.group.profinite.absolute_galois_groups",

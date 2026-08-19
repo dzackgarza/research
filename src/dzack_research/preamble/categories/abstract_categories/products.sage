@@ -518,6 +518,56 @@ else:
     CartesianProductParent = Parent
 
 
+def _is_known_empty(factor: "Parent") -> bool:
+    r"""Whether ``factor`` is known to be empty, from its owned placement.
+
+    Infinite or uncountable placement is nonemptiness; finite placement
+    answers by exact cardinality; countable placement by a terminating
+    first-element probe.  A parent with no placement deciding the question
+    is refused by name — this is a helper of the product constructions,
+    never a general ``is_empty`` on ``Sets().ParentMethods``.
+    """
+    from dzack_research.preamble.categories.sets.owned_sets import placement_of
+
+    axioms = frozenset(placement_of(factor).axioms())
+    if "Uncountable" in axioms or "Infinite" in axioms:
+        return False
+    if "Finite" in axioms:
+        return bool(factor.cardinality() == 0)
+    if "Countable" in axioms:
+        for _ in factor:
+            return False
+        return True
+    assert False, (
+        f"{factor} carries no owned Sets placement deciding emptiness"
+    )
+
+
+def _cartesian_placement(factors: "tuple[Parent, ...]") -> Sets:
+    r"""The owned ``Sets()`` placement of \(\prod_i X_i\).
+
+    Finite when every factor is finite; countable when every factor is
+    countable; uncountable when a factor is, else infinite when a factor
+    is.  A product with a known-empty factor — and the empty product, the
+    singleton — is finite, whatever the other factors are.
+    """
+    from dzack_research.preamble.categories.sets.owned_sets import placement_of
+
+    if not factors or any(_is_known_empty(factor) for factor in factors):
+        return Sets().Finite()
+    axiom_families = [frozenset(placement_of(factor).axioms()) for factor in factors]
+    placement = Sets()
+    if all("Finite" in axioms for axioms in axiom_families):
+        return placement.Finite()
+    if all("Finite" in axioms or "Countable" in axioms for axioms in axiom_families):
+        placement = placement.Countable()
+    if any("Uncountable" in axioms for axioms in axiom_families):
+        placement = placement.Uncountable()
+    elif any("Infinite" in axioms for axioms in axiom_families):
+        placement = placement.Infinite()
+    return placement
+
+
 class CartesianProductOfSets(CartesianProductParent):
     r"""The cartesian product \(U(X_1)\times\cdots\times U(X_n)\) of underlying sets.
 
@@ -534,25 +584,51 @@ class CartesianProductOfSets(CartesianProductParent):
 
     def __init__(self, factors: tuple) -> None:
         self._factors = tuple(factors)
-        Parent.__init__(self, category=Sets())
+        # Constructed inside the owned ``Sets().CartesianProducts()``, whose
+        # ``ParentMethods.cardinality`` (the single home of the product
+        # cardinality) resolves through :meth:`cartesian_factors`.
+        Parent.__init__(
+            self, category=_cartesian_placement(self._factors).CartesianProducts()
+        )
 
     def factors(self) -> "tuple[Parent, ...]":
         return self._factors
 
-    def cardinality(self) -> "Cardinal":
-        r"""Return ``prod(#X_i)`` for the factors ``X_i``."""
-        from dzack_research.preamble.categories.sets.cardinals import (
-            Cardinalities,
-        )
-
-        return Cardinalities().product(
-            *(factor.cardinality() for factor in self._factors)
-        )
+    def cartesian_factors(self) -> "tuple[Parent, ...]":
+        r"""The factors, under the name Sage's product machinery reads."""
+        return self._factors
 
     def __iter__(self) -> "Iterator[tuple[Element, ...]]":
-        from itertools import product as _product
+        r"""Fair enumeration, delegated to Sage's cartesian product.
 
-        return iter(_product(*self._factors))
+        Sage's antidiagonal iteration is fair across infinite factors,
+        which ``itertools.product`` is not.  The empty product yields the
+        one empty tuple; a known-empty factor yields nothing.
+        """
+        from sage.categories.cartesian_product import cartesian_product
+
+        if not self._factors:
+            yield self(())
+            return
+        if any(_is_known_empty(factor) for factor in self._factors):
+            return
+        for point in cartesian_product(list(self._factors)):
+            yield self(tuple(point))
+
+    def projection(self, index: int) -> "Morphism":
+        r"""The ``index``-th product projection \(\pi_i:\prod_j X_j\to X_i\)."""
+        from sage.categories.homset import Hom
+        from sage.categories.morphism import SetMorphism
+        from sage.categories.sets_cat import Sets as SageSets
+
+        factor = self._factors[index]
+        return SetMorphism(
+            Hom(self, factor, SageSets()), lambda point: point[index]
+        )
+
+    def cartesian_projection(self, index: int) -> "Morphism":
+        r"""The projection, under the name Sage's product machinery reads."""
+        return self.projection(index)
 
     def __contains__(self, element: "MembershipInput") -> bool:
         return (
@@ -598,6 +674,27 @@ class CartesianProductOfSets(CartesianProductParent):
         return " x ".join(str(factor) for factor in self._factors)
 
 
+def cartesian_product_morphism(*maps: Morphism) -> Morphism:
+    r"""The product morphism \(\prod_i f_i:\prod_i X_i\to\prod_i Y_i\).
+
+    Componentwise on the products of the maps' own boundaries: the
+    domain and codomain products are built from ``domain()`` and
+    ``codomain()`` of the given maps.
+    """
+    from sage.categories.homset import Hom
+    from sage.categories.morphism import SetMorphism
+    from sage.categories.sets_cat import Sets as SageSets
+
+    domain = CartesianProductOfSets(tuple(component.domain() for component in maps))
+    codomain = CartesianProductOfSets(tuple(component.codomain() for component in maps))
+    return SetMorphism(
+        Hom(domain, codomain, SageSets()),
+        lambda point: codomain(
+            tuple(component(value) for component, value in zip(maps, point))
+        ),
+    )
+
+
 class CoproductOfSets(Parent):
     r"""The tagged disjoint union of a finite family of sets."""
 
@@ -617,27 +714,49 @@ class CoproductOfSets(Parent):
         )
 
     def __iter__(self) -> "Iterator[tuple[int, Element]]":
-        for index, cofactor in enumerate(self._cofactors):
-            for element in cofactor:
-                yield (index, element)
+        r"""Fair enumeration, delegated to Sage's disjoint union.
+
+        ``DisjointUnionEnumeratedSets`` with ``keepkey=True`` yields the
+        tagged pairs fairly across infinite cofactors, which the naive
+        cofactor-by-cofactor loop does not.
+        """
+        from sage.sets.disjoint_union_enumerated_sets import (
+            DisjointUnionEnumeratedSets,
+        )
+        from sage.sets.family import Family
+
+        return iter(
+            DisjointUnionEnumeratedSets(
+                Family(list(self._cofactors)), keepkey=True
+            )
+        )
 
     def __contains__(self, tagged_element: tuple[int, Element]) -> bool:
+        from sage.rings.integer import Integer as SageInteger
+
         if not isinstance(tagged_element, tuple) or len(tagged_element) != 2:
             return False
         index, element = tagged_element
-        return (
-            isinstance(index, int)
-            and 0 <= index < len(self._cofactors)
-            and element in self._cofactors[index]
-        )
+        # Sage's disjoint-union enumeration tags with Sage integers; a
+        # session writes python ints.  Both name the same index.
+        if not isinstance(index, (int, SageInteger)):
+            return False
+        position = int(index)
+        return 0 <= position < len(self._cofactors) and element in self._cofactors[position]
 
-    def injection(self, index: int, element: Element) -> "tuple[int, Element]":
-        r"""Return the value of the ``index``-th coproduct injection."""
-        if index < 0 or index >= len(self._cofactors):
-            raise IndexError(f"no coproduct cofactor has index {index}")
-        if element not in self._cofactors[index]:
-            raise ValueError(f"{element} is not in cofactor {index}")
-        return (index, element)
+    def injection(self, index: int) -> Morphism:
+        r"""The ``index``-th coproduct injection \(\iota_i:X_i\to\coprod_j X_j\)."""
+        from sage.categories.homset import Hom
+        from sage.categories.morphism import SetMorphism
+        from sage.categories.sets_cat import Sets as SageSets
+
+        assert 0 <= index < len(self._cofactors), (
+            f"no coproduct cofactor has index {index}"
+        )
+        cofactor = self._cofactors[index]
+        return SetMorphism(
+            Hom(cofactor, self, SageSets()), lambda element: (index, element)
+        )
 
     def _repr_(self) -> str:
         if not self._cofactors:
