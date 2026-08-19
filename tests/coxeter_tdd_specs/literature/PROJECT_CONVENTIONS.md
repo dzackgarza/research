@@ -88,7 +88,8 @@ mathematical claim under test and the transcription of the specimen — and a
 failure cannot distinguish them. Sourcing the specimen from the construction
 leaves only the claim. Every recorded transcription error in this corpus
 (the $H_3$ Gram matrix with its off-diagonal entries swapped, the doubled
-Cartan matrix in `helpers/sage_extraction.py`, the $E_8$ adjacency claim) is
+Cartan matrix in the corpus's retired Sage-extraction helper, the $E_8$
+adjacency claim) is
 an instance of the failure this rule prevents.
 
 The rule is about specimens only. It does not make Sage the oracle: the
