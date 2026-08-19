@@ -107,7 +107,46 @@ def _constructions() -> dict:
         "cartesian product of sets": CartesianProductOfSets((Sets.Δ[1], Sets.Δ[2])),
         "polynomial ring": QQ["x"],
         "a ring as an algebra over itself": ZZ,
+        "subobject sum": Lattices.E8.subobject_on([2 * e[0]]).sum(
+            Lattices.E8.subobject_on([3 * e[1]])
+        ),
+        "subobject intersection": Lattices.E8.subobject_on([2 * e[0], 2 * e[1]])
+        .intersection(Lattices.E8.subobject_on([3 * e[0], 3 * e[1]])),
+        "discriminant quadratic form from data": _discriminant_quadratic_from_data(),
+        "discriminant bilinear form from data": _discriminant_bilinear_from_data(),
     }
+
+
+def _discriminant_quadratic_from_data() -> Parent:
+    r"""The independent torsion-quadratic-form constructor: $q$ on $\ZZ/2$
+    with $q(e)=-1/2$, the $A_1$ discriminant form built from data alone."""
+    from sage.matrix.constructor import matrix as _matrix
+    from sage.rings.integer_ring import ZZ as _ZZ
+    from sage.rings.rational_field import QQ as _QQ
+
+    from dzack_research.preamble.categories.modules.framed.formed.torsionform.discriminant_quadratic_modules import (
+        DiscriminantQuadraticModules,
+    )
+
+    return DiscriminantQuadraticModules().from_relations_and_gram(
+        _matrix(_ZZ, [[2]]), _matrix(_QQ, [[-_QQ(1) / 2]])
+    )
+
+
+def _discriminant_bilinear_from_data() -> Parent:
+    r"""The independent torsion-bilinear-form constructor: $b$ on $\ZZ/2$
+    with $b(e,e)=1/2$, built from data alone."""
+    from sage.matrix.constructor import matrix as _matrix
+    from sage.rings.integer_ring import ZZ as _ZZ
+    from sage.rings.rational_field import QQ as _QQ
+
+    from dzack_research.preamble.categories.modules.framed.formed.torsionform.discriminant_bilinear_modules import (
+        DiscriminantBilinearModules,
+    )
+
+    return DiscriminantBilinearModules().from_relations_and_gram(
+        _matrix(_ZZ, [[2]]), _matrix(_QQ, [[_QQ(1) / 2]])
+    )
 
 
 def _formed_constructions() -> dict:

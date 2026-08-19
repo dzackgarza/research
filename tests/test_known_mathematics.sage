@@ -616,6 +616,17 @@ def test_the_extensions_of_an_automorphism_form_a_coset_of_the_open_subgroup() -
 _NATIVE_A4 = SageIntegralLattice("A4")
 
 
+def _owned_a4() -> "Parent":
+    r"""The owned $A_4$, crossed to Sage's sign convention for the audit.
+
+    The named root lattices are *negative* definite (the AG convention,
+    enforced at the single construction site in ``_gram_from_name``), while
+    Sage's are positive definite.  The audit compares mathematics, not sign
+    conventions, so the owned specimen crosses back by one twist.
+    """
+    return IntegralLattice("A4").twist(-1)
+
+
 # Sage's question, and the word the preamble already answers it with.  A pair
 # is here only if the mathematics survived the audit: the imprecise accessors
 # (``dimension`` for rank, ``signature`` for the index p-q, ``determinant`` for
@@ -632,7 +643,10 @@ CAPTURED_BY_THE_PREAMBLE = {
     "rank": "rank",
     "is_even": "is_even",
     "signature_pair": "signature_pair",
-    "genus": "genus",
+    # No ``genus`` row: the owned ``genus()`` returns the owned value object
+    # (signature pair + discriminant quadratic form, Nik80 Cor. 1.9.4), not
+    # Sage's symbol, so equality across the boundary is no longer the
+    # question; the genus mathematics is asserted in its own rows below.
     "gram_matrix": "gram_matrix",
     "ngens": "number_of_module_generators",
 }
@@ -649,7 +663,7 @@ def test_the_preamble_captures_sages_answer(question: str) -> None:
     """
     preamble_word = CAPTURED_BY_THE_PREAMBLE[question]
     expected = getattr(_NATIVE_A4, question)()
-    actual = getattr(IntegralLattice("A4"), preamble_word)()
+    actual = getattr(_owned_a4(), preamble_word)()
     assert actual == expected, (
         f"A4.{question}() and A4.{preamble_word}() are one answer"
     )
@@ -864,7 +878,7 @@ def test_audited_mathematics_reaches_the_preamble(question: str) -> None:
     sound, and the owned word that carries it is missing or disagrees.
     """
     owned_datum, engine_datum = AUDITED_MATHEMATICS[question]
-    assert owned_datum(IntegralLattice("A4")) == engine_datum(_NATIVE_A4)
+    assert owned_datum(_owned_a4()) == engine_datum(_NATIVE_A4)
 
 
 def test_a_maximal_overlattice_is_reached_by_a_proper_inclusion() -> None:
@@ -1214,3 +1228,157 @@ def test_rank_one_2adic_form_separates_the_two_orthogonal_groups() -> None:
     assert form.brown_invariant() == 1, "Milgram cross-check: sign (1,0)"
     assert form.automorphism_group().order() == 2
     assert form.associated_bilinear_form().automorphism_group().order() == 4
+
+
+# ---------------------------------------------------------------------------
+# Reduction and closest-vector geometry (CS10 ch. 21, "Voronoi Cells of
+# Lattices and Quantization Errors"; covolume in ch. 2).
+
+
+def test_voronoi_cell_of_the_square_lattice_is_the_half_cube() -> None:
+    r"""CS10 ch. 21: the Voronoi cell of $\mathbb Z^n$ is the cube
+    $[-1/2,1/2]^n$; its volume is the covolume $\sqrt{\det G}=1$."""
+    square = Lattices.Z**2
+    cell = square.voronoi_cell()
+    assert cell.volume() == 1
+    assert sorted(tuple(v) for v in cell.vertices()) == sorted(
+        (SageRationals(a) / 2, SageRationals(b) / 2)
+        for a in (-1, 1)
+        for b in (-1, 1)
+    )
+
+
+def test_voronoi_relevant_vectors_of_the_square_lattice_are_the_facet_normals() -> None:
+    r"""CS10 ch. 21: the relevant vectors of $\mathbb Z^n$ are $\pm e_i$ --
+    one per facet of the cube, $2n$ in all."""
+    square = Lattices.Z**2
+    assert square.voronoi_relevant_vectors().cardinality() == 4
+
+
+def test_hexagonal_lattice_voronoi_cell_is_a_hexagon() -> None:
+    r"""CS10 ch. 21: the Voronoi cell of the $A_2$ lattice is a regular
+    hexagon -- six facets, one per relevant vector (the six minimal
+    vectors).  $A_2$ is negative definite here; the cell reads lengths
+    through $-G$."""
+    hexagonal = Lattices.A2
+    assert hexagonal.voronoi_cell().n_facets() == 6
+    assert hexagonal.voronoi_relevant_vectors().cardinality() == 6
+
+
+def test_closest_vector_is_exact_on_the_square_lattice() -> None:
+    r"""Definitional (no citation): in $\mathbb Z^2$ with the standard form,
+    the vector nearest $(3/4, 1/4)$ is $(1, 0)$ -- squared distance $1/8$
+    against $5/8$ for the origin."""
+    square = Lattices.Z**2
+    e1, e2 = square.module_generators()
+    assert square.closest_vector((SageRationals(3) / 4, SageRationals(1) / 4)) == e1
+
+
+# ---------------------------------------------------------------------------
+# Orthogonal complements, gluing, and the genus -- absorbed from the spike's
+# literature suite (Nik80, Zotero TTY9FFJS; CS10, Zotero T2WVLTDB).
+
+
+def _first_adjacent_pair(lattice: "Parent") -> tuple:
+    r"""Return two framing generators pairing nontrivially (an $A_2$ span)."""
+    generators = tuple(lattice.module_generators())
+    for i, left in enumerate(generators):
+        for right in generators[i + 1 :]:
+            if left.b(right) != 0:
+                return (left, right)
+    assert False, "no adjacent pair: the Gram matrix is diagonal"
+
+
+def test_the_orthogonal_complement_of_a_root_in_e8_is_e7() -> None:
+    r"""Nik80 Prop 1.4.1 / CS10 ch. 4: the orthogonal complement of a
+    primitively embedded $A_1$ in $E_8$ is $E_7$ -- rank 7, determinant 2,
+    126 roots -- and the glue groups of the complement pair have equal
+    order (CS10 ch. 4 Thm 1)."""
+    e8 = Lattices.E8
+    a1 = e8.subobject_on([e8.module_generators()[0]])
+    complement = a1.embedding().orthogonal_complement()
+    assert complement.rank() == 7
+    assert abs(matrix(ZZ, complement.gram_matrix()).det()) == 2
+    assert a1.is_primitive(), "a framing generator spans a primitive A1"
+    assert complement.is_primitive(), "an orthogonal complement is primitive"
+    assert complement.discriminant_group().invariants() == (2,), (
+        "det S = det K for a primitive complement pair in a unimodular "
+        "lattice (CS10 ch. 4 Thm 1)"
+    )
+    assert complement.twist(-1).enumerate_short_vectors(2).cardinality() == 63, (
+        "E7 has 126 roots, 63 modulo sign (CS10 ch. 4)"
+    )
+
+
+def test_the_orthogonal_complement_of_a2_in_e8_is_e6() -> None:
+    r"""Nik80 Prop 1.4.1 / CS10 ch. 4: the orthogonal complement of a
+    primitively embedded $A_2$ in $E_8$ is $E_6$ -- rank 6, determinant 3,
+    72 roots."""
+    e8 = Lattices.E8
+    a2 = e8.subobject_on(list(_first_adjacent_pair(e8)))
+    complement = a2.embedding().orthogonal_complement()
+    assert complement.rank() == 6
+    assert abs(matrix(ZZ, complement.gram_matrix()).det()) == 3
+    assert complement.twist(-1).enumerate_short_vectors(2).cardinality() == 36, (
+        "E6 has 72 roots, 36 modulo sign (CS10 ch. 4)"
+    )
+
+
+def test_a2_plus_its_negation_glues_to_an_even_unimodular_lattice_of_index_3() -> None:
+    r"""Nik80 Prop 1.4.1: even overlattices correspond to isotropic
+    subgroups of $A_L$, with $[L':L]^2=|A_L|/|A_{L'}|$.  $A_2\oplus A_2(-1)$
+    has $A_L\cong(\mathbb Z/3)^2$ containing an isotropic diagonal, so it
+    reaches an even unimodular overlattice of index 3."""
+    doubled = Lattices.A2 + Lattices.A2.twist(-1)
+    inclusion = doubled.maximal_overlattice()
+    assert inclusion.index() == 3
+    assert inclusion.codomain().is_even()
+    assert inclusion.codomain().is_unimodular()
+
+
+def test_milgram_on_the_a2_discriminant_form() -> None:
+    r"""Nik80 Thm 1.3.3 (Milgram): $\operatorname{Br}(q_L)\equiv
+    \operatorname{sign}(L)\pmod 8$.  The AG $A_2$ is negative definite with
+    signature $(0,2)$, so $\operatorname{Br}(q_{A_2}) = 6$."""
+    assert Lattices.A2.discriminant_group().brown_invariant() == 6
+
+
+def test_the_genus_of_a2_holds_its_defining_data_and_one_class() -> None:
+    r"""Nik80 Cor 1.9.4: the genus of an even lattice is the pair
+    (signature, discriminant quadratic form); CS10 ch. 15: the class number
+    of the $A_2$ genus is 1, so its representative shares the genus."""
+    genus = Lattices.A2.genus()
+    assert genus.signature_pair() == (0, 2)
+    assert genus.determinant() == 3
+    assert genus.class_number() == 1
+    assert genus.representative().genus() == genus
+
+
+def test_is_isometric_decides_the_definite_case_by_the_engine() -> None:
+    r"""Definitional: $[[-2,-1],[-1,-2]]$ is $A_2$ in a reflected framing
+    ($e_2\mapsto -e_2$), and a sign twist changes the signature."""
+    reflected = IntegralLattice(matrix(ZZ, [[-2, -1], [-1, -2]]))
+    assert Lattices.A2.is_isometric(reflected) is True
+    assert Lattices.A2.is_isometric(Lattices.A2.twist(-1)) is False
+
+
+def test_the_reflection_in_a_root_of_a2_acts_by_the_definition() -> None:
+    r"""Hum90 sec 1.1: $s_v(x)=x-\dfrac{2b(x,v)}{q(v)}v$.  On the $A_2$
+    framing, $s_{e_1}(e_1)=-e_1$ and $s_{e_1}(e_2)=e_1+e_2$."""
+    lattice = IntegralLattice("A2")
+    e1, e2 = lattice.module_generators()
+    reflection = lattice.reflection(e1)
+    assert reflection(e1) == -e1
+    assert reflection(e2) == e1 + e2
+
+
+def test_subobject_sum_and_intersection_are_the_lattice_operations() -> None:
+    r"""Definitional: in $\mathbb Z^2$, $2\mathbb Z^2\cap3\mathbb Z^2 =
+    6\mathbb Z^2$ (index 36) and $2\mathbb Z^2+3\mathbb Z^2=\mathbb Z^2$
+    (index 1)."""
+    square = Lattices.Z**2
+    e1, e2 = square.module_generators()
+    left = square.subobject_on([2 * e1, 2 * e2])
+    right = square.subobject_on([3 * e1, 3 * e2])
+    assert left.intersection(right).index() == 36
+    assert left.sum(right).index() == 1
