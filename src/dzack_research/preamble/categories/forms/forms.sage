@@ -8,7 +8,6 @@ if TYPE_CHECKING:
 from dzack_research.preamble.lexicon import Element
 if TYPE_CHECKING:
     from sage.categories.modules import Module
-    from sage.categories.rings import Ring
 
 if TYPE_CHECKING:
     from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormMorphism
@@ -43,47 +42,14 @@ if TYPE_CHECKING:
         ModuleMorphism,
     )
 
-    # What the graded constructions ask of the algebra they are cut out of,
-    # and what the piece they return records.  Declared for the checker
-    # only: at runtime the objects are the free algebra and the module the
-    # constructions actually build.
-
-    class _GradedAlgebra(Parent):
-        r"""A free algebra read one degree at a time."""
-
-        def zero(self) -> "Element": ...
-        def one(self) -> "Element": ...
-        def algebra_generator(self, label: "Element") -> "Element": ...
-        def divided_square(self, element: "Element") -> "Element": ...
-        def monomial_system(self) -> "Parent": ...
-        def graded_piece(self, degree: "Integer | int") -> "_GradedPiece": ...
-        def graded_piece_monomials(
-            self, degree: "Integer | int"
-        ) -> "OrderedSet | tuple": ...
-        def ideal_generators_in_degree(
-            self, relations: tuple, degree: "Integer | int"
-        ) -> tuple: ...
-
-    class _GradedPiece(Parent):
-        r"""One graded piece \(A[n]\), marked with the module and the degree
-        it was built from -- which is what lets a later call recognize it as
-        the tensor, symmetric, alternating or divided power of that module."""
-
-        _tensor_power_of: "Module"
-        _tensor_power_degree: int
-        _symmetric_power_of: "Module"
-        _symmetric_power_degree: int
-        _alternating_power_of: "Module"
-        _alternating_power_degree: int
-        _divided_power_of: "Module"
-        _divided_power_degree: int
-        _tensor_square_of: "Module"
-        _divided_square_of: "Module"
-
-        def zero(self) -> "Element": ...
-        def base_ring(self) -> "Ring": ...
-        def module_generating_set(self) -> "OrderedSet": ...
-        def module_generators(self) -> "OrderedSet": ...
+# The graded module functors a form is a morphism out of live at the tensor
+# node: a form has no say in what a tensor or divided square is, it only
+# consumes them as domains.  ``tensors`` loads before this module.
+from dzack_research.preamble.categories.modules.tensors import (
+    DividedSquare,
+    TensorSquare,
+    divided_square_element,
+)
 
 
 def _framing_rank(module_generating_set: "OrderedSet") -> Integer:
@@ -96,132 +62,12 @@ def _framing_rank(module_generating_set: "OrderedSet") -> Integer:
     return SageZZ(size)
 
 
-def _degree_construction(
-    module: "Module",
-    algebra_constructor: "Callable[[Ring, OrderedSet], _GradedAlgebra]",
-    cache_key: str,
-    degree: "Integer | int",
-) -> "_GradedPiece":
-    r"""Return one graded construction induced by a module presentation."""
-    degree = int(degree)
-    assert degree >= 0, "a graded degree is nonnegative"
-    cache = module.__dict__.setdefault("_degree_constructions", {})
-    cached: "_GradedPiece | None" = cache.get((cache_key, degree))
-    if cached is not None:
-        return cached
-
-    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import BasedFreeModule
-    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModule
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
-
-    algebra = algebra_constructor(
-        module.base_ring(), module.module_generating_set()
-    )
-    piece: "_GradedPiece" = algebra.graded_piece(degree)
-    relations = module.relation_matrix()._sage_matrix()
-    match relations.nrows():
-        case 0:
-            cache[(cache_key, degree)] = piece
-            return piece
-        case _:
-            pass
-
-    labels = tuple(module.module_generating_set())
-    algebra_relations = tuple(
-        sum(
-            (
-                coefficient * algebra.algebra_generator(label)
-                for coefficient, label in zip(row, labels)
-            ),
-            algebra.zero(),
-        )
-        for row in relations.rows()
-    )
-    degree_relations = algebra.ideal_generators_in_degree(
-        algebra_relations,
-        degree,
-    )
-    if not degree_relations:
-        # No relation reaches this degree, so the graded piece of the free
-        # algebra already presents the construction -- the same statement as
-        # the relation-free branch above.
-        cache[(cache_key, degree)] = piece
-        return piece
-    monomials = tuple(
-        next(iter(generator.coefficients()))
-        for generator in algebra.graded_piece_monomials(degree)
-    )
-    relation_vectors = tuple(
-        piece([
-            relation.coefficients().get(monomial, module.base_ring().zero())
-            for monomial in monomials
-        ])
-        for relation in degree_relations
-    )
-    relation_module = BasedFreeModule(
-        module.base_ring(), Sets.Δ[len(relation_vectors) - 1]
-    )
-    presentation = module_homset(relation_module, piece)(
-        dict(zip(relation_module.module_generating_set(), relation_vectors))
-    )
-    result: "_GradedPiece" = FinitelyPresentedModule(presentation)
-    cache[(cache_key, degree)] = result
-    return result
-
-
-def TensorPower(module: "Module", degree: "Integer | int") -> "_GradedPiece":
-    r"""Return \(T(M)[n]=M^{\otimes n}\)."""
-    from dzack_research.preamble.categories.algebras.framed_free_algebras import TensorAlgebraOn
-
-    power = _degree_construction(module, TensorAlgebraOn, "tensor", degree)
-    power._tensor_power_of = module
-    power._tensor_power_degree = int(degree)
-    return power
-
-
-def SymmetricPower(module: "Module", degree: "Integer | int") -> "_GradedPiece":
-    r"""Return \(\operatorname{Sym}(M)[n]=\operatorname{Sym}^nM\)."""
-    from dzack_research.preamble.categories.algebras.framed_free_algebras import FreeAlgebraOn
-
-    power = _degree_construction(module, FreeAlgebraOn, "symmetric", degree)
-    power._symmetric_power_of = module
-    power._symmetric_power_degree = int(degree)
-    return power
-
-
-def AlternatingPower(module: "Module", degree: "Integer | int") -> "_GradedPiece":
-    r"""Return \(\Lambda(M)[n]=\Lambda^nM\)."""
-    from dzack_research.preamble.categories.algebras.framed_free_algebras import AlternatingAlgebraOn
-
-    power = _degree_construction(module, AlternatingAlgebraOn, "alternating", degree)
-    power._alternating_power_of = module
-    power._alternating_power_degree = int(degree)
-    return power
-
-
-def DividedPower(module: "Module", degree: "Integer | int") -> "_GradedPiece":
-    r"""Return \(\Gamma(M)[n]=\Gamma^nM\)."""
-    from dzack_research.preamble.categories.algebras.framed_free_algebras import DividedPowerAlgebraOn
-
-    power = _degree_construction(module, DividedPowerAlgebraOn, "divided", degree)
-    power._divided_power_of = module
-    power._divided_power_degree = int(degree)
-    return power
-
-
-def TensorSquare(module: "Module") -> "_GradedPiece":
-    r"""Return \(T(M)[2]=M\otimes_RM\)."""
-    square = TensorPower(module, 2)
-    square._tensor_square_of = module
-    return square
-
-
 def _is_framed(module: "Module") -> bool:
     r"""Return whether ``module`` carries a framing \(F_R(S)\to M\).
 
     Being framed is category membership and is asked of the category, not of
-    the object's attributes: the framing is the datum the monomial
-    constructions above run on.
+    the object's attributes: the framing is the datum the graded module
+    functors at the tensor node run on.
     """
     # Local: the framed node is loaded before this one, and importing it at
     # module level here would close a cycle through the form modules.
@@ -250,175 +96,6 @@ def _bilinear_form_domain(module: "Module") -> Parent:
         return TensorSquare(module)
     pairs: Parent = CartesianProductOfSets((module, module))
     return pairs
-
-
-def DividedSquare(module: "Module") -> "_GradedPiece":
-    r"""Return \(\Gamma(M)[2]=\Gamma^2M\)."""
-    square = DividedPower(module, 2)
-    square._divided_square_of = module
-    return square
-
-
-def divided_square_element(module: "Module", element: "Element") -> "Element":
-    r"""Return \(\gamma_2(x)\in\Gamma^2M\)."""
-    from dzack_research.preamble.categories.algebras.framed_free_algebras import DividedPowerAlgebraOn
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _coordinate_vector
-    from dzack_research.preamble.utilities import zipsum
-
-    assert element.parent() is module, f"{element} is not an element of {module}"
-    labels = tuple(module.module_generating_set())
-    coordinates = _coordinate_vector(element)
-    algebra = DividedPowerAlgebraOn(module.base_ring(), module.module_generating_set())
-    degree_one = sum(
-        (
-            coefficient * algebra.algebra_generator(label)
-            for coefficient, label in zip(coordinates, labels)
-        ),
-        algebra.zero(),
-    )
-    divided = algebra.divided_square(degree_one)
-    square = DividedSquare(module)
-    coefficients = divided.coefficients()
-    return zipsum(
-        (
-            coefficients.get(label, module.base_ring().zero())
-            for label in square.module_generating_set()
-        ),
-        square.module_generators(),
-        square.zero(),
-    )
-
-
-def _element_of_degree_piece(
-    piece: "_GradedPiece", algebra_element: "Element"
-) -> "Element":
-    r"""Read a homogeneous algebra element in its graded-piece module."""
-    from dzack_research.preamble.utilities import zipsum
-
-    coefficients = algebra_element.coefficients()
-    ring = piece.base_ring()
-    return zipsum(
-        (coefficients.get(label, ring.zero()) for label in piece.module_generating_set()),
-        piece.module_generators(),
-        piece.zero(),
-    )
-
-
-def divided_power_invariant_inclusion(
-    module: "Module",
-    degree: "Integer | int",
-) -> "Morphism":
-    r"""Return \(\Gamma^nM\to M^{\otimes n}\) by summing each word orbit."""
-    from itertools import permutations
-    from dzack_research.preamble.categories.algebras.framed_free_algebras import DividedPowerAlgebraOn
-    from dzack_research.preamble.categories.algebras.framed_free_algebras import TensorAlgebraOn
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
-
-    degree = int(degree)
-    divided = DividedPowerAlgebraOn(module.base_ring(), module.module_generating_set())
-    tensor = TensorAlgebraOn(module.base_ring(), module.module_generating_set())
-    tensor_generators = {
-        label: tensor.algebra_generator(label)
-        for label in module.module_generating_set()
-    }
-
-    def invariant(monomial: "Element") -> "Element":
-        factors = tuple(divided.monomial_system().factors(monomial))
-        word = tuple(
-            label
-            for label, exponent in factors
-            for _ in range(exponent)
-        )
-        assert len(word) == degree, f"{monomial} does not have degree {degree}"
-        image = tensor.zero()
-        for permuted_word in set(permutations(word)):
-            term = tensor.one()
-            for label in permuted_word:
-                term *= tensor_generators[label]
-            image += term
-        return _element_of_degree_piece(TensorPower(module, degree), image)
-
-    source = DividedPower(module, degree)
-    target = TensorPower(module, degree)
-    inclusion: "Morphism" = module_homset(source, target)(
-        {monomial: invariant(monomial) for monomial in source.module_generating_set()}
-    )
-    return inclusion
-
-
-def tensor_power_polarization(module: "Module", degree: "Integer | int") -> "Morphism":
-    r"""Return \(M^{\otimes n}\to\Gamma^nM\), sending a word to its product."""
-    from dzack_research.preamble.categories.algebras.framed_free_algebras import DividedPowerAlgebraOn
-    from dzack_research.preamble.categories.algebras.framed_free_algebras import TensorAlgebraOn
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
-
-    degree = int(degree)
-    tensor = TensorAlgebraOn(module.base_ring(), module.module_generating_set())
-    divided = DividedPowerAlgebraOn(module.base_ring(), module.module_generating_set())
-    divided_generators = {
-        label: divided.algebra_generator(label)
-        for label in module.module_generating_set()
-    }
-
-    def polarized(monomial: "Element") -> "Element":
-        factors = tuple(tensor.monomial_system().factors(monomial))
-        assert len(factors) == degree, f"{monomial} does not have degree {degree}"
-        image = divided.one()
-        for label, _ in factors:
-            image *= divided_generators[label]
-        return _element_of_degree_piece(DividedPower(module, degree), image)
-
-    source = TensorPower(module, degree)
-    target = DividedPower(module, degree)
-    polarization: "Morphism" = module_homset(source, target)(
-        {monomial: polarized(monomial) for monomial in source.module_generating_set()}
-    )
-    return polarization
-
-
-def tensor_power_permutation(
-    module: "Module",
-    degree: "Integer | int",
-    positions: tuple[int, ...],
-) -> "Morphism":
-    r"""Return the permutation of tensor factors specified by ``positions``."""
-    from dzack_research.preamble.categories.algebras.framed_free_algebras import TensorAlgebraOn
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
-
-    degree = int(degree)
-    assert tuple(sorted(positions)) == tuple(range(degree)), (
-        f"{positions} is not a permutation of {tuple(range(degree))}"
-    )
-    algebra = TensorAlgebraOn(module.base_ring(), module.module_generating_set())
-    generators = {
-        label: algebra.algebra_generator(label)
-        for label in module.module_generating_set()
-    }
-    power = TensorPower(module, degree)
-
-    def permuted(monomial: "Element") -> "Element":
-        word = tuple(
-            label for label, _ in algebra.monomial_system().factors(monomial)
-        )
-        image = algebra.one()
-        for position in positions:
-            image *= generators[word[position]]
-        return _element_of_degree_piece(power, image)
-
-    permutation: "Morphism" = module_homset(power, power)(
-        {monomial: permuted(monomial) for monomial in power.module_generating_set()}
-    )
-    return permutation
-
-
-def divided_square_invariant_inclusion(module: "Module") -> "Morphism":
-    r"""Return \(\Gamma^2M\to M^{\otimes2}\)."""
-    return divided_power_invariant_inclusion(module, 2)
-
-
-def tensor_square_polarization(module: "Module") -> "Morphism":
-    r"""Return the polarization map \(M^{\otimes2}\to\Gamma^2M\)."""
-    return tensor_power_polarization(module, 2)
 
 
 class QuadraticMapMorphism(SetMorphism):
