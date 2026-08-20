@@ -25,6 +25,7 @@ the whole reason this construction is worth having: a normal form can be
 track \(M'\) separately.
 """
 
+from dzack_research.preamble.owned_category import CatConstructionsMixin
 from sage.categories.sets_cat import Sets
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -51,7 +52,7 @@ if TYPE_CHECKING:
         def target(self) -> Parent: ...
 
 
-class ArrowCategory(Category):
+class ArrowCategory(CatConstructionsMixin, Category):
     r"""\(\operatorname{Ar}(\mathbf{C})\): the morphisms of \(\mathbf{C}\) as objects."""
 
     @staticmethod
@@ -142,7 +143,7 @@ class IsoArrowCategory(ArrowCategory):
             return True
 
 
-class Core(Category):
+class Core(CatConstructionsMixin, Category):
     r"""\(\operatorname{core}(\mathbf{C})\): the objects of \(\mathbf{C}\), its isomorphisms alone.
 
     The maximal subgroupoid.  A construction that is functorial only on

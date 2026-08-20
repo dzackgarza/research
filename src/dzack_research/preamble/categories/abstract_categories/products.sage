@@ -19,7 +19,7 @@ from dzack_research.preamble.refine import refine
 from collections.abc import Callable, Iterable, Iterator
 from typing import Self, TYPE_CHECKING
 if TYPE_CHECKING:
-    from sage.structure.parent import ElementConstructorInput, MembershipInput
+    from sage.structure.parent import ElementConstructorInput
 
 from sage.categories.category import Category
 from sage.categories.morphism import Morphism

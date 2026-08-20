@@ -50,6 +50,7 @@ EXAMPLES::
     True
 """
 
+from dzack_research.preamble.owned_category import CatConstructionsMixin
 from typing import Any, Callable, NamedTuple, Optional, Protocol, Sequence, TYPE_CHECKING
 from sage.categories.category import Category
 from sage.categories.objects import Objects
@@ -202,7 +203,7 @@ class _ADESurfaceInterface(Protocol):
     def plot(self, **kwds: object) -> Graphics: ...
 
 
-class LogPairs(Category):
+class LogPairs(CatConstructionsMixin, Category):
     """
     The category of algebraic log pairs (X, Δ).
     """

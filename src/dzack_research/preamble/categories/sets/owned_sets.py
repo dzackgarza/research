@@ -32,13 +32,14 @@ from sage.categories.sets_cat import Sets as SageSets
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ
 from sage.rings.semirings.non_negative_integer_semiring import NN
+from sage.structure.element import Element as SageElement
 
 from dzack_research.preamble.lexicon.interop import SageParent, SageUniqueRepresentation
 from dzack_research.preamble.owned_category import OwnedCategory, OwnedCategoryMixin
 
-
-
 if TYPE_CHECKING:
+    from dzack_research.preamble.owned_category import ConstructionData
+
     # Sage's abstract_method ships untyped; for type-checking use
     # abc.abstractmethod (typed, and permits the empty abstract bodies
     # below). Runtime uses Sage's.
@@ -168,7 +169,9 @@ class Sets(OwnedCategory):
             return [Sets()]
 
         class ParentMethods:
-            def __init__(self, factors: tuple[SageParent, ...], **rest: object) -> None:
+            def __init__(
+                self, factors: tuple[SageParent, ...], **rest: ConstructionData
+            ) -> None:
                 self._factors = tuple(factors)
                 super().__init__(**rest)
 
@@ -189,7 +192,7 @@ class Sets(OwnedCategory):
                     *(factor.cardinality() for factor in self.cartesian_factors())
                 )
 
-            def __iter__(self) -> Iterator[tuple[object, ...]]:
+            def __iter__(self) -> Iterator[tuple[SageElement, ...]]:
                 r"""Fair enumeration, delegated to Sage's cartesian product.
 
                 Sage's antidiagonal iteration is fair across infinite factors,
@@ -235,8 +238,8 @@ class Sets(OwnedCategory):
                 )
 
             def _element_constructor_(
-                self, element: Iterable[object]
-            ) -> tuple[object, ...]:
+                self, element: Iterable[SageElement]
+            ) -> tuple[SageElement, ...]:
                 r"""Return the tuple as an element of this set.
 
                 An element here is a tuple of elements of the factors and
@@ -255,7 +258,7 @@ class Sets(OwnedCategory):
                 x: ElementConstructorInput = (),
                 *arguments: ElementConstructorInput,
                 **keywords: ElementConstructorInput,
-            ) -> tuple[object, ...]:
+            ) -> tuple[SageElement, ...]:
                 r"""Return the tuple, without Sage's default conversion.
 
                 ``Parent.__call__`` routes through a conversion map declared
@@ -277,7 +280,7 @@ class Sets(OwnedCategory):
         if TYPE_CHECKING:
             def cardinality(self) -> Cardinal: ...
 
-        def __init__(self, **rest: object) -> None:
+        def __init__(self, **rest: ConstructionData) -> None:
             r"""The bottom of every owned construction.
 
             The only non-cooperative ``Parent.__init__`` call in the chain:
@@ -520,7 +523,6 @@ class UncountableSets(CategoryWithAxiom):
         def is_uncountable(self) -> bool:
             return True
 
-from sage.structure.element import Element as SageElement
 from sage.categories.homset import Homset as SageHomset
 
 
@@ -951,15 +953,18 @@ def install_poset_display() -> None:
     finite poset Sage constructs into that category after ``__init__`` -- the
     sanctioned refinement route, never a monkey-patch onto Sage's class, and
     a failure here is loud.
+
+    Called from the install sequence, like every other ``install_*`` hook, and
+    never at import.  It constructs a category (``Sets().PartiallyOrdered()``),
+    and constructing an owned category needs ``Cat()``; firing that from module
+    scope re-enters the import of ``cat`` and fails with a partially
+    initialized module.
     """
     from sage.combinat.posets.posets import FinitePoset
 
     from dzack_research.preamble.refine import hook_post_init
 
     hook_post_init(FinitePoset, Sets().PartiallyOrdered())
-
-
-install_poset_display()
 
 
 class TotallyOrderedSets(CategoryWithAxiom):

@@ -16,6 +16,7 @@ transitivity and duplicate-free by freeness) and exact cardinality
 (\(|T| = |G|\), since the trivialization is a bijection).
 """
 
+from dzack_research.preamble.owned_category import CatConstructionsMixin
 from typing import TYPE_CHECKING
 
 from sage.categories.category import Category
@@ -32,7 +33,7 @@ if TYPE_CHECKING:
     from dzack_research.preamble.categories.sets.cardinals import Cardinal
 
 
-class GSets(Category):
+class GSets(CatConstructionsMixin, Category):
     r"""The owned category of \(G\)-sets: sets with a \(G\)-action."""
 
     def __init__(self, group: "Group") -> None:

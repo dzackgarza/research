@@ -27,6 +27,7 @@ preamble's shared load namespace it sends Sage's axiom deduction hunting for a
 base category class by name, where it finds the preamble's groups node.
 """
 
+from dzack_research.preamble.owned_category import CatConstructionsMixin
 from collections.abc import Callable, Iterator
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -73,7 +74,7 @@ from dzack_research.preamble.categories.sets.cardinals import Cardinal
 from sage.structure.parent import Parent
 
 
-class OwnedSemirings(Category):
+class OwnedSemirings(CatConstructionsMixin, Category):
     r"""A multiplicative monoid over an additively commutative monoid."""
 
     @classmethod
@@ -84,7 +85,7 @@ class OwnedSemirings(Category):
         return [SageSemirings()]
 
 
-class OwnedRngs(Category):
+class OwnedRngs(CatConstructionsMixin, Category):
     r"""A multiplicative semigroup over an additively commutative group."""
 
     @classmethod
@@ -322,7 +323,7 @@ def _owning[**P](
     return build
 
 
-class OwnedCategoryOverBaseRing(Category_over_base_ring):
+class OwnedCategoryOverBaseRing(CatConstructionsMixin, Category_over_base_ring):
     r"""A category over a base ring, named as the objects in it name theirs.
 
     A ring and the owned view of it are one ring, so they name one category.

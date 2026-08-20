@@ -7,13 +7,15 @@ what this module is: ``Cat.ParentMethods`` holds all twenty-one of them as
 the methods an object of \(\mathbf{Cat}\) has, and each one delegates to the
 owned class that already builds the construction.
 
-Sage seats an object of a category in a ``Parent``, and a Sage category is
-not one -- it is an instance of Sage's ``Category``.  So a session reaches
-these constructions through that class, and the bottom of this file is the
-one place where they are attached to it.  The declaration home is
-``Cat.ParentMethods``; the attachment is a single loop over what is declared
-there, and nothing is written on Sage's class that was not declared here
-first.
+A category reaches them by inheritance, through its own
+``subcategory_class``: Sage sets a category's class to ``dynamic_class(name,
+(cls, self.subcategory_class))`` and builds that from the super categories'
+``subcategory_class``es, so ``dzack_research.preamble.owned_category`` ties
+``Cat.ParentMethods`` in once at each owned root and every category below --
+axiom categories, functorial constructions, and the ``JoinCategory``
+instances Sage builds internally, which is what most owned categories
+actually are -- inherits it.  Nothing is written on a Sage class, so a
+Sage-native category correctly has none of this.
 """
 
 from typing import TYPE_CHECKING
@@ -21,6 +23,8 @@ if TYPE_CHECKING:
     from sage.structure.parent import MembershipInput
 
 from sage.categories.category import Category
+
+from dzack_research.preamble.owned_category import OwnedCategoryMixin
 from sage.categories.morphism import Morphism
 from sage.structure.parent import Parent
 
@@ -60,8 +64,13 @@ if TYPE_CHECKING:
     from dzack_research.preamble.lexicon import OrderedSet
 
 
-class Cat(Category):
-    r"""The category \(\mathbf{Cat}\), whose objects are categories."""
+class Cat(OwnedCategoryMixin, Category):
+    r"""The category \(\mathbf{Cat}\), whose objects are categories.
+
+    Not an :class:`OwnedCategory`: \(\mathbf{Cat}\) is not an object of itself,
+    so it takes the hook that ties it to its implementation classes without the
+    Cat-object half that every category below it carries.
+    """
 
     def _repr_(self) -> str:
         return "Category of categories"
@@ -225,12 +234,3 @@ class Cat(Category):
 
             functor_space: "Parent" = FunctorSpace(self, codomain)
             return functor_space
-
-
-# The one crossing of the Sage boundary.  Every construction above is declared
-# in ``Cat.ParentMethods``, which is its home; a session reaches a category
-# through Sage's ``Category``, so what is declared there is attached to that
-# class here, exactly once, and nowhere else.
-for _construction_name, _construction in vars(Cat.ParentMethods).items():
-    if not _construction_name.startswith("_") or _construction_name == "_Hom_":
-        setattr(Category, _construction_name, _construction)

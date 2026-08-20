@@ -15,6 +15,8 @@ normalization theorems in Mathlib's ``SetTheory/Cardinal/Defs.lean``,
 
 from __future__ import annotations
 
+from dzack_research.preamble.owned_category import CatConstructionsMixin
+
 from collections.abc import Iterator
 from dataclasses import dataclass
 from enum import Enum
@@ -79,7 +81,7 @@ class CardinalComparison(Enum):
     INCOMPARABLE = 4
 
 
-class Cardinalities(Category):
+class Cardinalities(CatConstructionsMixin, Category):
     r"""The thin category associated to the represented cardinal order."""
 
     def super_categories(self) -> list[Category]:

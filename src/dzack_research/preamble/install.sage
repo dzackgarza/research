@@ -215,6 +215,15 @@ def install_preamble(namespace: dict) -> None:
             )
         namespace.update(_exports)
 
+        # Post-init hooks that construct an owned category cannot run at their
+        # module's import: constructing one needs ``Cat()``, so doing it while
+        # ``cat`` is still importing re-enters that import.  They run here.
+        from dzack_research.preamble.categories.sets.owned_sets import (
+            install_poset_display,
+        )
+
+        install_poset_display()
+
         # ``R^n`` is the preamble's free module.  These are the rings a notebook
         # names before it has built anything; every other ring is refined on
         # intake, or by the constructor that builds it.
