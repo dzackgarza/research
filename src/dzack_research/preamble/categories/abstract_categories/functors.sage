@@ -22,7 +22,8 @@ to a generic id-equality homset.  This module owns both surfaces:
 
 from typing import TYPE_CHECKING
 
-from sage.categories.functor import Functor as SageFunctor
+from sage.categories.morphism import Morphism as SageMorphism
+from sage.structure.element import Element as SageElement
 from sage.categories.homset import Homset as SageHomset
 from sage.structure.unique_representation import UniqueRepresentation
 
@@ -36,8 +37,40 @@ if TYPE_CHECKING:
     from sage.structure.parent import Parent
 
 
-class Functor(SageFunctor):
-    r"""The owned functor base: Sage's ``Functor`` plus the \(\mathbf{Cat}\) surface.
+class Functor(SageElement):
+    r"""The owned functor base: a **morphism of** \(\mathbf{Cat}\).
+
+    A functor is a morphism of \(\mathbf{Cat}\), and a morphism is an element
+    of its homset, so a functor's ``parent()`` is
+    \(\operatorname{Hom}_{\mathbf{Cat}}(C,D)=\) :class:`FunctorSpace`.
+
+    Two Sage classes are deliberately *not* bases here, each for a measured
+    reason.
+
+    Sage's ``Functor`` cannot be one: it is a Cython extension type that
+    conflicts with ``Morphism``, with ``Map`` and even with bare ``Element``
+    (``TypeError: multiple bases have instance lay-out conflict``), so a
+    ``SageFunctor`` cannot have a parent at all.  Sage having a notion of
+    functor that is not a morphism is exactly the non-uniformity this layer
+    exists to remove, so the mathematics stays and the obstacle is fixed where
+    it occurs.
+
+    Sage's ``Morphism`` cannot be one either, and this is the sharper point.
+    ``Map.__init__`` assigns the boundary into ``cdef Parent`` slots, so
+    ``Morphism`` requires a morphism's **domain and codomain to be parents**.
+    A functor's boundary is two *categories*, and while an owned category is a
+    parent under the Cat model, a Sage-native one such as ``CommutativeRings()``
+    or ``Groups()`` never is and never should be -- the preamble does not
+    reshape Sage's categories.  Deriving from ``Morphism`` therefore fails at
+    construction for every functor with a Sage-native boundary
+    (``TypeError: Cannot convert Cardinalities_with_category to Parent``).
+
+    ``Element`` carries exactly what the mathematics asks and nothing that
+    fights it: a parent, which is the homset.  Being a morphism of
+    \(\mathbf{Cat}\) *is* being an element of \(\operatorname{Hom}_{\mathbf
+    {Cat}}(C,D)\); Sage's ``Morphism`` is a narrower thing -- a morphism
+    between parents -- and this is not one.  The boundary accessors come from
+    the homset, where they belong.
 
     ``(G * F)(x) = G(F(x))``; composing with an identity returns the other
     operand itself.  Faithfulness is a declared mathematical property; its
@@ -46,11 +79,55 @@ class Functor(SageFunctor):
 
     _faithful: bool = False
 
+    def __init__(self, domain: "Category", codomain: "Category") -> None:
+        SageElement.__init__(self, FunctorSpace(domain, codomain))
+
+    def domain(self) -> "Category":
+        r"""The source category, read off the homset this functor lives in."""
+        return self.parent().domain()
+
+    def codomain(self) -> "Category":
+        r"""The target category, read off the homset this functor lives in."""
+        return self.parent().codomain()
+
+    def __call__(self, x: "Parent | Morphism") -> "Parent | Morphism":
+        r"""Apply this functor to an object or a morphism of its domain.
+
+        Reproduces ``Functor.__call__`` in ``sage/categories/functor.pyx``:
+        dispatch on object-versus-morphism, check the argument lies in the
+        domain, apply, and check the result lands in the codomain.  It is
+        reproduced rather than inherited because ``SageFunctor`` cannot be a
+        base here (see the class docstring), and it is *overridden* rather than
+        left to ``Map.__call__`` because that coerces its argument into
+        ``self.domain()`` -- correct when a domain is a parent and the argument
+        is one of its elements, wrong here, where the domain is a category and
+        the argument is one of its objects.
+        """
+        if isinstance(x, SageMorphism) and not isinstance(x, Functor):
+            return self._apply_functor_to_morphism(x)
+        assert x in self.domain(), (
+            f"{x} is not an object of {self.domain()}, the domain of {self}"
+        )
+        image = self._apply_functor(x)
+        assert image in self.codomain() or image in self.codomain().Homsets(), (
+            f"{self} is ill-defined: it sends {x} outside {self.codomain()}"
+        )
+        return image
+
     def is_faithful(self) -> bool:
         r"""Whether this functor is injective on homsets, by declaration."""
         return self._faithful
 
-    def __mul__(self, first: SageFunctor) -> "Functor":
+    def _repr_(self) -> str:
+        r"""The boundary, as Sage's ``Functor`` printed it.
+
+        Restored here because ``Element``'s default -- "Generic element of a
+        structure" -- says nothing about a functor, and a functor that does not
+        name its own boundary is unreadable at a prompt.
+        """
+        return f"Functor from {self.domain()} to {self.codomain()}"
+
+    def __mul__(self, first: "Functor") -> "Functor":
         return compose_functors(self, first)
 
 
@@ -60,7 +137,7 @@ class IdentityFunctor(Functor):
     _faithful = True
 
     def __init__(self, category: "Category") -> None:
-        SageFunctor.__init__(self, category, category)
+        Functor.__init__(self, category, category)
 
     def _apply_functor(self, obj: "Parent") -> "Parent":
         return obj
@@ -72,7 +149,7 @@ class IdentityFunctor(Functor):
         return f"Identity functor of {self.domain()}"
 
 
-def compose_functors(second: SageFunctor, first: SageFunctor) -> Functor:
+def compose_functors(second: "Functor", first: "Functor") -> "Functor":
     r"""The composite ``second . first``, with exact boundary agreement.
 
     Identities are absorbed exactly (the other operand is returned itself)
@@ -98,7 +175,7 @@ def compose_functors(second: SageFunctor, first: SageFunctor) -> Functor:
 class ComposedFunctor(Functor):
     r"""A flattened chain of composable functors, applied left to right."""
 
-    def __init__(self, factors: tuple[SageFunctor, ...]) -> None:
+    def __init__(self, factors: tuple["Functor", ...]) -> None:
         assert len(factors) >= 2, (
             f"a composite needs at least two factors; found {len(factors)}"
         )
@@ -108,9 +185,9 @@ class ComposedFunctor(Functor):
                 f"{early.codomain()} composed into domain {late.domain()}"
             )
         self._factors = factors
-        SageFunctor.__init__(self, factors[0].domain(), factors[-1].codomain())
+        Functor.__init__(self, factors[0].domain(), factors[-1].codomain())
 
-    def factors(self) -> tuple[SageFunctor, ...]:
+    def factors(self) -> tuple["Functor", ...]:
         r"""The flattened chain of factors, in application order."""
         return self._factors
 
@@ -159,12 +236,24 @@ class FunctorSpace(UniqueRepresentation, SageHomset):
     def _repr_(self) -> str:
         return f"Fun({self.domain()}, {self.codomain()})"
 
-    def __contains__(self, functor: SageFunctor) -> bool:
-        return (
-            isinstance(functor, SageFunctor)
-            and functor.domain() == self.domain()
-            and functor.codomain() == self.codomain()
-        )
+    def __contains__(self, functor: "Functor") -> bool:
+        r"""Membership is parenthood: a functor lives in exactly one space.
+
+        Not a type probe plus a boundary comparison.  A functor is an element
+        of its homset, so the mathematical question -- is this a functor
+        \(C\to D\)? -- is answered by the structure that already holds it.
+        """
+        return isinstance(functor, Functor) and functor.parent() is self
+
+    def _element_constructor_(self, functor: "Functor") -> "Functor":
+        r"""Admit a functor of this boundary.
+
+        A functor is not assembled from raw data here: each owned functor is
+        its own construction, declaring what it does to objects and to
+        morphisms.  What this owns is the parenthood check.
+        """
+        assert functor in self, f"{functor} is not a functor in {self}"
+        return functor
 
     def identity(self) -> IdentityFunctor:
         assert self.domain() == self.codomain(), (
@@ -191,8 +280,8 @@ class NaturalIsomorphism:
 
     def __init__(
         self,
-        source: SageFunctor,
-        target: SageFunctor,
+        source: "Functor",
+        target: "Functor",
         components: "Callable",
         inverse_components: "Callable",
     ) -> None:
@@ -214,11 +303,11 @@ class NaturalIsomorphism:
         self._components = components
         self._inverse_components = inverse_components
 
-    def source(self) -> SageFunctor:
+    def source(self) -> "Functor":
         r"""Return \(F\), the functor the components leave."""
         return self._source
 
-    def target(self) -> SageFunctor:
+    def target(self) -> "Functor":
         r"""Return \(G\), the functor the components land in."""
         return self._target
 
