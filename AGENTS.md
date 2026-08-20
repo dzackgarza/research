@@ -987,6 +987,24 @@ anything and runs no hook — but it can be *visible*: an unmet obligation
 resolves to the abstract declaration on the object, and the sweep below
 reports it.
 
+**An abstract predicate on a subcategory is a requirement on participants, not
+an answer the category gives.** `EvenLattices.ParentMethods.is_even`,
+`NondegenerateLattices.is_nondegenerate` and `IntegralValuedLattices.is_integral`
+are abstract *on purpose*: the contract reads "if you refine an object into this
+subcategory, that object must **provide** a way to determine or compute the
+predicate". The object supplies it — a finitely generated formed module computes
+`is_even` from its Gram diagonal; a participant whose evenness is a theorem
+supplies a method returning `True`, and that is the *participant's* auditable
+claim, made by name on the object. Never replace such a declaration with a
+`return True` on the category: membership would then assert the property that
+the declaration exists to demand evidence for, and every participant would
+inherit an unearned claim. This is the correction of 2026-08-20 — the inversion
+was written and reverted the same day; when the abstract declaration appears to
+shadow a computing implementation, the defect is in how the class is built (see
+`refine.sage`: the parent class is rebuilt from the object's *joined* category,
+so a provider already in the join precedes the requirement), never in the
+declaration.
+
 ## Every constructor registers in the obligations sweep (for now)
 
 `tests/test_constructors_meet_their_obligations.sage` runs every way the

@@ -145,6 +145,21 @@ class MorphismMatrix:
         """
         return bool(self._matrix.is_one())
 
+    def is_square(self) -> bool:
+        r"""Return whether the two framings have the same size."""
+        return bool(self._matrix.is_square())
+
+    def is_invertible(self) -> bool:
+        r"""Return whether the morphism this presents is an isomorphism.
+
+        Over the base ring, not over its fraction field: the inverse has to
+        be a morphism of the same modules, so the determinant must be a unit
+        of $R$ and not merely nonzero.  A non-square matrix answers ``False``
+        rather than refusing, since a morphism between framings of different
+        sizes is not invertible either.
+        """
+        return bool(self._matrix.is_invertible())
+
     def rows(self) -> builtins.list[Vector]:
         return self._matrix.rows()
 

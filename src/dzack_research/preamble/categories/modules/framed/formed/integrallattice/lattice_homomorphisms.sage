@@ -13,6 +13,7 @@ from typing import Protocol, TYPE_CHECKING
 from sage.categories.category import Category
 from sage.matrix.constructor import matrix
 from sage.rings.integer_ring import ZZ as SageZZ
+from sage.rings.rational_field import QQ as SageQQ
 
 from dzack_research.preamble.categories.sets.owned_sets import Sets
 
@@ -175,6 +176,63 @@ class LatticeHomomorphisms(Category):
                 }
             )
 
+        def discriminant_inclusion(self: "Morphism") -> "FormMorphism":
+            r"""Return $A_S\hookrightarrow A_L$ for an orthogonal direct summand.
+
+            When $L=S\perp S^{\perp}$ the dual splits the same way,
+            $L^{\vee}=S^{\vee}\oplus(S^{\perp})^{\vee}$, and extending a
+            functional on $S$ by zero on $S^{\perp}$ carries $S$ into $L$;
+            so it descends to the classes and exhibits $A_L$ as
+            $A_S\oplus A_{S^{\perp}}$.  The image of $A_S$ is what
+            Conway--Sloane's glue vectors of the component $S$ live in.
+
+            The extension is $c_S^{-1}$ followed by $\iota$ followed by
+            $c_L$, so its matrix in the dual framings is
+            $G_S^{-1}MG_L$ for $M$ the matrix of $\iota$.  That matrix is
+            integral exactly when $S$ is an orthogonal direct summand --
+            integrality says the extension of every $\varphi\in S^{\vee}$
+            is integral on $L$, which asks the projection of $L$ to
+            $S\otimes\mathbb Q$ to land back in $S$ -- so the hypothesis is
+            the assertion below and not a separate predicate.  For equal
+            ranks $G_S=MG_LM^{\mathsf T}$ and the same expression collapses
+            to :meth:`discriminant_isometry`'s $(M^{-1})^{\mathsf T}$.
+            """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.utilities import zipsum
+            domain, codomain = self.domain(), self.codomain()
+            source = domain.discriminant_group()
+            target = codomain.discriminant_group()
+            source_dual = source.projection().domain()
+            target_projection = target.projection()
+            target_dual = target_projection.domain()
+            extension = (
+                matrix(SageQQ, domain.gram_matrix()).inverse()
+                * matrix(SageQQ, self.matrix())
+                * matrix(SageQQ, codomain.gram_matrix())
+            )
+            assert all(entry in SageZZ for entry in extension.list()), (
+                f"{domain} is not an orthogonal direct summand of {codomain}: "
+                "a functional extended by zero off it is not integral on the "
+                "whole lattice, so no map of discriminant groups is induced"
+            )
+            dual_matrix = extension.change_ring(SageZZ)
+            return source.Hom(target)(
+                {
+                    label: target_projection(
+                        zipsum(
+                            row,
+                            target_dual.module_generators(),
+                            target_dual.zero(),
+                        )
+                    )
+                    for label, row in zip(
+                        source_dual.module_generating_set(),
+                        dual_matrix.rows(),
+                        strict=True,
+                    )
+                }
+            )
+
 
 def lattice_homset(domain: "Module", codomain: "Module") -> FormHomset:
     r"""Return the canonical lattice homset for ``domain`` and ``codomain``."""
@@ -213,6 +271,31 @@ class IsometryHomset(FormHomset):
 
     def _repr_(self) -> str:
         return f"Isometries from {self.domain()} to {self.codomain()}"
+
+    def __call__(self, images: "LatticeMapSpecification") -> "Morphism":
+        r"""Return ``images`` as an isometry $L\to M$.
+
+        What separates this homset from $\operatorname{Hom}(L, M)$ is one
+        condition: an isometry is invertible.  Form preservation is already
+        asserted as the morphism is built, so invertibility is the whole of
+        what is checked here, and the morphism that passes is refined into
+        :class:`LatticeIsometries` -- it *is* an isometry, and answers the
+        vocabulary of one.
+
+        The morphism itself is built in $\operatorname{Hom}(L, M)$, which is
+        canonical for the pair; this homset is a *set* of morphisms cut out
+        by a predicate (see :meth:`__contains__`) and not a second parent
+        for the same arrows.
+        """
+        # Local: a module-level import here would close a cycle; by call time this module is built.
+        from dzack_research.preamble.categories.modules.framed.formed.integrallattice.lattice_isometries import LatticeIsometries
+        from dzack_research.preamble.refine import refine
+        morphism = lattice_homset(self.domain(), self.codomain())(images)
+        assert morphism.matrix().is_invertible(), (
+            f"{morphism} is not invertible, so it is not an isometry"
+        )
+        isometry: "Morphism" = refine(morphism, LatticeIsometries())
+        return isometry
 
     def is_empty(self) -> "bool | Unknown":
         r"""The isometry decision: every branch states the theorem it runs on.
@@ -397,9 +480,7 @@ class IsometryHomset(FormHomset):
         )
         left, right = self.domain(), self.codomain()
         if left is right:
-            return lattice_homset(left, right)(
-                list(left.module_generators())
-            )
+            return self(list(left.module_generators()))
         positive, negative = left.signature_pair()
         if positive != 0 and negative != 0:
             witness_rows = self.__dict__.get("_engine_witness_rows")
@@ -420,7 +501,7 @@ class IsometryHomset(FormHomset):
                 witness_rows = witness.rows()
             # The homset's own constructor asserts form preservation, so the
             # seam's verification is re-run where the morphism is built.
-            return lattice_homset(left, right)(
+            return self(
                 [
                     zipsum(row, right.module_generators(), right.zero())
                     for row in witness_rows
@@ -440,7 +521,7 @@ class IsometryHomset(FormHomset):
         )
         # The homset's own constructor asserts form preservation, so an
         # engine convention mismatch fails loudly here rather than passing.
-        return lattice_homset(left, right)(
+        return self(
             [
                 zipsum(
                     transformation.column(index),

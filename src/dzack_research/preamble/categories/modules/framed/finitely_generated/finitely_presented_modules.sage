@@ -336,10 +336,22 @@ class FinitelyPresentedModule(OwnedBaseRing, Parent):
         # the engine names it: the category below is built from this, and a
         # category over one name for a ring holds no object over the other.
         base_ring = engine_ring(codomain.base_ring())
-        relations = presentation.matrix()._sage_matrix().change_ring(base_ring)
-        assert relations.ncols() == codomain.module_generating_set().cardinality(), (
+        images = presentation.matrix().change_ring(base_ring)
+        assert images.ncols() == codomain.module_generating_set().cardinality(), (
             "the presentation matrix does not have the codomain's number of "
             "distinguished generators as its number of columns"
+        )
+        # $N/f(M)$ is written on $N$'s generators, so it imposes $N$'s own
+        # relations as well as $f$'s images: both are relations among those
+        # generators.  A free $N$ answers no relations of its own, which is
+        # why the free case needs no separate construction -- it is this one
+        # with an empty matrix to stack.
+        module = _underlying_module(codomain)
+        relations = (
+            module.relation_matrix()
+            .change_ring(base_ring)
+            .stack(images)
+            ._sage_matrix()
         )
         Parent.__init__(
             self,
@@ -355,7 +367,10 @@ class FinitelyPresentedModule(OwnedBaseRing, Parent):
         refine(self, FinitelyPresentedModules(base_ring))
         if engine_ring(base_ring) is SageZZ and self.is_torsion():
             refine(self, FinitelyPresentedTorsionModules(base_ring))
-        source = _underlying_module(codomain)
+        # The classes are named by $N$'s generators, and those generators are
+        # named by $N$'s own presenting free module -- itself when $N$ is
+        # free, its cover when $N$ is already a quotient.
+        source = module.framing_morphism().domain()
         source_module_generator_morphism = source.module_generator_morphism()
         quotient_generator_morphism = SetMorphism(
             Hom(

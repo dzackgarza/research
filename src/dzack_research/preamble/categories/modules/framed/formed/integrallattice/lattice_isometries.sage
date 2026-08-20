@@ -866,6 +866,32 @@ class LatticeIsometries(Category):
             )
             return bool(pairing > 0)
 
+        def then(self: "IsometryMorphism", other: "FormMorphism") -> "FormMorphism":
+            r"""Return $g\circ f$, sited by what the two factors are.
+
+            A composite of isometries is an isometry: it preserves the form
+            because both factors do, and it is invertible because both
+            factors are.  So $g\circ f$ belongs to
+            $\operatorname{Isom}(L, N)$ and answers the vocabulary of an
+            isometry -- ``is_identity``, ``inverse``, ``determinant`` --
+            which the general composition, siting every composite in
+            $\operatorname{Hom}(L, N)$, leaves out of reach.
+
+            The other factor need not be an isometry, and then neither is
+            the composite: $f$ followed by an inclusion of finite index is
+            an inclusion of finite index.  Which of the two the composite is
+            is read off the composite itself.
+            """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormMorphism
+            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.integral_lattices import IntegralLattices
+            composite: "FormMorphism" = FormMorphism.then(self, other)
+            codomain = composite.codomain()
+            if codomain in IntegralLattices() and composite.matrix().is_invertible():
+                admitted: "FormMorphism" = composite.domain().Isom(codomain)(composite)
+                return admitted
+            return composite
+
         def __mul__(self: "IsometryMorphism", other: "Element") -> "Element":
             # Local: a module-level import here would close a cycle; by call time this module is built.
             from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormMorphism
