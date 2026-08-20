@@ -879,8 +879,9 @@ class LatticeIsometries(Category):
 
             The other factor need not be an isometry, and then neither is
             the composite: $f$ followed by an inclusion of finite index is
-            an inclusion of finite index.  Which of the two the composite is
-            is read off the composite itself.
+            an inclusion of finite index, and $f$ followed by a projection
+            onto a discriminant group leaves the lattices altogether.  Both
+            are read off the composite, which is the arrow being sited.
             """
             # Local: a module-level import here would close a cycle; by call time this module is built.
             from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormMorphism

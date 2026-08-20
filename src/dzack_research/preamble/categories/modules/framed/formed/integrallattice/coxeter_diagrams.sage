@@ -68,9 +68,9 @@ COXETER_DRAWING_CONVENTIONS = (
     ("square -4 root", f"white node, fill {COXETER_NEGATIVE_FOUR_NODE_COLOR}"),
     ("square -2 root", f"black node, fill {COXETER_NEGATIVE_TWO_NODE_COLOR}"),
     ("root squares", "stored as self-loops in root_intersection_graph(), omitted from TikZ"),
-    ("single edge", "Coxeter exponent 3"),
-    ("double edge", "Coxeter exponent 4"),
-    ("triple edge", "Coxeter exponent 6"),
+    ("single edge", "Coxeter matrix entry 3"),
+    ("double edge", "Coxeter matrix entry 4"),
+    ("triple edge", "Coxeter matrix entry 6"),
     ("thick edge", "Coxeter bond ∞, parallel mirrors: b(v,w)² = v²w²"),
     ("dashed edge", "Coxeter bond ∞, divergent mirrors: b(v,w)² > v²w²"),
 )
@@ -98,9 +98,9 @@ class CoxeterDiagrams(Category):
 
         The diagrams here come from fundamental domains of (usually hyperbolic)
         reflection groups, so every vertex is the mirror of a root and the
-        roots have norm $-2$ or $-4$.  That pins the edge: with
+        roots have square $-2$ or $-4$.  That pins the edge: with
         $t=b(r_1,r_2)^2/q(r_1)q(r_2)=\cos^2(\pi/m)$, and pairings against a
-        norm $-4$ root even because its divisibility is, the whole list is
+        square $-4$ root even because its divisibility is, the whole list is
 
         =============  =========  =====  =========================
         $q_1,q_2$      $b$        $t$    edge
@@ -114,9 +114,9 @@ class CoxeterDiagrams(Category):
 
         **There is no triple edge.**  $m=6$ needs $t=3/4$, so $4b^2=3q_1q_2$;
         with $q_1q_2\in\{4,8,16\}$ that asks for $b^2\in\{3,6,12\}$ and none is
-        a square.  In general $m=6$ forces the two norms to differ by a factor
+        a square.  In general $m=6$ forces the two squares to differ by a factor
         of three up to squares -- smallest even case $\langle-2,-6\rangle$ with
-        $b=3$, which is $G_2$ -- and a norm $-6$ root needs divisibility $3$ or
+        $b=3$, which is $G_2$ -- and a square $-6$ root needs divisibility $3$ or
         $6$, which $-2$ and $-4$ roots do not produce.  So the crystallographic
         restriction tightens from $m\in\{2,3,4,6\}$ to $m\in\{2,3,4\}$ here;
         $m=5$ is out separately, $\cos^2(\pi/5)$ being irrational.
@@ -207,7 +207,7 @@ class FiniteCoxeterDiagram(CoxeterDiagramParent):
     * diagonal terms ``r_i^2`` are stored as self-loops by
       :meth:`root_intersection_graph`;
     * TikZ output omits self-loops and renders edges from the Coxeter
-      exponents: single for ``3``, double for ``4``, triple for ``6``.
+      matrix entries: single for ``3``, double for ``4``, triple for ``6``.
 
     Use :meth:`drawing_conventions`, :meth:`node_color`, :meth:`roots`,
     :meth:`root_intersection_matrix`, and :meth:`preferred_positions` to extract
@@ -313,7 +313,7 @@ class FiniteCoxeterDiagram(CoxeterDiagramParent):
             names = tuple(f"s_{i}" for i in vertex_index_set)
         normalized_names = normalize_names(rank, names)
         gram = realization.gram_of(roots)
-        entries = [[1 if i == j else _coxeter_exponent(gram[i, i], gram[j, j], gram[i, j]) for j in range(rank)] for i in range(rank)]
+        entries = [[1 if i == j else _coxeter_matrix_entry(gram[i, i], gram[j, j], gram[i, j]) for j in range(rank)] for i in range(rank)]
         # Coxeter bonds m=∞ (parallel or divergent mirrors) make the root span
         # degenerate.  That is a fact about the form, not about what kind of
         # object this is: a lattice here is a free module with a Z-valued
@@ -446,7 +446,7 @@ class FiniteCoxeterDiagram(CoxeterDiagramParent):
         return matrix(
             AA,
             [
-                [_schlafli_entry(exponent) for exponent in row]
+                [_schlafli_entry(matrix_entry) for matrix_entry in row]
                 for row in self._matrix_entries()
             ],
         )
@@ -540,10 +540,10 @@ class FiniteCoxeterDiagram(CoxeterDiagramParent):
         relations = [generator**2 for generator in generators]
         for i in range(len(indices)):
             for j in range(i + 1, len(indices)):
-                exponent = self._coxeter_matrix[indices[i], indices[j]]
-                if exponent != infinity:
+                order = self._coxeter_matrix[indices[i], indices[j]]
+                if order != infinity:
                     relations.append(
-                        (generators[i] * generators[j]) ** Integer(exponent)
+                        (generators[i] * generators[j]) ** Integer(order)
                     )
         return free / relations
 
@@ -980,9 +980,9 @@ class FiniteCoxeterDiagram(CoxeterDiagramParent):
         """
         vertex = self._element_constructor_(vertex).value
         index = self._index_set.index(vertex)
-        norm = self.root_intersection_matrix()[index, index]
-        assert norm in COXETER_NODE_COLORS, f"no Coxeter node color is defined for square {norm}"
-        return COXETER_NODE_COLORS[norm]
+        square = self.root_intersection_matrix()[index, index]
+        assert square in COXETER_NODE_COLORS, f"no Coxeter node color is defined for square {square}"
+        return COXETER_NODE_COLORS[square]
 
     def subdiagram(self, vertices: Iterable[Hashable]) -> FiniteCoxeterDiagram:
         selected = tuple(self._element_constructor_(vertex).value for vertex in vertices)
@@ -1030,7 +1030,7 @@ class FiniteCoxeterDiagram(CoxeterDiagramParent):
         ``#F8F9FE`` and square ``-2`` roots use ``#BFC9CA``.  The
         root-intersection graph stores those squares as self-loops, but TikZ
         deliberately omits the loops and draws only edges between distinct
-        vertices: single, double, or triple according to Coxeter exponent
+        vertices: single, double, or triple according to Coxeter matrix entry
         ``3``, ``4``, or ``6``.
 
         ``highlight`` names vertices of *this* diagram -- an induced
@@ -1102,9 +1102,9 @@ class FiniteCoxeterDiagram(CoxeterDiagramParent):
 
         def node(i: int, vertex: "Element") -> str:
             x, y = selected_positions[vertex]
-            norm = intersections[i, i]
-            fill = _tikz_node_color(norm)
-            text = "white" if norm == -2 else "black"
+            square = intersections[i, i]
+            fill = _tikz_node_color(square)
+            text = "white" if square == -2 else "black"
             label = self.variable_names()[i]
             return (
                 rf"\node[coxeter node,fill={fill},text={text}] "
@@ -1145,7 +1145,7 @@ def _normalize_positions(
     }
 
 
-def _schlafli_entry(exponent: "Integer | PlusInfinity") -> "Element":
+def _schlafli_entry(matrix_entry: "Integer | PlusInfinity") -> "Element":
     r"""Entry $-2\cos(\pi/m)$ of the Schläfli matrix at Coxeter bond $m$.
 
     $\zeta + \zeta^{-1} = 2\cos(\pi/m)$ for $\zeta = e^{i\pi/m}$ a primitive
@@ -1157,17 +1157,17 @@ def _schlafli_entry(exponent: "Integer | PlusInfinity") -> "Element":
     # inside ZZ and QQ.
     from sage.rings.qqbar import AA, QQbar
 
-    if exponent is infinity:
+    if matrix_entry is infinity:
         return AA(-2)
-    bond = Integer(exponent)
-    assert bond >= 1, f"a Coxeter bond is an integer at least 1 or infinity; exponent={exponent}"
+    bond = Integer(matrix_entry)
+    assert bond >= 1, f"a Coxeter matrix entry is an integer at least 1 or infinity; matrix_entry={matrix_entry}"
     zeta = QQbar.zeta(2 * bond)
     return AA(-(zeta + zeta ** -1))
 
 
-def _coxeter_exponent(
-    left_norm: "Element",
-    right_norm: "Element",
+def _coxeter_matrix_entry(
+    left_square: "Element",
+    right_square: "Element",
     pairing: "Element",
 ) -> "Element":
     r"""Coxeter bond $m$ of a rank-two root pair.
@@ -1179,38 +1179,37 @@ def _coxeter_exponent(
     """
     if pairing == 0:
         return 2
-    product = 4 * pairing ** 2 / (left_norm * right_norm)
+    product = 4 * pairing ** 2 / (left_square * right_square)
     if product >= 4:
         return infinity
-    exponent_by_product = {1: 3, 2: 4, 3: 6}
-    assert product in exponent_by_product, f"unsupported rank-two root angle; left_norm={left_norm}, right_norm={right_norm}, pairing={pairing}, product={product}"
-    return exponent_by_product[product]
+    entry_by_product = {1: 3, 2: 4, 3: 6}
+    assert product in entry_by_product, f"unsupported rank-two root angle; left_square={left_square}, right_square={right_square}, pairing={pairing}, product={product}"
+    return entry_by_product[product]
 
 
 def _tikz_edge_style(
-    left_norm: "Element",
-    right_norm: "Element",
+    left_square: "Element",
+    right_square: "Element",
     pairing: "Element",
 ) -> str:
-    exponent = _coxeter_exponent(left_norm, right_norm, pairing)
-    if exponent == 3:
+    matrix_entry = _coxeter_matrix_entry(left_square, right_square, pairing)
+    if matrix_entry == 3:
         return "-"
-    if exponent == 4:
+    if matrix_entry == 4:
         return "coxeter double"
-    if exponent == 6:
+    if matrix_entry == 6:
         return "coxeter triple"
-    if exponent == infinity:
+    if matrix_entry == infinity:
         # The Coxeter matrix collapses both to ∞; the drawing keeps Vinberg's
         # distinction: thick = parallel mirrors, dashed = divergent mirrors.
-        product = 4 * pairing ** 2 / (left_norm * right_norm)
+        product = 4 * pairing ** 2 / (left_square * right_square)
         return "coxeter parallel" if product == 4 else "coxeter divergent"
-    assert False, f"TikZ export does not render Coxeter bond m={exponent}"
+    assert False, f"TikZ export does not render Coxeter bond m={matrix_entry}"
 
 
-def _tikz_node_color(norm: "Element") -> str:
-    norm = norm
-    assert norm in COXETER_NODE_COLORS, f"no Coxeter node color is defined for square {norm}"
-    if norm == -4:
+def _tikz_node_color(square: "Element") -> str:
+    assert square in COXETER_NODE_COLORS, f"no Coxeter node color is defined for square {square}"
+    if square == -4:
         return "coxeterNegativeFour"
     return "coxeterNegativeTwo"
 
@@ -1261,7 +1260,7 @@ class CoxeterDiagramHomset(Homset):
 
 
 class CoxeterDiagramMorphism(Morphism):
-    r"""A map of vertices preserving every Coxeter exponent."""
+    r"""A map of vertices preserving every Coxeter matrix entry."""
 
     if TYPE_CHECKING:
 
@@ -1295,7 +1294,7 @@ class CoxeterDiagramMorphism(Morphism):
         source_matrix = domain.coxeter_matrix()
         target_matrix = codomain.coxeter_matrix()
         assert all(source_matrix[left, right] == target_matrix[image_map[left], image_map[right]] for left in domain.index_set() for right in domain.index_set()), (
-            "a Coxeter-diagram morphism must preserve every Coxeter exponent"
+            "a Coxeter-diagram morphism must preserve every Coxeter matrix entry"
         )
         self._images = image_map
 

@@ -613,6 +613,12 @@ class TorsionModulesWithForm(OwnedCategoryOverBaseRing):
             cokernel of the arrow $H\to K$ the two inclusions induce, with
             the form of $K$ read on the classes -- the same construction every
             torsion form here is born from.
+
+            $K$ is itself a quotient, so the cokernel is presented on $K$'s
+            generators by $K$'s own relations together with the images of
+            $H$'s.  That is why the Gram matrix handed over is $K$'s: the
+            subquotient is written on the generators $K$'s form is written
+            on, so it is the same matrix.
             """
             # Local: a module-level import here would close a cycle; by call time this module is built.
             from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_torsion_modules import TorsionModule

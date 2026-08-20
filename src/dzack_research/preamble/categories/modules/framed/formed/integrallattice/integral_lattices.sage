@@ -2547,7 +2547,8 @@ def _gram_from_name(name: str) -> GramMatrix:
     r"""Return the Gram matrix a lattice name stands for.
 
     Constructed from the root realization: the entries are the inner
-    products of the simple roots in the root system's ambient realization,
+    products of the simple roots in Sage's ambient-space realization of
+    the root system,
     with the AG sign convention applied here, at the single construction
     site -- $A_n$ comes out *negative* definite, with $-2$ on the diagonal,
     and the catalogue does not re-twist it.  Not a negated Cartan matrix:

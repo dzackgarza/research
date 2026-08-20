@@ -5,9 +5,10 @@ engine is an implementation detail of an owned homset or group surface, and
 nothing an engine returns leaves this module unverified over $\mathbb Z$.
 
 * **polyhedral_common** (Mathieu Dutour Sikirić) decides isometry of
-  indefinite lattices with an exact witness, enumerates orbits of primitive
-  isotropic $k$-planes and $k$-flags under $O(L)$, and produces generating
-  sets for $O(L)$ and for stabilizers of isotropic subspaces.  It is reached
+  indefinite lattices with an exact witness, enumerates the $O(L)$-orbits
+  of the primitive totally isotropic sublattices of rank $k$ and of the
+  flags of them, and produces generating sets for $O(L)$ and for stabilizers
+  of those sublattices.  It is reached
   through the vendored ``py_polyhedral`` wrapper
   (github.com/MathieuDutSik/py_polyhedral, the reference implementation this
   seam's marshalling follows): drop that clone into ``computations/vendor/``
@@ -134,24 +135,27 @@ def indefinite_orthogonal_group_generator_matrices(
     return generators
 
 
-def isotropic_subspace_orbit_representative_rows(
-    gram: "Matrix_integer_dense", depth: int, nature: str
+def isotropic_sublattice_orbit_representative_rows(
+    gram: "Matrix_integer_dense", rank: int, isotropic_object: str
 ) -> tuple:
     r"""Return one $k\times n$ basis-row block per $O(L)$-orbit.
 
     ``INDEF_FORM_GetOrbit_IsotropicKplane``: representatives of the
-    $O(L)$-orbits of totally isotropic primitive rank-``depth`` subspaces
-    (``nature="plane"``) or full isotropic flags of that depth
-    (``nature="flag"``).  Rows are validated by the caller against the owned
-    lattice (isotropy, orthogonality, independence); this seam only shapes
-    the data.
+    $O(L)$-orbits of the primitive totally isotropic sublattices of rank
+    ``rank`` (``isotropic_object="plane"``), or of the flags of such
+    sublattices whose top term has that rank
+    (``isotropic_object="flag"``).  Rows are validated by the caller against
+    the owned lattice (isotropy, orthogonality, independence); this seam only
+    shapes the data.
     """
-    assert nature in ("plane", "flag"), "the engine enumerates planes or flags"
+    assert isotropic_object in ("plane", "flag"), (
+        "the engine enumerates isotropic sublattices or flags of them"
+    )
     engine = polyhedral_engine()
     assert engine is not None, _POLYHEDRAL_PROVISIONING
     return tuple(
         engine.indefinite_form_isotropic_k_stuff(
-            _integer_rows(gram), int(depth), nature
+            _integer_rows(gram), int(rank), isotropic_object
         )
     )
 
@@ -186,25 +190,28 @@ def indefinite_vector_orbit_representative_rows(
     return rows
 
 
-def isotropic_subspace_stabilizer_generator_matrices(
-    gram: "Matrix_integer_dense", basis_rows: "IntegerRows", nature: str
+def isotropic_sublattice_stabilizer_generator_matrices(
+    gram: "Matrix_integer_dense", basis_rows: "IntegerRows", isotropic_object: str
 ) -> tuple:
-    r"""Return generators of the setwise stabilizer of an isotropic subspace or flag.
+    r"""Return generators of the setwise stabilizer of an isotropic sublattice or flag.
 
-    ``INDEF_FORM_StabilizerIsotropicPlane``: for ``nature="plane"`` the
-    stabilizer of the span of ``basis_rows``; for ``nature="flag"`` the
-    stabilizer of the full chain the rows generate stratum by stratum.  Form
-    preservation is verified per generator; span preservation is the caller's
-    check against the owned subobjects.
+    ``INDEF_FORM_StabilizerIsotropicPlane``: for
+    ``isotropic_object="plane"`` the stabilizer of the sublattice
+    ``basis_rows`` spans; for ``isotropic_object="flag"`` the stabilizer of
+    the full chain the rows generate, term by term.  Form preservation is
+    verified per generator; span preservation is the caller's check against
+    the owned subobjects.
     """
-    assert nature in ("plane", "flag"), "the engine stabilizes planes or flags"
+    assert isotropic_object in ("plane", "flag"), (
+        "the engine stabilizes isotropic sublattices or flags of them"
+    )
     engine = polyhedral_engine()
     assert engine is not None, _POLYHEDRAL_PROVISIONING
     gram_z = matrix(SageZZ, gram)
     generators = tuple(
         matrix(SageZZ, rows)
         for rows in engine.indefinite_form_stabilizer_isotropic_subspace(
-            _integer_rows(gram), basis_rows, choice=nature
+            _integer_rows(gram), basis_rows, choice=isotropic_object
         )
     )
     assert all(
@@ -258,8 +265,8 @@ def vector_stabilizer_generator_matrices(
 
     ``INDEF_FORM_StabilizerVector``: a generating set for the *pointwise*
     stabilizer of one vector -- the group whose finite-quotient image turns
-    an ambient equivalence witness into a decision about a structured
-    subgroup.  Each generator is verified here to preserve the form and to
+    an $O(L)$-equivalence witness into a decision about a subgroup
+    containing $\ker\varphi$.  Each generator is verified here to preserve the form and to
     fix the vector; that the set generates the whole stabilizer is the
     engine's contract, stated and not re-derived.
     """
@@ -283,41 +290,43 @@ def vector_stabilizer_generator_matrices(
     return generators
 
 
-def isotropic_subspace_equivalence_witness(
+def isotropic_sublattice_equivalence_witness(
     gram: "Matrix_integer_dense",
     source_rows: "IntegerRows",
     target_rows: "IntegerRows",
-    nature: str,
+    isotropic_object: str,
 ) -> "Matrix_integer_dense | None":
-    r"""Return $W$ with $WGW^{\mathsf T}=G$ carrying one subspace (or flag) to another.
+    r"""Return $W$ with $WGW^{\mathsf T}=G$ carrying one isotropic sublattice (or flag) to another.
 
-    ``INDEF_FORM_TestEquivalenceIsotropicKplane``.  For a plane the check is
-    equality of the row modules of ``source_rows``$\cdot W$ and
-    ``target_rows``; for a flag the *chain* is checked stratum by stratum --
-    span equality of every initial segment, which is strictly finer than the
+    ``INDEF_FORM_TestEquivalenceIsotropicKplane``.  For a sublattice the
+    check is equality of the row modules of ``source_rows``$\cdot W$ and
+    ``target_rows``; for a flag the *chain* is checked term by term -- span
+    equality of every initial segment, which is strictly finer than the
     total-span comparison (the source corpus's flag branch checked only total
     spans, deciding a coarser relation; that recorded error is corrected
     here).
     """
-    assert nature in ("plane", "flag"), "the engine compares planes or flags"
+    assert isotropic_object in ("plane", "flag"), (
+        "the engine compares isotropic sublattices or flags of them"
+    )
     engine = polyhedral_engine()
     assert engine is not None, _POLYHEDRAL_PROVISIONING
     raw = engine.indefinite_form_test_equivalence_isotropic_k_plane(
-        _integer_rows(gram), source_rows, target_rows, choice=nature
+        _integer_rows(gram), source_rows, target_rows, choice=isotropic_object
     )
     if raw is None:
         return None
     witness = matrix(SageZZ, raw)
     gram_z = matrix(SageZZ, gram)
     assert witness * gram_z * witness.transpose() == gram_z, (
-        "the engine's subspace witness does not preserve the form"
+        "the engine's sublattice witness does not preserve the form"
     )
-    depth = len(source_rows)
-    strata = range(1, depth + 1) if nature == "flag" else (depth,)
-    for stratum in strata:
-        image = matrix(SageZZ, source_rows[:stratum]) * witness
-        assert image.row_module() == matrix(SageZZ, target_rows[:stratum]).row_module(), (
-            "the engine's witness does not carry the stated stratum to its target"
+    rank = len(source_rows)
+    terms = range(1, rank + 1) if isotropic_object == "flag" else (rank,)
+    for term in terms:
+        image = matrix(SageZZ, source_rows[:term]) * witness
+        assert image.row_module() == matrix(SageZZ, target_rows[:term]).row_module(), (
+            "the engine's witness does not carry the stated flag term to its target"
         )
     return witness
 

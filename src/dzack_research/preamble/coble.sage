@@ -12,10 +12,12 @@ Two configurations from the ``Coble Lattice Invariants`` notebook
   $a_i\mapsto a_i+b_i$).
 
 * An eleven-root Coxeter configuration in the Nikulin $(10,10,1)$ lattice,
-  extracted in the notebook as the invariant lattice of the involution of
-  the $(18,2,0)$-plus-two configuration (:meth:`Sterk.roots_18_2_0`) that
-  swaps $v_1\ldots v_8$ with $v_9\ldots v_{16}$ and $v_{17},v_{18}$ with
-  $v_{19},v_{20}$ -- the exchange of the two $E_8$ blocks of
+  extracted in the notebook as the invariant lattice of an involution of
+  the $22$ roots $v_1,\ldots,v_{22}$ of :meth:`Sterk.roots_18_2_0` in
+  $T_{\mathrm{dP}}$ -- named for the Nikulin invariants
+  $(r,a,\delta)=(18,2,0)$ -- namely the involution swapping
+  $v_1\ldots v_8$ with $v_9\ldots v_{16}$ and $v_{17},v_{18}$ with
+  $v_{19},v_{20}$, which is the exchange of the two $E_8$ blocks of
   $T_{\mathrm{dP}}$.
 
 Corrections recorded at this landing (2026-08-20 migration):
@@ -132,8 +134,8 @@ class Coble:
         lattice, with the lattice.
 
         The notebook extracted a rank-$10$ lattice as the invariant lattice
-        of the block-exchange involution of the $(18,2,0)$-plus-two
-        configuration, found its induced roots (eleven of square $-2$ and
+        of the block-exchange involution of the $22$ roots of
+        :meth:`Sterk.roots_18_2_0`, found its induced roots (eleven of square $-2$ and
         $-4$, after primitivizing and doubling the square $-1$ images), and
         identified the lattice with the $(10,10,1)$ class by an explicit
         engine isometry witness onto $U(2)\oplus A_1^{8}$ -- the catalogue's
@@ -177,9 +179,9 @@ class Coble:
         )
         assert len(roots) == 11
         for index, root in enumerate(roots, start=1r):
-            norm = root.q()
-            assert norm in (-2, -4), (
-                f"rank-ten configuration root {index} has square {norm}"
+            square = root.q()
+            assert square in (-2, -4), (
+                f"rank-ten configuration root {index} has square {square}"
             )
         return lattice, roots
 

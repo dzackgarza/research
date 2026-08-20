@@ -63,8 +63,9 @@ class DefiniteLattices(Category):
     class ParentMethods:
         r"""The distance vocabulary a definite form supports.
 
-        Every method here reads the *length* Gram matrix: $G$ when the form
-        is positive definite and $-G$ when it is negative definite, because
+        Every method here reads the positive definite Gram matrix $\pm G$:
+        $G$ when the form is positive definite and $-G$ when it is negative
+        definite, because
         the distance geometry of $L$ and $L(-1)$ is the same geometry -- a
         closest vector, a Voronoi cell, a heuristic length do not see the
         sign this project writes root lattices with.  Values are exact: a
@@ -78,8 +79,8 @@ class DefiniteLattices(Category):
         coset $v+2L$.
         """
 
-        def _length_gram_matrix(self: "Module") -> "Matrix":
-            r"""Return the positive matrix measuring squared lengths: $\pm G$."""
+        def _positive_definite_gram_matrix(self: "Module") -> "Matrix":
+            r"""Return the positive definite Gram matrix $\pm G$."""
             gram = matrix(SageQQ, self.gram_matrix())
             positive, negative = self.signature_pair()
             assert positive + negative == gram.nrows(), (
@@ -97,8 +98,8 @@ class DefiniteLattices(Category):
             values and a negative definite one no positive values, and a
             square of the wrong sign is a caller error, asserted by name.
             Negative definite is *by definition* the $L(-1)$ transport of
-            the positive regime -- the engine runs on the length Gram
-            matrix $\pm G$, so no caller twists anything.
+            the positive regime -- the engine runs on the positive definite
+            Gram matrix $\pm G$, so no caller twists anything.
 
             Fincke--Pohst, reached through PARI's ``qfminim`` (up to sign),
             with both signs restored: an embedding search places module generators
@@ -125,7 +126,7 @@ class DefiniteLattices(Category):
             )
             if length == 0:
                 return finite_ordered_set((self.zero(),))
-            gram = matrix(SageZZ, self._length_gram_matrix())
+            gram = matrix(SageZZ, self._positive_definite_gram_matrix())
             _count, _largest, coordinates = gram.__pari__().qfminim(length, None)
             halves = tuple(
                 zipsum(column, self.module_generators(), self.zero())
@@ -140,7 +141,8 @@ class DefiniteLattices(Category):
             r"""Return the roots: the vectors of square $2$ in the positive
             definite regime and of square $-2$ in the negative definite one
             (the AG convention this repo writes root lattices with -- the
-            $L(-1)$ transport of the norm-2 convention)."""
+            $L(-1)$ transport of the convention that a root has square
+            $2$)."""
             positive, negative = self.signature_pair()
             return self.vectors_of_square(2 if negative == 0 else -2)
 
@@ -177,7 +179,8 @@ class DefiniteLattices(Category):
             :meth:`vectors_of_square`, and the engine behind coset
             questions: the vectors of $t + L$ of a given square are the
             $x - t$ over this enumeration.  Fincke--Pohst around a target,
-            reached through PARI's ``qfcvp`` on the length Gram matrix;
+            reached through PARI's ``qfcvp`` on the positive definite Gram
+            matrix;
             every returned displacement is re-verified exactly, so the
             engine's floating bound cannot admit a stray point.  The sign
             regime is the lattice's own, as in :meth:`vectors_of_square`:
@@ -196,14 +199,14 @@ class DefiniteLattices(Category):
                 f"a definite form takes values of one sign only; "
                 f"square_bound={square_bound}, signature={self.signature_pair()}"
             )
-            length_gram = matrix(SageZZ, self._length_gram_matrix())
-            _count, _largest, coordinates = length_gram.__pari__().qfcvp(
+            positive_gram = matrix(SageZZ, self._positive_definite_gram_matrix())
+            _count, _largest, coordinates = positive_gram.__pari__().qfcvp(
                 point.__pari__().Col(), length_bound + SageQQ(1) / 2
             )
             pairs = []
             for column in matrix(SageQQ, coordinates).columns():
                 displacement = column - point
-                length = displacement * length_gram * displacement
+                length = displacement * positive_gram * displacement
                 if length > length_bound:
                     continue  # the engine bound is floating; the filter is exact
                 pairs.append(
@@ -455,7 +458,7 @@ class DefiniteLattices(Category):
             from dzack_research.preamble.utilities import zipsum
 
             point = self._target_coordinates(target)
-            gram = self._length_gram_matrix()
+            gram = self._positive_definite_gram_matrix()
             if gram.nrows() == 0:
                 return self.zero()
 
@@ -488,7 +491,8 @@ class DefiniteLattices(Category):
         def babai(self: "Module", target: "Element") -> "Element":
             r"""Return Babai's rounding approximation to the closest vector.
 
-            LLL-reduce the length Gram, round the target's coordinates in the
+            LLL-reduce the positive definite Gram matrix, round the target's
+            coordinates in the
             reduced framing, and come back.  An approximation with a proven
             exponential factor, which is the trade for polynomial time;
             :meth:`closest_vector` is the exact answer.
@@ -499,7 +503,7 @@ class DefiniteLattices(Category):
             from dzack_research.preamble.utilities import zipsum
 
             point = self._target_coordinates(target)
-            gram = self._length_gram_matrix()
+            gram = self._positive_definite_gram_matrix()
             if gram.nrows() == 0:
                 return self.zero()
             transform = matrix(SageQQ, matrix(SageZZ, gram).LLL_gram())
@@ -524,7 +528,7 @@ class DefiniteLattices(Category):
             from sage.geometry.polyhedron.constructor import Polyhedron as polyhedron
             from sage.modules.free_module_element import vector
 
-            gram = self._length_gram_matrix()
+            gram = self._positive_definite_gram_matrix()
             if gram.nrows() == 0:
                 return polyhedron(vertices=[[]], base_ring=SageQQ)
 
@@ -536,9 +540,9 @@ class DefiniteLattices(Category):
                 for column in matrix(SageZZ, coordinates).columns():
                     for signed in (column, -column):
                         row_vector = vector(SageQQ, signed) * gram
-                        norm = vector(SageQQ, signed) * gram * vector(SageQQ, signed)
+                        square = vector(SageQQ, signed) * gram * vector(SageQQ, signed)
                         inequalities.append(
-                            [norm / 2] + [-entry for entry in row_vector]
+                            [square / 2] + [-entry for entry in row_vector]
                         )
                 return polyhedron(ieqs=inequalities, base_ring=SageQQ)
 
@@ -568,7 +572,7 @@ class DefiniteLattices(Category):
             from dzack_research.preamble.categories.sets.sets import finite_ordered_set
             from dzack_research.preamble.utilities import zipsum
 
-            gram = self._length_gram_matrix()
+            gram = self._positive_definite_gram_matrix()
             if gram.nrows() == 0:
                 return finite_ordered_set(())
             radius = SageZZ(max(gram[i, i] for i in range(gram.nrows())) + 1)
@@ -585,7 +589,7 @@ class DefiniteLattices(Category):
                 for signed in (column, -column)
             ]
 
-            def norm(candidate: "FreeModuleElement") -> "Element":
+            def square(candidate: "FreeModuleElement") -> "Element":
                 return candidate * gram * candidate
 
             relevant = [
@@ -598,7 +602,7 @@ class DefiniteLattices(Category):
                         (candidate[i] - other[i]) % 2 != 0
                         for i in range(gram.nrows())
                     )
-                    or norm(other) > norm(candidate)
+                    or square(other) > square(candidate)
                     for other in candidates
                 )
             ]
@@ -623,7 +627,7 @@ class DefiniteLattices(Category):
             from sage.symbolic.constants import e, pi
             from sage.symbolic.ring import SR
 
-            gram = self._length_gram_matrix()
+            gram = self._positive_definite_gram_matrix()
             n = gram.nrows()
             assert n > 0, "the rank-0 lattice has no shortest nonzero vector"
             exponent = SageQQ(1) / n
@@ -646,7 +650,7 @@ class DefiniteLattices(Category):
             from sage.misc.misc_c import prod
             from sage.symbolic.ring import SR
 
-            gram = self._length_gram_matrix()
+            gram = self._positive_definite_gram_matrix()
             n = gram.nrows()
             assert n > 0, "the rank-0 lattice has no framing to measure"
             product_of_norms = prod(
@@ -659,7 +663,8 @@ class DefiniteLattices(Category):
         def theta_series(self: "Module", prec: "RingElement") -> "Element":
             r"""Return $\theta_L(q)=\sum_{x\in L}q^{\pm b(x,x)}$ to $O(q^{\text{prec}})$.
 
-            Exponents read the length Gram matrix $\pm G$, so for a negative
+            Exponents read the positive definite Gram matrix $\pm G$, so for a
+            negative
             definite lattice this is the theta series of $L(-1)$ -- the same
             transport every method of this category makes.  The series
             converges for $|q|<1$ exactly because the form is definite
@@ -674,7 +679,7 @@ class DefiniteLattices(Category):
             """
             from sage.quadratic_forms.quadratic_form import QuadraticForm
 
-            gram = matrix(SageZZ, self._length_gram_matrix())
+            gram = matrix(SageZZ, self._positive_definite_gram_matrix())
             return QuadraticForm(SageZZ, 2 * gram).theta_series(prec)
 
         def kissing_number(self: "Module") -> "RingElement":
@@ -689,7 +694,7 @@ class DefiniteLattices(Category):
             Fincke--Pohst, reached through PARI's ``qfminim`` on the length
             Gram matrix.
             """
-            gram = matrix(SageZZ, self._length_gram_matrix())
+            gram = matrix(SageZZ, self._positive_definite_gram_matrix())
             assert gram.nrows() > 0, (
                 "the rank-0 lattice has no nonzero vector"
             )
@@ -707,7 +712,7 @@ class DefiniteLattices(Category):
             """
             from sage.symbolic.ring import SR
 
-            gram = matrix(SageZZ, self._length_gram_matrix())
+            gram = matrix(SageZZ, self._positive_definite_gram_matrix())
             assert gram.nrows() > 0, (
                 "the rank-0 lattice has no pair of distinct points"
             )
@@ -728,7 +733,7 @@ class DefiniteLattices(Category):
             from sage.modules.free_module_element import vector
             from sage.symbolic.ring import SR
 
-            gram = self._length_gram_matrix()
+            gram = self._positive_definite_gram_matrix()
             squared = max(
                 point * gram * point
                 for point in (
@@ -744,7 +749,8 @@ class DefiniteLattices(Category):
             $\lambda_i$ is the least length $r$ such that $L$ holds $i$
             linearly independent vectors of length at most $r$ (Cassels,
             *An Introduction to the Geometry of Numbers*, ch. VIII), read on
-            the length Gram matrix.  Greedy attains every $\lambda_i$: scan
+            the positive definite Gram matrix.  Greedy attains every
+            $\lambda_i$: scan
             the vectors in increasing length and keep each one independent of
             those kept so far -- any $i$ independent vectors of length at most
             $r$ include one outside the span of the first $i-1$ kept, so the
@@ -758,7 +764,7 @@ class DefiniteLattices(Category):
             """
             from sage.symbolic.ring import SR
 
-            gram = matrix(SageZZ, self._length_gram_matrix())
+            gram = matrix(SageZZ, self._positive_definite_gram_matrix())
             n = gram.nrows()
             assert n > 0, "the rank-0 lattice has no successive minima"
             transformation = matrix(SageZZ, gram.LLL_gram())
@@ -794,7 +800,7 @@ class DefiniteLattices(Category):
             """
             from sage.geometry.polyhedron.constructor import Polyhedron as polyhedron
 
-            gram = matrix(SageZZ, self._length_gram_matrix())
+            gram = matrix(SageZZ, self._positive_definite_gram_matrix())
             assert gram.nrows() > 0, (
                 "the rank-0 lattice has no nonzero vector"
             )
@@ -822,7 +828,7 @@ class DefiniteLattices(Category):
             """
             from sage.symbolic.ring import SR
 
-            gram = matrix(SageZZ, self._length_gram_matrix())
+            gram = matrix(SageZZ, self._positive_definite_gram_matrix())
             n = gram.nrows()
             assert n > 0, "the rank-0 lattice has no minimal nonzero vector"
             minimal = SageZZ(gram.__pari__().qfminim(None, 0)[1])
@@ -838,7 +844,7 @@ class DefiniteLattices(Category):
             """
             from sage.symbolic.ring import SR
 
-            gram = matrix(SageZZ, self._length_gram_matrix())
+            gram = matrix(SageZZ, self._positive_definite_gram_matrix())
             n = gram.nrows()
             assert n > 0, "the rank-0 lattice packs no spheres"
             return self.packing_radius() ** n / SR(gram.determinant()).sqrt()
@@ -853,7 +859,7 @@ class DefiniteLattices(Category):
             from sage.functions.gamma import gamma
             from sage.symbolic.constants import pi
 
-            gram = matrix(SageZZ, self._length_gram_matrix())
+            gram = matrix(SageZZ, self._positive_definite_gram_matrix())
             n = gram.nrows()
             assert n > 0, "the rank-0 lattice packs no spheres"
             ball_volume = pi ** (SageQQ(n) / 2) / gamma(1 + SageQQ(n) / 2)
@@ -866,16 +872,16 @@ class DefiniteLattices(Category):
             def LLL(self: "DefiniteSubobjectParent") -> "Module":
                 r"""Return this subobject on an LLL reduced framing.
 
-                The same submodule of the same ambient, generated by shorter
-                and more nearly orthogonal vectors.  What is reduced is the
-                inclusion's matrix: its rows are the generators of $S$ written
-                in the ambient's framing, so the arrow carries the reduction
-                and no call site rebuilds an embedding out of rows it reduced
-                itself.
+                The same submodule of the same codomain, generated by
+                shorter and more nearly orthogonal vectors.  What is reduced
+                is the inclusion's matrix: its rows are the generators of $S$
+                written in the codomain's framing, so the arrow carries the
+                reduction and no call site rebuilds an embedding out of rows
+                it reduced itself.
 
-                The target must be $I_{n,0}$ or $I_{0,n}$.  Reduction reads
+                The codomain must be $I_{n,0}$ or $I_{0,n}$.  Reduction reads
                 those rows as vectors and compares their lengths, which is
-                only what they mean when the ambient's form is the standard
+                only what they mean when the codomain's form is the standard
                 one; over any other definite form the same rows are
                 coordinates and their entries are not lengths.  $I_{0,n}$ is
                 admitted because $S$ and $S(-1)$ have the same short vectors.
@@ -885,11 +891,11 @@ class DefiniteLattices(Category):
                 from dzack_research.preamble.categories.sets.sets import finite_ordered_set
                 from dzack_research.preamble.utilities import zipsum
                 inclusion = self.embedding()
-                ambient = inclusion.codomain()
-                gram = matrix(SageZZ, ambient.gram_matrix())
+                codomain = inclusion.codomain()
+                gram = matrix(SageZZ, codomain.gram_matrix())
                 standard = identity_matrix(SageZZ, gram.nrows())
                 assert gram == standard or gram == -standard, (
-                    f"{ambient} is not $I_(n,0)$ or $I_(0,n)$, so the rows of "
+                    f"{codomain} is not $I_(n,0)$ or $I_(0,n)$, so the rows of "
                     "an inclusion into it are coordinates and not vectors"
                 )
                 return self._subobject_on_reduced_rows(
@@ -904,7 +910,7 @@ class DefiniteLattices(Category):
                 A new subobject and not a new arrow out of $S$: the reduced
                 generators induce a different form on the domain, so the old
                 domain is not one this arrow could preserve.  A row is one
-                generator's image in the ambient.
+                generator's image in the codomain.
 
                 Not ``subobject_on``: it puts a generating set into the
                 normal form of its rows, which is the framing this replaces.
@@ -913,16 +919,16 @@ class DefiniteLattices(Category):
                 from dzack_research.preamble.categories.modules.framed.formed.integrallattice.subobjects import Subobject
                 from dzack_research.preamble.categories.sets.sets import finite_ordered_set
                 from dzack_research.preamble.utilities import zipsum
-                ambient = self.embedding().codomain()
+                codomain = self.embedding().codomain()
                 reduced = finite_ordered_set(tuple(
-                    zipsum(row, ambient.module_generators(), ambient.zero())
+                    zipsum(row, codomain.module_generators(), codomain.zero())
                     for row in rows
                 ))
-                sub = ambient._sub_form_module(
+                sub = codomain._sub_form_module(
                     matrix([[left.b(right) for right in reduced] for left in reduced]),
                     reduced,
                 )
-                return Subobject(sub.Hom(ambient)({
+                return Subobject(sub.Hom(codomain)({
                     generator: generator for generator in reduced
                 }))
 
@@ -933,19 +939,19 @@ class DefiniteLattices(Category):
 
                 Block Korkine--Zolotarev reduction (Schnorr--Euchner, through
                 ``fpylll``): stronger than :meth:`LLL`, the same contract --
-                the same submodule of the same ambient on shorter, more
+                the same submodule of the same codomain on shorter, more
                 nearly orthogonal generators, with the same $I_{n,0}$ /
-                $I_{0,n}$ gate on the ambient, for the same reason: the
+                $I_{0,n}$ gate on the codomain, for the same reason: the
                 reducer reads rows as vectors and compares lengths.
                 """
                 import fpylll
 
                 inclusion = self.embedding()
-                ambient = inclusion.codomain()
-                gram = matrix(SageZZ, ambient.gram_matrix())
+                codomain = inclusion.codomain()
+                gram = matrix(SageZZ, codomain.gram_matrix())
                 standard = identity_matrix(SageZZ, gram.nrows())
                 assert gram == standard or gram == -standard, (
-                    f"{ambient} is not $I_(n,0)$ or $I_(0,n)$, so the rows of "
+                    f"{codomain} is not $I_(n,0)$ or $I_(0,n)$, so the rows of "
                     "an inclusion into it are coordinates and not vectors"
                 )
                 rows = matrix(SageZZ, inclusion.matrix())

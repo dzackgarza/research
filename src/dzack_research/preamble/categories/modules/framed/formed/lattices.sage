@@ -276,14 +276,21 @@ class Lattices(CategoryWithAxiom_over_base_ring):
     def IIPQ(p: "Integer", q: "Integer") -> "FormModule":
         r"""Return the even unimodular lattice $\mathrm{II}_{p,q}$ (indefinite).
 
-        Milnor's classification (the same fact the indecomposable registry
-        cites): an indefinite even unimodular lattice of signature $(p,q)$
-        exists exactly when $p \equiv q \pmod 8$, and is then unique,
+        Milnor's classification, the hypothesis the catalogue's
+        ``register_indecomposable`` header records: an indefinite even
+        unimodular lattice of signature $(p,q)$ exists exactly when
+        $p \equiv q \pmod 8$, and is then unique,
         $\mathrm{II}_{p,q} \cong U^{\min(p,q)} \oplus (\pm E_8)^{|p-q|/8}$ --
         with this catalogue's $E_8$ negative definite, the positive-definite
-        summand is its $(-1)$-twist.  Definite even unimodular lattices are
-        deliberately outside this constructor: their genera hold several
-        classes from rank $16$ on, so a signature does not name one.
+        summand is its $(-1)$-twist.
+
+        Definite even unimodular lattices are deliberately outside this
+        constructor: uniqueness fails from rank $16$ on ($E_8^2$ and
+        $D_{16}^+$ share signature $(16,0)$, and rank $24$ has the $24$
+        Niemeier classes), so a signature does not name one.  The source
+        notebook's existence filter mis-parenthesized the congruence as
+        ``p - q % 8 == 0``, which is $p - (q \bmod 8)$ and selects the wrong
+        signatures.
         """
         assert p >= 1 and q >= 1, (
             f"II_({p},{q}) names the indefinite even unimodular lattice; a "
@@ -300,43 +307,6 @@ class Lattices(CategoryWithAxiom_over_base_ring):
         if p < q:
             return hyperbolic_copies + Lattices.E8 ** ((q - p) // 8)
         return hyperbolic_copies + Lattices.E8.twist(-1) ** ((p - q) // 8)
-
-    @staticmethod
-    def IIPQ(p: "Integer", q: "Integer") -> "FormModule":
-        r"""Return the even unimodular lattice $II_{p,q}$, for indefinite
-        $(p, q)$ with $p\equiv q\pmod 8$.
-
-        $II_{p,q}\cong U^{\min(p,q)}\oplus E_8(\pm1)^{|p-q|/8}$ by Milnor --
-        the hypothesis the catalogue's ``register_indecomposable`` header
-        records: both unimodular families are unique only when *indefinite*.
-        The definite case is refused by the same fact: uniqueness fails from
-        rank $16$ on ($E_8^2$ and $D_{16}^+$ share signature $(16,0)$, and
-        rank $24$ has the $24$ Niemeier classes), so no single constructor
-        may answer there.  Existence needs $p\equiv q\pmod 8$, the signature
-        of an even unimodular lattice being divisible by $8$; the source
-        notebook's filter mis-parenthesized this as ``p - q % 8 == 0``,
-        which is $p-(q\bmod 8)$ and selects the wrong signatures.
-
-        This repo's convention makes $E_8$ negative definite, so the
-        $q>p$ excess is filled by ``Lattices.E8`` and the $p>q$ excess by
-        its twist by $-1$.
-        """
-        assert p >= 1 and q >= 1, (
-            f"II_({p},{q}) is definite, where even unimodular lattices are "
-            "not unique from rank 16 on (E8^2 and D16+ at (16,0); 24 "
-            "Niemeier classes at rank 24) -- no constructor decides which"
-        )
-        assert (p - q) % 8 == 0, (
-            f"no even unimodular lattice has signature ({p}, {q}): "
-            "the signature of an even unimodular lattice is divisible by 8"
-        )
-        hyperbolic_count = min(p, q)
-        excess = abs(p - q) // 8
-        planes = Lattices.U ** hyperbolic_count if hyperbolic_count > 1 else Lattices.U
-        if excess == 0:
-            return planes
-        block = Lattices.E8 if q > p else Lattices.E8.twist(-1)
-        return planes + (block ** excess if excess > 1 else block)
 
     @staticmethod
     def LK3_2d(degree: "Integer") -> "FormModule":

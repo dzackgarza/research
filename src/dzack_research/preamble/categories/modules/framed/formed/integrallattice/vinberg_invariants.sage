@@ -33,7 +33,7 @@ For any real algebraic candidate $x \in [-1, 1)$:
 
 2. Compute its exact multiplicative order $k = \operatorname{multiplicative\_order}(\zeta)$.
 3. $x \in X_{\mathrm{ref}}$ if and only if $k = 2n$ is an even integer and $\zeta^n = -1$.
-   In this case, the exact Coxeter exponent is $n = k / 2$.
+   In this case, the exact Coxeter matrix entry is $n = k / 2$.
 
 EXAMPLES::
 
@@ -61,8 +61,8 @@ EXAMPLES::
 TODOs & Architectural Roadmap
 =============================
 - [ ] Generalize to combinatorial intersection matrices for arbitrary hyperplane arrangements
-      in an ambient space (not just reflection hyperplanes).
-- [ ] Formalize "Hyperplane arrangement in an ambient space" as a first-class category.
+      in a vector space (not just reflection hyperplanes).
+- [ ] Formalize "Hyperplane arrangement in a vector space" as a first-class category.
 - [ ] Make crystallographic, non-crystallographic, and hyperbolic properties axiomatic
       refinements of reflection arrangements.
 - [ ] Ensure all root lattice objects in the preamble can canonically produce their associated
@@ -576,7 +576,7 @@ class CombinatorialVinbergInvariantMatrix(Parent):
         return self._names
 
     def projective_space(self) -> ProjectiveSpace:
-        r"""Return the ambient projective space $\mathbb{P}^1(R)$."""
+        r"""Return the projective space $\mathbb{P}^1(R)$ the invariants live in."""
         return self._projective_space
 
     def __getitem__(self, index: tuple[int, int] | int) -> SchemeMorphism_point_projective_ring:

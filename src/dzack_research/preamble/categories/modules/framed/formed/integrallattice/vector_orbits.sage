@@ -1,4 +1,5 @@
-r"""Orbits of non-isotropic vectors under $O(L)$ and its structured subgroups.
+r"""Orbits of non-isotropic vectors under $O(L)$ and its subgroups
+containing $\ker\varphi$.
 
 The sibling of :mod:`isotropic_orbits`.  There the objects are primitive
 totally isotropic sublattices and the whole theory runs through the engine's
@@ -16,16 +17,16 @@ vectors in lattices*, sec. 2; transcribed in the migrated glossary
 
 Three questions, three routes, all sited on the owned surfaces:
 
-* **The decision, for a structured $\Gamma\le O(L)$.**  The isometries
-  carrying $w_1$ to $w_2$ are the coset
-  $\operatorname{Stab}_{O(L)}(w_2)\cdot W$ of one ambient witness $W$, so
+* **The decision, for a $\Gamma\le O(L)$ containing $\ker\varphi$.**  The
+  isometries carrying $w_1$ to $w_2$ are the coset
+  $\operatorname{Stab}_{O(L)}(w_2)\cdot W$ of one $O(L)$-witness $W$, so
   $\Gamma$ meets it exactly when $\varphi(W)$ lies in the identity double
   coset of $\varphi(\Gamma)\backslash\varphi(O(L))/
   \varphi(\operatorname{Stab}(w_2))$ in the finite quotient
   $\varphi=(\rho_L,\det,\operatorname{sn}_{\mathbb R})$ that
   :class:`isotropic_orbits.OrthogonalPredicateSubgroup` already carries.
-  Every character cutting a structured subgroup out factors through that
-  finite quotient, so the test is a decision and not a search --
+  Every character cutting such a subgroup out factors through that finite
+  quotient, so the test is a decision and not a search --
   :meth:`isotropic_orbits.OrthogonalPredicateSubgroup.vectors_are_equivalent`
   is where it is asked.
 
@@ -97,7 +98,7 @@ if TYPE_CHECKING:
     from dzack_research.preamble.lexicon import Element
 
 
-# ---- the ambient layer: engine data, validated against the owned lattice ----
+# ---- the O(L) layer: engine data, validated against the owned lattice ----
 
 
 def _held(lattice: "FormModule", element: "Element") -> "Element":
@@ -133,7 +134,7 @@ def _coordinate_row(lattice: "FormModule", element: "Element") -> list:
     return [int(entry) for entry in _coordinate_vector(_held(lattice, element))]
 
 
-def ambient_vector_equivalence_witness(
+def orthogonal_group_vector_equivalence_witness(
     lattice: "FormModule", left: "Element", right: "Element"
 ) -> "FormMorphism | None":
     r"""Return $g\in O(L)$ with $g(v)=w$, or ``None`` when there is none.
@@ -166,7 +167,7 @@ def ambient_vector_equivalence_witness(
     return isometry
 
 
-def ambient_vector_stabilizer_generators(
+def orthogonal_group_vector_stabilizer_generators(
     lattice: "FormModule", element: "Element"
 ) -> tuple:
     r"""Return generators of $\operatorname{Stab}_{O(L)}(v)$, as isometries.
@@ -426,7 +427,7 @@ class VectorPrimitiveExtension:
 
 
 def _subobject_images(subobject: "FormModule") -> tuple:
-    r"""Return a subobject's elements seen in its ambient form."""
+    r"""Return a subobject's elements seen in the codomain of its embedding."""
     embedding = subobject.embedding()
     return tuple(embedding(element) for element in subobject)
 
