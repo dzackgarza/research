@@ -120,7 +120,7 @@ def _validated_isotropic_basis(
     return elements
 
 
-def ambient_isotropic_orbit_representatives(
+def orthogonal_group_isotropic_orbit_representatives(
     lattice: "FormModule", rank: "Integer", isotropic_object: str
 ) -> tuple:
     r"""Return one validated basis tuple per $O(L)$-orbit (engine behind the seam)."""
@@ -137,7 +137,7 @@ def ambient_isotropic_orbit_representatives(
     return representatives
 
 
-def ambient_line_equivalence_witness(
+def orthogonal_group_line_equivalence_witness(
     lattice: "FormModule", left: "Element", right: "Element"
 ) -> "FormMorphism | None":
     r"""Return $g\in O(L)$ with $g(\mathbb Z v)=\mathbb Z w$, or ``None``.
@@ -167,7 +167,7 @@ def ambient_line_equivalence_witness(
     return None
 
 
-def ambient_subspace_equivalence_witness(
+def orthogonal_group_sublattice_equivalence_witness(
     lattice: "FormModule",
     left: "OrderedSet",
     right: "OrderedSet",
@@ -564,7 +564,7 @@ class OrthogonalPredicateSubgroup(PredicateSubgroup):
         r"""Split each $O(L)$-orbit of isotropic subobjects into $\Gamma$-orbits."""
         lattice = self.domain()
         representatives = []
-        for representative in ambient_isotropic_orbit_representatives(
+        for representative in orthogonal_group_isotropic_orbit_representatives(
             lattice, rank, isotropic_object
         ):
             for witness in self._splitting_isometries(
@@ -599,11 +599,11 @@ class OrthogonalPredicateSubgroup(PredicateSubgroup):
         r"""Decide $\Gamma$-equivalence of two isotropic subobjects."""
         lattice = self.domain()
         if len(tuple(left)) == 1 and isotropic_object == "plane":
-            witness = ambient_line_equivalence_witness(
+            witness = orthogonal_group_line_equivalence_witness(
                 lattice, tuple(left)[0], tuple(right)[0]
             )
         else:
-            witness = ambient_subspace_equivalence_witness(
+            witness = orthogonal_group_sublattice_equivalence_witness(
                 lattice, left, right, isotropic_object
             )
         if witness is None:

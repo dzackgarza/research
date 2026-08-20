@@ -518,20 +518,20 @@ class LatticeIsometries(Category):
             The 0-cusps of the Baily--Borel boundary for this group.  The
             engine's representatives are validated against the owned lattice
             (isotropy, primitivity) before they leave
-            (:func:`isotropic_orbits.ambient_isotropic_orbit_representatives`).
+            (:func:`isotropic_orbits.orthogonal_group_isotropic_orbit_representatives`).
             Implemented on the full $O(L)$; a structured predicate subgroup
             splits these ambient orbits by double cosets in its finite
             quotient, and an opaque subgroup states the absence.
             """
             # Local: a module-level import here would close a cycle; by call time this module is built.
-            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.isotropic_orbits import ambient_isotropic_orbit_representatives
+            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.isotropic_orbits import orthogonal_group_isotropic_orbit_representatives
             assert self is self.domain().Aut(), (
                 "ambient orbit enumeration is O(L)'s; ask a structured "
                 "predicate subgroup for its own splitting"
             )
             return tuple(
                 flag[0]
-                for flag in ambient_isotropic_orbit_representatives(
+                for flag in orthogonal_group_isotropic_orbit_representatives(
                     self.domain(), 1, "plane"
                 )
             )
@@ -545,12 +545,12 @@ class LatticeIsometries(Category):
             spanning the plane, validated at the seam.
             """
             # Local: a module-level import here would close a cycle; by call time this module is built.
-            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.isotropic_orbits import ambient_isotropic_orbit_representatives
+            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.isotropic_orbits import orthogonal_group_isotropic_orbit_representatives
             assert self is self.domain().Aut(), (
                 "ambient orbit enumeration is O(L)'s; ask a structured "
                 "predicate subgroup for its own splitting"
             )
-            return ambient_isotropic_orbit_representatives(
+            return orthogonal_group_isotropic_orbit_representatives(
                 self.domain(), 2, "plane"
             )
 
@@ -559,12 +559,12 @@ class LatticeIsometries(Category):
         ) -> tuple:
             r"""Return one ordered basis per $O(L)$-orbit of isotropic ``depth``-flags."""
             # Local: a module-level import here would close a cycle; by call time this module is built.
-            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.isotropic_orbits import ambient_isotropic_orbit_representatives
+            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.isotropic_orbits import orthogonal_group_isotropic_orbit_representatives
             assert self is self.domain().Aut(), (
                 "ambient orbit enumeration is O(L)'s; ask a structured "
                 "predicate subgroup for its own splitting"
             )
-            return ambient_isotropic_orbit_representatives(
+            return orthogonal_group_isotropic_orbit_representatives(
                 self.domain(), depth, "flag"
             )
 
@@ -573,13 +573,13 @@ class LatticeIsometries(Category):
         ) -> bool:
             r"""Decide whether two primitive isotropic lines lie in one $O(L)$-orbit."""
             # Local: a module-level import here would close a cycle; by call time this module is built.
-            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.isotropic_orbits import ambient_line_equivalence_witness
+            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.isotropic_orbits import orthogonal_group_line_equivalence_witness
             assert self is self.domain().Aut(), (
                 "ambient equivalence is O(L)'s; ask a structured predicate "
                 "subgroup for the double-coset decision"
             )
             return (
-                ambient_line_equivalence_witness(self.domain(), left, right)
+                orthogonal_group_line_equivalence_witness(self.domain(), left, right)
                 is not None
             )
 
@@ -590,13 +590,13 @@ class LatticeIsometries(Category):
         ) -> bool:
             r"""Decide whether two totally isotropic planes lie in one $O(L)$-orbit."""
             # Local: a module-level import here would close a cycle; by call time this module is built.
-            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.isotropic_orbits import ambient_subspace_equivalence_witness
+            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.isotropic_orbits import orthogonal_group_sublattice_equivalence_witness
             assert self is self.domain().Aut(), (
                 "ambient equivalence is O(L)'s; ask a structured predicate "
                 "subgroup for the double-coset decision"
             )
             return (
-                ambient_subspace_equivalence_witness(
+                orthogonal_group_sublattice_equivalence_witness(
                     self.domain(), left, right, "plane"
                 )
                 is not None
@@ -614,13 +614,13 @@ class LatticeIsometries(Category):
             stratum by stratum.
             """
             # Local: a module-level import here would close a cycle; by call time this module is built.
-            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.isotropic_orbits import ambient_subspace_equivalence_witness
+            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.isotropic_orbits import orthogonal_group_sublattice_equivalence_witness
             assert self is self.domain().Aut(), (
                 "ambient equivalence is O(L)'s; ask a structured predicate "
                 "subgroup for the double-coset decision"
             )
             return (
-                ambient_subspace_equivalence_witness(
+                orthogonal_group_sublattice_equivalence_witness(
                     self.domain(), left, right, "flag"
                 )
                 is not None
