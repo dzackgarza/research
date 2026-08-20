@@ -234,12 +234,12 @@ class RestrictedScalarsModules(Category_over_base_ring):
             """
             # Local: the module node imports this module through the functor
             # tower; it is built by call time.
-            from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import BasedFreeModuleElement
+            from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import FinitelyGeneratedFreeModules
 
             member = self._module(element)
             if member.parent() is self:
                 return member
-            assert isinstance(member, BasedFreeModuleElement), (
+            assert isinstance(member, FinitelyGeneratedFreeModules.ElementMethods), (
                 f"restriction of scalars re-homes coordinate elements; "
                 f"{member!r} is not one"
             )

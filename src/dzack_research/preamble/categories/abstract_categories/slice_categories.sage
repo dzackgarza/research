@@ -270,6 +270,52 @@ class CokernelCategory(_UnderAnObject, Category):
         return [CoveredObjectCategory(self._ambient_category, map_taken.codomain())]
 
 
+def with_chosen_arrows_forgotten(category: Category) -> Category:
+    r"""Return ``category`` with every chosen arrow forgotten.
+
+    Being an object of \(\mathbf{C}/X\) is not a property of \(A\): it is
+    \(A\) *together with* a chosen arrow \(A\to X\).  So a construction that
+    builds a **new** object out of \(A\) -- the formed module classified by a
+    form written on \(A\), say -- inherits \(A\)'s structure and none of
+    \(A\)'s arrows: there is no morphism out of the new object to inherit,
+    and placing it in \(\mathbf{C}/X\) would assert one that does not exist.
+
+    The category the new object is built in is therefore the image of \(A\)'s
+    under the forgetful \(\mathbf{C}/X\to\mathbf{C}\), applied until no chosen
+    arrow is left.  ``super_categories()`` is where each of these categories
+    already states what it forgets to, so this reads that and nothing else.
+    """
+    # Local: the module-level subobject category is above this file in the
+    # tree, and it is built by the time a construction forgets an arrow.
+    from dzack_research.preamble.categories.modules.framed.formed.integrallattice.subobjects import (
+        Subobjects,
+    )
+    from sage.categories.category import Category as SageCategory
+    from sage.categories.category import JoinCategory
+    from sage.categories.subobjects import SubobjectsCategory
+
+    # The two parameter classes above are the whole slice and coslice family;
+    # ``Subobjects`` states the same of a module without naming the object it
+    # embeds in, and Sage's construction category states it of any C.
+    carries_a_chosen_arrow = (
+        _OverAnObject,
+        _UnderAnObject,
+        Subobjects,
+        SubobjectsCategory,
+    )
+
+    def forgotten(member: Category) -> list[Category]:
+        if isinstance(member, (JoinCategory, *carries_a_chosen_arrow)):
+            return [
+                forgetful
+                for above in member.super_categories()
+                for forgetful in forgotten(above)
+            ]
+        return [member]
+
+    return SageCategory.join(forgotten(category))
+
+
 def Slice(structure_morphism: Morphism, is_mono: bool = False, is_epi: bool = False) -> Parent:
     r"""Construct the slice object represented by a morphism \(A\to X\).
 

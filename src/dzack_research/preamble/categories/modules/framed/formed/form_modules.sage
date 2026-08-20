@@ -235,7 +235,6 @@ class FormModules(OwnedCategoryOverBaseRing):
                 self,
                 lifted_module_generator_morphism,
             )
-            self._refine_from_form()
 
         def _form_morphism(self: "FormedParent") -> "Form":
             r"""Return the morphism this object's form *is*.
@@ -411,6 +410,17 @@ class FormModules(OwnedCategoryOverBaseRing):
             return morphism
 
         def _refine_from_form(self: Self) -> None:
+            r"""Place this object in the subcategories its form puts it in.
+
+            Called once the construction has returned, never from inside it.
+            Which subcategories a formed module belongs to is read off the
+            form -- bilinear or quadratic, symmetric, free, torsion, integral
+            -- so it is a consequence of the datum rather than a step in
+            establishing it.  It is also the only order Sage's identity
+            caching admits: ``UniqueRepresentation.__classcall__`` requires
+            the object it caches to still be an instance of the class it
+            asked for, and refinement rebuilds that class.
+            """
             # Local: a module-level import here would close a cycle; by call time this module is built.
             from dzack_research.preamble.categories.forms.forms import BilinearFormMorphism
             from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import FinitelyGeneratedFreeModules
@@ -418,6 +428,7 @@ class FormModules(OwnedCategoryOverBaseRing):
             from dzack_research.preamble.categories.modules.pure.free_modules import FreeModules
             from dzack_research.preamble.categories.modules.group_modules.group_lattices import GroupLattices
             from dzack_research.preamble.categories.forms.forms import QuadraticFormMorphism
+            from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModules
             from dzack_research.preamble.categories.modules.pure.torsion_modules import TorsionModules
             from dzack_research.preamble.categories.modules.framed.formed.torsionform.torsion_modules_with_form import TorsionModulesWithForm
             from dzack_research.preamble.categories.modules.group_modules.group_lattices import _action_preserves_form
@@ -440,14 +451,25 @@ class FormModules(OwnedCategoryOverBaseRing):
                 or zero
             )
             finite_torsion = torsion and finitely_generated
-            owned_finite_torsion = finite_torsion and engine_ring(base_ring) is SageZZ
+            # ``TorsionModulesWithForm`` sits under the finitely *presented*
+            # torsion modules, which consume a chosen presentation.  Being
+            # torsion does not supply one: the zero module is torsion and is
+            # built free, framed by the empty set and presented by nothing, so
+            # admitting it there would place an object in a category whose
+            # defining datum it does not have.  It is refined into the torsion
+            # property category below instead.
+            presented_finite_torsion = (
+                finite_torsion
+                and engine_ring(base_ring) is SageZZ
+                and module in FinitelyPresentedModules(base_ring)
+            )
             bilinear = isinstance(self._form, BilinearFormMorphism)
             quadratic = isinstance(self._form, QuadraticFormMorphism)
             symmetric_bilinear = (
                 bilinear
                 and self._form.gram_matrix().is_symmetric()
             )
-            match (bilinear, quadratic, free, owned_finite_torsion):
+            match (bilinear, quadratic, free, presented_finite_torsion):
                 case (True, False, True, True):
                     refine(
                         self,
@@ -513,7 +535,7 @@ class FormModules(OwnedCategoryOverBaseRing):
                     pass
                 case _:
                     assert False, "only a bilinear form can be symmetric bilinear"
-            match (torsion, owned_finite_torsion):
+            match (torsion, presented_finite_torsion):
                 case (True, False):
                     refine(self, TorsionModules(base_ring))
                 case (True, True) | (False, False):
@@ -1335,15 +1357,34 @@ def FormModule(form: "Form") -> Parent:
     hands its framing set up as the module level's datum; an unframed one has
     none to hand, which is what ``FormModules`` means by not requiring a
     framing.
+
+    \(M\)'s *structure* is what is inherited, not \(M\)'s arrows.  A module
+    that is a subobject, a kernel or a graded piece of something is placed in
+    a slice category by that arrow, and the formed module has no such arrow:
+    it is a new object, and the only morphism it comes with is the form.  So
+    the arrows are forgotten and the framing, freeness, finite generation and
+    size -- everything \(M\) is rather than everything \(M\) came from --
+    carry across.
     """
+    # Local: the slice family reaches this module through the subobject
+    # constructor, so a module-level import here would close that cycle.
+    from dzack_research.preamble.categories.abstract_categories.slice_categories import (
+        with_chosen_arrows_forgotten,
+    )
+
     module = form.module()
     category = SageCategory.join(
-        [module.category(), FormModules(module.base_ring())]
+        [
+            with_chosen_arrows_forgotten(module.category()),
+            FormModules(module.base_ring()),
+        ]
     )
     data: dict[str, "ConstructionData"] = {"form": form}
     if hasattr(module, "module_generating_set"):
         data["module_generating_set"] = module.module_generating_set()
-    return object_of(category, **data)
+    formed = object_of(category, **data)
+    formed._refine_from_form()
+    return formed
 
 
 def is_form_morphism(morphism: "MembershipInput") -> bool:
