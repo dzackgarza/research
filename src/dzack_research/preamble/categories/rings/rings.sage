@@ -106,6 +106,23 @@ class OwnedRings(Category):
         return [SageRings(), OwnedSemirings(), OwnedRngs()]
 
     class ParentMethods:
+        def __getitem__(self: "Ring", names: "OrderedSet | str | int") -> "Parent":
+            r"""Return \(R[x_s:s\in S]\), the free \(R\)-algebra on the names.
+
+            On the category, not on the concrete ring class.  Subscript has a
+            second meaning here -- the countable-sets node reads it as the
+            index of a chosen enumeration -- and a countable ring answers to
+            both; the category methods precede the concrete class, so a
+            statement written on the class loses, and $\Q[x]$ became the
+            zeroth rational.  Ring vocabulary belongs to the ring node, which
+            is what makes the subscript of a ring its algebra.
+            """
+            # Local: a module-level import would close a cycle; the module is built by the time this runs.
+            from dzack_research.preamble.categories.algebras.framed_free_algebras import polynomial_ring
+
+            algebra: "Parent" = polynomial_ring(self, names)
+            return algebra
+
         def _ring_morphism_defining_algebra_structure(self: "Ring") -> "Morphism":
             r"""Return $R\to Z(R)$, the identity.
 
@@ -391,11 +408,13 @@ def install_rings(namespace: dict) -> dict:
     so a construction hook on the class does not exist.
 
     ``ZZ['x','y']`` reaches ``PolynomialRing`` through ``__getitem__``, which
-    Python looks up on the type and never on the category -- ``Parent.__pow__``
-    works only because Sage wrote that redirect by hand, and no such redirect
-    exists for subscripting.  ``OwnedRing`` is the preamble's own type, so the
-    subscript of an owned ring is answered here; a session names owned rings,
-    so that is the route it takes.
+    Python looks up on the type -- Sage's own categories never see it, and
+    ``Parent.__pow__`` works only because Sage wrote that redirect by hand.
+    Override-refine is what makes it reachable anyway: it builds the parent's
+    type out of the owned ``ParentMethods``, so ``OwnedRings`` states the
+    subscript and a session that names an owned ring gets it.  Stating it on
+    ``OwnedRing`` instead would lose, the countable-sets node reading the
+    subscript as an enumeration index from ahead of the concrete class.
     """
     # Local: a module-level import would close a cycle; the module is built by the time this runs.
     from dzack_research.preamble.categories.algebras.framed_free_algebras import polynomial_ring
@@ -611,20 +630,6 @@ class OwnedRing(Parent):
         """
         quotient: "Parent" = self._engine / engine_ring(ideal)
         return quotient
-
-    def __getitem__(self, names: "OrderedSet | str | int") -> "Parent":
-        r"""Return \(R[x_s:s\in S]\), the free \(R\)-algebra on the names.
-
-        Sage's rings cannot answer this in the preamble's terms: a dunder is
-        looked up on the type, their types are extension types, and the
-        category never sees the call.  This class is the preamble's own, so
-        the subscript means here what the preamble says it means.
-        """
-        # Local: a module-level import would close a cycle; the module is built by the time this runs.
-        from dzack_research.preamble.categories.algebras.framed_free_algebras import polynomial_ring
-
-        algebra: "Parent" = polynomial_ring(self, names)
-        return algebra
 
     def __iter__(self) -> "Iterator[Element]":
         r"""Iterate the engine's elements: they are this ring's own.

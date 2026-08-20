@@ -136,6 +136,18 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
         def is_torsion(self: "FiniteFreeModuleParent") -> bool:
             return bool(self.is_zero())
 
+        def invariants(self: "FiniteFreeModuleParent") -> tuple["Integer", ...]:
+            r"""Return the invariant factors, which a free module has none of.
+
+            The structure theorem writes $M\cong\bigoplus R/(d_i)\oplus R^r$
+            and this repository's ``invariants`` names the $d_i$ exceeding a
+            unit, so a free module answers the empty family -- not an
+            absence.  The zero module is where it is asked: being free and
+            torsion at once, it is the one object the torsion categories and
+            this one share, and they ask the underlying module this.
+            """
+            return ()
+
         def Aut(self: "FiniteFreeModuleParent") -> "ModuleAutomorphismGroup":
             # Local: at module level this closes an import cycle; the morphism
             # module is built by the time automorphisms are asked for.

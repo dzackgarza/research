@@ -321,6 +321,29 @@ class FormModules(OwnedCategoryOverBaseRing):
             plain_homset: "Homset" = Parent.Hom(self, codomain, category)
             return plain_homset
 
+        def Aut(self: "FormedParent") -> "FormAutomorphismGroup":
+            r"""Return $\operatorname{Aut}(M)$, the form-preserving units of
+            $\operatorname{End}(M)$.
+
+            Sited beside ``Hom``, on the general formed node, for the same
+            reason: a lattice's $\operatorname{Aut}$ is $O(L)$ and belongs in
+            the isometry node, and a refinement only reaches its own
+            statement first when it is a subcategory of the one the general
+            statement sits on.  On a node incomparable with the lattice
+            categories -- finite free formed modules, say -- it would shadow
+            them instead, leaving the join's linearization to decide which
+            $\operatorname{Aut}$ a lattice answers.
+
+            The group is built from a finite framing, which
+            ``FormAutomorphismGroup`` asserts: a formed module without one
+            has the operation named here and its hypothesis stated there.
+            """
+            cached = self.__dict__.get("_preamble_Aut")
+            if cached is None:
+                cached = FormAutomorphismGroup(self)
+                self._preamble_Aut = cached
+            return cached
+
         def hom(
             self: "FormedParent",
             images: "GeneratorAssignment",
@@ -772,13 +795,6 @@ class FinitelyGeneratedFreeFormModules(OwnedCategoryOverBaseRing):
         ]
 
     class ParentMethods:
-        def Aut(self: "FiniteFreeFormedParent") -> "FormAutomorphismGroup":
-            cached = self.__dict__.get("_preamble_Aut")
-            if cached is None:
-                cached = FormAutomorphismGroup(self)
-                self._preamble_Aut = cached
-            return cached
-
         # ---- the radical, and the predicates the axioms gate on ----
         #
         # Sited here, on the finitely generated *free* formed surface, and

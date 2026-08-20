@@ -118,11 +118,21 @@ else:
     Lattices.LK3_4 = Lattices.Z.twist(-4) + Lattices.U**2 + Lattices.E8**2
 
     # Named bases -- matching the old init.sage session.  The ``L.<generators> =``
-    # sugar only injected the generator names into the builder's local scope; the
-    # lattice is the object bound here.
-    Lattices.LK3 = (Lattices.U**3).direct_sum([Lattices.E8**2])
-    Lattices.TEn = Lattices.U.direct_sum([Lattices.E10_2])
-    Lattices.TdP = Lattices.U.direct_sum([Lattices.U_2, Lattices.E8, Lattices.E8])
+    # sugar only injected the generator names into the builder's local scope,
+    # so the names are attached to the lattice here instead: they are the
+    # literature's names for these three bases, and ``Lattices.install`` and
+    # ``sterk`` read them back off the object rather than restating the order.
+    # Each spec follows the summands, so ``e, f`` is $U$ and ``a1t..a8t`` the
+    # second copy of $E_8$.
+    Lattices.LK3 = (Lattices.U**3).direct_sum([Lattices.E8**2]).with_names(
+        "v1, v2, u1, u2, up1, up2, e1..e8, ep1..ep8"
+    )
+    Lattices.TEn = Lattices.U.direct_sum([Lattices.E10_2]).with_names(
+        "e, f, ep, fp, a1..a8"
+    )
+    Lattices.TdP = Lattices.U.direct_sum(
+        [Lattices.U_2, Lattices.E8, Lattices.E8]
+    ).with_names("e, f, ep, fp, a1..a8, a1t..a8t")
     Lattices.L_20_2_0 = Lattices.TdP
 
     # Bogachev--Kolpakov, arXiv:2112.14642v4 section 6: two ternary Lorentzian

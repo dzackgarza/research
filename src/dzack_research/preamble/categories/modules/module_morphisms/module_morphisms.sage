@@ -1750,8 +1750,12 @@ def _solve_left_integrally(
     and the divisibility questions live: over a field every nonzero pivot
     divides, over \(\mathbb Z\) divisibility is the integrality condition.
     """
+    # The Smith factors act here on coordinate vectors, not on framings: a
+    # morphism matrix times a vector is not a morphism matrix, so this solve
+    # runs on the underlying matrices -- the module's own linear algebra,
+    # which is what ``_sage_matrix`` exists for.
     smith, left, right = system.transpose().smith_form()
-    shifted = left * vector(ring, target)
+    shifted = left._sage_matrix() * vector(ring, target)
     width = smith.ncols()
     solution = [ring.zero()] * width
     for index, value in enumerate(shifted):
@@ -1765,4 +1769,4 @@ def _solve_left_integrally(
                 f"{value}/{divisor}"
             )
             solution[index] = ring(value / divisor)
-    return right * vector(ring, solution)
+    return right._sage_matrix() * vector(ring, solution)

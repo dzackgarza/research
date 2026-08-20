@@ -91,10 +91,15 @@ class LatticeHomomorphisms(Category):
                         zip(self.domain().module_generating_set(), images)
                     )
                 case _:
-                    assert False, (
-                        "a lattice morphism is declared by images of the "
-                        "domain's framing labels"
-                    )
+                    # What this override adds is the two spellings above:
+                    # images placed against the framing in order, and a
+                    # block dict keyed by summands.  Every other way a form
+                    # morphism is declared -- a generator morphism, which is
+                    # what composition builds, or a function on the
+                    # generating set -- belongs to the form homset's own
+                    # constructor, which states the list once and refuses
+                    # what is on none of it.
+                    assignment = images
             # Refined, so that this category's ``MorphismMethods`` reach the
             # morphisms it is the category of.  ``LatticeIsometries`` refines
             # its own on top, and has this category as a super category, so
@@ -298,8 +303,11 @@ class IsometryHomset(FormHomset):
         if left.signature_pair() != right.signature_pair():
             return True
         positive, negative = left.signature_pair()
-        radical_rank = left.rank() - positive - negative
-        if radical_rank > 0:
+        # Degeneracy is $\ker c \neq 0$, asked of the correlation morphism.
+        # Reading it off as $\operatorname{rank} - p - q$ would subtract
+        # cardinals, which is why they do not subtract: the difference of two
+        # infinite cardinals names nothing.
+        if not left.is_nondegenerate():
             return IsometryHomset(
                 left.radical_quotient(), right.radical_quotient()
             ).is_empty()

@@ -2236,12 +2236,18 @@ def _expand_names(spec: str, rank: int) -> tuple[str, ...]:
     r"""Expand indexed ranges in a basis-name specification."""
     def expand(piece: str) -> tuple[str, ...]:
         assert piece, f"empty name in spec {spec!r}"
-        match re.fullmatch(r"([A-Za-z_]+)(\d+)\.\.\1?(\d+)", piece):
+        # The alphabetic suffix is what makes ``a1t..a8t`` a range, the same
+        # family ``_expand_ellipsis_names`` reads from the ``L.<...>`` form:
+        # one spec, two spellings, and both name the second copy of $E_8$.
+        match re.fullmatch(r"([A-Za-z_]+)(\d+)([A-Za-z_]*)\.\.\1?(\d+)\3", piece):
             case re.Match() as indexed:
                 stem = indexed.group(1r)
                 start = int(indexed.group(2r))
-                stop = int(indexed.group(3r))
-                return tuple(f"{stem}{i}" for i in range(start, stop + 1))
+                suffix = indexed.group(3r)
+                stop = int(indexed.group(4r))
+                return tuple(
+                    f"{stem}{i}{suffix}" for i in range(start, stop + 1)
+                )
             case None:
                 assert re.fullmatch(r"[A-Za-z_]\w*", piece), (
                     f"invalid name: {piece!r}"

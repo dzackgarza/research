@@ -84,8 +84,8 @@ if TYPE_CHECKING:
 
 
 # ``ParentMethods`` methods run on parents, but a bare methods class has no
-# base to say so, and ``Parent.Hom``'s fallback branch needs nominal
-# parenthood.  Runtime-identical: a bare class already derives from object.
+# base to say so, and the methods below pass ``self`` where a parent is what
+# is wanted.  Runtime-identical: a bare class already derives from object.
 if TYPE_CHECKING:
     _ParentBase = Parent
 else:
@@ -126,11 +126,18 @@ class GroupLattices(Category):
 
         def Hom(self: Self, codomain: "Module", category: "Category | None" = None) -> "Homset":
             # Local: a module-level import would close a cycle; the module is built by the time this runs.
+            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.integral_lattices import IntegralLattices
             from dzack_research.preamble.categories.modules.group_modules.group_modules import GroupModules
 
             if codomain in GroupModules(self.base_ring(), self.group()):
                 return group_lattice_homset(self, codomain)
-            return Parent.Hom(self, codomain, category)
+            # No action on the codomain, so equivariance says nothing and the
+            # morphisms are those of the lattice this one is once the action
+            # is forgotten -- $L^\vee$ is the case that reaches here, through
+            # the correlation.  Sage's own homset would be the answer only if
+            # the codomain were outside the owned categories too, which is
+            # what the lattice's ``Hom`` decides.
+            return IntegralLattices.ParentMethods.Hom(self, codomain, category)
 
         def hom(self: "GroupLatticeParent", images: "EquivariantAssignment", codomain: "Module | None" = None) -> "ModuleMorphism":
             # Local: a module-level import would close a cycle; the module is built by the time this runs.

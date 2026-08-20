@@ -1004,7 +1004,10 @@ def test_lattice_latex_representation() -> None:
     assert r"L \in \mathrm{Lattices}(\mathbb{Z})" in u_latex
     assert r"\mathrm{rk}(L) = 2" in u_latex
     assert r"\mathrm{sig}(L) = (1, 1)" in u_latex
-    assert r"\mathrm{disc}(L) = -1" in u_latex
+    # $d_\pm=(-1)^{n(n-1)/2}\det G$, so $U$ reads $(-1)^1\cdot(-1)=1$: the
+    # hyperbolic plane is the trivial Witt class (Lam I.2), and $\det G=-1$
+    # is the framing-dependent number, not the invariant.
+    assert r"\mathrm{disc}(L) = 1" in u_latex
     assert r"\cdot" in u_latex
     assert r"A_L = \left\langle e_{1}, e_{2} \;\middle|\;" in u_latex
     assert r"\right\rangle_{\mathbb{Z}} \in \mathbb{Z}\text{-Mod}" in u_latex

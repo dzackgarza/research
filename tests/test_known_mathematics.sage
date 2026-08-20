@@ -1210,7 +1210,7 @@ def test_d8_isotropic_self_glue_reconstructs_e8() -> None:
     assert inclusion.index() == 2, "[E8 : D8] = 2"
     glued = inclusion.codomain()
     assert glued.is_even() and glued.is_unimodular()
-    assert glued.enumerate_short_vectors(2).cardinality() == 120, (
+    assert glued.twist(-1).enumerate_short_vectors(2).cardinality() == 120, (
         "CS10 ch. 4: E8 has 240 roots, counted modulo sign"
     )
     assert glued.is_isometric(IntegralLattice("E8"))
