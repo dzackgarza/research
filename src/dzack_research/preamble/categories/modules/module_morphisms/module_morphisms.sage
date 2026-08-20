@@ -19,6 +19,8 @@ if TYPE_CHECKING:
 
 from sage.categories.groups import Groups
 from sage.categories.modules import Modules
+from dzack_research.preamble.categories.modules.pure.modules import Modules as OwnedModules
+from dzack_research.preamble.owned_category_bases import Category_over_base_ring
 from dzack_research.preamble.categories.sets.sets import finite_ordered_set
 from dzack_research.preamble.refine import refine
 if TYPE_CHECKING:
@@ -40,6 +42,7 @@ from typing import TYPE_CHECKING
 
 from sage.misc.cachefunc import cached_method
 from sage.categories.homset import Hom, Homset
+from dzack_research.preamble.owned_category import object_of
 from sage.categories.morphism import Morphism, SetMorphism
 from sage.categories.rings import Rings
 from sage.matrix.constructor import matrix
@@ -85,82 +88,21 @@ if TYPE_CHECKING:
     # class is a Cython extension type and cannot be subscripted, so the
     # binding goes through an alias, per the note in
     # ``typings/sage/structure/parent.pyi``.
-    ModuleHomsetBase = Homset["ModuleMorphism"]
     GroupActionHomsetBase = Homset["GroupAction"]
 else:
-    ModuleHomsetBase = Homset
     GroupActionHomsetBase = Homset
 
 
-class ModuleHomset(ModuleHomsetBase):
-    r"""The homset \(\operatorname{Hom}_R(M,N)\) of two framed modules."""
+def module_homset(domain: "Module", codomain: "Module") -> Parent:
 
-    if TYPE_CHECKING:
-        def domain(self) -> "Module": ...
-        def codomain(self) -> "Module": ...
-
-    def __init__(
-        self,
-        domain: "Module",
-        codomain: "Module",
-        category: "Category",
-    ) -> None:
-        assert domain.base_ring() == codomain.base_ring(), (
-            "module morphisms require the same base ring"
-        )
-        Homset.__init__(
-            self,
-            domain,
-            codomain,
-            category=category,
-            base=domain.base_ring(),
-            check=False,
-        )
-
-    def _element_constructor_(self, images: "ModuleMorphismData") -> "ModuleMorphism":
-        return ModuleMorphism(self, images)
-
-    def zero(self) -> "ModuleMorphism":
-        return ModuleMorphism(
-            self,
-            SetMorphism(
-                Hom(
-                    self.domain().module_generating_set(),
-                    UnderlyingSet(self.codomain()),
-                    Sets(),
-                ),
-                lambda element_of_S: self.codomain().zero(),
-            ),
-        )
-
-    def identity(self) -> "ModuleMorphism":
-        assert self.domain() is self.codomain(), (
-            "an identity belongs to an endomorphism homset"
-        )
-        return ModuleMorphism(
-            self,
-            self.domain().module_generator_morphism(),
-        )
-
-    def __contains__(self, morphism: ElementConstructorInput) -> bool:
-        return (
-            isinstance(morphism, ModuleMorphism)
-            and morphism.parent() is self
-        )
-
-    def _repr_(self) -> str:
-        return f"Hom({self.domain()}, {self.codomain()})"
-
-
-def module_homset(domain: "Module", codomain: "Module") -> ModuleHomset:
     r"""Return the canonical module homset after forgetting extra structure."""
     cache = domain.__dict__.setdefault("_module_homsets", {})
-    homset: ModuleHomset | None = cache.get(codomain)
+    homset: Parent | None = cache.get(codomain)
     if homset is None:
-        homset = ModuleHomset(
-            domain,
-            codomain,
-            Modules(domain.base_ring()),
+        homset = object_of(
+            OwnedModules(domain.base_ring()).Homsets(),
+            domain=domain,
+            codomain=codomain,
         )
         cache[codomain] = homset
     return homset
@@ -208,7 +150,7 @@ def _one_sided_inverse_matrix(forward: "Matrix", left: bool) -> "Matrix":
     return candidate
 
 
-def endomorphism_ring(module: "Module") -> ModuleHomset:
+def endomorphism_ring(module: "Module") -> Parent:
     r"""Return \(\operatorname{End}_R(M)\): the endset, as a ring.
 
     Multiplication is composition and addition is pointwise, so the endset
@@ -223,7 +165,7 @@ def endomorphism_ring(module: "Module") -> ModuleHomset:
     to land in the subgroup preserving the form, not one whose endomorphism
     ring was formed somewhere else.
     """
-    endset: ModuleHomset = refine(module_homset(module, module), Rings())
+    endset: Parent = refine(module_homset(module, module), Rings())
     return endset
 
 
@@ -327,7 +269,7 @@ def _independent_module_generators(
 
 
 def _expand_subobject_dict(
-    parent: ModuleHomset,
+    parent: Parent,
     images: "ModuleMorphismAssignment",
 ) -> dict[ElementConstructorInput, ModuleElement]:
     r"""Expand a summand-level assignment onto the domain's framed labels.
@@ -409,7 +351,7 @@ class ModuleMorphism(Morphism):
 
     def __init__(
         self,
-        parent: ModuleHomset,
+        parent: Parent,
         images: "ModuleMorphismData",
     ) -> None:
         Morphism.__init__(self, parent)
@@ -1099,7 +1041,7 @@ class FramingMorphism(ModuleMorphism):
 
     def __init__(
         self,
-        parent: ModuleHomset,
+        parent: Parent,
         images: "ModuleMorphismData",
     ) -> None:
         # Local: at module level this closes an import cycle; the free-module
@@ -1343,148 +1285,162 @@ class AutomorphismSubgroup:
         return Character(self._defining_matrix_group().trivial_character())
 
 
-if TYPE_CHECKING:
-    ModuleAutomorphismGroupBase = ModuleHomset
-else:
-    ModuleAutomorphismGroupBase = ModuleHomset
+class ModuleAutomorphismGroups(Category_over_base_ring):
+    r"""$\operatorname{Aut}_R(M)$, and its finitely generated subgroups.
 
+    The group of units of $\operatorname{End}_R(M)$, which is a ring, so it is
+    a different object from the endset and has a node of its own.  It is
+    built over the module homsets, which is where its elements and its two
+    ends come from.
+    """
 
-class ModuleAutomorphismGroup(
-    AutomorphismSubgroup,
-    ModuleAutomorphismGroupBase,
-):
-    r"""The automorphism group, or a finite subgroup with the same elements."""
+    @classmethod
+    def _repr_object_names(cls) -> str:
+        return "module automorphism groups"
 
-    Element = ModuleAutomorphism
+    def super_categories(self) -> list:
+        return [OwnedModules(self.base_ring()).Homsets()]
 
-    if TYPE_CHECKING:
-        # The elements here are automorphisms, narrower than the module
-        # morphisms ``ModuleHomset`` binds.  The conversion is provided by
-        # this homset's element constructor.
-        def __call__(
+    class ParentMethods(AutomorphismSubgroup):
+        r"""The automorphism group, or a finite subgroup with the same elements."""
+
+        Element = ModuleAutomorphism
+
+        if TYPE_CHECKING:
+            # The elements here are automorphisms, narrower than the module
+            # morphisms the module homsets bind.  The conversion is provided by
+            # this homset's element constructor.
+            def __call__(
+                self,
+                x: ElementConstructorInput = ...,
+                *args: ElementConstructorInput,
+                **kwds: ElementConstructorInput,
+            ) -> ModuleAutomorphism: ...
+
+        def __init__(
             self,
-            x: ElementConstructorInput = ...,
-            *args: ElementConstructorInput,
-            **kwds: ElementConstructorInput,
-        ) -> ModuleAutomorphism: ...
+            module: "Module",
+            group_generators: "OrderedSet | None" = None,
+            **rest: "ModuleMorphismData",
+        ) -> None:
+            super().__init__(domain=module, codomain=module, **rest)
+            self._group_generators = None
+            self._elements = None
+            if group_generators is not None:
+                supplied = tuple(group_generators)
+                assert supplied, "a generated subgroup needs at least one generator"
+                assert all(
+                    isinstance(generator, ModuleAutomorphism)
+                    for generator in supplied
+                ), "subgroup generators must be module automorphisms"
+                self._group_generators = tuple(
+                    self(generator.module_generator_morphism())
+                    for generator in supplied
+                )
+                self._elements = self._close()
 
-    def __init__(
-        self,
-        module: "Module",
-        group_generators: "OrderedSet" = None,
-    ) -> None:
-        ModuleHomset.__init__(
+        def _element_constructor_(
             self,
-            module,
-            module,
-            Modules(module.base_ring()),
-        )
-        self._group_generators = None
-        self._elements = None
-        if group_generators is not None:
-            supplied = tuple(group_generators)
-            assert supplied, "a generated subgroup needs at least one generator"
-            assert all(
-                isinstance(generator, ModuleAutomorphism)
-                for generator in supplied
-            ), "subgroup generators must be module automorphisms"
-            self._group_generators = tuple(
-                self(generator.module_generator_morphism())
-                for generator in supplied
+            images: "ModuleMorphismData",
+        ) -> ModuleAutomorphism:
+            return ModuleAutomorphism(self, images)
+
+        def module(self) -> "Module":
+            return self.domain()
+
+        def one(
+            self,
+        ) -> ModuleAutomorphism:
+            return self(self.module().module_generator_morphism())
+
+        def subgroup_on(
+            self,
+            group_generators: "Set",
+        ) -> "ModuleAutomorphismGroup":
+            r"""Return the subgroup generated by a *set* of automorphisms."""
+            assert all(generator in self for generator in group_generators), (
+                "each subgroup generator must belong to this automorphism group"
             )
-            self._elements = self._close()
+            subgroup = ModuleAutomorphismGroup(self.module(), group_generators)
+            subgroup._supergroup = self
+            return refine(subgroup, Groups().Subobjects())
 
-    def _element_constructor_(
-        self,
-        images: "ModuleMorphismData",
-    ) -> ModuleAutomorphism:
-        return ModuleAutomorphism(self, images)
+        def group_generators(
+            self,
+        ) -> "OrderedSet[ModuleAutomorphism]":
+            generators: "OrderedSet[ModuleAutomorphism]" = (
+                finite_ordered_set(())
+                if self._group_generators is None
+                else finite_ordered_set(self._group_generators)
+            )
+            return generators
 
-    def module(self) -> "Module":
-        return self.domain()
+        def is_finite(self) -> bool:
+            return self._elements is not None
 
-    def one(
-        self,
-    ) -> ModuleAutomorphism:
-        return self(self.module().module_generator_morphism())
+        def order(self) -> "Cardinal":
+            r"""Return \(|G|\), the cardinality of this group.
 
-    def subgroup_on(
-        self,
-        group_generators: "Set",
-    ) -> "ModuleAutomorphismGroup":
-        r"""Return the subgroup generated by a *set* of automorphisms."""
-        assert all(generator in self for generator in group_generators), (
-            "each subgroup generator must belong to this automorphism group"
-        )
-        subgroup = ModuleAutomorphismGroup(self.module(), group_generators)
-        subgroup._supergroup = self
-        return refine(subgroup, Groups().Subobjects())
+            A cardinality, not an integer: \(\operatorname{Aut}(M)\) for a free
+            \(M\) of rank \(\ge 2\) over \(\mathbb Z\) is
+            \(\mathrm{GL}_n(\mathbb Z)\), which is infinite.  Refusing to answer
+            there would be assuming finiteness of a group that simply is not
+            finite; the order is \(\aleph_0\) and saying so costs nothing.
+            """
+            if self._elements is None:
+                return Sets.ℵ[0]
+            return cardinal(len(self._elements))
 
-    def group_generators(
-        self,
-    ) -> "OrderedSet[ModuleAutomorphism]":
-        generators: "OrderedSet[ModuleAutomorphism]" = (
-            finite_ordered_set(())
-            if self._group_generators is None
-            else finite_ordered_set(self._group_generators)
-        )
-        return generators
+        def __iter__(self) -> Iterator[ModuleAutomorphism]:
+            assert self._elements is not None, (
+                "the full automorphism group is not enumerable"
+            )
+            return iter(self._elements)
 
-    def is_finite(self) -> bool:
-        return self._elements is not None
+        def __contains__(self, element: ElementConstructorInput) -> bool:
+            return (
+                isinstance(element, ModuleAutomorphism)
+                and element.parent() is self
+            )
 
-    def order(self) -> "Cardinal":
-        r"""Return \(|G|\), the cardinality of this group.
+        def _close(
+            self,
+        ) -> tuple[ModuleAutomorphism, ...]:
+            identity = self.one()
+            elements = set((identity,))
+            frontier = [identity]
+            steps = 0
+            assert self._group_generators is not None
+            while frontier:
+                current = frontier.pop()
+                for generator in self._group_generators:
+                    for factor in (generator, generator.inverse()):
+                        candidate = current * factor
+                        if candidate in elements:
+                            continue
+                        elements.add(candidate)
+                        frontier.append(candidate)
+                        steps += 1
+                        assert steps <= 100000, (
+                            "the proposed subgroup has not closed after 100000 elements"
+                        )
+            return tuple(elements)
 
-        A cardinality, not an integer: \(\operatorname{Aut}(M)\) for a free
-        \(M\) of rank \(\ge 2\) over \(\mathbb Z\) is
-        \(\mathrm{GL}_n(\mathbb Z)\), which is infinite.  Refusing to answer
-        there would be assuming finiteness of a group that simply is not
-        finite; the order is \(\aleph_0\) and saying so costs nothing.
-        """
-        if self._elements is None:
-            return Sets.ℵ[0]
-        return cardinal(len(self._elements))
+        def _repr_(self) -> str:
+            if self.is_finite():
+                return f"Subgroup of Aut({self.module()}) of order {self.order()}"
+            return f"Aut({self.module()})"
 
-    def __iter__(self) -> Iterator[ModuleAutomorphism]:
-        assert self._elements is not None, (
-            "the full automorphism group is not enumerable"
-        )
-        return iter(self._elements)
-
-    def __contains__(self, element: ElementConstructorInput) -> bool:
-        return (
-            isinstance(element, ModuleAutomorphism)
-            and element.parent() is self
-        )
-
-    def _close(
-        self,
-    ) -> tuple[ModuleAutomorphism, ...]:
-        identity = self.one()
-        elements = set((identity,))
-        frontier = [identity]
-        steps = 0
-        assert self._group_generators is not None
-        while frontier:
-            current = frontier.pop()
-            for generator in self._group_generators:
-                for factor in (generator, generator.inverse()):
-                    candidate = current * factor
-                    if candidate in elements:
-                        continue
-                    elements.add(candidate)
-                    frontier.append(candidate)
-                    steps += 1
-                    assert steps <= 100000, (
-                        "the proposed subgroup has not closed after 100000 elements"
-                    )
-        return tuple(elements)
-
-    def _repr_(self) -> str:
-        if self.is_finite():
-            return f"Subgroup of Aut({self.module()}) of order {self.order()}"
-        return f"Aut({self.module()})"
+def ModuleAutomorphismGroup(
+    module: "Module",
+    group_generators: "OrderedSet | None" = None,
+) -> Parent:
+    r"""Return $\operatorname{Aut}_R(M)$, or the subgroup ``group_generators`` spans."""
+    return object_of(
+        ModuleAutomorphismGroups(module.base_ring()),
+        module=module,
+        group_generators=group_generators,
+    )
 
 
 class GroupActionHomset(GroupActionHomsetBase):

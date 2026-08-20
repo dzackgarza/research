@@ -10,7 +10,6 @@ if TYPE_CHECKING:
     from sage.categories.modules import Module
 
 if TYPE_CHECKING:
-    from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormMorphism
 
 from sage.rings.integer import Integer
 from sage.categories.homset import Homset
@@ -219,7 +218,7 @@ class BilinearFormHomset(Homset):
     def _element_constructor_(self, datum: "FormDatum") -> "BilinearFormMorphism":
         return BilinearFormMorphism(self, datum)
 
-    def __contains__(self, form: "FormMorphism") -> bool:
+    def __contains__(self, form: "Morphism") -> bool:
         return (
             isinstance(form, BilinearFormMorphism)
             and form.parent() is self
@@ -261,7 +260,7 @@ class QuadraticFormHomset(Homset):
     def _element_constructor_(self, gram: "GramMatrix") -> "QuadraticFormMorphism":
         return QuadraticFormMorphism(self, gram)
 
-    def __contains__(self, form: "FormMorphism") -> bool:
+    def __contains__(self, form: "Morphism") -> bool:
         return (
             isinstance(form, QuadraticFormMorphism)
             and form.parent() is self

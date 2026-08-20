@@ -20,7 +20,6 @@ if TYPE_CHECKING:
     from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModule
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleAutomorphismGroup
     from dzack_research.preamble.categories.modules.framed.formed.integrallattice.subobjects import Subobject
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism as ModuleMorphismType
     from sage.rings.ring import Ring
     from sage.structure.element import RingElement
 
@@ -64,8 +63,8 @@ if TYPE_CHECKING:
     from dzack_research.preamble.categories.modules.tensors import TensorElement
 
     # The form itself: the morphism out of $M\otimes_R M$ (or the quadratic
-    # map) that a formed module is equipped with.  Not ``FormMorphism``
-    # below, which is a map *between* two formed modules.
+    # map) that a formed module is equipped with.  Not an element of
+    # ``FormModules.Homsets``, which is a map *between* two formed modules.
     Form: TypeAlias = BilinearFormMorphism | QuadraticFormMorphism
 
     # How a map out of a formed module may be named: an assignment on the
@@ -395,7 +394,7 @@ class FormModules(OwnedCategoryOverBaseRing):
             self: "FormedParent",
             images: "GeneratorAssignment",
             codomain: "Module | None" = None,
-        ) -> "FormMorphism":
+        ) -> "Morphism":
             assignment: "GeneratorAssignment"
             match images:
                 case SetMorphism():
@@ -1203,7 +1202,7 @@ class FinitelyGeneratedFormModules(OwnedCategoryOverBaseRing):
             self: "FormedParent",
             images: "GeneratorAssignment | list | tuple",
             codomain: "Module | None" = None,
-        ) -> "FormMorphism":
+        ) -> "Morphism":
             # Local: a module-level import here would close a cycle; by call time this module is built.
             from dzack_research.preamble.categories.modules.framed.framed_modules import _finite_module_generator_assignment
             match images:

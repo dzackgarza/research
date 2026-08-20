@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 from sage.rings.integer_ring import ZZ as SageZZ
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModule
-from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormMorphism
+from dzack_research.preamble.categories.modules.framed.formed.form_modules import is_form_morphism
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import GroupAction
 if TYPE_CHECKING:
     from dzack_research.preamble.categories.abstract_categories.direct_sum_objects import DirectSumObject
@@ -58,7 +58,7 @@ if TYPE_CHECKING:
         def forget_form(self) -> "Module": ...
         def form(self) -> "Form": ...
         def group(self) -> "Group": ...
-        def action_of(self, element: "Element") -> FormMorphism: ...
+        def action_of(self, element: "Element") -> Morphism: ...
         def module_representation(self) -> "Module": ...
         def _over(self, element: "Element") -> "ModuleElement": ...
 
@@ -162,7 +162,7 @@ class GroupLattices(Category):
         def group(self: Self) -> "Group":
             return self._formed_action.domain()
 
-        def action_of(self: "GroupLatticeParent", element: "Element") -> FormMorphism:
+        def action_of(self: "GroupLatticeParent", element: "Element") -> Morphism:
             return self._formed_action(element)
 
         def action_matrix(self: "GroupLatticeParent", element: "Element") -> "MorphismMatrix":
@@ -259,7 +259,7 @@ class GroupLattices(Category):
                 )
                 super().__init__(domain=domain, codomain=codomain, **rest)
 
-            def _element_constructor_(self, images: "EquivariantAssignment", check_equivariance: bool = False) -> FormMorphism:
+            def _element_constructor_(self, images: "EquivariantAssignment", check_equivariance: bool = False) -> Morphism:
                 r"""Build the morphism, and check equivariance where that is possible.
 
                 ``check_equivariance`` forces the check in the branches that would
@@ -271,7 +271,7 @@ class GroupLattices(Category):
                 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
 
                 match images:
-                    case FormMorphism():
+                    case _ if is_form_morphism(images):
                         assert images.parent() is self, (
                             "an existing group-lattice morphism belongs to its own homset"
                         )
@@ -288,7 +288,7 @@ class GroupLattices(Category):
                 self._check_equivariance(morphism, forced=check_equivariance)
                 return morphism
 
-            def _check_equivariance(self, morphism: FormMorphism, forced: bool) -> None:
+            def _check_equivariance(self, morphism: Morphism, forced: bool) -> None:
                 r"""Check \(f(g\cdot m)=g\cdot f(m)\), and record whether it happened.
 
                 The check ranges over *generators*, of the group and of the module.

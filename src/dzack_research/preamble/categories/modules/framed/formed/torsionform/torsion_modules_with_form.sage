@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 from dzack_research.preamble.categories.modules.framed.formed.integrallattice.subobjects import Subobject
 if TYPE_CHECKING:
-    from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormMorphism
+    from dzack_research.preamble.categories.modules.framed.formed.form_modules import is_form_morphism
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
     from sage.categories.morphism import Morphism
 
@@ -52,7 +52,7 @@ if TYPE_CHECKING:
 
         _over: "Module"
 
-        def form(self) -> "FormMorphism": ...
+        def form(self) -> "Morphism": ...
         def forget_form(self) -> "Module": ...
         def presentation(self) -> "ModuleMorphism": ...
         def module_generator(self, label: "Element") -> "Element": ...
@@ -87,7 +87,7 @@ if TYPE_CHECKING:
         def presentation(self) -> "ModuleMorphism": ...
         def cover(self) -> "Module": ...
         def module_generator(self, label: "Element") -> "Element": ...
-        def projection(self) -> "FormMorphism": ...
+        def projection(self) -> "Morphism": ...
 
 
 class TorsionModulesWithForm(OwnedCategoryOverBaseRing):
@@ -669,7 +669,7 @@ class TorsionModulesWithForm(OwnedCategoryOverBaseRing):
                 subobject, self.orthogonal_subobject(subobject)
             )
 
-        def normal_form_isometry(self: "TorsionFormParent") -> "FormMorphism":
+        def normal_form_isometry(self: "TorsionFormParent") -> "Morphism":
             r"""Return the isometry ``normal_form() -> self`` witnessing the normal form.
 
             The normal form is this form regenerated on the $p$-adic Jordan
@@ -799,7 +799,7 @@ class TorsionModulesWithForm(OwnedCategoryOverBaseRing):
                     )
                     self._engine_group = self._engine_module.orthogonal_group()
 
-                def one(self) -> "FormMorphism":
+                def one(self) -> "Morphism":
                     return self(
                         {
                             label: self.domain().module_generator(label)
@@ -807,7 +807,7 @@ class TorsionModulesWithForm(OwnedCategoryOverBaseRing):
                         }
                     )
 
-                def _from_engine(self, engine_automorphism: "Element") -> "FormMorphism":
+                def _from_engine(self, engine_automorphism: "Element") -> "Morphism":
                     r"""Return the engine's automorphism as a morphism of this homset.
 
                     The engine's cover basis corresponds to this object's generators
@@ -833,7 +833,7 @@ class TorsionModulesWithForm(OwnedCategoryOverBaseRing):
                         )
                     return self(images)
 
-                def _to_engine(self, morphism: "FormMorphism") -> "Element":
+                def _to_engine(self, morphism: "Morphism") -> "Element":
                     r"""Return the engine element of an owned automorphism of $A$.
 
                     The inverse crossing of :meth:`_from_engine`, and the only one: the
@@ -1039,7 +1039,7 @@ class CokernelForms(Category):
             r"""Return $M=\operatorname{codom} f$, whose classes these are."""
             return self.presentation().codomain()
 
-        def projection(self: "CokernelFormParent") -> "FormMorphism":
+        def projection(self: "CokernelFormParent") -> "Morphism":
             r"""Return $\pi:M\to G$, sending $M$'s $i$-th generator to this object's.
 
             Available because there is a cover to project from.  A torsion form
@@ -1100,7 +1100,7 @@ class DiscriminantForms(Category):
     class ParentMethods:
         r"""Methods available on the discriminant form of a lattice."""
 
-        def correlation(self: "CokernelFormParent") -> "FormMorphism":
+        def correlation(self: "CokernelFormParent") -> "Morphism":
             r"""Return $c: L\to L^\vee$: the presentation, under its own name."""
             return self.presentation()
 
@@ -1110,7 +1110,7 @@ class DiscriminantForms(Category):
 
         def overlattice_from_isotropic_subobject(
             self: "CokernelFormParent", subobject: Subobject
-        ) -> "FormMorphism":
+        ) -> "Morphism":
             r"""Return $L\hookrightarrow L'$ for the overlattice glued along $S$.
 
             Nikulin Prop. 1.4.1 (Nik80, Zotero TTY9FFJS): the integral
@@ -1335,7 +1335,7 @@ def _coordinates_in_module_generators(
 
 # ---- shared construction: a torsion form is a cokernel ----
 
-def regenerating_data(form: "FormMorphism", module_generators: "OrderedSet") -> tuple:
+def regenerating_data(form: "Morphism", module_generators: "OrderedSet") -> tuple:
     r"""Return the relations and Gram matrix of ``form`` on ``module_generators``.
 
     The data of a torsion form, which is all a torsion form is: a presentation
@@ -1378,7 +1378,7 @@ def regenerating_data(form: "FormMorphism", module_generators: "OrderedSet") -> 
     return relations_among(form, module_generators), rows * gram * rows.transpose()
 
 
-def _symmetric_representative_matrix(morphism: "FormMorphism") -> "Matrix":
+def _symmetric_representative_matrix(morphism: "Morphism") -> "Matrix":
     r"""Return the symmetric matrix of representatives a torsion form is built on.
 
     For a bilinear form this is its own Gram matrix; for a quadratic form it
@@ -1395,7 +1395,7 @@ def _symmetric_representative_matrix(morphism: "FormMorphism") -> "Matrix":
             return morphism.gram_matrix()
 
 
-def relations_among(form: "FormMorphism", module_generators: "OrderedSet") -> "Matrix":
+def relations_among(form: "Morphism", module_generators: "OrderedSet") -> "Matrix":
     r"""Return the relations among ``module_generators``: the kernel of $\mathbb Z^m\to A$.
 
     A column slice of a morphism matrix is a raw array again -- reading entries
@@ -1420,7 +1420,7 @@ def relations_among(form: "FormMorphism", module_generators: "OrderedSet") -> "M
 
 
 def p_adic_jordan_module_generators(
-    form: "FormMorphism",
+    form: "Morphism",
 ) -> list["ModuleElement"]:
     r"""Return lifts of generators putting ``form`` in $p$-adic Jordan normal form.
 
@@ -1502,7 +1502,7 @@ def p_adic_jordan_module_generators(
     return generators
 
 
-def _p_adic_engine_matrix(form: "FormMorphism") -> "Matrix":
+def _p_adic_engine_matrix(form: "Morphism") -> "Matrix":
     r"""Return the matrix of representatives the $p$-adic reduction reads.
 
     A raw array, and no morphism's matrix either: it is scratch input for
@@ -1693,7 +1693,7 @@ class TorsionFormOrthogonalSubgroups(Category):
             from dzack_research.preamble.categories.sets.sets import finite_ordered_set
             return finite_ordered_set(self._group_generators)
 
-        def one(self) -> "FormMorphism":
+        def one(self) -> "Morphism":
             return self._supergroup.one()
 
         def is_finite(self) -> bool:
@@ -1738,10 +1738,10 @@ class TorsionFormOrthogonalSubgroups(Category):
 
         def __contains__(self, candidate: "MembershipInput") -> bool:
             # Local: a module-level import here would close a cycle; by call time this module is built.
-            from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormMorphism
+            from dzack_research.preamble.categories.modules.framed.formed.form_modules import is_form_morphism
             form = self.domain()
             if not (
-                isinstance(candidate, FormMorphism)
+                is_form_morphism(candidate)
                 and candidate.domain() is form
                 and candidate.codomain() is form
             ):

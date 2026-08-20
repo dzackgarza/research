@@ -206,7 +206,7 @@ def Ar(source: Parent, target: Parent) -> "Homset":
     r"""Return \(\operatorname{Ar}(X,Y)\), the arrows \(X\to Y\), as one object.
 
     This is the canonical hom-set and not a wrapper of it.  A morphism's
-    identity in this repo *is* its parent -- ``ModuleHomset.__contains__`` is
+    identity in this repo *is* its parent -- the module homsets' ``__contains__`` is
     ``parent() is self``, ``module_homset`` caches one homset per pair, and
     every morphism is manufactured by that parent -- so a second parent
     holding the same arrows would make two copies of one arrow fail to be the

@@ -93,7 +93,6 @@ if TYPE_CHECKING:
 
     from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
         FormModule,
-        FormMorphism,
     )
     from dzack_research.preamble.lexicon import Element
 
@@ -136,7 +135,7 @@ def _coordinate_row(lattice: "FormModule", element: "Element") -> list:
 
 def orthogonal_group_vector_equivalence_witness(
     lattice: "FormModule", left: "Element", right: "Element"
-) -> "FormMorphism | None":
+) -> "Morphism | None":
     r"""Return $g\in O(L)$ with $g(v)=w$, or ``None`` when there is none.
 
     The engine's vector equivalence
@@ -444,7 +443,7 @@ def vector_primitive_extension(
 
 def definite_complement_extensions(
     lattice: "FormModule", left: "Element", right: "Element"
-) -> "Iterator[FormMorphism]":
+) -> "Iterator[Morphism]":
     r"""Yield every $g\in O(L)$ with $g(w_1)=w_2$, for definite complements.
 
     Dawes 2021 Algorithm 2.1.  An isometry carrying $w_1$ to $w_2$ carries
@@ -494,8 +493,8 @@ def definite_complement_extensions(
 
 
 def _discriminant_isometries(
-    source: "FormModule", target: "FormModule", start: "FormMorphism"
-) -> "Iterator[FormMorphism]":
+    source: "FormModule", target: "FormModule", start: "Morphism"
+) -> "Iterator[Morphism]":
     r"""Yield every isometry $A\to B$, as the $O(B)$-torsor on one of them.
 
     A nonempty set of isometries between two finite forms is a torsor under
@@ -513,7 +512,7 @@ def _discriminant_isometries(
 
 def gluing_route_discriminant_classes(
     lattice: "FormModule", left: "Element", right: "Element"
-) -> "Iterator[FormMorphism]":
+) -> "Iterator[Morphism]":
     r"""Yield the classes in $O(A_L)$ induced by isometries $w_1\mapsto w_2$.
 
     Dawes 2021 Algorithms 2.2 and 2.3, on the owned gluing vocabulary.

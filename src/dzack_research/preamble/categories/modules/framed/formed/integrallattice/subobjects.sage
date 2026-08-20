@@ -19,7 +19,7 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from sage.categories.modules import Module
-    from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormMorphism
+    from dzack_research.preamble.categories.modules.framed.formed.form_modules import is_form_morphism
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
     from dzack_research.preamble.categories.modules.module_morphisms.morphism_matrices import MorphismMatrix
 
@@ -46,7 +46,7 @@ if TYPE_CHECKING:
         that category builds its objects from.
         """
 
-        _form: "FormMorphism"
+        _form: "Morphism"
         _module: "Module"
 
         def embedding(self) -> "ModuleMorphism": ...
@@ -74,7 +74,7 @@ class Subobjects(Category):
         # has.  A subobject *is* its inclusion, so the ambient object, the
         # lift and the retraction are all read off that one morphism rather
         # than stored again.
-        def _form_morphism(self: "SubobjectParent") -> "FormMorphism":
+        def _form_morphism(self: "SubobjectParent") -> "Morphism":
             return self._form
 
         def forget_form(self: "SubobjectParent") -> "Module":
@@ -373,12 +373,12 @@ def Subobject(embedding: "ModuleMorphism") -> "Module":
     methods.
     """
     # Local: a module-level import here would close a cycle; by call time this module is built.
-    from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormMorphism
+    from dzack_research.preamble.categories.modules.framed.formed.form_modules import is_form_morphism
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
     from dzack_research.preamble.categories.abstract_categories.slice_categories import Slice
     from dzack_research.preamble.categories.modules.framed.formed.integrallattice.definite_lattices import DefiniteLattices
     from dzack_research.preamble.refine import refine
-    assert isinstance(embedding, (ModuleMorphism, FormMorphism)), (
+    assert isinstance(embedding, ModuleMorphism) or is_form_morphism(embedding), (
         "a module subobject is represented by a module or form morphism"
     )
     domain = embedding.domain()

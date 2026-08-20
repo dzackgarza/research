@@ -9,7 +9,6 @@ from sage.rings.integer_ring import ZZ as SageZZ
 if TYPE_CHECKING:
     from dzack_research.preamble.categories.forms.forms import BilinearFormMorphism
     from dzack_research.preamble.categories.forms.forms import QuadraticFormMorphism
-    from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormHomset
     from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModule
     from sage.categories.morphism import Morphism
     from sage.rings.integer import Integer
@@ -123,12 +122,12 @@ class DiscriminantBilinearModules(Category):
         """
         # Local: a module-level import here would close a cycle; by call time this module is built.
         from dzack_research.preamble.categories.forms.forms import BilinearForm
-        from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormMorphism
+        from dzack_research.preamble.categories.modules.framed.formed.form_modules import is_form_morphism
         from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_torsion_modules import TorsionModule
         from dzack_research.preamble.categories.modules.framed.formed.torsionform.torsion_modules_with_form import cokernel_categories
         from dzack_research.preamble.refine import refine
         from dzack_research.preamble.categories.modules.framed.formed.torsionform.torsion_modules_with_form import subdivide_form_gram_matrix
-        assert isinstance(morphism, FormMorphism), (
+        assert is_form_morphism(morphism), (
             "a cokernel form is constructed from a form morphism"
         )
         module = TorsionModule(morphism)
@@ -275,7 +274,7 @@ class DiscriminantBilinearModules(Category):
                 == _engine_normal_form_key(other, quadratic=False)
             )
 
-        def automorphism_group(self: "DiscriminantBilinearParent") -> "FormHomset":
+        def automorphism_group(self: "DiscriminantBilinearParent") -> Parent:
             r"""Return $O(A,b):=\operatorname{Aut}$ in this category.
 
             The bilinear orthogonal group, which contains $O(A,q)$ of any

@@ -31,7 +31,6 @@ from dzack_research.preamble.categories.modules.framed.formed.integrallattice.in
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import group_action_homset
 from dzack_research.preamble.categories.modules.group_modules.group_lattices import group_lattice
 if TYPE_CHECKING:
-    from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormMorphism
 
 from sage.misc.cachefunc import cached_function
 from sage.misc.cachefunc import cached_method
@@ -64,7 +63,7 @@ class TrivialActionFunctor(Functor):
             ),
         )
 
-    def _apply_functor_to_morphism(self, morphism: "FormMorphism") -> "FormMorphism":
+    def _apply_functor_to_morphism(self, morphism: "Morphism") -> "Morphism":
         r"""Return \(\varepsilon^*(f)\): the same map, now equivariant.
 
         Equivariance is free on both sides -- \(f(1\cdot x)=1\cdot f(x)\) --

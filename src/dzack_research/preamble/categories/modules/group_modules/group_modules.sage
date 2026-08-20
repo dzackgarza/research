@@ -24,12 +24,12 @@ if TYPE_CHECKING:
     from sage.rings.ring import Ring
     from sage.structure.element import RingElement
 
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleHomset
 from typing import Protocol, Self, TYPE_CHECKING
 
 from sage.misc.cachefunc import cached_method
 from dzack_research.preamble.owned_category import object_of
 from dzack_research.preamble.owned_category_bases import Category
+from dzack_research.preamble.owned_category_bases import HomsetsCategory
 from sage.categories.homset import Hom
 from sage.categories.morphism import SetMorphism
 from sage.structure.element import Element as SageElement
@@ -511,68 +511,73 @@ class GroupModules(Category):
         def _repr_(self: Self) -> str:
             return repr(self._underlying)
 
+    class Homsets(HomsetsCategory):
+        r"""The equivariant maps between two modules for one $G$."""
 
-class GroupModuleHomset(ModuleHomset):
-    r"""The homset of equivariant maps between two modules for one \(G\)."""
+        class ParentMethods:
+            r"""The homset of equivariant maps between two modules for one \(G\)."""
 
-    def __init__(self, domain: "Module", codomain: "Module") -> None:
-        assert codomain in GroupModules(domain.base_ring(), domain.group()), (
-            "the codomain is not a module for the stated ring and group"
-        )
-        assert domain.group() == codomain.group(), (
-            "an equivariant homset has one specified acting group"
-        )
-        ModuleHomset.__init__(
-            self,
-            domain,
-            codomain,
-            GroupModules(domain.base_ring(), domain.group()),
-        )
-
-    def _element_constructor_(self, images: "EquivariantAssignment | ModuleMorphism") -> ModuleMorphism:
-        morphism: ModuleMorphism
-        match images:
-            case ModuleMorphism():
-                assert images.parent() is self, (
-                    "an existing equivariant morphism belongs to its own homset"
+            def __init__(
+                self,
+                domain: "Module",
+                codomain: "Module",
+                **rest: "ConstructionData",
+            ) -> None:
+                assert codomain in GroupModules(domain.base_ring(), domain.group()), (
+                    "the codomain is not a module for the stated ring and group"
                 )
-                return images
-            case SetMorphism() | dict():
-                morphism = ModuleMorphism(self, images)
-            case _:
-                assert False, (
-                    "an equivariant morphism is specified by its generator "
-                    "morphism or finite generator assignment"
+                assert domain.group() == codomain.group(), (
+                    "an equivariant homset has one specified acting group"
                 )
-        assert all(
-            morphism(
-                self.domain().act(
-                    group_element,
-                    self.domain().module_generator(element_of_S),
+                super().__init__(domain=domain, codomain=codomain, **rest)
+
+            def _element_constructor_(self, images: "EquivariantAssignment | ModuleMorphism") -> ModuleMorphism:
+                morphism: ModuleMorphism
+                match images:
+                    case ModuleMorphism():
+                        assert images.parent() is self, (
+                            "an existing equivariant morphism belongs to its own homset"
+                        )
+                        return images
+                    case SetMorphism() | dict():
+                        morphism = ModuleMorphism(self, images)
+                    case _:
+                        assert False, (
+                            "an equivariant morphism is specified by its generator "
+                            "morphism or finite generator assignment"
+                        )
+                assert all(
+                    morphism(
+                        self.domain().act(
+                            group_element,
+                            self.domain().module_generator(element_of_S),
+                        )
+                    )
+                    == self.codomain().act(
+                        group_element,
+                        morphism(self.domain().module_generator(element_of_S)),
+                    )
+                    for group_element in self.domain().group()
+                    for element_of_S in self.domain().module_generating_set()
+                ), "the proposed map is not equivariant"
+                return morphism
+
+            def _repr_(self) -> str:
+                return (
+                    f"Hom_{self.domain().group()}("
+                    f"{self.domain()}, {self.codomain()})"
                 )
-            )
-            == self.codomain().act(
-                group_element,
-                morphism(self.domain().module_generator(element_of_S)),
-            )
-            for group_element in self.domain().group()
-            for element_of_S in self.domain().module_generating_set()
-        ), "the proposed map is not equivariant"
-        return morphism
 
-    def _repr_(self) -> str:
-        return (
-            f"Hom_{self.domain().group()}("
-            f"{self.domain()}, {self.codomain()})"
-        )
-
-
-def group_module_homset(domain: "Module", codomain: "Module") -> GroupModuleHomset:
+def group_module_homset(domain: "Module", codomain: "Module") -> Parent:
     r"""Return the canonical equivariant homset of two \(G\)-modules."""
     cache = domain.__dict__.setdefault("_group_module_homsets", {})
-    homset: GroupModuleHomset | None = cache.get(codomain)
+    homset: Parent | None = cache.get(codomain)
     if homset is None:
-        homset = GroupModuleHomset(domain, codomain)
+        homset = object_of(
+            GroupModules(domain.base_ring(), domain.group()).Homsets(),
+            domain=domain,
+            codomain=codomain,
+        )
         cache[codomain] = homset
     return homset
 

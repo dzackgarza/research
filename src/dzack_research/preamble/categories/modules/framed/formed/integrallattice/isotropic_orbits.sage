@@ -70,7 +70,6 @@ if TYPE_CHECKING:
 
     from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
         FormModule,
-        FormMorphism,
     )
     from dzack_research.preamble.lexicon import Element, OrderedSet
 
@@ -144,7 +143,7 @@ def orthogonal_group_isotropic_orbit_representatives(
 
 def orthogonal_group_line_equivalence_witness(
     lattice: "FormModule", left: "Element", right: "Element"
-) -> "FormMorphism | None":
+) -> "Morphism | None":
     r"""Return $g\in O(L)$ with $g(\mathbb Z v)=\mathbb Z w$, or ``None``.
 
     A rank-one isotropic sublattice $\mathbb Zv$ is a primitive vector up to
@@ -177,7 +176,7 @@ def orthogonal_group_sublattice_equivalence_witness(
     left: "OrderedSet",
     right: "OrderedSet",
     isotropic_object: str,
-) -> "FormMorphism | None":
+) -> "Morphism | None":
     r"""Return $g\in O(L)$ carrying one isotropic sublattice or flag to another.
 
     For a flag the witness is checked term by term at the seam -- equality
@@ -291,7 +290,7 @@ class _FiniteQuotient:
                 allowed = libgap.Intersection(allowed, target_gap)
 
             def _discriminant_image(
-                isometry: "FormMorphism",
+                isometry: "Morphism",
                 _automorphism_group: "Parent" = automorphism_group,
             ) -> "GapElement":
                 return libgap(
@@ -319,7 +318,7 @@ class _FiniteQuotient:
         if len(factors) == 1:
             product, allowed_group, image_of = factors[0]
 
-            def _image(isometry: "FormMorphism") -> "GapElement":
+            def _image(isometry: "Morphism") -> "GapElement":
                 return image_of(isometry)
 
         else:
@@ -329,7 +328,7 @@ class _FiniteQuotient:
                 for index in range(len(factors))
             ]
 
-            def _image(isometry: "FormMorphism") -> "GapElement":
+            def _image(isometry: "Morphism") -> "GapElement":
                 composite = libgap.One(product)
                 for embedding, (_, _, image_of) in zip(embeddings, factors):
                     composite = composite * libgap.Image(
@@ -361,7 +360,7 @@ class _FiniteQuotient:
         )
         self._supergroup = supergroup
 
-    def image(self, isometry: "FormMorphism") -> "GapElement":
+    def image(self, isometry: "Morphism") -> "GapElement":
         return self._image_of(isometry)
 
     def image_subgroup(self, isometries: "OrderedSet") -> "GapElement":
@@ -378,7 +377,7 @@ class _FiniteQuotient:
         r"""Return $\varphi(O(L))$, where every double coset lives."""
         return self._image_group
 
-    def lift(self, target_element: "GapElement") -> "FormMorphism":
+    def lift(self, target_element: "GapElement") -> "Morphism":
         from sage.libs.gap.libgap import libgap
 
         lifted = libgap.PreImagesRepresentative(
@@ -395,7 +394,7 @@ def _sign_character_factor(character: "Callable") -> tuple:
     cyclic = libgap.CyclicGroup(2)
     generator = cyclic.GeneratorsOfGroup()[0]
 
-    def _image(isometry: "FormMorphism") -> "GapElement":
+    def _image(isometry: "Morphism") -> "GapElement":
         value = character(isometry)
         assert value in (1, -1), f"a sign character returned {value}"
         return libgap.One(cyclic) if value == 1 else generator
@@ -539,7 +538,7 @@ class OrthogonalPredicateSubgroups(Category_singleton):
             )
 
         def _witness_meets_subgroup(
-            self, witness: "FormMorphism", stabilizer_generators: "OrderedSet"
+            self, witness: "Morphism", stabilizer_generators: "OrderedSet"
         ) -> bool:
             r"""Decide whether $\Gamma$ meets $W\cdot\operatorname{Stab}(y)$.
 
@@ -700,7 +699,7 @@ class OrthogonalPredicateSubgroups(Category_singleton):
 
         def vector_equivalence_witness(
             self, left: "Element", right: "Element"
-        ) -> "FormMorphism | None":
+        ) -> "Morphism | None":
             r"""Return an element of $\Gamma$ carrying one vector to another.
 
             ``None`` is the absence of such an element, and it is grounded:

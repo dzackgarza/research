@@ -54,7 +54,6 @@ from sage.modules.free_module_element import vector
 if TYPE_CHECKING:
     from dzack_research.preamble.categories.abstract_categories.direct_sum_objects import DirectSumObject
     from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModule
-    from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormMorphism
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import GroupAction
     from sage.categories.homset import Homset
     from sage.combinat.root_system.cartan_type import CartanType
@@ -310,7 +309,7 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             r"""Return the inclusion morphism $L\to L^*$."""
             return self.correlation()
 
-        def discriminant_projection(self: "LatticeParent") -> "FormMorphism":
+        def discriminant_projection(self: "LatticeParent") -> "Morphism":
             r"""Return the quotient morphism $\pi: L^* \to A_L$.
 
             The target $A_L$ carries the discriminant bilinear form for any
@@ -409,7 +408,7 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
                 module_generating_set,
             )
 
-        def maximal_overlattice(self: "LatticeParent") -> "FormMorphism":
+        def maximal_overlattice(self: "LatticeParent") -> "Morphism":
             r"""Return $L\hookrightarrow L'$ for an overlattice admitting no other.
 
             Nikulin Prop. 1.4.1: the overlattices of $L$ on which the form
@@ -436,7 +435,7 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
 
         def overlattice(
             self: "LatticeParent", *elements: "OrderedSet"
-        ) -> "FormMorphism":
+        ) -> "Morphism":
             r"""Return $L\hookrightarrow L'$ glued along discriminant classes.
 
             The same Nik80 Prop. 1.4.1 correspondence as :meth:`glue`,
@@ -458,7 +457,7 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
 
         def local_modification(
             self: "LatticeParent", p: "Integer", *elements: "OrderedSet"
-        ) -> "FormMorphism":
+        ) -> "Morphism":
             r"""Return $L\hookrightarrow L'$ glued along a $p$-primary
             isotropic subgroup of $A_L$.
 
@@ -549,7 +548,7 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
 
         def embed_in_even_unimodular(
             self: "LatticeParent", positive: "Integer", negative: "Integer"
-        ) -> "FormMorphism":
+        ) -> "Morphism":
             r"""Return a primitive embedding $L\hookrightarrow M$, $M$ even
             unimodular of signature ``(positive, negative)``.
 
@@ -604,7 +603,7 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
 
         def glue_map(
             self: "LatticeParent", first: "Module", second: "Module"
-        ) -> "FormMorphism":
+        ) -> "Morphism":
             r"""Return the glue isometry $\gamma: H_S\to H_R(-1)$ of the
             primitive extension $S\oplus R\subseteq L$.
 
@@ -616,7 +615,7 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             embeds into $A_S\oplus A_R$ as the graph of an anti-isometry
             $\gamma$ between subgroups $H_S\le A_S$ and $H_R\le A_R$.  An
             anti-isometry *is* an isometry onto the $(-1)$-twist of the
-            codomain, so $\gamma$ comes back as an owned ``FormMorphism``
+            codomain, so $\gamma$ comes back as an owned ``Morphism``
             into the twisted restricted form -- the homset constructor is
             the verification that $\gamma$ anti-preserves the discriminant
             form.  Reference implementation: Hecke ``glue_map``
@@ -634,7 +633,6 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             where Nikulin's theory (and every catalogue caller) lives.
             """
             # Local: a module-level import here would close a cycle; by call time this module is built.
-            from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormMorphism
 
             assert self.is_even(), (
                 "the glue map is computed on discriminant quadratic forms; "
@@ -705,7 +703,7 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             )
             domain = source_subobject.embedding().domain()
             codomain = target_subobject.embedding().domain()
-            glue: "FormMorphism" = domain.Hom(codomain)(
+            glue: "Morphism" = domain.Hom(codomain)(
                 {
                     label: codomain.module_generator(graph[label])
                     for label in domain.module_generating_set()
@@ -1178,7 +1176,7 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             )
 
         @cached_method
-        def correlation(self: "LatticeParent") -> "FormMorphism":
+        def correlation(self: "LatticeParent") -> "Morphism":
             r"""Return $c: L\to L^\vee$, $v\mapsto\langle v,-\rangle$, matrix $G$.
 
             Nondegeneracy is injectivity of $c$, unimodularity is $c$ being an
@@ -1485,7 +1483,7 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             scale: "RingElement",
             images: "dict | list | tuple",
             codomain: "FormModule | None" = None,
-        ) -> "FormMorphism":
+        ) -> "Morphism":
             r"""Return the similarity of the given scale as the morphism it is.
 
             A similarity $L\to M$ of scale $a$ pulls $b_M$ back to
@@ -1529,7 +1527,7 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             endset: "Homset" = self.Hom(self)
             return endset
 
-        def Aut(self: "LatticeParent") -> "FormAutomorphismGroup":
+        def Aut(self: "LatticeParent") -> "Parent":
             r"""Return $\mathrm{Aut}(L)=O(L)$, the units of $\mathrm{End}(L)$.
 
             One object, reached one way.  ``orthogonal_group`` and
@@ -1554,7 +1552,6 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             to decide; it is a question the group answers when asked.
             """
             # Local: a module-level import here would close a cycle; by call time this module is built.
-            from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormAutomorphismGroup
             from dzack_research.preamble.categories.modules.framed.formed.integrallattice.lattice_homomorphisms import LatticeHomomorphisms
             from dzack_research.preamble.categories.modules.framed.formed.integrallattice.lattice_isometries import LatticeIsometries
             from dzack_research.preamble.categories.group.groups import OwnedFinitelyPresentedGroups
@@ -1566,7 +1563,7 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             # condition on its elements, so it is built the same way and
             # refined once more.
             refined = refine(
-                FormAutomorphismGroup(self),
+                self.Hom(self),
                 [
                     LatticeHomomorphisms(),
                     LatticeIsometries(),

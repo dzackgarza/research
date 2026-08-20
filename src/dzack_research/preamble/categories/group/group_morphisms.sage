@@ -282,8 +282,8 @@ class GroupAutomorphismGroup(GroupHomset):
         # placement.  Not the endomorphism-homset role as well:
         # \(\operatorname{End}(G)\) is a monoid under composition, and
         # \(\operatorname{Aut}(G)\) is its group of units -- multiplicative
-        # placement, exactly as ``FormAutomorphismGroup`` is placed.  The
-        # homset surface comes from the class it subclasses.
+        # placement, exactly as the endset of a formed module is placed.
+        # The homset surface comes from the category it is an object of.
         refine(self, [SageGroups()])
 
     @cached_method

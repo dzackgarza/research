@@ -144,14 +144,14 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
             # Local: at module level these close an import cycle; the morphism,
             # form and torsion modules are built by the time one is presented.
             from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_torsion_modules import FinitelyPresentedTorsionModules
-            from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormMorphism
+            from dzack_research.preamble.categories.modules.framed.formed.form_modules import is_form_morphism
             from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
             from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _coordinate_vector
             from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _underlying_module
             from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import framing_morphism
             from dzack_research.preamble.categories.rings.rings import engine_ring
 
-            assert isinstance(presentation, (ModuleMorphism, FormMorphism)), (
+            assert isinstance(presentation, ModuleMorphism) or is_form_morphism(presentation), (
                 "a presentation is a morphism of framed modules"
             )
             codomain = presentation.codomain()

@@ -19,7 +19,6 @@ if TYPE_CHECKING:
     from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModule
     from dzack_research.preamble.lexicon import ModuleElement
 
-from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormMorphism
 from dzack_research.preamble.categories.modules.framed.formed.integrallattice.integral_lattices import _integral_lattice_with_names
 from dzack_research.preamble.categories.sets.sets import finite_ordered_set
 from sage.combinat.root_system.cartan_type import CartanType
@@ -154,7 +153,7 @@ class CoxeterDiagrams(Category):
         self,
         coxeter_matrix: CoxeterMatrix,
         names: Sequence[str] | str | None = None,
-        root_morphism: FormMorphism | None = None,
+        root_morphism: Morphism | None = None,
         positions: Mapping[Hashable, Sequence["RingElement | float"]] | None = None,
     ) -> Parent:
         r"""Construct a diagram from its Coxeter matrix."""
@@ -400,7 +399,7 @@ class CoxeterDiagrams(Category):
             self,
             coxeter_matrix: CoxeterMatrix,
             names: Sequence[str] | str | None = None,
-            root_morphism: FormMorphism | None = None,
+            root_morphism: Morphism | None = None,
             positions: Mapping[Hashable, Sequence["RingElement | float"]] | None = None,
             **rest: "ConstructionData",
         ) -> None:
@@ -784,7 +783,7 @@ class CoxeterDiagrams(Category):
             """
             return dict(COXETER_DRAWING_CONVENTIONS)
 
-        def root_morphism(self) -> FormMorphism:
+        def root_morphism(self) -> Morphism:
             r"""Return the morphism sending the formal root generators to roots.
 
             Returned as an object of $\operatorname{Ar}(\text{lattices})$, because
