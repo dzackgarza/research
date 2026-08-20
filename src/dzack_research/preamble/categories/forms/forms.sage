@@ -9,8 +9,6 @@ from dzack_research.preamble.lexicon import Element
 if TYPE_CHECKING:
     from sage.categories.modules import Module
 
-if TYPE_CHECKING:
-
 from sage.rings.integer import Integer
 from sage.categories.homset import Homset
 from sage.categories.homset import Hom

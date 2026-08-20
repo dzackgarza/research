@@ -79,6 +79,22 @@ class Modules(Category_over_base_ring):
         return Category_over_base_ring.__contains__(self, module)
 
     class ParentMethods:
+        def __init__(
+            self, category: "Category", **rest: "ConstructionData"
+        ) -> None:
+            r"""Add the ring to the set below.
+
+            A module is over a ring, and ``Modules(R)`` is the category that
+            names which one.  So this level assigns the base, and every level
+            above it inherits a module that already has one.  Sage decides
+            membership in a category over a base ring by
+            ``x.base_ring() is self.base_ring()``, so an object built without
+            it belongs to no such category at all.
+            """
+            super().__init__(
+                category=category, base=category.base_ring(), **rest
+            )
+
         @abstract_method
         def _ring_morphism_defining_module_action(self: Self) -> "Morphism":
             r"""Return $\rho:R\to\operatorname{End}(M)$, which is the module.

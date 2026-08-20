@@ -73,6 +73,101 @@ def _finite_rank(module_generating_set: "OrderedSet") -> int:
     return int(size)
 
 
+class BasedFreeModuleElement(ModuleElement):
+    r"""An element represented in its parent's chosen ordered basis."""
+
+    if TYPE_CHECKING:
+        # The parent is the based free module the coordinates are read in;
+        # ``Element.parent`` states only that it is some parent.  Declared,
+        # never defined: the inherited implementation is the one that runs.
+        def parent(self) -> "BasedFreeModule": ...
+
+    def __init__(self, parent: "BasedFreeModule", coordinates: "Vector") -> None:
+        ModuleElement.__init__(self, parent)
+        coordinate_module = parent._coordinate_module()
+        # Coordinate arithmetic already lands in the coordinate module, so a
+        # sum, difference, negation or scaling arrives here as its own answer.
+        # The module rejects a wrong-length assignment itself.
+        self._coordinates_: FreeModuleElement = (
+            coordinates
+            if isinstance(coordinates, FreeModuleElement)
+            and coordinates.parent() is coordinate_module
+            else coordinate_module(coordinates)
+        )
+
+    def _coordinates(self) -> "Vector":
+        return self._coordinates_
+
+    def coefficients(self) -> Mapping["Element", "RingElement"]:
+        return {
+            element_of_S: coefficient
+            for element_of_S, coefficient in zip(
+                self.parent().module_generating_set(), self._coordinates_
+            )
+            if coefficient != 0
+        }
+
+    def underlying_set_element(self) -> "Element":
+        r"""Recover \(s\) when this element is the canonical generator \([s]\)."""
+        nonzero = tuple(self.coefficients().items())
+        assert len(nonzero) == 1, (
+            "only an element in the image of the canonical generator morphism "
+            "has one underlying element of S"
+        )
+        element_of_S: "Element" = nonzero[0][0]
+        coefficient = nonzero[0][1]
+        assert coefficient == self.parent().base_ring().one(), (
+            "only an element in the image of the canonical generator morphism "
+            "has one underlying element of S"
+        )
+        return element_of_S
+
+    def _add_(self, other: "BasedFreeModuleElement") -> "BasedFreeModuleElement":
+        return self.parent()._from_coordinates(
+                self._coordinates_ + other._coordinates_
+            )
+
+    def _sub_(self, other: "BasedFreeModuleElement") -> "BasedFreeModuleElement":
+        return self.parent()._from_coordinates(
+                self._coordinates_ - other._coordinates_
+            )
+
+    def _neg_(self) -> "BasedFreeModuleElement":
+        return self.parent()._from_coordinates(-self._coordinates_)
+
+    def _lmul_(self, factor: "RingElement") -> "BasedFreeModuleElement":
+        return self.parent()._from_coordinates(
+                self.parent().base_ring()(factor) * self._coordinates_
+            )
+
+    _rmul_ = _lmul_
+
+    def _richcmp_(self, other: "BasedFreeModuleElement", op: int) -> bool:
+        return bool(richcmp(self._coordinates_, other._coordinates_, op))
+
+
+    def __eq__(self, other: "MembershipInput") -> bool:
+        # Identification across parents is a stated morphism, never coercion
+        # (AGENTS.md: coercion must not erase the element/image distinction),
+        # so equality outside this parent is plain False and Sage's
+        # conversion fallback never consults a constructor.
+        if not (isinstance(other, BasedFreeModuleElement) and other.parent() is self.parent()):
+            return False
+        return bool(richcmp(self._coordinates_, other._coordinates_, op_EQ))
+
+    def __ne__(self, other: "MembershipInput") -> bool:
+        return not self.__eq__(other)
+
+    def __hash__(self) -> int:
+        return hash(tuple(self._coordinates_))
+
+    def __iter__(self) -> Iterator["RingElement"]:
+        return iter(self._coordinates_)
+
+    def _repr_(self) -> str:
+        return repr(self._coordinates_)
+
+
 class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
     r"""Finite free modules whose framing set has a chosen total order."""
 
@@ -347,101 +442,6 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
                         "a finite assignment, or an ordered list of images"
                     )
             return self.Hom(target)(assignment)
-
-
-class BasedFreeModuleElement(ModuleElement):
-    r"""An element represented in its parent's chosen ordered basis."""
-
-    if TYPE_CHECKING:
-        # The parent is the based free module the coordinates are read in;
-        # ``Element.parent`` states only that it is some parent.  Declared,
-        # never defined: the inherited implementation is the one that runs.
-        def parent(self) -> "BasedFreeModule": ...
-
-    def __init__(self, parent: "BasedFreeModule", coordinates: "Vector") -> None:
-        ModuleElement.__init__(self, parent)
-        coordinate_module = parent._coordinate_module()
-        # Coordinate arithmetic already lands in the coordinate module, so a
-        # sum, difference, negation or scaling arrives here as its own answer.
-        # The module rejects a wrong-length assignment itself.
-        self._coordinates_: FreeModuleElement = (
-            coordinates
-            if isinstance(coordinates, FreeModuleElement)
-            and coordinates.parent() is coordinate_module
-            else coordinate_module(coordinates)
-        )
-
-    def _coordinates(self) -> "Vector":
-        return self._coordinates_
-
-    def coefficients(self) -> Mapping["Element", "RingElement"]:
-        return {
-            element_of_S: coefficient
-            for element_of_S, coefficient in zip(
-                self.parent().module_generating_set(), self._coordinates_
-            )
-            if coefficient != 0
-        }
-
-    def underlying_set_element(self) -> "Element":
-        r"""Recover \(s\) when this element is the canonical generator \([s]\)."""
-        nonzero = tuple(self.coefficients().items())
-        assert len(nonzero) == 1, (
-            "only an element in the image of the canonical generator morphism "
-            "has one underlying element of S"
-        )
-        element_of_S: "Element" = nonzero[0][0]
-        coefficient = nonzero[0][1]
-        assert coefficient == self.parent().base_ring().one(), (
-            "only an element in the image of the canonical generator morphism "
-            "has one underlying element of S"
-        )
-        return element_of_S
-
-    def _add_(self, other: "BasedFreeModuleElement") -> "BasedFreeModuleElement":
-        return self.parent()._from_coordinates(
-                self._coordinates_ + other._coordinates_
-            )
-
-    def _sub_(self, other: "BasedFreeModuleElement") -> "BasedFreeModuleElement":
-        return self.parent()._from_coordinates(
-                self._coordinates_ - other._coordinates_
-            )
-
-    def _neg_(self) -> "BasedFreeModuleElement":
-        return self.parent()._from_coordinates(-self._coordinates_)
-
-    def _lmul_(self, factor: "RingElement") -> "BasedFreeModuleElement":
-        return self.parent()._from_coordinates(
-                self.parent().base_ring()(factor) * self._coordinates_
-            )
-
-    _rmul_ = _lmul_
-
-    def _richcmp_(self, other: "BasedFreeModuleElement", op: int) -> bool:
-        return bool(richcmp(self._coordinates_, other._coordinates_, op))
-
-
-    def __eq__(self, other: "MembershipInput") -> bool:
-        # Identification across parents is a stated morphism, never coercion
-        # (AGENTS.md: coercion must not erase the element/image distinction),
-        # so equality outside this parent is plain False and Sage's
-        # conversion fallback never consults a constructor.
-        if not (isinstance(other, BasedFreeModuleElement) and other.parent() is self.parent()):
-            return False
-        return bool(richcmp(self._coordinates_, other._coordinates_, op_EQ))
-
-    def __ne__(self, other: "MembershipInput") -> bool:
-        return not self.__eq__(other)
-
-    def __hash__(self) -> int:
-        return hash(tuple(self._coordinates_))
-
-    def __iter__(self) -> Iterator["RingElement"]:
-        return iter(self._coordinates_)
-
-    def _repr_(self) -> str:
-        return repr(self._coordinates_)
 
 
 def BasedFreeModule(

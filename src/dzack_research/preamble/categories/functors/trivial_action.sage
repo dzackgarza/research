@@ -30,8 +30,6 @@ from dzack_research.preamble.categories.modules.group_modules.group_lattices imp
 from dzack_research.preamble.categories.modules.framed.formed.integrallattice.integral_lattices import IntegralLattices
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import group_action_homset
 from dzack_research.preamble.categories.modules.group_modules.group_lattices import group_lattice
-if TYPE_CHECKING:
-
 from sage.misc.cachefunc import cached_function
 from sage.misc.cachefunc import cached_method
 from dzack_research.preamble.categories.abstract_categories.functors import Functor

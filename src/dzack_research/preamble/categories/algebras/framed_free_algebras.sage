@@ -78,6 +78,8 @@ from dzack_research.preamble.categories.sets.owned_sets import Sets
 from dzack_research.preamble.categories.sets.underlying_sets import UnderlyingSet
 
 if TYPE_CHECKING:
+    from sage.categories.sets_cat import Set
+
     # The ordered-set noun is type-only: the preamble loads into one
     # shared namespace and nothing named OrderedSet may bind there.
     from dzack_research.preamble.lexicon import OrderedSet
@@ -100,7 +102,7 @@ if TYPE_CHECKING:
         """
 
         _algebra_generating_set: "OrderedSet"
-        _algebra_generating_set_for_morphism: Parent
+        _algebra_generating_set_for_morphism: "Set"
         _monomial_system: "MonomialSystem"
         _monomial_parent: "_MonomialParent"
         _algebra_generator_morphism: SetMorphism
@@ -148,6 +150,19 @@ if TYPE_CHECKING:
             images: "SetMorphism | dict | tuple | list | Callable",
             codomain: "Module" = ...,
         ) -> "FreeAlgebraMorphism": ...
+
+    class DividedPowerAlgebraParent(FreeAlgebraParent, Protocol):
+        r"""A parent in ``FramedDividedPowerAlgebras(R)``.
+
+        \(\Gamma\) is the one construction whose divided powers are its own
+        operation: \(\gamma_a(x)\) is not \(x^a\), so it has to be asked for
+        by name.
+        """
+
+        def divided_power(
+            self, value: "Element", exponent: "Integer | int"
+        ) -> "Element": ...
+        def divided_square(self, element: "Element") -> "Element": ...
 
     class _MonomialParent(Parent):
         r"""Where the monomials live: a monoid, or the finite subsets of
@@ -690,7 +705,7 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
 
         # Installed by the constructor.
         _algebra_generating_set: "OrderedSet"
-        _algebra_generating_set_for_morphism: Parent
+        _algebra_generating_set_for_morphism: "Set"
         _monomial_system: MonomialSystem
         _monomial_parent: "_MonomialParent"
         _algebra_generator_morphism: SetMorphism
@@ -1009,7 +1024,7 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
         def _require_symmetric_polynomial_structure(
             self: "FreeAlgebraParent",
         ) -> None:
-            r"""Require the commutative polynomial structure these algorithms use."""
+            r"""Require the commutative polynomial structure used by these algorithms."""
             assert self in SymmetricAlgebras(self.base_ring()), (
                 "polynomial factorization, division, roots, and leading terms "
                 "belong to the symmetric algebra"
@@ -1158,21 +1173,21 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
             )
 
         def algebra_generating_set(self: "FreeAlgebraParent") -> "OrderedSet":
-            r"""Return the original set \(S\), not \(\operatorname{Mon}(S)\)."""
+            r"""Return the original set ``S`` (not ``Mon(S)``)."""
             return self._algebra_generating_set
 
         def algebra_generator_morphism(self: "FreeAlgebraParent") -> SetMorphism:
-            r"""Return the framing map \(S\to U(\operatorname{FreeAlg}_R(S))\)."""
+            """Return the framing map from algebra generators to the free algebra."""
             return self._algebra_generator_morphism
 
         def algebra_framing_morphism(self: "FreeAlgebraParent") -> SetMorphism:
-            r"""Return the framing morphism under the name framed algebras use."""
+            """Alias for the free-algebra framing morphism from algebra generators."""
             return self.algebra_generator_morphism()
 
         def algebra_generator(
             self: "FreeAlgebraParent", s: "_SageElement"
         ) -> "FreeAlgebraOnSetElement":
-            r"""Return the degree-one monomial \([s]\)."""
+            r"""Return the degree-1 monomial ``[s]`` in ``FreeAlg_R(S)``."""
             assert s in self._algebra_generating_set, (
                 f"{s!r} is not in {self._algebra_generating_set}"
             )
@@ -1182,7 +1197,7 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
             return generator
 
         def algebra_generators(self: "FreeAlgebraParent") -> tuple:
-            r"""Return the algebra generators, for a finite framing set."""
+            r"""Return algebra generators when the framing set is finite."""
             assert self._algebra_generating_set in Sets().Finite(), (
                 "algebra_generators() is defined only for finitely generated "
                 "framed free algebras; use algebra_generator(s) for arbitrary "
@@ -1195,7 +1210,7 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
         def product_on_algebra_generators(
             self: "FreeAlgebraParent", s: "_SageElement", t: "_SageElement"
         ) -> "FreeAlgebraOnSetElement":
-            r"""Return the product of the algebra generators \([s]\) and \([t]\)."""
+            r"""Return the product of algebra generators s and t."""
             product: "FreeAlgebraOnSetElement" = (
                 self.algebra_generator(s) * self.algebra_generator(t)
             )
@@ -1314,12 +1329,13 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
 
         def __getitem__(
             self: "FreeAlgebraParent", names: "OrderedSet | str | int"
-        ) -> "Parent":
+        ) -> "FreeAlgebraParent":
             r"""Return \(A[y]\), the free algebra over this one on ``names``.
 
-            Nothing here inherits a meaning for the subscript, so it can carry
-            the one a polynomial ring's subscript carries: adjoining variables
-            is the free construction applied again, now over \(A\).
+            The subscript is this category's own.  Nothing here inherits a
+            meaning for it, so it can carry the one a polynomial ring's
+            subscript carries: adjoining variables is the free construction
+            applied again, now over \(A\).
             """
             return polynomial_ring(self, names)
 
@@ -1730,7 +1746,7 @@ class FramedSymmetricAlgebras(OwnedCategoryOverBaseRing):
 
 def FreeAlgebraOn(
     base_ring: "Ring", algebra_generating_set: "OrderedSet"
-) -> "Parent":
+) -> "FreeAlgebraParent":
     r"""Return \(\operatorname{FreeAlg}_R(S)\), the same object on every call.
 
     \(\operatorname{FreeAlg}_R(-)\) is a functor, so \((R,S)\) names one
@@ -1752,7 +1768,7 @@ def polynomial_ring(
     base_ring: "Ring",
     *arguments: "ElementConstructorInput",
     **keywords: "ElementConstructorInput",
-) -> "Parent":
+) -> "FreeAlgebraParent":
     r"""Return \(R[x_s:s\in S]\) as the free \(R\)-algebra on \(S\).
 
     A polynomial ring is not a separate construction: it *is* the free
@@ -1835,7 +1851,7 @@ class FramedTensorAlgebras(OwnedCategoryOverBaseRing):
 
 def TensorAlgebraOn(
     base_ring: "Ring", algebra_generating_set: "OrderedSet"
-) -> "Parent":
+) -> "FreeAlgebraParent":
     r"""Return \(T(F_R(S))\), the same object on every call."""
     return object_of(
         FramedTensorAlgebras(engine_ring(base_ring)),
@@ -1844,7 +1860,7 @@ def TensorAlgebraOn(
 
 
 class FramedAlternatingAlgebras(OwnedCategoryOverBaseRing):
-    r"""\(\Lambda(F_R(S))=T(M)/\langle x\otimes x\rangle\), framed by \(S\).
+    r"""The alternating algebra \(\Lambda(F_R(S))=T(M)/\langle x\otimes x\rangle\), framed by \(S\).
 
     Framed by the subsets of \(S\), so \(\Lambda(F_R(S))\) is free of rank
     \(2^{|S|}\) and \(\Lambda^k\) of rank \(\binom{n}{k}\) -- which is
@@ -1876,7 +1892,7 @@ class FramedAlternatingAlgebras(OwnedCategoryOverBaseRing):
 
 def AlternatingAlgebraOn(
     base_ring: "Ring", algebra_generating_set: "OrderedSet"
-) -> "Parent":
+) -> "FreeAlgebraParent":
     r"""Return \(\Lambda(F_R(S))\), the same object on every call."""
     return object_of(
         FramedAlternatingAlgebras(engine_ring(base_ring)),
@@ -1976,7 +1992,7 @@ class FramedDividedPowerAlgebras(OwnedCategoryOverBaseRing):
 
 def DividedPowerAlgebraOn(
     base_ring: "Ring", algebra_generating_set: "OrderedSet"
-) -> "Parent":
+) -> "DividedPowerAlgebraParent":
     r"""Return \(\Gamma(F_R(S))\), the same object on every call."""
     return object_of(
         FramedDividedPowerAlgebras(engine_ring(base_ring)),
@@ -2301,7 +2317,7 @@ class PresentedFreeAlgebras(OwnedCategoryOverBaseRing):
             self,
             module: "Module",
             construction: str,
-            presentation_algebra: Parent,
+            presentation_algebra: "FreeAlgebraParent",
             **rest: "ConstructionData",
         ) -> None:
             r"""Build \(A(F)/\langle K\rangle\) for one of the four constructions."""
@@ -2313,7 +2329,7 @@ class PresentedFreeAlgebras(OwnedCategoryOverBaseRing):
         def module(self) -> "Module":
             return self._module
 
-        def presentation_algebra(self) -> Parent:
+        def presentation_algebra(self) -> "FreeAlgebraParent":
             return self._presentation_algebra
 
         def algebra_generating_set(self) -> "OrderedSet":
@@ -2407,7 +2423,7 @@ class PresentedFreeAlgebras(OwnedCategoryOverBaseRing):
 def _free_algebra_of_module(
     module: "Module",
     construction: str,
-    constructor: "Callable[[Ring, OrderedSet], Parent]",
+    constructor: "Callable[[Ring, OrderedSet], FreeAlgebraParent]",
 ) -> "Parent":
     source = constructor(module.base_ring(), module.module_generating_set())
     if module.relation_matrix().nrows() == 0:

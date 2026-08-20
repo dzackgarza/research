@@ -409,6 +409,11 @@ def object_of(category: Category, **data: ConstructionData) -> Parent:
     and a join is Sage's class, which the preamble consumes and does not
     extend.  The join's ``parent_class`` has the owned levels among its bases,
     so it constructs exactly the same way.
+
+    The base ring is not supplied here.  A level that sits over a ring states
+    its own ``base`` when it calls ``super().__init__``, the way the module
+    homset does, because a level may name a base its category does not -- and
+    injecting one here would arrive twice at the levels that already do.
     """
     return category.parent_class(category=category, **data)
 

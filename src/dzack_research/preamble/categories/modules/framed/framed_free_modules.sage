@@ -116,6 +116,104 @@ def _free_module_placement(
     return Sets()
 
 
+class FreeModuleOnSetElement(ModuleElement):
+    if TYPE_CHECKING:
+        # The parent is the free module this coefficient function is read in;
+        # ``Element.parent`` states only that it is some parent.  Declared,
+        # never defined.
+        def parent(self) -> "FreeModuleOnSet": ...
+
+        # Negation is parent-preserving on a module element; ``Element.__neg__``
+        # is deliberately wider, for the extended reals where it is not.
+        def __neg__(self) -> "FreeModuleOnSetElement": ...
+
+    r"""A finitely supported coefficient function on the set \(S\)."""
+
+    def __init__(self, parent: "FreeModuleOnSet", coefficients: dict) -> None:
+        ModuleElement.__init__(self, parent)
+        coefficients = dict(coefficients)
+        assert all(
+            element_of_S in parent.module_generating_set()
+            for element_of_S in coefficients
+        ), f"the coefficient function is not supported on {parent.module_generating_set()}"
+        self._coefficients: dict["Element", "RingElement"] = {
+            element_of_S: coefficient
+            for element_of_S, value in coefficients.items()
+            if (coefficient := parent.base_ring()(value)) != 0
+        }
+
+    def coefficients(self) -> Mapping["Element", "RingElement"]:
+        return dict(self._coefficients)
+
+    def _add_(self, other: "FreeModuleOnSetElement") -> "FreeModuleOnSetElement":
+        zero = self.parent().base_ring().zero()
+        support = self._coefficients.keys() | other._coefficients.keys()
+        total: "FreeModuleOnSetElement" = self.parent().element_class(
+            self.parent(),
+            {
+                element_of_S: (
+                    self._coefficients.get(element_of_S, zero)
+                    + other._coefficients.get(element_of_S, zero)
+                )
+                for element_of_S in support
+            },
+        )
+        return total
+
+    def _sub_(self, other: "FreeModuleOnSetElement") -> "FreeModuleOnSetElement":
+        return self._add_(-other)
+
+    def _neg_(self) -> "FreeModuleOnSetElement":
+        negated: "FreeModuleOnSetElement" = self.parent().element_class(
+            self.parent(),
+            {
+                element_of_S: -coefficient
+                for element_of_S, coefficient in self._coefficients.items()
+            },
+        )
+        return negated
+
+    def _lmul_(self, factor: "RingElement") -> "FreeModuleOnSetElement":
+        factor = self.parent().base_ring()(factor)
+        scaled: "FreeModuleOnSetElement" = self.parent().element_class(
+            self.parent(),
+            {
+                element_of_S: factor * coefficient
+                for element_of_S, coefficient in self._coefficients.items()
+            },
+        )
+        return scaled
+
+    _rmul_ = _lmul_
+
+    def _richcmp_(self, other: "FreeModuleOnSetElement", op: int) -> bool:
+        return richcmp(self._coefficients, other._coefficients, op)
+
+    def __hash__(self) -> int:
+        return hash(frozenset(self._coefficients.items()))
+
+    def underlying_set_element(self) -> "Element":
+        r"""Recover \(s\) when this element is the canonical generator \([s]\)."""
+        assert len(self._coefficients) == 1, (
+            "only an element in the image of the canonical generator morphism "
+            "has one underlying element of S"
+        )
+        element_of_S, coefficient = next(iter(self._coefficients.items()))
+        assert coefficient == self.parent().base_ring().one(), (
+            "only an element in the image of the canonical generator morphism "
+            "has one underlying element of S"
+        )
+        return element_of_S
+
+    def _repr_(self) -> str:
+        if not self._coefficients:
+            return "0"
+        return " + ".join(
+            f"{coefficient}*[{element_of_S!r}]"
+            for element_of_S, coefficient in self._coefficients.items()
+        )
+
+
 class FramedFreeModules(OwnedCategoryOverBaseRing):
     r"""Free modules equipped with the canonical map \(S\to U(F_R(S))\)."""
 
@@ -313,104 +411,6 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
             if ring_size == 1:
                 return cardinal(1)
             return Cardinalities().supremum(ring_size, framing_size)
-
-
-class FreeModuleOnSetElement(ModuleElement):
-    if TYPE_CHECKING:
-        # The parent is the free module this coefficient function is read in;
-        # ``Element.parent`` states only that it is some parent.  Declared,
-        # never defined.
-        def parent(self) -> "FreeModuleOnSet": ...
-
-        # Negation is parent-preserving on a module element; ``Element.__neg__``
-        # is deliberately wider, for the extended reals where it is not.
-        def __neg__(self) -> "FreeModuleOnSetElement": ...
-
-    r"""A finitely supported coefficient function on the set \(S\)."""
-
-    def __init__(self, parent: "FreeModuleOnSet", coefficients: dict) -> None:
-        ModuleElement.__init__(self, parent)
-        coefficients = dict(coefficients)
-        assert all(
-            element_of_S in parent.module_generating_set()
-            for element_of_S in coefficients
-        ), f"the coefficient function is not supported on {parent.module_generating_set()}"
-        self._coefficients: dict["Element", "RingElement"] = {
-            element_of_S: coefficient
-            for element_of_S, value in coefficients.items()
-            if (coefficient := parent.base_ring()(value)) != 0
-        }
-
-    def coefficients(self) -> Mapping["Element", "RingElement"]:
-        return dict(self._coefficients)
-
-    def _add_(self, other: "FreeModuleOnSetElement") -> "FreeModuleOnSetElement":
-        zero = self.parent().base_ring().zero()
-        support = self._coefficients.keys() | other._coefficients.keys()
-        total: "FreeModuleOnSetElement" = self.parent().element_class(
-            self.parent(),
-            {
-                element_of_S: (
-                    self._coefficients.get(element_of_S, zero)
-                    + other._coefficients.get(element_of_S, zero)
-                )
-                for element_of_S in support
-            },
-        )
-        return total
-
-    def _sub_(self, other: "FreeModuleOnSetElement") -> "FreeModuleOnSetElement":
-        return self._add_(-other)
-
-    def _neg_(self) -> "FreeModuleOnSetElement":
-        negated: "FreeModuleOnSetElement" = self.parent().element_class(
-            self.parent(),
-            {
-                element_of_S: -coefficient
-                for element_of_S, coefficient in self._coefficients.items()
-            },
-        )
-        return negated
-
-    def _lmul_(self, factor: "RingElement") -> "FreeModuleOnSetElement":
-        factor = self.parent().base_ring()(factor)
-        scaled: "FreeModuleOnSetElement" = self.parent().element_class(
-            self.parent(),
-            {
-                element_of_S: factor * coefficient
-                for element_of_S, coefficient in self._coefficients.items()
-            },
-        )
-        return scaled
-
-    _rmul_ = _lmul_
-
-    def _richcmp_(self, other: "FreeModuleOnSetElement", op: int) -> bool:
-        return richcmp(self._coefficients, other._coefficients, op)
-
-    def __hash__(self) -> int:
-        return hash(frozenset(self._coefficients.items()))
-
-    def underlying_set_element(self) -> "Element":
-        r"""Recover \(s\) when this element is the canonical generator \([s]\)."""
-        assert len(self._coefficients) == 1, (
-            "only an element in the image of the canonical generator morphism "
-            "has one underlying element of S"
-        )
-        element_of_S, coefficient = next(iter(self._coefficients.items()))
-        assert coefficient == self.parent().base_ring().one(), (
-            "only an element in the image of the canonical generator morphism "
-            "has one underlying element of S"
-        )
-        return element_of_S
-
-    def _repr_(self) -> str:
-        if not self._coefficients:
-            return "0"
-        return " + ".join(
-            f"{coefficient}*[{element_of_S!r}]"
-            for element_of_S, coefficient in self._coefficients.items()
-        )
 
 
 def FreeModuleOn(

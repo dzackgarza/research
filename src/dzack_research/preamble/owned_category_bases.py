@@ -311,6 +311,25 @@ class HomsetsCategory(
         self._init_cat_object()
         SageHomsetsCategory.__init__(self, category)
 
+    def extra_super_categories(self) -> list:
+        r"""A homset of owned objects is an owned homset.
+
+        Sage's ``HomsetsOf`` answers a flat ``[Homsets()]``: it does not carry
+        a category's own super categories across the construction, so
+        ``Modules(R).Homsets()`` would not be a subcategory of
+        ``Sets().Homsets()``.  The owned homset chain has a root, and a chain
+        that does not reach its root cannot construct -- cooperative
+        ``super().__init__`` runs off the end into ``object``.  This states
+        the missing edge once, for every owned category's nested ``Homsets``.
+        """
+        from dzack_research.preamble.categories.sets.owned_sets import Sets
+
+        owned_sets = Sets()
+        if self.base_category() is owned_sets:
+            # The root has no edge to itself.
+            return []
+        return [owned_sets.Homsets()]
+
 
 class HomsetsOf(OwnedCategoryMixin, OwnedCategoryObject, SageHomsetsOf, Parent):
     r"""Owned base over Sage's category-specific homsets base."""
