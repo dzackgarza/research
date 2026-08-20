@@ -695,7 +695,27 @@ the same object would collapse distinct mathematics onto one parent. (Measured: 
 `A₂` share one `BasedFreeModule`, because free modules are keyed on $(R,S)$.) A distinct
 parent for chosen enrichment is therefore correct — what is not correct is wrapping its
 *elements*: it declares `facade=underlying` so the two share one element set, and restates
-none of the underlying object's computations. The paragraph below governs determined
+none of the underlying object's computations.
+
+**And the forwarding is derived, never written.** `self.forget_form().cardinality()`,
+`self.forget_form().rank()`, `self.forget_action().zero()` — a method whose body forwards
+to `forget_*()` under the same name — is the bloat pattern in its purest form: trivial
+individually, a second copy of the lower category's surface in aggregate, and it grows
+every time that category does. A chosen enrichment declares **one** thing, the forgetful
+map to the category it enriches, and the forwarding for every name that category declares
+is generated from the category itself, the way bases are derived from `super_categories()`.
+A name the enriched level genuinely answers differently is written there and wins.
+*The tell:* any method whose body is `return self.forget_<something>().<the same name>()`.
+
+**All of this holds three times over: parents, elements, and morphisms.** Sage declares
+`ParentMethods`, `ElementMethods` and `MorphismMethods`, and `refine()` already rebuilds
+the parent and element classes and routes morphisms separately. A category binds three
+classes, a determined enrichment derives three parallel base chains from the one category
+graph, and a chosen enrichment's single declared forgetful map generates forwarding on all
+three. The morphism surface is where hand-written delegation concentrates — `FormMorphism`
+forwards twelve names to a held `_module_morphism`, with `FormHomset` holding a parallel
+`_module_homset` — so a design that threads only parents has not started. Homsets are
+parents, so their own set-level answers thread by the same rule, never by a second chain. The paragraph below governs determined
 enrichment; `PLAN-threading-set-behaviour` records the evidence and the decision.
 
 **Added structure enriches an object; it never wraps one.** A formed module *is* a
