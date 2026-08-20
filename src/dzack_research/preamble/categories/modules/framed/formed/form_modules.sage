@@ -160,13 +160,11 @@ class FormModules(OwnedCategoryOverBaseRing):
     @staticmethod
     def __classcall_private__(
         cls: type["FormModules"],
-        base_ring: "Ring | None" = None,
+        base_ring: "Ring",
     ) -> "FormModules":
         # Local: a module-level import here would close a cycle; by call time this module is built.
         from dzack_research.preamble.categories.rings.rings import engine_ring
-        category: FormModules = super().__classcall__(
-            cls, SageZZ if base_ring is None else engine_ring(base_ring)
-        )
+        category: FormModules = super().__classcall__(cls, engine_ring(base_ring))
         return category
 
     @classmethod
@@ -955,13 +953,11 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
     @staticmethod
     def __classcall_private__(
         cls: type["BilinearFormModules"],
-        base_ring: "Ring | None" = None,
+        base_ring: "Ring",
     ) -> "BilinearFormModules":
         # Local: a module-level import here would close a cycle; by call time this module is built.
         from dzack_research.preamble.categories.rings.rings import engine_ring
-        category: BilinearFormModules = super().__classcall__(
-            cls, SageZZ if base_ring is None else engine_ring(base_ring)
-        )
+        category: BilinearFormModules = super().__classcall__(cls, engine_ring(base_ring))
         return category
 
     @classmethod
@@ -978,12 +974,12 @@ class SymmetricBilinearFormModules(OwnedCategoryOverBaseRing):
     @staticmethod
     def __classcall_private__(
         cls: type["SymmetricBilinearFormModules"],
-        base_ring: "Ring | None" = None,
+        base_ring: "Ring",
     ) -> "SymmetricBilinearFormModules":
         # Local: a module-level import here would close a cycle; by call time this module is built.
         from dzack_research.preamble.categories.rings.rings import engine_ring
         category: SymmetricBilinearFormModules = super().__classcall__(
-            cls, SageZZ if base_ring is None else engine_ring(base_ring)
+            cls, engine_ring(base_ring)
         )
         return category
 
@@ -1001,13 +997,11 @@ class QuadraticFormModules(OwnedCategoryOverBaseRing):
     @staticmethod
     def __classcall_private__(
         cls: type["QuadraticFormModules"],
-        base_ring: "Ring | None" = None,
+        base_ring: "Ring",
     ) -> "QuadraticFormModules":
         # Local: a module-level import here would close a cycle; by call time this module is built.
         from dzack_research.preamble.categories.rings.rings import engine_ring
-        category: QuadraticFormModules = super().__classcall__(
-            cls, SageZZ if base_ring is None else engine_ring(base_ring)
-        )
+        category: QuadraticFormModules = super().__classcall__(cls, engine_ring(base_ring))
         return category
 
     @classmethod
@@ -1024,13 +1018,11 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
     @staticmethod
     def __classcall_private__(
         cls: type["FreeFormModules"],
-        base_ring: "Ring | None" = None,
+        base_ring: "Ring",
     ) -> "FreeFormModules":
         # Local: a module-level import here would close a cycle; by call time this module is built.
         from dzack_research.preamble.categories.rings.rings import engine_ring
-        category: FreeFormModules = super().__classcall__(
-            cls, SageZZ if base_ring is None else engine_ring(base_ring)
-        )
+        category: FreeFormModules = super().__classcall__(cls, engine_ring(base_ring))
         return category
 
     @classmethod
@@ -1099,12 +1091,12 @@ class FinitelyGeneratedFormModules(OwnedCategoryOverBaseRing):
     @staticmethod
     def __classcall_private__(
         cls: type["FinitelyGeneratedFormModules"],
-        base_ring: "Ring | None" = None,
+        base_ring: "Ring",
     ) -> "FinitelyGeneratedFormModules":
         # Local: a module-level import here would close a cycle; by call time this module is built.
         from dzack_research.preamble.categories.rings.rings import engine_ring
         category: FinitelyGeneratedFormModules = super().__classcall__(
-            cls, SageZZ if base_ring is None else engine_ring(base_ring)
+            cls, engine_ring(base_ring)
         )
         return category
 
@@ -1221,12 +1213,12 @@ class FinitelyGeneratedFreeFormModules(OwnedCategoryOverBaseRing):
     @staticmethod
     def __classcall_private__(
         cls: type["FinitelyGeneratedFreeFormModules"],
-        base_ring: "Ring | None" = None,
+        base_ring: "Ring",
     ) -> "FinitelyGeneratedFreeFormModules":
         # Local: a module-level import here would close a cycle; by call time this module is built.
         from dzack_research.preamble.categories.rings.rings import engine_ring
         category: FinitelyGeneratedFreeFormModules = super().__classcall__(
-            cls, SageZZ if base_ring is None else engine_ring(base_ring)
+            cls, engine_ring(base_ring)
         )
         return category
 

@@ -1065,7 +1065,7 @@ def test_catalogue_latex_fits_mathjax_and_has_balanced_environments() -> None:
         # The registry, not a scan of the class's attributes: ``Lattices`` is
         # the category as well as the catalogue, so its attributes include the
         # axiom categories, and asking a class whether it is in
-        # ``IntegralLattices()`` asks a class for its ``category()``.
+        # ``IntegralLattices(R)`` asks a class for its ``category()``.
         **catalogue.Lattices.namespace(),
         **{f"A{n}": catalogue.Lattices.root_lattice("A", n) for n in (1, 2, 5)},
         **{f"D{n}": catalogue.Lattices.root_lattice("D", n) for n in (4, 5)},
@@ -1135,13 +1135,13 @@ def test_get_isotropic_type_classifies() -> None:
 
     catalogue, _, _ = _preamble()
     odd = catalogue.Lattices.U.direct_sum((catalogue.Lattices.U,))
-    refine(odd, IntegralLattices())
+    refine(odd, IntegralLattices(ZZ))
     assert odd.get_isotropic_type(odd.module_generators()[0]) == "Odd"
     with pytest.raises(AssertionError):
         odd.get_isotropic_type(vector(ZZ, [1, 0, 0, 0]))
 
     ordinary = catalogue.Lattices.U_2
-    refine(ordinary, IntegralLattices())
+    refine(ordinary, IntegralLattices(ZZ))
     # $e/2$, which is $e/\operatorname{div}(e)$ since $\operatorname{div}(e)=2$
     # in $U(2)$ -- built by dividing $c(e)$ rather than from a coordinate row,
     # which the projection refuses and which names no element of $L^\vee$.
@@ -1152,7 +1152,7 @@ def test_get_isotropic_type_classifies() -> None:
     assert ordinary.get_isotropic_type(ordinary.module_generators()[0]) == "Even ordinary"
 
     characteristic = catalogue.Lattices.IPQ(1, 1).twist(2)
-    refine(characteristic, IntegralLattices())
+    refine(characteristic, IntegralLattices(ZZ))
     # $(e+f)/2$, and $\operatorname{div}(e+f)=\gcd(2,-2)=2$ on $\langle2\rangle
     # \oplus\langle-2\rangle$, so this is the same class the isotropic type
     # below is read from.

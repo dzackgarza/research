@@ -198,10 +198,10 @@ def test_the_lattice_axioms_compose_in_any_order() -> None:
 
 
 def test_integral_lattices_is_that_join_and_holds_the_specimens() -> None:
-    r"""``IntegralLattices()`` is the axioms, not a category standing alone."""
+    r"""``IntegralLattices(R)`` is the axioms, not a category standing alone."""
     _ensure_preamble()
 
-    category = IntegralLattices()
+    category = IntegralLattices(ZZ)
     carried = set(category.axioms())
 
     for axiom in ("Projective", "FinitelyGenerated", "Integral", "Nondegenerate"):

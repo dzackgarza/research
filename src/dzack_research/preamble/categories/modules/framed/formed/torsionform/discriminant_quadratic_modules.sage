@@ -81,7 +81,7 @@ class DiscriminantQuadraticModules(Category):
         # Local: a module-level import here would close a cycle; by call time this module is built.
         from dzack_research.preamble.categories.modules.framed.formed.form_modules import QuadraticFormModules
         from dzack_research.preamble.categories.modules.framed.formed.torsionform.torsion_modules_with_form import TorsionModulesWithForm
-        return [TorsionModulesWithForm(), QuadraticFormModules()]
+        return [TorsionModulesWithForm(SageZZ), QuadraticFormModules(SageZZ)]
 
     def from_module(self, module: "Module", gram: Matrix) -> "FormModule":
         r"""Return the torsion form on ``module`` with Gram matrix ``gram``.
@@ -97,7 +97,7 @@ class DiscriminantQuadraticModules(Category):
         from dzack_research.preamble.categories.forms.forms import QuadraticForm
         from dzack_research.preamble.refine import refine
         from dzack_research.preamble.categories.modules.framed.formed.torsionform.torsion_modules_with_form import subdivide_form_gram_matrix
-        assert module in FinitelyPresentedTorsionModules(), (
+        assert module in FinitelyPresentedTorsionModules(SageZZ), (
             "a discriminant form requires a finitely presented torsion module"
         )
         relations = module.relation_matrix()._sage_matrix().change_ring(SageZZ)
@@ -131,7 +131,7 @@ class DiscriminantQuadraticModules(Category):
         """
         # Local: a module-level import here would close a cycle; by call time this module is built.
         from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_torsion_modules import FinitelyPresentedTorsionModules
-        module = FinitelyPresentedTorsionModules().from_relations(relations)
+        module = FinitelyPresentedTorsionModules(SageZZ).from_relations(relations)
         return self.from_module(module, gram)
 
     def cokernel(self, morphism: "Morphism") -> "FormModule":
@@ -185,7 +185,7 @@ class DiscriminantQuadraticModules(Category):
             from dzack_research.preamble.categories.modules.framed.formed.torsionform.torsion_modules_with_form import regenerating_data
             module_generators = tuple(module_generators)
             relations, gram = regenerating_data(self, module_generators)
-            module = FinitelyPresentedTorsionModules().from_relations(
+            module = FinitelyPresentedTorsionModules(SageZZ).from_relations(
                 relations,
                 finite_ordered_set(module_generators),
             )

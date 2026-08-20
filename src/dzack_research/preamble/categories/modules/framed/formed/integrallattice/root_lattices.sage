@@ -11,6 +11,7 @@ from typing import Protocol, Self, TYPE_CHECKING
 
 from dzack_research.preamble.owned_category_bases import Category
 from sage.combinat.root_system.weyl_group import WeylGroup
+from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.sets.cardinals import Cardinal, cardinal
 
@@ -59,7 +60,7 @@ class RootLattices(Category):
     def super_categories(self) -> list:
         # Local: a module-level import here would close a cycle; by call time this module is built.
         from dzack_research.preamble.categories.modules.framed.formed.integrallattice.integral_lattices import IntegralLattices
-        return [IntegralLattices()]
+        return [IntegralLattices(SageZZ)]
 
     class ParentMethods:
         # Recorded by ``refine_root_lattice`` when the Cartan matrix becomes

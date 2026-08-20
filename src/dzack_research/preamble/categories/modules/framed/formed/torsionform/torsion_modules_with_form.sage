@@ -95,7 +95,7 @@ class TorsionModulesWithForm(OwnedCategoryOverBaseRing):
     @staticmethod
     def __classcall_private__(
         cls: type["TorsionModulesWithForm"],
-        base_ring: "Ring | None" = None,
+        base_ring: "Ring",
     ) -> "TorsionModulesWithForm":
         # Over the engine's integers, which is what the modules of this
         # category carry: the owned ring is the session's name for it, and a
@@ -105,9 +105,6 @@ class TorsionModulesWithForm(OwnedCategoryOverBaseRing):
         from dzack_research.preamble.categories.rings.rings import engine_ring
         category: "TorsionModulesWithForm"
         match base_ring:
-            case None:
-                category = super().__classcall__(cls, SageZZ)
-                return category
             case _ if engine_ring(base_ring) is SageZZ:
                 category = super().__classcall__(cls, SageZZ)
                 return category
@@ -956,7 +953,7 @@ class CokernelForms(Category):
         return "cokernel torsion forms"
 
     def super_categories(self) -> list:
-        return [TorsionModulesWithForm()]
+        return [TorsionModulesWithForm(SageZZ)]
 
     class ParentMethods:
         r"""What a lattice presentation adds, which is a cover and little else.
@@ -1117,7 +1114,7 @@ def cokernel_categories(morphism: "Morphism") -> list:
     # Local: a module-level import here would close a cycle; by call time this module is built.
     from dzack_research.preamble.categories.modules.framed.formed.integrallattice.integral_lattices import IntegralLattices
     domain = morphism.domain()
-    if domain not in IntegralLattices():
+    if domain not in IntegralLattices(SageZZ):
         return []
     if morphism is domain.correlation():
         return [CokernelForms(), DiscriminantForms()]

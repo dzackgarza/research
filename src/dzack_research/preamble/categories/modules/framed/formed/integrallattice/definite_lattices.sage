@@ -57,7 +57,7 @@ class DefiniteLattices(Category):
     def super_categories(self) -> list:
         # Local: a module-level import here would close a cycle; by call time this module is built.
         from dzack_research.preamble.categories.modules.framed.formed.integrallattice.integral_lattices import IntegralLattices
-        return [IntegralLattices()]
+        return [IntegralLattices(SageZZ)]
 
     class ParentMethods:
         r"""The distance vocabulary a definite form supports.

@@ -23,6 +23,7 @@ from typing import TYPE_CHECKING
 
 from dzack_research.preamble.owned_category_bases import Category
 from sage.misc.abstract_method import abstract_method
+from sage.rings.integer_ring import ZZ as SageZZ
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -61,7 +62,7 @@ class HyperbolicLattices(Category):
     def super_categories(self) -> list:
         # Local: a module-level import here would close a cycle; by call time this module is built.
         from dzack_research.preamble.categories.modules.framed.formed.integrallattice.integral_lattices import IntegralLattices
-        return [IntegralLattices()]
+        return [IntegralLattices(SageZZ)]
 
     class ParentMethods:
         r"""Methods available on hyperbolic lattices refined into this category."""

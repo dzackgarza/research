@@ -296,7 +296,7 @@ def test_a_degenerate_gram_matrix_does_not_claim_nondegeneracy() -> None:
 
     assert formed in Lattices(ZZ).FinitelyGenerated().Integral()
     assert formed not in Lattices(ZZ).Nondegenerate()
-    assert formed not in IntegralLattices()
+    assert formed not in IntegralLattices(ZZ)
 
 
 def test_a_degenerate_lattice_answers_its_own_nondegeneracy() -> None:

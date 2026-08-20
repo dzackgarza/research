@@ -106,7 +106,7 @@ class GroupLattices(Category):
 
         return [
             GroupModules(SageZZ, self._group),
-            IntegralLattices(),
+            IntegralLattices(SageZZ),
         ]
 
     class ParentMethods:
@@ -435,7 +435,7 @@ def group_lattice(lattice: "FormModule", action: GroupAction) -> FormModule:
     from dzack_research.preamble.categories.modules.group_modules.group_modules import GroupModule
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import group_action_homset
 
-    assert lattice in IntegralLattices(), (
+    assert lattice in IntegralLattices(SageZZ), (
         "a group lattice is constructed from an actual integral lattice"
     )
     assert (

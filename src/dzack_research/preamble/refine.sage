@@ -30,7 +30,7 @@ EXAMPLES::
     sage: from sage.matrix.constructor import matrix
     sage: from sage.rings.integer_ring import ZZ
     sage: L = _integral_lattice_with_names(matrix(ZZ, [[0, 1], [1, 0]]))
-    sage: refine(L, IntegralLattices())
+    sage: refine(L, IntegralLattices(ZZ))
     sage: L.q(L.module_generators()[0])
     0
 """

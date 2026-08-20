@@ -471,7 +471,7 @@ class Lattices(CategoryWithAxiom_over_base_ring):
 
         Read off the registry rather than by scanning attributes for things
         that look like lattices.  The class also carries the axiom categories
-        and the constructors, and ``obj in IntegralLattices()`` asks a class for
+        and the constructors, and ``obj in IntegralLattices(R)`` asks a class for
         its ``category()``.
         """
         return dict(cls._specimens)

@@ -94,7 +94,7 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
 
     @staticmethod
     def __classcall_private__(
-        cls: type["FinitelyPresentedTorsionModules"], base_ring: "Ring | None" = None
+        cls: type["FinitelyPresentedTorsionModules"], base_ring: "Ring"
     ) -> "FinitelyPresentedTorsionModules":
         # Local: at module level this closes an import cycle; the ring module
         # is built by the time this category is constructed.
@@ -106,9 +106,6 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
         # members at all.
         over_the_integers: "FinitelyPresentedTorsionModules"
         match base_ring:
-            case None:
-                over_the_integers = super().__classcall__(cls, SageZZ)
-                return over_the_integers
             case _ if engine_ring(base_ring) is SageZZ:
                 over_the_integers = super().__classcall__(cls, SageZZ)
                 return over_the_integers

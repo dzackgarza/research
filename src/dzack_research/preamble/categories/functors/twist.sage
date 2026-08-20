@@ -42,7 +42,7 @@ class TwistFunctor(Functor):
         # call time.
         from dzack_research.preamble.categories.modules.framed.formed.integrallattice.integral_lattices import IntegralLattices
 
-        Functor.__init__(self, IntegralLattices(), IntegralLattices())
+        Functor.__init__(self, IntegralLattices(SageZZ), IntegralLattices(SageZZ))
 
     def scale(self) -> "RingElement":
         return self._scale

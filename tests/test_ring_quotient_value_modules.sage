@@ -35,8 +35,8 @@ def test_the_session_names_Q_mod_Z_and_lands_it_in_the_owned_category() -> None:
     rationals_mod_one = QQ / ZZ
     rationals_mod_two = QQ / (2 * ZZ)
 
-    assert rationals_mod_one in FractionFieldQuotients()
-    assert rationals_mod_two in FractionFieldQuotients()
+    assert rationals_mod_one in FractionFieldQuotients(ZZ)
+    assert rationals_mod_two in FractionFieldQuotients(ZZ)
     assert rationals_mod_one.modulus() == 1
     assert rationals_mod_two.modulus() == 2
     assert rationals_mod_one.fraction_field() == QQ
@@ -93,7 +93,7 @@ def test_the_fraction_field_is_the_modulus_zero_object() -> None:
 
     fractions = QQ / (0 * ZZ)
 
-    assert fractions in FractionFieldQuotients()
+    assert fractions in FractionFieldQuotients(ZZ)
     assert fractions.modulus() == 0
     # $\mathbb Q$ is torsion free, so it is the one object here that must not
     # be placed where its proper quotients are.

@@ -174,7 +174,7 @@ else:
         for _name, _value in vars(Lattices).items()
         if not _name.startswith("_")
         and isinstance(_value, Parent)
-        and _value in IntegralLattices()
+        and _value in IntegralLattices(SageZZ)
     }
 
     # Names for the blocks a decomposition can actually produce.  Matching is

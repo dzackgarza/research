@@ -446,7 +446,7 @@ def test_tensor_and_divided_squares_respect_a_module_presentation() -> None:
     use the same quotient presentation.
     """
     _ensure_preamble()
-    module = FinitelyPresentedTorsionModules().from_relations(matrix(ZZ, [[2]]))
+    module = FinitelyPresentedTorsionModules(ZZ).from_relations(matrix(ZZ, [[2]]))
 
     assert TensorSquare(module).invariants() == (2,)
     assert DividedSquare(module).invariants() == (4,)

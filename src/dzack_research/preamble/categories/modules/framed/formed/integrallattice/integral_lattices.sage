@@ -28,8 +28,9 @@ EXAMPLES::
     sage: from dzack_research.preamble import catalogue
     sage: from dzack_research.preamble.categories import IntegralLattices
     sage: from dzack_research.preamble.refine import refine
+    sage: from sage.rings.integer_ring import ZZ
     sage: L = Lattices.U
-    sage: refine(L, IntegralLattices())
+    sage: refine(L, IntegralLattices(ZZ))
     sage: L.q(L.module_generators()[0])
     0
 """
@@ -146,33 +147,6 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
         FinitelyGeneratedIntegralLattices,
         "Nondegenerate",
     )
-
-    @staticmethod
-    def __classcall_private__(
-        cls: type["IntegralLattices"],
-        base_ring: "Ring | Category | None" = None,
-    ) -> "IntegralLattices":
-        r"""Default the base ring to the integers.
-
-        Lattices are $R$-lattices and the category is parametrized by $R$;
-        over $\ZZ$ is the case a session means when it says no ring, and
-        saying so here keeps the general statement without making every call
-        site name the ring.
-        """
-        from sage.categories.category import Category
-        from sage.rings.integer_ring import ZZ as _ZZ
-
-        if base_ring is None:
-            base_ring = _ZZ
-        if isinstance(base_ring, Category):
-            over_category: "IntegralLattices" = super(
-                IntegralLattices, cls
-            ).__classcall__(cls, base_ring)
-            return over_category
-        category: "IntegralLattices" = super(IntegralLattices, cls).__classcall__(
-            cls, base_ring
-        )
-        return category
 
     class ParentMethods:
         r"""Methods available on every integral lattice parent refined into this category."""
@@ -2500,7 +2474,7 @@ def refine_one_lattice(lattice: "FormModule") -> None:
             return
         case True:
             pass
-    refine(lattice, IntegralLattices())
+    refine(lattice, IntegralLattices(SageZZ))
     # The Even axiom is admitted by its certifying predicate: ``refine``
     # re-asks ``is_even()`` and refuses a ``False``, so the routing here is
     # the same question the gate asks, not a diagonal proxy of its own.

@@ -32,6 +32,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 from dzack_research.preamble.categories.modules.group_modules.group_lattices import group_lattice
 from sage.misc.cachefunc import cached_function
 from sage.misc.cachefunc import cached_method
+from sage.rings.integer_ring import ZZ as SageZZ
 from dzack_research.preamble.categories.abstract_categories.functors import Functor
 
 
@@ -40,7 +41,7 @@ class TrivialActionFunctor(Functor):
 
     def __init__(self, group: "Group") -> None:
         self._group = group
-        Functor.__init__(self, IntegralLattices(), GroupLattices(group))
+        Functor.__init__(self, IntegralLattices(SageZZ), GroupLattices(group))
 
     def group(self) -> "Group":
         return self._group

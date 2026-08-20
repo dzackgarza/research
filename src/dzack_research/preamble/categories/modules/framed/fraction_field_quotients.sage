@@ -98,10 +98,10 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
 
     @staticmethod
     def __classcall_private__(
-        cls: type["FractionFieldQuotients"], base_ring: "Ring | None" = None
+        cls: type["FractionFieldQuotients"], base_ring: "Ring"
     ) -> "FractionFieldQuotients":
         category: "FractionFieldQuotients" = super().__classcall__(
-            cls, SageZZ if base_ring is None else engine_ring(base_ring)
+            cls, engine_ring(base_ring)
         )
         return category
 
@@ -258,7 +258,7 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
                 tuple(self.lift(element) for element in classes),
                 self.modulus(),
             )
-            source = FinitelyPresentedTorsionModules().from_relations(
+            source = FinitelyPresentedTorsionModules(SageZZ).from_relations(
                 matrix(SageZZ, [[order]])
             )
             inclusion = module_homset(source, self)(
@@ -349,14 +349,17 @@ def install_fraction_field_quotients() -> None:
         return
     hook_post_init(
         QmodnZ,
-        FractionFieldQuotients(),
+        FractionFieldQuotients(SageZZ),
         before=_record_modulus,
         predicate=_is_the_fraction_field,
     )
     hook_post_init(
         QmodnZ,
         Category.join(
-            [FractionFieldQuotients(), TorsionModules(FractionFieldQuotients().base_ring())]
+            [
+                FractionFieldQuotients(SageZZ),
+                TorsionModules(FractionFieldQuotients(SageZZ).base_ring()),
+            ]
         ),
         predicate=_is_a_proper_quotient,
     )

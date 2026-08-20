@@ -276,7 +276,7 @@ class IsometryHomsets(Category):
         ) -> None:
             # Local: a module-level import here would close a cycle; by call time this module is built.
             from dzack_research.preamble.categories.modules.framed.formed.integrallattice.integral_lattices import IntegralLattices
-            assert domain in IntegralLattices() and codomain in IntegralLattices(), (
+            assert domain in IntegralLattices(SageZZ) and codomain in IntegralLattices(SageZZ), (
                 "Isom(L, M) is sited between integral lattices; base-change "
                 "explicitly before asking for isometries of anything else"
             )
@@ -683,7 +683,7 @@ class EmbeddingHomsets(Category):
         ) -> None:
             # Local: a module-level import here would close a cycle; by call time this module is built.
             from dzack_research.preamble.categories.modules.framed.formed.integrallattice.integral_lattices import IntegralLattices
-            assert domain in IntegralLattices() and codomain in IntegralLattices(), (
+            assert domain in IntegralLattices(SageZZ) and codomain in IntegralLattices(SageZZ), (
                 "Emb(L, M) is sited between integral lattices"
             )
             super().__init__(domain=domain, codomain=codomain, **rest)

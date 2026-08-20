@@ -891,7 +891,7 @@ class LatticeIsometries(Category):
             from dzack_research.preamble.categories.modules.framed.formed.integrallattice.integral_lattices import IntegralLattices
             composite: "Morphism" = FormModules.Homsets.ElementMethods.then(self, other)
             codomain = composite.codomain()
-            if codomain in IntegralLattices() and composite.matrix().is_invertible():
+            if codomain in IntegralLattices(SageZZ) and composite.matrix().is_invertible():
                 admitted: "Morphism" = composite.domain().Isom(codomain)(composite)
                 return admitted
             return composite
