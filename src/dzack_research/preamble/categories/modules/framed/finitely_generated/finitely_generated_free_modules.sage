@@ -357,12 +357,10 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
             # module is built by the time a relation matrix is asked for.
             from dzack_research.preamble.categories.rings.rings import engine_ring
 
+            ring = engine_ring(self.base_ring())
             return MorphismMatrix(
-                matrix(
-                    engine_ring(self.base_ring()),
-                    0,
-                    _finite_rank(self.module_generating_set()),
-                )
+                matrix(ring, 0, _finite_rank(self.module_generating_set())),
+                ring,
             )
 
         def number_of_module_generators(self: "FiniteFreeModuleParent") -> "Integer":

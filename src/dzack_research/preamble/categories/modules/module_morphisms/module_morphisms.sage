@@ -235,14 +235,15 @@ def _independent_module_generators(
             for label in coefficients
         )
     )
+    ring = engine_ring(module.base_ring())
     rows = matrix(
-        engine_ring(module.base_ring()),
+        ring,
         [
             [coefficients.get(label, module.base_ring().zero()) for label in support]
             for coefficients in coefficient_functions
         ],
     )
-    independent = MorphismMatrix(rows).normal_form().rows()
+    independent = MorphismMatrix(rows, ring).normal_form().rows()
     return [
         zipsum(
             row,
@@ -502,23 +503,24 @@ class ModuleMorphism(Morphism):
         try:
             return self._matrix
         except AttributeError:
+            # Local: at module level this closes an import cycle; the ring
+            # module is built by the time a matrix is asked for.
+            from dzack_research.preamble.categories.rings.rings import engine_ring
+
             domain_labels = self.domain().module_generating_set()
             codomain_labels = self.codomain().module_generating_set()
             assert (
                 domain_labels in Sets().Finite()
                 and codomain_labels in Sets().Finite()
             ), "a matrix requires finite ordered framings"
+            ring = engine_ring(self.codomain().base_ring())
             images = self.images()
             if not images:
-                m = matrix(
-                    self.codomain().base_ring(),
-                    0,
-                    len(tuple(codomain_labels)),
-                )
+                m = matrix(ring, 0, len(tuple(codomain_labels)))
             else:
                 m = matrix([_coordinate_vector(image) for image in images])
 
-            self._matrix = MorphismMatrix(m)
+            self._matrix = MorphismMatrix(m, ring)
             return self._matrix
 
     def _call_(self, element: ElementConstructorInput) -> "Element":
@@ -808,7 +810,8 @@ class ModuleMorphism(Morphism):
         assert not _is_torsion(codomain), (
             "orthogonal complement is defined here in a free codomain"
         )
-        pairing = MorphismMatrix(codomain.gram_matrix()) * self.matrix().transpose()
+        gram = codomain.gram_matrix()
+        pairing = MorphismMatrix(gram, gram.base_ring()) * self.matrix().transpose()
         return codomain.subobject_on(
             [
                 zipsum(
@@ -984,7 +987,8 @@ class ModuleMorphism(Morphism):
                         SageZZ,
                         0,
                         len(tuple(self.codomain().module_generating_set())),
-                    )
+                    ),
+                    SageZZ,
                 )
 
     def _repr_type(self) -> str:
@@ -1230,9 +1234,14 @@ class AutomorphismSubgroup:
         so returning representatives from a parallel model would silently
         write every character against the wrong classes.
         """
+        # Local: at module level this closes an import cycle; the ring module
+        # is built by the time conjugacy classes are asked for.
+        from dzack_research.preamble.categories.rings.rings import engine_ring
+
+        ring = engine_ring(self.domain().base_ring())
         by_matrix = self._by_matrix()
         representatives = tuple(
-            by_matrix.get(MorphismMatrix(representative.matrix()))
+            by_matrix.get(MorphismMatrix(representative.matrix(), ring))
             for representative in
             self._defining_matrix_group().conjugacy_classes_representatives()
         )

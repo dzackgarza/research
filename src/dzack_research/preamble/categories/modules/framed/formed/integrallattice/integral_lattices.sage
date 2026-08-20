@@ -369,7 +369,7 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             )
             hermite_rows = [
                 row
-                for row in MorphismMatrix(scaled).normal_form(include_zero_rows=True).rows()
+                for row in MorphismMatrix(scaled, SageZZ).normal_form(include_zero_rows=True).rows()
                 if any(coordinate != 0 for coordinate in row)
             ]
             basis = matrix(SageQQ, hermite_rows[:rank]) / denominator

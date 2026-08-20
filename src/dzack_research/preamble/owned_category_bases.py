@@ -367,6 +367,20 @@ class Homsets(
         return SageHomsets().Endset()
 
 
+class _OverTheSameBaseRing:
+    r"""A construction on a category over a ring is over the same ring.
+
+    A subobject of an \(R\)-module is an \(R\)-module, and so is a product,
+    a quotient and a tensor product of them.  Sage's construction categories
+    are not over a base ring, so a join that includes one answers no ring at
+    all, and an object built in that join then has none.  Every construction
+    below reads the ring off the category it is built on.
+    """
+
+    def base_ring(self) -> SageCategory:
+        return self.base_category().base_ring()
+
+
 class FunctorialConstructionCategory(
     OwnedCategoryMixin,
     OwnedCategoryObject,

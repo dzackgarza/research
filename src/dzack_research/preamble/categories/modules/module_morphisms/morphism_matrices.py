@@ -63,8 +63,15 @@ class MorphismMatrix:
     def __init__(
         self,
         entries: RawMorphismMatrix | MorphismMatrix,
-        base_ring: BaseRing | None = None,
+        base_ring: BaseRing,
     ) -> None:
+        r"""Build the matrix of a morphism over ``base_ring``.
+
+        The ring is named, never inferred.  Raw entries have no ring to read,
+        and entries that arrive as a matrix carry one that may not be the
+        ring the morphism is over -- so the caller states which ring this
+        matrix is written over and the entries are moved to it.
+        """
         built: Matrix[RingElement]
         match entries:
             case MorphismMatrix():
@@ -72,11 +79,8 @@ class MorphismMatrix:
             case Matrix():
                 built = entries
             case _:
-                assert base_ring is not None, (
-                    "a morphism matrix built from raw entries needs its base ring"
-                )
                 built = _matrix(base_ring, entries)
-        if base_ring is not None and built.base_ring() is not base_ring:
+        if built.base_ring() is not base_ring:
             built = built.change_ring(base_ring)
         self._matrix = built
 
@@ -99,8 +103,15 @@ class MorphismMatrix:
         through this protocol, so declaring it is what makes the plain idiom
         work -- rather than a bespoke predicate that would say the same thing
         in a name only this repo knows.
+
+        Sage calls this hook with or without a ring, so the parameter is
+        Sage's and not a choice made here.  Without one, the answer is this
+        matrix over the ring it was written over; there is no other ring to
+        pick and none is inferred.
         """
-        return self._matrix if base_ring is None else self._matrix.change_ring(base_ring)
+        if base_ring is None:
+            return self._matrix
+        return self._matrix.change_ring(base_ring)
 
     # -- shape and entries -------------------------------------------------
 
@@ -182,17 +193,19 @@ class MorphismMatrix:
         A morphism has no "transpose" as such; what it has is a dual, and
         the dual's matrix in the dual generating sets is this one.
         """
-        return MorphismMatrix(self._matrix.transpose())
+        return MorphismMatrix(self._matrix.transpose(), self._matrix.base_ring())
 
     def inverse(self) -> MorphismMatrix:
         r"""Return the matrix of the inverse morphism."""
-        return MorphismMatrix(self._matrix.inverse())
+        return MorphismMatrix(self._matrix.inverse(), self._matrix.base_ring())
 
     def change_ring(self, ring: Ring) -> MorphismMatrix:
-        return MorphismMatrix(self._matrix.change_ring(ring))
+        return MorphismMatrix(self._matrix.change_ring(ring), ring)
 
     def stack(self, other: MorphismMatrix | Matrix) -> MorphismMatrix:
-        return MorphismMatrix(self._matrix.stack(_underlying(other)))
+        return MorphismMatrix(
+            self._matrix.stack(_underlying(other)), self._matrix.base_ring()
+        )
 
     def hermite_form(
         self,
@@ -209,8 +222,11 @@ class MorphismMatrix:
             reduced, transform = self._matrix.hermite_form(
                 transformation=True, **kwargs
             )
-            return (MorphismMatrix(reduced), MorphismMatrix(transform))
-        return MorphismMatrix(self._matrix.hermite_form(**kwargs))
+            return (
+                MorphismMatrix(reduced, self._matrix.base_ring()),
+                MorphismMatrix(transform, self._matrix.base_ring()),
+            )
+        return MorphismMatrix(self._matrix.hermite_form(**kwargs), self._matrix.base_ring())
 
     def normal_form(self, include_zero_rows: bool = False) -> MorphismMatrix:
         r"""Return the row-reduced form appropriate to the base ring.
@@ -228,9 +244,10 @@ class MorphismMatrix:
                 reduced = reduced.matrix_from_rows(
                     [i for i, row in enumerate(reduced.rows()) if not row.is_zero()]
                 )
-            return MorphismMatrix(reduced)
+            return MorphismMatrix(reduced, self._matrix.base_ring())
         return MorphismMatrix(
-            self._matrix.hermite_form(include_zero_rows=include_zero_rows)
+            self._matrix.hermite_form(include_zero_rows=include_zero_rows),
+            self._matrix.base_ring(),
         )
 
     def smith_form(
@@ -238,9 +255,9 @@ class MorphismMatrix:
     ) -> tuple[MorphismMatrix, MorphismMatrix, MorphismMatrix]:
         normal, left, right = self._matrix.smith_form()
         return (
-            MorphismMatrix(normal),
-            MorphismMatrix(left),
-            MorphismMatrix(right),
+            MorphismMatrix(normal, self._matrix.base_ring()),
+            MorphismMatrix(left, self._matrix.base_ring()),
+            MorphismMatrix(right, self._matrix.base_ring()),
         )
 
     def LLL(self) -> MorphismMatrix:
@@ -256,7 +273,7 @@ class MorphismMatrix:
         # integer matrix type and not on the generic one, which is what the
         # annotation says -- ``change_ring(ZZ)`` is what produces it.
         integral: Matrix_integer_dense = self._matrix.change_ring(_ZZ)
-        return MorphismMatrix(integral.LLL())
+        return MorphismMatrix(integral.LLL(), _ZZ)
 
     def __mul__(
         self,
@@ -264,7 +281,7 @@ class MorphismMatrix:
     ) -> MorphismMatrix:
         product = self._matrix * _underlying(other)
         assert isinstance(product, Matrix), "matrix multiplication must return a matrix"
-        return MorphismMatrix(product)
+        return MorphismMatrix(product, self._matrix.base_ring())
 
     def __rmul__(
         self,
@@ -272,17 +289,17 @@ class MorphismMatrix:
     ) -> MorphismMatrix:
         product = _underlying(other) * self._matrix
         assert isinstance(product, Matrix), "matrix multiplication must return a matrix"
-        return MorphismMatrix(product)
+        return MorphismMatrix(product, self._matrix.base_ring())
 
     # -- nullspaces: private, and matrices ---------------------------------
 
     def _left_kernel_matrix(self) -> MorphismMatrix:
         r"""Return the rows spanning $\{x : xA = 0\}$. Callers: morphisms only."""
-        return MorphismMatrix(self._matrix.left_kernel_matrix())
+        return MorphismMatrix(self._matrix.left_kernel_matrix(), self._matrix.base_ring())
 
     def _right_kernel_matrix(self) -> MorphismMatrix:
         r"""Return the rows spanning $\{x : Ax = 0\}$. Callers: morphisms only."""
-        return MorphismMatrix(self._matrix.right_kernel_matrix())
+        return MorphismMatrix(self._matrix.right_kernel_matrix(), self._matrix.base_ring())
 
     # -- subdivisions are display data -------------------------------------
 

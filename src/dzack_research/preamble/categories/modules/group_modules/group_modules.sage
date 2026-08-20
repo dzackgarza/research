@@ -623,10 +623,11 @@ def _invariant_generators(module: "Module") -> list:
         "computing invariants imposes one condition per group element, so "
         f"it requires a finite group; {module.group()} is not known to be one"
     )
-    identity = identity_matrix(engine_ring(module.base_ring()), module.rank())
+    ring = engine_ring(module.base_ring())
+    identity = identity_matrix(ring, module.rank())
     constraints = MorphismMatrix(
         matrix(
-            engine_ring(module.base_ring()),
+            ring,
             [
                 row
                 for element in module.group()
@@ -634,7 +635,8 @@ def _invariant_generators(module: "Module") -> list:
                     module.action_matrix(element)._sage_matrix() - identity
                 ).transpose().rows()
             ],
-        )
+        ),
+        ring,
     )
     generators = [
         module._from_coordinates(row)

@@ -1588,3 +1588,360 @@ The recent verification rules were specific to the migration project:
 - Local projects should follow current upstream `main`, not fixed revision pins.
 
 Communication must report mathematical effects. It must not report token use, agent waves, repeated checks, or administrative state.
+
+# Mathematical judgment and repository practice from transcript corrections (2026-08-21)
+
+The preceding section records a first synthesis. This section adds the mathematical
+reasoning, cognitive corrections, repository rules, and style requirements that the
+short synthesis did not capture.
+
+## Standard of mathematical thought
+
+- Treat each mathematical correction as compressed research guidance.
+- Derive the structure that makes the correction true.
+- Do not translate one mathematical correction into one local method request.
+- Identify the objects, morphisms, hypotheses, codomains, and universal properties first.
+- Determine the categorical home of each construction before writing its representation.
+- A named category must exist as a category, not as a class with similarly named methods.
+- A named functor must act on objects and morphisms.
+- A named adjunction must include the hom-set bijection, unit, counit, and naturality.
+- Do not use category theory as a metaphor for a collection of constructors.
+- Do not replace a mathematical object with the data returned by an external engine.
+- External engines compute data used to construct owned mathematical objects.
+- Local computational data never replaces the structure that explains its functorial behavior.
+- Prefer a general mathematical construction when it removes many apparent local tasks.
+- A short advisor question can expose a missing theory rather than a missing method.
+- Unfold that theory before estimating or implementing the apparent method backlog.
+- Do not hedge after the user has supplied enough structure to derive the answer.
+- Perform the mathematics needed to resolve the stated universal property.
+- If a conclusion contradicts standard structure, rederive it before changing code.
+- One false foundational assertion invalidates every downstream inference that used it.
+- Review foundational assumptions after such a contradiction.
+- Do not review counts, file totals, or gate output as substitutes for those assumptions.
+- Ask whether the current construction is the requested mathematical object at all.
+- Ask whether the code models the user's stated object, morphism, or functor exactly.
+- A locally working representation does not answer either question.
+
+## Object, structure, and representation
+
+- Start from mathematical objects and their relations.
+- Choose representations only after the mathematical ownership is clear.
+- A lattice is a set with module structure and a form.
+- It does not merely hold unrelated objects representing those structures.
+- A formed module is a module with a form.
+- It does not wrap a second module that remains the real mathematical object.
+- Category membership must correspond to actual supplied structure.
+- An object in a structured category must carry the data required by that category.
+- Do not refine an existing object into a data-bearing category without constructing the required data.
+- Construct owned objects through the owned category hierarchy.
+- Use refinement only for adopted Sage objects when refinement adds no missing construction data.
+- Provide a `preamble.all` construction surface analogous to `sage.all`.
+- That surface constructs owned objects and populates the research namespace.
+- Never build a parallel toy hierarchy when the task concerns the live preamble hierarchy.
+- A toy that proves itself against itself does not prove the real architecture.
+- Convert one real category before claiming that a category mechanism reduces author effort.
+- User-facing notebook objects are evidence about the live surface.
+- Do not describe a new experimental path as the state of that surface.
+
+## Category and class architecture
+
+- Defining a new leaf category must feel routine.
+- The leaf author handles the leaf and its immediate supercategory only.
+- The leaf author never implements the transitive chain manually.
+- `super_categories()` is the sole declaration of categorical inheritance.
+- Do not add a second registry, binding declaration, or `forgets_to` relation.
+- The declared category graph already contains that information.
+- Sage already derives parent, element, and morphism method hierarchies from that graph.
+- The owned mechanism must propagate constructors and fields through the same graph.
+- The category and its implementation class should become one readable source unit.
+- `ParentMethods` can be the implementation class when its bases and fields propagate.
+- The implementation class stores only the minimal data introduced at that level.
+- Its constructor consumes that data and delegates the remaining construction upward.
+- A category level supplies the structure it introduces.
+- It must not merely declare an obligation that its own construction could discharge.
+- Abstract obligations remain valid for genuinely axiomatic categories.
+- An axiomatic subcategory need not have a separate concrete implementation class.
+- Generic mathematical operations belong in category method classes.
+- Parent operations belong in `ParentMethods`.
+- Element operations belong in `ElementMethods`.
+- Morphism operations belong in `MorphismMethods`.
+- Concrete classes remain minimal data containers when Sage ownership requires them.
+- Category methods precede concrete class methods in the owned MRO.
+- A concrete class can then provide a more efficient implementation when required.
+- Generated forwarding methods are forbidden.
+- A mathematician must be able to open the source and inspect each method body.
+- Do not replace readable mathematics with generated indirection.
+- Delete hand-written forwarding after the category graph supplies the operation directly.
+- Do not delete forwarding before the correct category surface exists.
+- The mechanism must compose through parents, elements, and morphisms.
+- The mechanism must also propagate fields and construction data.
+- Method propagation without data propagation does not solve the architecture.
+- Data propagation without the three method surfaces does not solve it either.
+
+## Immediate-supercategory construction
+
+- In a chain `Sets -> Modules -> Lattices`, each level owns one construction step.
+- A lattice constructor supplies the module required by the module level.
+- It never reimplements set cardinality or product behavior.
+- A module constructor supplies its underlying set construction.
+- A free module of rank `n` supplies the product of `n` copies of its base ring.
+- The set level owns cardinality, finiteness, countability, products, and coproducts.
+- The ring level supplies the set data for the ring.
+- Higher levels inherit the set operations through the category chain.
+- `L.cardinality()` must work without `Lattices` naming cardinality.
+- The implementation must preserve actual element parents and element operations.
+- Do not identify a module's elements with bare tuples merely because their sets are bijective.
+- Use the correct categorical relation when only a bijection is available.
+- Cardinality and finiteness are invariant under bijection.
+- Element representation and parenthood are not invariant under an arbitrary implementation shortcut.
+- The architecture must preserve both facts.
+
+## Subcategories, predicates, and operations
+
+- Distinguish membership predicates from ordinary categorical operations.
+- A predicate-defined subcategory states the contract for membership.
+- An object refined into that subcategory supplies the predicate computation.
+- The category does not return `True` merely because its name asserts a property.
+- Other operations should remain category methods whenever their hypotheses are categorical.
+- Place axioms as high as their hypotheses permit.
+- Foundational categories remain essential without current callers.
+- A category of magmas is foundational mathematical work, not disposable empty code.
+- Empty method bodies, low call counts, and unfinished descendants do not reduce its value.
+
+## Forms and formed modules
+
+- A form is not synonymous with a bilinear form.
+- Bilinear and quadratic forms have different classifying constructions.
+- A bilinear form on `M` is a morphism from `M tensor M` to its value module.
+- A quadratic form uses the divided square appropriate to quadratic maps.
+- Construct a formed module from that defining form morphism.
+- Recover the underlying module from the source construction of the form.
+- Do not pass the same module twice through independent constructor arguments.
+- Independent copies can disagree and make invalid states representable.
+- A Gram matrix constructor first constructs the implied free module.
+- It then constructs the required homset and form morphism.
+- It finally calls the main formed-module constructor.
+- Forgetting the form is a functor between categories.
+- It is not a method on a formed module.
+- Each form flavor has its own free-forgetful adjunction.
+- The free bilinear form is the identity on the tensor-square classifier.
+- The free quadratic form is the identity on the quadratic classifier.
+- Prove each adjunction through its hom-set bijection.
+- Do not name an adjunction and then deny the existence of its adjoint.
+
+## Base rings and morphisms
+
+- A module category always requires its base ring.
+- No module constructor may silently substitute the integers.
+- `IntegralLattices` also requires an explicit ring.
+- Remove optional-ring signatures and their fallback branches.
+- A module morphism has a source and target over the same base ring.
+- `Hom` between an `R`-module and an unrelated `S`-module is not a module homset.
+- Scalar extension and restriction require named functors and changed categorical data.
+- Do not conceal such changes inside a permissive homset constructor.
+- Make invalid base-ring combinations impossible at construction.
+- Fix the architecture that permits ringless modules.
+- Do not patch individual ringless instances.
+
+## Decidability and specialized algorithms
+
+- State the exact decidability boundary for each equality or isomorphism question.
+- Do not invent Boolean procedures for general undecidable problems.
+- Do not use general undecidability to reject a specialized decision procedure.
+- KBMAG can make equality decidable for groups with suitable automatic structures.
+- Such machinery is significant research, not a conflict with the undecidability rule.
+- Return `Unknown` only where the available hypotheses and algorithms do not decide the question.
+- A specialized algorithm should return a definite result on its valid domain.
+- Record its hypotheses in the category that supplies it.
+- Let category placement select the specialized algorithm.
+- Do not special-case it inside a general method without mathematical ownership.
+
+## Mathematical discrepancies and research findings
+
+- Preserve discrepancies that expose distinct mathematical group actions or conventions.
+- A Sterk root-count difference is not debris.
+- It can distinguish full reflection-group orbits from smaller subgroup orbits.
+- Preserve the groups, actions, and orbit relation needed to state that difference.
+- Do not reduce such a finding to a note that two numbers disagree.
+- Derive the corrected mathematical statement from a false source statement.
+- Land the corrected proposition, construction, or cited specimen in the repository.
+- Do not retain tests whose only purpose is to forbid a past mistake.
+- Test the intended positive mathematics instead.
+- Published tables, literature examples, and existing fixture values can be proper oracles.
+- Their value does not depend on whether an agent considers the source prestigious.
+- Verify provenance when adding a new citation-gated specimen.
+- Preserve an existing oracle during migration even when its provenance is informal.
+
+## Semantic migration
+
+- The preamble centrally owns locally-authored Sage mathematics.
+- A migration request establishes the value of the selected corpus.
+- The executor decides destination and synthesis, not whether the corpus deserved preservation.
+- The unit of migration is a mathematical notion, not a file.
+- Read each notion once for semantics.
+- The reader should migrate or synthesize it while that context is live.
+- Do not separate deep analysis from implementation when implementation needs that mathematical context.
+- Do not make one agent produce a report for an unrelated new agent to interpret.
+- A summary is not the migrated mathematics.
+- Move prior art into the live preamble before reconciling it with current code.
+- Prefer a real move over a parallel rewrite.
+- After a mistaken edit yields the correct state, repair forward.
+- Do not undo the correct state merely to reproduce it by a preferred method.
+- Reconcile source and destination until the result is semantically a move plus required updates.
+- Delete the original only after every useful notion has an owned destination.
+- Deletion is a receipt for completed relocation.
+- It is never a value judgment on the source.
+- Preserve code, tests, specifications, examples, design corpora, and incomplete research.
+- Incomplete research remains research.
+- Planning corpora can contain mathematical structure and future categorical homes.
+- Stub declarations can define essential structure before algorithms exist.
+- Existing TDD suites are forward requirements and must migrate to the owned surface.
+- Existing parity tests can document delegation boundaries.
+- False source mathematics creates a correction-synthesis obligation.
+- Do not delete the false statement and preserve only an error ledger.
+- Non-code logs, telemetry, caches, and tool output are outside a mathematical code migration.
+- Do not create dispositions or rulings for irrelevant material.
+
+## Value and evidence during migration
+
+- Byte equality has no positive or negative mathematical meaning.
+- A checksum can locate possible duplicates but cannot decide semantic equivalence.
+- Execution status does not determine research value.
+- Maturity, polish, file name, directory, and current scope do not determine research value.
+- The absence of callers does not determine research value.
+- The absence of complete algorithms does not determine research value.
+- A source outside the current preamble scope is a reason to enrich the preamble.
+- It is not a deletion reason.
+- Compare source and destination definitions, hypotheses, codomains, conventions, and behavior.
+- Verify that the destination owns every useful mathematical distinction.
+- If the destination cannot express a notion, extend the destination.
+- Do not discard the notion because the destination is incomplete.
+
+## Execution shape for large migrations
+
+- Inventory files once.
+- Partition them into disjoint semantic batches.
+- Assign one reader to each artifact or notion.
+- Read, decide, migrate or synthesize, and retire the source in one context.
+- Do not analyze the same material in repeated waves.
+- Do not create an analysis fleet followed by a context-free implementation fleet.
+- Preserve an agent's mathematical context when revising its instructions.
+- Ask it to checkpoint before stopping it.
+- Stop only when its frame is unusable, not when one instruction changes.
+- Use agent reasoning effort that matches the mathematics.
+- Do not spend a large research context on a file move or import update.
+- Perform simple moves and direct edits directly.
+- Do not write edit scripts for a bounded hand edit.
+- Do not replace a direct migration with scripts that match and rewrite source text.
+- A sweeping architectural refactor need not pass tests at each intermediate state.
+- Determine the correct final migration and execute the coherent sweep.
+- Do not invent an incremental-green requirement that the user did not give.
+- During a declared semantic-only migration, do not run tests, hooks, or Sage.
+- Commit those migration units with the user's declared hook posture.
+- Run the separate integrated verification pass only after the semantic migration finishes.
+
+## Architecture before local repair
+
+- A repeated local defect often indicates one missing mathematical foundation.
+- Fix that foundation before patching its instances.
+- If a module can exist without a ring, forbid ringless construction.
+- Do not hunt only for the current ringless object.
+- If a formed module delegates through `forget_form`, fix its mathematical ownership.
+- Do not add another forwarding method.
+- If many leaves restate set behavior, fix the category construction chain.
+- Do not optimize the forwarding calls.
+- If prior art already solved the problem, migrate it before deriving a new mechanism.
+- Read the archived implementation and its reasons.
+- A row marked superseded is a claim requiring semantic comparison.
+- It is not evidence that the older implementation adds nothing.
+- Preserve small load-bearing details from the older implementation.
+- Do not infer their irrelevance from file size.
+
+## Fundamental-assumption reset
+
+The conditions below require a frame reset rather than a local correction.
+
+- A user states that a claimed mathematical object already works in live notebooks.
+- A user identifies a category, functor, or adjunction that the implementation does not model.
+- A user shows that the current code permits a mathematically invalid object.
+- A user shows that the work built a parallel hierarchy instead of changing the live hierarchy.
+- Two corrections remove mechanisms introduced by the same design frame.
+- A local patch produces another defect at the same ownership boundary.
+- An acceptance check measures a toy, count, or checker rather than the requested object.
+
+When one condition occurs:
+
+- Stop the local edit.
+- Restate the requested mathematical object in standard terms.
+- Identify the live repository object that must model it.
+- List the foundational assumptions used by the current approach.
+- Check those assumptions against source, runtime objects, and prior art.
+- Remove every inference whose premise failed.
+- Resume only from the corrected mathematical model.
+- Do not ask the user to select the next probe when the repository can answer it.
+- Do not manufacture ambiguity after the user has already decided the architecture.
+
+## Work selection and proof
+
+- A count of type errors does not measure architectural correctness.
+- A count of passing tests does not measure mathematical correctness.
+- A count of migrated files does not measure semantic completion.
+- A green toy specimen does not prove migration of the live surface.
+- State the mathematical claim that the current artifact makes true.
+- Verify that claim on a concrete repository-owned object.
+- Choose specimens that exercise the real category, constructor, element, and morphism paths.
+- Use notebook research objects when the requirement concerns notebook research.
+- Do not substitute a nearby proxy object.
+- By-eye review during a semantic migration concerns definitions, organization, and types.
+- Automated verification belongs to its separately declared pass.
+- Do not report unverified work as deferred verification.
+- It is simply unverified until that pass occurs.
+
+## Repository organization
+
+- Organize the preamble by mathematical ownership.
+- The tree should expose the category hierarchy to a mathematician.
+- Place generic constructions at the highest valid categorical level.
+- Keep value-level form morphisms distinct from categories of formed modules.
+- Keep research-specific computations below the general structures they use.
+- Preserve a clear root for categories, functors, homsets, subobjects, and named specimens.
+- A new leaf should have one obvious filing location.
+- Adding that leaf should require only its new data and immediate-supercategory construction.
+- Do not keep the same mathematical notion in an archive and the live preamble after migration.
+- Do not create parallel sources of truth.
+
+## QC and tooling house rules
+
+- Global QC belongs in `ai-review-ci`.
+- Local repositories delegate to that global owner.
+- Sage source must be lowered to Python before Python type analysis.
+- Type checkers inspect the lowered Python, not raw `.sage` syntax.
+- The custom Sage parser must be globally available to the lowering path.
+- `sage-stubs` supplies the global Sage type surface.
+- Owned tools track the latest upstream default branch.
+- Do not create fixed revision policy for fast-moving local projects.
+- Diagnostic recipes must preserve detailed errors, warnings, and issues in logs.
+- Their final output must name the detailed log paths.
+- Test execution must produce wall-time and profiling artifacts.
+- Agents should inspect those artifacts instead of rerunning long commands for omitted output.
+- These rules govern the later verification pass.
+- They do not authorize running verification during a semantic-only migration.
+
+## Communication and research style
+
+- Lead with the mathematical result or unresolved mathematical point.
+- Explain repository objects in plain technical English before using local shorthand.
+- Do not report internal batch labels without their mathematical referents.
+- Do not report agent waves, token use, idle notices, or administrative counts.
+- Do not describe an analysis report as if its mathematics landed in the repository.
+- State what was migrated, synthesized, corrected, or left unresolved.
+- Explain the mathematical meaning of a discrepancy.
+- Do not substitute tourist commentary for a construction, theorem, definition, or source edit.
+- Do not use vague phrases such as `missing machinery` without naming the missing objects and morphisms.
+- Do not call work deferred when the assigned task requires its completion.
+- Do not ask the user to decide questions that mathematical analysis should decide.
+- Ask only when the remaining alternatives encode different research choices.
+- Preserve long-lived decisions in their owning plan during a long migration.
+- Do not let important architecture exist only in chat.
+- A plan records settled mathematical direction.
+- It does not replace the code, proof, or migrated research.

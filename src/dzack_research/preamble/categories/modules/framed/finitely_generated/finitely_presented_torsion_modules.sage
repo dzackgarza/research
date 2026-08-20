@@ -145,7 +145,9 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
         assert all(d > 1 for d in orders), (
             f"each summand needs an order greater than 1, got {orders}"
         )
-        return self.from_relations(MorphismMatrix(diagonal_matrix(SageZZ, orders)))
+        return self.from_relations(
+            MorphismMatrix(diagonal_matrix(SageZZ, orders), SageZZ)
+        )
 
     def from_abelian_group(self, group: "Group") -> FinitelyPresentedModule:
         r"""Return ``group`` as an object of this category, on its own generators.
@@ -175,7 +177,7 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
         generators = tuple(group.group_generators())
         if not generators:
             return self.from_relations(
-                MorphismMatrix(matrix(SageZZ, 0, 0)),
+                MorphismMatrix(matrix(SageZZ, 0, 0), SageZZ),
                 Sets.Δ[-1],
             )
         orders = [generator.order() for generator in generators]
@@ -194,7 +196,9 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
             for exponents in cartesian_product_iterator([range(d) for d in orders])
             if combine(generators, exponents) == identity
         ]
-        relations = MorphismMatrix(matrix(SageZZ, found).stack(diagonal_matrix(SageZZ, orders)))
+        relations = MorphismMatrix(
+            matrix(SageZZ, found).stack(diagonal_matrix(SageZZ, orders)), SageZZ
+        )
         # Square again: the relation lattice has full rank, so its Hermite form
         # has one nonzero row per generator and the rest are padding.
         reduced = relations.normal_form(include_zero_rows=True)

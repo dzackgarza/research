@@ -1345,7 +1345,7 @@ def relations_among(form: "Morphism", module_generators: "OrderedSet") -> "Matri
             for generator in module_generators
         ],
     )
-    kernel = MorphismMatrix(lifts).stack(known)._left_kernel_matrix()
+    kernel = MorphismMatrix(lifts, SageZZ).stack(known)._left_kernel_matrix()
     return kernel[:, : lifts.nrows()]
 
 

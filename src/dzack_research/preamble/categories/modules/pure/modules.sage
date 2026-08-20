@@ -91,9 +91,12 @@ class Modules(Category_over_base_ring):
             ``x.base_ring() is self.base_ring()``, so an object built without
             it belongs to no such category at all.
             """
-            super().__init__(
-                category=category, base=category.base_ring(), **rest
+            base_ring = category.base_ring()
+            assert base_ring is not None, (
+                f"{category} names no ring, so it builds no module: a module "
+                "over no ring is not a module"
             )
+            super().__init__(category=category, base=base_ring, **rest)
 
         @abstract_method
         def _ring_morphism_defining_module_action(self: Self) -> "Morphism":

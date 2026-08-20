@@ -217,7 +217,7 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
             construction that reaches this category another way states its own
             relations here.
             """
-            return MorphismMatrix(self._relations)
+            return MorphismMatrix(self._relations, self._relations.base_ring())
 
         def framing_morphism(self: Self) -> "FramingMorphism":
             return self._framing_morphism
@@ -483,7 +483,7 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
             from dzack_research.preamble.categories.rings.rings import engine_ring
 
             smith, _, right = self._smith()
-            target = _presented_on(self, MorphismMatrix(smith))
+            target = _presented_on(self, MorphismMatrix(smith, smith.base_ring()))
             return Isomorphism(
                 _change_of_module_generators(self, target, right.rows()),
                 _change_of_module_generators(
