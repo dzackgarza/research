@@ -27,7 +27,6 @@ if TYPE_CHECKING:
     from dzack_research.preamble.categories.sets.sets import Set
     from dzack_research.preamble.categories.modules.framed.framed_modules import FramedModuleParent
     from dzack_research.preamble.categories.modules.framed.formed.integrallattice.subobjects import Subobject
-    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModule
     class AutomorphismModuleParent(FramedModuleParent, Protocol):
         def Aut(self) -> "ModuleAutomorphismGroup": ...
 
@@ -231,10 +230,10 @@ def endomorphism_ring(module: "Module") -> ModuleHomset:
 def _underlying_module(module: "Module") -> "Module":
     # Local: at module level this closes an import cycle; the form module is
     # built by the time a morphism reads its domain.
-    from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModule
+    from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModules
 
     match module:
-        case FormModule():
+        case Parent() if module in FormModules(module.base_ring()):
             return module.forget_form()
         case Parent():
             return module
@@ -243,69 +242,45 @@ def _underlying_module(module: "Module") -> "Module":
 
 
 def _coordinate_vector(element: "Element") -> FreeModuleElement:
-    r"""Return finite coordinates in the element's declared framing."""
-    # Local: at module level these close an import cycle; every element module
-    # is built by the time an element is handed over for coordinates.
-    from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModuleElement
-    from dzack_research.preamble.categories.modules.group_modules.group_modules import GroupModuleElement
-    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import BasedFreeModuleElement
-    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModuleElement
+    r"""Return finite coordinates in the element's declared framing.
 
-    match element:
-        case BasedFreeModuleElement():
-            coordinates: FreeModuleElement = element._coordinates_
-            return coordinates
-        case FormModuleElement():
-            return _coordinate_vector(element.forget_form())
-        case GroupModuleElement():
-            return _coordinate_vector(element.forget_action())
-        case FinitelyPresentedModuleElement():
-            return vector(element._lift())
-        case _:
-            assert False, (
-                f"{element} has no finite ordered framing in which a matrix "
-                "coordinate vector is defined"
-            )
+    Asked of the element.  A module whose category gives its elements a finite
+    ordered framing answers this; one without such a framing has no answer.
+    """
+    assert hasattr(element, "_coordinates"), (
+        f"{element} has no finite ordered framing in which a matrix "
+        "coordinate vector is defined"
+    )
+    coordinates: FreeModuleElement = element._coordinates()
+    return coordinates
 
 
 def _coefficients(element: "Element") -> dict[ElementConstructorInput, RingElement]:
-    r"""Return the finite coefficient function of a framed-module element."""
-    # Local: at module level these close an import cycle; every element module
-    # is built by the time an element is handed over for coefficients.
-    from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModuleElement
-    from dzack_research.preamble.categories.modules.group_modules.group_modules import GroupModuleElement
-    from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreeModuleOnSetElement
-    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import BasedFreeModuleElement
-    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModuleElement
+    r"""Return the finite coefficient function of a framed-module element.
 
-    match element:
-        case FormModuleElement():
-            return _coefficients(element.forget_form())
-        case GroupModuleElement():
-            return _coefficients(element.forget_action())
-        case FreeModuleOnSetElement() | BasedFreeModuleElement():
-            return dict(element.coefficients())
-        case FinitelyPresentedModuleElement():
-            return {
-                element_of_S: coefficient
-                for element_of_S, coefficient in zip(
-                    element.parent().module_generating_set(), element._lift()
-                )
-                if coefficient != 0
-            }
-        case _:
-            assert False, (
-                f"{element} is not an element of an owned framed module"
-            )
+    Asked of the element, whose own category names its generators.
+    """
+    assert hasattr(element, "coefficients"), (
+        f"{element} is not an element of an owned framed module"
+    )
+    coefficient_function: dict[ElementConstructorInput, RingElement] = dict(
+        element.coefficients()
+    )
+    return coefficient_function
+
+
+def _is_presented(module: "Module") -> bool:
+    r"""Whether ``module`` carries a chosen finite presentation."""
+    # Local: at module level this closes an import cycle; the presented
+    # category is built by the time a morphism asks about its ends.
+    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModules
+
+    return module in FinitelyPresentedModules(module.base_ring())
 
 
 def _is_torsion(module: "Module") -> bool:
-    # Local: at module level this closes an import cycle; the presented module
-    # is built by the time a morphism asks about its domain.
-    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModule
-
     module = _underlying_module(module)
-    return isinstance(module, FinitelyPresentedModule) and module.is_torsion()
+    return _is_presented(module) and module.is_torsion()
 
 
 def _independent_module_generators(
@@ -561,9 +536,7 @@ class ModuleMorphism(Morphism):
         # Local: at module level this closes an import cycle; the presented
         # category is built by the time relations are checked.
         domain = _underlying_module(self.domain())
-        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModule
-
-        if not isinstance(domain, FinitelyPresentedModule):
+        if not _is_presented(domain):
             return
         module_generating_set = tuple(self.domain().module_generating_set())
         zero = self.codomain().zero()
@@ -691,7 +664,7 @@ class ModuleMorphism(Morphism):
             ]
         )
 
-    def cokernel(self) -> "FinitelyPresentedModule":
+    def cokernel(self) -> Parent:
         r"""Return $\operatorname{coker}(f)=N/f(M)$, the module $f$ presents.
 
         Not assumed torsion: for $\mathbb Zv\hookrightarrow L$ with $L$ of
@@ -709,7 +682,7 @@ class ModuleMorphism(Morphism):
     def image(self) -> "Subobject":
         return self.codomain().subobject_on(list(self.images()))
 
-    def coimage(self) -> "FinitelyPresentedModule":
+    def coimage(self) -> Parent:
         r"""Return $\operatorname{coim}(f)=M/\ker(f)$, presented by the kernel's inclusion.
 
         The dual of :meth:`cokernel`, computed as one: the coimage is the
@@ -882,16 +855,15 @@ class ModuleMorphism(Morphism):
         answer, $+\infty$, per the cardinal contract.
         """
         from sage.rings.infinity import Infinity
-        # Local: at module level these close an import cycle; the presented
-        # module and ring modules are built by the time an index is asked for.
-        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModule
+        # Local: at module level this closes an import cycle; the ring module
+        # is built by the time an index is asked for.
         from dzack_research.preamble.categories.rings.rings import engine_ring
 
         codomain = _underlying_module(self.codomain())
         image = self.matrix()
         width = len(tuple(self.codomain().module_generating_set()))
 
-        if not isinstance(codomain, FinitelyPresentedModule) and (
+        if not _is_presented(codomain) and (
             engine_ring(codomain.base_ring()).is_field()
         ):
             if image.rank() != width:
@@ -1072,13 +1044,9 @@ class ModuleMorphism(Morphism):
         return bool((difference ** engine.nrows()).is_zero())
 
     def _codomain_relations(self) -> MorphismMatrix:
-        # Local: at module level this closes an import cycle; the presented
-        # module is built by the time relations are read off a codomain.
-        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModule
-
         codomain = _underlying_module(self.codomain())
         match codomain:
-            case FinitelyPresentedModule():
+            case _ if _is_presented(codomain):
                 return codomain.relation_matrix()
             case _:
                 # A free codomain imposes no relations. The empty matrix is

@@ -14,10 +14,10 @@ to a generic id-equality homset.  This module owns both surfaces:
   — ``_faithful`` on the class — propagated through composites by the
   theorem that a composite of faithful functors is faithful.  No runtime
   injectivity check exists or lands.
-- :class:`FunctorSpace`, \(\operatorname{Fun}(C,D)\) as a first-class
-  parent: the homset of \(\mathbf{Cat}\) (method-placement doctrine puts
-  existence questions on homsets).  ``cat.sage`` dispatches ``Hom(C, D)``
-  between categories here.
+- :class:`FunctorSpaces`, whose objects are the \(\operatorname{Fun}(C,D)\)
+  as first-class parents: the homsets of \(\mathbf{Cat}\) (method-placement
+  doctrine puts existence questions on homsets).  ``cat.sage`` dispatches
+  ``Hom(C, D)`` between categories here.
 
 **The shape, which is the general one.**  A morphism of \(C\) is an element
 of \(\operatorname{Hom}_C(A,B)\), and that homset is a parent: the homset is
@@ -46,11 +46,13 @@ space, ``Hom(Groups(), Sets())`` is not.
 from typing import TYPE_CHECKING
 
 from sage.categories.morphism import Morphism as SageMorphism
+from sage.misc.cachefunc import cached_function
 from sage.structure.element import Element as SageElement
 from sage.categories.homset import Homset as SageHomset
-from sage.structure.unique_representation import UniqueRepresentation
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
+from dzack_research.preamble.owned_category_bases import Category as OwnedCategory
+from dzack_research.preamble.refine import refine
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -237,53 +239,82 @@ class ComposedFunctor(Functor):
         return " . ".join(str(factor) for factor in reversed(self._factors))
 
 
-class FunctorSpace(UniqueRepresentation, SageHomset):
+class FunctorSpaces(OwnedCategory):
     r"""\(\operatorname{Fun}(C, D)\): the functors \(C\to D\) as a first-class parent.
 
-    A homset of \(\mathbf{Cat}\) — and therefore a subclass of Sage's own
-    ``Homset`` machinery, from which the boundary accessors and homset
-    semantics are inherited, never re-spelled here.  Unique per boundary
-    pair; membership is exact boundary agreement; the endofunctor space
-    owns its identity.  Existence and element handling are the contract;
-    no enumeration is promised.
+    An object is a homset of \(\mathbf{Cat}\).  Membership is exact boundary
+    agreement.  The endofunctor space owns its identity.  Existence and
+    element handling are the contract; no enumeration is promised.
+
+    **This category adopts a Sage parent; it does not construct one.**  Sage's
+    ``Homset.__init__`` supplies the boundary accessors and the homset
+    semantics, and it is also what decides the placement: its last act is
+    ``Parent.__init__(category=category.Endsets() if X is Y else
+    category.Homsets())``.  So a functor space is already an object of
+    ``Cat().Homsets()`` before this category sees it, and the route in is
+    :func:`~dzack_research.preamble.refine.refine`, which puts these methods
+    ahead of ``Homset``'s own.  The construction chain is not available here:
+    it would have to write ``Homset``'s private boundary fields by hand.
+
+    The methods a functor space's *elements* have stay on :class:`Functor`
+    below, which every owned functor derives from.
     """
 
-    def __init__(self, domain: "Category", codomain: "Category") -> None:
-        cat = Cat()
-        assert domain in cat and codomain in cat, (
-            f"a functor space's boundary must be objects of Cat; "
-            f"found {domain!r} and {codomain!r}"
-        )
-        SageHomset.__init__(self, domain, codomain, category=cat, check=False)
+    def _repr_object_names(self) -> str:
+        return "functor spaces"
 
-    def _repr_(self) -> str:
-        return f"Fun({self.domain()}, {self.codomain()})"
+    def super_categories(self) -> list["Category"]:
+        return [Cat().Homsets()]
 
-    def __contains__(self, functor: "Functor") -> bool:
-        r"""Membership is parenthood: a functor lives in exactly one space.
+    class ParentMethods:
+        def _repr_(self) -> str:
+            return f"Fun({self.domain()}, {self.codomain()})"
 
-        Not a type probe plus a boundary comparison.  A functor is an element
-        of its homset, so the mathematical question -- is this a functor
-        \(C\to D\)? -- is answered by the structure that already holds it.
-        """
-        return isinstance(functor, Functor) and functor.parent() is self
+        def __contains__(self, functor: "Functor") -> bool:
+            r"""Membership is parenthood: a functor lives in exactly one space.
 
-    def _element_constructor_(self, functor: "Functor") -> "Functor":
-        r"""Admit a functor of this boundary.
+            Not a type probe plus a boundary comparison.  A functor is an
+            element of its homset, so the mathematical question -- is this a
+            functor \(C\to D\)? -- is answered by the structure that already
+            holds it.
+            """
+            return isinstance(functor, Functor) and functor.parent() is self
 
-        A functor is not assembled from raw data here: each owned functor is
-        its own construction, declaring what it does to objects and to
-        morphisms.  What this owns is the parenthood check.
-        """
-        assert functor in self, f"{functor} is not a functor in {self}"
-        return functor
+        def _element_constructor_(self, functor: "Functor") -> "Functor":
+            r"""Admit a functor of this boundary.
 
-    def identity(self) -> IdentityFunctor:
-        assert self.domain() == self.codomain(), (
-            f"only an endofunctor space has an identity; "
-            f"found Fun({self.domain()}, {self.codomain()})"
-        )
-        return IdentityFunctor(self.domain())
+            A functor is not assembled from raw data here: each owned functor
+            is its own construction, declaring what it does to objects and to
+            morphisms.  What this owns is the parenthood check.
+            """
+            assert functor in self, f"{functor} is not a functor in {self}"
+            return functor
+
+        def identity(self) -> "IdentityFunctor":
+            assert self.domain() == self.codomain(), (
+                f"only an endofunctor space has an identity; "
+                f"found Fun({self.domain()}, {self.codomain()})"
+            )
+            return IdentityFunctor(self.domain())
+
+
+@cached_function
+def FunctorSpace(domain: "Category", codomain: "Category") -> "Parent":
+    r"""Return \(\operatorname{Fun}(C, D)\), the functors \(C\to D\).
+
+    One space per boundary pair, because a functor's parent is its identity:
+    ``FunctorSpaces.ParentMethods.__contains__`` reads membership off
+    ``parent() is self``, so two spaces on one boundary would make one functor
+    fail to be in its own space.
+    """
+    cat = Cat()
+    assert domain in cat and codomain in cat, (
+        f"a functor space's boundary must be objects of Cat; "
+        f"found {domain!r} and {codomain!r}"
+    )
+    space = SageHomset(domain, codomain, category=cat, check=False)
+    functor_space: "Parent" = refine(space, FunctorSpaces())
+    return functor_space
 
 
 class NaturalIsomorphism:

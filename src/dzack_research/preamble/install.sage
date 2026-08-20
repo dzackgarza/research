@@ -187,7 +187,6 @@ def install_preamble(namespace: dict) -> None:
             "categories.algebras.number_fields",
             "categories.schemes.ringed_spaces",
             "categories.schemes.schemes",
-            "categories.schemes.scheme_morphisms",
             "categories.schemes.scheme_points",
             "categories.schemes.ambient_spaces",
             "categories.schemes.subschemes",

@@ -15,8 +15,8 @@ choose a basepoint.
 A :class:`GaloisChoicePolicy` makes extension choices reproducible.  It
 is immutable state of the parent, set at construction::
 
-    G = AbsoluteGaloisGroup(K, closure=QQbar, embedding=iota,
-                            choice_policy=my_policy)
+    G = absolute_galois_group(K, closure=QQbar, embedding=iota,
+                              choice_policy=my_policy)
 
 The default policy, ``"sage"``, uses Sage's own ordering on embeddings
 and extensions: the first embedding returned by

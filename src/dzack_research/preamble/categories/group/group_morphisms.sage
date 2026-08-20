@@ -313,7 +313,7 @@ class GroupAutomorphismGroup(GroupHomset):
         from sage.groups.finitely_presented import FinitelyPresentedGroup
         from sage.groups.free_group import FreeGroup_class
         from dzack_research.preamble.categories.group.predicate_subgroups import (
-            PredicateSubgroup,
+            PredicateSubgroups,
         )
 
         group = self.domain()
@@ -324,7 +324,7 @@ class GroupAutomorphismGroup(GroupHomset):
                     "presentation requires coset enumeration, which is not "
                     "run silently; the object stands, the algorithm is the gap"
                 )
-            case PredicateSubgroup():
+            case _ if group in PredicateSubgroups():
                 assert False, (
                     f"{group} has no generating set by construction, so no "
                     "engine holds a model to compute Aut from; the gap is a "

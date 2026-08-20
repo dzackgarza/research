@@ -29,12 +29,11 @@ from sage.categories.category import Category as SageCategory
 from sage.categories.category_with_axiom import all_axioms
 from sage.categories.sets_cat import Sets as SageSets
 from sage.rings.integer import Integer
-from sage.rings.integer_ring import ZZ
 from sage.rings.semirings.non_negative_integer_semiring import NN
 from sage.structure.element import Element as SageElement
 from sage.structure.richcmp import richcmp
 
-from dzack_research.preamble.lexicon.interop import SageParent, SageUniqueRepresentation
+from dzack_research.preamble.lexicon.interop import SageParent
 from dzack_research.preamble.owned_category import OwnedCategoryMixin, OwnedParent
 from dzack_research.preamble.owned_category_bases import (
     CartesianProductsCategory,
@@ -566,8 +565,8 @@ class CountableSets(CategoryWithAxiom):
             # Quoted: ``cast`` evaluates its first argument, and Sage's
             # ``Parent`` is a Cython class that cannot be subscripted.
             domain = cast("SageParent[SageElement]", self)
-            naturals = cast("SageParent[Integer]", NonNegativeIntegers())
-            target: UnderlyingSet[Integer] = UnderlyingSet(naturals)
+            naturals = cast("SageParent[Integer]", NN)
+            target = UnderlyingSet(naturals)
             homset = Hom(domain, target, SageSets())
             # target[n] IS the natural number n (identity enumeration),
             # already normalized into the host parent.
@@ -1108,31 +1107,6 @@ def placement_of(parent: SageParent[_E]) -> Sets:
         if parent.category().is_subcategory(SagePosets()):
             placement = placement.PartiallyOrdered()
     return placement
-
-
-class NonNegativeIntegers(SageUniqueRepresentation, SageParent):
-    r"""The nonnegative integers as an owned countable set: the identity
-    enumeration ``0, 1, 2, ...`` over Sage's ``NN``.
-
-    Placed in the owned sets and nowhere higher.  This exists as the codomain
-    of :meth:`enumeration_injection`, which is a map of *sets*: it forgets the
-    semiring structure of the naturals, so declaring that structure here would
-    claim something the one caller discards.
-    """
-
-    def __init__(self) -> None:
-        SageParent.__init__(self, facade=NN, category=Sets().Countable().Infinite().Facade())
-
-    def _repr_(self) -> str:
-        return "Set of nonnegative integers"
-
-    def __iter__(self) -> Iterator[Integer]:
-        return iter(NN)
-
-    def index(self, element: Integer | int) -> Integer:
-        member = ZZ(element)
-        assert member >= 0, f"{element} is not a nonnegative integer"
-        return member
 
 
 if not TYPE_CHECKING:

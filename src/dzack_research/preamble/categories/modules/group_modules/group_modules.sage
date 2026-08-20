@@ -6,6 +6,7 @@ if TYPE_CHECKING:
     from sage.categories.groups import Group
     from sage.categories.groups import GroupElement
     from sage.categories.modules import Module
+    from sage.structure.element import ModuleElement
     from sage.structure.element import Vector
     from sage.structure.parent import ElementConstructorInput, MembershipInput
 
@@ -27,10 +28,11 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 from typing import Protocol, Self, TYPE_CHECKING
 
 from sage.misc.cachefunc import cached_method
+from dzack_research.preamble.owned_category import object_of
 from dzack_research.preamble.owned_category_bases import Category
 from sage.categories.homset import Hom
 from sage.categories.morphism import SetMorphism
-from sage.structure.element import ModuleElement
+from sage.structure.element import Element as SageElement
 from sage.structure.parent import Parent
 from sage.structure.richcmp import op_EQ, richcmp
 
@@ -45,6 +47,7 @@ if TYPE_CHECKING:
     # shared namespace and nothing named OrderedSet may bind there.
     from dzack_research.preamble.lexicon import OrderedSet
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleAutomorphismGroup
+    from dzack_research.preamble.owned_category import ConstructionData
 
     # The admissible ways to name an equivariant map, in the order the
     # constructors match them: the generator morphism itself, a finite
@@ -66,14 +69,6 @@ if TYPE_CHECKING:
         def Hom(self, codomain: "Module", category: "Category | None" = ...) -> "Homset": ...
 
 
-
-# ``ParentMethods`` methods run on parents, but a bare methods class has no
-# base to say so, and ``Parent.Hom``'s fallback branch needs nominal
-# parenthood.  Runtime-identical: a bare class already derives from object.
-if TYPE_CHECKING:
-    _ParentBase = Parent
-else:
-    _ParentBase = object
 
 class GroupModules(Category):
     r"""The category of \(R[G]\)-modules for the specified \(R\) and \(G\)."""
@@ -193,13 +188,127 @@ class GroupModules(Category):
         )
         return splits
 
-    class ParentMethods(_ParentBase):
-        # Installed on the object by the constructor: the two halves of the
-        # pair $(M,\rho)$, and the same $\rho$ recorded through the element
-        # wrapping so it moves this parent's own elements.
+    class ParentMethods:
+        r"""One $R[G]$-module: a finite free $M$, and an action $G\to Aut_R(M)$."""
+
+        # The two halves of the pair $(M,\rho)$, and the same $\rho$ recorded
+        # through the element wrapping so it moves this parent's own elements.
         _module: "Module"
         _action: GroupAction
         _acting_automorphisms: GroupAction
+
+        def __init__(
+            self: Self,
+            module: "Module",
+            action: GroupAction,
+            **rest: "ConstructionData",
+        ) -> None:
+            # Local: a module-level import would close a cycle; the module is built by the time this runs.
+            from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import FinitelyGeneratedFreeModules
+            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import framing_morphism
+            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import group_action_homset
+
+            assert module in FinitelyGeneratedFreeModules(module.base_ring()), (
+                "an R[G]-module is constructed from an actual finite framed "
+                "free module"
+            )
+            assert isinstance(action, GroupAction) and action.module() is module, (
+                "the action must be a morphism into the supplied module's Aut "
+                "homset"
+            )
+            # A group module IS the pair $(M,\rho)$, and both halves arrive as
+            # constructor arguments.  They are stored before anything else so
+            # that identity -- hash, equality, repr -- is answerable from the
+            # first moment the object exists, including while construction is
+            # still running and Sage's caches hash it.
+            self._module = module
+            self._action = action
+            super().__init__(base=module.base_ring(), **rest)
+            source = module.framing_morphism().domain()
+            underlying_module_generator_morphism = module.module_generator_morphism()
+            lifted_module_generator_morphism = SetMorphism(
+                Hom(
+                    underlying_module_generator_morphism.domain(),
+                    UnderlyingSet(self),
+                    Sets(),
+                ),
+                lambda element_of_S: self._over(
+                    underlying_module_generator_morphism(element_of_S)
+                ),
+            )
+            self._free_module_generator_morphism = lifted_module_generator_morphism
+            self._framing_morphism = framing_morphism(
+                source,
+                self,
+                lifted_module_generator_morphism,
+            )
+            automorphisms = self.Aut()
+            values = {
+                element: automorphisms(
+                    {
+                        element_of_S: self._over(
+                            action(element)(
+                                underlying_module_generator_morphism(element_of_S)
+                            )
+                        )
+                        for element_of_S in module.module_generating_set()
+                    }
+                )
+                for element in action.domain()
+            }
+            # $\rho$ lands in $Aut(M)$, whose automorphisms move elements of
+            # $M$.  This module's elements wrap those, so the same $\rho$ is
+            # also recorded through the wrapping, to act on them.  Derived,
+            # under its own name: ``_action`` is the constructor's $\rho$ and
+            # never changes, because the hash is taken from it.
+            self._acting_automorphisms = group_action_homset(action.domain(), self)(values)
+
+        def framing_morphism(self: Self) -> FramingMorphism:
+            return self._framing_morphism
+
+        def rank(self: Self) -> "Cardinal":
+            return self._module.rank()
+
+        def zero(self: Self) -> "Element":
+            return self._over(self._module.zero())
+
+        def _over(self: Self, element: "Element") -> "Element":
+            wrapped: "Element" = self.element_class(self, element)
+            return wrapped
+
+        def _from_coordinates(self: Self, coordinates: "Vector") -> "Element":
+            return self._over(self._module._from_coordinates(coordinates))
+
+        def _element_constructor_(
+            self: Self,
+            element: "ElementConstructorInput",
+        ) -> "Element":
+            # Conversion, not just recognition: coordinate data converts through
+            # the module's own coordinate route; an element of this parent passes
+            # through unchanged.
+            if isinstance(element, SageElement) and element.parent() is self:
+                return element
+            assert isinstance(element, (tuple, list, SageElement)), (
+                f"{element} is neither an element of {self} nor coordinate "
+                "data for one"
+            )
+            return self._over(self._module(element))
+
+        def __contains__(self: Self, element: "MembershipInput") -> bool:
+            return isinstance(element, SageElement) and element.parent() is self
+
+        def __hash__(self: Self) -> int:
+            return hash((type(self), self._module, self._action))
+
+        def __eq__(self: Self, other: "MembershipInput") -> bool:
+            return (
+                type(other) is type(self)
+                and self._module == other._module
+                and self._action == other._action
+            )
+
+        def _repr_(self: Self) -> str:
+            return f"{self._module} with an action of {self.group()}"
 
         def forget_action(self: Self) -> "Module":
             return self._module
@@ -334,6 +443,74 @@ class GroupModules(Category):
             return _module_coinvariants(self)
 
 
+    class ElementMethods:
+        r"""An element of an $R[G]$-module, and its image after forgetting $G$."""
+
+        def __init__(
+            self: Self,
+            parent: Parent,
+            element: "Element",
+            **rest: "ConstructionData",
+        ) -> None:
+            assert element.parent() is parent.forget_action(), (
+                f"{element} is not an element of {parent.forget_action()}"
+            )
+            self._underlying = element
+            super().__init__(parent, **rest)
+
+        def forget_action(self: Self) -> "Element":
+            return self._underlying
+
+        def coefficients(self: Self) -> dict:
+            return dict(self._underlying.coefficients())
+
+        def underlying_set_element(self: Self) -> "Element":
+            r"""Recover the element of \(S\) defining a canonical generator."""
+            return self._underlying.underlying_set_element()
+
+        def _coordinates(self: Self) -> "Vector":
+            coordinates: "Vector" = self._underlying._coordinates()
+            return coordinates
+
+        def _add_(self: Self, other: Self) -> "Element":
+            return self.parent()._over(self._underlying + other._underlying)
+
+        def _sub_(self: Self, other: Self) -> "Element":
+            return self.parent()._over(self._underlying - other._underlying)
+
+        def _neg_(self: Self) -> "Element":
+            return self.parent()._over(-self._underlying)
+
+        def _lmul_(self: Self, factor: "RingElement") -> "Element":
+            return self.parent()._over(factor * self._underlying)
+
+        _rmul_ = _lmul_
+
+        def _richcmp_(self: Self, other: Self, op: int) -> bool:
+            return richcmp(self._underlying, other._underlying, op)
+
+        def __eq__(self: Self, other: "MembershipInput") -> bool:
+            # Identification across parents is a stated morphism, never coercion
+            # (AGENTS.md: coercion must not erase the element/image distinction),
+            # so equality outside this parent is plain False and Sage's
+            # conversion fallback never consults a constructor.
+            if not (
+                isinstance(other, SageElement)
+                and other.parent() is self.parent()
+            ):
+                return False
+            return bool(richcmp(self._underlying, other._underlying, op_EQ))
+
+        def __ne__(self: Self, other: "MembershipInput") -> bool:
+            return not self.__eq__(other)
+
+        def __hash__(self: Self) -> int:
+            return hash((id(self.parent()), self._underlying))
+
+        def _repr_(self: Self) -> str:
+            return repr(self._underlying)
+
+
 class GroupModuleHomset(ModuleHomset):
     r"""The homset of equivariant maps between two modules for one \(G\)."""
 
@@ -399,210 +576,22 @@ def group_module_homset(domain: "Module", codomain: "Module") -> GroupModuleHoms
     return homset
 
 
-class GroupModuleElement(ModuleElement):
-    r"""An element of an \(R[G]\)-module and its image after forgetting \(G\)."""
-
-    if TYPE_CHECKING:
-        # The parent is the group module this element was wrapped for;
-        # ``Element.parent`` states only that it is some parent.  Declared,
-        # never defined: the inherited implementation is the one that runs.
-        def parent(self) -> "GroupModule": ...
-
-    def __init__(self, parent: "GroupModule", element: "Element") -> None:
-        ModuleElement.__init__(self, parent)
-        assert element.parent() is parent.forget_action(), (
-            f"{element} is not an element of {parent.forget_action()}"
-        )
-        self._underlying = element
-
-    def forget_action(self) -> "Module":
-        return self._underlying
-
-    def coefficients(self) -> dict:
-        # Local: a module-level import would close a cycle; the module is built by the time this runs.
-        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _coefficients
-
-        coefficient_function: dict = _coefficients(self._underlying)
-        return coefficient_function
-
-    def underlying_set_element(self) -> "Element":
-        r"""Recover the element of \(S\) defining a canonical generator."""
-        return self._underlying.underlying_set_element()
-
-    def _coordinates(self) -> "Vector":
-        # Local: a module-level import would close a cycle; the module is built by the time this runs.
-        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _coordinate_vector
-
-        return _coordinate_vector(self._underlying)
-
-    def _add_(self, other: "GroupModuleElement") -> "GroupModuleElement":
-        return self.parent()._over(self._underlying + other._underlying)
-
-    def _sub_(self, other: "GroupModuleElement") -> "GroupModuleElement":
-        return self.parent()._over(self._underlying - other._underlying)
-
-    def _neg_(self) -> "GroupModuleElement":
-        return self.parent()._over(-self._underlying)
-
-    def _lmul_(self, factor: "RingElement") -> "GroupModuleElement":
-        return self.parent()._over(factor * self._underlying)
-
-    _rmul_ = _lmul_
-
-    def _richcmp_(self, other: "GroupModuleElement", op: int) -> bool:
-        return richcmp(self._underlying, other._underlying, op)
-
-    def __eq__(self, other: "MembershipInput") -> bool:
-        # Identification across parents is a stated morphism, never coercion
-        # (AGENTS.md: coercion must not erase the element/image distinction),
-        # so equality outside this parent is plain False and Sage's
-        # conversion fallback never consults a constructor.
-        if not (
-            isinstance(other, GroupModuleElement)
-            and other.parent() is self.parent()
-        ):
-            return False
-        return bool(richcmp(self._underlying, other._underlying, op_EQ))
-
-    def __ne__(self, other: "MembershipInput") -> bool:
-        return not self.__eq__(other)
-
-    def __hash__(self) -> int:
-        return hash((id(self.parent()), self._underlying))
-
-    def _repr_(self) -> str:
-        return repr(self._underlying)
+def GroupModule(module: "Module", action: GroupAction) -> Parent:
+    r"""Return the finite free module $M$ acted on by $G$ through ``action``."""
+    return object_of(
+        GroupModules(module.base_ring(), action.domain()),
+        module=module,
+        action=action,
+    )
 
 
-class GroupModule(Parent):
-    r"""A finite free module \(M\) with a specified action \(G\to Aut_R(M)\)."""
+def _is_group_module(module: "Module") -> bool:
+    r"""Whether ``module`` is an object of a category of $R[G]$-modules."""
+    return any(
+        isinstance(part, GroupModules)
+        for part in module.category().all_super_categories()
+    )
 
-    Element = GroupModuleElement
-
-    if TYPE_CHECKING:
-        # Reached from the categories this parent is placed in:
-        # ``Aut`` from the free-module surface underneath, ``group`` from
-        # ``GroupModules.ParentMethods``.  Declared, never defined.
-        def Aut(self) -> "ModuleAutomorphismGroup": ...
-        def group(self) -> "Group": ...
-
-    def __init__(self, module: "Module", action: GroupAction) -> None:
-        # Local: a module-level import would close a cycle; the module is built by the time this runs.
-        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import FinitelyGeneratedFreeModules
-        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import framing_morphism
-        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import group_action_homset
-        from dzack_research.preamble.refine import refine
-
-        assert module in FinitelyGeneratedFreeModules(module.base_ring()), (
-            "an R[G]-module is constructed from an actual finite framed free module"
-        )
-        assert isinstance(action, GroupAction) and action.module() is module, (
-            "the action must be a morphism into the supplied module's Aut homset"
-        )
-        # A group module IS the pair \((M,\rho)\), and both halves arrive as
-        # constructor arguments.  They are stored before anything else so that
-        # identity -- hash, equality, repr -- is answerable from the first
-        # moment the object exists, including while ``__init__`` is still
-        # running and Sage's caches hash it.
-        self._module = module
-        self._action = action
-        Parent.__init__(
-            self,
-            base=module.base_ring(),
-            category=GroupModules(module.base_ring(), action.domain()),
-        )
-        refine(self, GroupModules(module.base_ring(), action.domain()))
-        source = module.framing_morphism().domain()
-        underlying_module_generator_morphism = module.module_generator_morphism()
-        lifted_module_generator_morphism = SetMorphism(
-            Hom(
-                underlying_module_generator_morphism.domain(),
-                UnderlyingSet(self),
-                Sets(),
-            ),
-            lambda element_of_S: self._over(
-                underlying_module_generator_morphism(element_of_S)
-            ),
-        )
-        self._free_module_generator_morphism = lifted_module_generator_morphism
-        self._framing_morphism = framing_morphism(
-            source,
-            self,
-            lifted_module_generator_morphism,
-        )
-        automorphisms = self.Aut()
-        values = {
-            element: automorphisms(
-                {
-                    element_of_S: self._over(
-                        action(element)(
-                            underlying_module_generator_morphism(element_of_S)
-                        )
-                    )
-                    for element_of_S in module.module_generating_set()
-                }
-            )
-            for element in action.domain()
-        }
-        # \(\rho\) lands in \(Aut(M)\), whose automorphisms move elements of
-        # \(M\).  This module's elements wrap those, so the same \(\rho\) is
-        # also recorded through the wrapping, to act on them.  Derived, under
-        # its own name: ``_action`` is the constructor's \(\rho\) and never
-        # changes, because the hash is taken from it.
-        self._acting_automorphisms = group_action_homset(action.domain(), self)(values)
-
-    def framing_morphism(self) -> FramingMorphism:
-        return self._framing_morphism
-
-    def forget_action(self) -> "Module":
-        return self._module
-
-    def rank(self) -> "Cardinal":
-        return self._module.rank()
-
-    def zero(self) -> GroupModuleElement:
-        return self._over(self._module.zero())
-
-    def _over(self, element: ModuleElement) -> GroupModuleElement:
-        wrapped: GroupModuleElement = self.element_class(self, element)
-        return wrapped
-
-    def _from_coordinates(self, coordinates: "Vector") -> GroupModuleElement:
-        return self._over(self._module._from_coordinates(coordinates))
-
-    def _element_constructor_(
-        self,
-        element: "ElementConstructorInput",
-    ) -> GroupModuleElement:
-        # Conversion, not just recognition: coordinate data converts through
-        # the module's own coordinate route; an element of this parent passes
-        # through unchanged.
-        if isinstance(element, GroupModuleElement) and element.parent() is self:
-            return element
-        assert isinstance(element, (tuple, list, ModuleElement)), (
-            f"{element} is neither an element of {self} nor coordinate data for one"
-        )
-        return self._over(self._module(element))
-
-    def __contains__(self, element: "MembershipInput") -> bool:
-        return (
-            isinstance(element, GroupModuleElement)
-            and element.parent() is self
-        )
-
-    def __hash__(self) -> int:
-        return hash((type(self), self._module, self._action))
-
-    def __eq__(self, other: "MembershipInput") -> bool:
-        return (
-            isinstance(other, GroupModule)
-            and type(other) is type(self)
-            and self._module == other._module
-            and self._action == other._action
-        )
-
-    def _repr_(self) -> str:
-        return f"{self._module} with an action of {self.group()}"
 
 
 def _invariant_generators(module: "Module") -> list:

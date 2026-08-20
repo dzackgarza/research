@@ -30,6 +30,7 @@ finite-level ``decomposition_group``, ``inertia_group``, and
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
+    from sage.structure.parent import Parent
     from sage.structure.parent import MembershipInput
 
 from sage.structure.sage_object import SageObject
@@ -55,12 +56,12 @@ class AbsoluteDecompositionGroup(SageObject):
     """
 
     def __init__(
-        self, ambient: "AbsoluteGaloisGroup", prime: "NumberFieldFractionalIdeal"
+        self, ambient: "Parent", prime: "NumberFieldFractionalIdeal"
     ) -> None:
         self._ambient = ambient
         self._prime = prime
 
-    def ambient(self) -> "AbsoluteGaloisGroup":
+    def ambient(self) -> "Parent":
         return self._ambient
 
     def prime(self) -> "NumberFieldFractionalIdeal":
@@ -94,12 +95,12 @@ class AbsoluteInertiaGroup(SageObject):
     r"""The inertia group \(I_{\bar v}\subseteq G_K\) at a chosen prolongation of ``prime``."""
 
     def __init__(
-        self, ambient: "AbsoluteGaloisGroup", prime: "NumberFieldFractionalIdeal"
+        self, ambient: "Parent", prime: "NumberFieldFractionalIdeal"
     ) -> None:
         self._ambient = ambient
         self._prime = prime
 
-    def ambient(self) -> "AbsoluteGaloisGroup":
+    def ambient(self) -> "Parent":
         return self._ambient
 
     def prime(self) -> "NumberFieldFractionalIdeal":
@@ -138,12 +139,12 @@ class FrobeniusConjugacyClass(SageObject):
     """
 
     def __init__(
-        self, ambient: "AbsoluteGaloisGroup", prime: "NumberFieldFractionalIdeal"
+        self, ambient: "Parent", prime: "NumberFieldFractionalIdeal"
     ) -> None:
         self._ambient = ambient
         self._prime = prime
 
-    def ambient(self) -> "AbsoluteGaloisGroup":
+    def ambient(self) -> "Parent":
         return self._ambient
 
     def prime(self) -> "NumberFieldFractionalIdeal":
@@ -177,12 +178,12 @@ class DecompositionGroupConjugacyClass(SageObject):
     r"""The conjugacy class of decomposition groups at ``prime``, forgetting the prolongation."""
 
     def __init__(
-        self, ambient: "AbsoluteGaloisGroup", prime: "NumberFieldFractionalIdeal"
+        self, ambient: "Parent", prime: "NumberFieldFractionalIdeal"
     ) -> None:
         self._ambient = ambient
         self._prime = prime
 
-    def ambient(self) -> "AbsoluteGaloisGroup":
+    def ambient(self) -> "Parent":
         return self._ambient
 
     def prime(self) -> "NumberFieldFractionalIdeal":
@@ -212,12 +213,12 @@ class InertiaGroupConjugacyClass(SageObject):
     r"""The conjugacy class of inertia groups at ``prime``, forgetting the prolongation."""
 
     def __init__(
-        self, ambient: "AbsoluteGaloisGroup", prime: "NumberFieldFractionalIdeal"
+        self, ambient: "Parent", prime: "NumberFieldFractionalIdeal"
     ) -> None:
         self._ambient = ambient
         self._prime = prime
 
-    def ambient(self) -> "AbsoluteGaloisGroup":
+    def ambient(self) -> "Parent":
         return self._ambient
 
     def prime(self) -> "NumberFieldFractionalIdeal":

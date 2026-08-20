@@ -1,24 +1,21 @@
-r"""Subtree for subschemes, open immersions, closed embeddings, and quasischemes.
+r"""Subtree for subschemes, open immersions and closed embeddings.
 
 Hierarchy:
-  Subscheme(Scheme) ──> inclusion_morphism i: A -> B
-    ├── OpenSubscheme(Subscheme)   ──> OpenSubschemes(S)
-    ├── ClosedSubscheme(Subscheme) ──> ClosedSubschemes(S)
-    └── QuasiScheme(Scheme)       ──> QuasiAffine / QuasiProjective (V(I) \ V(J))
+  Schemes(S)
+    └── Subschemes(S)          ──> the scheme A together with the scheme B it sits in
+          ├── OpenSubschemes(S)
+          └── ClosedSubschemes(S)
 """
 
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
-from dzack_research.preamble.categories.schemes.schemes import SchemeElement
-from sage.categories.morphism import Morphism
 from sage.structure.parent import Parent
-from dzack_research.preamble.categories.schemes.schemes import Scheme
-from sage.rings.integer_ring import ZZ as SageZZ
 
 from typing import Self, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from sage.categories.rings import Ring
+    from sage.categories.morphism import Morphism
     from sage.schemes.generic.morphism import SchemeMorphism_point
+    from dzack_research.preamble.owned_category import ConstructionData
 
     from typing import Protocol
 
@@ -33,23 +30,38 @@ if TYPE_CHECKING:
         def dimension(self) -> "Integer": ...
 
 
-class Subscheme(Scheme):
-    r"""A subscheme A of a scheme B, carrying the inclusion morphism i: A -> B."""
+class Subschemes(OwnedCategoryOverBaseRing):
+    r"""Category of subschemes A of a scheme B."""
 
-    Element = SchemeElement
+    def _repr_object_names(self) -> str:
+        return f"subschemes over {self.base_ring()}"
 
-    def __init__(self, ambient: "Parent", base_ring: "Ring" = SageZZ) -> None:
-        r"""Initialize the subscheme and record its ambient scheme B."""
-        Scheme.__init__(self, base_ring=base_ring)
-        self._ambient = ambient
+    def super_categories(self) -> list:
+        r"""Return [Schemes(S)]."""
+        # Local: a module-level import would close a cycle; the module is built by the time this runs.
+        from dzack_research.preamble.categories.schemes.schemes import Schemes
 
-    def ambient_scheme(self) -> "Parent":
-        r"""Return the ambient scheme B of which this is a subscheme."""
-        return self._ambient
+        return [Schemes(self.base_ring())]
 
-    def inclusion_morphism(self) -> "Morphism":
-        r"""Return the structure inclusion morphism i: A -> B."""
-        assert False, "inclusion_morphism must be implemented by concrete Subscheme"
+    class ParentMethods:
+        r"""Parent methods for a subscheme A of a scheme B."""
+
+        def __init__(
+            self: Self,
+            ambient: Parent,
+            **rest: "ConstructionData",
+        ) -> None:
+            r"""Build the subscheme sitting in the scheme ``ambient``."""
+            self._ambient = ambient
+            super().__init__(**rest)
+
+        def ambient_scheme(self: Self) -> Parent:
+            r"""Return the scheme B of which this is a subscheme."""
+            return self._ambient
+
+        def inclusion_morphism(self: Self) -> "Morphism":
+            r"""Return the structure inclusion morphism i: A -> B."""
+            assert False, "inclusion_morphism must be implemented by concrete Subscheme"
 
 
 class ClosedSubschemes(OwnedCategoryOverBaseRing):
@@ -59,11 +71,8 @@ class ClosedSubschemes(OwnedCategoryOverBaseRing):
         return f"closed subschemes over {self.base_ring()}"
 
     def super_categories(self) -> list:
-        r"""Return [Schemes(S)]."""
-        # Local: a module-level import would close a cycle; the module is built by the time this runs.
-        from dzack_research.preamble.categories.schemes.schemes import Schemes
-
-        return [Schemes(self.base_ring())]
+        r"""Return [Subschemes(S)]."""
+        return [Subschemes(self.base_ring())]
 
     class ParentMethods:
         r"""Parent methods for closed subschemes V -> X."""
@@ -107,6 +116,7 @@ class ClosedSubschemes(OwnedCategoryOverBaseRing):
             )
             return super().intersection_multiplicity(other, point)
 
+
 class OpenSubschemes(OwnedCategoryOverBaseRing):
     r"""Category of open subschemes U -> X."""
 
@@ -114,49 +124,8 @@ class OpenSubschemes(OwnedCategoryOverBaseRing):
         return f"open subschemes over {self.base_ring()}"
 
     def super_categories(self) -> list:
-        r"""Return [Schemes(S)]."""
-        # Local: a module-level import would close a cycle; the module is built by the time this runs.
-        from dzack_research.preamble.categories.schemes.schemes import Schemes
-
-        return [Schemes(self.base_ring())]
-
-
-class OpenSubscheme(Subscheme):
-    r"""An open subscheme U -> X."""
-
-    Element = SchemeElement
-
-    def __init__(self, ambient: "Parent", base_ring: "Ring" = SageZZ) -> None:
-        r"""Initialize the open subscheme and refine into OpenSubschemes(base_ring)."""
-        # Local: a module-level import would close a cycle; the module is built by the time this runs.
-        from dzack_research.preamble.refine import refine
-
-        Subscheme.__init__(self, ambient=ambient, base_ring=base_ring)
-        refine(self, OpenSubschemes(base_ring))
-
-
-class ClosedSubscheme(Subscheme):
-    r"""A closed subscheme Z -> X."""
-
-    Element = SchemeElement
-
-    def __init__(self, ambient: "Parent", base_ring: "Ring" = SageZZ) -> None:
-        r"""Initialize the closed subscheme and refine into ClosedSubschemes(base_ring)."""
-        # Local: a module-level import would close a cycle; the module is built by the time this runs.
-        from dzack_research.preamble.refine import refine
-
-        Subscheme.__init__(self, ambient=ambient, base_ring=base_ring)
-        refine(self, ClosedSubschemes(base_ring))
-
-
-class QuasiScheme(Scheme):
-    r"""A quasi-scheme V(I) \ V(J) (quasi-affine or quasi-projective open subscheme)."""
-
-    Element = SchemeElement
-
-    def __init__(self, base_ring: "Ring" = SageZZ) -> None:
-        r"""Initialize the quasi-scheme."""
-        Scheme.__init__(self, base_ring=base_ring)
+        r"""Return [Subschemes(S)]."""
+        return [Subschemes(self.base_ring())]
 
 
 def install_subschemes() -> None:

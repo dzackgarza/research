@@ -50,9 +50,12 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from collections.abc import Callable
 
+    from sage.categories.morphism import Morphism
     from sage.rings.polynomial.polynomial_element import Polynomial
     from sage.categories.modules import Module
+    from sage.rings.ring import Ring
     from dzack_research.preamble.lexicon import Element
+    from dzack_research.preamble.owned_category import ConstructionData
 
 from typing import Self
 
@@ -68,15 +71,17 @@ from sage.functions.trig import arctan, cos, sin
 from sage.rings.infinity import Infinity
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.qqbar import AA
-from sage.structure.element import ModuleElement
+from sage.misc.cachefunc import cached_function
+from sage.structure.element import Element as SageElement
 from sage.structure.parent import Parent
-from sage.structure.unique_representation import UniqueRepresentation
 from sage.symbolic.expression import Expression
 from sage.symbolic.integration.integral import integrate
 from sage.symbolic.operators import add_vararg, mul_vararg
 from sage.symbolic.ring import SR
 
 from dzack_research.preamble.categories.modules.pure.modules import Modules
+from dzack_research.preamble.owned_category import object_of
+from dzack_research.preamble.owned_category_bases import Category_over_base_ring
 
 if TYPE_CHECKING:
     # What a module of functions is offered as an element: a symbolic
@@ -392,115 +397,155 @@ def _certify_membership(kind: str, domain_name: str, function: "Function") -> No
     )
 
 
-class FunctionModuleElement(ModuleElement):
-    r"""A function, as an element of a module of functions."""
+class FunctionModules(Category_over_base_ring):
+    r"""Modules whose elements are functions of a stated kind on a stated domain."""
 
-    def __init__(self, parent: "FunctionModule", function: "Function") -> None:
-        ModuleElement.__init__(self, parent)
-        assert callable(function), f"an element of {parent} is a function, got {function!r}"
-        self._function = function
+    @classmethod
+    def _repr_object_names(cls) -> str:
+        return "function modules"
 
-    def __call__(self, point: "Element") -> "Element":
-        r"""Return the value at ``point``; an element of a function module is a function.
+    def super_categories(self) -> list:
+        return [Modules(self.base_ring())]
 
-        A symbolic expression is evaluated by substituting for its variable,
-        which is how Sage evaluates one -- calling it with a bare argument was
-        removed from Sage, so an expression is not a callable in the sense the
-        other branch means.
-        """
-        if isinstance(self._function, Expression):
-            return self._function.subs({
-                variable: point for variable in self._function.variables()
-            })
-        return self._function(point)
+    class ParentMethods:
+        r"""One module of functions: the kind, and the domain they live on."""
 
-    def _by_closure(self, function: "Function") -> "FunctionModuleElement":
-        r"""Return an element of the same module, without certifying it.
+        def __init__(
+            self: Self,
+            base_ring: "Ring",
+            kind: str,
+            domain_name: str,
+            **rest: "ConstructionData",
+        ) -> None:
+            self._kind = kind
+            self._domain_name = domain_name
+            super().__init__(base=base_ring, **rest)
 
-        A module is closed under its own operations, so a sum, a negative or a
-        scalar multiple of members is a member -- by a theorem, which is why
-        this goes around the certifier instead of asking it again.
-        """
-        parent = self.parent()
-        member: "FunctionModuleElement" = parent.element_class(parent, function)
-        return member
+        def base_ring(self: Self) -> "Ring":
+            return self.base()
 
-    def _add_(self, other: "FunctionModuleElement") -> "FunctionModuleElement":
-        if isinstance(self._function, Expression) and isinstance(other._function, Expression):
-            return self._by_closure(self._function + other._function)
-        return self._by_closure(lambda point: self(point) + other(point))
+        def _element_constructor_(
+            self: Self, function: "Function | Element"
+        ) -> "Element":
+            if isinstance(function, SageElement) and function.parent() is self:
+                return function
+            _certify_membership(self._kind, self._domain_name, function)
+            member: "Element" = self.element_class(self, function)
+            return member
 
-    def _neg_(self) -> "FunctionModuleElement":
-        if isinstance(self._function, Expression):
-            return self._by_closure(-self._function)
-        return self._by_closure(lambda point: -self(point))
+        def zero(self: Self) -> "Element":
+            r"""Return the zero function, a member of anything by closure."""
+            zero_function: "Element" = self.element_class(self, SR.zero())
+            return zero_function
 
-    def _lmul_(self, scalar: "Element") -> "FunctionModuleElement":
-        if isinstance(self._function, Expression):
-            return self._by_closure(scalar * self._function)
-        return self._by_closure(lambda point: scalar * self(point))
+        def _ring_morphism_defining_module_action(self: Self) -> "Morphism":
+            r"""Return $\rho:R\to\operatorname{End}(M)$, $r\mapsto(f\mapsto rf)$.
 
-    _rmul_ = _lmul_
+            The action a module of functions has for free: scaling a function is
+            scaling its values.  No generating set is consulted, which is the
+            point -- the obligation is about being a module, and this module has
+            no generators to read it off.
+            """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 
-    def _repr_(self) -> str:
-        return f"function in {self.parent()}"
+            endomorphisms = module_homset(self, self)
+            return SetMorphism(
+                Hom(self.base_ring(), endomorphisms, Rings()),
+                lambda scalar: SetMorphism(
+                    endomorphisms, lambda element: scalar * element
+                ),
+            )
+
+        def _repr_(self: Self) -> str:
+            return (
+                f"{self._kind}({self._domain_name}) as a module over "
+                f"{self.base_ring()}"
+            )
+
+    class ElementMethods:
+        r"""A function, as an element of a module of functions."""
+
+        def __init__(
+            self: Self,
+            parent: Parent,
+            function: "Function",
+            **rest: "ConstructionData",
+        ) -> None:
+            assert callable(function), (
+                f"an element of {parent} is a function, got {function!r}"
+            )
+            self._function = function
+            super().__init__(parent, **rest)
+
+        def __call__(self: Self, point: "Element") -> "Element":
+            r"""Return the value at ``point``; such an element is a function.
+
+            A symbolic expression is evaluated by substituting for its variable,
+            which is how Sage evaluates one -- calling it with a bare argument was
+            removed from Sage, so an expression is not a callable in the sense the
+            other branch means.
+            """
+            if isinstance(self._function, Expression):
+                return self._function.subs({
+                    variable: point for variable in self._function.variables()
+                })
+            return self._function(point)
+
+        def _by_closure(self: Self, function: "Function") -> "Element":
+            r"""Return an element of the same module, without certifying it.
+
+            A module is closed under its own operations, so a sum, a negative or a
+            scalar multiple of members is a member -- by a theorem, which is why
+            this goes around the certifier instead of asking it again.
+            """
+            parent = self.parent()
+            member: "Element" = parent.element_class(parent, function)
+            return member
+
+        def _add_(self: Self, other: Self) -> "Element":
+            if isinstance(self._function, Expression) and isinstance(other._function, Expression):
+                return self._by_closure(self._function + other._function)
+            return self._by_closure(lambda point: self(point) + other(point))
+
+        def _neg_(self: Self) -> "Element":
+            if isinstance(self._function, Expression):
+                return self._by_closure(-self._function)
+            return self._by_closure(lambda point: -self(point))
+
+        def _lmul_(self: Self, scalar: "Element") -> "Element":
+            if isinstance(self._function, Expression):
+                return self._by_closure(scalar * self._function)
+            return self._by_closure(lambda point: scalar * self(point))
+
+        _rmul_ = _lmul_
+
+        def _repr_(self: Self) -> str:
+            return f"function in {self.parent()}"
 
 
-class FunctionModule(UniqueRepresentation, Parent):
-    r"""The $R$-module of functions of a stated kind on a stated domain."""
+@cached_function
+def FunctionModule(base_ring: "Ring", kind: str, domain_name: str) -> Parent:
+    r"""Return the $R$-module of functions of a stated kind on a stated domain.
 
-    Element = FunctionModuleElement
-
-    def __init__(self, base_ring: "Ring", kind: str, domain_name: str) -> None:
-        self._kind = kind
-        self._domain_name = domain_name
-        Parent.__init__(self, base=base_ring, category=Modules(base_ring))
-
-    def base_ring(self) -> "Ring":
-        return self.base()
-
-    def _element_constructor_(self, function: "Function | FunctionModuleElement") -> FunctionModuleElement:
-        if isinstance(function, FunctionModuleElement) and function.parent() is self:
-            return function
-        _certify_membership(self._kind, self._domain_name, function)
-        member: FunctionModuleElement = self.element_class(self, function)
-        return member
-
-    def zero(self) -> FunctionModuleElement:
-        r"""Return the zero function, which is a member of anything by closure."""
-        zero_function: FunctionModuleElement = self.element_class(self, SR.zero())
-        return zero_function
-
-    def _ring_morphism_defining_module_action(self: Self) -> "Morphism":
-        r"""Return $\rho:R\to\operatorname{End}(M)$, $r\mapsto(f\mapsto rf)$.
-
-        The action a module of functions has for free: scaling a function is
-        scaling its values.  No generating set is consulted, which is the
-        point -- the obligation is about being a module, and this module has
-        no generators to read it off.
-        """
-        # Local: a module-level import here would close a cycle; by call time this module is built.
-        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
-
-        endomorphisms = module_homset(self, self)
-        return SetMorphism(
-            Hom(self.base_ring(), endomorphisms, Rings()),
-            lambda scalar: SetMorphism(
-                endomorphisms, lambda element: scalar * element
-            ),
-        )
-
-    def _repr_(self) -> str:
-        return f"{self._kind}({self._domain_name}) as a module over {self.base_ring()}"
+    Cached on its arguments: one module per $(R,\text{kind},\text{domain})$, or
+    two parents print alike and their elements refuse to add.
+    """
+    return object_of(
+        FunctionModules(base_ring),
+        base_ring=base_ring,
+        kind=kind,
+        domain_name=domain_name,
+    )
 
 
-def smooth_functions(base_ring: "Ring", domain_name: str = _THE_REAL_LINE) -> FunctionModule:
+def smooth_functions(base_ring: "Ring", domain_name: str = _THE_REAL_LINE) -> Parent:
     r"""Return $C^\infty$ on the named domain, as an $R$-module."""
     return FunctionModule(base_ring, _SMOOTH, domain_name)
 
 
 def square_integrable_functions(
     base_ring: "Ring", domain_name: str = _THE_REAL_LINE
-) -> FunctionModule:
+) -> Parent:
     r"""Return $L^2$ on the named domain, as an $R$-module."""
     return FunctionModule(base_ring, _SQUARE_INTEGRABLE, domain_name)

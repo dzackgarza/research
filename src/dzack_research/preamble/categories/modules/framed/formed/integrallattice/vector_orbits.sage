@@ -24,10 +24,10 @@ Three questions, three routes, all sited on the owned surfaces:
   coset of $\varphi(\Gamma)\backslash\varphi(O(L))/
   \varphi(\operatorname{Stab}(w_2))$ in the finite quotient
   $\varphi=(\rho_L,\det,\operatorname{sn}_{\mathbb R})$ that
-  :class:`isotropic_orbits.OrthogonalPredicateSubgroup` already carries.
+  :class:`isotropic_orbits.OrthogonalPredicateSubgroups` already carries.
   Every character cutting such a subgroup out factors through that finite
   quotient, so the test is a decision and not a search --
-  :meth:`isotropic_orbits.OrthogonalPredicateSubgroup.vectors_are_equivalent`
+  ``vectors_are_equivalent`` on that subgroup
   is where it is asked.
 
 * **Algorithm 2.1, the definite-complement route.**  When $w^{\perp}$ is
@@ -176,7 +176,7 @@ def orthogonal_group_vector_stabilizer_generators(
     morphisms; each is verified here to fix the vector, and that they
     generate the whole pointwise stabilizer is the engine's contract, which
     is what makes the double-coset decision on
-    :class:`isotropic_orbits.OrthogonalPredicateSubgroup` a decision.
+    :class:`isotropic_orbits.OrthogonalPredicateSubgroups` a decision.
     """
     # Local: a module-level import here would close a cycle; by call time this module is built.
     from dzack_research.preamble.categories.modules.framed.formed.integrallattice.engines import vector_stabilizer_generator_matrices

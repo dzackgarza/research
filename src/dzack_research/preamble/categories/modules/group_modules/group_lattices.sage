@@ -14,7 +14,6 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModule
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormMorphism
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import GroupAction
-from sage.structure.parent import Parent
 if TYPE_CHECKING:
     from dzack_research.preamble.categories.abstract_categories.direct_sum_objects import DirectSumObject
     from dzack_research.preamble.categories.modules.framed.formed.integrallattice.subobjects import Subobject
@@ -83,14 +82,6 @@ if TYPE_CHECKING:
 
 
 
-# ``ParentMethods`` methods run on parents, but a bare methods class has no
-# base to say so, and the methods below pass ``self`` where a parent is what
-# is wanted.  Runtime-identical: a bare class already derives from object.
-if TYPE_CHECKING:
-    _ParentBase = Parent
-else:
-    _ParentBase = object
-
 class GroupLattices(Category):
     r"""The pullback of \(G\)-modules and integral lattices."""
 
@@ -119,7 +110,7 @@ class GroupLattices(Category):
             IntegralLattices(),
         ]
 
-    class ParentMethods(_ParentBase):
+    class ParentMethods:
         # Installed on the object by the constructor: $\rho$ recorded through
         # the form-bearing wrapping, so it moves this parent's own elements.
         _formed_action: GroupAction

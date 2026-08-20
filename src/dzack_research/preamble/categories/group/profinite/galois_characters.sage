@@ -35,6 +35,7 @@ from sage.categories.homset import Hom
 from sage.categories.morphism import Morphism
 
 if TYPE_CHECKING:
+    from sage.structure.parent import Parent
     from sage.categories.groups import Group
     from sage.categories.rings import Ring
 
@@ -51,18 +52,18 @@ class CyclotomicCharacter(Morphism):
         self._restriction_map = restriction_map
         self._target = target
 
-    def domain(self) -> "AbsoluteGaloisGroup":
+    def domain(self) -> "Parent":
         return self._restriction_map.domain()
 
     def codomain(self) -> "Group":
         return self._target
 
-    def kernel(self) -> "OpenAbsoluteGaloisSubgroup":
+    def kernel(self) -> "Parent":
         return self._restriction_map.kernel()
 
-    def restrict(self, L: "Ring") -> "OpenAbsoluteGaloisSubgroup":
+    def restrict(self, L: "Ring") -> "Parent":
         r"""Restrict the character along \(G_L\hookrightarrow G_K\)."""
-        subgroup: "OpenAbsoluteGaloisSubgroup" = (
+        subgroup: "Parent" = (
             self._restriction_map.domain().open_subgroup(L)
         )
         return subgroup
@@ -83,10 +84,10 @@ class QuadraticCharacter(Morphism):
         )
         self._restriction_map = restriction_map
 
-    def domain(self) -> "AbsoluteGaloisGroup":
+    def domain(self) -> "Parent":
         return self._restriction_map.domain()
 
-    def kernel(self) -> "OpenAbsoluteGaloisSubgroup":
+    def kernel(self) -> "Parent":
         return self._restriction_map.kernel()
 
     def _repr_(self) -> str:

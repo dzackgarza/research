@@ -13,6 +13,7 @@ if TYPE_CHECKING:
 if TYPE_CHECKING:
     from typing import Callable
     from sage.rings.integer import Integer
+    from dzack_research.preamble.owned_category import ConstructionData
 
 from dzack_research.preamble.categories.sets.owned_sets import Sets, placement_of
 if TYPE_CHECKING:
@@ -52,7 +53,8 @@ from sage.groups.perm_gps.permgroup_named import AlternatingGroup
 from sage.groups.perm_gps.permgroup_named import SymmetricGroup
 from sage.libs.gap.libgap import libgap
 from sage.misc.unknown import Unknown
-from dzack_research.preamble.categories.rings.rings import ℤ
+from dzack_research.preamble.categories.rings.rings import OwnedRings, ℤ
+from dzack_research.preamble.owned_category import object_of
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.sets.totally_ordered_finite_set import TotallyOrderedFiniteSet
 from sage.structure.element import Element, RingElement
@@ -917,133 +919,132 @@ class OwnedFinitelyPresentedGroups(Category):
             return finite_ordered_set(relations)
 
 
-class AbelianGroupEndomorphism(Element):
-    r"""An endomorphism of an abelian group.
-
-    A map, held as one.  Images of a generating set would be a presentation,
-    and endomorphisms are wanted here for groups that have no distinguished
-    one -- a permutation group has no coordinates to read an exponent off.
-    """
-
-    if TYPE_CHECKING:
-        # The parent of an endomorphism is the endomorphism ring, which is
-        # what makes the ring's own operations reachable from an element.
-        def parent(self) -> "AbelianGroupEndomorphismRing": ...
-
-    def __init__(
-        self, parent: "Parent", mapping: "Callable[[GroupElement], GroupElement]"
-    ) -> None:
-        Element.__init__(self, parent)
-        self._mapping = mapping
-
-    def __call__(self, element: "GroupElement") -> "GroupElement":
-        return self._mapping(element)
-
-    def _add_(self, other: "AbelianGroupEndomorphism") -> "AbelianGroupEndomorphism":
-        r"""Return \(f+g:x\mapsto f(x)g(x)\).
-
-        A homomorphism exactly because the target is abelian:
-        \((f+g)(xy)=f(x)f(y)g(x)g(y)\), and the middle pair commutes past
-        each other to give \((f+g)(x)(f+g)(y)\).  This is the whole reason
-        the endomorphism ring is a ring, and the reason it is built here.
-        """
-        return self.parent()(
-            lambda element: self.parent()._sum_values(
-                self(element), other(element)
-            )
-        )
-
-    def _neg_(self) -> "AbelianGroupEndomorphism":
-        return self.parent()(
-            lambda element: self.parent()._negative_value(self(element))
-        )
-
-    def _mul_(self, other: "AbelianGroupEndomorphism") -> "AbelianGroupEndomorphism":
-        r"""Return the composite \(f\circ g\), the ring's multiplication."""
-        return self.parent()(lambda element: self(other(element)))
-
-
-if TYPE_CHECKING:
-    EndomorphismRingParent = Parent[AbelianGroupEndomorphism]
-else:
-    # ``Parent`` is a cython extension type and is not subscriptable at
-    # runtime; the element binding is for the checker.
-    EndomorphismRingParent = Parent
-
-
-class AbelianGroupEndomorphismRing(EndomorphismRingParent):
+class AbelianGroupEndomorphismRings(Category):
     r"""\(\operatorname{End}(A)\) for \(A\) abelian, as a ring.
 
     Endomorphisms of any group compose, so they always form a monoid; they
     add only when the target is abelian.  So this is a ring precisely for the
-    groups this category holds, and Sage builds no such ring for them --
+    groups the abelian node holds, and Sage builds no such ring for them --
     ``End(AbelianGroup([3]))`` is not in ``Rings()`` and declines to construct
     a morphism from generator images at all.
+
+    The group is the datum this level introduces.  Everything the
+    endomorphism ring *is* as a ring it reaches through :class:`OwnedRings`.
     """
 
-    Element = AbelianGroupEndomorphism
+    @classmethod
+    def _repr_object_names(cls) -> str:
+        return "endomorphism rings of abelian groups"
 
-    def __init__(self, group: "Group") -> None:
-        assert group.is_abelian(), (
-            f"{group} is not abelian, so its endomorphisms do not add"
-        )
-        self._group = group
-        self._additive = _uses_additive_notation(group)
-        Parent.__init__(self, category=Rings())
+    def super_categories(self) -> list:
+        return [OwnedRings()]
 
-    def _sum_values(
-        self, left: "GroupElement", right: "GroupElement"
-    ) -> "GroupElement":
-        match self._additive:
-            case True:
-                return left + right
-            case False:
-                return left * right
+    class ElementMethods:
+        r"""An endomorphism of an abelian group.
 
-    def _negative_value(self, value: "GroupElement") -> "GroupElement":
-        match self._additive:
-            case True:
-                return -value
-            case False:
-                return value ** -1
+        A map, held as one.  Images of a generating set would be a
+        presentation, and endomorphisms are wanted here for groups that have
+        no distinguished one -- a permutation group has no coordinates to
+        read an exponent off.
+        """
 
-    def _identity_value(self) -> "GroupElement":
-        match self._additive:
-            case True:
-                return self._group.zero()
-            case False:
-                return self._group.one()
+        def __init__(
+            self,
+            parent: "Parent",
+            mapping: "Callable[[GroupElement], GroupElement]",
+        ) -> None:
+            self._mapping = mapping
+            super().__init__(parent)
 
-    def domain(self) -> "Group":
-        return self._group
+        def __call__(self, element: "GroupElement") -> "GroupElement":
+            return self._mapping(element)
 
-    def codomain(self) -> "Group":
-        return self._group
+        def _add_(self: Self, other: Self) -> Self:
+            r"""Return \(f+g:x\mapsto f(x)g(x)\).
 
-    def _element_constructor_(
-        self, mapping: "Callable[[GroupElement], GroupElement]"
-    ) -> AbelianGroupEndomorphism:
-        endomorphism: AbelianGroupEndomorphism = self.element_class(self, mapping)
-        return endomorphism
+            A homomorphism exactly because the target is abelian:
+            \((f+g)(xy)=f(x)f(y)g(x)g(y)\), and the middle pair commutes past
+            each other to give \((f+g)(x)(f+g)(y)\).  This is the whole reason
+            the endomorphism ring is a ring, and the reason it is built here.
+            """
+            return self.parent()(
+                lambda element: self.parent()._sum_values(
+                    self(element), other(element)
+                )
+            )
 
-    def one(self) -> AbelianGroupEndomorphism:
-        return self(lambda element: element)
+        def _neg_(self: Self) -> Self:
+            return self.parent()(
+                lambda element: self.parent()._negative_value(self(element))
+            )
 
-    def zero(self) -> AbelianGroupEndomorphism:
-        return self(lambda element: self._identity_value())
+        def _mul_(self: Self, other: Self) -> Self:
+            r"""Return the composite \(f\circ g\), the ring's multiplication."""
+            return self.parent()(lambda element: self(other(element)))
 
-    def __hash__(self) -> int:
-        return hash((type(self), self._group))
+    class ParentMethods:
+        def __init__(
+            self, group: "Group", **rest: "ConstructionData"
+        ) -> None:
+            assert group.is_abelian(), (
+                f"{group} is not abelian, so its endomorphisms do not add"
+            )
+            self._group = group
+            self._additive = _uses_additive_notation(group)
+            super().__init__(**rest)
 
-    def __eq__(self, other: "MembershipInput") -> bool:
-        return (
-            isinstance(other, AbelianGroupEndomorphismRing)
-            and type(other) is type(self)
-            and self._group == other._group
-        )
+        def _sum_values(
+            self, left: "GroupElement", right: "GroupElement"
+        ) -> "GroupElement":
+            match self._additive:
+                case True:
+                    return left + right
+                case False:
+                    return left * right
 
-    def _repr_(self) -> str:
-        return f"Endomorphism ring of {self._group}"
+        def _negative_value(self, value: "GroupElement") -> "GroupElement":
+            match self._additive:
+                case True:
+                    return -value
+                case False:
+                    return value ** -1
+
+        def _identity_value(self) -> "GroupElement":
+            match self._additive:
+                case True:
+                    return self._group.zero()
+                case False:
+                    return self._group.one()
+
+        def domain(self) -> "Group":
+            return self._group
+
+        def codomain(self) -> "Group":
+            return self._group
+
+        def _element_constructor_(
+            self, mapping: "Callable[[GroupElement], GroupElement]"
+        ) -> "Element":
+            endomorphism: "Element" = self.element_class(self, mapping)
+            return endomorphism
+
+        def one(self) -> "Element":
+            return self(lambda element: element)
+
+        def zero(self) -> "Element":
+            return self(lambda element: self._identity_value())
+
+        def __hash__(self) -> int:
+            return hash((type(self), self._group))
+
+        def __eq__(self, other: "MembershipInput") -> bool:
+            return (
+                type(other) is type(self)
+                and self._group == other._group
+            )
+
+        def _repr_(self) -> str:
+            return f"Endomorphism ring of {self._group}"
 
 
 class OwnedAbelianGroups(Category):
@@ -1065,9 +1066,9 @@ class OwnedAbelianGroups(Category):
 
     class ParentMethods:
         @cached_method
-        def endomorphism_ring(self: Self) -> AbelianGroupEndomorphismRing:
+        def endomorphism_ring(self: Self) -> "Parent":
             r"""Return \(\operatorname{End}(A)\), a ring because \(A\) is abelian."""
-            return AbelianGroupEndomorphismRing(self)
+            return object_of(AbelianGroupEndomorphismRings(), group=self)
 
         @cached_method
         def _ring_morphism_defining_module_action(self: Self) -> "Morphism":

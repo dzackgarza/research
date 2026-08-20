@@ -4,23 +4,16 @@ Hierarchy:
   Schemes(S)
     └── Varieties(S)
           ├── Curves(S)   (dim = 1)
-          ├── Surfaces(S) (dim = 2)
-          └── ToricVariety
+          └── Surfaces(S) (dim = 2)
 """
 
 from typing import TYPE_CHECKING
 from dzack_research.preamble.categories.schemes.schemes import Schemes
 from dzack_research.preamble.categories.schemes.subschemes import ClosedSubschemes
 from dzack_research.preamble.refine import refine
-if TYPE_CHECKING:
-    from sage.rings.ring import Field
-    from sage.rings.ring import Ring
 
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
-from dzack_research.preamble.categories.schemes.schemes import SchemeElement
-from sage.categories.morphism import Morphism
 from sage.structure.parent import Parent
-from dzack_research.preamble.categories.schemes.schemes import Scheme
 from sage.rings.rational_field import QQ as SageQQ
 from sage.categories.category_with_axiom import (
     all_axioms,
@@ -28,7 +21,6 @@ from sage.categories.category_with_axiom import (
 )
 import sage.schemes.curves.constructor as _sage_curve_const
 import sage.schemes.toric.variety as _sage_toric
-from sage.rings.integer_ring import ZZ as SageZZ
 
 
 from typing import Self
@@ -36,6 +28,7 @@ from typing import Self
 if TYPE_CHECKING:
     # The ordered-set noun is type-only: the preamble loads into one
     # shared namespace and nothing named OrderedSet may bind there.
+    from sage.rings.ring import Field
     from sage.categories.rings import Ring
     from dzack_research.preamble.lexicon import OrderedSet
 
@@ -61,17 +54,6 @@ for _axiom_name in ("DimensionOne", "DimensionTwo", "Toric"):
 # ---------------------------------------------------------------------------
 # Varieties(S)
 # ---------------------------------------------------------------------------
-
-
-class Variety(Scheme):
-    r"""An algebraic variety over S: an integral, separated scheme of finite type over S."""
-
-    Element = SchemeElement
-
-    def __init__(self, base_ring: "Ring" = SageZZ) -> None:
-        r"""Initialize the variety and refine into Varieties(S)."""
-        Scheme.__init__(self, base_ring=base_ring)
-        refine(self, Varieties(base_ring))
 
 
 class Varieties(OwnedCategoryOverBaseRing):
@@ -180,21 +162,6 @@ class Curves(OwnedCategoryOverBaseRing):
 # ---------------------------------------------------------------------------
 
 
-class Surface(Variety):
-    r"""An algebraic surface over S: a 2-dimensional variety over S."""
-
-    Element = SchemeElement
-
-    def __init__(self, base_ring: "Ring" = SageZZ) -> None:
-        r"""Initialize the surface and refine into Surfaces(S)."""
-        Variety.__init__(self, base_ring=base_ring)
-        refine(self, Surfaces(base_ring))
-
-    def dimension(self) -> "Integer":
-        r"""Return 2, the dimension of a surface."""
-        return 2
-
-
 class Surfaces(OwnedCategoryOverBaseRing):
     r"""Category of algebraic surfaces over S (varieties of dimension 2)."""
 
@@ -208,7 +175,7 @@ class Surfaces(OwnedCategoryOverBaseRing):
     class ParentMethods:
         r"""Surface parent methods."""
 
-        def dimension(self) -> "Integer":
+        def dimension(self: Self) -> "Integer":
             r"""Return 2."""
             return 2
 

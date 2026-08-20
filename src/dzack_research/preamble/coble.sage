@@ -40,11 +40,12 @@ Corrections recorded at this landing (2026-08-20 migration):
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from sage.structure.parent import Parent
     from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModule
     from dzack_research.preamble.lexicon import ModuleElement
 
 from dzack_research.preamble.catalogue import Embeddings, Lattices, TwoElementary
-from dzack_research.preamble.categories.modules.framed.formed.integrallattice.coxeter_diagrams import FiniteCoxeterDiagram
+from dzack_research.preamble.categories.modules.framed.formed.integrallattice.coxeter_diagrams import CoxeterDiagrams
 from dzack_research.preamble.utilities import zipsum
 
 __all__ = [
@@ -186,7 +187,7 @@ class Coble:
         return lattice, roots
 
     @staticmethod
-    def rank_ten_diagram() -> FiniteCoxeterDiagram:
+    def rank_ten_diagram() -> "Parent":
         r"""Return the eleven-vertex rooted Coxeter diagram of
         :meth:`rank_ten_coxeter_roots`.
 
@@ -195,7 +196,7 @@ class Coble:
         between a $-2$ and a $-4$ root a double bond ($m=4$).
         """
         _lattice, roots = Coble.rank_ten_coxeter_roots()
-        return FiniteCoxeterDiagram.from_roots(
+        return CoxeterDiagrams().from_roots(
             roots,
             names=tuple(f"r_{index + 1}" for index in range(len(roots))),
         )

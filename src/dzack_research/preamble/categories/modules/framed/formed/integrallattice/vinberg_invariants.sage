@@ -38,8 +38,7 @@ For any real algebraic candidate $x \in [-1, 1)$:
 EXAMPLES::
 
     sage: from dzack_research.preamble.categories.modules.framed.formed.integrallattice.vinberg_invariants import (
-    ...       CombinatorialVinbergInvariantMatrix,
-    ...       ReflectionCosineSet, X_ref,
+    ...       X_ref,
     ...       vinberg_invariant_matrix_from_gram
     ...   )
     sage: from sage.rings.integer_ring import ZZ
@@ -66,7 +65,7 @@ TODOs & Architectural Roadmap
 - [ ] Make crystallographic, non-crystallographic, and hyperbolic properties axiomatic
       refinements of reflection arrangements.
 - [ ] Ensure all root lattice objects in the preamble can canonically produce their associated
-      CombinatorialVinbergInvariantMatrix / hyperplane arrangement.
+      combinatorial Vinberg invariant matrix / hyperplane arrangement.
 - [ ] Make the Gram tensor reconstruction return an entire abstract root lattice parent
       instead of just the bare Gram matrix.
 - [ ] Rename `gram_matrix` to `gram_tensor` across the entire preamble codebase.
@@ -77,9 +76,10 @@ from itertools import combinations
 import math
 from typing import TYPE_CHECKING
 
+from dzack_research.preamble.categories.sets.owned_sets import Sets
+from dzack_research.preamble.owned_category import object_of
 from dzack_research.preamble.owned_category_bases import Category
 from sage.categories.objects import Objects
-from sage.categories.sets_cat import Sets
 from sage.combinat.posets.posets import Poset
 from sage.combinat.root_system.coxeter_matrix import CoxeterMatrix as SageCoxeterMatrix
 from sage.functions.other import sqrt
@@ -96,18 +96,15 @@ from sage.rings.rational_field import QQ as SageQQ
 from sage.schemes.projective.projective_point import SchemeMorphism_point_projective_ring
 from sage.schemes.projective.projective_space import ProjectiveSpace
 from sage.structure.parent import Parent
-from sage.structure.unique_representation import UniqueRepresentation
 
 if TYPE_CHECKING:
+    from dzack_research.preamble.owned_category import ConstructionData
     from sage.graphs.digraph import DiGraph
     from sage.rings.qqbar import AlgebraicNumber
     from sage.rings.ring import Ring
     from sage.structure.parent import MembershipInput
     from sage.symbolic.expression import Expression
     from dzack_research.preamble.lexicon import Element
-    from dzack_research.preamble.categories.modules.framed.formed.integrallattice.coxeter_diagrams import (
-        FiniteCoxeterDiagram,
-    )
 
     # A vertex of a projective weighted graph is named by a label; the
     # constructors accept either the label or its index.
@@ -130,59 +127,62 @@ if TYPE_CHECKING:
 # ---------------------------------------------------------------------------
 
 
-class ReflectionCosineSet(UniqueRepresentation, Parent):
-    r"""
-    The infinite set of reflection cosines:
-        X_ref = { cos(pi/n) | n in ZZ_{>=1} } subset QQbar cap [-1, 1)
+class ReflectionCosineSets(Category):
+    r"""The category of the reflection cosine set.
 
-    Membership is computed algebraically via roots of unity in QQbar without rounding.
+    Its object is X_ref = { cos(pi/n) | n in ZZ_{>=1} }, a subset of QQbar
+    in the interval [-1, 1).  Roots of unity in QQbar decide membership.
+    No rounding occurs.
     """
 
-    def __init__(self) -> None:
-        Parent.__init__(self, category=Sets().Infinite())
+    def _repr_object_names(self) -> str:
+        return "reflection cosine sets"
 
-    def _repr_(self) -> str:
-        return "Set of reflection cosines { cos(pi/n) | n in ZZ_{>=1} }"
+    def super_categories(self) -> list[Category]:
+        return [Sets().Infinite()]
 
-    def _exact_n(self, x: "AlgebraicNumber | Element") -> Integer | None:
-        r"""
-        Return the exact integer n >= 1 such that x = cos(pi/n), or None if x not in X_ref.
-        """
-        x_alg = QQbar(x)
+    class ParentMethods:
+        def _repr_(self) -> str:
+            return "Set of reflection cosines { cos(pi/n) | n in ZZ_{>=1} }"
 
-        if x_alg == -1:
-            return Integer(1)
-        if x_alg <= -1 or x_alg >= 1:
+        def _exact_n(self, x: "AlgebraicNumber | Element") -> Integer | None:
+            r"""
+            Return the exact integer n >= 1 such that x = cos(pi/n), or None if x not in X_ref.
+            """
+            x_alg = QQbar(x)
+
+            if x_alg == -1:
+                return Integer(1)
+            if x_alg <= -1 or x_alg >= 1:
+                return None
+
+            zeta = x_alg + QQbar(I) * QQbar(sqrt(1 - x_alg**2))
+            order = zeta.multiplicative_order()
+            if order is not infinity and order % 2 == 0:
+                n = Integer(order // 2)
+                if zeta**n == -1:
+                    return n
             return None
 
-        zeta = x_alg + QQbar(I) * QQbar(sqrt(1 - x_alg**2))
-        order = zeta.multiplicative_order()
-        if order is not infinity and order % 2 == 0:
-            n = Integer(order // 2)
-            if zeta**n == -1:
-                return n
-        return None
+        def __contains__(self, x: "AlgebraicNumber | Element") -> bool:
+            return self._exact_n(x) is not None
 
-    def __contains__(self, x: "AlgebraicNumber | Element") -> bool:
-        return self._exact_n(x) is not None
+        def __getitem__(self, n: int | Integer) -> "Expression":
+            r"""Return cos(pi/n) for n >= 1."""
+            n_int = Integer(n)
+            assert n_int >= 1, "Index must be an integer n >= 1"
+            return cos(SageQQ.pi() / n_int) if hasattr(SageQQ, "pi") else cos(SageZZ(1) * SageQQ(1) / n_int)
 
-    def __getitem__(self, n: int | Integer) -> "Expression":
-        r"""Return cos(pi/n) for n >= 1."""
-        n_int = Integer(n)
-        assert n_int >= 1, "Index must be an integer n >= 1"
-        return cos(SageQQ.pi() / n_int) if hasattr(SageQQ, "pi") else cos(SageZZ(1) * SageQQ(1) / n_int)
-
-    def index_of(self, x: "AlgebraicNumber | Element") -> Integer:
-        r"""Return the exact integer n such that x = cos(pi/n)."""
-        n = self._exact_n(x)
-        assert n is not None, (
-            f"{x} is not an algebraic reflection cosine in X_ref"
-        )
-        return n
+        def index_of(self, x: "AlgebraicNumber | Element") -> Integer:
+            r"""Return the exact integer n such that x = cos(pi/n)."""
+            n = self._exact_n(x)
+            assert n is not None, (
+                f"{x} is not an algebraic reflection cosine in X_ref"
+            )
+            return n
 
 
-# Singleton instance
-X_ref = ReflectionCosineSet()
+X_ref = object_of(ReflectionCosineSets())
 
 
 # ---------------------------------------------------------------------------
@@ -535,248 +535,271 @@ def to_projective_point(P1: ProjectiveSpace, val: "ProjectivePointDatum") -> Sch
 # ---------------------------------------------------------------------------
 
 
-class CombinatorialVinbergInvariantMatrix(Parent):
-    r"""
-    A Combinatorial Vinberg Invariant Matrix $T = (t_{ij}) \in \mathbb{P}^1(R)^{n \times n}$.
+class CombinatorialVinbergInvariantMatrices(Category):
+    r"""The category of combinatorial Vinberg invariant matrices.
 
-    Encodes the normalized projective angles, mirror distances, and parabolic classifications
-    of a reflection group natively without relying on Sage's flawed CoxeterMatrix.
+    An object is a matrix $T = (t_{ij}) \in \mathbb{P}^1(R)^{n \times n}$.
+    It holds the normalized projective angles, the mirror distances, and the
+    parabolic classification of a reflection group.
     """
 
-    def __init__(
-        self,
-        base_ring: "Ring",
-        entries: dict[tuple[int, int], SchemeMorphism_point_projective_ring],
-        rank: int,
-        names: Sequence[str] | None = None,
-        category: Category | None = None,
-    ) -> None:
-        cat = category if category is not None else ProjectiveWeightedGraphs().Symmetric()
-        Parent.__init__(self, base=base_ring, category=cat)
-        self._rank = int(rank)
-        self._projective_space = ProjectiveSpace(base_ring, 1, "x,y")
-        self._names = tuple(names) if names is not None else tuple(f"v_{i}" for i in range(self._rank))
+    def _repr_object_names(self) -> str:
+        return "combinatorial Vinberg invariant matrices"
 
-        # Enforce symmetry and diagonal = (4 : 1)
-        sym_entries = {}
-        for i in range(self._rank):
-            sym_entries[(i, i)] = self._projective_space([4, 1])
-        for (i, j), pt in entries.items():
-            if i != j:
-                sym_entries[(i, j)] = pt
-                sym_entries[(j, i)] = pt
-        self._entries = sym_entries
+    def super_categories(self) -> list[Category]:
+        return [ProjectiveWeightedGraphs().Symmetric()]
 
-    def rank(self) -> int:
-        r"""Return the number of vertices / generators."""
-        return self._rank
+    class ParentMethods:
+        def __init__(
+            self,
+            entries: "dict[tuple[int, int], SchemeMorphism_point_projective_ring]",
+            rank: int,
+            names: "Sequence[str] | None" = None,
+            **rest: "ConstructionData",
+        ) -> None:
+            super().__init__(**rest)
+            self._rank = int(rank)
+            self._projective_space = ProjectiveSpace(self.base_ring(), 1, "x,y")
+            self._names = tuple(names) if names is not None else tuple(f"v_{i}" for i in range(self._rank))
 
-    def variable_names(self) -> tuple[str, ...]:
-        r"""Return vertex / generator names."""
-        return self._names
+            # Enforce symmetry and diagonal = (4 : 1)
+            sym_entries = {}
+            for i in range(self._rank):
+                sym_entries[(i, i)] = self._projective_space([4, 1])
+            for (i, j), pt in entries.items():
+                if i != j:
+                    sym_entries[(i, j)] = pt
+                    sym_entries[(j, i)] = pt
+            self._entries = sym_entries
 
-    def projective_space(self) -> ProjectiveSpace:
-        r"""Return the projective space $\mathbb{P}^1(R)$ the invariants live in."""
-        return self._projective_space
+        def rank(self) -> int:
+            r"""Return the number of vertices / generators."""
+            return self._rank
 
-    def __getitem__(self, index: tuple[int, int] | int) -> SchemeMorphism_point_projective_ring:
-        r"""Return the Vinberg invariant $t_{ij} \in \mathbb{P}^1(R)$."""
-        idx = index if isinstance(index, tuple) else (index, index)
-        if idx[0] == idx[1]:
-            return self._projective_space([4, 1])
-        return self._entries.get(idx, self._projective_space([0, 1]))
+        def variable_names(self) -> tuple[str, ...]:
+            r"""Return vertex / generator names."""
+            return self._names
 
-    def entries(self) -> dict[tuple[int, int], SchemeMorphism_point_projective_ring]:
-        r"""Return the dictionary of entries."""
-        return dict(self._entries)
+        def projective_space(self) -> ProjectiveSpace:
+            r"""Return the projective space $\mathbb{P}^1(R)$ the invariants live in."""
+            return self._projective_space
 
-    def __eq__(self, other: "MembershipInput") -> bool:
-        r"""Return True if other is a CombinatorialVinbergInvariantMatrix with equal projective entries."""
-        if not isinstance(other, CombinatorialVinbergInvariantMatrix):
-            return False
-        if self._rank != other._rank:
-            return False
-        n = self._rank
-        for i in range(n):
-            for j in range(n):
-                pt1, pt2 = self[i, j], other[i, j]
-                if pt1[0] * pt2[1] != pt2[0] * pt1[1]:
-                    return False
-        return True
+        def __getitem__(self, index: tuple[int, int] | int) -> SchemeMorphism_point_projective_ring:
+            r"""Return the Vinberg invariant $t_{ij} \in \mathbb{P}^1(R)$."""
+            idx = index if isinstance(index, tuple) else (index, index)
+            if idx[0] == idx[1]:
+                return self._projective_space([4, 1])
+            return self._entries.get(idx, self._projective_space([0, 1]))
 
-    def __ne__(self, other: "MembershipInput") -> bool:
-        return not (self == other)
+        def entries(self) -> dict[tuple[int, int], SchemeMorphism_point_projective_ring]:
+            r"""Return the dictionary of entries."""
+            return dict(self._entries)
 
-    def is_infinity(self, i: int, j: int) -> bool:
-        r"""Return True if $t_{ij} = \infty$ (denominator coordinate is 0)."""
-        return self[i, j][1] == 0
+        def __eq__(self, other: "MembershipInput") -> bool:
+            r"""Return True if other is a Vinberg invariant matrix with equal projective entries."""
+            if not isinstance(other, CombinatorialVinbergInvariantMatrices.ParentMethods):
+                return False
+            if self._rank != other._rank:
+                return False
+            n = self._rank
+            for i in range(n):
+                for j in range(n):
+                    pt1, pt2 = self[i, j], other[i, j]
+                    if pt1[0] * pt2[1] != pt2[0] * pt1[1]:
+                        return False
+            return True
 
-    def affine_ratio(self, i: int, j: int) -> "Element | PlusInfinity":
-        r"""Return the affine scalar $t_{ij} = x/y$ if finite, else infinity."""
-        pt = self[i, j]
-        if pt[1] == 0:
-            return infinity
-        return pt[0] / pt[1]
+        def __ne__(self, other: "MembershipInput") -> bool:
+            return not (self == other)
 
-    def coxeter_order(self, i: int, j: int) -> "Integer | PlusInfinity":
-        r"""
-        Return the exact Coxeter bond exponent $m_{ij} \in \{1, 2, 3, \ldots, \infty\}$.
+        def is_infinity(self, i: int, j: int) -> bool:
+            r"""Return True if $t_{ij} = \infty$ (denominator coordinate is 0)."""
+            return self[i, j][1] == 0
 
-        Uses exact algebraic verification via $X_{\mathrm{ref}}$ (no numerical rounding).
-        """
-        if i == j:
-            return Integer(1)
-        pt = self[i, j]
-        if pt[1] == 0:
-            return infinity
-        ratio = pt[0] / pt[1]
-        if ratio >= 4:
-            return infinity
-        assert ratio >= 0, (
-            f"Negative Vinberg invariant t[{i},{j}] = {ratio} is invalid"
-        )
+        def affine_ratio(self, i: int, j: int) -> "Element | PlusInfinity":
+            r"""Return the affine scalar $t_{ij} = x/y$ if finite, else infinity."""
+            pt = self[i, j]
+            if pt[1] == 0:
+                return infinity
+            return pt[0] / pt[1]
 
-        cos_theta = sqrt(ratio) / 2
-        n = X_ref._exact_n(cos_theta)
-        assert n is not None, (
-            f"Vinberg invariant t[{i},{j}] = {ratio} corresponds to "
-            f"non-Coxeter angle (cos = {cos_theta})"
-        )
-        return n
+        def coxeter_order(self, i: int, j: int) -> "Integer | PlusInfinity":
+            r"""
+            Return the exact Coxeter bond exponent $m_{ij} \in \{1, 2, 3, \ldots, \infty\}$.
 
-    def is_valid(self) -> bool:
-        r"""Return True if all entries represent valid Coxeter/Vinberg invariants.
-
-        The same conditions :meth:`coxeter_order` asserts, computed as the
-        predicate they are: an entry is valid when it is infinite, at least
-        four, or a nonnegative ratio whose half square root is a reflection
-        cosine.
-        """
-        n = self._rank
-        for i in range(n):
-            for j in range(i + 1, n):
-                pt = self[i, j]
-                if pt[1] == 0:
-                    continue
-                ratio = pt[0] / pt[1]
-                if ratio >= 4:
-                    continue
-                if ratio < 0 or sqrt(ratio) / 2 not in X_ref:
-                    return False
-        return True
-
-    def to_sage_coxeter_matrix(self) -> SageCoxeterMatrix:
-        r"""Export to Sage's native :class:`CoxeterMatrix` (optional adapter)."""
-        n = self._rank
-        raw_entries = [
-            [self.coxeter_order(i, j) for j in range(n)]
-            for i in range(n)
-        ]
-        return SageCoxeterMatrix(raw_entries)
-
-    def __hash__(self) -> int:
-        canon_entries = tuple(
-            sorted((k, (pt[0] / pt[1], 1) if pt[1] != 0 else (1, 0)) for k, pt in self._entries.items())
-        )
-        return hash((self.__class__, self._names, self._rank, canon_entries))
-
-    def subdiagram(self, indices: Sequence[int | str]) -> "CombinatorialVinbergInvariantMatrix":
-        r"""Return the induced subdiagram on the specified vertex indices or names."""
-        name_to_idx = {name: i for i, name in enumerate(self._names)}
-        idx_list = [name_to_idx[str(x)] if str(x) in name_to_idx else int(x) for x in indices]
-        n_sub = len(idx_list)
-        sub_entries = {}
-        for new_i, old_i in enumerate(idx_list):
-            for new_j, old_j in enumerate(idx_list):
-                sub_entries[(new_i, new_j)] = self[old_i, old_j]
-        sub_names = tuple(self._names[i] for i in idx_list)
-        return CombinatorialVinbergInvariantMatrix(self.base_ring(), sub_entries, n_sub, names=sub_names)
-
-    def submatrix(self, indices: Sequence[int | str]) -> "CombinatorialVinbergInvariantMatrix":
-        r"""Alias for :meth:`subdiagram`."""
-        return self.subdiagram(indices)
-
-    def to_digraph(self) -> "ProjectiveWeightedDiGraph":
-        r"""Construct a ProjectiveWeightedDiGraph with node and edge weights in P^1(R)."""
-        return ProjectiveWeightedDiGraph.from_combinatorial_matrix(self)
-
-    def graph(self) -> Graph:
-        r"""Construct a Sage Graph representing the Coxeter diagram."""
-        G = Graph()
-        G.add_vertices(range(self._rank))
-        for i in range(self._rank):
-            for j in range(i + 1, self._rank):
-                m = self.coxeter_order(i, j)
-                if m > 2 or m is infinity:
-                    G.add_edge(i, j, m)
-        return G
-
-    def tikz(self, title: str = "", labels: Sequence[str] | None = None) -> str:
-        r"""Generate standalone LaTeX TikZ markup for the Coxeter diagram."""
-        n = self._rank
-        if labels is None:
-            labels = [f"\\alpha_{{{i+1}}}" for i in range(n)]
-
-        if n <= 4:
-            pos = [(2 * i, 0) for i in range(n)]
-        else:
-            angles = [2 * math.pi * i / n for i in range(n)]
-            pos = [(3 * math.cos(a), 3 * math.sin(a)) for a in angles]
-
-        tikz = ["\\begin{tikzpicture}[scale=1.2]"]
-        tikz.append("\\tikzstyle{vertex}=[circle,draw,minimum size=8mm,inner sep=2pt,fill=white]")
-
-        for i in range(n):
-            x, y = pos[i]
-            tikz.append(f"\\node[vertex] (n{i}) at ({float(x):.2f},{float(y):.2f}) {{${labels[i]}$}};")
-
-        for i in range(n):
-            for j in range(i + 1, n):
-                m = self.coxeter_order(i, j)
-                if m == 3:
-                    tikz.append(f"\\draw (n{i}) -- (n{j});")
-                elif m == 4:
-                    tikz.append(f"\\draw[double,double distance=1.5pt] (n{i}) -- (n{j});")
-                elif m == 5:
-                    tikz.append(f"\\draw[decorate,decoration={{zigzag,segment length=4mm,amplitude=1mm}}] (n{i}) -- (n{j});")
-                elif m == 6:
-                    tikz.append(f"\\draw[double,double distance=3pt] (n{i}) -- (n{j});")
-                    tikz.append(f"\\draw (n{i}) -- (n{j});")
-                elif m is infinity:
-                    tikz.append(f"\\draw[dashed,thick] (n{i}) -- (n{j});")
-                elif m > 6:
-                    tikz.append(f"\\draw (n{i}) -- (n{j}) node[midway,above] {{\\small {m}}};")
-
-        if title:
-            avg_x = sum(p[0] for p in pos) / n
-            tikz.append(f"\\node at ({avg_x:.2f},2.5) {{\\Large \\textbf{{{title}}}}};")
-
-        tikz.append("\\end{tikzpicture}")
-        return "\n".join(tikz)
-
-    def _repr_(self) -> str:
-        n = self._rank
-        grid_rows = []
-        for i in range(n):
-            row_str = "  ".join(str(self[i, j]) for j in range(n))
-            grid_rows.append(f"[{row_str}]")
-        grid_repr = "\n".join(grid_rows)
-        return f"Combinatorial Vinberg Invariant Matrix of rank {n} over {self.base_ring()}:\n{grid_repr}"
-
-    def _latex_(self) -> str:
-        n = self._rank
-        rows_latex = []
-        for i in range(n):
-            row_latex = " & ".join(
-                r"\infty" if self[i, j][1] == 0 else str(self[i, j][0] / self[i, j][1])
-                for j in range(n)
+            Uses exact algebraic verification via $X_{\mathrm{ref}}$ (no numerical rounding).
+            """
+            if i == j:
+                return Integer(1)
+            pt = self[i, j]
+            if pt[1] == 0:
+                return infinity
+            ratio = pt[0] / pt[1]
+            if ratio >= 4:
+                return infinity
+            assert ratio >= 0, (
+                f"Negative Vinberg invariant t[{i},{j}] = {ratio} is invalid"
             )
-            rows_latex.append(row_latex)
-        mat_latex = r" \\ ".join(rows_latex)
-        return rf"\begin{{pmatrix}} {mat_latex} \end{{pmatrix}}"
 
-    def _repr_latex_(self) -> str:
-        return "$\\displaystyle " + self._latex_() + "$"
+            cos_theta = sqrt(ratio) / 2
+            n = X_ref._exact_n(cos_theta)
+            assert n is not None, (
+                f"Vinberg invariant t[{i},{j}] = {ratio} corresponds to "
+                f"non-Coxeter angle (cos = {cos_theta})"
+            )
+            return n
+
+        def is_valid(self) -> bool:
+            r"""Return True if all entries represent valid Coxeter/Vinberg invariants.
+
+            The same conditions :meth:`coxeter_order` asserts, computed as the
+            predicate they are: an entry is valid when it is infinite, at least
+            four, or a nonnegative ratio whose half square root is a reflection
+            cosine.
+            """
+            n = self._rank
+            for i in range(n):
+                for j in range(i + 1, n):
+                    pt = self[i, j]
+                    if pt[1] == 0:
+                        continue
+                    ratio = pt[0] / pt[1]
+                    if ratio >= 4:
+                        continue
+                    if ratio < 0 or sqrt(ratio) / 2 not in X_ref:
+                        return False
+            return True
+
+        def to_sage_coxeter_matrix(self) -> SageCoxeterMatrix:
+            r"""Export to Sage's native :class:`CoxeterMatrix` (optional adapter)."""
+            n = self._rank
+            raw_entries = [
+                [self.coxeter_order(i, j) for j in range(n)]
+                for i in range(n)
+            ]
+            return SageCoxeterMatrix(raw_entries)
+
+        def __hash__(self) -> int:
+            canon_entries = tuple(
+                sorted((k, (pt[0] / pt[1], 1) if pt[1] != 0 else (1, 0)) for k, pt in self._entries.items())
+            )
+            return hash((self.__class__, self._names, self._rank, canon_entries))
+
+        def subdiagram(self, indices: "Sequence[int | str]") -> Parent:
+            r"""Return the induced subdiagram on the specified vertex indices or names."""
+            name_to_idx = {name: i for i, name in enumerate(self._names)}
+            idx_list = [name_to_idx[str(x)] if str(x) in name_to_idx else int(x) for x in indices]
+            n_sub = len(idx_list)
+            sub_entries = {}
+            for new_i, old_i in enumerate(idx_list):
+                for new_j, old_j in enumerate(idx_list):
+                    sub_entries[(new_i, new_j)] = self[old_i, old_j]
+            sub_names = tuple(self._names[i] for i in idx_list)
+            return object_of(
+                CombinatorialVinbergInvariantMatrices(),
+                base=self.base_ring(),
+                entries=sub_entries,
+                rank=n_sub,
+                names=sub_names,
+            )
+
+        def submatrix(self, indices: "Sequence[int | str]") -> Parent:
+            r"""Alias for :meth:`subdiagram`."""
+            return self.subdiagram(indices)
+
+        def to_digraph(self) -> Parent:
+            r"""Return the projective weighted digraph with the same weights."""
+            names = self.variable_names()
+            n = self.rank()
+            return projective_weighted_digraph(
+                self.base_ring(),
+                names,
+                vertex_weights={names[i]: self[i, i] for i in range(n)},
+                edges=[
+                    (names[i], names[j], self[i, j])
+                    for i in range(n)
+                    for j in range(n)
+                    if i != j and self[i, j][0] != 0
+                ],
+            )
+
+        def graph(self) -> Graph:
+            r"""Construct a Sage Graph representing the Coxeter diagram."""
+            G = Graph()
+            G.add_vertices(range(self._rank))
+            for i in range(self._rank):
+                for j in range(i + 1, self._rank):
+                    m = self.coxeter_order(i, j)
+                    if m > 2 or m is infinity:
+                        G.add_edge(i, j, m)
+            return G
+
+        def tikz(self, title: str = "", labels: Sequence[str] | None = None) -> str:
+            r"""Generate standalone LaTeX TikZ markup for the Coxeter diagram."""
+            n = self._rank
+            if labels is None:
+                labels = [f"\\alpha_{{{i+1}}}" for i in range(n)]
+
+            if n <= 4:
+                pos = [(2 * i, 0) for i in range(n)]
+            else:
+                angles = [2 * math.pi * i / n for i in range(n)]
+                pos = [(3 * math.cos(a), 3 * math.sin(a)) for a in angles]
+
+            tikz = ["\\begin{tikzpicture}[scale=1.2]"]
+            tikz.append("\\tikzstyle{vertex}=[circle,draw,minimum size=8mm,inner sep=2pt,fill=white]")
+
+            for i in range(n):
+                x, y = pos[i]
+                tikz.append(f"\\node[vertex] (n{i}) at ({float(x):.2f},{float(y):.2f}) {{${labels[i]}$}};")
+
+            for i in range(n):
+                for j in range(i + 1, n):
+                    m = self.coxeter_order(i, j)
+                    if m == 3:
+                        tikz.append(f"\\draw (n{i}) -- (n{j});")
+                    elif m == 4:
+                        tikz.append(f"\\draw[double,double distance=1.5pt] (n{i}) -- (n{j});")
+                    elif m == 5:
+                        tikz.append(f"\\draw[decorate,decoration={{zigzag,segment length=4mm,amplitude=1mm}}] (n{i}) -- (n{j});")
+                    elif m == 6:
+                        tikz.append(f"\\draw[double,double distance=3pt] (n{i}) -- (n{j});")
+                        tikz.append(f"\\draw (n{i}) -- (n{j});")
+                    elif m is infinity:
+                        tikz.append(f"\\draw[dashed,thick] (n{i}) -- (n{j});")
+                    elif m > 6:
+                        tikz.append(f"\\draw (n{i}) -- (n{j}) node[midway,above] {{\\small {m}}};")
+
+            if title:
+                avg_x = sum(p[0] for p in pos) / n
+                tikz.append(f"\\node at ({avg_x:.2f},2.5) {{\\Large \\textbf{{{title}}}}};")
+
+            tikz.append("\\end{tikzpicture}")
+            return "\n".join(tikz)
+
+        def _repr_(self) -> str:
+            n = self._rank
+            grid_rows = []
+            for i in range(n):
+                row_str = "  ".join(str(self[i, j]) for j in range(n))
+                grid_rows.append(f"[{row_str}]")
+            grid_repr = "\n".join(grid_rows)
+            return f"Combinatorial Vinberg Invariant Matrix of rank {n} over {self.base_ring()}:\n{grid_repr}"
+
+        def _latex_(self) -> str:
+            n = self._rank
+            rows_latex = []
+            for i in range(n):
+                row_latex = " & ".join(
+                    r"\infty" if self[i, j][1] == 0 else str(self[i, j][0] / self[i, j][1])
+                    for j in range(n)
+                )
+                rows_latex.append(row_latex)
+            mat_latex = r" \\ ".join(rows_latex)
+            return rf"\begin{{pmatrix}} {mat_latex} \end{{pmatrix}}"
+
+        def _repr_latex_(self) -> str:
+            return "$\\displaystyle " + self._latex_() + "$"
 
 
 # ---------------------------------------------------------------------------
@@ -786,10 +809,10 @@ class CombinatorialVinbergInvariantMatrix(Parent):
 
 def vinberg_invariant_matrix_from_gram(
     G: Matrix,
-    names: Sequence[str] | None = None,
-) -> CombinatorialVinbergInvariantMatrix:
+    names: "Sequence[str] | None" = None,
+) -> Parent:
     r"""
-    Construct a CombinatorialVinbergInvariantMatrix from any finite Gram matrix $G$.
+    Construct a combinatorial Vinberg invariant matrix from any finite Gram matrix $G$.
 
     Formula:
         $t_{ij} = [4\,G_{ij}^2 : G_{ii}\,G_{jj}] \in \mathbb{P}^1(R)$
@@ -817,16 +840,22 @@ def vinberg_invariant_matrix_from_gram(
             entries[(i, j)] = pt
             entries[(j, i)] = pt
 
-    return CombinatorialVinbergInvariantMatrix(ring, entries, n, names=names)
+    return object_of(
+        CombinatorialVinbergInvariantMatrices(),
+        base=ring,
+        entries=entries,
+        rank=n,
+        names=names,
+    )
 
 
 def combinatorial_vinberg_invariant_matrix(
     base_ring: "Ring",
     components: "Sequence[Sequence[ProjectivePointDatum]]",
-    names: Sequence[str] | None = None,
-) -> CombinatorialVinbergInvariantMatrix:
+    names: "Sequence[str] | None" = None,
+) -> Parent:
     r"""
-    Construct a CombinatorialVinbergInvariantMatrix from a nested matrix of $t_{ij}$ values.
+    Construct a combinatorial Vinberg invariant matrix from a nested matrix of $t_{ij}$ values.
     """
     assert isinstance(components, (list, tuple)), "Components must be a list or tuple"
     n_rows = len(components)
@@ -840,7 +869,13 @@ def combinatorial_vinberg_invariant_matrix(
             val = row[j]
             entries[(i, j)] = to_projective_point(P1, val)
 
-    return CombinatorialVinbergInvariantMatrix(base_ring, entries, n_rows, names=names)
+    return object_of(
+        CombinatorialVinbergInvariantMatrices(),
+        base=base_ring,
+        entries=entries,
+        rank=n_rows,
+        names=names,
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -848,184 +883,173 @@ def combinatorial_vinberg_invariant_matrix(
 # ---------------------------------------------------------------------------
 
 
-class ProjectiveWeightedDiGraph(Parent):
-    r"""
-    A Directed Graph with both node weights and edge weights in $\mathbb{P}^1(R)$.
+class ProjectiveWeightedDiGraphs(Category):
+    r"""The category of directed graphs with weights in $\mathbb{P}^1(R)$.
 
-    Bidirectionally dual to :class:`CombinatorialVinbergInvariantMatrix`:
-    - Node weights correspond to diagonal invariants $t_{ii} \in \mathbb{P}^1(R)$.
-    - Directed edge weights correspond to off-diagonal invariants $t_{ij} \in \mathbb{P}^1(R)$.
+    An object weights each node and each directed edge by a point of
+    $\mathbb{P}^1(R)$.  It is dual to a combinatorial Vinberg invariant
+    matrix in both directions.  A node weight is a diagonal invariant
+    $t_{ii}$.  A directed edge weight is an off-diagonal invariant $t_{ij}$.
     """
 
-    def __init__(
-        self,
-        base_ring: "Ring",
-        vertices: "Sequence[VertexLabel]",
-        vertex_weights: "Mapping[VertexLabel, ProjectivePointDatum] | Sequence[ProjectivePointDatum] | None" = None,
-        edges: "Sequence[tuple[VertexLabel, VertexLabel, ProjectivePointDatum]] | None" = None,
-        category: Category | None = None,
-    ) -> None:
-        cat = category if category is not None else ProjectiveWeightedGraphs()
-        Parent.__init__(self, base=base_ring, category=cat)
-        self._projective_space = ProjectiveSpace(base_ring, 1, "x,y")
-        self._vertices = tuple(str(v) for v in vertices)
-        self._v_to_idx = {v: i for i, v in enumerate(self._vertices)}
+    def _repr_object_names(self) -> str:
+        return "projective weighted digraphs"
 
-        # 1. Initialize vertex weights
-        v_weights = {}
-        if isinstance(vertex_weights, Mapping):
-            for v in self._vertices:
-                wt = vertex_weights.get(v, vertex_weights.get(self._v_to_idx[v], [4, 1]))
-                v_weights[v] = to_projective_point(self._projective_space, wt)
-        elif isinstance(vertex_weights, Sequence):
-            for i, v in enumerate(self._vertices):
-                wt = vertex_weights[i] if i < len(vertex_weights) else [4, 1]
-                v_weights[v] = to_projective_point(self._projective_space, wt)
-        else:
-            for v in self._vertices:
-                v_weights[v] = self._projective_space([4, 1])
-        self._vertex_weights = v_weights
+    def super_categories(self) -> list[Category]:
+        return [ProjectiveWeightedGraphs()]
 
-        # 2. Initialize directed edge weights
-        e_weights = {}
-        if edges is not None:
-            for e in edges:
-                u_str, v_str = str(e[0]), str(e[1])
-                wt = to_projective_point(self._projective_space, e[2])
-                e_weights[(u_str, v_str)] = wt
-        self._edge_weights = e_weights
+    class ParentMethods:
+        def __init__(
+            self,
+            vertices: "Sequence[VertexLabel]",
+            vertex_weights: "Mapping[VertexLabel, ProjectivePointDatum] | Sequence[ProjectivePointDatum] | None" = None,
+            edges: "Sequence[tuple[VertexLabel, VertexLabel, ProjectivePointDatum]] | None" = None,
+            **rest: "ConstructionData",
+        ) -> None:
+            super().__init__(**rest)
+            self._projective_space = ProjectiveSpace(self.base_ring(), 1, "x,y")
+            self._vertices = tuple(str(v) for v in vertices)
+            self._v_to_idx = {v: i for i, v in enumerate(self._vertices)}
 
-    def vertices(self) -> tuple[str, ...]:
-        r"""Return the tuple of vertex labels."""
-        return self._vertices
+            # 1. Initialize vertex weights
+            v_weights = {}
+            if isinstance(vertex_weights, Mapping):
+                for v in self._vertices:
+                    wt = vertex_weights.get(v, vertex_weights.get(self._v_to_idx[v], [4, 1]))
+                    v_weights[v] = to_projective_point(self._projective_space, wt)
+            elif isinstance(vertex_weights, Sequence):
+                for i, v in enumerate(self._vertices):
+                    wt = vertex_weights[i] if i < len(vertex_weights) else [4, 1]
+                    v_weights[v] = to_projective_point(self._projective_space, wt)
+            else:
+                for v in self._vertices:
+                    v_weights[v] = self._projective_space([4, 1])
+            self._vertex_weights = v_weights
 
-    def num_vertices(self) -> int:
-        r"""Return the number of vertices."""
-        return len(self._vertices)
+            # 2. Initialize directed edge weights
+            e_weights = {}
+            if edges is not None:
+                for e in edges:
+                    u_str, v_str = str(e[0]), str(e[1])
+                    wt = to_projective_point(self._projective_space, e[2])
+                    e_weights[(u_str, v_str)] = wt
+            self._edge_weights = e_weights
 
-    def vertex_weight(self, v: "VertexLabel") -> SchemeMorphism_point_projective_ring:
-        r"""Return the weight of vertex $v$ in $\mathbb{P}^1(R)$."""
-        v_str = str(v)
-        return self._vertex_weights.get(v_str, self._projective_space([4, 1]))
+        def vertices(self) -> tuple[str, ...]:
+            r"""Return the tuple of vertex labels."""
+            return self._vertices
 
-    def edge_weight(self, u: "VertexLabel", v: "VertexLabel") -> SchemeMorphism_point_projective_ring:
-        r"""Return the directed edge weight $(u \to v)$ in $\mathbb{P}^1(R)$."""
-        u_str, v_str = str(u), str(v)
-        return self._edge_weights.get((u_str, v_str), self._projective_space([0, 1]))
+        def num_vertices(self) -> int:
+            r"""Return the number of vertices."""
+            return len(self._vertices)
 
-    def edges(self) -> list[tuple[str, str, SchemeMorphism_point_projective_ring]]:
-        r"""Return all directed edges with non-zero weight."""
-        result = []
-        for (u, v), wt in self._edge_weights.items():
-            if wt[0] != 0:  # Non-zero projective point
-                result.append((u, v, wt))
-        return result
+        def vertex_weight(self, v: "VertexLabel") -> SchemeMorphism_point_projective_ring:
+            r"""Return the weight of vertex $v$ in $\mathbb{P}^1(R)$."""
+            v_str = str(v)
+            return self._vertex_weights.get(v_str, self._projective_space([4, 1]))
 
-    def __eq__(self, other: "MembershipInput") -> bool:
-        r"""Return True if other is a ProjectiveWeightedDiGraph with equal vertices and weights."""
-        if not isinstance(other, ProjectiveWeightedDiGraph):
-            return False
-        if self._vertices != other._vertices:
-            return False
-        for v in self._vertices:
-            pt1, pt2 = self.vertex_weight(v), other.vertex_weight(v)
-            if pt1[0] * pt2[1] != pt2[0] * pt1[1]:
+        def edge_weight(self, u: "VertexLabel", v: "VertexLabel") -> SchemeMorphism_point_projective_ring:
+            r"""Return the directed edge weight $(u \to v)$ in $\mathbb{P}^1(R)$."""
+            u_str, v_str = str(u), str(v)
+            return self._edge_weights.get((u_str, v_str), self._projective_space([0, 1]))
+
+        def edges(self) -> list[tuple[str, str, SchemeMorphism_point_projective_ring]]:
+            r"""Return all directed edges with non-zero weight."""
+            result = []
+            for (u, v), wt in self._edge_weights.items():
+                if wt[0] != 0:  # Non-zero projective point
+                    result.append((u, v, wt))
+            return result
+
+        def __eq__(self, other: "MembershipInput") -> bool:
+            r"""Return True if other is a projective weighted digraph with equal vertices and weights."""
+            if not isinstance(other, ProjectiveWeightedDiGraphs.ParentMethods):
                 return False
-        for u in self._vertices:
+            if self._vertices != other._vertices:
+                return False
             for v in self._vertices:
-                pt1, pt2 = self.edge_weight(u, v), other.edge_weight(u, v)
+                pt1, pt2 = self.vertex_weight(v), other.vertex_weight(v)
                 if pt1[0] * pt2[1] != pt2[0] * pt1[1]:
                     return False
-        return True
+            for u in self._vertices:
+                for v in self._vertices:
+                    pt1, pt2 = self.edge_weight(u, v), other.edge_weight(u, v)
+                    if pt1[0] * pt2[1] != pt2[0] * pt1[1]:
+                        return False
+            return True
 
-    def __ne__(self, other: "MembershipInput") -> bool:
-        return not (self == other)
+        def __ne__(self, other: "MembershipInput") -> bool:
+            return not (self == other)
 
-    def __hash__(self) -> int:
-        v_wts = tuple(
-            sorted((v, (wt[0] / wt[1], 1) if wt[1] != 0 else (1, 0)) for v, wt in self._vertex_weights.items())
-        )
-        e_wts = tuple(
-            sorted((k, (wt[0] / wt[1], 1) if wt[1] != 0 else (1, 0)) for k, wt in self._edge_weights.items())
-        )
-        return hash((self.__class__, self._vertices, v_wts, e_wts))
+        def __hash__(self) -> int:
+            v_wts = tuple(
+                sorted((v, (wt[0] / wt[1], 1) if wt[1] != 0 else (1, 0)) for v, wt in self._vertex_weights.items())
+            )
+            e_wts = tuple(
+                sorted((k, (wt[0] / wt[1], 1) if wt[1] != 0 else (1, 0)) for k, wt in self._edge_weights.items())
+            )
+            return hash((self.__class__, self._vertices, v_wts, e_wts))
 
-    def subdiagram(self, vertices: Sequence[str | int]) -> "ProjectiveWeightedDiGraph":
-        r"""Return the induced subdiagram (subgraph) on the specified vertex subset."""
-        target_v = tuple(str(self._vertices[v]) if isinstance(v, (int, Integer)) else str(v) for v in vertices)
-        v_set = set(target_v)
-        sub_v_weights = {v: self.vertex_weight(v) for v in target_v}
-        sub_edges = [
-            (u, v, wt) for (u, v), wt in self._edge_weights.items()
-            if u in v_set and v in v_set and wt[0] != 0
-        ]
-        return ProjectiveWeightedDiGraph(
-            self.base_ring(), target_v, vertex_weights=sub_v_weights, edges=sub_edges
-        )
+        def subdiagram(self, vertices: "Sequence[str | int]") -> Parent:
+            r"""Return the induced subdiagram (subgraph) on the specified vertex subset."""
+            target_v = tuple(str(self._vertices[v]) if isinstance(v, (int, Integer)) else str(v) for v in vertices)
+            v_set = set(target_v)
+            sub_v_weights = {v: self.vertex_weight(v) for v in target_v}
+            sub_edges = [
+                (u, v, wt) for (u, v), wt in self._edge_weights.items()
+                if u in v_set and v in v_set and wt[0] != 0
+            ]
+            return projective_weighted_digraph(
+                self.base_ring(), target_v, vertex_weights=sub_v_weights, edges=sub_edges
+            )
 
-    def subgraph(self, vertices: Sequence[str | int]) -> "ProjectiveWeightedDiGraph":
-        r"""Alias for :meth:`subdiagram`."""
-        return self.subdiagram(vertices)
+        def subgraph(self, vertices: "Sequence[str | int]") -> Parent:
+            r"""Alias for :meth:`subdiagram`."""
+            return self.subdiagram(vertices)
 
-    def to_combinatorial_matrix(self) -> CombinatorialVinbergInvariantMatrix:
-        r"""
-        Convert to the dual CombinatorialVinbergInvariantMatrix.
-        """
-        n = len(self._vertices)
-        entries = {}
-        for i, u in enumerate(self._vertices):
-            entries[(i, i)] = self.vertex_weight(u)
-            for j, v in enumerate(self._vertices):
-                if i != j:
-                    wt_uv = self.edge_weight(u, v)
-                    wt_vu = self.edge_weight(v, u)
-                    wt = wt_uv if wt_uv[0] != 0 else wt_vu
-                    entries[(i, j)] = wt
-        return CombinatorialVinbergInvariantMatrix(
-            self.base_ring(), entries, n, names=self._vertices
-        )
+        def to_combinatorial_matrix(self) -> Parent:
+            r"""
+            Convert to the dual combinatorial Vinberg invariant matrix.
+            """
+            n = len(self._vertices)
+            entries = {}
+            for i, u in enumerate(self._vertices):
+                entries[(i, i)] = self.vertex_weight(u)
+                for j, v in enumerate(self._vertices):
+                    if i != j:
+                        wt_uv = self.edge_weight(u, v)
+                        wt_vu = self.edge_weight(v, u)
+                        wt = wt_uv if wt_uv[0] != 0 else wt_vu
+                        entries[(i, j)] = wt
+            return object_of(
+                CombinatorialVinbergInvariantMatrices(),
+                base=self.base_ring(),
+                entries=entries,
+                rank=n,
+                names=self._vertices,
+            )
 
-    def to_vinberg_matrix(self) -> CombinatorialVinbergInvariantMatrix:
-        r"""Alias for :meth:`to_combinatorial_matrix`."""
-        return self.to_combinatorial_matrix()
+        def to_vinberg_matrix(self) -> Parent:
+            r"""Alias for :meth:`to_combinatorial_matrix`."""
+            return self.to_combinatorial_matrix()
 
-    @classmethod
-    def from_combinatorial_matrix(
-        cls, T: CombinatorialVinbergInvariantMatrix
-    ) -> "ProjectiveWeightedDiGraph":
-        r"""
-        Construct a ProjectiveWeightedDiGraph from a CombinatorialVinbergInvariantMatrix.
-        """
-        ring = T.base_ring()
-        verts = list(T.variable_names())
-        n = T.rank()
-        v_weights = {verts[i]: T[i, i] for i in range(n)}
-        edges = []
-        for i in range(n):
-            for j in range(n):
-                if i != j:
-                    wt = T[i, j]
-                    if wt[0] != 0:
-                        edges.append((verts[i], verts[j], wt))
-        return cls(ring, verts, vertex_weights=v_weights, edges=edges)
+        def underlying_digraph(self) -> "DiGraph":
+            r"""Construct a native Sage DiGraph carrying the projective weights as attributes."""
+            from sage.graphs.digraph import DiGraph
+            D = DiGraph(multiedges=False)
+            for v in self._vertices:
+                D.add_vertex(v)
+                D.set_vertex(v, self.vertex_weight(v))
+            for u, v, wt in self.edges():
+                D.add_edge(u, v, wt)
+            return D
 
-    def underlying_digraph(self) -> "DiGraph":
-        r"""Construct a native Sage DiGraph carrying the projective weights as attributes."""
-        from sage.graphs.digraph import DiGraph
-        D = DiGraph(multiedges=False)
-        for v in self._vertices:
-            D.add_vertex(v)
-            D.set_vertex(v, self.vertex_weight(v))
-        for u, v, wt in self.edges():
-            D.add_edge(u, v, wt)
-        return D
-
-    def _repr_(self) -> str:
-        return (
-            f"Projective Weighted DiGraph on {self.num_vertices()} vertices over {self.base_ring()}:\n"
-            f"  Vertices: {self._vertices}\n"
-            f"  Edges: {[(u, v, str(wt)) for u, v, wt in self.edges()]}"
-        )
+        def _repr_(self) -> str:
+            return (
+                f"Projective Weighted DiGraph on {self.num_vertices()} vertices over {self.base_ring()}:\n"
+                f"  Vertices: {self._vertices}\n"
+                f"  Edges: {[(u, v, str(wt)) for u, v, wt in self.edges()]}"
+            )
 
 
 def projective_weighted_digraph(
@@ -1033,9 +1057,13 @@ def projective_weighted_digraph(
     vertices: "Sequence[VertexLabel]",
     vertex_weights: "Mapping[VertexLabel, ProjectivePointDatum] | Sequence[ProjectivePointDatum] | None" = None,
     edges: "Sequence[tuple[VertexLabel, VertexLabel, ProjectivePointDatum]] | None" = None,
-) -> ProjectiveWeightedDiGraph:
-    r"""Construct a ProjectiveWeightedDiGraph."""
-    return ProjectiveWeightedDiGraph(
-        base_ring, vertices, vertex_weights=vertex_weights, edges=edges
+) -> Parent:
+    r"""Construct a projective weighted digraph over ``base_ring``."""
+    return object_of(
+        ProjectiveWeightedDiGraphs(),
+        base=base_ring,
+        vertices=vertices,
+        vertex_weights=vertex_weights,
+        edges=edges,
     )
 

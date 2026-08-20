@@ -48,6 +48,7 @@ if TYPE_CHECKING:
     from sage.sets.family import Family
     from sage.categories.morphism import Morphism
     from sage.categories.rings import Ring
+    from sage.structure.parent import Parent
     from dzack_research.preamble.lexicon import RingElement
 
     from typing import Protocol
@@ -150,7 +151,7 @@ class AbsoluteGaloisGroups(Category_singleton):
 
         def open_subgroup(
             self: "AbsoluteGaloisGroupParent", E: "Ring", embedding: "Morphism | None" = None
-        ) -> "OpenAbsoluteGaloisSubgroup":
+        ) -> "Parent":
             r"""Return the actual open subgroup \(G_E\subset G_K\) for \(E/K\).
 
             Given \(E/K\), embed \(E\) into the chosen \(\bar K\) via the
@@ -159,9 +160,9 @@ class AbsoluteGaloisGroups(Category_singleton):
             the realized \(G_K\).
             """
             # Local: a module-level import would close a cycle; the module is built by the time this runs.
-            from dzack_research.preamble.categories.group.profinite.absolute_galois_group_subgroup import OpenAbsoluteGaloisSubgroup
+            from dzack_research.preamble.categories.group.profinite.absolute_galois_group_subgroup import open_absolute_galois_subgroup
 
-            return OpenAbsoluteGaloisSubgroup(self, E, embedding)
+            return open_absolute_galois_subgroup(self, E, embedding)
 
         def open_subgroup_class(self: "AbsoluteGaloisGroupParent", E: "Ring") -> "OpenGaloisSubgroupConjugacyClass":
             r"""Return the conjugacy class of open subgroups determined by \(E/K\).
@@ -291,14 +292,9 @@ class AbsoluteGaloisGroups(Category_singleton):
 
 def absolute_galois_group_factory(
     field: "Ring", **kwargs: "Ring | Morphism | GaloisChoicePolicy | None"
-) -> "AbsoluteGaloisGroup":
-    r"""Dispatch to the right :class:`AbsoluteGaloisGroup` subclass for ``field``."""
-    from sage.rings.finite_rings.finite_field_base import FiniteField
-
+) -> "Parent":
+    r"""Return \(G_K\) for ``field``, in the category the field decides."""
     # Local: a module-level import would close a cycle; the module is built by the time this runs.
-    from dzack_research.preamble.categories.group.profinite.absolute_galois_group import AbsoluteGaloisGroup
-    from dzack_research.preamble.categories.group.profinite.absolute_galois_group import AbsoluteGaloisGroup_finite_field
+    from dzack_research.preamble.categories.group.profinite.absolute_galois_group import absolute_galois_group
 
-    if isinstance(field, FiniteField):
-        return AbsoluteGaloisGroup_finite_field(field, **kwargs)
-    return AbsoluteGaloisGroup(field, **kwargs)
+    return absolute_galois_group(field, **kwargs)

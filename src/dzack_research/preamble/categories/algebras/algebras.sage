@@ -8,6 +8,7 @@ R-module on S.
 from typing import Protocol, TYPE_CHECKING
 if TYPE_CHECKING:
     from sage.structure.parent import ElementConstructorInput, MembershipInput
+    from dzack_research.preamble.owned_category import ConstructionData
 if TYPE_CHECKING:
     from dzack_research.preamble.lexicon import Element
     from sage.categories.modules import Module
@@ -17,7 +18,7 @@ from sage.categories.morphism import Morphism
 if TYPE_CHECKING:
     from sage.rings.ring import Ring
 
-from dzack_research.preamble.categories.rings.rings import OwnedBaseRing
+from dzack_research.preamble.owned_category import object_of
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
 from sage.categories.algebras import Algebras as SageAlgebras
 from sage.categories.category import Category
@@ -205,81 +206,108 @@ class FramedAlgebras(OwnedCategoryOverBaseRing):
             ...
 
 
-class OwnedAlgebra(OwnedBaseRing, Parent):
-    r"""The \(R\)-algebra a ring map \(R\to A\) presents, as an owned object.
+class OwnedAlgebras(OwnedCategoryOverBaseRing):
+    r"""The \(R\)-algebras a ring map \(R\to A\) presents.
 
-    An \(R\)-algebra *is* that map, so it is the constructor's argument: one
+    An \(R\)-algebra *is* that map, so it is the construction's argument: one
     ring is an algebra over many bases, and \(\mathbb Q\) over \(\mathbb Z\)
     and \(\mathbb Q\) over \(\mathbb Q\) are two algebras that differ in
     nothing but their structure map.
 
     Constructed from the structure map rather than refined onto its codomain.
     One ring is an algebra over different base rings through different maps,
-    so the map is additional structure and must remain part of this parent.
+    so the map is additional structure and must remain part of the object.
     """
 
-    def __init__(self, structure_map: "Map") -> None:
-        # Local: importing the ring node here would close a cycle, and the
-        # module is built by the time this constructor runs.
-        from dzack_research.preamble.categories.rings.rings import engine_ring
+    @classmethod
+    def _repr_object_names(cls) -> str:
+        return "owned algebras"
 
-        assert isinstance(structure_map, Map), (
-            "an algebra is presented by a ring map into it"
-        )
-        # Intake: both ends of the presenting map cross to the engine.  The
-        # map may be an owned one, whose ends are the rings a session named;
-        # what is computed in is the ring the engine holds.
-        base_ring = engine_ring(structure_map.domain())
-        self._structure_map = structure_map
-        self._engine = engine_ring(structure_map.codomain())
-        Parent.__init__(self, base=base_ring, category=Algebras(base_ring))
+    def super_categories(self) -> list:
+        return [Algebras(self.base_ring())]
 
-    def algebra_structure_map(self) -> "Map":
-        return self._structure_map
+    class ParentMethods:
+        r"""A ring the engine holds, read as an \(R\)-algebra through a map."""
 
-    def change_ring(self, ring: "Ring") -> "OwnedAlgebra":
-        return own_algebra(self._engine.base_extend(ring).coerce_map_from(ring))
+        def __init__(
+            self, structure_map: "Map", **rest: "ConstructionData"
+        ) -> None:
+            r"""Build the \(R\)-algebra the ring map ``structure_map`` presents."""
+            # Local: importing the ring node here would close a cycle, and the
+            # module is built by the time this constructor runs.
+            from dzack_research.preamble.categories.rings.rings import engine_ring
 
-    def _element_constructor_(self, value: "Element") -> "Element":
-        return self._engine(value)
+            assert isinstance(structure_map, Map), (
+                "an algebra is presented by a ring map into it"
+            )
+            # Intake: both ends of the presenting map cross to the engine.  The
+            # map may be an owned one, whose ends are the rings a session named;
+            # what is computed in is the ring the engine holds.
+            self._structure_map = structure_map
+            self._engine = engine_ring(structure_map.codomain())
+            super().__init__(base=engine_ring(structure_map.domain()), **rest)
 
-    def __contains__(self, value: "Element") -> bool:
-        return value in self._engine
+        def base_ring(self) -> "Ring":
+            r"""Return the base ring, in the name the session gave it."""
+            # Local: importing the ring node here would close a cycle, and the
+            # module is built by the time this method runs.
+            from dzack_research.preamble.categories.rings.rings import owned_ring_view
 
-    def one(self) -> "Element":
-        return self._engine.one()
+            return owned_ring_view(self.base())
 
-    def rank(self) -> "Integer":
-        r"""Return the rank of \(A\) as a free module over its base ring."""
-        rank: "Integer" = self._engine.rank()
-        return rank
+        def algebra_structure_map(self) -> "Map":
+            return self._structure_map
 
-    def is_commutative(self) -> bool:
-        commutative: bool = self._engine.is_commutative()
-        return commutative
+        def change_ring(self, ring: "Ring") -> "Parent":
+            return own_algebra(self._engine.base_extend(ring).coerce_map_from(ring))
 
-    def zero(self) -> "Element":
-        return self._engine.zero()
+        def _element_constructor_(self, value: "Element") -> "Element":
+            return self._engine(value)
 
-    def an_element(self) -> "Element":
-        return self._engine.an_element()
+        def __contains__(self, value: "Element") -> bool:
+            return value in self._engine
 
-    def __hash__(self) -> int:
-        return hash((type(self), self._structure_map))
+        def one(self) -> "Element":
+            return self._engine.one()
 
-    def __eq__(self, other: "MembershipInput") -> bool:
-        return (
-            type(other) is type(self)
-            and other._structure_map == self._structure_map
-        )
+        def rank(self) -> "Integer":
+            r"""Return the rank of \(A\) as a free module over its base ring."""
+            rank: "Integer" = self._engine.rank()
+            return rank
 
-    def _repr_(self) -> str:
-        return f"{self._engine} as an algebra over {self.base_ring()}"
+        def is_commutative(self) -> bool:
+            commutative: bool = self._engine.is_commutative()
+            return commutative
+
+        def zero(self) -> "Element":
+            return self._engine.zero()
+
+        def an_element(self) -> "Element":
+            return self._engine.an_element()
+
+        def __hash__(self) -> int:
+            return hash((type(self), self._structure_map))
+
+        def __eq__(self, other: "MembershipInput") -> bool:
+            return (
+                type(other) is type(self)
+                and other._structure_map == self._structure_map
+            )
+
+        def _repr_(self) -> str:
+            return f"{self._engine} as an algebra over {self.base_ring()}"
 
 
-def own_algebra(structure_map: "Map") -> OwnedAlgebra:
+def own_algebra(structure_map: "Map") -> Parent:
     r"""Return the owned \(R\)-algebra the ring map ``structure_map`` presents."""
-    return OwnedAlgebra(structure_map)
+    # Local: importing the ring node here would close a cycle, and the module
+    # is built by the time this function runs.
+    from dzack_research.preamble.categories.rings.rings import engine_ring
+
+    return object_of(
+        OwnedAlgebras(engine_ring(structure_map.domain())),
+        structure_map=structure_map,
+    )
 
 
 def finite_algebra_generators(algebra: "FramedAlgebraParent") -> tuple:

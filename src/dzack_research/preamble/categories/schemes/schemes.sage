@@ -17,18 +17,17 @@ Hierarchy:
 """
 
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
-from sage.categories.morphism import Morphism
 from sage.structure.parent import Parent
-from dzack_research.preamble.categories.schemes.ringed_spaces import LocallyRingedSpace
+from dzack_research.preamble.categories.schemes.ringed_spaces import LocallyRingedSpaces
 from sage.structure.element import Element
 from sage.categories.category_with_axiom import (
     all_axioms,
     axiom,
 )
 from sage.matrix.constructor import matrix
+from sage.misc.abstract_method import abstract_method
 from sage.misc.cachefunc import cached_method
 from sage.schemes.toric.all import toric_varieties
-from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.sets.owned_sets import Sets
 
@@ -36,6 +35,7 @@ from collections.abc import Sequence
 from typing import Self, TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from sage.categories.morphism import Morphism
     from sage.geometry.fan import RationalPolyhedralFan
     from sage.categories.rings import Ring
     from dzack_research.preamble.lexicon import RingElement
@@ -76,39 +76,18 @@ for _axiom_name in (
         all_axioms.add(_axiom_name)
 
 
-class SchemeElement(Element):
-    r"""Point or section of a scheme."""
-
-
-class Scheme(LocallyRingedSpace):
-    r"""A scheme over S: a locally ringed space locally isomorphic to affine schemes."""
-
-    Element = SchemeElement
-
-    def __init__(self, base_ring: "Ring" = SageZZ) -> None:
-        r"""Initialize the scheme and refine into Schemes(S)."""
-        # Local: a module-level import would close a cycle; the module is built by the time this runs.
-        from dzack_research.preamble.refine import refine
-
-        LocallyRingedSpace.__init__(self, base_ring=base_ring)
-        refine(self, Schemes(base_ring))
-
-
-class SchemeMorphism(Morphism):
-    r"""Morphism of schemes over S."""
-
-
 class Schemes(OwnedCategoryOverBaseRing):
-    r"""Category of schemes over a base scheme or ring S."""
+    r"""Category of schemes over a base scheme or ring S.
+
+    A scheme is a locally ringed space that is locally isomorphic to an
+    affine scheme.
+    """
 
     def _repr_object_names(self) -> str:
         return f"schemes over {self.base_ring()}"
 
     def super_categories(self) -> list:
         r"""Return LocallyRingedSpaces(), of which schemes are a subcategory."""
-        # Local: a module-level import would close a cycle; the module is built by the time this runs.
-        from dzack_research.preamble.categories.schemes.ringed_spaces import LocallyRingedSpaces
-
         return [LocallyRingedSpaces()]
 
     class SubcategoryMethods:
@@ -153,6 +132,35 @@ class Schemes(OwnedCategoryOverBaseRing):
                 )
             except Exception:
                 return False
+
+    class ElementMethods:
+        r"""Scheme element methods: a point or a section."""
+
+    class MorphismMethods:
+        r"""Scheme morphism methods, in Sch/S.
+
+        Point evaluation at an S-point p: S -> X is the composition f * p.
+        A preimage or fiber over an S-point, or over a subobject Z -> Y, is
+        the fiber product X \times_Y Z.
+        """
+
+        @abstract_method
+        def compose(self: Self, g: "Morphism") -> "Morphism":
+            r"""Return the composition (g o self): X -> Z for g: Y -> Z."""
+            ...
+
+        @abstract_method
+        def pullback(self: Self, Z: "Morphism | Parent") -> Parent:
+            r"""Return the fiber product X \times_Y Z for a morphism Z -> Y."""
+            ...
+
+        def evaluate_at(self: Self, p: "Morphism") -> "Morphism":
+            r"""Return the value of self at an S-point p: S -> X, the composite f * p."""
+            return self * p
+
+        def fiber_over(self: Self, y: "Morphism") -> Parent:
+            r"""Return the fiber X \times_Y S over an S-point y: S -> Y."""
+            return self.pullback(y)
 
 
 class AffineSpaces(OwnedCategoryOverBaseRing):

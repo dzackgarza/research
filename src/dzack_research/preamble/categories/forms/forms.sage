@@ -302,10 +302,10 @@ def QuadraticForms(module: "Module", value_module: "Module") -> QuadraticFormHom
 def _forget_form_element(element: "Element") -> "Element":
     # Local: form_modules imports this module, so a module-level import here
     # would close that cycle; it is built by the time this function runs.
-    from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModuleElement
+    from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModules
 
     match element:
-        case FormModuleElement():
+        case Element() if element.parent() in FormModules(element.parent().base_ring()):
             return element.forget_form()
         case Element():
             return element

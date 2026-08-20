@@ -8,7 +8,7 @@
 https://en.wikipedia.org/w/index.php?title=Coxeter%E2%80%93Dynkin_diagram&oldid=1290398091
 
 **Status in this repository**: **not owned.** `coxeter_diagrams.sage` computes
-the diagram automorphism group (`FiniteCoxeterDiagram.Aut`, and
+the diagram automorphism group (`CoxeterDiagrams.ParentMethods.Aut`, and
 `elliptic_subdiagram_orbits` over it), which is the input a folding needs, but
 there is no quotient construction: given a diagram and an element of its
 `Aut`, nothing returns the folded diagram. The table below is the oracle such

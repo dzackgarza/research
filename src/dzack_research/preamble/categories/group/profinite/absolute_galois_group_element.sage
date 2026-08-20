@@ -17,6 +17,7 @@ normal-extension theorem (Stacks 0BME).
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
+    from sage.structure.parent import Parent
     from sage.structure.parent import MembershipInput
 
 from sage.categories.fields import Fields as SageFields
@@ -36,7 +37,7 @@ if TYPE_CHECKING:
 class AbsoluteGaloisGroupElement(Morphism):
     r"""A lazy automorphism of \(\bar K\) fixing \(K\), an element of \(G_K\).
 
-    Constructed by :meth:`AbsoluteGaloisGroup.lift` from a finite-level
+    Constructed by ``lift`` on \(G_K\) from a finite-level
     automorphism.  Its action on \(\bar K\) is realized progressively:
     each evaluation on a new \(\alpha\in\bar K\) forces the automorphism
     to extend to a finite normal field containing \(\alpha\), caching
@@ -44,7 +45,7 @@ class AbsoluteGaloisGroupElement(Morphism):
     """
 
     def __init__(
-        self, parent: "AbsoluteGaloisGroup", stage: "Ring", action: Morphism
+        self, parent: "Parent", stage: "Ring", action: Morphism
     ) -> None:
         r"""Initialize from a finite stage and a finite-level automorphism.
 
@@ -57,7 +58,7 @@ class AbsoluteGaloisGroupElement(Morphism):
         self._stage = stage
         self._action = action
 
-    def parent(self) -> "AbsoluteGaloisGroup":
+    def parent(self) -> "Parent":
         return self._parent
 
     def stage(self) -> "Ring":
@@ -132,13 +133,13 @@ class ElementConjugacyClass:
 
     def __init__(
         self,
-        ambient: "AbsoluteGaloisGroup",
+        ambient: "Parent",
         representative: "AbsoluteGaloisGroupElement",
     ) -> None:
         self._ambient = ambient
         self._representative = representative
 
-    def ambient(self) -> "AbsoluteGaloisGroup":
+    def ambient(self) -> "Parent":
         return self._ambient
 
     def representative(self) -> "AbsoluteGaloisGroupElement":

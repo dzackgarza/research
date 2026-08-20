@@ -8,7 +8,7 @@
 https://en.wikipedia.org/w/index.php?title=Coxeter_group&oldid=1300325012
 
 **Status in this repository**: the affine (parabolic) predicate is owned —
-`coxeter_diagrams.sage` `FiniteCoxeterDiagram.is_parabolic`, componentwise,
+`coxeter_diagrams.sage` `CoxeterDiagrams.ParentMethods.is_parabolic`, componentwise,
 and `vinberg_invariants.sage` `is_parabolic` on the form. The **naming layer
 below is not owned**: the preamble has no Witt symbol for an affine diagram
 and no construction of the affine diagram by adjoining the highest root.

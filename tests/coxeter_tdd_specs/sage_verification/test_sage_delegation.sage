@@ -1,6 +1,6 @@
 r"""The Coxeter classification seams where the preamble delegates to Sage.
 
-``FiniteCoxeterDiagram`` answers four questions by handing them to Sage:
+``CoxeterDiagrams`` answers four questions by handing them to Sage:
 ``is_elliptic``/``is_parabolic`` to ``CoxeterMatrix``'s classification,
 ``coxeter_group`` to ``CoxeterGroup`` on that same matrix, the rooted
 realization of a Cartan type to the symmetrized Cartan matrix, and
@@ -95,7 +95,7 @@ def test_the_schlafli_matrix_is_the_literature_sign_and_the_root_gram_its_negati
     assert a2.schlafli_matrix() == matrix(AA, [[2, -1], [-1, 2]])
 
     for cartan_type in (["A", 2], ["A", 4], ["D", 4], ["E", 6]):
-        rooted = FiniteCoxeterDiagram.from_cartan_type(cartan_type, scale=1)
+        rooted = CoxeterDiagrams().from_cartan_type(cartan_type, scale=1)
         gram = rooted.root_intersection_matrix()
         assert gram.change_ring(AA) == -rooted.schlafli_matrix(), (
             f"{cartan_type}: the root Gram matrix is not -C"
@@ -104,7 +104,7 @@ def test_the_schlafli_matrix_is_the_literature_sign_and_the_root_gram_its_negati
             f"{cartan_type}: simply laced roots have square -2 in this convention"
         )
 
-    assert FiniteCoxeterDiagram.from_cartan_type(
+    assert CoxeterDiagrams().from_cartan_type(
         ["A", 2], scale=1
     ).root_intersection_matrix() == matrix(ZZ, [[-2, 1], [1, -2]])
 
@@ -162,7 +162,7 @@ def test_the_dihedral_schlaflian_is_four_sine_squared_and_stays_algebraic() -> N
 @pytest.mark.xfail(
     strict=True,
     reason=(
-        "defect on the owned surface: FiniteCoxeterDiagram.schlafli_matrix "
+        "defect on the owned surface: CoxeterDiagrams.schlafli_matrix "
         "documents the entry -2 at an infinite bond, but reads the exponent "
         "through CoxeterMatrix.__getitem__, which returns Sage's internal -1 "
         "rather than +Infinity (only coxeter_graph() converts).  So "
@@ -360,7 +360,7 @@ def test_the_exceptional_dihedral_isomorphisms_are_visible_in_the_bonds() -> Non
         "gap on the owned surface: Lattices.root_lattice admits only the "
         "simply laced families A, D, E, so F_4 and G_2 -- root lattices over "
         "ZZ like the others -- have no named specimen.  Their Gram data is "
-        "reachable only through FiniteCoxeterDiagram.from_cartan_type(..., "
+        "reachable only through CoxeterDiagrams().from_cartan_type(..., "
         "scale=1).root_intersection_matrix()."
     ),
 )

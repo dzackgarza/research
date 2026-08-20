@@ -16,7 +16,7 @@ from dzack_research.preamble.categories.sets.owned_sets import Sets
 if TYPE_CHECKING:
     from dzack_research.preamble import lexicon
     from dzack_research.preamble.categories.abstract_categories.products import (
-        CoproductOfSets,
+        CoproductsOfSets,
     )
     from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
         Core,
@@ -65,7 +65,7 @@ class CardinalityFunctor(Functor):
 
     def coproduct_comparison(
         self,
-        coproduct: "CoproductOfSets",
+        coproduct: "CoproductsOfSets.ParentMethods",
     ) -> CardinalityMorphism:
         r"""Return the equality arrow ``#(coprod X_i) -> sum #X_i``."""
         source = self._apply_functor(coproduct)

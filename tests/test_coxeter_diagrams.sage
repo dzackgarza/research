@@ -40,7 +40,7 @@ def test_parent_constructs_a_diagram_from_its_coxeter_matrix() -> None:
     r"""The parent constructor preserves the standard $B_3$ exponents."""
     matrix = CoxeterMatrix(["B", 3])
 
-    diagram = FiniteCoxeterDiagram(matrix)
+    diagram = CoxeterDiagrams().from_coxeter_matrix(matrix)
 
     assert diagram.coxeter_matrix() == matrix
     assert list(diagram.graph().edges(sort=True)) == [(1, 2, 3), (2, 3, 4)]
@@ -51,7 +51,7 @@ def test_rooted_diagram_records_roots_intersections_layout_and_tikz() -> None:
     lattice = IntegralLattice(matrix(ZZ, [[-4, 2], [2, -2]]), names=("r", "s"))
     r, s = lattice.module_generators()
 
-    diagram = FiniteCoxeterDiagram.from_roots(
+    diagram = CoxeterDiagrams().from_roots(
         (r, s),
         names=("r", "s"),
         positions={0: (0, 0), 1: (2, 0)},
@@ -92,9 +92,9 @@ def test_rooted_diagram_records_roots_intersections_layout_and_tikz() -> None:
 
 def test_morphisms_preserve_the_full_coxeter_matrix_and_compose() -> None:
     r"""Diagram morphisms preserve every exponent, including nonedges."""
-    a2 = FiniteCoxeterDiagram.from_cartan_type(["A", 2])
-    a3 = FiniteCoxeterDiagram.from_cartan_type(["A", 3])
-    a4 = FiniteCoxeterDiagram.from_cartan_type(["A", 4])
+    a2 = CoxeterDiagrams().from_cartan_type(["A", 2])
+    a3 = CoxeterDiagrams().from_cartan_type(["A", 3])
+    a4 = CoxeterDiagrams().from_cartan_type(["A", 4])
 
     inclusion_23 = a2.hom([2, 3], codomain=a3)
     inclusion_234 = a3.hom([2, 3, 4], codomain=a4)

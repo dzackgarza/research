@@ -18,13 +18,12 @@ once, on ``Rings``, and everything below inherits it.
 
 Sage's own node of each name is a super category of the owned one, so a ring
 in this hierarchy is a ring in Sage's terms and every Sage algorithm still
-recognizes it.  The multiplicative and additive roots are Sage's too: routing
-them through a parallel set-forgetting layer makes ``QQ.cardinality()``
-recurse, and the elements of a ring do not change when its operations are
-forgotten.  Naming the multiplicative and additive roots again would add
-nothing -- Sage's own semiring and rng nodes already carry them -- and in the
-preamble's shared load namespace it sends Sage's axiom deduction hunting for a
-base category class by name, where it finds the preamble's groups node.
+recognizes it.  The multiplicative and additive roots are the owned ones in
+``group/magmas.sage``, which is the spine that carries a ring to the owned
+``Sets()``.  A ring is built as a set before it is built as a ring, so this
+edge is what makes the construction chain reach the root: without it
+``OwnedRings().parent_class`` inherits no ``Parent`` and nothing can be
+constructed in the category at all.
 """
 
 from dzack_research.preamble.owned_category import (
@@ -46,6 +45,7 @@ if TYPE_CHECKING:
 
     from dzack_research.preamble.categories.sets.cardinals import Cardinal
     from dzack_research.preamble.lexicon import Element
+    from dzack_research.preamble.owned_category import ConstructionData
     from sage.categories.map import Map
     from sage.rings.integer import Integer
     from sage.categories.groups import Group
@@ -58,6 +58,12 @@ if TYPE_CHECKING:
 from sage.misc.cachefunc import cached_method
 from dzack_research.preamble.owned_category_bases import Category
 from dzack_research.preamble.owned_category_bases import Category_over_base_ring
+from dzack_research.preamble.categories.group.magmas import (
+    AdditiveGroups as OwnedAdditiveGroups,
+    AdditiveMonoids as OwnedAdditiveMonoids,
+    Monoids as OwnedMonoids,
+    Semigroups as OwnedSemigroups,
+)
 from sage.categories.homset import Hom
 from sage.categories.morphism import Morphism
 from sage.categories.division_rings import DivisionRings as SageDivisionRings
@@ -87,7 +93,7 @@ class OwnedSemirings(Category):
         return "semirings"
 
     def super_categories(self) -> list:
-        return [SageSemirings()]
+        return [SageSemirings(), OwnedMonoids(), OwnedAdditiveMonoids()]
 
 
 class OwnedRngs(Category):
@@ -98,7 +104,7 @@ class OwnedRngs(Category):
         return "rngs"
 
     def super_categories(self) -> list:
-        return [SageRngs()]
+        return [SageRngs(), OwnedSemigroups(), OwnedAdditiveGroups()]
 
 
 class OwnedRings(Category):
@@ -205,11 +211,11 @@ class OwnedRings(Category):
 
             # Local: the carve-out imports this node, so a module-level
             # import would close that cycle; it is built by call time.
-            from dzack_research.preamble.categories.rings.predicate_subrings import PredicateSubring
+            from dzack_research.preamble.categories.rings.predicate_subrings import predicate_subring
 
             if self in CommutativeRings():
                 return self
-            return PredicateSubring(
+            return predicate_subring(
                 self,
                 self.is_central,
                 "z commutes with every element",
@@ -311,7 +317,7 @@ _PLACEMENTS = (
 
 def _owning[**P](
     constructor: "Callable[P, Ring]",
-) -> "Callable[P, OwnedRing]":
+) -> "Callable[P, Parent]":
     r"""Return ``constructor``, handing out the owned view of the ring it builds.
 
     Owned and not refined.  Sage's ring constructors are cached by
@@ -322,7 +328,7 @@ def _owning[**P](
     computing.  The wrapper leaves the engine's ring alone.
     """
 
-    def build(*arguments: "P.args", **keywords: "P.kwargs") -> OwnedRing:
+    def build(*arguments: "P.args", **keywords: "P.kwargs") -> Parent:
         return own_ring(constructor(*arguments, **keywords))
 
     build.__name__ = getattr(constructor, "__name__", "constructor")
@@ -407,7 +413,7 @@ class PrimeFields(Category):
     r"""\(\mathbb{F}_p\), constructed through the chain rather than adopted.
 
     The ring level's first construction that *builds* rather than wraps.
-    :class:`OwnedRing` presents a ring Sage already holds; this declares one,
+    :class:`AdoptedRings` presents a ring Sage already holds; this declares
     and the difference is where its set-theoretic answers come from.  Being a
     ring here means being a set with ring structure, so this level declares
     where it sits among the owned sets -- \(\mathbb{F}_p\) has \(p\) elements
@@ -428,10 +434,12 @@ class PrimeFields(Category):
         return [OwnedFields(), OwnedSets().Finite()]
 
     class ParentMethods:
-        def __init__(self, characteristic: SageInteger, **rest: object) -> None:
+        def __init__(
+            self, characteristic: SageInteger, **rest: "ConstructionData"
+        ) -> None:
             self._characteristic = characteristic
             self._engine = SageGF(characteristic)
-            # The elements are the engine's, for the reason ``OwnedRing``
+            # The elements are the engine's, for the reason ``AdoptedRings``
             # gives: a ring's underlying set does not change by being placed,
             # and an element parented here would lose every coercion Sage
             # knows for the engine's.
@@ -476,7 +484,7 @@ def install_rings(namespace: dict) -> dict:
     Override-refine is what makes it reachable anyway: it builds the parent's
     type out of the owned ``ParentMethods``, so ``OwnedRings`` states the
     subscript and a session that names an owned ring gets it.  Stating it on
-    ``OwnedRing`` instead would lose, the countable-sets node reading the
+    ``AdoptedRings`` instead would lose, the countable-sets node reading the
     subscript as an enumeration index from ahead of the concrete class.
     """
     # Local: a module-level import would close a cycle; the module is built by the time this runs.
@@ -528,7 +536,7 @@ def install_rings(namespace: dict) -> dict:
     return installed
 
 
-class OwnedRing(Parent):
+class AdoptedRings(Category):
     r"""The ring a Sage ring presents, as an owned object.
 
     Constructed around the Sage ring rather than refining it, for the reason
@@ -542,282 +550,253 @@ class OwnedRing(Parent):
     being placed, and the arithmetic that makes it a ring is the one the
     engine already computes.
 
-    The engine crosses the boundary once, here, and is private afterwards.
+    The engine is the datum this level introduces.  It crosses the boundary
+    once, here, and is private afterwards.  Every ring the preamble *builds*
+    -- \(\mathbb F_p\) in :class:`PrimeFields`, a number field, the
+    endomorphism ring of an abelian group -- is a sibling of this node and
+    not a member of it, which is why the delegation below is declared here
+    rather than on :class:`OwnedRings`.
     """
 
-    def __init__(self, engine: "Ring") -> None:
-        assert engine in SageRings(), f"{engine} is not a ring"
-        self._engine = engine
-        # A facade: the elements are the engine's own.  A ring's underlying
-        # set does not change by being placed, and an element parented here
-        # instead would lose every coercion Sage knows for the engine's --
-        # a rational matrix divided by one would have no common parent.
-        Parent.__init__(
-            self,
-            facade=engine,
-            category=_owned_ring_category(engine),
-        )
-        if not engine.is_exact():
-            # \(|R|\), which the engine cannot state: Sage's axioms record
-            # finiteness alone, so \(\mathbb R\) and \(\mathbb Z\) both arrive
-            # *infinite* and both answer \(+\infty\) -- the one distinction the
-            # owned cardinals exist to keep.  An inexact ring is Sage's own
-            # word for a ring whose elements are approximations to those of a
-            # completion (\(\mathbb R\), \(\mathbb C\), \(\mathbb Q_p\), a
-            # power series ring), and every such completion is of the
-            # continuum: a point is an infinite sequence of digits and every
-            # sequence is a point.  Uncountability of the reals is Mathlib's
-            # ``Cardinal.not_countable_real``.  Inexactness is used here only
-            # as that statement about completions, never as a cardinality
-            # criterion in itself.  Refined rather than joined, so the owned
-            # cardinality precedes Sage's countable-blind one.
-            from dzack_research.preamble.categories.sets.owned_sets import Sets as OwnedSets
-            from dzack_research.preamble.refine import refine
+    @classmethod
+    def _repr_object_names(cls) -> str:
+        return "adopted rings"
 
-            refine(self, OwnedSets().Uncountable())
-        else:
-            # Countability is per-engine, never ``exact => countable``: SR is
-            # exact with continuum cardinality.  The engines the session
-            # catalogue names whose countability is a theorem: \(\mathbb Z\),
-            # \(\mathbb Q\), every number field (finite over \(\mathbb Q\)),
-            # and \(\overline{\mathbb Q}\).
-            from sage.categories.number_fields import NumberFields
-            from sage.rings.qqbar import QQbar as SageQQbar
+    def super_categories(self) -> list:
+        return [OwnedRings()]
 
-            countable_engine = (
-                engine is SageZZ
-                or engine is SageQQ
-                or engine in NumberFields()
-                or engine is SageQQbar
+    class ParentMethods:
+        def __init__(self, engine: "Ring", **rest: "ConstructionData") -> None:
+            assert engine in SageRings(), f"{engine} is not a ring"
+            self._engine = engine
+            # A facade: the elements are the engine's own.  A ring's underlying
+            # set does not change by being placed, and an element parented here
+            # instead would lose every coercion Sage knows for the engine's --
+            # a rational matrix divided by one would have no common parent.
+            super().__init__(facade=engine, **rest)
+
+        def index(self, element: "Element") -> SageInteger:
+            r"""Reverse lookup in the chosen enumeration of a countable ring.
+
+            For \(\ZZ\) the answer is the closed zigzag form of Sage's native
+            ``iter(ZZ)`` order \(0, 1, -1, 2, -2, \dots\): index \(0\) at \(0\),
+            \(2n-1\) at \(n>0\), \(-2n\) at \(n<0\) — a formula, because a scan
+            for the value the formula already names is waste.  Every other
+            countable engine answers by the generic terminating scan the owned
+            ``Countable`` sets declare.
+            """
+            from dzack_research.preamble.categories.sets.owned_sets import (
+                CountableSets,
+                Sets as OwnedSets,
             )
-            if countable_engine:
-                from dzack_research.preamble.categories.sets.owned_sets import Sets as OwnedSets
-                from dzack_research.preamble.refine import refine
 
-                refine(self, OwnedSets().Countable().Infinite())
+            assert self.category().is_subcategory(OwnedSets().Countable()), (
+                f"{self} is not placed countable, so it has no enumeration to "
+                "look an index up in"
+            )
+            if self._engine is SageZZ:
+                member = SageZZ(element)
+                if member == 0:
+                    return SageZZ.zero()
+                if member > 0:
+                    return 2 * member - 1
+                return -2 * member
+            position: SageInteger = SageInteger(
+                CountableSets.ParentMethods.index(self, element)
+            )
+            return position
 
-    def index(self, element: "Element") -> SageInteger:
-        r"""Reverse lookup in the chosen enumeration of a countable ring.
+        def _coerce_map_from_(self, other: "Parent") -> bool:
+            r"""Return whether ``other`` coerces here, which is the engine's answer.
 
-        For \(\ZZ\) the answer is the closed zigzag form of Sage's native
-        ``iter(ZZ)`` order \(0, 1, -1, 2, -2, \dots\): index \(0\) at \(0\),
-        \(2n-1\) at \(n>0\), \(-2n\) at \(n<0\) — a formula, because a scan
-        for the value the formula already names is waste.  Every other
-        countable engine answers by the generic terminating scan the owned
-        ``Countable`` sets declare.
-        """
-        from dzack_research.preamble.categories.sets.owned_sets import (
-            CountableSets,
-            Sets as OwnedSets,
-        )
+            ``other`` crosses to the engine to be asked.  A session names owned
+            rings on both sides -- \(\ZZ\to\QQ\) is asked of two of them -- and the
+            engine knows the map between the rings they are, while it has never
+            heard of the wrappers.
+            """
+            if other is self or other is self._engine:
+                return True
+            return bool(self._engine.has_coerce_map_from(engine_ring(other)))
 
-        assert self.category().is_subcategory(OwnedSets().Countable()), (
-            f"{self} is not placed countable, so it has no enumeration to "
-            "look an index up in"
-        )
-        if self._engine is SageZZ:
-            member = SageZZ(element)
-            if member == 0:
-                return SageZZ.zero()
-            if member > 0:
-                return 2 * member - 1
-            return -2 * member
-        position: SageInteger = SageInteger(
-            CountableSets.ParentMethods.index(self, element)
-        )
-        return position
+        def coerce_map_from(
+            self,
+            other: "ElementConstructorInput",
+        ) -> "Morphism | None":
+            r"""Return the coercion \(S\to R\), named between the rings it joins.
 
-    def _coerce_map_from_(self, other: "Parent") -> bool:
-        r"""Return whether ``other`` coerces here, which is the engine's answer.
+            Answered here rather than by Sage, and this is the whole of the
+            crossing.  Sage decides a coercion by asking the codomain and then
+            *composing* whatever it finds, and the composite is built through
+            ``Hom`` with an explicit category -- whose membership, for
+            ``NumberFields`` among others, is an ``isinstance`` test that no
+            facade passes however sound the mathematics.  So both ends cross to
+            the engine before Sage is asked anything, and the engine's answer is
+            renamed on the way out.
+            """
+            crossed = engine_ring(other)
+            engine_map = self._engine.coerce_map_from(crossed)
+            if engine_map is None:
+                return None
+            if not isinstance(crossed, Parent):
+                # Sage asks this of Python types too -- ``int`` coerces into every
+                # ring.  A type is not a ring a session named, so it has no owned
+                # view and there are no two ends to rename.
+                crossing: "Morphism" = engine_map
+                return crossing
+            renamed: "Morphism" = OwnedRingMap(engine_map, owned_ring_view(crossed), self)
+            return renamed
 
-        ``other`` crosses to the engine to be asked.  A session names owned
-        rings on both sides -- \(\ZZ\to\QQ\) is asked of two of them -- and the
-        engine knows the map between the rings they are, while it has never
-        heard of the wrappers.
-        """
-        if other is self or other is self._engine:
-            return True
-        return bool(self._engine.has_coerce_map_from(engine_ring(other)))
+        def has_coerce_map_from(self, other: "ElementConstructorInput") -> bool:
+            return bool(self._engine.has_coerce_map_from(engine_ring(other)))
 
-    def coerce_map_from(
-        self,
-        other: "ElementConstructorInput",
-    ) -> "Morphism | None":
-        r"""Return the coercion \(S\to R\), named between the rings it joins.
+        def _element_constructor_(self, value: "Element") -> "Element":
+            return self._engine(value)
 
-        Answered here rather than by Sage, and this is the whole of the
-        crossing.  Sage decides a coercion by asking the codomain and then
-        *composing* whatever it finds, and the composite is built through
-        ``Hom`` with an explicit category -- whose membership, for
-        ``NumberFields`` among others, is an ``isinstance`` test that no
-        facade passes however sound the mathematics.  So both ends cross to
-        the engine before Sage is asked anything, and the engine's answer is
-        renamed on the way out.
-        """
-        crossed = engine_ring(other)
-        engine_map = self._engine.coerce_map_from(crossed)
-        if engine_map is None:
-            return None
-        if not isinstance(crossed, Parent):
-            # Sage asks this of Python types too -- ``int`` coerces into every
-            # ring.  A type is not a ring a session named, so it has no owned
-            # view and there are no two ends to rename.
-            crossing: "Morphism" = engine_map
-            return crossing
-        renamed: "Morphism" = OwnedRingMap(engine_map, owned_ring_view(crossed), self)
-        return renamed
+        def __contains__(self, value: "MembershipInput") -> bool:
+            return value in self._engine
 
-    def has_coerce_map_from(self, other: "ElementConstructorInput") -> bool:
-        return bool(self._engine.has_coerce_map_from(engine_ring(other)))
+        def __pow__(self, exponent: "Integer") -> "Module":
+            r"""Return \(R^n\), the free \(R\)-module on the canonical framing."""
+            return OwnedRings.ParentMethods.__pow__(self, exponent)
 
-    def _element_constructor_(self, value: "Element") -> "Element":
-        return self._engine(value)
+        def __truediv__(self, ideal: "Parent") -> "Parent":
+            r"""Return \(K/\mathfrak a\), which is the engine's quotient.
 
-    def __contains__(self, value: "MembershipInput") -> bool:
-        return value in self._engine
+            ``QQ/ZZ`` and ``QQ/(2*ZZ)`` are Sage's own spelling of
+            \(\Q/\Z\) and \(\Q/2\Z\), and the engine builds the right object; a
+            session loses that syntax only because a dunder is looked up on the
+            type, and the type of the ring a session names is this one.  So the
+            crossing is the whole of the method.  What makes the result the
+            preamble's is the post-init hook in ``fraction_field_quotients``,
+            which refines every such quotient as it is built.
+            """
+            quotient: "Parent" = self._engine / engine_ring(ideal)
+            return quotient
 
-    def __pow__(self, exponent: "Integer") -> "Module":
-        r"""Return \(R^n\), the free \(R\)-module on the canonical framing."""
-        return OwnedRings.ParentMethods.__pow__(self, exponent)
+        def __iter__(self) -> "Iterator[Element]":
+            r"""Iterate the engine's elements: they are this ring's own.
 
-    def __truediv__(self, ideal: "Parent") -> "Parent":
-        r"""Return \(K/\mathfrak a\), which is the engine's quotient.
+            Promised by the category, which is the engine's -- \(\ZZ\) is an
+            infinite enumerated set, and claiming that while declining to
+            enumerate is what a facade must not do.
+            """
+            return iter(self._engine)
 
-        ``QQ/ZZ`` and ``QQ/(2*ZZ)`` are Sage's own spelling of
-        \(\Q/\Z\) and \(\Q/2\Z\), and the engine builds the right object; a
-        session loses that syntax only because a dunder is looked up on the
-        type, and the type of the ring a session names is this one.  So the
-        crossing is the whole of the method.  What makes the result the
-        preamble's is the post-init hook in ``fraction_field_quotients``,
-        which refines every such quotient as it is built.
-        """
-        quotient: "Parent" = self._engine / engine_ring(ideal)
-        return quotient
+        def some_elements(self) -> tuple["Element", ...]:
+            r"""Return a few elements, which are the engine's."""
+            return tuple(self._engine.some_elements())
 
-    def __iter__(self) -> "Iterator[Element]":
-        r"""Iterate the engine's elements: they are this ring's own.
+        def an_element(self) -> "Element":
+            return self._engine.an_element()
 
-        Promised by the category, which is the engine's -- \(\ZZ\) is an
-        infinite enumerated set, and claiming that while declining to
-        enumerate is what a facade must not do.
-        """
-        return iter(self._engine)
+        def zero(self) -> "Element":
+            return self._engine.zero()
 
-    def some_elements(self) -> tuple["Element", ...]:
-        r"""Return a few elements, which are the engine's."""
-        return tuple(self._engine.some_elements())
+        def one(self) -> "Element":
+            return self._engine.one()
 
-    def an_element(self) -> "Element":
-        return self._engine.an_element()
+        def characteristic(self) -> "Integer":
+            characteristic: "Integer" = self._engine.characteristic()
+            return characteristic
 
-    def zero(self) -> "Element":
-        return self._engine.zero()
+        def is_field(self) -> bool:
+            field: bool = self._engine.is_field()
+            return field
 
-    def one(self) -> "Element":
-        return self._engine.one()
+        def is_integral_domain(self) -> bool:
+            integral_domain: bool = self._engine.is_integral_domain()
+            return integral_domain
 
-    def characteristic(self) -> "Integer":
-        characteristic: "Integer" = self._engine.characteristic()
-        return characteristic
+        def is_finite(self) -> bool:
+            finite: bool = self._engine.is_finite()
+            return finite
 
-    def is_field(self) -> bool:
-        field: bool = self._engine.is_field()
-        return field
+        def cardinality(self) -> "Cardinal":
+            from dzack_research.preamble.categories.sets.cardinals import (
+                cardinal,
+                continuum,
+            )
 
-    def is_integral_domain(self) -> bool:
-        integral_domain: bool = self._engine.is_integral_domain()
-        return integral_domain
+            if not self._engine.is_exact():
+                return continuum
+            return cardinal(self._engine.cardinality())
 
-    def is_finite(self) -> bool:
-        finite: bool = self._engine.is_finite()
-        return finite
+        def fraction_field(self) -> "Parent":
+            r"""Return \(\operatorname{Frac}(R)\), owned as this ring is."""
+            fraction_field: "Parent" = own_ring(self._engine.fraction_field())
+            return fraction_field
 
-    def cardinality(self) -> "Cardinal":
-        from dzack_research.preamble.categories.sets.cardinals import (
-            cardinal,
-            continuum,
-        )
+        def _first_ngens(self, count: int) -> tuple["Element", ...]:
+            r"""Return the first ``count`` generators, for ``K.<a> = ...`` syntax.
 
-        if not self._engine.is_exact():
-            return continuum
-        return cardinal(self._engine.cardinality())
+            Sage's preparser lowers a generator-naming assignment to this call, so
+            a ring a session names that way has to answer it.  The generators are
+            the engine's elements, which are this ring's own.
+            """
+            first: tuple["Element", ...] = self._engine._first_ngens(count)
+            return first
 
-    def fraction_field(self) -> "Parent":
-        r"""Return \(\operatorname{Frac}(R)\), owned as this ring is."""
-        fraction_field: "Parent" = own_ring(self._engine.fraction_field())
-        return fraction_field
+        def gens(self) -> tuple["Element", ...]:
+            r"""Return the generators, which are the engine's elements."""
+            return tuple(self._engine.gens())
 
-    def _first_ngens(self, count: int) -> tuple["Element", ...]:
-        r"""Return the first ``count`` generators, for ``K.<a> = ...`` syntax.
+        def gen(self, index: "Integer" = 0) -> "Element":
+            return self._engine.gen(index)
 
-        Sage's preparser lowers a generator-naming assignment to this call, so
-        a ring a session names that way has to answer it.  The generators are
-        the engine's elements, which are this ring's own.
-        """
-        first: tuple["Element", ...] = self._engine._first_ngens(count)
-        return first
+        def ring_of_integers(self) -> "Parent":
+            r"""Return \(\mathcal O_K\), owned as this ring is."""
+            return own_ring(self._engine.ring_of_integers())
 
-    def gens(self) -> tuple["Element", ...]:
-        r"""Return the generators, which are the engine's elements."""
-        return tuple(self._engine.gens())
+        def ideal(
+            self,
+            *ideal_generators: "ElementConstructorInput",
+            **keywords: "ElementConstructorInput",
+        ) -> "Parent":
+            r"""Return the ideal generated by ``generators``.
 
-    def gen(self, index: "Integer" = 0) -> "Element":
-        return self._engine.gen(index)
+            The engine's object: an ideal is not a ring, so it has no owned view
+            of its own, and ``own_ideal`` is the preamble's word for one.
+            """
+            ideal: "Parent" = self._engine.ideal(*ideal_generators, **keywords)
+            return ideal
 
-    def ring_of_integers(self) -> "Parent":
-        r"""Return \(\mathcal O_K\), owned as this ring is."""
-        return own_ring(self._engine.ring_of_integers())
+        def embeddings(self, codomain: "Ring") -> list["Morphism"]:
+            r"""Return the field maps \(R\to\Omega\), which the engine computes.
 
-    def ideal(
-        self,
-        *ideal_generators: "ElementConstructorInput",
-        **keywords: "ElementConstructorInput",
-    ) -> "Parent":
-        r"""Return the ideal generated by ``generators``.
+            Both ends cross: an embedding is a computation, and the engine has
+            never heard of either wrapper.
+            """
+            maps: list["Morphism"] = self._engine.embeddings(engine_ring(codomain))
+            return maps
 
-        The engine's object: an ideal is not a ring, so it has no owned view
-        of its own, and ``own_ideal`` is the preamble's word for one.
-        """
-        ideal: "Parent" = self._engine.ideal(*ideal_generators, **keywords)
-        return ideal
+        def algebraic_closure(self) -> "Parent":
+            r"""Return \(\bar R\), owned as this ring is.
 
-    def embeddings(self, codomain: "Ring") -> list["Morphism"]:
-        r"""Return the field maps \(R\to\Omega\), which the engine computes.
+            The engine's answer, because which field \(\bar\QQ\) *is* was never
+            the wrapper's to decide.  Delegated rather than inherited: Sage
+            supplies a generic ``algebraic_closure`` from the ``Fields`` category
+            that declines, and the one that answers lives on the concrete ring
+            class this facade does not inherit from.
+            """
+            return own_ring(self._engine.algebraic_closure())
 
-        Both ends cross: an embedding is a computation, and the engine has
-        never heard of either wrapper.
-        """
-        maps: list["Morphism"] = self._engine.embeddings(engine_ring(codomain))
-        return maps
+        def __hash__(self) -> int:
+            return hash((type(self), self._engine))
 
-    def algebraic_closure(self) -> "Parent":
-        r"""Return \(\bar R\), owned as this ring is.
+        def __eq__(self, other: "MembershipInput") -> bool:
+            r"""Return whether ``other`` is this owned ring.
 
-        The engine's answer, because which field \(\bar\QQ\) *is* was never
-        the wrapper's to decide.  Delegated rather than inherited: Sage
-        supplies a generic ``algebraic_closure`` from the ``Fields`` category
-        that declines, and the one that answers lives on the concrete ring
-        class this facade does not inherit from.
-        """
-        return own_ring(self._engine.algebraic_closure())
+            Not equal to the engine it views, however tempting: Sage sorts its
+            category poset with these as keys, and two base rings that compare
+            equal while being distinct objects make that sort inconsistent --
+            it says so, and then its caches miss.  Consistency comes from using
+            the owned ring everywhere instead, with ``engine_ring`` at the
+            crossings.
+            """
+            return type(other) is type(self) and other._engine == self._engine
 
-    def __hash__(self) -> int:
-        return hash((type(self), self._engine))
-
-    def __eq__(self, other: "MembershipInput") -> bool:
-        r"""Return whether ``other`` is this owned ring.
-
-        Not equal to the engine it views, however tempting: Sage sorts its
-        category poset with these as keys, and two base rings that compare
-        equal while being distinct objects make that sort inconsistent --
-        it says so, and then its caches miss.  Consistency comes from using
-        the owned ring everywhere instead, with ``engine_ring`` at the
-        crossings.
-        """
-        return type(other) is type(self) and other._engine == self._engine
-
-    def _repr_(self) -> str:
-        return repr(self._engine)
+        def _repr_(self) -> str:
+            return repr(self._engine)
 
 
 class OwnedRingMap(Morphism):
@@ -853,12 +832,57 @@ def _owned_ring_category(engine: "Ring") -> "Category":
     ring: the wrapper adds a place in the preamble's hierarchy and takes
     nothing away.  Dropping the engine's category would make \(\ZZ\) stop
     being a commutative ring, which every Sage construction over it checks.
+
+    The size of the underlying set is settled here as well, because it is a
+    fact about the engine and the object is built in the category this
+    returns.
     """
     category = engine.category()
+    placement = OwnedRings()
     for sage_category, owned_category in _PLACEMENTS:
         if category.is_subcategory(sage_category):
-            return Category.join((category, owned_category()))
-    return Category.join((category, OwnedRings()))
+            placement = owned_category()
+            break
+    return Category.join(
+        (category, placement, AdoptedRings(), _owned_ring_size(engine))
+    )
+
+
+def _owned_ring_size(engine: "Ring") -> "Category":
+    r"""Return where \(R\) sits among the owned sets by its size.
+
+    \(|R|\), which the engine cannot state: Sage's axioms record finiteness
+    alone, so \(\mathbb R\) and \(\mathbb Z\) both arrive *infinite* and both
+    answer \(+\infty\) -- the one distinction the owned cardinals exist to
+    keep.
+
+    An inexact ring is Sage's own word for a ring whose elements are
+    approximations to those of a completion (\(\mathbb R\), \(\mathbb C\),
+    \(\mathbb Q_p\), a power series ring), and every such completion is of the
+    continuum: a point is an infinite sequence of digits and every sequence is
+    a point.  Uncountability of the reals is Mathlib's
+    ``Cardinal.not_countable_real``.  Inexactness is used here only as that
+    statement about completions, never as a cardinality criterion in itself.
+
+    Countability is per-engine, never ``exact => countable``: SR is exact with
+    continuum cardinality.  The engines the session catalogue names whose
+    countability is a theorem: \(\mathbb Z\), \(\mathbb Q\), every number
+    field (finite over \(\mathbb Q\)), and \(\overline{\mathbb Q}\).
+    """
+    from sage.categories.number_fields import NumberFields
+    from sage.rings.qqbar import QQbar as SageQQbar
+
+    if not engine.is_exact():
+        return OwnedSets().Uncountable()
+    countable_engine = (
+        engine is SageZZ
+        or engine is SageQQ
+        or engine in NumberFields()
+        or engine is SageQQbar
+    )
+    if countable_engine:
+        return OwnedSets().Countable().Infinite()
+    return OwnedSets()
 
 
 def engine_ring(ring: "Ring") -> "Ring":
@@ -875,7 +899,7 @@ def engine_ring(ring: "Ring") -> "Ring":
     belong to.  A module whose base were the wrapper would sit in a category
     over the engine's ring with no member, and its matrices would be generic.
     """
-    return ring._engine if isinstance(ring, OwnedRing) else ring
+    return ring._engine if ring in AdoptedRings() else ring
 
 
 def install_session_rings(scope: dict) -> None:
@@ -921,7 +945,7 @@ def install_session_rings(scope: dict) -> None:
 # can mean both.
 
 
-def owned_ring_named(name: str) -> "OwnedRing":
+def owned_ring_named(name: str) -> Parent:
     r"""Return the owned view of the engine ring bound to ``name``."""
     from sage.all import __dict__ as _sage_all
     engine = _sage_all[name]
@@ -931,18 +955,18 @@ def owned_ring_named(name: str) -> "OwnedRing":
 _OWNED_RINGS: dict = {}
 
 
-def own_ring(ring: "Ring") -> OwnedRing:
+def own_ring(ring: "Ring") -> Parent:
     r"""Return the owned ring ``ring`` presents, the same object every time.
 
     One object per engine: a ring is compared and cached by identity all over
     Sage, and two wrappers of one ring would be two rings with no map between
     them.
     """
-    if isinstance(ring, OwnedRing):
+    if ring in AdoptedRings():
         return ring
     owned = _OWNED_RINGS.get(ring)
     if owned is None:
-        owned = OwnedRing(ring)
+        owned = object_of(_owned_ring_category(ring), engine=ring)
         _OWNED_RINGS[ring] = owned
     return owned
 

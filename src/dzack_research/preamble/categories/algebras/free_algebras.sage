@@ -3,8 +3,6 @@ r"""Free algebras over a base ring, without a chosen generating set."""
 from typing import Protocol, TYPE_CHECKING
 
 from sage.categories.category import Category
-from sage.categories.category_types import Category_over_base_ring
-from sage.categories.rings import Rings as SageRings
 from sage.structure.parent import Parent
 
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
@@ -32,6 +30,7 @@ if TYPE_CHECKING:
         """
 
         def base_ring(self) -> "Ring": ...
+        def algebra_generating_set(self) -> "OrderedSet": ...
         def monomial_system(self) -> "MonomialSystem": ...
         def module_generator(self, monomial: "Element") -> "Element": ...
         def degree_on_module_generator(
@@ -53,18 +52,6 @@ if TYPE_CHECKING:
 
         def base_ring(self) -> "Ring": ...
 
-
-if TYPE_CHECKING:
-    # Nominal, and not a protocol: the two methods that keep this base hand
-    # ``self`` to ``Hom``, which takes a ``Parent``, and return it where a
-    # ring is expected.  A parent in these categories IS a ring parent, and
-    # naming its generating set is what a free one adds.  At runtime the name
-    # is ``object``, so the class Sage receives is the plain one it expects.
-    class _FreeAlgebraRingBase(SageRings.ParentMethods):
-        def algebra_generating_set(self) -> "OrderedSet": ...
-
-else:
-    _FreeAlgebraRingBase = object
 
 class FreeAlgebras(OwnedCategoryOverBaseRing):
     r"""Algebras whose underlying modules are free."""
@@ -118,7 +105,7 @@ class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
 
         return [FreeAlgebras(self.base_ring()), GradedAlgebras(self.base_ring())]
 
-    class ParentMethods(_FreeAlgebraRingBase):
+    class ParentMethods:
         def _ring_morphism_defining_algebra_structure(self) -> "Morphism":
             r"""Return \(R\to A\), \(r\mapsto r1_A\)."""
             from sage.categories.homset import Hom
@@ -264,7 +251,7 @@ class TensorAlgebras(OwnedCategoryOverBaseRing):
     def super_categories(self) -> list:
         return [GradedFreeAlgebras(self.base_ring())]
 
-    class ParentMethods(_FreeAlgebraRingBase):
+    class ParentMethods:
         def ring_center(self) -> "Ring":
             r"""Return \(Z(T(M))\).
 

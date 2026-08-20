@@ -315,8 +315,8 @@ class LatticeIsometries(Category):
             :meth:`MorphismMethods.determinant`.
             """
             # Local: a module-level import here would close a cycle; by call time this module is built.
-            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.isotropic_orbits import OrthogonalPredicateSubgroup
-            return OrthogonalPredicateSubgroup(
+            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.isotropic_orbits import orthogonal_predicate_subgroup
+            return orthogonal_predicate_subgroup(
                 self,
                 lambda isometry: isometry.determinant() == 1,
                 "det(g) = 1",
@@ -336,8 +336,8 @@ class LatticeIsometries(Category):
             :meth:`MorphismMethods.preserves_positive_cone`.
             """
             # Local: a module-level import here would close a cycle; by call time this module is built.
-            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.isotropic_orbits import OrthogonalPredicateSubgroup
-            return OrthogonalPredicateSubgroup(
+            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.isotropic_orbits import orthogonal_predicate_subgroup
+            return orthogonal_predicate_subgroup(
                 self,
                 lambda isometry: isometry.real_spinor_norm_sign() == 1,
                 "the real spinor norm of g is positive",
@@ -357,7 +357,7 @@ class LatticeIsometries(Category):
             set of the preimage is needed, or claimed.
             """
             # Local: a module-level import here would close a cycle; by call time this module is built.
-            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.isotropic_orbits import OrthogonalPredicateSubgroup
+            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.isotropic_orbits import orthogonal_predicate_subgroup
             from dzack_research.preamble.categories.modules.framed.formed.torsionform.torsion_modules_with_form import (
                 TorsionFormAutomorphismGroup,
                 TorsionFormAutomorphismSubgroup,
@@ -369,7 +369,7 @@ class LatticeIsometries(Category):
             assert subgroup.domain() is self.domain().discriminant_group(), (
                 "the subgroup must live on this lattice's discriminant form"
             )
-            return OrthogonalPredicateSubgroup(
+            return orthogonal_predicate_subgroup(
                 self,
                 lambda isometry: isometry.discriminant_morphism() in subgroup,
                 f"rho(g) lies in {subgroup}",
@@ -381,10 +381,10 @@ class LatticeIsometries(Category):
         ) -> "Parent":
             r"""Return $\{g: g(v)=v\}$, the pointwise stabilizer of a vector."""
             # Local: a module-level import here would close a cycle; by call time this module is built.
-            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.isotropic_orbits import OrthogonalPredicateSubgroup
+            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.isotropic_orbits import orthogonal_predicate_subgroup
             lattice = self.domain()
             vector = element if element.parent() is lattice else lattice(element)
-            return OrthogonalPredicateSubgroup(
+            return orthogonal_predicate_subgroup(
                 self,
                 lambda isometry: isometry(vector) == vector,
                 f"g fixes {vector}",
@@ -400,13 +400,13 @@ class LatticeIsometries(Category):
             $\pm v$ ($v$ primitive; the units of $\mathbb Z$).
             """
             # Local: a module-level import here would close a cycle; by call time this module is built.
-            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.isotropic_orbits import OrthogonalPredicateSubgroup
+            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.isotropic_orbits import orthogonal_predicate_subgroup
             lattice = self.domain()
             vector = element if element.parent() is lattice else lattice(element)
             assert vector.q() == 0, (
                 f"{vector} is not isotropic; this stabilizer is 0-cusp vocabulary"
             )
-            return OrthogonalPredicateSubgroup(
+            return orthogonal_predicate_subgroup(
                 self,
                 lambda isometry: isometry(vector) in (vector, -vector),
                 f"g preserves the line through {vector}",
@@ -424,7 +424,7 @@ class LatticeIsometries(Category):
             index saturation, so the index is 1).
             """
             # Local: a module-level import here would close a cycle; by call time this module is built.
-            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.isotropic_orbits import OrthogonalPredicateSubgroup
+            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.isotropic_orbits import orthogonal_predicate_subgroup
             lattice = self.domain()
             vectors = tuple(
                 element if element.parent() is lattice else lattice(element)
@@ -435,7 +435,7 @@ class LatticeIsometries(Category):
             assert all(
                 left.b(right) == 0 for left in vectors for right in vectors
             ), "the plane is not totally isotropic"
-            return OrthogonalPredicateSubgroup(
+            return orthogonal_predicate_subgroup(
                 self,
                 lambda isometry: isometry.preserves(plane),
                 f"g preserves the plane on {vectors}",
@@ -453,7 +453,7 @@ class LatticeIsometries(Category):
             recorded error corrected here).
             """
             # Local: a module-level import here would close a cycle; by call time this module is built.
-            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.isotropic_orbits import OrthogonalPredicateSubgroup
+            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.isotropic_orbits import orthogonal_predicate_subgroup
             lattice = self.domain()
             vectors = tuple(
                 element if element.parent() is lattice else lattice(element)
@@ -467,7 +467,7 @@ class LatticeIsometries(Category):
                 lattice.subobject_on(vectors[: depth + 1])
                 for depth in range(len(vectors))
             )
-            return OrthogonalPredicateSubgroup(
+            return orthogonal_predicate_subgroup(
                 self,
                 lambda isometry: all(
                     isometry.preserves(term) for term in terms

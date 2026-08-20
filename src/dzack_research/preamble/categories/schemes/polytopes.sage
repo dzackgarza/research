@@ -42,14 +42,18 @@ EXAMPLES::
     9/4
 """
 
-from typing import Sequence, Callable, Optional, Protocol, TYPE_CHECKING
+from typing import Self, Sequence, Callable, Optional, Protocol, TYPE_CHECKING
 from dzack_research.preamble.owned_category_bases import Category
-from sage.categories.objects import Objects
+from dzack_research.preamble.owned_category import object_of
+from dzack_research.preamble.categories.sets.owned_sets import Sets
 from sage.structure.parent import Parent
 from sage.geometry.toric_lattice import ToricLattice, ToricLattice_generic
 from sage.geometry.polyhedron.constructor import Polyhedron as polyhedron
 
 from dzack_research.preamble.lexicon import Polyhedron
+
+if TYPE_CHECKING:
+    from dzack_research.preamble.owned_category import ConstructionData
 from sage.rings.rational_field import QQ
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational import Rational
@@ -94,10 +98,10 @@ class ConvexPolytopes(Category):
         sage: ConvexPolytopes()
         Category of convex polytopes
         sage: ConvexPolytopes().super_categories()
-        [Category of objects]
+        [Category of sets]
     """
     def super_categories(self) -> list[Category]:
-        return [Objects()]
+        return [Sets()]
 
     def _repr_object_names(self) -> str:
         return "convex polytopes"
@@ -109,9 +113,48 @@ class ConvexPolytopes(Category):
         return "$\\displaystyle " + self._latex_() + "$"
 
     class ParentMethods:
+        r"""
+        A convex polytope P \subset N_\RR: the bounded convex hull of finitely
+        many points, together with the lattice N it is read in.
         """
-        Generic geometric and lattice-intersection methods for convex polytopes.
-        """
+        def __init__(
+            self: Self,
+            vertices: Sequence[Sequence[LatticeCoord]] | Polyhedron,
+            lattice: Optional[ToricLattice_generic] = None,
+            base_ring: object = QQ,
+            **rest: "ConstructionData",
+        ) -> None:
+            r"""Build the polytope of ``vertices``, read in the lattice ``lattice``."""
+            if isinstance(vertices, Polyhedron) or hasattr(vertices, 'vertices'):
+                poly = vertices if isinstance(vertices, Polyhedron) else vertices.polyhedron()
+                raw_verts = [list(v) for v in poly.vertices()]
+                self._polyhedron = poly
+            else:
+                raw_verts = [list(v) for v in vertices]
+                self._polyhedron = polyhedron(vertices=raw_verts, base_ring=base_ring)
+
+            dim = len(raw_verts[0]) if raw_verts else 0
+            if lattice is None:
+                lattice = ToricLattice(dim, 'N')
+            self._lattice = lattice
+            self._ambient_space = lattice
+            self._raw_vertices = tuple(tuple(v) for v in raw_verts)
+            super().__init__(base=base_ring, **rest)
+
+        def polyhedron(self: Self) -> Polyhedron:
+            """Return the underlying Sage polyhedron."""
+            return self._polyhedron
+
+        def ambient_space(self: Self) -> Callable[[Sequence[LatticeCoord]], LatticePoint]:
+            """Return the lattice N the polytope is read in."""
+            return self._ambient_space
+
+        def _repr_(self: _LatticePolytopeInterface) -> str:
+            return f"Convex Polytope of dimension {self.dimension()} with {len(self.vertices())} vertices"
+
+        def _latex_(self: _LatticePolytopeInterface) -> str:
+            return fr"\text{{Polytope}}\left(\dim = {self.dimension()},\, |V| = {len(self.vertices())}\right)"
+
         def dimension(self: _LatticePolytopeInterface) -> int:
             """Return the dimension of the polytope."""
             return self.polyhedron().dim()
@@ -451,7 +494,7 @@ class ConvexPolytopes(Category):
             }
 
 
-class LatticePolytopes(ConvexPolytopes):
+class LatticePolytopes(Category):
     """
     The category of integral lattice polytopes (polytopes whose vertices are lattice points).
 
@@ -479,6 +522,9 @@ class LatticePolytopes(ConvexPolytopes):
         """
         Specialized properties for integral lattice polytopes.
         """
+        def _repr_(self: _LatticePolytopeInterface) -> str:
+            return f"Lattice Polytope of dimension {self.dimension()} with {len(self.vertices())} vertices"
+
         def is_reflexive(self: _LatticePolytopeInterface) -> bool:
             """Return True if P is a reflexive lattice polytope."""
             return self.polyhedron().is_reflexive()
@@ -498,7 +544,7 @@ class LatticePolytopes(ConvexPolytopes):
             return tuple(self.polyhedron().h_star_vector())
 
 
-class ConvexPolygons(ConvexPolytopes):
+class ConvexPolygons(Category):
     r"""
     The category of 2-dimensional convex polytopes (convex polygons).
 
@@ -526,6 +572,13 @@ class ConvexPolygons(ConvexPolytopes):
         """
         Domain methods specialized for 2D convex polygons.
         """
+        def _repr_(self: _LatticePolytopeInterface) -> str:
+            return f"Convex Polygon with {len(self.vertices())} vertices"
+
+        def _latex_(self: _LatticePolytopeInterface) -> str:
+            verts_latex = ", ".join(f"({v[0]}, {v[1]})" for v in self.vertices())
+            return fr"\text{{Polygon}}\left({verts_latex}\right)"
+
         def area(self: _LatticePolytopeInterface) -> Rational:
             """Return Euclidean area (Volume in 2D)."""
             return self.volume()
@@ -637,7 +690,7 @@ class ConvexPolygons(ConvexPolytopes):
             return self.tikz()
 
 
-class LatticePolygons(ConvexPolygons, LatticePolytopes):
+class LatticePolygons(Category):
     r"""
     The category of 2-dimensional integral lattice polygons.
 
@@ -663,115 +716,74 @@ class LatticePolygons(ConvexPolygons, LatticePolytopes):
     def _repr_latex_(self) -> str:
         return "$\\displaystyle " + self._latex_() + "$"
 
-
-class ConvexPolytope(Parent):
-    r"""
-    Concrete Parent representing a convex polytope P \subset N_\RR.
-    """
-    def __init__(
-        self,
-        vertices: Sequence[Sequence[LatticeCoord]] | Polyhedron,
-        lattice: Optional[ToricLattice_generic] = None,
-        base_ring: object = QQ,
-        category: Optional[Category] = None,
-    ) -> None:
-        if isinstance(vertices, Polyhedron) or hasattr(vertices, 'vertices'):
-            poly = vertices if isinstance(vertices, Polyhedron) else vertices.polyhedron()
-            raw_verts = [list(v) for v in poly.vertices()]
-            self._polyhedron = poly
-        else:
-            raw_verts = [list(v) for v in vertices]
-            self._polyhedron = polyhedron(vertices=raw_verts, base_ring=base_ring)
-
-        dim = len(raw_verts[0]) if raw_verts else 0
-        if lattice is None:
-            lattice = ToricLattice(dim, 'N')
-        self._lattice = lattice
-        self._ambient_space = lattice
-        self._raw_vertices = tuple(tuple(v) for v in raw_verts)
-
-        if category is None:
-            if dim == 2:
-                category = ConvexPolygons()
-            else:
-                category = ConvexPolytopes()
-
-        super().__init__(base=base_ring, category=category)
-
-    def polyhedron(self) -> Polyhedron:
-        return self._polyhedron
-
-    def ambient_space(self) -> Callable[[Sequence[LatticeCoord]], LatticePoint]:
-        return self._ambient_space
-
-    def _repr_(self) -> str:
-        return f"Convex Polytope of dimension {self.dimension()} with {len(self.vertices())} vertices"
-
-    def _latex_(self) -> str:
-        return fr"\text{{Polytope}}\left(\dim = {self.dimension()},\, |V| = {len(self.vertices())}\right)"
+    class ParentMethods:
+        """
+        A 2-dimensional integral lattice polygon Q \\subset N.
+        """
+        def _repr_(self: _LatticePolytopeInterface) -> str:
+            return f"Lattice Polygon with {len(self.vertices())} vertices"
 
 
-class ConvexPolygon(ConvexPolytope):
-    r"""
-    Concrete Parent representing a 2-dimensional convex polygon in N_\RR.
-    """
-    def __init__(
-        self,
-        vertices: Sequence[Sequence[LatticeCoord]],
-        lattice: Optional[ToricLattice_generic] = None,
-        base_ring: object = QQ,
-        category: Optional[Category] = None,
-    ) -> None:
-        if category is None:
-            category = ConvexPolygons()
-        super().__init__(vertices=vertices, lattice=lattice, base_ring=base_ring, category=category)
-
-    def _repr_(self) -> str:
-        return f"Convex Polygon with {len(self.vertices())} vertices"
-
-    def _latex_(self) -> str:
-        verts_latex = ", ".join(f"({v[0]}, {v[1]})" for v in self.vertices())
-        return fr"\text{{Polygon}}\left({verts_latex}\right)"
+def _vertex_dimension(
+    vertices: Sequence[Sequence[LatticeCoord]] | Polyhedron,
+) -> int:
+    """Return the number of coordinates a vertex of ``vertices`` has."""
+    if isinstance(vertices, Polyhedron) or hasattr(vertices, 'vertices'):
+        poly = vertices if isinstance(vertices, Polyhedron) else vertices.polyhedron()
+        raw_verts = [list(v) for v in poly.vertices()]
+    else:
+        raw_verts = [list(v) for v in vertices]
+    return len(raw_verts[0]) if raw_verts else 0
 
 
-class LatticePolytope(ConvexPolytope):
-    r"""
-    Concrete Parent representing an integral lattice polytope P \subset N.
-    """
-    def __init__(
-        self,
-        vertices: Sequence[Sequence[LatticeCoord]] | Polyhedron,
-        lattice: Optional[ToricLattice_generic] = None,
-        base_ring: object = ZZ,
-        category: Optional[Category] = None,
-    ) -> None:
-        if isinstance(vertices, Polyhedron) or hasattr(vertices, 'vertices'):
-            poly = vertices if isinstance(vertices, Polyhedron) else vertices.polyhedron()
-            raw_verts = [list(v) for v in poly.vertices()]
-        else:
-            raw_verts = [list(v) for v in vertices]
-        dim = len(raw_verts[0]) if raw_verts else 0
-        if category is None:
-            if dim == 2:
-                category = LatticePolygons()
-            else:
-                category = LatticePolytopes()
-        super().__init__(vertices=vertices, lattice=lattice, base_ring=base_ring, category=category)
-
-    def _repr_(self) -> str:
-        return f"Lattice Polytope of dimension {self.dimension()} with {len(self.vertices())} vertices"
+def ConvexPolytope(
+    vertices: Sequence[Sequence[LatticeCoord]] | Polyhedron,
+    lattice: Optional[ToricLattice_generic] = None,
+    base_ring: object = QQ,
+    category: Optional[Category] = None,
+) -> Parent:
+    r"""Return the convex polytope P \subset N_\RR spanned by ``vertices``."""
+    if category is None:
+        category = ConvexPolygons() if _vertex_dimension(vertices) == 2 else ConvexPolytopes()
+    return object_of(
+        category, vertices=vertices, lattice=lattice, base_ring=base_ring
+    )
 
 
-class LatticePolygon(ConvexPolygon, LatticePolytope):
-    r"""
-    Concrete Parent representing a 2-dimensional integral lattice polygon Q \subset N.
-    """
-    def __init__(
-        self,
-        vertices: Sequence[Sequence[LatticeCoord]] | Polyhedron,
-        lattice: Optional[ToricLattice_generic] = None,
-    ) -> None:
-        super().__init__(vertices=vertices, lattice=lattice, base_ring=ZZ, category=LatticePolygons())
+def ConvexPolygon(
+    vertices: Sequence[Sequence[LatticeCoord]],
+    lattice: Optional[ToricLattice_generic] = None,
+    base_ring: object = QQ,
+    category: Optional[Category] = None,
+) -> Parent:
+    r"""Return the 2-dimensional convex polygon in N_\RR spanned by ``vertices``."""
+    return object_of(
+        category or ConvexPolygons(),
+        vertices=vertices,
+        lattice=lattice,
+        base_ring=base_ring,
+    )
 
-    def _repr_(self) -> str:
-        return f"Lattice Polygon with {len(self.vertices())} vertices"
+
+def LatticePolytope(
+    vertices: Sequence[Sequence[LatticeCoord]] | Polyhedron,
+    lattice: Optional[ToricLattice_generic] = None,
+    base_ring: object = ZZ,
+    category: Optional[Category] = None,
+) -> Parent:
+    r"""Return the integral lattice polytope P \subset N spanned by ``vertices``."""
+    if category is None:
+        category = LatticePolygons() if _vertex_dimension(vertices) == 2 else LatticePolytopes()
+    return object_of(
+        category, vertices=vertices, lattice=lattice, base_ring=base_ring
+    )
+
+
+def LatticePolygon(
+    vertices: Sequence[Sequence[LatticeCoord]] | Polyhedron,
+    lattice: Optional[ToricLattice_generic] = None,
+) -> Parent:
+    r"""Return the 2-dimensional integral lattice polygon Q \subset N."""
+    return object_of(
+        LatticePolygons(), vertices=vertices, lattice=lattice, base_ring=ZZ
+    )

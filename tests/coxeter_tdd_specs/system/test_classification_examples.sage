@@ -5,10 +5,10 @@ Migrated from the red-phase spec ``system/test_classification_examples.py``,
 which asked a planned ``CoxeterSystem`` class for eigenvalues and a type string.
 The requirements survive; they are now asked of the owned surface:
 
-* :meth:`FiniteCoxeterDiagram.is_elliptic` and :meth:`is_parabolic`
+* :meth:`CoxeterDiagrams.ParentMethods.is_elliptic` and :meth:`is_parabolic`
   (``preamble/.../integrallattice/coxeter_diagrams.sage``) are Coxeter's own
   words for what the spec called finite and affine type;
-* :meth:`FiniteCoxeterDiagram.schlafli_matrix` is the literature matrix
+* :meth:`CoxeterDiagrams.ParentMethods.schlafli_matrix` is the literature matrix
   $C_{ij} = -2\cos(\pi/m_{ij})$, exact over $\overline{\mathbb Q}\cap\mathbb R$
   -- no floating cosine and no numerical tolerance, so the spec's ``1e-9``
   guards are gone rather than loosened;
@@ -277,7 +277,7 @@ def test_the_rank_two_schlaeflian_is_four_sine_squared(
     Schläflian settles the type outright, the determinant being the product of
     the two eigenvalues.
     """
-    diagram = FiniteCoxeterDiagram(CoxeterMatrix([[1, bond], [bond, 1]]))
+    diagram = CoxeterDiagrams().from_coxeter_matrix(CoxeterMatrix([[1, bond], [bond, 1]]))
     schlafli = diagram.schlafli_matrix()
 
     assert schlafli.det() == schlaeflian

@@ -23,7 +23,7 @@ if TYPE_CHECKING:
 
 from sage.rings.integer_ring import ZZ as SageZZ
 from dzack_research.preamble.catalogue import Embeddings
-from dzack_research.preamble.categories.modules.framed.formed.integrallattice.coxeter_diagrams import FiniteCoxeterDiagram
+from dzack_research.preamble.categories.modules.framed.formed.integrallattice.coxeter_diagrams import CoxeterDiagrams
 if TYPE_CHECKING:
     from sage.graphs.graph import Graph
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
@@ -451,7 +451,7 @@ def _sterk_diagram(name: str, roots: "OrderedSet") -> "Graph":
         index: tuple(coordinates)
         for index, coordinates in _STERK_DIAGRAM_LAYOUTS[name].items()
     }
-    diagram: "Graph" = FiniteCoxeterDiagram.from_roots(
+    diagram: "Graph" = CoxeterDiagrams().from_roots(
         rooted,
         # Identifier names; Sage derives the LaTeX form r_{i} itself
         # (``latex_variable_names``) — brace-form names fail ``certify_names``.

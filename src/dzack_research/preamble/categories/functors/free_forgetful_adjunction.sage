@@ -95,7 +95,7 @@ class ModuleAlgebraFunctor(Functor):
         self,
         module_morphism: "ModuleMorphism",
     ) -> "Morphism":
-        from dzack_research.preamble.categories.algebras.framed_free_algebras import PresentedFreeAlgebra
+        from dzack_research.preamble.categories.algebras.framed_free_algebras import PresentedFreeAlgebras
         from dzack_research.preamble.categories.algebras.framed_free_algebras import PresentedFreeAlgebraElement
         from dzack_research.preamble.categories.algebras.framed_free_algebras import alternating_extension
         from dzack_research.preamble.categories.algebras.framed_free_algebras import divided_power_extension
@@ -111,7 +111,7 @@ class ModuleAlgebraFunctor(Functor):
         codomain = self._apply_functor(codomain_module)
         target_presentation = (
             codomain.presentation_algebra()
-            if isinstance(codomain, PresentedFreeAlgebra)
+            if codomain in PresentedFreeAlgebras(codomain.base_ring())
             else codomain
         )
         source_frame = BasedFreeModule(

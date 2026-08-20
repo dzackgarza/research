@@ -5,7 +5,7 @@ Coxeter exponent $m_{ij}$: $-2$ on the diagonal ($m=1$), $0$ on a commuting
 pair ($m=2$), $1$ on a single bond ($m=3$), and $2$ where the mirrors are
 parallel ($m=\infty$).  That is this repository's sign.  The literature's
 Schläfli matrix is $C_{ij} = -2\cos(\pi/m_{ij}) = -B$, and
-``FiniteCoxeterDiagram.schlafli_matrix`` is the one place it is spelled.
+``CoxeterDiagrams.ParentMethods.schlafli_matrix`` is the one place it is spelled.
 
 Oracles for the fixture values below:
 
@@ -14,7 +14,7 @@ Oracles for the fixture values below:
   - ``literature/wikiwand/coxeter_schlaefli_matrices.md``: the literature
     Schläfli matrix $C_{ij} = -2\cos(\pi/M_{ij})$.
 
-The owned surface is ``CoxeterDiagrams`` and ``FiniteCoxeterDiagram`` in
+The owned surface is ``CoxeterDiagrams`` and ``CoxeterDiagrams`` in
 ``preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage``.
 """
 
@@ -73,7 +73,7 @@ def test_commuting_roots_give_a_zero_entry_and_two_components() -> None:
     of $\langle -2\rangle$ and the Coxeter graph has two components.
     """
     lattice = CoxeterDiagrams.minimal_edge_lattices()["orthogonal"]
-    diagram = FiniteCoxeterDiagram.from_roots(lattice.module_generators())
+    diagram = CoxeterDiagrams().from_roots(lattice.module_generators())
 
     assert diagram.root_intersection_matrix() == matrix(ZZ, [[-2, 0], [0, -2]])
     assert diagram.root_intersection_matrix()[0, 1] == AA(2 * cos(pi / 2)) == 0
@@ -97,7 +97,7 @@ def test_parallel_mirrors_give_the_entry_two_and_a_degenerate_form() -> None:
     not a defect: this diagram is $\tilde A_1$.
     """
     lattice = CoxeterDiagrams.minimal_edge_lattices()["parallel"]
-    diagram = FiniteCoxeterDiagram.from_roots(lattice.module_generators())
+    diagram = CoxeterDiagrams().from_roots(lattice.module_generators())
 
     assert diagram.root_intersection_matrix() == matrix(ZZ, [[-2, 2], [2, -2]])
     assert diagram.root_intersection_matrix()[0, 1] == 2

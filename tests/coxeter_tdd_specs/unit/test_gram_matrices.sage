@@ -152,7 +152,7 @@ def test_a_hyperbolic_edge_has_negative_determinant_and_mixed_signature() -> Non
     parabolic.
     """
     lattice = CoxeterDiagrams.minimal_edge_lattices()["ultraparallel"]
-    diagram = FiniteCoxeterDiagram.from_roots(lattice.module_generators())
+    diagram = CoxeterDiagrams().from_roots(lattice.module_generators())
 
     assert lattice.gram_matrix() == matrix(ZZ, [[-2, 3], [3, -2]])
     assert lattice.gram_matrix().det() == -5
@@ -170,7 +170,7 @@ def test_triangle_group_333_is_the_a2_schlafli_matrix() -> None:
     $[[2,-1],[-1,2]]$ of determinant $3$, and this repository's $B$ is its
     negative.  Determinants agree here only because the rank is even.
     """
-    diagram = FiniteCoxeterDiagram(CoxeterMatrix([[1, 3], [3, 1]]))
+    diagram = CoxeterDiagrams().from_coxeter_matrix(CoxeterMatrix([[1, 3], [3, 1]]))
 
     assert diagram.schlafli_matrix() == matrix(AA, [[2, -1], [-1, 2]])
     assert diagram.schlafli_matrix().det() == 3
@@ -186,7 +186,7 @@ def test_square_group_is_the_dihedral_group_of_order_eight() -> None:
     and $B_2$ name the same Coxeter system and the claim here is about the
     system, not about which spelling Sage prefers.
     """
-    diagram = FiniteCoxeterDiagram(CoxeterMatrix([[1, 4], [4, 1]]))
+    diagram = CoxeterDiagrams().from_coxeter_matrix(CoxeterMatrix([[1, 4], [4, 1]]))
 
     assert diagram.is_elliptic()
     assert diagram.coxeter_group().order() == 8

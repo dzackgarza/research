@@ -505,14 +505,12 @@ def own_number_field(defining_polynomial: "Element") -> "Parent":
     # Local: these modules reach this one, so module-level imports would close
     # those cycles; all are built by the time this function runs.
     from dzack_research.preamble.categories.algebras.finitely_presented_algebras import FinitelyPresentedAlgebra
-    from dzack_research.preamble.categories.rings.rings import OwnedRing
+    from dzack_research.preamble.categories.rings.rings import engine_ring
     from dzack_research.preamble.refine import refine
 
     presentation_ring = defining_polynomial.parent()
     base_ring = presentation_ring.base_ring()
-    engine_base_ring = (
-        base_ring._engine if isinstance(base_ring, OwnedRing) else base_ring
-    )
+    engine_base_ring = engine_ring(base_ring)
     assert isinstance(engine_base_ring, _RationalFieldType), (
         "a number field is an extension of QQ; over another base this is a "
         "finitely presented algebra and is built as one"

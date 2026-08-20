@@ -17,7 +17,7 @@ $\mathbb Q$-spans, that is subspaces of $L\otimes\mathbb Q$ -- and the two
 questions agree exactly because every representative here is primitive,
 hence saturated.
 
-:class:`OrthogonalPredicateSubgroup` is the home of every orbit question a
+:class:`OrthogonalPredicateSubgroups` is the home of every orbit question a
 subgroup containing $\ker\varphi$ answers, so the *non*-isotropic vectors
 are asked of it too; their own theory -- Nikulin's gluing over the
 primitive extension a vector cuts out, and Dawes' algorithms over it --
@@ -53,11 +53,16 @@ from sage.matrix.constructor import matrix
 from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.group.predicate_subgroups import (
-    PredicateSubgroup,
+    PredicateSubgroups,
+    predicate_subgroup_category,
 )
+from dzack_research.preamble.owned_category import object_of
+from dzack_research.preamble.owned_category_bases import Category_singleton
 
 if TYPE_CHECKING:
     from collections.abc import Callable
+
+    from dzack_research.preamble.owned_category import ConstructionData
 
     from sage.libs.gap.element import GapElement
     from sage.rings.integer import Integer
@@ -260,7 +265,7 @@ class _FiniteQuotient:
     GAP's preimage representative.
     """
 
-    def __init__(self, subgroup: "OrthogonalPredicateSubgroup") -> None:
+    def __init__(self, subgroup: "Parent") -> None:
         from sage.libs.gap.libgap import libgap
 
         supergroup = subgroup.supergroup()
@@ -416,12 +421,12 @@ def _gap_matrix_group(generators: tuple) -> "GapElement":
     )
 
 
-class OrthogonalPredicateSubgroup(PredicateSubgroup):
+class OrthogonalPredicateSubgroups(Category_singleton):
     r"""A subgroup of $O(L)$ cut out by a membership predicate, with its
     defining character data.
 
     The predicate is the always-available operation
-    (:mod:`predicate_subgroups`); what this refinement adds is the record of
+    (:mod:`predicate_subgroups`); what this level adds is the record of
     *which characters* cut the subgroup out -- the determinant kernel, the
     real-spinor-norm kernel, preimages of subgroups of $O(A_L)$ -- because
     that data is exactly what makes orbit questions decidable by double
@@ -433,315 +438,343 @@ class OrthogonalPredicateSubgroup(PredicateSubgroup):
     membership; its orbit questions are a stated absence.
     """
 
-    def __init__(
-        self,
-        isometry_group: "Parent",
-        predicate: "Callable",
-        description: str,
-        *,
-        determinant_kernel: bool = False,
-        spinor_kernel: bool = False,
-        discriminant_preimages: tuple = (),
-    ) -> None:
-        PredicateSubgroup.__init__(self, isometry_group, predicate, description)
-        self._determinant_kernel = bool(determinant_kernel)
-        self._spinor_kernel = bool(spinor_kernel)
-        self._discriminant_preimages = tuple(discriminant_preimages)
+    @classmethod
+    def _repr_object_names(cls) -> str:
+        return "predicate subgroups of an orthogonal group"
 
-    def domain(self) -> "FormModule":
-        r"""Return $L$: a subgroup of $O(L)$ acts where $O(L)$ does."""
-        return self.supergroup().domain()
+    def super_categories(self) -> list:
+        return [PredicateSubgroups()]
 
-    def contains_character_kernel(self) -> bool:
-        r"""Return whether $\Gamma\supseteq\ker\varphi$.
+    class ParentMethods:
+        def __init__(
+            self,
+            determinant_kernel: bool = False,
+            spinor_kernel: bool = False,
+            discriminant_preimages: tuple = (),
+            **rest: "ConstructionData",
+        ) -> None:
+            self._determinant_kernel = bool(determinant_kernel)
+            self._spinor_kernel = bool(spinor_kernel)
+            self._discriminant_preimages = tuple(discriminant_preimages)
+            super().__init__(**rest)
 
-        Equivalently, whether character data cuts this subgroup out: a
-        subgroup so cut *is* the full preimage of that data, which is the
-        standing hypothesis every orbit method below needs.
-        """
-        return bool(
-            self._determinant_kernel
-            or self._spinor_kernel
-            or self._discriminant_preimages
-        )
+        def domain(self) -> "FormModule":
+            r"""Return $L$: a subgroup of $O(L)$ acts where $O(L)$ does."""
+            return self.supergroup().domain()
 
-    def intersection(
-        self, other: "OrthogonalPredicateSubgroup"
-    ) -> "OrthogonalPredicateSubgroup":
-        r"""Return $\Gamma_1\cap\Gamma_2$: predicates conjoin, the defining
-        characters union.
+        def contains_character_kernel(self) -> bool:
+            r"""Return whether $\Gamma\supseteq\ker\varphi$.
 
-        The degree-two Enriques group is the model:
-        $\rho^{-1}(\operatorname{Stab}(h/2))\cap O^+(L)$.
-        """
-        assert (
-            isinstance(other, OrthogonalPredicateSubgroup)
-            and other.supergroup() is self.supergroup()
-        ), "an intersection of subgroups happens inside one group"
-        left_predicate = self.defining_predicate()
-        right_predicate = other.defining_predicate()
-        return OrthogonalPredicateSubgroup(
-            self.supergroup(),
-            lambda isometry: left_predicate(isometry)
-            and right_predicate(isometry),
-            f"({self._description}) and ({other._description})",
-            determinant_kernel=self._determinant_kernel
-            or other._determinant_kernel,
-            spinor_kernel=self._spinor_kernel or other._spinor_kernel,
-            discriminant_preimages=self._discriminant_preimages
-            + other._discriminant_preimages,
-        )
+            Equivalently, whether character data cuts this subgroup out: a
+            subgroup so cut *is* the full preimage of that data, which is the
+            standing hypothesis every orbit method below needs.
+            """
+            return bool(
+                self._determinant_kernel
+                or self._spinor_kernel
+                or self._discriminant_preimages
+            )
 
-    def _finite_quotient(self) -> _FiniteQuotient:
-        assert self.contains_character_kernel(), (
-            f"{self} carries no determinant, spinor, or discriminant-image "
-            "data, so no finite quotient decides its orbits"
-        )
-        cached = self.__dict__.get("_finite_quotient_cache")
-        if cached is None:
-            cached = _FiniteQuotient(self)
-            self._finite_quotient_cache = cached
-        return cached
+        def intersection(self, other: "Parent") -> "Parent":
+            r"""Return $\Gamma_1\cap\Gamma_2$: predicates conjoin, the defining
+            characters union.
 
-    # ---- orbit splitting by double cosets ----
+            The degree-two Enriques group is the model:
+            $\rho^{-1}(\operatorname{Stab}(h/2))\cap O^+(L)$.
+            """
+            assert (
+                other in OrthogonalPredicateSubgroups()
+                and other.supergroup() is self.supergroup()
+            ), "an intersection of subgroups happens inside one group"
+            left_predicate = self.defining_predicate()
+            right_predicate = other.defining_predicate()
+            return orthogonal_predicate_subgroup(
+                self.supergroup(),
+                lambda isometry: left_predicate(isometry)
+                and right_predicate(isometry),
+                f"({self._description}) and ({other._description})",
+                determinant_kernel=self._determinant_kernel
+                or other._determinant_kernel,
+                spinor_kernel=self._spinor_kernel or other._spinor_kernel,
+                discriminant_preimages=self._discriminant_preimages
+                + other._discriminant_preimages,
+            )
 
-    def _splitting_isometries(self, stabilizer_generators: "OrderedSet") -> tuple:
-        r"""Return one isometry per $\Gamma$-orbit inside one $O(L)$-orbit.
+        def _finite_quotient(self) -> _FiniteQuotient:
+            assert self.contains_character_kernel(), (
+                f"{self} carries no determinant, spinor, or discriminant-image "
+                "data, so no finite quotient decides its orbits"
+            )
+            cached = self.__dict__.get("_finite_quotient_cache")
+            if cached is None:
+                cached = _FiniteQuotient(self)
+                self._finite_quotient_cache = cached
+            return cached
 
-        $O(L)/\operatorname{Stab}(x)\to O(L)\cdot x$ is the orbit map (right
-        action on rows), so the $\Gamma$-orbits inside one $O(L)$-orbit are
-        the double cosets $\operatorname{Stab}(x)\backslash O(L)/\Gamma$,
-        computed in the finite quotient -- sound because
-        $\Gamma\supseteq\ker\varphi$ -- and each coset representative is
-        lifted back through the quotient.  Applying them to the
-        $O(L)$-representative is the caller's step, because what an isometry
-        is applied *to* differs by the kind of object.
-        """
-        from sage.libs.gap.libgap import libgap
+        # ---- orbit splitting by double cosets ----
 
-        quotient = self._finite_quotient()
-        stabilizer_image = quotient.image_subgroup(stabilizer_generators)
-        return tuple(
-            quotient.lift(libgap.Representative(double_coset))
-            for double_coset in libgap.DoubleCosets(
-                quotient.image_group(),
-                stabilizer_image,
+        def _splitting_isometries(self, stabilizer_generators: "OrderedSet") -> tuple:
+            r"""Return one isometry per $\Gamma$-orbit inside one $O(L)$-orbit.
+
+            $O(L)/\operatorname{Stab}(x)\to O(L)\cdot x$ is the orbit map (right
+            action on rows), so the $\Gamma$-orbits inside one $O(L)$-orbit are
+            the double cosets $\operatorname{Stab}(x)\backslash O(L)/\Gamma$,
+            computed in the finite quotient -- sound because
+            $\Gamma\supseteq\ker\varphi$ -- and each coset representative is
+            lifted back through the quotient.  Applying them to the
+            $O(L)$-representative is the caller's step, because what an isometry
+            is applied *to* differs by the kind of object.
+            """
+            from sage.libs.gap.libgap import libgap
+
+            quotient = self._finite_quotient()
+            stabilizer_image = quotient.image_subgroup(stabilizer_generators)
+            return tuple(
+                quotient.lift(libgap.Representative(double_coset))
+                for double_coset in libgap.DoubleCosets(
+                    quotient.image_group(),
+                    stabilizer_image,
+                    quotient.subgroup_image(),
+                )
+            )
+
+        def _witness_meets_subgroup(
+            self, witness: "FormMorphism", stabilizer_generators: "OrderedSet"
+        ) -> bool:
+            r"""Decide whether $\Gamma$ meets $W\cdot\operatorname{Stab}(y)$.
+
+            With $W$ an $O(L)$-witness carrying $x$ to $y$, the isometries
+            carrying $x$ to $y$ are exactly $W\cdot\operatorname{Stab}(y)$, so
+            one of them lies in $\Gamma$ exactly when
+            $\varphi(W)\in\varphi(\Gamma)\cdot\varphi(\operatorname{Stab}(y))$ --
+            membership of the image in one double coset.  (The right-action order
+            of the factors is forced by the row convention; the source corpus's
+            column-action code had them mirrored.)  Every character cutting such
+            a subgroup out factors through $\varphi$, so this is a decision and
+            never a bounded search.
+            """
+            from sage.libs.gap.libgap import libgap
+
+            if witness in self:
+                return True
+            quotient = self._finite_quotient()
+            stabilizer_image = quotient.image_subgroup(stabilizer_generators)
+            identity_double_coset = libgap.DoubleCoset(
                 quotient.subgroup_image(),
+                libgap.One(quotient.image_group()),
+                stabilizer_image,
             )
-        )
+            return bool(quotient.image(witness) in identity_double_coset)
 
-    def _witness_meets_subgroup(
-        self, witness: "FormMorphism", stabilizer_generators: "OrderedSet"
-    ) -> bool:
-        r"""Decide whether $\Gamma$ meets $W\cdot\operatorname{Stab}(y)$.
+        def _split_orthogonal_group_orbits(
+            self, rank: "Integer", isotropic_object: str
+        ) -> tuple:
+            r"""Split each $O(L)$-orbit of isotropic subobjects into $\Gamma$-orbits."""
+            lattice = self.domain()
+            representatives = []
+            for representative in orthogonal_group_isotropic_orbit_representatives(
+                lattice, rank, isotropic_object
+            ):
+                for witness in self._splitting_isometries(
+                    orthogonal_group_isotropic_stabilizer_generators(
+                        lattice, representative, isotropic_object
+                    )
+                ):
+                    representatives.append(
+                        tuple(witness(element) for element in representative)
+                    )
+            return tuple(representatives)
 
-        With $W$ an $O(L)$-witness carrying $x$ to $y$, the isometries
-        carrying $x$ to $y$ are exactly $W\cdot\operatorname{Stab}(y)$, so
-        one of them lies in $\Gamma$ exactly when
-        $\varphi(W)\in\varphi(\Gamma)\cdot\varphi(\operatorname{Stab}(y))$ --
-        membership of the image in one double coset.  (The right-action order
-        of the factors is forced by the row convention; the source corpus's
-        column-action code had them mirrored.)  Every character cutting such
-        a subgroup out factors through $\varphi$, so this is a decision and
-        never a bounded search.
-        """
-        from sage.libs.gap.libgap import libgap
+        def isotropic_line_orbit_representatives(self) -> tuple:
+            r"""Return one primitive isotropic vector per $\Gamma$-orbit of lines."""
+            return tuple(
+                flag[0] for flag in self._split_orthogonal_group_orbits(1, "plane")
+            )
 
-        if witness in self:
-            return True
-        quotient = self._finite_quotient()
-        stabilizer_image = quotient.image_subgroup(stabilizer_generators)
-        identity_double_coset = libgap.DoubleCoset(
-            quotient.subgroup_image(),
-            libgap.One(quotient.image_group()),
-            stabilizer_image,
-        )
-        return bool(quotient.image(witness) in identity_double_coset)
+        def isotropic_plane_orbit_representatives(self) -> tuple:
+            r"""Return one basis pair per $\Gamma$-orbit of totally isotropic planes."""
+            return self._split_orthogonal_group_orbits(2, "plane")
 
-    def _split_orthogonal_group_orbits(
-        self, rank: "Integer", isotropic_object: str
-    ) -> tuple:
-        r"""Split each $O(L)$-orbit of isotropic subobjects into $\Gamma$-orbits."""
-        lattice = self.domain()
-        representatives = []
-        for representative in orthogonal_group_isotropic_orbit_representatives(
-            lattice, rank, isotropic_object
-        ):
-            for witness in self._splitting_isometries(
+        def isotropic_flag_orbit_representatives(self, length: "Integer") -> tuple:
+            r"""Return one ordered basis per $\Gamma$-orbit of isotropic flags."""
+            return self._split_orthogonal_group_orbits(length, "flag")
+
+        # ---- equivalence by double-coset membership ----
+
+        def _objects_are_equivalent(
+            self, left: "OrderedSet", right: "OrderedSet", isotropic_object: str
+        ) -> bool:
+            r"""Decide $\Gamma$-equivalence of two isotropic subobjects."""
+            lattice = self.domain()
+            if len(tuple(left)) == 1 and isotropic_object == "plane":
+                witness = orthogonal_group_line_equivalence_witness(
+                    lattice, tuple(left)[0], tuple(right)[0]
+                )
+            else:
+                witness = orthogonal_group_sublattice_equivalence_witness(
+                    lattice, left, right, isotropic_object
+                )
+            if witness is None:
+                return False
+            return self._witness_meets_subgroup(
+                witness,
                 orthogonal_group_isotropic_stabilizer_generators(
-                    lattice, representative, isotropic_object
-                )
-            ):
-                representatives.append(
-                    tuple(witness(element) for element in representative)
-                )
-        return tuple(representatives)
-
-    def isotropic_line_orbit_representatives(self) -> tuple:
-        r"""Return one primitive isotropic vector per $\Gamma$-orbit of lines."""
-        return tuple(
-            flag[0] for flag in self._split_orthogonal_group_orbits(1, "plane")
-        )
-
-    def isotropic_plane_orbit_representatives(self) -> tuple:
-        r"""Return one basis pair per $\Gamma$-orbit of totally isotropic planes."""
-        return self._split_orthogonal_group_orbits(2, "plane")
-
-    def isotropic_flag_orbit_representatives(self, length: "Integer") -> tuple:
-        r"""Return one ordered basis per $\Gamma$-orbit of isotropic flags."""
-        return self._split_orthogonal_group_orbits(length, "flag")
-
-    # ---- equivalence by double-coset membership ----
-
-    def _objects_are_equivalent(
-        self, left: "OrderedSet", right: "OrderedSet", isotropic_object: str
-    ) -> bool:
-        r"""Decide $\Gamma$-equivalence of two isotropic subobjects."""
-        lattice = self.domain()
-        if len(tuple(left)) == 1 and isotropic_object == "plane":
-            witness = orthogonal_group_line_equivalence_witness(
-                lattice, tuple(left)[0], tuple(right)[0]
+                    lattice, _held_elements(lattice, right), isotropic_object
+                ),
             )
-        else:
-            witness = orthogonal_group_sublattice_equivalence_witness(
-                lattice, left, right, isotropic_object
-            )
-        if witness is None:
-            return False
-        return self._witness_meets_subgroup(
-            witness,
-            orthogonal_group_isotropic_stabilizer_generators(
-                lattice, _held_elements(lattice, right), isotropic_object
-            ),
-        )
 
-    def isotropic_lines_are_equivalent(
-        self, left: "Element", right: "Element"
-    ) -> bool:
-        r"""Decide whether two primitive isotropic lines lie in one $\Gamma$-orbit."""
-        return self._objects_are_equivalent((left,), (right,), "plane")
+        def isotropic_lines_are_equivalent(
+            self, left: "Element", right: "Element"
+        ) -> bool:
+            r"""Decide whether two primitive isotropic lines lie in one $\Gamma$-orbit."""
+            return self._objects_are_equivalent((left,), (right,), "plane")
 
-    def isotropic_planes_are_equivalent(
-        self, left: "OrderedSet", right: "OrderedSet"
-    ) -> bool:
-        r"""Decide whether two totally isotropic planes lie in one $\Gamma$-orbit."""
-        return self._objects_are_equivalent(left, right, "plane")
+        def isotropic_planes_are_equivalent(
+            self, left: "OrderedSet", right: "OrderedSet"
+        ) -> bool:
+            r"""Decide whether two totally isotropic planes lie in one $\Gamma$-orbit."""
+            return self._objects_are_equivalent(left, right, "plane")
 
-    def isotropic_flags_are_equivalent(
-        self, left: "OrderedSet", right: "OrderedSet"
-    ) -> bool:
-        r"""Decide whether two isotropic flags lie in one $\Gamma$-orbit."""
-        return self._objects_are_equivalent(left, right, "flag")
+        def isotropic_flags_are_equivalent(
+            self, left: "OrderedSet", right: "OrderedSet"
+        ) -> bool:
+            r"""Decide whether two isotropic flags lie in one $\Gamma$-orbit."""
+            return self._objects_are_equivalent(left, right, "flag")
 
-    # ---- orbits of non-isotropic vectors ----
-    #
-    # The theory is Nikulin's gluing over the primitive extension a vector
-    # cuts out, and it lives in ``vector_orbits``; what belongs here is the
-    # same double-coset splitting, asked of a vector's pointwise stabilizer.
+        # ---- orbits of non-isotropic vectors ----
+        #
+        # The theory is Nikulin's gluing over the primitive extension a vector
+        # cuts out, and it lives in ``vector_orbits``; what belongs here is the
+        # same double-coset splitting, asked of a vector's pointwise stabilizer.
 
-    def vector_orbit_representatives(self, square: "Integer") -> tuple:
-        r"""Return one vector per $\Gamma$-orbit of vectors of this square.
+        def vector_orbit_representatives(self, square: "Integer") -> tuple:
+            r"""Return one vector per $\Gamma$-orbit of vectors of this square.
 
-        The $O(L)$-orbits of vectors $v$ with $q(v)$ equal to
-        ``square`` are finitely many for an indefinite lattice and the engine
-        enumerates them
-        (:meth:`LatticeIsometries.ParentMethods.vector_orbit_representatives`);
-        each splits into the double cosets of $\Gamma$ against the vector's
-        pointwise stabilizer.
-        """
-        # Local: a module-level import here would close a cycle; by call time this module is built.
-        from dzack_research.preamble.categories.modules.framed.formed.integrallattice.vector_orbits import orthogonal_group_vector_stabilizer_generators
-        lattice = self.domain()
-        representatives = []
-        for representative in lattice.Aut().vector_orbit_representatives(
-            square
-        ):
-            for witness in self._splitting_isometries(
-                orthogonal_group_vector_stabilizer_generators(
-                    lattice, representative
-                )
+            The $O(L)$-orbits of vectors $v$ with $q(v)$ equal to
+            ``square`` are finitely many for an indefinite lattice and the engine
+            enumerates them
+            (:meth:`LatticeIsometries.ParentMethods.vector_orbit_representatives`);
+            each splits into the double cosets of $\Gamma$ against the vector's
+            pointwise stabilizer.
+            """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.vector_orbits import orthogonal_group_vector_stabilizer_generators
+            lattice = self.domain()
+            representatives = []
+            for representative in lattice.Aut().vector_orbit_representatives(
+                square
             ):
-                representatives.append(witness(representative))
-        return tuple(representatives)
+                for witness in self._splitting_isometries(
+                    orthogonal_group_vector_stabilizer_generators(
+                        lattice, representative
+                    )
+                ):
+                    representatives.append(witness(representative))
+            return tuple(representatives)
 
-    def vectors_are_equivalent(self, left: "Element", right: "Element") -> bool:
-        r"""Decide whether two vectors lie in one $\Gamma$-orbit.
+        def vectors_are_equivalent(self, left: "Element", right: "Element") -> bool:
+            r"""Decide whether two vectors lie in one $\Gamma$-orbit.
 
-        Complete, and a decision rather than a search: the isometries
-        carrying $v$ to $w$ are one coset of $\operatorname{Stab}_{O(L)}(w)$,
-        every character cutting $\Gamma$ out factors through the finite
-        quotient, and the coset meets $\Gamma$ exactly when the
-        $O(L)$-witness's image lies in the identity double coset.  (The source
-        corpus decided this by a search bounded twice over -- a fixed
-        coefficient box and products of at most two reflections -- and
-        reported "not equivalent" when that search came up empty; neither
-        bound was a theorem.  That route is not reproduced.)
-        """
-        # Local: a module-level import here would close a cycle; by call time this module is built.
-        from dzack_research.preamble.categories.modules.framed.formed.integrallattice.vector_orbits import (
-            orthogonal_group_vector_equivalence_witness,
-            orthogonal_group_vector_stabilizer_generators,
-        )
-        lattice = self.domain()
-        witness = orthogonal_group_vector_equivalence_witness(lattice, left, right)
-        if witness is None:
-            return False
-        return self._witness_meets_subgroup(
-            witness, orthogonal_group_vector_stabilizer_generators(lattice, right)
-        )
+            Complete, and a decision rather than a search: the isometries
+            carrying $v$ to $w$ are one coset of $\operatorname{Stab}_{O(L)}(w)$,
+            every character cutting $\Gamma$ out factors through the finite
+            quotient, and the coset meets $\Gamma$ exactly when the
+            $O(L)$-witness's image lies in the identity double coset.  (The source
+            corpus decided this by a search bounded twice over -- a fixed
+            coefficient box and products of at most two reflections -- and
+            reported "not equivalent" when that search came up empty; neither
+            bound was a theorem.  That route is not reproduced.)
+            """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.vector_orbits import (
+                orthogonal_group_vector_equivalence_witness,
+                orthogonal_group_vector_stabilizer_generators,
+            )
+            lattice = self.domain()
+            witness = orthogonal_group_vector_equivalence_witness(lattice, left, right)
+            if witness is None:
+                return False
+            return self._witness_meets_subgroup(
+                witness, orthogonal_group_vector_stabilizer_generators(lattice, right)
+            )
 
-    def vector_equivalence_witness(
-        self, left: "Element", right: "Element"
-    ) -> "FormMorphism | None":
-        r"""Return an element of $\Gamma$ carrying one vector to another.
+        def vector_equivalence_witness(
+            self, left: "Element", right: "Element"
+        ) -> "FormMorphism | None":
+            r"""Return an element of $\Gamma$ carrying one vector to another.
 
-        ``None`` is the absence of such an element, and it is grounded:
-        either no isometry of $L$ at all carries $v$ to $w$, or
-        :meth:`vectors_are_equivalent` decides that none of them lies in
-        $\Gamma$.
+            ``None`` is the absence of such an element, and it is grounded:
+            either no isometry of $L$ at all carries $v$ to $w$, or
+            :meth:`vectors_are_equivalent` decides that none of them lies in
+            $\Gamma$.
 
-        Two routes produce the element itself.  The $O(L)$-witness may
-        already lie in $\Gamma$.  Otherwise, when $w^{\perp}$ is definite,
-        Dawes' Algorithm 2.1 constructs every isometry carrying $v$ to $w$
-        and the first one in $\Gamma$ is returned
-        (:func:`vector_orbits.definite_complement_extensions`).
+            Two routes produce the element itself.  The $O(L)$-witness may
+            already lie in $\Gamma$.  Otherwise, when $w^{\perp}$ is definite,
+            Dawes' Algorithm 2.1 constructs every isometry carrying $v$ to $w$
+            and the first one in $\Gamma$ is returned
+            (:func:`vector_orbits.definite_complement_extensions`).
 
-        Stated gap, for an indefinite complement with the $O(L)$-witness
-        outside $\Gamma$: the decision is available and is asserted here,
-        but *exhibiting* the element needs a preimage in
-        $\operatorname{Stab}_{O(L)}(w)$ of a named element of the finite
-        quotient, which this surface does not compute -- $\varphi$ is
-        presented on generators of $O(L)$, not of the stabilizer.  The
-        assertion below is that absence by name, never a ``None`` standing
-        in for it.
-        """
-        # Local: a module-level import here would close a cycle; by call time this module is built.
-        from dzack_research.preamble.categories.modules.framed.formed.integrallattice.vector_orbits import (
-            orthogonal_group_vector_equivalence_witness,
-            definite_complement_extensions,
-            vector_primitive_extension,
-        )
-        lattice = self.domain()
-        witness = orthogonal_group_vector_equivalence_witness(lattice, left, right)
-        if witness is None:
-            return None
-        if witness in self:
-            return witness
-        if not self.vectors_are_equivalent(left, right):
-            return None
-        assert vector_primitive_extension(
-            lattice, right
-        ).complement_is_definite(), (
-            f"{left} and {right} are equivalent under {self}, and exhibiting "
-            "the isometry for an indefinite complement needs a preimage in "
-            "Stab(w) of an element of the finite quotient; that computation "
-            "is not sited here"
-        )
-        for extension in definite_complement_extensions(lattice, left, right):
-            if extension in self:
-                return extension
-        assert False, (
-            "the double-coset decision and Algorithm 2.1 disagree: one says "
-            "an isometry in this subgroup exists and the other enumerated "
-            "them all without finding it"
-        )
+            Stated gap, for an indefinite complement with the $O(L)$-witness
+            outside $\Gamma$: the decision is available and is asserted here,
+            but *exhibiting* the element needs a preimage in
+            $\operatorname{Stab}_{O(L)}(w)$ of a named element of the finite
+            quotient, which this surface does not compute -- $\varphi$ is
+            presented on generators of $O(L)$, not of the stabilizer.  The
+            assertion below is that absence by name, never a ``None`` standing
+            in for it.
+            """
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.vector_orbits import (
+                orthogonal_group_vector_equivalence_witness,
+                definite_complement_extensions,
+                vector_primitive_extension,
+            )
+            lattice = self.domain()
+            witness = orthogonal_group_vector_equivalence_witness(lattice, left, right)
+            if witness is None:
+                return None
+            if witness in self:
+                return witness
+            if not self.vectors_are_equivalent(left, right):
+                return None
+            assert vector_primitive_extension(
+                lattice, right
+            ).complement_is_definite(), (
+                f"{left} and {right} are equivalent under {self}, and exhibiting "
+                "the isometry for an indefinite complement needs a preimage in "
+                "Stab(w) of an element of the finite quotient; that computation "
+                "is not sited here"
+            )
+            for extension in definite_complement_extensions(lattice, left, right):
+                if extension in self:
+                    return extension
+            assert False, (
+                "the double-coset decision and Algorithm 2.1 disagree: one says "
+                "an isometry in this subgroup exists and the other enumerated "
+                "them all without finding it"
+            )
+
+
+def orthogonal_predicate_subgroup(
+    isometry_group: "Parent",
+    predicate: "Callable",
+    description: str,
+    *,
+    determinant_kernel: bool = False,
+    spinor_kernel: bool = False,
+    discriminant_preimages: tuple = (),
+) -> "Parent":
+    r"""Return $\Gamma\le O(L)$, with the character data that cuts it out."""
+    from sage.categories.category import Category
+
+    return object_of(
+        Category.join(
+            (OrthogonalPredicateSubgroups(), predicate_subgroup_category())
+        ),
+        containing_group=isometry_group,
+        predicate=predicate,
+        description=description,
+        determinant_kernel=determinant_kernel,
+        spinor_kernel=spinor_kernel,
+        discriminant_preimages=discriminant_preimages,
+    )

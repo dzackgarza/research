@@ -6,7 +6,7 @@ which asserted these agreements against a planned ``GramMatrix`` / ``RootSystem`
 requirement it carried survives here; what changed is the surface it is asked
 of.
 
-On the owned surface a Cartan type constructs a ``FiniteCoxeterDiagram``
+On the owned surface a Cartan type constructs a ``CoxeterDiagrams``
 (``preamble/.../integrallattice/coxeter_diagrams.sage``), and the objects the
 spec kept in step are not separate objects any more:
 
@@ -84,7 +84,7 @@ def test_the_cartan_type_and_its_rooted_realization_agree_on_rank_and_gram() -> 
     (``literature/PROJECT_CONVENTIONS.md``, and the wikiwand capture's
     A_2 row).
     """
-    diagram = FiniteCoxeterDiagram.from_cartan_type(["A", 2], scale=1)
+    diagram = CoxeterDiagrams().from_cartan_type(["A", 2], scale=1)
 
     assert diagram.cardinality() == 2
     assert diagram.root_lattice().rank() == 2
@@ -104,9 +104,9 @@ def test_a_rooted_diagram_is_recovered_from_its_own_roots() -> None:
     $4b(r,s)^2/q(r)q(s) \in \{0,1,2\} \mapsto m \in \{2,3,4\}$, giving the
     bracket-$[4,3]$ Coxeter matrix.
     """
-    rooted = FiniteCoxeterDiagram.from_cartan_type(["B", 3], scale=1)
+    rooted = CoxeterDiagrams().from_cartan_type(["B", 3], scale=1)
 
-    recovered = FiniteCoxeterDiagram.from_roots(tuple(rooted.roots()))
+    recovered = CoxeterDiagrams().from_roots(tuple(rooted.roots()))
 
     assert recovered.root_intersection_matrix() == rooted.root_intersection_matrix()
     assert recovered.coxeter_matrix() == rooted.coxeter_matrix()
@@ -122,11 +122,11 @@ def test_the_coxeter_group_of_a3_is_the_symmetric_group_on_four_letters() -> Non
 
     The spec built a ``CoxeterGroup`` from a ``RootSystem`` and checked its
     order against $|S_4|$.  The owned route is
-    :meth:`FiniteCoxeterDiagram.coxeter_group`, and the isomorphism is asked
+    :meth:`CoxeterDiagrams.ParentMethods.coxeter_group`, and the isomorphism is asked
     with the owned name -- ``is_isomorphic_to``, which decides the question for
     finite groups through GAP rather than inferring it from equal orders.
     """
-    group = FiniteCoxeterDiagram.from_cartan_type(["A", 3]).coxeter_group()
+    group = CoxeterDiagrams().from_cartan_type(["A", 3]).coxeter_group()
 
     assert group.order() == 24
     assert group.is_isomorphic_to(SymmetricGroup(4)) is True
@@ -142,8 +142,8 @@ def test_every_construction_path_reaches_the_same_c3_diagram() -> None:
     not mathematics, so the comparison is of bonds and of group order.
     """
     by_type = CoxeterDiagrams().from_cartan_type(["C", 3])
-    by_matrix = FiniteCoxeterDiagram(CoxeterMatrix(["C", 3]))
-    by_roots = FiniteCoxeterDiagram.from_cartan_type(["C", 3], scale=1)
+    by_matrix = CoxeterDiagrams().from_coxeter_matrix(CoxeterMatrix(["C", 3]))
+    by_roots = CoxeterDiagrams().from_cartan_type(["C", 3], scale=1)
 
     assert by_type.coxeter_matrix() == by_matrix.coxeter_matrix()
     assert by_roots.coxeter_matrix() == CoxeterMatrix(
@@ -164,7 +164,7 @@ def test_rank_is_one_number_across_diagram_lattice_and_group() -> None:
     had one element.  Two of those objects no longer exist separately; the
     remaining three places the number can be read are asserted here.
     """
-    diagram = FiniteCoxeterDiagram.from_cartan_type(["E", 6], scale=1)
+    diagram = CoxeterDiagrams().from_cartan_type(["E", 6], scale=1)
 
     assert diagram.cardinality() == 6
     assert diagram.root_lattice().rank() == 6
@@ -180,7 +180,7 @@ def test_finite_crystallographic_types_are_elliptic_of_the_tabulated_schlaeflian
     Schläflian.
 
     "Elliptic" is Coxeter's word for what the spec called finite type, and it is
-    the owned predicate: :meth:`FiniteCoxeterDiagram.is_elliptic`.  The
+    the owned predicate: :meth:`CoxeterDiagrams.ParentMethods.is_elliptic`.  The
     determinant is the per-family literature formula, not a recomputation, and
     it separates the ranks within a family: $E_7$ has $\det C = 2$, while
     $\det C$ reaches $0$ at $E_9 = \tilde E_8$ and $-1$ at $E_{10}$.

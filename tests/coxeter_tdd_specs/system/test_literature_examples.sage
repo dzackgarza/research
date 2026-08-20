@@ -33,7 +33,7 @@ from dzack_research.preamble.install import install_preamble
 install_preamble(globals())
 
 
-def _bracket_diagram(*bonds: int) -> "FiniteCoxeterDiagram":
+def _bracket_diagram(*bonds: int) -> "Parent":
     r"""Return the diagram of the bracket symbol $[p_1,\dots,p_{k}]$.
 
     Bracket notation names the *path*: the diagram on $k+1$ nodes whose
@@ -49,7 +49,7 @@ def _bracket_diagram(*bonds: int) -> "FiniteCoxeterDiagram":
         ]
         for i in range(rank)
     ]
-    return FiniteCoxeterDiagram(CoxeterMatrix(entries))
+    return CoxeterDiagrams().from_coxeter_matrix(CoxeterMatrix(entries))
 
 
 # Wikipedia, *Coxeter group*, oldid 1300325012: bracket symbol -> named type and
@@ -211,7 +211,7 @@ DIAGRAM_INVARIANTS = {
 def test_diagram_invariants_match_the_literature(cartan_type: tuple) -> None:
     r"""Node count, edge count, and $|\operatorname{Aut}|$ of the diagram.
 
-    :meth:`FiniteCoxeterDiagram.Aut` on an unrooted diagram is the
+    :meth:`CoxeterDiagrams.ParentMethods.Aut` on an unrooted diagram is the
     bond-preserving group -- the automorphism group of the Coxeter graph with
     its edge labels -- which is the group the literature tabulates for a Dynkin
     diagram.

@@ -25,10 +25,14 @@ the whole reason this construction is worth having: a normal form can be
 track \(M'\) separately.
 """
 
-from sage.categories.sets_cat import Sets
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
+    from dzack_research.preamble.owned_category import ConstructionData
     from sage.structure.parent import MembershipInput
+# The owned root, not Sage's: the preamble places every set in it, and a set
+# left in Sage's ``Sets()`` is not in the owned one.
+from dzack_research.preamble.categories.sets.owned_sets import Sets
+from dzack_research.preamble.owned_category import object_of
 from dzack_research.preamble.owned_category_bases import Category
 from sage.categories.morphism import IdentityMorphism
 from sage.categories.morphism import Morphism
@@ -51,19 +55,26 @@ if TYPE_CHECKING:
         def target(self) -> Parent: ...
 
 
-class ArrowCategory(Category):
-    r"""\(\operatorname{Ar}(\mathbf{C})\): the morphisms of \(\mathbf{C}\) as objects."""
+class _OnACategory:
+    r"""The one parameter these categories take: the ambient category
+    \(\mathbf{C}\) they are built out of.
 
-    @staticmethod
-    def __classcall_private__(
-        cls: type["ArrowCategory"], ambient_category: Category
-    ) -> "ArrowCategory":
-        arrows: ArrowCategory = super().__classcall__(cls, ambient_category)
-        return arrows
+    This is not a category.  Each category below states its place with
+    ``super_categories()``.  A category class that inherits another states the
+    class graph by hand instead, and then its methods class arrives twice in
+    one set of bases, which no method resolution order can satisfy.
+    """
 
     def __init__(self, ambient_category: Category) -> None:
         self._ambient_category = ambient_category
-        Category.__init__(self)
+        super().__init__()
+
+    def ambient_category(self) -> Category:
+        return self._ambient_category
+
+
+class ArrowCategory(_OnACategory, Category):
+    r"""\(\operatorname{Ar}(\mathbf{C})\): the morphisms of \(\mathbf{C}\) as objects."""
 
     def _repr_(self) -> str:
         return f"Category of arrows in {self._ambient_category}"
@@ -73,9 +84,6 @@ class ArrowCategory(Category):
         # relates the two are the functors dom, cod: Ar(C) -> C, and neither is
         # an inclusion, so there is nothing above this but Objects.
         return [Objects()]
-
-    def ambient_category(self) -> Category:
-        return self._ambient_category
 
     class MorphismMethods:
         r"""The methods of an *object* of \(\operatorname{Ar}(\mathbf{C})\)."""
@@ -121,7 +129,7 @@ class ArrowCategory(Category):
             )
 
 
-class IsoArrowCategory(ArrowCategory):
+class IsoArrowCategory(_OnACategory, Category):
     r"""The subcategory of \(\operatorname{Ar}(\mathbf{C})\) of isomorphisms."""
 
     def _repr_(self) -> str:
@@ -142,7 +150,7 @@ class IsoArrowCategory(ArrowCategory):
             return True
 
 
-class Core(Category):
+class Core(_OnACategory, Category):
     r"""\(\operatorname{core}(\mathbf{C})\): the objects of \(\mathbf{C}\), its isomorphisms alone.
 
     The maximal subgroupoid.  A construction that is functorial only on
@@ -157,17 +165,6 @@ class Core(Category):
     every other arrow of the core is one that was declared with its inverse.
     """
 
-    @staticmethod
-    def __classcall_private__(
-        cls: type["Core"], ambient_category: Category
-    ) -> "Core":
-        core: Core = super().__classcall__(cls, ambient_category)
-        return core
-
-    def __init__(self, ambient_category: Category) -> None:
-        self._ambient_category = ambient_category
-        Category.__init__(self)
-
     def _repr_(self) -> str:
         return f"Core of {self._ambient_category}"
 
@@ -178,9 +175,6 @@ class Core(Category):
         # here would say the core has fewer objects, which is the one thing
         # it does not.
         return [Objects()]
-
-    def ambient_category(self) -> Category:
-        return self._ambient_category
 
     def __contains__(self, candidate: "MembershipInput") -> bool:
         r"""Return whether ``candidate`` is an object of \(\mathbf{C}\): the core keeps them all."""
@@ -223,56 +217,79 @@ def Ar(source: Parent, target: Parent) -> "Homset":
     return arrows
 
 
-class IsomorphismSet(Parent):
+class IsomorphismSets(Category):
     r"""\(\operatorname{IsoAr}(X,Y)\subseteq\operatorname{Ar}(X,Y)\).
 
-    A *subset* of the arrow set, cut out by invertibility -- the same kind of
-    thing ``CartesianProductOfSets`` is, a parent whose members live in other
-    parents.  It is nonempty exactly when \(X\) and \(Y\) are isomorphic, and
-    when nonempty it is a torsor under \(\operatorname{Aut}(X)\) acting by
-    precomposition; \(\operatorname{IsoAr}(X,X)\) is \(\operatorname{Aut}(X)\).
+    An object is a *subset* of the arrow set, cut out by invertibility.  It is
+    the same kind of thing ``CartesianProductOfSets`` is: a parent whose
+    members live in other parents.  It is nonempty exactly when \(X\) and
+    \(Y\) are isomorphic, and when nonempty it is a torsor under
+    \(\operatorname{Aut}(X)\) acting by precomposition;
+    \(\operatorname{IsoAr}(X,X)\) is \(\operatorname{Aut}(X)\).
+
+    The two ends are the datum this level introduces, so they are the two
+    arguments its ``__init__`` consumes.
     """
 
-    def __init__(self, source: Parent, target: Parent) -> None:
-        self._source = source
-        self._target = target
-        Parent.__init__(self, category=Sets())
+    def _repr_object_names(self) -> str:
+        return "isomorphism sets"
 
-    def source(self) -> Parent:
-        return self._source
+    def super_categories(self) -> list[Category]:
+        return [Sets()]
 
-    def target(self) -> Parent:
-        return self._target
+    class ParentMethods:
+        def __init__(
+            self,
+            source: Parent,
+            target: Parent,
+            **rest: "ConstructionData",
+        ) -> None:
+            self._source = source
+            self._target = target
+            super().__init__(**rest)
 
-    def arrow_set(self) -> "Homset":
-        r"""Return \(\operatorname{Ar}(X,Y)\), the arrow set this sits inside."""
-        return Ar(self._source, self._target)
+        def source(self) -> Parent:
+            return self._source
 
-    def __contains__(self, arrow: "MembershipInput") -> bool:
-        match arrow:
-            case IsoArrowCategory.MorphismMethods():
-                # An object of Ar(C) is an arrow of C, and its source and
-                # target are that arrow's two ends.
-                assert isinstance(arrow, Morphism)
-                return (
-                    arrow.domain() is self._source
-                    and arrow.codomain() is self._target
-                )
-            case _:
-                return False
+        def target(self) -> Parent:
+            return self._target
 
-    def _element_constructor_(self, arrow: Morphism) -> Morphism:
-        assert arrow in self, (
-            f"{arrow} is not a declared isomorphism from {self._source} to "
-            f"{self._target}"
-        )
-        return arrow
+        def arrow_set(self) -> "Homset":
+            r"""Return \(\operatorname{Ar}(X,Y)\), the arrow set this sits inside."""
+            return Ar(self._source, self._target)
 
-    def _repr_(self) -> str:
-        return f"Isomorphisms from {self._source} to {self._target}"
+        def __contains__(self, arrow: "MembershipInput") -> bool:
+            match arrow:
+                case IsoArrowCategory.MorphismMethods():
+                    # An object of Ar(C) is an arrow of C, and its source and
+                    # target are that arrow's two ends.
+                    assert isinstance(arrow, Morphism)
+                    return (
+                        arrow.domain() is self._source
+                        and arrow.codomain() is self._target
+                    )
+                case _:
+                    return False
+
+        def _element_constructor_(self, arrow: Morphism) -> Morphism:
+            assert arrow in self, (
+                f"{arrow} is not a declared isomorphism from {self._source} to "
+                f"{self._target}"
+            )
+            return arrow
+
+        def _repr_(self) -> str:
+            return f"Isomorphisms from {self._source} to {self._target}"
 
 
-IsoAr = IsomorphismSet
+def IsoAr(source: Parent, target: Parent) -> Parent:
+    r"""Return \(\operatorname{IsoAr}(X,Y)\), the isomorphisms \(X\to Y\).
+
+    The construction is the category: what an isomorphism set *is* is declared
+    once on ``IsomorphismSets.ParentMethods``, and the object is that
+    category's parent class carrying the two ends.
+    """
+    return object_of(IsomorphismSets(), source=source, target=target)
 
 
 def Isomorphism(forward: Morphism, backward: Morphism) -> Morphism:

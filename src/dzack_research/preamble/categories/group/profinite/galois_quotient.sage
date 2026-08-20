@@ -36,6 +36,7 @@ from sage.categories.morphism import Morphism
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from sage.structure.parent import Parent
     from collections.abc import Iterable
 
     from sage.categories.groups import Group
@@ -105,9 +106,9 @@ class GaloisRestrictionMap(Morphism):
         r"""Return the finite Galois extension \(L/K\)."""
         return self._extension
 
-    def kernel(self) -> "OpenAbsoluteGaloisSubgroup":
+    def kernel(self) -> "Parent":
         r"""Return \(G_L\), the open subgroup that is the kernel."""
-        open_subgroup: "OpenAbsoluteGaloisSubgroup" = self.domain().open_subgroup(
+        open_subgroup: "Parent" = self.domain().open_subgroup(
             self._extension
         )
         return open_subgroup

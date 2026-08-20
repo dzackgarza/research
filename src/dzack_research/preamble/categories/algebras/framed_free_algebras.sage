@@ -28,6 +28,7 @@ from dzack_research.preamble.categories.algebras.free_algebras import FreeAlgebr
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreeModuleOnSet
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreeModuleOnSetElement
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
+from dzack_research.preamble.owned_category import object_of
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
 from dzack_research.preamble.categories.sets.sets import _as_set
 from sage.misc.cachefunc import cached_function
@@ -37,6 +38,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 if TYPE_CHECKING:
     from sage.categories.morphism import Morphism
     from sage.rings.ring import Ring
+    from dzack_research.preamble.owned_category import ConstructionData
 
 from collections.abc import Iterable as _Iterable, Mapping
 from typing import Protocol, TYPE_CHECKING
@@ -183,18 +185,6 @@ if TYPE_CHECKING:
             self, ring: "Ring" = ..., multiplicities: bool = ...
         ) -> list: ...
         def _delegate(self, name: str, *arguments: "Element") -> "Element": ...
-
-    class _PresentedAlgebraBase(Parent["PresentedFreeAlgebraElement"]):
-        r"""``Parent`` with this algebra's element type bound.
-
-        The runtime class is a Cython extension type and is not
-        subscriptable, so the binding is declared here and the plain
-        ``Parent`` is what is inherited at runtime -- the technique
-        ``typings/sage/structure/parent.pyi`` describes.
-        """
-
-else:
-    _PresentedAlgebraBase = Parent
 
 
 assert "FramedAlgebras" in globals(), (
@@ -2146,19 +2136,13 @@ class PresentedFreeAlgebraElement(ModuleElement):
     r"""A class in a free algebra modulo relations generated in degree one."""
 
     def __init__(
-        self, parent: "PresentedFreeAlgebra", representative: "FreeAlgebraOnSetElement"
+        self, parent: "Parent", representative: "FreeAlgebraOnSetElement"
     ) -> None:
         ModuleElement.__init__(self, parent)
         assert representative.parent() is parent.presentation_algebra(), (
             "a representative lies in this presentation algebra"
         )
         self._representative = representative
-
-    if TYPE_CHECKING:
-        # The class is an element OF the presented algebra, which is what
-        # makes the arithmetic below land back in it.  Declared only for
-        # the checker: at runtime ``parent`` is Sage's own.
-        def parent(self) -> "PresentedFreeAlgebra": ...
 
     def representative(self) -> "FreeAlgebraOnSetElement":
         return self._representative
@@ -2203,125 +2187,129 @@ class PresentedFreeAlgebraElement(ModuleElement):
         return degree
 
 
-class PresentedFreeAlgebra(UniqueRepresentation, _PresentedAlgebraBase):
-    r"""The graded algebra (A(F)/\langle K\rangle) for a presented module."""
+class PresentedFreeAlgebras(OwnedCategoryOverBaseRing):
+    r"""The graded algebras \(A(F)/\langle K\rangle\) of a presented module."""
 
-    Element = PresentedFreeAlgebraElement
+    @classmethod
+    def _repr_object_names(cls) -> str:
+        return "presented free algebras"
 
-    def __init__(
-        self,
-        module: "Module",
-        construction: str,
-        presentation_algebra: "FreeAlgebraOnSet",
-    ) -> None:
+    def super_categories(self) -> list:
         from dzack_research.preamble.categories.algebras.algebras import Algebras
 
-        self._module = module
-        self._construction = construction
-        self._presentation_algebra = presentation_algebra
-        Parent.__init__(
+        return [Algebras(self.base_ring())]
+
+    class ParentMethods:
+        r"""\(A(F)/\langle K\rangle\) for a module given by a presentation."""
+
+        def __init__(
             self,
-            base=module.base_ring(),
-            category=Algebras(module.base_ring()),
-        )
+            module: "Module",
+            construction: str,
+            presentation_algebra: "FreeAlgebraOnSet",
+            **rest: "ConstructionData",
+        ) -> None:
+            r"""Build \(A(F)/\langle K\rangle\) for one of the four constructions."""
+            self._module = module
+            self._construction = construction
+            self._presentation_algebra = presentation_algebra
+            super().__init__(base=module.base_ring(), **rest)
 
-    def module(self) -> "Module":
-        return self._module
+        def module(self) -> "Module":
+            return self._module
 
-    def base_ring(self) -> "Ring":
-        return self.base()
+        def base_ring(self) -> "Ring":
+            return self.base()
 
-    def presentation_algebra(self) -> "FreeAlgebraOnSet":
-        return self._presentation_algebra
+        def presentation_algebra(self) -> "FreeAlgebraOnSet":
+            return self._presentation_algebra
 
-    def algebra_generating_set(self) -> "OrderedSet":
-        return self._module.module_generating_set()
+        def algebra_generating_set(self) -> "OrderedSet":
+            return self._module.module_generating_set()
 
-    def algebra_generator(
-        self, label: "_SageElement"
-    ) -> "PresentedFreeAlgebraElement":
-        return self(self._presentation_algebra.algebra_generator(label))
+        def algebra_generator(
+            self, label: "_SageElement"
+        ) -> "PresentedFreeAlgebraElement":
+            return self(self._presentation_algebra.algebra_generator(label))
 
-    def algebra_generators(self) -> tuple:
-        return tuple(
-            self.algebra_generator(label)
-            for label in self.algebra_generating_set()
-        )
+        def algebra_generators(self) -> tuple:
+            return tuple(
+                self.algebra_generator(label)
+                for label in self.algebra_generating_set()
+            )
 
-    def zero(self) -> "PresentedFreeAlgebraElement":
-        return self(self._presentation_algebra.zero())
+        def zero(self) -> "PresentedFreeAlgebraElement":
+            return self(self._presentation_algebra.zero())
 
-    def one(self) -> "PresentedFreeAlgebraElement":
-        return self(self._presentation_algebra.one())
+        def one(self) -> "PresentedFreeAlgebraElement":
+            return self(self._presentation_algebra.one())
 
-    def _element_constructor_(
-        self, representative: "PresentedFreeAlgebraElement | FreeAlgebraOnSetElement"
-    ) -> "PresentedFreeAlgebraElement":
-        if isinstance(representative, PresentedFreeAlgebraElement):
-            assert representative.parent() is self, "an algebra element has one parent"
-            return representative
-        if representative.parent() is not self._presentation_algebra:
-            representative = representative * self._presentation_algebra.one()
-        algebra_class: "PresentedFreeAlgebraElement" = self.element_class(
-            self, representative
-        )
-        return algebra_class
+        def _element_constructor_(
+            self, representative: "PresentedFreeAlgebraElement | FreeAlgebraOnSetElement"
+        ) -> "PresentedFreeAlgebraElement":
+            if isinstance(representative, PresentedFreeAlgebraElement):
+                assert representative.parent() is self, "an algebra element has one parent"
+                return representative
+            if representative.parent() is not self._presentation_algebra:
+                representative = representative * self._presentation_algebra.one()
+            algebra_class = PresentedFreeAlgebraElement(self, representative)
+            return algebra_class
 
-    def _ring_morphism_defining_algebra_structure(self) -> "Morphism":
-        from sage.categories.rings import Rings
+        def _ring_morphism_defining_algebra_structure(self) -> "Morphism":
+            from sage.categories.rings import Rings
 
-        return SetMorphism(
-            Hom(self.base_ring(), self, Rings()),
-            lambda scalar: scalar * self.one(),
-        )
+            return SetMorphism(
+                Hom(self.base_ring(), self, Rings()),
+                lambda scalar: scalar * self.one(),
+            )
 
-    def graded_piece(self, degree: int) -> "Module":
-        from dzack_research.preamble.categories.modules.tensors import AlternatingPower
-        from dzack_research.preamble.categories.modules.tensors import DividedPower
-        from dzack_research.preamble.categories.modules.tensors import SymmetricPower
-        from dzack_research.preamble.categories.modules.tensors import TensorPower
+        def graded_piece(self, degree: int) -> "Module":
+            from dzack_research.preamble.categories.modules.tensors import AlternatingPower
+            from dzack_research.preamble.categories.modules.tensors import DividedPower
+            from dzack_research.preamble.categories.modules.tensors import SymmetricPower
+            from dzack_research.preamble.categories.modules.tensors import TensorPower
 
-        constructions = {
-            "tensor": TensorPower,
-            "symmetric": SymmetricPower,
-            "alternating": AlternatingPower,
-            "divided": DividedPower,
-        }
-        return constructions[self._construction](self._module, int(degree))
+            constructions = {
+                "tensor": TensorPower,
+                "symmetric": SymmetricPower,
+                "alternating": AlternatingPower,
+                "divided": DividedPower,
+            }
+            return constructions[self._construction](self._module, int(degree))
 
-    def _class_in_degree(
-        self, degree: int, representative: "_SageElement"
-    ) -> "_SageElement":
-        from dzack_research.preamble.categories.modules.tensors import _element_of_degree_piece
+        def _class_in_degree(
+            self, degree: int, representative: "_SageElement"
+        ) -> "_SageElement":
+            from dzack_research.preamble.categories.modules.tensors import _element_of_degree_piece
 
-        in_degree: "_SageElement" = _element_of_degree_piece(
-            self.graded_piece(degree), representative
-        )
-        return in_degree
+            in_degree: "_SageElement" = _element_of_degree_piece(
+                self.graded_piece(degree), representative
+            )
+            return in_degree
 
-    def divided_power(
-        self,
-        element: "PresentedFreeAlgebraElement | FreeAlgebraOnSetElement",
-        degree: int,
-    ) -> "PresentedFreeAlgebraElement":
-        assert self._construction == "divided", (
-            "divided powers belong to the divided power construction"
-        )
-        representative = (
-            element.representative()
-            if isinstance(element, PresentedFreeAlgebraElement)
-            else element
-        )
-        return self(self._presentation_algebra.divided_power(representative, degree))
+        def divided_power(
+            self,
+            element: "PresentedFreeAlgebraElement | FreeAlgebraOnSetElement",
+            degree: int,
+        ) -> "PresentedFreeAlgebraElement":
+            assert self._construction == "divided", (
+                "divided powers belong to the divided power construction"
+            )
+            representative = (
+                element.representative()
+                if isinstance(element, PresentedFreeAlgebraElement)
+                else element
+            )
+            return self(self._presentation_algebra.divided_power(representative, degree))
 
-    def _repr_(self) -> str:
-        names = {
-            "tensor": "Tensor",
-            "symmetric": "Symmetric",
-            "alternating": "Alternating",
-            "divided": "Divided power",
-        }
-        return f"{names[self._construction]} algebra on {self._module}"
+        def _repr_(self) -> str:
+            names = {
+                "tensor": "Tensor",
+                "symmetric": "Symmetric",
+                "alternating": "Alternating",
+                "divided": "Divided power",
+            }
+            return f"{names[self._construction]} algebra on {self._module}"
 
 
 def _free_algebra_of_module(
@@ -2332,7 +2320,12 @@ def _free_algebra_of_module(
     source = constructor(module.base_ring(), module.module_generating_set())
     if module.relation_matrix().nrows() == 0:
         return source
-    return PresentedFreeAlgebra(module, construction, source)
+    return object_of(
+        PresentedFreeAlgebras(module.base_ring()),
+        module=module,
+        construction=construction,
+        presentation_algebra=source,
+    )
 
 
 def TensorAlgebraOf(module: "Module") -> "Parent":

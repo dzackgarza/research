@@ -103,25 +103,49 @@ def sole_structure_generators(obj: Parent) -> "OrderedSet":
             return tuple(algebra.algebra_generators())
 
 
-class SliceOverCategory(Category):
-    r"""Slice category \(\mathbf{C}/X\) of objects over \(X\)."""
+class _OverAnObject:
+    r"""The two parameters a slice category takes.
 
-    @staticmethod
-    def __classcall_private__(
-        cls: type["SliceOverCategory"], ambient_category: Category, X: "Parent | Morphism"
-    ) -> "SliceOverCategory":
-        # ``X`` is an object for a slice and a *morphism* for the kernel
-        # subcategory, which slices over the domain of the map it is the
-        # kernel of.
-        slice_category: SliceOverCategory = super().__classcall__(
-            cls, ambient_category, X
-        )
-        return slice_category
+    They are the ambient category and the object the slice is over.  The
+    kernel subcategory takes a *morphism* there: it slices over the domain of
+    the map it is the kernel of.
+
+    This is not a category.  Each category below states its place with
+    ``super_categories()``.  A category class that inherits another states the
+    class graph by hand instead, and then its methods class arrives twice in
+    one set of bases, which no method resolution order can satisfy.
+    """
 
     def __init__(self, ambient_category: Category, X: "Parent | Morphism") -> None:
         self._ambient_category = ambient_category
         self._target_object = X
-        Category.__init__(self)
+        super().__init__()
+
+    def ambient_category(self) -> Category:
+        return self._ambient_category
+
+
+class _UnderAnObject:
+    r"""The two parameters a coslice category takes.
+
+    They are the ambient category and the object the coslice is under.  The
+    cokernel subcategory takes a *morphism* there: it coslices under the
+    codomain of the map it is the cokernel of.
+
+    Read :class:`_OverAnObject` for why this is not a category.
+    """
+
+    def __init__(self, ambient_category: Category, X: "Parent | Morphism") -> None:
+        self._ambient_category = ambient_category
+        self._source_object = X
+        super().__init__()
+
+    def ambient_category(self) -> Category:
+        return self._ambient_category
+
+
+class SliceOverCategory(_OverAnObject, Category):
+    r"""Slice category \(\mathbf{C}/X\) of objects over \(X\)."""
 
     def _repr_(self) -> str:
         return f"Category of objects over {self._target_object} in {self._ambient_category}"
@@ -137,26 +161,8 @@ class SliceOverCategory(Category):
             return self._structure_morphism
 
 
-class CosliceUnderCategory(Category):
+class CosliceUnderCategory(_UnderAnObject, Category):
     r"""Coslice category \(X \setminus \mathbf{C}\) of objects under \(X\)."""
-
-    @staticmethod
-    def __classcall_private__(
-        cls: type["CosliceUnderCategory"],
-        ambient_category: Category,
-        X: "Parent | Morphism",
-    ) -> "CosliceUnderCategory":
-        # ``X`` is an object for a coslice and a *morphism* for the cokernel
-        # subcategory, which coslices under the codomain of that map.
-        coslice_category: CosliceUnderCategory = super().__classcall__(
-            cls, ambient_category, X
-        )
-        return coslice_category
-
-    def __init__(self, ambient_category: Category, X: "Parent | Morphism") -> None:
-        self._ambient_category = ambient_category
-        self._source_object = X
-        Category.__init__(self)
 
     def _repr_(self) -> str:
         return f"Category of objects under {self._source_object} in {self._ambient_category}"
@@ -172,7 +178,7 @@ class CosliceUnderCategory(Category):
             return self._costructure_morphism
 
 
-class SubobjectCategory(SliceOverCategory):
+class SubobjectCategory(_OverAnObject, Category):
     r"""Subcategory of ``SliceOver(X)`` represented by monomorphisms \(A\hookrightarrow X\)."""
 
     def _repr_(self) -> str:
@@ -206,7 +212,7 @@ class SubobjectCategory(SliceOverCategory):
             return ambient
 
 
-class SuperobjectCategory(CosliceUnderCategory):
+class SuperobjectCategory(_UnderAnObject, Category):
     r"""Subcategory of ``CosliceUnder(X)`` represented by monomorphisms \(X\hookrightarrow B\)."""
 
     def _repr_(self) -> str:
@@ -216,7 +222,7 @@ class SuperobjectCategory(CosliceUnderCategory):
         return [CosliceUnderCategory(self._ambient_category, self._source_object)]
 
 
-class CoveringObjectCategory(SliceOverCategory):
+class CoveringObjectCategory(_OverAnObject, Category):
     r"""Subcategory of ``SliceOver(X)`` represented by epimorphisms \(A\twoheadrightarrow X\)."""
 
     def _repr_(self) -> str:
@@ -226,7 +232,7 @@ class CoveringObjectCategory(SliceOverCategory):
         return [SliceOverCategory(self._ambient_category, self._target_object)]
 
 
-class CoveredObjectCategory(CosliceUnderCategory):
+class CoveredObjectCategory(_UnderAnObject, Category):
     r"""Subcategory of ``CosliceUnder(X)`` represented by epimorphisms \(X\twoheadrightarrow B\)."""
 
     def _repr_(self) -> str:
@@ -236,7 +242,7 @@ class CoveredObjectCategory(CosliceUnderCategory):
         return [CosliceUnderCategory(self._ambient_category, self._source_object)]
 
 
-class KernelCategory(SubobjectCategory):
+class KernelCategory(_OverAnObject, Category):
     r"""Subcategory of ``SubObject(f.domain())``: the kernel \(\ker(f)\hookrightarrow\operatorname{dom}f\)."""
 
     def _repr_(self) -> str:
@@ -250,7 +256,7 @@ class KernelCategory(SubobjectCategory):
         return [SubobjectCategory(self._ambient_category, map_taken.domain())]
 
 
-class CokernelCategory(CoveredObjectCategory):
+class CokernelCategory(_UnderAnObject, Category):
     r"""Subcategory of ``CoveredObject(f.codomain())``: the cokernel \(\operatorname{cod}f\twoheadrightarrow\operatorname{coker}f\)."""
 
     def _repr_(self) -> str:

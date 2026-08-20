@@ -96,7 +96,7 @@ def _constructions() -> dict:
         "direct sum": Lattices.A1 + Lattices.A2,
         "tensor product": Lattices.U @ Lattices.A2,
         "twist": Lattices.E8.twist(2),
-        "rooted Coxeter diagram from a scaled Cartan type": FiniteCoxeterDiagram.from_cartan_type(
+        "rooted Coxeter diagram from a scaled Cartan type": CoxeterDiagrams().from_cartan_type(
             ["A", 2], scale=2
         ),
         "dual lattice": Lattices.A2.dual_lattice(),

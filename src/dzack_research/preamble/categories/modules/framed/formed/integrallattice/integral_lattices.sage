@@ -328,10 +328,10 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             element of $L$.
             """
             # Local: a module-level import here would close a cycle; by call time this module is built.
-            from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModuleElement
+            from sage.structure.element import Element as SageElement
             projection = self.discriminant_projection()
             assert (
-                isinstance(element, FormModuleElement)
+                isinstance(element, SageElement)
                 and element.parent() is projection.domain()
             ), (
                 f"pi is defined on {projection.domain()}, and this is "
@@ -2210,8 +2210,11 @@ def _discriminant_lift_row(
     ``glue`` returns $L$ back for an honest gluing datum.
     """
     # Local: a module-level import here would close a cycle; by call time this module is built.
-    from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModuleElement
-    assert isinstance(element, FormModuleElement), (
+    from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModules
+    from sage.structure.element import Element as SageElement
+    assert isinstance(element, SageElement) and element.parent() in FormModules(
+        element.parent().base_ring()
+    ), (
         f"glue is defined on classes in A_L, and this is {element!r}. Build an "
         "element of L^\\vee with correlation(), then project it with "
         "project_to_discriminant_bilinear_form(...); a coordinate vector is not a "

@@ -123,7 +123,7 @@ def test_endomorphisms_of_a_nonabelian_group_are_refused() -> None:
     ]
     assert witnesses, "S3 is nonabelian; the search for a witness is wrong"
     try:
-        AbelianGroupEndomorphismRing(symmetric_group)
+        object_of(AbelianGroupEndomorphismRings(), group=symmetric_group)
     except AssertionError:
         return
     assert False, "End(S3) was built as a ring, and its addition is not one"

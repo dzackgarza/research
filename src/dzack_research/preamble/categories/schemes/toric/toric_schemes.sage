@@ -2,15 +2,15 @@ r"""Category subtree for toric schemes, ambient toric varieties, and toric subob
 
 Hierarchy:
   Schemes(S)
-    └── Varieties(S)
-          └── ToricSchemes(S) ─────────────> ToricScheme (V_P, V_Q)
-                └── .Subobject ────────────> ToricSubscheme (X ⊂ V_P, Y = V_Q)
+    ├── Varieties(S)
+    │     └── ToricSchemes(S) ──────────────> V_P, V_Q
+    └── Subschemes(S)
+          └── ToricSubschemes(S) ───────────> X ⊂ V_P, Y = V_Q
 """
 
-from typing import Any, Callable, Optional, Sequence, TYPE_CHECKING
+from typing import Any, Optional, Self, Sequence, TYPE_CHECKING
 from sage.categories.category import Category
 from sage.structure.parent import Parent
-from sage.categories.morphism import Morphism
 from sage.rings.rational_field import QQ as SageQQ
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.matrix.constructor import matrix
@@ -20,11 +20,13 @@ from sage.misc.latex import latex
 from sage.schemes.toric.variety import ToricVariety_field, ToricVariety as NativeToricVariety
 
 from dzack_research.preamble.lexicon import Polyhedron
+from dzack_research.preamble.owned_category import object_of
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
-from dzack_research.preamble.categories.schemes.schemes import SchemeElement, Schemes
-from dzack_research.preamble.categories.schemes.varieties import Varieties, Variety
-from dzack_research.preamble.categories.schemes.subschemes import Subscheme
-from dzack_research.preamble.refine import refine
+from dzack_research.preamble.categories.schemes.varieties import Varieties
+from dzack_research.preamble.categories.schemes.subschemes import Subschemes
+
+if TYPE_CHECKING:
+    from dzack_research.preamble.owned_category import ConstructionData
 
 
 class FormalDivisor(SageObject):
@@ -122,299 +124,324 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
         return [Varieties(self.base_ring())]
 
     class ParentMethods:
-        r"""Parent methods for objects in ToricSchemes(S)."""
+        r"""Parent methods for objects in ToricSchemes(S).
+
+        A toric scheme V is defined by a rational fan Σ or a lattice polytope P.
+        """
+
+        def __init__(
+            self: Self,
+            polytope_or_fan: Any,
+            dim: Optional[int] = None,
+            identification: Optional[str] = None,
+            **rest: "ConstructionData",
+        ) -> None:
+            r"""Build the toric scheme of a polytope or a fan."""
+            if isinstance(polytope_or_fan, Polyhedron) or hasattr(polytope_or_fan, 'vertices'):
+                self._polytope = polytope_or_fan
+                self._dim = int(polytope_or_fan.dimension()) if dim is None else int(dim)
+                self._fan = getattr(polytope_or_fan, 'normal_fan', lambda: None)()
+            else:
+                self._fan = polytope_or_fan
+                self._polytope = None
+                self._dim = int(polytope_or_fan.dimension()) if (polytope_or_fan and hasattr(polytope_or_fan, 'dimension')) else (dim or 2)
+
+            self._identification = identification or self._identify_ambient()
+            self._native_variety = None
+            super().__init__(**rest)
 
         def is_toric(self) -> bool:
             r"""Return True: every object in ToricSchemes(S) is a toric scheme."""
             return True
 
+        def fan(self) -> Any:
+            r"""Return the rational polyhedral fan Σ."""
+            return self._fan
 
-class ToricSubscheme(Subscheme):
-    r"""
-    A subscheme X ↪ V of an ambient toric scheme V.
+        def normal_fan(self) -> Any:
+            r"""Return the normal fan of the polarizing polytope."""
+            return self._fan
 
-    Carries:
-    - The ambient toric scheme V (accessed via .ambient_space() or .ambient_toric_variety())
-    - The defining equations cutting out X in V (accessed via .equations() or .defining_equations())
-    - The ambient polytope P associated with V (accessed via .ambient_polytope() or .polytope())
-    - The ambient variety identification string (e.g. PP^2, PP^3, PP(w_i), V_P, V_Q)
-    - Integral polytope invariants (Vol_ZZ, |P ∩ ZZ^n|, |Int(P) ∩ ZZ^n|)
-    """
-    _ambient_toric: "ToricScheme"
-    _equations: tuple[Any, ...]
-    _dim: int
+        def polytope(self) -> Any:
+            r"""Return the polarizing integral lattice polytope P."""
+            return self._polytope
 
-    def __init__(
-        self,
-        ambient: "ToricScheme",
-        equations: Sequence[Any] = (),
-        dim: Optional[int] = None,
-        base_ring: Any = SageQQ,
-    ) -> None:
-        Subscheme.__init__(self, ambient=ambient, base_ring=base_ring)
-        self._ambient_toric = ambient
-        self._equations = tuple(equations)
-        if dim is not None:
-            self._dim = int(dim)
-        else:
-            amb_dim = ambient.dimension() if hasattr(ambient, 'dimension') else 2
-            codim = len(self._equations) if self._equations and self._equations != (0,) else 0
-            self._dim = max(0, amb_dim - codim)
+        def polyhedron(self) -> Any:
+            r"""Alias for polytope()."""
+            return self._polytope
 
-    def ambient_space(self) -> "ToricScheme":
-        r"""Return the ambient toric scheme V."""
-        return self._ambient_toric
+        def dimension(self) -> int:
+            r"""Return the algebraic dimension of the toric scheme."""
+            return self._dim
 
-    def ambient_toric_variety(self) -> "ToricScheme":
-        r"""Alias for ambient_space()."""
-        return self._ambient_toric
+        def subscheme(self, *equations: Any, dim: Optional[int] = None) -> Parent:
+            r"""Construct a toric subscheme X ↪ V cut out by equations."""
+            eq_list = equations[0] if (len(equations) == 1 and isinstance(equations[0], (list, tuple))) else list(equations)
+            return ToricSubscheme(ambient=self, equations=eq_list, dim=dim, base_ring=self.base_ring())
 
-    def ambient_scheme(self) -> "ToricScheme":
-        r"""Alias for ambient_space()."""
-        return self._ambient_toric
+        def ambient_identification(self) -> str:
+            r"""Return geometric identification string (e.g. PP^2, PP^1 x PP^1, PP(w_i), V_P, V_Q)."""
+            return self._identification
 
-    def equations(self) -> tuple[Any, ...]:
-        r"""Return the tuple of defining equations cutting out X in V."""
-        return self._equations
+        def ambient_identification_latex(self) -> str:
+            r"""Return LaTeX formatted identification."""
+            if hasattr(self, '_identification_latex') and self._identification_latex:
+                return self._identification_latex
+            ident = self._identification
+            if ident == "P^2" or ident == "PP^2":
+                return r"\mathbb{P}^2"
+            if ident == "P^3" or ident == "PP^3":
+                return r"\mathbb{P}^3"
+            if ident == "P^1 x P^1" or ident == "PP^1 x PP^1":
+                return r"\mathbb{P}^1 \times \mathbb{P}^1"
+            if ident.startswith("P(") or ident.startswith("PP("):
+                weights = ident[ident.index("(") + 1 : ident.index(")")]
+                return rf"\mathbb{{P}}({weights})"
+            return rf"{ident}"
 
-    def defining_equations(self) -> tuple[Any, ...]:
-        r"""Alias for equations()."""
-        return self._equations
+        def _identify_ambient(self) -> str:
+            r"""Compute standard geometric identification from fan rays or polytope shape."""
+            ident_str, ident_latex = self._classify_fan_or_poly()
+            self._identification_latex = ident_latex
+            return ident_str
 
-    def defining_polynomial(self) -> Any:
-        r"""Return the principal defining polynomial for hypersurfaces (or 0 for ambient)."""
-        if self._equations:
-            return self._equations[0]
-        return 0
+        def _classify_fan_or_poly(self) -> tuple[str, str]:
+            r"""Classify the toric variety from its normal fan or polytope."""
+            fan = self._fan
+            poly = self._polytope
+            if fan is None and poly is not None and hasattr(poly, 'normal_fan'):
+                try:
+                    fan = poly.normal_fan()
+                except Exception:
+                    pass
 
-    def dimension(self) -> int:
-        r"""Return the algebraic dimension of the subscheme X."""
-        return self._dim
+            if fan is None:
+                d = self._dim
+                return f"V_P(dim={d})", rf"V_P \subset \mathbb{{R}}^{{{d}}}"
 
-    def ambient_dimension(self) -> int:
-        r"""Return the dimension of the ambient toric variety V."""
-        if hasattr(self._ambient_toric, 'dimension'):
-            return int(self._ambient_toric.dimension())
-        return self._dim
-
-    def codimension(self) -> int:
-        r"""Return the codimension of X in ambient V: dim(V) - dim(X)."""
-        return self.ambient_dimension() - self.dimension()
-
-    def is_hypersurface(self) -> bool:
-        r"""Return True if X is a hypersurface in ambient V (codimension 1)."""
-        return self.codimension() == 1
-
-    def is_ambient(self) -> bool:
-        r"""Return True if X is the entire ambient toric variety V (codimension 0)."""
-        return self.codimension() == 0
-
-    def ambient_polytope(self) -> Any:
-        r"""Return the lattice polytope P of the ambient toric variety V."""
-        if hasattr(self._ambient_toric, 'polytope'):
-            return self._ambient_toric.polytope()
-        if hasattr(self._ambient_toric, 'polyhedron'):
-            return self._ambient_toric.polyhedron()
-        return None
-
-    def polytope(self) -> Any:
-        r"""Alias for ambient_polytope()."""
-        return self.ambient_polytope()
-
-    def ambient_identification(self) -> str:
-        r"""Return the geometric identification string for the ambient toric variety."""
-        if hasattr(self._ambient_toric, 'ambient_identification'):
-            return self._ambient_toric.ambient_identification()
-        return f"V_{{P}} \\subset \\mathbb{{R}}^{{{self.ambient_dimension()}}}"
-
-    def ambient_identification_latex(self) -> str:
-        r"""Return the LaTeX representation of the ambient toric variety identification."""
-        if hasattr(self._ambient_toric, 'ambient_identification_latex'):
-            return self._ambient_toric.ambient_identification_latex()
-        return self.ambient_identification()
-
-    def _repr_(self) -> str:
-        if not self._equations or self._equations == (0,):
-            return f"{self.ambient_identification()}"
-        eqs_str = ", ".join(str(eq) for eq in self._equations)
-        return f"V({eqs_str}) ⊂ {self.ambient_identification()}"
-
-    def _latex_(self) -> str:
-        if not self._equations or self._equations == (0,):
-            return self.ambient_identification_latex()
-        eqs_lat = r",\, ".join(latex(eq) for eq in self._equations)
-        return rf"\mathrm{{V}}\left({eqs_lat}\right) \subset {self.ambient_identification_latex()}"
-
-
-class ToricScheme(Variety):
-    r"""
-    A toric scheme / variety V defined by a rational fan Σ or lattice polytope P.
-    """
-    Subobject = ToricSubscheme
-
-    _fan: Optional[Any]
-    _polytope: Optional[Any]
-    _dim: int
-    _identification: str
-    _native_variety: Optional[ToricVariety_field]
-
-    def __init__(
-        self,
-        polytope_or_fan: Any,
-        dim: Optional[int] = None,
-        identification: Optional[str] = None,
-        base_ring: Any = SageQQ,
-    ) -> None:
-        Variety.__init__(self, base_ring=base_ring)
-        refine(self, ToricSchemes(base_ring))
-
-        if isinstance(polytope_or_fan, Polyhedron) or hasattr(polytope_or_fan, 'vertices'):
-            self._polytope = polytope_or_fan
-            self._dim = int(polytope_or_fan.dimension()) if dim is None else int(dim)
-            self._fan = getattr(polytope_or_fan, 'normal_fan', lambda: None)()
-        else:
-            self._fan = polytope_or_fan
-            self._polytope = None
-            self._dim = int(polytope_or_fan.dimension()) if (polytope_or_fan and hasattr(polytope_or_fan, 'dimension')) else (dim or 2)
-
-        self._identification = identification or self._identify_ambient()
-        self._native_variety = None
-
-    def fan(self) -> Any:
-        r"""Return the rational polyhedral fan Σ."""
-        return self._fan
-
-    def normal_fan(self) -> Any:
-        r"""Return the normal fan of the polarizing polytope."""
-        return self._fan
-
-    def polytope(self) -> Any:
-        r"""Return the polarizing integral lattice polytope P."""
-        return self._polytope
-
-    def polyhedron(self) -> Any:
-        r"""Alias for polytope()."""
-        return self._polytope
-
-    def dimension(self) -> int:
-        r"""Return the algebraic dimension of the toric scheme."""
-        return self._dim
-
-    def subscheme(self, *equations: Any, dim: Optional[int] = None) -> ToricSubscheme:
-        r"""Construct a ToricSubscheme X ↪ V cut out by equations."""
-        eq_list = equations[0] if (len(equations) == 1 and isinstance(equations[0], (list, tuple))) else list(equations)
-        return ToricSubscheme(ambient=self, equations=eq_list, dim=dim, base_ring=self.base_ring())
-
-    def ambient_identification(self) -> str:
-        r"""Return geometric identification string (e.g. PP^2, PP^1 x PP^1, PP(w_i), V_P, V_Q)."""
-        return self._identification
-
-    def ambient_identification_latex(self) -> str:
-        r"""Return LaTeX formatted identification."""
-        if hasattr(self, '_identification_latex') and self._identification_latex:
-            return self._identification_latex
-        ident = self._identification
-        if ident == "P^2" or ident == "PP^2":
-            return r"\mathbb{P}^2"
-        if ident == "P^3" or ident == "PP^3":
-            return r"\mathbb{P}^3"
-        if ident == "P^1 x P^1" or ident == "PP^1 x PP^1":
-            return r"\mathbb{P}^1 \times \mathbb{P}^1"
-        if ident.startswith("P(") or ident.startswith("PP("):
-            weights = ident[ident.index("(") + 1 : ident.index(")")]
-            return rf"\mathbb{{P}}({weights})"
-        return rf"{ident}"
-
-    def _identify_ambient(self) -> str:
-        r"""Compute standard geometric identification from fan rays or polytope shape."""
-        ident_str, ident_latex = self._classify_fan_or_poly()
-        self._identification_latex = ident_latex
-        return ident_str
-
-    def _classify_fan_or_poly(self) -> tuple[str, str]:
-        r"""Classify the toric variety from its normal fan or polytope."""
-        fan = self._fan
-        poly = self._polytope
-        if fan is None and poly is not None and hasattr(poly, 'normal_fan'):
             try:
-                fan = poly.normal_fan()
+                rays = [vector(SageZZ, [int(c) for c in r]) for r in fan.rays()]
             except Exception:
-                pass
+                return r"V(\Sigma)", r"V(\Sigma)"
 
-        if fan is None:
+            n_rays = len(rays)
             d = self._dim
-            return f"V_P(dim={d})", rf"V_P \subset \mathbb{{R}}^{{{d}}}"
 
-        try:
-            rays = [vector(SageZZ, [int(c) for c in r]) for r in fan.rays()]
-        except Exception:
-            return r"V(\Sigma)", r"V(\Sigma)"
+            if d == 2:
+                if n_rays == 3:
+                    M = matrix(SageZZ, [list(r) for r in rays]).transpose()
+                    ker = M.right_kernel().basis()
+                    if ker:
+                        v = ker[0]
+                        w = sorted([abs(int(c)) for c in v])
+                        if w == [1, 1, 1]:
+                            return "PP^2", r"\mathbb{P}^2"
+                        return f"PP({w[0]},{w[1]},{w[2]})", rf"\mathbb{{P}}({w[0]},{w[1]},{w[2]})"
+                elif n_rays == 4:
+                    pts = set((int(r[0]), int(r[1])) for r in rays)
+                    if pts == {(1,0), (0,1), (-1,0), (0,-1)}:
+                        return "PP^1 x PP^1", r"\mathbb{P}^1 \times \mathbb{P}^1"
+                    if pts in ({(1,0), (0,1), (-1,0), (1,-2)}, {(1,0), (-1,2), (-1,0), (0,-1)}):
+                        return "FF_2", r"\mathbb{F}_2"
+                    if pts in ({(1,0), (0,-1), (-1,-1), (0,1)}, {(1,0), (0,1), (-1,-1), (0,-1)}):
+                        return "FF_1", r"\mathbb{F}_1"
+                    if pts in ({(1,0), (-1,-2), (-2,-1), (0,1)}, {(1,0), (-1,-2), (-1,-1), (0,1)}, {(1,0), (0,-1), (-2,-1), (0,1)}):
+                        return "Bl_1(PP(1,1,2))", r"\operatorname{Bl}_1(\mathbb{P}(1,1,2))"
+                    if pts == {(1,0), (-1,-2), (-2,-3), (0,1)}:
+                        return "Bl_1(PP(1,2,3))", r"\operatorname{Bl}_1(\mathbb{P}(1,2,3))"
+                    return "ToricSurface(4-rays)", r"V_Q"
+                return f"ToricSurface({n_rays}-rays)", r"V_Q"
 
-        n_rays = len(rays)
-        d = self._dim
+            elif d == 3:
+                if n_rays == 4:
+                    M = matrix(SageZZ, [list(r) for r in rays]).transpose()
+                    ker = M.right_kernel().basis()
+                    if ker:
+                        v = ker[0]
+                        w = sorted([abs(int(c)) for c in v])
+                        if w == [1, 1, 1, 1]:
+                            return "PP^3", r"\mathbb{P}^3"
+                        return f"PP({w[0]},{w[1]},{w[2]},{w[3]})", rf"\mathbb{{P}}({w[0]},{w[1]},{w[2]},{w[3]})"
+                elif n_rays == 5:
+                    # 3D pyramid over a 2D quadrangle: projective cone / anticanonical bundle
+                    side_rays = [vector(SageZZ, [r[0], r[1]]) for r in rays if not (r[0] == 0 and r[1] == 0)]
+                    pts = set((int(r[0]), int(r[1])) for r in side_rays)
+                    if pts == {(1,0), (0,1), (-1,0), (0,-1)}:
+                        base_id, base_latex = "PP^1 x PP^1", r"\mathbb{P}^1 \times \mathbb{P}^1"
+                    elif pts in ({(1,0), (0,1), (-1,0), (1,-2)}, {(1,0), (-1,2), (-1,0), (0,-1)}):
+                        base_id, base_latex = "FF_2", r"\mathbb{F}_2"
+                    elif pts in ({(1,0), (0,-1), (-1,-1), (0,1)}, {(1,0), (0,1), (-1,-1), (0,-1)}):
+                        base_id, base_latex = "FF_1", r"\mathbb{F}_1"
+                    elif pts in ({(1,0), (-1,-2), (-2,-1), (0,1)}, {(1,0), (-1,-2), (-1,-1), (0,1)}, {(1,0), (0,-1), (-2,-1), (0,1)}):
+                        base_id, base_latex = "Bl_1(PP(1,1,2))", r"\operatorname{Bl}_1(\mathbb{P}(1,1,2))"
+                    elif pts == {(1,0), (-1,-2), (-2,-3), (0,1)}:
+                        base_id, base_latex = "Bl_1(PP(1,2,3))", r"\operatorname{Bl}_1(\mathbb{P}(1,2,3))"
+                    else:
+                        base_id, base_latex = "Y", r"Y"
+                    return f"Cone_P(1,2)({base_id})", rf"\mathbb{{P}}_{{{base_latex}}}(\mathcal{{O}} \oplus \mathcal{{O}}(-K))"
+                return f"ToricThreefold({n_rays}-rays)", r"V_P"
 
-        if d == 2:
-            if n_rays == 3:
-                M = matrix(SageZZ, [list(r) for r in rays]).transpose()
-                ker = M.right_kernel().basis()
-                if ker:
-                    v = ker[0]
-                    w = sorted([abs(int(c)) for c in v])
-                    if w == [1, 1, 1]:
-                        return "PP^2", r"\mathbb{P}^2"
-                    return f"PP({w[0]},{w[1]},{w[2]})", rf"\mathbb{{P}}({w[0]},{w[1]},{w[2]})"
-            elif n_rays == 4:
-                pts = set((int(r[0]), int(r[1])) for r in rays)
-                if pts == {(1,0), (0,1), (-1,0), (0,-1)}:
-                    return "PP^1 x PP^1", r"\mathbb{P}^1 \times \mathbb{P}^1"
-                if pts in ({(1,0), (0,1), (-1,0), (1,-2)}, {(1,0), (-1,2), (-1,0), (0,-1)}):
-                    return "FF_2", r"\mathbb{F}_2"
-                if pts in ({(1,0), (0,-1), (-1,-1), (0,1)}, {(1,0), (0,1), (-1,-1), (0,-1)}):
-                    return "FF_1", r"\mathbb{F}_1"
-                if pts in ({(1,0), (-1,-2), (-2,-1), (0,1)}, {(1,0), (-1,-2), (-1,-1), (0,1)}, {(1,0), (0,-1), (-2,-1), (0,1)}):
-                    return "Bl_1(PP(1,1,2))", r"\operatorname{Bl}_1(\mathbb{P}(1,1,2))"
-                if pts == {(1,0), (-1,-2), (-2,-3), (0,1)}:
-                    return "Bl_1(PP(1,2,3))", r"\operatorname{Bl}_1(\mathbb{P}(1,2,3))"
-                return "ToricSurface(4-rays)", r"V_Q"
-            return f"ToricSurface({n_rays}-rays)", r"V_Q"
+            return f"ToricVariety(dim={d})", rf"V_P \subset \mathbb{{R}}^{{{d}}}"
 
-        elif d == 3:
-            if n_rays == 4:
-                M = matrix(SageZZ, [list(r) for r in rays]).transpose()
-                ker = M.right_kernel().basis()
-                if ker:
-                    v = ker[0]
-                    w = sorted([abs(int(c)) for c in v])
-                    if w == [1, 1, 1, 1]:
-                        return "PP^3", r"\mathbb{P}^3"
-                    return f"PP({w[0]},{w[1]},{w[2]},{w[3]})", rf"\mathbb{{P}}({w[0]},{w[1]},{w[2]},{w[3]})"
-            elif n_rays == 5:
-                # 3D pyramid over a 2D quadrangle: projective cone / anticanonical bundle
-                side_rays = [vector(SageZZ, [r[0], r[1]]) for r in rays if not (r[0] == 0 and r[1] == 0)]
-                pts = set((int(r[0]), int(r[1])) for r in side_rays)
-                if pts == {(1,0), (0,1), (-1,0), (0,-1)}:
-                    base_id, base_latex = "PP^1 x PP^1", r"\mathbb{P}^1 \times \mathbb{P}^1"
-                elif pts in ({(1,0), (0,1), (-1,0), (1,-2)}, {(1,0), (-1,2), (-1,0), (0,-1)}):
-                    base_id, base_latex = "FF_2", r"\mathbb{F}_2"
-                elif pts in ({(1,0), (0,-1), (-1,-1), (0,1)}, {(1,0), (0,1), (-1,-1), (0,-1)}):
-                    base_id, base_latex = "FF_1", r"\mathbb{F}_1"
-                elif pts in ({(1,0), (-1,-2), (-2,-1), (0,1)}, {(1,0), (-1,-2), (-1,-1), (0,1)}, {(1,0), (0,-1), (-2,-1), (0,1)}):
-                    base_id, base_latex = "Bl_1(PP(1,1,2))", r"\operatorname{Bl}_1(\mathbb{P}(1,1,2))"
-                elif pts == {(1,0), (-1,-2), (-2,-3), (0,1)}:
-                    base_id, base_latex = "Bl_1(PP(1,2,3))", r"\operatorname{Bl}_1(\mathbb{P}(1,2,3))"
-                else:
-                    base_id, base_latex = "Y", r"Y"
-                return f"Cone_P(1,2)({base_id})", rf"\mathbb{{P}}_{{{base_latex}}}(\mathcal{{O}} \oplus \mathcal{{O}}(-K))"
-            return f"ToricThreefold({n_rays}-rays)", r"V_P"
+        def to_native_toric_variety(self) -> ToricVariety_field:
+            r"""Construct or return the native Sage ToricVariety."""
+            if self._native_variety is None:
+                if self._fan is not None:
+                    self._native_variety = NativeToricVariety(self._fan)
+                elif self._polytope is not None:
+                    fan = self._polytope.normal_fan()
+                    self._native_variety = NativeToricVariety(fan)
+            return self._native_variety
 
-        return f"ToricVariety(dim={d})", rf"V_P \subset \mathbb{{R}}^{{{d}}}"
 
-    def to_native_toric_variety(self) -> ToricVariety_field:
-        r"""Construct or return the native Sage ToricVariety."""
-        if self._native_variety is None:
-            if self._fan is not None:
-                self._native_variety = NativeToricVariety(self._fan)
-            elif self._polytope is not None:
-                fan = self._polytope.normal_fan()
-                self._native_variety = NativeToricVariety(fan)
-        return self._native_variety
+class ToricSubschemes(OwnedCategoryOverBaseRing):
+    r"""Category of subschemes X ↪ V of a toric scheme V."""
+
+    def _repr_object_names(self) -> str:
+        return f"toric subschemes over {self.base_ring()}"
+
+    def super_categories(self) -> list[Category]:
+        r"""Return [Subschemes(S)]."""
+        return [Subschemes(self.base_ring())]
+
+    class ParentMethods:
+        r"""Parent methods for a subscheme X ↪ V of a toric scheme V.
+
+        The datum this level adds is the family of equations cutting X out of
+        V, together with the dimension of X.  The toric scheme V itself is the
+        subscheme datum of the level above.  Everything else is read off V:
+        its polytope P, its identification string, and the invariants of P.
+        """
+
+        def __init__(
+            self: Self,
+            ambient: Parent,
+            equations: Sequence[Any] = (),
+            dim: Optional[int] = None,
+            **rest: "ConstructionData",
+        ) -> None:
+            r"""Build the subscheme of ``ambient`` cut out by ``equations``."""
+            self._equations = tuple(equations)
+            if dim is not None:
+                self._dim = int(dim)
+            else:
+                amb_dim = ambient.dimension() if hasattr(ambient, 'dimension') else 2
+                codim = len(self._equations) if self._equations and self._equations != (0,) else 0
+                self._dim = max(0, amb_dim - codim)
+            super().__init__(ambient=ambient, **rest)
+
+        def ambient_space(self) -> Parent:
+            r"""Return the toric scheme V that X sits in."""
+            return self.ambient_scheme()
+
+        def ambient_toric_variety(self) -> Parent:
+            r"""Alias for ambient_space()."""
+            return self.ambient_scheme()
+
+        def equations(self) -> tuple[Any, ...]:
+            r"""Return the tuple of defining equations cutting out X in V."""
+            return self._equations
+
+        def defining_equations(self) -> tuple[Any, ...]:
+            r"""Alias for equations()."""
+            return self._equations
+
+        def defining_polynomial(self) -> Any:
+            r"""Return the principal defining polynomial for hypersurfaces (or 0 for ambient)."""
+            if self._equations:
+                return self._equations[0]
+            return 0
+
+        def dimension(self) -> int:
+            r"""Return the algebraic dimension of the subscheme X."""
+            return self._dim
+
+        def ambient_dimension(self) -> int:
+            r"""Return the dimension of the toric scheme V."""
+            ambient = self.ambient_scheme()
+            if hasattr(ambient, 'dimension'):
+                return int(ambient.dimension())
+            return self._dim
+
+        def codimension(self) -> int:
+            r"""Return the codimension of X in V: dim(V) - dim(X)."""
+            return self.ambient_dimension() - self.dimension()
+
+        def is_hypersurface(self) -> bool:
+            r"""Return True if X is a hypersurface in V (codimension 1)."""
+            return self.codimension() == 1
+
+        def is_ambient(self) -> bool:
+            r"""Return True if X is the whole of V (codimension 0)."""
+            return self.codimension() == 0
+
+        def ambient_polytope(self) -> Any:
+            r"""Return the lattice polytope P of the toric scheme V."""
+            ambient = self.ambient_scheme()
+            if hasattr(ambient, 'polytope'):
+                return ambient.polytope()
+            if hasattr(ambient, 'polyhedron'):
+                return ambient.polyhedron()
+            return None
+
+        def polytope(self) -> Any:
+            r"""Alias for ambient_polytope()."""
+            return self.ambient_polytope()
+
+        def ambient_identification(self) -> str:
+            r"""Return the geometric identification string for V."""
+            ambient = self.ambient_scheme()
+            if hasattr(ambient, 'ambient_identification'):
+                return ambient.ambient_identification()
+            return f"V_{{P}} \\subset \\mathbb{{R}}^{{{self.ambient_dimension()}}}"
+
+        def ambient_identification_latex(self) -> str:
+            r"""Return the LaTeX representation of the identification of V."""
+            ambient = self.ambient_scheme()
+            if hasattr(ambient, 'ambient_identification_latex'):
+                return ambient.ambient_identification_latex()
+            return self.ambient_identification()
+
+        def _repr_(self) -> str:
+            if not self._equations or self._equations == (0,):
+                return f"{self.ambient_identification()}"
+            eqs_str = ", ".join(str(eq) for eq in self._equations)
+            return f"V({eqs_str}) ⊂ {self.ambient_identification()}"
+
+        def _latex_(self) -> str:
+            if not self._equations or self._equations == (0,):
+                return self.ambient_identification_latex()
+            eqs_lat = r",\, ".join(latex(eq) for eq in self._equations)
+            return rf"\mathrm{{V}}\left({eqs_lat}\right) \subset {self.ambient_identification_latex()}"
+
+
+def ToricScheme(
+    polytope_or_fan: Any,
+    dim: Optional[int] = None,
+    identification: Optional[str] = None,
+    base_ring: Any = SageQQ,
+) -> Parent:
+    r"""Return the toric scheme V of a lattice polytope P or a rational fan Σ."""
+    return object_of(
+        ToricSchemes(base_ring),
+        polytope_or_fan=polytope_or_fan,
+        dim=dim,
+        identification=identification,
+        base_ring=base_ring,
+    )
+
+
+def ToricSubscheme(
+    ambient: Parent,
+    equations: Sequence[Any] = (),
+    dim: Optional[int] = None,
+    base_ring: Any = SageQQ,
+) -> Parent:
+    r"""Return the subscheme X ↪ V cut out of the toric scheme ``ambient``."""
+    return object_of(
+        ToricSubschemes(base_ring),
+        ambient=ambient,
+        equations=equations,
+        dim=dim,
+        base_ring=base_ring,
+    )

@@ -19,6 +19,7 @@ from dzack_research.preamble.refine import refine
 from collections.abc import Callable, Iterable, Iterator
 from typing import Self, TYPE_CHECKING
 if TYPE_CHECKING:
+    from dzack_research.preamble.owned_category import ConstructionData
     from sage.structure.parent import ElementConstructorInput
 
 from dzack_research.preamble.owned_category_bases import Category
@@ -63,7 +64,56 @@ if TYPE_CHECKING:
         def _pure_tensor(self, *elements: Element) -> Element: ...
 
 
-class DiagramCategory(Category):
+class _DiagramParameters:
+    r"""The parameters a diagram category takes.
+
+    They are the ambient category, the family of objects, and the family of
+    morphisms.
+
+    This is not a category.  Each category below states its place with
+    ``super_categories()``.  A category class that inherits another states the
+    class graph by hand instead, and then its methods class arrives twice in
+    one set of bases, which no method resolution order can satisfy.
+    """
+
+    def __init__(
+        self, ambient_category: Category, objects: tuple, morphisms: tuple = ()
+    ) -> None:
+        self._ambient_category = ambient_category
+        self._diagram_objects = tuple(objects)
+        self._diagram_morphisms = tuple(morphisms)
+        super().__init__()
+
+    def ambient_category(self) -> Category:
+        return self._ambient_category
+
+    def diagram_objects(self) -> "tuple[Parent, ...]":
+        return self._diagram_objects
+
+    def diagram_morphisms(self) -> "tuple[Morphism, ...]":
+        return self._diagram_morphisms
+
+
+class _IndexedDiagramParameters(_DiagramParameters):
+    r"""The parameters an indexed diagram category takes: a diagram and one
+    index set.  Read :class:`_DiagramParameters` for why this is not a
+    category."""
+
+    def __init__(
+        self,
+        ambient_category: Category,
+        index_set: "OrderedSet",
+        objects: tuple,
+        morphisms: tuple = (),
+    ) -> None:
+        self._index_set = index_set
+        super().__init__(ambient_category, objects, morphisms)
+
+    def index_set(self) -> "OrderedSet":
+        return self._index_set
+
+
+class DiagramCategory(_DiagramParameters, Category):
     r"""A diagram \(F:J\to\mathbf{C}\): a family of objects and morphisms."""
 
     @staticmethod
@@ -92,26 +142,14 @@ class DiagramCategory(Category):
         )
         return constructed
 
-    def __init__(self, ambient_category: Category, objects: tuple, morphisms: tuple = ()) -> None:
-        self._ambient_category = ambient_category
-        self._diagram_objects = tuple(objects)
-        self._diagram_morphisms = tuple(morphisms)
-        Category.__init__(self)
-
     def _repr_(self) -> str:
         return f"Category of diagrams on {self._diagram_objects} in {self._ambient_category}"
 
     def super_categories(self) -> list[Category]:
         return [self._ambient_category]
 
-    def diagram_objects(self) -> "tuple[Parent, ...]":
-        return self._diagram_objects
 
-    def diagram_morphisms(self) -> "tuple[Morphism, ...]":
-        return self._diagram_morphisms
-
-
-class DirectedSystem(DiagramCategory):
+class DirectedSystem(_IndexedDiagramParameters, Category):
     r"""A directed system: \((X_i)_{i\in I}\) with morphisms \(X_i\to X_j\) for \(i\le j\)."""
 
     @staticmethod
@@ -142,21 +180,14 @@ class DirectedSystem(DiagramCategory):
         )
         return constructed
 
-    def __init__(self, ambient_category: Category, index_set: "OrderedSet", objects: tuple, morphisms: tuple = ()) -> None:
-        self._index_set = index_set
-        DiagramCategory.__init__(self, ambient_category, objects, morphisms)
-
     def _repr_(self) -> str:
         return f"Category of directed systems indexed by {self._index_set} in {self._ambient_category}"
 
     def super_categories(self) -> list[Category]:
         return [DiagramCategory(self._ambient_category, self._diagram_objects, self._diagram_morphisms)]
 
-    def index_set(self) -> "OrderedSet":
-        return self._index_set
 
-
-class InverseSystem(DiagramCategory):
+class InverseSystem(_IndexedDiagramParameters, Category):
     r"""An inverse system: \((X_i)_{i\in I}\) with morphisms \(X_j\to X_i\) for \(i\le j\)."""
 
     @staticmethod
@@ -187,21 +218,14 @@ class InverseSystem(DiagramCategory):
         )
         return constructed
 
-    def __init__(self, ambient_category: Category, index_set: "OrderedSet", objects: tuple, morphisms: tuple = ()) -> None:
-        self._index_set = index_set
-        DiagramCategory.__init__(self, ambient_category, objects, morphisms)
-
     def _repr_(self) -> str:
         return f"Category of inverse systems indexed by {self._index_set} in {self._ambient_category}"
 
     def super_categories(self) -> list[Category]:
         return [DiagramCategory(self._ambient_category, self._diagram_objects, self._diagram_morphisms)]
 
-    def index_set(self) -> "OrderedSet":
-        return self._index_set
 
-
-class ConeCategory(DirectedSystem):
+class ConeCategory(_IndexedDiagramParameters, Category):
     r"""A cone over a directed system: an apex \(A\) with projections \(\pi_i:A\to X_i\)."""
 
     def _repr_(self) -> str:
@@ -232,7 +256,7 @@ class ConeCategory(DirectedSystem):
             return self.category().diagram_objects()[i]
 
 
-class CoconeCategory(InverseSystem):
+class CoconeCategory(_IndexedDiagramParameters, Category):
     r"""A cocone under an inverse system: a coapex \(A\) with injections \(\iota_i:X_i\to A\)."""
 
     def _repr_(self) -> str:
@@ -262,7 +286,7 @@ class CoconeCategory(InverseSystem):
             return self.category().diagram_objects()[i]
 
 
-class ProductCategory(ConeCategory):
+class ProductCategory(_IndexedDiagramParameters, Category):
     r"""A product: a cone over a discrete diagram. Parameterized by factors."""
 
     @staticmethod
@@ -290,8 +314,7 @@ class ProductCategory(ConeCategory):
 
     def __init__(self, ambient_category: Category, factors: tuple) -> None:
         factors = tuple(factors)
-        index_set = tuple(range(len(factors)))
-        ConeCategory.__init__(self, ambient_category, index_set, factors, ())
+        super().__init__(ambient_category, tuple(range(len(factors))), factors, ())
 
     def _repr_(self) -> str:
         return f"Category of products of {self._diagram_objects} in {self._ambient_category}"
@@ -300,7 +323,7 @@ class ProductCategory(ConeCategory):
         return [ConeCategory(self._ambient_category, self._index_set, self._diagram_objects, self._diagram_morphisms)]
 
 
-class CoproductCategory(CoconeCategory):
+class CoproductCategory(_IndexedDiagramParameters, Category):
     r"""A coproduct: a cocone under a discrete diagram. Parameterized by cofactors."""
 
     @staticmethod
@@ -328,8 +351,7 @@ class CoproductCategory(CoconeCategory):
 
     def __init__(self, ambient_category: Category, cofactors: tuple) -> None:
         cofactors = tuple(cofactors)
-        index_set = tuple(range(len(cofactors)))
-        CoconeCategory.__init__(self, ambient_category, index_set, cofactors, ())
+        super().__init__(ambient_category, tuple(range(len(cofactors))), cofactors, ())
 
     def _repr_(self) -> str:
         return f"Category of coproducts of {self._diagram_objects} in {self._ambient_category}"
@@ -338,7 +360,7 @@ class CoproductCategory(CoconeCategory):
         return [CoconeCategory(self._ambient_category, self._index_set, self._diagram_objects, self._diagram_morphisms)]
 
 
-class BiproductCategory(ProductCategory, CoproductCategory):
+class BiproductCategory(_IndexedDiagramParameters, Category):
     r"""A biproduct: simultaneously a product and coproduct (additive setting).
 
     The projections \(\pi_i:A\to X_i\) and injections \(\iota_i:X_i\to A\)
@@ -370,7 +392,8 @@ class BiproductCategory(ProductCategory, CoproductCategory):
         return constructed
 
     def __init__(self, ambient_category: Category, factors: tuple) -> None:
-        ProductCategory.__init__(self, ambient_category, factors)
+        factors = tuple(factors)
+        super().__init__(ambient_category, tuple(range(len(factors))), factors, ())
 
     def _repr_(self) -> str:
         return f"Category of biproducts of {self._diagram_objects} in {self._ambient_category}"
@@ -596,76 +619,107 @@ def cartesian_product_morphism(*maps: Morphism) -> Morphism:
     )
 
 
-class CoproductOfSets(Parent):
-    r"""The tagged disjoint union of a finite family of sets."""
+class CoproductsOfSets(Category):
+    r"""The coproduct \(\coprod_i X_i\) of sets, as the tagged disjoint union.
 
-    def __init__(self, cofactors: tuple) -> None:
-        self._cofactors = tuple(cofactors)
-        Parent.__init__(self, category=Sets())
+    An element is a pair \((i, x)\) with \(x\in X_i\).  The tag is what
+    makes the union disjoint, and the \(i\)-th injection sends \(x\) to
+    \((i, x)\).
 
-    def cofactors(self) -> "tuple[Parent, ...]":
-        return self._cofactors
+    The one datum this level introduces is the family of cofactors, so it is
+    the one argument its ``__init__`` consumes.
+    """
 
-    def cardinality(self) -> "Cardinal":
-        r"""Return ``sum(#X_i)`` for the cofactors ``X_i``."""
-        from dzack_research.preamble.categories.sets.cardinals import Cardinalities
+    def _repr_object_names(self) -> str:
+        return "coproducts of sets"
 
-        return Cardinalities().sum(
-            *(cofactor.cardinality() for cofactor in self._cofactors)
-        )
+    def super_categories(self) -> list[Category]:
+        return [Sets()]
 
-    def __iter__(self) -> "Iterator[tuple[int, Element]]":
-        r"""Fair enumeration, delegated to Sage's disjoint union.
+    class ParentMethods:
+        def __init__(
+            self, cofactors: "Iterable[Parent]", **rest: "ConstructionData"
+        ) -> None:
+            self._cofactors = tuple(cofactors)
+            super().__init__(**rest)
 
-        ``DisjointUnionEnumeratedSets`` with ``keepkey=True`` yields the
-        tagged pairs fairly across infinite cofactors, which the naive
-        cofactor-by-cofactor loop does not.
-        """
-        from sage.sets.disjoint_union_enumerated_sets import (
-            DisjointUnionEnumeratedSets,
-        )
-        from sage.sets.family import Family
+        def cofactors(self) -> "tuple[Parent, ...]":
+            return self._cofactors
 
-        return iter(
-            DisjointUnionEnumeratedSets(
-                Family(list(self._cofactors)), keepkey=True
+        def cardinality(self) -> "Cardinal":
+            r"""Return ``sum(#X_i)`` for the cofactors ``X_i``."""
+            from dzack_research.preamble.categories.sets.cardinals import Cardinalities
+
+            return Cardinalities().sum(
+                *(cofactor.cardinality() for cofactor in self._cofactors)
             )
-        )
 
-    def __contains__(self, tagged_element: tuple[int, Element]) -> bool:
-        from sage.rings.integer import Integer as SageInteger
+        def __iter__(self) -> "Iterator[tuple[int, Element]]":
+            r"""Fair enumeration, delegated to Sage's disjoint union.
 
-        if not isinstance(tagged_element, tuple) or len(tagged_element) != 2:
-            return False
-        index, element = tagged_element
-        # Sage's disjoint-union enumeration tags with Sage integers; a
-        # session writes python ints.  Both name the same index.
-        if not isinstance(index, (int, SageInteger)):
-            return False
-        position = int(index)
-        return 0 <= position < len(self._cofactors) and element in self._cofactors[position]
+            ``DisjointUnionEnumeratedSets`` with ``keepkey=True`` yields the
+            tagged pairs fairly across infinite cofactors, which the naive
+            cofactor-by-cofactor loop does not.
+            """
+            from sage.sets.disjoint_union_enumerated_sets import (
+                DisjointUnionEnumeratedSets,
+            )
+            from sage.sets.family import Family
 
-    def injection(self, index: int) -> Morphism:
-        r"""The ``index``-th coproduct injection \(\iota_i:X_i\to\coprod_j X_j\)."""
-        from sage.categories.homset import Hom
-        from sage.categories.morphism import SetMorphism
-        from sage.categories.sets_cat import Sets as SageSets
+            return iter(
+                DisjointUnionEnumeratedSets(
+                    Family(list(self._cofactors)), keepkey=True
+                )
+            )
 
-        assert 0 <= index < len(self._cofactors), (
-            f"no coproduct cofactor has index {index}"
-        )
-        cofactor = self._cofactors[index]
-        return SetMorphism(
-            Hom(cofactor, self, SageSets()), lambda element: (index, element)
-        )
+        def __contains__(self, tagged_element: tuple[int, Element]) -> bool:
+            from sage.rings.integer import Integer as SageInteger
 
-    def _repr_(self) -> str:
-        if not self._cofactors:
-            return "Empty coproduct of sets"
-        return " + ".join(str(cofactor) for cofactor in self._cofactors)
+            if not isinstance(tagged_element, tuple) or len(tagged_element) != 2:
+                return False
+            index, element = tagged_element
+            # Sage's disjoint-union enumeration tags with Sage integers; a
+            # session writes python ints.  Both name the same index.
+            if not isinstance(index, (int, SageInteger)):
+                return False
+            position = int(index)
+            return 0 <= position < len(self._cofactors) and element in self._cofactors[position]
+
+        def injection(self, index: int) -> Morphism:
+            r"""The ``index``-th coproduct injection \(\iota_i:X_i\to\coprod_j X_j\)."""
+            from sage.categories.homset import Hom
+            from sage.categories.morphism import SetMorphism
+            from sage.categories.sets_cat import Sets as SageSets
+
+            assert 0 <= index < len(self._cofactors), (
+                f"no coproduct cofactor has index {index}"
+            )
+            cofactor = self._cofactors[index]
+            return SetMorphism(
+                Hom(cofactor, self, SageSets()), lambda element: (index, element)
+            )
+
+        def _repr_(self) -> str:
+            if not self._cofactors:
+                return "Empty coproduct of sets"
+            return " + ".join(str(cofactor) for cofactor in self._cofactors)
 
 
-class TensorProductCategory(CoconeCategory):
+def CoproductOfSets(cofactors: "Iterable[Parent]") -> Parent:
+    r"""The coproduct \(\coprod_i X_i\) of sets, as the tagged disjoint union.
+
+    The construction is the category: what a coproduct of sets *is* -- its
+    cofactors, its cardinality, its enumeration, its injections, its elements
+    -- is declared once on ``CoproductsOfSets.ParentMethods``, and the object
+    is that category's parent class carrying the one datum this level
+    introduces.
+    """
+    from dzack_research.preamble.owned_category import object_of
+
+    return object_of(CoproductsOfSets(), cofactors=tuple(cofactors))
+
+
+class TensorProductCategory(_IndexedDiagramParameters, Category):
     r"""A tensor product \(X_1\otimes\cdots\otimes X_n\).
 
     A cocone -- an object *under* something -- and what it is under is the
@@ -712,13 +766,26 @@ class TensorProductCategory(CoconeCategory):
         factors = tuple(factors)
         self._tensor_factors: "tuple[ModuleParent, ...]" = factors
         source = CartesianProductOfSets(factors)
-        CoconeCategory.__init__(self, ambient_category, (0,), (source,), ())
+        super().__init__(ambient_category, (0,), (source,), ())
 
     def _repr_(self) -> str:
         return (
             f"Category of tensor products of {self._tensor_factors} "
             f"in {self._ambient_category}"
         )
+
+    def super_categories(self) -> list[Category]:
+        # A tensor product is a cocone under \(M\times N\), which is what
+        # supplies the universal bilinear map read below as
+        # ``costructure_morphism(0)``.
+        return [
+            CoconeCategory(
+                self._ambient_category,
+                self._index_set,
+                self._diagram_objects,
+                self._diagram_morphisms,
+            )
+        ]
 
     class ParentMethods:
         def tensor_factors(self: "TensorProductParent") -> "tuple[ModuleParent, ...]":
