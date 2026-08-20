@@ -177,7 +177,23 @@ class FormModules(OwnedCategoryOverBaseRing):
         return "form modules"
 
     def super_categories(self) -> list:
-        return [FramedModules(self.base_ring())]
+        r"""A formed module is a module with a form.  It need not be framed.
+
+        A framing is what a *presentation* of the form needs -- a Gram matrix
+        is written against chosen generators -- and ``forms.sage`` says so
+        itself: an unframed module states its pairing on \(U(M)\times U(M)\)
+        instead, which by the universal property of the tensor product is the
+        same datum.  Requiring a framing here made that unreachable, because
+        ``_is_framed`` asks category *membership*, so a formed module was
+        reported framed and asked for a framing datum it had never been given.
+        Modules that do carry one are placed in the framed nodes by their own
+        constructors and keep everything they had.
+        """
+        from dzack_research.preamble.categories.modules.pure.modules import (
+            Modules as OwnedModules,
+        )
+
+        return [OwnedModules(self.base_ring())]
 
     class ParentMethods(_ParentBase):
 
@@ -208,15 +224,6 @@ class FormModules(OwnedCategoryOverBaseRing):
         def forget_form(self: "FormedParent") -> "Module":
             r"""Return the underlying module, forgetting the form."""
             return self._module
-
-        def cardinality(self: "FormedParent") -> "Cardinal":
-            r"""Return \(|M|\), which forgetting the form does not change.
-
-            The functor to modules is the identity on underlying sets -- a
-            form is extra structure on the same elements -- so the count is
-            the underlying module's and is asked there.
-            """
-            return self.forget_form().cardinality()
 
         def twist(self: "FormedParent", scalar: "RingElement") -> "FormModule":
             r"""Return $M(s)$: the same underlying module, the form rescaled by ``scalar``.
