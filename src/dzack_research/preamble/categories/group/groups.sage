@@ -88,6 +88,36 @@ def _group_inclusion_image(
     return containing_group(element)
 
 
+def _canonical_subgroup_inclusion(subgroup: "Group") -> SetMorphism:
+    r"""Return \(\iota:H\hookrightarrow G\), the arrow \(H\) is a subgroup by.
+
+    One implementation for the two levels that name it: the owned groups node,
+    where every group has it and a group naming no containing group is a
+    subgroup of itself by the identity, and the subobject construction, where
+    it is the datum the construction is about.  A group whose presentation
+    determines its own arrow -- a subgroup of \(\operatorname{Aut}(M)\), whose
+    inclusion *is* the representation \(\rho\) -- names it and that one is
+    returned.
+    """
+    specialized = getattr(subgroup, "_subgroup_inclusion", None)
+    if specialized is not None:
+        inclusion: SetMorphism = specialized()
+        return inclusion
+    containing_group = subgroup.supergroup()
+    # In the owned category, because both ends are owned groups: an object
+    # reached only through the owned tree -- a predicate subgroup among them --
+    # is in no Sage group category at all, and asking for the homset there
+    # refuses it.
+    return SubgroupInclusion(
+        Hom(subgroup, containing_group, OwnedGroups()),
+        lambda element: _group_inclusion_image(
+            subgroup,
+            containing_group,
+            element,
+        ),
+    )
+
+
 if TYPE_CHECKING:
     from typing import Protocol
 
@@ -456,19 +486,7 @@ class OwnedGroups(Category):
 
         def inclusion(self: Self) -> SetMorphism:
             r"""Return the canonical inclusion homomorphism into the containing group."""
-            specialized = getattr(self, "_subgroup_inclusion", None)
-            if specialized is not None:
-                inclusion: SetMorphism = specialized()
-                return inclusion
-            containing_group = self.supergroup()
-            return SubgroupInclusion(
-                Hom(self, containing_group, SageGroups()),
-                lambda element: _group_inclusion_image(
-                    self,
-                    containing_group,
-                    element,
-                ),
-            )
+            return _canonical_subgroup_inclusion(self)
 
         def group_generators(self: Self) -> "OrderedSet":
             r"""Return \(S\), the images in \(G\) of the generating morphism.
@@ -757,6 +775,20 @@ class OwnedGroups(Category):
         subgroup of a finite group is a subgroup that is finite, not a second
         construction.
         """
+
+        class ParentMethods:
+            def inclusion(self: Self) -> SetMorphism:
+                r"""Return \(\iota:H\hookrightarrow G\), the datum of this level.
+
+                Named here and not left to the owned groups node above:
+                :class:`SubobjectsCategory` declares ``inclusion`` abstract,
+                and a construction category's own declaration precedes its
+                supercategory's implementation, so a subgroup would answer
+                nothing for the one arrow it is defined by.  The owned groups
+                node keeps the same arrow for a group reached outside this
+                construction, and both call one implementation.
+                """
+                return _canonical_subgroup_inclusion(self)
 
 
 class OwnedFinitelyGeneratedGroups(Category):
