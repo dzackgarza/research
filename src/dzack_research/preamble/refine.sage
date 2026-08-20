@@ -309,21 +309,33 @@ def _reclass_chain_built(obj: "Parent", category: "Category") -> None:
 
 
 def _rebuild_parent_class(obj: "Parent", category: "Category") -> None:
-    # Only preamble/category ParentMethods mixins precede the concrete class —
-    # never the full Sage parent_class (which would hoist Modules.basis etc.).
+    # Owned ParentMethods precede the concrete class; the joined parent_class
+    # follows it, which is where Sage itself puts it -- its own
+    # ``X_with_category`` is ``(X, category.parent_class)``.  Only the *order*
+    # is this preamble's: hoisting the full parent_class in front would put
+    # ``Modules.basis`` and its fellows over the concrete class, and dropping
+    # it took away everything Sage's categories supply and the preamble does
+    # not restate.  ``CoxeterGroup.order()`` calls ``len(self)``, and
+    # ``__len__`` is on ``FiniteEnumeratedSets.parent_class``.
     mixins = _method_mixins(category, "ParentMethods")
     if not mixins:
         return
     concrete = _concrete_base(obj)
-    # Hoist only what the concrete class does not already carry.  A methods
-    # class already inside ``concrete`` is installed, in category order, and
-    # C3 refuses a base placed in front of a class that contains it:
-    # ``TypeError: Cannot create a consistent method resolution order (MRO)
-    # for bases FormModules.Homsets.ParentMethods,
-    # FormModules.Homsets.parent_class``.  ``object`` arrives here the same
-    # way, from a super category with no methods class of its own, and is a
-    # base every other base already derives from.
-    carried = frozenset(concrete.__mro__)
+    # The single base is the class the object already had -- Sage's own
+    # ``X_with_category``, which is ``(X, its category.parent_class)``.  Using
+    # the bare ``X`` instead dropped every method Sage's categories supply and
+    # the preamble does not restate: ``CoxeterGroup.order()`` calls
+    # ``len(self)``, and ``__len__`` is on ``FiniteEnumeratedSets.parent_class``.
+    # Kept across a second refinement so the wrappers do not nest.
+    inherited = getattr(type(obj), "_preamble_inherited", type(obj))
+    # Hoist only what that class does not already carry.  A methods class
+    # already inside it is installed, in category order, and C3 refuses a base
+    # placed in front of a class that contains it: ``TypeError: Cannot create
+    # a consistent method resolution order (MRO) for bases
+    # FormModules.Homsets.ParentMethods, FormModules.Homsets.parent_class``.
+    # ``object`` arrives here the same way, from a super category with no
+    # methods class of its own, and is a base every other base derives from.
+    carried = frozenset(inherited.__mro__)
     mixins = tuple(
         mixin for mixin in mixins if mixin is not object and mixin not in carried
     )
@@ -335,10 +347,11 @@ def _rebuild_parent_class(obj: "Parent", category: "Category") -> None:
     )
     new_cls = dynamic_class(
         f"{concrete.__name__}_with_category",
-        (*mixins, concrete),
+        (*mixins, inherited),
         doccls=concrete,
     )
     new_cls._preamble_concrete = concrete
+    new_cls._preamble_inherited = inherited
     obj.__class__ = new_cls
 
 def _rebuild_element_class(parent: "Parent", category: "Category") -> None:
