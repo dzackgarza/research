@@ -690,7 +690,19 @@ $\mathbb{Z}$-algebra, a group and a monoid — one object, several categories. A
 subobject *is* the module $S$, an object of the ambient category like any other,
 which additionally has an inclusion $f: S\hookrightarrow B$. Underlying-ness is what
 a forgetful functor produces on demand, never data an object stores.
-*The tell:* the phrase "has an underlying X"; a stored `self._underlying`; a
+The construction says the same thing, in the same direction: a free module of rank
+$n$ over $R$ is built **on** the underlying set $R^n$, and a lattice is that module
+with a form. So every set-theoretic answer — cardinality, finiteness, countability,
+the owned `Sets()` placement, membership, enumeration — is *inherited through the
+construction*, never assigned to the enriched object. A lattice has no cardinality;
+its underlying set has one, and $|R^n| = |R|^n$ (the rank-zero module is the
+singleton, so its set has cardinality one). If a construction reaches a lattice
+without passing through an owned set that answers these, the construction is wrong
+and stamping a placement onto the lattice hides it.
+*The tell:* a placement, cardinality, or enumeration installed on a module, lattice
+or group directly; `_is_known_empty`-style code refusing an object "for want of a
+placement" when the fix is that its underlying set was never built; the phrase "has
+an underlying X"; a stored `self._underlying`; a
 `forget_*()` call used to obtain the receiver of a method rather than to name a
 functor; delegation chains for methods the object already has from its own category.
 (Vault: `subobjects-are-a-subcategory-not-a-wrapper`.)
