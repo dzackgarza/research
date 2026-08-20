@@ -410,13 +410,20 @@ class BilinearFormMorphism(Morphism):
             "a bilinear form is evaluated on the two elements it pairs"
         )
         left, right = x, args[0]
-        # Finitely presented quotient elements are ModuleElements; the
-        # parent-identity assert below is the real mathematical precondition.
         assert isinstance(left, Element) and isinstance(right, Element), (
             "a bilinear form pairs elements"
         )
+        # Membership, not parent identity: the domain of the form is
+        # ``self.module()``, and being an element of it is what the question
+        # asks.  The two agree for a module whose members answer to it, and
+        # part company for a facade, whose members answer to its host --
+        # so identity would refuse elements that are in the domain.  An
+        # element of a module *enriched* over this one (a formed module's
+        # element over its underlying module) is not in this domain and
+        # reaches it through the forgetful map, which is what
+        # ``FormedModules.ElementMethods.b`` applies before calling here.
         assert all(
-            element.parent() is self.module()
+            element in self.module()
             for element in (left, right)
         ), f"the form pairs elements of {self.module()}"
         if self._pairing is not None:
@@ -629,12 +636,11 @@ class QuadraticFormMorphism(Morphism):
             "a quadratic form is evaluated on one element"
         )
         element = x
-        # Finitely presented quotient elements are ModuleElements; the
-        # parent-identity assert below carries the mathematics.
         assert isinstance(element, Element), (
             "a quadratic form is evaluated on an element"
         )
-        assert element.parent() is self.module(), (
+        # Membership, for the reason given on the bilinear ``__call__``.
+        assert element in self.module(), (
             f"{element} is not an element of {self.module()}"
         )
         coordinates = _coordinate_vector(element)

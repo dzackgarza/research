@@ -1589,7 +1589,7 @@ class GroupActionHomset(GroupActionHomsetBase):
         assert len(images) == len(generators), (
             f"{group} has {len(generators)} generators, got {len(images)} images"
         )
-        assert all(image.parent() is automorphisms for image in images), (
+        assert all(image in automorphisms for image in images), (
             "the generator images must belong to the automorphism group of this homset"
         )
         values = {group.one(): automorphisms.one()}
@@ -1652,7 +1652,7 @@ class GroupAction(Morphism):
         assert set(values) == set(group), (
             "the action must name the image of every group element"
         )
-        assert all(value.parent() is automorphisms for value in values.values()), (
+        assert all(value in automorphisms for value in values.values()), (
             "every value must belong to the stated automorphism group"
         )
         assert values[group.one()] == automorphisms.one(), (

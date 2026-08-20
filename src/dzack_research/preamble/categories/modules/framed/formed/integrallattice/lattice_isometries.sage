@@ -1106,7 +1106,7 @@ class LatticeIsometrySubgroup(
         )
         assert group_generators, "a generated subgroup needs a generator"
         assert all(
-            generator.parent() is supergroup for generator in group_generators
+            generator in supergroup for generator in group_generators
         ), "each subgroup generator must belong to the stated isometry group"
         self._group_generators = finite_ordered_set(
             [

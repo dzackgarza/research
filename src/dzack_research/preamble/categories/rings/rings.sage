@@ -27,7 +27,12 @@ preamble's shared load namespace it sends Sage's axiom deduction hunting for a
 base category class by name, where it finds the preamble's groups node.
 """
 
-from dzack_research.preamble.owned_category import CatConstructionsMixin
+from dzack_research.preamble.owned_category import (
+    CatConstructionsMixin,
+    OwnedCategoryMixin,
+    object_of,
+)
+from dzack_research.preamble.categories.sets.owned_sets import Sets as OwnedSets
 from collections.abc import Callable, Iterator
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -62,6 +67,7 @@ from sage.categories.rings import Rings as SageRings
 from sage.categories.rngs import Rngs as SageRngs
 from sage.categories.semirings import Semirings as SageSemirings
 from sage.rings.integer import Integer as SageInteger
+from sage.rings.finite_rings.finite_field_constructor import GF as SageGF
 # The engine's own names for the two rings the preamble computes in, bound
 # here for every script that loads after this one.  A session binds ``ZZ`` and
 # ``QQ`` to the owned view of them, and the preamble shares that namespace, so
@@ -238,6 +244,57 @@ class OwnedRings(Category):
             )
             assert exponent >= 0, "a rank is a nonnegative cardinality"
             return BasedFreeModule(self, exponent)
+
+
+class PrimeFields(OwnedCategoryMixin, Category):
+    r"""\(\mathbb{F}_p\), constructed through the chain rather than adopted.
+
+    The ring level's first construction that *builds* rather than wraps.
+    :class:`OwnedRing` presents a ring Sage already holds; this declares one,
+    and the difference is where its set-theoretic answers come from.  Being a
+    ring here means being a set with ring structure, so this level declares
+    where it sits among the owned sets -- \(\mathbb{F}_p\) has \(p\) elements
+    for every prime \(p\), which is a fact about the mathematics and not a
+    stamp on an object -- and the enumeration below is the witness that level
+    asks for.  Nothing here counts anything; the set level does, once, from
+    that enumeration.  The engine computes the arithmetic and is never the
+    object, so nothing here asks ``GF(p)`` how big it is either.
+    """
+
+    @classmethod
+    def _repr_object_names(cls) -> str:
+        return "prime fields"
+
+    def super_categories(self) -> list:
+        return [OwnedRings(), OwnedSets().Finite()]
+
+    class ParentMethods:
+        def __init__(self, characteristic: SageInteger, **rest: object) -> None:
+            self._characteristic = characteristic
+            self._engine = SageGF(characteristic)
+            # The elements are the engine's, for the reason ``OwnedRing``
+            # gives: a ring's underlying set does not change by being placed,
+            # and an element parented here would lose every coercion Sage
+            # knows for the engine's.
+            super().__init__(facade=self._engine, **rest)
+
+        def characteristic(self) -> SageInteger:
+            return self._characteristic
+
+        def __iter__(self) -> "Iterator[Element]":
+            r"""The residues, which is what makes this a finite set."""
+            return iter(self._engine)
+
+        def _element_constructor_(self, value: "Element") -> "Element":
+            return self._engine(value)
+
+        def _repr_(self) -> str:
+            return f"FF_{self._characteristic}"
+
+
+def PrimeField(characteristic: SageInteger) -> Parent:
+    r"""Return \(\mathbb{F}_p\), built through the chain."""
+    return object_of(PrimeFields(), characteristic=characteristic)
 
 
 class OwnedDivisionRings(Category):

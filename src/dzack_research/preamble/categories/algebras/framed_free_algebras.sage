@@ -1643,7 +1643,7 @@ class FreeAlgebraOnSet(FreeModuleOnSet):
             f"{self!r} has {algebra_generating_set_cardinality} algebra generators, "
             f"got {len(values)}"
         )
-        assert all(value.parent() is codomain for value in values), (
+        assert all(value in codomain for value in values), (
             "all values in a finite assignment must belong to the specified codomain"
         )
         return dict(zip(self._algebra_generating_set, values, strict=True))

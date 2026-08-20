@@ -1429,7 +1429,7 @@ def regenerating_data(form: "FormMorphism", module_generators: "OrderedSet") -> 
     change of generating set and not a pairing computed behind the form's back.
     """
     module_generators = list(module_generators)
-    assert all(generator.parent() is form for generator in module_generators), (
+    assert all(generator in form for generator in module_generators), (
         "a generating set for this object is made of its own elements; "
         "elements of another module reach it through a morphism"
     )

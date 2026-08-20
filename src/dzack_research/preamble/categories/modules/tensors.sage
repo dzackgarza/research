@@ -390,7 +390,7 @@ def divided_square_element(module: "Module", element: "Element") -> "Element":
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _coordinate_vector
     from dzack_research.preamble.utilities import zipsum
 
-    assert element.parent() is module, f"{element} is not an element of {module}"
+    assert element in module, f"{element} is not an element of {module}"
     labels = tuple(module.module_generating_set())
     coordinates = _coordinate_vector(element)
     algebra = DividedPowerAlgebraOn(module.base_ring(), module.module_generating_set())
@@ -1042,7 +1042,7 @@ class MixedTensorElement(ModuleElement):
             if component != component.parent().zero()
         }
         assert all(
-            component.parent() is parent.homogeneous_piece(valence)
+            component in parent.homogeneous_piece(valence)
             for valence, component in self._components.items()
         ), "each component must belong to its stated bidegree"
 

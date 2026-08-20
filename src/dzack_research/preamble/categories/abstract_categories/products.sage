@@ -752,7 +752,7 @@ class TensorProductCategory(CoconeCategory):
                 f"{len(factors)} expected, {len(elements)} given"
             )
             assert all(
-                element.parent() is factor
+                element in factor
                 for element, factor in zip(elements, factors)
             ), "each element belongs to its own factor"
             tensor: Element = self._pure_tensor(*elements)
