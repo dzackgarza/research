@@ -1569,21 +1569,21 @@ class GroupAction(Morphism):
         Morphism.__init__(self, parent)
         group = parent.domain()
         automorphisms = parent.codomain()
-        assert group.is_finite(), "this constructor requires a finite group"
-        assert set(values) == set(group), (
-            "the action must name the image of every group element"
-        )
         assert all(value in automorphisms for value in values.values()), (
             "every value must belong to the stated automorphism group"
         )
-        assert values[group.one()] == automorphisms.one(), (
-            "the identity must map to the identity automorphism"
+        # $\rho$ is determined by its values on a generating set, so that is
+        # what the assignment must name.  Ranging over $G$ instead -- to check
+        # coverage, the identity and the homomorphism law pairwise -- required
+        # $G$ to be finite and cost $|G|^2$, which rules out every ordinary
+        # input here: $\mathrm{GL}_n(R)$, $O(L)$ for indefinite $L$, and the
+        # infinite cyclic group a single isometry generates.  The law itself
+        # is not checkable on generators without the relations, so it is not
+        # claimed rather than claimed on the finite cases alone.
+        group_generators = getattr(group, "group_generators", None)
+        assert group_generators is None or set(group_generators()) <= set(values), (
+            "the action must name the image of every group generator"
         )
-        assert all(
-            values[left * right] == values[left] * values[right]
-            for left in group
-            for right in group
-        ), "the supplied function is not a group homomorphism"
         self._values = dict(values)
 
     def module(self) -> "Module":

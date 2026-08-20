@@ -172,9 +172,11 @@ def classifying_morphism(quadratic: QuadraticMapMorphism) -> "Morphism":
 
 def quadratic_map_from_morphism(morphism: "Morphism") -> SetMorphism:
     r"""Evaluate \(f:\Gamma^2M\to W\) on \(\gamma_2(x)\)."""
-    square = morphism.domain()
-    module = square.__dict__.get("_divided_square_of")
-    assert module is not None, "the morphism domain must be a divided square"
+    # Local: the tensor node imports this module, so a module-level import
+    # here would close that cycle; it is built by the time a form is evaluated.
+    from dzack_research.preamble.categories.modules.tensors import divided_square_of
+
+    module = divided_square_of(morphism.domain())
     return QuadraticMap(
         module,
         morphism.codomain(),

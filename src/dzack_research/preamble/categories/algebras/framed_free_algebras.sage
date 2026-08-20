@@ -36,6 +36,7 @@ from dzack_research.preamble.categories.algebras.free_algebras import TensorAlge
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
 from dzack_research.preamble.owned_category import object_of
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
+from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.sets import _as_set
 from sage.misc.cachefunc import cached_method
 from dzack_research.preamble.categories.rings.rings import engine_ring
@@ -683,8 +684,12 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
             )
 
         def number_of_algebra_generators(self: "FreeAlgebraParent") -> "Cardinal":
-            r"""Return \(|S|\), the cardinality of the algebra generating set."""
-            return self.algebra_generating_set().cardinality()
+            r"""Return \(|S|\), the cardinality of the algebra generating set.
+
+            A cardinal, not an integer: a generating set may be infinite, and
+            the count of one is the thing that can say so.
+            """
+            return cardinal(self.algebra_generating_set().cardinality())
 
         def number_of_module_generators(self: "FreeAlgebraParent") -> "Cardinal":
             r"""Return \(|\operatorname{Mon}(S)|\).

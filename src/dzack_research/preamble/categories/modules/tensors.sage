@@ -368,6 +368,19 @@ def DividedSquare(module: "Module") -> "_GradedPiece":
     return square
 
 
+def divided_square_of(square: "_GradedPiece") -> "Module":
+    r"""Return the \(M\) whose divided square ``square`` is.
+
+    The reading sits beside the construction that establishes it, so a caller
+    asks the divided square what it is the square of instead of going through
+    the object's storage.
+    """
+    module = square.__dict__.get("_divided_square_of")
+    assert module is not None, "the module is not a divided square"
+    underlying: "Module" = module
+    return underlying
+
+
 def divided_square_element(module: "Module", element: "Element") -> "Element":
     r"""Return \(\gamma_2(x)\in\Gamma^2M\)."""
     from dzack_research.preamble.categories.algebras.framed_free_algebras import DividedPowerAlgebraOn

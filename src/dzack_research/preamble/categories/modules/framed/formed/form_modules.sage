@@ -1399,6 +1399,11 @@ def FormModule(form: "Form") -> Parent:
     elif hasattr(module, "module_generating_set"):
         data["module_generating_set"] = module.module_generating_set()
     formed = object_of(category, **data)
+    # The form is re-read on the object it is the form *of*.  It arrives here
+    # written on $M$, because $L$ did not exist when it was stated; but $L$ is
+    # $M$ with that form, so a form of $L$ that its own elements cannot be fed
+    # to is a form of something else.
+    formed._form = form.on_module(formed)
     formed._refine_from_form()
     return formed
 
