@@ -700,19 +700,25 @@ singleton, so its set has cardinality one). If a construction reaches a lattice
 without passing through an owned set that answers these, the construction is wrong
 and stamping a placement onto the lattice hides it.
 **How the inheritance is threaded matters as much as that it is.** Classes are thin
-containers, so a module or lattice class never inherits from — or imports — a set
-class to acquire set-theoretic methods; that coupling is what the category system
-exists to remove. Two admissible routes, and no third: thread it **through
-categories**, where the methods live in the owned `Sets()` placement categories'
-`ParentMethods` and reach the object dynamically because its category chain reaches
-`Sets`, the object supplying only the datum they consume; or thread it by **explicit
-composition through the forgetful functor**, each step named, as
-`FormModules.ParentMethods.cardinality` does when it delegates to
-`forget_form().cardinality()`. Either way the computation lives once, with the set
-notion, and is never restated at each level of enrichment.
+containers holding data and construction; the mathematics is category `ParentMethods`.
+What is banned is a *hand-written* chain — a module or lattice file importing a set
+class, or naming one in its bases — because then the class graph and the category graph
+drift independently and nothing detects it. The class hierarchy is instead **derived
+from the category graph**: one concrete class is bound to each category, and the class
+realizing a category takes as its bases the classes bound to that category's
+super-categories, computed rather than written (`BoundTo(Sets)` via `__mro_entries__`).
+Construction then threads by cooperative `super().__init__` — the set level builds the
+underlying set and establishes the set-theoretic facts, the module level adds the ring
+action, the form level adds the form — so a new leaf declares only its own category, its
+own data, and its own construction step, and never restates a level below it. Exactly one
+class, the set-level root, may call Sage's non-cooperative `Parent.__init__`; a level
+that calls it directly silently breaks the chain. The decision record, with the options
+weighed and the approaches already falsified, is the plan card
+`PLAN-threading-set-behaviour`.
 *The tell:* a placement, cardinality, or enumeration installed on a module, lattice
-or group directly; a set class imported into a module or lattice file, or named as a
-base class there; the same count computed again at a second level of enrichment;
+or group directly; a set class imported into a module or lattice file, or hand-written in
+its bases; a constructor that calls `Parent.__init__` instead of `super().__init__`;
+the same count computed again at a second level of enrichment;
 `_is_known_empty`-style code refusing an object "for want of a
 placement" when the fix is that its underlying set was never built; the phrase "has
 an underlying X"; a stored `self._underlying`; a
