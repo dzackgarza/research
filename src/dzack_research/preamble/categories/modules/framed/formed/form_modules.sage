@@ -588,11 +588,17 @@ class FormModules(OwnedCategoryOverBaseRing):
             return isinstance(element, Element) and element.parent() is self
 
         def _over(self: Self, element: "UnderlyingElement") -> "Element":
-            formed: "Element" = self.element_class(self, element)
-            return formed
+            r"""Return this module's element reading ``element``'s coordinates.
 
-        def zero(self: Self) -> "Element":
-            return self._over(super().zero())
+            \(M\) and this module are the free module on one framing set over
+            one ring: equipping \(M\)'s form built a second object of that
+            category, and the isomorphism between the two is the identity on
+            the framing, hence the identity on coordinates.  Nothing is
+            wrapped -- the element is this module's own, made the way this
+            module makes elements.
+            """
+            formed: "Element" = self._from_coordinates(element._coordinates())
+            return formed
 
         def _repr_(self: Self) -> str:
             return (
@@ -601,52 +607,30 @@ class FormModules(OwnedCategoryOverBaseRing):
             )
 
     class ElementMethods:
-        r"""An element of a formed module, and its image after forgetting the form."""
+        r"""An element of a formed module: the form is on the parent.
 
-        def __init__(
-            self: Self,
-            parent: Parent,
-            element: "UnderlyingElement",
-            **rest: "ConstructionData",
-        ) -> None:
-            assert element.parent() is parent, (
-                f"{element} is not an element of {parent}"
-            )
-            self._underlying = element
-            super().__init__(parent, **rest)
+        A formed module *is* a module, so its elements are that module's own
+        and this level adds no datum to them.  Addition, negation, scaling,
+        comparison, coordinates and coefficients are all answered by the
+        module level the formed module is constructed through; what is
+        declared here is what the *form* gives an element -- its norm, the
+        pairing with another element, the subobject it spans.
+        """
 
         def underlying_element(self: Self) -> "UnderlyingElement":
-            return self._underlying
+            r"""Return this element read in the module the form is written on.
 
-        def coefficients(self: Self) -> dict["Element", "RingElement"]:
-            return dict(self._underlying.coefficients())
-
-        def _add_(self: Self, other: Self) -> "Element":
-            return self.parent()._over(self._underlying + other._underlying)
-
-        def _sub_(self: Self, other: Self) -> "Element":
-            return self.parent()._over(self._underlying - other._underlying)
-
-        def _neg_(self: Self) -> "Element":
-            return self.parent()._over(-self._underlying)
-
-        def _lmul_(self: Self, factor: "RingElement") -> "Element":
-            return self.parent()._over(factor * self._underlying)
-
-        _rmul_ = _lmul_
-
-        def _richcmp_(self: Self, other: Self, op: int) -> bool:
-            return bool(richcmp(self._underlying, other._underlying, op))
-
-        def __hash__(self: Self) -> int:
-            return hash((id(self.parent()), self._underlying))
-
-        def _repr_(self: Self) -> str:
-            return repr(self._underlying)
-
-        def _coordinates(self: "FormedElement") -> "Vector":
-            coordinates: "Vector" = self.underlying_element()._coordinates()
-            return coordinates
+            The action on elements of the functor forgetting the form.  The
+            two modules are framed by one set, so the arrow is the identity
+            on coordinates; what changes is which parent the element answers
+            to, and the form is a morphism out of \(M\), so it is evaluated
+            on \(M\)'s elements.
+            """
+            module: "Module" = self.parent().form().module()
+            underlying: "UnderlyingElement" = module._from_coordinates(
+                self._coordinates()
+            )
+            return underlying
 
         def b(self: "FormedElement", other: "Element") -> "Element":
             # Local: a module-level import here would close a cycle; by call time this module is built.
@@ -716,7 +700,7 @@ class FormModules(OwnedCategoryOverBaseRing):
                 case Element() if other.parent() is self.parent():
                     return self.b(other)
                 case scalar if scalar in self.parent().base_ring():
-                    return self.parent()._over(scalar * self.underlying_element())
+                    return self._lmul_(scalar)
                 case _:
                     assert False, (
                         f"{other} is neither an element of {self.parent()} nor "
