@@ -14,6 +14,7 @@ from sage.categories.groups import Groups
 from sage.matrix.matrix0 import Matrix
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
 from dzack_research.preamble.categories.modules.framed.framed_modules import FramedModules
+from sage.categories.category import Category as SageCategory
 from sage.categories.modules import Modules
 if TYPE_CHECKING:
     from sage.categories.category import Category
@@ -222,7 +223,6 @@ class FormModules(OwnedCategoryOverBaseRing):
                     )
             module = form.module()
             self._form = form
-            self._module = module
             super().__init__(**rest)
             source = module.framing_morphism().domain()
             underlying_module_generator_morphism = module.module_generator_morphism()
@@ -256,10 +256,6 @@ class FormModules(OwnedCategoryOverBaseRing):
         def form(self: "FormedParent") -> "Form":
             r"""Return the form morphism classifying this object."""
             return self._form_morphism()
-
-        def forget_form(self: "FormedParent") -> "Module":
-            r"""Return the underlying module, forgetting the form."""
-            return self._module
 
         def twist(self: "FormedParent", scalar: "RingElement") -> Parent:
             r"""Return $M(s)$: the same underlying module, the form rescaled by ``scalar``.
@@ -448,7 +444,7 @@ class FormModules(OwnedCategoryOverBaseRing):
             from dzack_research.preamble.categories.rings.rings import engine_ring
             from dzack_research.preamble.refine import refine
             from dzack_research.preamble.categories.modules.framed.formed.integrallattice.integral_lattices import refine_one_lattice
-            module = self._module
+            module = self
             # Equipping a module with a form leaves its elements alone, so the
             # underlying set -- and every placement that set determines -- is the
             # module's own.
@@ -592,11 +588,11 @@ class FormModules(OwnedCategoryOverBaseRing):
             return formed
 
         def zero(self: Self) -> "Element":
-            return self._over(self._module.zero())
+            return self._over(super().zero())
 
         def _repr_(self: Self) -> str:
             return (
-                f"{type(self._form).__name__} on {self._module} with values in "
+                f"{type(self._form).__name__} on the module with values in "
                 f"{self.value_module()}"
             )
 
@@ -1355,8 +1351,27 @@ class FinitelyGeneratedFreeFormModules(OwnedCategoryOverBaseRing):
 
 
 def FormModule(form: "Form") -> Parent:
-    r"""Return the formed object one form morphism classifies."""
-    return object_of(FormModules(form.module().base_ring()), form=form)
+    r"""Return the formed object one form morphism classifies.
+
+    The form is the datum, and \(M\) is recovered from it: the form's domain
+    is \(T^2M\) or \(\Lambda^2M\), so the module it is written on is
+    ``form.module()``.  Nothing passes \(M\) alongside the form, which could
+    only disagree with it.
+
+    The object is built in \(M\)'s own category enriched by the form, so it
+    **is** a module rather than one that holds a module.  A framed \(M\)
+    hands its framing set up as the module level's datum; an unframed one has
+    none to hand, which is what ``FormModules`` means by not requiring a
+    framing.
+    """
+    module = form.module()
+    category = SageCategory.join(
+        [module.category(), FormModules(module.base_ring())]
+    )
+    data: dict[str, "ConstructionData"] = {"form": form}
+    if hasattr(module, "module_generating_set"):
+        data["module_generating_set"] = module.module_generating_set()
+    return object_of(category, **data)
 
 
 def is_form_morphism(morphism: "MembershipInput") -> bool:
