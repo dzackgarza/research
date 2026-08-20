@@ -128,6 +128,7 @@ def install_preamble(namespace: dict) -> None:
             "categories.modules.tensors",
             "categories.modules.framed.formed.integrallattice.vinberg_invariants",
             "categories.modules.framed.formed.form_modules",
+            "categories.modules.framed.formed.free_lattices",
             "categories.modules.pure.projective_modules",
             "categories.modules.framed.formed.lattices",
             "categories.modules.framed.formed.lattice_axioms",

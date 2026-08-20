@@ -29,6 +29,12 @@ from dzack_research.preamble.categories.forms.forms import (
     BilinearFormMorphism,
     QuadraticFormMorphism,
 )
+# Imported rather than named: ``install_preamble`` does not list
+# ``categories.modules.framed.formed.free_lattices``, so a session cannot
+# reach this constructor the way it reaches ``FreeModuleOfRank``.
+from dzack_research.preamble.categories.modules.framed.formed.free_lattices import (
+    FreeLatticeOfRank,
+)
 from dzack_research.preamble.categories.modules.tensors import (
     DividedSquare,
     TensorSquare,
@@ -104,6 +110,12 @@ def _constructions() -> dict:
         "free module on a set": FreeModuleOn(ZZ, Sets.Δ[2]),
         "based free module": BasedFreeModule(ZZ, Sets.Δ[2]),
         "R^n": ZZ**3,
+        # Not the row above: ``ZZ**3`` builds the framed free module on a
+        # chosen generating set, while these two are built through the
+        # category chain, where the underlying set is the product
+        # $R\times\cdots\times R$ and the form is added on top of it.
+        "free module of rank n": FreeModuleOfRank(ZZ, 3),
+        "free lattice of rank n": FreeLatticeOfRank(ZZ, identity_matrix(ZZ, 2)),
         "isometry group": Lattices.A2.Aut(),
         # A finite abstract group's automorphism group, and the stated-gap
         # specimen: Aut of a free group constructs -- the object exists --
@@ -153,6 +165,7 @@ def _constructions() -> dict:
         "square-integrable function module": square_integrable_functions(RR),
         "cartesian product of sets": CartesianProductOfSets((Sets.Δ[1], Sets.Δ[2])),
         "polynomial ring": QQ["x"],
+        "prime field": PrimeField(3),
         "a ring as an algebra over itself": ZZ,
         "subobject sum": Lattices.E8.subobject_on([2 * e[0]]).sum(
             Lattices.E8.subobject_on([3 * e[1]])
