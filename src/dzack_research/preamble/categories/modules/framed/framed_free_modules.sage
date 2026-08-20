@@ -267,7 +267,22 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
 
             self._module_generating_set = _as_set(module_generating_set)
             super().__init__(**rest)
-            if self._module_generating_set in Sets().Finite():
+            # Finite *and* totally ordered, because the level below is the
+            # based free modules and an ordering is what it adds.  An element
+            # here is the finitely supported \(a:S\to R\); what a chosen total
+            # order buys is a way to write that function down, as the
+            # coordinate vector indexed by the order.  Finiteness of \(S\) is a
+            # property of \(S\) and orders it not at all, so admitting a
+            # finite unordered framing to that level gives an object whose
+            # elements are asked for coordinates no order exists to produce:
+            # the exterior algebra, framed by the subsets of \(S\), and every
+            # algebra on the empty label set, framed by \(\{1\}\), both arrive
+            # that way.  This is the same test the constructor
+            # :func:`FreeModuleOn` applies, and the two must agree.
+            placement = self._module_generating_set.category()
+            if placement.is_subcategory(
+                Sets().Finite()
+            ) and placement.is_subcategory(Sets().TotallyOrdered()):
                 refine(self, FinitelyGeneratedFreeModules(self.base_ring()))
             # The underlying set: a module that cannot say whether it is
             # finite or infinite is unusable to every construction that ranges
