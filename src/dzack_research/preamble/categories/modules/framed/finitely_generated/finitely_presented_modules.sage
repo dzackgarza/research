@@ -5,7 +5,6 @@ declaring ``FinitelyGeneratedModules(R)`` in its supercategories.
 """
 
 
-
 from typing import Protocol, TYPE_CHECKING
 from dzack_research.preamble.utilities import zipsum
 if TYPE_CHECKING:
@@ -494,7 +493,6 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
                     right.inverse().change_ring(engine_ring(self.base_ring())).rows(),
                 ),
             )
-
 
     class ElementMethods:
         r"""A class of a presented module, reduced modulo its relations."""

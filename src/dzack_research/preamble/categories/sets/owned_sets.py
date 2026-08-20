@@ -341,6 +341,15 @@ class Sets(Category):
         This level carries what every homset has: the two objects it is taken
         between.  Sage's ``Homset`` holds them, and ``domain()`` and
         ``codomain()`` read them back.
+
+        **The constructor is ``Hom(X, Y, C)``, not ``object_of``.**  Sage's
+        ``Hom`` asks the domain through ``_Hom_``, which
+        ``Sets.ParentMethods`` answers; that method says why no other route
+        is available.  ``category`` here is therefore the category of the
+        *objects*, which is what Sage's ``Homset.__init__`` takes, and Sage
+        derives ``C.Homsets()`` or ``C.Endsets()`` from it.  A level whose
+        homsets carry a datum declares ``_Hom_`` on its objects, supplies the
+        datum there, and consumes it in its own ``Homsets.ParentMethods``.
         """
 
         class ParentMethods(OwnedParent, SageHomset):
@@ -423,6 +432,43 @@ class Sets(Category):
         def is_uncountable(self) -> bool:
             r"""Whether $|X| > \aleph_0$."""
             return bool(self.cardinality().is_uncountable())
+
+        def _Hom_(
+            self,
+            codomain: SageParent,
+            category: SageCategory | None = None,
+        ) -> SageParent:
+            r"""Build \(\operatorname{Hom}(X, Y)\) through the owned homset chain.
+
+            ``Sets.Homsets.ParentMethods`` is the homset implementation
+            class, so a homset of an owned category has to be built as that
+            class.  A plain Sage ``Homset`` cannot become one afterwards:
+            ``Parent._init_category_`` rewraps a fresh homset into
+            ``dynamic_class(name, (Homset, category.parent_class))``, and the
+            second base is now a subclass of the first, which C3 refuses.
+            Sage asks the domain first, so the construction happens here,
+            where the class is right from the start.
+
+            ``Hom`` is therefore the constructor of every owned homset.  A
+            level whose homsets carry a datum declares its own ``_Hom_``,
+            supplies that datum, and reaches this one by ``super()``.
+
+            A parent with its own ``_Hom_`` -- a ring, a free module -- keeps
+            it, because its concrete class precedes the category methods.  A
+            homset asked for in a category the preamble does not own stays
+            Sage's to build.
+            """
+            if category is None:
+                category = self.category()
+            # Dispatch, not a fallback: a Sage category gets Sage's homset and
+            # an owned category gets the owned one, which is the routing this
+            # repo already settled for ``Hom``.
+            if not category.is_subcategory(Sets()):
+                return SageHomset(self, codomain, category=category)
+            homset: SageParent = category.Homsets().parent_class(
+                domain=self, codomain=codomain, category=category
+            )
+            return homset
 
 
 class FiniteSets(CategoryWithAxiom):

@@ -1152,7 +1152,6 @@ def FormModule(form: "Form") -> Parent:
     return object_of(FormModules(form.module().base_ring()), form=form)
 
 
-
 # ``Homset`` is generic in its morphism type; the runtime class is not
 # subscriptable, so the binding goes through a TYPE_CHECKING-only alias.
 # The ends bind to a phantom NOMINAL type: a form homset's ends really are

@@ -25,6 +25,8 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from sage.categories.modules import Module
+    from sage.structure.parent import Parent
+    from dzack_research.preamble.owned_category import ConstructionData
 
 from typing import Self
 
@@ -34,6 +36,8 @@ from dzack_research.preamble.owned_category_bases import Category_over_base_ring
 from sage.categories.fields import Fields as SageFields
 from sage.categories.modules import Modules as SageModules
 from sage.misc.abstract_method import abstract_method
+from sage.structure.element import Element as SageElement
+from sage.structure.element import ModuleElement
 
 
 class Modules(Category_over_base_ring):
@@ -94,6 +98,30 @@ class Modules(Category_over_base_ring):
         def scalar_multiple(self: Self, scalar: "Element", element: "Element") -> "Element":
             r"""Return $r\cdot m$, which is $\rho(r)(m)$ and nothing else."""
             return self.scalar_action()(scalar)(element)
+
+    class ElementMethods(ModuleElement):
+        r"""An element of a module: where Sage's module element enters the chain.
+
+        The module level is where addition acquires scalars, so this is where
+        ``ModuleElement`` enters, as ``Element`` enters at the set level and
+        ``Parent`` at the parent root.  Sage finds the scalar action only for a
+        ``ModuleElement`` (``sage/structure/coerce_actions.pyx``), so without
+        this an element of a chain-built module has no $r\cdot m$ at all.
+        """
+
+        def __init__(self: Self, parent: "Parent", **rest: "ConstructionData") -> None:
+            ModuleElement.__init__(self, parent)
+
+        def __bool__(self: Self) -> bool:
+            r"""Return whether this element differs from $0$.
+
+            Sage states this for every element -- an element is true when it is
+            not the zero of its parent -- and also declares it abstract on
+            ``AdditiveMagmas.AdditiveUnital``.  In category order that
+            declaration precedes the implementation, so the implementation is
+            named here, on the level whose objects have a zero.
+            """
+            return SageElement.__bool__(self)
 
 
 class VectorSpaces(Category_over_base_ring):

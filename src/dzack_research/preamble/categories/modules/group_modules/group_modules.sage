@@ -72,7 +72,6 @@ if TYPE_CHECKING:
         def Hom(self, codomain: "Module", category: "Category | None" = ...) -> "Homset": ...
 
 
-
 class GroupModules(Category):
     r"""The category of \(R[G]\)-modules for the specified \(R\) and \(G\)."""
 
@@ -445,7 +444,6 @@ class GroupModules(Category):
         def module_coinvariants(self: Self) -> "Module":
             return _module_coinvariants(self)
 
-
     class ElementMethods:
         r"""An element of an $R[G]$-module, and its image after forgetting $G$."""
 
@@ -594,7 +592,6 @@ def _is_group_module(module: "Module") -> bool:
         isinstance(part, GroupModules)
         for part in module.category().all_super_categories()
     )
-
 
 
 def _invariant_generators(module: "Module") -> list:
