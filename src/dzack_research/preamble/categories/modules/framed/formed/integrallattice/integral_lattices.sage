@@ -2321,7 +2321,11 @@ def _decompose_lattice(L: "FormModule") -> "DirectSumObject | None":
     _subdivide_gram(L, cuts, cuts)
     generators = tuple(L.module_generators())
     summands = tuple(
-        Subobject(block.Hom(L)(generators[start:end]))
+        Subobject(
+            block.Hom(L)(
+                dict(zip(block.module_generators(), generators[start:end]))
+            )
+        )
         for block, (start, end) in zip(blocks, bounds)
     )
     return DirectSumDecomposition(L, summands)
