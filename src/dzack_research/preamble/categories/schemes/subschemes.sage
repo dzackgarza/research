@@ -1,9 +1,13 @@
 r"""Subtree for open subschemes and closed embeddings.
 
 Hierarchy:
-  Schemes(S)
+  Schemes(S).Subobjects()
     ├── OpenSubschemes(S)
     └── ClosedSubschemes(S)
+
+A subscheme is its inclusion, so the scheme it sits in is
+``inclusion().codomain()``.  The objects of both categories below are Sage
+subschemes the preamble adopts, and Sage builds that arrow itself.
 """
 
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
@@ -11,6 +15,7 @@ from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBase
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from sage.categories.morphism import Morphism
     from sage.schemes.generic.morphism import SchemeMorphism_point
 
     from typing import Protocol
@@ -24,6 +29,7 @@ if TYPE_CHECKING:
 
         def ambient_space(self) -> "AmbientSpaceParent": ...
         def dimension(self) -> "Integer": ...
+        def embedding_morphism(self) -> "Morphism": ...
 
 
 class ClosedSubschemes(OwnedCategoryOverBaseRing):
@@ -33,14 +39,18 @@ class ClosedSubschemes(OwnedCategoryOverBaseRing):
         return f"closed subschemes over {self.base_ring()}"
 
     def super_categories(self) -> list:
-        r"""Return [Schemes(S)]."""
+        r"""Return [Schemes(S).Subobjects()]."""
         # Local: a module-level import would close a cycle; the module is built by the time this runs.
         from dzack_research.preamble.categories.schemes.schemes import Schemes
 
-        return [Schemes(self.base_ring())]
+        return [Schemes(self.base_ring()).Subobjects()]
 
     class ParentMethods:
         r"""Parent methods for closed subschemes V -> X."""
+
+        def inclusion(self: "SubschemeParent") -> "Morphism":
+            r"""Return the closed embedding V -> X, which Sage builds."""
+            return self.embedding_morphism()
 
         def codimension(self: "SubschemeParent") -> "Integer":
             r"""Return dim(X) - dim(V), the codimension of V in ambient X."""
@@ -89,11 +99,18 @@ class OpenSubschemes(OwnedCategoryOverBaseRing):
         return f"open subschemes over {self.base_ring()}"
 
     def super_categories(self) -> list:
-        r"""Return [Schemes(S)]."""
+        r"""Return [Schemes(S).Subobjects()]."""
         # Local: a module-level import would close a cycle; the module is built by the time this runs.
         from dzack_research.preamble.categories.schemes.schemes import Schemes
 
-        return [Schemes(self.base_ring())]
+        return [Schemes(self.base_ring()).Subobjects()]
+
+    class ParentMethods:
+        r"""Parent methods for open subschemes U -> X."""
+
+        def inclusion(self: "SubschemeParent") -> "Morphism":
+            r"""Return the open immersion U -> X, which Sage builds."""
+            return self.embedding_morphism()
 
 
 def install_subschemes() -> None:

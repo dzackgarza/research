@@ -2,13 +2,15 @@ r"""Category subtree for toric schemes, ambient toric varieties, and toric subob
 
 Hierarchy:
   Schemes(S)
-    ├── Varieties(S)
-    │     └── ToricSchemes(S) ──────────────> V_P, V_Q
-    └── ToricSubschemes(S) ─────────────────> X ⊂ V_P, Y = V_Q
+    └── Varieties(S)
+          └── ToricSchemes(S) ──────────────> V_P, V_Q
+                └── .Subobjects() ──────────> X ⊂ V_P, Y = V_Q
 """
 
 from typing import Any, Optional, Self, Sequence, TYPE_CHECKING
 from sage.categories.category import Category
+from sage.categories.homset import Hom
+from sage.categories.morphism import SetMorphism
 from sage.structure.parent import Parent
 from sage.rings.rational_field import QQ as SageQQ
 from sage.rings.integer_ring import ZZ as SageZZ
@@ -20,7 +22,9 @@ from sage.schemes.toric.variety import ToricVariety_field, ToricVariety as Nativ
 
 from dzack_research.preamble.lexicon import Polyhedron
 from dzack_research.preamble.owned_category import object_of
+from dzack_research.preamble.owned_category_bases import SubobjectsCategory
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
+from dzack_research.preamble.categories.schemes.schemes import Schemes
 from dzack_research.preamble.categories.schemes.varieties import Varieties
 
 if TYPE_CHECKING:
@@ -293,139 +297,137 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             return self._native_variety
 
 
-class ToricSubschemes(OwnedCategoryOverBaseRing):
-    r"""Category of subschemes X ↪ V of a toric scheme V."""
+    class Subobjects(SubobjectsCategory):
+        r"""Subschemes X ↪ V of a toric scheme V.
 
-    def _repr_object_names(self) -> str:
-        return f"toric subschemes over {self.base_ring()}"
-
-    def super_categories(self) -> list[Category]:
-        r"""Return [Schemes(S)]."""
-        # Local: a module-level import would close a cycle; the module is built by the time this runs.
-        from dzack_research.preamble.categories.schemes.schemes import Schemes
-
-        return [Schemes(self.base_ring())]
-
-    class ParentMethods:
-        r"""Parent methods for a subscheme X ↪ V of a toric scheme V.
-
-        The data this level adds are the toric scheme V that X sits in and the
-        family of equations cutting X out of it, together with the dimension
-        of X.  Everything else is read off V: its polytope P, its
-        identification string, and the invariants of P.
+        The datum this level adds is the family of equations cutting X out of
+        V, together with the dimension of X.  V itself is
+        ``inclusion().codomain()``, and everything else is read off V: its
+        polytope P, its identification string, and the invariants of P.
         """
 
-        def __init__(
-            self: Self,
-            ambient: Parent,
-            equations: Sequence[Any] = (),
-            dim: Optional[int] = None,
-            **rest: "ConstructionData",
-        ) -> None:
-            r"""Build the subscheme of ``ambient`` cut out by ``equations``."""
-            self._ambient = ambient
-            self._equations = tuple(equations)
-            if dim is not None:
-                self._dim = int(dim)
-            else:
-                amb_dim = ambient.dimension() if hasattr(ambient, 'dimension') else 2
-                codim = len(self._equations) if self._equations and self._equations != (0,) else 0
-                self._dim = max(0, amb_dim - codim)
-            super().__init__(**rest)
+        class ParentMethods:
+            r"""Parent methods for a subscheme X ↪ V of a toric scheme V."""
 
-        def ambient_scheme(self) -> Parent:
-            r"""Return the toric scheme V of which X is a subscheme."""
-            return self._ambient
+            def __init__(
+                self: Self,
+                ambient: Parent,
+                equations: Sequence[Any] = (),
+                dim: Optional[int] = None,
+                **rest: "ConstructionData",
+            ) -> None:
+                r"""Build the subscheme of ``ambient`` cut out by ``equations``."""
+                self._equations = tuple(equations)
+                if dim is not None:
+                    self._dim = int(dim)
+                else:
+                    amb_dim = ambient.dimension() if hasattr(ambient, 'dimension') else 2
+                    codim = len(self._equations) if self._equations and self._equations != (0,) else 0
+                    self._dim = max(0, amb_dim - codim)
+                super().__init__(**rest)
+                # After the chain, because a homset needs both ends to be
+                # parents.  The arrow is what makes X a subobject, and it is
+                # the only record of V.
+                # ponytail: on points the inclusion of a subscheme is the
+                # identity, which is all a scheme of this tower can say --
+                # neither end constructs elements yet.  It becomes the
+                # canonical Spec(O_V/I) -> V once schemes carry their sheaves.
+                self._inclusion = SetMorphism(
+                    Hom(self, ambient, Schemes(self.base_ring())),
+                    lambda point: point,
+                )
 
-        def inclusion_morphism(self) -> "Morphism":
-            r"""Return the structure inclusion morphism i: X -> V."""
-            assert False, (
-                "inclusion_morphism is not yet built for a toric subscheme"
-            )
+            def inclusion(self) -> "Morphism":
+                r"""Return the inclusion X -> V that makes X a subscheme."""
+                return self._inclusion
 
-        def ambient_space(self) -> Parent:
-            r"""Return the toric scheme V that X sits in."""
-            return self.ambient_scheme()
+            def ambient_space(self) -> Parent:
+                r"""Return the toric scheme V that X sits in."""
+                return self.inclusion().codomain()
 
-        def ambient_toric_variety(self) -> Parent:
-            r"""Alias for ambient_space()."""
-            return self.ambient_scheme()
+            def ambient_scheme(self) -> Parent:
+                r"""Alias for ambient_space()."""
+                return self.inclusion().codomain()
 
-        def equations(self) -> tuple[Any, ...]:
-            r"""Return the tuple of defining equations cutting out X in V."""
-            return self._equations
+            def ambient_toric_variety(self) -> Parent:
+                r"""Alias for ambient_space()."""
+                return self.inclusion().codomain()
 
-        def defining_equations(self) -> tuple[Any, ...]:
-            r"""Alias for equations()."""
-            return self._equations
+            def equations(self) -> tuple[Any, ...]:
+                r"""Return the tuple of defining equations cutting out X in V."""
+                return self._equations
 
-        def defining_polynomial(self) -> Any:
-            r"""Return the principal defining polynomial for hypersurfaces (or 0 for ambient)."""
-            if self._equations:
-                return self._equations[0]
-            return 0
+            def defining_equations(self) -> tuple[Any, ...]:
+                r"""Alias for equations()."""
+                return self._equations
 
-        def dimension(self) -> int:
-            r"""Return the algebraic dimension of the subscheme X."""
-            return self._dim
+            def defining_polynomial(self) -> Any:
+                r"""Return the principal defining polynomial for hypersurfaces (or 0 for ambient)."""
+                if self._equations:
+                    return self._equations[0]
+                return 0
 
-        def ambient_dimension(self) -> int:
-            r"""Return the dimension of the toric scheme V."""
-            ambient = self.ambient_scheme()
-            if hasattr(ambient, 'dimension'):
-                return int(ambient.dimension())
-            return self._dim
+            def dimension(self) -> int:
+                r"""Return the algebraic dimension of the subscheme X."""
+                return self._dim
 
-        def codimension(self) -> int:
-            r"""Return the codimension of X in V: dim(V) - dim(X)."""
-            return self.ambient_dimension() - self.dimension()
+            def ambient_dimension(self) -> int:
+                r"""Return the dimension of the toric scheme V."""
+                ambient = self.ambient_scheme()
+                if hasattr(ambient, 'dimension'):
+                    return int(ambient.dimension())
+                return self._dim
 
-        def is_hypersurface(self) -> bool:
-            r"""Return True if X is a hypersurface in V (codimension 1)."""
-            return self.codimension() == 1
+            def codimension(self) -> int:
+                r"""Return the codimension of X in V: dim(V) - dim(X)."""
+                return self.ambient_dimension() - self.dimension()
 
-        def is_ambient(self) -> bool:
-            r"""Return True if X is the whole of V (codimension 0)."""
-            return self.codimension() == 0
+            def is_hypersurface(self) -> bool:
+                r"""Return True if X is a hypersurface in V (codimension 1)."""
+                return self.codimension() == 1
 
-        def ambient_polytope(self) -> Any:
-            r"""Return the lattice polytope P of the toric scheme V."""
-            ambient = self.ambient_scheme()
-            if hasattr(ambient, 'polytope'):
-                return ambient.polytope()
-            if hasattr(ambient, 'polyhedron'):
-                return ambient.polyhedron()
-            return None
+            def is_ambient(self) -> bool:
+                r"""Return True if X is the whole of V (codimension 0)."""
+                return self.codimension() == 0
 
-        def polytope(self) -> Any:
-            r"""Alias for ambient_polytope()."""
-            return self.ambient_polytope()
+            def ambient_polytope(self) -> Any:
+                r"""Return the lattice polytope P of the toric scheme V."""
+                ambient = self.ambient_scheme()
+                if hasattr(ambient, 'polytope'):
+                    return ambient.polytope()
+                if hasattr(ambient, 'polyhedron'):
+                    return ambient.polyhedron()
+                return None
 
-        def ambient_identification(self) -> str:
-            r"""Return the geometric identification string for V."""
-            ambient = self.ambient_scheme()
-            if hasattr(ambient, 'ambient_identification'):
-                return ambient.ambient_identification()
-            return f"V_{{P}} \\subset \\mathbb{{R}}^{{{self.ambient_dimension()}}}"
+            def polytope(self) -> Any:
+                r"""Alias for ambient_polytope()."""
+                return self.ambient_polytope()
 
-        def ambient_identification_latex(self) -> str:
-            r"""Return the LaTeX representation of the identification of V."""
-            ambient = self.ambient_scheme()
-            if hasattr(ambient, 'ambient_identification_latex'):
-                return ambient.ambient_identification_latex()
-            return self.ambient_identification()
+            def ambient_identification(self) -> str:
+                r"""Return the geometric identification string for V."""
+                ambient = self.ambient_scheme()
+                if hasattr(ambient, 'ambient_identification'):
+                    return ambient.ambient_identification()
+                return f"V_{{P}} \\subset \\mathbb{{R}}^{{{self.ambient_dimension()}}}"
 
-        def _repr_(self) -> str:
-            if not self._equations or self._equations == (0,):
-                return f"{self.ambient_identification()}"
-            eqs_str = ", ".join(str(eq) for eq in self._equations)
-            return f"V({eqs_str}) ⊂ {self.ambient_identification()}"
+            def ambient_identification_latex(self) -> str:
+                r"""Return the LaTeX representation of the identification of V."""
+                ambient = self.ambient_scheme()
+                if hasattr(ambient, 'ambient_identification_latex'):
+                    return ambient.ambient_identification_latex()
+                return self.ambient_identification()
 
-        def _latex_(self) -> str:
-            if not self._equations or self._equations == (0,):
-                return self.ambient_identification_latex()
-            eqs_lat = r",\, ".join(latex(eq) for eq in self._equations)
-            return rf"\mathrm{{V}}\left({eqs_lat}\right) \subset {self.ambient_identification_latex()}"
+            def _repr_(self) -> str:
+                if not self._equations or self._equations == (0,):
+                    return f"{self.ambient_identification()}"
+                eqs_str = ", ".join(str(eq) for eq in self._equations)
+                return f"V({eqs_str}) ⊂ {self.ambient_identification()}"
+
+            def _latex_(self) -> str:
+                if not self._equations or self._equations == (0,):
+                    return self.ambient_identification_latex()
+                eqs_lat = r",\, ".join(latex(eq) for eq in self._equations)
+                return rf"\mathrm{{V}}\left({eqs_lat}\right) \subset {self.ambient_identification_latex()}"
 
 
 def ToricScheme(
@@ -452,7 +454,7 @@ def ToricSubscheme(
 ) -> Parent:
     r"""Return the subscheme X ↪ V cut out of the toric scheme ``ambient``."""
     return object_of(
-        ToricSubschemes(base_ring),
+        ToricSchemes(base_ring).Subobjects(),
         ambient=ambient,
         equations=equations,
         dim=dim,

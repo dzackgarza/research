@@ -7,8 +7,9 @@ Hierarchy:
           ├── ADESurfaces() ───────────> X ⊂ V_P with D + eps*R
           └── ADEBaseSurfaces() ───────> Y = V_Q with C + (1+eps)/2 * B
 
-ADELogPairs() is also a subcategory of ToricSubschemes(QQ): both the cover and
-the base are subschemes of a toric scheme.
+ADELogPairs() is also a subcategory of ToricSchemes(QQ).Subobjects(): both the
+cover and the base are subschemes of a toric scheme, each carrying its own
+inclusion.
 
 Mathematical Foundations (Alexeev-Thompson [AT21], arXiv:1712.07932):
 ---------------------------------------------------------------------
@@ -52,12 +53,10 @@ EXAMPLES::
 from typing import Any, Callable, NamedTuple, Optional, Protocol, Sequence, TYPE_CHECKING
 from dzack_research.preamble.owned_category_bases import Category
 from dzack_research.preamble.owned_category import object_of
-from dzack_research.preamble.categories.rings.rings import owned_ring_view
 from dzack_research.preamble.categories.sets.owned_sets import Sets
 from sage.structure.parent import Parent
 
 if TYPE_CHECKING:
-    from sage.categories.rings import Ring
     from dzack_research.preamble.owned_category import ConstructionData
 from sage.geometry.toric_lattice import ToricLattice, ToricLattice_generic
 from sage.geometry.polyhedron.constructor import Polyhedron as polyhedron
@@ -83,7 +82,7 @@ from dzack_research.preamble.categories.schemes.polytopes import (
     ConvexPolygon, ConvexPolytope, ConvexPolygons, ConvexPolytopes
 )
 from dzack_research.preamble.categories.schemes.toric.toric_schemes import (
-    ToricSchemes, ToricSubschemes, ToricScheme, ToricSubscheme, FormalDivisor
+    ToricSchemes, ToricScheme, ToricSubscheme, FormalDivisor
 )
 
 # Valid side decorations for distinguished edges incident to p*
@@ -313,7 +312,7 @@ class ADELogPairs(Category):
     The category of ADE surface log pairs, both the cover X and the base Y.
     """
     def super_categories(self) -> list[Category]:
-        return [LogPairs(), ToricSubschemes(QQ)]
+        return [LogPairs(), ToricSchemes(QQ).Subobjects()]
 
     def _repr_object_names(self) -> str:
         return "a d e surfaces (Y, C)"
@@ -335,18 +334,10 @@ class ADELogPairs(Category):
             """Return the base del Pezzo log pair (Y = V_Q, C + 1/2(1+eps)B).
 
             ``base`` on these pairs names the base of the double cover, not
-            the base ring, so ``base_ring`` below states QQ rather than
-            reading it off ``base()``.
+            the base ring.  ``base_ring`` is unaffected: it reads the ring the
+            construction recorded, never this method.
             """
             raise NotImplementedError
-
-        def base_ring(self) -> "Ring":
-            """Return QQ, the field an ADE log pair is defined over.
-
-            Stated by placement: ADELogPairs() is a subcategory of
-            ToricSubschemes(QQ).
-            """
-            return owned_ring_view(QQ)
 
         def is_cover(self) -> bool:
             """Return True if this is the covering hypersurface X ⊂ V_P."""

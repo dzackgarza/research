@@ -17,6 +17,7 @@ Hierarchy:
 """
 
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
+from dzack_research.preamble.owned_category_bases import SubobjectsCategory
 from sage.structure.parent import Parent
 from dzack_research.preamble.categories.schemes.ringed_spaces import LocallyRingedSpaces
 from sage.structure.element import Element
@@ -132,6 +133,13 @@ class Schemes(OwnedCategoryOverBaseRing):
                 )
             except Exception:
                 return False
+
+    class Subobjects(SubobjectsCategory):
+        r"""Subschemes: a scheme A together with an inclusion A -> B.
+
+        The scheme A sits in is ``inclusion().codomain()`` and is read from
+        there, so no object of this category records it a second time.
+        """
 
     class ElementMethods:
         r"""Scheme element methods: a point or a section."""
