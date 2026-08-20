@@ -275,6 +275,54 @@ class CatConstructionsMixin:
         )
 
 
+def declared_method_providers(
+    category: Category, declaring_class: type, method_provider: str
+) -> tuple[type | None, tuple[type, ...]]:
+    r"""The declarations of ``method_provider`` the category's class graph makes.
+
+    Returns the most derived one, which Sage would have taken alone, and the
+    ones its declaration hides.
+
+    Sage reads the methods class with one ``getattr``, which returns the most
+    derived declaration and nothing else.  A category class that both derives
+    from an owned construction base -- :class:`SubobjectsCategory`, say -- and
+    declares its own ``ParentMethods`` therefore *replaces* the base's rather
+    than extending it, so the base can only reach categories with nothing of
+    their own to add.  That inverts what a base is for.
+
+    Nothing is spliced in to repair it: the relation is already stated, by the
+    class graph the category declarations write down, and this reads it.  Each
+    ancestor's own declaration becomes a base, most derived first, exactly as
+    Python would resolve them if the nested classes were the outer ones.  A
+    declaration an earlier one already derives from is left out; naming it
+    twice is not a stronger statement and C3 refuses the class.
+
+    Order is not new authority.  A name a derived level defines still wins over
+    the base's, which is what makes an override an override; what changes is
+    that a name the derived level is silent about now falls through to the base
+    instead of vanishing.
+    """
+    if declaring_class.__name__.endswith("_with_category"):
+        # Sage's per-category dynamic class, whose second base is the
+        # ``subcategory_class``.  What a category declares is on the class it
+        # was written as, so that is the graph read here.
+        declaring_class = declaring_class.__base__
+    declared: list[type] = []
+    most_derived = getattr(category, method_provider, None)
+    if most_derived is not None:
+        declared.append(most_derived)
+    for ancestor in declaring_class.__mro__:
+        inherited = ancestor.__dict__.get(method_provider)
+        if inherited is None:
+            continue
+        if any(issubclass(seen, inherited) for seen in declared):
+            continue
+        declared.append(inherited)
+    if not declared:
+        return None, ()
+    return declared[0], tuple(declared[1:])
+
+
 class OwnedCategoryMixin(CatConstructionsMixin):
     r"""Tie a category to its implementation classes.
 
@@ -334,9 +382,23 @@ class OwnedCategoryMixin(CatConstructionsMixin):
             getattr(super_category, name)
             for super_category in category._super_categories_for_classes
         )
-        provider = getattr(category, method_provider, None)
-        if provider is not None:
-            bases = (provider,) + bases
+        provider, inherited = declared_method_providers(
+            category, declaring_class, method_provider
+        )
+        # Ahead of the super categories, behind the level's own declaration.
+        # The owned construction base states what being a subobject *is*, and
+        # Sage's ``Sets.Subquotients`` states the same names abstractly; a
+        # super category carries the abstract ones, so an owned declaration
+        # placed after them would be shadowed by exactly what it exists to
+        # replace.  A super category that already reached this declaration is
+        # skipped: it has it at the end of its own linearization, and asking
+        # for it earlier contradicts that order, which C3 refuses.
+        carried = tuple(
+            ancestor_provider
+            for ancestor_provider in inherited
+            if not any(ancestor_provider in base.mro() for base in bases)
+        )
+        bases = ((provider,) if provider is not None else ()) + carried + bases
         if len(bases) > 1 and object in bases:
             # A super category with no methods class of its own contributes
             # ``object``.  Left in place beside a real base it is a base that

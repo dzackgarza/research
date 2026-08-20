@@ -52,6 +52,10 @@ from sage.structure.parent import Parent as SageParent
 from sage.structure.dynamic_class import dynamic_class
 from sage.structure.element import Element
 
+from dzack_research.preamble.owned_category import (
+    declared_method_providers as _declared_method_providers,
+)
+
 __all__ = [
     "hook_post_init",
     "hooked_classes",
@@ -165,25 +169,31 @@ def _preamble_mixins(category: "Category", attr: str) -> tuple[type, ...]:
         category_type = type(cat)
         if not _is_owned_category(category_type):
             continue
-        nested = getattr(category_type, attr, None)
-        if nested is None:
+        # Every declaration the category's class graph makes, not only the
+        # most derived: a category class that both derives from an owned
+        # construction base and declares its own methods class would
+        # otherwise hide the base's, and the base would reach exactly those
+        # categories with nothing of their own to add.
+        provider, inherited = _declared_method_providers(cat, category_type, attr)
+        if provider is None:
             continue
-        if issubclass(nested, _IMPLEMENTATION_BASES):
-            # The root of an owned construction chain declares its methods
-            # class to *be* the implementation class -- it names ``Parent``
-            # (or ``Element``, or ``Morphism``) among its own bases; see
-            # ``dzack_research.preamble.owned_category``.  An object built
-            # through that chain already has the class in the right place.
-            # An object the preamble *adopts* is a Sage parent with its own
-            # instance layout, and a second structural base is not a mixin
-            # it can wear: Python refuses the ``__class__`` assignment with
-            # "object layout differs".  Its own category's ``parent_class``
-            # still carries these methods, behind the concrete class where
-            # a Sage parent's own definitions belong.
-            continue
-        implemented = _implemented_mixin(nested)
-        if implemented not in mixins:
-            mixins.append(implemented)
+        for nested in (provider,) + inherited:
+            if issubclass(nested, _IMPLEMENTATION_BASES):
+                # The root of an owned construction chain declares its methods
+                # class to *be* the implementation class -- it names ``Parent``
+                # (or ``Element``, or ``Morphism``) among its own bases; see
+                # ``dzack_research.preamble.owned_category``.  An object built
+                # through that chain already has the class in the right place.
+                # An object the preamble *adopts* is a Sage parent with its own
+                # instance layout, and a second structural base is not a mixin
+                # it can wear: Python refuses the ``__class__`` assignment with
+                # "object layout differs".  Its own category's ``parent_class``
+                # still carries these methods, behind the concrete class where
+                # a Sage parent's own definitions belong.
+                continue
+            implemented = _implemented_mixin(nested)
+            if implemented not in mixins:
+                mixins.append(implemented)
     return tuple(mixins)
 
 def _method_mixins(category: "Category", attr: str) -> tuple[type, ...]:
@@ -257,14 +267,17 @@ def _resolved_requirements(category: "Category") -> type | None:
         category_type = type(cat)
         if not _is_owned_category(category_type):
             continue
-        methods = getattr(category_type, "ParentMethods", None)
-        if methods is None:
-            continue
-        required.update(
-            name
-            for name, value in vars(methods).items()
-            if isinstance(value, AbstractMethod)
+        provider, inherited = _declared_method_providers(
+            cat, category_type, "ParentMethods"
         )
+        if provider is None:
+            continue
+        for methods in (provider,) + inherited:
+            required.update(
+                name
+                for name, value in vars(methods).items()
+                if isinstance(value, AbstractMethod)
+            )
     resolved: dict[str, object] = {}
     for name in required:
         for klass in category.parent_class.__mro__:
@@ -396,14 +409,17 @@ def _assert_preamble_obligations_are_met(
     for cat in category.all_super_categories(proper=False):
         if not type(cat).__module__.startswith(_PREAMBLE_PACKAGE):
             continue
-        methods = getattr(type(cat), "ParentMethods", None)
-        if methods is None:
-            continue
-        required.update(
-            name
-            for name, value in vars(methods).items()
-            if isinstance(value, AbstractMethod)
+        provider, inherited = _declared_method_providers(
+            cat, type(cat), "ParentMethods"
         )
+        if provider is None:
+            continue
+        for methods in (provider,) + inherited:
+            required.update(
+                name
+                for name, value in vars(methods).items()
+                if isinstance(value, AbstractMethod)
+            )
     missing = []
     for name in required:
         try:
