@@ -1173,7 +1173,7 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             """
             # Local: a module-level import here would close a cycle; by call time this module is built.
             from dzack_research.preamble.categories.modules.framed.formed.torsionform.discriminant_bilinear_modules import DiscriminantBilinearModules
-            return DiscriminantBilinearModules().cokernel(self.correlation())
+            return DiscriminantBilinearModules(self.base_ring()).cokernel(self.correlation())
 
         def discriminant_quadratic_form(self: "LatticeParent") -> "QuadraticFormMorphism":
             r"""Return $(A_L, q)$ with $q: A_L\to\mathbb Q/2\mathbb Z$.
@@ -1185,7 +1185,7 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             """
             # Local: a module-level import here would close a cycle; by call time this module is built.
             from dzack_research.preamble.categories.modules.framed.formed.torsionform.discriminant_quadratic_modules import DiscriminantQuadraticModules
-            return DiscriminantQuadraticModules().cokernel(self.correlation())
+            return DiscriminantQuadraticModules(self.base_ring()).cokernel(self.correlation())
 
         # The key states that the answer depends on $p$ and on the flag alone,
         # so naming the flag and leaving it out reach one object.
@@ -1229,9 +1229,9 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             correlation = self.correlation()
             # Which form A_L carries is a fact about L, not a flag on the answer.
             category = (
-                DiscriminantQuadraticModules()
+                DiscriminantQuadraticModules(self.base_ring())
                 if self.is_even()
-                else DiscriminantBilinearModules()
+                else DiscriminantBilinearModules(self.base_ring())
             )
             form = category.cokernel(correlation)
             if reduce_trivial:

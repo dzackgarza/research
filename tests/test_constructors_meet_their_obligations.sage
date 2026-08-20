@@ -327,7 +327,7 @@ def _discriminant_quadratic_from_data() -> Parent:
         DiscriminantQuadraticModules,
     )
 
-    return DiscriminantQuadraticModules().from_relations_and_gram(
+    return DiscriminantQuadraticModules(_ZZ).from_relations_and_gram(
         _matrix(_ZZ, [[2]]), _matrix(_QQ, [[-_QQ(1) / 2]])
     )
 
@@ -343,7 +343,7 @@ def _discriminant_bilinear_from_data() -> Parent:
         DiscriminantBilinearModules,
     )
 
-    return DiscriminantBilinearModules().from_relations_and_gram(
+    return DiscriminantBilinearModules(_ZZ).from_relations_and_gram(
         _matrix(_ZZ, [[2]]), _matrix(_QQ, [[_QQ(1) / 2]])
     )
 

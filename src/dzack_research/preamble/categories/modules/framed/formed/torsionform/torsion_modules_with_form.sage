@@ -20,6 +20,7 @@ if TYPE_CHECKING:
 from dzack_research.preamble.owned_category import object_of
 from dzack_research.preamble.owned_category_bases import (
     Category,
+    Category_over_base_ring,
     CategoryWithAxiom,
     HomsetsCategory,
 )
@@ -1008,7 +1009,7 @@ class CokernelForms(Category):
             return self.parent().projection().lift(self)
 
 
-class DiscriminantForms(Category):
+class DiscriminantForms(Category_over_base_ring):
     r"""The cokernels whose morphism is a correlation: $A_L=\operatorname{coker}(c:L\to L^\vee)$.
 
     A refinement, not a kind of object.  A torsion bilinear form is a finite
@@ -1123,7 +1124,7 @@ def cokernel_categories(morphism: "Morphism") -> list:
     if domain not in IntegralLattices(SageZZ):
         return []
     if morphism is domain.correlation():
-        return [CokernelForms(), DiscriminantForms()]
+        return [CokernelForms(), DiscriminantForms(domain.base_ring())]
     return [CokernelForms()]
 
 
@@ -1163,9 +1164,9 @@ def _discriminant_category_of(form: "Module") -> Category:
     # Local: a module-level import here would close a cycle; by call time this module is built.
     from dzack_research.preamble.categories.modules.framed.formed.torsionform.discriminant_bilinear_modules import DiscriminantBilinearModules
     from dzack_research.preamble.categories.modules.framed.formed.torsionform.discriminant_quadratic_modules import DiscriminantQuadraticModules
-    if form in DiscriminantQuadraticModules():
-        return DiscriminantQuadraticModules()
-    return DiscriminantBilinearModules()
+    if form in DiscriminantQuadraticModules(form.base_ring()):
+        return DiscriminantQuadraticModules(form.base_ring())
+    return DiscriminantBilinearModules(form.base_ring())
 
 
 # The one sanctioned crossing to Sage's torsion-quadratic engine: these are

@@ -27,7 +27,7 @@ if TYPE_CHECKING:
 
 from typing import Protocol, TYPE_CHECKING
 
-from dzack_research.preamble.owned_category_bases import Category
+from dzack_research.preamble.owned_category_bases import Category_over_base_ring
 from sage.groups.additive_abelian.qmodnz import QmodnZ
 
 # The one sanctioned crossing to Sage's private per-block Brown engine
@@ -64,7 +64,7 @@ if TYPE_CHECKING:
         def b(self, other: "Element") -> "Element": ...
 
 
-class DiscriminantQuadraticModules(Category):
+class DiscriminantQuadraticModules(Category_over_base_ring):
     r"""Category of discriminant quadratic modules.
 
     Its objects carry $q:A\to\mathbb Q/2\mathbb Z$; the polarization
@@ -81,7 +81,7 @@ class DiscriminantQuadraticModules(Category):
         # Local: a module-level import here would close a cycle; by call time this module is built.
         from dzack_research.preamble.categories.modules.framed.formed.form_modules import QuadraticFormModules
         from dzack_research.preamble.categories.modules.framed.formed.torsionform.torsion_modules_with_form import TorsionModulesWithForm
-        return [TorsionModulesWithForm(SageZZ), QuadraticFormModules(SageZZ)]
+        return [TorsionModulesWithForm(self.base_ring()), QuadraticFormModules(self.base_ring())]
 
     def from_module(self, module: "Module", gram: Matrix) -> "FormModule":
         r"""Return the torsion form on ``module`` with Gram matrix ``gram``.
@@ -189,7 +189,7 @@ class DiscriminantQuadraticModules(Category):
                 relations,
                 finite_ordered_set(module_generators),
             )
-            return DiscriminantQuadraticModules().from_module(module, gram)
+            return DiscriminantQuadraticModules(self.base_ring()).from_module(module, gram)
 
         def form_vanishes_on(self: "DiscriminantQuadraticParent", elements: "OrderedSet") -> bool:
             r"""Return whether $q$ is zero on every element of ``elements``.
@@ -215,7 +215,7 @@ class DiscriminantQuadraticModules(Category):
             """
             # Local: a module-level import here would close a cycle; by call time this module is built.
             from dzack_research.preamble.categories.modules.framed.formed.torsionform.discriminant_bilinear_modules import DiscriminantBilinearModules
-            return DiscriminantBilinearModules().from_module(
+            return DiscriminantBilinearModules(self.base_ring()).from_module(
                 self,
                 self.form().polar_form().gram_matrix(),
             )
@@ -302,7 +302,7 @@ class DiscriminantQuadraticModules(Category):
             """
             # Local: a module-level import here would close a cycle; by call time this module is built.
             from dzack_research.preamble.categories.modules.framed.formed.torsionform.torsion_modules_with_form import _engine_normal_form_key
-            assert other in DiscriminantQuadraticModules(), (
+            assert other in DiscriminantQuadraticModules(self.base_ring()), (
                 "quadratic isometry is decided between quadratic torsion "
                 "forms; ask the bilinear category about polarizations"
             )
@@ -335,7 +335,7 @@ class DiscriminantQuadraticModules(Category):
             constructor is what writes the rescaled form on the same
             presented group.
             """
-            return DiscriminantQuadraticModules().from_module(
+            return DiscriminantQuadraticModules(self.base_ring()).from_module(
                 self,
                 scalar * self.form().polar_form().gram_matrix(),
             )

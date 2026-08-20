@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
 from typing import Protocol, TYPE_CHECKING
 
-from dzack_research.preamble.owned_category_bases import Category
+from dzack_research.preamble.owned_category_bases import Category_over_base_ring
 from sage.groups.additive_abelian.qmodnz import QmodnZ
 from sage.matrix.matrix0 import Matrix
 
@@ -41,7 +41,7 @@ if TYPE_CHECKING:
         def b(self, other: "Element") -> "Element": ...
 
 
-class DiscriminantBilinearModules(Category):
+class DiscriminantBilinearModules(Category_over_base_ring):
     r"""Category of discriminant bilinear modules.
 
     The category's ``gram_matrix`` is the bilinear Gram matrix. Quadratic
@@ -58,8 +58,8 @@ class DiscriminantBilinearModules(Category):
         from dzack_research.preamble.categories.modules.framed.formed.form_modules import SymmetricBilinearFormModules
         from dzack_research.preamble.categories.modules.framed.formed.torsionform.torsion_modules_with_form import TorsionModulesWithForm
         return [
-            TorsionModulesWithForm(SageZZ),
-            SymmetricBilinearFormModules(SageZZ),
+            TorsionModulesWithForm(self.base_ring()),
+            SymmetricBilinearFormModules(self.base_ring()),
         ]
 
     def from_module(self, module: "Module", gram: Matrix) -> "FormModule":
@@ -162,7 +162,7 @@ class DiscriminantBilinearModules(Category):
                 relations,
                 finite_ordered_set(module_generators),
             )
-            return DiscriminantBilinearModules().from_module(module, gram)
+            return DiscriminantBilinearModules(self.base_ring()).from_module(module, gram)
 
         def form_vanishes_on(self: "DiscriminantBilinearParent", elements: "OrderedSet") -> bool:
             r"""Return whether $b$ is zero on every pair drawn from ``elements``.
@@ -199,7 +199,7 @@ class DiscriminantBilinearModules(Category):
             """
             # Local: a module-level import here would close a cycle; by call time this module is built.
             from dzack_research.preamble.categories.modules.framed.formed.torsionform.torsion_modules_with_form import DiscriminantForms
-            assert self in DiscriminantForms(), (
+            assert self in DiscriminantForms(self.base_ring()), (
                 "b does not determine q: a bare bilinear torsion module's "
                 "representative entries are defined only mod 1, so the "
                 "quadratic refinement is reachable only through a source "
@@ -214,7 +214,7 @@ class DiscriminantBilinearModules(Category):
             # correlation: the construction goes back through the lattice,
             # never through this object's mod-1 representative entries.
             from dzack_research.preamble.categories.modules.framed.formed.torsionform.discriminant_quadratic_modules import DiscriminantQuadraticModules
-            return DiscriminantQuadraticModules().cokernel(self.correlation())
+            return DiscriminantQuadraticModules(self.base_ring()).cokernel(self.correlation())
 
         def _form_matrix_latex_label(self: "DiscriminantBilinearParent") -> str:
             r"""Return the LaTeX label for the bilinear Gram matrix."""
@@ -264,7 +264,7 @@ class DiscriminantBilinearModules(Category):
             """
             # Local: a module-level import here would close a cycle; by call time this module is built.
             from dzack_research.preamble.categories.modules.framed.formed.torsionform.torsion_modules_with_form import _engine_normal_form_key
-            assert other in DiscriminantBilinearModules(), (
+            assert other in DiscriminantBilinearModules(self.base_ring()), (
                 "bilinear isometry is decided between bilinear torsion forms; "
                 "polarize a quadratic form first"
             )
@@ -294,7 +294,7 @@ class DiscriminantBilinearModules(Category):
             rescaled pairing on the same presented group (MM09's negation
             rules, Zotero ACX7WF7L, are the $s=-1$ case).
             """
-            return DiscriminantBilinearModules().from_module(
+            return DiscriminantBilinearModules(self.base_ring()).from_module(
                 self,
                 scalar * self.form().gram_matrix(),
             )
