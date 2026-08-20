@@ -89,8 +89,6 @@ if TYPE_CHECKING:
         _alternating_power_degree: int
         _divided_power_of: "Module"
         _divided_power_degree: int
-        _tensor_square_of: "Module"
-        _divided_square_of: "Module"
 
         def zero(self) -> "Element": ...
         def base_ring(self) -> "Ring": ...
@@ -356,29 +354,20 @@ def TensorSquare(module: "Module") -> "_GradedPiece":
     :func:`TensorProductModule` is not a second definition of the square; it
     is the binary functor, consumed where two *different* modules meet.
     """
-    square = TensorPower(module, 2)
-    square._tensor_square_of = module
-    return square
+    return TensorPower(module, 2)
 
 
 def DividedSquare(module: "Module") -> "_GradedPiece":
-    r"""Return \(\Gamma(M)[2]=\Gamma^2M\)."""
-    square = DividedPower(module, 2)
-    square._divided_square_of = module
-    return square
+    r"""Return \(\Gamma(M)[2]=\Gamma^2M\).
 
-
-def divided_square_of(square: "_GradedPiece") -> "Module":
-    r"""Return the \(M\) whose divided square ``square`` is.
-
-    The reading sits beside the construction that establishes it, so a caller
-    asks the divided square what it is the square of instead of going through
-    the object's storage.
+    The square is the value of a functor and carries no mark of its
+    argument.  \(T^2\) and \(\Gamma^2\) are not injections on objects, and
+    the graded piece this returns is cached on the free algebra over
+    \((R,S)\), so one object can be the square of more than one module.  A
+    caller that needs \(M\) holds \(M\); it does not read it back off
+    \(\Gamma^2M\).
     """
-    module = square.__dict__.get("_divided_square_of")
-    assert module is not None, "the module is not a divided square"
-    underlying: "Module" = module
-    return underlying
+    return DividedPower(module, 2)
 
 
 def divided_square_element(module: "Module", element: "Element") -> "Element":

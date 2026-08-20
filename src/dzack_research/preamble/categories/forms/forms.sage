@@ -170,13 +170,23 @@ def classifying_morphism(quadratic: QuadraticMapMorphism) -> "Morphism":
     return classifier
 
 
-def quadratic_map_from_morphism(morphism: "Morphism") -> SetMorphism:
-    r"""Evaluate \(f:\Gamma^2M\to W\) on \(\gamma_2(x)\)."""
-    # Local: the tensor node imports this module, so a module-level import
-    # here would close that cycle; it is built by the time a form is evaluated.
-    from dzack_research.preamble.categories.modules.tensors import divided_square_of
+def quadratic_map_from_morphism(
+    module: "Module", morphism: "Morphism"
+) -> SetMorphism:
+    r"""Evaluate \(f:\Gamma^2M\to W\) on \(\gamma_2(x)\), inverting
+    :func:`classifying_morphism`.
 
-    module = divided_square_of(morphism.domain())
+    \(M\) is an argument because it is part of the datum, not because it is
+    hard to look up: \(\Gamma^2\) is a functor and not an injection on
+    objects, so \(\Gamma^2M\) does not name the \(M\) it came from.  A
+    quadratic map is the pair \((M, f:\Gamma^2M\to W)\), exactly as
+    :func:`QuadraticMap` already spells it, and the domain of \(f\) is
+    checked against \(M\) rather than mined for it.
+    """
+    assert morphism.domain() is DividedSquare(module), (
+        f"{morphism} classifies a quadratic map on {module} only if its "
+        f"domain is that module's divided square"
+    )
     return QuadraticMap(
         module,
         morphism.codomain(),
