@@ -22,7 +22,7 @@ the citable reference for the hand-rolled parts.
 
 | File | What it computes | Where the mathematics lives now |
 |---|---|---|
-| `isometry_backend.py` | The isometry obstruction ladder: rank, signature, determinant, discriminant-group isomorphism, discriminant-form isometry, rational isometry, local isometry at $p = 2, 3, 5$, genus; then a full decision. | `IsometryHomset.is_empty` (`lattice_homomorphisms.sage`), including the Nikulin $(r, a, \delta)$ branch for even indefinite 2-elementary lattices. |
+| `isometry_backend.py` | The chain of necessary conditions for isometry: equal rank, equal signature, equal determinant, isomorphic discriminant groups, isometric discriminant forms, rational isometry, local isometry at $p = 2, 3, 5$, equal genus. Each condition is necessary, so a failed one answers empty outright; when all pass, a full decision follows. | `IsometryHomset.is_empty` (`lattice_homomorphisms.sage`), including the Nikulin $(r, a, \delta)$ branch for even indefinite 2-elementary lattices. |
 | `dawes_orbit_backend.py` | Dawes Algorithms 2.1 / 2.2 / 2.3: orbits of a non-isotropic vector under a subgroup, by the definite-complement route and by the gluing route; the real spinor norm; the induced action on the discriminant group. | `vector_orbits.sage`; the spinor-norm character and $O^{+}$, $SO$ on `lattice_isometries.sage`. |
 | `isotropic_gamma_orbit_backend.py` | Orbits of primitive isotropic lines, planes and flags under $O(L)$, and their splitting under a subgroup by double cosets in a finite quotient of $O(L)$. | `isotropic_orbits.sage`. |
 | `orthogonal.py` | Predicate-cut subgroups of $O(L)$: $SO$, $O^{+}$, the preimage of a subgroup of $O(A_L)$, the kernel of the discriminant action, and stabilizers of a vector, an isotropic line, an isotropic plane and an isotropic flag. | `lattice_isometries.sage` (`special_orthogonal_subgroup`, `discriminant_preimage`) and `predicate_subgroups.sage`. |
@@ -62,8 +62,8 @@ requirements.
   `research_workflows.sage`, the end-to-end Coble/Enriques script.
 - `lattice_spec/` — the lattice interface specs, including
   `todo_general_indefinite_isometry_spec.py`: an odd indefinite basis change
-  ($U$ twisted by 3) that must be detected as an isometry once every screen
-  passes. `lattice_methods.sage` is the user specification's own copy, and
+  ($U$ twisted by 3) that must be detected as an isometry once every necessary
+  condition above passes. `lattice_methods.sage` is the user specification's own copy, and
   `lattice_methods_sage_spec_variant.sage` the runnable variant of it that the
   corpus kept under `tests.bak/sage_spec/`, carrying its own header telling a
   reader not to delete it as a stale API.

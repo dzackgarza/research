@@ -3,7 +3,7 @@
 Four documents, landed 2026-08-20 from `gitclones/Coxeter/research/` under
 `PLAN-coxeter-deletion-audit-registry` (reader H). One design: a category
 $\mathrm{Ch}(\mathcal{C})$ of chain complexes as a Sage category, plus the
-attempt to carry a bilinear form along each degree.
+attempt to attach a bilinear form in each degree.
 
 The preamble has no complexes node, so nothing here is superseded. It is the
 prerequisite for any $\mathrm{Ext}$ or $\mathrm{Tor}$ in this repository, and
@@ -26,7 +26,7 @@ where it does.
   interface: `ChC = Ch(Modules(R))`, complexes built from `Hom(A,B)`
   elements, homology and exactness asked of the result.
 - `bilinear_chain_complex_extension.md` — the extension to formed modules: a
-  complex carrying a form $b_i$ at each degree with form-preserving
+  complex with a form $b_i$ in each degree and form-preserving
   differentials, tensor product by the Kronecker product of the forms,
   resolutions and derived functors computed in that setting. Written against
   Sage's `sage.homology.chain_complex.ChainComplex` as the base.
@@ -47,11 +47,11 @@ full, along with the two mathematically live repairs (forms as structure over
 $\mathrm{Mod}_R$, so the underlying complex is a complex of $R$-modules; or
 Ranicki-style chain duality, where the form is a chain map $C^{-*} \to C$).
 `bilinear_chain_complex_extension.md` is readable as a proposal for the first
-of those, since its differentials are matrices over $R$ and the forms are
-carried alongside.
+of those, since its differentials are matrices over $R$ and the forms sit
+alongside them.
 
 Sage's own `ChainComplex` over $\mathbb{Z}$ is unaffected by any of this and
-is the working substrate the first three documents assume.
+is the working implementation the first three documents assume.
 
 ## Errors recorded
 

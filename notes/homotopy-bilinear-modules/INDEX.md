@@ -56,7 +56,11 @@ object becomes free after enough suspensions, because suspension keeps adding
 hyperbolic planes.
 Over $\mathbb{Z}$ that is false: orthogonal sum with a hyperbolic plane leaves
 the discriminant form unchanged up to isometry, so a lattice with nonzero
-discriminant form is never hyperbolic after any number of suspensions.
+discriminant form is never split — that is, never an orthogonal sum of
+hyperbolic planes — after any number of suspensions.
+("Hyperbolic" is used here in the Witt-theoretic sense, a form isometric to a
+sum of hyperbolic planes; it is not the signature sense the preamble uses,
+where a hyperbolic lattice is one of signature $(1,n)$.)
 
 ## What survives, and where it already lives
 

@@ -11,12 +11,12 @@ witnessed by a function `ℕ → X` or `X → ℕ`.
 
 SageMath is a computational framework. Every object in Sage must support
 effective operations — membership, iteration, construction. A set that is
-countable but not recursively presentable (e.g., a set whose elements exist
-set-theoretically but have no computable membership test) cannot be represented
+countable but whose membership is undecidable (its elements exist
+set-theoretically, but no algorithm decides membership) cannot be represented
 in Sage in any operationally useful way. This restriction loses nothing relevant
 to the research project's domain (algebraic geometry, lattice theory, number
-theory, and combinatorics), where every set that arises naturally is recursively
-presentable.
+theory, and combinatorics), where every set that arises naturally has decidable
+membership and a computable enumeration.
 
 ## Relationship to EnumeratedSets
 

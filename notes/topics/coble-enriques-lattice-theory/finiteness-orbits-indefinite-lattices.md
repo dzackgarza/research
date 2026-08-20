@@ -25,10 +25,10 @@ These ergodic/lattice-point approaches give alternative proofs of finiteness and
 
 ## Informal Summary
 
-1. $S_n = \{v \in L : Q(v) = n\}$ is an integral quadratic-affine algebraic set.
+1. $S_n = \{v \in L : Q(v) = n\}$ is the set of integral points of the affine quadric $Q = n$, that is, the representations of $n$ by $Q$.
 2. The integral orthogonal group $O(L)$ acts on $S_n$.
 3. Classical results (Siegel/Kitaoka) show $S_n$ decomposes into a finite union of $O(L)$-orbits.
-4. Intuitively: integral solutions with bounded denominators/heights fall into finitely many arithmetic equivalence classes; reduction theory / mass formulas / arithmetic groups make this precise.
+4. Intuitively: integral solutions with bounded denominators/heights fall into finitely many orbits under an arithmetic group; reduction theory and mass formulas make this precise.
 5. Modern ergodic methods (Gorodnik–Nevo, Ratcliffe–Tschantz, Lauret) give alternative proofs and quantitative counting results.
 
 ## Stack Exchange Sources

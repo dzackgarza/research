@@ -28,7 +28,7 @@ The two counts measure **different group actions**. The computation takes orbits
 
 All data lives in `computations/scripts/init.sage`.
 
-- **Ambient lattice**: `TEn = U ⊕ E10(2)` (basis `e, f, ep, fp, a1..a8`), lines 322–349.
+- **The lattice everything below is computed in**: `TEn = U ⊕ E10(2)` (basis `e, f, ep, fp, a1..a8`), lines 322–349.
 - **The five cusps** are the isotropic vectors `TEn.isotropic_vectors_Sterk = [e, ep, ep+fp+ω, ep+2fp+α, 2e+2f+α]` with `ω = 2·w8`, `α = 2·w1` in the dual basis (lines 337–349).
 - **The rank-10 quotients** `Sterk_j = e_perp_mod_e(v_j)` (lines 356–363). Per the in-tree isometry tests: `Sterk_1 ≅ U(2) ⊕ E8(2) = E10(2)` (two-elementary type $(10,10,0)$); `Sterk_2..5 ≅ U ⊕ E8(2)` (type $(10,8,0)$).
 - **The Vinberg runs** use `vinal` (loaded from `~/gitclones/vinal/src/sage`, lines 9–10; wrapper at lines 40–42 calls `VinAl(gram, v0).FindRoots()`) and a Julia implementation ("Julia" in the comments). Each root below is a 10-tuple of coordinates in the recorded basis of the respective rank-10 lattice.

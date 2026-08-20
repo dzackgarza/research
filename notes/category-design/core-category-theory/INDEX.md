@@ -1,7 +1,7 @@
 # Core category theory — design corpus
 
-The abstract categorical substrate the bilinear-module tower was designed to
-sit on: abelian and concrete categories, diagram and cone machinery, limits
+The abstract categorical layer the bilinear-module tower was designed to sit
+on: abelian and concrete categories, diagram and cone machinery, limits
 and colimits, internal algebraic objects, and symmetric monoidal structure.
 Landed 2026-08-20 from `~/gitclones/Coxeter/implementation/planning/` and
 `~/gitclones/Coxeter/tmp_restore/docs/api-planning/`.
@@ -28,7 +28,7 @@ Read against `src/dzack_research/preamble/categories/abstract_categories/`
 | `diagrams/diagram_categories_summary.md` | The shape toolkit: which index category (thin, from a poset; or free, from a digraph) produces which universal construction. |
 | `diagrams/poset_categories.md` | The poset-to-thin-category construction, and the chain, discrete, span and cospan shapes; poset diagrams for products, filtrations and pullbacks. |
 | `diagrams/digraph_categories.md` | The free category on a directed graph: paths as morphisms; the parallel-pair, walking-arrow and commutative-square shapes; quotient categories by relations on paths. |
-| `limits/unified_limits_colimits.md` | Universal properties carrying an explicit witness; the hom-equivalence $\mathrm{Hom}(X, \lim D) \cong \mathrm{Cones}(X, D)$; limits and colimits as Kan extensions along $J \to \mathbf{1}$. |
+| `limits/unified_limits_colimits.md` | Universal properties with an explicit witness object; the hom-equivalence $\mathrm{Hom}(X, \lim D) \cong \mathrm{Cones}(X, D)$; limits and colimits as Kan extensions along $J \to \mathbf{1}$. |
 | `limits/universal_constructions_via_limits.md` | Every universal construction as a limit or colimit — a kernel is an equalizer against $0$, a fibre is a pullback along a point — with a layered architecture that gives a default from the general construction and specialises where a better algorithm exists. |
 | `examples/morphism_inverse_operator.md` | The operator $f^{(-1)}$: the inverse morphism when $f$ is invertible, and otherwise a partial section — a preimage operator whose fibre over $y$ is $x_0 + \ker f$. Includes the deprecation path for `lift()`. |
 | `examples/working_f_inverse_example.py` | The working prototype of that operator, implemented by overriding `__pow__` on a vector-space morphism. Prototype code, not maintained preamble code. |

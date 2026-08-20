@@ -12,14 +12,17 @@ error is a finding, not a defect to repair in place**.
 
 A specification tower for a toy model of (∞,n)-categories, written in three
 stages (`README.md`: specification ABCs → partial implementation bases →
-full implementations), organized around one idea: **the dimension shift** —
-an n-morphism of `C` is a 0-morphism of an iterated hom-category, with
-suspension as the reverse direction. `newcat2.md` (landed at this corpus
+full implementations), organized around one idea: **iterated hom-enrichment**
+— an $n$-morphism of `C` is a $0$-morphism of an iterated hom-category —
+with suspension $\Sigma$ as its adjoint direction. (The corpus calls this
+"the dimension shift"; the phrase is its own coinage and is used below only
+in quotation.) `newcat2.md` (landed at this corpus
 root) is the toy model's summary: equality of objects as the homotopy fibre
 `Eq^0(A,B)`, the homotopy toolkit, and the requirements table for `Cat`,
 `Fun`, `Hom_C`. `docs/background_theory.md` and
 `docs/old_docs/original_specifications.md` are the fuller theory; `WARP.md`
-holds the `Cat_n` level table and the ambient chain.
+holds the `Cat_n` level table and the chain
+$\mathrm{Cat}_0 \to \mathrm{Cat}_1 \to \cdots$.
 
 ## Where the pieces went
 
@@ -40,13 +43,14 @@ holds the `Cat_n` level table and the ambient chain.
 Recorded, per the migration directive — these are the notions the corpus
 specifies that the preamble does not own; the corpus is their design source:
 
-- **The dimension shift** (`new_w_categories/_arrow_abcs.py`,
-  `arrow_implementations.py`, `old_interfaces/__arrows.py`): the bijection
+- **Iterated hom-enrichment** — the corpus's "dimension shift"
+  (`new_w_categories/_arrow_abcs.py`, `arrow_implementations.py`,
+  `old_interfaces/__arrows.py`): the bijection
   `Mor_C(x,y) = Ob(Hom_C(x,y))` as `morphism_to_object` /
   `object_to_morphism`, iterated hom-categories unique per pair, the
   correspondence table (n-morphisms of `Hom^k_C` ↔ (n+k)-morphisms of `C`,
   in `tests/abc_specs/new_w_categories/test_initial_category.py`), and the
-  suspension `ΣC` as the reverse direction.
+  suspension `ΣC` as the adjoint direction.
 - **Hom/End/Aut as category families** (`hom_categories/`,
   `cells/categories/wCat/hom_categories/`): `Hom_C` with objects the
   `Hom_C(x,y)`; `End_C(x)`; `Aut_C(x)`; the functor-category family `Fun`

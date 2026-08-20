@@ -101,8 +101,10 @@ PrimIso(T_Co)/O(T_Co) is a singleton.
 This full-group lattice orbit theorem is stronger than the finite discriminant-form
 orbit count for primitive vectors: all primitive isotropic vectors of `T_Co` have
 divisibility `2`, and their discriminant classes lie in the single nonzero isotropic
-orbit of `O(A_N,q_N)`.  It does not decide stable-kernel, real-spinor, stabilizer,
-centralizer, or Coble arithmetic-subgroup orbits.
+orbit of `O(A_N,q_N)`.  It does not decide orbits under the stable orthogonal
+group $\widetilde O(L) = \ker(O(L) \to O(q_L))$, under the kernel of the real
+spinor norm, under a stabilizer or a centralizer, or under the Coble arithmetic
+subgroup.
 
 Source basis:
 

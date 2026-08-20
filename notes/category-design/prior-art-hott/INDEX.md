@@ -27,8 +27,7 @@ alongside `cat.sage`, `products.sage`, `arrow_categories.sage`.
 
 Absent, and named here: general comma categories $(F \downarrow G)$; Kan
 extensions, and with them limits-as-Kan-extensions; universal properties
-carrying an explicit witness object rather than being asserted of a
-construction.
+with an explicit witness object rather than asserted of a construction.
 
 The witness point is the one with in-repo consequences. The repository's
 subobject model already works this way — a subobject *is* the monomorphism

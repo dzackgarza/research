@@ -78,7 +78,7 @@ appealing to local computation.
 
 ## Repo-facing consequence
 
-Use the literature above for the ambient facts:
+Use the literature above for the background facts:
 
 - existence and classical geometry of the 10-nodal sextic model;
 - K3-cover/lattice setup;

@@ -40,7 +40,7 @@ Owned already (the drafts are prior art for these, not sources):
   (kernel, cokernel, image, and — landed by this migration — coimage,
   equalizer, retraction, section).
 
-**The genuinely absent notion this corpus carries: the axiom scheme
+**The genuinely absent notion this corpus supplies: the axiom scheme
 itself.** The preamble's finitely-generated tier is a directory of
 categories (`finitely_generated_free_modules`,
 `finitely_presented_torsion_modules`, ...) rather than one category with

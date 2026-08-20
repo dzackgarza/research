@@ -33,8 +33,8 @@ theory works in signature $(1,n-1)$. So the survey's central table separates:
   (`vectors_of_square`, `closest_vector`, `babai`, `voronoi_cell`, LLL/BKZ/HKZ)
   and `integral_lattices.sage` (`minimum`, `enumerate_short_vectors`).
 - **indefinite** — where the same questions are open or need different
-  machinery: $O(L)$ for indefinite $L$ is infinite and needs generators rather
-  than enumeration; the theta series diverges and needs regularization;
+  machinery: $O(L)$ for indefinite $L$ is infinite and needs group generators
+  rather than enumeration; the theta series diverges and needs regularization;
   primitive-embedding existence needs Nikulin's genus criteria rather than
   search. These remain live gaps; `enumerate_short_vectors` is
   positive-definite-only by construction.

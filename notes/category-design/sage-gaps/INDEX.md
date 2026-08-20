@@ -16,7 +16,8 @@ Two of them enumerate absences; two propose what to do about them.
   submodule; no syzygies or minimal presentations; finitely presented modules
   over a general ring largely absent.
 - `sagemath_notation_deficiencies.md` — notation. Rows: $M \oplus N$ spelled
-  `M.direct_sum(N)`; no $M^{*}$ for the dual; no $f^{-1}(y)$ for a preimage;
+  `M.direct_sum(N)`; no $M^{*}$ for the dual module; no $f^{-1}(y)$ for a
+  preimage;
   no $\langle v, w\rangle$ pairing spelling; sums of a family spelled as a
   loop rather than `sum([...])`.
 - `alternative_notation_implementations.md` — the experiments behind the

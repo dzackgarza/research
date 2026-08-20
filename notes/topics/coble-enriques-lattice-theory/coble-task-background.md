@@ -145,7 +145,7 @@ Literature: Nikulin (1979), Dolgachev-Kondo (2013), Huybrechts.
 lattice on the K3 side and verifies its discriminant form.
 
 **Discriminant group.** If the computed discriminant group is $(\mathbf{Z}/2\mathbf{Z})^{11}$,
-then $A_{T_{\mathrm{Co}}}$ has order $2048$ and carries the induced quadratic form
+then $A_{T_{\mathrm{Co}}}$ has order $2048$, with the induced quadratic form
 $q_T: A_{T_{\mathrm{Co}}} \to \mathbf{Q}/2\mathbf{Z}$.
 
 **Isotropic vectors.** v in A_{T_Co} with q_T(v) = 0 (mod 2Z). For the
@@ -227,8 +227,8 @@ orthogonal complement $\delta^\perp$.  This is a mathematical subgroup of
 $O(T_{\mathrm{Co}})$ once the Heegner line is chosen.  It records the degree-2
 polarization and Enriques involution data supplied by AEGS, but it is not yet the
 project subgroup $\Gamma_{\mathrm{Co}}$ defined by a Coble-side folding involution
-$\theta$ unless a comparison theorem identifies the ambient lattices, stabilized class,
-and involution data.
+$\theta$ unless a comparison theorem identifies the two lattices, the stabilized class,
+and the involution data.
 
 AEGS's decomposition gives an explicit Heegner representative.  Write the unimodular
 summand of $T_{\mathrm{En}}\simeq U\oplus U(2)\oplus E_8(2)$ as
@@ -376,13 +376,14 @@ period lattice.
 **Unresolved subgroup definition.** The project name $\Gamma_{\mathrm{Co}}$ denotes a
 smaller intended arithmetic subgroup only after the following data are fixed:
 
-- the ambient lattice, either $T_{\mathrm{En}}$ or an explicitly embedded copy of
-  $T_{\mathrm{Co}}\subset T_{\mathrm{En}}$;
+- the lattice every item below is stated in: either $T_{\mathrm{En}}$, or
+  $T_{\mathrm{Co}}$ together with an explicit embedding
+  $T_{\mathrm{Co}}\hookrightarrow T_{\mathrm{En}}$;
 - the Heegner vector $\delta$ whose orthogonal complement is $T_{\mathrm{Co}}$;
 - the degree-2 polarization class being stabilized, distinguishing the downstairs
   $h_{\mathrm{Co}}\in K_S^\perp\subset\mathrm{Pic}(S)$ from the K3-side pullback
   $\tilde h_{\mathrm{Co}}=f^*h_{\mathrm{Co}}$ of square $4$;
-- the involution $\theta$ as an isometry of the same ambient lattice;
+- the involution $\theta$ as an isometry of that same lattice;
 - the restriction map, if any, from the stabilizer-centralizer subgroup to
   $O(T_{\mathrm{Co}})$ and then to $O(A_{T_{\mathrm{Co}}},q_T)$.
 
@@ -499,7 +500,7 @@ obligations are:
 - compare $\Gamma_{\mathrm{Co}}^{\mathrm{En}}(\delta)$ with the project
   stabilizer-centralizer notation
   $\operatorname{Stab}(\text{typed Coble polarization data})\cap Z(\theta)$ after
-  $\theta$ and the transported polarization class are constructed in the same ambient
+  $\theta$ and the transported polarization class are constructed in one and the same
   lattice.
 
 **Moduli interpretation.** The polarization $h_{\mathrm{Co}}$ is the degree-2

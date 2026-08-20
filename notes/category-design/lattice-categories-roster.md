@@ -46,9 +46,9 @@ Recorded by the corpora audit (PLAN-corpora-audit-registry, error row for
 `cat/docs/sage_integration.md`); each correction above is marked in bold.
 
 1. **Unimodularity is not an abstract isomorphism.** The roster wrote
-   `UnimodularLattice: L ≅ L^v`. For a nondegenerate lattice the dual is
-   free of the same rank, so an abstract *module* isomorphism always
-   exists. Unimodularity is that the correlation the form induces,
+   `UnimodularLattice: L ≅ L^v`. For a nondegenerate lattice the dual module
+   $L^\vee = \operatorname{Hom}_R(L, R)$ is free of the same rank, so an
+   abstract *module* isomorphism always exists. Unimodularity is that the correlation the form induces,
    $c: L \to L^\vee$, is an isomorphism — equivalently, the discriminant
    group is trivial.
 
@@ -102,8 +102,9 @@ $(0,2,1)$ — are the smallest specimens the owned tree cannot place.
 The predicate the routing edge would use already exists
 (`is_negative_semidefinite`, `integral_lattices.sage`). What is missing is
 the category and its refinement edge, and above it the degenerate node the
-design corpora put parabolic under (radical, radical complement,
-split-degeneracy, the stabilizer of the radical in $O(L)$; then null root,
+design corpora put parabolic under (radical, radical complement, whether the
+radical splits off — $L \cong \operatorname{rad}(L) \oplus L'$ with $L'$
+nondegenerate — the stabilizer of the radical in $O(L)$; then null root,
 level, real and imaginary roots, height grading, affine Weyl group). The
 design is written out in
 `bilinear-module-tower/api-planning/categories/bilinear_Rmod/symmetric_Rmod/degenerate_lattices/`
