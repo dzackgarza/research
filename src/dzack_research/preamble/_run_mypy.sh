@@ -14,12 +14,22 @@ CACHE="${2:-/tmp/mypy-cache-$$}"
 # absolute and is appended to mypy_path, so point it there. Without this every
 # Sage noun resolves to Any and the whole type pass checks nothing.
 export MYPYPATH=/home/dzack/research/typings
+# Sage's own interpreter, which has sageparse on its path. `sage -python` is
+# not available on this build either, so the venv's python is named directly.
+SAGE_PYTHON="${SAGE_PYTHON:-/home/dzack/gitclones/sage-dev-allopts/.venv/bin/python}"
 rm -f "$PY"
-# `sage --preparse` is this project's preparser: src/sitecustomize.py installs
-# it into every Sage process, so the CLI, the QC gates and this script all
-# compile the same way. Hand-rolling the preparse here would be a second
-# compiler to keep in step.
-sage --preparse "$TARGET"
+# The lowering is `sageparse.build.lower_file`, which is the compiler the QC
+# gates and every Sage process use; hand-rolling the preparse here would be a
+# second compiler to keep in step. It is called directly rather than through
+# `sage --preparse`, because this machine's Sage CLI (sage.cli) has no such
+# flag -- `sage: error: unrecognized arguments: --preparse`. Sage's own
+# interpreter runs it, so the lowering is the same one the gates apply.
+"$SAGE_PYTHON" -c '
+import sys
+from pathlib import Path
+from sageparse.build import lower_file
+lower_file(Path(sys.argv[1]), Path(sys.argv[2]))
+' "$TARGET" "$PY"
 timeout 600 uvx --python 3.14 \
   --with-editable . \
   --from mypy mypy --no-incremental --cache-dir="$CACHE" \
