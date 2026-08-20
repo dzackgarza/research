@@ -20,15 +20,18 @@ if TYPE_CHECKING:
     from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModule
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleAutomorphismGroup
     from dzack_research.preamble.categories.modules.framed.formed.integrallattice.subobjects import Subobject
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism as ModuleMorphismType
     from sage.rings.ring import Ring
     from sage.structure.element import RingElement
 
 from dzack_research.preamble.categories.rings.rings import OwnedBaseRing
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
 from dzack_research.preamble.owned_category import object_of
+from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
+from dzack_research.preamble.owned_category_bases import HomsetsCategory
 from typing import Protocol, Self, TYPE_CHECKING, TypeAlias
 
-from sage.categories.homset import Hom, Homset
+from sage.categories.homset import Hom
 from sage.misc.cachefunc import cached_method
 from sage.categories.morphism import Morphism, SetMorphism
 from sage.rings.integer import Integer
@@ -353,48 +356,40 @@ class FormModules(OwnedCategoryOverBaseRing):
             self: Self,
             codomain: "Module",
             category: "Category | None" = None,
-        ) -> "FormHomset | Homset":
-            # The union is the honest return: the formed branch builds a
-            # FormHomset (its ends are the FormedParent protocol, not a
-            # nominal Parent), the fallback delegates to Parent.Hom.
+        ) -> Parent:
+            r"""Return the form-preserving homset, or Sage's for a plain codomain."""
             if codomain in FormModules(self.base_ring()):
-                cache: dict["Module", "FormHomset"] = self.__dict__.setdefault(
+                cache: dict["Module", Parent] = self.__dict__.setdefault(
                     "_form_module_homsets", {}
                 )
                 homset = cache.get(codomain)
                 if homset is None:
-                    homset = FormHomset(
-                        self,
-                        codomain,
-                        FormModules(self.base_ring()),
+                    hom_category = FormModules(self.base_ring()).Homsets()
+                    if codomain is self:
+                        hom_category = hom_category.Endset()
+                    homset = object_of(
+                        hom_category, domain=self, codomain=codomain
                     )
                     cache[codomain] = homset
                 return homset
-            plain_homset: "Homset" = Parent.Hom(self, codomain, category)
+            plain_homset: Parent = Parent.Hom(self, codomain, category)
             return plain_homset
 
-        def Aut(self: "FormedParent") -> "FormAutomorphismGroup":
-            r"""Return $\operatorname{Aut}(M)$, the form-preserving units of
-            $\operatorname{End}(M)$.
+        def Aut(self: "FormedParent") -> Parent:
+            r"""Return $\operatorname{Aut}(M)$, which is $\operatorname{End}(M)$.
+
+            The morphisms of this category are the form-preserving maps, so on
+            these objects the endset is the automorphism group and there is one
+            object for both.  The group is built from a finite framing, which
+            the endset asserts.
 
             Sited beside ``Hom``, on the general formed node, for the same
             reason: a lattice's $\operatorname{Aut}$ is $O(L)$ and belongs in
             the isometry node, and a refinement only reaches its own
             statement first when it is a subcategory of the one the general
-            statement sits on.  On a node incomparable with the lattice
-            categories -- finite free formed modules, say -- it would shadow
-            them instead, leaving the join's linearization to decide which
-            $\operatorname{Aut}$ a lattice answers.
-
-            The group is built from a finite framing, which
-            ``FormAutomorphismGroup`` asserts: a formed module without one
-            has the operation named here and its hypothesis stated there.
+            statement sits on.
             """
-            cached = self.__dict__.get("_preamble_Aut")
-            if cached is None:
-                cached = FormAutomorphismGroup(self)
-                self._preamble_Aut = cached
-            return cached
+            return self.Hom(self)
 
         def hom(
             self: "FormedParent",
@@ -432,7 +427,7 @@ class FormModules(OwnedCategoryOverBaseRing):
                         "its generating set"
                     )
             morphism = self.Hom(target)(assignment)
-            assert isinstance(morphism, FormMorphism), (
+            assert is_form_morphism(morphism), (
                 f"{target} is a formed module, so its homset builds form "
                 f"morphisms; got {morphism}"
             )
@@ -748,6 +743,225 @@ class FormModules(OwnedCategoryOverBaseRing):
             return quotient
 
 
+    class Homsets(HomsetsCategory):
+        r"""The form-preserving maps between two formed modules.
+
+        The homset is the parent and the morphism is its element, so this is
+        where both live.  The level below is the owned ``Sets().Homsets()``,
+        which supplies Sage's ``Homset`` and ``Morphism``; nothing here names
+        a base.
+        """
+
+        class ParentMethods:
+            r"""$\operatorname{Hom}(M, N)$ of two modules with a form."""
+
+            def __init__(
+                self,
+                domain: "Module",
+                codomain: "Module",
+                **rest: "ConstructionData",
+            ) -> None:
+                # Local: a module-level import here would close a cycle; by call time this module is built.
+                from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
+
+                assert domain.base_ring() == codomain.base_ring(), (
+                    "form morphisms require the same module base ring"
+                )
+                super().__init__(
+                    domain=domain,
+                    codomain=codomain,
+                    base=domain.base_ring(),
+                    check=False,
+                    **rest,
+                )
+                self._module_homset = module_homset(domain, codomain)
+
+            def _element_constructor_(
+                self, images: "GeneratorAssignment | ModuleMorphism"
+            ) -> "Morphism":
+                # Local: a module-level import here would close a cycle; by call time this module is built.
+                from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
+
+                match images:
+                    case ModuleMorphism():
+                        module_morphism = images
+                        assert module_morphism.parent() is self._module_homset, (
+                            "the module morphism belongs to a different homset"
+                        )
+                    case SetMorphism() | dict():
+                        module_morphism = self._module_homset(images)
+                    case _ if callable(images):
+                        module_morphism = self._module_homset(images)
+                    case _:
+                        assert False, (
+                            "a form morphism is specified by its generator morphism"
+                        )
+                morphism: "Morphism" = self.element_class(self, module_morphism)
+                return morphism
+
+            def __contains__(self, morphism: "MembershipInput") -> bool:
+                # ``in`` is asked of an arbitrary value.
+                return isinstance(morphism, Morphism) and morphism.parent() is self
+
+            def _repr_(self) -> str:
+                return (
+                    f"Form-preserving morphisms from {self.domain()} to "
+                    f"{self.codomain()}"
+                )
+
+        class ElementMethods:
+            r"""A morphism whose underlying module map preserves the form."""
+
+            def __init__(
+                self,
+                parent: Parent,
+                module_morphism: ModuleMorphism,
+            ) -> None:
+                super().__init__(parent)
+                pulled_back = parent.codomain().form().pullback(module_morphism)
+                expected_form = parent.domain().form()
+                if pulled_back.codomain() is not expected_form.codomain():
+                    pulled_back = pulled_back.reduced(expected_form.codomain())
+                assert expected_form == pulled_back, (
+                    "the module morphism does not preserve the stated form"
+                )
+                self._module_morphism = module_morphism
+
+            def module_morphism(self) -> ModuleMorphism:
+                return self._module_morphism
+
+            def module_generator_morphism(self) -> SetMorphism:
+                generator_morphism: SetMorphism = self._module_morphism.module_generator_morphism()
+                return generator_morphism
+
+            def matrix(self) -> MorphismMatrix:
+                return self._module_morphism.matrix()
+
+            def _call_(self, element: "ElementConstructorInput") -> "Element":
+                # Sage calls a morphism on an arbitrary value and lets the
+                # underlying map decide; the parameter is unrestricted for that
+                # reason.
+                image: "Element" = self._module_morphism(element)
+                return image
+
+            def lift(self, element: "Element") -> "ModuleElement":
+                lifted: "ModuleElement" = self._module_morphism.lift(element)
+                return lifted
+
+            def kernel(self) -> "Subobject":
+                return self._module_morphism.kernel()
+
+            def cokernel(self) -> Parent:
+                return self._module_morphism.cokernel()
+
+            def image(self) -> "Subobject":
+                return self._module_morphism.image()
+
+            def is_injective(self) -> bool:
+                return bool(self._module_morphism.is_injective())
+
+            def index(self) -> "Integer":
+                index: "Integer" = self._module_morphism.index()
+                return index
+
+            def orthogonal_complement(self) -> "Subobject":
+                return self._module_morphism.orthogonal_complement()
+
+            def then(self, other: "Morphism") -> "Morphism":
+                assert other.domain() is self.codomain(), (
+                    "the codomain of the first map is not the domain of the second"
+                )
+                module_generator_morphism = self.module_generator_morphism()
+                composite: "Morphism" = self.domain().Hom(other.codomain())(
+                    SetMorphism(
+                        Hom(
+                            module_generator_morphism.domain(),
+                            UnderlyingSet(other.codomain()),
+                            Sets(),
+                        ),
+                        lambda element_of_S: other(
+                            module_generator_morphism._call_(element_of_S)
+                        ),
+                    )
+                )
+                return composite
+
+            def __mul__(self, other: "ElementConstructorInput") -> "Morphism":
+                assert (
+                    isinstance(other, Morphism)
+                    and other.parent() is self.parent()
+                ), "composition here is internal to one automorphism homset"
+                module_generator_morphism = other.module_generator_morphism()
+                return self.parent()(
+                    SetMorphism(
+                        Hom(
+                            module_generator_morphism.domain(),
+                            UnderlyingSet(self.codomain()),
+                            Sets(),
+                        ),
+                        lambda element_of_S: self(
+                            module_generator_morphism._call_(element_of_S)
+                        ),
+                    )
+                )
+
+            def __eq__(self, other: "MembershipInput") -> bool:
+                return (
+                    isinstance(other, Morphism)
+                    and self.parent() is other.parent()
+                    and self._module_morphism == other._module_morphism
+                )
+
+            def __hash__(self) -> int:
+                return hash((id(self.parent()), self._module_morphism))
+
+            def _repr_type(self) -> str:
+                return "Form"
+
+            def _repr_defn(self) -> str:
+                return str(self._module_morphism._repr_defn())
+
+        class Endset(CategoryWithAxiom):
+            r"""$\operatorname{Aut}(M)$: the endset of a finite free formed module.
+
+            Its morphisms are the form-preserving maps, so on these objects
+            $\operatorname{End}(M)=\operatorname{Aut}(M)$ and the endset is a
+            group.
+            """
+
+            class ParentMethods:
+                def __init__(self, **rest: "ConstructionData") -> None:
+                    # Local: a module-level import here would close a cycle; by call time this module is built.
+                    from dzack_research.preamble.refine import refine
+
+                    super().__init__(**rest)
+                    assert self.domain() in FinitelyGeneratedFreeFormModules(
+                        self.domain().base_ring()
+                    ), "form automorphisms here require a finite free module"
+                    # $\operatorname{Aut}$ in formed modules is a group, so that
+                    # is the placement.  Not the module-homset category as well:
+                    # that carries the additive axioms of $\operatorname{End}$,
+                    # which is a ring -- whereas $\operatorname{Aut}$ is its group
+                    # of units, closed under composition and inverse and not under
+                    # addition.  Declaring both makes this object an additive *and*
+                    # multiplicative semigroup, and constructions keyed on that,
+                    # $R[G]$ among them, rightly refuse it as ambiguous.
+                    refine(self, [Groups()])
+
+                def _element_constructor_(
+                    self, images: "GeneratorAssignment | ModuleMorphism"
+                ) -> "Morphism":
+                    morphism = super()._element_constructor_(images)
+                    determinant = morphism.matrix().det()
+                    assert determinant.is_unit(), (
+                        f"the determinant {determinant} is not a unit"
+                    )
+                    return morphism
+
+                def one(self) -> "Morphism":
+                    return self(self.domain().module_generator_morphism())
+
+
 class BilinearFormModules(OwnedCategoryOverBaseRing):
     r"""Modules whose form is bilinear."""
 
@@ -869,13 +1083,7 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
             labels = finite_ordered_set(tuple(module_generators))
             sub = self._sub_form_module(gram, labels)
             images = {generator: generator for generator in labels}
-            return Subobject(
-                FormHomset(
-                    sub,
-                    self,
-                    FormModules(self.base_ring()),
-                )(images)
-            )
+            return Subobject(sub.Hom(self)(images))
 
         def _sub_form_module(
             self: "FormedParent",
@@ -1012,7 +1220,7 @@ class FinitelyGeneratedFormModules(OwnedCategoryOverBaseRing):
                         codomain,
                     )
                     morphism = self.Hom(target)(assignment)
-                    assert isinstance(morphism, FormMorphism), (
+                    assert is_form_morphism(morphism), (
                         f"{target} is a formed module, so its homset builds "
                         f"form morphisms; got {morphism}"
                     )
@@ -1152,233 +1360,21 @@ def FormModule(form: "Form") -> Parent:
     return object_of(FormModules(form.module().base_ring()), form=form)
 
 
-# ``Homset`` is generic in its morphism type; the runtime class is not
-# subscriptable, so the binding goes through a TYPE_CHECKING-only alias.
-# The ends bind to a phantom NOMINAL type: a form homset's ends really are
-# Parents (the protocol alone is not, so it cannot sit under Parent.Hom's
-# declared Homset return), and they carry the formed surface — stated once
-# by inheriting the protocol.
-if TYPE_CHECKING:
+def is_form_morphism(morphism: "MembershipInput") -> bool:
+    r"""Whether ``morphism`` is an element of a form-preserving homset.
 
-    class FormedModule(Parent, FormedParent):
-        r"""A Parent that offers the formed surface (type-only)."""
-
-    _FormHomsetBase = Homset["FormMorphism", "FormedModule", "FormedModule"]
-else:
-    _FormHomsetBase = Homset
+    Being form-preserving is not a class but a homset: such a morphism is an
+    element of ``Hom`` taken in :class:`FormModules`, so this asks its parent.
+    """
+    if not isinstance(morphism, Morphism):
+        return False
+    return morphism.parent() in FormModules(
+        morphism.domain().base_ring()
+    ).Homsets()
 
 
-class FormHomset(_FormHomsetBase):
-    r"""The homset of form-preserving morphisms between formed modules."""
 
-    def __init__(self, domain: "Module", codomain: "Module", category: "Category") -> None:
-        # Local: a module-level import here would close a cycle; by call time this module is built.
-        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
-        assert domain.base_ring() == codomain.base_ring(), (
-            "form morphisms require the same module base ring"
-        )
-        Homset.__init__(
-            self,
-            domain,
-            codomain,
-            category=category,
-            base=domain.base_ring(),
-            check=False,
-        )
-        self._module_homset = module_homset(domain, codomain)
-
-    def _element_constructor_(self, images: "GeneratorAssignment | ModuleMorphism") -> "FormMorphism":
-        match images:
-            case ModuleMorphism():
-                module_morphism = images
-                assert module_morphism.parent() is self._module_homset, (
-                    "the module morphism belongs to a different homset"
-                )
-            case SetMorphism() | dict():
-                module_morphism = self._module_homset(images)
-            case _ if callable(images):
-                module_morphism = self._module_homset(images)
-            case _:
-                assert False, (
-                    "a form morphism is specified by its generator morphism"
-                )
-        return FormMorphism(self, module_morphism)
-
-    def __contains__(self, morphism: "MembershipInput") -> bool:
-        # ``in`` is asked of an arbitrary value.
-        return (
-            isinstance(morphism, FormMorphism)
-            and morphism.parent() is self
-        )
-
-    def _repr_(self) -> str:
-        return (
-            f"Form-preserving morphisms from {self.domain()} to "
-            f"{self.codomain()}"
-        )
-
-
-class FormMorphism(Morphism):
-    r"""A morphism whose underlying module map preserves the form."""
-
-    if TYPE_CHECKING:
-        # Built only by ``FormHomset._element_constructor_``, so that homset
-        # is the parent.
-        def parent(self) -> FormHomset: ...
-
-    def __init__(self, parent: FormHomset, module_morphism: ModuleMorphism) -> None:
-        Morphism.__init__(self, parent)
-        pulled_back = parent.codomain().form().pullback(module_morphism)
-        expected_form = parent.domain().form()
-        if pulled_back.codomain() is not expected_form.codomain():
-            pulled_back = pulled_back.reduced(expected_form.codomain())
-        assert parent.domain().form() == pulled_back, (
-            "the module morphism does not preserve the stated form"
-        )
-        self._module_morphism = module_morphism
-
-    def module_morphism(self) -> ModuleMorphism:
-        return self._module_morphism
-
-    def module_generator_morphism(self) -> SetMorphism:
-        generator_morphism: SetMorphism = self._module_morphism.module_generator_morphism()
-        return generator_morphism
-
-    def matrix(self) -> MorphismMatrix:
-        return self._module_morphism.matrix()
-
-    def _call_(self, element: "ElementConstructorInput") -> "Element":
-        # Sage calls a morphism on an arbitrary value and lets the underlying
-        # map decide; the parameter is unrestricted for that reason.
-        image: "Element" = self._module_morphism(element)
-        return image
-
-    def lift(self, element: "Element") -> "ModuleElement":
-        lifted: "ModuleElement" = self._module_morphism.lift(element)
-        return lifted
-
-    def kernel(self) -> "Subobject":
-        return self._module_morphism.kernel()
-
-    def cokernel(self) -> "FinitelyPresentedModule":
-        return self._module_morphism.cokernel()
-
-    def image(self) -> "Subobject":
-        return self._module_morphism.image()
-
-    def is_injective(self) -> bool:
-        return bool(self._module_morphism.is_injective())
-
-    def index(self) -> "Integer":
-        index: "Integer" = self._module_morphism.index()
-        return index
-
-    def orthogonal_complement(self) -> "Subobject":
-        return self._module_morphism.orthogonal_complement()
-
-    def then(self, other: "FormMorphism") -> "FormMorphism":
-        assert other.domain() is self.codomain(), (
-            "the codomain of the first map is not the domain of the second"
-        )
-        module_generator_morphism = self.module_generator_morphism()
-        composite: "FormMorphism" = self.domain().Hom(other.codomain())(
-                SetMorphism(
-                    Hom(
-                        module_generator_morphism.domain(),
-                        UnderlyingSet(other.codomain()),
-                        Sets(),
-                    ),
-                    lambda element_of_S: other(
-                        module_generator_morphism._call_(element_of_S)
-                    ),
-                )
-            )
-        return composite
-
-    def __mul__(self, other: "ElementConstructorInput") -> "FormMorphism":
-        assert (
-            isinstance(other, FormMorphism)
-            and other.parent() is self.parent()
-        ), "composition here is internal to one automorphism homset"
-        module_generator_morphism = other.module_generator_morphism()
-        return self.parent()(
-                SetMorphism(
-                    Hom(
-                        module_generator_morphism.domain(),
-                        UnderlyingSet(self.codomain()),
-                        Sets(),
-                    ),
-                    lambda element_of_S: self(
-                        module_generator_morphism._call_(element_of_S)
-                    ),
-                )
-            )
-
-    def __eq__(self, other: "MembershipInput") -> bool:
-        return (
-            isinstance(other, FormMorphism)
-            and self.parent() is other.parent()
-            and self._module_morphism == other._module_morphism
-        )
-
-    def __hash__(self) -> int:
-        return hash((id(self.parent()), self._module_morphism))
-
-    def _repr_type(self) -> str:
-        return "Form"
-
-    def _repr_defn(self) -> str:
-        return str(self._module_morphism._repr_defn())
-
-
-class FormAutomorphismGroup(FormHomset):
-    r"""The invertible form-preserving endomorphisms of a finite free object."""
-
-    def __init__(self, formed_module: "Module") -> None:
-        # Local: a module-level import here would close a cycle; by call time this module is built.
-        from dzack_research.preamble.refine import refine
-        assert formed_module in FinitelyGeneratedFreeFormModules(
-            formed_module.base_ring()
-        ), "form automorphisms here require a finite free module"
-        FormHomset.__init__(
-            self,
-            formed_module,
-            formed_module,
-            FormModules(formed_module.base_ring()),
-        )
-        # \(\operatorname{Aut}\) in formed modules is a group, so that is the
-        # placement.  Not the module-homset category as well: that carries
-        # the additive axioms of \(\operatorname{End}\), which is a ring --
-        # whereas \(\operatorname{Aut}\) is its group of units, closed under
-        # composition and inverse and not under addition.  Declaring both
-        # makes this object an additive *and* multiplicative semigroup, and
-        # constructions keyed on that, \(R[G]\) among them, rightly refuse it
-        # as ambiguous.  The homset surface comes from the class it subclasses.
-        refine(self, [Groups()])
-
-    def _element_constructor_(
-        self,
-        images: "GeneratorAssignment | ModuleMorphism",
-    ) -> FormMorphism:
-        morphism = FormHomset._element_constructor_(self, images)
-        determinant = morphism.matrix().det()
-        assert determinant.is_unit(), (
-            f"the determinant {determinant} is not a unit"
-        )
-        return morphism
-
-    def one(self) -> FormMorphism:
-        return self(self.domain().module_generator_morphism())
-
-    def __contains__(self, morphism: "MembershipInput") -> bool:
-        # ``in`` is asked of an arbitrary value.
-        return (
-            isinstance(morphism, FormMorphism)
-            and morphism.parent() is self
-        )
-
-
-def correlation_of(lattice: Parent) -> FormMorphism:
+def correlation_of(lattice: Parent) -> Morphism:
     r"""Return \(c:L\to L^\vee\), \(v\mapsto b(v,-)\)."""
     # Local: a module-level import here would close a cycle; by call time this module is built.
     from dzack_research.preamble.utilities import zipsum
@@ -1396,7 +1392,7 @@ def correlation_of(lattice: Parent) -> FormMorphism:
                 )
             }
         )
-    assert isinstance(correlation, FormMorphism), (
+    assert is_form_morphism(correlation), (
         f"{dual} is a formed module, so its homset builds form morphisms; "
         f"got {correlation}"
     )

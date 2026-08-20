@@ -441,11 +441,7 @@ class CoxeterDiagrams(Category):
             key = (codomain, hom_category)
             homset = cache.get(key)
             if homset is None:
-                homset = object_of(
-                    hom_category.Homsets(),
-                    domain=self,
-                    codomain=codomain,
-                )
+                homset = super()._Hom_(codomain, hom_category)
                 cache[key] = homset
             diagram_homset: Parent = homset
             return diagram_homset
