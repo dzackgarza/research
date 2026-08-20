@@ -31,6 +31,12 @@ rebinds every name from this module's own namespace and costs nothing.
 
 import sys as _sys
 
+# First, and by the star: a session says ``matrix`` and ``vector`` as readily
+# as it says ``ZZ``, so the analogue of ``sage.all`` is a superset of it and
+# not a replacement.  Everything the preamble owns is bound below this line,
+# so an owned name always wins over the engine's -- the whole ordering, in one
+# line.
+from sage.all import *  # noqa: F401,F403
 from sage.repl.load import load as _engine_load
 
 from dzack_research.preamble.categories.modules.framed.formed.lattices import Lattices
