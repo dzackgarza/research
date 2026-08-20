@@ -19,6 +19,7 @@ implemented.
 """
 
 import functools
+from collections.abc import Callable
 
 import pytest
 
@@ -60,12 +61,18 @@ def _identity_on(source: Parent) -> SetMorphism:
 
 
 def _ensure_preamble() -> None:
+    r"""Make this module a session, the way a session is made.
+
+    The one import, and not ``install_preamble`` plus ``Lattices.install``:
+    the table names ``QuaternionGroup``, ``RR``, ``matrix`` and their
+    fellows, which the preamble does not export and a lowered module is not
+    given.  ``preamble.all`` is a superset of ``sage.all``, so the names the
+    specimens are written in resolve here for the same reason they resolve at
+    a prompt.
+    """
     if "Lattices" in globals():
         return
-    from dzack_research.preamble.install import install_preamble
-
-    install_preamble(globals())
-    Lattices.install(globals())
+    exec("from dzack_research.preamble.all import *", globals())
 
 
 def unmet_obligations(parent: Parent) -> list:
@@ -93,12 +100,25 @@ def unmet_obligations(parent: Parent) -> list:
 
 
 @functools.cache
-def _constructions() -> dict:
+def _construction(name: str) -> Parent:
+    r"""Return the specimen ``name`` names, building it at most once.
+
+    Cached, for the reason the table used to be built eagerly: a construction
+    named by several rows would otherwise be run once per row, multiplying
+    every constructor's cost by the size of the table.  What the cache no
+    longer does is build a row nobody asked for -- a specimen that raises is
+    one red row naming its own construction, where before it was a collection
+    error that silenced all hundred and six.
+    """
+    return _constructions()[name]()
+
+
+@functools.cache
+def _constructions() -> "dict[str, Callable[[], Parent]]":
     r"""Every way the preamble makes an object, with one specimen each.
 
-    Built once per process: the sweep below is parametrized over this table,
-    and rebuilding every non-unique construction per parameter multiplies
-    every constructor's cost by the number of rows.
+    The values are thunks and not objects: collection needs the names, and
+    asking for the names must not run a single constructor.
     """
     _ensure_preamble()
     e = list(Lattices.E8.module_generators())
@@ -106,180 +126,180 @@ def _constructions() -> dict:
     uu = Lattices.U + Lattices.U
     g = list(uu.module_generators())
     return {
-        "Lattices(ring)": Lattices(ZZ),
-        "Lattices(name)": Lattices("LK3"),
-        "Lattices(root system)": Lattices("A", 2),
-        "Lattices(gram)": Lattices(matrix(ZZ, [[2, 1], [1, 2]])),
-        "IntegralLattice(name)": IntegralLattice("E8"),
-        "direct sum": Lattices.A1 + Lattices.A2,
-        "tensor product": Lattices.U @ Lattices.A2,
-        "twist": Lattices.E8.twist(2),
-        "rooted Coxeter diagram from a scaled Cartan type": CoxeterDiagrams().from_cartan_type(
+        "Lattices(ring)": lambda: Lattices(ZZ),
+        "Lattices(name)": lambda: Lattices("LK3"),
+        "Lattices(root system)": lambda: Lattices("A", 2),
+        "Lattices(gram)": lambda: Lattices(matrix(ZZ, [[2, 1], [1, 2]])),
+        "IntegralLattice(name)": lambda: IntegralLattice("E8"),
+        "direct sum": lambda: Lattices.A1 + Lattices.A2,
+        "tensor product": lambda: Lattices.U @ Lattices.A2,
+        "twist": lambda: Lattices.E8.twist(2),
+        "rooted Coxeter diagram from a scaled Cartan type": lambda: CoxeterDiagrams().from_cartan_type(
             ["A", 2], scale=2
         ),
-        "dual lattice": Lattices.A2.dual_lattice(),
-        "hyperkaehler lattice": Lattices.hyperkaehler_lattice("Kum", 2),
-        "leech lattice": Lattices.leech_lattice(),
-        "root sublattice": Lattices.A2.root_sublattice(),
-        "symmetric group of a finite set": Sets.Δ[2].symmetric_group(),
-        "subobject": Lattices.E8.subobject_on([2 * e[0]]),
-        "discriminant group": Lattices.A2.discriminant_group(),
-        "discriminant bilinear form": Lattices.A2.discriminant_bilinear_form(),
-        "free module on a set": FreeModuleOn(ZZ, Sets.Δ[2]),
-        "based free module": BasedFreeModule(ZZ, Sets.Δ[2]),
-        "R^n": ZZ**3,
+        "dual lattice": lambda: Lattices.A2.dual_lattice(),
+        "hyperkaehler lattice": lambda: Lattices.hyperkaehler_lattice("Kum", 2),
+        "leech lattice": lambda: Lattices.leech_lattice(),
+        "root sublattice": lambda: Lattices.A2.root_sublattice(),
+        "symmetric group of a finite set": lambda: Sets.Δ[2].symmetric_group(),
+        "subobject": lambda: Lattices.E8.subobject_on([2 * e[0]]),
+        "discriminant group": lambda: Lattices.A2.discriminant_group(),
+        "discriminant bilinear form": lambda: Lattices.A2.discriminant_bilinear_form(),
+        "free module on a set": lambda: FreeModuleOn(ZZ, Sets.Δ[2]),
+        "based free module": lambda: BasedFreeModule(ZZ, Sets.Δ[2]),
+        "R^n": lambda: ZZ**3,
         # Not the row above: ``ZZ**3`` builds the framed free module on a
         # chosen generating set, while these two are built through the
         # category chain, where the underlying set is the product
         # $R\times\cdots\times R$ and the form is added on top of it.
-        "free module of rank n": FreeModuleOfRank(ZZ, 3),
-        "free lattice of rank n": FreeLatticeOfRank(ZZ, identity_matrix(ZZ, 2)),
-        "isometry group": Lattices.A2.Aut(),
+        "free module of rank n": lambda: FreeModuleOfRank(ZZ, 3),
+        "free lattice of rank n": lambda: FreeLatticeOfRank(ZZ, identity_matrix(ZZ, 2)),
+        "isometry group": lambda: Lattices.A2.Aut(),
         # A finite abstract group's automorphism group, and the stated-gap
         # specimen: Aut of a free group constructs -- the object exists --
         # while enumeration and order state the algorithmic gap when asked.
-        "abstract group automorphism group": QuaternionGroup().Aut(),
-        "free group automorphism group": FreeGroup(2).Aut(),
-        "isometry homset": Lattices.A2.Isom(Lattices.A2),
-        "embedding homset": Lattices.A1.Emb(Lattices.E8),
-        "discriminant image subgroup": Lattices.A2.Aut().discriminant_image(),
+        "abstract group automorphism group": lambda: QuaternionGroup().Aut(),
+        "free group automorphism group": lambda: FreeGroup(2).Aut(),
+        "isometry homset": lambda: Lattices.A2.Isom(Lattices.A2),
+        "embedding homset": lambda: Lattices.A1.Emb(Lattices.E8),
+        "discriminant image subgroup": lambda: Lattices.A2.Aut().discriminant_image(),
         # The stabilizer of one class in O(A): for A2 the discriminant form is
         # ZZ/3 with O(A) = {+-1}, so the stabilizer of a nonzero class is
         # trivial -- which also puts the empty generating set through the
         # subgroup constructor.
-        "discriminant class stabilizer": Lattices.A2.discriminant_group()
+        "discriminant class stabilizer": lambda: Lattices.A2.discriminant_group()
         .automorphism_group()
         .stabilizer_of_element(
             list(Lattices.A2.discriminant_group().module_generators())[0]
         ),
-        "special orthogonal subgroup": Lattices.A2.Aut().special_orthogonal_subgroup(),
-        "spinor kernel subgroup": Lattices.U.Aut().spinor_kernel_subgroup(),
-        "stable orthogonal group": Lattices.A2.stable_orthogonal_group(),
-        "vector stabilizer subgroup": Lattices.A2.Aut().stabilizer_of_vector(
+        "special orthogonal subgroup": lambda: Lattices.A2.Aut().special_orthogonal_subgroup(),
+        "spinor kernel subgroup": lambda: Lattices.U.Aut().spinor_kernel_subgroup(),
+        "stable orthogonal group": lambda: Lattices.A2.stable_orthogonal_group(),
+        "vector stabilizer subgroup": lambda: Lattices.A2.Aut().stabilizer_of_vector(
             list(Lattices.A2.module_generators())[0]
         ),
-        "isotropic line stabilizer subgroup": Lattices.U.Aut().stabilizer_of_isotropic_line(
+        "isotropic line stabilizer subgroup": lambda: Lattices.U.Aut().stabilizer_of_isotropic_line(
             u[0]
         ),
-        "isotropic plane stabilizer subgroup": uu.Aut().stabilizer_of_isotropic_plane(
+        "isotropic plane stabilizer subgroup": lambda: uu.Aut().stabilizer_of_isotropic_plane(
             (g[0], g[2])
         ),
-        "isotropic flag stabilizer subgroup": uu.Aut().stabilizer_of_isotropic_flag(
+        "isotropic flag stabilizer subgroup": lambda: uu.Aut().stabilizer_of_isotropic_flag(
             (g[0], g[2])
         ),
-        "character-kernel subgroup intersection": Lattices.U.Aut()
+        "character-kernel subgroup intersection": lambda: Lattices.U.Aut()
         .special_orthogonal_subgroup()
         .intersection(Lattices.U.Aut().spinor_kernel_subgroup()),
-        "free algebra": FreeAlgebraOn(QQ, Sets.Δ[1]),
-        "tensor algebra": TensorAlgebraOn(QQ, Sets.Δ[1]),
-        "alternating algebra": AlternatingAlgebraOn(QQ, Sets.Δ[1]),
-        "divided power algebra": DividedPowerAlgebraOn(QQ, Sets.Δ[1]),
-        "tensor algebra degree two": TensorAlgebraOn(QQ, Sets.Δ[1]).graded_piece(2),
-        "symmetric algebra degree two": FreeAlgebraOn(QQ, Sets.Δ[1]).graded_piece(2),
-        "alternating algebra degree two": AlternatingAlgebraOn(QQ, Sets.Δ[1]).graded_piece(2),
-        "divided power algebra degree two": DividedPowerAlgebraOn(QQ, Sets.Δ[1]).graded_piece(2),
-        "mixed tensor": Tensor(BasedFreeModule(QQ, Sets.Δ[1]), (1, 1)),
-        "smooth function module": smooth_functions(RR),
-        "square-integrable function module": square_integrable_functions(RR),
-        "cartesian product of sets": CartesianProductOfSets((Sets.Δ[1], Sets.Δ[2])),
-        "polynomial ring": QQ["x"],
-        "prime field": PrimeField(3),
-        "a ring as an algebra over itself": ZZ,
-        "subobject sum": Lattices.E8.subobject_on([2 * e[0]]).sum(
+        "free algebra": lambda: FreeAlgebraOn(QQ, Sets.Δ[1]),
+        "tensor algebra": lambda: TensorAlgebraOn(QQ, Sets.Δ[1]),
+        "alternating algebra": lambda: AlternatingAlgebraOn(QQ, Sets.Δ[1]),
+        "divided power algebra": lambda: DividedPowerAlgebraOn(QQ, Sets.Δ[1]),
+        "tensor algebra degree two": lambda: TensorAlgebraOn(QQ, Sets.Δ[1]).graded_piece(2),
+        "symmetric algebra degree two": lambda: FreeAlgebraOn(QQ, Sets.Δ[1]).graded_piece(2),
+        "alternating algebra degree two": lambda: AlternatingAlgebraOn(QQ, Sets.Δ[1]).graded_piece(2),
+        "divided power algebra degree two": lambda: DividedPowerAlgebraOn(QQ, Sets.Δ[1]).graded_piece(2),
+        "mixed tensor": lambda: Tensor(BasedFreeModule(QQ, Sets.Δ[1]), (1, 1)),
+        "smooth function module": lambda: smooth_functions(RR),
+        "square-integrable function module": lambda: square_integrable_functions(RR),
+        "cartesian product of sets": lambda: CartesianProductOfSets((Sets.Δ[1], Sets.Δ[2])),
+        "polynomial ring": lambda: QQ["x"],
+        "prime field": lambda: PrimeField(3),
+        "a ring as an algebra over itself": lambda: ZZ,
+        "subobject sum": lambda: Lattices.E8.subobject_on([2 * e[0]]).sum(
             Lattices.E8.subobject_on([3 * e[1]])
         ),
-        "subobject intersection": Lattices.E8.subobject_on([2 * e[0], 2 * e[1]])
+        "subobject intersection": lambda: Lattices.E8.subobject_on([2 * e[0], 2 * e[1]])
         .intersection(Lattices.E8.subobject_on([3 * e[0], 3 * e[1]])),
-        "discriminant quadratic form from data": _discriminant_quadratic_from_data(),
-        "discriminant bilinear form from data": _discriminant_bilinear_from_data(),
+        "discriminant quadratic form from data": lambda: _discriminant_quadratic_from_data(),
+        "discriminant bilinear form from data": lambda: _discriminant_bilinear_from_data(),
         # ---- sets ----
-        "power set": PowerSet(Sets.Δ[2]),
-        "subsets of a fixed size": SubsetsOfSize(Sets.Δ[2], 2),
-        "finite subsets": FiniteSubsets(Sets.Δ[2]),
-        "ordinals": Ordinals(),
+        "power set": lambda: PowerSet(Sets.Δ[2]),
+        "subsets of a fixed size": lambda: SubsetsOfSize(Sets.Δ[2], 2),
+        "finite subsets": lambda: FiniteSubsets(Sets.Δ[2]),
+        "ordinals": lambda: Ordinals(),
         # A cardinal is built by ``object_of`` through the owned chain like
         # any other object here -- ``type(cardinal(3))`` is
         # ``Cardinalities.parent_class`` and it is a ``Parent``, not an
         # element -- so the sweep's question is the same question for it.
-        "cardinal": cardinal(3),
+        "cardinal": lambda: cardinal(3),
         # The image of the forgetful functor: what a lattice's cardinality,
         # finiteness and enumeration are actually asked of.
-        "underlying set of a lattice": UnderlyingSet(Lattices.A2),
-        "set from an iterable": Set([1, 2, 3]),
-        "condition set": ConditionSet(ZZ, lambda n: n > 0),
-        "image set": ImageSet(lambda n: n, Sets.Δ[2]),
+        "underlying set of a lattice": lambda: UnderlyingSet(Lattices.A2),
+        "set from an iterable": lambda: Set([1, 2, 3]),
+        "condition set": lambda: ConditionSet(ZZ, lambda n: n > 0),
+        "image set": lambda: ImageSet(lambda n: n, Sets.Δ[2]),
         # ---- categorical constructions ----
-        "functor space": FunctorSpace(Cat(), Cat()),
-        "coproduct of sets": CoproductOfSets((Sets.Δ[1], Sets.Δ[2])),
-        "isomorphism homset": IsoAr(Lattices.A2, Lattices.A2),
+        "functor space": lambda: FunctorSpace(Cat(), Cat()),
+        "coproduct of sets": lambda: CoproductOfSets((Sets.Δ[1], Sets.Δ[2])),
+        "isomorphism homset": lambda: IsoAr(Lattices.A2, Lattices.A2),
         # The five limit constructors, on one-object diagrams.  Not the direct
         # sum row above: ``Lattices.A1 + Lattices.A2`` goes through the
         # lattice-specific block-diagonal sum and reaches none of these.
-        "cone": Cone((_identity_on(Sets.Δ[11]),)),
-        "cocone": Cocone((_identity_on(Sets.Δ[12]),)),
-        "product": Product((_identity_on(Sets.Δ[13]),)),
-        "coproduct": Coproduct((_identity_on(Sets.Δ[14]),)),
-        "biproduct": Biproduct(
+        "cone": lambda: Cone((_identity_on(Sets.Δ[11]),)),
+        "cocone": lambda: Cocone((_identity_on(Sets.Δ[12]),)),
+        "product": lambda: Product((_identity_on(Sets.Δ[13]),)),
+        "coproduct": lambda: Coproduct((_identity_on(Sets.Δ[14]),)),
+        "biproduct": lambda: Biproduct(
             (_identity_on(Sets.Δ[15]),), (_identity_on(Sets.Δ[15]),)
         ),
-        "superobject": Superobject(_identity_on(Sets.Δ[18])),
-        "covering object": Covering(_identity_on(Sets.Δ[16])),
-        "covered object": Covered(_identity_on(Sets.Δ[17])),
+        "superobject": lambda: Superobject(_identity_on(Sets.Δ[18])),
+        "covering object": lambda: Covering(_identity_on(Sets.Δ[16])),
+        "covered object": lambda: Covered(_identity_on(Sets.Δ[17])),
         # ---- divisors ----
         # One free module each: every one of these refines the module it is
         # handed into its own divisor category.
-        "divisor group": DivisorGroup(FreeModuleOn(ZZ, Sets.Δ[3])),
-        "weil divisor group": WeilDivisorGroup(FreeModuleOn(ZZ, Sets.Δ[4])),
-        "cartier divisor group": CartierDivisorGroup(FreeModuleOn(ZZ, Sets.Δ[5])),
-        "picard group": PicardGroup(FreeModuleOn(ZZ, Sets.Δ[6])),
-        "class group": ClassGroup(FreeModuleOn(ZZ, Sets.Δ[7])),
+        "divisor group": lambda: DivisorGroup(FreeModuleOn(ZZ, Sets.Δ[3])),
+        "weil divisor group": lambda: WeilDivisorGroup(FreeModuleOn(ZZ, Sets.Δ[4])),
+        "cartier divisor group": lambda: CartierDivisorGroup(FreeModuleOn(ZZ, Sets.Δ[5])),
+        "picard group": lambda: PicardGroup(FreeModuleOn(ZZ, Sets.Δ[6])),
+        "class group": lambda: ClassGroup(FreeModuleOn(ZZ, Sets.Δ[7])),
         # ---- schemes ----
-        "affine space": AffineSpace(2, QQ),
-        "projective space": ProjectiveSpace(2, QQ),
-        "convex polytope": ConvexPolytope([[0, 0], [1, 0], [0, 1]]),
-        "convex polygon": ConvexPolygon([[0, 0], [1, 0], [0, 1]]),
-        "lattice polytope": LatticePolytope([[0, 0], [1, 0], [0, 1]]),
-        "lattice polygon": LatticePolygon([[0, 0], [1, 0], [0, 1]]),
-        "toric scheme": ToricScheme(LatticePolytope([[0, 0], [1, 0], [0, 1]])),
-        "toric subscheme": ToricSubscheme(
+        "affine space": lambda: AffineSpace(2, QQ),
+        "projective space": lambda: ProjectiveSpace(2, QQ),
+        "convex polytope": lambda: ConvexPolytope([[0, 0], [1, 0], [0, 1]]),
+        "convex polygon": lambda: ConvexPolygon([[0, 0], [1, 0], [0, 1]]),
+        "lattice polytope": lambda: LatticePolytope([[0, 0], [1, 0], [0, 1]]),
+        "lattice polygon": lambda: LatticePolygon([[0, 0], [1, 0], [0, 1]]),
+        "toric scheme": lambda: ToricScheme(LatticePolytope([[0, 0], [1, 0], [0, 1]])),
+        "toric subscheme": lambda: ToricSubscheme(
             ToricScheme(LatticePolytope([[0, 0], [1, 0], [0, 1]])), (0,)
         ),
-        "toric variety": ToricVariety(
+        "toric variety": lambda: ToricVariety(
             LatticePolytope([[1, 0], [0, 1], [-1, -1]]).normal_fan()
         ),
-        "curve": Curve(AffineSpace(2, QQ).coordinate_ring().gens()[0]),
-        "toric log pair": ToricLogPair(
+        "curve": lambda: Curve(AffineSpace(2, QQ).coordinate_ring().gens()[0]),
+        "toric log pair": lambda: ToricLogPair(
             ToricVariety(LatticePolytope([[1, 0], [0, 1], [-1, -1]]).normal_fan())
         ),
-        "ade surface": ADESurface("A", 1),
-        "ade base surface": ADEBaseSurface(ADESurface("A", 1)),
+        "ade surface": lambda: ADESurface("A", 1),
+        "ade base surface": lambda: ADEBaseSurface(ADESurface("A", 1)),
         # ---- algebras on an existing module ----
         # A different construction from the ``...On`` rows above: those build
         # the free algebra on a chosen generating set, these build it on a
         # module that already exists and keep that module's presentation.
-        "tensor algebra of a module": TensorAlgebraOf(BasedFreeModule(QQ, Sets.Δ[1])),
-        "symmetric algebra of a module": SymmetricAlgebraOf(
+        "tensor algebra of a module": lambda: TensorAlgebraOf(BasedFreeModule(QQ, Sets.Δ[1])),
+        "symmetric algebra of a module": lambda: SymmetricAlgebraOf(
             BasedFreeModule(QQ, Sets.Δ[1])
         ),
-        "alternating algebra of a module": AlternatingAlgebraOf(
+        "alternating algebra of a module": lambda: AlternatingAlgebraOf(
             BasedFreeModule(QQ, Sets.Δ[1])
         ),
-        "divided power algebra of a module": DividedPowerAlgebraOf(
+        "divided power algebra of a module": lambda: DividedPowerAlgebraOf(
             BasedFreeModule(QQ, Sets.Δ[1])
         ),
         # ---- modules ----
         # Not the ``mixed tensor`` row above: that is one bidegree $T^{p,q}M$,
         # this is the whole graded algebra $\bigoplus_{p,q}T^{p,q}M$.
-        "mixed tensor algebra": MixedTensorAlgebra(BasedFreeModule(QQ, Sets.Δ[1])),
-        "fractional ideal": FractionalIdeal(ZZ, [2]),
+        "mixed tensor algebra": lambda: MixedTensorAlgebra(BasedFreeModule(QQ, Sets.Δ[1])),
+        "fractional ideal": lambda: FractionalIdeal(ZZ, [2]),
         # The two square constructions on an arbitrary module rather than on a
         # free algebra's graded piece: they are where a form's domain comes
         # from, so a lattice is the specimen that matters.
-        "tensor square": TensorSquare(Lattices.A2),
-        "divided square": DividedSquare(Lattices.A2),
+        "tensor square": lambda: TensorSquare(Lattices.A2),
+        "divided square": lambda: DividedSquare(Lattices.A2),
         # Not the ``torsion module`` path: this presents a module by a chosen
         # morphism of free modules.
-        "finitely presented module": FinitelyPresentedModule(
+        "finitely presented module": lambda: FinitelyPresentedModule(
             FreeModuleOn(ZZ, Sets.Δ[0]).hom(
                 {0: FreeModuleOn(ZZ, Sets.Δ[0]).module_generator(0) * 2},
                 FreeModuleOn(ZZ, Sets.Δ[0]),
@@ -288,11 +308,11 @@ def _constructions() -> dict:
         # ---- forms ----
         # A quadratic map supplied by its value function, before any
         # classifying morphism is formed.
-        "quadratic map": QuadraticMap(Lattices.A2, ZZ, lambda x: x.b(x)),
+        "quadratic map": lambda: QuadraticMap(Lattices.A2, ZZ, lambda x: x.b(x)),
         # The two form homsets: built transiently everywhere a form is made,
         # and never asked for themselves.
-        "bilinear form homset": BilinearForms(Lattices.A2, ZZ),
-        "quadratic form homset": QuadraticForms(Lattices.A2, ZZ),
+        "bilinear form homset": lambda: BilinearForms(Lattices.A2, ZZ),
+        "quadratic form homset": lambda: QuadraticForms(Lattices.A2, ZZ),
     }
 
 
@@ -328,18 +348,12 @@ def _discriminant_bilinear_from_data() -> Parent:
     )
 
 
-def _formed_constructions() -> dict:
-    r"""The constructions whose results carry a form."""
-    return {
-        name: parent
-        for name, parent in _constructions().items()
-        if hasattr(parent, "form") and hasattr(parent, "value_module")
-    }
-
-
-@pytest.mark.parametrize("name", sorted(_formed_constructions()))
-def test_a_form_is_a_morphism_into_the_value_module(name: str) -> None:
+def test_a_form_is_a_morphism_into_the_value_module() -> None:
     r"""The form is a map, not a matrix.
+
+    One test over the whole table rather than one per formed row: which rows
+    carry a form is not knowable without building them, and building the
+    table to find out is what a single bad specimen used to be able to break.
 
     A bilinear form on $M$ with values in $W$ is an element of
     $\operatorname{Hom}_R(M\otimes_R M, W)$: its domain is the tensor square
@@ -347,35 +361,42 @@ def test_a_form_is_a_morphism_into_the_value_module(name: str) -> None:
     generated* one can be written down, and asking for the morphism is what
     keeps the general case expressible.
     """
-    parent = _formed_constructions()[name]
-    form = parent.form()
+    checked = 0
+    for name in sorted(_constructions()):
+        parent = _construction(name)
+        if not (hasattr(parent, "form") and hasattr(parent, "value_module")):
+            continue
+        checked += 1
+        form = parent.form()
 
-    assert form.codomain() is parent.value_module(), (
-        f"{name}: the form's codomain must be the value module, "
-        f"got {form.codomain()} against {parent.value_module()}"
-    )
-    # Both forms are morphisms out of a square construction of the module:
-    # a bilinear form on $M\otimes_R M$, a quadratic form on $\Gamma^2M$.
-    # A quadratic form is not linear on $M$ -- $q(rx)=r^2q(x)$ -- so it is not
-    # a map out of $M$ at all, and the divided square is what makes it a
-    # morphism without pretending otherwise.
-    domain = form.domain()
-    expected_constructor = {
-        BilinearFormMorphism: TensorSquare,
-        QuadraticFormMorphism: DividedSquare,
-    }[type(form)]
-    expected_domain = expected_constructor(parent)
+        assert form.codomain() is parent.value_module(), (
+            f"{name}: the form's codomain must be the value module, "
+            f"got {form.codomain()} against {parent.value_module()}"
+        )
+        # Both forms are morphisms out of a square construction of the module:
+        # a bilinear form on $M\otimes_R M$, a quadratic form on $\Gamma^2M$.
+        # A quadratic form is not linear on $M$ -- $q(rx)=r^2q(x)$ -- so it is
+        # not a map out of $M$ at all, and the divided square is what makes it
+        # a morphism without pretending otherwise.
+        domain = form.domain()
+        expected_constructor = {
+            BilinearFormMorphism: TensorSquare,
+            QuadraticFormMorphism: DividedSquare,
+        }[type(form)]
+        expected_domain = expected_constructor(parent)
 
-    assert domain is expected_domain, (
-        f"{name}: the form has domain {domain}, not the degree-two "
-        f"construction {expected_domain}"
-    )
+        assert domain is expected_domain, (
+            f"{name}: the form has domain {domain}, not the degree-two "
+            f"construction {expected_domain}"
+        )
+
+    assert checked > 0, "the table names no formed construction at all"
 
 
 @pytest.mark.parametrize("name", sorted(_constructions()))
 def test_a_constructed_object_answers_what_its_categories_require(name: str) -> None:
     r"""Nothing the object's categories declare is left unimplemented."""
-    parent = _constructions()[name]
+    parent = _construction(name)
     unmet = unmet_obligations(parent)
 
     assert not unmet, (
