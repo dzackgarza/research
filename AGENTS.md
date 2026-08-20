@@ -713,12 +713,18 @@ any stored `_module`, `_underlying` or `_module_morphism` holding the level belo
 category requires the **trifecta** — its objects, its elements and its morphisms — tied to
 `ParentMethods`, `ElementMethods` and `MorphismMethods`. More properly: a morphism of
 $\mathbf{C}$ is an *element of* $\mathrm{Hom}_\mathbf{C}(A,B)$, and the homsets are the
-*objects* of the arrow category $\mathrm{Ar}(\mathbf{C})$. So `MorphismMethods` is
-`ElementMethods` on the homset, and a homset takes its `ParentMethods` from
-$\mathrm{Ar}(\mathbf{C})$. The morphism surface is therefore not a third parallel mechanism;
-it is the object-and-element pair applied to a different category. A design that threads only
-parents has not started. `PLAN-threading-set-behaviour` records the evidence and the
-decisions.
+*objects* of the arrow category $\mathrm{Ar}(\mathbf{C})$. So the morphism surface is not a
+third parallel mechanism: it is the object-and-element pair applied to a different category,
+and it is built as an ordinary owned chain over $\mathrm{Ar}(\mathbf{C})$ with one `_Hom_`
+per level.
+
+**`MorphismMethods` is not the vehicle, and this was measured.** Sage never instantiates
+`morphism_class`, and `MorphismMethods` reaches a morphism only through
+`Element.__getattr__` → `parent()._abstract_element_class`, never through the MRO — so
+morphism *data* can never propagate along it, which is the half the mechanism exists for.
+Taking $\mathrm{Ar}(\mathbf{C})$ literally instead threads data and makes claims falsifiable
+on real morphisms. A design that threads only parents has not started.
+`PLAN-threading-set-behaviour` records the evidence and the decisions.
 
 **Added structure enriches an object; it never wraps one.** A formed module *is* a
 module that additionally has a form. An abelian group *is* a $\mathbb{Z}$-module.
@@ -1092,11 +1098,28 @@ contract.**
   supply a determinate answer rather than an *unknown*. The abstract
   declaration at the general level is correct mathematics, not a gap.
 
-The second kind is **enforced at construction**: the owned category base gives
-the methods classes `ABCMeta` semantics, so an object whose obligations are
-unmet raises at instantiation instead of existing in a defective state. That
-closes the hole this section used to record — that `_refine_category_` admits
-anything and runs no hook, leaving an obligation merely *visible*.
+The second kind is **enforced at construction**, so an object whose obligations
+are unmet raises at instantiation instead of existing in a defective state.
+That closes the hole this section used to record — that `_refine_category_`
+admits anything and runs no hook, leaving an obligation merely *visible*.
+
+Enforcement has an authoring cost, and it is two things, both measured:
+
+- **Write `abc.abstractmethod`, not Sage's `abstract_method`.** Sage's sets no
+  `__isabstractmethod__` at all, so nothing — not `ABCMeta`, not any bridge —
+  can see it. It is also untyped, which is why type-checking already used the
+  stdlib one; this makes the two agree instead of split.
+- **A provider that declares obligations carries `metaclass=ABCMeta`.** With a
+  plain provider the dynamic class collects no abstracts, because the provider
+  is in the bases rather than copied and a plain class never has
+  `__abstractmethods__`. The metaclass is therefore *meaningful*: a provider
+  carrying it is declaring that this level has obligations, and a level with
+  none writes a plain provider. (It also requires the combined
+  `DynamicMetaclass` × `ABCMeta`; a bare `ABCMeta` provider makes
+  `dynamic_class` raise a metaclass conflict.)
+
+Never synthesize `__abstractmethods__` by scanning provider dictionaries. That
+is generation, and a generated obligation has no source to audit.
 
 **An abstract predicate on a subcategory is a requirement on participants, not
 an answer the category gives.** `EvenLattices.ParentMethods.is_even`,
