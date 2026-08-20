@@ -345,13 +345,21 @@ def refine[S: SageObject](
     # Objects of the category — parents, homsets, and standalone category
     # objects alike — receive ``ParentMethods`` before their concrete class.
     CategoryObject._refine_category_(obj, target_category)
-    _rebuild_parent_class(obj, target_category)
+    # Rebuilt from the object's *joined* category, never from this call's
+    # argument.  The join is what the object now claims to be, and the class
+    # has to say the same thing: rebuilding from the argument alone starts
+    # again at the concrete base, so a second refine drops the mixins the
+    # first one installed and the last call wins.  Reading the join keeps the
+    # class a function of the category, so refining is order-independent and
+    # idempotent -- which is the invariant override-refine exists to hold.
+    joined_category = obj.category()
+    _rebuild_parent_class(obj, joined_category)
 
     # An element-bearing parent manufactures elements; homsets manufacture
     # morphisms (their ``ParentMethods.__call__`` refines each one) and
     # standalone category objects manufacture neither.
     if isinstance(obj, Parent) and not _is_homset(obj):
-        _rebuild_element_class(obj, target_category)
+        _rebuild_element_class(obj, joined_category)
     _assert_preamble_obligations_are_met(obj, target_category)
     _assert_certifying_predicates_hold(obj, target_category)
     return obj
