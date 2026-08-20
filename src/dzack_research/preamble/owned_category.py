@@ -168,12 +168,22 @@ class CatConstructionsMixin:
     takes this one.  Everything below it inherits the constructions through
     ``subcategory_class`` and needs no declaration of its own.
 
-    Separate from :class:`OwnedCategoryMixin` because the two do different
-    jobs at different costs.  This one only routes ``subcategory_class``, which
-    no category competes for; the flip additionally rebuilds
-    ``parent_class`` / ``element_class`` / ``morphism_class``, which is a real
-    change to a category's objects and must be taken deliberately, one level at
-    a time, as that level is converted to the construction chain.
+    **Keep this separate from** :class:`OwnedCategoryMixin`.  Two mixins where
+    one would do looks like something to merge, and it is not.  They do
+    different jobs at different costs: this one only routes
+    ``subcategory_class``, which is a *view* on a category and which no
+    category competes for, while the flip rebuilds ``parent_class`` /
+    ``element_class`` / ``morphism_class``, which changes what a category's
+    **objects** are.  That has to be taken one level at a time, as each level
+    is converted to the construction chain -- never swept across a family of
+    categories to obtain a construction surface.
+
+    Measured, when they were briefly one: giving the roots the flip put it on
+    ``OwnedCategoryOverBaseRing`` and so on roughly sixteen over-base
+    categories at once, and ``FreeModules`` failed immediately with
+    ``TypeError: Cannot create a consistent method resolution order (MRO) for
+    bases Modules.parent_class, FreeModules.ParentMethods``.  That was the
+    design's own tripwire firing correctly, not an obstacle to route around.
     """
 
     def _make_named_class(
