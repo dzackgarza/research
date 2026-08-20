@@ -361,9 +361,10 @@ class DefiniteLattices(Category):
                 "the reordered simple system does not carry the recognized "
                 "type's Cartan matrix"
             )
-            assert 2 * len(
+            positive_roots_of_type = (
                 recognized.root_system().root_lattice().positive_roots()
-            ) == len(roots), (
+            )
+            assert 2 * positive_roots_of_type.cardinality() == len(roots), (
                 "the recognized type's root count disagrees with the "
                 "lattice's roots"
             )

@@ -137,7 +137,7 @@ def _constructions() -> dict:
         "isotropic flag stabilizer subgroup": uu.Aut().stabilizer_of_isotropic_flag(
             (g[0], g[2])
         ),
-        "structured subgroup intersection": Lattices.U.Aut()
+        "character-kernel subgroup intersection": Lattices.U.Aut()
         .special_orthogonal_subgroup()
         .intersection(Lattices.U.Aut().spinor_kernel_subgroup()),
         "free algebra": FreeAlgebraOn(QQ, Sets.Δ[1]),

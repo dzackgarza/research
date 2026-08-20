@@ -40,6 +40,7 @@ from dzack_research.preamble.lexicon import GramMatrix
 from dzack_research.preamble.categories.modules.module_morphisms.morphism_matrices import MorphismMatrix
 from dzack_research.preamble.categories.sets.cardinals import Cardinal
 
+from dzack_research.preamble.categories.sets.owned_sets import placement_of
 from dzack_research.preamble.categories.sets.owned_sets import Sets
 from dzack_research.preamble.categories.sets.underlying_sets import UnderlyingSet
 
@@ -206,6 +207,15 @@ class FormModules(OwnedCategoryOverBaseRing):
         def forget_form(self: "FormedParent") -> "Module":
             r"""Return the underlying module, forgetting the form."""
             return self._module
+
+        def cardinality(self: "FormedParent") -> "Cardinal":
+            r"""Return \(|M|\), which forgetting the form does not change.
+
+            The functor to modules is the identity on underlying sets -- a
+            form is extra structure on the same elements -- so the count is
+            the underlying module's and is asked there.
+            """
+            return self.forget_form().cardinality()
 
         def twist(self: "FormedParent", scalar: "RingElement") -> "FormModule":
             r"""Return $M(s)$: the same underlying module, the form rescaled by ``scalar``.
@@ -1008,6 +1018,10 @@ class FormModule(OwnedBaseRing, Parent):
         from dzack_research.preamble.refine import refine
         from dzack_research.preamble.categories.modules.framed.formed.integrallattice.integral_lattices import refine_one_lattice
         module = self._module
+        # Equipping a module with a form leaves its elements alone, so the
+        # underlying set -- and every placement that set determines -- is the
+        # module's own.
+        refine(self, placement_of(module))
         base_ring = module.base_ring()
         free = module in FreeModules(base_ring)
         finitely_generated = module in FinitelyGeneratedModules(base_ring)

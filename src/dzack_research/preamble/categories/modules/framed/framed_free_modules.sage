@@ -47,6 +47,7 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleHomset
+    from dzack_research.preamble.categories.sets.cardinals import Cardinal
     from sage.categories.sets_cat import Set
     from dzack_research.preamble.lexicon import OrderedSet
 
@@ -67,6 +68,7 @@ if TYPE_CHECKING:
         def _module_generator_element(self, element_of_S: SageElement) -> "FreeModuleOnSetElement": ...
 from sage.structure.richcmp import richcmp
 
+from dzack_research.preamble.categories.sets.owned_sets import placement_of
 from dzack_research.preamble.categories.sets.owned_sets import Sets
 from dzack_research.preamble.categories.sets.underlying_sets import UnderlyingSet
 
@@ -74,6 +76,41 @@ if TYPE_CHECKING:
     # The ordered-set noun is type-only: the preamble loads into one
     # shared namespace and nothing named OrderedSet may bind there.
     from dzack_research.preamble.lexicon import OrderedSet
+
+
+def _free_module_placement(
+    base_ring: "Ring", module_generating_set: "OrderedSet"
+) -> Sets:
+    r"""The owned ``Sets()`` placement of \(F_R(S)=\bigoplus_S R\).
+
+    Read off the placements of \(R\) and of \(S\), which is what decides the
+    question and what a general ring states.  \(R\) is the owned ring and not
+    the engine's: countability and uncountability are what the owned rings
+    add, and \(\mathbb R\) reaches the engine declaring only that it is
+    infinite.  The exact count is
+    :meth:`FramedFreeModules.ParentMethods.cardinality`; it is not asked
+    here, because Sage equips only some rings to say how big they are -- a
+    maximal order in a number field does not -- and a construction must not
+    depend on that.  Such a ring leaves the module unplaced, which is the
+    honest answer rather than a size nobody computed.
+    """
+    ring = frozenset(placement_of(base_ring).axioms())
+    framing = frozenset(placement_of(module_generating_set).axioms())
+    finite_framing = "Finite" in framing
+    if finite_framing and module_generating_set.cardinality() == 0:
+        # \(F_R(\emptyset)=0\): the singleton, over any ring at all.
+        return Sets().Finite()
+    if "Finite" in ring:
+        # A finite ring states its order, so both finite cases are decided
+        # exactly -- including the zero ring, over which every module is zero.
+        if base_ring.cardinality() == 1 or finite_framing:
+            return Sets().Finite()
+        return Sets().Infinite()
+    if "Uncountable" in ring:
+        return Sets().Uncountable()
+    if "Infinite" in ring:
+        return Sets().Infinite()
+    return Sets()
 
 
 class FramedFreeModules(OwnedCategoryOverBaseRing):
@@ -156,6 +193,34 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
 
         def is_torsion_free(self: Self) -> bool:
             return True
+
+        def cardinality(self: "FreeModuleParent") -> "Cardinal":
+            r"""Return \(|F_R(S)|\), which the construction determines.
+
+            An element is a finitely supported \(a:S\to R\), so for a finite
+            \(S\) the underlying set is \(R^{|S|}\) and the count is
+            \(|R|^{|S|}\).  For an infinite \(S\) finite support is what keeps
+            the count down: with at least two coefficients to choose from the
+            finitely supported functions number \(\max(|R|,|S|)\), and *not*
+            \(|R|^{|S|}\), which counts the product \(\prod_S R\) -- a
+            different module.  Over the zero ring every module is zero, so
+            the count is \(1\) whatever \(S\) is.
+            """
+            # Local: at module level this closes an import cycle; the cardinals
+            # are built by the time a module is asked how big it is.
+            from dzack_research.preamble.categories.sets.cardinals import Cardinalities, cardinal
+
+            framing_size = cardinal(self.module_generating_set().cardinality())
+            if framing_size == 0:
+                # \(F_R(\emptyset)\) is the zero module over any ring at all,
+                # so this answers before the ring is asked anything.
+                return cardinal(1)
+            ring_size = cardinal(self.base_ring().cardinality())
+            if framing_size.is_finite():
+                return Cardinalities().power(ring_size, framing_size)
+            if ring_size == 1:
+                return cardinal(1)
+            return Cardinalities().supremum(ring_size, framing_size)
 
 
 class FreeModuleOnSetElement(ModuleElement):
@@ -334,6 +399,10 @@ class FreeModuleOnSet(UniqueRepresentation, OwnedBaseRing, Parent):
         refine(self, category)
         if module_generating_set in Sets().Finite():
             refine(self, FinitelyGeneratedFreeModules(base_ring))
+        # The underlying set: a module that cannot say whether it is finite
+        # or infinite is unusable to every construction that ranges over its
+        # elements, and the free module's own \(R\) and \(S\) decide it.
+        refine(self, _free_module_placement(self.base_ring(), module_generating_set))
         self._framing_morphism = framing_morphism(
             self,
             self,
