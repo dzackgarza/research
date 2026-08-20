@@ -16,7 +16,6 @@ from dzack_research.preamble.categories.sets.owned_sets import Sets
 if TYPE_CHECKING:
     from dzack_research.preamble import lexicon
     from dzack_research.preamble.categories.abstract_categories.products import (
-        CartesianProductOfSets,
         CoproductOfSets,
     )
     from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
@@ -54,7 +53,7 @@ class CardinalityFunctor(Functor):
 
     def cartesian_product_comparison(
         self,
-        product: "CartesianProductOfSets",
+        product: "Sets.CartesianProducts.ParentMethods",
     ) -> CardinalityMorphism:
         r"""Return the equality arrow ``#(prod X_i) -> prod #X_i``."""
         source = self._apply_functor(product)

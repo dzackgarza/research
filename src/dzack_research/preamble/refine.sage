@@ -141,6 +141,11 @@ assert _PREAMBLE_PACKAGE != ".", (
 )
 _MIXIN_CACHE: dict[tuple[Category, str], tuple[type, ...]] = {}
 
+# A methods class that names one of these among its bases is an
+# implementation class, not a mixin: it is the class an owned category is
+# tied to. See ``dzack_research.preamble.owned_category``.
+_IMPLEMENTATION_BASES = (Parent, Element, Morphism)
+
 
 def _is_owned_category(category_type: type) -> bool:
     """Whether ``category_type`` was defined by this project."""
@@ -156,6 +161,19 @@ def _preamble_mixins(category: "Category", attr: str) -> tuple[type, ...]:
             continue
         nested = getattr(category_type, attr, None)
         if nested is None:
+            continue
+        if issubclass(nested, _IMPLEMENTATION_BASES):
+            # The root of an owned construction chain declares its methods
+            # class to *be* the implementation class -- it names ``Parent``
+            # (or ``Element``, or ``Morphism``) among its own bases; see
+            # ``dzack_research.preamble.owned_category``.  An object built
+            # through that chain already has the class in the right place.
+            # An object the preamble *adopts* is a Sage parent with its own
+            # instance layout, and a second structural base is not a mixin
+            # it can wear: Python refuses the ``__class__`` assignment with
+            # "object layout differs".  Its own category's ``parent_class``
+            # still carries these methods, behind the concrete class where
+            # a Sage parent's own definitions belong.
             continue
         implemented = _implemented_mixin(nested)
         if implemented not in mixins:

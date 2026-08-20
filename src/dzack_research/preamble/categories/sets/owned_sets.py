@@ -34,6 +34,7 @@ from sage.rings.integer_ring import ZZ
 from sage.rings.semirings.non_negative_integer_semiring import NN
 
 from dzack_research.preamble.lexicon.interop import SageParent, SageUniqueRepresentation
+from dzack_research.preamble.owned_category import OwnedCategory, OwnedCategoryMixin
 
 
 
@@ -114,10 +115,19 @@ class CountabilitySubcategoryMethods:
         return category._with_axiom("TotallyOrdered")
 
 
-class Sets(Category):
+class Sets(OwnedCategory):
     r"""The owned category of sets: declaration owner of the generic
     meanings of cardinality, finiteness, infinitude, countability,
-    uncountability, enumeration, indexing, and reverse lookup."""
+    uncountability, enumeration, indexing, and reverse lookup.
+
+    It is also the **root of the owned construction chain**.  Its
+    ``ParentMethods`` is the parent implementation class of everything built
+    through the chain: it declares Sage's ``Parent`` as a base and makes the
+    one non-cooperative ``Parent.__init__`` call, so a level above it supplies
+    only the datum it introduces and reaches this one by ``super()``.
+    :mod:`dzack_research.preamble.owned_category` records the mechanism, and
+    why Sage's ``Sets()`` below is load-bearing rather than decoration.
+    """
 
     def super_categories(self) -> list[Category]:
         return [SageSets()]
@@ -136,15 +146,38 @@ class Sets(Category):
         def Facade(self) -> Sets: ...
     SubcategoryMethods = CountabilitySubcategoryMethods
 
-    class CartesianProducts(CartesianProductsCategory):
-        r"""Cartesian products in the owned category of sets."""
+    class CartesianProducts(OwnedCategoryMixin, CartesianProductsCategory):
+        r"""The cartesian product \(U(X_1)\times\cdots\times U(X_n)\) of sets.
+
+        A *set*, not a module.  The module-level product of \(M\) and \(N\) is
+        their biproduct \(M\oplus N\); this is the different object whose
+        elements are pairs and out of which bilinear maps are defined.  The
+        two have the same elements and different structure, and conflating
+        them is what makes the tensor product's universal property unstatable.
+
+        The factors stored are the objects \(X_i\) themselves, since
+        \(U(X_i)\) has exactly the elements of \(X_i\): membership is read as
+        ``component.parent() is X_i``, which is what \(U\) forgetting to is.
+
+        The one datum this level introduces is the family of factors, so it is
+        the one argument its ``__init__`` consumes; everything a product *is*
+        as a set it reaches by ``super()``.
+        """
 
         def extra_super_categories(self) -> list[Category]:
             return [Sets()]
 
         class ParentMethods:
-            if TYPE_CHECKING:
-                def cartesian_factors(self) -> tuple[Sets.ParentMethods, ...]: ...
+            def __init__(self, factors: tuple[SageParent, ...], **rest: object) -> None:
+                self._factors = tuple(factors)
+                super().__init__(**rest)
+
+            def factors(self) -> tuple[SageParent, ...]:
+                return self._factors
+
+            def cartesian_factors(self) -> tuple[SageParent, ...]:
+                r"""The factors, under the name Sage's product machinery reads."""
+                return self._factors
 
             def cardinality(self) -> Cardinal:
                 r"""Return ``prod(#X_i)`` for the cartesian factors ``X_i``."""
@@ -156,9 +189,103 @@ class Sets(Category):
                     *(factor.cardinality() for factor in self.cartesian_factors())
                 )
 
-    class ParentMethods:
+            def __iter__(self) -> Iterator[tuple[object, ...]]:
+                r"""Fair enumeration, delegated to Sage's cartesian product.
+
+                Sage's antidiagonal iteration is fair across infinite factors,
+                which ``itertools.product`` is not.  The empty product yields
+                the one empty tuple; a known-empty factor yields nothing.
+                """
+                from sage.categories.cartesian_product import cartesian_product
+
+                from dzack_research.preamble.categories.abstract_categories.products import (
+                    _is_known_empty,
+                )
+
+                if not self._factors:
+                    yield self(())
+                    return
+                if any(_is_known_empty(factor) for factor in self._factors):
+                    return
+                for point in cartesian_product(list(self._factors)):
+                    yield self(tuple(point))
+
+            def projection(self, index: int) -> SetMorphism:
+                r"""The ``index``-th product projection \(\pi_i:\prod_j X_j\to X_i\)."""
+                from sage.categories.homset import Hom
+                from sage.categories.morphism import SetMorphism
+
+                factor = self._factors[index]
+                return SetMorphism(
+                    Hom(self, factor, SageSets()), lambda point: point[index]
+                )
+
+            def cartesian_projection(self, index: int) -> SetMorphism:
+                r"""The projection, under the name Sage's product machinery reads."""
+                return self.projection(index)
+
+            def __contains__(self, element: ElementConstructorInput) -> bool:
+                return (
+                    isinstance(element, tuple)
+                    and len(element) == len(self._factors)
+                    and all(
+                        component.parent() is factor
+                        for component, factor in zip(element, self._factors)
+                    )
+                )
+
+            def _element_constructor_(
+                self, element: Iterable[object]
+            ) -> tuple[object, ...]:
+                r"""Return the tuple as an element of this set.
+
+                An element here is a tuple of elements of the factors and
+                nothing more, so there is no element class to build; the
+                constructor exists because every map out of this set coerces
+                its argument through the domain before evaluating it.
+                """
+                components = tuple(element)
+                assert components in self, (
+                    f"{components} is not a tuple of elements of the factors of {self}"
+                )
+                return components
+
+            def __call__(
+                self,
+                x: ElementConstructorInput = (),
+                *arguments: ElementConstructorInput,
+                **keywords: ElementConstructorInput,
+            ) -> tuple[object, ...]:
+                r"""Return the tuple, without Sage's default conversion.
+
+                ``Parent.__call__`` routes through a conversion map declared
+                to return an ``Element``, which a tuple is not.  The elements
+                here are tuples -- that is what a product of sets has -- so
+                the constructor is called directly.
+                """
+                from collections.abc import Iterable as _Iterable
+
+                assert isinstance(x, _Iterable), (
+                    "an element here is a tuple of factor elements"
+                )
+                return self._element_constructor_(x)
+
+            def _repr_(self) -> str:
+                return " x ".join(str(factor) for factor in self._factors)
+
+    class ParentMethods(SageParent):
         if TYPE_CHECKING:
             def cardinality(self) -> Cardinal: ...
+
+        def __init__(self, **rest: object) -> None:
+            r"""The bottom of every owned construction.
+
+            The only non-cooperative ``Parent.__init__`` call in the chain:
+            every level above reaches it through ``super().__init__(**rest)``
+            after consuming its own datum, so constructing anything owned has
+            already constructed the set it is built on.
+            """
+            SageParent.__init__(self, **rest)
 
         def is_countable(self) -> bool:
             r"""Whether $|X| \le \aleph_0$.

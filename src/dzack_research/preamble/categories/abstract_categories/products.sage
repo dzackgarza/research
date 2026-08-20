@@ -510,14 +510,6 @@ def Biproduct(
 # ``DirectSumDecomposition`` in ``direct_sum_objects`` is the other one.
 DirectSum = Biproduct
 
-if TYPE_CHECKING:
-    # Its elements are tuples, not ``Element``s -- see the class docstring.
-    # ``Parent`` is a cython extension type, not subscriptable at runtime.
-    CartesianProductParent = Parent[tuple[Element, ...]]
-else:
-    CartesianProductParent = Parent
-
-
 def _is_known_empty(factor: "Parent") -> bool:
     r"""Whether ``factor`` is known to be empty, from its owned placement.
 
@@ -568,110 +560,20 @@ def _cartesian_placement(factors: "tuple[Parent, ...]") -> Sets:
     return placement
 
 
-class CartesianProductOfSets(CartesianProductParent):
-    r"""The cartesian product \(U(X_1)\times\cdots\times U(X_n)\) of underlying sets.
+def CartesianProductOfSets(factors: "Iterable[Parent]") -> "Parent":
+    r"""The cartesian product \(U(X_1)\times\cdots\times U(X_n)\) of sets.
 
-    A *set*, not a module.  The module-level product of \(M\) and \(N\) is
-    their biproduct \(M\oplus N\); this is the different object whose
-    elements are pairs and out of which bilinear maps are defined.  The two
-    have the same elements and different structure, and conflating them is
-    what makes the tensor product's universal property unstatable.
-
-    The factors stored are the objects \(X_i\) themselves, since \(U(X_i)\)
-    has exactly the elements of \(X_i\): membership is read as
-    ``component.parent() is X_i``, which is what \(U\) forgetting to is.
+    The construction is the category: what a product of sets *is* — its
+    factors, its cardinality, its enumeration, its projections, its elements —
+    is declared once on ``Sets.CartesianProducts.ParentMethods``, and the
+    object is that category's parent class carrying the one datum this level
+    introduces.  What is left here is the placement rule (which axioms a
+    product of these factors carries) and the public name.
     """
+    from dzack_research.preamble.owned_category import object_of
 
-    def __init__(self, factors: tuple) -> None:
-        self._factors = tuple(factors)
-        # Constructed inside the owned ``Sets().CartesianProducts()``, whose
-        # ``ParentMethods.cardinality`` (the single home of the product
-        # cardinality) resolves through :meth:`cartesian_factors`.
-        Parent.__init__(
-            self, category=_cartesian_placement(self._factors).CartesianProducts()
-        )
-
-    def factors(self) -> "tuple[Parent, ...]":
-        return self._factors
-
-    def cartesian_factors(self) -> "tuple[Parent, ...]":
-        r"""The factors, under the name Sage's product machinery reads."""
-        return self._factors
-
-    def __iter__(self) -> "Iterator[tuple[Element, ...]]":
-        r"""Fair enumeration, delegated to Sage's cartesian product.
-
-        Sage's antidiagonal iteration is fair across infinite factors,
-        which ``itertools.product`` is not.  The empty product yields the
-        one empty tuple; a known-empty factor yields nothing.
-        """
-        from sage.categories.cartesian_product import cartesian_product
-
-        if not self._factors:
-            yield self(())
-            return
-        if any(_is_known_empty(factor) for factor in self._factors):
-            return
-        for point in cartesian_product(list(self._factors)):
-            yield self(tuple(point))
-
-    def projection(self, index: int) -> "Morphism":
-        r"""The ``index``-th product projection \(\pi_i:\prod_j X_j\to X_i\)."""
-        from sage.categories.homset import Hom
-        from sage.categories.morphism import SetMorphism
-        from sage.categories.sets_cat import Sets as SageSets
-
-        factor = self._factors[index]
-        return SetMorphism(
-            Hom(self, factor, SageSets()), lambda point: point[index]
-        )
-
-    def cartesian_projection(self, index: int) -> "Morphism":
-        r"""The projection, under the name Sage's product machinery reads."""
-        return self.projection(index)
-
-    def __contains__(self, element: "MembershipInput") -> bool:
-        return (
-            isinstance(element, tuple)
-            and len(element) == len(self._factors)
-            and all(
-                component.parent() is factor
-                for component, factor in zip(element, self._factors)
-            )
-        )
-
-    def _element_constructor_(self, element: "Iterable[Element]") -> "tuple[Element, ...]":
-        r"""Return the tuple as an element of this set.
-
-        An element here is a tuple of elements of the factors and nothing
-        more, so there is no element class to build; the constructor exists
-        because every map out of this set coerces its argument through the
-        domain before evaluating it.
-        """
-        components = tuple(element)
-        assert components in self, (
-            f"{components} is not a tuple of elements of the factors of {self}"
-        )
-        return components
-
-    def __call__(
-        self,
-        x: "ElementConstructorInput" = (),
-        *arguments: "ElementConstructorInput",
-        **keywords: "ElementConstructorInput",
-    ) -> "tuple[Element, ...]":
-        r"""Return the tuple, without Sage's default conversion.
-
-        ``Parent.__call__`` routes through a conversion map declared to
-        return an ``Element``, which a tuple is not.  The elements here are
-        tuples -- that is what a product of sets has -- so the constructor
-        is called directly.
-        """
-        assert isinstance(x, Iterable), "an element here is a tuple of factor elements"
-        return self._element_constructor_(x)
-
-    def _repr_(self) -> str:
-        return " x ".join(str(factor) for factor in self._factors)
+    family = tuple(factors)
+    return object_of(_cartesian_placement(family).CartesianProducts(), factors=family)
 
 
 def cartesian_product_morphism(*maps: Morphism) -> Morphism:

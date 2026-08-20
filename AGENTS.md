@@ -690,33 +690,35 @@ inclusion, an axiom is a property of what is already there. The forgetful functo
 injective, so the enriched thing is the same object with more categories. *Chosen*
 enrichment adds structure the same underlying object supports many of — many forms on
 $\mathbb{Z}^2$, many $G$-actions on $\mathbb{Z}^n$ — so the forgetful functor is not
-injective and the enriched thing **must be a distinct object**, the pair $(M,b)$; making it
-the same object would collapse distinct mathematics onto one parent. (Measured: `U` and
-`A₂` share one `BasedFreeModule`, because free modules are keyed on $(R,S)$.) A distinct
-parent for chosen enrichment is therefore correct — what is not correct is wrapping its
-*elements*: it declares `facade=underlying` so the two share one element set, and restates
-none of the underlying object's computations.
+injective and the enriched thing **is its own object**; collapsing many structures onto one
+parent would collapse distinct mathematics.
 
-**And the forwarding is derived, never written.** `self.forget_form().cardinality()`,
-`self.forget_form().rank()`, `self.forget_action().zero()` — a method whose body forwards
-to `forget_*()` under the same name — is the bloat pattern in its purest form: trivial
-individually, a second copy of the lower category's surface in aggregate, and it grows
-every time that category does. A chosen enrichment declares **one** thing, the forgetful
-map to the category it enriches, and the forwarding for every name that category declares
-is generated from the category itself, the way bases are derived from `super_categories()`.
-A name the enriched level genuinely answers differently is written there and wins.
-*The tell:* any method whose body is `return self.forget_<something>().<the same name>()`.
+That distinctness is what the construction chain already delivers, and it needs no
+apparatus. A lattice is built *through* the module level, so it **is** a module — one
+object, all the way down to its underlying set — and two lattices on $\mathbb{Z}^2$ are two
+objects because each ran its own construction. (The old measurement `U.forget_form() is
+A₂.forget_form()` described the superseded design in which a lattice *held* a separate free
+module keyed on $(R,S)$. With construction threading there is no held module to share.)
 
-**All of this holds three times over: parents, elements, and morphisms.** Sage declares
-`ParentMethods`, `ElementMethods` and `MorphismMethods`, and `refine()` already rebuilds
-the parent and element classes and routes morphisms separately. A category binds three
-classes, a determined enrichment derives three parallel base chains from the one category
-graph, and a chosen enrichment's single declared forgetful map generates forwarding on all
-three. The morphism surface is where hand-written delegation concentrates — `FormMorphism`
-forwards twelve names to a held `_module_morphism`, with `FormHomset` holding a parallel
-`_module_homset` — so a design that threads only parents has not started. Homsets are
-parents, so their own set-level answers thread by the same rule, never by a second chain. The paragraph below governs determined
-enrichment; `PLAN-threading-set-behaviour` records the evidence and the decision.
+**There is no `forget_*` method, at any level.** Not as a method, not as an abstract
+declaration, not as a delegation target. A lattice already is a module, so there is nothing
+to forget to, and the lower category's methods answer on the object directly because the
+object is in that category. The forgetful passage $\mathbf{Lat}\to\mathbf{Mod}_R$ is a
+**standalone functor**, sited with the other functors as an adjoint pair — never a method on
+an object. So there is no forwarding to write, to generate, or to delete.
+*The tell:* any method whose body is `return self.forget_<something>().<the same name>()`;
+any stored `_module`, `_underlying` or `_module_morphism` holding the level below.
+
+**All of this holds three times over, and the requirement is symmetric.** Defining a
+category requires the **trifecta** — its objects, its elements and its morphisms — tied to
+`ParentMethods`, `ElementMethods` and `MorphismMethods`. More properly: a morphism of
+$\mathbf{C}$ is an *element of* $\mathrm{Hom}_\mathbf{C}(A,B)$, and the homsets are the
+*objects* of the arrow category $\mathrm{Ar}(\mathbf{C})$. So `MorphismMethods` is
+`ElementMethods` on the homset, and a homset takes its `ParentMethods` from
+$\mathrm{Ar}(\mathbf{C})$. The morphism surface is therefore not a third parallel mechanism;
+it is the object-and-element pair applied to a different category. A design that threads only
+parents has not started. `PLAN-threading-set-behaviour` records the evidence and the
+decisions.
 
 **Added structure enriches an object; it never wraps one.** A formed module *is* a
 module that additionally has a form. An abelian group *is* a $\mathbb{Z}$-module.
@@ -730,38 +732,51 @@ $n$ over $R$ is built **on** the underlying set $R^n$, and a lattice is that mod
 with a form. So every set-theoretic answer — cardinality, finiteness, countability,
 the owned `Sets()` placement, membership, enumeration — is *inherited through the
 construction*, never assigned to the enriched object. A lattice has no cardinality;
-its underlying set has one, and $|R^n| = |R|^n$ (the rank-zero module is the
-singleton, so its set has cardinality one). If a construction reaches a lattice
-without passing through an owned set that answers these, the construction is wrong
-and stamping a placement onto the lattice hides it.
-**How the inheritance is threaded matters as much as that it is.** Classes are thin
-containers holding data and construction; the mathematics is category `ParentMethods`.
-What is banned is a *hand-written* chain — a module or lattice file importing a set
-class, or naming one in its bases — because then the class graph and the category graph
-drift independently and nothing detects it. The class hierarchy is instead **derived
-from the category graph**: one concrete class is bound to each category, and the class
-realizing a category takes as its bases the classes bound to that category's
-super-categories, computed rather than written (`BoundTo(Sets)` via `__mro_entries__`).
-Construction then threads by cooperative `super().__init__` — the set level builds the
-underlying set and establishes the set-theoretic facts, the module level adds the ring
-action, the form level adds the form. Exactly one class, the set-level root, may call
-Sage's non-cooperative `Parent.__init__`; a level that calls it directly silently breaks
-the chain.
+its underlying set has one. An element of the free module on $S$ is a finitely
+supported $a: S\to R$, so for finite $S$ the underlying set is $R^{|S|}$ and the
+count is $|R|^{|S|}$; for infinite $S$ finite support keeps it to
+$\max(|R|,|S|)$, which is *not* $\prod_S R$; and over the zero ring, or for empty
+$S$, it is $1$. If a construction reaches a lattice without passing through an
+owned set that answers these, the construction is wrong, and stamping a placement
+onto the lattice hides it.
 
-**The leaf contract, which is what the mechanism exists to buy.** Adding a new category
-leaf costs exactly four things: name its category (`class NewLeafParent(BoundTo(NewLeaf))`,
-bases derived, never written); introduce the datum its own level adds and no more; fulfil
-the `abstract_method` obligations declared by the level **directly above** it; and one
-construction step ending in `super().__init__(**rest)`. Nothing else is permitted. A leaf
-knows its own level and the one above: it never names a category two levels up, never
-imports a class below its derived base, never re-declares an obligation a lower level
-already declared, and never writes a forwarding method. Obligations compose by induction —
-if every level fulfils the one above it, every object's obligations are met and no leaf
-carries the transitive burden. The decay signal is a leaf *reaching down*: importing a
-lower class to call it, restating a lower level's computation because the chain did not
-deliver it, or calling `Parent.__init__`. The decision record, with the options weighed,
-the approaches already falsified, and the falsifiable acceptance for this contract, is the
-plan card `PLAN-threading-set-behaviour`.
+**The category IS the class.** This is the mechanism, and it replaces the hand-written
+chain rather than merely forbidding it. Sage already builds `parent_class`,
+`element_class` and `morphism_class` as dynamic classes whose **bases come from
+`super_categories()`** — and then passes `prepend_cls_bases=False`, discarding the methods
+class's own bases. That single choice is the only reason a `ParentMethods` cannot carry
+`Parent`, cannot hold fields, and cannot have a constructor, and it is why the
+class/`XMethods` split existed at all. An owned `Category` base flips it, and then
+`ParentMethods` **is** the implementation class.
+
+So no class is bound to a category and no base is written: above the root, a level declares
+`super_categories()` and its own methods classes, nothing more. Only the root names bases
+(`Parent`, plus one plain-Python base so the dynamic class keeps an instance `__dict__`), and
+only the root calls Sage's non-cooperative `Parent.__init__`. Construction threads by
+cooperative `super().__init__` — the set level builds the underlying set and establishes the
+set-theoretic facts, the module level adds the ring action, the form level adds the form.
+A level that calls `Parent.__init__` directly silently breaks the chain.
+*The tell:* any **non-root** `ParentMethods`, `ElementMethods` or `MorphismMethods` that
+names a base. That is the class graph being patched by hand instead of stated as the
+category graph, and it means the design went wrong.
+
+**The leaf contract, which is what the mechanism exists to buy.** Defining a new leaf must
+feel like easy magic: you do not go looking for an implementation class, you do not need to
+know how it works or where it lives, because it is the category. You only need to know how
+to construct an object **in your immediate super-category**. Adding a leaf therefore costs
+exactly four things: declare `super_categories()`; declare the trifecta of methods classes
+for what your own level adds; introduce your own datum and no more; and one construction
+step ending in `super().__init__(**rest)`. Nothing else is permitted, and no base is
+written. A leaf knows its own level and the one above: it never names a category two levels
+up, never restates anything from below, and never writes a forwarding method. Obligations
+compose by induction — if every level fulfils the one above it, every object's obligations
+are met and no leaf carries the transitive burden. **The author of a lattice category never
+writes the word cardinality**; they construct the underlying module and stop. The decay
+signal is a leaf *reaching down*: importing a lower class to call it, restating a lower
+level's computation because the chain did not deliver it, or calling `Parent.__init__`. The
+decision record, with the options weighed, the approaches already falsified, and the
+falsifiable acceptance for this contract, is the plan card
+`PLAN-threading-set-behaviour`.
 *The tell:* a placement, cardinality, or enumeration installed on a module, lattice
 or group directly; a set class imported into a module or lattice file, or hand-written in
 its bases; a constructor that calls `Parent.__init__` instead of `super().__init__`;
@@ -1054,16 +1069,34 @@ contract or the same derived method, the axiom was attached too low. Never
 re-declare in a subcategory what a supercategory already provides, and never
 restate category methods on a concrete class.
 
-## Contracts are abstract_methods
+## Contracts are abstract_methods — of one kind, not two
 
 A data subcategory states its contractual requirement as `abstract_method`s
 on its `ParentMethods` (the pattern of
 `categories/modules/pure/modules.sage`, where being a module *is* the ring
 morphism $\rho: R \to \operatorname{End}(M)$ and the category requires it).
-The obligation cannot be a construction gate — `_refine_category_` admits
-anything and runs no hook — but it can be *visible*: an unmet obligation
-resolves to the abstract declaration on the object, and the sweep below
-reports it.
+
+**Two things used to be spelled the same way, and only one of them is a
+contract.**
+
+- A **data-accessor** declaration exists only to say "hand me the field the
+  concrete class holds" — the `_form_morphism()` shape. The category/class
+  mechanism *obviates* these: the level that declares the datum supplies the
+  constructor that establishes it, so the obligation cannot be missed and
+  there is nothing left to declare. Do not write new ones, and delete the ones
+  the chain makes redundant.
+- An **undischargeable operation** is one a category can legitimately *state*
+  in full generality but cannot *implement* in full generality. These are real
+  contracts and they stay. Cardinality is total on sets, so the set level may
+  declare it for every set while only a sufficiently narrow subcategory can
+  supply a determinate answer rather than an *unknown*. The abstract
+  declaration at the general level is correct mathematics, not a gap.
+
+The second kind is **enforced at construction**: the owned category base gives
+the methods classes `ABCMeta` semantics, so an object whose obligations are
+unmet raises at instantiation instead of existing in a defective state. That
+closes the hole this section used to record — that `_refine_category_` admits
+anything and runs no hook, leaving an obligation merely *visible*.
 
 **An abstract predicate on a subcategory is a requirement on participants, not
 an answer the category gives.** `EvenLattices.ParentMethods.is_even`,
@@ -1081,25 +1114,36 @@ was written and reverted the same day; when the abstract declaration appears to
 shadow a computing implementation, the defect is in how the class is built (see
 `refine.sage`: the parent class is rebuilt from the object's *joined* category,
 so a provider already in the join precedes the requirement), never in the
-declaration.
+declaration. This predicate case is the **undischargeable-operation** kind
+above: the general category states the predicate, the participant supplies
+it, and `ABCMeta` is what makes "supplies it" mandatory rather than hoped for.
 
 ## Every constructor registers in the obligations sweep (for now)
 
 `tests/test_constructors_meet_their_obligations.sage` runs every way the
 preamble makes an object and asks each result whether any name its
-categories require still resolves to an abstract declaration. That sweep is
-the enforcement of the contract above, so every new constructor or
-construction path must add a specimen row to its `_constructions()` table.
-An object that can enter a category without the category's defining datum is
-exactly the failure class this catches (modules with no ring action, form
-modules with no form). "For now": the sweep is the current gate; a stronger
-mechanism may replace it, but absence from the sweep is never acceptable.
+categories require still resolves to an abstract declaration. Every new
+constructor or construction path must add a specimen row to its
+`_constructions()` table. An object that can enter a category without the
+category's defining datum is exactly the failure class this catches (modules
+with no ring action, form modules with no form).
+
+"For now" is now load-bearing: the sweep was the enforcement of last resort
+while an obligation could only be made *visible*. `ABCMeta` at construction is
+the stronger mechanism it was waiting for, and the data-accessor obligations
+disappear entirely once construction threads. Expect the sweep to shrink or be
+retired as those land — but it is retired by a decision that says so, never by
+attrition, and until then absence from it is never acceptable.
 
 ## Classes only tie constructions into the tree
 
-Almost everything lives at the categorical level. Concrete `Parent` classes
-enter only to tie a specific construction into the tree for a specific
-subcategory — `BasedFreeModule`, framed groups intake, the framed free
+Almost everything lives at the categorical level. The mechanism above makes the
+category's methods classes *be* the implementation, so a separate concrete
+`Parent` class is the exception, not the rule — it enters only where a
+construction cannot be expressed categorically, or where the preamble consumes
+a Sage class it did not define. Historically this read the other way, and the
+named examples below are the ones being migrated, not the pattern to copy:
+`BasedFreeModule`, framed groups intake, the framed free
 algebras — and constructions are uniformized as high up as possible: one
 free functor per concrete category in
 `categories/functors/free_forgetful_adjunction.sage`, one framing contract,
