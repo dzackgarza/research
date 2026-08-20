@@ -20,7 +20,7 @@ import pytest
 
 if TYPE_CHECKING:
     from dzack_research.preamble.categories.algebras.framed_free_algebras import (
-        FreeAlgebraOnSetElement,
+        FramedFreeAlgebras,
         FreeAlgebraParent,
     )
 
@@ -34,7 +34,7 @@ def _ensure_preamble() -> None:
     Lattices.install(globals())
 
 
-def _generators(algebra: "FreeAlgebraParent") -> list["FreeAlgebraOnSetElement"]:
+def _generators(algebra: "FreeAlgebraParent") -> list["FramedFreeAlgebras.ElementMethods"]:
     return [
         algebra.algebra_generator(label)
         for label in algebra.algebra_generating_set()
