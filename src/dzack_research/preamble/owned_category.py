@@ -54,6 +54,7 @@ from abc import ABCMeta
 from typing import TYPE_CHECKING
 
 from sage.categories.category import Category, CategoryWithParameters
+from sage.misc.constant_function import ConstantFunction
 from sage.misc.lazy_attribute import lazy_attribute
 from sage.structure.category_object import CategoryObject
 from sage.structure.parent import Parent as SageParent
@@ -462,6 +463,39 @@ class OwnedParent:
         return self.category().element_class
 
 
+class _BaseRingOfACategoryOverABase:
+    r"""``base_ring`` on an owned category, present exactly when there is a base.
+
+    Making a category a ``Parent`` (:class:`OwnedCategoryObject`) hands it
+    ``CategoryObject.base_ring``, which answers ``self._base`` -- and that is
+    ``None`` for every category which is not over a base.  Sage's own comment
+    on that method calls it a pollution of the namespace of all category
+    objects, and here it is one: ``Modules.SubcategoryMethods.base_ring``
+    finds the ring of a join by returning ``C.base_ring()`` for the first
+    super category carrying a ``base_ring`` **attribute**, so a single owned
+    category over no base -- an owned ``Sets()``, an owned additive group, a
+    slice category -- makes the whole join answer ``None``, and then a module
+    built in that join is a module over no ring.
+
+    A category over no base does not have a base ring, so it does not have the
+    attribute.  ``hasattr`` is then false for exactly the categories that
+    search means to skip, the join answers the ring of the member which has
+    one, and nothing is written on a Sage class.
+    """
+
+    def __get__(
+        self, category: Category | None, owner: type | None = None
+    ) -> "ConstantFunction | _BaseRingOfACategoryOverABase":
+        if category is None:
+            return self
+        base = category.base()
+        if base is None:
+            raise AttributeError(
+                f"{type(category).__name__} is over no base, so it has no base ring"
+            )
+        return ConstantFunction(base)
+
+
 class OwnedCategoryObject:
     r"""A Sage category that is additionally an **object of** :math:`\mathbf{Cat}`.
 
@@ -501,6 +535,8 @@ class OwnedCategoryObject:
       element-construction logic, which is wrong for a category;
     * ``Parent`` last, present only so the object really is one.
     """
+
+    base_ring = _BaseRingOfACategoryOverABase()
 
     def _init_cat_object(self) -> None:
         r"""Initialize the parent shell without a second class rewrite.
