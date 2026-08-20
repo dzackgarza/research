@@ -103,6 +103,9 @@ def install_preamble(namespace: dict) -> None:
             "categories.sets.ordinals",
             "categories.sets.cardinals",
             "categories.sets.sets",
+            # After the sets node it takes its placement from, and after
+            # ``cardinals``, whose ``cardinal`` it answers with.
+            "categories.sets.underlying_sets",
             "categories.rings.rings",
             "categories.rings.predicate_subrings",
             "categories.abstract_categories.slice_categories",
@@ -153,12 +156,22 @@ def install_preamble(namespace: dict) -> None:
             "categories.group.finitely_presented_groups",
             "categories.group.predicate_subgroups",
             "categories.modules.framed.formed.integrallattice.integral_lattices",
+            # Reached only by local imports until now, so the one lattice axiom
+            # category a session could not name.  It depends on the owned bases
+            # alone; the position is beside its siblings.
+            "categories.modules.framed.formed.integrallattice.definite_lattices",
             "categories.modules.framed.formed.integrallattice.subobjects",
             "categories.modules.group_modules.group_lattices",
             "categories.modules.framed.finitely_generated.ring_as_module",
             "categories.modules.fractional_ideals",
             "categories.functors.trivial_action",
             "categories.functors.free_forgetful_adjunction",
+            # After the free-forgetful adjunction it is built beside, and
+            # after ``form_modules`` above, whose categories are its ends.
+            "categories.functors.form_forgetful_adjunction",
+            # After ``abstract_categories.functors``, which is where ``Functor``
+            # comes from; nothing else constrains it.
+            "categories.functors.twist",
             "categories.functors.ring_centers",
             "categories.functors.cardinality",
             "categories.functors.base_change_adjunction",
@@ -191,6 +204,9 @@ def install_preamble(namespace: dict) -> None:
             "categories.schemes.ambient_spaces",
             "categories.schemes.subschemes",
             "categories.schemes.varieties",
+            # After ``schemes`` and ``varieties``, the two categories it seats
+            # on, and before ``ade_surfaces``, which builds toric objects.
+            "categories.schemes.toric.toric_schemes",
             "categories.schemes.polytopes",
             "categories.schemes.ade_surfaces",
             "catalogue",
