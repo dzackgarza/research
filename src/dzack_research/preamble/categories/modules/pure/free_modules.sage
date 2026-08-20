@@ -64,8 +64,15 @@ class FiniteRankFreeModules(Category_over_base_ring):
 
     class ParentMethods:
         def __init__(self, rank: "Integer", base: "Ring", **rest: object) -> None:
+            r"""Build $R^n$ on the underlying set $R\times\cdots\times R$.
+
+            The ring is named here only to say what the $n$ factors are.  It
+            is not forwarded: the module level assigns the base, reading it
+            off the category, and passing it again arrives twice at the set
+            level below.
+            """
             self._rank = rank
-            super().__init__(factors=(base,) * rank, base=base, **rest)
+            super().__init__(factors=(base,) * rank, **rest)
 
         def rank(self) -> "Integer":
             return self._rank

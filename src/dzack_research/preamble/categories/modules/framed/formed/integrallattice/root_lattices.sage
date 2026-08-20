@@ -80,9 +80,7 @@ class RootLattices(Category):
             vector of square $\pm2$ -- and comes back as the plain integral
             lattice it is.
             """
-            # Local: a module-level import here would close a cycle; by call time this module is built.
-            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.integral_lattices import IntegralLattices
-            result = IntegralLattices.ParentMethods.twist(self, scale, names)
+            result = super().twist(scale, names)
             if scale in (1, -1):
                 refine_root_lattice(result, self.cartan_type())
             return result
@@ -96,12 +94,8 @@ class RootLattices(Category):
             :meth:`RootLatticeIsometries.ParentMethods.cardinality`.
             """
             # Local: a module-level import here would close a cycle; by call time this module is built.
-            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.integral_lattices import IntegralLattices
             from dzack_research.preamble.refine import refine
-            return refine(
-                IntegralLattices.ParentMethods.Aut(self),
-                RootLatticeIsometries(),
-            )
+            return refine(super().Aut(), RootLatticeIsometries())
 
         orthogonal_group = Aut
         automorphisms = Aut
