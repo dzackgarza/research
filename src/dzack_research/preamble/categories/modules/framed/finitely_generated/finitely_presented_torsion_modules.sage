@@ -28,6 +28,7 @@ from dzack_research.preamble.categories.modules.framed.finitely_generated.finite
 from dzack_research.preamble.categories.sets.sets import finite_ordered_set
 from sage.misc.misc_c import prod
 from sage.modules.free_module_element import vector
+from sage.structure.element import ModuleElement as SageModuleElement
 if TYPE_CHECKING:
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
 
@@ -280,8 +281,19 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
         )
 
 
-    class ElementMethods:
+    class ElementMethods(SageModuleElement):
         r"""What torsion adds to being a module element, which is one thing.
+
+        The base is the *layout*, not the methods: an owned class takes its
+        instance layout from its first base, and the first base here is this
+        provider.  Without it the class is laid out on whichever branch Sage's
+        linearization put first -- for a discriminant group that is the group
+        branch, which ends at ``Element`` -- and then Sage's
+        ``RightModuleAction._act_``, which casts to ``ModuleElement``
+        unchecked and calls ``_lmul_`` through that class's method table,
+        jumps through a table with no such slot.  These elements are added and
+        scaled, so ``ModuleElement`` is the layout they must have.
+
 
         Addition, negation and the action of $\mathbb Z$ are structure -- they
         are exactly the structure of $\mathbb Z\text{-Mod}$, which this
