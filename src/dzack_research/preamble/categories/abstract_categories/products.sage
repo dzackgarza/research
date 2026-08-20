@@ -530,9 +530,11 @@ def _is_known_empty(factor: "Parent") -> bool:
         for _ in factor:
             return False
         return True
-    assert False, (
-        f"{factor} carries no owned Sets placement deciding emptiness"
-    )
+    # No placement decides it, so ask the object.  A placement is one way to
+    # know a set's size and not the only one: a set built through the chain
+    # states its size from its factors, with no axiom stamped on it, and this
+    # used to refuse such a set outright "for want of a placement".
+    return bool(factor.cardinality() == 0)
 
 
 def _cartesian_placement(factors: "tuple[Parent, ...]") -> Sets:

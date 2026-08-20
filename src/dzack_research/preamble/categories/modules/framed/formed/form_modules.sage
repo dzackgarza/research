@@ -185,9 +185,9 @@ class FormModules(OwnedCategoryOverBaseRing):
         instead, which by the universal property of the tensor product is the
         same datum.  Requiring a framing here made that unreachable, because
         ``_is_framed`` asks category *membership*, so a formed module was
-        reported framed and asked for a framing datum it had never been given.
-        Modules that do carry one are placed in the framed nodes by their own
-        constructors and keep everything they had.
+        reported framed and then asked for a framing datum it had never been
+        given.  Modules that do carry one are placed in the framed nodes by
+        their own constructors and keep everything they had.
         """
         from dzack_research.preamble.categories.modules.pure.modules import (
             Modules as OwnedModules,
