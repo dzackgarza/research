@@ -1596,18 +1596,43 @@ class GroupAction(Morphism):
         # infinite cyclic group a single isometry generates.  The law itself
         # is not checkable on generators without the relations, so it is not
         # claimed rather than claimed on the finite cases alone.
-        group_generators = getattr(group, "group_generators", None)
-        assert group_generators is None or set(group_generators()) <= set(values), (
-            "the action must name the image of every group generator"
-        )
+        # Whether a generating set exists is category membership, and the
+        # owned finitely generated groups are where it is stated; Sage's
+        # ``FinitelyGenerated`` is a declaration none of these groups carry.
+        # Local: at module level this closes an import cycle; the group node
+        # is built by the time an action is named.
+        from dzack_research.preamble.categories.group.groups import OwnedFinitelyGeneratedGroups
+
+        if group in OwnedFinitelyGeneratedGroups():
+            assert set(group.group_generators()) <= set(values), (
+                "the action must name the image of every group generator"
+            )
         self._values = dict(values)
 
     def module(self) -> "Module":
         return self.parent().module()
 
     def _call_(self, element: ElementConstructorInput) -> ModuleAutomorphism:
+        r"""Return \(\rho(g)\) where the assignment names it.
+
+        \(\rho\) is a homomorphism on all of \(G\); what this object holds is
+        the assignment it was named by.  Reaching an element that assignment
+        does not name means writing it as a word in the ones it does, which is
+        the word problem -- undecidable in general, and decidable for a group
+        carrying an automatic structure, which is what KBMAG computes.
+        Neither is done here, so the answer is an absence.
+
+        The absence is not a claim about the element.  It may well be in
+        \(G\), and for a group named by generators most of \(G\) is: the
+        finite case reaches every element only because the Cayley-graph
+        extension in :meth:`GroupActionHomset._values_on_generators` ran
+        first and named them all.
+        """
         assert element in self._values, (
-            f"{element} is not an element of this action's group"
+            f"this action names no value at {element}; finding one means "
+            f"writing it as a word in the elements it does name, which is the "
+            f"word problem for {self.domain()} and is not solved here.  The "
+            f"element may well be in the group."
         )
         automorphism: ModuleAutomorphism = self._values[element]
         return automorphism
