@@ -683,6 +683,21 @@ accessor that only exists because the preamble injected it into a Sage category;
 test asserting membership through `sage.categories.*` for behavior the preamble
 defines; a stub declaration on a Sage class for a member Sage does not have.
 
+**Enrichment is of two kinds, and which one applies is a fact about the mathematics.**
+*Determined* enrichment adds structure the object itself determines — a free algebra *is*
+the free module on $\mathrm{Mon}(S)$, a subobject is the object together with its own
+inclusion, an axiom is a property of what is already there. The forgetful functor is
+injective, so the enriched thing is the same object with more categories. *Chosen*
+enrichment adds structure the same underlying object supports many of — many forms on
+$\mathbb{Z}^2$, many $G$-actions on $\mathbb{Z}^n$ — so the forgetful functor is not
+injective and the enriched thing **must be a distinct object**, the pair $(M,b)$; making it
+the same object would collapse distinct mathematics onto one parent. (Measured: `U` and
+`A₂` share one `BasedFreeModule`, because free modules are keyed on $(R,S)$.) A distinct
+parent for chosen enrichment is therefore correct — what is not correct is wrapping its
+*elements*: it declares `facade=underlying` so the two share one element set, and restates
+none of the underlying object's computations. The paragraph below governs determined
+enrichment; `PLAN-threading-set-behaviour` records the evidence and the decision.
+
 **Added structure enriches an object; it never wraps one.** A formed module *is* a
 module that additionally has a form. An abelian group *is* a $\mathbb{Z}$-module.
 `ZZ` is at once a ring, a rank-one $\mathbb{Z}$-module, a rank-one
