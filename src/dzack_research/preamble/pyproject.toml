@@ -1,6 +1,6 @@
 [project]
 name = "dzack-research-preamble"
-version = "0.0.9"
+version = "0.0.10"
 description = "SageMath preamble: categorical foundations for lattice research"
 requires-python = ">=3.14"
 # sagepython (the compiler core) is sage-free and needs only these;
@@ -47,7 +47,7 @@ packages = [
     "dzack_research.preamble.categories.modules.framed.formed.integrallattice",
     "dzack_research.preamble.categories.modules.framed.formed.torsionform",
     "dzack_research.preamble.categories.modules.framed.finitely_generated",
-    "dzack_research.preamble.categories.modules.functors",
+    "dzack_research.preamble.categories.functors",
     "dzack_research.preamble.categories.modules.group_modules",
     "dzack_research.preamble.categories.modules.module_morphisms",
     "dzack_research.preamble.categories.modules.pure",
