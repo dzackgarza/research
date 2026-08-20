@@ -34,7 +34,7 @@ from sage.misc.cachefunc import cached_method
 
 from dzack_research.preamble.categories.sets.cardinals import Cardinal
 from dzack_research.preamble.categories.modules.module_morphisms.morphism_matrices import matrix_group
-from sage.categories.category import Category
+from dzack_research.preamble.owned_category_bases import Category
 from sage.categories.groups import Groups as SageGroups
 from sage.quadratic_forms.quadratic_form import QuadraticForm as SageQuadraticForm
 from sage.sets.totally_ordered_finite_set import TotallyOrderedFiniteSet

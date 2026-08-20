@@ -169,22 +169,22 @@ class CatConstructionsMixin:
     takes this one.  Everything below it inherits the constructions through
     ``subcategory_class`` and needs no declaration of its own.
 
-    **Keep this separate from** :class:`OwnedCategoryMixin`.  Two mixins where
-    one would do looks like something to merge, and it is not.  They do
-    different jobs at different costs: this one only routes
-    ``subcategory_class``, which is a *view* on a category and which no
-    category competes for, while the flip rebuilds ``parent_class`` /
-    ``element_class`` / ``morphism_class``, which changes what a category's
-    **objects** are.  That has to be taken one level at a time, as each level
-    is converted to the construction chain -- never swept across a family of
-    categories to obtain a construction surface.
+    **Keep this separate from** :class:`OwnedCategoryMixin`.  The two do
+    different jobs.  This one routes ``subcategory_class``, which is a *view*
+    on a category, and no category competes for it.  The flip rebuilds
+    ``parent_class`` / ``element_class`` / ``morphism_class``, which changes
+    what a category's **objects** are.
 
-    Measured, when they were briefly one: giving the roots the flip put it on
-    ``OwnedCategoryOverBaseRing`` and so on roughly sixteen over-base
-    categories at once, and ``FreeModules`` failed immediately with
+    Giving a family the flip together makes MRO conflicts appear.  One example
+    is ``OwnedCategoryOverBaseRing`` and the categories over it:
     ``TypeError: Cannot create a consistent method resolution order (MRO) for
-    bases Modules.parent_class, FreeModules.ParentMethods``.  That was the
-    design's own tripwire firing correctly, not an obstacle to route around.
+    bases Modules.parent_class, FreeModules.ParentMethods``.
+
+    A conflict of that kind is the design's own tripwire.  Its cause is a
+    non-root methods class that names a base, which states the class graph by
+    hand in place of the category graph.  Remove that base.  Do not avoid the
+    flip, and do not apply the flip in stages: the migration is one sweep, and
+    the conflicts it shows are the sites to repair.
     """
 
     def _make_named_class(
@@ -508,20 +508,3 @@ class OwnedCategoryObject:
         return _cat()
 
 
-class OwnedCategory(OwnedCategoryMixin, OwnedCategoryObject, Category, SageParent):
-    r"""A category tied to its implementation classes.
-
-    Declaring one is ``super_categories()``, the nested method classes for the
-    surfaces this level speaks to, and -- when the level introduces a datum --
-    one ``__init__`` that consumes exactly that datum and passes the rest up
-    with ``super().__init__(**rest)``.  There is no second place to register
-    anything.
-
-    A parameterized or functorial-construction category mixes
-    :class:`OwnedCategoryMixin` into its own Sage base in the same way, first
-    in the bases.
-    """
-
-    def __init__(self) -> None:
-        self._init_cat_object()
-        Category.__init__(self)

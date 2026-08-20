@@ -7,7 +7,7 @@ if TYPE_CHECKING:
 
 from dzack_research.preamble.categories.modules.framed.framed_modules import FramedModules
 from dzack_research.preamble.refine import refine
-from sage.categories.category import Category
+from dzack_research.preamble.owned_category_bases import Category
 
 
 def CartierDivisorGroup(module: "Module") -> "Module":

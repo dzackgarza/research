@@ -1,51 +1,51 @@
-r"""Owned bases for the Sage category classes a declaration can be written over.
+r"""One owned class per Sage category base class.
 
-A category declared over one of these is an **object of** :math:`\mathbf{Cat}`
-and is tied to its own implementation classes: ``ParentMethods`` /
-``ElementMethods`` / ``MorphismMethods`` enter the named classes as *bases*,
-so a level's methods carry fields, a constructor and cooperative ``super()``.
-:mod:`dzack_research.preamble.owned_category` holds the mechanism and the
-measurements behind it; this module is only the list of Sage bases that
-mechanism can be put over, one wrapper per base.
+Sage gives a category a different base class for each shape.  The shapes are
+plain, parameterized, singleton, with an axiom, over a base, over a base ring,
+and one for each functorial construction.  Declare a preamble category over
+the class here that has its shape.  Do not declare it over Sage's class.
 
-The un-parameterized case is not here.  It is
-:class:`~dzack_research.preamble.owned_category.OwnedCategory` -- the same four
-bases in the same order, declared where the mechanism is -- and
-``categories/sets/owned_sets.py`` already builds on it.
+This gives the category two properties.
 
-Every wrapper below has the base order
+Its ``ParentMethods``, ``ElementMethods`` and ``MorphismMethods`` become bases
+of the named classes.  Thus they hold fields and a constructor, and
+zero-argument ``super()`` operates.
+
+The category also becomes an object of :math:`\mathbf{Cat}`.  Thus
+``category()`` gives ``Cat()``, and not Sage's ``Objects()``.
+
+:mod:`dzack_research.preamble.owned_category` has the mechanism for both
+properties, and the measurements that show it is correct.
+
+The base order is:
 
 ``OwnedCategoryMixin, OwnedCategoryObject, <the Sage category base>, Parent``
 
-and each position is forced by a different Sage behaviour:
+A different Sage behaviour makes each position necessary.
 
-* ``OwnedCategoryMixin`` first, so its ``_make_named_class`` wins.
-  ``CategoryWithParameters._make_named_class`` -- inherited by
-  ``Category_over_base``, ``CategoryWithAxiom`` and the
-  functorial-construction categories -- calls ``Category._make_named_class``
-  **by name**, so an override placed further down the ``Category`` hierarchy
-  is bypassed.
-* ``OwnedCategoryObject`` before the Sage base, because that is the one
-  semantic change: Sage's ``Category.category`` answers ``Objects()``, and an
-  owned category answers ``Cat()``.
-* the Sage base before ``Parent``, or ``__contains__``, ``__call__``,
-  ``base``/``base_ring`` and ``element_class`` resolve to parent
-  element-construction logic, which is wrong for a category.
-* ``Parent`` last, present only so the object really is one.
+* ``OwnedCategoryMixin`` is first.  Thus its ``_make_named_class`` wins.
+  ``CategoryWithParameters._make_named_class`` calls
+  ``Category._make_named_class`` **by name**.  ``Category_over_base``,
+  ``CategoryWithAxiom`` and the functorial-construction categories inherit
+  that call.  Thus an override lower in the ``Category`` hierarchy does not
+  operate.
+* ``OwnedCategoryObject`` is before the Sage base.  This is the one change of
+  meaning.  Sage's ``Category.category`` gives ``Objects()``.  An owned
+  category gives ``Cat()``.
+* The Sage base is before ``Parent``.  If ``Parent`` is first,
+  ``__contains__``, ``__call__``, ``base``, ``base_ring`` and
+  ``element_class`` resolve to element-construction code.  That code is wrong
+  for a category.
+* ``Parent`` is last.  It is present only to make the category a parent.
 
-The two singleton wrappers additionally carry their classcall bridge ahead of
-everything; see :class:`_SingletonClasscallMixin`.
-
-``OwnedCategoryOverBaseRing`` (``categories/rings/rings.sage``) is the one
-owned wrapper base that is **not** here.  Its ``__classcall__`` spells the base
-ring the way the objects over it spell theirs, which needs ``owned_ring_view``
-from that module, so it is declared where that function is.  It carries
-``CatConstructionsMixin`` rather than the flip, which is a separate decision
-from this module's.
+The two singleton wrappers put their classcall bridge before all of these.
+Sage's singleton classcall makes an assertion about ``__mro__[1]``.  See
+:class:`_SingletonClasscallMixin`.
 """
 
 from __future__ import annotations
 
+from abc import abstractmethod
 from typing import TYPE_CHECKING, final
 
 from sage.categories.algebra_functor import AlgebrasCategory as SageAlgebrasCategory
@@ -121,7 +121,8 @@ from dzack_research.preamble.owned_category import (
 )
 
 if TYPE_CHECKING:
-    from sage.structure.category_object import CategoryObject
+    from sage.categories.morphism import Morphism
+    from sage.structure.element import Element as CategoryElement
 
 
 class _SingletonClasscallMixin:
@@ -180,6 +181,24 @@ class _SingletonAxiomClasscallMixin:
         cls._set_classcall(ConstantFunction(obj))
         obj.__class__._set_classcall(ConstantFunction(obj))
         return obj
+
+
+class Category(OwnedCategoryMixin, OwnedCategoryObject, SageCategory, Parent):
+    r"""Owned base over Sage's ``Category``.  Most categories use this one.
+
+    To declare a category over this base, write three things.  Write
+    ``super_categories()``.  Write the nested method classes for the surfaces
+    of this level.  If the level adds a datum, write one ``__init__`` that
+    takes that datum and sends the remainder up with
+    ``super().__init__(**rest)``.  There is no other place to register data.
+
+    A parameterized category or a functorial construction uses one of the
+    other bases below.  Those bases differ only in the Sage base class.
+    """
+
+    def __init__(self) -> None:
+        self._init_cat_object()
+        SageCategory.__init__(self)
 
 
 class CategoryWithParameters(
@@ -385,6 +404,27 @@ class SubobjectsCategory(
     def __init__(self, category: SageCategory) -> None:
         self._init_cat_object()
         SageSubobjectsCategory.__init__(self, category)
+
+    class ParentMethods:
+        r"""A subobject is its inclusion.  Read the remainder from that.
+
+        A subobject of :math:`B` is the pair :math:`(A, f: A \hookrightarrow
+        B)`.  Thus the object that contains it is ``f.codomain()``.
+
+        The migrated source also declared ``ambient()``.  That declaration is
+        not here.  It gives the codomain a second name, and it is a
+        data-accessor obligation.  The construction chain supplies such data.
+        """
+
+        @abstractmethod
+        def inclusion(self) -> Morphism:
+            r"""Return the inclusion morphism of this subobject."""
+            ...
+
+        @final
+        def lift(self, x: CategoryElement) -> CategoryElement:
+            r"""Return the image of ``x`` under the inclusion."""
+            return self.inclusion()(x)
 
 
 class QuotientsCategory(

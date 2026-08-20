@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
     from sage.categories.morphism import Morphism
 
-from sage.categories.category import Category
+from dzack_research.preamble.owned_category_bases import Category
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
 from typing import Protocol, TYPE_CHECKING
 

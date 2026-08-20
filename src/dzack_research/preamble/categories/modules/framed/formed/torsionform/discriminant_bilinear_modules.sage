@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 
 from typing import Protocol, TYPE_CHECKING
 
-from sage.categories.category import Category
+from dzack_research.preamble.owned_category_bases import Category
 from sage.groups.additive_abelian.qmodnz import QmodnZ
 from sage.matrix.matrix0 import Matrix
 

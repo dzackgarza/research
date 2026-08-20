@@ -28,7 +28,6 @@ base category class by name, where it finds the preamble's groups node.
 """
 
 from dzack_research.preamble.owned_category import (
-    CatConstructionsMixin,
     OwnedCategoryMixin,
     object_of,
 )
@@ -57,8 +56,8 @@ if TYPE_CHECKING:
     from sage.rings.ring import Ring
 
 from sage.misc.cachefunc import cached_method
-from sage.categories.category import Category
-from sage.categories.category_types import Category_over_base_ring
+from dzack_research.preamble.owned_category_bases import Category
+from dzack_research.preamble.owned_category_bases import Category_over_base_ring
 from sage.categories.homset import Hom
 from sage.categories.morphism import Morphism
 from sage.categories.division_rings import DivisionRings as SageDivisionRings
@@ -80,7 +79,7 @@ from dzack_research.preamble.categories.sets.cardinals import Cardinal
 from sage.structure.parent import Parent
 
 
-class OwnedSemirings(CatConstructionsMixin, Category):
+class OwnedSemirings(Category):
     r"""A multiplicative monoid over an additively commutative monoid."""
 
     @classmethod
@@ -91,7 +90,7 @@ class OwnedSemirings(CatConstructionsMixin, Category):
         return [SageSemirings()]
 
 
-class OwnedRngs(CatConstructionsMixin, Category):
+class OwnedRngs(Category):
     r"""A multiplicative semigroup over an additively commutative group."""
 
     @classmethod
@@ -331,7 +330,7 @@ def _owning[**P](
     return build
 
 
-class OwnedCategoryOverBaseRing(CatConstructionsMixin, Category_over_base_ring):
+class OwnedCategoryOverBaseRing(Category_over_base_ring):
     r"""A category over a base ring, named as the objects in it name theirs.
 
     A ring and the owned view of it are one ring, so they name one category.
@@ -404,7 +403,7 @@ SESSION_ENGINE_CONSTRUCTORS = (
 SESSION_OWNED_ENGINE_CONSTRUCTORS = ("MatrixSpace",)
 
 
-class PrimeFields(OwnedCategoryMixin, Category):
+class PrimeFields(Category):
     r"""\(\mathbb{F}_p\), constructed through the chain rather than adopted.
 
     The ring level's first construction that *builds* rather than wraps.

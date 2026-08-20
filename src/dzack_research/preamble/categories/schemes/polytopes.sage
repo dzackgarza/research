@@ -42,9 +42,8 @@ EXAMPLES::
     9/4
 """
 
-from dzack_research.preamble.owned_category import CatConstructionsMixin
 from typing import Sequence, Callable, Optional, Protocol, TYPE_CHECKING
-from sage.categories.category import Category
+from dzack_research.preamble.owned_category_bases import Category
 from sage.categories.objects import Objects
 from sage.structure.parent import Parent
 from sage.geometry.toric_lattice import ToricLattice, ToricLattice_generic
@@ -85,7 +84,7 @@ class _LatticePolytopeInterface(Protocol):
     def normalized_volume(self) -> Integer: ...
 
 
-class ConvexPolytopes(CatConstructionsMixin, Category):
+class ConvexPolytopes(Category):
     """
     The category of convex polytopes.
 

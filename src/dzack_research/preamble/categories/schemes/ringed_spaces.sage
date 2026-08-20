@@ -12,7 +12,7 @@ from sage.categories.morphism import Morphism
 from sage.structure.parent import Parent
 from dzack_research.preamble.categories.rings.rings import OwnedBaseRing
 from sage.structure.element import Element
-from sage.categories.category import Category
+from dzack_research.preamble.owned_category_bases import Category
 from sage.categories.category_with_axiom import (
     all_axioms,
     axiom,

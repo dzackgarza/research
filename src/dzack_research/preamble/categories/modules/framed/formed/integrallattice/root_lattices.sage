@@ -9,7 +9,7 @@ Dynkin diagram instead of from a search over the Gram matrix.
 
 from typing import Protocol, Self, TYPE_CHECKING
 
-from sage.categories.category import Category
+from dzack_research.preamble.owned_category_bases import Category
 from sage.combinat.root_system.weyl_group import WeylGroup
 
 from dzack_research.preamble.categories.sets.cardinals import Cardinal

@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 
 from typing import TYPE_CHECKING
 
-from sage.categories.category import Category
+from dzack_research.preamble.owned_category_bases import Category
 from sage.misc.abstract_method import abstract_method
 
 if TYPE_CHECKING:

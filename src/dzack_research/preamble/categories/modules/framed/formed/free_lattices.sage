@@ -18,10 +18,10 @@ from dzack_research.preamble.categories.modules.pure.free_modules import (
     FiniteRankFreeModules,
 )
 from dzack_research.preamble.owned_category import OwnedCategoryMixin, object_of
-from sage.categories.category_types import Category_over_base_ring
+from dzack_research.preamble.owned_category_bases import Category_over_base_ring
 
 
-class FiniteRankFreeLattices(OwnedCategoryMixin, Category_over_base_ring):
+class FiniteRankFreeLattices(Category_over_base_ring):
     r"""\(R^n\) with a symmetric bilinear form."""
 
     @classmethod

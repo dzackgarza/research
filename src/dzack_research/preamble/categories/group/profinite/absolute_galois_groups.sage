@@ -34,7 +34,7 @@ from collections.abc import Iterator
 from typing import TYPE_CHECKING
 
 from sage.rings.finite_rings.integer_mod_ring import Integers
-from sage.categories.category_singleton import Category_singleton
+from dzack_research.preamble.owned_category_bases import Category_singleton
 from sage.categories.fields import Fields as SageFields
 from sage.categories.groups import Groups as SageGroups
 from sage.categories.number_fields import NumberFields

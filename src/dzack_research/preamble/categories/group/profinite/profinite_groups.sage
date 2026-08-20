@@ -27,7 +27,7 @@ profinite group sits somewhere honest in the hierarchy.
 from collections.abc import Iterator
 from typing import Self, TYPE_CHECKING
 
-from sage.categories.category_singleton import Category_singleton
+from dzack_research.preamble.owned_category_bases import Category_singleton
 from sage.categories.groups import Groups as SageGroups
 
 if TYPE_CHECKING:

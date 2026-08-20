@@ -25,9 +25,8 @@ from __future__ import annotations
 from collections.abc import Iterator
 from typing import cast, Generic, TYPE_CHECKING, TypeVar
 
-from sage.categories.cartesian_product import CartesianProductsCategory
-from sage.categories.category import Category
-from sage.categories.category_with_axiom import CategoryWithAxiom, all_axioms
+from sage.categories.category import Category as SageCategory
+from sage.categories.category_with_axiom import all_axioms
 from sage.categories.sets_cat import Sets as SageSets
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ
@@ -36,7 +35,12 @@ from sage.structure.element import Element as SageElement
 from sage.structure.richcmp import richcmp
 
 from dzack_research.preamble.lexicon.interop import SageParent, SageUniqueRepresentation
-from dzack_research.preamble.owned_category import OwnedCategory, OwnedCategoryMixin, OwnedParent
+from dzack_research.preamble.owned_category import OwnedCategoryMixin, OwnedParent
+from dzack_research.preamble.owned_category_bases import (
+    CartesianProductsCategory,
+    Category,
+    CategoryWithAxiom,
+)
 
 if TYPE_CHECKING:
     from dzack_research.preamble.owned_category import ConstructionData
@@ -89,35 +93,35 @@ class CountabilitySubcategoryMethods:
     root and by every owned structured root whose objects carry set axioms."""
 
     # Runtime Sage mixes this class into every subcategory, so ``self``
-    # is a Category there; the casts state that fact for the checker.
-    def Countable(self) -> Category:
+    # is a SageCategory there; the casts state that fact for the checker.
+    def Countable(self) -> SageCategory:
         r"""Objects whose underlying set has a chosen computable,
         exhaustive, duplicate-free enumeration."""
-        category = cast(Category, self)
+        category = cast(SageCategory, self)
         assert "Uncountable" not in category.axioms(), "Countable and Uncountable are disjoint"
         return category._with_axiom("Countable")
 
-    def Uncountable(self) -> Category:
+    def Uncountable(self) -> SageCategory:
         r"""Objects whose underlying set is beyond every enumeration, by
         trusted declaration. (The reverse contradiction, ``Uncountable``
         then ``Finite``, is refused by Sage's native finite/infinite
         incompatibility because ``Uncountable`` implies ``Infinite``.)"""
-        category = cast(Category, self)
+        category = cast(SageCategory, self)
         assert "Countable" not in category.axioms(), "Countable and Uncountable are disjoint"
         return category._with_axiom("Uncountable")
 
-    def PartiallyOrdered(self) -> Category:
+    def PartiallyOrdered(self) -> SageCategory:
         r"""Objects whose underlying set is equipped with a partial order."""
-        category = cast(Category, self)
+        category = cast(SageCategory, self)
         return category._with_axiom("PartiallyOrdered")
 
-    def TotallyOrdered(self) -> Category:
+    def TotallyOrdered(self) -> SageCategory:
         r"""Objects whose underlying set is equipped with a total order."""
-        category = cast(Category, self)
+        category = cast(SageCategory, self)
         return category._with_axiom("TotallyOrdered")
 
 
-class Sets(OwnedCategory):
+class Sets(Category):
     r"""The owned category of sets: declaration owner of the generic
     meanings of cardinality, finiteness, infinitude, countability,
     uncountability, enumeration, indexing, and reverse lookup.
@@ -131,7 +135,7 @@ class Sets(OwnedCategory):
     why Sage's ``Sets()`` below is load-bearing rather than decoration.
     """
 
-    def super_categories(self) -> list[Category]:
+    def super_categories(self) -> list[SageCategory]:
         return [SageSets()]
 
     if TYPE_CHECKING:
@@ -148,7 +152,7 @@ class Sets(OwnedCategory):
         def Facade(self) -> Sets: ...
     SubcategoryMethods = CountabilitySubcategoryMethods
 
-    class CartesianProducts(OwnedCategoryMixin, CartesianProductsCategory):
+    class CartesianProducts(CartesianProductsCategory):
         r"""The cartesian product \(U(X_1)\times\cdots\times U(X_n)\) of sets.
 
         A *set*, not a module.  The module-level product of \(M\) and \(N\) is
@@ -171,7 +175,7 @@ class Sets(OwnedCategory):
         as a set it reaches by ``super()``.
         """
 
-        def extra_super_categories(self) -> list[Category]:
+        def extra_super_categories(self) -> list[SageCategory]:
             return [Sets()]
 
         class ParentMethods:
@@ -386,7 +390,7 @@ class FiniteSets(CategoryWithAxiom):
 
     _base_category_class_and_axiom = (Sets, "Finite")
 
-    def extra_super_categories(self) -> list[Category]:
+    def extra_super_categories(self) -> list[SageCategory]:
         return [cast(Sets, self.base_category()).Countable()]
 
     def __contains__(self, parent: ElementConstructorInput) -> bool:
@@ -496,7 +500,7 @@ class CountableSets(CategoryWithAxiom):
 
     _base_category_class_and_axiom = (Sets, "Countable")
 
-    def extra_super_categories(self) -> list[Category]:
+    def extra_super_categories(self) -> list[SageCategory]:
         from sage.categories.enumerated_sets import EnumeratedSets
 
         return [EnumeratedSets()]
@@ -597,7 +601,7 @@ class UncountableSets(CategoryWithAxiom):
 
     _base_category_class_and_axiom = (Sets, "Uncountable")
 
-    def extra_super_categories(self) -> list[Category]:
+    def extra_super_categories(self) -> list[SageCategory]:
         return [self.base_category().Infinite()]
 
     class ParentMethods:
@@ -1056,7 +1060,7 @@ class TotallyOrderedSets(CategoryWithAxiom):
 
     _base_category_class_and_axiom = (Sets, "TotallyOrdered")
 
-    def extra_super_categories(self) -> list[Category]:
+    def extra_super_categories(self) -> list[SageCategory]:
         return [self.base_category().PartiallyOrdered()]
 
 

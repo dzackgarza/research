@@ -8,7 +8,7 @@ if TYPE_CHECKING:
 from dzack_research.preamble.categories.divisors.divisor_groups import DivisorGroups
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules
 from dzack_research.preamble.refine import refine
-from sage.categories.category import Category
+from dzack_research.preamble.owned_category_bases import Category
 
 
 def WeilDivisorGroup(module: "Module") -> "Module":

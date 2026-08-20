@@ -22,6 +22,8 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from sage.structure.parent import MembershipInput
 
+# Sage's ``Category``, not the owned base.  An owned base makes its category an
+# object of ``Cat()``, and ``Cat()`` is not an object of itself.
 from sage.categories.category import Category
 from sage.categories.objects import Objects
 

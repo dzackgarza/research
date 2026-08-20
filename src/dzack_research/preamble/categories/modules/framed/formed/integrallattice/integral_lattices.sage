@@ -76,7 +76,7 @@ from typing import Protocol, TYPE_CHECKING
 from sage.arith.functions import lcm
 from sage.arith.misc import gcd
 from sage.categories.category import Category
-from sage.categories.category_with_axiom import CategoryWithAxiom_over_base_ring
+from dzack_research.preamble.owned_category_bases import CategoryWithAxiom_over_base_ring
 from dzack_research.preamble.categories.modules.framed.formed.lattices import Lattices
 from dzack_research.preamble.categories.modules.framed.formed.lattice_axioms import FinitelyGeneratedLattices
 from sage.categories.groups import Groups as SageGroups

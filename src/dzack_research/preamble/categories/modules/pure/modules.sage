@@ -30,7 +30,7 @@ from typing import Self
 
 from sage.categories.additive_groups import AdditiveGroups
 from sage.categories.category import Category
-from sage.categories.category_types import Category_over_base_ring
+from dzack_research.preamble.owned_category_bases import Category_over_base_ring
 from sage.categories.fields import Fields as SageFields
 from sage.categories.modules import Modules as SageModules
 from sage.misc.abstract_method import abstract_method

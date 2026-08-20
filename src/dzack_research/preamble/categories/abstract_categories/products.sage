@@ -21,7 +21,7 @@ from typing import Self, TYPE_CHECKING
 if TYPE_CHECKING:
     from sage.structure.parent import ElementConstructorInput
 
-from sage.categories.category import Category
+from dzack_research.preamble.owned_category_bases import Category
 from sage.categories.morphism import Morphism
 from sage.structure.element import Element
 from sage.structure.parent import Parent
@@ -368,9 +368,6 @@ class BiproductCategory(ProductCategory, CoproductCategory):
             cls, *BiproductCategory._biproduct_arguments(ambient_category, factors)
         )
         return constructed
-
-    class ParentMethods(ConeCategory.ParentMethods, CoconeCategory.ParentMethods):
-        r"""A biproduct object carries both the projections and the injections."""
 
     def __init__(self, ambient_category: Category, factors: tuple) -> None:
         ProductCategory.__init__(self, ambient_category, factors)
@@ -723,7 +720,7 @@ class TensorProductCategory(CoconeCategory):
             f"in {self._ambient_category}"
         )
 
-    class ParentMethods(CoconeCategory.ParentMethods):
+    class ParentMethods:
         def tensor_factors(self: "TensorProductParent") -> "tuple[ModuleParent, ...]":
             r"""Return the factors \(X_i\)."""
             return self.category()._tensor_factors

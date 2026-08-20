@@ -19,8 +19,7 @@ if TYPE_CHECKING:
 
 from typing import Protocol, TYPE_CHECKING
 
-from sage.categories.category import Category
-from sage.categories.subobjects import SubobjectsCategory
+from dzack_research.preamble.owned_category_bases import Category, SubobjectsCategory
 from sage.matrix.constructor import matrix
 from sage.matrix.special import identity_matrix
 from sage.rings.integer_ring import ZZ as SageZZ

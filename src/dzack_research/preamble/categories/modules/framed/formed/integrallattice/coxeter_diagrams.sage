@@ -31,7 +31,7 @@ from collections.abc import Hashable, Iterable, Iterator, Mapping, Sequence
 from itertools import combinations
 from typing import TYPE_CHECKING, ClassVar, cast
 
-from sage.categories.category import Category
+from dzack_research.preamble.owned_category_bases import Category
 from sage.categories.homset import Homset
 from sage.categories.morphism import Morphism
 from sage.combinat.posets.posets import Poset

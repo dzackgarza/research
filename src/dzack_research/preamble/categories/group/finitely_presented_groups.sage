@@ -9,7 +9,7 @@ from dzack_research.preamble.categories.group.groups import OwnedFinitelyPresent
 from dzack_research.preamble.refine import hook_post_init
 from typing import Self
 
-from sage.categories.category import Category
+from dzack_research.preamble.owned_category_bases import Category
 from sage.groups.finitely_presented import FinitelyPresentedGroup
 
 

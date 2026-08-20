@@ -5,7 +5,7 @@ from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBase
 from dzack_research.preamble.categories.sets.owned_sets import Sets as OwnedSets
 from dzack_research.preamble.owned_category import OwnedCategoryMixin, object_of
 from sage.categories.action import Action
-from sage.categories.category_types import Category_over_base_ring
+from dzack_research.preamble.owned_category_bases import Category_over_base_ring
 from sage.categories.modules import Modules
 
 
@@ -48,7 +48,7 @@ class ScalarMultiplication(Action):
         return element._lmul_(scalar)
 
 
-class FiniteRankFreeModules(OwnedCategoryMixin, Category_over_base_ring):
+class FiniteRankFreeModules(Category_over_base_ring):
     r"""\(R^n\), constructed through the chain rather than framed and placed.
 
     The module level is where the underlying **set** is worried about: a

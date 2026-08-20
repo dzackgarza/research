@@ -23,7 +23,7 @@ from sage.categories.additive_magmas import AdditiveMagmas as SageAdditiveMagmas
 from sage.categories.additive_semigroups import AdditiveSemigroups as SageAdditiveSemigroups
 from sage.categories.additive_monoids import AdditiveMonoids as SageAdditiveMonoids
 from sage.categories.additive_groups import AdditiveGroups as SageAdditiveGroups
-from sage.categories.category import Category
+from dzack_research.preamble.owned_category_bases import Category
 from sage.categories.magmas import Magmas as SageMagmas
 from sage.categories.monoids import Monoids as SageMonoids
 from sage.categories.semigroups import Semigroups as SageSemigroups

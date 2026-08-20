@@ -9,7 +9,8 @@ from dzack_research.preamble.categories.sets.sets import finite_ordered_set
 from collections.abc import Iterable
 from typing import Self, TYPE_CHECKING
 
-from sage.categories.category import Category
+from dzack_research.preamble.owned_category import object_of
+from dzack_research.preamble.owned_category_bases import Category
 from sage.structure.parent import Parent
 
 from dzack_research.preamble.categories.sets.owned_sets import Sets
@@ -18,6 +19,7 @@ if TYPE_CHECKING:
     # The ordered-set noun is type-only: the preamble loads into one
     # shared namespace and nothing named OrderedSet may bind there.
     from dzack_research.preamble.lexicon import OrderedSet
+    from dzack_research.preamble.owned_category import ConstructionData
 
 
 def _is_subobject(source: "Module") -> bool:
@@ -71,36 +73,33 @@ class DirectSumObjects(Category):
             )
             return self._summands[self._summand_index_set.index(label)]
 
+        def __init__(
+            self: Self,
+            underlying_object: "Module",
+            summands: "OrderedSet",
+            summand_index_set: "OrderedSet",
+            **rest: "ConstructionData",
+        ) -> None:
+            self._underlying_object = underlying_object
+            self._summands = tuple(summands)
+            self._summand_index_set = summand_index_set
+            assert summand_index_set.cardinality() == len(self._summands), (
+                "the summand-indexing set and summand family have different sizes"
+            )
+            super().__init__(**rest)
 
-class DirectSumObject(Parent):
-    r"""One object together with one chosen ordered tuple of summands."""
-
-    def __init__(
-        self,
-        underlying_object: "Module",
-        summands: "OrderedSet",
-        summand_index_set: "OrderedSet",
-    ) -> None:
-        self._underlying_object = underlying_object
-        self._summands = tuple(summands)
-        self._summand_index_set = summand_index_set
-        assert summand_index_set.cardinality() == len(self._summands), (
-            "the summand-indexing set and summand family have different sizes"
-        )
-        Parent.__init__(self, category=DirectSumObjects())
-
-    def _repr_(self) -> str:
-        return (
-            f"{self._underlying_object} with {len(self._summands)} "
-            "chosen summands"
-        )
+        def _repr_(self: Self) -> str:
+            return (
+                f"{self._underlying_object} with {len(self._summands)} "
+                "chosen summands"
+            )
 
 
 def DirectSumDecomposition(
     underlying_object: "Module",
     summands: "OrderedSet",
     summand_index_set: "OrderedSet | None" = None,
-) -> DirectSumObject:
+) -> Parent:
     r"""Return the decomposition \(M=\bigoplus_i M_i\) of an object already in hand.
 
     This asserts of \(M\) that the given family decomposes it; it does not
@@ -123,10 +122,11 @@ def DirectSumDecomposition(
             assert False, (
                 "a summand index set is a finite set or finite iterable"
             )
-    return DirectSumObject(
-        underlying_object,
-        summands,
-        summand_index_set,
+    return object_of(
+        DirectSumObjects(),
+        underlying_object=underlying_object,
+        summands=summands,
+        summand_index_set=summand_index_set,
     )
 
 

@@ -15,14 +15,13 @@ normalization theorems in Mathlib's ``SetTheory/Cardinal/Defs.lean``,
 
 from __future__ import annotations
 
-from dzack_research.preamble.owned_category import CatConstructionsMixin
 
 from collections.abc import Iterator
 from dataclasses import dataclass
 from enum import Enum
 from typing import TYPE_CHECKING
 
-from sage.categories.category import Category
+from dzack_research.preamble.owned_category_bases import Category
 from sage.categories.homset import Hom, Homset
 from sage.categories.morphism import Morphism
 from sage.categories.objects import Objects
@@ -81,7 +80,7 @@ class CardinalComparison(Enum):
     INCOMPARABLE = 4
 
 
-class Cardinalities(CatConstructionsMixin, Category):
+class Cardinalities(Category):
     r"""The thin category associated to the represented cardinal order."""
 
     def super_categories(self) -> list[Category]:

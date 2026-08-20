@@ -72,13 +72,12 @@ TODOs & Architectural Roadmap
 - [ ] Rename `gram_matrix` to `gram_tensor` across the entire preamble codebase.
 """
 
-from dzack_research.preamble.owned_category import CatConstructionsMixin
 from collections.abc import Mapping, Sequence
 from itertools import combinations
 import math
 from typing import TYPE_CHECKING
 
-from sage.categories.category import Category
+from dzack_research.preamble.owned_category_bases import Category
 from sage.categories.objects import Objects
 from sage.categories.sets_cat import Sets
 from sage.combinat.posets.posets import Poset
@@ -191,7 +190,7 @@ X_ref = ReflectionCosineSet()
 # ---------------------------------------------------------------------------
 
 
-class ProjectiveWeightedGraphs(CatConstructionsMixin, Category):
+class ProjectiveWeightedGraphs(Category):
     r"""Category of finite directed graphs with node and edge weights in P^1(R)."""
 
     def _repr_object_names(self) -> str:

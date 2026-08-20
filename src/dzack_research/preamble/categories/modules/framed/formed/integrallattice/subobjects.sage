@@ -26,7 +26,7 @@ if TYPE_CHECKING:
 from sage.misc.misc_c import prod
 from typing import Protocol, TYPE_CHECKING
 
-from sage.categories.category import Category
+from dzack_research.preamble.owned_category_bases import Category
 
 from dzack_research.preamble.categories.sets.owned_sets import Sets
 

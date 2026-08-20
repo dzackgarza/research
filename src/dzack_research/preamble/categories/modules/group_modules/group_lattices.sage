@@ -26,7 +26,7 @@ import logging
 from typing import Self, TYPE_CHECKING
 
 from sage.misc.cachefunc import cached_method
-from sage.categories.category import Category
+from dzack_research.preamble.owned_category_bases import Category
 from sage.categories.morphism import SetMorphism
 
 if TYPE_CHECKING:

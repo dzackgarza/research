@@ -27,7 +27,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 from typing import Protocol, Self, TYPE_CHECKING
 
 from sage.misc.cachefunc import cached_method
-from sage.categories.category import Category
+from dzack_research.preamble.owned_category_bases import Category
 from sage.categories.homset import Hom
 from sage.categories.morphism import SetMorphism
 from sage.structure.element import ModuleElement

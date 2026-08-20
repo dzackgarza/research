@@ -28,7 +28,7 @@ if TYPE_CHECKING:
 
 from typing import Protocol, TYPE_CHECKING
 
-from sage.categories.category import Category
+from dzack_research.preamble.owned_category_bases import Category
 from sage.groups.additive_abelian.qmodnz import QmodnZ
 
 # The one sanctioned crossing to Sage's private per-block Brown engine

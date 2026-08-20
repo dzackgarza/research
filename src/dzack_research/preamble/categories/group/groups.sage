@@ -27,7 +27,7 @@ if TYPE_CHECKING:
 from typing import Self
 
 from sage.misc.cachefunc import cached_method
-from sage.categories.category import Category
+from dzack_research.preamble.owned_category_bases import Category
 from sage.categories.commutative_additive_groups import CommutativeAdditiveGroups
 from sage.categories.finite_groups import FiniteGroups as SageFiniteGroups
 from sage.categories.groups import Groups as SageGroups

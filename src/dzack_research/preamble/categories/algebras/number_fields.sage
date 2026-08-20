@@ -37,7 +37,7 @@ if TYPE_CHECKING:
 from dzack_research.preamble.categories.rings.rings import SageZZ
 from typing import Protocol
 
-from sage.categories.category import Category
+from dzack_research.preamble.owned_category_bases import Category
 from sage.libs.pari import pari as _pari
 from sage.matrix.special import column_matrix as _column_matrix
 from sage.misc.cachefunc import cached_method
