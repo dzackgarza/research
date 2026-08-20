@@ -25,8 +25,8 @@ from sage.categories.category import Category
 
 if TYPE_CHECKING:
     from dzack_research.preamble.categories.algebras.framed_free_algebras import (
-        AlternatingAlgebraOnSet,
         FreeAlgebraOnSetElement,
+        FreeAlgebraParent,
     )
 
 
@@ -39,7 +39,7 @@ def _ensure_preamble() -> None:
     Lattices.install(globals())
 
 
-def _wedge_algebra() -> "tuple[AlternatingAlgebraOnSet, FreeAlgebraOnSetElement, FreeAlgebraOnSetElement]":
+def _wedge_algebra() -> "tuple[FreeAlgebraParent, FreeAlgebraOnSetElement, FreeAlgebraOnSetElement]":
     r"""Return $\Lambda(F_\QQ(S))$ on two letters, and its two generators."""
     algebra = AlternatingAlgebraOn(QQ, Sets.Δ[1])
     first, second = algebra.algebra_generators()
