@@ -60,10 +60,6 @@ if TYPE_CHECKING:
         def action_of(self, element: "Element") -> Morphism: ...
         def _over(self, element: "Element") -> "ModuleElement": ...
 
-        # Installed on the object by the constructor: $\rho$ recorded through
-        # the form-bearing wrapping, so it moves this parent's own elements.
-        _formed_action: GroupAction
-
         # The category's own operations, which its methods call on each other.
         def forget_action(self) -> "Module": ...
         def act(self, element: "Element", vector_: "ModuleElement") -> "ModuleElement": ...
@@ -110,10 +106,6 @@ class GroupLattices(Category):
         ]
 
     class ParentMethods:
-        # Installed on the object by the constructor: $\rho$ recorded through
-        # the form-bearing wrapping, so it moves this parent's own elements.
-        _formed_action: GroupAction
-
         def Hom(self: Self, codomain: "Module", category: "Category | None" = None) -> "Homset":
             # Local: a module-level import would close a cycle; the module is built by the time this runs.
             from dzack_research.preamble.categories.modules.framed.formed.integrallattice.integral_lattices import IntegralLattices
@@ -150,20 +142,11 @@ class GroupLattices(Category):
             self._action_forgotten_form = stored
             return stored
 
-        def action(self: "GroupLatticeParent") -> GroupAction:
-            return self._formed_action
-
-        def group(self: Self) -> "Group":
-            return self._formed_action.domain()
-
-        def action_of(self: "GroupLatticeParent", element: "Element") -> Morphism:
-            return self._formed_action(element)
-
-        def action_matrix(self: "GroupLatticeParent", element: "Element") -> "MorphismMatrix":
-            return self.action_of(element).matrix()
-
-        def act(self: "GroupLatticeParent", element: "Element", vector_: "ModuleElement") -> "ModuleElement":
-            return self.action_of(element)(vector_)
+        # The action, the group, $\rho(g)$ and its matrix are the group
+        # module's own, read off the $\rho$ this object was constructed with.
+        # A second copy recorded on the formed object was installed after the
+        # refine that admits it here, so every one of these read a field that
+        # did not exist yet -- the installer's own first statement did.
 
         def is_invariant(self: "GroupLatticeParent", vector_: "ModuleElement") -> bool:
             r"""Return whether \(g\cdot v=v\) for every \(g\in G\).
@@ -380,30 +363,6 @@ def _action_preserves_form(formed_module: "Module") -> bool:
     )
 
 
-def _install_group_lattice_structure(formed_module: "Module") -> None:
-    r"""Install the action on a formed \(G\)-module after invariance is known."""
-    # Local: a module-level import would close a cycle; the module is built by the time this runs.
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import group_action_homset
-
-    group = formed_module.group()
-    isometries = formed_module.Aut()
-    values = {
-        element: isometries(
-            {
-                label: formed_module._over(
-                    formed_module.action_of(element)(
-                        formed_module.module_generator(label)
-                    )
-                )
-                for label in formed_module.module_generating_set()
-            }
-        )
-        for element in group
-    }
-    formed_module._formed_action = group_action_homset(
-        group,
-        formed_module,
-    )(values)
 
 
 def _formed_group_subobject(

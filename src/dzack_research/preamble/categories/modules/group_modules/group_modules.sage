@@ -109,9 +109,18 @@ class GroupModules(Category):
 
     def super_categories(self) -> list:
         # Local: a module-level import would close a cycle; the module is built by the time this runs.
-        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import FinitelyGeneratedFreeModules
+        from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules
+        from dzack_research.preamble.categories.modules.pure.finitely_generated.finitely_generated_modules import FinitelyGeneratedModules
 
-        return [FinitelyGeneratedFreeModules(self._base_ring)]
+        # The two edges named separately rather than through their meet.
+        # $R[G]$-Mod reaches a formed object -- an integral lattice with an
+        # action is one -- and naming the joint node gives that node a rank
+        # which contradicts the rank the formed branch gives it, so C3 refuses
+        # the join.  These are the same two statements, ranked on their own.
+        return [
+            FramedFreeModules(self._base_ring),
+            FinitelyGeneratedModules(self._base_ring),
+        ]
 
     def is_semisimple(self) -> bool:
         r"""Return whether \(R[G]\)-Mod is semisimple.
@@ -251,26 +260,6 @@ class GroupModules(Category):
                 self,
                 lifted_module_generator_morphism,
             )
-            automorphisms = self.Aut()
-            values = {
-                element: automorphisms(
-                    {
-                        element_of_S: self._over(
-                            action(element)(
-                                underlying_module_generator_morphism(element_of_S)
-                            )
-                        )
-                        for element_of_S in module.module_generating_set()
-                    }
-                )
-                for element in action.domain()
-            }
-            # $\rho$ lands in $Aut(M)$, whose automorphisms move elements of
-            # $M$.  This module's elements wrap those, so the same $\rho$ is
-            # also recorded through the wrapping, to act on them.  Derived,
-            # under its own name: ``_action`` is the constructor's $\rho$ and
-            # never changes, because the hash is taken from it.
-            self._acting_automorphisms = group_action_homset(action.domain(), self)(values)
 
         def framing_morphism(self: Self) -> FramingMorphism:
             return self._framing_morphism
@@ -330,7 +319,15 @@ class GroupModules(Category):
             return self.action().domain()
 
         def action_of(self: Self, element: "Element") -> ModuleAutomorphism:
-            return self._acting_automorphisms(element)
+            r"""Return $\rho(g)$, an automorphism of the module underneath.
+
+            Not an element of $\operatorname{Aut}_{R[G]}(M)$: $\rho(g)$
+            commutes with the whole of $\rho$ only when $g$ is central, so a
+            second copy of $\rho$ recorded in the equivariant endomorphisms
+            was both a category error and a circle -- building it asked the
+            equivariance test for the action it was defining.
+            """
+            return self._action(element)
 
         def action_matrix(self: Self, element: "Element") -> MorphismMatrix:
             return self.action_of(element).matrix()
@@ -371,7 +368,13 @@ class GroupModules(Category):
             return Parent.Hom(self, codomain, category)
 
         def act(self: Self, element: "Element", vector_: "ModuleElement") -> "ModuleElement":
-            moved: "ModuleElement" = self.action_of(element)(vector_)
+            # $\rho(g)$ is applied in its own domain and the result read back
+            # here: both modules are framed by one set, so the crossing either
+            # way is the identity on coordinates.
+            acting = self.action_of(element)
+            moved: "ModuleElement" = self._over(
+                acting(acting.domain()._from_coordinates(vector_._coordinates()))
+            )
             return moved
 
         def is_invariant(self: Self, vector_: "ModuleElement") -> bool:

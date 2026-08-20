@@ -437,7 +437,6 @@ class FormModules(OwnedCategoryOverBaseRing):
             from dzack_research.preamble.categories.modules.pure.torsion_modules import TorsionModules
             from dzack_research.preamble.categories.modules.framed.formed.torsionform.torsion_modules_with_form import TorsionModulesWithForm
             from dzack_research.preamble.categories.modules.group_modules.group_lattices import _action_preserves_form
-            from dzack_research.preamble.categories.modules.group_modules.group_lattices import _install_group_lattice_structure
             from dzack_research.preamble.categories.modules.group_modules.group_modules import _is_group_module
             from dzack_research.preamble.categories.rings.rings import engine_ring
             from dzack_research.preamble.refine import refine
@@ -579,7 +578,6 @@ class FormModules(OwnedCategoryOverBaseRing):
                     and _action_preserves_form(self)
                 ):
                     refine(self, GroupLattices(module.group()))
-                    _install_group_lattice_structure(self)
 
         def _element_constructor_(self: Self, element: "ElementConstructorInput") -> "Element":
             assert isinstance(element, Element) and element.parent() is self, (
