@@ -438,6 +438,21 @@ class OwnedCategoryObject:
     ``Cat``'s constructions the ordinary Sage way and nothing is installed on a
     class the preamble does not own.
 
+    **What this currently buys, stated so it is not re-derived.**  It buys no
+    computation.  Two justifications for it have been measured and falsified:
+    the \(\mathbf{Cat}\) constructions do *not* reach a category this way --
+    they arrive through ``subcategory_class``, which is what covers the joins
+    and axiom categories most owned categories actually are -- and ``Hom(C, D)``
+    does *not* route to the functor space by parenthood either; that follows
+    the domain being an owned category, again through ``subcategory_class``.
+    It is kept because a category **is** an object of \(\mathbf{Cat}\), which
+    is what ``Cat.super_categories() == [Objects()]`` says, and the code should
+    say it too: foundational structure is not discarded for having no callers.
+    Its one near-use so far: had Sage's ``Morphism`` been available as a base
+    for functors, it would have *required* the boundary categories to be
+    parents -- see ``abstract_categories/functors.sage``, which explains why
+    that route is closed.
+
     The base order below every subclass must keep is
     ``OwnedCategoryMixin, OwnedCategoryObject, <Sage category base>, Parent``:
 

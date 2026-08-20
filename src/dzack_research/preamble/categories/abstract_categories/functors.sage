@@ -6,18 +6,41 @@ Sage's ``Functor`` carries actions on objects and morphisms but no
 composition operator, and Sage's ``Hom`` between two categories falls back
 to a generic id-equality homset.  This module owns both surfaces:
 
-- :class:`Functor`, the base every preamble functor derives from: Sage's
-  ``Functor`` plus composition (``G * F``, with identity absorption and
-  chain flattening, so associativity holds on the nose) and faithfulness
-  as a *declared* property.  Injectivity on homsets is not decidable in
-  general, so faithfulness is declaration-by-placement — ``_faithful`` on
-  the class — propagated through composites by the theorem that a
-  composite of faithful functors is faithful.  No runtime injectivity
-  check exists or lands.
+- :class:`Functor`, the base every preamble functor derives from: an
+  ``Element`` of its functor space, plus composition (``G * F``, with
+  identity absorption and chain flattening, so associativity holds on the
+  nose) and faithfulness as a *declared* property.  Injectivity on homsets
+  is not decidable in general, so faithfulness is declaration-by-placement
+  — ``_faithful`` on the class — propagated through composites by the
+  theorem that a composite of faithful functors is faithful.  No runtime
+  injectivity check exists or lands.
 - :class:`FunctorSpace`, \(\operatorname{Fun}(C,D)\) as a first-class
   parent: the homset of \(\mathbf{Cat}\) (method-placement doctrine puts
   existence questions on homsets).  ``cat.sage`` dispatches ``Hom(C, D)``
   between categories here.
+
+**The shape, which is the general one.**  A morphism of \(C\) is an element
+of \(\operatorname{Hom}_C(A,B)\), and that homset is a parent: the homset is
+a ``Parent``, the morphism is an ``Element`` of it, and the boundary is read
+off the homset rather than stored on the morphism.  This module is that shape
+with \(C=\mathbf{Cat}\).  Which Sage base a given arrow category takes is
+settled by one question — **are the objects of \(C\) Sage parents?**  Where
+they are, ``Morphism``/``Map`` is right and hands you composition for free.
+Where they are not, as here, ``Map`` is closed off (it types the boundary as
+``cdef Parent``) and ``Element`` is the base.
+
+That is also why composition is written out below rather than inherited:
+``Map._composition_`` exists, ``Element._composition_`` does not.  The
+hand-written ``compose_functors`` is not a reimplementation of something
+available — it is what remains once the platform's version is structurally
+out of reach.  Do not "restore" it to ``Map``.
+
+``Hom(C, D)`` reaches this module when the **domain** is an owned category,
+parent or not: ``_Hom_`` arrives through ``subcategory_class``, the same
+route the \(\mathbf{Cat}\) constructions take.  A Sage-native domain has no
+such method and gets Sage's generic homset — measured, including the
+asymmetry: ``Hom(OwnedRings().core(), CommutativeRings())`` is a functor
+space, ``Hom(Groups(), Sets())`` is not.
 """
 
 from typing import TYPE_CHECKING

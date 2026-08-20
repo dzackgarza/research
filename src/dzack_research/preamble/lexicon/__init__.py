@@ -40,7 +40,6 @@ from .geometry import (
 from .interop import (
     SageCategory,
     SageElement,
-    SageFunctor,
     SageMorphism,
     SageParent,
     SageUniqueRepresentation,
@@ -71,7 +70,6 @@ __all__ = [
     # Sage interop
     "SageCategory",
     "SageElement",
-    "SageFunctor",
     "SageMorphism",
     "SageParent",
     "SageUniqueRepresentation",
