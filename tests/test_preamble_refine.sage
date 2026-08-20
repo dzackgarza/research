@@ -62,6 +62,7 @@ def test_refinement_refuses_a_module_without_its_action_morphism() -> None:
     from dzack_research.preamble.categories.modules.pure.modules import Modules as OwnedModules
     from dzack_research.preamble.refine import refine
     from sage.categories.modules import Modules as SageModules
+    from sage.rings.integer_ring import ZZ
     from sage.structure.parent import Parent
 
     class _BareModule(Parent):

@@ -477,7 +477,9 @@ def test_the_divided_square_classifies_quadratic_maps() -> None:
         ) * value_generator,
     )
     classifier = classifying_morphism(quadratic)
-    recovered = quadratic_map_from_morphism(classifier)
+    # A quadratic map is the pair $(M, f)$, so the module is named rather than
+    # read back off the classifying morphism's domain.
+    recovered = quadratic_map_from_morphism(module, classifier)
     reclassified = classifying_morphism(recovered)
 
     for element in (x, y, x + y, 2 * x - y):
@@ -607,23 +609,34 @@ def test_tensor_and_symmetric_freeness_are_homset_bijections() -> None:
     assert symmetric_map(sx * sy) == (sx + sy) * sx
 
 
-def test_morphisms_respect_equality_of_free_module_objects() -> None:
-    r"""Equal realizations of (F_R(S)) have the same elements and induced maps."""
+def test_the_two_routes_to_an_element_of_a_free_module_agree() -> None:
+    r"""The generator route and the coordinate route give one element of \(F_R(S)\).
+
+    \(F_R(S)\) is one object per \((R,S)\), so there is no second realization
+    for a morphism to disagree across.  What remains to check is inside the one
+    object: the distinguished generator \(g_s\) and the element carried by the
+    coordinate vector \(e_s\) are the same element, and a morphism therefore
+    cannot tell them apart.
+    """
     _ensure_preamble()
-    from sage.misc.classcall_metaclass import typecall
 
     labels = Sets.Δ[1]
-    first = BasedFreeModule(ZZ, labels)
-    second = typecall(BasedFreeModule, ZZ, labels)
-    assert first == second
-    assert first is not second
-    first_x, first_y = first.module_generators()
-    second_x = second._from_coordinates(second._coordinate_module().gen(0))
-    second_y = second._from_coordinates(second._coordinate_module().gen(1))
-    morphism = module_homset(first, first)({0: first_x + first_y, 1: first_y})
+    module = BasedFreeModule(ZZ, labels)
+    assert BasedFreeModule(ZZ, labels) is module
 
-    assert morphism(second_x) == morphism(first_x)
-    assert morphism(second_y) == morphism(first_y)
+    generator_x, generator_y = module.module_generators()
+    coordinate_x = module._from_coordinates(module._coordinate_module().gen(0))
+    coordinate_y = module._from_coordinates(module._coordinate_module().gen(1))
+
+    assert coordinate_x == generator_x
+    assert coordinate_y == generator_y
+
+    morphism = module_homset(module, module)(
+        {0: generator_x + generator_y, 1: generator_y}
+    )
+
+    assert morphism(coordinate_x) == morphism(generator_x)
+    assert morphism(coordinate_y) == morphism(generator_y)
 
 
 def test_exterior_and_divided_power_functoriality_preserve_their_operations() -> None:

@@ -14,12 +14,15 @@ from dzack_research.preamble.categories.sets.cardinals import (
 )
 from dzack_research.preamble.categories.sets.owned_sets import Sets
 from dzack_research.preamble.categories.sets.sets import ImageSet, PowerSet, Set
+from dzack_research.preamble.categories.sets.underlying_sets import UnderlyingSet
 
 
 def test_power_set_accepts_finite_and_canonical_infinite_subsets() -> None:
     r"""A member of P(X) is a subset of X, not only a finite enumeration."""
     naturals = Sets.Δ[aleph0]
-    integers = own_ring(ZZ)
+    # $\ZZ$ is a ring; what has subsets is its underlying set, which the
+    # forgetful functor names.
+    integers = UnderlyingSet(own_ring(ZZ))
     natural_subsets = PowerSet(naturals)
 
     assert {1, 2, 3} in natural_subsets

@@ -118,6 +118,6 @@ def test_morphisms_preserve_the_full_coxeter_matrix_and_compose() -> None:
 
     with pytest.raises(
         AssertionError,
-        match="must preserve every Coxeter exponent",
+        match="must preserve every Coxeter matrix entry",
     ):
         a2.hom([1, 3], codomain=a3)

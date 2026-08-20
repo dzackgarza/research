@@ -252,7 +252,12 @@ def test_the_a2_schlaefli_matrix_is_the_negative_of_this_repositorys_gram_matrix
     assert gram.det() == 3
 
     assert schlafli.is_positive_definite()
-    assert matrix(AA, gram).is_negative_definite()
+    # $B$ is negative definite exactly when $-B$ is positive definite, which is
+    # the definition and is what $B=-C$ makes visible here.  Stated that way
+    # rather than through ``is_negative_definite``: over $\overline{\QQ}\cap\RR$
+    # a matrix is generic and sparse, and Sage supplies only the positive test
+    # on that type.
+    assert (-matrix(AA, gram)).is_positive_definite()
 
 
 @pytest.mark.parametrize(

@@ -1247,7 +1247,10 @@ def _schlafli_entry(matrix_entry: "Integer | PlusInfinity") -> "Element":
     # inside ZZ and QQ.
     from sage.rings.qqbar import AA, QQbar
 
-    if matrix_entry is infinity:
+    # Sage's ``CoxeterMatrix`` writes $m=\infty$ as $-1$, which is the entry a
+    # matrix read off a Cartan type actually carries; ``infinity`` is what a
+    # diagram built from roots carries.  Both name the same bond.
+    if matrix_entry is infinity or matrix_entry == -1:
         return AA(-2)
     bond = Integer(matrix_entry)
     assert bond >= 1, f"a Coxeter matrix entry is an integer at least 1 or infinity; matrix_entry={matrix_entry}"

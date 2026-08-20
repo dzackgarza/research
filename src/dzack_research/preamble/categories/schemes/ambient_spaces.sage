@@ -1,7 +1,7 @@
-r"""Subtree for ambient spaces AA^n(R) and PP^n(R) shadowing native Sage constructors.
+r"""$\mathbb A^n_R$ and $\mathbb P^n_R$: Sage's constructors, refined into the owned categories.
 
-AffineSpace / AA -> constructs native AffineSpace, refines into AffineSpaces(R)
-ProjectiveSpace / PP -> constructs native ProjectiveSpace, refines into ProjectiveSpaces(R)
+AffineSpace -> constructs native AffineSpace, refines into AffineSpaces(R)
+ProjectiveSpace -> constructs native ProjectiveSpace, refines into ProjectiveSpaces(R)
 """
 
 from typing import TYPE_CHECKING
@@ -50,11 +50,6 @@ def ProjectiveSpace(
     obj = _NativeProjectiveSpace(n, R, names)
     projective_space: "Parent" = refine(obj, ProjectiveSpaces(obj.base_ring()))
     return projective_space
-
-
-# Aliases exported to preamble scope
-AA = AffineSpace
-PP = ProjectiveSpace
 
 
 def install_ambient_spaces() -> None:

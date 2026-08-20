@@ -92,9 +92,16 @@ def _lattice_constructor() -> _LatticeConstructor:
     return constructor
 
 
-def test_explicit_generator_form_preparses_to_names_keyword() -> None:
-    """The sugar becomes a ``names=`` kwarg plus ``_first_ngens``."""
-    source = preparse('L.<e,f> = IntegralLattice("H")')
+def test_explicit_generator_form_lowers_to_names_keyword() -> None:
+    """The sugar becomes a ``names=`` kwarg plus ``_first_ngens``.
+
+    Asked of ``sageparse``, which is the compiler this repository's ``.sage``
+    sources are lowered by; Sage's own ``preparse`` is not on the path a file
+    here takes to Python.
+    """
+    import sageparse
+
+    source = sageparse.lower('L.<e,f> = IntegralLattice("H")').python
     assert "names=('e', 'f',)" in source, source
     assert "_first_ngens(2)" in source, source
 
@@ -146,8 +153,16 @@ def test_assign_names_then_inject_works() -> None:
 
 
 def test_variable_names_before_assignment_raises() -> None:
-    """An unnamed lattice reports loudly rather than inventing names."""
-    lattice = _lattice_constructor()("H")
+    """An unnamed lattice reports loudly rather than inventing names.
+
+    Built from a Gram matrix no other test in this file names.  A lattice is
+    one object per Gram matrix, and ``_assign_names`` writes onto that object,
+    so a lattice another test has named is named for the rest of the session.
+    """
+    from sage.matrix.constructor import matrix
+    from sage.rings.integer_ring import ZZ
+
+    lattice = _lattice_constructor()(matrix(ZZ, [[-4, 1], [1, -6]]))
     try:
         lattice.variable_names()
     except ValueError as error:

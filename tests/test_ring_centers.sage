@@ -26,8 +26,6 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from sage.categories.category import Category
-
 if TYPE_CHECKING:
     from dzack_research.preamble.categories.algebras.framed_free_algebras import (
         FramedFreeAlgebras,
@@ -176,25 +174,31 @@ def test_the_core_of_a_category_has_the_same_objects() -> None:
     r"""$\operatorname{core}(\mathbf C)$ drops arrows, not objects."""
     _ensure_preamble()
     algebra, _, _ = _wedge_algebra()
-    core = Rings().core()
+    core = OwnedRings().core()
 
     assert algebra in core
     assert QQ in core
-    assert core.ambient_category() is Rings()
+    assert core.ambient_category() is OwnedRings()
 
 
 def test_a_category_performs_its_constructions_as_an_object_of_Cat() -> None:
     r"""$\mathbf{Cat}$ holds the categories, and the constructions built out
-    of a category are the methods it has there."""
+    of a category are the methods it has there.
+
+    Asked of the owned category of rings, which is the one the centre functor
+    is defined on.  The constructions belong to $\mathbf{Cat}$ and reach a
+    category because that category is an object of $\mathbf{Cat}$; Sage's own
+    ``Rings()`` is consumed rather than extended, so it does not answer them.
+    """
     _ensure_preamble()
 
-    assert Rings() in Cat()
+    assert OwnedRings() in Cat()
     assert QQ not in Cat()
 
-    over_the_rationals = Rings().SliceOver(QQ)
+    over_the_rationals = OwnedRings().SliceOver(QQ)
 
-    assert over_the_rationals is SliceOverCategory(Rings(), QQ)
-    assert vars(Category)["SliceOver"] is Cat.ParentMethods.SliceOver
+    assert over_the_rationals is SliceOverCategory(OwnedRings(), QQ)
+    assert over_the_rationals.ambient_category() is OwnedRings()
 
 
 def test_the_centre_functor_transports_an_isomorphism() -> None:
