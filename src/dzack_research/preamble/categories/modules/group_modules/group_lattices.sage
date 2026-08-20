@@ -365,9 +365,17 @@ def group_lattice_homset(domain: "Module", codomain: "Module") -> Parent:
 
 
 def _action_preserves_form(formed_module: "Module") -> bool:
+    r"""Whether every $g$ acts by an isometry: $\rho(g)^*b = b$.
+
+    An equation between two forms *on one module*.  The pullback is written
+    on the acting morphism's domain, while the module's own form is written
+    on the module the form classifies, one level of enrichment below, so the
+    latter is read there before the two are compared.
+    """
+    form = formed_module.form()
     return all(
-        formed_module.form().pullback(formed_module.action_of(element))
-        == formed_module.form()
+        (pulled := form.pullback(formed_module.action_of(element)))
+        == form.on_module(pulled.module())
         for element in formed_module.group()
     )
 
@@ -445,9 +453,11 @@ def group_lattice(lattice: "FormModule", action: GroupAction) -> FormModule:
     values = {
         element: automorphisms(
             {
-                label: action(element)(
-                    lattice.module_generator(label)
-                ).underlying_element()
+                # The image stays in $L$.  ``Aut(L)`` is a homset between $L$
+                # and itself, so its generator images are $L$'s elements; the
+                # form is on $L$, and taking them down to the module the form
+                # was written on was the old holder relationship.
+                label: action(element)(lattice.module_generator(label))
                 for label in lattice.module_generating_set()
             }
         )

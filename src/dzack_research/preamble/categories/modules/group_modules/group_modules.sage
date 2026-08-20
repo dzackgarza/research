@@ -278,15 +278,16 @@ class GroupModules(Category):
         def rank(self: Self) -> "Cardinal":
             return self._module.rank()
 
-        def zero(self: Self) -> "Element":
-            return self._over(self._module.zero())
-
         def _over(self: Self, element: "Element") -> "Element":
-            wrapped: "Element" = self.element_class(self, element)
-            return wrapped
+            r"""Return this module's element reading ``element``'s coordinates.
 
-        def _from_coordinates(self: Self, coordinates: "Vector") -> "Element":
-            return self._over(self._module._from_coordinates(coordinates))
+            $M$ and this module are the free module on one framing set over
+            one ring; adding the action built a second object of that
+            category, and the isomorphism between the two is the identity on
+            the framing, hence the identity on coordinates.
+            """
+            over: "Element" = self._from_coordinates(element._coordinates())
+            return over
 
         def _element_constructor_(
             self: Self,
@@ -452,71 +453,27 @@ class GroupModules(Category):
             return _module_coinvariants(self)
 
     class ElementMethods:
-        r"""An element of an $R[G]$-module, and its image after forgetting $G$."""
+        r"""An element of an $R[G]$-module: the action is on the parent.
 
-        def __init__(
-            self: Self,
-            parent: Parent,
-            element: "Element",
-            **rest: "ConstructionData",
-        ) -> None:
-            assert element.parent() is parent.forget_action(), (
-                f"{element} is not an element of {parent.forget_action()}"
-            )
-            self._underlying = element
-            super().__init__(parent, **rest)
+        $M$ with a $G$-action is the same underlying module, so its elements
+        are that module's own and this level adds no datum to them.  Addition,
+        negation, scaling, comparison, coordinates and coefficients are all
+        answered by the module level the group module is constructed through;
+        what $\rho$ gives an element is written below.
+        """
 
         def forget_action(self: Self) -> "Element":
-            return self._underlying
+            r"""Return this element read in the module with the action forgotten.
 
-        def coefficients(self: Self) -> dict:
-            return dict(self._underlying.coefficients())
-
-        def underlying_set_element(self: Self) -> "Element":
-            r"""Recover the element of \(S\) defining a canonical generator."""
-            return self._underlying.underlying_set_element()
-
-        def _coordinates(self: Self) -> "Vector":
-            coordinates: "Vector" = self._underlying._coordinates()
-            return coordinates
-
-        def _add_(self: Self, other: Self) -> "Element":
-            return self.parent()._over(self._underlying + other._underlying)
-
-        def _sub_(self: Self, other: Self) -> "Element":
-            return self.parent()._over(self._underlying - other._underlying)
-
-        def _neg_(self: Self) -> "Element":
-            return self.parent()._over(-self._underlying)
-
-        def _lmul_(self: Self, factor: "RingElement") -> "Element":
-            return self.parent()._over(factor * self._underlying)
-
-        _rmul_ = _lmul_
-
-        def _richcmp_(self: Self, other: Self, op: int) -> bool:
-            return richcmp(self._underlying, other._underlying, op)
-
-        def __eq__(self: Self, other: "MembershipInput") -> bool:
-            # Identification across parents is a stated morphism, never coercion
-            # (AGENTS.md: coercion must not erase the element/image distinction),
-            # so equality outside this parent is plain False and Sage's
-            # conversion fallback never consults a constructor.
-            if not (
-                isinstance(other, SageElement)
-                and other.parent() is self.parent()
-            ):
-                return False
-            return bool(richcmp(self._underlying, other._underlying, op_EQ))
-
-        def __ne__(self: Self, other: "MembershipInput") -> bool:
-            return not self.__eq__(other)
-
-        def __hash__(self: Self) -> int:
-            return hash((id(self.parent()), self._underlying))
-
-        def _repr_(self: Self) -> str:
-            return repr(self._underlying)
+            The action on elements of the functor $R[G]\text{-Mod}\to
+            R\text{-Mod}$.  The two modules are framed by one set, so the
+            arrow is the identity on coordinates; what changes is which parent
+            the element answers to.
+            """
+            forgotten: "Element" = self.parent().forget_action()._from_coordinates(
+                self._coordinates()
+            )
+            return forgotten
 
     class Homsets(HomsetsCategory):
         r"""The equivariant maps between two modules for one $G$."""

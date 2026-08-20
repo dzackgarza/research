@@ -1380,12 +1380,23 @@ def FormModule(form: "Form") -> Parent:
     # \(M\)'s data: the levels of that chain declare exactly one datum each,
     # and a presented module is presented by its own presentation while a
     # framed one is framed by its own framing set.
-    # Local: the presented node reaches this module, so a module-level import
-    # here would close that cycle; it is built by the time a form is equipped.
+    # Local: the presented and group nodes reach this module, so a module-level
+    # import here would close that cycle; both are built by the time a form is
+    # equipped.
     from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModules
+    from dzack_research.preamble.categories.modules.group_modules.group_modules import GroupModules
 
+    # One datum per level, and the highest level that declares one supplies
+    # what the levels under it need: a group module hands up its own module
+    # and action, and the framing comes from that module rather than twice.
+    # $R[G]$-Mod is named by its group, and only a module carrying an action
+    # can say which group that is, so the module is asked for it first.
+    group = getattr(module, "group", None)
     data: dict[str, "ConstructionData"] = {"form": form}
-    if module in FinitelyPresentedModules(module.base_ring()):
+    if group is not None and module in GroupModules(module.base_ring(), group()):
+        data["module"] = module.forget_action()
+        data["action"] = module.action()
+    elif module in FinitelyPresentedModules(module.base_ring()):
         data["presentation"] = module.presentation()
     elif hasattr(module, "module_generating_set"):
         data["module_generating_set"] = module.module_generating_set()
