@@ -15,7 +15,8 @@ if TYPE_CHECKING:
     from sage.rings.ring import Ring
     from sage.structure.element import RingElement
 
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreeModuleOnSet
+from dzack_research.preamble.owned_category import object_of
+from sage.structure.unique_representation import UniqueRepresentation
 from dzack_research.preamble.categories.rings.rings import ℤ
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
 from collections.abc import Iterable, Iterator, Mapping, Sequence
@@ -90,7 +91,148 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
             FinitelyGeneratedModules(self.base_ring()),
         ]
 
-    class ParentMethods:
+    class ParentMethods(UniqueRepresentation):
+
+        Element = BasedFreeModuleElement
+
+        def __init__(
+            self,
+            module_generating_set: "OrderedSet",
+            **rest: "ConstructionData",
+        ) -> None:
+            match module_generating_set:
+                case int() | SageInteger():
+                    assert module_generating_set >= 0, (
+                        "the canonical finite framing has nonnegative cardinality"
+                    )
+                    module_generating_set = Sets.Δ[module_generating_set - 1]
+                case Parent():
+                    pass
+                case Iterable():
+                    module_generating_set = _as_set(module_generating_set)
+                case _:
+                    assert False, (
+                        "a generating set is a finite set, a finite iterable, or "
+                        "a nonnegative cardinality"
+                    )
+            if module_generating_set in Sets().Finite():
+                module_generating_set = finite_ordered_set(module_generating_set)
+            else:
+                module_generating_set = _as_set(module_generating_set)
+            super().__init__(module_generating_set=module_generating_set, **rest)
+
+        def _module_generator_element(self, element_of_S: SageElement) -> BasedFreeModuleElement:
+            module_generating_set = self.__dict__.get("_module_generating_set")
+            assert module_generating_set is not None, (
+                "a framed free module stores its canonical generating set"
+            )
+            assert element_of_S in module_generating_set, (
+                f"{element_of_S!r} is not in {module_generating_set}"
+            )
+            index = module_generating_set.index(element_of_S)
+            return self._from_coordinates(self._coordinate_module().gen(index))
+
+        def number_of_module_generators(self) -> int:
+            return _finite_rank(self.module_generating_set())
+
+        def _coordinate_module(self) -> "FreeModule_generic":
+            r"""The engine's \(R^n\), where this module's coordinate vectors live.
+
+            A standard basis vector and the zero vector are this module's own,
+            and it decides what counts as a coordinate assignment.
+            """
+            # Local: at module level this closes an import cycle; the ring module
+            # is built by the time coordinates are asked for.
+            from dzack_research.preamble.categories.rings.rings import engine_ring
+
+            cached: "FreeModule_generic | None" = self.__dict__.get("_coordinate_module_")
+            if cached is None:
+                cached = engine_ring(self.base_ring()) ** self.number_of_module_generators()
+                self._coordinate_module_ = cached
+            return cached
+
+        def zero(self) -> BasedFreeModuleElement:
+            return self._from_coordinates(self._coordinate_module().zero())
+
+        def _from_coordinates(self, coordinates: "Vector") -> BasedFreeModuleElement:
+            member: BasedFreeModuleElement = self.element_class(self, coordinates)
+            return member
+
+        def rank(self) -> "Cardinal":
+            return self.module_generating_set().cardinality()
+
+        def _element_constructor_(
+            self,
+            value: "ElementConstructorInput",
+        ) -> BasedFreeModuleElement:
+            if isinstance(value, BasedFreeModuleElement) and value.parent() is self:
+                return value
+            match value:
+                case Sequence() | FreeModuleElement():
+                    # A framing is exactly what makes a coordinate family name an
+                    # element, so a module that has one reads its own coordinates.
+                    assert len(value) == self.number_of_module_generators(), (
+                        f"{self} has rank {self.number_of_module_generators()}, "
+                        f"got {len(value)} coordinates"
+                    )
+                    return self._from_coordinates(value)
+            if value == self.base_ring().zero():
+                # $M(0)$ is the zero of $M$: a module has one, the additive
+                # identity is what $0$ names in any of them, and writing it is
+                # shorter than naming the module's own zero.
+                return self.zero()
+            assert False, f"{value} is not an element of {self}"
+
+        def __contains__(self, value: "MembershipInput") -> bool:
+            match value:
+                case BasedFreeModuleElement() if value.parent() is self:
+                    return True
+                case Element() if (
+                    "_structure_morphism" in self.__dict__
+                    and value.parent() is self._structure_morphism.codomain()
+                ):
+                    return bool(self._structure_morphism.image_contains(value))
+                case _:
+                    return False
+
+        def _stored_module_generating_set(self) -> "OrderedSet":
+            r"""Return the generating set the constructor stored.
+
+            Identity reads the stored set rather than
+            ``module_generating_set()``, which derives it from the generator
+            morphism.  Building that morphism constructs ``UnderlyingSet(self)``,
+            a ``UniqueRepresentation`` whose cache looks ``self`` up by hash and
+            equality -- so identity computed through the accessor would ask for
+            identity to answer.
+            """
+            module_generating_set = self.__dict__.get("_module_generating_set")
+            assert module_generating_set is not None, (
+                "a based free module stores its canonical generating set"
+            )
+            return module_generating_set
+
+        def __eq__(self, other: "MembershipInput") -> bool:
+            return (
+                type(other) is type(self)
+                and self.base_ring() == other.base_ring()
+                and tuple(self._stored_module_generating_set())
+                == tuple(other._stored_module_generating_set())
+            )
+
+        def __hash__(self) -> int:
+            return hash(
+                (
+                    type(self),
+                    self.base_ring(),
+                    tuple(self._stored_module_generating_set()),
+                )
+            )
+
+        def _repr_(self) -> str:
+            return (
+                f"Free {self.base_ring()}-module on the ordered set "
+                f"{self.module_generating_set()}"
+            )
         def rank(self: "FiniteFreeModuleParent") -> "Cardinal":
             r"""Return the cardinality of the finite generating set."""
             return self.module_generating_set().cardinality()
@@ -302,147 +444,25 @@ class BasedFreeModuleElement(ModuleElement):
         return repr(self._coordinates_)
 
 
-class BasedFreeModule(FreeModuleOnSet):
-    r"""The finite specialization of \(F_R(S)\) for a totally ordered \(S\)."""
+def BasedFreeModule(
+    base_ring: "Ring", module_generating_set: "OrderedSet"
+) -> "Parent":
+    r"""Construct \(F_R(S)\) for a finite, totally ordered \(S\).
 
-    Element = BasedFreeModuleElement
+    The order on \(S\) indexes a basis, which is what makes the module a
+    *based* one and puts it in this category rather than the framed free one.
+    """
+    # Local: at module level this closes an import cycle; the ring module is
+    # built by the time a free module is constructed.
+    from dzack_research.preamble.categories.rings.rings import engine_ring
 
-    def __init__(self, base_ring: "Ring", module_generating_set: "OrderedSet") -> None:
-        match module_generating_set:
-            case int() | SageInteger():
-                assert module_generating_set >= 0, (
-                    "the canonical finite framing has nonnegative cardinality"
-                )
-                module_generating_set = Sets.Δ[module_generating_set - 1]
-            case Parent():
-                pass
-            case Iterable():
-                module_generating_set = _as_set(module_generating_set)
-            case _:
-                assert False, (
-                    "a generating set is a finite set, a finite iterable, or "
-                    "a nonnegative cardinality"
-                )
-        if module_generating_set in Sets().Finite():
-            module_generating_set = finite_ordered_set(module_generating_set)
-        else:
-            module_generating_set = _as_set(module_generating_set)
-        FreeModuleOnSet.__init__(self, base_ring, module_generating_set)
+    return object_of(
+        FinitelyGeneratedFreeModules(engine_ring(base_ring)),
+        module_generating_set=module_generating_set,
+    )
 
-    def _module_generator_element(self, element_of_S: SageElement) -> BasedFreeModuleElement:
-        module_generating_set = self.__dict__.get("_module_generating_set")
-        assert module_generating_set is not None, (
-            "a framed free module stores its canonical generating set"
-        )
-        assert element_of_S in module_generating_set, (
-            f"{element_of_S!r} is not in {module_generating_set}"
-        )
-        index = module_generating_set.index(element_of_S)
-        return self._from_coordinates(self._coordinate_module().gen(index))
 
-    def number_of_module_generators(self) -> int:
-        return _finite_rank(self.module_generating_set())
-
-    def _coordinate_module(self) -> "FreeModule_generic":
-        r"""The engine's \(R^n\), where this module's coordinate vectors live.
-
-        A standard basis vector and the zero vector are this module's own,
-        and it decides what counts as a coordinate assignment.
-        """
-        # Local: at module level this closes an import cycle; the ring module
-        # is built by the time coordinates are asked for.
-        from dzack_research.preamble.categories.rings.rings import engine_ring
-
-        cached: "FreeModule_generic | None" = self.__dict__.get("_coordinate_module_")
-        if cached is None:
-            cached = engine_ring(self.base_ring()) ** self.number_of_module_generators()
-            self._coordinate_module_ = cached
-        return cached
-
-    def zero(self) -> BasedFreeModuleElement:
-        return self._from_coordinates(self._coordinate_module().zero())
-
-    def _from_coordinates(self, coordinates: "Vector") -> BasedFreeModuleElement:
-        member: BasedFreeModuleElement = self.element_class(self, coordinates)
-        return member
-
-    def rank(self) -> "Cardinal":
-        return self.module_generating_set().cardinality()
-
-    def _element_constructor_(
-        self,
-        value: "ElementConstructorInput",
-    ) -> BasedFreeModuleElement:
-        if isinstance(value, BasedFreeModuleElement) and value.parent() is self:
-            return value
-        match value:
-            case Sequence() | FreeModuleElement():
-                # A framing is exactly what makes a coordinate family name an
-                # element, so a module that has one reads its own coordinates.
-                assert len(value) == self.number_of_module_generators(), (
-                    f"{self} has rank {self.number_of_module_generators()}, "
-                    f"got {len(value)} coordinates"
-                )
-                return self._from_coordinates(value)
-        if value == self.base_ring().zero():
-            # $M(0)$ is the zero of $M$: a module has one, the additive
-            # identity is what $0$ names in any of them, and writing it is
-            # shorter than naming the module's own zero.
-            return self.zero()
-        assert False, f"{value} is not an element of {self}"
-
-    def __contains__(self, value: "MembershipInput") -> bool:
-        match value:
-            case BasedFreeModuleElement() if value.parent() is self:
-                return True
-            case Element() if (
-                "_structure_morphism" in self.__dict__
-                and value.parent() is self._structure_morphism.codomain()
-            ):
-                return bool(self._structure_morphism.image_contains(value))
-            case _:
-                return False
-
-    def _stored_module_generating_set(self) -> "OrderedSet":
-        r"""Return the generating set the constructor stored.
-
-        Identity reads the stored set rather than
-        ``module_generating_set()``, which derives it from the generator
-        morphism.  Building that morphism constructs ``UnderlyingSet(self)``,
-        a ``UniqueRepresentation`` whose cache looks ``self`` up by hash and
-        equality -- so identity computed through the accessor would ask for
-        identity to answer.
-        """
-        module_generating_set = self.__dict__.get("_module_generating_set")
-        assert module_generating_set is not None, (
-            "a based free module stores its canonical generating set"
-        )
-        return module_generating_set
-
-    def __eq__(self, other: "MembershipInput") -> bool:
-        return (
-            type(other) is type(self)
-            and self.base_ring() == other.base_ring()
-            and tuple(self._stored_module_generating_set())
-            == tuple(other._stored_module_generating_set())
-        )
-
-    def __hash__(self) -> int:
-        return hash(
-            (
-                type(self),
-                self.base_ring(),
-                tuple(self._stored_module_generating_set()),
-            )
-        )
-
-    def _repr_(self) -> str:
-        return (
-            f"Free {self.base_ring()}-module on the ordered set "
-            f"{self.module_generating_set()}"
-        )
-
-def Free_ZZ(module_generating_set: "OrderedSet") -> FreeModuleOnSet:
+def Free_ZZ(module_generating_set: "OrderedSet") -> "Parent":
     r"""Construct the free \(\mathbb Z\)-module on ``module_generating_set``."""
     # Local: at module level this closes an import cycle; the general free
     # module is built by the time one is constructed over ZZ.

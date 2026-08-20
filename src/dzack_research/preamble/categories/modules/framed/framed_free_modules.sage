@@ -21,6 +21,7 @@ if TYPE_CHECKING:
 
 from sage.categories.modules import Modules
 from dzack_research.preamble.categories.sets.sets import _as_set
+from dzack_research.preamble.owned_category import object_of
 from dzack_research.preamble.refine import refine
 if TYPE_CHECKING:
     from sage.categories.category import Category
@@ -131,7 +132,96 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
 
         return [FreeModules(self.base_ring()), FramedModules(self.base_ring())]
 
-    class ParentMethods:
+    class ParentMethods(UniqueRepresentation):
+        r"""The free \(R\)-module on the actual set \(S\).
+
+        ``UniqueRepresentation`` is named here because \(F_R(S)\) must be
+        *the* free module on \((R,S)\).  \(F_R(S)=F_R(S')\) exactly when
+        \(S=S'\), so two parents on one \((R,S)\) would print alike and
+        refuse to coerce each other's elements.  It is a Sage implementation
+        class, so naming it states how this chain reaches Sage rather than
+        patching the class graph.
+        """
+
+        Element = FreeModuleOnSetElement
+
+        # Installed by the constructor.
+        _module_generating_set: "OrderedSet"
+        _framing_morphism: "FramingMorphism"
+
+        def __init__(
+            self,
+            module_generating_set: "OrderedSet",
+            **rest: "ConstructionData",
+        ) -> None:
+            # Local: at module level these close an import cycle; the finite
+            # free and morphism modules are built by the time one is.
+            from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import FinitelyGeneratedFreeModules
+            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import framing_morphism
+
+            self._module_generating_set = _as_set(module_generating_set)
+            super().__init__(**rest)
+            if self._module_generating_set in Sets().Finite():
+                refine(self, FinitelyGeneratedFreeModules(self.base_ring()))
+            # The underlying set: a module that cannot say whether it is
+            # finite or infinite is unusable to every construction that ranges
+            # over its elements, and the free module's own \(R\) and \(S\)
+            # decide it.
+            refine(
+                self,
+                _free_module_placement(
+                    self.base_ring(), self._module_generating_set
+                ),
+            )
+            self._framing_morphism = framing_morphism(
+                self, self, self._module_generator_element
+            )
+
+        def module_generating_set(self: "FreeModuleParent") -> "Parent":
+            framing: "Parent" = self._module_generating_set
+            return framing
+
+        def framing_morphism(self: "FreeModuleParent") -> "FramingMorphism":
+            return self._framing_morphism
+
+        def _module_generator_element(
+            self: "FreeModuleParent", element_of_S: SageElement
+        ) -> FreeModuleOnSetElement:
+            assert element_of_S in self._module_generating_set, (
+                f"{element_of_S!r} is not in {self._module_generating_set}"
+            )
+            generator: FreeModuleOnSetElement = self.element_class(
+                self, {element_of_S: self.base_ring().one()}
+            )
+            return generator
+
+        def zero(self: "FreeModuleParent") -> FreeModuleOnSetElement:
+            zero_element: FreeModuleOnSetElement = self.element_class(self, {})
+            return zero_element
+
+        def _element_constructor_(
+            self: "FreeModuleParent", value: FreeModuleOnSetElement
+        ) -> FreeModuleOnSetElement:
+            assert (
+                isinstance(value, FreeModuleOnSetElement)
+                and value.parent() is self
+            ), f"{value} is not an element of {self}"
+            return value
+
+        def __contains__(
+            self: "FreeModuleParent", value: "MembershipInput"
+        ) -> bool:
+            return (
+                isinstance(value, FreeModuleOnSetElement)
+                and value.parent() is self
+            )
+
+        def _repr_(self: "FreeModuleParent") -> str:
+            return (
+                f"Free {self.base_ring()}-module on "
+                f"{self._module_generating_set}"
+            )
+
         def module_generators(self: "FreeModuleParent") -> "Set":
             r"""Return the framed generators, as a set, without counting them.
 
@@ -323,148 +413,44 @@ class FreeModuleOnSetElement(ModuleElement):
         )
 
 
-class FreeModuleOnSet(UniqueRepresentation, OwnedBaseRing, Parent):
-    r"""The free \(R\)-module on the actual set \(S\)."""
-
-    @staticmethod
-    def __classcall__(
-        cls: type["FreeModuleOnSet"],
-        base_ring: "Ring",
-        module_generating_set: "OrderedSet",
-        *arguments: "ElementConstructorInput",
-        **keywords: "ElementConstructorInput",
-    ) -> "FreeModuleOnSet":
-        r"""Return *the* free module on \((R,S)\).
-
-        $F_R(S)=F_R(S')$ exactly when $S=S'$, so there is one object per
-        $(R,S)$ and not one per spelling.  The finite ordered case has its own
-        class, and the choice is made here rather than in a constructor
-        function: reaching the class directly must give the same object, or
-        two parents exist on one $(R,S)$ and elements of the two refuse to
-        coerce.
-        """
-        # Local: at module level this closes an import cycle; the finite
-        # ordered specialization is built by the time a free module is.
-        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import BasedFreeModule
-
-        # A ring and the owned view of it are one ring, so they key one
-        # module: $F_R(S)$ built over the session's ``ZZ`` and over the
-        # engine's must be the same object, or their elements refuse to
-        # coerce while both print as the integers.
-        base_ring = engine_ring(base_ring)
-        # A count names the standard set of that many slots: ``R^n`` says
-        # how many generators, not which, and $\Delta[n-1]$ is that set.
-        if isinstance(module_generating_set, (int, SageInteger)):
-            module_generating_set = Sets.Δ[module_generating_set - 1]
-        module_generating_set = _as_set(module_generating_set)
-        set_category = module_generating_set.category()
-        if cls is FreeModuleOnSet and set_category.is_subcategory(
-            Sets().Finite()
-        ) and set_category.is_subcategory(Sets().TotallyOrdered()):
-            cls = BasedFreeModule
-        module: "FreeModuleOnSet" = super(FreeModuleOnSet, cls).__classcall__(
-            cls, base_ring, module_generating_set, *arguments, **keywords
-        )
-        return module
-
-    Element = FreeModuleOnSetElement
-
-    def __init__(
-        self,
-        base_ring: "Ring",
-        module_generating_set: "OrderedSet",
-        category: "Category | None" = None,
-    ) -> None:
-        r"""Frame a free module on ``module_generating_set``.
-
-        ``category`` is what a subclass already knows itself to be: a free
-        algebra is one at construction, not after a later refinement, and
-        Sage installs a parent's structural surface -- the coercion from the
-        base ring among it -- from the category ``Parent.__init__`` is given.
-        """
-        # Local: at module level these close an import cycle; the ring, finite
-        # free and morphism modules are built by the time one is constructed.
-        from dzack_research.preamble.categories.rings.rings import engine_ring
-        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import FinitelyGeneratedFreeModules
-        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import framing_morphism
-
-        # Intake: the module is built over the ring the engine computes in,
-        # whichever of the two names for it arrived.  A module over the owned
-        # view would carry a base its category, its matrices and its Smith
-        # forms do not share.  ``base_ring`` reports the name back.
-        base_ring = engine_ring(base_ring)
-        module_generating_set = _as_set(module_generating_set)
-        self._module_generating_set = module_generating_set
-        if category is None:
-            category = FramedFreeModules(base_ring)
-        Parent.__init__(self, base=base_ring, category=category)
-        refine(self, category)
-        if module_generating_set in Sets().Finite():
-            refine(self, FinitelyGeneratedFreeModules(base_ring))
-        # The underlying set: a module that cannot say whether it is finite
-        # or infinite is unusable to every construction that ranges over its
-        # elements, and the free module's own \(R\) and \(S\) decide it.
-        refine(self, _free_module_placement(self.base_ring(), module_generating_set))
-        self._framing_morphism = framing_morphism(
-            self,
-            self,
-            self._module_generator_element,
-        )
-
-    def module_generating_set(self) -> Parent:
-        framing: Parent = self._module_generating_set
-        return framing
-
-    def framing_morphism(self) -> "FramingMorphism":
-        return self._framing_morphism
-
-    def _module_generator_element(self, element_of_S: SageElement) -> FreeModuleOnSetElement:
-        assert element_of_S in self._module_generating_set, (
-            f"{element_of_S!r} is not in {self._module_generating_set}"
-        )
-        generator: FreeModuleOnSetElement = self.element_class(
-            self,
-            {element_of_S: self.base_ring().one()},
-        )
-        return generator
-
-    def zero(self) -> FreeModuleOnSetElement:
-        zero_element: FreeModuleOnSetElement = self.element_class(self, {})
-        return zero_element
-
-    def _element_constructor_(self, value: FreeModuleOnSetElement) -> FreeModuleOnSetElement:
-        assert isinstance(value, FreeModuleOnSetElement) and value.parent() is self, (
-            f"{value} is not an element of {self}"
-        )
-        return value
-
-    def __contains__(self, value: "MembershipInput") -> bool:
-        return isinstance(value, FreeModuleOnSetElement) and value.parent() is self
-
-    def __eq__(self, other: "MembershipInput") -> bool:
-        return (
-            isinstance(other, FreeModuleOnSet)
-            and self.base_ring() == other.base_ring()
-            and self._module_generating_set == other._module_generating_set
-        )
-
-    def __hash__(self) -> int:
-        return hash((type(self), self.base_ring(), self._module_generating_set))
-
-    def _repr_(self) -> str:
-        return f"Free {self.base_ring()}-module on {self._module_generating_set}"
-
-
-def FreeModuleOn(base_ring: "Ring", module_generating_set: "OrderedSet") -> FreeModuleOnSet:
+def FreeModuleOn(
+    base_ring: "Ring", module_generating_set: "OrderedSet"
+) -> "Parent":
     r"""Construct \(F_R(S)\) on the supplied set \(S\).
 
-    One object per \((R,S)\): free modules are rigid, and $F_R(S)=F_R(S')$
-    exactly when $S=S'$.  The classes are ``UniqueRepresentation`` so that
-    holds however the module is reached, not only through this constructor --
-    two parents that print alike and cannot coerce is what it prevents.
-    """
-    # Local: at module level this closes an import cycle; the finite ordered
-    # specialization is built by the time a free module is constructed.
-    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import BasedFreeModule
+    One object per \((R,S)\): free modules are rigid, and \(F_R(S)=F_R(S')\)
+    exactly when \(S=S'\).  The ``ParentMethods`` of these categories name
+    ``UniqueRepresentation``, so that holds however the module is reached and
+    not only through this constructor.  Two parents that print alike and
+    cannot coerce is what it prevents.
 
-    return FreeModuleOnSet(base_ring, module_generating_set)
+    The category is the choice this makes.  A finite, totally ordered
+    generating set indexes a basis, so the module is a *based* one and the
+    finitely generated free category is where it belongs; any other set gives
+    the framed free category.  The old class-level ``__classcall__`` said the
+    same thing by returning a different class.
+    """
+    # Local: at module level these close an import cycle; the finite ordered
+    # specialization is built by the time a free module is constructed.
+    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import FinitelyGeneratedFreeModules
+
+    # A ring and the owned view of it are one ring, so they key one module:
+    # \(F_R(S)\) built over the session's ``ZZ`` and over the engine's must be
+    # the same object, or their elements refuse to coerce while both print as
+    # the integers.
+    base_ring = engine_ring(base_ring)
+    # A count names the standard set of that many slots: ``R^n`` says how many
+    # generators, not which, and \(\Delta[n-1]\) is that set.
+    if isinstance(module_generating_set, (int, SageInteger)):
+        module_generating_set = Sets.Δ[module_generating_set - 1]
+    module_generating_set = _as_set(module_generating_set)
+    set_category = module_generating_set.category()
+    based = set_category.is_subcategory(
+        Sets().Finite()
+    ) and set_category.is_subcategory(Sets().TotallyOrdered())
+    category = (
+        FinitelyGeneratedFreeModules(base_ring)
+        if based
+        else FramedFreeModules(base_ring)
+    )
+    return object_of(category, module_generating_set=module_generating_set)
