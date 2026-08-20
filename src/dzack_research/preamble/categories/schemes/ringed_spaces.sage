@@ -6,7 +6,6 @@ Hierarchy:
     └── LocallyRingedSpaces() = RingedSpaces().LocallyRinged()
 """
 
-from dzack_research.preamble.categories.rings.rings import engine_ring
 from dzack_research.preamble.categories.rings.rings import owned_ring_view
 from sage.structure.parent import Parent
 from sage.structure.element import Element
@@ -68,20 +67,12 @@ class RingedSpaces(Category):
             r"""Build the ringed space over ``base_ring``.
 
             Every scheme in this tower reaches the set level through here, so
-            this is where the base ring crosses to the engine: the categories
-            the tower names are named by the engine's ring, and a space whose
-            base is the owned view of it would belong to none of them.
+            this is the one place the base ring is named.  It is named the way
+            a category over a base ring names it, so that
+            ``CategoryObject.base_ring`` answers with the same ring the
+            category holds and membership in ``Schemes(S)`` reads true.
             """
-            super().__init__(base=engine_ring(base_ring), **rest)
-
-        def base_ring(self: Self) -> "Ring":
-            r"""Return the base ring, in the name the session gave it.
-
-            ``base()`` reports what the construction handed the set level,
-            which is the engine's ring.  A session that wrote \(\ZZ\) asked
-            about *its* \(\ZZ\), and the two are one ring.
-            """
-            return owned_ring_view(self.base())
+            super().__init__(base=owned_ring_view(base_ring), **rest)
 
         def structure_sheaf(self: Self) -> "Sheaf":
             r"""Return O_X, the sheaf of rings."""

@@ -48,6 +48,7 @@ from sage.structure.sage_object import SageObject
 from sage.cpython.type import can_assign_class
 from sage.misc.abstract_method import AbstractMethod
 from sage.structure.category_object import CategoryObject
+from sage.structure.parent import Parent as SageParent
 from sage.structure.dynamic_class import dynamic_class
 from sage.structure.element import Element
 
@@ -207,19 +208,86 @@ def _is_morphism(obj: "SageObject") -> bool:
     r"""Return whether ``obj`` is a Sage morphism."""
     return isinstance(obj, Morphism)
 
-def _is_chain_built(obj: "SageObject", category: "Category") -> bool:
+def _is_chain_built(obj: "SageObject") -> bool:
     r"""Whether ``obj``'s class comes from its category rather than a class.
 
-    A chain-built parent is an instance of some owned category's
-    ``parent_class``, so that class is among the bases of the joined
-    category's.  A parent of a hand-written class is not: Sage splices the
-    category's ``parent_class`` beside that class, and the class itself is
-    what ``__base__`` reports.
+    A chain-built parent has no hand-written parent class anywhere in its
+    method resolution order: every entry is a category-generated class, a
+    nested methods class, or one of Sage's own bases.  So the test is for a
+    hand-written one, and finding none is what says the class *is* the
+    category.
+
+    A category generates its classes under the name
+    ``"<category>.parent_class"`` -- Sage's ``Category._make_named_class``
+    and the owned override both -- and Sage renames a refined parent's class
+    with the suffix ``_with_category``.
     """
-    cls = type(obj)
-    if cls.__name__.endswith("_with_category"):
-        cls = cls.__base__
-    return cls in getattr(category.parent_class, "__mro__", ())
+    for candidate in type(obj).__mro__:
+        name = candidate.__name__
+        if name.endswith("_with_category") or name.endswith(".parent_class"):
+            continue
+        if name.endswith("ParentMethods") or name == "Parent":
+            continue
+        if issubclass(candidate, SageParent):
+            return False
+    return True
+
+
+def _resolved_requirements(category: "Category") -> type | None:
+    r"""The concrete answer to each name the join declares abstract.
+
+    In category order a subcategory precedes its supercategories, so a
+    requirement declared on the subcategory -- ``EvenLattices.is_even`` --
+    stands in front of the supercategory that computes it.  Reading the join
+    puts the provider first: for every abstract name, the first concrete
+    definition down the ``parent_class`` linearization is collected into one
+    class, and that class is hoisted.  A name with no provider stays abstract,
+    which is what the obligation assertion below reports.
+
+    Only ``ParentMethods`` names are hoisted; the class itself cannot be,
+    since C3 refuses a base that already sits inside the class it precedes.
+    """
+    required: set[str] = _PY_SET()
+    for cat in category.all_super_categories(proper=False):
+        category_type = type(cat)
+        if not _is_owned_category(category_type):
+            continue
+        methods = getattr(category_type, "ParentMethods", None)
+        if methods is None:
+            continue
+        required.update(
+            name
+            for name, value in vars(methods).items()
+            if isinstance(value, AbstractMethod)
+        )
+    resolved: dict[str, object] = {}
+    for name in required:
+        for klass in category.parent_class.__mro__:
+            value = vars(klass).get(name)
+            if value is None or isinstance(value, AbstractMethod):
+                continue
+            resolved[name] = value
+            break
+    if not resolved:
+        return None
+    return type("ResolvedRequirements", (), resolved)
+
+
+def _reclass_chain_built(obj: "Parent", category: "Category") -> None:
+    r"""Install the joined ``parent_class``, resolved requirements in front."""
+    resolved = _resolved_requirements(category)
+    if resolved is None:
+        obj.__class__ = category.parent_class
+        return
+    assert can_assign_class(obj), (
+        f"cannot assign __class__ on {type(obj).__name__}; "
+        "override-refine requires a heap type"
+    )
+    obj.__class__ = dynamic_class(
+        f"{category.parent_class.__name__}_with_category",
+        (resolved, category.parent_class),
+        doccls=category.parent_class,
+    )
 
 
 def _rebuild_parent_class(obj: "Parent", category: "Category") -> None:
@@ -386,13 +454,15 @@ def refine[S: SageObject](
     # class a function of the category, so refining is order-independent and
     # idempotent -- which is the invariant override-refine exists to hold.
     joined_category = obj.category()
-    if _is_chain_built(obj, joined_category):
-        # A chain-built parent already *is* its category: its class is that
-        # category's ``parent_class``, with every level's methods in category
-        # order.  So nothing is hoisted -- the class and the element class are
-        # read off the join, and the cached element class is dropped so the
-        # next reader recomputes it.
-        obj.__class__ = joined_category.parent_class
+    if _is_chain_built(obj):
+        # A chain-built parent already *is* its category, so the class is the
+        # joined category's ``parent_class`` and nothing of the chain is
+        # hoisted.  What is hoisted is the implementation shims: a
+        # subcategory declares an obligation abstract, and in category order
+        # that declaration precedes the supercategory that computes it, so a
+        # participant would answer ``NotImplementedError`` for a name it can
+        # compute.  The shims carry the concrete members only.
+        _reclass_chain_built(obj, joined_category)
         obj.__dict__.pop("element_class", None)
         obj.__dict__.pop("_abstract_element_class", None)
     else:

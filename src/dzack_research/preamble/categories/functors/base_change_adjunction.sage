@@ -40,7 +40,6 @@ from dzack_research.preamble.categories.functors.free_forgetful_adjunction impor
 from dzack_research.preamble.categories.abstract_categories.functors import Functor
 from dzack_research.preamble.owned_category import object_of
 from dzack_research.preamble.owned_category_bases import Category_over_base_ring
-from sage.structure.parent import Parent
 
 
 class BaseChangeFunctor(Functor):

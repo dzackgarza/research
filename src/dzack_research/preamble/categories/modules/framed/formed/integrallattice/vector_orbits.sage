@@ -225,7 +225,7 @@ class VectorPrimitiveExtension:
 
     def __init__(self, lattice: "FormModule", element: "Element") -> None:
         # Local: a module-level import here would close a cycle; by call time this module is built.
-        from dzack_research.preamble.categories.sets.cardinals import Cardinal, cardinal
+        from dzack_research.preamble.categories.sets.cardinals import cardinal
         from dzack_research.preamble.utilities import zipsum
 
         vector = _validated_anisotropic_vector(lattice, element)

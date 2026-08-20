@@ -32,9 +32,8 @@ from collections.abc import Hashable, Iterable, Iterator, Mapping, Sequence
 from itertools import combinations
 from typing import TYPE_CHECKING, cast
 
-from dzack_research.preamble.owned_category import object_of, OwnedParent
+from dzack_research.preamble.owned_category import object_of
 from dzack_research.preamble.owned_category_bases import Category, HomsetsCategory
-from sage.categories.homset import Homset
 from sage.categories.morphism import Morphism
 from sage.combinat.posets.posets import Poset
 from sage.matrix.constructor import matrix
@@ -254,7 +253,7 @@ class CoxeterDiagrams(Category):
         homset is the parent and the morphism is its element.
         """
 
-        class ParentMethods(OwnedParent, Homset):
+        class ParentMethods:
             r"""Coxeter-matrix-preserving maps between two finite diagrams."""
 
             if TYPE_CHECKING:
@@ -268,27 +267,6 @@ class CoxeterDiagrams(Category):
                     *args: "ElementConstructorInput",
                     **kwds: "ElementConstructorInput",
                 ) -> "Morphism": ...
-
-            def __init__(
-                self,
-                domain: Parent,
-                codomain: Parent,
-                category: HomsetsCategory,
-            ) -> None:
-                r"""Build the homset of the two diagrams.
-
-                This is the one non-cooperative call of this chain.  Sage's
-                ``Homset`` takes the category the arrows run in.  It then
-                puts the homset in that category's ``Homsets()``.  This
-                level is that category, so it hands down its base category.
-                """
-                Homset.__init__(
-                    self,
-                    domain,
-                    codomain,
-                    category=category.base_category(),
-                    check=False,
-                )
 
             def _element_constructor_(
                 self,
@@ -304,7 +282,7 @@ class CoxeterDiagrams(Category):
                 )
 
 
-        class ElementMethods(Morphism):
+        class ElementMethods:
             r"""A map of vertices preserving every Coxeter matrix entry."""
 
             if TYPE_CHECKING:
@@ -316,7 +294,7 @@ class CoxeterDiagrams(Category):
                 parent: Parent,
                 images: Mapping[Hashable, Hashable] | Sequence[Hashable],
             ) -> None:
-                Morphism.__init__(self, parent)
+                super().__init__(parent)
                 domain = parent.domain()
                 codomain = parent.codomain()
                 match images:

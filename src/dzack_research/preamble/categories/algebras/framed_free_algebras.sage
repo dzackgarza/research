@@ -2218,9 +2218,6 @@ class PresentedFreeAlgebras(OwnedCategoryOverBaseRing):
         def module(self) -> "Module":
             return self._module
 
-        def base_ring(self) -> "Ring":
-            return self.base()
-
         def presentation_algebra(self) -> "FreeAlgebraOnSet":
             return self._presentation_algebra
 

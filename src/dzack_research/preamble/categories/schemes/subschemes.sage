@@ -1,21 +1,17 @@
-r"""Subtree for subschemes, open immersions and closed embeddings.
+r"""Subtree for open subschemes and closed embeddings.
 
 Hierarchy:
   Schemes(S)
-    └── Subschemes(S)          ──> the scheme A together with the scheme B it sits in
-          ├── OpenSubschemes(S)
-          └── ClosedSubschemes(S)
+    ├── OpenSubschemes(S)
+    └── ClosedSubschemes(S)
 """
 
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
-from sage.structure.parent import Parent
 
-from typing import Self, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from sage.categories.morphism import Morphism
     from sage.schemes.generic.morphism import SchemeMorphism_point
-    from dzack_research.preamble.owned_category import ConstructionData
 
     from typing import Protocol
 
@@ -30,40 +26,6 @@ if TYPE_CHECKING:
         def dimension(self) -> "Integer": ...
 
 
-class Subschemes(OwnedCategoryOverBaseRing):
-    r"""Category of subschemes A of a scheme B."""
-
-    def _repr_object_names(self) -> str:
-        return f"subschemes over {self.base_ring()}"
-
-    def super_categories(self) -> list:
-        r"""Return [Schemes(S)]."""
-        # Local: a module-level import would close a cycle; the module is built by the time this runs.
-        from dzack_research.preamble.categories.schemes.schemes import Schemes
-
-        return [Schemes(self.base_ring())]
-
-    class ParentMethods:
-        r"""Parent methods for a subscheme A of a scheme B."""
-
-        def __init__(
-            self: Self,
-            ambient: Parent,
-            **rest: "ConstructionData",
-        ) -> None:
-            r"""Build the subscheme sitting in the scheme ``ambient``."""
-            self._ambient = ambient
-            super().__init__(**rest)
-
-        def ambient_scheme(self: Self) -> Parent:
-            r"""Return the scheme B of which this is a subscheme."""
-            return self._ambient
-
-        def inclusion_morphism(self: Self) -> "Morphism":
-            r"""Return the structure inclusion morphism i: A -> B."""
-            assert False, "inclusion_morphism must be implemented by concrete Subscheme"
-
-
 class ClosedSubschemes(OwnedCategoryOverBaseRing):
     r"""Category of closed subschemes V -> X."""
 
@@ -71,8 +33,11 @@ class ClosedSubschemes(OwnedCategoryOverBaseRing):
         return f"closed subschemes over {self.base_ring()}"
 
     def super_categories(self) -> list:
-        r"""Return [Subschemes(S)]."""
-        return [Subschemes(self.base_ring())]
+        r"""Return [Schemes(S)]."""
+        # Local: a module-level import would close a cycle; the module is built by the time this runs.
+        from dzack_research.preamble.categories.schemes.schemes import Schemes
+
+        return [Schemes(self.base_ring())]
 
     class ParentMethods:
         r"""Parent methods for closed subschemes V -> X."""
@@ -124,8 +89,11 @@ class OpenSubschemes(OwnedCategoryOverBaseRing):
         return f"open subschemes over {self.base_ring()}"
 
     def super_categories(self) -> list:
-        r"""Return [Subschemes(S)]."""
-        return [Subschemes(self.base_ring())]
+        r"""Return [Schemes(S)]."""
+        # Local: a module-level import would close a cycle; the module is built by the time this runs.
+        from dzack_research.preamble.categories.schemes.schemes import Schemes
+
+        return [Schemes(self.base_ring())]
 
 
 def install_subschemes() -> None:

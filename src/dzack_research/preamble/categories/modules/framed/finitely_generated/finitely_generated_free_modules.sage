@@ -175,10 +175,11 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
             # Local: at module level this closes an import cycle; the framed
             # module is built by the time a homomorphism is constructed.
             from dzack_research.preamble.categories.modules.framed.framed_modules import _finite_module_generator_assignment
+            from dzack_research.preamble.categories.sets.underlying_sets import UnderlyingSets
 
             match images:
                 case SetMorphism():
-                    assert isinstance(images.codomain(), UnderlyingSet), (
+                    assert isinstance(images.codomain(), UnderlyingSets.ParentMethods), (
                         "a generator morphism lands in the underlying set of "
                         "its module codomain"
                     )

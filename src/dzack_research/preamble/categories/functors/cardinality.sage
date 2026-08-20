@@ -21,7 +21,7 @@ if TYPE_CHECKING:
     from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
         Core,
     )
-    from dzack_research.preamble.categories.sets.sets import PowerSetParent
+    from dzack_research.preamble.categories.sets.sets import PowerSets
 
 
 class CardinalityFunctor(Functor):
@@ -77,7 +77,7 @@ class CardinalityFunctor(Functor):
 
     def power_set_comparison(
         self,
-        power_set: "PowerSetParent",
+        power_set: "PowerSets.ParentMethods",
     ) -> CardinalityMorphism:
         r"""Return the equality arrow ``#P(X) -> 2 ^ #X``."""
         source = self._apply_functor(power_set)

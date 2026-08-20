@@ -1,7 +1,9 @@
 r"""Owned sets used by the preamble.
 
-The category and its axioms live in the lattice spike.  This module keeps the
-preamble inside that category while reusing Sage's concrete set parents.  It
+The owned ``Sets()`` root and its axioms live in ``owned_sets.py``.  This
+module keeps the preamble inside that category while reusing Sage's concrete
+set parents, and it declares the set constructions built on a set: the power
+object, the subsets of one fixed cardinality, and the finite subsets.  It
 also supplies the canonical finite ordinals and the construction that
 transports the order of a finite enumeration.  An arbitrary parent is not
 declared ordered merely because it can be iterated.

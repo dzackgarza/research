@@ -40,7 +40,10 @@ from dzack_research.preamble.categories.sets.cardinals import Cardinal
 from dzack_research.preamble.categories.modules.group_modules.characters import Character
 from dzack_research.preamble.categories.modules.module_morphisms.morphism_matrices import MorphismMatrix
 from dzack_research.preamble.categories.sets.owned_sets import Sets
-from dzack_research.preamble.categories.sets.underlying_sets import UnderlyingSet
+from dzack_research.preamble.categories.sets.underlying_sets import (
+    UnderlyingSet,
+    UnderlyingSets,
+)
 
 if TYPE_CHECKING:
     # The ordered-set noun is type-only: the preamble loads into one
@@ -389,7 +392,7 @@ class GroupModules(Category):
 
             match images:
                 case SetMorphism():
-                    assert isinstance(images.codomain(), UnderlyingSet), (
+                    assert isinstance(images.codomain(), UnderlyingSets.ParentMethods), (
                         "a generator morphism lands in the underlying set of "
                         "its module codomain"
                     )

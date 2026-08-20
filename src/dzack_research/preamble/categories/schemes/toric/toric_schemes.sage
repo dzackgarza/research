@@ -4,8 +4,7 @@ Hierarchy:
   Schemes(S)
     ├── Varieties(S)
     │     └── ToricSchemes(S) ──────────────> V_P, V_Q
-    └── Subschemes(S)
-          └── ToricSubschemes(S) ───────────> X ⊂ V_P, Y = V_Q
+    └── ToricSubschemes(S) ─────────────────> X ⊂ V_P, Y = V_Q
 """
 
 from typing import Any, Optional, Self, Sequence, TYPE_CHECKING
@@ -23,9 +22,9 @@ from dzack_research.preamble.lexicon import Polyhedron
 from dzack_research.preamble.owned_category import object_of
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
 from dzack_research.preamble.categories.schemes.varieties import Varieties
-from dzack_research.preamble.categories.schemes.subschemes import Subschemes
 
 if TYPE_CHECKING:
+    from sage.categories.morphism import Morphism
     from dzack_research.preamble.owned_category import ConstructionData
 
 
@@ -301,16 +300,19 @@ class ToricSubschemes(OwnedCategoryOverBaseRing):
         return f"toric subschemes over {self.base_ring()}"
 
     def super_categories(self) -> list[Category]:
-        r"""Return [Subschemes(S)]."""
-        return [Subschemes(self.base_ring())]
+        r"""Return [Schemes(S)]."""
+        # Local: a module-level import would close a cycle; the module is built by the time this runs.
+        from dzack_research.preamble.categories.schemes.schemes import Schemes
+
+        return [Schemes(self.base_ring())]
 
     class ParentMethods:
         r"""Parent methods for a subscheme X ↪ V of a toric scheme V.
 
-        The datum this level adds is the family of equations cutting X out of
-        V, together with the dimension of X.  The toric scheme V itself is the
-        subscheme datum of the level above.  Everything else is read off V:
-        its polytope P, its identification string, and the invariants of P.
+        The data this level adds are the toric scheme V that X sits in and the
+        family of equations cutting X out of it, together with the dimension
+        of X.  Everything else is read off V: its polytope P, its
+        identification string, and the invariants of P.
         """
 
         def __init__(
@@ -321,6 +323,7 @@ class ToricSubschemes(OwnedCategoryOverBaseRing):
             **rest: "ConstructionData",
         ) -> None:
             r"""Build the subscheme of ``ambient`` cut out by ``equations``."""
+            self._ambient = ambient
             self._equations = tuple(equations)
             if dim is not None:
                 self._dim = int(dim)
@@ -328,7 +331,17 @@ class ToricSubschemes(OwnedCategoryOverBaseRing):
                 amb_dim = ambient.dimension() if hasattr(ambient, 'dimension') else 2
                 codim = len(self._equations) if self._equations and self._equations != (0,) else 0
                 self._dim = max(0, amb_dim - codim)
-            super().__init__(ambient=ambient, **rest)
+            super().__init__(**rest)
+
+        def ambient_scheme(self) -> Parent:
+            r"""Return the toric scheme V of which X is a subscheme."""
+            return self._ambient
+
+        def inclusion_morphism(self) -> "Morphism":
+            r"""Return the structure inclusion morphism i: X -> V."""
+            assert False, (
+                "inclusion_morphism is not yet built for a toric subscheme"
+            )
 
         def ambient_space(self) -> Parent:
             r"""Return the toric scheme V that X sits in."""

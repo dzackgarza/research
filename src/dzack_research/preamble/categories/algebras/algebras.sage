@@ -236,24 +236,19 @@ class OwnedAlgebras(OwnedCategoryOverBaseRing):
             # Local: importing the ring node here would close a cycle, and the
             # module is built by the time this constructor runs.
             from dzack_research.preamble.categories.rings.rings import engine_ring
+            from dzack_research.preamble.categories.rings.rings import owned_ring_view
 
             assert isinstance(structure_map, Map), (
                 "an algebra is presented by a ring map into it"
             )
-            # Intake: both ends of the presenting map cross to the engine.  The
-            # map may be an owned one, whose ends are the rings a session named;
-            # what is computed in is the ring the engine holds.
+            # Intake: the codomain crosses to the engine, which is what
+            # computes.  The domain is named the way the category over it is
+            # named, so ``CategoryObject.base_ring`` answers with that ring.
             self._structure_map = structure_map
             self._engine = engine_ring(structure_map.codomain())
-            super().__init__(base=engine_ring(structure_map.domain()), **rest)
-
-        def base_ring(self) -> "Ring":
-            r"""Return the base ring, in the name the session gave it."""
-            # Local: importing the ring node here would close a cycle, and the
-            # module is built by the time this method runs.
-            from dzack_research.preamble.categories.rings.rings import owned_ring_view
-
-            return owned_ring_view(self.base())
+            super().__init__(
+                base=owned_ring_view(structure_map.domain()), **rest
+            )
 
         def algebra_structure_map(self) -> "Map":
             return self._structure_map

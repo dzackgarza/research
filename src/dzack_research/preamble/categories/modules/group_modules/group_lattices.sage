@@ -20,12 +20,12 @@ if TYPE_CHECKING:
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
     from sage.categories.homset import Homset
 
-from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormHomset
 import logging
 from typing import Self, TYPE_CHECKING
 
 from sage.misc.cachefunc import cached_method
-from dzack_research.preamble.owned_category_bases import Category
+from dzack_research.preamble.owned_category import object_of
+from dzack_research.preamble.owned_category_bases import Category, HomsetsCategory
 from sage.categories.morphism import SetMorphism
 
 if TYPE_CHECKING:
@@ -38,6 +38,8 @@ if TYPE_CHECKING:
     from sage.categories.morphism import Morphism
 
     from dzack_research.preamble.categories.forms.forms import Form
+    from dzack_research.preamble.owned_category import ConstructionData
+    from sage.structure.parent import Parent
 
     # The admissible ways to name an equivariant form-preserving map, in the
     # order the constructors match them: an existing morphism (``SetMorphism``
@@ -240,136 +242,141 @@ class GroupLattices(Category):
 
 
 
-class GroupLatticeHomset(FormHomset):
-    r"""Form-preserving equivariant maps of two lattices for one \(G\)."""
+    class Homsets(HomsetsCategory):
+        r"""Form-preserving equivariant maps of two lattices for one \(G\)."""
 
-    def __init__(self, domain: "Module", codomain: "Module") -> None:
-        assert codomain in GroupLattices(domain.group()), (
-            "the codomain is not a lattice for the stated group"
-        )
-        assert domain.group() == codomain.group(), (
-            "a group-lattice homset has one specified acting group"
-        )
-        FormHomset.__init__(
-            self,
-            domain,
-            codomain,
-            GroupLattices(domain.group()),
-        )
-
-    def _element_constructor_(self, images: "EquivariantAssignment", check_equivariance: bool = False) -> FormMorphism:
-        r"""Build the morphism, and check equivariance where that is possible.
-
-        ``check_equivariance`` forces the check in the branches that would
-        otherwise decline it.  It sits on morphism construction, not on the
-        homset: one homset serves many morphisms, and whether a given one was
-        checked is a fact about that morphism.
-        """
-        # Local: a module-level import would close a cycle; the module is built by the time this runs.
-        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
-
-        match images:
-            case FormMorphism():
-                assert images.parent() is self, (
-                    "an existing group-lattice morphism belongs to its own homset"
+        class ParentMethods:
+            def __init__(
+                self,
+                domain: "Module",
+                codomain: "Module",
+                **rest: "ConstructionData",
+            ) -> None:
+                assert codomain in GroupLattices(domain.group()), (
+                    "the codomain is not a lattice for the stated group"
                 )
-                return images
-            case ModuleMorphism() | SetMorphism() | dict():
-                morphism = FormHomset._element_constructor_(self, images)
-            case _ if callable(images):
-                morphism = FormHomset._element_constructor_(self, images)
-            case _:
-                assert False, (
-                    "a group-lattice morphism is specified by its generator "
-                    "morphism or finite generator assignment"
+                assert domain.group() == codomain.group(), (
+                    "a group-lattice homset has one specified acting group"
                 )
-        self._check_equivariance(morphism, forced=check_equivariance)
-        return morphism
+                super().__init__(domain=domain, codomain=codomain, **rest)
 
-    def _check_equivariance(self, morphism: FormMorphism, forced: bool) -> None:
-        r"""Check \(f(g\cdot m)=g\cdot f(m)\), and record whether it happened.
+            def _element_constructor_(self, images: "EquivariantAssignment", check_equivariance: bool = False) -> FormMorphism:
+                r"""Build the morphism, and check equivariance where that is possible.
 
-        The check ranges over *generators*, of the group and of the module.
-        A module map commuting with a generating set commutes with the whole
-        group, because the action is by module maps and the identity extends
-        along products -- so the check is \(|S|\times|\text{module generators}|\)
-        comparisons, and finiteness of \(G\) is not what it needs.  Ranging
-        over \(G\) itself is what forced the finiteness assumption and shut
-        out every infinite-order isometry, which is the generic case for an
-        indefinite lattice.
+                ``check_equivariance`` forces the check in the branches that would
+                otherwise decline it.  It sits on morphism construction, not on the
+                homset: one homset serves many morphisms, and whether a given one was
+                checked is a fact about that morphism.
+                """
+                # Local: a module-level import would close a cycle; the module is built by the time this runs.
+                from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
 
-        Four routes, and the morphism records which one it took:
+                match images:
+                    case FormMorphism():
+                        assert images.parent() is self, (
+                            "an existing group-lattice morphism belongs to its own homset"
+                        )
+                        return images
+                    case ModuleMorphism() | SetMorphism() | dict():
+                        morphism = super()._element_constructor_(images)
+                    case _ if callable(images):
+                        morphism = super()._element_constructor_(images)
+                    case _:
+                        assert False, (
+                            "a group-lattice morphism is specified by its generator "
+                            "morphism or finite generator assignment"
+                        )
+                self._check_equivariance(morphism, forced=check_equivariance)
+                return morphism
 
-        - generators already in hand: check, always, since it is free;
-        - computable but not yet computed: check when forced, otherwise say
-          so and leave the morphism unchecked, since the computation can be
-          long -- \(O(L)\) for a definite lattice;
-        - not known to be finitely generated: with ``forced``, assert; the
-          assertion is the honest statement that no algorithm is known here.
-          Unforced, say so and leave it unchecked;
-        - no generators at all: ask anyway when forced, and let the group
-          fail however it chooses.
-        """
-        # Local: a module-level import would close a cycle; the module is built by the time this runs.
-        from dzack_research.preamble.categories.group.groups import refine_group
+            def _check_equivariance(self, morphism: FormMorphism, forced: bool) -> None:
+                r"""Check \(f(g\cdot m)=g\cdot f(m)\), and record whether it happened.
 
-        group = refine_group(self.domain().group())
-        morphism._equivariance_checked = False
+                The check ranges over *generators*, of the group and of the module.
+                A module map commuting with a generating set commutes with the whole
+                group, because the action is by module maps and the identity extends
+                along products -- so the check is \(|S|\times|\text{module generators}|\)
+                comparisons, and finiteness of \(G\) is not what it needs.  Ranging
+                over \(G\) itself is what forced the finiteness assumption and shut
+                out every infinite-order isometry, which is the generic case for an
+                indefinite lattice.
 
-        if group.has_computed_group_generators() is not True:
-            if group.is_finitely_generated() is not True:
-                if forced:
-                    assert group.is_finitely_generated() is True, (
-                        "no known way to check equivariance computationally "
-                        "for non-finitely-generated groups yet"
+                Four routes, and the morphism records which one it took:
+
+                - generators already in hand: check, always, since it is free;
+                - computable but not yet computed: check when forced, otherwise say
+                  so and leave the morphism unchecked, since the computation can be
+                  long -- \(O(L)\) for a definite lattice;
+                - not known to be finitely generated: with ``forced``, assert; the
+                  assertion is the honest statement that no algorithm is known here.
+                  Unforced, say so and leave it unchecked;
+                - no generators at all: ask anyway when forced, and let the group
+                  fail however it chooses.
+                """
+                # Local: a module-level import would close a cycle; the module is built by the time this runs.
+                from dzack_research.preamble.categories.group.groups import refine_group
+
+                group = refine_group(self.domain().group())
+                morphism._equivariance_checked = False
+
+                if group.has_computed_group_generators() is not True:
+                    if group.is_finitely_generated() is not True:
+                        if forced:
+                            assert group.is_finitely_generated() is True, (
+                                "no known way to check equivariance computationally "
+                                "for non-finitely-generated groups yet"
+                            )
+                        logging.info(
+                            "%s is not known to be finitely generated; the morphism "
+                            "is not checked for equivariance",
+                            group,
+                        )
+                        return
+                    if group.group_generators_are_computable() is not True:
+                        logging.info(
+                            "no algorithm is known to produce generators of %s; the "
+                            "morphism is not checked for equivariance",
+                            group,
+                        )
+                        return
+                    if not forced:
+                        logging.info(
+                            "generators of %s are computable but not yet computed; "
+                            "pass check_equivariance=True to compute them and check",
+                            group,
+                        )
+                        return
+
+                domain = self.domain()
+                codomain = self.codomain()
+                assert all(
+                    morphism(domain.act(generator, domain.module_generator(element_of_S)))
+                    == codomain.act(
+                        generator,
+                        morphism(domain.module_generator(element_of_S)),
                     )
-                logging.info(
-                    "%s is not known to be finitely generated; the morphism "
-                    "is not checked for equivariance",
-                    group,
+                    for generator in group.group_generators()
+                    for element_of_S in domain.module_generating_set()
+                ), "the proposed lattice map is not equivariant"
+                morphism._equivariance_checked = True
+
+            def _repr_(self) -> str:
+                return (
+                    f"Isometric Hom_{self.domain().group()}("
+                    f"{self.domain()}, {self.codomain()})"
                 )
-                return
-            if group.group_generators_are_computable() is not True:
-                logging.info(
-                    "no algorithm is known to produce generators of %s; the "
-                    "morphism is not checked for equivariance",
-                    group,
-                )
-                return
-            if not forced:
-                logging.info(
-                    "generators of %s are computable but not yet computed; "
-                    "pass check_equivariance=True to compute them and check",
-                    group,
-                )
-                return
-
-        domain = self.domain()
-        codomain = self.codomain()
-        assert all(
-            morphism(domain.act(generator, domain.module_generator(element_of_S)))
-            == codomain.act(
-                generator,
-                morphism(domain.module_generator(element_of_S)),
-            )
-            for generator in group.group_generators()
-            for element_of_S in domain.module_generating_set()
-        ), "the proposed lattice map is not equivariant"
-        morphism._equivariance_checked = True
-
-    def _repr_(self) -> str:
-        return (
-            f"Isometric Hom_{self.domain().group()}("
-            f"{self.domain()}, {self.codomain()})"
-        )
 
 
-def group_lattice_homset(domain: "Module", codomain: "Module") -> GroupLatticeHomset:
+def group_lattice_homset(domain: "Module", codomain: "Module") -> Parent:
     r"""Return the canonical form-preserving equivariant homset."""
     cache = domain.__dict__.setdefault("_group_lattice_homsets", {})
-    homset: GroupLatticeHomset | None = cache.get(codomain)
+    homset: Parent | None = cache.get(codomain)
     if homset is None:
-        homset = GroupLatticeHomset(domain, codomain)
+        homset = object_of(
+            GroupLattices(domain.group()).Homsets(),
+            domain=domain,
+            codomain=codomain,
+        )
         cache[codomain] = homset
     return homset
 

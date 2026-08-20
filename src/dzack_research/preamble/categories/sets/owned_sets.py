@@ -27,6 +27,8 @@ from typing import cast, Generic, TYPE_CHECKING, TypeVar
 
 from sage.categories.category import Category as SageCategory
 from sage.categories.category_with_axiom import all_axioms
+from sage.categories.homset import Homset as SageHomset
+from sage.categories.morphism import Morphism as SageMorphism
 from sage.categories.sets_cat import Sets as SageSets
 from sage.rings.integer import Integer
 from sage.rings.semirings.non_negative_integer_semiring import NN
@@ -39,6 +41,7 @@ from dzack_research.preamble.owned_category_bases import (
     CartesianProductsCategory,
     Category,
     CategoryWithAxiom,
+    HomsetsCategory,
 )
 
 if TYPE_CHECKING:
@@ -320,6 +323,45 @@ class Sets(Category):
 
             def _repr_(self) -> str:
                 return "(%s)" % ", ".join(repr(component) for component in self._components)
+
+    class Homsets(HomsetsCategory):
+        r"""The **root of the owned homset chain**.
+
+        A homset is a parent whose elements are the morphisms, and Sage's
+        ``Homset.__init__`` already places one in ``C.Homsets()``.  So the
+        homsets of a category form an ordinary owned chain, parallel to the
+        chain of the objects, and this is its bottom: the one level that names
+        Sage's classes as bases and makes the one non-cooperative
+        ``Homset.__init__`` call.
+
+        A level above declares its own nested ``Homsets`` with methods only.
+        It names no base.  It reaches these through ``super_categories()``,
+        and it reaches this constructor by ``super().__init__(**rest)``.
+
+        This level carries what every homset has: the two objects it is taken
+        between.  Sage's ``Homset`` holds them, and ``domain()`` and
+        ``codomain()`` read them back.
+        """
+
+        class ParentMethods(OwnedParent, SageHomset):
+            def __init__(
+                self,
+                domain: SageParent,
+                codomain: SageParent,
+                **rest: ConstructionData,
+            ) -> None:
+                SageHomset.__init__(self, domain, codomain, **rest)
+
+        class ElementMethods(SageMorphism):
+            r"""A morphism: an element of the homset it belongs to.
+
+            It carries ``Morphism`` so that everything built through this
+            chain is one, and it carries nothing else.  What the morphism
+            does is declared by the levels above.
+            """
+
+            def __init__(self, parent: SageParent) -> None:
+                SageMorphism.__init__(self, parent)
 
     class ElementMethods(SageElement):
         r"""An element of an owned set: the element implementation class.
@@ -609,8 +651,6 @@ class UncountableSets(CategoryWithAxiom):
 
         def is_uncountable(self) -> bool:
             return True
-
-from sage.categories.homset import Homset as SageHomset
 
 
 class PosetMorphism(SageElement):

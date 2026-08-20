@@ -623,6 +623,16 @@ class Cardinalities(Category):
             return CardinalityHomset(self, codomain)
 
 
+Cardinal = Cardinalities.ParentMethods
+r"""The class of a cardinal object.
+
+The category is the class, so the implementation class of
+:class:`Cardinalities` is what an ``isinstance`` question and a type
+annotation both name.  A cardinal is built by :func:`cardinal` or
+:func:`aleph`.
+"""
+
+
 # A homset is a parent whose elements are its morphisms.  The runtime class
 # is a Cython extension type and cannot be subscripted at class-creation
 # time, so the binding goes through an alias, per the note in
@@ -707,16 +717,6 @@ class CardinalityMorphism(Morphism):
         assert isinstance(right, CardinalityMorphism)
         assert isinstance(homset, CardinalityHomset)
         return homset.unique_morphism()
-
-
-Cardinal = Cardinalities.ParentMethods
-r"""The class of a cardinal object.
-
-The category is the class, so the implementation class of
-:class:`Cardinalities` is what an ``isinstance`` question and a type
-annotation both name.  A cardinal is built by :func:`cardinal` or
-:func:`aleph`.
-"""
 
 
 @cached_function

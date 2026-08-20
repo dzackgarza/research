@@ -359,12 +359,12 @@ class LatticeIsometries(Category):
             # Local: a module-level import here would close a cycle; by call time this module is built.
             from dzack_research.preamble.categories.modules.framed.formed.integrallattice.isotropic_orbits import orthogonal_predicate_subgroup
             from dzack_research.preamble.categories.modules.framed.formed.torsionform.torsion_modules_with_form import (
-                TorsionFormAutomorphismGroup,
-                TorsionFormAutomorphismSubgroup,
+                TorsionFormOrthogonalSubgroups,
             )
-            assert isinstance(
-                subgroup,
-                (TorsionFormAutomorphismGroup, TorsionFormAutomorphismSubgroup),
+            discriminant_form = self.domain().discriminant_group()
+            assert (
+                subgroup is discriminant_form.Aut()
+                or subgroup in TorsionFormOrthogonalSubgroups()
             ), "the preimage is taken of a subgroup of O(A_L)"
             assert subgroup.domain() is self.domain().discriminant_group(), (
                 "the subgroup must live on this lattice's discriminant form"
@@ -985,7 +985,7 @@ class LatticeIsometries(Category):
             """
             # Local: a module-level import here would close a cycle; by call time this module is built.
             from dzack_research.preamble.categories.modules.framed.formed.integrallattice.engines import oscar_centralizer_discriminant_image
-            from dzack_research.preamble.categories.sets.cardinals import Cardinal, cardinal
+            from dzack_research.preamble.categories.sets.cardinals import cardinal
             lattice = self.domain()
             assert lattice.is_even(), (
                 "the image of a centralizer in O(A_L) is computed by "
