@@ -509,8 +509,18 @@ class OwnedGroups(Category):
             return refine(family, placement_of(family).TotallyOrdered())
 
         def number_of_group_generators(self: Self) -> "Cardinal":
-            r"""Return \(|S|\), which is a cardinal and may be infinite."""
-            return self.group_generators().cardinality()
+            r"""Return \(|S|\), which is a cardinal and may be infinite.
+
+            A cardinal, not an integer: a generating set may be infinite, and
+            the count of one is the thing that can say so.  A set the engine
+            built and the preamble refined answers its size as an ``Integer``,
+            so the count says what it is here rather than passing that on.
+            """
+            # Local: the cardinals module reaches the group node, so a
+            # module-level import would close that cycle.
+            from dzack_research.preamble.categories.sets.cardinals import cardinal
+
+            return cardinal(self.group_generators().cardinality())
 
         def is_finitely_generated(self: Self) -> "bool | Unknown":
             r"""Return whether \(G\) admits a finite generating set.

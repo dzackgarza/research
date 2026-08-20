@@ -304,30 +304,33 @@ def FinitelyPresentedAlgebra(
     presentation_ideal, relation_generators = _relations_to_ideal(
         presentation_ring, relations
     )
-    quotient = presentation_ring.quotient(presentation_ideal)
-    quotient._presentation_generators = relation_generators
-
-    quotient._presentation_ring = presentation_ring
-    quotient._presentation_ideal = presentation_ideal
+    # The placement comes first, before any morphism into the quotient is
+    # built.  \(F/I\) is an \(R\)-algebra the moment it exists, so a map into
+    # it is a map of \(R\)-modules; Sage's own quotient lands in the ring
+    # categories alone, and ``presentation_ring.hom`` below forms its homset
+    # in \(R\)-Mod, which the codomain must already be an object of.
+    presented: "Parent" = refine(
+        presentation_ring.quotient(presentation_ideal),
+        FinitelyPresentedAlgebras(presentation_ring.base_ring()),
+    )
+    presented._presentation_generators = relation_generators
+    presented._presentation_ring = presentation_ring
+    presented._presentation_ideal = presentation_ideal
     generator_set = presentation_ring.algebra_generating_set()
-    quotient._algebra_generator_morphism = SetMorphism(
+    presented._algebra_generator_morphism = SetMorphism(
         Hom(
             generator_set,
-            UnderlyingSet(quotient),
+            UnderlyingSet(presented),
             Sets(),
         ),
-        lambda label: quotient(presentation_ring.algebra_generator(label)),
+        lambda label: presented(presentation_ring.algebra_generator(label)),
     )
-    quotient._algebra_presentation_morphism = presentation_ring.hom(
+    presented._algebra_presentation_morphism = presentation_ring.hom(
         {
-            label: quotient(presentation_ring.algebra_generator(label))
+            label: presented(presentation_ring.algebra_generator(label))
             for label in generator_set
         },
-        quotient,
-    )
-
-    presented: "Parent" = refine(
-        quotient, FinitelyPresentedAlgebras(presentation_ring.base_ring())
+        presented,
     )
     return presented
 

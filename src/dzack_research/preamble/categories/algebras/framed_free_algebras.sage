@@ -699,7 +699,7 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
             non-empty.  Cardinality is total on sets, so neither count is
             restricted to the finitely generated case.
             """
-            return self.module_generating_set().cardinality()
+            return cardinal(self.module_generating_set().cardinality())
 
         def hom(
             self: "FreeAlgebraParent",
