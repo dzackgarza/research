@@ -22,7 +22,7 @@ from dzack_research.preamble.owned_category_bases import Category
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
 from typing import Protocol, TYPE_CHECKING
 
-from dzack_research.preamble.categories.sets.cardinals import Cardinal
+from dzack_research.preamble.categories.sets.cardinals import Cardinal, cardinal
 from dzack_research.preamble.lexicon import GramMatrix
 from dzack_research.preamble.categories.modules.module_morphisms.morphism_matrices import MorphismMatrix
 
@@ -1017,7 +1017,7 @@ def _engine_torsion_module(form: "Module", quadratic: bool) -> "Parent":
         case False:
             gram = matrix(SageQQ, form.gram_matrix())
     engine = _SageTorsionForm(gram)
-    assert Cardinal(engine.cardinality()) == form.cardinality(), (
+    assert cardinal(engine.cardinality()) == form.cardinality(), (
         "the engine's torsion module must carry the whole group: a relation "
         "the denominators do not see was dropped"
     )
@@ -1236,7 +1236,7 @@ class TorsionFormAutomorphismGroup(FormHomset):
         return stored
 
     def cardinality(self) -> "Cardinal":
-        return Cardinal(self._engine_group.order())
+        return cardinal(self._engine_group.order())
 
     def order(self) -> "Cardinal":
         r"""Return $|O(A)|$.  The order of a group is its cardinality."""
@@ -1317,7 +1317,7 @@ class TorsionFormAutomorphismSubgroup(FormHomset):
         return True
 
     def cardinality(self) -> "Cardinal":
-        return Cardinal(self._engine_group.order())
+        return cardinal(self._engine_group.order())
 
     def order(self) -> "Cardinal":
         r"""Return $|G|$.  The order of a group is its cardinality."""

@@ -38,7 +38,7 @@ from dzack_research.preamble.categories.group.groups import (
     _finiteness,
     _gap_model,
 )
-from dzack_research.preamble.categories.sets.cardinals import Cardinal
+from dzack_research.preamble.categories.sets.cardinals import Cardinal, cardinal
 
 
 def _element_to_engine(group: "Group", element: "GroupElement") -> GapElement:
@@ -426,7 +426,7 @@ class GroupAutomorphismGroup(GroupHomset):
 
     def order(self) -> Cardinal:
         r"""Return \(|\operatorname{Aut}(G)|\), computed by the engine."""
-        return Cardinal(self._libgap_().Size().sage())
+        return cardinal(self._libgap_().Size().sage())
 
     def __iter__(self) -> "Iterator[GroupAutomorphism]":
         r"""Enumerate the elements, which a finite group is entitled to."""

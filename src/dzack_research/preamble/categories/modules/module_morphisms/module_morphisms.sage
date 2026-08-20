@@ -52,7 +52,7 @@ from sage.structure.element import Element, MultiplicativeGroupElement, RingElem
 from sage.structure.parent import Parent
 from sage.structure.sage_object import SageObject
 
-from dzack_research.preamble.categories.sets.cardinals import Cardinal
+from dzack_research.preamble.categories.sets.cardinals import Cardinal, cardinal
 from dzack_research.preamble.categories.modules.module_morphisms.morphism_matrices import matrix_group
 from dzack_research.preamble.categories.modules.group_modules.characters import Character
 from dzack_research.preamble.categories.modules.module_morphisms.morphism_matrices import MorphismMatrix
@@ -1444,7 +1444,7 @@ class ModuleAutomorphismGroup(
         """
         if self._elements is None:
             return Sets.ℵ[0]
-        return Cardinal(len(self._elements))
+        return cardinal(len(self._elements))
 
     def __iter__(self) -> Iterator[ModuleAutomorphism]:
         assert self._elements is not None, (

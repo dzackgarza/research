@@ -45,7 +45,7 @@ from sage.structure.element import Element as SageElement
 from sage.structure.parent import Parent
 from sage.structure.richcmp import richcmp
 
-from dzack_research.preamble.categories.sets.cardinals import Cardinal
+from dzack_research.preamble.categories.sets.cardinals import Cardinal, cardinal
 from dzack_research.preamble.categories.modules.module_morphisms.morphism_matrices import MorphismMatrix
 from dzack_research.preamble.categories.sets.owned_sets import Sets
 from dzack_research.preamble.categories.sets.underlying_sets import UnderlyingSet
@@ -359,7 +359,7 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
             """
             if not self.is_torsion():
                 return Sets.ℵ[0]
-            return Cardinal(prod(self.invariants(), 1))
+            return cardinal(prod(self.invariants(), 1))
 
         def exponent(self: "PresentedModuleParent") -> "Integer":
             invariants = self.invariants()

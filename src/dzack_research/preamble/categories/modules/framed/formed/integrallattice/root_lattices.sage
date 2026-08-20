@@ -12,7 +12,7 @@ from typing import Protocol, Self, TYPE_CHECKING
 from dzack_research.preamble.owned_category_bases import Category
 from sage.combinat.root_system.weyl_group import WeylGroup
 
-from dzack_research.preamble.categories.sets.cardinals import Cardinal
+from dzack_research.preamble.categories.sets.cardinals import Cardinal, cardinal
 
 if TYPE_CHECKING:
     from sage.combinat.root_system.cartan_type import CartanType
@@ -312,4 +312,4 @@ class RootLatticeIsometries(Category):
             diagram_automorphisms = cartan_type.dynkin_diagram().automorphism_group(
                 edge_labels=True
             )
-            return Cardinal(weyl_group.order() * diagram_automorphisms.order())
+            return cardinal(weyl_group.order() * diagram_automorphisms.order())

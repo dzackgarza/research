@@ -207,6 +207,21 @@ def _is_morphism(obj: "SageObject") -> bool:
     r"""Return whether ``obj`` is a Sage morphism."""
     return isinstance(obj, Morphism)
 
+def _is_chain_built(obj: "SageObject", category: "Category") -> bool:
+    r"""Whether ``obj``'s class comes from its category rather than a class.
+
+    A chain-built parent is an instance of some owned category's
+    ``parent_class``, so that class is among the bases of the joined
+    category's.  A parent of a hand-written class is not: Sage splices the
+    category's ``parent_class`` beside that class, and the class itself is
+    what ``__base__`` reports.
+    """
+    cls = type(obj)
+    if cls.__name__.endswith("_with_category"):
+        cls = cls.__base__
+    return cls in getattr(category.parent_class, "__mro__", ())
+
+
 def _rebuild_parent_class(obj: "Parent", category: "Category") -> None:
     # Only preamble/category ParentMethods mixins precede the concrete class —
     # never the full Sage parent_class (which would hoist Modules.basis etc.).
@@ -371,13 +386,23 @@ def refine[S: SageObject](
     # class a function of the category, so refining is order-independent and
     # idempotent -- which is the invariant override-refine exists to hold.
     joined_category = obj.category()
-    _rebuild_parent_class(obj, joined_category)
+    if _is_chain_built(obj, joined_category):
+        # A chain-built parent already *is* its category: its class is that
+        # category's ``parent_class``, with every level's methods in category
+        # order.  So nothing is hoisted -- the class and the element class are
+        # read off the join, and the cached element class is dropped so the
+        # next reader recomputes it.
+        obj.__class__ = joined_category.parent_class
+        obj.__dict__.pop("element_class", None)
+        obj.__dict__.pop("_abstract_element_class", None)
+    else:
+        _rebuild_parent_class(obj, joined_category)
 
-    # An element-bearing parent manufactures elements; homsets manufacture
-    # morphisms (their ``ParentMethods.__call__`` refines each one) and
-    # standalone category objects manufacture neither.
-    if isinstance(obj, Parent) and not _is_homset(obj):
-        _rebuild_element_class(obj, joined_category)
+        # An element-bearing parent manufactures elements; homsets manufacture
+        # morphisms (their ``ParentMethods.__call__`` refines each one) and
+        # standalone category objects manufacture neither.
+        if isinstance(obj, Parent) and not _is_homset(obj):
+            _rebuild_element_class(obj, joined_category)
     _assert_preamble_obligations_are_met(obj, target_category)
     _assert_certifying_predicates_hold(obj, target_category)
     return obj

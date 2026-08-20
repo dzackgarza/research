@@ -44,6 +44,7 @@ if TYPE_CHECKING:
     # Type-only: the preamble loads into one shared namespace and nothing
     # named OrderedSet may bind there.
     from dzack_research.preamble.lexicon import OrderedSet
+    from dzack_research.preamble.owned_category import ConstructionData
     from sage.structure.parent import ElementConstructorInput
     from dzack_research.preamble.categories.sets.cardinals import Cardinal
 
@@ -323,7 +324,7 @@ class PowerSets(CategoryWithParameters):
             self,
             subset: PowerSetElement,
             morphism: Morphism,
-            codomain_power_set: PowerSetParent,
+            codomain_power_set: Parent,
         ) -> PowerSetElement:
             assert subset.underlying_set() in Sets().Finite(), (
                 "direct-image membership requires a finite subset or an image decision procedure"
@@ -709,12 +710,28 @@ class FinitePowerSets(CategoryWithParameters):
             return f"Finite subsets of {self._source}"
 
 
+def _power_set_of(base_set: "lexicon.Set") -> Parent:
+    r"""Build \(P(X)\), placed by the size of \(X\).
+
+    \(2^{|X|}\) is finite exactly when \(|X|\) is, so the placement reads the
+    size of \(X\) and leaves the power to the object's own count.
+    """
+    from dzack_research.preamble.categories.sets.cardinals import cardinal
+
+    placement = (
+        Sets().Finite()
+        if cardinal(base_set.cardinality()).is_finite()
+        else Sets().Uncountable()
+    )
+    return object_of(PowerSets(placement), base_set=base_set)
+
+
 @cached_function
-def _cached_power_set(base_set: "lexicon.Set") -> PowerSetParent:
-    return PowerSetParent(base_set)
+def _cached_power_set(base_set: "lexicon.Set") -> Parent:
+    return _power_set_of(base_set)
 
 
-def PowerSet(base_set: "lexicon.Set") -> PowerSetParent:
+def PowerSet(base_set: "lexicon.Set") -> Parent:
     from dzack_research.preamble.categories.sets.underlying_sets import UnderlyingSet
 
     match base_set.category().is_subcategory(Sets()):
@@ -724,24 +741,52 @@ def PowerSet(base_set: "lexicon.Set") -> PowerSetParent:
             underlying_set = UnderlyingSet(base_set)
     match underlying_set:
         case SageImageSet():
-            return PowerSetParent(underlying_set)
+            return _power_set_of(underlying_set)
         case Hashable():
             return _cached_power_set(underlying_set)
         case _:
-            return PowerSetParent(underlying_set)
+            return _power_set_of(underlying_set)
 
 
 @cached_function
 def SubsetsOfSize(
     source: "lexicon.Set",
     cardinality: "Integer",
-) -> FixedCardinalitySubsetsParent:
-    return FixedCardinalitySubsetsParent(source, cardinality)
+) -> Parent:
+    r"""Return \([S]^k\), the subsets of ``source`` of the given cardinality."""
+    if source not in Sets().Countable():
+        source = _as_set(source)
+    subset_cardinality = SageInteger(cardinality)
+    assert subset_cardinality >= 0, "a subset cardinality is nonnegative"
+    assert source in Sets().Countable(), (
+        "fixed-cardinality subsets currently require a chosen countable enumeration"
+    )
+    placement = (
+        Sets().Finite()
+        if source in Sets().Finite() or subset_cardinality == 0
+        else Sets().Countable().Infinite()
+    )
+    return object_of(
+        FixedCardinalitySubsets(placement),
+        source=source,
+        subset_cardinality=subset_cardinality,
+    )
 
 
 @cached_function
-def FiniteSubsets(source: "lexicon.Set") -> FiniteSubsetsParent:
-    return FiniteSubsetsParent(source)
+def FiniteSubsets(source: "lexicon.Set") -> Parent:
+    r"""Return \(P_{\mathrm{fin}}(S)\), the finite subsets of ``source``."""
+    if source not in Sets().Countable():
+        source = _as_set(source)
+    assert source in Sets().Countable(), (
+        "finite subsets currently require a chosen countable enumeration"
+    )
+    placement = (
+        Sets().Finite()
+        if source in Sets().Finite()
+        else Sets().Countable().Infinite()
+    )
+    return object_of(FinitePowerSets(placement), source=source)
 
 
 E = TypeVar("E", bound=Element)

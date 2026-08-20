@@ -42,9 +42,9 @@ EXAMPLES::
     sage: S in LogPairs()
     True
     sage: S.ambient_identification()
-    'V_P'
+    'PP(1,1,2,2)'
     sage: S.base().ambient_identification()
-    'V_Q'
+    'PP(1,1,2)'
     sage: S.base().cover() is S
     True
 """

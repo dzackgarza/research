@@ -553,8 +553,6 @@ class TensorModules(Category_over_base_ring):
     class ParentMethods:
         r"""The module of type-$(p,q)$ tensors on $M$."""
 
-        r"""The module of type-$(p,q)$ tensors on $M$."""
-
         def __init__(
             self: Self,
             module: "Module",
@@ -681,8 +679,6 @@ class TensorModules(Category_over_base_ring):
             return MixedTensorAlgebra(self._module)
 
     class ElementMethods:
-        r"""A tensor, held by its components in the module's framing."""
-
         r"""A tensor, held by its components in the module's framing."""
 
         def __init__(
@@ -976,8 +972,6 @@ class MixedTensorAlgebras(Category_over_base_ring):
         return [Algebras(self.base_ring())]
 
     class ParentMethods:
-        r"""The bigraded algebra $T(M)\otimes_R T(M^*)$."""
-
         r"""The bigraded algebra \(T(M)\otimes_R T(M^*)\)."""
 
         def __init__(
@@ -1049,8 +1043,6 @@ class MixedTensorAlgebras(Category_over_base_ring):
             return f"Mixed tensor algebra on {self._module}"
 
     class ElementMethods:
-        r"""A finite sum of homogeneous mixed tensors."""
-
         r"""A finite sum of homogeneous mixed tensors."""
 
         def __init__(

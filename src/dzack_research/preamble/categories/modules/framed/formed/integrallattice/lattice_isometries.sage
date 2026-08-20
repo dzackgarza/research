@@ -32,7 +32,7 @@ from typing import Protocol, TYPE_CHECKING
 
 from sage.misc.cachefunc import cached_method
 
-from dzack_research.preamble.categories.sets.cardinals import Cardinal
+from dzack_research.preamble.categories.sets.cardinals import Cardinal, cardinal
 from dzack_research.preamble.categories.modules.module_morphisms.morphism_matrices import matrix_group
 from dzack_research.preamble.owned_category_bases import Category
 from sage.categories.groups import Groups as SageGroups
@@ -746,7 +746,7 @@ class LatticeIsometries(Category):
 
         def cardinality(self: "IsometryGroupParent") -> "Cardinal":
             r"""Return \(|G|\), as computed by GAP."""
-            return Cardinal(self._matrix_group().order())
+            return cardinal(self._matrix_group().order())
 
         def order(self: "IsometryGroupParent") -> "Cardinal":
             r"""Return \(|G|\).  The order of a group is its cardinality."""
@@ -985,7 +985,7 @@ class LatticeIsometries(Category):
             """
             # Local: a module-level import here would close a cycle; by call time this module is built.
             from dzack_research.preamble.categories.modules.framed.formed.integrallattice.engines import oscar_centralizer_discriminant_image
-            from dzack_research.preamble.categories.sets.cardinals import Cardinal
+            from dzack_research.preamble.categories.sets.cardinals import Cardinal, cardinal
             lattice = self.domain()
             assert lattice.is_even(), (
                 "the image of a centralizer in O(A_L) is computed by "
@@ -1029,7 +1029,7 @@ class LatticeIsometries(Category):
                 "commute with rho_L(f)"
             )
             image = automorphism_group.subgroup_on(generators)
-            assert image.cardinality() == Cardinal(order), (
+            assert image.cardinality() == cardinal(order), (
                 "the crossed-back generators do not generate a group of the "
                 "order the engine reports"
             )

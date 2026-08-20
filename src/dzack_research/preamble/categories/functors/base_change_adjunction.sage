@@ -32,13 +32,15 @@ from dzack_research.preamble.lexicon import Element
 from sage.categories.modules import Modules
 if TYPE_CHECKING:
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
+    from dzack_research.preamble.owned_category import ConstructionData
     from sage.categories.morphism import Morphism
     from sage.rings.ring import Ring
 
 from dzack_research.preamble.categories.functors.free_forgetful_adjunction import Adjunction
 from dzack_research.preamble.categories.abstract_categories.functors import Functor
+from dzack_research.preamble.owned_category import object_of
+from dzack_research.preamble.owned_category_bases import Category_over_base_ring
 from sage.structure.parent import Parent
-from sage.structure.unique_representation import UniqueRepresentation
 
 
 class BaseChangeFunctor(Functor):
@@ -137,14 +139,14 @@ def fraction_field_base_change(base_ring: "Ring") -> BaseChangeFunctor:
     return BaseChangeFunctor(fraction_field.coerce_map_from(ring))
 
 
-class RestrictedScalarsModule(UniqueRepresentation, Parent):
-    r"""An \(S\)-module read as an \(R\)-module through \(f:R\to S\).
+class RestrictedScalarsModules(Category_over_base_ring):
+    r"""The \(S\)-modules read as \(R\)-modules through \(f:R\to S\).
 
     The restriction of scalars of \(N\) is \(N\) itself as an additive group,
     with the action \(\rho_N\circ f\): the datum that *is* an \(R\)-module is
     the ring morphism \(R\to\operatorname{End}(N)\), and composing \(\rho_N\)
     with \(f\) is the whole construction.  The elements do not move, so the
-    parent is a facade over \(N\), the way ``UnderlyingSet`` realizes the
+    object is a facade over \(N\), the way ``UnderlyingSet`` realizes the
     other forgetful functors' object actions.
 
     Not free and not framed: \(N\)'s framing over \(S\) is not one over
@@ -152,107 +154,116 @@ class RestrictedScalarsModule(UniqueRepresentation, Parent):
     \(\mathbb Z\hookrightarrow\mathbb Q\) already fails.  \(G(F(L))\) for a
     lattice \(L\) is \(L\otimes\mathbb Q\) read additively over
     \(\mathbb Z\) -- not finitely generated, and explicitly not \(L\).
-
-    ``UniqueRepresentation`` keys on \((N,f)\) because a functor must be
-    well defined on objects: \(G(\operatorname{dom}\varphi)\) has to *be*
-    the domain of \(G(\varphi)\), not merely an equal copy.
     """
 
-    def __init__(self, module: "Module", ring_map: "Morphism") -> None:
-        self._module = module
-        self._ring_map = ring_map
+    @classmethod
+    def _repr_object_names(cls) -> str:
+        return "restricted scalars modules"
+
+    def super_categories(self) -> list:
         # Local: the module node imports this module, so a module-level import
         # would close that cycle; it is built by call time.
         from dzack_research.preamble.categories.modules.pure.modules import Modules as OwnedModules
 
-        Parent.__init__(
+        return [OwnedModules(self.base_ring())]
+
+    class ParentMethods:
+        r"""\(N\) read over \(R\), with the elements left where they are."""
+
+        def __init__(
             self,
-            base=ring_map.domain(),
-            facade=module,
-            category=OwnedModules(ring_map.domain()),
-        )
+            module: "Module",
+            ring_map: "Morphism",
+            **rest: "ConstructionData",
+        ) -> None:
+            r"""Build \(N\) read over \(R\) through ``ring_map``."""
+            self._module = module
+            self._ring_map = ring_map
+            super().__init__(
+                base=ring_map.domain(), facade=module, **rest
+            )
 
-    def ring_map(self) -> "Morphism":
-        return self._ring_map
+        def ring_map(self) -> "Morphism":
+            return self._ring_map
 
-    def module_over_extension(self) -> "Module":
-        r"""The \(S\)-module this object reads over \(R\)."""
-        return self._module
+        def module_over_extension(self) -> "Module":
+            r"""The \(S\)-module this object reads over \(R\)."""
+            return self._module
 
-    def _ring_morphism_defining_module_action(self) -> "Morphism":
-        r"""Return \(\rho_N\circ f:R\to\operatorname{End}(N)\), which is the module.
+        def _ring_morphism_defining_module_action(self) -> "Morphism":
+            r"""Return \(\rho_N\circ f:R\to\operatorname{End}(N)\), which is the module.
 
-        \(\rho(r)\) is scaling by \(f(r)\) in \(N\): the \(S\)-action already
-        present, read along the ring map.  Nothing is computed -- restriction
-        of scalars *is* this composition.
-        """
-        from sage.categories.homset import Hom
-        from sage.categories.morphism import SetMorphism
-        from sage.categories.rings import Rings
+            \(\rho(r)\) is scaling by \(f(r)\) in \(N\): the \(S\)-action already
+            present, read along the ring map.  Nothing is computed -- restriction
+            of scalars *is* this composition.
+            """
+            from sage.categories.homset import Hom
+            from sage.categories.morphism import SetMorphism
+            from sage.categories.rings import Rings
 
-        # Local: the module node imports this module, so a module-level import
-        # would close that cycle; it is built by call time.
-        from dzack_research.preamble.categories.modules.pure.modules import Modules as OwnedModules
+            # Local: the module node imports this module, so a module-level import
+            # would close that cycle; it is built by call time.
+            from dzack_research.preamble.categories.modules.pure.modules import Modules as OwnedModules
 
-        endomorphisms = Hom(self, self, OwnedModules(self._ring_map.domain()))
-        return SetMorphism(
-            Hom(self._ring_map.domain(), endomorphisms, Rings()),
-            lambda scalar: SetMorphism(
-                endomorphisms,
-                lambda element, scalar=scalar: self._ring_map(scalar) * element,
-            ),
-        )
+            endomorphisms = Hom(self, self, OwnedModules(self._ring_map.domain()))
+            return SetMorphism(
+                Hom(self._ring_map.domain(), endomorphisms, Rings()),
+                lambda scalar: SetMorphism(
+                    endomorphisms,
+                    lambda element, scalar=scalar: self._ring_map(scalar) * element,
+                ),
+            )
 
-    def scalar_multiple(self, scalar: "Element", element: "Element") -> "Element":
-        return self._ring_map(scalar) * element
+        def scalar_multiple(self, scalar: "Element", element: "Element") -> "Element":
+            return self._ring_map(scalar) * element
 
-    def _coordinate_module(self) -> "Module":
-        r"""\(N\)'s coordinate module: restriction does not move coordinates."""
-        return self._module._coordinate_module()
+        def _coordinate_module(self) -> "Module":
+            r"""\(N\)'s coordinate module: restriction does not move coordinates."""
+            return self._module._coordinate_module()
 
-    def zero(self) -> "Element":
-        return self(self._module.zero())
+        def zero(self) -> "Element":
+            return self(self._module.zero())
 
-    def _element_constructor_(self, element: "Element") -> "Element":
-        r"""Same elements as \(N\), answering to this parent.
+        def _element_constructor_(self, element: "Element") -> "Element":
+            r"""Same elements as \(N\), answering to this parent.
 
-        Restriction of scalars does not move elements, so conversion first
-        runs \(N\)'s and then re-homes the result: the element's class and
-        coordinates are unchanged, and only the parent it answers to is this
-        restricted reading.  That identification is what makes an image
-        \(g\otimes1\in F(M)\) an element *of* \(G(F(M))\), which is the
-        codomain-parent equality a module morphism into this facade checks.
-        """
-        # Local: the module node imports this module through the functor
-        # tower; it is built by call time.
-        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import BasedFreeModuleElement
+            Restriction of scalars does not move elements, so conversion first
+            runs \(N\)'s and then re-homes the result: the element's class and
+            coordinates are unchanged, and only the parent it answers to is this
+            restricted reading.  That identification is what makes an image
+            \(g\otimes1\in F(M)\) an element *of* \(G(F(M))\), which is the
+            codomain-parent equality a module morphism into this facade checks.
+            """
+            # Local: the module node imports this module through the functor
+            # tower; it is built by call time.
+            from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import BasedFreeModuleElement
 
-        member = self._module(element)
-        if member.parent() is self:
-            return member
-        assert isinstance(member, BasedFreeModuleElement), (
-            f"restriction of scalars re-homes coordinate elements; "
-            f"{member!r} is not one"
-        )
-        reparented: "Element" = type(member)(self, member._coordinates_)
-        return reparented
+            member = self._module(element)
+            if member.parent() is self:
+                return member
+            assert isinstance(member, BasedFreeModuleElement), (
+                f"restriction of scalars re-homes coordinate elements; "
+                f"{member!r} is not one"
+            )
+            reparented: "Element" = type(member)(self, member._coordinates_)
+            return reparented
 
-    def __contains__(self, element: "MembershipInput") -> bool:
-        # An element already re-homed here belongs here; otherwise the
-        # facade's members are exactly \(N\)'s.
-        if isinstance(element, Element) and element.parent() is self:
-            return True
-        return element in self._module
+        def __contains__(self, element: "MembershipInput") -> bool:
+            # An element already re-homed here belongs here; otherwise the
+            # facade's members are exactly \(N\)'s.
+            if isinstance(element, Element) and element.parent() is self:
+                return True
+            return element in self._module
 
-    def _repr_(self) -> str:
-        return f"{self._module} read over {self._ring_map.domain()} through {self._ring_map}"
+        def _repr_(self) -> str:
+            return f"{self._module} read over {self._ring_map.domain()} through {self._ring_map}"
 
 
 class RestrictionOfScalarsFunctor(Functor):
     r"""\(\mathbf{Mod}(S)\to\mathbf{Mod}(R)\) along \(f:R\to S\).
 
-    The object action is :class:`RestrictedScalarsModule`: the same module
-    with the action read through \(f\).  A morphism restricts to itself --
+    The object action lands in :class:`RestrictedScalarsModules`: the same
+    module with the action read through \(f\).  A morphism restricts to itself --
     an \(S\)-linear map is \(R\)-linear for the composed action, on the same
     elements -- so the morphism action re-homes the map between the
     restricted parents without touching its values.
@@ -268,7 +279,11 @@ class RestrictionOfScalarsFunctor(Functor):
         return self._ring_map
 
     def _apply_functor(self, module: "Module") -> "Module":
-        return RestrictedScalarsModule(module, self._ring_map)
+        return object_of(
+            RestrictedScalarsModules(self._ring_map.domain()),
+            module=module,
+            ring_map=self._ring_map,
+        )
 
     def _apply_functor_to_morphism(self, morphism: "Morphism") -> "Morphism":
         from sage.categories.homset import Hom
