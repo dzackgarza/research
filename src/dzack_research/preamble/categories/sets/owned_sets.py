@@ -28,6 +28,7 @@ from typing import cast, Generic, TYPE_CHECKING, TypeVar
 from sage.categories.category import Category as SageCategory
 from sage.categories.category_with_axiom import all_axioms
 from sage.categories.homset import Homset as SageHomset
+from sage.misc.cachefunc import cached_method
 from sage.categories.morphism import Morphism as SageMorphism
 from sage.categories.sets_cat import Sets as SageSets
 from sage.rings.integer import Integer
@@ -517,6 +518,7 @@ class FiniteSets(CategoryWithAxiom):
         if TYPE_CHECKING:
             def __iter__(self) -> Iterator[SageElement]: ...
 
+        @cached_method
         def symmetric_group(self) -> SageParent:
             r"""Return :math:`\operatorname{Sym}(X)`: the automorphism group
             of this set *in* ``Set``.
@@ -542,13 +544,9 @@ class FiniteSets(CategoryWithAxiom):
             :math:`\operatorname{Aut}(F(X))` as the permutation matrices of
             the chosen enumeration.
             """
-            cached = self.__dict__.get("_preamble_symmetric_group")
-            if cached is not None:
-                return cast(SageParent, cached)
             from sage.groups.perm_gps.permgroup_named import SymmetricGroup
 
             automorphisms = SymmetricGroup(domain=tuple(self))
-            self._preamble_symmetric_group = automorphisms
             return cast(SageParent, automorphisms)
 
         # No ``cardinality`` here.  A count is an operation this category may

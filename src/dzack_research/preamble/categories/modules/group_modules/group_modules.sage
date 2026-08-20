@@ -26,7 +26,7 @@ if TYPE_CHECKING:
 
 from typing import Protocol, Self, TYPE_CHECKING
 
-from sage.misc.cachefunc import cached_method
+from sage.misc.cachefunc import cached_function, cached_method
 from dzack_research.preamble.owned_category import object_of
 from dzack_research.preamble.owned_category_bases import Category
 from dzack_research.preamble.owned_category_bases import HomsetsCategory
@@ -568,18 +568,14 @@ class GroupModules(Category):
                     f"{self.domain()}, {self.codomain()})"
                 )
 
+@cached_function
 def group_module_homset(domain: "Module", codomain: "Module") -> Parent:
     r"""Return the canonical equivariant homset of two \(G\)-modules."""
-    cache = domain.__dict__.setdefault("_group_module_homsets", {})
-    homset: Parent | None = cache.get(codomain)
-    if homset is None:
-        homset = object_of(
-            GroupModules(domain.base_ring(), domain.group()).Homsets(),
-            domain=domain,
-            codomain=codomain,
-        )
-        cache[codomain] = homset
-    return homset
+    return object_of(
+        GroupModules(domain.base_ring(), domain.group()).Homsets(),
+        domain=domain,
+        codomain=codomain,
+    )
 
 
 def GroupModule(module: "Module", action: GroupAction) -> Parent:

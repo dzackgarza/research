@@ -49,6 +49,7 @@ morphism-matrix convention throughout.
 
 from typing import TYPE_CHECKING
 
+from sage.misc.cachefunc import cached_method
 from sage.matrix.constructor import matrix
 from sage.rings.integer_ring import ZZ as SageZZ
 
@@ -499,16 +500,13 @@ class OrthogonalPredicateSubgroups(Category_singleton):
                 + other._discriminant_preimages,
             )
 
+        @cached_method
         def _finite_quotient(self) -> _FiniteQuotient:
             assert self.contains_character_kernel(), (
                 f"{self} carries no determinant, spinor, or discriminant-image "
                 "data, so no finite quotient decides its orbits"
             )
-            cached = self.__dict__.get("_finite_quotient_cache")
-            if cached is None:
-                cached = _FiniteQuotient(self)
-                self._finite_quotient_cache = cached
-            return cached
+            return _FiniteQuotient(self)
 
         # ---- orbit splitting by double cosets ----
 

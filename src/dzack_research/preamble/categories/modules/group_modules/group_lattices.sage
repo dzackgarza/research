@@ -23,7 +23,7 @@ if TYPE_CHECKING:
 import logging
 from typing import Self, TYPE_CHECKING
 
-from sage.misc.cachefunc import cached_method
+from sage.misc.cachefunc import cached_function, cached_method
 from dzack_research.preamble.owned_category_bases import Category, HomsetsCategory
 from sage.categories.morphism import SetMorphism
 
@@ -357,13 +357,10 @@ class GroupLattices(Category):
                 )
 
 
+@cached_function
 def group_lattice_homset(domain: "Module", codomain: "Module") -> Parent:
     r"""Return the canonical form-preserving equivariant homset."""
-    cache = domain.__dict__.setdefault("_group_lattice_homsets", {})
-    homset: Parent | None = cache.get(codomain)
-    if homset is None:
-        homset = domain._Hom_(codomain, GroupLattices(domain.group()))
-        cache[codomain] = homset
+    homset: Parent = domain._Hom_(codomain, GroupLattices(domain.group()))
     return homset
 
 

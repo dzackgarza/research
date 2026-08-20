@@ -29,7 +29,7 @@ from sage.groups.libgap_wrapper import ParentLibGAP
 from sage.groups.perm_gps.permgroup import PermutationGroup_generic
 from sage.libs.gap.element import GapElement
 from sage.libs.gap.libgap import libgap
-from sage.misc.cachefunc import cached_method
+from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.unknown import Unknown
 from sage.structure.element import Element
 
@@ -220,14 +220,10 @@ class GroupHomset(GroupHomset_libgap):
         return f"Hom({self.domain()}, {self.codomain()})"
 
 
+@cached_function
 def group_homset(domain: "Group", codomain: "Group") -> GroupHomset:
     r"""Return the canonical homset: one object per ordered pair of groups."""
-    cache = domain.__dict__.setdefault("_group_homsets", {})
-    homset: GroupHomset | None = cache.get(codomain)
-    if homset is None:
-        homset = GroupHomset(domain, codomain)
-        cache[codomain] = homset
-    return homset
+    return GroupHomset(domain, codomain)
 
 
 class GroupAutomorphism(GroupHomomorphism):

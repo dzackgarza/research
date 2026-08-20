@@ -644,6 +644,7 @@ class OwnedGroups(Category):
 
             return group_homset(self, self)
 
+        @cached_method
         def Aut(self: Self) -> "GroupAutomorphismGroup":
             r"""Return \(\operatorname{Aut}(G)\), the units of \(\operatorname{End}(G)\).
 
@@ -666,15 +667,11 @@ class OwnedGroups(Category):
             )
             from dzack_research.preamble.refine import refine
 
-            cached = self.__dict__.get("_preamble_Aut")
-            if cached is not None:
-                return cached
             automorphisms = GroupAutomorphismGroup(self)
             placements: list[Category] = [OwnedGroups()]
             if _finiteness(self) is True:
                 placements.append(OwnedFiniteGroups())
             refine(automorphisms, placements)
-            self._preamble_Aut = automorphisms
             return automorphisms
 
         def conjugation_morphism(self: Self) -> "GroupHomomorphism":

@@ -19,7 +19,6 @@ from sage.categories.modules import Modules
 if TYPE_CHECKING:
     from sage.categories.category import Category
     from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModule
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleAutomorphismGroup
     from dzack_research.preamble.categories.modules.framed.formed.integrallattice.subobjects import Subobject
     from sage.rings.ring import Ring
     from sage.structure.element import RingElement
@@ -118,8 +117,6 @@ if TYPE_CHECKING:
         formed module can answer: the dual and the correlation morphism are
         built from a finite basis.
         """
-
-        _preamble_Aut: "ModuleAutomorphismGroup"
 
         def dual_module(self) -> "Module": ...
         def correlation_morphism(self) -> ModuleMorphism: ...
@@ -337,6 +334,7 @@ class FormModules(OwnedCategoryOverBaseRing):
             r"""Lower one upper index using this form."""
             return tensor.lower_index(self, slot)
 
+        @cached_method
         def Hom(
             self: Self,
             codomain: "Module",
@@ -344,18 +342,12 @@ class FormModules(OwnedCategoryOverBaseRing):
         ) -> Parent:
             r"""Return the form-preserving homset, or Sage's for a plain codomain."""
             if codomain in FormModules(self.base_ring()):
-                cache: dict["Module", Parent] = self.__dict__.setdefault(
-                    "_form_module_homsets", {}
+                hom_category = FormModules(self.base_ring()).Homsets()
+                if codomain is self:
+                    hom_category = hom_category.Endset()
+                homset: Parent = object_of(
+                    hom_category, domain=self, codomain=codomain
                 )
-                homset = cache.get(codomain)
-                if homset is None:
-                    hom_category = FormModules(self.base_ring()).Homsets()
-                    if codomain is self:
-                        hom_category = hom_category.Endset()
-                    homset = object_of(
-                        hom_category, domain=self, codomain=codomain
-                    )
-                    cache[codomain] = homset
                 return homset
             plain_homset: Parent = Parent.Hom(self, codomain, category)
             return plain_homset

@@ -9,6 +9,7 @@ from dzack_research.preamble.lexicon import Element
 if TYPE_CHECKING:
     from sage.categories.modules import Module
 
+from sage.misc.cachefunc import cached_function
 from sage.rings.integer import Integer
 from sage.categories.homset import Homset
 from sage.categories.homset import Hom
@@ -271,29 +272,16 @@ class QuadraticFormHomset(Homset):
         )
 
 
-def _form_homset_cache(module: "Module") -> dict:
-    homsets: dict = module.__dict__.setdefault("_form_homsets", {})
-    return homsets
-
-
+@cached_function
 def BilinearForms(module: "Module", value_module: "Module") -> BilinearFormHomset:
     r"""Return the canonical homset of bilinear forms on ``module``."""
-    key = ("bilinear", value_module)
-    cache = _form_homset_cache(module)
-    if key not in cache:
-        cache[key] = BilinearFormHomset(module, value_module)
-    forms: BilinearFormHomset = cache[key]
-    return forms
+    return BilinearFormHomset(module, value_module)
 
 
+@cached_function
 def QuadraticForms(module: "Module", value_module: "Module") -> QuadraticFormHomset:
     r"""Return the canonical homset of quadratic forms on ``module``."""
-    key = ("quadratic", value_module)
-    cache = _form_homset_cache(module)
-    if key not in cache:
-        cache[key] = QuadraticFormHomset(module, value_module)
-    forms: QuadraticFormHomset = cache[key]
-    return forms
+    return QuadraticFormHomset(module, value_module)
 
 
 def _underlying_element(element: "Element") -> "Element":

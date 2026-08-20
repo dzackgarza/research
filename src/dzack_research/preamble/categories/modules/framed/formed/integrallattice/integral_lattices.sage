@@ -81,6 +81,7 @@ from dzack_research.preamble.categories.modules.framed.formed.lattices import La
 from dzack_research.preamble.categories.modules.framed.formed.lattice_axioms import FinitelyGeneratedLattices
 from sage.categories.groups import Groups as SageGroups
 from sage.misc.cachefunc import cached_method
+from sage.misc.lazy_attribute import lazy_attribute
 from sage.categories.modules import Modules
 from sage.matrix.constructor import matrix
 from sage.matrix.special import identity_matrix
@@ -1186,6 +1187,9 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             from dzack_research.preamble.categories.modules.framed.formed.torsionform.discriminant_quadratic_modules import DiscriminantQuadraticModules
             return DiscriminantQuadraticModules().cokernel(self.correlation())
 
+        # The key states that the answer depends on $p$ and on the flag alone,
+        # so naming the flag and leaving it out reach one object.
+        @cached_method(key=lambda self, p, reduce_trivial=False: (p, bool(reduce_trivial)))
         def discriminant_group(
             self: "LatticeParent", p: "Integer" = 0, *, reduce_trivial: bool = False
         ) -> "FormModule":
@@ -1222,11 +1226,6 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             # Local: a module-level import here would close a cycle; by call time this module is built.
             from dzack_research.preamble.categories.modules.framed.formed.torsionform.discriminant_bilinear_modules import DiscriminantBilinearModules
             from dzack_research.preamble.categories.modules.framed.formed.torsionform.discriminant_quadratic_modules import DiscriminantQuadraticModules
-            cache = f"_preamble_discriminant_group_{bool(reduce_trivial)}"
-            cached = self.__dict__.get(cache)
-            if p == 0 and cached is not None:
-                return cached
-
             correlation = self.correlation()
             # Which form A_L carries is a fact about L, not a flag on the answer.
             category = (
@@ -1245,7 +1244,6 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
                 form = form.regenerate(surviving)
             if p != 0:
                 return form.primary_part(p)
-            setattr(self, cache, form)
             return form
 
         def is_coeven(self: "LatticeParent") -> bool:
@@ -1351,14 +1349,10 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
                 case _:
                     assert False, "a tuple is empty or it is not"
 
-        @property
+        @lazy_attribute
         def sublattices(self: "LatticeParent") -> dict[str, "Subobject"]:
             r"""Return the per-instance dictionary of named sublattices."""
-            existing = self.__dict__.get("_sublattices")
-            if existing is None:
-                existing = {}
-                self._sublattices = existing
-            return existing
+            return {}
 
         # ---- orthogonal direct sum / twist ----
 
@@ -1501,6 +1495,7 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             endset: "Homset" = self.Hom(self)
             return endset
 
+        @cached_method
         def Aut(self: "LatticeParent") -> "Parent":
             r"""Return $\mathrm{Aut}(L)=O(L)$, the units of $\mathrm{End}(L)$.
 
@@ -1530,9 +1525,6 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             from dzack_research.preamble.categories.modules.framed.formed.integrallattice.lattice_isometries import LatticeIsometries
             from dzack_research.preamble.categories.group.groups import OwnedFinitelyPresentedGroups
             from dzack_research.preamble.refine import refine
-            cached = self.__dict__.get("_preamble_Aut")
-            if cached is not None:
-                return cached
             # An automorphism group is the endomorphism homset with one more
             # condition on its elements, so it is built the same way and
             # refined once more.
@@ -1544,7 +1536,6 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
                     OwnedFinitelyPresentedGroups(),
                 ],
             )
-            self._preamble_Aut = refined
             return refined
 
         orthogonal_group = Aut

@@ -40,7 +40,7 @@ if TYPE_CHECKING:
 from collections.abc import Iterator
 from typing import TYPE_CHECKING
 
-from sage.misc.cachefunc import cached_method
+from sage.misc.cachefunc import cached_function, cached_method
 from sage.categories.homset import Hom, Homset
 from dzack_research.preamble.owned_category import object_of
 from sage.categories.morphism import Morphism, SetMorphism
@@ -93,19 +93,14 @@ else:
     GroupActionHomsetBase = Homset
 
 
+@cached_function
 def module_homset(domain: "Module", codomain: "Module") -> Parent:
-
     r"""Return the canonical module homset after forgetting extra structure."""
-    cache = domain.__dict__.setdefault("_module_homsets", {})
-    homset: Parent | None = cache.get(codomain)
-    if homset is None:
-        homset = object_of(
-            OwnedModules(domain.base_ring()).Homsets(),
-            domain=domain,
-            codomain=codomain,
-        )
-        cache[codomain] = homset
-    return homset
+    return object_of(
+        OwnedModules(domain.base_ring()).Homsets(),
+        domain=domain,
+        codomain=codomain,
+    )
 
 
 def _module_morphism(domain: "Module", codomain: "Module", images: "ModuleMorphismData") -> "ModuleMorphism":

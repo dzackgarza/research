@@ -31,6 +31,7 @@ from dzack_research.preamble.categories.sets.cardinals import Cardinal, cardinal
 from dzack_research.preamble.lexicon import GramMatrix
 from dzack_research.preamble.categories.modules.module_morphisms.morphism_matrices import MorphismMatrix
 
+from sage.misc.cachefunc import cached_function
 from sage.arith.misc import factor
 from sage.misc.latex import latex as _latex_fn
 
@@ -1221,6 +1222,7 @@ def _engine_normal_form_key(form: "Module", quadratic: bool) -> tuple:
     )
 
 
+@cached_function
 def _torsion_form_automorphism_group(
     form: "Module", quadratic: bool
 ) -> Parent:
@@ -1230,16 +1232,13 @@ def _torsion_form_automorphism_group(
     as their parent, and two calls answering with two objects would make
     composition across them undefined.
     """
-    cached = form.__dict__.get("_preamble_automorphism_group")
-    if cached is None:
-        cached = object_of(
-            form.category().Homsets().Endset(),
-            domain=form,
-            codomain=form,
-            quadratic=quadratic,
-        )
-        form._preamble_automorphism_group = cached
-    return cached
+    automorphisms: Parent = object_of(
+        form.category().Homsets().Endset(),
+        domain=form,
+        codomain=form,
+        quadratic=quadratic,
+    )
+    return automorphisms
 
 
 def _coordinates_in_module_generators(

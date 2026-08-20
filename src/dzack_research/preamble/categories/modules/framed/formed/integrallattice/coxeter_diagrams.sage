@@ -35,6 +35,7 @@ from dzack_research.preamble.owned_category import object_of
 from dzack_research.preamble.owned_category_bases import Category, HomsetsCategory
 from sage.categories.morphism import Morphism
 from sage.combinat.posets.posets import Poset
+from sage.misc.cachefunc import cached_method
 from sage.matrix.constructor import matrix
 from sage.rings.infinity import infinity, PlusInfinity
 from sage.rings.integer import Integer
@@ -426,23 +427,22 @@ class CoxeterDiagrams(Category):
                 **rest,
             )
 
+        @cached_method
         def _Hom_(
             self,
             codomain: Parent,
             category: Category | None = None,
         ) -> Parent:
-            hom_category = CoxeterDiagrams() if category is None else category
-            assert hom_category.is_subcategory(CoxeterDiagrams()), (
+            # The default spelling is cached onto the same homset as the
+            # named one, so the two ways of asking give one object.
+            if category is None:
+                default_homset: Parent = self._Hom_(codomain, CoxeterDiagrams())
+                return default_homset
+            assert category.is_subcategory(CoxeterDiagrams()), (
                 "a Coxeter-diagram homset category must refine "
-                f"CoxeterDiagrams; category={hom_category}"
+                f"CoxeterDiagrams; category={category}"
             )
-            cache = self.__dict__.setdefault("_coxeter_homsets", {})
-            key = (codomain, hom_category)
-            homset = cache.get(key)
-            if homset is None:
-                homset = super()._Hom_(codomain, hom_category)
-                cache[key] = homset
-            diagram_homset: Parent = homset
+            diagram_homset: Parent = super()._Hom_(codomain, category)
             return diagram_homset
 
         def hom(

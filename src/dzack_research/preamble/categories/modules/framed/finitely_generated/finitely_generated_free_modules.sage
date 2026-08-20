@@ -24,6 +24,7 @@ from typing import Self, TYPE_CHECKING
 if TYPE_CHECKING:
     from sage.structure.parent import ElementConstructorInput, MembershipInput
 
+from sage.misc.cachefunc import cached_method
 from sage.rings.integer import Integer
 from sage.categories.morphism import SetMorphism
 from sage.matrix.constructor import matrix
@@ -230,6 +231,7 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
         def number_of_module_generators(self) -> int:
             return _finite_rank(self.module_generating_set())
 
+        @cached_method
         def _coordinate_module(self) -> "FreeModule_generic":
             r"""The engine's \(R^n\), where this module's coordinate vectors live.
 
@@ -240,11 +242,10 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
             # is built by the time coordinates are asked for.
             from dzack_research.preamble.categories.rings.rings import engine_ring
 
-            cached: "FreeModule_generic | None" = self.__dict__.get("_coordinate_module_")
-            if cached is None:
-                cached = engine_ring(self.base_ring()) ** self.number_of_module_generators()
-                self._coordinate_module_ = cached
-            return cached
+            coordinates: "FreeModule_generic" = (
+                engine_ring(self.base_ring()) ** self.number_of_module_generators()
+            )
+            return coordinates
 
         def zero(self) -> BasedFreeModuleElement:
             return self._from_coordinates(self._coordinate_module().zero())
@@ -382,16 +383,13 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
             """
             return ()
 
+        @cached_method
         def Aut(self: "FiniteFreeModuleParent") -> "ModuleAutomorphismGroup":
             # Local: at module level this closes an import cycle; the morphism
             # module is built by the time automorphisms are asked for.
             from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleAutomorphismGroup
 
-            cached = self.__dict__.get("_preamble_Aut")
-            if cached is None:
-                cached = ModuleAutomorphismGroup(self)
-                self._preamble_Aut = cached
-            return cached
+            return ModuleAutomorphismGroup(self)
 
         def subobject_on(self: "FiniteFreeModuleParent", module_generators: "OrderedSet") -> "Subobject":
             from dzack_research.preamble.categories.modules.framed.framed_modules import FramedModules

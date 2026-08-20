@@ -16,6 +16,7 @@ if TYPE_CHECKING:
 
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
 from sage.categories.principal_ideal_domains import PrincipalIdealDomains
+from sage.misc.cachefunc import cached_method
 from sage.matrix.constructor import matrix
 from sage.structure.sage_object import SageObject
 
@@ -161,6 +162,7 @@ class FinitelyGeneratedModules(OwnedCategoryOverBaseRing):
         return [FramedModules(self.base_ring())]
 
     class ParentMethods:
+        @cached_method
         def module_generators(self: "FinitelyGeneratedModuleParent") -> "OrderedSet":
             r"""Return the finite framed generators, as an ordered set.
 
@@ -170,22 +172,19 @@ class FinitelyGeneratedModules(OwnedCategoryOverBaseRing):
             which makes the *index* set canonical, but two modules'
             generators can compare equal while being different generators.
             """
-            cached: "OrderedSet | None" = self.__dict__.get("_preamble_module_generators")
-            if cached is None:
-                module_generating_set = self.module_generating_set()
-                assert module_generating_set in Sets().Finite(), (
-                    "module_generators() is defined only for finitely generated modules"
+            module_generating_set = self.module_generating_set()
+            assert module_generating_set in Sets().Finite(), (
+                "module_generators() is defined only for finitely generated modules"
+            )
+            # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.sets.sets import ordered_set_owned_by
+            module_generators: "OrderedSet" = ordered_set_owned_by(
+                tuple(
+                    self.module_generator(element_of_S)
+                    for element_of_S in module_generating_set
                 )
-                # Local: a module-level import here would close a cycle; by call time this module is built.
-                from dzack_research.preamble.categories.sets.sets import ordered_set_owned_by
-                cached = ordered_set_owned_by(
-                    tuple(
-                        self.module_generator(element_of_S)
-                        for element_of_S in module_generating_set
-                    )
-                )
-                self._preamble_module_generators = cached
-            return cached
+            )
+            return module_generators
 
         def free_resolution(self: "FinitelyGeneratedModuleParent") -> FreeResolution:
             r"""Return the free resolution of this module.

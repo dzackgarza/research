@@ -223,19 +223,15 @@ def TensorProductModule(left: "Module", right: "Module") -> "Module":
     return FinitelyPresentedModule(presentation)
 
 
+@cached_function
 def _degree_construction(
     module: "Module",
     algebra_constructor: "Callable[[Ring, OrderedSet], _GradedAlgebra]",
-    cache_key: str,
     degree: "Integer | int",
 ) -> "_GradedPiece":
     r"""Return one graded construction induced by a module presentation."""
     degree = int(degree)
     assert degree >= 0, "a graded degree is nonnegative"
-    cache = module.__dict__.setdefault("_degree_constructions", {})
-    cached: "_GradedPiece | None" = cache.get((cache_key, degree))
-    if cached is not None:
-        return cached
 
     from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import BasedFreeModule
     from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModule
@@ -249,7 +245,6 @@ def _degree_construction(
     relations = module.relation_matrix()._sage_matrix()
     match relations.nrows():
         case 0:
-            cache[(cache_key, degree)] = piece
             return piece
         case _:
             pass
@@ -273,7 +268,6 @@ def _degree_construction(
         # No relation reaches this degree, so the graded piece of the free
         # algebra already presents the construction -- the same statement as
         # the relation-free branch above.
-        cache[(cache_key, degree)] = piece
         return piece
     monomials = tuple(
         next(iter(generator.coefficients()))
@@ -293,7 +287,6 @@ def _degree_construction(
         dict(zip(relation_module.module_generating_set(), relation_vectors))
     )
     result: "_GradedPiece" = FinitelyPresentedModule(presentation)
-    cache[(cache_key, degree)] = result
     return result
 
 
@@ -301,7 +294,7 @@ def TensorPower(module: "Module", degree: "Integer | int") -> "_GradedPiece":
     r"""Return \(T(M)[n]=M^{\otimes n}\)."""
     from dzack_research.preamble.categories.algebras.framed_free_algebras import TensorAlgebraOn
 
-    power = _degree_construction(module, TensorAlgebraOn, "tensor", degree)
+    power = _degree_construction(module, TensorAlgebraOn, degree)
     power._tensor_power_of = module
     power._tensor_power_degree = int(degree)
     return power
@@ -311,7 +304,7 @@ def SymmetricPower(module: "Module", degree: "Integer | int") -> "_GradedPiece":
     r"""Return \(\operatorname{Sym}(M)[n]=\operatorname{Sym}^nM\)."""
     from dzack_research.preamble.categories.algebras.framed_free_algebras import FreeAlgebraOn
 
-    power = _degree_construction(module, FreeAlgebraOn, "symmetric", degree)
+    power = _degree_construction(module, FreeAlgebraOn, degree)
     power._symmetric_power_of = module
     power._symmetric_power_degree = int(degree)
     return power
@@ -321,7 +314,7 @@ def AlternatingPower(module: "Module", degree: "Integer | int") -> "_GradedPiece
     r"""Return \(\Lambda(M)[n]=\Lambda^nM\)."""
     from dzack_research.preamble.categories.algebras.framed_free_algebras import AlternatingAlgebraOn
 
-    power = _degree_construction(module, AlternatingAlgebraOn, "alternating", degree)
+    power = _degree_construction(module, AlternatingAlgebraOn, degree)
     power._alternating_power_of = module
     power._alternating_power_degree = int(degree)
     return power
@@ -341,7 +334,7 @@ def DividedPower(module: "Module", degree: "Integer | int") -> "_GradedPiece":
     """
     from dzack_research.preamble.categories.algebras.framed_free_algebras import DividedPowerAlgebraOn
 
-    power = _degree_construction(module, DividedPowerAlgebraOn, "divided", degree)
+    power = _degree_construction(module, DividedPowerAlgebraOn, degree)
     power._divided_power_of = module
     power._divided_power_degree = int(degree)
     return power

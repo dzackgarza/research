@@ -84,6 +84,7 @@ morphism-matrix convention throughout.
 
 from typing import TYPE_CHECKING
 
+from sage.misc.cachefunc import cached_method
 from sage.matrix.constructor import matrix
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
@@ -360,6 +361,7 @@ class VectorPrimitiveExtension:
         self.discriminant_form = discriminant_form
         self.discriminant_representatives = discriminant_representatives
 
+    @cached_method
     def _representative_table(self) -> dict:
         r"""Return the lookup $H^{\perp}\to A_L$, built once and on demand.
 
@@ -367,9 +369,6 @@ class VectorPrimitiveExtension:
         callers that invert the correspondence -- the gluing route -- and not
         by the ones that only want the summands or the index.
         """
-        table = self.__dict__.get("_representative_table_cache")
-        if table is not None:
-            return table
         table = {}
         for discriminant_class in self.discriminant_form:
             representative = self.representative_of(discriminant_class)
@@ -383,7 +382,6 @@ class VectorPrimitiveExtension:
             "A_L -> A_M/H is not injective; the cosets of H hit by the "
             "representatives overlap"
         )
-        self._representative_table_cache = table
         return table
 
     def representative_of(self, discriminant_class: "Element") -> "Element":
