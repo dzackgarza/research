@@ -1336,6 +1336,21 @@ creates the object, so no interception is needed — just add `_refine_category_
   The parent class (`IntegerRing_class`, `MatrixSpace`, etc.) is Sage's compiled code;
   the category's `ParentMethods` is where new methods belong.
 
+  **This holds for the preamble's own classes too, and it is the dominant pattern.**
+  A concrete class is as small as possible: a container for the data a category needs
+  to *do* its computations, plus whatever construction cannot be expressed
+  categorically. Every mathematical operation — predicate, invariant, construction,
+  orbit, presentation — is a mixin on the refined category (`ParentMethods`,
+  `ElementMethods`, `MorphismMethods`), because that is what makes it available to
+  every object the mathematics says it applies to, in the right resolution order, and
+  what lets a subcategory sharpen it. Writing the same method on the class instead
+  binds it to one construction path, hides it from siblings, and puts it behind the
+  category methods in the MRO. Ask of every new method: *which category's members can
+  answer this?* — and put it there. The exceptions are narrow and nameable: catalogue
+  namespaces holding named specimens (`Lattices`, `Coble`, `Sterk` and their
+  staticmethods), Sage's own element-construction hooks on a `Parent`
+  (`_element_constructor_`), and private record types that carry no mathematics.
+
 - **`_refine_category_` joins.** It calls `self._init_category_(self.category().join(Cat))`, so
   the object keeps all its existing category memberships and gains the new one.
   Calling it multiple times is safe. Override-refine still performs that join, then rebuilds
