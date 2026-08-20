@@ -33,9 +33,10 @@ from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ
 from sage.rings.semirings.non_negative_integer_semiring import NN
 from sage.structure.element import Element as SageElement
+from sage.structure.richcmp import richcmp
 
 from dzack_research.preamble.lexicon.interop import SageParent, SageUniqueRepresentation
-from dzack_research.preamble.owned_category import OwnedCategory, OwnedCategoryMixin
+from dzack_research.preamble.owned_category import OwnedCategory, OwnedCategoryMixin, OwnedParent
 
 if TYPE_CHECKING:
     from dzack_research.preamble.owned_category import ConstructionData
@@ -229,8 +230,16 @@ class Sets(OwnedCategory):
                 return self.projection(index)
 
             def __contains__(self, element: ElementConstructorInput) -> bool:
-                r"""Whether ``element`` is a point of \(\prod_i X_i\): a family
-                of the right length whose \(i\)-th component lies in \(X_i\)."""
+                r"""Whether ``element`` is a point of \(\prod_i X_i\).
+
+                A point this product built is one of its own elements, which
+                its parent settles.  A raw family is one when it has the right
+                length and its \(i\)-th component lies in \(X_i\) -- read as
+                ``component in X_i`` and never off ``component.parent()``,
+                because a facade set holds the elements of its host.
+                """
+                if isinstance(element, SageElement) and element.parent() is self:
+                    return True
                 return (
                     isinstance(element, tuple)
                     and len(element) == len(self._factors)
@@ -242,56 +251,114 @@ class Sets(OwnedCategory):
 
             def _element_constructor_(
                 self, element: Iterable[SageElement]
-            ) -> tuple[SageElement, ...]:
-                r"""Return the tuple as an element of this set.
+            ) -> SageElement:
+                r"""Return the family \((x_i)\) as an element of this product.
 
-                An element here is a tuple of elements of the factors and
-                nothing more, so there is no element class to build; the
-                constructor exists because every map out of this set coerces
-                its argument through the domain before evaluating it.
+                Each component is put into its factor rather than merely
+                checked against it: a point of \(\prod_i X_i\) has \(x_i\in
+                X_i\), and admitting whatever compared equal left arithmetic
+                running in whichever parent the caller happened to pass --
+                \((1,0)-(0,1)\) came back as \((1,-1)\) over
+                \(\mathbb{F}_3\) instead of \((1,2)\).
                 """
-                components = tuple(element)
+                components = tuple(
+                    factor(component)
+                    for factor, component in zip(self._factors, tuple(element))
+                )
                 assert components in self, (
                     f"{components} is not a tuple of elements of the factors of {self}"
                 )
-                return components
-
-            def __call__(
-                self,
-                x: ElementConstructorInput = (),
-                *arguments: ElementConstructorInput,
-                **keywords: ElementConstructorInput,
-            ) -> tuple[SageElement, ...]:
-                r"""Return the tuple, without Sage's default conversion.
-
-                ``Parent.__call__`` routes through a conversion map declared
-                to return an ``Element``, which a tuple is not.  The elements
-                here are tuples -- that is what a product of sets has -- so
-                the constructor is called directly.
-                """
-                from collections.abc import Iterable as _Iterable
-
-                assert isinstance(x, _Iterable), (
-                    "an element here is a tuple of factor elements"
-                )
-                return self._element_constructor_(x)
+                return self.element_class(components=components, parent=self)
 
             def _repr_(self) -> str:
                 return " x ".join(str(factor) for factor in self._factors)
 
-    class ParentMethods(SageParent):
-        if TYPE_CHECKING:
-            def cardinality(self) -> Cardinal: ...
+        class ElementMethods:
+            r"""A point of \(\prod_i X_i\): the family \((x_i)\) and nothing more.
 
-        def __init__(self, **rest: ConstructionData) -> None:
+            No arithmetic.  A product of *sets* has no addition to offer, and
+            putting one here would be a second notion of what a module or
+            lattice element is, competing with the one the levels above
+            declare.  Components, comparison and indexing are all a point of a
+            product is.
+            """
+
+            def __init__(
+                self, components: tuple[SageElement, ...], **rest: ConstructionData
+            ) -> None:
+                self._components = tuple(components)
+                super().__init__(**rest)
+
+            def components(self) -> tuple[SageElement, ...]:
+                return self._components
+
+            def cartesian_projection(self, index: int) -> SageElement:
+                r"""The ``index``-th component, under the name Sage's machinery reads."""
+                return self._components[index]
+
+            def __getitem__(self, index: int) -> SageElement:
+                return self._components[index]
+
+            def __len__(self) -> int:
+                return len(self._components)
+
+            def __iter__(self) -> Iterator[SageElement]:
+                return iter(self._components)
+
+            def _richcmp_(self, other: SageElement, op: int) -> bool:
+                return bool(richcmp(self._components, other.components(), op))
+
+            def __hash__(self) -> int:
+                return hash((id(self.parent()), self._components))
+
+            def _repr_(self) -> str:
+                return "(%s)" % ", ".join(repr(component) for component in self._components)
+
+    class ElementMethods(SageElement):
+        r"""An element of an owned set: the element implementation class.
+
+        The element half of what ``ParentMethods`` is for parents.  It carries
+        ``Element`` so that everything built through the chain has a parent,
+        and it carries nothing else: what an element of a bare *set* is, is a
+        member of that set.  Structure is added by the levels above, which is
+        where the arithmetic lives.
+        """
+
+        def __init__(self, parent: SageParent) -> None:
+            SageElement.__init__(self, parent)
+
+    class ParentMethods(OwnedParent, SageParent):
+        def __init__(
+            self, cardinality: Cardinal | Integer | None = None, **rest: ConstructionData
+        ) -> None:
             r"""The bottom of every owned construction.
 
             The only non-cooperative ``Parent.__init__`` call in the chain:
             every level above reaches it through ``super().__init__(**rest)``
             after consuming its own datum, so constructing anything owned has
             already constructed the set it is built on.
+
+            ``cardinality`` is this level's datum, and it is optional because
+            a set may be constructed knowing its size or not.  A level that
+            knows how big the set it is building is -- \(\mathbb{F}_p\) knows
+            \(p\) -- passes it up here rather than answering the question
+            itself; a level that does not, such as a product, derives the
+            answer from its own datum instead.  Nothing counts an enumeration
+            to rediscover a number the construction was given.
             """
+            if cardinality is not None:
+                from dzack_research.preamble.categories.sets.cardinals import cardinal
+
+                self._cardinality = cardinal(cardinality)
             SageParent.__init__(self, **rest)
+
+        def cardinality(self) -> Cardinal:
+            r"""Return \(|X|\), as the construction stated it.
+
+            A set that was not built with a size does not have one to give,
+            and says so by having no answer here rather than by counting.
+            """
+            return self._cardinality
 
         def is_countable(self) -> bool:
             r"""Whether $|X| \le \aleph_0$.

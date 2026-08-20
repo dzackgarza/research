@@ -54,6 +54,7 @@ from abc import ABCMeta
 from typing import TYPE_CHECKING
 
 from sage.categories.category import Category, CategoryWithParameters
+from sage.misc.lazy_attribute import lazy_attribute
 from sage.structure.category_object import CategoryObject
 from sage.structure.parent import Parent as SageParent
 from sage.misc.classcall_metaclass import ClasscallMetaclass
@@ -424,6 +425,28 @@ def _cat_constructions() -> type:
     from dzack_research.preamble.categories.abstract_categories.cat import Cat
 
     return Cat.ParentMethods
+
+
+class OwnedParent:
+    r"""Base of the root ``ParentMethods`` of an owned chain: elements come
+    from the category.
+
+    Sage's :meth:`Parent.element_class` composes the parent's own ``Element``
+    attribute with the category's ``element_class``, and returns
+    ``NotImplemented`` when the parent declares no ``Element``.  A chain-built
+    parent declares none: the category's ``ElementMethods`` *is* the element
+    implementation class, for exactly the reason ``ParentMethods`` is the
+    parent one.  This says so.
+
+    Reaches only objects built through the chain.  An *adopted* Sage parent
+    keeps its own ``Element`` -- ``refine`` does not hoist a methods class that
+    declares ``Parent`` (see ``refine._IMPLEMENTATION_BASES``), so this never
+    enters such a parent's MRO and cannot shadow it.
+    """
+
+    @lazy_attribute
+    def element_class(self) -> type:
+        return self.category().element_class
 
 
 class OwnedCategoryObject:
