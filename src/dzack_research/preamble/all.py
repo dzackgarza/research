@@ -29,7 +29,7 @@ itself offers for the same situation: import this module again.  Doing so
 rebinds every name from this module's own namespace and costs nothing.
 """
 
-import sys
+import sys as _sys
 
 from sage.repl.load import load as _engine_load
 
@@ -46,7 +46,7 @@ def load(filename: str, globals: dict | None = None, attach: bool = False) -> No
     the caller's.  ``install_session_rings`` then runs on that same scope,
     which is the whole reason this name is bound here rather than Sage's.
     """
-    scope = sys._getframe(1).f_globals if globals is None else globals
+    scope = _sys._getframe(1).f_globals if globals is None else globals
     _engine_load(filename, scope, attach)
     install_session_rings(scope)
 
