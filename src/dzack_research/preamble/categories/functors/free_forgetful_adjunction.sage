@@ -453,20 +453,24 @@ class Adjunction(SageObject):
     @abstract_method
     def unit(self, object_C: "Set") -> "Morphism":
         r"""Return the unit component $\eta_A: A \to U(F(A))$ in Hom_C(A, U(F(A)))."""
+        ...
 
     @abstract_method
     def counit(self, object_D: "Module") -> "Morphism":
         r"""Return the counit component $\varepsilon_B: F(U(B)) \to B$ in Hom_D(F(U(B)), B)."""
+        ...
 
     @abstract_method
     def hom_set_isomorphism_forward(self, module_morphism: "ModuleMorphism") -> "Morphism":
         r"""Forward bijection \Phi(\phi) = U(\phi) \circ \eta_S."""
+        ...
 
     @abstract_method
     def hom_set_isomorphism_inverse(
         self, set_morphism: "SetMorphism", codomain_D: "Module"
     ) -> "ModuleMorphism":
         r"""Inverse bijection \Psi(f) = \varepsilon_M \circ F(f)."""
+        ...
 
 
 class FreeForgetfulAdjunction(Adjunction):

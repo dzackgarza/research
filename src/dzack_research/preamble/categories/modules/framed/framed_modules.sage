@@ -142,6 +142,7 @@ class FramedModules(OwnedCategoryOverBaseRing):
         @abstract_method
         def framing_morphism(self) -> "FramingMorphism":
             r"""Return the framing morphism \(F_R(S)\to M\)."""
+            ...
 
         @cached_method
         def module_generator_morphism(self) -> "SetMorphism":

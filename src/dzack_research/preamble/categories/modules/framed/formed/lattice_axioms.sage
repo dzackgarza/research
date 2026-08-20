@@ -104,6 +104,7 @@ class IntegralValuedLattices(CategoryWithAxiom_over_base_ring):
         @abstract_method
         def is_integral(self) -> bool:
             r"""Return whether every value of the form is integral over $\mathbb Z$."""
+            ...
 
 
 class NondegenerateLattices(CategoryWithAxiom_over_base_ring):
@@ -128,6 +129,7 @@ class NondegenerateLattices(CategoryWithAxiom_over_base_ring):
         @abstract_method
         def is_nondegenerate(self) -> bool:
             r"""Return whether $\operatorname{rad}(L)=0$."""
+            ...
 
 
 class EvenLattices(CategoryWithAxiom_over_base_ring):
@@ -163,6 +165,7 @@ class EvenLattices(CategoryWithAxiom_over_base_ring):
         @abstract_method
         def is_even(self) -> bool:
             r"""Return whether every norm $b(x,x)$ lies in $2R$."""
+            ...
 
 
 # ``IntegralLattices`` is ``Lattices(R).FinitelyGenerated().Integral()``, and

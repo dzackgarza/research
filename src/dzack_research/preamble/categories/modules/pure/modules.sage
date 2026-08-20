@@ -85,6 +85,7 @@ class Modules(Category_over_base_ring):
             $\operatorname{End}(M)$ is taken where the additive structure
             lives, so it is the endomorphism ring in $R\text{-Mod}$.
             """
+            ...
 
         def scalar_action(self: Self) -> "Morphism":
             r"""Return the action, under the name the mathematics uses."""

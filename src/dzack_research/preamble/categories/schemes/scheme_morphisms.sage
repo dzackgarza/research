@@ -33,18 +33,22 @@ class SchemeMorphism(Morphism):
     @abstract_method
     def domain(self) -> Parent:
         r"""Return the domain scheme of this morphism."""
+        ...
 
     @abstract_method
     def codomain(self) -> Parent:
         r"""Return the codomain scheme of this morphism."""
+        ...
 
     @abstract_method
     def compose(self, g: SchemeMorphism) -> SchemeMorphism:
         r"""Return composition (g o self): X -> Z for g: Y -> Z."""
+        ...
 
     @abstract_method
     def pullback(self, Z: "SchemeMorphism | Parent") -> Parent:
         r"""Return pullback / fiber product X \times_Y Z for a morphism or subobject Z -> Y."""
+        ...
 
     def evaluate_at(self, p: SchemeMorphism) -> SchemeMorphism:
         r"""Evaluate self at an S-point p: S -> X via composition f * p."""

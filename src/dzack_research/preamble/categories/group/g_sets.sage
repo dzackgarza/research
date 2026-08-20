@@ -57,6 +57,7 @@ class GSets(Category):
             morphism; a parent placed here without one has not been given
             a \(G\)-set structure, whatever category it sits in.
             """
+            ...
 
         def acting_group(self) -> "Group":
             r"""The acting group: the domain of the action morphism."""
@@ -92,6 +93,7 @@ class Torsors(Category):
             concrete parent carries, and every derived operation below
             states which theorem lets it consume the choice.
             """
+            ...
 
         def __iter__(self) -> "Iterator[Element]":
             r"""Enumeration through the trivializing choice.

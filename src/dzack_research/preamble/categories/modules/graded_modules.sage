@@ -73,6 +73,7 @@ class GradedModules(OwnedCategoryOverBaseRing):
             where each of its generators sits, and everything else in this
             category follows from that.
             """
+            ...
 
         def module_generators_of_degree(self: "GradedModuleParent", degree: "Integer") -> "OrderedSet":
             r"""Return the module generators sitting in one degree."""

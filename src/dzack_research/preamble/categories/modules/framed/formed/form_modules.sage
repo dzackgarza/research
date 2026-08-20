@@ -199,6 +199,7 @@ class FormModules(OwnedCategoryOverBaseRing):
             since refinement admits anything, but an obligation never met
             resolves to this declaration and the constructor sweep reports it.
             """
+            ...
 
         def form(self: "FormedParent") -> "Form":
             r"""Return the form morphism classifying this object."""

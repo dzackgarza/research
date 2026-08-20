@@ -115,6 +115,7 @@ class Algebras(OwnedCategoryOverBaseRing):
             be decided -- for an algebra given by a multiplication tensor the
             centre is not computable -- and checked where it can.
             """
+            ...
 
         def scalar_structure_morphism(self) -> "Morphism":
             r"""Return the structure morphism, under the name it is used by."""
@@ -201,6 +202,7 @@ class FramedAlgebras(OwnedCategoryOverBaseRing):
             self, s: "Element", t: "Element"
         ) -> "Element":
             r"""Return the product of algebra_generators labelled by s and t in S."""
+            ...
 
 
 class OwnedAlgebra(OwnedBaseRing, Parent):
