@@ -180,11 +180,12 @@ class LatticeHomomorphisms(Category):
             r"""Return $A_S\hookrightarrow A_L$ for an orthogonal direct summand.
 
             When $L=S\perp S^{\perp}$ the dual splits the same way,
-            $L^{\vee}=S^{\vee}\oplus(S^{\perp})^{\vee}$, and extending a
-            functional on $S$ by zero on $S^{\perp}$ carries $S$ into $L$;
-            so it descends to the classes and exhibits $A_L$ as
-            $A_S\oplus A_{S^{\perp}}$.  The image of $A_S$ is what
-            Conway--Sloane's glue vectors of the component $S$ live in.
+            $L^{\vee}=S^{\vee}\oplus(S^{\perp})^{\vee}$: extending a
+            functional on $S$ by zero on $S^{\perp}$ embeds $S^{\vee}$ in
+            $L^{\vee}$ and carries $S$ onto its image in $L$, so it descends
+            to the classes and exhibits $A_L$ as $A_S\oplus A_{S^{\perp}}$.
+            That image is where Conway--Sloane's glue vectors of the
+            component $S$ live.
 
             The extension is $c_S^{-1}$ followed by $\iota$ followed by
             $c_L$, so its matrix in the dual framings is

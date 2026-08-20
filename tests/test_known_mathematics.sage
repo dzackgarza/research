@@ -1675,7 +1675,24 @@ def test_a4_a4_order_five_glue_reconstructs_e8() -> None:
     doubled = Lattices.A4 + Lattices.A4
     form = doubled.discriminant_group()
     assert tuple(form.invariants()) == (5, 5)
-    first, second = tuple(form.module_generators())
+    # A component's glue vectors are its own discriminant classes read inside
+    # the sum's discriminant group, which is what the orthogonal summand's
+    # inclusion of discriminant groups names.  $A_L$ itself is presented on
+    # the eight dual classes of the rank-eight sum, so its generating set does
+    # not name the two components.
+    inclusions = tuple(
+        summand.embedding().discriminant_inclusion()
+        for summand in doubled.summands()
+    )
+    assert tuple(into.domain().cardinality() for into in inclusions) == (5, 5), (
+        "CS10 ch. 4 sec 6.1: each A4 component has glue group C5"
+    )
+    first, second = tuple(
+        into(into.domain().module_generators()[0]) for into in inclusions
+    )
+    assert (first.order(), second.order()) == (5, 5), (
+        "each chosen class generates its component's cyclic glue group"
+    )
     glue_class = first + 2 * second
     assert glue_class.q() == 0, "the [1,2] glue class is isotropic"
     subgroup = form.subobject_generated_by((glue_class,))

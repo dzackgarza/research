@@ -15,8 +15,9 @@ types exist to stop that conflation.
 Kernels are the seam.  A *morphism* has a kernel: a module with its own
 abstract generators, together with the inclusion recording how those
 generators are written in $M$'s.  A *matrix* has only a nullspace, and Sage
-hands it back as a submodule spanned by a basis inside an ambient module --
-which is what forces the ambient-module bookkeeping this repo eschews.  So
+hands it back as a submodule spanned by a basis inside a containing module
+-- which is what forces the containing-module bookkeeping this repo
+eschews.  So
 ``_left_kernel_matrix`` and ``_right_kernel_matrix`` are private: they
 return matrices, never modules, and only a morphism calls them.
 

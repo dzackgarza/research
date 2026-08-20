@@ -308,11 +308,14 @@ class FinitelyPresentedModuleElement(ModuleElement):
 
 
 class FinitelyPresentedModule(OwnedBaseRing, Parent):
-    r"""The cokernel of a morphism of finite free modules.
+    r"""The cokernel $N/f(M)$ of a morphism $f$ of finitely presented modules.
 
     The relation morphism may have arbitrary rank, so this includes free,
     torsion, and mixed finitely presented modules.  The rows of its matrix are
-    relations on the named generators of the codomain.
+    relations on the named generators of the codomain, and the codomain's own
+    relations are relations on those generators too -- so $N$ itself may be a
+    quotient, and $K/H$ for $H\subseteq K$ two finite torsion modules is this
+    construction as much as $L^{\vee}/L$ is.
     """
 
     Element = FinitelyPresentedModuleElement
@@ -346,9 +349,9 @@ class FinitelyPresentedModule(OwnedBaseRing, Parent):
         # generators.  A free $N$ answers no relations of its own, which is
         # why the free case needs no separate construction -- it is this one
         # with an empty matrix to stack.
-        module = _underlying_module(codomain)
+        underlying = _underlying_module(codomain)
         relations = (
-            module.relation_matrix()
+            underlying.relation_matrix()
             .change_ring(base_ring)
             .stack(images)
             ._sage_matrix()
@@ -370,7 +373,7 @@ class FinitelyPresentedModule(OwnedBaseRing, Parent):
         # The classes are named by $N$'s generators, and those generators are
         # named by $N$'s own presenting free module -- itself when $N$ is
         # free, its cover when $N$ is already a quotient.
-        source = module.framing_morphism().domain()
+        source = underlying.framing_morphism().domain()
         source_module_generator_morphism = source.module_generator_morphism()
         quotient_generator_morphism = SetMorphism(
             Hom(
