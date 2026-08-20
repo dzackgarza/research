@@ -1458,10 +1458,14 @@ creates the object, so no interception is needed — just add `_refine_category_
   The parent class (`IntegerRing_class`, `MatrixSpace`, etc.) is Sage's compiled code;
   the category's `ParentMethods` is where new methods belong.
 
-  **This holds for the preamble's own classes too, and it is the dominant pattern.**
-  A concrete class is as small as possible: a container for the data a category needs
-  to *do* its computations, plus whatever construction cannot be expressed
-  categorically. Every mathematical operation — predicate, invariant, construction,
+  **For the preamble's own categories this goes further: there is no separate class
+  at all.** The category's methods classes *are* the implementation — they carry the
+  bases, the fields and the constructor, and construction threads by
+  `super().__init__` up the category graph (see *The category IS the class* above).
+  A distinct concrete class survives only where a construction cannot be expressed
+  categorically, or where the preamble consumes a Sage class it did not define; the
+  rule below is stated for those, and for the adopted Sage objects this addendum is
+  about. Every mathematical operation — predicate, invariant, construction,
   orbit, presentation — is a mixin on the refined category (`ParentMethods`,
   `ElementMethods`, `MorphismMethods`), because that is what makes it available to
   every object the mathematics says it applies to, in the right resolution order, and
