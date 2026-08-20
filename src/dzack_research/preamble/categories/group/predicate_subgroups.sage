@@ -113,7 +113,11 @@ class PredicateSubgroups(Category):
 
 def predicate_subgroup_category() -> "SageCategory":
     r"""Return where a predicate subgroup is built: a subobject of a group."""
-    return SageCategory.join([PredicateSubgroups(), Groups().Subobjects()])
+    # Local: a module-level import would close a cycle; the module is built
+    # by the time this runs.
+    from dzack_research.preamble.categories.group.groups import OwnedGroups
+
+    return SageCategory.join([PredicateSubgroups(), OwnedGroups().Subobjects()])
 
 
 def predicate_subgroup(

@@ -1352,7 +1352,11 @@ class ModuleAutomorphismGroups(Category_over_base_ring):
             )
             subgroup = ModuleAutomorphismGroup(self.module(), group_generators)
             subgroup._supergroup = self
-            return refine(subgroup, Groups().Subobjects())
+            # Local: a module-level import would close a cycle; the module is
+            # built by the time this runs.
+            from dzack_research.preamble.categories.group.groups import OwnedGroups
+
+            return refine(subgroup, OwnedGroups().Subobjects())
 
         def group_generators(
             self,

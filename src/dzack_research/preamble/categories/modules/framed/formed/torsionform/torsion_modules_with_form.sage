@@ -23,7 +23,7 @@ from dzack_research.preamble.owned_category_bases import (
     CategoryWithAxiom,
     HomsetsCategory,
 )
-from dzack_research.preamble.categories.group.groups import OwnedGroups
+from dzack_research.preamble.categories.group.groups import OwnedFiniteGroups, OwnedGroups
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
 from typing import Protocol, TYPE_CHECKING
 
@@ -1591,7 +1591,10 @@ class TorsionFormOrthogonalSubgroups(Category):
     """
 
     def super_categories(self) -> list:
-        return [OwnedGroups().Finite().Subobjects()]
+        # ``OwnedFiniteGroups()`` and not ``OwnedGroups().Finite()``: the owned
+        # tree states finiteness by a node of its own, and the subobject
+        # construction is reached from there through ``super_categories()``.
+        return [OwnedFiniteGroups().Subobjects()]
 
     class ParentMethods:
         def __init__(

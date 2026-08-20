@@ -37,7 +37,6 @@ from sage.misc.cachefunc import cached_method
 from dzack_research.preamble.categories.sets.cardinals import Cardinal, cardinal
 from dzack_research.preamble.categories.modules.module_morphisms.morphism_matrices import matrix_group
 from dzack_research.preamble.owned_category_bases import Category
-from sage.categories.groups import Groups as SageGroups
 from sage.quadratic_forms.quadratic_form import QuadraticForm as SageQuadraticForm
 from sage.sets.totally_ordered_finite_set import TotallyOrderedFiniteSet
 
@@ -1101,6 +1100,7 @@ class LatticeIsometrySubgroups(Category):
             **rest: "ConstructionData",
         ) -> None:
             # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.group.groups import OwnedFinitelyGeneratedGroups
             from dzack_research.preamble.categories.modules.framed.formed.integrallattice.lattice_homomorphisms import LatticeHomomorphisms
             from dzack_research.preamble.categories.sets.sets import finite_ordered_set
             from dzack_research.preamble.refine import refine
@@ -1110,22 +1110,21 @@ class LatticeIsometrySubgroups(Category):
             )
             super().__init__(domain=lattice, codomain=lattice, **rest)
             # A subgroup of \(O(L)\) is a group, and that is the whole placement.
-            # Not ``Groups().Finite()``: refining into the finite subcategory
-            # asserts a theorem, and one that is generally hard -- it needs
-            # \(O(L)\) computed, or a definiteness hypothesis.  Cardinality is
-            # not a reason to reach for it, being total on sets already.
+            # Not the finite groups node: claiming finiteness asserts a theorem,
+            # and one that is generally hard -- it needs \(O(L)\) computed, or a
+            # definiteness hypothesis.  Cardinality is not a reason to reach for
+            # it, being total on sets already.
             #
             # Finitely generated is the one axiom the constructor does witness:
-            # the generating set is the argument.  The isometry node carries the
-            # group vocabulary and the engine's own node carries the axiom, so
-            # the placement is what makes this object answer as a group.
+            # the generating set is the argument.  So one owned term says both
+            # of the things this object is -- a finitely generated group, and a
+            # subgroup of the \(O(L)\) the inclusion names.
             refine(
                 self,
                 [
                     LatticeHomomorphisms(),
                     LatticeIsometries(),
-                    SageGroups().FinitelyGenerated(),
-                    SageGroups().Subobjects(),
+                    OwnedFinitelyGeneratedGroups().Subobjects(),
                 ],
             )
             assert group_generators, "a generated subgroup needs a generator"

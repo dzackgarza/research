@@ -378,7 +378,9 @@ class GroupAutomorphismGroup(GroupHomset):
             self.domain(), engine_subgroup=engine_subgroup
         )
         subgroup._supergroup = self
-        return refine(subgroup, [OwnedGroups(), SageGroups().Subobjects()])
+        # One term: the owned subobject construction is already a subcategory
+        # of ``OwnedGroups()``, so naming the group node beside it repeats it.
+        return refine(subgroup, [OwnedGroups().Subobjects()])
 
     def supergroup(self) -> "Group":
         containing: "Group" = self.__dict__.get("_supergroup", self)

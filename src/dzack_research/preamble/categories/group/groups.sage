@@ -28,7 +28,7 @@ if TYPE_CHECKING:
 from typing import Self
 
 from sage.misc.cachefunc import cached_method
-from dzack_research.preamble.owned_category_bases import Category
+from dzack_research.preamble.owned_category_bases import Category, SubobjectsCategory
 from sage.categories.commutative_additive_groups import CommutativeAdditiveGroups
 from sage.categories.finite_groups import FiniteGroups as SageFiniteGroups
 from sage.categories.groups import Groups as SageGroups
@@ -733,6 +733,30 @@ class OwnedGroups(Category):
                 return Unknown
             found = _gap_model(self).IsomorphismGroups(_gap_model(other))
             return str(found) != "fail"
+
+    class Subobjects(SubobjectsCategory):
+        r"""Subgroups: a group \(H\) and a monomorphism \(\iota:H\hookrightarrow G\).
+
+        \(G\) is ``inclusion().codomain()``, so no subgroup records it a
+        second time.  What this level states past the bare subobject is that
+        \(\iota\) is a homomorphism: \(H\) is closed under the operation and
+        under inverses, and \(1_H=1_G\).  That is why the arrow alone decides
+        membership, and why nothing has to be enumerated to get it.
+
+        Order, finite generation and a generating set are no part of being a
+        subgroup and are not asserted here.  A subgroup of \(O(L)\) is the
+        case that forbids asserting them: computing a generating set of
+        \(O(L)\) for a common indefinite \(L\) runs for days, while deciding
+        \(f\in H\) is always available.
+
+        The axiom subcategories -- :class:`OwnedFinitelyGeneratedGroups`,
+        :class:`OwnedFinitelyPresentedGroups`, :class:`OwnedFiniteGroups` --
+        declare no ``Subobjects`` of their own and must not.  Each reaches
+        this one through ``super_categories()``, which is the whole
+        statement: an axiom is a property of the group already there, so a
+        subgroup of a finite group is a subgroup that is finite, not a second
+        construction.
+        """
 
 
 class OwnedFinitelyGeneratedGroups(Category):
