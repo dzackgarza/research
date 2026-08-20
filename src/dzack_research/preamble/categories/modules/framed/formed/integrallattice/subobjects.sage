@@ -47,7 +47,6 @@ if TYPE_CHECKING:
         """
 
         _form: "Morphism"
-        _module: "Module"
 
         def embedding(self) -> "ModuleMorphism": ...
         def embedding_codomain(self) -> "Module": ...
@@ -381,10 +380,12 @@ def Subobject(embedding: "ModuleMorphism") -> "Module":
     domain = embedding.domain()
     domain_category = domain.category()
     codomain = embedding.codomain()
+    # A formed module is a module, so the module a form sits on is the object
+    # that carries the form.
     match ("_form" in domain.__dict__, "_form" in codomain.__dict__):
         case (True, _):
             form = domain.__dict__["_form"]
-            underlying_module = domain.__dict__["_module"]
+            underlying_module = domain
         case (False, True):
             form = codomain.form().pullback(embedding)
             underlying_module = domain
@@ -401,7 +402,6 @@ def Subobject(embedding: "ModuleMorphism") -> "Module":
             pass
         case _:
             subobject._form = form
-            subobject._module = underlying_module
     categories = [domain_category, subobject.category(), Subobjects()]
     # A submodule of a definite lattice is where reduction is defined, so the
     # axiom is joined here rather than asserted at each call site.
