@@ -188,6 +188,10 @@ class Sets(OwnedCategory):
                 r"""The factors, under the name Sage's product machinery reads."""
                 return self._factors
 
+            def _sets_keys(self) -> range:
+                r"""The indices of the factors: a finite family is indexed by position."""
+                return range(len(self._factors))
+
             def cardinality(self) -> Cardinal:
                 r"""Return ``prod(#X_i)`` for the cartesian factors ``X_i``."""
                 from dzack_research.preamble.categories.sets.cardinals import (

@@ -436,16 +436,12 @@ class PrimeFields(OwnedCategoryMixin, Category):
             # gives: a ring's underlying set does not change by being placed,
             # and an element parented here would lose every coercion Sage
             # knows for the engine's.
-            super().__init__(facade=self._engine, **rest)
+            super().__init__(
+                facade=self._engine, cardinality=characteristic, **rest
+            )
 
         def characteristic(self) -> SageInteger:
             return self._characteristic
-
-        def cardinality(self) -> "Cardinal":
-            r"""Return \(|\mathbb{F}_p| = p\)."""
-            from dzack_research.preamble.categories.sets.cardinals import cardinal
-
-            return cardinal(self._characteristic)
 
         def __iter__(self) -> "Iterator[Element]":
             r"""The residues, which is what makes this a finite set."""

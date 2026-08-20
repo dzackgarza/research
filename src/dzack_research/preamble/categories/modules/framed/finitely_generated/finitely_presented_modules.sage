@@ -29,6 +29,7 @@ from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBase
 from typing import Self
 
 from sage.categories.homset import Hom
+from sage.misc.abstract_method import abstract_method
 from sage.misc.cachefunc import cached_method
 from sage.categories.morphism import SetMorphism
 from sage.matrix.constructor import matrix
@@ -130,9 +131,161 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
         return [FinitelyGeneratedModules(self.base_ring())]
 
     class ParentMethods:
+
+        @abstract_method
+        def relation_matrix(self: "PresentedModuleParent") -> MorphismMatrix:
+            r"""Return the relations of the chosen presentation.
+
+            The obligation of this category: a finitely presented module is a
+            module together with a chosen finite presentation, and the rows of
+            this matrix are the relations that presentation imposes on the
+            chosen generators.  Every invariant below -- rank, torsion, the
+            invariant factors, the reduction of a coordinate vector -- is read
+            off it, so it is the one name a parent placed here must answer and
+            the only route by which the mathematics reaches the presentation.
+            """
+            ...
+
         def is_finitely_presented(self: "PresentedModuleParent") -> bool:
             r"""Return whether this module is finitely presented."""
             return True
+
+        def number_of_module_generators(self: "PresentedModuleParent") -> int:
+            r"""Return the number of generators the presentation is written on."""
+            count: int = self.relation_matrix().ncols()
+            return count
+
+        def rank(self: "PresentedModuleParent") -> "Cardinal":
+            r"""Return the rank of the free part: generators minus independent relations."""
+            return (
+                self.number_of_module_generators()
+                - self.relation_matrix()._sage_matrix().rank()
+            )
+
+        def is_torsion(self: "PresentedModuleParent") -> bool:
+            # Local: at module level this closes an import cycle; the ring module
+            # is built by the time a module answers about its torsion.
+            from dzack_research.preamble.categories.rings.rings import engine_ring
+
+            return engine_ring(self.base_ring()) is SageZZ and self.rank() == 0
+
+        @cached_method
+        def _smith(self: "PresentedModuleParent") -> tuple:
+            r"""Return the Smith normal form $D=URV$ of the relations.
+
+            Every invariant of a presented module -- its invariant factors, its
+            torsion freeness, its torsion-free quotient -- is read off this one
+            decomposition, so it is computed once and named rather than
+            recomputed at each question.
+            """
+            decomposition: tuple = self.relation_matrix()._sage_matrix().smith_form()
+            return decomposition
+
+        @cached_method
+        def _relations_normal_form(self: "PresentedModuleParent") -> Matrix:
+            r"""Return the relations row-reduced, as the reduction below uses them."""
+            reduced: Matrix = self.relation_matrix().normal_form()._sage_matrix()
+            return reduced
+
+        def torsion_free_quotient(self: "PresentedModuleParent") -> "ModuleMorphism":
+            r"""Return the projection $M\twoheadrightarrow M/\operatorname{tors}(M)$.
+
+            The Smith form $D=URV$ of the relations puts $M$ in the coordinates
+            $y=xV$, where the relations are diagonal: a coordinate with a nonzero
+            entry is torsion, one with a zero entry is free.  The projection is
+            therefore $V$ restricted to the free columns, and this is the one
+            place that computation is done -- every saturation and primitivity
+            question routes through it rather than restating it as a matrix
+            normal form at the call site.
+            """
+            # Local: at module level this closes an import cycle; the free module
+            # is built by the time a quotient is projected onto.
+            from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import BasedFreeModule
+
+            smith, _, right = self._smith()
+            diagonal = list(smith.diagonal())
+            free_columns = [
+                column
+                for column in range(self.number_of_module_generators())
+                if column >= len(diagonal) or diagonal[column] == 0
+            ]
+            coordinates = right.matrix_from_columns(free_columns)
+            target = BasedFreeModule(
+                self.base_ring(), Sets.Δ[len(free_columns) - 1]
+            )
+            return self.Hom(target)(
+                {
+                    label: zipsum(row, target.module_generators(), target.zero())
+                    for label, row in zip(self.module_generating_set(), coordinates.rows())
+                }
+            )
+
+        def is_torsion_free(self: "PresentedModuleParent") -> bool:
+            # Local: at module level this closes an import cycle; the ring module
+            # is built by the time a module answers about its torsion.
+            from dzack_research.preamble.categories.rings.rings import engine_ring
+
+            if engine_ring(self.base_ring()) is not SageZZ:
+                return True
+            smith = self._smith()[0]
+            return all(abs(entry) == 1 for entry in smith.diagonal() if entry != 0)
+
+        def is_zero(self: "PresentedModuleParent") -> bool:
+            return all(generator == self.zero() for generator in self.module_generators())
+
+        def invariants(self: "PresentedModuleParent") -> tuple:
+            # Local: at module level this closes an import cycle; the ring module
+            # is built by the time invariants are asked for.
+            from dzack_research.preamble.categories.rings.rings import engine_ring
+
+            assert engine_ring(self.base_ring()) is SageZZ, "invariants are defined here over ZZ"
+            smith = self._smith()[0]
+            return tuple(
+                abs(entry) for entry in smith.diagonal() if abs(entry) > 1
+            )
+
+        def cardinality(self: "PresentedModuleParent") -> "Cardinal":
+            r"""Return \(|M|\).
+
+            Total, so positive rank is answered rather than refused: a module
+            with a free part is countably infinite, not an error.
+            """
+            if not self.is_torsion():
+                return Sets.ℵ[0]
+            return Cardinal(prod(self.invariants(), 1))
+
+        def exponent(self: "PresentedModuleParent") -> "Integer":
+            invariants = self.invariants()
+            return invariants[-1] if invariants else 1
+
+        def _reduce(self: "PresentedModuleParent", coordinates: "Vector") -> "Vector":
+            # Local: at module level this closes an import cycle; the ring module
+            # is built by the time an element is reduced.
+            from dzack_research.preamble.categories.rings.rings import engine_ring
+
+            result = vector(engine_ring(self.base_ring()), list(coordinates))
+            assert len(result) == self.number_of_module_generators(), (
+                f"this module has {self.number_of_module_generators()} coordinates, got {len(result)}"
+            )
+            for row in self._relations_normal_form().rows():
+                pivot = next((i for i, entry in enumerate(row) if entry != 0), None)
+                if pivot is None:
+                    continue
+                match self.base_ring():
+                    case ring if engine_ring(ring) is SageZZ:
+                        coefficient = result[pivot] // row[pivot]
+                    case ring if ring.is_field():
+                        coefficient = result[pivot] / row[pivot]
+                    case _:
+                        assert False, (
+                            "normal-form reduction currently requires ZZ or a field"
+                        )
+                result -= coefficient * row
+            return result
+
+        def reduce(self: "PresentedModuleParent", coordinates: "Vector") -> "Vector":
+            r"""Return the canonical representative modulo the presentation."""
+            return self._reduce(coordinates)
 
         def hermite_form(self: "PresentedModuleParent") -> "Isomorphism":
             r"""Return the isomorphism $M\to M'$ onto the reduced presentation.
