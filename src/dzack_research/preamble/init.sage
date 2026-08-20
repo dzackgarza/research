@@ -30,45 +30,38 @@
 import IPython.core.ultratb
 from sage.libs.gap.libgap import libgap
 
-from dzack_research.preamble.categories.rings import rings as _owned_rings
 from dzack_research.preamble.display import install_implicit_typesetting
-from dzack_research.preamble.install import install_preamble
+
+# One import, and it is the same one a script or a notebook cell makes: the
+# categories and their install hooks, every name the preamble's modules export
+# -- ``Lattices``, ``zipsum``, ``Sterk`` -- the named specimens, and the
+# session's own ``ZZ`` and ``QQ``, which are the owned rings and not the
+# engine's.  ``dzack_research.preamble.all`` is the analogue of ``sage.all``,
+# so this file states the session in one line rather than keeping a second
+# copy of the sequence that would drift from it.
+#
+# The ring names used to be bound by hand here, last, because any further
+# ``load()`` re-imports Sage's namespace and would rebind them to the engine
+# behind the session's back.  That is no longer an ordering fact to maintain:
+# the ``load`` this import binds re-owns the scope it ran in, so the property
+# holds wherever the line sits.
+from dzack_research.preamble.all import *
 
 Σ = sum
 Π = prod
 
-# One call, one mechanism: the categories, their install hooks, and every name
-# the preamble's modules export -- ``Lattices``, ``zipsum``, ``Sterk`` -- are
-# bound into this session.  The ``.sage`` tests call the same function with
-# their own namespace, so the two cannot drift apart.
-install_preamble(globals())
-
 libgap.LoadPackage("PackageManager")
 IPython.core.ultratb.VerboseTB._tb_highlight = "bg:ansired"
 
-Lattices.install(globals())
-
-# The session's names for the owned rings, bound last.
-#
-# In code the owned rings are spelled so that a missing import fails loudly;
-# nobody types those at a prompt, so a session gets them under the names it
-# already uses.  This is the one place the two spellings meet, and it is the
-# last act because any further loading re-imports Sage's namespace and would
-# rebind these to the engine behind the session's back.
-# Read off the module, not from names bound here: the code spellings
-# normalize to ``Z``, ``Q``, ``R``, ``C`` under Python's identifier rules, and
-# ``Lattices.install`` has just bound ``Z`` to the rank-one lattice
-# $\langle 1\rangle$.  A bare ``ZZ = ℤ`` on this line reads that lattice.
-ZZ = _owned_rings.ℤ
-QQ = _owned_rings.ℚ
-RR = _owned_rings.ℝ
-CC = _owned_rings.ℂ
+# Before the Julia bridge, because a session that cannot reach Julia is still
+# a session and should still typeset.  The bridge is a computational backend
+# and its absence is loud -- Sage prints the startup traceback -- but it used
+# to take this line down with it, and then nothing in the session rendered.
+install_implicit_typesetting(get_ipython())
 
 from sage_julia_bridge import JuliaHandle, julia
 
 julia.eval("using Oscar")
-
-install_implicit_typesetting(get_ipython())
 
 # Sage routes ``load(...)`` through its active preparser, so the interactive
 # extension is installed only after every authored preamble file has loaded.

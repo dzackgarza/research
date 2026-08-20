@@ -87,7 +87,7 @@ docs-preview: docs-bib
 sage-init-install:
     #!/usr/bin/env bash
     set -euo pipefail
-    source="{{justfile_directory()}}/sage-init.sage"
+    source="{{justfile_directory()}}/src/dzack_research/preamble/init.sage"
     target="${DOT_SAGE:-$HOME/.sage}/init.sage"
     [ -f "${source}" ] || { echo "sage-init-install: missing ${source}" >&2; exit 1; }
     mkdir -p "$(dirname "${target}")"
@@ -114,13 +114,23 @@ sage-init-install:
 sage-init-check:
     #!/usr/bin/env bash
     set -euo pipefail
-    "$(just --evaluate sage_bin 2>/dev/null || echo "${SAGE_BIN:-sage}")" --python - <<'PY'
+    # Through ``sage -c``, which is the only way this Sage runs code: the CLI
+    # has no ``--python``.  The probe is written out first because ``-c`` reads
+    # trailing words as more code.
+    probe="$(mktemp --suffix=.py)"
+    trap 'gio trash "${probe}" 2>/dev/null || true' EXIT
+    cat > "${probe}" <<'PY'
     from jupyter_client.manager import start_new_kernel
 
     km, kc = start_new_kernel(kernel_name="sagemath")
     try:
         results = {}
-        for label, code in [("typeset", "R.<t> = QQ[]; t^2 + 1"), ("plain", "'a plain string'")]:
+        # A matrix, not ``QQ['t']``: in a preamble session ``PolynomialRing``
+        # is the owned free-algebra constructor, so that expression no longer
+        # names a Sage object at all.  The rule under test is that an object
+        # able to typeset does, and a matrix is the specimen a session still
+        # gets from the engine.
+        for label, code in [("typeset", "matrix(ZZ, [[1, 2], [3, 4]])"), ("plain", "'a plain string'")]:
             got = {}
             kc.execute_interactive(
                 code, timeout=180,
@@ -134,6 +144,8 @@ sage-init-check:
         kc.stop_channels()
         km.shutdown_kernel()
     PY
+    "$(just --evaluate sage_bin 2>/dev/null || echo "${SAGE_BIN:-sage}")" \
+        -c "exec(open('${probe}').read())"
 
 [private]
 _lock:

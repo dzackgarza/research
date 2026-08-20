@@ -686,12 +686,17 @@ class TorsionModulesWithForm(OwnedCategoryOverBaseRing):
         """
 
         def order(self: "TorsionFormElement") -> "Integer":
-            r"""Return the generator of $\operatorname{Ann}(a)$, asked of $U(a)$.
+            r"""Return the generator of $\operatorname{Ann}(a)$, which is its
+            additive order.
 
-            A module question, and one the form has no part in, so it is put to
-            the element's image under the fibration's projection.
+            A module question, and one the form has no part in, so it is put
+            to the module level: $\operatorname{Ann}(a)=(n)$ exactly when $n$
+            is least with $na=0$.  Not to ``underlying_element()`` -- a formed
+            module *is* the module its form is written on, so that arrow is
+            the identity and asking it this question asks the same element
+            again.
             """
-            order: "Integer" = self.underlying_element().order()
+            order: "Integer" = self.additive_order()
             return order
 
 
