@@ -296,14 +296,14 @@ def QuadraticForms(module: "Module", value_module: "Module") -> QuadraticFormHom
     return forms
 
 
-def _forget_form_element(element: "Element") -> "Element":
+def _underlying_element(element: "Element") -> "Element":
     # Local: form_modules imports this module, so a module-level import here
     # would close that cycle; it is built by the time this function runs.
     from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModules
 
     match element:
         case Element() if element.parent() in FormModules(element.parent().base_ring()):
-            return element.forget_form()
+            return element.underlying_element()
         case Element():
             return element
         case _:
@@ -493,12 +493,8 @@ class BilinearFormMorphism(Morphism):
         )
 
     def pullback(self, morphism: "ModuleMorphism") -> "BilinearFormMorphism":
-        # Local: the morphism node imports this module, so a module-level
-        # import would close that cycle; it is built by call time.
-        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _underlying_module
-
         matrix_of_map = morphism.matrix()._sage_matrix()
-        domain = _underlying_module(morphism.domain())
+        domain = morphism.domain()
         return BilinearForms(domain, self.codomain())(
             GramMatrix(
                 matrix_of_map
@@ -522,9 +518,7 @@ class BilinearFormMorphism(Morphism):
         # The compatibility the pairing loop below silently assumes: the
         # inclusion lands in this form's module, which is where both the
         # images of N and the generating family of M are paired.
-        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _underlying_module
-
-        assert _underlying_module(codomain) is self.module(), (
+        assert codomain is self.module(), (
             f"the inclusion lands in {codomain}, but this form pairs "
             f"elements of {self.module()}"
         )
@@ -536,8 +530,8 @@ class BilinearFormMorphism(Morphism):
         return all(
             value_projection(
                 self(
-                    _forget_form_element(morphism(domain.module_generator(label))),
-                    _forget_form_element(codomain.module_generator(target_label)),
+                    _underlying_element(morphism(domain.module_generator(label))),
+                    _underlying_element(codomain.module_generator(target_label)),
                 )
             )
             == target_zero
@@ -709,12 +703,8 @@ class QuadraticFormMorphism(Morphism):
         )
 
     def pullback(self, morphism: "ModuleMorphism") -> "QuadraticFormMorphism":
-        # Local: the morphism node imports this module, so a module-level
-        # import would close that cycle; it is built by call time.
-        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _underlying_module
-
         matrix_of_map = morphism.matrix()._sage_matrix()
-        domain = _underlying_module(morphism.domain())
+        domain = morphism.domain()
         return QuadraticForms(domain, self.codomain())(
             matrix_of_map
             * self._lift_matrix
@@ -751,7 +741,7 @@ class QuadraticFormMorphism(Morphism):
         target_zero = quadratic_target.zero()
         return all(
             value_projection(
-                self(_forget_form_element(morphism(morphism.domain().module_generator(label))))
+                self(_underlying_element(morphism(morphism.domain().module_generator(label))))
             )
             == target_zero
             for label in morphism.domain().module_generating_set()

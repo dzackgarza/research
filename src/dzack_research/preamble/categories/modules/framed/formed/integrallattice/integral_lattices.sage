@@ -1452,7 +1452,7 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             # Local: a module-level import here would close a cycle; by call time this module is built.
             from dzack_research.preamble.categories.forms.forms import BilinearForm
             result = BilinearForm(
-                self.forget_form(),
+                self,
                 ℤ,
                 scale * matrix(SageZZ, self.gram_matrix()),
             )

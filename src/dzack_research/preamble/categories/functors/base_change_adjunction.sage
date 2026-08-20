@@ -72,8 +72,7 @@ class BaseChangeFunctor(Functor):
 
         base_ring = module.base_ring()
         formed = module in FormModules(base_ring)
-        underlying = module.forget_form() if formed else module
-        assert underlying in FramedFreeModules(base_ring), (
+        assert module in FramedFreeModules(base_ring), (
             f"{module} is not free on its framing, and base change is "
             "computed here by carrying that framing over to S. A module "
             "with relations base-changes to the cokernel of its relations "

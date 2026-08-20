@@ -865,7 +865,7 @@ AUDITED_MATHEMATICS = {
     ),
     # the forgetful functor
     "free_module": (
-        lambda lattice: lattice.forget_form().number_of_module_generators(),
+        lambda lattice: lattice.number_of_module_generators(),
         lambda native: native.free_module().rank(),
     ),
     # base change to QQ

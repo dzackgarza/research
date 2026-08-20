@@ -174,10 +174,9 @@ def test_the_gram_matrix_is_the_forms_covariant_tensor() -> None:
     assert form_tensor.valence() == (0, 2)
 
     lattice_generators = list(lattice.module_generators())
-    module_generators = list(lattice.forget_form().module_generators())
     for i in (0, 1):
         for j in (0, 1):
-            assert form_tensor(module_generators[i], module_generators[j]) == lattice.b(
+            assert form_tensor(lattice_generators[i], lattice_generators[j]) == lattice.b(
                 lattice_generators[i], lattice_generators[j]
             ), "the tensor pairs what the form pairs"
 

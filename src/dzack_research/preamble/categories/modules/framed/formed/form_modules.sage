@@ -82,13 +82,11 @@ if TYPE_CHECKING:
         answers these too and is no instance of ``FormModule``.
         """
 
-        _module: "Module"
         _framing_morphism: FramingMorphism
 
         def _form_morphism(self) -> "Form": ...
         def base_ring(self) -> "Ring": ...
         def form(self) -> "Form": ...
-        def forget_form(self) -> "Module": ...
         def value_module(self) -> "Module": ...
         def gram_matrix(self) -> GramMatrix: ...
         def vector_space(self) -> "FormedParent": ...
@@ -130,7 +128,7 @@ if TYPE_CHECKING:
         r"""What an element of a formed module offers."""
 
         def parent(self) -> Parent: ...
-        def forget_form(self) -> "UnderlyingElement": ...
+        def underlying_element(self) -> "UnderlyingElement": ...
         def b(self, other: "Element") -> "Element": ...
         def span(self) -> "Subobject": ...
         def _coordinates(self) -> "Vector": ...
@@ -311,7 +309,7 @@ class FormModules(OwnedCategoryOverBaseRing):
                 self.base_ring(),
                 [list(row) for row in self.gram_matrix().rows()],
                 valence=(0, 2),
-                module=self.forget_form(),
+                module=self,
             )
             return gram_tensor
 
@@ -330,7 +328,7 @@ class FormModules(OwnedCategoryOverBaseRing):
         ) -> "TensorElement":
             r"""Raise one lower index after extension to the fraction field."""
             changed_form = self.vector_space()
-            changed_tensor = tensor.base_changed(changed_form.forget_form())
+            changed_tensor = tensor.base_changed(changed_form)
             return changed_form.raise_index(changed_tensor, slot)
 
         def lower_index(
@@ -340,12 +338,6 @@ class FormModules(OwnedCategoryOverBaseRing):
         ) -> "TensorElement":
             r"""Lower one upper index using this form."""
             return tensor.lower_index(self, slot)
-
-        def is_torsion_free(self: "FormedParent") -> bool:
-            return bool(self.forget_form().is_torsion_free())
-
-        def is_torsion(self: "FormedParent") -> bool:
-            return bool(self.forget_form().is_torsion())
 
         def Hom(
             self: Self,
@@ -605,13 +597,13 @@ class FormModules(OwnedCategoryOverBaseRing):
             element: "UnderlyingElement",
             **rest: "ConstructionData",
         ) -> None:
-            assert element.parent() is parent.forget_form(), (
-                f"{element} is not an element of {parent.forget_form()}"
+            assert element.parent() is parent, (
+                f"{element} is not an element of {parent}"
             )
             self._underlying = element
             super().__init__(parent, **rest)
 
-        def forget_form(self: Self) -> "UnderlyingElement":
+        def underlying_element(self: Self) -> "UnderlyingElement":
             return self._underlying
 
         def coefficients(self: Self) -> dict["Element", "RingElement"]:
@@ -641,26 +633,26 @@ class FormModules(OwnedCategoryOverBaseRing):
             return repr(self._underlying)
 
         def _coordinates(self: "FormedElement") -> "Vector":
-            coordinates: "Vector" = self.forget_form()._coordinates()
+            coordinates: "Vector" = self.underlying_element()._coordinates()
             return coordinates
 
         def b(self: "FormedElement", other: "Element") -> "Element":
             # Local: a module-level import here would close a cycle; by call time this module is built.
-            from dzack_research.preamble.categories.forms.forms import _forget_form_element
+            from dzack_research.preamble.categories.forms.forms import _underlying_element
             assert other.parent() is self.parent(), (
                 "a form pairs two elements of one formed module"
             )
             value: "Element" = self.parent().form().b(
-                _forget_form_element(self),
-                _forget_form_element(other),
+                _underlying_element(self),
+                _underlying_element(other),
             )
             return value
 
         def norm(self: "FormedElement") -> "Element":
             # Local: a module-level import here would close a cycle; by call time this module is built.
-            from dzack_research.preamble.categories.forms.forms import _forget_form_element
+            from dzack_research.preamble.categories.forms.forms import _underlying_element
             value: "Element" = self.parent().form().norm(
-                _forget_form_element(self)
+                _underlying_element(self)
             )
             return value
 
@@ -712,7 +704,7 @@ class FormModules(OwnedCategoryOverBaseRing):
                 case Element() if other.parent() is self.parent():
                     return self.b(other)
                 case scalar if scalar in self.parent().base_ring():
-                    return self.parent()._over(scalar * self.forget_form())
+                    return self.parent()._over(scalar * self.underlying_element())
                 case _:
                     assert False, (
                         f"{other} is neither an element of {self.parent()} nor "
@@ -1055,10 +1047,6 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
 
     class ParentMethods:
 
-        def rank(self: "FormedParent") -> "Cardinal":
-            rank: "Cardinal" = self.forget_form().rank()
-            return rank
-
         def subobject_on(
             self: "FormedParent",
             module_generators: "OrderedSet",
@@ -1101,7 +1089,7 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
     class ElementMethods:
         def underlying_set_element(self: "FormedElement") -> "Element":
             r"""Recover the element of \(S\) defining a canonical generator."""
-            label: "Element" = self.forget_form().underlying_set_element()
+            label: "Element" = self.underlying_element().underlying_set_element()
             return label
 
 

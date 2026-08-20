@@ -48,7 +48,6 @@ if TYPE_CHECKING:
     class DiscriminantQuadraticParent(Protocol):
         r"""What an object of this category offers."""
 
-        def forget_form(self) -> "Module": ...
         def form(self) -> "QuadraticFormMorphism": ...
         def smith_form_module_generators(self) -> "OrderedSet": ...
         def regenerate(self, module_generators: "OrderedSet") -> "FormModule": ...
@@ -60,7 +59,7 @@ if TYPE_CHECKING:
         r"""What an element of such an object offers."""
 
         def parent(self) -> "DiscriminantQuadraticParent": ...
-        def forget_form(self) -> "Element": ...
+        def underlying_element(self) -> "Element": ...
         def q(self) -> "Element": ...
         def b(self, other: "Element") -> "Element": ...
 
@@ -217,7 +216,7 @@ class DiscriminantQuadraticModules(Category):
             # Local: a module-level import here would close a cycle; by call time this module is built.
             from dzack_research.preamble.categories.modules.framed.formed.torsionform.discriminant_bilinear_modules import DiscriminantBilinearModules
             return DiscriminantBilinearModules().from_module(
-                self.forget_form(),
+                self,
                 self.form().polar_form().gram_matrix(),
             )
 
@@ -337,7 +336,7 @@ class DiscriminantQuadraticModules(Category):
             presented group.
             """
             return DiscriminantQuadraticModules().from_module(
-                self.forget_form(),
+                self,
                 scalar * self.form().polar_form().gram_matrix(),
             )
 
@@ -369,7 +368,7 @@ class DiscriminantQuadraticModules(Category):
             here modulo $2\mathbb Z$ instead -- Nikulin's convention, and the
             reason $q$ and $b$ differ only in their value module.
             """
-            return self.parent().form()(self.forget_form())
+            return self.parent().form()(self.underlying_element())
 
         def __pow__(
             self: "DiscriminantQuadraticElement",

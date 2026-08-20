@@ -53,7 +53,6 @@ if TYPE_CHECKING:
         _over: "Module"
 
         def form(self) -> "Morphism": ...
-        def forget_form(self) -> "Module": ...
         def presentation(self) -> "ModuleMorphism": ...
         def module_generator(self, label: "Element") -> "Element": ...
         def module_generators(self) -> tuple: ...
@@ -77,7 +76,7 @@ if TYPE_CHECKING:
         r"""What an element of such a module offers."""
 
         def parent(self) -> "TorsionFormParent": ...
-        def forget_form(self) -> "ModuleElement": ...
+        def underlying_element(self) -> "ModuleElement": ...
 
     class CokernelFormParent(Protocol):
         r"""What a form on a cokernel offers: the map it came from."""
@@ -176,58 +175,6 @@ class TorsionModulesWithForm(OwnedCategoryOverBaseRing):
             ))
             reduced.subdivide(*form.gram_matrix().subdivisions())
             return reduced
-
-        def relation_matrix(self: "TorsionFormParent") -> MorphismMatrix:
-            r"""Return :meth:`presentation`'s matrix, one row per relation."""
-            return self.forget_form().relation_matrix()
-
-        def presentation(self: "TorsionFormParent") -> "ModuleMorphism":
-            r"""Return $p$, the morphism this object is the cokernel of.
-
-            Every object here has one, because every finitely presented module
-            does.  What $p$ *is* varies -- a lattice's correlation, a
-            finite-index map of lattices, or a morphism synthesized from a
-            group and a matrix -- and that is what the refinements below are
-            about; that there is one is not.
-            """
-            return self.forget_form().presentation()
-
-        def invariants(self: "TorsionFormParent") -> tuple["Integer", ...]:
-            r"""Return the invariant factors of the underlying module."""
-            return tuple(self.forget_form().invariants())
-
-        def cardinality(self: "TorsionFormParent") -> "Cardinal":
-            r"""Return \(|A|\), which a form does not change."""
-            return self.forget_form().cardinality()
-
-        def annihilator(self: "TorsionFormParent") -> "Ideal_pid":
-            r"""Return $\operatorname{Ann}(A)\subseteq\mathbb Z$, which is nonzero here.
-
-            The ideal, not its generator: callers ask it for ``gen()``.
-            """
-            annihilator: "Ideal_pid" = self.forget_form().annihilator()
-            return annihilator
-
-        def smith_form_module_generators(self: "TorsionFormParent") -> "OrderedSet":
-            r"""Return generators realizing the invariant factor decomposition.
-
-            The form is not written in them -- they are a different generating
-            set, and a form written in one is a different object from the same
-            form written in another, which is what ``regenerate`` builds.
-            """
-            # Local: a module-level import here would close a cycle; by call time this module is built.
-            from dzack_research.preamble.categories.sets.sets import finite_ordered_set
-            return finite_ordered_set(
-                tuple(
-                    self._over(generator)
-                    for generator in self.forget_form().smith_form_module_generators()
-                )
-            )
-
-        def __iter__(self: "TorsionFormParent") -> "Iterator[Element]":
-            r"""Iterate over the elements, of which there are finitely many."""
-            return map(self._over, self.forget_form())
-
 
         def primary_part(self: "TorsionFormParent", p: "Integer") -> Subobject:
             r"""Return $A_p\hookrightarrow A$ as a subobject: the inclusion is the data.
@@ -684,26 +631,12 @@ class TorsionModulesWithForm(OwnedCategoryOverBaseRing):
                 {label: label for label in normal.module_generating_set()}
             )
 
-        def is_p_elementary(self: "TorsionFormParent", p: "Integer") -> bool:
-            r"""Return whether the underlying group is elementary abelian of exponent $p$."""
-            elementary: bool = self.forget_form().is_p_elementary(p)
-            return elementary
-
-        def primary_decomposition(
-            self: "TorsionFormParent",
-        ) -> dict["Integer", tuple["Integer", ...]]:
-            r"""Return the underlying group's primary decomposition."""
-            decomposition: dict["Integer", tuple["Integer", ...]] = (
-                self.forget_form().primary_decomposition()
-            )
-            return decomposition
-
         def _latex_(self: "TorsionFormParent") -> str:
             r"""Return multi-line LaTeX for the torsion module and its form."""
             invs = self.invariants()
             n = self.gram_matrix().nrows()
 
-            fp_latex = str(_latex_fn(self.forget_form()))
+            fp_latex = str(_latex_fn(self))
             inv_str = _format_invariant_factor_latex(invs)
             prim_str = _format_primary_decomp_latex(invs)
             gram_latex = _form_gram_matrix_latex(self)
@@ -760,7 +693,7 @@ class TorsionModulesWithForm(OwnedCategoryOverBaseRing):
             A module question, and one the form has no part in, so it is put to
             the element's image under the fibration's projection.
             """
-            order: "Integer" = self.forget_form().order()
+            order: "Integer" = self.underlying_element().order()
             return order
 
 
@@ -1354,7 +1287,7 @@ def regenerating_data(form: "Morphism", module_generators: "OrderedSet") -> tupl
         "a generating set for this object is made of its own elements; "
         "elements of another module reach it through a morphism"
     )
-    underlying_set = tuple(form.forget_form().module_generating_set())
+    underlying_set = tuple(form.module_generating_set())
     # Shaped, not inferred: the zero subobject is generated by nothing, and a
     # coordinate matrix read off an empty list of rows has no width to
     # multiply the Gram matrix by unless it is told the one it has.
@@ -1403,9 +1336,9 @@ def relations_among(form: "Morphism", module_generators: "OrderedSet") -> "Matri
     (``from_relations``) wraps it into the presentation it is the matrix of.
     """
     module_generators = list(module_generators)
-    known = form.forget_form().relation_matrix()
+    known = form.relation_matrix()
     width = known.ncols()
-    underlying_set = tuple(form.forget_form().module_generating_set())
+    underlying_set = tuple(form.module_generating_set())
     lifts = matrix(
         SageZZ,
         len(module_generators),

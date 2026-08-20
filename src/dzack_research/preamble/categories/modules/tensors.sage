@@ -885,7 +885,7 @@ class TensorModules(Category_over_base_ring):
             assert covariant > slot >= 0, (
                 f"slot {slot} is not a lower index of a type-{self.valence()} tensor"
             )
-            assert formed_module.forget_form() is self.parent().module(), (
+            assert formed_module is self.parent().module(), (
                 "the form and tensor must use the same module"
             )
             inverse = matrix(formed_module.gram_matrix()).inverse()
@@ -918,7 +918,7 @@ class TensorModules(Category_over_base_ring):
             assert contravariant > slot >= 0, (
                 f"slot {slot} is not an upper index of a type-{self.valence()} tensor"
             )
-            assert formed_module.forget_form() is self.parent().module(), (
+            assert formed_module is self.parent().module(), (
                 "the form and tensor must use the same module"
             )
             gram = matrix(formed_module.gram_matrix())

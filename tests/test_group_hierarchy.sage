@@ -187,7 +187,7 @@ def test_a_module_presentation_uses_the_presentation_matrix_relations() -> None:
     r"""The underlying-group presentation retains its commutator relators."""
     from sage.misc.latex import latex
 
-    module = Lattices.A4.discriminant_group().forget_form()
+    module = Lattices.A4.discriminant_group()
     free = module.presenting_free_group()
     first, second = free.gens()[:2]
     commutator = first * second * first**-1 * second**-1

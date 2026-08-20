@@ -77,9 +77,6 @@ class Subobjects(Category):
         def _form_morphism(self: "SubobjectParent") -> "Morphism":
             return self._form
 
-        def forget_form(self: "SubobjectParent") -> "Module":
-            return self._module
-
         def ambient(self: "SubobjectParent") -> "Module":
             r"""Return $B$, the object this one is a subobject of."""
             return self.embedding_codomain()
@@ -163,7 +160,7 @@ class Subobjects(Category):
             ambient = inclusion.codomain()
             quotient = inclusion.cokernel()
             projection = quotient.torsion_free_quotient()
-            torsion_free = ambient.forget_form().hom(
+            torsion_free = ambient.hom(
                 {
                     label: projection(quotient.module_generator(label))
                     for label in ambient.module_generating_set()

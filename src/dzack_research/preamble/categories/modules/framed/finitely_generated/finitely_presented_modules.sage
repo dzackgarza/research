@@ -147,7 +147,6 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
             from dzack_research.preamble.categories.modules.framed.formed.form_modules import is_form_morphism
             from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
             from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _coordinate_vector
-            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _underlying_module
             from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import framing_morphism
             from dzack_research.preamble.categories.rings.rings import engine_ring
 
@@ -169,7 +168,7 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
             # generators.  A free $N$ answers no relations of its own, which is
             # why the free case needs no separate construction -- it is this one
             # with an empty matrix to stack.
-            underlying = _underlying_module(codomain)
+            underlying = codomain
             assert engine_ring(base_ring) is SageZZ or base_ring.is_field(), (
                 "finitely presented modules currently require ZZ or a field"
             )

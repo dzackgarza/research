@@ -169,20 +169,6 @@ def endomorphism_ring(module: "Module") -> Parent:
     return endset
 
 
-def _underlying_module(module: "Module") -> "Module":
-    # Local: at module level this closes an import cycle; the form module is
-    # built by the time a morphism reads its domain.
-    from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModules
-
-    match module:
-        case Parent() if module in FormModules(module.base_ring()):
-            return module.forget_form()
-        case Parent():
-            return module
-        case _:
-            assert False, f"{module!r} is not a module parent"
-
-
 def _coordinate_vector(element: "Element") -> FreeModuleElement:
     r"""Return finite coordinates in the element's declared framing.
 
@@ -221,7 +207,6 @@ def _is_presented(module: "Module") -> bool:
 
 
 def _is_torsion(module: "Module") -> bool:
-    module = _underlying_module(module)
     return _is_presented(module) and module.is_torsion()
 
 
@@ -477,7 +462,7 @@ class ModuleMorphism(Morphism):
     def _check_relations(self) -> None:
         # Local: at module level this closes an import cycle; the presented
         # category is built by the time relations are checked.
-        domain = _underlying_module(self.domain())
+        domain = self.domain()
         if not _is_presented(domain):
             return
         module_generating_set = tuple(self.domain().module_generating_set())
@@ -801,7 +786,7 @@ class ModuleMorphism(Morphism):
         # is built by the time an index is asked for.
         from dzack_research.preamble.categories.rings.rings import engine_ring
 
-        codomain = _underlying_module(self.codomain())
+        codomain = self.codomain()
         image = self.matrix()
         width = len(tuple(self.codomain().module_generating_set()))
 
@@ -986,7 +971,7 @@ class ModuleMorphism(Morphism):
         return bool((difference ** engine.nrows()).is_zero())
 
     def _codomain_relations(self) -> MorphismMatrix:
-        codomain = _underlying_module(self.codomain())
+        codomain = self.codomain()
         match codomain:
             case _ if _is_presented(codomain):
                 return codomain.relation_matrix()

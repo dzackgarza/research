@@ -245,7 +245,7 @@ def test_a_form_is_a_morphism_into_the_value_module(name: str) -> None:
         BilinearFormMorphism: TensorSquare,
         QuadraticFormMorphism: DividedSquare,
     }[type(form)]
-    expected_domain = expected_constructor(parent.forget_form())
+    expected_domain = expected_constructor(parent)
 
     assert domain is expected_domain, (
         f"{name}: the form has domain {domain}, not the degree-two "
@@ -283,7 +283,7 @@ def test_a_constructed_lattice_satisfies_its_defining_properties() -> None:
     lattice = Lattices.A2
     generators = tuple(lattice.module_generators())
 
-    assert lattice.forget_form().relations().cardinality() == 0
+    assert lattice.relations().cardinality() == 0
     assert lattice.rank() == len(generators) == 2
     assert all(left.b(right) in ZZ for left in generators for right in generators)
     assert lattice.correlation_morphism().is_injective()
