@@ -22,6 +22,8 @@ import functools
 
 import pytest
 
+from sage.categories.homset import Hom
+from sage.categories.morphism import SetMorphism
 from sage.misc.abstract_method import AbstractMethod, abstract_methods_of_class
 from sage.structure.parent import Parent
 
@@ -39,6 +41,22 @@ from dzack_research.preamble.categories.modules.tensors import (
     DividedSquare,
     TensorSquare,
 )
+
+
+def _identity_on(source: Parent) -> SetMorphism:
+    r"""Return $\mathrm{id}_S$, the arrow the diagram constructors are given.
+
+    A one-object diagram is the smallest cone, cocone, product, coproduct and
+    biproduct there is: $S$ is the limit of the diagram $(S)$ with
+    $\pi=\mathrm{id}$, and dually the colimit with $\iota=\mathrm{id}$.  The
+    identity is also a monomorphism and an epimorphism, which is what
+    ``Superobject``, ``Covering`` and ``Covered`` require.
+
+    Each row below is given its own $\Delta[n]$: every one of these
+    constructors *refines the object it is handed*, so two rows sharing a set
+    would each see the other's placement.
+    """
+    return SetMorphism(Hom(source, source, Sets()), lambda member: member)
 
 
 def _ensure_preamble() -> None:
@@ -174,6 +192,107 @@ def _constructions() -> dict:
         .intersection(Lattices.E8.subobject_on([3 * e[0], 3 * e[1]])),
         "discriminant quadratic form from data": _discriminant_quadratic_from_data(),
         "discriminant bilinear form from data": _discriminant_bilinear_from_data(),
+        # ---- sets ----
+        "power set": PowerSet(Sets.Δ[2]),
+        "subsets of a fixed size": SubsetsOfSize(Sets.Δ[2], 2),
+        "finite subsets": FiniteSubsets(Sets.Δ[2]),
+        "ordinals": Ordinals(),
+        # A cardinal is built by ``object_of`` through the owned chain like
+        # any other object here -- ``type(cardinal(3))`` is
+        # ``Cardinalities.parent_class`` and it is a ``Parent``, not an
+        # element -- so the sweep's question is the same question for it.
+        "cardinal": cardinal(3),
+        # The image of the forgetful functor: what a lattice's cardinality,
+        # finiteness and enumeration are actually asked of.
+        "underlying set of a lattice": UnderlyingSet(Lattices.A2),
+        "set from an iterable": Set([1, 2, 3]),
+        "condition set": ConditionSet(ZZ, lambda n: n > 0),
+        "image set": ImageSet(lambda n: n, Sets.Δ[2]),
+        # ---- categorical constructions ----
+        "functor space": FunctorSpace(Cat(), Cat()),
+        "coproduct of sets": CoproductOfSets((Sets.Δ[1], Sets.Δ[2])),
+        "isomorphism homset": IsoAr(Lattices.A2, Lattices.A2),
+        # The five limit constructors, on one-object diagrams.  Not the direct
+        # sum row above: ``Lattices.A1 + Lattices.A2`` goes through the
+        # lattice-specific block-diagonal sum and reaches none of these.
+        "cone": Cone((_identity_on(Sets.Δ[11]),)),
+        "cocone": Cocone((_identity_on(Sets.Δ[12]),)),
+        "product": Product((_identity_on(Sets.Δ[13]),)),
+        "coproduct": Coproduct((_identity_on(Sets.Δ[14]),)),
+        "biproduct": Biproduct(
+            (_identity_on(Sets.Δ[15]),), (_identity_on(Sets.Δ[15]),)
+        ),
+        "superobject": Superobject(_identity_on(Sets.Δ[18])),
+        "covering object": Covering(_identity_on(Sets.Δ[16])),
+        "covered object": Covered(_identity_on(Sets.Δ[17])),
+        # ---- divisors ----
+        # One free module each: every one of these refines the module it is
+        # handed into its own divisor category.
+        "divisor group": DivisorGroup(FreeModuleOn(ZZ, Sets.Δ[3])),
+        "weil divisor group": WeilDivisorGroup(FreeModuleOn(ZZ, Sets.Δ[4])),
+        "cartier divisor group": CartierDivisorGroup(FreeModuleOn(ZZ, Sets.Δ[5])),
+        "picard group": PicardGroup(FreeModuleOn(ZZ, Sets.Δ[6])),
+        "class group": ClassGroup(FreeModuleOn(ZZ, Sets.Δ[7])),
+        # ---- schemes ----
+        "affine space": AffineSpace(2, QQ),
+        "projective space": ProjectiveSpace(2, QQ),
+        "convex polytope": ConvexPolytope([[0, 0], [1, 0], [0, 1]]),
+        "convex polygon": ConvexPolygon([[0, 0], [1, 0], [0, 1]]),
+        "lattice polytope": LatticePolytope([[0, 0], [1, 0], [0, 1]]),
+        "lattice polygon": LatticePolygon([[0, 0], [1, 0], [0, 1]]),
+        "toric scheme": ToricScheme(LatticePolytope([[0, 0], [1, 0], [0, 1]])),
+        "toric subscheme": ToricSubscheme(
+            ToricScheme(LatticePolytope([[0, 0], [1, 0], [0, 1]])), (0,)
+        ),
+        "toric variety": ToricVariety(
+            LatticePolytope([[1, 0], [0, 1], [-1, -1]]).normal_fan()
+        ),
+        "curve": Curve(AffineSpace(2, QQ).coordinate_ring().gens()[0]),
+        "toric log pair": ToricLogPair(
+            ToricVariety(LatticePolytope([[1, 0], [0, 1], [-1, -1]]).normal_fan())
+        ),
+        "ade surface": ADESurface("A", 1),
+        "ade base surface": ADEBaseSurface(ADESurface("A", 1)),
+        # ---- algebras on an existing module ----
+        # A different construction from the ``...On`` rows above: those build
+        # the free algebra on a chosen generating set, these build it on a
+        # module that already exists and keep that module's presentation.
+        "tensor algebra of a module": TensorAlgebraOf(BasedFreeModule(QQ, Sets.Δ[1])),
+        "symmetric algebra of a module": SymmetricAlgebraOf(
+            BasedFreeModule(QQ, Sets.Δ[1])
+        ),
+        "alternating algebra of a module": AlternatingAlgebraOf(
+            BasedFreeModule(QQ, Sets.Δ[1])
+        ),
+        "divided power algebra of a module": DividedPowerAlgebraOf(
+            BasedFreeModule(QQ, Sets.Δ[1])
+        ),
+        # ---- modules ----
+        # Not the ``mixed tensor`` row above: that is one bidegree $T^{p,q}M$,
+        # this is the whole graded algebra $\bigoplus_{p,q}T^{p,q}M$.
+        "mixed tensor algebra": MixedTensorAlgebra(BasedFreeModule(QQ, Sets.Δ[1])),
+        "fractional ideal": FractionalIdeal(ZZ, [2]),
+        # The two square constructions on an arbitrary module rather than on a
+        # free algebra's graded piece: they are where a form's domain comes
+        # from, so a lattice is the specimen that matters.
+        "tensor square": TensorSquare(Lattices.A2),
+        "divided square": DividedSquare(Lattices.A2),
+        # Not the ``torsion module`` path: this presents a module by a chosen
+        # morphism of free modules.
+        "finitely presented module": FinitelyPresentedModule(
+            FreeModuleOn(ZZ, Sets.Δ[0]).hom(
+                {0: FreeModuleOn(ZZ, Sets.Δ[0]).module_generator(0) * 2},
+                FreeModuleOn(ZZ, Sets.Δ[0]),
+            )
+        ),
+        # ---- forms ----
+        # A quadratic map supplied by its value function, before any
+        # classifying morphism is formed.
+        "quadratic map": QuadraticMap(Lattices.A2, ZZ, lambda x: x.b(x)),
+        # The two form homsets: built transiently everywhere a form is made,
+        # and never asked for themselves.
+        "bilinear form homset": BilinearForms(Lattices.A2, ZZ),
+        "quadratic form homset": QuadraticForms(Lattices.A2, ZZ),
     }
 
 

@@ -225,7 +225,14 @@ class GroupModules(Category):
             # still running and Sage's caches hash it.
             self._module = module
             self._action = action
-            super().__init__(**rest)
+            # $M$ with a $G$-action is the same underlying module, so the
+            # generating set the level above is constructed on is $M$'s.  This
+            # level introduces $\rho$ and nothing else; without threading the
+            # generating set the chain reaches the free-module level with no
+            # framing and an $R[G]$-module cannot be built at all.
+            super().__init__(
+                module_generating_set=module.module_generating_set(), **rest
+            )
             source = module.framing_morphism().domain()
             underlying_module_generator_morphism = module.module_generator_morphism()
             lifted_module_generator_morphism = SetMorphism(
