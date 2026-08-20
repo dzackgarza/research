@@ -382,9 +382,13 @@ def Subobject(embedding: "ModuleMorphism") -> "Module":
     codomain = embedding.codomain()
     # A formed module is a module, so the module a form sits on is the object
     # that carries the form.
-    match ("_form" in domain.__dict__, "_form" in codomain.__dict__):
+    # Being formed is category membership, asked of the category.
+    from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModules
+
+    ring = codomain.base_ring()
+    match (domain in FormModules(ring), codomain in FormModules(ring)):
         case (True, _):
-            form = domain.__dict__["_form"]
+            form = domain.form()
             underlying_module = domain
         case (False, True):
             form = codomain.form().pullback(embedding)

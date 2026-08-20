@@ -278,7 +278,11 @@ class FramedModules(OwnedCategoryOverBaseRing):
             Finite input has finite combined support in the framing.  The
             containing module need not have a finite generating set.
             """
-            if "_form" in self.__dict__:
+            # Local: the form node imports this one, so this import is
+            # made where it is used.
+            from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModules
+
+            if self in FormModules(self.base_ring()):
                 # A formed parent's subobjects carry the restricted form,
                 # and the formed category owns that construction.  Said
                 # explicitly: which mixin wins the name must not decide
