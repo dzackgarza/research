@@ -72,6 +72,7 @@ from sage.categories.rings import Rings as SageRings
 from sage.categories.rngs import Rngs as SageRngs
 from sage.categories.semirings import Semirings as SageSemirings
 from sage.rings.integer import Integer as SageInteger
+from sage.structure.element import RingElement as SageRingElement
 from sage.rings.finite_rings.finite_field_constructor import GF as SageGF
 # The engine's own names for the two rings the preamble computes in, bound
 # here for every script that loads after this one.  A session binds ``ZZ`` and
@@ -116,6 +117,23 @@ class OwnedRings(Category):
 
     def super_categories(self) -> list:
         return [SageRings(), OwnedSemirings(), OwnedRngs()]
+
+    class ElementMethods(SageRingElement):
+        r"""An element of a ring: where Sage's ring element enters the chain.
+
+        The ring level is where addition acquires a multiplication, so this is
+        where ``RingElement`` enters, as ``ModuleElement`` enters at the module
+        level and ``Element`` at the set level.  It carries that base and
+        nothing else.
+
+        The base is not decoration.  A dynamic class takes its instance layout
+        from its first base, and the layout decides which Cython method table
+        an instance carries.  Without this the elements of an algebra were laid
+        out on ``Element``, and Sage's ``RightModuleAction._act_`` -- which
+        casts to ``ModuleElement`` unchecked and calls ``_lmul_`` through that
+        table -- jumped through a table that has no such slot.  So \(r\cdot x\)
+        segfaulted on every free algebra.
+        """
 
     class ParentMethods:
         def __getitem__(self: "Ring", names: "OrderedSet | str | int") -> "Parent":

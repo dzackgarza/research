@@ -1376,8 +1376,18 @@ def FormModule(form: "Form") -> Parent:
             FormModules(module.base_ring()),
         ]
     )
+    # The formed object is built in \(M\)'s categories, so it is built from
+    # \(M\)'s data: the levels of that chain declare exactly one datum each,
+    # and a presented module is presented by its own presentation while a
+    # framed one is framed by its own framing set.
+    # Local: the presented node reaches this module, so a module-level import
+    # here would close that cycle; it is built by the time a form is equipped.
+    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModules
+
     data: dict[str, "ConstructionData"] = {"form": form}
-    if hasattr(module, "module_generating_set"):
+    if module in FinitelyPresentedModules(module.base_ring()):
+        data["presentation"] = module.presentation()
+    elif hasattr(module, "module_generating_set"):
         data["module_generating_set"] = module.module_generating_set()
     formed = object_of(category, **data)
     formed._refine_from_form()

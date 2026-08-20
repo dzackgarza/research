@@ -23,6 +23,12 @@ if TYPE_CHECKING:
     from sage.structure.parent import ElementConstructorInput
 
 from dzack_research.preamble.owned_category_bases import Category
+# The category a diagram sits in is any category, and the objects that carry
+# diagrams have joined categories -- so the ambient is typically a
+# ``JoinCategory``, which is Sage's class and not an owned one.  Every
+# ``ambient_category`` below is this type; the owned ``Category`` above is the
+# base of the diagram categories themselves.
+from sage.categories.category import Category as AmbientCategory
 from sage.categories.morphism import Morphism
 from sage.structure.element import Element
 from sage.structure.parent import Parent
@@ -77,14 +83,14 @@ class _DiagramParameters:
     """
 
     def __init__(
-        self, ambient_category: Category, objects: tuple, morphisms: tuple = ()
+        self, ambient_category: AmbientCategory, objects: tuple, morphisms: tuple = ()
     ) -> None:
         self._ambient_category = ambient_category
         self._diagram_objects = tuple(objects)
         self._diagram_morphisms = tuple(morphisms)
         super().__init__()
 
-    def ambient_category(self) -> Category:
+    def ambient_category(self) -> AmbientCategory:
         return self._ambient_category
 
     def diagram_objects(self) -> "tuple[Parent, ...]":
@@ -101,7 +107,7 @@ class _IndexedDiagramParameters(_DiagramParameters):
 
     def __init__(
         self,
-        ambient_category: Category,
+        ambient_category: AmbientCategory,
         index_set: "OrderedSet",
         objects: tuple,
         morphisms: tuple = (),
@@ -118,7 +124,7 @@ class DiagramCategory(_DiagramParameters, Category):
 
     @staticmethod
     def _diagram_arguments(
-        ambient_category: Category,
+        ambient_category: AmbientCategory,
         objects: "Iterable[Parent]",
         morphisms: "Iterable[Morphism]" = (),
     ) -> tuple:
@@ -135,7 +141,7 @@ class DiagramCategory(_DiagramParameters, Category):
         # so it is protocol plumbing; the mathematics is on the normalizer.
         ambient_category, objects, *optional = arguments
         morphisms = optional[0] if optional else keywords.get("morphisms", ())
-        assert isinstance(ambient_category, Category)
+        assert isinstance(ambient_category, AmbientCategory)
         assert isinstance(objects, Iterable) and isinstance(morphisms, Iterable)
         constructed: DiagramCategory = Category.__classcall__(
             cls, *DiagramCategory._diagram_arguments(ambient_category, objects, morphisms)
@@ -154,7 +160,7 @@ class DirectedSystem(_IndexedDiagramParameters, Category):
 
     @staticmethod
     def _directed_system_arguments(
-        ambient_category: Category,
+        ambient_category: AmbientCategory,
         index_set: "OrderedSet",
         objects: "Iterable[Parent]",
         morphisms: "Iterable[Morphism]" = (),
@@ -172,7 +178,7 @@ class DirectedSystem(_IndexedDiagramParameters, Category):
         # so it is protocol plumbing; the mathematics is on the normalizer.
         ambient_category, index_set, objects, *optional = arguments
         morphisms = optional[0] if optional else keywords.get("morphisms", ())
-        assert isinstance(ambient_category, Category)
+        assert isinstance(ambient_category, AmbientCategory)
         assert isinstance(objects, Iterable) and isinstance(morphisms, Iterable)
         constructed: DirectedSystem = Category.__classcall__(
             cls,
@@ -192,7 +198,7 @@ class InverseSystem(_IndexedDiagramParameters, Category):
 
     @staticmethod
     def _inverse_system_arguments(
-        ambient_category: Category,
+        ambient_category: AmbientCategory,
         index_set: "OrderedSet",
         objects: "Iterable[Parent]",
         morphisms: "Iterable[Morphism]" = (),
@@ -210,7 +216,7 @@ class InverseSystem(_IndexedDiagramParameters, Category):
         # so it is protocol plumbing; the mathematics is on the normalizer.
         ambient_category, index_set, objects, *optional = arguments
         morphisms = optional[0] if optional else keywords.get("morphisms", ())
-        assert isinstance(ambient_category, Category)
+        assert isinstance(ambient_category, AmbientCategory)
         assert isinstance(objects, Iterable) and isinstance(morphisms, Iterable)
         constructed: InverseSystem = Category.__classcall__(
             cls,
@@ -291,7 +297,7 @@ class ProductCategory(_IndexedDiagramParameters, Category):
 
     @staticmethod
     def _product_arguments(
-        ambient_category: Category, factors: "Iterable[Parent]"
+        ambient_category: AmbientCategory, factors: "Iterable[Parent]"
     ) -> tuple:
         r"""Return the constructor arguments in the form the cache keys on."""
         return (ambient_category, tuple(factors))
@@ -305,14 +311,14 @@ class ProductCategory(_IndexedDiagramParameters, Category):
         # Sage reads this slot out of ``cls.__dict__`` and never inherits it,
         # so it is protocol plumbing; the mathematics is on the normalizer.
         ambient_category, factors = arguments
-        assert isinstance(ambient_category, Category)
+        assert isinstance(ambient_category, AmbientCategory)
         assert isinstance(factors, Iterable)
         constructed: ProductCategory = Category.__classcall__(
             cls, *ProductCategory._product_arguments(ambient_category, factors)
         )
         return constructed
 
-    def __init__(self, ambient_category: Category, factors: tuple) -> None:
+    def __init__(self, ambient_category: AmbientCategory, factors: tuple) -> None:
         factors = tuple(factors)
         super().__init__(ambient_category, tuple(range(len(factors))), factors, ())
 
@@ -328,7 +334,7 @@ class CoproductCategory(_IndexedDiagramParameters, Category):
 
     @staticmethod
     def _coproduct_arguments(
-        ambient_category: Category, cofactors: "Iterable[Parent]"
+        ambient_category: AmbientCategory, cofactors: "Iterable[Parent]"
     ) -> tuple:
         r"""Return the constructor arguments in the form the cache keys on."""
         return (ambient_category, tuple(cofactors))
@@ -342,14 +348,14 @@ class CoproductCategory(_IndexedDiagramParameters, Category):
         # Sage reads this slot out of ``cls.__dict__`` and never inherits it,
         # so it is protocol plumbing; the mathematics is on the normalizer.
         ambient_category, cofactors = arguments
-        assert isinstance(ambient_category, Category)
+        assert isinstance(ambient_category, AmbientCategory)
         assert isinstance(cofactors, Iterable)
         constructed: CoproductCategory = Category.__classcall__(
             cls, *CoproductCategory._coproduct_arguments(ambient_category, cofactors)
         )
         return constructed
 
-    def __init__(self, ambient_category: Category, cofactors: tuple) -> None:
+    def __init__(self, ambient_category: AmbientCategory, cofactors: tuple) -> None:
         cofactors = tuple(cofactors)
         super().__init__(ambient_category, tuple(range(len(cofactors))), cofactors, ())
 
@@ -370,7 +376,7 @@ class BiproductCategory(_IndexedDiagramParameters, Category):
 
     @staticmethod
     def _biproduct_arguments(
-        ambient_category: Category, factors: "Iterable[Parent]"
+        ambient_category: AmbientCategory, factors: "Iterable[Parent]"
     ) -> tuple:
         r"""Return the constructor arguments in the form the cache keys on."""
         return (ambient_category, tuple(factors))
@@ -384,14 +390,14 @@ class BiproductCategory(_IndexedDiagramParameters, Category):
         # Sage reads this slot out of ``cls.__dict__`` and never inherits it,
         # so it is protocol plumbing; the mathematics is on the normalizer.
         ambient_category, factors = arguments
-        assert isinstance(ambient_category, Category)
+        assert isinstance(ambient_category, AmbientCategory)
         assert isinstance(factors, Iterable)
         constructed: BiproductCategory = Category.__classcall__(
             cls, *BiproductCategory._biproduct_arguments(ambient_category, factors)
         )
         return constructed
 
-    def __init__(self, ambient_category: Category, factors: tuple) -> None:
+    def __init__(self, ambient_category: AmbientCategory, factors: tuple) -> None:
         factors = tuple(factors)
         super().__init__(ambient_category, tuple(range(len(factors))), factors, ())
 
@@ -741,7 +747,7 @@ class TensorProductCategory(_IndexedDiagramParameters, Category):
 
     @staticmethod
     def _tensor_product_arguments(
-        ambient_category: Category, factors: "Iterable[Parent]"
+        ambient_category: AmbientCategory, factors: "Iterable[Parent]"
     ) -> tuple:
         r"""Return the constructor arguments in the form the cache keys on."""
         return (ambient_category, tuple(factors))
@@ -755,14 +761,14 @@ class TensorProductCategory(_IndexedDiagramParameters, Category):
         # Sage reads this slot out of ``cls.__dict__`` and never inherits it,
         # so it is protocol plumbing; the mathematics is on the normalizer.
         ambient_category, factors = arguments
-        assert isinstance(ambient_category, Category)
+        assert isinstance(ambient_category, AmbientCategory)
         assert isinstance(factors, Iterable)
         constructed: TensorProductCategory = Category.__classcall__(
             cls, *TensorProductCategory._tensor_product_arguments(ambient_category, factors)
         )
         return constructed
 
-    def __init__(self, ambient_category: Category, factors: tuple) -> None:
+    def __init__(self, ambient_category: AmbientCategory, factors: tuple) -> None:
         factors = tuple(factors)
         self._tensor_factors: "tuple[ModuleParent, ...]" = factors
         source = CartesianProductOfSets(factors)

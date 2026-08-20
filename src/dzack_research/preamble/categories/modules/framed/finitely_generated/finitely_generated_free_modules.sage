@@ -25,6 +25,7 @@ if TYPE_CHECKING:
     from sage.structure.parent import ElementConstructorInput, MembershipInput
 
 from sage.misc.cachefunc import cached_method
+from sage.misc.lazy_attribute import lazy_attribute
 from sage.rings.integer import Integer
 from sage.categories.morphism import SetMorphism
 from sage.matrix.constructor import matrix
@@ -93,12 +94,15 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
         ]
 
     class ElementMethods:
-        r"""An element represented in its parent's chosen ordered basis.
+        r"""An element written in its parent's chosen ordered basis.
 
-        The coordinate family is what this level adds to an element, so this
-        level takes it and sends the remainder up.  Everything below --
-        having a parent, having a zero, having a scalar acting on it -- is
-        answered by the levels the category graph puts underneath.
+        An element of a free module *is* the finitely supported \(a:S\to R\),
+        and that is the datum the framed free level above holds.  What a
+        chosen total order on \(S\) adds is a way to *write* that function:
+        the coordinate vector, indexed by the order.  So this level takes the
+        coordinates it is given, hands the function they name up, and reads
+        the vector back off it -- one datum, one written form of it, and
+        every arithmetic operation here in the form a basis makes cheap.
         """
 
         if TYPE_CHECKING:
@@ -117,40 +121,40 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
             # Coordinate arithmetic already lands in the coordinate module, so a
             # sum, difference, negation or scaling arrives here as its own answer.
             # The module rejects a wrong-length assignment itself.
-            self._coordinates_: FreeModuleElement = (
+            coordinates = (
                 coordinates
                 if isinstance(coordinates, FreeModuleElement)
                 and coordinates.parent() is coordinate_module
                 else coordinate_module(coordinates)
             )
-            super().__init__(parent, **rest)
+            super().__init__(
+                parent,
+                coefficients={
+                    element_of_S: coefficient
+                    for element_of_S, coefficient in zip(
+                        parent.module_generating_set(), coordinates
+                    )
+                    if coefficient != 0
+                },
+                **rest,
+            )
+
+        @lazy_attribute
+        def _coordinates_(self: Self) -> FreeModuleElement:
+            r"""The coefficient function written against the chosen order."""
+            parent = self.parent()
+            coefficients = self.coefficients()
+            zero = parent.base_ring().zero()
+            vector: FreeModuleElement = parent._coordinate_module()(
+                [
+                    coefficients.get(element_of_S, zero)
+                    for element_of_S in parent.module_generating_set()
+                ]
+            )
+            return vector
 
         def _coordinates(self: Self) -> "Vector":
             return self._coordinates_
-
-        def coefficients(self: Self) -> Mapping["Element", "RingElement"]:
-            return {
-                element_of_S: coefficient
-                for element_of_S, coefficient in zip(
-                    self.parent().module_generating_set(), self._coordinates_
-                )
-                if coefficient != 0
-            }
-
-        def underlying_set_element(self: Self) -> "Element":
-            r"""Recover \(s\) when this element is the canonical generator \([s]\)."""
-            nonzero = tuple(self.coefficients().items())
-            assert len(nonzero) == 1, (
-                "only an element in the image of the canonical generator morphism "
-                "has one underlying element of S"
-            )
-            element_of_S: "Element" = nonzero[0][0]
-            coefficient = nonzero[0][1]
-            assert coefficient == self.parent().base_ring().one(), (
-                "only an element in the image of the canonical generator morphism "
-                "has one underlying element of S"
-            )
-            return element_of_S
 
         def _add_(self: Self, other: Self) -> Self:
             return self.parent()._from_coordinates(

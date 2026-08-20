@@ -324,7 +324,21 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                     amb_dim = ambient.dimension() if hasattr(ambient, 'dimension') else 2
                     codim = len(self._equations) if self._equations and self._equations != (0,) else 0
                     self._dim = max(0, amb_dim - codim)
-                super().__init__(**rest)
+                # X is a scheme in the same tower as V, so the level above
+                # still needs the datum a toric scheme is defined by, and that
+                # datum is V's: it is V that P or Sigma describes, and X is cut
+                # out of V by the equations this level adds.  Without it the
+                # chain reaches ``ToricSchemes.ParentMethods.__init__`` with no
+                # polytope and no fan, and a subscheme cannot be built at all.
+                ambient_polytope = ambient.polytope()
+                super().__init__(
+                    polytope_or_fan=(
+                        ambient.fan() if ambient_polytope is None else ambient_polytope
+                    ),
+                    dim=self._dim,
+                    identification=ambient.ambient_identification(),
+                    **rest,
+                )
                 # After the chain, because a homset needs both ends to be
                 # parents.  The arrow is what makes X a subobject, and it is
                 # the only record of V.

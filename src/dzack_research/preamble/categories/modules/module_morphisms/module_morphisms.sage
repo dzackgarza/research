@@ -95,12 +95,16 @@ else:
 
 @cached_function
 def module_homset(domain: "Module", codomain: "Module") -> Parent:
-    r"""Return the canonical module homset after forgetting extra structure."""
-    return object_of(
-        OwnedModules(domain.base_ring()).Homsets(),
-        domain=domain,
-        codomain=codomain,
-    )
+    r"""Return the canonical module homset after forgetting extra structure.
+
+    ``Hom(X, Y, C)`` with ``C`` the category of the *objects*: Sage's
+    ``Homset.__init__`` is what places the result in ``C.Homsets()`` or
+    ``C.Endsets()``, so handing it ``C.Homsets()`` places the homset in the
+    homsets of the homsets and its morphisms reach none of the homset
+    methods.
+    """
+    homset: Parent = Hom(domain, codomain, OwnedModules(domain.base_ring()))
+    return homset
 
 
 def _module_morphism(domain: "Module", codomain: "Module", images: "ModuleMorphismData") -> "ModuleMorphism":
