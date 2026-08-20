@@ -622,20 +622,15 @@ class CoxeterDiagrams(Category):
             group -- the chosen-presentation *data*, where
             :meth:`coxeter_group` is the represented group.
             """
-            from sage.groups.free_group import FreeGroup
+            # Local: a module-level import here would close a cycle.
+            from dzack_research.preamble.categories.group.groups import (
+                coxeter_presentation,
+            )
 
-            free = FreeGroup(names=self.variable_names())
-            generators = free.gens()
-            indices = tuple(self._index_set)
-            relations = [generator**2 for generator in generators]
-            for i in range(len(indices)):
-                for j in range(i + 1, len(indices)):
-                    order = self._coxeter_matrix[indices[i], indices[j]]
-                    if order != infinity:
-                        relations.append(
-                            (generators[i] * generators[j]) ** Integer(order)
-                        )
-            return free / relations
+            free, relations = coxeter_presentation(
+                self._coxeter_matrix, names=self.variable_names()
+            )
+            return free / list(relations)
 
         def Aut(self) -> "PermutationGroup_generic":
             r"""Return the finite group of Coxeter-diagram automorphisms.

@@ -46,6 +46,7 @@ from sage.groups.matrix_gps.finitely_generated import (
 from sage.groups.matrix_gps.finitely_generated_gap import (
     FinitelyGeneratedMatrixGroup_gap,
 )
+from sage.groups.matrix_gps.coxeter_group import CoxeterMatrixGroup
 from sage.groups.matrix_gps.named_group import NamedMatrixGroup_generic
 from sage.groups.matrix_gps.named_group_gap import NamedMatrixGroup_gap
 from sage.groups.perm_gps.permgroup import PermutationGroup_generic
@@ -55,6 +56,7 @@ from sage.libs.gap.libgap import libgap
 from sage.misc.unknown import Unknown
 from dzack_research.preamble.categories.rings.rings import OwnedRings, ℤ
 from dzack_research.preamble.owned_category import object_of
+from sage.rings.infinity import infinity
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.sets.totally_ordered_finite_set import TotallyOrderedFiniteSet
 from sage.structure.element import Element, RingElement
@@ -857,6 +859,35 @@ class OwnedFinitelyGeneratedGroups(Category):
             generating_set: TotallyOrderedFiniteSet = finite_ordered_set(nonidentity)
             return generating_set
 
+def coxeter_presentation(
+    coxeter_matrix: "Matrix",
+    names: "OrderedSet | None" = None,
+) -> tuple:
+    r"""Return \((F, R)\) for \(\langle s_i \mid s_i^2,\ (s_is_j)^{m_{ij}}\rangle\).
+
+    The Coxeter presentation of the group a Coxeter matrix describes: one
+    involution per index, and a braid relation for each finite bond.  A bond
+    \(m_{ij}=\infty\) contributes no relation, which is what leaves the two
+    involutions of the infinite dihedral group unrelated.
+
+    Sage writes \(\infty\) two ways.  A matrix read off a Cartan type carries
+    \(-1\); one built from roots carries ``infinity``.  Both name the bond.
+    """
+    from sage.groups.free_group import FreeGroup
+
+    indices = tuple(coxeter_matrix.index_set())
+    free = FreeGroup(len(indices) if names is None else names)
+    generators = free.gens()
+    relations = [generator**2 for generator in generators]
+    for i in range(len(indices)):
+        for j in range(i + 1, len(indices)):
+            bond = coxeter_matrix[indices[i], indices[j]]
+            if bond is infinity or bond == -1:
+                continue
+            relations.append((generators[i] * generators[j]) ** SageZZ(bond))
+    return free, tuple(relations)
+
+
 def _presentation_of(group: "Group") -> tuple:
     r"""Return \((F(S), R)\) for a finitely presented group.
 
@@ -880,6 +911,8 @@ def _presentation_of(group: "Group") -> tuple:
         case AbelianGroup_class():
             presented = group.permutation_group().as_finitely_presented_group()
             return presented.free_group(), tuple(presented.relations())
+        case CoxeterMatrixGroup():
+            return coxeter_presentation(group.coxeter_matrix())
         case NamedMatrixGroup_generic() | NamedMatrixGroup_gap():
             presented = (
                 group.as_permutation_group().as_finitely_presented_group()
@@ -924,6 +957,15 @@ def _gap_model(group: "Group") -> "GapElement":
                 "finiteness, which the group cannot decide"
             )
             return libgap(group.permutation_group())
+        case CoxeterMatrixGroup():
+            # Its Coxeter presentation, which is a GAP-backed group.  Sage's
+            # matrix realization is not: it has no ``as_permutation_group``,
+            # and its ``_libgap_`` falls through to converting the repr.  The
+            # presentation is also the group's own definition, so nothing is
+            # normalized away by taking it -- over a number field there is no
+            # matrix model GAP could hold in any case.
+            free, relations = coxeter_presentation(group.coxeter_matrix())
+            return libgap(free / list(relations))
         case NamedMatrixGroup_generic() | FinitelyGeneratedMatrixGroup_generic():
             assert _finiteness(group) is True, (
                 f"normalizing {group} to a permutation model requires "

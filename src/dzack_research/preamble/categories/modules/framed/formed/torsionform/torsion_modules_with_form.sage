@@ -1238,8 +1238,15 @@ def _torsion_form_automorphism_group(
     as their parent, and two calls answering with two objects would make
     composition across them undefined.
     """
+    # Asked of the category that declares the construction, not of the form's
+    # own category.  The latter is a join, and Sage builds a join's
+    # ``Homsets()`` generically -- ``HomsetsOf`` -- which carries none of the
+    # levels' homset content and so has nothing to construct with.  The
+    # subcategories a discriminant form additionally belongs to are properties
+    # of the object, not extra structure on the arrows, so the endset is the
+    # same one either way.
     automorphisms: Parent = object_of(
-        form.category().Homsets().Endset(),
+        TorsionModulesWithForm(form.base_ring()).Homsets().Endset(),
         domain=form,
         codomain=form,
         quadratic=quadratic,

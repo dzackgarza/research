@@ -412,14 +412,19 @@ class FunctionModules(Category_over_base_ring):
 
         def __init__(
             self: Self,
-            base_ring: "Ring",
             kind: str,
             domain_name: str,
             **rest: "ConstructionData",
         ) -> None:
+            r"""Add the kind and the domain to the module below.
+
+            The ring is not named here.  ``FunctionModules(R)`` says which
+            ring, and the module level reads it off the category and assigns
+            the base; naming it again arrives there twice.
+            """
             self._kind = kind
             self._domain_name = domain_name
-            super().__init__(base=base_ring, **rest)
+            super().__init__(**rest)
 
         def base_ring(self: Self) -> "Ring":
             return self.base()
@@ -533,7 +538,6 @@ def FunctionModule(base_ring: "Ring", kind: str, domain_name: str) -> Parent:
     """
     return object_of(
         FunctionModules(base_ring),
-        base_ring=base_ring,
         kind=kind,
         domain_name=domain_name,
     )
