@@ -381,10 +381,18 @@ class Sets(Category):
         and it carries nothing else: what an element of a bare *set* is, is a
         member of that set.  Structure is added by the levels above, which is
         where the arithmetic lives.
+
+        A morphism is an element too, and a homset whose objects are also a
+        *group* -- \(O(L)\) is one -- has both element roots in its chain,
+        with Sage's linearization free to put this one first.  So the call
+        below is cooperative: reached from a morphism it goes on to
+        ``Sets.Homsets.ElementMethods`` and thence to ``Map.__init__``, which
+        is what gives the morphism its two ends.  Calling ``Element.__init__``
+        directly stopped there, and the morphism came out with no domain.
         """
 
         def __init__(self, parent: SageParent) -> None:
-            SageElement.__init__(self, parent)
+            super().__init__(parent)
 
     class ParentMethods(OwnedParent, SageParent):
         def __init__(
