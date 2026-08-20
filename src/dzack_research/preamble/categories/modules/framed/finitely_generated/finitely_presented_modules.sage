@@ -179,7 +179,10 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
                 .stack(images)
                 ._sage_matrix()
             )
-            super().__init__(base=base_ring, **rest)
+            # The base is not stated here.  ``Modules.ParentMethods`` assigns
+            # it, from the ring its own category names, and a second statement
+            # of it arrives at that level as a duplicate keyword.
+            super().__init__(**rest)
             if engine_ring(base_ring) is SageZZ and self.is_torsion():
                 refine(self, FinitelyPresentedTorsionModules(base_ring))
             # The classes are named by $N$'s generators, and those generators are

@@ -340,7 +340,13 @@ def Slice(structure_morphism: Morphism, is_mono: bool = False, is_epi: bool = Fa
     domain = structure_morphism.domain()
     domain._structure_morphism = structure_morphism
     codomain = structure_morphism.codomain()
-    cat = domain.category()
+    # \(\mathbf{C}/X\) is a slice of \(\mathbf{C}\), so the category sliced is
+    # \(A\)'s as an object of \(\mathbf{C}\) -- not as an object of a slice it
+    # already sits in.  A free module can be the degree-2 piece of two tensor
+    # algebras, and reading its sliced category back in would nest
+    # \(\mathbf{C}/X\) inside \(\mathbf{C}/X\), which no method resolution
+    # order satisfies.
+    cat = with_chosen_arrows_forgotten(domain.category())
     if is_mono:
         refine(domain, cat.SubObject(codomain))
     elif is_epi:
@@ -368,7 +374,8 @@ def Coslice(costructure_morphism: Morphism, is_mono: bool = False, is_epi: bool 
     codomain = costructure_morphism.codomain()
     codomain._costructure_morphism = costructure_morphism
     source = costructure_morphism.domain()
-    cat = codomain.category()
+    # The category cosliced is \(B\)'s own, for the reason :func:`Slice` gives.
+    cat = with_chosen_arrows_forgotten(codomain.category())
     if is_mono:
         refine(codomain, cat.SuperObject(source))
     elif is_epi:

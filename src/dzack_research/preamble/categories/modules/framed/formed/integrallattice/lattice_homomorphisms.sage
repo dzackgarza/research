@@ -50,7 +50,19 @@ class LatticeHomomorphisms(Category):
         return "lattice homomorphisms"
 
     def super_categories(self) -> list:
-        return [Sets()]
+        r"""A lattice homset is a homset of formed modules.
+
+        Not ``Sets()``: the objects of this category are homsets, so their
+        elements are morphisms, and stating the objects' root instead puts
+        ``Sets.ElementMethods`` -- the elements of a *set* -- ahead of
+        ``Sets.Homsets.ElementMethods`` in the element class.  A morphism
+        built there never reaches ``Map.__init__`` and so has no domain.
+        The sibling homset categories in this file state the same edge.
+        """
+        # Local: a module-level import here would close a cycle; by call time this module is built.
+        from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModules
+
+        return [FormModules(SageZZ).Homsets()]
 
     class ParentMethods:
         def __call__(

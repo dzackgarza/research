@@ -339,13 +339,18 @@ class FormModules(OwnedCategoryOverBaseRing):
             codomain: "Module",
             category: "Category | None" = None,
         ) -> Parent:
-            r"""Return the form-preserving homset, or Sage's for a plain codomain."""
+            r"""Return the form-preserving homset, or Sage's for a plain codomain.
+
+            Built by ``Hom(X, Y, C)`` with ``C`` the category of the
+            *objects*, which is the constructor of every owned homset: Sage's
+            ``Homset.__init__`` is what places the result in ``C.Homsets()``
+            or ``C.Endsets()``, so handing it ``C.Homsets()`` would place the
+            homset in the homsets of the homsets and its morphisms would
+            never reach ``FormModules.Homsets.ElementMethods``.
+            """
             if codomain in FormModules(self.base_ring()):
-                hom_category = FormModules(self.base_ring()).Homsets()
-                if codomain is self:
-                    hom_category = hom_category.Endset()
-                homset: Parent = object_of(
-                    hom_category, domain=self, codomain=codomain
+                homset: Parent = Hom(
+                    self, codomain, FormModules(self.base_ring())
                 )
                 return homset
             plain_homset: Parent = Parent.Hom(self, codomain, category)
@@ -801,8 +806,16 @@ class FormModules(OwnedCategoryOverBaseRing):
                 module_morphism: ModuleMorphism,
             ) -> None:
                 super().__init__(parent)
+                # $f$ preserves the form when $f^*b_N = b_M$, which is an
+                # equation between two forms *on one module*.  The pullback is
+                # written on the morphism's domain; the domain's own form is
+                # written on the module the form classifies, one level of
+                # enrichment below.  So the domain's form is read on the
+                # module the pullback lives on before the two are compared.
                 pulled_back = parent.codomain().form().pullback(module_morphism)
-                expected_form = parent.domain().form()
+                expected_form = parent.domain().form().on_module(
+                    pulled_back.module()
+                )
                 if pulled_back.codomain() is not expected_form.codomain():
                     pulled_back = pulled_back.reduced(expected_form.codomain())
                 assert expected_form == pulled_back, (

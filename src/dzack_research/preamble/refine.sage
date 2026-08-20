@@ -110,6 +110,11 @@ def _concrete_base(obj: "SageObject") -> type:
         name = candidate.__name__
         if name.endswith("_with_category"):
             continue
+        if name.endswith("_with_equality_by_id") or name == "WithEqualityById":
+            # Sage's ``Hom`` splices identity comparison onto the class of the
+            # homset it caches (``sage/categories/homset.py``).  That wrapper
+            # is Sage's, and it is not the class the homset is built from.
+            continue
         if name in _PY_SET((
             "parent_class",
             "element_class",
@@ -296,11 +301,25 @@ def _rebuild_parent_class(obj: "Parent", category: "Category") -> None:
     mixins = _method_mixins(category, "ParentMethods")
     if not mixins:
         return
+    concrete = _concrete_base(obj)
+    # Hoist only what the concrete class does not already carry.  A methods
+    # class already inside ``concrete`` is installed, in category order, and
+    # C3 refuses a base placed in front of a class that contains it:
+    # ``TypeError: Cannot create a consistent method resolution order (MRO)
+    # for bases FormModules.Homsets.ParentMethods,
+    # FormModules.Homsets.parent_class``.  ``object`` arrives here the same
+    # way, from a super category with no methods class of its own, and is a
+    # base every other base already derives from.
+    carried = frozenset(concrete.__mro__)
+    mixins = tuple(
+        mixin for mixin in mixins if mixin is not object and mixin not in carried
+    )
+    if not mixins:
+        return
     assert can_assign_class(obj), (
         f"cannot assign __class__ on {type(obj).__name__}; "
         "override-refine requires a heap type"
     )
-    concrete = _concrete_base(obj)
     new_cls = dynamic_class(
         f"{concrete.__name__}_with_category",
         (*mixins, concrete),
