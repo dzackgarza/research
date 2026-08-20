@@ -16,7 +16,7 @@ from collections.abc import Iterator
 from typing import cast, Generic, TYPE_CHECKING, TypeVar
 
 from dzack_research.preamble.lexicon.interop import SageParent, SageUniqueRepresentation
-from dzack_research.preamble.categories.sets.cardinals import Cardinal
+from dzack_research.preamble.categories.sets.cardinals import Cardinal, cardinal
 from dzack_research.preamble.categories.sets.owned_sets import Sets, placement_of
 
 if TYPE_CHECKING:
@@ -89,8 +89,14 @@ class UnderlyingSet(SageUniqueRepresentation, _UnderlyingSetParent, Generic[_E])
         Cardinality is total on sets, so the structured parent answers it.
         The former fallbacks read a generating set instead -- which counts
         generators, not elements, and answers a different question.
+
+        ``U`` is where a Sage-structured parent enters the owned sets, so it
+        is where its count enters the owned cardinals: Sage answers with a raw
+        ``Integer`` or ``+Infinity``, which are elements of a ring and of an
+        extended scalar line and answer none of the questions a cardinal does.
+        The single conversion is here, at the crossing.
         """
-        return self._structured.cardinality()
+        return cardinal(self._structured.cardinality())
 
     def is_finite(self) -> bool:
         r"""Return whether $U(X)$ is finite.

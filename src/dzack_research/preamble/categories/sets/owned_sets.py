@@ -156,9 +156,14 @@ class Sets(OwnedCategory):
         two have the same elements and different structure, and conflating
         them is what makes the tensor product's universal property unstatable.
 
-        The factors stored are the objects \(X_i\) themselves, since
-        \(U(X_i)\) has exactly the elements of \(X_i\): membership is read as
-        ``component.parent() is X_i``, which is what \(U\) forgetting to is.
+        The factors stored are the objects \(X_i\) themselves, and a point is a
+        family \((x_i)\) with \(x_i\in X_i\), so membership is read component by
+        component as ``component in X_i``.  Parent identity is not membership:
+        a facade set — which is what every \(U(X)\) is — holds the elements of
+        its host \(X\), so its members' parent is \(X\) and never the facade.
+        Reading membership off ``component.parent()`` therefore asks a different
+        question, and gets it wrong for exactly the sets this product is built
+        from.
 
         The one datum this level introduces is the family of factors, so it is
         the one argument its ``__init__`` consumes; everything a product *is*
@@ -192,26 +197,22 @@ class Sets(OwnedCategory):
                     *(factor.cardinality() for factor in self.cartesian_factors())
                 )
 
-            def __iter__(self) -> Iterator[tuple[SageElement, ...]]:
-                r"""Fair enumeration, delegated to Sage's cartesian product.
+            def _cartesian_product_of_elements(
+                self, elements: Iterable[SageElement]
+            ) -> tuple[SageElement, ...]:
+                r"""The point \((x_i)\) assembled from its components, under
+                the name Sage's product machinery reads.
 
-                Sage's antidiagonal iteration is fair across infinite factors,
-                which ``itertools.product`` is not.  The empty product yields
-                the one empty tuple; a known-empty factor yields nothing.
+                Sage states the enumeration of a product of sets
+                (``Sets.CartesianProducts.ParentMethods.__iter__``) in terms of
+                this name and of :meth:`cartesian_factors`, so supplying it is
+                what makes that enumeration the enumeration of this product:
+                lexicographic when every factor after the first is finite, and
+                Cantor's antidiagonal otherwise, which is fair across infinite
+                factors.  The empty product yields the one empty family, and a
+                product with an empty factor yields nothing.
                 """
-                from sage.categories.cartesian_product import cartesian_product
-
-                from dzack_research.preamble.categories.abstract_categories.products import (
-                    _is_known_empty,
-                )
-
-                if not self._factors:
-                    yield self(())
-                    return
-                if any(_is_known_empty(factor) for factor in self._factors):
-                    return
-                for point in cartesian_product(list(self._factors)):
-                    yield self(tuple(point))
+                return self(tuple(elements))
 
             def projection(self, index: int) -> SetMorphism:
                 r"""The ``index``-th product projection \(\pi_i:\prod_j X_j\to X_i\)."""
@@ -228,11 +229,13 @@ class Sets(OwnedCategory):
                 return self.projection(index)
 
             def __contains__(self, element: ElementConstructorInput) -> bool:
+                r"""Whether ``element`` is a point of \(\prod_i X_i\): a family
+                of the right length whose \(i\)-th component lies in \(X_i\)."""
                 return (
                     isinstance(element, tuple)
                     and len(element) == len(self._factors)
                     and all(
-                        component.parent() is factor
+                        component in factor
                         for component, factor in zip(element, self._factors)
                     )
                 )
