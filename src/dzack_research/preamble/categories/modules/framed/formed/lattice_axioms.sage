@@ -14,9 +14,13 @@ an error -- the objects would claim an axiom nothing imposed.
 """
 
 import sage.categories.category_with_axiom as cwa
-from sage.categories.category_with_axiom import (
+
+# ``axiom`` and the ``all_axioms`` register are Sage's, and stay Sage's: they
+# are the mechanism by which an axiom name becomes applicable at all, not a
+# category the preamble could own.  The base below is the owned one.
+from sage.categories.category_with_axiom import axiom
+from dzack_research.preamble.owned_category_bases import (
     CategoryWithAxiom_over_base_ring,
-    axiom,
 )
 from sage.misc.abstract_method import abstract_method
 

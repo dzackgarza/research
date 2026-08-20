@@ -30,9 +30,12 @@ module, once ``Lattices`` already names the class.
 from functools import cache
 from typing import TYPE_CHECKING, ClassVar, TypeAlias
 
-from sage.categories.category_with_axiom import (
+# The ``all_axioms`` register is Sage's, and stays Sage's: it is the mechanism
+# by which an axiom name becomes applicable at all, not a category the preamble
+# could own.  The base below is the owned one.
+from sage.categories.category_with_axiom import all_axioms
+from dzack_research.preamble.owned_category_bases import (
     CategoryWithAxiom_over_base_ring,
-    all_axioms,
 )
 from sage.matrix.constructor import matrix
 from sage.matrix.special import diagonal_matrix
