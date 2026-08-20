@@ -344,8 +344,17 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
                 f"{self.module_generating_set()}"
             )
         def rank(self: "FiniteFreeModuleParent") -> "Cardinal":
-            r"""Return the cardinality of the finite generating set."""
-            return self.module_generating_set().cardinality()
+            r"""Return the cardinality of the finite generating set.
+
+            A cardinal, not an integer: a set the engine built and the
+            preamble refined answers its size as an ``Integer``, so the rank
+            says what it is here rather than passing that on.
+            """
+            # Local: the cardinals module reaches this node, so a module-level
+            # import would close that cycle.
+            from dzack_research.preamble.categories.sets.cardinals import cardinal
+
+            return cardinal(self.module_generating_set().cardinality())
 
         def relations(self: "FiniteFreeModuleParent") -> "OrderedSet":
             r"""Return the relations among the module generators: none.

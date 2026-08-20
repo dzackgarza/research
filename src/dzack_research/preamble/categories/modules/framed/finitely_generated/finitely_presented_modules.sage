@@ -264,8 +264,16 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
             return count
 
         def rank(self: "PresentedModuleParent") -> "Cardinal":
-            r"""Return the rank of the free part: generators minus independent relations."""
-            return (
+            r"""Return the rank of the free part: generators minus independent relations.
+
+            A cardinal, like every rank: the two counts it is read off are the
+            presentation's own shape and arrive as integers.
+            """
+            # Local: the cardinals module reaches this node, so a module-level
+            # import would close that cycle.
+            from dzack_research.preamble.categories.sets.cardinals import cardinal
+
+            return cardinal(
                 self.number_of_module_generators()
                 - self.relation_matrix()._sage_matrix().rank()
             )
