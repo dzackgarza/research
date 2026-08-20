@@ -15,6 +15,8 @@ from __future__ import annotations
 from collections.abc import Iterator
 from typing import cast, Generic, TYPE_CHECKING, TypeVar
 
+from sage.rings.infinity import Infinity
+
 from dzack_research.preamble.lexicon.interop import SageParent, SageUniqueRepresentation
 from dzack_research.preamble.categories.sets.cardinals import Cardinal, cardinal
 from dzack_research.preamble.categories.sets.owned_sets import Sets, placement_of
@@ -95,8 +97,29 @@ class UnderlyingSet(SageUniqueRepresentation, _UnderlyingSetParent, Generic[_E])
         ``Integer`` or ``+Infinity``, which are elements of a ring and of an
         extended scalar line and answer none of the questions a cardinal does.
         The single conversion is here, at the crossing.
+
+        ``+Infinity`` is where Sage's line stops and the cardinals begin: it
+        is a single point, while above it sit $\aleph_0$, $2^{\aleph_0}$ and
+        the rest, which the extended scalar line does not tell apart.  Which
+        one it is, is a fact about $X$, so a bare ``+Infinity`` determines a
+        cardinal only for a countable $X$, where it is $\aleph_0$.  Anything
+        else has to say its own size: an uncountable set is not thereby of the
+        continuum, and guessing would assert a theorem (the continuum
+        hypothesis, in the worst case) that nobody proved.  A parent that
+        knows states its count and never arrives here -- which is what the
+        owned rings do, naming their countable engines and reading a
+        completion as being of the continuum (``rings.sage``).
         """
-        return cardinal(self._structured.cardinality())
+        counted = self._structured.cardinality()
+        if isinstance(counted, Cardinal) or counted != Infinity:
+            return cardinal(counted)
+        assert "Countable" in placement_of(self._structured).axioms(), (
+            f"{self._structured} answers +Infinity and does not declare itself "
+            f"countable, so its cardinal is not determined -- every infinite "
+            f"cardinal lies above that one point of the extended scalars. "
+            f"State the count on the parent, or declare its countability."
+        )
+        return cardinal(counted)
 
     def is_finite(self) -> bool:
         r"""Return whether $U(X)$ is finite.
