@@ -336,6 +336,14 @@ class OwnedCategoryMixin(CatConstructionsMixin):
         provider = getattr(category, method_provider, None)
         if provider is not None:
             bases = (provider,) + bases
+        if len(bases) > 1 and object in bases:
+            # A super category with no methods class of its own contributes
+            # ``object``.  Left in place beside a real base it is a base that
+            # every other base already derives from, and C3 refuses the class:
+            # ``TypeError: Cannot create a consistent method resolution order
+            # (MRO) for bases object, Modules.parent_class,
+            # FreeModules.ParentMethods``.
+            bases = tuple(base for base in bases if base is not object)
         doccls = provider or declaring_class
         class_name = f"{declaring_class.__name__}.{name}"
         reduction = (getattr, (category, name)) if picklable else None
