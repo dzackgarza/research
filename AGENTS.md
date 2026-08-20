@@ -709,12 +709,24 @@ realizing a category takes as its bases the classes bound to that category's
 super-categories, computed rather than written (`BoundTo(Sets)` via `__mro_entries__`).
 Construction then threads by cooperative `super().__init__` — the set level builds the
 underlying set and establishes the set-theoretic facts, the module level adds the ring
-action, the form level adds the form — so a new leaf declares only its own category, its
-own data, and its own construction step, and never restates a level below it. Exactly one
-class, the set-level root, may call Sage's non-cooperative `Parent.__init__`; a level
-that calls it directly silently breaks the chain. The decision record, with the options
-weighed and the approaches already falsified, is the plan card
-`PLAN-threading-set-behaviour`.
+action, the form level adds the form. Exactly one class, the set-level root, may call
+Sage's non-cooperative `Parent.__init__`; a level that calls it directly silently breaks
+the chain.
+
+**The leaf contract, which is what the mechanism exists to buy.** Adding a new category
+leaf costs exactly four things: name its category (`class NewLeafParent(BoundTo(NewLeaf))`,
+bases derived, never written); introduce the datum its own level adds and no more; fulfil
+the `abstract_method` obligations declared by the level **directly above** it; and one
+construction step ending in `super().__init__(**rest)`. Nothing else is permitted. A leaf
+knows its own level and the one above: it never names a category two levels up, never
+imports a class below its derived base, never re-declares an obligation a lower level
+already declared, and never writes a forwarding method. Obligations compose by induction —
+if every level fulfils the one above it, every object's obligations are met and no leaf
+carries the transitive burden. The decay signal is a leaf *reaching down*: importing a
+lower class to call it, restating a lower level's computation because the chain did not
+deliver it, or calling `Parent.__init__`. The decision record, with the options weighed,
+the approaches already falsified, and the falsifiable acceptance for this contract, is the
+plan card `PLAN-threading-set-behaviour`.
 *The tell:* a placement, cardinality, or enumeration installed on a module, lattice
 or group directly; a set class imported into a module or lattice file, or hand-written in
 its bases; a constructor that calls `Parent.__init__` instead of `super().__init__`;
