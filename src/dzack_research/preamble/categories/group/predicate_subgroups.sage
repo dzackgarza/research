@@ -28,7 +28,6 @@ if TYPE_CHECKING:
     from dzack_research.preamble.owned_category import ConstructionData
     from sage.categories.groups import Group
 
-from sage.categories.groups import Groups
 from sage.categories.category import Category as SageCategory
 from sage.structure.parent import Parent
 
@@ -63,7 +62,15 @@ class PredicateSubgroups(Category):
             description: str,
             **rest: "ConstructionData",
         ) -> None:
-            assert containing_group in Groups(), (
+            # Local: a module-level import would close a cycle; the module is
+            # built by the time this runs.
+            from dzack_research.preamble.categories.group.groups import OwnedGroups
+
+            # The owned node, because that is what a group is here.  \(O(L)\)
+            # is a group of the preamble's own making and stands in no Sage
+            # group category, so asking Sage's would refuse the very object
+            # this vocabulary exists for.
+            assert containing_group in OwnedGroups(), (
                 f"{containing_group} is not a group, so it has no subgroups"
             )
             # Stored before the chain runs so identity is answerable while
