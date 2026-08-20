@@ -747,11 +747,6 @@ class ModuleMorphism(Morphism):
 
     def is_injective(self) -> bool:
         r"""Return whether this morphism is a monomorphism."""
-        match self.__dict__.get("_known_injective"):
-            case True:
-                return True
-            case _:
-                pass
         # Local: at module level this closes an import cycle; the free-module
         # category is built by the time injectivity is asked about.
         from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules
@@ -766,11 +761,50 @@ class ModuleMorphism(Morphism):
         assert domain in FramedFreeModules(domain.base_ring()), (
             "injectivity is implemented for free and finite torsion domains"
         )
+        if self._carries_framing_into_framing():
+            return True
         independent_images = _independent_module_generators(
             self.codomain(),
             self.images(),
         )
         return bool(len(independent_images) == domain.rank())
+
+    def _carries_framing_into_framing(self) -> bool:
+        r"""Whether this is \(F_R(\iota)\) for an injection \(\iota\) of framings.
+
+        The hypothesis of freeness, checked rather than assumed: each generator
+        of \(T\) goes to a unit multiple of one generator of \(S\), and no two
+        go to the same one.  Such a morphism is the free functor applied to an
+        injection of sets composed with a diagonal automorphism, and
+        \(F_R(-)\) is a left adjoint, so it is a split monomorphism.  A ``False``
+        here says only that the hypothesis does not hold, never that the
+        morphism fails to be injective.
+
+        Sited beside the general answer because it decides the same question on
+        less work: the general route builds the matrix of the images and takes
+        its normal form, which the inclusion of a graded piece into its algebra
+        pays on every tensor square -- and that inclusion is a sub-framing by
+        construction.
+        """
+        # Local: at module level this closes an import cycle; the free-module
+        # category is built by the time injectivity is asked about.
+        from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules
+
+        codomain = self.codomain()
+        if codomain not in FramedFreeModules(codomain.base_ring()):
+            return False
+        if self.domain().module_generating_set() not in Sets().Finite():
+            return False
+        targets = set()
+        for image in self.images():
+            coefficients = image.coefficients()
+            if len(coefficients) != 1:
+                return False
+            ((label, coefficient),) = coefficients.items()
+            if not coefficient.is_unit() or label in targets:
+                return False
+            targets.add(label)
+        return True
 
     def index(self) -> "Integer | PlusInfinity":
         r"""Return $[N:f(M)]=|\operatorname{coker} f|\in\mathbb Z_{\ge 1}\cup\{\infty\}$.

@@ -138,7 +138,6 @@ class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
                     self.monomial_system().basis_monomial(index)
                 )
             )
-            inclusion._known_injective = True
             return Subobject(inclusion)
 
         def degree_on_module_generator(

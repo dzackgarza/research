@@ -230,3 +230,23 @@ class VectorSpaces(Category_over_base_ring):
             SageVectorSpaces(self.base_ring()),
             Category_over_base_ring.__classcall__(Modules, self.base_ring()),
         ]
+
+    class Homsets(Modules.Homsets):
+        r"""$\operatorname{Hom}_K(V,W)$, which is the module homset.
+
+        Sage reads a functorial construction off the category's *class* with
+        one ``getattr`` -- ``CovariantConstructionCategory.category_of`` asks
+        ``getattr(type(category), "Homsets")`` and falls back to the
+        structureless ``HomsetsOf`` when it finds nothing -- and it does not
+        consult ``super_categories()``.  Reaching ``Modules(K)`` only through
+        the category graph therefore left this construction unstated, and
+        ``Hom_K(V, W)`` was built as a bare Sage homset whose elements came
+        out as set maps rather than module morphisms: over a field, and only
+        over a field.
+
+        Declared rather than inherited because Sage binds a nested
+        construction class to exactly one base category
+        (``__classget__`` asserts it), and it carries no content of its own:
+        a homset of vector spaces is a homset of modules, so everything is
+        the base's.
+        """
