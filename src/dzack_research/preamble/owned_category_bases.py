@@ -183,6 +183,20 @@ class _SingletonAxiomClasscallMixin:
         return obj
 
 
+class _OverTheSameBaseRing:
+    r"""A construction on a category over a ring is over the same ring.
+
+    A subobject of an \(R\)-module is an \(R\)-module, and so is a product,
+    a quotient and a tensor product of them.  Sage's construction categories
+    are not over a base ring, so a join that includes one answers no ring at
+    all, and an object built in that join then has none.  Every construction
+    below reads the ring off the category it is built on.
+    """
+
+    def base_ring(self) -> SageCategory:
+        return self.base_category().base_ring()
+
+
 class Category(OwnedCategoryMixin, OwnedCategoryObject, SageCategory, Parent):
     r"""Owned base over Sage's ``Category``.  Most categories use this one.
 
@@ -303,6 +317,7 @@ class Category_ideal(
 
 
 class HomsetsCategory(
+    _OverTheSameBaseRing,
     OwnedCategoryMixin, OwnedCategoryObject, SageHomsetsCategory, Parent
 ):
     r"""Owned base over Sage's homsets construction category."""
@@ -331,7 +346,7 @@ class HomsetsCategory(
         return [owned_sets.Homsets()]
 
 
-class HomsetsOf(OwnedCategoryMixin, OwnedCategoryObject, SageHomsetsOf, Parent):
+class HomsetsOf(_OverTheSameBaseRing, OwnedCategoryMixin, OwnedCategoryObject, SageHomsetsOf, Parent):
     r"""Owned base over Sage's category-specific homsets base."""
 
     def __init__(self, category: SageCategory) -> None:
@@ -367,21 +382,8 @@ class Homsets(
         return SageHomsets().Endset()
 
 
-class _OverTheSameBaseRing:
-    r"""A construction on a category over a ring is over the same ring.
-
-    A subobject of an \(R\)-module is an \(R\)-module, and so is a product,
-    a quotient and a tensor product of them.  Sage's construction categories
-    are not over a base ring, so a join that includes one answers no ring at
-    all, and an object built in that join then has none.  Every construction
-    below reads the ring off the category it is built on.
-    """
-
-    def base_ring(self) -> SageCategory:
-        return self.base_category().base_ring()
-
-
 class FunctorialConstructionCategory(
+    _OverTheSameBaseRing,
     OwnedCategoryMixin,
     OwnedCategoryObject,
     SageFunctorialConstructionCategory,
@@ -402,6 +404,7 @@ class FunctorialConstructionCategory(
 
 
 class CovariantConstructionCategory(
+    _OverTheSameBaseRing,
     OwnedCategoryMixin,
     OwnedCategoryObject,
     SageCovariantConstructionCategory,
@@ -415,6 +418,7 @@ class CovariantConstructionCategory(
 
 
 class RegressiveCovariantConstructionCategory(
+    _OverTheSameBaseRing,
     OwnedCategoryMixin,
     OwnedCategoryObject,
     SageRegressiveCovariantConstructionCategory,
@@ -430,6 +434,7 @@ class RegressiveCovariantConstructionCategory(
 
 
 class SubobjectsCategory(
+    _OverTheSameBaseRing,
     OwnedCategoryMixin, OwnedCategoryObject, SageSubobjectsCategory, Parent
 ):
     r"""Owned base over Sage's subobject construction base."""
@@ -461,6 +466,7 @@ class SubobjectsCategory(
 
 
 class QuotientsCategory(
+    _OverTheSameBaseRing,
     OwnedCategoryMixin, OwnedCategoryObject, SageQuotientsCategory, Parent
 ):
     r"""Owned base over Sage's quotient construction base."""
@@ -471,6 +477,7 @@ class QuotientsCategory(
 
 
 class SubquotientsCategory(
+    _OverTheSameBaseRing,
     OwnedCategoryMixin, OwnedCategoryObject, SageSubquotientsCategory, Parent
 ):
     r"""Owned base over Sage's subquotient construction base."""
@@ -481,6 +488,7 @@ class SubquotientsCategory(
 
 
 class CartesianProductsCategory(
+    _OverTheSameBaseRing,
     OwnedCategoryMixin, OwnedCategoryObject, SageCartesianProductsCategory, Parent
 ):
     r"""Owned base over Sage's Cartesian-product construction base."""
@@ -491,6 +499,7 @@ class CartesianProductsCategory(
 
 
 class IsomorphicObjectsCategory(
+    _OverTheSameBaseRing,
     OwnedCategoryMixin, OwnedCategoryObject, SageIsomorphicObjectsCategory, Parent
 ):
     r"""Owned base over Sage's isomorphic-object construction base."""
@@ -501,6 +510,7 @@ class IsomorphicObjectsCategory(
 
 
 class RealizationsCategory(
+    _OverTheSameBaseRing,
     OwnedCategoryMixin, OwnedCategoryObject, SageRealizationsCategory, Parent
 ):
     r"""Owned base over Sage's realization construction base."""
@@ -511,6 +521,7 @@ class RealizationsCategory(
 
 
 class WithRealizationsCategory(
+    _OverTheSameBaseRing,
     OwnedCategoryMixin, OwnedCategoryObject, SageWithRealizationsCategory, Parent
 ):
     r"""Owned base over Sage's with-realizations construction base."""
@@ -521,6 +532,7 @@ class WithRealizationsCategory(
 
 
 class DualObjectsCategory(
+    _OverTheSameBaseRing,
     OwnedCategoryMixin, OwnedCategoryObject, SageDualObjectsCategory, Parent
 ):
     r"""Owned base over Sage's dual-object construction base."""
@@ -531,6 +543,7 @@ class DualObjectsCategory(
 
 
 class TensorProductsCategory(
+    _OverTheSameBaseRing,
     OwnedCategoryMixin, OwnedCategoryObject, SageTensorProductsCategory, Parent
 ):
     r"""Owned base over Sage's tensor-product construction base."""
@@ -541,6 +554,7 @@ class TensorProductsCategory(
 
 
 class AlgebrasCategory(
+    _OverTheSameBaseRing,
     OwnedCategoryMixin, OwnedCategoryObject, SageAlgebrasCategory, Parent
 ):
     r"""Owned base over Sage's algebra functor construction base."""
@@ -551,6 +565,7 @@ class AlgebrasCategory(
 
 
 class FilteredModulesCategory(
+    _OverTheSameBaseRing,
     OwnedCategoryMixin, OwnedCategoryObject, SageFilteredModulesCategory, Parent
 ):
     r"""Owned base over Sage's filtered-module construction base."""
@@ -561,6 +576,7 @@ class FilteredModulesCategory(
 
 
 class GradedModulesCategory(
+    _OverTheSameBaseRing,
     OwnedCategoryMixin, OwnedCategoryObject, SageGradedModulesCategory, Parent
 ):
     r"""Owned base over Sage's graded-module construction base."""
@@ -571,6 +587,7 @@ class GradedModulesCategory(
 
 
 class SuperModulesCategory(
+    _OverTheSameBaseRing,
     OwnedCategoryMixin, OwnedCategoryObject, SageSuperModulesCategory, Parent
 ):
     r"""Owned base over Sage's super-module construction base."""
