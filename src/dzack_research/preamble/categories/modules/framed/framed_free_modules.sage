@@ -267,8 +267,8 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
 
             self._module_generating_set = _as_set(module_generating_set)
             super().__init__(**rest)
-            # Finite *and* totally ordered, because the level below is the
-            # based free modules and an ordering is what it adds.  An element
+            # Finite *and* totally ordered, because the category refined into
+            # is the based free modules and an ordering is what it adds.  An element
             # here is the finitely supported \(a:S\to R\); what a chosen total
             # order buys is a way to write that function down, as the
             # coordinate vector indexed by the order.  Finiteness of \(S\) is a
