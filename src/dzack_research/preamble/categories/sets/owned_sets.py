@@ -353,7 +353,7 @@ class FiniteSets(CategoryWithAxiom):
 
     class ParentMethods:
         if TYPE_CHECKING:
-            def __iter__(self) -> Iterator[_E]: ...
+            def __iter__(self) -> Iterator[SageElement]: ...
 
         def symmetric_group(self) -> SageParent:
             r"""Return :math:`\operatorname{Sym}(X)`: the automorphism group
@@ -389,28 +389,15 @@ class FiniteSets(CategoryWithAxiom):
             self._preamble_symmetric_group = automorphisms
             return cast(SageParent, automorphisms)
 
-        def cardinality(self) -> Cardinal:
-            r"""The exact count, by materializing the chosen enumeration —
-            finite sets own the termination-dependent implementation,
-            constructed from the witness suite.
-
-            A construction that determines its own count states it directly
-            (the fundamental finite sets, cartesian products, disjoint
-            unions).  This is the one-time evaluation witness for a finite
-            set whose construction does not: the enumeration runs once and
-            the cardinal it yields is the set's stored count from then on."""
-            stored = self.__dict__.get("_owned_cardinality")
-            if stored is not None:
-                return cast("Cardinal", stored)
-
-            from sage.rings.integer_ring import ZZ
-
-            from dzack_research.preamble.categories.sets.cardinals import cardinal
-
-            stored = cardinal(ZZ(sum(1 for _ in self)))
-            self._owned_cardinality = stored
-            return stored
-
+        # No ``cardinality`` here.  A count is an operation this category may
+        # state for every finite set, and the *object* supplies it: a group
+        # knows its order, a prime field is of size p, a free module of rank n
+        # over R has |R|^n elements.  Counting by materializing an enumeration
+        # answers only for a set given by nothing else, and Sage already owns
+        # that case (``FiniteEnumeratedSets``), so a count written here would
+        # not add the answer -- it would take precedence over every object
+        # that can state its own, which is the whole membership of this
+        # category.
 
 class InfiniteSets(CategoryWithAxiom):
     r"""Infinite sets: Sage's standard axiom supplies the uniform
@@ -443,32 +430,53 @@ class CountableSets(CategoryWithAxiom):
 
         return [EnumeratedSets()]
 
-    class ParentMethods(Generic[_E]):
+    class ParentMethods:
         if TYPE_CHECKING:
-            def __iter__(self) -> Iterator[_E]: ...
+            def __iter__(self) -> Iterator[SageElement]: ...
+
+        def _chosen_enumeration(self) -> Iterator[SageElement]:
+            r"""The chosen enumeration of this set, as an iterator.
+
+            Reading it is what :meth:`__getitem__` and :meth:`index` do, and
+            the reason they cannot simply write ``iter(self)``: Python treats
+            a type that defines ``__getitem__`` and no ``__iter__`` as a
+            sequence, and iterates it *by calling* ``__getitem__``.  On such a
+            parent ``iter(self)`` is this category's own accessor, so reading
+            the enumeration through it would be reading itself.  A set with no
+            ``__iter__`` has chosen no enumeration, and these operations --
+            which are operations of a chosen one, never obligations of
+            countability -- say so instead of descending.
+            """
+            assert any("__iter__" in ancestor.__dict__ for ancestor in type(self).__mro__), (
+                f"{self} has chosen no enumeration: it defines no __iter__, so "
+                f"there is no order in which to index its elements. Countability "
+                f"is the existence of an injection into the naturals and names no "
+                f"enumeration; supply one to index or look up by position."
+            )
+            return iter(self)
 
         # Operations of a CHOSEN enumeration, available where one exists;
         # never obligations of countability.  ponytail: they read the
         # enumeration through iteration rather than through the slice object
         # that properly holds it -- see the module note on Slice(f).
-        def __getitem__(self, n: int) -> _E:
+        def __getitem__(self, n: int) -> SageElement:
             r"""The ``n``-th element of the chosen enumeration, ``n >= 0``."""
             assert n >= 0, f"enumeration indices are nonnegative; found {n}"
-            for position, element in enumerate(self):
+            for position, element in enumerate(self._chosen_enumeration()):
                 if position == n:
                     return element
             assert False, f"index {n} exceeds the enumeration of {self}"
 
-        def index(self, element: _E) -> int:
+        def index(self, element: SageElement) -> int:
             r"""Reverse lookup in the chosen enumeration: terminates for
             members and satisfies ``X[X.index(x)] == x``. No termination
             promise for a nonmember of an infinite parent."""
-            for position, candidate in enumerate(self):
+            for position, candidate in enumerate(self._chosen_enumeration()):
                 if candidate == element:
                     return position
             assert False, f"{element} is not in the enumeration of {self}"
 
-        def enumeration_injection(self) -> SetMorphism[_E, Integer]:
+        def enumeration_injection(self) -> SetMorphism[SageElement, Integer]:
             r"""The monomorphism into the SET of nonnegative integers
             realized by the chosen enumeration, ``x -> index(x)``, as an
             element of the actual homset — the constructed effective
@@ -480,8 +488,10 @@ class CountableSets(CategoryWithAxiom):
 
             from dzack_research.preamble.categories.sets.underlying_sets import UnderlyingSet
 
-            domain = cast(SageParent[_E], self)
-            naturals = cast(SageParent[Integer], NonNegativeIntegers())
+            # Quoted: ``cast`` evaluates its first argument, and Sage's
+            # ``Parent`` is a Cython class that cannot be subscripted.
+            domain = cast("SageParent[SageElement]", self)
+            naturals = cast("SageParent[Integer]", NonNegativeIntegers())
             target: UnderlyingSet[Integer] = UnderlyingSet(naturals)
             homset = Hom(domain, target, SageSets())
             # target[n] IS the natural number n (identity enumeration),

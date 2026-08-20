@@ -414,9 +414,11 @@ class PrimeFields(OwnedCategoryMixin, Category):
     where it sits among the owned sets -- \(\mathbb{F}_p\) has \(p\) elements
     for every prime \(p\), which is a fact about the mathematics and not a
     stamp on an object -- and the enumeration below is the witness that level
-    asks for.  Nothing here counts anything; the set level does, once, from
-    that enumeration.  The engine computes the arithmetic and is never the
-    object, so nothing here asks ``GF(p)`` how big it is either.
+    asks for.  Nothing here counts anything: the size is *stated*, because
+    \(p\) is the datum this object is built from, and running the enumeration
+    to rediscover it would be deriving a defining datum from its own witness.
+    The engine computes the arithmetic and is never the object, so nothing
+    here asks ``GF(p)`` how big it is either.
     """
 
     @classmethod
@@ -438,6 +440,12 @@ class PrimeFields(OwnedCategoryMixin, Category):
 
         def characteristic(self) -> SageInteger:
             return self._characteristic
+
+        def cardinality(self) -> "Cardinal":
+            r"""Return \(|\mathbb{F}_p| = p\)."""
+            from dzack_research.preamble.categories.sets.cardinals import cardinal
+
+            return cardinal(self._characteristic)
 
         def __iter__(self) -> "Iterator[Element]":
             r"""The residues, which is what makes this a finite set."""

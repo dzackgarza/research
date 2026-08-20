@@ -516,6 +516,26 @@ class FixedCardinalitySubsetsParent(UniqueRepresentation, SubsetsParent):
     def source(self) -> "lexicon.Set":
         return self._source
 
+    def cardinality(self) -> Cardinal:
+        r"""Return \(\bigl|\{A\subseteq S:|A|=k\}\bigr|\).
+
+        Stated from this object's own data, never counted: for finite \(S\)
+        it is \(\binom{|S|}{k}\), and for countably infinite \(S\) there are
+        \(\aleph_0\) subsets of each positive size \(k\) (choose the largest
+        member freely), while the empty subset is the only one of size zero.
+        """
+        from sage.arith.misc import binomial
+
+        from dzack_research.preamble.categories.sets.cardinals import aleph0, cardinal
+
+        if self._source in Sets().Finite():
+            return cardinal(
+                binomial(SageZZ(self._source.cardinality()), self._subset_cardinality)
+            )
+        if self._subset_cardinality == 0:
+            return cardinal(1)
+        return aleph0
+
     def subset_cardinality(self) -> SageInteger:
         cardinality: SageInteger = self._subset_cardinality
         return cardinality
@@ -603,6 +623,21 @@ class FiniteSubsetsParent(UniqueRepresentation, SubsetsParent):
 
     def source(self) -> "lexicon.Set":
         return self._source
+
+    def cardinality(self) -> Cardinal:
+        r"""Return \(\bigl|\{A\subseteq S:A\text{ finite}\}\bigr|\).
+
+        Stated from this object's own data, never counted: for finite \(S\)
+        every subset is finite, so this is the whole power set, \(2^{|S|}\).
+        For countably infinite \(S\) the finite subsets are countable -- a
+        finite subset of \(\mathbb N\) is a finite binary string -- so there
+        are \(\aleph_0\) of them.
+        """
+        from dzack_research.preamble.categories.sets.cardinals import aleph0, cardinal
+
+        if self._source in Sets().Finite():
+            return cardinal(2) ** self._source.cardinality()
+        return aleph0
 
     def _element_constructor_(
         self,
