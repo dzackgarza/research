@@ -10,6 +10,11 @@ set.  Those belong to the finitely generated node, and a module that has not
 got them should not be expected to answer.
 """
 
+# Sage's namespace first, and the preamble's over it: these tests name
+# ``MatrixSpace``, ``RR`` and their fellows, which the preamble does not
+# export and a lowered module is not given.
+from sage.all import *  # noqa: F401,F403
+
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:

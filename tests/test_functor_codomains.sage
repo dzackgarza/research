@@ -16,6 +16,11 @@ if TYPE_CHECKING:
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleAutomorphismGroup
     from dzack_research.preamble.lexicon import OrderedSet
 
+# Sage's namespace first, and the preamble's over it: these tests name
+# ``AbelianGroup``, ``FreeGroup``, ``RR`` and their fellows, which the
+# preamble does not export and a lowered module is not given.
+from sage.all import *  # noqa: F401,F403
+
 from dzack_research.preamble.install import install_preamble
 install_preamble(globals())
 

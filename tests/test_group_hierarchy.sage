@@ -5,6 +5,11 @@ on that group.  A finite torsion $\mathbb Z$-module is already a finite
 abelian group.  It does not need a second parent to state either fact.
 """
 
+# Sage's namespace first, and the preamble's over it: these tests name
+# ``AbelianGroup``, ``FreeGroup``, ``RR`` and their fellows, which the
+# preamble does not export and a lowered module is not given.
+from sage.all import *  # noqa: F401,F403
+
 from dzack_research.preamble.install import install_preamble
 install_preamble(globals())
 def _abelian_groups() -> list:

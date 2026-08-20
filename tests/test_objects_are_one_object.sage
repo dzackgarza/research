@@ -51,20 +51,23 @@ def test_compiler_runtime_names_do_not_enter_the_installed_namespace() -> None:
 def test_a_free_module_is_one_object_per_ring_and_set() -> None:
     r"""$F_R(S)$ is the same object however it is reached.
 
-    Three spellings and one object: the specialized class, the general one,
-    and the constructor.  Reaching a class directly used to give a second
-    parent on the same $(R,S)$, and its elements would not coerce against the
-    first's.
+    Two spellings and one object: the class and the constructor.  Reaching a
+    class directly used to give a second parent on the same $(R,S)$, and its
+    elements would not coerce against the first's.
+
+    There were three.  ``FreeModuleOnSet`` was the general class beside the
+    specialized one, and the free functor is now one per concrete category,
+    so there is no second class left to reach and no third spelling to agree
+    with.
     """
     _ensure_preamble()
     integers = _owned_integers()
     labels = Sets.Δ[2]
 
-    from_specialized = BasedFreeModule(integers, labels)
-    from_general = FreeModuleOnSet(integers, labels)
+    from_class = BasedFreeModule(integers, labels)
     from_constructor = FreeModuleOn(integers, labels)
 
-    assert from_specialized is from_general is from_constructor
+    assert from_class is from_constructor
 
 
 def test_the_owned_ring_and_the_engines_key_one_free_module() -> None:

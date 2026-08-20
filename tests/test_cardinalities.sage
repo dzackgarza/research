@@ -19,6 +19,11 @@ from sage.all import (
 from sage.categories.homset import Hom
 from sage.categories.morphism import SetMorphism
 
+# Sage's namespace first, and the preamble's over it: these tests name
+# ``AbelianGroup``, ``FreeGroup``, ``RR`` and their fellows, which the
+# preamble does not export and a lowered module is not given.
+from sage.all import *  # noqa: F401,F403
+
 from dzack_research.preamble.categories.abstract_categories.products import (
     CartesianProductOfSets,
     CoproductOfSets,

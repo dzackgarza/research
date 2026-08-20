@@ -16,6 +16,11 @@ of an integral computed two ways.
 """
 
 
+# Sage's namespace first, and the preamble's over it: these tests name
+# ``MatrixSpace``, ``RR`` and their fellows, which the preamble does not
+# export and a lowered module is not given.
+from sage.all import *  # noqa: F401,F403
+
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -23,7 +28,7 @@ if TYPE_CHECKING:
 
     from sage.symbolic.expression import Expression
 
-    from dzack_research.preamble.categories.modules.function_modules import (
+    from dzack_research.preamble.categories.modules.pure.function_modules import (
         FunctionModule,
         FunctionModuleElement,
     )
@@ -40,14 +45,14 @@ def _ensure_preamble() -> None:
 
 def _smooth() -> "FunctionModule":
     _ensure_preamble()
-    from dzack_research.preamble.categories.modules.function_modules import smooth_functions
+    from dzack_research.preamble.categories.modules.pure.function_modules import smooth_functions
 
     return smooth_functions(RR)
 
 
 def _square_integrable() -> "FunctionModule":
     _ensure_preamble()
-    from dzack_research.preamble.categories.modules.function_modules import (
+    from dzack_research.preamble.categories.modules.pure.function_modules import (
         square_integrable_functions,
     )
 
@@ -250,7 +255,7 @@ def test_a_vanishing_tail_certifies_what_the_integral_cannot_evaluate() -> None:
     trusting are both admission -- the module takes an undecided function on
     trust -- so the verdict is the only place the tier is observable.
     """
-    from dzack_research.preamble.categories.modules.function_modules import (
+    from dzack_research.preamble.categories.modules.pure.function_modules import (
         _MEMBER,
         _NOT_MEMBER,
         _square_integrability,

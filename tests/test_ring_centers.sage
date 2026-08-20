@@ -17,6 +17,11 @@ isomorphisms.  That restriction is the ``core`` of a category, and the
 refusal of a non-invertible arrow is the last specimen.
 """
 
+# Sage's namespace first, and the preamble's over it: these tests name
+# ``MatrixSpace``, ``RR`` and their fellows, which the preamble does not
+# export and a lowered module is not given.
+from sage.all import *  # noqa: F401,F403
+
 from typing import TYPE_CHECKING
 
 import pytest

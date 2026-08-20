@@ -28,7 +28,7 @@ def _ensure_preamble() -> None:
 def test_the_session_names_Q_mod_Z_and_lands_it_in_the_owned_category() -> None:
     r"""``QQ/ZZ`` is the value module a discriminant form already uses."""
     _ensure_preamble()
-    from dzack_research.preamble.categories.modules.fraction_field_quotients import (
+    from dzack_research.preamble.categories.modules.framed.fraction_field_quotients import (
         FractionFieldQuotients,
     )
 
@@ -84,7 +84,7 @@ def test_the_modulus_enters_the_submodule_of_Q_mod_2Z() -> None:
 def test_the_fraction_field_is_the_modulus_zero_object() -> None:
     r"""$\mathbb Q=\operatorname{coker}(0\hookrightarrow\mathbb Q)$, framed by $1/n!$."""
     _ensure_preamble()
-    from dzack_research.preamble.categories.modules.fraction_field_quotients import (
+    from dzack_research.preamble.categories.modules.framed.fraction_field_quotients import (
         FractionFieldQuotients,
     )
     from dzack_research.preamble.categories.modules.pure.torsion_modules import (

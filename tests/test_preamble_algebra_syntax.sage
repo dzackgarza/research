@@ -8,6 +8,11 @@ These tests define the intended user-facing syntax for `R`-algebras in the
 - Free-algebra maps induced from finite/explicit generator data.
 """
 
+# Sage's namespace first, and the preamble's over it: these tests name
+# ``MatrixSpace``, ``RR`` and their fellows, which the preamble does not
+# export and a lowered module is not given.
+from sage.all import *  # noqa: F401,F403
+
 from pathlib import Path
 
 from sage.categories.homset import Hom

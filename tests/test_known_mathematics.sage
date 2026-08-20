@@ -80,6 +80,11 @@ from sage.rings.rational_field import QQ as SageRationals
 # categories outright); Sage's ``Groups().FinitelyGenerated()`` is a
 # declaration registry the preamble consumes on intake, not the node these
 # assertions ask about.
+# Sage's namespace first, and the preamble's over it: these tests name
+# ``AbelianGroup``, ``FreeGroup``, ``RR`` and their fellows, which the
+# preamble does not export and a lowered module is not given.
+from sage.all import *  # noqa: F401,F403
+
 from dzack_research.preamble.categories.group.groups import OwnedFinitelyGeneratedGroups
 
 # Coordinates are data, not elements: a tuple becomes an element only by being
