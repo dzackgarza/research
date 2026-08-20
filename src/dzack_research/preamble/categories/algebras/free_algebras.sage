@@ -120,9 +120,19 @@ class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
         def graded_piece(
             self: "GradedFreeAlgebraParent", degree: "Integer"
         ) -> "Module":
-            r"""Return the free submodule on the monomials of one degree."""
+            r"""Return the free submodule on the monomials of one degree.
+
+            The monomials of a degree are a subset of all of them, and
+            ``basis_monomial`` is the inclusion, so the arrow is the free
+            functor applied to an injection of framings -- which is what
+            :class:`SubFramingMorphism` names.  Stated rather than
+            rediscovered: for countably many generators the degree-two
+            monomials are countable too, and no listing of images decides
+            anything about them.
+            """
             from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreeModuleOn
             from dzack_research.preamble.categories.modules.framed.formed.integrallattice.subobjects import Subobject
+            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import SubFramingMorphism
             from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
             from dzack_research.preamble.categories.sets.sets import finite_ordered_set
 
@@ -133,10 +143,11 @@ class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
                 self.base_ring(),
                 monomials,
             )
-            inclusion = module_homset(source, self)(
+            inclusion = SubFramingMorphism(
+                module_homset(source, self),
                 lambda index: self.module_generator(
                     self.monomial_system().basis_monomial(index)
-                )
+                ),
             )
             return Subobject(inclusion)
 

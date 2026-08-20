@@ -761,50 +761,11 @@ class ModuleMorphism(Morphism):
         assert domain in FramedFreeModules(domain.base_ring()), (
             "injectivity is implemented for free and finite torsion domains"
         )
-        if self._carries_framing_into_framing():
-            return True
         independent_images = _independent_module_generators(
             self.codomain(),
             self.images(),
         )
         return bool(len(independent_images) == domain.rank())
-
-    def _carries_framing_into_framing(self) -> bool:
-        r"""Whether this is \(F_R(\iota)\) for an injection \(\iota\) of framings.
-
-        The hypothesis of freeness, checked rather than assumed: each generator
-        of \(T\) goes to a unit multiple of one generator of \(S\), and no two
-        go to the same one.  Such a morphism is the free functor applied to an
-        injection of sets composed with a diagonal automorphism, and
-        \(F_R(-)\) is a left adjoint, so it is a split monomorphism.  A ``False``
-        here says only that the hypothesis does not hold, never that the
-        morphism fails to be injective.
-
-        Sited beside the general answer because it decides the same question on
-        less work: the general route builds the matrix of the images and takes
-        its normal form, which the inclusion of a graded piece into its algebra
-        pays on every tensor square -- and that inclusion is a sub-framing by
-        construction.
-        """
-        # Local: at module level this closes an import cycle; the free-module
-        # category is built by the time injectivity is asked about.
-        from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules
-
-        codomain = self.codomain()
-        if codomain not in FramedFreeModules(codomain.base_ring()):
-            return False
-        if self.domain().module_generating_set() not in Sets().Finite():
-            return False
-        targets = set()
-        for image in self.images():
-            coefficients = image.coefficients()
-            if len(coefficients) != 1:
-                return False
-            ((label, coefficient),) = coefficients.items()
-            if not coefficient.is_unit() or label in targets:
-                return False
-            targets.add(label)
-        return True
 
     def index(self) -> "Integer | PlusInfinity":
         r"""Return $[N:f(M)]=|\operatorname{coker} f|\in\mathbb Z_{\ge 1}\cup\{\infty\}$.
@@ -1077,6 +1038,27 @@ class FramingMorphism(ModuleMorphism):
 
     def _domain_module_generating_set(self) -> "OrderedSet":
         return self.domain().module_generator_morphism().domain()
+
+
+class SubFramingMorphism(ModuleMorphism):
+    r"""\(F_R(\iota)\) for an injection \(\iota:T\hookrightarrow S\) of framings.
+
+    Injectivity is part of the construction datum, the way surjectivity is for
+    :class:`FramingMorphism` above, and for the same reason: an injection of
+    sets is split, \(F_R(-)\) is a left adjoint and carries the splitting, so
+    the morphism is a split monomorphism -- and \(T\) may be infinite, as the
+    degree-two piece of an algebra on countably many generators is, in which
+    case no enumeration of images decides anything.
+
+    The caller supplies \(\iota\) and states by choosing this class that it is
+    injective.  Sited here rather than as a field written onto whatever
+    morphism arrived: a class says what the morphism *is*, and the general
+    route below is a matrix of images and its normal form, which the tensor
+    square of every lattice would otherwise pay.
+    """
+
+    def is_injective(self) -> bool:
+        return True
 
     def is_surjective(self) -> bool:
         return True
