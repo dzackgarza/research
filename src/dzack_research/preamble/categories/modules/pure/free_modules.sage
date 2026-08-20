@@ -2,6 +2,9 @@ r"""Free modules over a base ring."""
 
 
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
+from dzack_research.preamble.categories.sets.owned_sets import Sets as OwnedSets
+from dzack_research.preamble.owned_category import OwnedCategoryMixin, object_of
+from sage.categories.category_types import Category_over_base_ring
 from sage.categories.modules import Modules
 
 
@@ -35,3 +38,42 @@ class FreeModules(OwnedCategoryOverBaseRing):
                 "states no torsion answer there"
             )
             return True
+
+
+class FiniteRankFreeModules(OwnedCategoryMixin, Category_over_base_ring):
+    r"""\(R^n\), constructed through the chain rather than framed and placed.
+
+    The module level is where the underlying **set** is worried about: a
+    module is a set, and declaring this one to be \(R^n\) is declaring its
+    underlying set to be the product \(R\times\cdots\times R\).  That is the
+    whole of what this level does about size -- it names the factors, and the
+    set level answers from them.
+
+    Contrast ``framed/framed_free_modules.sage``, where ``_free_module_placement``
+    reads the axioms of \(R\) and of the framing and *stamps* an answer onto
+    the module, with a separate count beside it.  Nothing of that shape is
+    here: the factors are the only thing declared.
+    """
+
+    @classmethod
+    def _repr_object_names(cls) -> str:
+        return "free modules of finite rank"
+
+    def super_categories(self) -> list:
+        return [FreeModules(self.base_ring()), OwnedSets().CartesianProducts()]
+
+    class ParentMethods:
+        def __init__(self, rank: "Integer", base: "Ring", **rest: object) -> None:
+            self._rank = rank
+            super().__init__(factors=(base,) * rank, base=base, **rest)
+
+        def rank(self) -> "Integer":
+            return self._rank
+
+        def _repr_(self) -> str:
+            return f"{self.base_ring()}^{self._rank}"
+
+
+def FreeModuleOfRank(base_ring: "Ring", rank: "Integer") -> "Parent":
+    r"""Return \(R^n\), built through the chain."""
+    return object_of(FiniteRankFreeModules(base_ring), rank=rank, base=base_ring)
