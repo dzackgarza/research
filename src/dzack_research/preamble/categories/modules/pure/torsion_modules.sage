@@ -8,7 +8,7 @@ with no finite presentation or finite generation hypothesis.
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
 from typing import Self
 
-from sage.categories.modules import Modules
+from dzack_research.preamble.categories.modules.pure.modules import Modules
 
 
 class TorsionModules(OwnedCategoryOverBaseRing):

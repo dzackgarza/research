@@ -567,7 +567,7 @@ class TensorModules(Category_over_base_ring):
             self._valence = (contravariant, covariant)
             self._dual_module = DualModule(module)
             self._intrinsic_module, self._index_to_generator = self._build_intrinsic_module()
-            super().__init__(base=module.base_ring(), **rest)
+            super().__init__(**rest)
 
         def module(self) -> "Module":
             r"""Return $M$, the module the tensors are on."""
@@ -986,7 +986,7 @@ class MixedTensorAlgebras(Category_over_base_ring):
             self._dual_module = DualModule(module)
             self._vector_tensor_algebra = TensorAlgebraOf(module)
             self._covector_tensor_algebra = TensorAlgebraOf(self._dual_module)
-            super().__init__(base=module.base_ring(), **rest)
+            super().__init__(**rest)
 
         def module(self) -> "Module":
             return self._module

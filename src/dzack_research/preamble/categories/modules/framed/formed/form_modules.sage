@@ -223,7 +223,7 @@ class FormModules(OwnedCategoryOverBaseRing):
             module = form.module()
             self._form = form
             self._module = module
-            super().__init__(base=module.base_ring(), **rest)
+            super().__init__(**rest)
             source = module.framing_morphism().domain()
             underlying_module_generator_morphism = module.module_generator_morphism()
             lifted_module_generator_morphism = SetMorphism(

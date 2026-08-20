@@ -5,7 +5,7 @@ from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBase
 from dzack_research.preamble.categories.sets.owned_sets import Sets as OwnedSets
 from dzack_research.preamble.owned_category import OwnedCategoryMixin, object_of
 from dzack_research.preamble.owned_category_bases import Category_over_base_ring
-from sage.categories.modules import Modules
+from dzack_research.preamble.categories.modules.pure.modules import Modules
 
 
 class FreeModules(OwnedCategoryOverBaseRing):

@@ -77,7 +77,7 @@ class OwnedIdeals(OwnedCategoryOverBaseRing):
             # back as whichever equal \(1\) built that set first.  A family of
             # ring elements is carried by the ring, not by a set of numbers.
             self._generators = tuple(generators)
-            super().__init__(base=ring, **rest)
+            super().__init__(**rest)
 
         def ring(self: Self) -> "Ring":
             r"""Return \(R\), the ring this is an ideal of."""
