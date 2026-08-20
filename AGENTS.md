@@ -699,8 +699,21 @@ its underlying set has one, and $|R^n| = |R|^n$ (the rank-zero module is the
 singleton, so its set has cardinality one). If a construction reaches a lattice
 without passing through an owned set that answers these, the construction is wrong
 and stamping a placement onto the lattice hides it.
+**How the inheritance is threaded matters as much as that it is.** Classes are thin
+containers, so a module or lattice class never inherits from — or imports — a set
+class to acquire set-theoretic methods; that coupling is what the category system
+exists to remove. Two admissible routes, and no third: thread it **through
+categories**, where the methods live in the owned `Sets()` placement categories'
+`ParentMethods` and reach the object dynamically because its category chain reaches
+`Sets`, the object supplying only the datum they consume; or thread it by **explicit
+composition through the forgetful functor**, each step named, as
+`FormModules.ParentMethods.cardinality` does when it delegates to
+`forget_form().cardinality()`. Either way the computation lives once, with the set
+notion, and is never restated at each level of enrichment.
 *The tell:* a placement, cardinality, or enumeration installed on a module, lattice
-or group directly; `_is_known_empty`-style code refusing an object "for want of a
+or group directly; a set class imported into a module or lattice file, or named as a
+base class there; the same count computed again at a second level of enrichment;
+`_is_known_empty`-style code refusing an object "for want of a
 placement" when the fix is that its underlying set was never built; the phrase "has
 an underlying X"; a stored `self._underlying`; a
 `forget_*()` call used to obtain the receiver of a method rather than to name a
