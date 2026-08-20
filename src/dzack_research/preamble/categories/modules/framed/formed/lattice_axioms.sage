@@ -101,9 +101,16 @@ class IntegralValuedLattices(CategoryWithAxiom_over_base_ring):
         return "integral-valued lattices"
 
     class ParentMethods:
-        @abstract_method
         def is_integral(self) -> bool:
-            r"""Return whether every value of the form is integral over $\mathbb Z$."""
+            r"""Return ``True``: membership in this category is the statement.
+
+            The answer is not recomputed here because it was computed before
+            admission: ``refine`` evaluates ``is_integral()`` on the candidate,
+            which still resolves to the computing implementation, and refuses a
+            ``False``.  Once the object is placed, the property is what
+            placement asserts.
+            """
+            return True
 
 
 class NondegenerateLattices(CategoryWithAxiom_over_base_ring):
@@ -125,9 +132,15 @@ class NondegenerateLattices(CategoryWithAxiom_over_base_ring):
         return "nondegenerate lattices"
 
     class ParentMethods:
-        @abstract_method
         def is_nondegenerate(self) -> bool:
-            r"""Return whether $\operatorname{rad}(L)=0$."""
+            r"""Return ``True``: membership in this category is the statement.
+
+            $\operatorname{rad}(L)=0$ was decided before admission -- ``refine``
+            evaluates ``is_nondegenerate()`` on the candidate, where it still
+            resolves to the computing implementation (the kernel module of the
+            correlation morphism) and refuses a ``False``.
+            """
+            return True
 
 
 class EvenLattices(CategoryWithAxiom_over_base_ring):
@@ -160,9 +173,15 @@ class EvenLattices(CategoryWithAxiom_over_base_ring):
         return "even lattices"
 
     class ParentMethods:
-        @abstract_method
         def is_even(self) -> bool:
-            r"""Return whether every norm $b(x,x)$ lies in $2R$."""
+            r"""Return ``True``: membership in this category is the statement.
+
+            $b(x,x)\in 2R$ was decided before admission -- ``refine`` evaluates
+            ``is_even()`` on the candidate, where it still resolves to the
+            computing implementation (the Gram diagonal of a finitely generated
+            formed module) and refuses a ``False``.
+            """
+            return True
 
 
 # ``IntegralLattices`` is ``Lattices(R).FinitelyGenerated().Integral()``, and
