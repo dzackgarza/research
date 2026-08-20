@@ -23,6 +23,7 @@ if TYPE_CHECKING:
     from sage.structure.parent import MembershipInput
 
 from sage.categories.category import Category
+from sage.categories.objects import Objects
 
 from dzack_research.preamble.owned_category import OwnedCategoryMixin
 from sage.categories.morphism import Morphism
@@ -76,8 +77,11 @@ class Cat(OwnedCategoryMixin, Category):
         return "Category of categories"
 
     def super_categories(self) -> list[Category]:
-        # A category is not a set, so nothing above this holds its objects.
-        return []
+        # A category is an object.  ``Objects()`` is where Sage declares
+        # ``Homsets``/``Endsets``, which is how every ordinary category comes
+        # by them -- so without this, ``Hom(C, D)`` between categories cannot
+        # build its homset at all.
+        return [Objects()]
 
     def __contains__(self, candidate: "MembershipInput") -> bool:
         r"""Return whether ``candidate`` is a category, hence an object here."""
