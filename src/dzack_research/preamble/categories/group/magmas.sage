@@ -30,14 +30,26 @@ from sage.categories.semigroups import Semigroups as SageSemigroups
 
 
 class Magmas(Category):
-    r"""The owned category of magmas: a set with a binary operation."""
+    r"""The owned category of magmas: a set with a binary operation.
+
+    The owned ``Sets()`` is named here because that is what the sentence
+    says: a magma *is* a set, with an operation on it.  Seating the root on
+    this node and on :class:`AdditiveMagmas` is what carries every owned
+    group, ring, module and algebra to it through the spine they already
+    declare, so no constructor has to place an object in ``Sets()`` by hand
+    and no object can be in ``Sets().Finite()`` without being in ``Sets()``.
+    """
 
     @classmethod
     def _repr_object_names(cls) -> str:
         return "magmas"
 
     def super_categories(self) -> list[Category]:
-        return [SageMagmas()]
+        # Local: the sets module is lower than this one and imports nothing
+        # from the category tree, so the edge is one-way.
+        from dzack_research.preamble.categories.sets.owned_sets import Sets as OwnedSets
+
+        return [SageMagmas(), OwnedSets()]
 
 
 class Semigroups(Category):
@@ -66,14 +78,23 @@ class Monoids(Category):
 
 
 class AdditiveMagmas(Category):
-    r"""The owned category of additive magmas: a set with a ``+``."""
+    r"""The owned category of additive magmas: a set with a ``+``.
+
+    Names the owned ``Sets()`` for the same reason :class:`Magmas` does, and
+    it is this node that carries modules there: a module is an additively
+    commutative group with a ring action, so its additive spine passes
+    through here.
+    """
 
     @classmethod
     def _repr_object_names(cls) -> str:
         return "additive magmas"
 
     def super_categories(self) -> list[Category]:
-        return [SageAdditiveMagmas()]
+        # Local: see Magmas.super_categories.
+        from dzack_research.preamble.categories.sets.owned_sets import Sets as OwnedSets
+
+        return [SageAdditiveMagmas(), OwnedSets()]
 
 
 class AdditiveSemigroups(Category):
