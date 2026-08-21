@@ -472,7 +472,7 @@ class LatticePolytopes(Category):
         ) -> None:
             super().__init__(**rest)
             self._is_reflexive = bool(self.polyhedron().is_reflexive())
-            self._is_smooth = bool(self.polyhedron().is_smooth())
+            self._is_smooth = bool(self.normal_fan().is_smooth())
             self._ehrhart_polynomial = self.polyhedron().ehrhart_polynomial()
             self._h_star_vector = tuple(self.polyhedron().h_star_vector())
             origin = self.ambient_space()([0] * self.dimension())
