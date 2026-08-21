@@ -24,7 +24,7 @@ dzack_research = ["py.typed"]
 
 [tool.uv.sources]
 sage-stubs = { git = "https://github.com/dzackgarza/sage-stubs.git" }
-tree-sitter-sage = { git = "https://github.com/dzackgarza/tree-sitter-sage" }
+tree-sitter-sage = { path = "../gitclones/tree-sitter-sage", editable = true }
 
 
 [tool.pytest.ini_options]
