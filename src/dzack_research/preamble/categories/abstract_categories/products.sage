@@ -255,11 +255,11 @@ class ConeCategory(_IndexedDiagramParameters, Category):
 
         def factors(self: "ConeParent") -> "tuple[Parent, ...]":
             r"""Return the factor objects \(X_i\) of the diagram."""
-            return self.category().diagram_objects()
+            return construction_category_of(self, ConeCategory).diagram_objects()
 
         def factor(self: "ConeParent", i: "Integer") -> Parent:
             r"""Return the \(i\)-th factor \(X_i\)."""
-            return self.category().diagram_objects()[i]
+            return construction_category_of(self, ConeCategory).diagram_objects()[i]
 
 
 class CoconeCategory(_IndexedDiagramParameters, Category):
@@ -285,11 +285,11 @@ class CoconeCategory(_IndexedDiagramParameters, Category):
 
         def cofactors(self: "CoconeParent") -> "tuple[Parent, ...]":
             r"""Return the cofactor objects \(X_i\) of the diagram."""
-            return self.category().diagram_objects()
+            return construction_category_of(self, CoconeCategory).diagram_objects()
 
         def cofactor(self: "CoconeParent", i: "Integer") -> Parent:
             r"""Return the \(i\)-th cofactor \(X_i\)."""
-            return self.category().diagram_objects()[i]
+            return construction_category_of(self, CoconeCategory).diagram_objects()[i]
 
 
 class ProductCategory(_IndexedDiagramParameters, Category):
@@ -415,6 +415,38 @@ class BiproductCategory(_IndexedDiagramParameters, Category):
 DirectSumCategory = BiproductCategory
 
 
+def construction_category_of(obj: Parent, construction: type) -> "AmbientCategory":
+    r"""Return the ``construction`` category ``obj`` sits in.
+
+    An object is in many categories, and after a construction it is in a join:
+    the construction's own level is one member of that join, and the data the
+    construction carries -- its diagram objects, its factors -- is on that
+    member.  Asking ``obj.category()`` for it reaches the join, which has
+    none of them.
+    """
+    for member in obj.categories():
+        if isinstance(member, construction):
+            found: "AmbientCategory" = member
+            return found
+    assert False, f"{obj} is in no {construction.__name__}"
+
+
+def ambient_category_of(objects: "Iterable[Parent]") -> "AmbientCategory":
+    r"""Return the category these objects share, which a construction over
+    them is taken in.
+
+    The meet, so it is a fact about the objects and nothing else.  Read off
+    the *result* of a construction instead, a second construction over the
+    same objects asks for a cone over a category that is already that cone,
+    and nests the construction inside itself -- which a cached result, a
+    lattice among them, reaches on the second call.
+    """
+    ambient: "AmbientCategory" = AmbientCategory.meet(
+        [obj.category() for obj in objects]
+    )
+    return ambient
+
+
 def Cone(structure_morphisms: "tuple[Morphism, ...]") -> Parent:
     r"""Construct a cone: an apex \(A\) with projections \(\pi_i:A\to X_i\)."""
     projections = tuple(structure_morphisms)
@@ -428,7 +460,7 @@ def Cone(structure_morphisms: "tuple[Morphism, ...]") -> Parent:
     apex._structure_morphisms = projections
     objects = tuple(m.codomain() for m in projections)
     index_set = tuple(range(len(projections)))
-    refine(apex, apex.category().Cone(index_set, objects))
+    refine(apex, ambient_category_of(objects).Cone(index_set, objects))
     constructed: Parent = apex
     return constructed
 
@@ -446,7 +478,7 @@ def Cocone(costructure_morphisms: "tuple[Morphism, ...]") -> Parent:
     coapex._costructure_morphisms = injections
     objects = tuple(m.domain() for m in injections)
     index_set = tuple(range(len(injections)))
-    refine(coapex, coapex.category().Cocone(index_set, objects))
+    refine(coapex, ambient_category_of(objects).Cocone(index_set, objects))
     constructed: Parent = coapex
     return constructed
 
@@ -463,7 +495,7 @@ def Product(structure_morphisms: "tuple[Morphism, ...]") -> Parent:
     domain = projections[0].domain()
     domain._structure_morphisms = projections
     factors = tuple(m.codomain() for m in projections)
-    refine(domain, domain.category().Product(factors))
+    refine(domain, ambient_category_of(factors).Product(factors))
     constructed: Parent = domain
     return constructed
 
@@ -480,7 +512,7 @@ def Coproduct(costructure_morphisms: "tuple[Morphism, ...]") -> Parent:
     codomain = injections[0].codomain()
     codomain._costructure_morphisms = injections
     cofactors = tuple(m.domain() for m in injections)
-    refine(codomain, codomain.category().Coproduct(cofactors))
+    refine(codomain, ambient_category_of(cofactors).Coproduct(cofactors))
     constructed: Parent = codomain
     return constructed
 
@@ -522,7 +554,7 @@ def Biproduct(
     )
     obj._structure_morphisms = projections
     obj._costructure_morphisms = injections
-    refine(obj, obj.category().Biproduct(factors))
+    refine(obj, ambient_category_of(factors).Biproduct(factors))
     constructed: Parent = obj
     return constructed
 
@@ -796,15 +828,17 @@ class TensorProductCategory(_IndexedDiagramParameters, Category):
     class ParentMethods:
         def tensor_factors(self: "TensorProductParent") -> "tuple[ModuleParent, ...]":
             r"""Return the factors \(X_i\)."""
-            return self.category()._tensor_factors
+            return construction_category_of(self, TensorProductCategory)._tensor_factors
 
         def tensor_factor(self: "TensorProductParent", i: "Integer") -> "ModuleParent":
             r"""Return the \(i\)-th factor \(X_i\)."""
-            return self.category()._tensor_factors[i]
+            return self.tensor_factors()[i]
 
         def cartesian_source(self: "TensorProductParent") -> Parent:
             r"""Return \(M\times N\), the object this cocone sits under."""
-            source: Parent = self.category().diagram_objects()[0]
+            source: Parent = construction_category_of(
+                self, TensorProductCategory
+            ).diagram_objects()[0]
             return source
 
         def universal_bilinear_map(self: "TensorProductParent") -> Morphism:

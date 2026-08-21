@@ -1742,6 +1742,7 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             ``TensorProductCategory``.
             """
             # Local: a module-level import here would close a cycle; by call time this module is built.
+            from dzack_research.preamble.categories.abstract_categories.products import ambient_category_of
             from dzack_research.preamble.categories.sets.sets import finite_ordered_set
             from dzack_research.preamble.refine import refine
             gram = matrix(SageZZ, self.gram_matrix()).tensor_product(
@@ -1755,7 +1756,16 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
                 ]
             )
             result = _lattice_with_gram(gram, labels)
-            refine(result, result.category().TensorProduct((self, other)))
+            # The ambient is the category the tensor product is taken *in*,
+            # which the factors name.  Read off the result instead, a second
+            # ``L @ M`` on one pair asks for the tensor product of the
+            # already-tensored category and nests the construction inside
+            # itself; a lattice is one object per Gram matrix, so the second
+            # call reaches the first call's object.
+            refine(
+                result,
+                ambient_category_of((self, other)).TensorProduct((self, other)),
+            )
             # The cocone's structure map: the universal bilinear map out of
             # L x M. It is bilinear, so it is a set morphism, not a module one.
             source = result.cartesian_source()
