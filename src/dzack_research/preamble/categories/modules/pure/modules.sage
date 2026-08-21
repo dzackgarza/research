@@ -783,8 +783,11 @@ class Modules(Category_over_base_ring):
                 kernel above.
                 """
                 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _is_torsion
+                from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import FinitelyGeneratedFreeModules
 
                 domain = self.domain()
+                if domain in FinitelyGeneratedFreeModules(domain.base_ring()) and domain.is_zero():
+                    return True
                 if _is_torsion(domain):
                     zero = domain.zero()
                     return all(
