@@ -151,17 +151,41 @@ sage-init-check:
 sage-rebuild:
     #!/usr/bin/env bash
     set -euo pipefail
-    research_root="{{justfile_directory()}}"
     sage_root="${SAGE_DEV_ROOT:-/home/dzack/gitclones/sage-dev-allopts}"
     sage_python_version="${SAGE_PYTHON_VERSION:-3.14}"
     [ -f "${sage_root}/uv.lock" ] || { echo "sage-rebuild: missing ${sage_root}/uv.lock" >&2; exit 1; }
     cd "${sage_root}"
     uv sync --python "${sage_python_version}" --frozen --inexact --no-install-project
     uv sync --python "${sage_python_version}" --frozen --inexact --no-build-isolation --reinstall-package sagemath
+    just --justfile "{{justfile()}}" _sage-runtime-sync
+
+[private]
+_sage-runtime-sync:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    research_root="{{justfile_directory()}}"
+    sage_root="${SAGE_DEV_ROOT:-/home/dzack/gitclones/sage-dev-allopts}"
+    jupyter_api_root="${JUPYTER_ASSISTANT_API_ROOT:-/home/dzack/gitclones/jupyter-assistant-api}"
+    [ -f "${sage_root}/uv.lock" ] || { echo "sage-runtime-sync: missing ${sage_root}/uv.lock" >&2; exit 1; }
+    [ -f "${jupyter_api_root}/uv.lock" ] || { echo "sage-runtime-sync: missing ${jupyter_api_root}/uv.lock" >&2; exit 1; }
     sage_python="${sage_root}/.venv/bin/python"
+    VIRTUAL_ENV="${sage_root}/.venv" uv sync --project "${research_root}" --active --frozen --inexact --no-install-project
+    VIRTUAL_ENV="${sage_root}/.venv" uv sync --project "${jupyter_api_root}" --active --frozen --inexact --no-install-project
+    sage_preparse_source="${sage_root}/src/bin/sage-preparse"
+    sage_preparse="${sage_root}/.venv/bin/sage-preparse"
+    [ -x "${sage_preparse_source}" ] || { echo "sage-runtime-sync: missing ${sage_preparse_source}" >&2; exit 1; }
+    if [ -e "${sage_preparse}" ] || [ -L "${sage_preparse}" ]; then
+        [ "$(readlink -f "${sage_preparse}")" = "$(readlink -f "${sage_preparse_source}")" ] || {
+            echo "sage-runtime-sync: refusing to replace ${sage_preparse}" >&2
+            exit 1
+        }
+    else
+        ln -s "${sage_preparse_source}" "${sage_preparse}"
+    fi
     uv pip install --python "${sage_python}" --reinstall-package tree-sitter-sage \
         "tree-sitter-sage @ git+https://github.com/dzackgarza/tree-sitter-sage@main"
     uv pip install --python "${sage_python}" --no-deps --editable "${research_root}"
+    uv pip install --python "${sage_python}" --no-deps --editable "${jupyter_api_root}"
 
 [private]
 _lock:
