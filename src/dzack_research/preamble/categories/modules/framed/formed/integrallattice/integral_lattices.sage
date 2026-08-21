@@ -2,7 +2,7 @@ r"""``IntegralLattices`` — a category owning the lattice-specific API.
 
 Refine any integral lattice parent into this category to gain::
 
-    q(x), b(x, y), div(x), get_isotropic_type(element)
+    norm(x), b(x, y), div(x), get_isotropic_type(element)
     dual_basis(), I_perp_mod_I(vectors), is_isometric(other)
     with_names(spec), to_lin_comb_module_generators(element), sublattices
     _latex_()                   # multi-line Gram + discriminant display
@@ -20,7 +20,7 @@ Elements gain::
 
     v * w   →  b(v, w)
     v ^ 2  →  q(v)
-    v.q(), v.b(w), v.div()
+    v.norm(), v.b(w), v.div()
     v.e_perp_mod_e()            # for isotropic vectors
 
 EXAMPLES::
@@ -31,13 +31,15 @@ EXAMPLES::
     sage: from sage.rings.integer_ring import ZZ
     sage: L = Lattices.U
     sage: refine(L, IntegralLattices(ZZ))
-    sage: L.q(L.module_generators()[0])
+    sage: L.module_generators()[0].norm()
     0
 """
 
 from typing import TYPE_CHECKING
 from dzack_research.preamble.categories.sets.underlying_sets import UnderlyingSet
-from dzack_research.preamble.categories.modules.module_morphisms.morphism_matrices import MorphismMatrix
+from dzack_research.preamble.categories.modules.module_morphisms.morphism_matrices import (
+    row_normal_form,
+)
 if TYPE_CHECKING:
     from dzack_research.preamble.lexicon import Element
     from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModule
@@ -76,7 +78,11 @@ from typing import Protocol, TYPE_CHECKING
 from sage.arith.functions import lcm
 from sage.arith.misc import gcd
 from sage.categories.category import Category
-from dzack_research.preamble.owned_category_bases import CategoryWithAxiom_over_base_ring
+from dzack_research.preamble.owned_category_bases import (
+    CategoryWithAxiom,
+    CategoryWithAxiom_over_base_ring,
+    HomsetsCategory,
+)
 from dzack_research.preamble.categories.modules.framed.formed.lattices import Lattices
 from dzack_research.preamble.categories.modules.framed.formed.lattice_axioms import FinitelyGeneratedLattices
 from sage.categories.groups import Groups as SageGroups
@@ -149,10 +155,42 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
         "Nondegenerate",
     )
 
+    class Homsets(HomsetsCategory):
+        r"""Form-preserving maps between integral lattices."""
+
+        def extra_super_categories(self) -> list:
+            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.lattice_homomorphisms import LatticeHomomorphisms
+
+            return [LatticeHomomorphisms()]
+
+        class Endset(CategoryWithAxiom):
+            r"""The orthogonal group of one integral lattice."""
+
+            def extra_super_categories(self) -> list:
+                from dzack_research.preamble.categories.group.groups import OwnedFinitelyPresentedGroups
+                from dzack_research.preamble.categories.modules.framed.formed.integrallattice.lattice_isometries import LatticeIsometries
+
+                return [
+                    LatticeIsometries(),
+                    OwnedFinitelyPresentedGroups(),
+                ]
+
     class ParentMethods:
         r"""Methods available on every integral lattice parent refined into this category."""
 
+        _declared_generator_name_slots: tuple = ()
+
         # ---- bilinear / quadratic API ----
+
+        def _Hom_(
+            self: "LatticeParent",
+            codomain: "Module",
+            category: "Category | None" = None,
+        ) -> "Parent":
+            r"""Build the lattice homset through its owned arrow category."""
+            if category is None and codomain in IntegralLattices(self.base_ring()):
+                category = IntegralLattices(self.base_ring())
+            return super()._Hom_(codomain, category)
 
         @cached_method
         def decomposition(self: "LatticeParent") -> "DirectSumObject | None":
@@ -179,14 +217,6 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
         def is_decomposable(self: "LatticeParent") -> bool:
             return self.decomposition() is not None
 
-        def q(self: "LatticeParent", x: "Element") -> "Element":
-            r"""Return the quadratic form $q(x) = \langle x, x\rangle$."""
-            return x.norm()
-
-        def b(self: "LatticeParent", x: "Element", y: "Element") -> "Element":
-            r"""Return the pairing $\langle x, y\rangle$, asked of the two elements."""
-            return x.b(y)
-
         def div(self: "LatticeParent", x: "Element") -> "Integer":
             r"""Return the positive generator of $\{\langle x, y\rangle : y \in L\}$.
 
@@ -206,13 +236,13 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             that two vectors share an orbit, or produces an orbit
             representative, from the three.
             """
-            pairings = [self.b(x, v) for v in self.module_generators()]
+            pairings = [x.b(v) for v in self.module_generators()]
             return abs(gcd(pairings))
 
         def gram_of(self: "LatticeParent", vectors: "OrderedSet") -> GramMatrix:
             r"""Return the Gram matrix $[b(x_i, x_j)]$ of a finite family of vectors."""
             vectors = tuple(vectors)
-            return GramMatrix(matrix(SageZZ, [[self.b(x, y) for y in vectors] for x in vectors]))
+            return GramMatrix(matrix(SageZZ, [[x.b(y) for y in vectors] for x in vectors]))
 
         def get_isotropic_type(self: "LatticeParent", isotropic_element: "ModuleElement") -> str:
             r"""Classify a primitive isotropic element by its cusp type.
@@ -224,8 +254,8 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
                 f"get_isotropic_type is about an element of {self}, and this is "
                 f"{isotropic_element!r}"
             )
-            assert self.q(isotropic_element) == 0, (
-                f"expected an isotropic element, got square {self.q(isotropic_element)}"
+            assert isotropic_element.norm() == 0, (
+                f"expected an isotropic element, got square {isotropic_element.norm()}"
             )
             assert isotropic_element.is_primitive(), "expected a primitive element"
             divisibility = self.div(isotropic_element)
@@ -370,7 +400,7 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             )
             hermite_rows = [
                 row
-                for row in MorphismMatrix(scaled, SageZZ).normal_form(include_zero_rows=True).rows()
+                for row in row_normal_form(scaled, include_zero_rows=True).rows()
                 if any(coordinate != 0 for coordinate in row)
             ]
             basis = matrix(SageQQ, hermite_rows[:rank]) / denominator
@@ -420,7 +450,7 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             ``.codomain()``; the index is the arrow's own ``.index()``.  For
             a direct-sum $L$, the summand inclusions carried into $L'$ are
             the decomposition's own witnesses composed with this inclusion:
-            ``summand.embedding().then(inclusion)`` per entry of
+            ``summand.structure_morphism().then(inclusion)`` per entry of
             :meth:`summands`.
             """
             form = self.discriminant_group()
@@ -446,7 +476,7 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             """
             form = self.discriminant_group()
             for element in elements:
-                order = form(element).order()
+                order = form(element).additive_order()
                 assert order == p ** order.valuation(p), (
                     f"local modification at p={p} glues along the p-primary "
                     f"part of the discriminant form; the class {element} has "
@@ -456,7 +486,7 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
 
         # There is no separate ``summand_embeddings``: :meth:`summands`
         # already returns subobjects, each carrying its inclusion as
-        # ``summand.embedding()`` (minted by ``_decompose_lattice``).
+        # ``summand.structure_morphism()`` (minted by ``_decompose_lattice``).
 
         # ---- isometry ----
 
@@ -547,7 +577,6 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             """
             # Local: a module-level import here would close a cycle; by call time this module is built.
             from dzack_research.preamble.categories.modules.framed.formed.integrallattice.engines import oscar_even_unimodular_primitive_embedding
-            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.lattice_homomorphisms import lattice_homset
             from dzack_research.preamble.utilities import zipsum
 
             assert self.embeds_in_even_unimodular(positive, negative), (
@@ -564,7 +593,7 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             assert codomain.signature_pair() == (positive, negative), (
                 "the engine's codomain has the wrong signature"
             )
-            embedding = lattice_homset(self, codomain)(
+            embedding = self.Hom(codomain)(
                 [
                     zipsum(row, codomain.module_generators(), codomain.zero())
                     for row in embedding_rows.rows()
@@ -614,7 +643,7 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
                 f"{self} is odd, a stated absence"
             )
             for subobject in (first, second):
-                assert subobject.embedding().codomain() is self, (
+                assert subobject.structure_morphism().codomain() is self, (
                     "glue_map is asked of two subobjects of this lattice"
                 )
                 assert subobject.is_primitive(), (
@@ -622,8 +651,8 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
                     f"sublattices; {subobject} is not primitive in {self}"
                 )
             gram = matrix(SageZZ, self.gram_matrix())
-            first_rows = matrix(SageZZ, first.embedding().matrix())
-            second_rows = matrix(SageZZ, second.embedding().matrix())
+            first_rows = matrix(SageZZ, first.structure_morphism().matrix())
+            second_rows = matrix(SageZZ, second.structure_morphism().matrix())
             assert first_rows * gram * second_rows.transpose() == 0, (
                 "the glue map needs orthogonal sublattices"
             )
@@ -676,8 +705,8 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             target_subobject = second_discriminant_twisted.subobject_generated_by(
                 tuple(graph.values())
             )
-            domain = source_subobject.embedding().domain()
-            codomain = target_subobject.embedding().domain()
+            domain = source_subobject.structure_morphism().domain()
+            codomain = target_subobject.structure_morphism().domain()
             glue: "Morphism" = domain.Hom(codomain)(
                 {
                     label: codomain.module_generator(graph[label])
@@ -740,7 +769,7 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
                 if isinstance(vector, SageElement) and vector.parent() is self
                 else self(vector)
             )
-            norm = element.q()
+            norm = element.norm()
             assert norm != 0, (
                 f"reflection is defined in an anisotropic vector; q(v)=0 for v={element}"
             )
@@ -789,14 +818,14 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
 
             e = held(isotropic)
             a = held(orthogonal)
-            assert e.q() == 0, (
-                f"an Eichler transvection is taken in an isotropic vector; q(e)={e.q()} for e={e}"
+            assert e.norm() == 0, (
+                f"an Eichler transvection is taken in an isotropic vector; q(e)={e.norm()} for e={e}"
             )
             assert e.b(a) == 0, (
                 f"an Eichler transvection needs a in the isotropic vector's "
                 f"orthogonal complement; b(e,a)={e.b(a)}"
             )
-            norm = a.q()
+            norm = a.norm()
             images = {}
             for label in self.module_generating_set():
                 generator = self.module_generator(label)
@@ -945,7 +974,7 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             the second sum is even whatever the lattice is, so $q$ is even
             exactly when every $q(e_i)$ is.
             """
-            return all(generator.q() % 2 == 0 for generator in self.module_generators())
+            return all(generator.norm() % 2 == 0 for generator in self.module_generators())
 
         def level(self: "LatticeParent") -> "Integer":
             r"""Return the level: the smallest $N>0$ killing the form on $A_L$.
@@ -981,7 +1010,7 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             ]
             if self.is_even():
                 denominators.extend(
-                    (generator.q().lift() / 2).denominator()
+                    (generator.norm().lift() / 2).denominator()
                     for generator in generators
                 )
             level: "Integer" = SageZZ(lcm(denominators)) if denominators else SageZZ.one()
@@ -1239,7 +1268,7 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
                 # Smith basis would be a different object again, not this one
                 # with the trivial components dropped.
                 surviving = [
-                    generator for generator in form.module_generators() if generator.order() != 1
+                    generator for generator in form.module_generators() if generator.additive_order() != 1
                 ]
                 form = form.regenerate(surviving)
             if p != 0:
@@ -1260,7 +1289,7 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             # $q$ takes values in $\mathbb Q/2\mathbb Z$, and a class there has
             # no denominator -- integrality is a question about a
             # representative, so the lift is what answers it.
-            return all(element.q().lift().denominator() == 1 for element in disc)
+            return all(element.norm().lift().denominator() == 1 for element in disc)
 
         def is_coodd(self: "LatticeParent") -> bool:
             """Return the negation of :meth:`is_coeven`."""
@@ -1308,6 +1337,10 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             )
 
         # ---- naming and display ----
+
+        def declared_generator_name_slots(self: "LatticeParent") -> tuple:
+            r"""Return the chosen generator-name slots, including ellipses."""
+            return self._declared_generator_name_slots
 
         def with_names(self: "LatticeParent", spec: str) -> "Module":
             r"""Attach basis names from a compact spec and return the lattice.
@@ -1462,84 +1495,10 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             coincide (a twist scales the form and touches nothing else),
             so ``images`` is read on them unchanged.
             """
-            # Local: a module-level import here would close a cycle; by call time this module is built.
-            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.lattice_homomorphisms import lattice_homset
             target = self if codomain is None else codomain
-            return lattice_homset(self.twist(scale), target)(images)
+            return self.twist(scale).Hom(target)(images)
 
         # ---- morphisms / automorphisms ----
-
-        def Hom(
-            self: "LatticeParent",
-            codomain: "Module",
-            category: "Category | None" = None,
-        ) -> "Homset":
-            # Local: a module-level import here would close a cycle; by call time this module is built.
-            from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModules
-            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.lattice_homomorphisms import lattice_homset
-            if codomain in FormModules(self.base_ring()):
-                homset: "Homset" = lattice_homset(self, codomain)
-                return homset
-            plain_homset: "Homset" = Parent.Hom(self, codomain, category)
-            return plain_homset
-
-        def End(self: "LatticeParent") -> "Homset":
-            r"""Return $\mathrm{End}(L)=\mathrm{Hom}(L,L)$.
-
-            The endset, which is where $O(L)$ comes from: an isometry of $L$
-            is an invertible endomorphism, so the group is the units of this
-            monoid.  Sited here and not built here -- an endset is the homset
-            whose two objects coincide, and asking for it any other way would
-            produce a second object with the same elements.
-            """
-            endset: "Homset" = self.Hom(self)
-            return endset
-
-        @cached_method
-        def Aut(self: "LatticeParent") -> "Parent":
-            r"""Return $\mathrm{Aut}(L)=O(L)$, the units of $\mathrm{End}(L)$.
-
-            One object, reached one way.  ``orthogonal_group`` and
-            ``automorphisms`` are this method under other names: the
-            automorphisms of a lattice *are* its isometries, so two accessors
-            answering with two objects would say there are two groups.
-
-            Elements are constructed by their images on the framing labels.
-
-            The placement is the point.  $O(L)$ is a group, so it goes in the
-            isometry node -- which is a group node -- and the words a group
-            answers follow from that rather than from anything written here.
-            Finitely *presented* is claimed outright, indefinite $L$ included:
-            $O(L)$ is an arithmetic group (Borel--Harish-Chandra), and
-            Borel--Serre / Raghunathan prove every arithmetic group is
-            finitely presented, whether or not this session can produce a
-            presentation.  The axiom is claimed on this object
-            and not on the isometry category, because that category holds the
-            subgroups too, and a finitely generated subgroup of a finitely
-            presented group need not be finitely presented.  Finiteness is not
-            claimed, because it is false for most indefinite $L$ and expensive
-            to decide; it is a question the group answers when asked.
-            """
-            # Local: a module-level import here would close a cycle; by call time this module is built.
-            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.lattice_homomorphisms import LatticeHomomorphisms
-            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.lattice_isometries import LatticeIsometries
-            from dzack_research.preamble.categories.group.groups import OwnedFinitelyPresentedGroups
-            from dzack_research.preamble.refine import refine
-            # An automorphism group is the endomorphism homset with one more
-            # condition on its elements, so it is built the same way and
-            # refined once more.
-            refined = refine(
-                self.Hom(self),
-                [
-                    LatticeHomomorphisms(),
-                    LatticeIsometries(),
-                    OwnedFinitelyPresentedGroups(),
-                ],
-            )
-            return refined
-
-        orthogonal_group = Aut
-        automorphisms = Aut
 
         def discriminant_representation(self: "LatticeParent") -> "Morphism":
             r"""Return $\rho_L: O(L)\to O(A_L)$, the discriminant representation.
@@ -1663,7 +1622,7 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             r"""Return $(L^G)^{\perp L}\hookrightarrow L$ for the representation $\rho$."""
             return self.with_action(action).formed_coinvariants()
 
-        def _induced_lattice(self: "LatticeParent", coordinate_basis: "MorphismMatrix") -> "FormModule | None":
+        def _induced_lattice(self: "LatticeParent", coordinate_basis: "Matrix") -> "FormModule | None":
             """Return the integral lattice with Gram form induced on ``coordinate_basis``."""
             # Local: a module-level import here would close a cycle; by call time this module is built.
             from dzack_research.preamble.categories.sets.sets import finite_ordered_set
@@ -1701,12 +1660,14 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             # the declared names, and positions are read off the order, not
             # off the set.
             module_generators = tuple(self.module_generators())
-            spec = self.__dict__.get("_ellipsis_spec")
-            if spec is None or len(spec) != count:
+            spec = self.declared_generator_name_slots()
+            if len(spec) != count:
                 return module_generators[:count]
-            names = list(self.variable_names())
+            from dzack_research.preamble.categories.sets.sets import finite_ordered_set
+
+            names = finite_ordered_set(self.variable_names())
             return tuple(
-                Ellipsis if slot == "Ellipsis" else module_generators[names.index(slot)]
+                Ellipsis if slot == "Ellipsis" else module_generators[names.position(slot)]
                 for slot in spec
             )
 
@@ -1859,10 +1820,6 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
         the constructions that need $L$ to be integral.
         """
 
-        def q(self: "LatticeElement") -> "Element":
-            r"""Return $q(v) = \langle v, v\rangle$: the norm, under its name here."""
-            return self.norm()
-
         def div(self: "LatticeElement") -> "Integer":
             r"""Return the divisibility of this vector."""
             divisibility: "Integer" = self.parent().div(self)
@@ -1914,7 +1871,7 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
         ) -> "Element":
             r"""``v ^ 2`` -> $q(v)$."""
             assert exponent == 2, f"exponent {exponent} not supported"
-            return self.q()
+            return self.norm()
 
         def e_perp_mod_e(self: "LatticeElement") -> "Module":
             r"""$e^\perp/\langle e\rangle$, which is this element's isotropic reduction."""
@@ -2035,7 +1992,7 @@ class Genus:
             SageQQ,
             [
                 [
-                    left.q().lift() if i == j else left.b(right).lift()
+                    left.norm().lift() if i == j else left.b(right).lift()
                     for j, right in enumerate(generators)
                 ]
                 for i, left in enumerate(generators)
@@ -2272,7 +2229,7 @@ def _apply_names(lattice: "FormModule", names: "OrderedSet") -> "FormModule":
         f"{declared} expands to {len(expanded)} names but rank is {lattice.rank()}"
     )
     lattice._assign_names(expanded)
-    lattice._ellipsis_spec = declared
+    lattice._declared_generator_name_slots = declared
     return lattice
 
 

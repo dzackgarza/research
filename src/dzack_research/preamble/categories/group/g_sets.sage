@@ -24,12 +24,9 @@ from sage.misc.abstract_method import abstract_method
 from sage.misc.unknown import Unknown
 
 if TYPE_CHECKING:
-    from collections.abc import Iterator
-
     from sage.categories.groups import Group
     from sage.categories.morphism import Morphism
     from sage.structure.element import Element
-    from dzack_research.preamble.categories.sets.cardinals import Cardinal
 
 
 class GSets(Category):
@@ -94,23 +91,6 @@ class Torsors(Category):
             states which theorem lets it consume the choice.
             """
             ...
-
-        def __iter__(self) -> "Iterator[Element]":
-            r"""Enumeration through the trivializing choice.
-
-            Acting the group through one chosen point is exhaustive by
-            transitivity and duplicate-free by freeness.  Termination
-            follows the acting group's own placement, not the torsor's:
-            the iteration is the group's, transported by the bijection.
-            """
-            chosen = self.an_element()
-            return (self.act(group_element, chosen) for group_element in self.acting_group())
-
-        def cardinality(self) -> "Cardinal":
-            r"""\(|T| = |G|\): the trivialization is a bijection."""
-            from dzack_research.preamble.categories.sets.cardinals import cardinal
-
-            return cardinal(self.acting_group().cardinality())
 
         def transporter(self, source: "Element", target: "Element") -> "Element | Unknown":
             r"""The unique \(g\) with \(g\cdot\text{source} = \text{target}\).

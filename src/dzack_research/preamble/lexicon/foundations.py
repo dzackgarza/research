@@ -28,7 +28,6 @@ __all__ = [
     "MatrixData",
     "OrderedSet",
     "Rational",
-    "RawMorphismMatrix",
     "SignaturePair",
     "SymbolicExpression",
 ]
@@ -61,7 +60,7 @@ if TYPE_CHECKING:
         below.  Same technique, same reason, as ``UnderlyingSet``'s
         ``TYPE_CHECKING`` surface block."""
 
-        def index(self, element: E) -> int: ...
+        def position(self, element: E) -> int: ...
         def __getitem__(self, n: int) -> E: ...
 
     type OrderedSet[E: Element] = _OwnedOrderedSet[E]
@@ -77,7 +76,7 @@ uniqueness of members "is the producing constructor's contract, not the
 type's" -- an admission that it named a list, not a set.  A later revision
 kept it as a union arm "for the input boundary"; that arm is gone too.  A
 ``Sequence`` is not a mathematical object, and a value typed by this noun
-must answer ``cardinality``, ``index`` and ``X[n]``, which a list does not.
+must answer ``cardinality``, ``position`` and ``X[n]``, which a list does not.
 Code that holds a literal enumeration calls ``finite_ordered_set`` -- the one
 constructor that transports an enumeration into an order -- and passes the
 set."""
@@ -87,17 +86,13 @@ GramMatrix = NewType("GramMatrix", Matrix)
 square and symmetric, produced only by the grammar's Gram codec
 (INVENTORY.md Part III.5).
 
-It represents NO morphism. Its companion ``MorphismMatrix`` does, and the
-two are categorically different: that the correlation $c:L\\to L^\\vee$ is
-represented by a matrix coinciding with the Gram matrix in dual generating
-sets is a coincidence of coordinates, not an identity of objects."""
+It represents no morphism. A matrix can represent the correlation
+$c:L\\to L^\\vee$ and coincide with the Gram matrix in dual generating
+sets. This is a coincidence of coordinates, not an identity of objects."""
 
 type MatrixData = Sequence[Sequence[Rational]]
 """Structured matrix-shaped input accepted by overloads that route through
 ``Matrix`` (Python int literals are exact integers and enter freely)."""
-
-type RawMorphismMatrix = Matrix | MatrixData
-"""Untrusted matrix-shaped input to homset/element constructors."""
 
 type RealNumber = AlgebraicReal | SymbolicExpression
 """An element of $\\mathbb R$, held exactly: $\\sqrt2$ in ``AA``, $\\pi$ in the

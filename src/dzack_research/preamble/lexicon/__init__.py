@@ -6,9 +6,8 @@ preamble code draws from here:
     from ..lexicon import Element, Matrix, OrderedSet
 
 The dependency runs one way: ``objects`` draws on ``lexicon``, and the
-lexicon draws on nothing but Sage. The nouns ``objects`` itself defines
-(``Cardinal``, ``Character``, ``MorphismMatrix``) are therefore imported from
-their own modules, never re-exported here — re-exporting them would make
+lexicon draws on nothing but Sage. The nouns ``objects`` itself defines are
+therefore imported from their own modules, never re-exported here. Doing so would make
 ``lexicon`` and ``objects`` import each other, a cycle that survives only
 under one hand-arranged import order.
 """

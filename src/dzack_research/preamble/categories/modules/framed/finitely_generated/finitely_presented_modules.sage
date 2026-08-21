@@ -45,12 +45,14 @@ from sage.structure.parent import Parent
 from sage.structure.richcmp import richcmp
 
 from dzack_research.preamble.categories.sets.cardinals import Cardinal, cardinal
-from dzack_research.preamble.categories.modules.module_morphisms.morphism_matrices import MorphismMatrix
+from dzack_research.preamble.categories.modules.module_morphisms.morphism_matrices import (
+    row_normal_form,
+)
 from dzack_research.preamble.categories.sets.owned_sets import Sets
 from dzack_research.preamble.categories.sets.underlying_sets import UnderlyingSet
 
 
-def _presented_on(module: "Module", relations: MorphismMatrix) -> Parent:
+def _presented_on(module: "Module", relations: Matrix) -> Parent:
     r"""Return the module presented by ``relations`` on ``module``'s generators.
 
     A presentation is a morphism, so the matrix is turned back into the one it
@@ -112,7 +114,7 @@ if TYPE_CHECKING:
         the generator count, and the coordinate route in."""
 
         def base_ring(self) -> "Ring": ...
-        def relation_matrix(self) -> MorphismMatrix: ...
+        def relation_matrix(self) -> Matrix: ...
         def number_of_module_generators(self) -> int: ...
         def _smith(self) -> tuple: ...
         def _from_coordinates(self, coordinates: "Vector") -> "Element": ...
@@ -177,7 +179,6 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
                 underlying.relation_matrix()
                 .change_ring(base_ring)
                 .stack(images)
-                ._sage_matrix()
             )
             # The base is not stated here.  ``Modules.ParentMethods`` assigns
             # it, from the ring its own category names, and a second statement
@@ -208,7 +209,7 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
                 quotient_generator_morphism,
             )
 
-        def relation_matrix(self: "PresentedModuleParent") -> MorphismMatrix:
+        def relation_matrix(self: "PresentedModuleParent") -> Matrix:
             r"""Return the relations of the chosen presentation.
 
             A finitely presented module is a module together with a chosen
@@ -220,7 +221,7 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
             construction that reaches this category another way states its own
             relations here.
             """
-            return MorphismMatrix(self._relations, self._relations.base_ring())
+            return self._relations
 
         def framing_morphism(self: Self) -> "FramingMorphism":
             return self._framing_morphism
@@ -258,11 +259,6 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
             r"""Return whether this module is finitely presented."""
             return True
 
-        def number_of_module_generators(self: "PresentedModuleParent") -> int:
-            r"""Return the number of generators the presentation is written on."""
-            count: int = self.relation_matrix().ncols()
-            return count
-
         def rank(self: "PresentedModuleParent") -> "Cardinal":
             r"""Return the rank of the free part: generators minus independent relations.
 
@@ -275,7 +271,7 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
 
             return cardinal(
                 self.number_of_module_generators()
-                - self.relation_matrix()._sage_matrix().rank()
+                - self.relation_matrix().rank()
             )
 
         def is_torsion(self: "PresentedModuleParent") -> bool:
@@ -294,13 +290,13 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
             decomposition, so it is computed once and named rather than
             recomputed at each question.
             """
-            decomposition: tuple = self.relation_matrix()._sage_matrix().smith_form()
+            decomposition: tuple = self.relation_matrix().smith_form()
             return decomposition
 
         @cached_method
         def _relations_normal_form(self: "PresentedModuleParent") -> Matrix:
             r"""Return the relations row-reduced, as the reduction below uses them."""
-            reduced: Matrix = self.relation_matrix().normal_form()._sage_matrix()
+            reduced: Matrix = row_normal_form(self.relation_matrix())
             return reduced
 
         def torsion_free_quotient(self: "PresentedModuleParent") -> "ModuleMorphism":
@@ -399,10 +395,6 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
                 result -= coefficient * row
             return result
 
-        def reduce(self: "PresentedModuleParent", coordinates: "Vector") -> "Vector":
-            r"""Return the canonical representative modulo the presentation."""
-            return self._reduce(coordinates)
-
         def hermite_form(self: "PresentedModuleParent") -> "Isomorphism":
             r"""Return the isomorphism $M\to M'$ onto the reduced presentation.
 
@@ -414,7 +406,7 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
 
             Which reduction applies is a fact about the base ring -- Hermite
             over a PID, echelon over a field -- and that branch is
-            ``MorphismMatrix.normal_form``'s, called here as the
+            ``row_normal_form``'s, called here as the
             implementation of the module-level notion.
 
             The reduced relations span the relations they were reduced from,
@@ -427,7 +419,7 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
             from dzack_research.preamble.categories.abstract_categories.arrow_categories import Isomorphism
             from dzack_research.preamble.categories.rings.rings import engine_ring
 
-            target = _presented_on(self, self.relation_matrix().normal_form())
+            target = _presented_on(self, row_normal_form(self.relation_matrix()))
             unchanged = identity_matrix(
                 engine_ring(self.base_ring()), self.number_of_module_generators()
             ).rows()
@@ -494,7 +486,7 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
             from dzack_research.preamble.categories.rings.rings import engine_ring
 
             smith, _, right = self._smith()
-            target = _presented_on(self, MorphismMatrix(smith, smith.base_ring()))
+            target = _presented_on(self, smith)
             return Isomorphism(
                 _change_of_module_generators(self, target, right.rows()),
                 _change_of_module_generators(
@@ -515,24 +507,6 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
         ) -> None:
             self._coordinates_: FreeModuleElement = parent._reduce(coordinates)
             super().__init__(parent, **rest)
-
-        def additive_order(self: Self) -> "Integer":
-            r"""Return the additive order of this class.
-
-            Read off the invariant factors, which a torsion module has.  A
-            module with a free part has classes of infinite order, and a
-            presentation does not name that order.
-            """
-            # Local: the torsion category imports this module to build its
-            # parent, so the category owner is available when this runs.
-            from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_torsion_modules import FinitelyPresentedTorsionModules
-
-            assert self.parent().is_torsion(), (
-                "an additive order is read off the invariant factors of a "
-                "torsion module"
-            )
-            order: "Integer" = FinitelyPresentedTorsionModules.ElementMethods.additive_order(self)
-            return order
 
         def _coordinates(self: Self) -> "Vector":
             return self._coordinates_

@@ -7,7 +7,6 @@ if TYPE_CHECKING:
     from sage.categories.groups import Group, GroupElement
     from sage.categories.rings import Ring
     from dzack_research.preamble.lexicon import CartanType, Matrix
-    from sage.categories.sets_cat import Set
     from dzack_research.preamble.lexicon import OrderedSet
 
 if TYPE_CHECKING:
@@ -15,7 +14,7 @@ if TYPE_CHECKING:
     from sage.rings.integer import Integer
     from dzack_research.preamble.owned_category import ConstructionData
 
-from dzack_research.preamble.categories.sets.owned_sets import Sets, placement_of
+from dzack_research.preamble.categories.sets.owned_sets import Sets
 if TYPE_CHECKING:
     from sage.categories.morphism import Morphism
     from sage.libs.gap.element import GapElement
@@ -28,7 +27,11 @@ if TYPE_CHECKING:
 from typing import Self
 
 from sage.misc.cachefunc import cached_method
-from dzack_research.preamble.owned_category_bases import Category, SubobjectsCategory
+from dzack_research.preamble.owned_category_bases import (
+    Category,
+    HomsetsCategory,
+    SubobjectsCategory,
+)
 from sage.categories.commutative_additive_groups import CommutativeAdditiveGroups
 from sage.categories.finite_groups import FiniteGroups as SageFiniteGroups
 from sage.categories.groups import Groups as SageGroups
@@ -101,10 +104,6 @@ def _canonical_subgroup_inclusion(subgroup: "Group") -> SetMorphism:
     inclusion *is* the representation \(\rho\) -- names it and that one is
     returned.
     """
-    specialized = getattr(subgroup, "_subgroup_inclusion", None)
-    if specialized is not None:
-        inclusion: SetMorphism = specialized()
-        return inclusion
     containing_group = subgroup.supergroup()
     # In the owned category, because both ends are owned groups: an object
     # reached only through the owned tree -- a predicate subgroup among them --
@@ -126,6 +125,8 @@ if TYPE_CHECKING:
     class GroupParent(Protocol):
         r"""What a group parent has from its placement: an identity, supplied
         by Sage's ``Groups().ParentMethods``."""
+
+        _group_generators: "OrderedSet"
 
         def one(self) -> "GroupElement": ...
 
@@ -307,40 +308,6 @@ def _Coxeter(
     )
 
 
-def _engine_answer(
-    group: "Group", question: str
-) -> "bool | Integer | Unknown":
-    r"""Return the engine's answer to ``question``, or ``Unknown``.
-
-    Asked of the class Sage built rather than of ``group`` when the owned
-    category supplies the public method.  Asking the object in that case
-    would find the method that called this one.
-
-    Sage says "I cannot decide" in two ways -- no such method, and a method
-    that raises ``NotImplementedError`` -- and neither is mathematics.  Both
-    become ``Unknown``, which carries the same information as a value.  Any
-    other exception is a defect and is left to raise.
-
-    ``super`` and not the class, because what is wanted is a *bound* answer:
-    a cached method reached through its class is a descriptor and not a
-    function of the group.
-    """
-    try:
-        match group.category().is_subcategory(OwnedGroups()):
-            case True:
-                answer = getattr(
-                    super(OwnedGroups.ParentMethods, group), question
-                )
-            case False:
-                answer = getattr(group, question)
-    except AttributeError:
-        return Unknown
-    try:
-        return answer()
-    except NotImplementedError:
-        return Unknown
-
-
 def _finiteness(group: "Group") -> "bool | Unknown":
     r"""Return whether ``group`` is finite, as a value.
 
@@ -350,10 +317,9 @@ def _finiteness(group: "Group") -> "bool | Unknown":
     :meth:`OwnedGroups.ParentMethods.is_finite` yet, which is why the decline
     is caught here too.
     """
-    try:
-        return group.is_finite()
-    except NotImplementedError:
-        return Unknown
+    if group in SageFiniteGroups() or group in OwnedFiniteGroups():
+        return True
+    return Unknown
 
 
 class OwnedGroups(Category):
@@ -466,63 +432,17 @@ class OwnedGroups(Category):
         # through the spine.
         from dzack_research.preamble.categories.group.magmas import Monoids as OwnedMonoids
 
-        return [OwnedMonoids()]
+        # Sage's ``Groups()`` beside the spine, the way the spine itself seats
+        # each owned node over Sage's (``Monoids -> [SageMonoids(), ...]``).
+        # Without it an owned group was a Sage *monoid* and not a Sage group,
+        # so $O(L)$ -- which is one -- failed ``in Groups()`` while answering
+        # its order.
+        return [SageGroups(), OwnedMonoids()]
 
     class ParentMethods:
-        def supergroup(self: Self) -> "Group":
-            r"""Return the containing group; every group includes into itself by identity.
-
-            Probed by attribute lookup on the bound super object -- no
-            exception control flow: a class that spells the containing group
-            ``supergroup`` or ``ambient_group`` answers through that name,
-            and a group with neither name contains itself.
-            """
-            bound = super(OwnedGroups.ParentMethods, self)
-            for name in ("supergroup", "ambient_group"):
-                accessor = getattr(bound, name, None)
-                if accessor is not None:
-                    containing_group: "Group" = accessor()
-                    return containing_group
-            group: "Group" = self
-            return group
-
-        def inclusion(self: Self) -> SetMorphism:
-            r"""Return the canonical inclusion homomorphism into the containing group."""
+        def _subgroup_inclusion(self: Self) -> SetMorphism:
+            r"""Construct the inclusion from this subgroup's containing group."""
             return _canonical_subgroup_inclusion(self)
-
-        def group_generators(self: Self) -> "OrderedSet":
-            r"""Return \(S\), the images in \(G\) of the generating morphism.
-
-            Honest elements of this group, and an ordered set of them: the
-            enumeration the group lists them in is the order, and it is
-            placed rather than rebuilt, which would discard it.  Finiteness
-            is not part of it -- a group is not finitely generated by being
-            a group -- so an infinite generating set survives being asked.
-
-            Dropping the identity needs the set enumerated, so it happens at
-            the category of finitely generated groups and not here.
-            """
-            # Local: a module-level import would close a cycle; the module is built by the time this runs.
-            from dzack_research.preamble.refine import refine
-
-            family: "Set" = SageGroups().ParentMethods.group_generators(self)
-            if family.category().is_subcategory(Sets().TotallyOrdered()):
-                return family
-            return refine(family, placement_of(family).TotallyOrdered())
-
-        def number_of_group_generators(self: Self) -> "Cardinal":
-            r"""Return \(|S|\), which is a cardinal and may be infinite.
-
-            A cardinal, not an integer: a generating set may be infinite, and
-            the count of one is the thing that can say so.  A set the engine
-            built and the preamble refined answers its size as an ``Integer``,
-            so the count says what it is here rather than passing that on.
-            """
-            # Local: the cardinals module reaches the group node, so a
-            # module-level import would close that cycle.
-            from dzack_research.preamble.categories.sets.cardinals import cardinal
-
-            return cardinal(self.group_generators().cardinality())
 
         def is_finitely_generated(self: Self) -> "bool | Unknown":
             r"""Return whether \(G\) admits a finite generating set.
@@ -544,46 +464,9 @@ class OwnedGroups(Category):
                 return True
             if _finiteness(self) is True:
                 return True
-            if self.has_computed_group_generators() is True:
-                return True
-            if self.group_generators_are_computable() is True:
-                return True
             if self.is_arithmetic_group() is True:
                 return True
             return Unknown
-
-        def is_finite(self: Self) -> "bool | Unknown":
-            r"""Return whether \(|G|\) is finite, as a value.
-
-            A group placed in the finite groups category is finite, and that
-            is the end of the question -- the placement is the statement, and
-            a group carrying it needs no procedure run over it.  Sage's own
-            procedure computes the order to decide, which for such a group is
-            asking the cardinality to decide its own finiteness.
-
-            Otherwise the group is asked.  A procedure that declines to decide
-            is saying it does not know, which is what ``Unknown`` is for:
-            ``Sp_4(\ZZ)`` reaches here, and the exception Sage raises instead
-            says nothing about the group.
-            """
-            if self in OwnedFiniteGroups() or self in SageFiniteGroups():
-                return True
-            return _engine_answer(self, "is_finite")
-
-        def ngens(self: Self) -> "Integer | Unknown":
-            r"""Return the size of the generating set the engine holds.
-
-            Sage answers for a group whose generators it can produce and
-            raises ``AttributeError`` for one it cannot, so a caller has to
-            catch to learn that nobody knows the generators.  That is the
-            same fact ``Unknown`` states as a value.
-
-            The preamble's own word is
-            :meth:`number_of_group_generators`, which says which structure is
-            generated; this spelling is kept because it is the one Sage's
-            callers already type.
-            """
-            return _engine_answer(self, "ngens")
 
         def is_arithmetic_group(self: Self) -> "bool | Unknown":
             r"""Return whether \(G\) is the \(\ZZ\)-points of an algebraic group.
@@ -608,46 +491,6 @@ class OwnedGroups(Category):
                 and self.base_ring() is SageZZ
             ):
                 return True
-            return Unknown
-
-        def group_generators_are_computable(self: Self) -> "bool | Unknown":
-            r"""Return whether some algorithm produces a generating set.
-
-            Asked of this object's resolution order with the owned categories'
-            own answer discounted.  ``OwnedGroups`` gives *every* group it
-            holds a ``group_generators`` that reads the group's ``gens``, so
-            asking the object whether the method is there finds the
-            preamble's own and says yes about a group -- \(SO_3(\QQ)\) --
-            whose generating set nobody can produce.  What is left is the
-            engine's method, or a category that computes one, as
-            ``LatticeIsometries`` does from the Gram matrix.
-
-            True does not promise the computation is cheap -- ``O(L)`` for a
-            definite lattice is computable and slow.  It promises only that
-            asking is meaningful.  Absence is ``Unknown``: no algorithm in
-            this engine is not the same as no algorithm.
-            """
-            generic = (
-                OwnedGroups.ParentMethods,
-                OwnedFinitelyGeneratedGroups.ParentMethods,
-            )
-            for holder in type(self).__mro__:
-                if holder in generic:
-                    continue
-                if "group_generators" in vars(holder) or "gens" in vars(holder):
-                    return True
-            return Unknown
-
-        def has_computed_group_generators(self: Self) -> "bool | Unknown":
-            r"""Return whether a generating set is already in hand.
-
-            The one case that is free.  A group given by generators and
-            relations, or carved out of \(GL_n(R)\) on stated matrices,
-            answers ``True`` and no computation follows.
-            """
-            for stored in ("_group_generators", "_gens", "_gens_matrix"):
-                if self.__dict__.get(stored) is not None:
-                    return True
             return Unknown
 
         def End(self: Self) -> "GroupHomset":
@@ -704,43 +547,6 @@ class OwnedGroups(Category):
             refine(automorphisms, placements)
             return automorphisms
 
-        def conjugation_morphism(self: Self) -> "GroupHomomorphism":
-            r"""Return \(c:G\to\operatorname{Aut}(G)\), \(g\mapsto(x\mapsto gxg^{-1})\).
-
-            The one representation \(G\) carries on itself with no choice
-            made.  \(\ker c=Z(G)\) and \(\operatorname{im}c=
-            \operatorname{Inn}(G)\), so \(G/Z(G)\cong\operatorname{Inn}(G)\)
-            by the first isomorphism theorem (Dummit--Foote, DF04, sec. 4.4
-            Cor. 15 with the remark following it), and
-            \(|\operatorname{Out}(G)|=[\operatorname{Aut}(G):
-            \operatorname{Inn}(G)]\) follows (DF04 sec. 4.4 Exercise 1
-            defines \(\operatorname{Out}\)) -- theorems carried, never
-            re-verified at runtime.  The repo owns no general quotient of
-            groups yet, so \(\operatorname{Out}(G)\) as an *object* is a
-            stated gap; its order is derived.
-
-            Built as any homomorphism is built: an element of
-            \(\operatorname{Hom}(G,\operatorname{Aut}(G))\), named by the
-            images of the distinguished generators.
-            """
-            # Local: a module-level import would close a cycle; the module is built by the time this runs.
-            from dzack_research.preamble.categories.group.group_morphisms import (
-                _element_to_engine,
-                group_homset,
-            )
-
-            automorphisms = self.Aut()
-            model = _gap_model(self)
-            images = {
-                generator: automorphisms(
-                    libgap.ConjugatorAutomorphism(
-                        model, _element_to_engine(self, generator)
-                    )
-                )
-                for generator in self.group_generators()
-            }
-            return group_homset(self, automorphisms)(images)
-
         def is_isomorphic_to(self: Self, other: "Group") -> "bool | Unknown":
             r"""Return whether \(G\cong H\) as groups, as a value.
 
@@ -763,6 +569,27 @@ class OwnedGroups(Category):
                 return Unknown
             found = _gap_model(self).IsomorphismGroups(_gap_model(other))
             return str(found) != "fail"
+
+    class Homsets(HomsetsCategory):
+        r"""Homsets of groups and their homomorphisms."""
+
+        class ElementMethods:
+            def image(self: "GroupHomomorphism") -> "Group":
+                r"""Return \(\operatorname{im}(f)\leq H\)."""
+                from dzack_research.preamble.categories.group.group_morphisms import (
+                    GroupAutomorphismGroup,
+                )
+
+                engine_image = self.gap().Image()
+                codomain = self.codomain()
+                match codomain:
+                    case GroupAutomorphismGroup():
+                        return codomain._subgroup_from_engine(engine_image)
+                    case _:
+                        subgroup: "Group" = codomain._subgroup_constructor(
+                            engine_image
+                        )
+                        return subgroup
 
     class Subobjects(SubobjectsCategory):
         r"""Subgroups: a group \(H\) and a monomorphism \(\iota:H\hookrightarrow G\).
@@ -800,7 +627,7 @@ class OwnedGroups(Category):
                 node keeps the same arrow for a group reached outside this
                 construction, and both call one implementation.
                 """
-                return _canonical_subgroup_inclusion(self)
+                return self._subgroup_inclusion()
 
 
 class OwnedFinitelyGeneratedGroups(Category):
@@ -824,40 +651,33 @@ class OwnedFinitelyGeneratedGroups(Category):
             return True
 
         def group_generators(self: "GroupParent") -> "OrderedSet":
-            r"""Return \(S\), which the axiom makes a *finite* ordered set.
+            r"""Return the finite generating set supplied by the construction."""
+            return self._group_generators
 
-            The same generating set, with the finiteness the axiom supplies.
-            The enumeration is handed over as the order rather than re-sorted,
-            so a family indexed \(1,\dots,n\) keeps its indexing.
+        def number_of_group_generators(self: "GroupParent") -> "Cardinal":
+            r"""Return the cardinality of the specified finite generating set."""
+            from dzack_research.preamble.categories.sets.cardinals import cardinal
 
-            The identity is dropped, which is only possible where the set can
-            be enumerated: \(\langle S\rangle=\langle S\setminus\{1\}\rangle\)
-            for every \(S\), so it never generates anything, and the trivial
-            group is generated by \(\emptyset\) rather than by \(\{1\}\).
-            """
-            # Local: a module-level import would close a cycle; the module is built by the time this runs.
-            from dzack_research.preamble.categories.sets.sets import finite_ordered_set
+            return cardinal(self.group_generators().cardinality())
 
-            identity = self.one()
-            stored = self.__dict__.get("_group_generators")
-            match stored:
-                case None:
-                    generators = SageGroups().ParentMethods.group_generators(
-                        self
+        def conjugation_morphism(self: "GroupParent") -> "GroupHomomorphism":
+            r"""Return the conjugation representation on the specified generators."""
+            from dzack_research.preamble.categories.group.group_morphisms import (
+                _element_to_engine,
+                group_homset,
+            )
+
+            automorphisms = self.Aut()
+            model = _gap_model(self)
+            images = {
+                generator: automorphisms(
+                    libgap.ConjugatorAutomorphism(
+                        model, _element_to_engine(self, generator)
                     )
-                    nonidentity = tuple(
-                        generator
-                        for generator in generators
-                        if generator != identity
-                    )
-                case _:
-                    nonidentity = tuple(
-                        generator
-                        for generator in stored
-                        if not generator.is_identity()
-                    )
-            generating_set: TotallyOrderedFiniteSet = finite_ordered_set(nonidentity)
-            return generating_set
+                )
+                for generator in self.group_generators()
+            }
+            return group_homset(self, automorphisms)(images)
 
 def coxeter_presentation(
     coxeter_matrix: "Matrix",
@@ -1217,12 +1037,48 @@ class OwnedFiniteGroups(Category):
         return "finite groups"
 
     def super_categories(self) -> list:
-        return [OwnedFinitelyPresentedGroups()]
+        return [OwnedFinitelyPresentedGroups(), Sets().Finite()]
 
     class ParentMethods:
-        def is_finite(self: Self) -> bool:
-            r"""Return ``True`` because membership states this property."""
-            return True
+        def conjugacy_classes_representatives(self: Self) -> tuple:
+            r"""Return this finite group's conjugacy-class representatives."""
+            from dzack_research.preamble.categories.group.group_morphisms import (
+                _element_from_engine,
+            )
+
+            return tuple(
+                _element_from_engine(self, conjugacy_class.Representative())
+                for conjugacy_class in _gap_model(self).ConjugacyClasses()
+            )
+
+        def irreducible_characters(self: Self) -> tuple:
+            r"""Return the absolutely irreducible characters of this group."""
+            from sage.groups.class_function import ClassFunction
+            from dzack_research.preamble.categories.modules.group_modules.characters import Character
+
+            return tuple(
+                Character(ClassFunction(self, engine_character), self)
+                for engine_character in _gap_model(self).Irr()
+            )
+
+        def character(self: Self, values: "OrderedSet") -> "Character":
+            r"""Return the character with the stated conjugacy-class values."""
+            from sage.groups.class_function import ClassFunction
+            from dzack_research.preamble.categories.modules.group_modules.characters import Character
+
+            class_function = ClassFunction(self, list(values))
+            return Character(class_function, self)
+
+        def trivial_character(self: Self) -> "Character":
+            r"""Return the trivial character."""
+            from sage.groups.class_function import ClassFunction
+            from dzack_research.preamble.categories.modules.group_modules.characters import Character
+
+            class_function = ClassFunction(
+                self,
+                _gap_model(self).TrivialCharacter(),
+            )
+            return Character(class_function, self)
 
 
 class OwnedFiniteAbelianGroups(Category):
@@ -1243,22 +1099,11 @@ def _answers_abelian(group: "Group") -> bool:
     is abelian -- so a group declining the question is not a group that is
     nonabelian.  Placing on a witness and not on a default is the difference.
     """
-    return _engine_answer(group, "is_abelian") is True
-
-
-def _record_group_notation(group: "Group") -> None:
-    r"""Record how Sage writes the group law before category refinement."""
-    group._preamble_uses_additive_notation = group.category().is_subcategory(
-        CommutativeAdditiveGroups()
-    )
+    return group.category().is_subcategory(SageGroups().Commutative())
 
 
 def _uses_additive_notation(group: "Group") -> bool:
     r"""Return whether this realization writes the group law additively."""
-    recorded = group.__dict__.get("_preamble_uses_additive_notation")
-    if recorded is not None:
-        additive: bool = recorded
-        return additive
     written_additively: bool = group.category().is_subcategory(
         CommutativeAdditiveGroups()
     )
@@ -1273,8 +1118,6 @@ def refine_group(group: "Group") -> "Group":
     """
     from dzack_research.preamble.refine import refine
 
-    if "_preamble_uses_additive_notation" not in group.__dict__:
-        _record_group_notation(group)
     if group.category().is_subcategory(OwnedGroups()):
         return group
     categories = tuple(
@@ -1394,7 +1237,6 @@ def install_groups() -> None:
         hook_post_init(
             construction,
             OwnedGroups(),
-            before=_record_group_notation,
         )
         hook_post_init(
             construction,

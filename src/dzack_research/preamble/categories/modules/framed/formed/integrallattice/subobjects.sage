@@ -19,9 +19,9 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from sage.categories.modules import Module
+    from sage.matrix.matrix0 import Matrix
     from dzack_research.preamble.categories.modules.framed.formed.form_modules import is_form_morphism
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
-    from dzack_research.preamble.categories.modules.module_morphisms.morphism_matrices import MorphismMatrix
 
 from sage.misc.misc_c import prod
 from typing import Protocol, TYPE_CHECKING
@@ -48,12 +48,10 @@ if TYPE_CHECKING:
 
         _form: "Morphism"
 
-        def embedding(self) -> "ModuleMorphism": ...
-        def embedding_codomain(self) -> "Module": ...
+        def structure_morphism(self) -> "ModuleMorphism": ...
         def ambient(self) -> "Module": ...
-        def gram_matrix(self) -> "MorphismMatrix": ...
+        def gram_matrix(self) -> "Matrix": ...
         def module_generators(self) -> tuple: ...
-        def is_countable(self) -> bool: ...
         def is_primitive(self) -> bool: ...
         def embedded_module_generators(self) -> "OrderedSet": ...
 
@@ -73,33 +71,17 @@ class Subobjects(Category):
         # has.  A subobject *is* its inclusion, so the ambient object, the
         # lift and the retraction are all read off that one morphism rather
         # than stored again.
-        def _form_morphism(self: "SubobjectParent") -> "Morphism":
-            return self._form
-
         def ambient(self: "SubobjectParent") -> "Module":
             r"""Return $B$, the object this one is a subobject of."""
-            return self.embedding_codomain()
+            return self.structure_morphism().codomain()
 
         def lift(self: "SubobjectParent", element: "Element") -> "Element":
             r"""Return $\iota(x)$, the element seen in the ambient object."""
-            return self.embedding()(element)
+            return self.structure_morphism()(element)
 
         def retract(self: "SubobjectParent", element: "Element") -> "Element":
             r"""Return the $x$ with $\iota(x)$ the given ambient element."""
-            return self.embedding().lift(element)
-
-        def is_countable(self: "SubobjectParent") -> bool:
-            r"""A subobject is countable exactly when its ambient is.
-
-            It injects into the ambient, so it is no larger; and the
-            countability is read off the object it sits in rather than
-            recomputed from a presentation.
-            """
-            return bool(self.ambient().is_countable())
-
-        def is_uncountable(self: "SubobjectParent") -> bool:
-            r"""Whether this subobject is beyond every enumeration."""
-            return not self.is_countable()
+            return self.structure_morphism().lift(element)
 
         def index(self: "SubobjectParent") -> "Integer":
             r"""Return $[B:S]$, the cardinality of $\operatorname{coker}(\iota)$.
@@ -114,7 +96,7 @@ class Subobjects(Category):
 
             The computation belongs to the arrow: ``ModuleMorphism.index``.
             """
-            index: "Integer" = self.embedding().index()
+            index: "Integer" = self.structure_morphism().index()
             return index
 
         def is_primitive(self: "SubobjectParent") -> bool:
@@ -130,7 +112,7 @@ class Subobjects(Category):
             Torsion free is not free: over a general $R$ the two differ, and
             the definition is the former.
             """
-            primitive: bool = self.embedding().cokernel().is_torsion_free()
+            primitive: bool = self.structure_morphism().cokernel().is_torsion_free()
             return primitive
 
         is_saturated = is_primitive
@@ -155,7 +137,7 @@ class Subobjects(Category):
             # Local: a module-level import here would close a cycle; by call time this module is built.
             from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _coordinate_vector
             from dzack_research.preamble.utilities import zipsum
-            inclusion = self.embedding()
+            inclusion = self.structure_morphism()
             ambient = inclusion.codomain()
             quotient = inclusion.cokernel()
             projection = quotient.torsion_free_quotient()
@@ -194,7 +176,7 @@ class Subobjects(Category):
             """
             index: "Integer" = prod(
                 invariant
-                for invariant in self.embedding().cokernel().invariants()
+                for invariant in self.structure_morphism().cokernel().invariants()
                 if invariant != 0
             )
             return index
@@ -206,9 +188,9 @@ class Subobjects(Category):
             images: the ambient is handed every embedded generator of each and
             builds the subobject on them the way it builds every subobject.
             """
-            assert self.embedding_codomain() == other.embedding_codomain(), (
+            assert self.structure_morphism().codomain() == other.structure_morphism().codomain(), (
                 "the subobject sum lives in one common codomain; "
-                f"left={self.embedding_codomain()}, right={other.embedding_codomain()}"
+                f"left={self.structure_morphism().codomain()}, right={other.structure_morphism().codomain()}"
             )
             joined: "SubobjectParent" = self.ambient().subobject_on(
                 list(self.embedded_module_generators())
@@ -228,9 +210,9 @@ class Subobjects(Category):
             # Local: a module-level import here would close a cycle; by call time this module is built.
             from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _coordinate_vector
             from dzack_research.preamble.utilities import zipsum
-            assert self.embedding_codomain() == other.embedding_codomain(), (
+            assert self.structure_morphism().codomain() == other.structure_morphism().codomain(), (
                 "the subobject intersection lives in one common codomain; "
-                f"left={self.embedding_codomain()}, right={other.embedding_codomain()}"
+                f"left={self.structure_morphism().codomain()}, right={other.structure_morphism().codomain()}"
             )
             ambient = self.ambient()
             left_rows = matrix(
@@ -272,7 +254,7 @@ class Subobjects(Category):
             from dzack_research.preamble.categories.sets.sets import finite_ordered_set
             return finite_ordered_set(
                 tuple(
-                    self.embedding()(generator)
+                    self.structure_morphism()(generator)
                     for generator in self.module_generators()
                 )
             )
@@ -286,9 +268,9 @@ class Subobjects(Category):
             assert self.gram_matrix().is_zero(), (
                 "isotropic reduction requires the form to vanish on the subobject"
             )
-            codomain = self.embedding_codomain()
-            perpendicular = self.embedding().orthogonal_complement()
-            inclusion = perpendicular.embedding()
+            codomain = self.structure_morphism().codomain()
+            perpendicular = self.structure_morphism().orthogonal_complement()
+            inclusion = perpendicular.structure_morphism()
             relations = matrix(
                 SageZZ,
                 [
@@ -323,7 +305,7 @@ class Subobjects(Category):
             )
 
 
-def _free_quotient_lifts(module: "Module", relations: "MorphismMatrix") -> list:
+def _free_quotient_lifts(module: "Module", relations: "Matrix") -> list:
     r"""Return coordinates in ``module``'s framing of its quotient's generators.
 
     The quotient by the submodule the rows of ``relations`` generate is the

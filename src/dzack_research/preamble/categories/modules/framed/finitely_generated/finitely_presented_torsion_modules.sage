@@ -44,7 +44,9 @@ from sage.matrix.special import diagonal_matrix
 from sage.misc.cachefunc import cached_method
 from sage.structure.parent import Parent
 
-from dzack_research.preamble.categories.modules.module_morphisms.morphism_matrices import MorphismMatrix
+from dzack_research.preamble.categories.modules.module_morphisms.morphism_matrices import (
+    row_normal_form,
+)
 from dzack_research.preamble.categories.sets.owned_sets import Sets
 
 if TYPE_CHECKING:
@@ -73,7 +75,7 @@ if TYPE_CHECKING:
         supplies: the presentation, the generating set and its size, the zero,
         the coordinate route in, the invariant factors, and the exponent."""
 
-        def relation_matrix(self) -> MorphismMatrix: ...
+        def relation_matrix(self) -> Matrix: ...
         def number_of_module_generators(self) -> int: ...
         def module_generators(self) -> "OrderedSet": ...
         def zero(self) -> "Element": ...
@@ -147,7 +149,7 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
             f"each summand needs an order greater than 1, got {orders}"
         )
         return self.from_relations(
-            MorphismMatrix(diagonal_matrix(SageZZ, orders), SageZZ)
+            diagonal_matrix(SageZZ, orders)
         )
 
     def from_abelian_group(self, group: "Group") -> FinitelyPresentedModule:
@@ -178,7 +180,7 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
         generators = tuple(group.group_generators())
         if not generators:
             return self.from_relations(
-                MorphismMatrix(matrix(SageZZ, 0, 0), SageZZ),
+                matrix(SageZZ, 0, 0),
                 Sets.Δ[-1],
             )
         orders = [generator.order() for generator in generators]
@@ -197,12 +199,10 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
             for exponents in cartesian_product_iterator([range(d) for d in orders])
             if combine(generators, exponents) == identity
         ]
-        relations = MorphismMatrix(
-            matrix(SageZZ, found).stack(diagonal_matrix(SageZZ, orders)), SageZZ
-        )
+        relations = matrix(SageZZ, found).stack(diagonal_matrix(SageZZ, orders))
         # Square again: the relation lattice has full rank, so its Hermite form
         # has one nonzero row per generator and the rest are padding.
-        reduced = relations.normal_form(include_zero_rows=True)
+        reduced = row_normal_form(relations, include_zero_rows=True)
         return self.from_relations(
             reduced[: len(orders), :],
             finite_ordered_set(generators),
@@ -238,7 +238,7 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
 
     def from_relations(
         self,
-        relations: "MorphismMatrix",
+        relations: "Matrix",
         module_generating_set: "OrderedSet" = None,
     ) -> FinitelyPresentedModule:
         r"""Return the module presented by ``relations``, as a morphism.
@@ -252,7 +252,7 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
         from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import BasedFreeModule
         from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _module_morphism
 
-        relations = MorphismMatrix(relations, SageZZ)
+        relations = relations.change_ring(SageZZ)
         domain = BasedFreeModule(ℤ, Sets.Δ[relations.nrows() - 1])
         match module_generating_set:
             case None:
@@ -470,7 +470,7 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
         def __iter__(self: "TorsionModuleParent") -> "Iterator[Element]":
             from sage.misc.mrange import cartesian_product_iterator
 
-            reduced = self.relation_matrix().normal_form()
+            reduced = row_normal_form(self.relation_matrix())
             bounds = [reduced[i, i] for i in range(self.number_of_module_generators())]
             for point in cartesian_product_iterator(
                 [range(bound) for bound in bounds]

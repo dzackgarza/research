@@ -215,12 +215,8 @@ class RestrictedScalarsModules(Category_over_base_ring):
         def scalar_multiple(self, scalar: "Element", element: "Element") -> "Element":
             return self._ring_map(scalar) * element
 
-        def _coordinate_module(self) -> "Module":
-            r"""\(N\)'s coordinate module: restriction does not move coordinates."""
-            return self._module._coordinate_module()
-
         def zero(self) -> "Element":
-            return self(self._module.zero())
+            return self(self._module.base_ring().zero())
 
         def _element_constructor_(self, element: "Element") -> "Element":
             r"""Same elements as \(N\), answering to this parent.

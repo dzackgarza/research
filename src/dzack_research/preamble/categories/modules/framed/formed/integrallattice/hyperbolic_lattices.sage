@@ -344,7 +344,7 @@ class HyperbolicLattices(Category):
                 (
                     element_of(generator_row),
                     tuple(element_of(row) for row in incident_rows),
-                    element_of(generator_row).q(),
+                    element_of(generator_row).norm(),
                 )
                 for generator_row, incident_rows, _engine_norm in record["vertices"]
             )

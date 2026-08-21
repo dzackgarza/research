@@ -73,6 +73,14 @@ class PredicateSubrings(Category):
             self._ambient_ring = ambient_ring
             self._predicate = predicate
             self._description = description
+            self._one = ambient_ring.one()
+            self._zero = ambient_ring.zero()
+            assert self._predicate(self._one), (
+                f"{self._description} does not contain 1, so it is not a subring"
+            )
+            assert self._predicate(self._zero), (
+                f"{self._description} does not contain 0, so it is not a subring"
+            )
             super().__init__(**rest)
 
         def ambient_ring(self) -> "Ring":
@@ -92,18 +100,10 @@ class PredicateSubrings(Category):
             return element
 
         def one(self) -> "Element":
-            identity = self._ambient_ring.one()
-            assert identity in self, (
-                f"{self._description} does not contain 1, so it is not a subring"
-            )
-            return identity
+            return self._one
 
         def zero(self) -> "Element":
-            zero = self._ambient_ring.zero()
-            assert zero in self, (
-                f"{self._description} does not contain 0, so it is not a subring"
-            )
-            return zero
+            return self._zero
 
         def inclusion(self) -> SetMorphism:
             r"""Return the inclusion \(S\hookrightarrow R\) recording the subobject."""

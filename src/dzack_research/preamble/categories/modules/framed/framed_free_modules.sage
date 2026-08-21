@@ -37,6 +37,7 @@ from typing import Self, TYPE_CHECKING
 
 from sage.categories.homset import Hom
 from sage.categories.morphism import SetMorphism
+from sage.misc.cachefunc import cached_method
 from sage.structure.element import ModuleElement
 from sage.rings.integer import Integer as SageInteger
 from sage.structure.parent import Parent
@@ -48,7 +49,6 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
     from dzack_research.preamble.owned_category import ConstructionData
-    from dzack_research.preamble.categories.sets.cardinals import Cardinal
     from sage.categories.sets_cat import Set
     from dzack_research.preamble.lexicon import OrderedSet
 
@@ -69,8 +69,10 @@ if TYPE_CHECKING:
         def _module_generator_element(self, element_of_S: SageElement) -> "FramedFreeModules.ElementMethods": ...
 from sage.structure.richcmp import richcmp
 
-from dzack_research.preamble.categories.sets.owned_sets import placement_of
-from dzack_research.preamble.categories.sets.owned_sets import Sets
+from dzack_research.preamble.categories.sets.owned_sets import (
+    FinitelySupportedFunctionSets,
+    Sets,
+)
 from dzack_research.preamble.categories.sets.underlying_sets import (
     UnderlyingSet,
     UnderlyingSets,
@@ -80,42 +82,6 @@ if TYPE_CHECKING:
     # The ordered-set noun is type-only: the preamble loads into one
     # shared namespace and nothing named OrderedSet may bind there.
     from dzack_research.preamble.lexicon import OrderedSet
-
-
-def _free_module_placement(
-    base_ring: "Ring", module_generating_set: "OrderedSet"
-) -> Sets:
-    r"""The owned ``Sets()`` placement of \(F_R(S)=\bigoplus_S R\).
-
-    Read off the placements of \(R\) and of \(S\), which is what decides the
-    question and what a general ring states.  \(R\) is the owned ring and not
-    the engine's: countability and uncountability are what the owned rings
-    add, and \(\mathbb R\) reaches the engine declaring only that it is
-    infinite.  The exact count is
-    :meth:`FramedFreeModules.ParentMethods.cardinality`; it is not asked
-    here, because Sage equips only some rings to say how big they are -- a
-    maximal order in a number field does not -- and a construction must not
-    depend on that.  Such a ring leaves the module unplaced, which is the
-    honest answer rather than a size nobody computed.
-    """
-    ring = frozenset(placement_of(base_ring).axioms())
-    framing = frozenset(placement_of(module_generating_set).axioms())
-    finite_framing = "Finite" in framing
-    if finite_framing and module_generating_set.cardinality() == 0:
-        # \(F_R(\emptyset)=0\): the singleton, over any ring at all.
-        return Sets().Finite()
-    if "Finite" in ring:
-        # A finite ring states its order, so both finite cases are decided
-        # exactly -- including the zero ring, over which every module is zero.
-        if base_ring.cardinality() == 1 or finite_framing:
-            return Sets().Finite()
-        return Sets().Infinite()
-    if "Uncountable" in ring:
-        return Sets().Uncountable()
-    if "Infinite" in ring:
-        return Sets().Infinite()
-    return Sets()
-
 
 
 class FramedFreeModules(OwnedCategoryOverBaseRing):
@@ -132,7 +98,11 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
         # Local: a module-level import here would close a cycle; by call time this module is built.
         from dzack_research.preamble.categories.modules.framed.framed_modules import FramedModules
 
-        return [FreeModules(self.base_ring()), FramedModules(self.base_ring())]
+        return [
+            FreeModules(self.base_ring()),
+            FramedModules(self.base_ring()),
+            FinitelySupportedFunctionSets(),
+        ]
 
     class ElementMethods:
         r"""A finitely supported coefficient function on the set \(S\).
@@ -258,6 +228,7 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
         def __init__(
             self,
             module_generating_set: "OrderedSet",
+            category: "Category",
             **rest: "ConstructionData",
         ) -> None:
             # Local: at module level these close an import cycle; the finite
@@ -266,7 +237,17 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
             from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import framing_morphism
 
             self._module_generating_set = _as_set(module_generating_set)
-            super().__init__(**rest)
+            base_ring = category.base_ring()
+            assert base_ring is not None, (
+                f"{category} names no ring, so it builds no free module"
+            )
+            super().__init__(
+                category=category,
+                index_set=self._module_generating_set,
+                value_set=base_ring,
+                basepoint=base_ring.zero(),
+                **rest,
+            )
             # Finite *and* totally ordered, because the category refined into
             # is the based free modules and an ordering is what it adds.  An element
             # here is the finitely supported \(a:S\to R\); what a chosen total
@@ -284,16 +265,6 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
                 Sets().Finite()
             ) and placement.is_subcategory(Sets().TotallyOrdered()):
                 refine(self, FinitelyGeneratedFreeModules(self.base_ring()))
-            # The underlying set: a module that cannot say whether it is
-            # finite or infinite is unusable to every construction that ranges
-            # over its elements, and the free module's own \(R\) and \(S\)
-            # decide it.
-            refine(
-                self,
-                _free_module_placement(
-                    self.base_ring(), self._module_generating_set
-                ),
-            )
             self._framing_morphism = framing_morphism(
                 self, self, self._module_generator_element
             )
@@ -362,20 +333,14 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
                 is_injective=True,
             )
 
+        @cached_method
         def module_generator_morphism(self: "FreeModuleParent") -> SetMorphism:
             r"""Return the canonical set morphism \(S\to U(F_R(S))\)."""
-            morphism: SetMorphism | None = self.__dict__.get("_free_module_generator_morphism")
-            if morphism is None:
-                module_generating_set = self.__dict__.get("_module_generating_set")
-                assert (
-                    module_generating_set is not None
-                ), "a framed free module stores its framing set"
-                morphism = SetMorphism(
-                    Hom(module_generating_set, UnderlyingSet(self), Sets()),
-                    self._module_generator_element,
-                )
-                self._free_module_generator_morphism = morphism
-            return morphism
+            module_generating_set = self.module_generating_set()
+            return SetMorphism(
+                Hom(module_generating_set, UnderlyingSet(self), Sets()),
+                self._module_generator_element,
+            )
 
         def hom(self: "FreeModuleParent", images: "GeneratorAssignment", codomain: "Module | None" = None) -> "ModuleMorphism":
             r"""Extend a set morphism \(S\to U(N)\) \(R\)-linearly."""
@@ -406,35 +371,6 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
 
         def is_torsion_free(self: Self) -> bool:
             return True
-
-        def cardinality(self: "FreeModuleParent") -> "Cardinal":
-            r"""Return \(|F_R(S)|\), which the construction determines.
-
-            An element is a finitely supported \(a:S\to R\), so for a finite
-            \(S\) the underlying set is \(R^{|S|}\) and the count is
-            \(|R|^{|S|}\).  For an infinite \(S\) finite support is what keeps
-            the count down: with at least two coefficients to choose from the
-            finitely supported functions number \(\max(|R|,|S|)\), and *not*
-            \(|R|^{|S|}\), which counts the product \(\prod_S R\) -- a
-            different module.  Over the zero ring every module is zero, so
-            the count is \(1\) whatever \(S\) is.
-            """
-            # Local: at module level this closes an import cycle; the cardinals
-            # are built by the time a module is asked how big it is.
-            from dzack_research.preamble.categories.sets.cardinals import Cardinalities, cardinal
-
-            framing_size = cardinal(self.module_generating_set().cardinality())
-            if framing_size == 0:
-                # \(F_R(\emptyset)\) is the zero module over any ring at all,
-                # so this answers before the ring is asked anything.
-                return cardinal(1)
-            ring_size = cardinal(self.base_ring().cardinality())
-            if framing_size.is_finite():
-                return Cardinalities().power(ring_size, framing_size)
-            if ring_size == 1:
-                return cardinal(1)
-            return Cardinalities().supremum(ring_size, framing_size)
-
 
 def FreeModuleOn(
     base_ring: "Ring", module_generating_set: "OrderedSet"
@@ -476,4 +412,7 @@ def FreeModuleOn(
         if based
         else FramedFreeModules(base_ring)
     )
-    return object_of(category, module_generating_set=module_generating_set)
+    return object_of(
+        category,
+        module_generating_set=module_generating_set,
+    )

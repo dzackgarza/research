@@ -29,6 +29,7 @@ from typing import Self, TYPE_CHECKING
 
 from dzack_research.preamble.owned_category_bases import Category_singleton
 from sage.categories.groups import Groups as SageGroups
+from sage.misc.abstract_method import abstract_method
 
 if TYPE_CHECKING:
     from sage.categories.groups import GroupElement
@@ -58,17 +59,12 @@ class ProfiniteGroups(Category_singleton):
         return [OwnedGroups(), SageGroups().Topological()]
 
     class ParentMethods:
+        @abstract_method(optional=True)
         def topological_group_generators(
             self: "GroupParent",
         ) -> "Iterator[GroupElement]":
-            r"""Yield some topological generators as an infinite stream.
-
-            Distinct from :meth:`group_generators`: a finite set may be
-            topologically dense without algebraically generating, the way a
-            finite set of algebra generators need not module-generate.
-            No exhaustivity is claimed; the supply is infinite.
-            """
-            yield from self.group_generators()
+            r"""Yield a specified topological generating family, when supplied."""
+            ...
 
         def is_profinite(self: Self) -> bool:
             r"""Return ``True``: membership in this category is the claim."""

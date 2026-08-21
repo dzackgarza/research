@@ -110,7 +110,7 @@ def _validated_isotropic_basis(
     engine representative passes before it is one of ours.
     """
     for left in elements:
-        assert left.q() == 0, f"{left} is not isotropic"
+        assert left.norm() == 0, f"{left} is not isotropic"
         for right in elements:
             assert left.b(right) == 0, (
                 f"{left} and {right} do not span a totally isotropic subobject"
@@ -457,10 +457,11 @@ class OrthogonalPredicateSubgroups(Category_singleton):
             self._spinor_kernel = bool(spinor_kernel)
             self._discriminant_preimages = tuple(discriminant_preimages)
             super().__init__(**rest)
+            self._domain = self.supergroup().domain()
 
         def domain(self) -> "FormModule":
             r"""Return $L$: a subgroup of $O(L)$ acts where $O(L)$ does."""
-            return self.supergroup().domain()
+            return self._domain
 
         def contains_character_kernel(self) -> bool:
             r"""Return whether $\Gamma\supseteq\ker\varphi$.

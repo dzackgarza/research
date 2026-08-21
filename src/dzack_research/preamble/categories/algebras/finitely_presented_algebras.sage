@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from dzack_research.preamble.lexicon import Element
     from sage.categories.modules import Module
-    from dzack_research.preamble.categories.modules.module_morphisms.morphism_matrices import MorphismMatrix
 
 if TYPE_CHECKING:
     from sage.categories.morphism import Morphism
@@ -68,6 +67,7 @@ if TYPE_CHECKING:
         _presentation_ring: "PresentingAlgebraParent"
         _presentation_ideal: "Ideal_generic"
         _presentation_generators: tuple["Element", ...]
+        _algebra_generating_set: "OrderedSet"
         _algebra_generator_morphism: SetMorphism
         _algebra_presentation_morphism: "Morphism"
 
@@ -168,7 +168,7 @@ class FinitelyPresentedAlgebras(OwnedCategoryOverBaseRing):
             return FinitelyPresentedAlgebra(target_presentation, relations)
 
         def algebra_generating_set(self: "PresentedAlgebraParent") -> "OrderedSet":
-            return self.presentation_ring().algebra_generating_set()
+            return self._algebra_generating_set
 
         def algebra_generator_morphism(
             self: "PresentedAlgebraParent",
@@ -190,11 +190,6 @@ class FinitelyPresentedAlgebras(OwnedCategoryOverBaseRing):
             )
 
         def algebra_presentation_morphism(
-            self: "PresentedAlgebraParent",
-        ) -> "Morphism":
-            return self._algebra_presentation_morphism
-
-        def algebra_framing_morphism(
             self: "PresentedAlgebraParent",
         ) -> "Morphism":
             return self._algebra_presentation_morphism
@@ -283,7 +278,8 @@ def _relations_to_ideal(
 
 
 def FinitelyPresentedAlgebra(
-    presentation_ring: "PresentingAlgebraParent", relations: "MorphismMatrix"
+    presentation_ring: "PresentingAlgebraParent",
+    relations: "Ideal_generic | Iterable[Element]",
 ) -> "Parent":
     """Present an algebra as ``presentation_ring/relations`` and expose the data."""
     # Local: free_algebras imports this module, so a module-level import here
@@ -314,6 +310,7 @@ def FinitelyPresentedAlgebra(
         FinitelyPresentedAlgebras(presentation_ring.base_ring()),
     )
     presented._presentation_generators = relation_generators
+    presented._algebra_generating_set = presentation_ring.algebra_generating_set()
     presented._presentation_ring = presentation_ring
     presented._presentation_ideal = presentation_ideal
     generator_set = presentation_ring.algebra_generating_set()
@@ -335,7 +332,11 @@ def FinitelyPresentedAlgebra(
     return presented
 
 
-def FGAlgebra(base_ring: "Ring", algebra_generating_set: "OrderedSet", relations: "MorphismMatrix") -> "Parent":
+def FGAlgebra(
+    base_ring: "Ring",
+    algebra_generating_set: "OrderedSet",
+    relations: "Ideal_generic | Iterable[Element]",
+) -> "Parent":
     """Construct ``FreeAlgebraOn(base_ring, algebra_generating_set) / (relations)``."""
     # Local: framed_free_algebras imports this module, so a module-level
     # import here would close that cycle.

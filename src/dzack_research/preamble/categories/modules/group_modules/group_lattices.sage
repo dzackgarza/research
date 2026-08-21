@@ -5,15 +5,16 @@ if TYPE_CHECKING:
     from dzack_research.preamble.categories.modules.group_modules.characters import Character
     from dzack_research.preamble.lexicon import Element
     from sage.categories.groups import Group
+    from sage.matrix.matrix0 import Matrix
     from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModule
     from sage.categories.modules import Module
     from dzack_research.preamble.lexicon import ModuleElement
-    from dzack_research.preamble.categories.modules.module_morphisms.morphism_matrices import MorphismMatrix
 
 from sage.rings.integer_ring import ZZ as SageZZ
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModule
+from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModules
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import is_form_morphism
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import GroupAction
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import GroupAction, GroupActionHomsets
 if TYPE_CHECKING:
     from dzack_research.preamble.categories.abstract_categories.direct_sum_objects import DirectSumObject
     from dzack_research.preamble.categories.modules.framed.formed.integrallattice.subobjects import Subobject
@@ -24,6 +25,7 @@ import logging
 from typing import Self, TYPE_CHECKING
 
 from sage.misc.cachefunc import cached_function, cached_method
+from dzack_research.preamble.owned_category import object_of
 from dzack_research.preamble.owned_category_bases import Category, HomsetsCategory
 from sage.categories.morphism import SetMorphism
 
@@ -50,9 +52,7 @@ if TYPE_CHECKING:
     EquivariantAssignment = Morphism | dict | Callable
 
     class GroupLatticeParent(Protocol):
-        r"""What a parent placed in ``GroupLattices(G)`` supplies: the ring
-        underneath, the two forgetful maps off the pair $(L,\rho)$, the form
-        itself, and this parent's own element wrapping."""
+        r"""What a parent placed in ``GroupLattices(G)`` supplies."""
 
         def base_ring(self) -> "Ring": ...
         def form(self) -> "Form": ...
@@ -61,21 +61,11 @@ if TYPE_CHECKING:
         def _over(self, element: "Element") -> "ModuleElement": ...
 
         # The category's own operations, which its methods call on each other.
-        def forget_action(self) -> "Module": ...
         def act(self, element: "Element", vector_: "ModuleElement") -> "ModuleElement": ...
         def subobject_on(self, module_generators: "OrderedSet") -> "Subobject": ...
         def isotypic_decomposition(self) -> "DirectSumObject": ...
         def invariant_lattice(self) -> "Subobject": ...
         def _equip(self, submodule: "Module") -> "Module": ...
-
-    class GroupLatticeElement(Protocol):
-        r"""What an element of a group lattice supplies: the lattice it lies
-        in, and its image after the form is forgotten."""
-
-        def parent(self) -> "GroupLatticeParent": ...
-        def underlying_element(self) -> "ModuleElement": ...
-
-
 
 class GroupLattices(Category):
     r"""The pullback of \(G\)-modules and integral lattices."""
@@ -106,62 +96,14 @@ class GroupLattices(Category):
         ]
 
     class ParentMethods:
-        def Hom(self: Self, codomain: "Module", category: "Category | None" = None) -> "Homset":
-            # Local: a module-level import would close a cycle; the module is built by the time this runs.
-            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.integral_lattices import IntegralLattices
+        def _Hom_(self: Self, codomain: "Module", category: "Category | None" = None) -> "Homset":
+            r"""Return the homset in the strongest owned category of both ends."""
             from dzack_research.preamble.categories.modules.group_modules.group_modules import GroupModules
 
-            if codomain in GroupModules(self.base_ring(), self.group()):
-                return group_lattice_homset(self, codomain)
-            # No action on the codomain, so equivariance says nothing and the
-            # morphisms are those of the lattice this one is once the action
-            # is forgotten -- $L^\vee$ is the case that reaches here, through
-            # the correlation.  Sage's own homset would be the answer only if
-            # the codomain were outside the owned categories too, which is
-            # what the lattice's ``Hom`` decides.
-            return IntegralLattices.ParentMethods.Hom(self, codomain, category)
-
-        def hom(self: "GroupLatticeParent", images: "EquivariantAssignment", codomain: "Module | None" = None) -> "ModuleMorphism":
-            # Local: a module-level import would close a cycle; the module is built by the time this runs.
-            from dzack_research.preamble.categories.modules.framed.formed.form_modules import FinitelyGeneratedFormModules
-
-            return FinitelyGeneratedFormModules.ParentMethods.hom(
-                self,
-                images,
-                codomain,
-            )
-
-        @cached_method
-        def forget_action(self: "GroupLatticeParent") -> "Module":
-            r"""Forget the action and retain the formed module."""
-            stored = self.__dict__.get("_action_forgotten_form")
-            if stored is not None:
-                return stored
-            module = self.forget_action()
-            stored = FormModule(self.form().on_module(module))
-            self._action_forgotten_form = stored
-            return stored
-
-        # The action, the group, $\rho(g)$ and its matrix are the group
-        # module's own, read off the $\rho$ this object was constructed with.
-        # A second copy recorded on the formed object was installed after the
-        # refine that admits it here, so every one of these read a field that
-        # did not exist yet -- the installer's own first statement did.
-
-        def is_invariant(self: "GroupLatticeParent", vector_: "ModuleElement") -> bool:
-            r"""Return whether \(g\cdot v=v\) for every \(g\in G\).
-
-            Decided on generators: the elements fixing \(v\) form a
-            subgroup, so it contains \(G\) as soon as it contains a
-            generating set.
-            """
-            # Local: a module-level import would close a cycle; the module is built by the time this runs.
-            from dzack_research.preamble.categories.group.groups import refine_group
-
-            return all(
-                self.act(generator, vector_) == vector_
-                for generator in refine_group(self.group()).group_generators()
-            )
+            if category is None and codomain in GroupModules(self.base_ring(), self.group()):
+                category = GroupLattices(self.group())
+            homset: "Homset" = super()._Hom_(codomain, category)
+            return homset
 
         def subobject_on(self: "GroupLatticeParent", module_generators: "OrderedSet") -> "Subobject":
             module_generators = tuple(module_generators)
@@ -173,11 +115,9 @@ class GroupLattices(Category):
             # it first -- and ``self.subobject_on`` is this method.
             # Local: a module-level import would close a cycle; the module is
             # built by the time a subobject is asked for.
-            from dzack_research.preamble.categories.modules.group_modules.group_modules import GroupModules
+            from dzack_research.preamble.categories.modules.group_modules.group_modules import _group_subobject
 
-            representation_subobject = GroupModules.ParentMethods.subobject_on(
-                self, module_generators
-            )
+            representation_subobject = _group_subobject(self, module_generators)
             return _formed_group_subobject(self, representation_subobject)
 
         def isotypic_lattice(self: "GroupLatticeParent", character: "Character") -> "Subobject":
@@ -191,36 +131,15 @@ class GroupLattices(Category):
 
         @cached_method
         def coinvariant_lattice(self: "GroupLatticeParent") -> "Subobject":
-            return self.invariant_lattice().embedding().orthogonal_complement()
+            return self.invariant_lattice().structure_morphism().orthogonal_complement()
 
         formed_coinvariants = coinvariant_lattice
 
-        def _over_forgotten(self: "GroupLatticeParent", element: "Element") -> "Element":
-            r"""Return the element of this \(G\)-lattice underlying ``element``.
-
-            The inverse of :meth:`ElementMethods.forget_action`: forgetting
-            the action does not change which elements there are, so the two
-            are a bijection and this is the other half of it.
-            """
-            assert element.parent() is self.forget_action(), (
-                f"{element} is not an element of {self.forget_action()}"
-            )
-            return self._over(self._over(element.underlying_element()))
-
         def _equip(self: "GroupLatticeParent", submodule: "Module") -> "Module":
-            assert submodule.embedding_codomain() is self, (
+            assert submodule.structure_morphism().codomain() is self, (
                 "the group submodule belongs to a different representation"
             )
             return _formed_group_subobject(self, submodule)
-
-    class ElementMethods:
-        def forget_action(self: "GroupLatticeElement") -> "Module":
-            lattice = self.parent().forget_action()
-            return lattice._over(
-                self.underlying_element().forget_action()
-            )
-
-
 
     class Homsets(HomsetsCategory):
         r"""Form-preserving equivariant maps of two lattices for one \(G\)."""
@@ -298,17 +217,10 @@ class GroupLattices(Category):
                 out every infinite-order isometry, which is the generic case for an
                 indefinite lattice.
 
-                Four routes, and the morphism records which one it took:
-
-                - generators already in hand: check, always, since it is free;
-                - computable but not yet computed: check when forced, otherwise say
-                  so and leave the morphism unchecked, since the computation can be
-                  long -- \(O(L)\) for a definite lattice;
-                - not known to be finitely generated: with ``forced``, assert; the
-                  assertion is the honest statement that no algorithm is known here.
-                  Unforced, say so and leave it unchecked;
-                - no generators at all: ask anyway when forced, and let the group
-                  fail however it chooses.
+                A finitely generated group carries its generating set as category
+                data, so the check uses it.  For another group, ``forced`` requires
+                that datum and an unforced construction records that it did not
+                perform the check.
                 """
                 # Local: a module-level import would close a cycle; the module is built by the time this runs.
                 from dzack_research.preamble.categories.group.groups import refine_group
@@ -316,33 +228,17 @@ class GroupLattices(Category):
                 group = refine_group(self.domain().group())
                 morphism._equivariance_checked = False
 
-                if group.has_computed_group_generators() is not True:
-                    if group.is_finitely_generated() is not True:
-                        if forced:
-                            assert group.is_finitely_generated() is True, (
-                                "no known way to check equivariance computationally "
-                                "for non-finitely-generated groups yet"
-                            )
-                        logging.info(
-                            "%s is not known to be finitely generated; the morphism "
-                            "is not checked for equivariance",
-                            group,
-                        )
-                        return
-                    if group.group_generators_are_computable() is not True:
-                        logging.info(
-                            "no algorithm is known to produce generators of %s; the "
-                            "morphism is not checked for equivariance",
-                            group,
-                        )
-                        return
-                    if not forced:
-                        logging.info(
-                            "generators of %s are computable but not yet computed; "
-                            "pass check_equivariance=True to compute them and check",
-                            group,
-                        )
-                        return
+                if group.is_finitely_generated() is not True:
+                    assert not forced, (
+                        "a forced equivariance check requires a group with a "
+                        "specified finite generating set"
+                    )
+                    logging.info(
+                        "%s has no specified finite generating set; the morphism "
+                        "is not checked for equivariance",
+                        group,
+                    )
+                    return
 
                 domain = self.domain()
                 codomain = self.codomain()
@@ -382,8 +278,8 @@ def _action_preserves_form(formed_module: "Module") -> bool:
     form = formed_module.form()
     return all(
         (pulled := form.pullback(formed_module.action_of(element)))
-        == form.on_module(pulled.module())
-        for element in formed_module.group()
+        == form.on_module(pulled.codomain().domain())
+        for element in formed_module.group().group_generators()
     )
 
 
@@ -397,7 +293,7 @@ def _formed_group_subobject(
     # Local: a module-level import would close a cycle; the module is built by the time this runs.
     from dzack_research.preamble.categories.modules.framed.formed.integrallattice.subobjects import Subobject
 
-    module_embedding = representation_subobject.embedding()
+    module_embedding = representation_subobject.structure_morphism()
     representation = module_embedding.domain()
     restricted = FormModule(
         group_lattice_.form().pullback(module_embedding)
@@ -419,42 +315,36 @@ def _formed_group_subobject(
 def group_lattice(lattice: "FormModule", action: GroupAction) -> FormModule:
     r"""Equip ``lattice`` with the specified action by isometries."""
     # Local: a module-level import would close a cycle; the module is built by the time this runs.
+    from sage.categories.category import Category as SageCategory
+    from dzack_research.preamble.categories.abstract_categories.slice_categories import with_chosen_arrows_forgotten
     from dzack_research.preamble.categories.modules.framed.formed.integrallattice.integral_lattices import IntegralLattices
-    from dzack_research.preamble.categories.modules.group_modules.group_modules import GroupModule
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import group_action_homset
+    from dzack_research.preamble.categories.modules.group_modules.group_modules import GroupModules
 
     assert lattice in IntegralLattices(SageZZ), (
         "a group lattice is constructed from an actual integral lattice"
     )
     assert (
         isinstance(action, GroupAction)
-        and action.module() is lattice
-        and action.parent() is group_action_homset(action.domain(), lattice)
+        and action.codomain().domain() is lattice
+        and action.parent() in GroupActionHomsets()
     ), "the action must be an element of the lattice's action homset"
 
-    automorphisms = lattice.Aut()
-    values = {
-        element: automorphisms(
-            {
-                # The image stays in $L$.  ``Aut(L)`` is a homset between $L$
-                # and itself, so its generator images are $L$'s elements; the
-                # form is on $L$, and taking them down to the module the form
-                # was written on was the old holder relationship.
-                label: action(element)(lattice.module_generator(label))
-                for label in lattice.module_generating_set()
-            }
-        )
-        for element in action.domain()
-    }
-    representation = GroupModule(
-        lattice,
-        group_action_homset(action.domain(), lattice)(values),
+    category = SageCategory.join(
+        [
+            with_chosen_arrows_forgotten(lattice.category()),
+            GroupModules(lattice.base_ring(), action.domain()),
+            FormModules(lattice.base_ring()),
+        ]
     )
-    formed_module = FormModule(
-        lattice.form().on_module(representation)
+    formed_module = object_of(
+        category,
+        form=lattice.form(),
+        action=action,
+        module_generating_set=lattice.module_generating_set(),
     )
+    formed_module._form = lattice.form().on_module(formed_module)
+    formed_module._refine_from_form()
     assert formed_module in GroupLattices(action.domain()), (
         "the supplied action did not refine to isometries"
     )
-    formed_module._action_forgotten_form = lattice
     return formed_module

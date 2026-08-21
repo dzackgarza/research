@@ -76,6 +76,7 @@ class PredicateSubgroups(Category):
             # Stored before the chain runs so identity is answerable while
             # Sage's caches hash this object during construction.
             self._containing_group = containing_group
+            self._identity = containing_group.one()
             self._predicate = predicate
             self._description = description
             super().__init__(**rest)
@@ -97,12 +98,11 @@ class PredicateSubgroups(Category):
             return element
 
         def one(self) -> "Element":
-            identity = self._containing_group.one()
-            assert identity in self, (
+            assert self._identity in self, (
                 f"{self._description} does not contain the identity, so it is "
                 "not a subgroup"
             )
-            return identity
+            return self._identity
 
         def __hash__(self) -> int:
             return hash((type(self), self._containing_group, self._description))

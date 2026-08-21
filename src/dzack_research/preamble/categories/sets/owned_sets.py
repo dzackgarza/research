@@ -427,6 +427,12 @@ class Sets(Category):
             """
             return self._cardinality
 
+        def is_finite(self) -> bool:
+            return self.cardinality().is_finite()
+
+        def is_infinite(self) -> bool:
+            return self.cardinality().is_infinite()
+
         def is_countable(self) -> bool:
             r"""Whether $|X| \le \aleph_0$.
 
@@ -480,6 +486,110 @@ class Sets(Category):
             return homset
 
 
+class FinitelySupportedFunctionSets(Category):
+    r"""Sets of finitely supported functions from a set into a pointed set.
+
+    For a set \(S\) and a pointed set \((X,x_0)\), this construction has
+    elements
+
+    \[
+        X^{(S)}=\{a:S\to X:\{s\in S:a(s)\ne x_0\}\text{ is finite}\}.
+    \]
+
+    If \(S\) is finite, this is the full function set \(X^S\), which is
+    equinumerous with a finite cartesian product of copies of \(X\).  Its
+    elements remain functions.  The construction therefore supplies the
+    cardinality and the resulting set placement without putting its objects
+    in the category of cartesian-product sets.
+    """
+
+    def super_categories(self) -> list[SageCategory]:
+        return [Sets()]
+
+    @classmethod
+    def _repr_object_names(cls) -> str:
+        return "sets of finitely supported functions"
+
+    class ParentMethods:
+        def __init__(
+            self,
+            index_set: SageParent,
+            value_set: SageParent,
+            basepoint: SageElement,
+            **rest: ConstructionData,
+        ) -> None:
+            assert basepoint in value_set, (
+                f"the basepoint {basepoint!r} is an element of {value_set}"
+            )
+            self._index_set = index_set
+            self._value_set = value_set
+            self._basepoint = basepoint
+            # The cardinality belongs to the finitely supported-function set
+            # constructed here, before any algebraic enrichment is added.
+            super().__init__(
+                cardinality=self._finitely_supported_cardinality(),
+                **rest,
+            )
+
+            from dzack_research.preamble.refine import refine
+
+            refine(self, placement_of(self))
+
+        def index_set(self) -> SageParent:
+            return self._index_set
+
+        def value_set(self) -> SageParent:
+            return self._value_set
+
+        def basepoint(self) -> SageElement:
+            return self._basepoint
+
+        def _finitely_supported_cardinality(self) -> Cardinal:
+            r"""Return the cardinality determined by this set construction."""
+            from dzack_research.preamble.categories.sets.cardinals import (
+                Cardinal,
+                Cardinalities,
+                cardinal,
+            )
+            from sage.rings.infinity import Infinity
+
+            value_count = self.value_set().cardinality()
+            if not isinstance(value_count, Cardinal) and value_count == Infinity:
+                assert "Countable" in placement_of(self.value_set()).axioms(), (
+                    f"{self.value_set()} reports only +Infinity and does not "
+                    "declare countability, so its cardinality is not determined"
+                )
+            value_cardinality = cardinal(value_count)
+            if value_cardinality == 1:
+                return cardinal(1)
+
+            index_count = self.index_set().cardinality()
+            if not isinstance(index_count, Cardinal) and index_count == Infinity:
+                assert "Countable" in placement_of(self.index_set()).axioms(), (
+                    f"{self.index_set()} reports only +Infinity and does not "
+                    "declare countability, so its cardinality is not determined"
+                )
+            index_cardinality = cardinal(index_count)
+            if index_cardinality == 0:
+                return cardinal(1)
+            if index_cardinality.is_finite():
+                return Cardinalities().power(
+                    value_cardinality, index_cardinality
+                )
+            return Cardinalities().supremum(
+                value_cardinality, index_cardinality
+            )
+
+        def cardinality(self) -> Cardinal:
+            r"""Return \(\lvert X^{(S)}\rvert\).
+
+            A finite \(S\) gives \(\lvert X\rvert^{\lvert S\rvert}\).  For
+            infinite \(S\) and nontrivial \(X\), finite support gives
+            \(\max(\lvert X\rvert,\lvert S\rvert)\), not the cardinality of
+            the full product \(X^S\).
+            """
+            return self._finitely_supported_cardinality()
+
 class FiniteSets(CategoryWithAxiom):
     r"""Finite sets: Sage's standard axiom, plus the owned refinement that
     finiteness implies the countable enumeration contract."""
@@ -505,22 +615,7 @@ class FiniteSets(CategoryWithAxiom):
         if super().__contains__(parent):
             return True
 
-        from sage.structure.parent import Parent
-
-        # ponytail: hasattr stays until it is checked that every Sage Parent
-        # exposes is_finite; the placement branch above already handles the
-        # placed-but-methodless case.
-        if not (isinstance(parent, Parent) and hasattr(parent, "is_finite")):
-            return False
-        # The documented engine boundary (the `_engine_answer` pattern in
-        # groups.sage): Sage says "I cannot decide" by raising
-        # ``NotImplementedError``.  Membership is a predicate, so an
-        # undecided finiteness answers False here; any other exception is a
-        # defect and is left to raise.
-        try:
-            return bool(parent.is_finite())
-        except NotImplementedError:
-            return False
+        return False
 
     class ParentMethods:
         if TYPE_CHECKING:
@@ -593,11 +688,6 @@ class CountableSets(CategoryWithAxiom):
 
     _base_category_class_and_axiom = (Sets, "Countable")
 
-    def extra_super_categories(self) -> list[SageCategory]:
-        from sage.categories.enumerated_sets import EnumeratedSets
-
-        return [EnumeratedSets()]
-
     class ParentMethods:
         if TYPE_CHECKING:
             def __iter__(self) -> Iterator[SageElement]: ...
@@ -605,7 +695,7 @@ class CountableSets(CategoryWithAxiom):
         def _chosen_enumeration(self) -> Iterator[SageElement]:
             r"""The chosen enumeration of this set, as an iterator.
 
-            Reading it is what :meth:`__getitem__` and :meth:`index` do, and
+            Reading it is what :meth:`__getitem__` and :meth:`position` do, and
             the reason they cannot simply write ``iter(self)``: Python treats
             a type that defines ``__getitem__`` and no ``__iter__`` as a
             sequence, and iterates it *by calling* ``__getitem__``.  On such a
@@ -615,11 +705,14 @@ class CountableSets(CategoryWithAxiom):
             which are operations of a chosen one, never obligations of
             countability -- say so instead of descending.
             """
-            assert any("__iter__" in ancestor.__dict__ for ancestor in type(self).__mro__), (
-                f"{self} has chosen no enumeration: it defines no __iter__, so "
+            from sage.categories.enumerated_sets import EnumeratedSets
+
+            assert self in EnumeratedSets(), (
+                f"{self} has chosen no enumeration: its parent is not in Sage's "
+                "EnumeratedSets category, so "
                 f"there is no order in which to index its elements. Countability "
                 f"is the existence of an injection into the naturals and names no "
-                f"enumeration; supply one to index or look up by position."
+                f"enumeration; supply one to look up by position."
             )
             return iter(self)
 
@@ -635,9 +728,9 @@ class CountableSets(CategoryWithAxiom):
                     return element
             assert False, f"index {n} exceeds the enumeration of {self}"
 
-        def index(self, element: SageElement) -> int:
+        def position(self, element: SageElement) -> int:
             r"""Reverse lookup in the chosen enumeration: terminates for
-            members and satisfies ``X[X.index(x)] == x``. No termination
+            members and satisfies ``X[X.position(x)] == x``. No termination
             promise for a nonmember of an infinite parent."""
             for position, candidate in enumerate(self._chosen_enumeration()):
                 if candidate == element:
@@ -646,7 +739,7 @@ class CountableSets(CategoryWithAxiom):
 
         def enumeration_injection(self) -> SetMorphism[SageElement, Integer]:
             r"""The monomorphism into the SET of nonnegative integers
-            realized by the chosen enumeration, ``x -> index(x)``, as an
+            realized by the chosen enumeration, ``x -> position(x)``, as an
             element of the actual homset — the constructed effective
             witness of countability. (The codomain is the underlying set of
             the naturals: the injection is a set map, so it forgets the
@@ -664,7 +757,9 @@ class CountableSets(CategoryWithAxiom):
             homset = Hom(domain, target, SageSets())
             # target[n] IS the natural number n (identity enumeration),
             # already normalized into the host parent.
-            return SetMorphism(homset, lambda element: target[self.index(element)])
+            return SetMorphism(
+                homset, lambda element: target[self.position(element)]
+            )
 
         def is_countable(self) -> bool:
             return True
@@ -705,7 +800,7 @@ class UncountableSets(CategoryWithAxiom):
             return True
 
 
-class PosetMorphism(SageElement):
+class PosetMorphism(SageMorphism):
     r"""Morphism of partially ordered sets (order-preserving map)."""
 
     def __init__(
@@ -713,17 +808,11 @@ class PosetMorphism(SageElement):
         parent: PosetHomset,
         function: Callable[[PosetElement], PosetElement],
     ) -> None:
-        SageElement.__init__(self, parent)
+        SageMorphism.__init__(self, parent)
         self._function = function
 
     def __call__(self, x: PosetElement) -> PosetElement:
         return self._function(x)
-
-    def domain(self) -> FinitePoset:
-        return self.parent().domain()
-
-    def codomain(self) -> FinitePoset:
-        return self.parent().codomain()
 
     def is_order_preserving(self) -> bool:
         r"""Return True if x <= y implies f(x) <= f(y)."""
@@ -1170,8 +1259,11 @@ def placement_of(parent: SageParent[_E]) -> Sets:
 
     Countability, finiteness and order are answers this parent already
     declares; reading them off is how an object enters the owned sets able
-    to answer what ``Sets`` declares abstract.  Contradictory declarations
-    are refused by the owned axiom guards at translation time.
+    to answer what ``Sets`` declares abstract.  When no cardinality axiom is
+    declared, the category-owned cardinality determines finite, countable,
+    or uncountable placement.  Contradictory declarations are refused by the
+    owned axiom guards at translation time.  Sage's raw ``+Infinity`` does not
+    identify an infinite cardinal and therefore supplies no derived placement.
 
     Sage's ``Enumerated`` witnesses countability without being it: it
     asserts a *chosen* enumeration, and exhibiting one injection into
@@ -1186,6 +1278,20 @@ def placement_of(parent: SageParent[_E]) -> Sets:
         placement = placement.Finite()
     elif "Countable" in axioms or "Enumerated" in declared:
         placement = placement.Countable()
+    elif not {"Finite", "Countable", "Uncountable"} & axioms:
+        from sage.rings.infinity import Infinity
+
+        from dzack_research.preamble.categories.sets.cardinals import cardinal
+
+        declared_cardinality = parent.cardinality()
+        if declared_cardinality != Infinity:
+            cardinality = cardinal(declared_cardinality)
+            if cardinality.is_finite():
+                placement = placement.Finite()
+            elif cardinality.is_countable():
+                placement = placement.Countable()
+            else:
+                placement = placement.Uncountable()
     if "Uncountable" in axioms:
         placement = placement.Uncountable()
     elif "Infinite" in axioms:

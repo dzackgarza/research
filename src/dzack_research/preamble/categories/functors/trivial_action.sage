@@ -22,18 +22,53 @@ of a trivial \(G\)-lattice lands in it.
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from dzack_research.preamble.lexicon import Element
     from sage.categories.groups import Group
     from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModule
+    from sage.categories.modules import Module
+    from sage.categories.morphism import Morphism
+    from sage.rings.ring import Ring
 
 from dzack_research.preamble.categories.modules.group_modules.group_lattices import GroupLattices
+from dzack_research.preamble.categories.modules.group_modules.group_modules import GroupModules
 from dzack_research.preamble.categories.modules.framed.formed.integrallattice.integral_lattices import IntegralLattices
+from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import group_action_homset
 from dzack_research.preamble.categories.modules.group_modules.group_lattices import group_lattice
 from sage.misc.cachefunc import cached_function
 from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
 from dzack_research.preamble.categories.abstract_categories.functors import Functor
+
+
+class GroupModuleForgetfulFunctor(Functor):
+    r"""The faithful functor \(U:R[G]\text{-Mod}\to R\text{-Mod}\).
+
+    A group module is constructed through the module category.  Removing the
+    chosen \(G\)-action therefore changes neither the object nor its module
+    morphisms.  It changes only the category in which they are read.
+    """
+
+    _faithful = True
+
+    def __init__(self, base_ring: "Ring", group: "Group") -> None:
+        from dzack_research.preamble.categories.rings.rings import owned_ring_view
+
+        base_ring = owned_ring_view(base_ring)
+        Functor.__init__(self, GroupModules(base_ring, group), Modules(base_ring))
+
+    def _apply_functor(self, group_module: "Module") -> "Module":
+        return group_module
+
+    def _apply_functor_to_morphism(self, morphism: "Morphism") -> "Morphism":
+        return morphism
+
+
+@cached_function
+def group_module_forgetful_functor(
+    base_ring: "Ring", group: "Group"
+) -> GroupModuleForgetfulFunctor:
+    r"""Return the canonical \(R[G]\text{-Mod}\to R\text{-Mod}\) functor."""
+    return GroupModuleForgetfulFunctor(base_ring, group)
 
 
 class TrivialActionFunctor(Functor):
@@ -55,10 +90,15 @@ class TrivialActionFunctor(Functor):
         \(\varepsilon^*(f)\).
         """
         identity = lattice.Aut().one()
+        group_elements = (
+            tuple(self._group)
+            if self._group.is_finite()
+            else tuple(self._group.group_generators())
+        )
         return group_lattice(
             lattice,
             group_action_homset(self._group, lattice)(
-                {element: identity for element in self._group}
+                {element: identity for element in group_elements}
             ),
         )
 
@@ -69,18 +109,15 @@ class TrivialActionFunctor(Functor):
         which is the content of \(\varepsilon^*\) being defined at all.
         """
         domain = morphism.domain()
-        return self(domain).Hom(self(morphism.codomain()))(
+        codomain = self(morphism.codomain())
+        return self(domain).Hom(codomain)(
             {
-                label: self._over_lattice(
-                    morphism(domain.module_generator(label))
+                label: codomain._from_coordinates(
+                    morphism(domain.module_generator(label))._coordinates()
                 )
                 for label in domain.module_generating_set()
             }
         )
-
-    def _over_lattice(self, element: "Element") -> "Element":
-        r"""Return ``element`` read in \(\varepsilon^*\) of its own lattice."""
-        return self(element.parent())._over_forgotten(element)
 
     def _repr_(self) -> str:
         return f"The functor equipping a lattice with the trivial {self._group}-action"

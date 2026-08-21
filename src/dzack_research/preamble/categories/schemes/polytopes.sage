@@ -33,12 +33,12 @@ EXAMPLES::
     4
     sage: P.n_boundary_points()
     12
-    sage: P.area()
+    sage: P.volume()
     9
     sage: P.normalized_volume()
     18
     sage: CP = ConvexPolygon([(0, 0), (0, 3/2), (3, 0)])
-    sage: CP.area()
+    sage: CP.volume()
     9/4
 """
 
@@ -54,6 +54,9 @@ from dzack_research.preamble.lexicon import Polyhedron
 
 if TYPE_CHECKING:
     from dzack_research.preamble.owned_category import ConstructionData
+    from sage.plot.plot3d.base import Graphics3d
+
+    type PlotOption = str | int | float | bool | tuple[float, ...]
 from sage.rings.rational_field import QQ
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational import Rational
@@ -119,14 +122,18 @@ class ConvexPolytopes(Category):
         """
         def __init__(
             self: Self,
-            vertices: Sequence[Sequence[LatticeCoord]] | Polyhedron,
+            vertices: Sequence[Sequence[LatticeCoord]] | Polyhedron | Parent,
             lattice: Optional[ToricLattice_generic] = None,
             base_ring: object = QQ,
             **rest: "ConstructionData",
         ) -> None:
             r"""Build the polytope of ``vertices``, read in the lattice ``lattice``."""
-            if isinstance(vertices, Polyhedron) or hasattr(vertices, 'vertices'):
-                poly = vertices if isinstance(vertices, Polyhedron) else vertices.polyhedron()
+            if isinstance(vertices, Polyhedron):
+                poly = vertices
+                raw_verts = [list(v) for v in poly.vertices()]
+                self._polyhedron = poly
+            elif isinstance(vertices, Parent) and vertices in ConvexPolytopes():
+                poly = vertices.polyhedron()
                 raw_verts = [list(v) for v in poly.vertices()]
                 self._polyhedron = poly
             else:
@@ -139,6 +146,10 @@ class ConvexPolytopes(Category):
             self._lattice = lattice
             self._ambient_space = lattice
             self._raw_vertices = tuple(tuple(v) for v in raw_verts)
+            self._dimension = int(self._polyhedron.dim())
+            self._facets = tuple(self._polyhedron.facets())
+            self._normal_fan = self._polyhedron.normal_fan()
+            self._volume = Rational(self._polyhedron.volume())
             super().__init__(base=base_ring, **rest)
 
         def polyhedron(self: Self) -> Polyhedron:
@@ -157,7 +168,7 @@ class ConvexPolytopes(Category):
 
         def dimension(self: _LatticePolytopeInterface) -> int:
             """Return the dimension of the polytope."""
-            return self.polyhedron().dim()
+            return self._dimension
 
         def vertices(self: _LatticePolytopeInterface) -> tuple[LatticePoint, ...]:
             """Return the vertices of the polytope."""
@@ -166,15 +177,15 @@ class ConvexPolytopes(Category):
 
         def facets(self: _LatticePolytopeInterface) -> tuple[_PolyhedronFace, ...]:
             """Return the facets (codimension-1 faces) of the polytope."""
-            return tuple(self.polyhedron().facets())
+            return self._facets
 
         def normal_fan(self: _LatticePolytopeInterface) -> object:
             """Return the outward normal fan of the polytope."""
-            return self.polyhedron().normal_fan()
+            return self._normal_fan
 
         def volume(self: _LatticePolytopeInterface) -> Rational:
             """Return the Euclidean volume of the polytope."""
-            return Rational(self.polyhedron().volume())
+            return self._volume
 
         def normalized_volume(self: _LatticePolytopeInterface) -> Integer:
             r"""
@@ -186,7 +197,7 @@ class ConvexPolytopes(Category):
 
         def is_compact(self: _LatticePolytopeInterface) -> bool:
             """Return True if the polytope is compact (bounded)."""
-            return self.polyhedron().is_compact()
+            return True
 
         def integral_points(self: _LatticePolytopeInterface) -> tuple[LatticePoint, ...]:
             r"""Return all integral lattice points contained in P (P \cap N)."""
@@ -225,16 +236,15 @@ class ConvexPolytopes(Category):
             pt_vec = self.ambient_space()(list(pt))
             return self.polyhedron().interior_contains(pt_vec)
 
-        def ehrhart_polynomial(self: _LatticePolytopeInterface) -> object:
-            """Return the Ehrhart polynomial counting lattice points in dilations k*P."""
-            return self.polyhedron().ehrhart_polynomial()
-
         def is_lattice_polytope(self: _LatticePolytopeInterface) -> bool:
             """Return True if all vertices of P are integral lattice points."""
             poly = self.polyhedron()
             return all(all(c in ZZ for c in v) for v in poly.vertices())
 
-        def plot3d(self: _LatticePolytopeInterface, **kwds: object) -> object:
+        def plot3d(
+            self: _LatticePolytopeInterface,
+            **kwds: "PlotOption",
+        ) -> "Graphics3d":
             """
             Render an interactive 3D graphics visualization of a 3-dimensional polytope,
             including a bounded ambient ZZ^3 grid of spheres distinguishing points in the polytope or on its faces,
@@ -245,8 +255,9 @@ class ConvexPolytopes(Category):
             from sage.plot.plot3d.index_face_set import IndexFaceSet
 
             poly = self.polyhedron()
-            if poly.dim() != 3:
-                raise ValueError(f"plot3d requires a 3-dimensional polytope, got dimension {poly.dim()}")
+            assert self.dimension() == 3, (
+                f"plot3d requires a three-dimensional polytope; dimension={self.dimension()}"
+            )
 
             face_color = kwds.get('color', '#3182CE')
             face_opacity = kwds.get('opacity', 0.35)
@@ -255,9 +266,17 @@ class ConvexPolytopes(Category):
             show_axes = kwds.get('axes', True)
             show_grid = kwds.get('show_grid', True)
 
-            verts = [list(v) for v in poly.vertices()]
+            from dzack_research.preamble.categories.sets.sets import finite_ordered_set
+
+            vertex_set = finite_ordered_set(
+                tuple(tuple(vertex) for vertex in poly.vertices())
+            )
+            verts = [list(vertex) for vertex in vertex_set]
             vert_set = set(tuple(int(c) for c in v) for v in verts)
-            faces = [[verts.index(list(v)) for v in f.vertices()] for f in poly.facets()]
+            faces = [
+                [vertex_set.position(tuple(vertex)) for vertex in facet.vertices()]
+                for facet in poly.facets()
+            ]
 
             g3d = IndexFaceSet(faces, verts, opacity=face_opacity, color=face_color)
 
@@ -388,98 +407,23 @@ class ConvexPolytopes(Category):
                 r"\end{tikzpicture}",
             ])
 
-        def plot(self: _LatticePolytopeInterface, **kwds: object) -> object:
-            """
-            Render a graphical visualization of the polytope.
-            Dispatches to 2D polygon plot for dimension 2, or 3D interactive plot for dimension 3.
-            """
-            if self.dimension() == 2 and hasattr(self, '_plot_2d'):
-                return self._plot_2d(**kwds)
-            elif self.dimension() == 3:
-                return self.plot3d(**kwds)
-            return self.polyhedron().plot(**kwds)
+        def plot(
+            self: _LatticePolytopeInterface,
+            **kwds: "PlotOption",
+        ) -> "Graphics3d":
+            r"""Render a three-dimensional polytope."""
+            assert self.dimension() == 3, (
+                "generic polytope plotting is defined in dimension three; "
+                "polygon plotting belongs to ConvexPolygons"
+            )
+            return self.plot3d(**kwds)
 
-        def _plot_(self: _LatticePolytopeInterface, **kwds: object) -> object:
+        def _plot_(
+            self: _LatticePolytopeInterface,
+            **kwds: "PlotOption",
+        ) -> "Graphics3d":
             """Sage plotting hook."""
             return self.plot(**kwds)
-
-        def _rich_repr_(self: _LatticePolytopeInterface, dm: object) -> object:
-            """Rich display hook for SageMath and Jupyter, defaulting 3D polytopes to threejs."""
-            if dm.types.OutputHtml in dm.supported_output():
-                html = self._repr_html_()
-                if html:
-                    return dm.types.OutputHtml(html)
-            elif dm.types.OutputSceneThreejs in dm.supported_output() and self.dimension() == 3:
-                p = self.plot3d()
-                if hasattr(p, '_rich_repr_threejs'):
-                    try:
-                        return p._rich_repr_threejs(online=True)
-                    except Exception:
-                        try:
-                            return p._rich_repr_threejs()
-                        except Exception:
-                            pass
-            elif dm.types.OutputImagePng in dm.supported_output() and self.dimension() == 2:
-                p = self.plot()
-                if hasattr(p, '_rich_repr_'):
-                    return p._rich_repr_(dm)
-            elif dm.types.OutputPlainText in dm.supported_output():
-                return dm.types.OutputPlainText(repr(self))
-            return None
-
-        def _repr_html_(self: _LatticePolytopeInterface) -> Optional[str]:
-            """HTML representation hook for Jupyter Notebooks."""
-            if self.dimension() == 3:
-                try:
-                    from dzack_research.preamble.categories.schemes.threejs_viewer import generate_threejs_polytope_html
-                    poly = self.polyhedron()
-                    verts = [list(v) for v in poly.vertices()]
-                    facets = [[verts.index(list(v)) for v in f.vertices()] for f in poly.facets()]
-                    int_pts = [list(p) for p in self.interior_integral_points()]
-                    bnd_pts = [list(p) for p in self.boundary_integral_points()]
-                    return generate_threejs_polytope_html(
-                        verts,
-                        facets,
-                        interior_points=int_pts,
-                        boundary_points=bnd_pts,
-                        title="3D Lattice Polytope P ⊂ N ⊕ ℤ",
-                        invariants=self.invariants(),
-                    )
-                except Exception:
-                    p = self.plot3d()
-                    try:
-                        res = p._rich_repr_threejs(online=True)
-                        if res is not None and hasattr(res, 'html'):
-                            return res.html.get()
-                    except Exception:
-                        pass
-            elif self.dimension() == 2:
-                try:
-                    from dzack_research.preamble.categories.schemes.svg_2d_viewer import generate_2d_polygon_svg
-                    verts = [list(v) for v in self.vertices()]
-                    int_pts = [list(p) for p in self.interior_integral_points()]
-                    bnd_pts = [list(p) for p in self.boundary_integral_points()]
-                    return generate_2d_polygon_svg(
-                        verts,
-                        interior_points=int_pts,
-                        boundary_points=bnd_pts,
-                        theme="dark",
-                        width=480,
-                        height=380,
-                    )
-                except Exception:
-                    pass
-            return None
-
-        def _repr_mimebundle_(self: _LatticePolytopeInterface, include: object = None, exclude: object = None) -> object:
-            """MIME bundle hook for Jupyter Notebooks."""
-            html = self._repr_html_()
-            if html:
-                return {'text/html': html, 'text/plain': repr(self)}
-            p = self.plot()
-            if hasattr(p, '_repr_mimebundle_'):
-                return p._repr_mimebundle_(include=include, exclude=exclude)
-            return None
 
         def invariants(self: _LatticePolytopeInterface) -> dict[str, object]:
             """Return a dictionary of fundamental invariants."""
@@ -522,26 +466,60 @@ class LatticePolytopes(Category):
         """
         Specialized properties for integral lattice polytopes.
         """
+        def __init__(
+            self: Self,
+            **rest: "ConstructionData",
+        ) -> None:
+            super().__init__(**rest)
+            self._is_reflexive = bool(self.polyhedron().is_reflexive())
+            self._is_smooth = bool(self.polyhedron().is_smooth())
+            self._ehrhart_polynomial = self.polyhedron().ehrhart_polynomial()
+            self._h_star_vector = tuple(self.polyhedron().h_star_vector())
+            origin = self.ambient_space()([0] * self.dimension())
+            if self.polyhedron().interior_contains(origin):
+                polar = self.polyhedron().polar()
+                self._polar_vertices = tuple(
+                    tuple(coordinate for coordinate in vertex)
+                    for vertex in polar.vertices()
+                )
+            else:
+                self._polar_vertices = None
+
         def _repr_(self: _LatticePolytopeInterface) -> str:
             return f"Lattice Polytope of dimension {self.dimension()} with {len(self.vertices())} vertices"
 
         def is_reflexive(self: _LatticePolytopeInterface) -> bool:
             """Return True if P is a reflexive lattice polytope."""
-            return self.polyhedron().is_reflexive()
+            return self._is_reflexive
 
         def is_smooth(self: _LatticePolytopeInterface) -> bool:
             """Return True if the normal fan of P is smooth (Delzant polytope)."""
-            return self.polyhedron().is_smooth()
+            return self._is_smooth
 
-        def polar_dual(self: _LatticePolytopeInterface) -> Polyhedron:
+        def polar_dual(self: _LatticePolytopeInterface) -> Parent:
             """Return the polar dual polytope P*."""
-            return self.polyhedron().polar()
+            assert self._polar_vertices is not None, (
+                "the polar dual is a polytope only when the origin is in the interior"
+            )
+            if all(coordinate in ZZ for vertex in self._polar_vertices for coordinate in vertex):
+                return LatticePolytope(
+                    self._polar_vertices,
+                    lattice=self.ambient_space().dual(),
+                )
+            return ConvexPolytope(
+                self._polar_vertices,
+                lattice=self.ambient_space().dual(),
+            )
+
+        def ehrhart_polynomial(self: _LatticePolytopeInterface):
+            """Return the Ehrhart polynomial counting lattice points in dilations k*P."""
+            return self._ehrhart_polynomial
 
         def h_star_vector(self: _LatticePolytopeInterface) -> tuple[Integer, ...]:
             r"""
             Return the coefficients of the h*-polynomial (Ehrhart delta-series).
             """
-            return tuple(self.polyhedron().h_star_vector())
+            return self._h_star_vector
 
 
 class ConvexPolygons(Category):
@@ -579,9 +557,11 @@ class ConvexPolygons(Category):
             verts_latex = ", ".join(f"({v[0]}, {v[1]})" for v in self.vertices())
             return fr"\text{{Polygon}}\left({verts_latex}\right)"
 
-        def area(self: _LatticePolytopeInterface) -> Rational:
-            """Return Euclidean area (Volume in 2D)."""
-            return self.volume()
+        def plot(
+            self: _LatticePolytopeInterface,
+            **kwds: "PlotOption",
+        ) -> Graphics:
+            return self._plot_2d(**kwds)
 
         def _plot_2d(self: _LatticePolytopeInterface, **kwds: object) -> Graphics:
             """
@@ -725,11 +705,13 @@ class LatticePolygons(Category):
 
 
 def _vertex_dimension(
-    vertices: Sequence[Sequence[LatticeCoord]] | Polyhedron,
+    vertices: Sequence[Sequence[LatticeCoord]] | Polyhedron | Parent,
 ) -> int:
     """Return the number of coordinates a vertex of ``vertices`` has."""
-    if isinstance(vertices, Polyhedron) or hasattr(vertices, 'vertices'):
-        poly = vertices if isinstance(vertices, Polyhedron) else vertices.polyhedron()
+    if isinstance(vertices, Polyhedron):
+        raw_verts = [list(v) for v in vertices.vertices()]
+    elif isinstance(vertices, Parent) and vertices in ConvexPolytopes():
+        poly = vertices.polyhedron()
         raw_verts = [list(v) for v in poly.vertices()]
     else:
         raw_verts = [list(v) for v in vertices]
@@ -737,7 +719,7 @@ def _vertex_dimension(
 
 
 def ConvexPolytope(
-    vertices: Sequence[Sequence[LatticeCoord]] | Polyhedron,
+    vertices: Sequence[Sequence[LatticeCoord]] | Polyhedron | Parent,
     lattice: Optional[ToricLattice_generic] = None,
     base_ring: object = QQ,
     category: Optional[Category] = None,
@@ -766,7 +748,7 @@ def ConvexPolygon(
 
 
 def LatticePolytope(
-    vertices: Sequence[Sequence[LatticeCoord]] | Polyhedron,
+    vertices: Sequence[Sequence[LatticeCoord]] | Polyhedron | Parent,
     lattice: Optional[ToricLattice_generic] = None,
     base_ring: object = ZZ,
     category: Optional[Category] = None,
@@ -780,7 +762,7 @@ def LatticePolytope(
 
 
 def LatticePolygon(
-    vertices: Sequence[Sequence[LatticeCoord]] | Polyhedron,
+    vertices: Sequence[Sequence[LatticeCoord]] | Polyhedron | Parent,
     lattice: Optional[ToricLattice_generic] = None,
 ) -> Parent:
     r"""Return the 2-dimensional integral lattice polygon Q \subset N."""

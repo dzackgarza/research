@@ -890,7 +890,7 @@ class DefiniteLattices(Category):
                 from dzack_research.preamble.categories.modules.framed.formed.integrallattice.subobjects import Subobject
                 from dzack_research.preamble.categories.sets.sets import finite_ordered_set
                 from dzack_research.preamble.utilities import zipsum
-                inclusion = self.embedding()
+                inclusion = self.structure_morphism()
                 codomain = inclusion.codomain()
                 gram = matrix(SageZZ, codomain.gram_matrix())
                 standard = identity_matrix(SageZZ, gram.nrows())
@@ -919,7 +919,7 @@ class DefiniteLattices(Category):
                 from dzack_research.preamble.categories.modules.framed.formed.integrallattice.subobjects import Subobject
                 from dzack_research.preamble.categories.sets.sets import finite_ordered_set
                 from dzack_research.preamble.utilities import zipsum
-                codomain = self.embedding().codomain()
+                codomain = self.structure_morphism().codomain()
                 reduced = finite_ordered_set(tuple(
                     zipsum(row, codomain.module_generators(), codomain.zero())
                     for row in rows
@@ -946,7 +946,7 @@ class DefiniteLattices(Category):
                 """
                 import fpylll
 
-                inclusion = self.embedding()
+                inclusion = self.structure_morphism()
                 codomain = inclusion.codomain()
                 gram = matrix(SageZZ, codomain.gram_matrix())
                 standard = identity_matrix(SageZZ, gram.nrows())

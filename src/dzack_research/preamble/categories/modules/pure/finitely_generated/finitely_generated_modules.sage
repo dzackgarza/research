@@ -21,6 +21,7 @@ from sage.matrix.constructor import matrix
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.sets.owned_sets import Sets
+from dzack_research.preamble.categories.sets.cardinals import Cardinal
 
 
 class FreeResolution(SageObject):
@@ -46,7 +47,7 @@ class FreeResolution(SageObject):
         )
         augmentation = module.framing_morphism()
         free_on_generators = augmentation.domain()
-        relations = module.relation_matrix()._sage_matrix()
+        relations = module.relation_matrix()
         # Sage resolves $F/N$ for a submodule $N\subseteq F$, so handing it
         # the relation module is handing it this module.  What comes back is
         # a basis of the relations as the columns of the first differential:
@@ -162,6 +163,22 @@ class FinitelyGeneratedModules(OwnedCategoryOverBaseRing):
         return [FramedModules(self.base_ring())]
 
     class ParentMethods:
+        def number_of_module_generators(
+            self: "FinitelyGeneratedModuleParent",
+        ) -> int:
+            r"""Return the cardinality of the chosen finite generating set."""
+            module_generating_set = self.module_generating_set()
+            assert module_generating_set in Sets().Finite(), (
+                "a finitely generated module has a finite generating set"
+            )
+            size = module_generating_set.cardinality()
+            if isinstance(size, Cardinal):
+                assert size.is_finite(), (
+                    "a finitely generated module has finitely many generators"
+                )
+                return int(size.finite_value())
+            return int(size)
+
         @cached_method
         def module_generators(self: "FinitelyGeneratedModuleParent") -> "OrderedSet":
             r"""Return the finite framed generators, as an ordered set.
@@ -220,5 +237,3 @@ class FinitelyGeneratedModules(OwnedCategoryOverBaseRing):
                 generator == self.zero()
                 for generator in self.module_generators()
             )
-
-

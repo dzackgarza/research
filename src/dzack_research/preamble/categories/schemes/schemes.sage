@@ -17,7 +17,10 @@ Hierarchy:
 """
 
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
-from dzack_research.preamble.owned_category_bases import SubobjectsCategory
+from dzack_research.preamble.owned_category_bases import (
+    HomsetsCategory,
+    SubobjectsCategory,
+)
 from sage.structure.parent import Parent
 from dzack_research.preamble.categories.schemes.ringed_spaces import LocallyRingedSpaces
 from sage.structure.element import Element
@@ -57,7 +60,6 @@ if TYPE_CHECKING:
         ) -> Parent: ...
         def gen(self, i: "Integer") -> Element: ...
         def dimension_relative(self) -> "Integer": ...
-        def base_scheme(self) -> "Ring": ...
 
 # Register scheme axioms in Sage's axiom registry if not already present
 for _axiom_name in (
@@ -109,31 +111,6 @@ class Schemes(OwnedCategoryOverBaseRing):
     class ParentMethods:
         r"""Scheme parent methods."""
 
-        def base_scheme(self: "SchemeParent") -> "Ring":
-            r"""Return the base scheme or ring S."""
-            base: "Ring" = self.base_ring()
-            return base
-
-        def is_affine(self: "SchemeParent") -> bool:
-            r"""Return whether the scheme is affine."""
-            try:
-                base = self.base_ring()
-                return self.category().is_subcategory(
-                    Schemes(base).Affine()
-                )
-            except Exception:
-                return False
-
-        def is_projective(self: "SchemeParent") -> bool:
-            r"""Return whether the scheme is projective."""
-            try:
-                base = self.base_ring()
-                return self.category().is_subcategory(
-                    Schemes(base).Projective()
-                )
-            except Exception:
-                return False
-
     class Subobjects(SubobjectsCategory):
         r"""Subschemes: a scheme A together with an inclusion A -> B.
 
@@ -144,32 +121,30 @@ class Schemes(OwnedCategoryOverBaseRing):
     class ElementMethods:
         r"""Scheme element methods: a point or a section."""
 
-    class MorphismMethods:
-        r"""Scheme morphism methods, in Sch/S.
+    class Homsets(HomsetsCategory):
+        r"""Homsets in \(\operatorname{Sch}/S\)."""
 
-        Point evaluation at an S-point p: S -> X is the composition f * p.
-        A preimage or fiber over an S-point, or over a subobject Z -> Y, is
-        the fiber product X \times_Y Z.
-        """
+        class ElementMethods:
+            r"""Scheme morphisms in \(\operatorname{Sch}/S\).
 
-        @abstract_method
-        def compose(self: Self, g: "Morphism") -> "Morphism":
-            r"""Return the composition (g o self): X -> Z for g: Y -> Z."""
-            ...
+            Point evaluation at an S-point p: S -> X is the composition f * p.
+            A preimage or fiber over an S-point, or over a subobject Z -> Y,
+            is the fiber product X \times_Y Z.
+            """
 
-        @abstract_method
-        def pullback(self: Self, Z: "Morphism | Parent") -> Parent:
-            r"""Return the fiber product X \times_Y Z for a morphism Z -> Y."""
-            ...
+            @abstract_method
+            def compose(self: Self, g: "Morphism") -> "Morphism":
+                r"""Return the composition (g o self): X -> Z for g: Y -> Z."""
+                ...
 
-        def evaluate_at(self: Self, p: "Morphism") -> "Morphism":
-            r"""Return the value of self at an S-point p: S -> X, the composite f * p."""
-            return self * p
+            @abstract_method
+            def pullback(self: Self, Z: "Morphism | Parent") -> Parent:
+                r"""Return the fiber product X \times_Y Z for a morphism Z -> Y."""
+                ...
 
-        def fiber_over(self: Self, y: "Morphism") -> Parent:
-            r"""Return the fiber X \times_Y S over an S-point y: S -> Y."""
-            return self.pullback(y)
-
+            def evaluate_at(self: Self, p: "Morphism") -> "Morphism":
+                r"""Return the value of self at an S-point p: S -> X."""
+                return self * p
 
 class AffineSpaces(OwnedCategoryOverBaseRing):
     r"""Category of affine spaces AA^n over a base scheme or ring S."""

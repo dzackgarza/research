@@ -1,50 +1,19 @@
-r"""The matrix extracted from a morphism of free R-modules.
+r"""Matrix data extracted from morphisms of framed modules.
 
-A ``MorphismMatrix`` is the matrix of a morphism $f:M\to N$ of free
-$R$-modules with respect to chosen generating sets: its rows express
-$f(e_i)$ in the generators of $N$.  It is *extracted from* a morphism and
-means nothing without one.
-
-It is categorically different from a ``GramMatrix``, which is the array
-$[b(e_i,e_j)]$ of a form $M\otimes M\to W$ and represents no morphism at
-all.  That the correlation $c:L\to L^\vee$, $v\mapsto b(v,-)$, is
-represented by a matrix coinciding with the Gram matrix in dual generating
-sets is a coincidence of coordinates, not an identity of objects.  The two
-types exist to stop that conflation.
-
-Kernels are the seam.  A *morphism* has a kernel: a module with its own
-abstract generators, together with the inclusion recording how those
-generators are written in $M$'s.  A *matrix* has only a nullspace, and Sage
-hands it back as a submodule spanned by a basis inside a containing module
--- which is what forces the containing-module bookkeeping this repo
-eschews.  So
-``_left_kernel_matrix`` and ``_right_kernel_matrix`` are private: they
-return matrices, never modules, and only a morphism calls them.
-
-Consequently this class does not subclass Sage's ``Matrix``.  Sage builds
-the result of every operation through the ``MatrixSpace`` parent, so a
-subclass is silently discarded by ``+``, ``*`` and every factory -- the
-banned surface would reappear on the first arithmetic step.  Composition
-holds the invariant: an operation exists here or it does not exist at all.
+A matrix is coordinate data for a morphism.  It is not a second mathematical
+object with a copied matrix API.  Morphisms own kernels, cokernels, images,
+composition, and invertibility.  Sage matrices supply Smith, Hermite, and LLL
+computations on the coordinate data.
 """
 
 from __future__ import annotations
 
-import builtins
 from collections.abc import Iterable
-from copy import copy
-from typing import overload, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
-from sage.matrix.constructor import matrix as _matrix
-from sage.matrix.matrix_integer_dense import Matrix_integer_dense
-from sage.rings.integer_ring import ZZ as _ZZ
-from sage.structure.element import Matrix, RingElement, Vector
+from sage.structure.element import Matrix
 
 if TYPE_CHECKING:
-    from sage.structure.parent import ElementConstructorInput
-    from dzack_research.preamble.lexicon.algebra import BaseRing, Element, Ring
-    from dzack_research.preamble.lexicon.foundations import Integer, Rational, RawMorphismMatrix
-    from dzack_research.preamble.categories.sets.cardinals import Cardinal
     from sage.groups.matrix_gps.finitely_generated import (
         FinitelyGeneratedMatrixGroup_generic,
     )
@@ -52,321 +21,36 @@ if TYPE_CHECKING:
         FinitelyGeneratedMatrixGroup_gap,
     )
 
-__all__ = ["MorphismMatrix"]
+__all__ = ["matrix_group", "row_normal_form"]
 
 
-class MorphismMatrix:
-    r"""The matrix of a morphism of free $R$-modules in chosen generating sets."""
+def row_normal_form(entries: Matrix, include_zero_rows: bool = False) -> Matrix:
+    r"""Return the reduced matrix with the same row span.
 
-    _matrix: Matrix[RingElement]
-
-    def __init__(
-        self,
-        entries: RawMorphismMatrix | MorphismMatrix,
-        base_ring: BaseRing,
-    ) -> None:
-        r"""Build the matrix of a morphism over ``base_ring``.
-
-        The ring is named, never inferred.  Raw entries have no ring to read,
-        and entries that arrive as a matrix carry one that may not be the
-        ring the morphism is over -- so the caller states which ring this
-        matrix is written over and the entries are moved to it.
-        """
-        built: Matrix[RingElement]
-        match entries:
-            case MorphismMatrix():
-                built = entries._matrix
-            case Matrix():
-                built = entries
-            case _:
-                built = _matrix(base_ring, entries)
-        if built.base_ring() is not base_ring:
-            built = built.change_ring(base_ring)
-        self._matrix = built
-
-    # -- the private escape ------------------------------------------------
-    #
-    # Reading the underlying Sage matrix is how the DSL's own constructions
-    # (a form pulled back along a morphism, a presentation stacked onto its
-    # relations) do their linear algebra.  It is private because a caller
-    # that holds a raw Sage matrix holds ``basis`` and ``left_kernel`` again.
-
-    def _sage_matrix(self) -> Matrix:
-        r"""Return the underlying Sage matrix. DSL-internal."""
-        return self._matrix
-
-    def _matrix_(self, base_ring: Ring | None = None) -> Matrix:
-        r"""Sage's conversion protocol, so ``M in G`` works as containment.
-
-        Asking whether a morphism matrix lies in a matrix group is ordinary
-        containment and should read as ``M in G``.  Sage's parents convert
-        through this protocol, so declaring it is what makes the plain idiom
-        work -- rather than a bespoke predicate that would say the same thing
-        in a name only this repo knows.
-
-        Sage calls this hook with or without a ring, so the parameter is
-        Sage's and not a choice made here.  Without one, the answer is this
-        matrix over the ring it was written over; there is no other ring to
-        pick and none is inferred.
-        """
-        if base_ring is None:
-            return self._matrix
-        return self._matrix.change_ring(base_ring)
-
-    # -- shape and entries -------------------------------------------------
-
-    def base_ring(self) -> Ring:
-        return self._matrix.base_ring()
-
-    def nrows(self) -> int:
-        return self._matrix.nrows()
-
-    def ncols(self) -> int:
-        return self._matrix.ncols()
-
-    def dimensions(self) -> tuple[int, int]:
-        r"""Return ``(nrows, ncols)``: the sizes of the two framings."""
-        return (self.nrows(), self.ncols())
-
-    def rank(self) -> Cardinal:
-        from dzack_research.preamble.categories.sets.cardinals import cardinal
-
-        return cardinal(self._matrix.rank())
-
-    def det(self) -> RingElement:
-        return self._matrix.det()
-
-    def trace(self) -> Element:
-        r"""Return $\operatorname{tr}$ of the endomorphism this presents.
-
-        A conjugation invariant, so the value belongs to the endomorphism and
-        not to the generating set it is written in.  That is exactly what
-        makes $g\mapsto\operatorname{tr}\rho(g)$ constant on conjugacy classes
-        and so a class function on $G$.
-        """
-        return self._matrix.trace()
-
-    def is_zero(self) -> bool:
-        return bool(self._matrix.is_zero())
-
-    def is_one(self) -> bool:
-        r"""Return whether this is the matrix of an identity morphism.
-
-        Asked instead of comparing against ``identity_matrix``: equality here
-        holds only between morphism matrices, so a raw identity would compare
-        unequal to everything.
-        """
-        return bool(self._matrix.is_one())
-
-    def is_square(self) -> bool:
-        r"""Return whether the two framings have the same size."""
-        return bool(self._matrix.is_square())
-
-    def is_invertible(self) -> bool:
-        r"""Return whether the morphism this presents is an isomorphism.
-
-        Over the base ring, not over its fraction field: the inverse has to
-        be a morphism of the same modules, so the determinant must be a unit
-        of $R$ and not merely nonzero.  A non-square matrix answers ``False``
-        rather than refusing, since a morphism between framings of different
-        sizes is not invertible either.
-        """
-        return bool(self._matrix.is_invertible())
-
-    def rows(self) -> builtins.list[Vector]:
-        return self._matrix.rows()
-
-    def list(self) -> builtins.list[RingElement]:
-        return self._matrix.list()
-
-    def __getitem__(
-        self,
-        key: tuple[int | Integer, int | Integer],
-    ) -> RingElement:
-        return self._matrix[key]
-
-    # -- operations that stay morphism matrices ----------------------------
-
-    def transpose(self) -> MorphismMatrix:
-        r"""Return the matrix of the dual morphism $f^t:N^\vee\to M^\vee$.
-
-        A morphism has no "transpose" as such; what it has is a dual, and
-        the dual's matrix in the dual generating sets is this one.
-        """
-        return MorphismMatrix(self._matrix.transpose(), self._matrix.base_ring())
-
-    def inverse(self) -> MorphismMatrix:
-        r"""Return the matrix of the inverse morphism."""
-        return MorphismMatrix(self._matrix.inverse(), self._matrix.base_ring())
-
-    def change_ring(self, ring: Ring) -> MorphismMatrix:
-        return MorphismMatrix(self._matrix.change_ring(ring), ring)
-
-    def stack(self, other: MorphismMatrix | Matrix) -> MorphismMatrix:
-        return MorphismMatrix(
-            self._matrix.stack(_underlying(other)), self._matrix.base_ring()
-        )
-
-    def hermite_form(
-        self,
-        transformation: bool = False,
-        **kwargs: ElementConstructorInput,
-    ) -> MorphismMatrix | tuple[MorphismMatrix, MorphismMatrix]:
-        r"""Return the Hermite form, with its transformation when asked.
-
-        ``transformation=True`` makes Sage return the pair $(H,U)$ with
-        $H=UA$, so the pair is rewrapped rather than handed to the
-        constructor as one object.
-        """
-        if transformation:
-            reduced, transform = self._matrix.hermite_form(
-                transformation=True, **kwargs
-            )
-            return (
-                MorphismMatrix(reduced, self._matrix.base_ring()),
-                MorphismMatrix(transform, self._matrix.base_ring()),
-            )
-        return MorphismMatrix(self._matrix.hermite_form(**kwargs), self._matrix.base_ring())
-
-    def normal_form(self, include_zero_rows: bool = False) -> MorphismMatrix:
-        r"""Return the row-reduced form appropriate to the base ring.
-
-        Which normal form reduces a family of rows is a fact about the base
-        ring -- Hermite over a PID, echelon over a field -- and not about the
-        caller.  Every site that needs "these rows, reduced" asks here, so
-        that branch is written once instead of being restated wherever a
-        span, an index, or a presentation is computed.
-        """
-        base_ring = self._matrix.base_ring()
-        if base_ring.is_field():
-            reduced = self._matrix.echelon_form()
-            if not include_zero_rows:
-                reduced = reduced.matrix_from_rows(
-                    [i for i, row in enumerate(reduced.rows()) if not row.is_zero()]
-                )
-            return MorphismMatrix(reduced, self._matrix.base_ring())
-        return MorphismMatrix(
-            self._matrix.hermite_form(include_zero_rows=include_zero_rows),
-            self._matrix.base_ring(),
-        )
-
-    def smith_form(
-        self,
-    ) -> tuple[MorphismMatrix, MorphismMatrix, MorphismMatrix]:
-        normal, left, right = self._matrix.smith_form()
-        return (
-            MorphismMatrix(normal, self._matrix.base_ring()),
-            MorphismMatrix(left, self._matrix.base_ring()),
-            MorphismMatrix(right, self._matrix.base_ring()),
-        )
-
-    def LLL(self) -> MorphismMatrix:
-        r"""Return these rows LLL reduced.
-
-        A reduction of the rows and nothing else: the rows span what they
-        spanned, written in a shorter and more orthogonal generating set.
-        The reduced rows are again a matrix in the same two framings, which
-        is why this returns one and not a module.
-        """
-        # Over the integers and not the ring the entries happen to carry:
-        # reduction is of an integer row lattice.  ``LLL`` lives on the
-        # integer matrix type and not on the generic one, which is what the
-        # annotation says -- ``change_ring(ZZ)`` is what produces it.
-        integral: Matrix_integer_dense = self._matrix.change_ring(_ZZ)
-        return MorphismMatrix(integral.LLL(), _ZZ)
-
-    def __mul__(
-        self,
-        other: MorphismMatrix | Matrix | RingElement | int,
-    ) -> MorphismMatrix:
-        product = self._matrix * _underlying(other)
-        assert isinstance(product, Matrix), "matrix multiplication must return a matrix"
-        return MorphismMatrix(product, self._matrix.base_ring())
-
-    def __rmul__(
-        self,
-        other: MorphismMatrix | Matrix | RingElement | int,
-    ) -> MorphismMatrix:
-        product = _underlying(other) * self._matrix
-        assert isinstance(product, Matrix), "matrix multiplication must return a matrix"
-        return MorphismMatrix(product, self._matrix.base_ring())
-
-    # -- nullspaces: private, and matrices ---------------------------------
-
-    def _left_kernel_matrix(self) -> MorphismMatrix:
-        r"""Return the rows spanning $\{x : xA = 0\}$. Callers: morphisms only."""
-        return MorphismMatrix(self._matrix.left_kernel_matrix(), self._matrix.base_ring())
-
-    def _right_kernel_matrix(self) -> MorphismMatrix:
-        r"""Return the rows spanning $\{x : Ax = 0\}$. Callers: morphisms only."""
-        return MorphismMatrix(self._matrix.right_kernel_matrix(), self._matrix.base_ring())
-
-    # -- subdivisions are display data -------------------------------------
-
-    def subdivide(self, *args: ElementConstructorInput) -> None:
-        self._matrix.subdivide(*args)
-
-    def subdivisions(
-        self,
-    ) -> tuple[builtins.list[int], builtins.list[int]]:
-        return self._matrix.subdivisions()
-
-    # -- identity ----------------------------------------------------------
-
-    def __eq__(self, other: ElementConstructorInput) -> bool:
-        return isinstance(other, MorphismMatrix) and self._matrix == other._matrix
-
-    def __hash__(self) -> int:
-        # Sage refuses to hash a mutable matrix, and the wrapped matrix stays
-        # mutable because ``subdivide`` writes display data onto it.  So the
-        # entries are hashed through a frozen copy.
-        entries = copy(self._matrix)
-        entries.set_immutable()
-        return hash(("MorphismMatrix", entries))
-
-    def __repr__(self) -> str:
-        return repr(self._matrix)
-
-    def _latex_(self) -> str:
-        from sage.misc.latex import latex
-
-        return str(latex(self._matrix))
+    Echelon form owns this computation over a field.  Hermite form owns it
+    over the integral rings used by the preamble.
+    """
+    base_ring = entries.base_ring()
+    if base_ring.is_field():
+        reduced = entries.echelon_form()
+        if include_zero_rows:
+            return reduced
+        nonzero_rows = [
+            index for index, row in enumerate(reduced.rows()) if not row.is_zero()
+        ]
+        return reduced.matrix_from_rows(nonzero_rows)
+    return entries.hermite_form(include_zero_rows=include_zero_rows)
 
 
 def matrix_group(
-    group_generators: Iterable[MorphismMatrix],
+    group_generators: Iterable[Matrix],
 ) -> FinitelyGeneratedMatrixGroup_gap | FinitelyGeneratedMatrixGroup_generic:
-    r"""Return the GAP-backed matrix group these generate.
-
-    Handing a group to GAP is the one legitimate reason to unwrap these
-    matrices, and it happens here because this module owns the wrapping.  A
-    caller that did the unwrapping itself would hold raw Sage matrices --
-    ``basis`` and ``left_kernel`` and all -- which is what ``_sage_matrix``
-    is private to prevent.  Callers ask for the group and translate GAP's
-    answers back into their own elements.
-    """
+    r"""Return the matrix group generated by the stated matrices."""
     from sage.groups.matrix_gps.finitely_generated import MatrixGroup
 
-    group_generators = tuple(group_generators)
-    assert group_generators, "a matrix group needs a generator"
-    assert all(
-        isinstance(group_generator, MorphismMatrix)
-        for group_generator in group_generators
-    ), "a matrix group here is generated by morphism matrices"
-    return MatrixGroup(
-        [group_generator._matrix for group_generator in group_generators]
+    generating_set = tuple(group_generators)
+    assert generating_set, "a matrix group needs a generating set"
+    assert all(isinstance(group_generator, Matrix) for group_generator in generating_set), (
+        "a matrix group is generated by matrices"
     )
-
-
-@overload
-def _underlying(value: MorphismMatrix | Matrix) -> Matrix: ...
-
-
-@overload
-def _underlying(value: RingElement | int) -> RingElement | int: ...
-
-
-def _underlying(
-    value: MorphismMatrix | Matrix | RingElement | int,
-) -> Matrix | RingElement | int:
-    return value._sage_matrix() if isinstance(value, MorphismMatrix) else value
+    return MatrixGroup(generating_set)

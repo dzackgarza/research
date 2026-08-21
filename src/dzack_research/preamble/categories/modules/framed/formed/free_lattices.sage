@@ -7,9 +7,11 @@ element of its own underlying module.  There is no forgetful step to reach
 around, at this level or any other.
 
 The rest follows from the levels below.  Rank and coordinates come from
-``FiniteRankFreeModules``, which declares the underlying set to be the product
-\(R\times\cdots\times R\); this level adds a form and nothing else.
+``FiniteRankFreeModules``.  Its underlying set is the set of finitely
+supported functions on a finite set, and this level adds only the form.
 """
+
+from typing import TYPE_CHECKING
 
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
     SymmetricBilinearFormModules,
@@ -17,8 +19,11 @@ from dzack_research.preamble.categories.modules.framed.formed.form_modules impor
 from dzack_research.preamble.categories.modules.pure.free_modules import (
     FiniteRankFreeModules,
 )
-from dzack_research.preamble.owned_category import OwnedCategoryMixin, object_of
+from dzack_research.preamble.owned_category import object_of
 from dzack_research.preamble.owned_category_bases import Category_over_base_ring
+
+if TYPE_CHECKING:
+    from dzack_research.preamble.owned_category import ConstructionData
 
 
 class FiniteRankFreeLattices(Category_over_base_ring):
@@ -35,7 +40,7 @@ class FiniteRankFreeLattices(Category_over_base_ring):
         ]
 
     class ParentMethods:
-        def __init__(self, gram: tuple, **rest: object) -> None:
+        def __init__(self, gram: tuple, **rest: "ConstructionData") -> None:
             self._gram = gram
             super().__init__(rank=len(gram), **rest)
 
@@ -58,16 +63,15 @@ class FiniteRankFreeLattices(Category_over_base_ring):
             )
 
             gram = self._gram
-            rank = self.rank()
             zero = self.base_ring().zero()
 
             def pairing(left: "Element", right: "Element") -> "Element":
                 r"""\(b(x,y)=\sum_{i,j}x_i g_{ij} y_j\)."""
                 return sum(
                     (
-                        left[i] * gram[i][j] * right[j]
-                        for i in range(rank)
-                        for j in range(rank)
+                        left_coordinate * gram_entry * right_coordinate
+                        for left_coordinate, row in zip(left, gram)
+                        for gram_entry, right_coordinate in zip(row, right)
                     ),
                     zero,
                 )
@@ -83,5 +87,4 @@ def FreeLatticeOfRank(base_ring: "Ring", gram: tuple) -> "Parent":
     return object_of(
         FiniteRankFreeLattices(base_ring),
         gram=tuple(tuple(base_ring(entry) for entry in row) for row in gram),
-        base=base_ring,
     )

@@ -2,10 +2,14 @@ r"""Free modules over a base ring."""
 
 
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
-from dzack_research.preamble.categories.sets.owned_sets import Sets as OwnedSets
-from dzack_research.preamble.owned_category import OwnedCategoryMixin, object_of
+from typing import TYPE_CHECKING
+
+from dzack_research.preamble.owned_category import object_of
 from dzack_research.preamble.owned_category_bases import Category_over_base_ring
 from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+if TYPE_CHECKING:
+    from dzack_research.preamble.owned_category import ConstructionData
 
 
 class FreeModules(OwnedCategoryOverBaseRing):
@@ -41,18 +45,12 @@ class FreeModules(OwnedCategoryOverBaseRing):
 
 
 class FiniteRankFreeModules(Category_over_base_ring):
-    r"""\(R^n\), constructed through the chain rather than framed and placed.
+    r"""The free module on the standard ordered set of cardinality \(n\).
 
-    The module level is where the underlying **set** is worried about: a
-    module is a set, and declaring this one to be \(R^n\) is declaring its
-    underlying set to be the product \(R\times\cdots\times R\).  That is the
-    whole of what this level does about size -- it names the factors, and the
-    set level answers from them.
-
-    Contrast ``framed/framed_free_modules.sage``, where ``_free_module_placement``
-    reads the axioms of \(R\) and of the framing and *stamps* an answer onto
-    the module, with a separate count beside it.  Nothing of that shape is
-    here: the factors are the only thing declared.
+    Its underlying set is the set of finitely supported functions from that
+    standard set into \(R\).  Since the domain is finite, this set is
+    equinumerous with \(R^n\).  It is not an object of the category of actual
+    cartesian-product sets, and its elements remain module elements.
     """
 
     @classmethod
@@ -60,53 +58,22 @@ class FiniteRankFreeModules(Category_over_base_ring):
         return "free modules of finite rank"
 
     def super_categories(self) -> list:
-        return [FreeModules(self.base_ring()), OwnedSets().CartesianProducts()]
+        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import FinitelyGeneratedFreeModules
+
+        return [FinitelyGeneratedFreeModules(self.base_ring())]
 
     class ParentMethods:
-        def __init__(self, rank: "Integer", base: "Ring", **rest: object) -> None:
-            r"""Build $R^n$ on the underlying set $R\times\cdots\times R$.
-
-            The ring is named here only to say what the $n$ factors are.  It
-            is not forwarded: the module level assigns the base, reading it
-            off the category, and passing it again arrives twice at the set
-            level below.
-            """
-            self._rank = rank
-            super().__init__(factors=(base,) * rank, **rest)
-
-        def rank(self) -> "Integer":
-            return self._rank
+        def __init__(
+            self,
+            rank: "Integer",
+            **rest: "ConstructionData",
+        ) -> None:
+            assert rank >= 0, "a free module has nonnegative rank"
+            super().__init__(module_generating_set=rank, **rest)
 
         def _repr_(self) -> str:
-            return f"{self.base_ring()}^{self._rank}"
-
-    class ElementMethods:
-        r"""A coordinate vector: where the arithmetic of \(R^n\) lives.
-
-        Not on the product below.  A point of a product of *sets* has no
-        addition; addition is what the module level adds, so it is declared
-        here and the components come from the set level unchanged.
-        """
-
-        def _add_(self, other: "Element") -> "Element":
-            return self.parent()(
-                [left + right for left, right in zip(self, other)]
-            )
-
-        def _sub_(self, other: "Element") -> "Element":
-            return self.parent()(
-                [left - right for left, right in zip(self, other)]
-            )
-
-        def _neg_(self) -> "Element":
-            return self.parent()([-coordinate for coordinate in self])
-
-        def _lmul_(self, scalar: "Element") -> "Element":
-            return self.parent()([scalar * coordinate for coordinate in self])
-
-        _rmul_ = _lmul_
-
+            return f"{self.base_ring()}^{self.rank()}"
 
 def FreeModuleOfRank(base_ring: "Ring", rank: "Integer") -> "Parent":
     r"""Return \(R^n\), built through the chain."""
-    return object_of(FiniteRankFreeModules(base_ring), rank=rank, base=base_ring)
+    return object_of(FiniteRankFreeModules(base_ring), rank=rank)

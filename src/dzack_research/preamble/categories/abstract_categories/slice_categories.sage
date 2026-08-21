@@ -61,7 +61,6 @@ if TYPE_CHECKING:
         arrow it is an object over."""
 
         def structure_morphism(self) -> Morphism: ...
-        def embedding(self) -> Morphism: ...
 
 
 def sole_structure_generators(obj: Parent) -> "OrderedSet":
@@ -186,31 +185,6 @@ class SubobjectCategory(_OverAnObject, Category):
 
     def super_categories(self) -> list[Category]:
         return [SliceOverCategory(self._ambient_category, self._target_object)]
-
-    class ParentMethods:
-        r"""What being a subobject gives \(A\), and nothing more.
-
-        \(A\) is an object of \(\mathbf{C}\) already, so its generators,
-        rank, form, and action are answered by \(\mathbf{C}\).  Being a
-        subobject adds one thing: the monomorphism.
-        """
-
-        def embedding(self: "SliceParent") -> Morphism:
-            r"""Return the monomorphism \(A\hookrightarrow X\) representing this subobject.
-
-            The slice category calls this arrow ``structure_morphism``; in a
-            subobject category the arrow is a mono, and ``embedding`` is the
-            name it earns there.
-            """
-            return self.structure_morphism()
-
-        inclusion = embedding
-
-        def embedding_codomain(self: "SliceParent") -> Parent:
-            r"""Return the ambient object \(X\) this subobject embeds into."""
-            ambient: Parent = self.embedding().codomain()
-            return ambient
-
 
 class SuperobjectCategory(_UnderAnObject, Category):
     r"""Subcategory of ``CosliceUnder(X)`` represented by monomorphisms \(X\hookrightarrow B\)."""

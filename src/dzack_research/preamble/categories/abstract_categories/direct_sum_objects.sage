@@ -71,7 +71,7 @@ class DirectSumObjects(Category):
             assert label in self._summand_index_set, (
                 f"{label!r} is not a summand label"
             )
-            return self._summands[self._summand_index_set.index(label)]
+            return self._summands[self._summand_index_set.position(label)]
 
         def __init__(
             self: Self,

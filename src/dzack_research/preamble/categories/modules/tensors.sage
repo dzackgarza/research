@@ -134,7 +134,7 @@ def DualModule(module: "Module") -> "Module":
         module.base_ring(),
         module.module_generating_set(),
     )
-    relations = module.relation_matrix()._sage_matrix()
+    relations = module.relation_matrix()
     if relations.nrows() == 0:
         return dual_frame
 
@@ -181,8 +181,8 @@ def TensorProductModule(left: "Module", right: "Module") -> "Module":
         tuple(_index_product(left_labels, right_labels))
     )
     free_product = BasedFreeModule(left.base_ring(), product_labels)
-    left_relations = left.relation_matrix()._sage_matrix().rows()
-    right_relations = right.relation_matrix()._sage_matrix().rows()
+    left_relations = left.relation_matrix().rows()
+    right_relations = right.relation_matrix().rows()
     relations = []
     for relation in left_relations:
         for right_label in right_labels:
@@ -240,7 +240,7 @@ def _degree_construction(
         module.base_ring(), module.module_generating_set()
     )
     piece: "_GradedPiece" = algebra.graded_piece(degree)
-    relations = module.relation_matrix()._sage_matrix()
+    relations = module.relation_matrix()
     match relations.nrows():
         case 0:
             return piece
@@ -688,12 +688,9 @@ class TensorModules(Category_over_base_ring):
 
         def base_changed(self, module: "Module") -> "Element":
             r"""Read this tensor after extending scalars to ``module.base_ring()``."""
-            target = Tensor(module, self.valence())
+            target = Tensor(module, self.parent().valence())
             ring = module.base_ring()
             return target({index: ring(entry) for index, entry in self._entries.items()})
-
-        def valence(self) -> tuple:
-            return self.parent().valence()
 
         def __getitem__(self, index: tuple | int) -> "Element":
             r"""Return the component at a multi-index, zero where unrecorded."""
@@ -759,9 +756,9 @@ class TensorModules(Category_over_base_ring):
             # Local: a module-level import here would close a cycle; by call time this module is built.
             from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _coordinate_vector
 
-            contravariant, covariant = self.valence()
+            contravariant, covariant = self.parent().valence()
             assert len(arguments) <= covariant, (
-                f"a type-{self.valence()} tensor has {covariant} covariant slots, "
+                f"a type-{self.parent().valence()} tensor has {covariant} covariant slots, "
                 f"got {len(arguments)} arguments"
             )
             coordinates = [_coordinate_vector(argument) for argument in arguments]
@@ -789,14 +786,14 @@ class TensorModules(Category_over_base_ring):
             vector as a type-$(1,0)$ tensor; pairing with a functional is the case
             where it is a type-$(0,1)$ one.
             """
-            contravariant, covariant = self.valence()
-            other_contravariant, other_covariant = other.valence()
+            contravariant, covariant = self.parent().valence()
+            other_contravariant, other_covariant = other.parent().valence()
             assert contravariant > slot >= 0, (
-                f"slot {slot} is not an upper index of a type-{self.valence()} tensor"
+                f"slot {slot} is not an upper index of a type-{self.parent().valence()} tensor"
             )
             assert other_covariant > other_slot >= 0, (
                 f"slot {other_slot} is not a lower index of a "
-                f"type-{other.valence()} tensor"
+                f"type-{other.parent().valence()} tensor"
             )
             assert other.parent().module() is self.parent().module(), (
                 "contraction pairs tensors on one module"
@@ -829,9 +826,9 @@ class TensorModules(Category_over_base_ring):
 
         def trace(self, slot: int | Integer = 0, other_slot: int | Integer = 0) -> "Element":
             r"""Contract one of this tensor's own upper slots against a lower one."""
-            contravariant, covariant = self.valence()
+            contravariant, covariant = self.parent().valence()
             assert contravariant > slot >= 0 and covariant > other_slot >= 0, (
-                f"a type-{self.valence()} tensor has no such pair of slots"
+                f"a type-{self.parent().valence()} tensor has no such pair of slots"
             )
             entries: dict = {}
             for index, entry in self._entries.items():
@@ -852,8 +849,8 @@ class TensorModules(Category_over_base_ring):
             assert self.parent().module() is other.parent().module(), (
                 "an outer product uses tensors on one module"
             )
-            left_upper, left_lower = self.valence()
-            right_upper, right_lower = other.valence()
+            left_upper, left_lower = self.parent().valence()
+            right_upper, right_lower = other.parent().valence()
             entries: dict = {}
             for left_index, left_entry in self._entries.items():
                 for right_index, right_entry in other._entries.items():
@@ -876,9 +873,9 @@ class TensorModules(Category_over_base_ring):
             r"""Raise one lower index with the inverse Gram matrix."""
             from sage.matrix.constructor import matrix
 
-            contravariant, covariant = self.valence()
+            contravariant, covariant = self.parent().valence()
             assert covariant > slot >= 0, (
-                f"slot {slot} is not a lower index of a type-{self.valence()} tensor"
+                f"slot {slot} is not a lower index of a type-{self.parent().valence()} tensor"
             )
             assert formed_module is self.parent().module(), (
                 "the form and tensor must use the same module"
@@ -909,9 +906,9 @@ class TensorModules(Category_over_base_ring):
             r"""Lower one upper index with the Gram matrix."""
             from sage.matrix.constructor import matrix
 
-            contravariant, covariant = self.valence()
+            contravariant, covariant = self.parent().valence()
             assert contravariant > slot >= 0, (
-                f"slot {slot} is not an upper index of a type-{self.valence()} tensor"
+                f"slot {slot} is not an upper index of a type-{self.parent().valence()} tensor"
             )
             assert formed_module is self.parent().module(), (
                 "the form and tensor must use the same module"
@@ -934,7 +931,7 @@ class TensorModules(Category_over_base_ring):
             )
 
         def __repr__(self) -> str:
-            contravariant, covariant = self.valence()
+            contravariant, covariant = self.parent().valence()
             return (
                 f"type-({contravariant},{covariant}) tensor on "
                 f"{self.parent().module()}"

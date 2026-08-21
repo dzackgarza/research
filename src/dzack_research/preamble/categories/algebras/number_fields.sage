@@ -76,11 +76,8 @@ if TYPE_CHECKING:
         definition, so each crosses once and comes back.
         """
 
-        def discriminant(self) -> "Integer": ...
-        def signature(self) -> tuple["Integer", "Integer"]: ...
-        def class_number(self) -> "Integer": ...
-        def is_galois(self) -> bool: ...
-        def galois_group(self) -> "Group": ...
+        def pari_nf(self) -> "Element": ...
+        def pari_bnf(self) -> "Element": ...
 
     class NumberFieldParent(Protocol):
         r"""A parent in ``OwnedNumberFields()``.
@@ -111,7 +108,6 @@ if TYPE_CHECKING:
 
         def lift(self) -> "Element": ...
         def parent(self) -> "NumberFieldParent": ...
-        def _representative(self) -> "Element": ...
         def _power_basis_coordinates(self) -> "Vector": ...
         def matrix(self) -> "Matrix": ...
         def minimal_polynomial(self) -> "Element": ...
@@ -233,7 +229,10 @@ class OwnedNumberFields(Category):
             index of \(\ZZ[\alpha]\) in the ring of integers, and it is the
             field's that the ramification reads.
             """
-            return self._engine_field().discriminant()
+            discriminant: "Integer" = SageZZ(
+                self._engine_field().pari_nf().nf_get_disc()
+            )
+            return discriminant
 
         def signature(self: "NumberFieldParent") -> tuple:
             r"""Return \((r,s)\): the real and the conjugate-pair places.
@@ -241,7 +240,8 @@ class OwnedNumberFields(Category):
             \(r+2s=[K:\QQ]\), which is what makes this a decomposition of the
             degree and not two independent counts.
             """
-            return tuple(self._engine_field().signature())
+            real, complex_pairs = self._engine_field().pari_nf().nf_get_sign()
+            return SageZZ(real), SageZZ(complex_pairs)
 
         def _from_power_basis(
             self: "NumberFieldParent", coefficients: "Sequence"
@@ -332,7 +332,10 @@ class OwnedNumberFields(Category):
 
         def class_number(self: "NumberFieldParent") -> "Integer":
             r"""Return \(|\operatorname{Cl}(\mathcal O_K)|\)."""
-            return self._engine_field().class_number()
+            class_number: "Integer" = SageZZ(
+                self._engine_field().pari_bnf().bnf_get_no()
+            )
+            return class_number
 
         def ramified_primes(self: "NumberFieldParent") -> tuple:
             r"""Return the primes that ramify: those dividing \(d_K\)."""
@@ -345,7 +348,11 @@ class OwnedNumberFields(Category):
             normal exactly when every root of the defining polynomial is
             already here.
             """
-            return bool(self._engine_field().is_galois())
+            roots = self.defining_polynomial().roots(
+                ring=self,
+                multiplicities=False,
+            )
+            return len(roots) == self.degree()
 
         def galois_group(self: "NumberFieldParent") -> "Group":
             r"""Return \(\operatorname{Gal}\), as an owned group.
@@ -364,8 +371,10 @@ class OwnedNumberFields(Category):
             # Local: the group node reaches the algebra node, so a module-level
             # import here would close that cycle.
             from dzack_research.preamble.categories.group.groups import refine_group
+            from sage.rings.number_field.galois_group import GaloisGroup_v2
 
-            return refine_group(self._engine_field().galois_group())
+            computed = GaloisGroup_v2(self._engine_field(), algorithm="pari")
+            return refine_group(computed)
 
         def embedding_images(self: "NumberFieldParent", ring: "Ring") -> tuple:
             r"""Return the images of \(\alpha\) under the embeddings into ``ring``.
@@ -385,10 +394,6 @@ class OwnedNumberFields(Category):
 
 
     class ElementMethods:
-        def _representative(self: "NumberFieldElement") -> "Element":
-            r"""Return the reduced representative in \(\QQ[x]\)."""
-            return self.lift()
-
         def _power_basis_coordinates(self: "NumberFieldElement") -> "Vector":
             r"""Return the coordinates in \(1,\alpha,\dots,\alpha^{n-1}\).
 
@@ -398,7 +403,7 @@ class OwnedNumberFields(Category):
             """
             field = self.parent()
             degree = field.degree()
-            representative = self._representative()
+            representative = self.lift()
             by_degree = {
                 sum(monomial.dict().values()): coefficient
                 for monomial, coefficient in representative.coefficients().items()
@@ -471,7 +476,7 @@ class OwnedNumberFields(Category):
             """
             field = self.parent()
             assert self != field.zero(), "zero has no inverse"
-            common, cofactor, _ = self._representative().xgcd(
+            common, cofactor, _ = self.lift().xgcd(
                 field.defining_polynomial()
             )
             return field(cofactor * common.leading_coefficient()**-1)
@@ -486,7 +491,7 @@ class OwnedNumberFields(Category):
             """
             field = self.parent()
             label = tuple(field.algebra_generating_set())[0]
-            representative = self._representative()
+            representative = self.lift()
             return tuple(
                 representative.subs({label: image})
                 for image in field.embedding_images(ring)

@@ -60,7 +60,7 @@ if TYPE_CHECKING:
 
         def parent(self) -> "DiscriminantQuadraticParent": ...
         def underlying_element(self) -> "Element": ...
-        def q(self) -> "Element": ...
+        def norm(self) -> "Element": ...
         def b(self, other: "Element") -> "Element": ...
 
 
@@ -100,7 +100,7 @@ class DiscriminantQuadraticModules(Category_over_base_ring):
         assert module in FinitelyPresentedTorsionModules(SageZZ), (
             "a discriminant form requires a finitely presented torsion module"
         )
-        relations = module.relation_matrix()._sage_matrix().change_ring(SageZZ)
+        relations = module.relation_matrix().change_ring(SageZZ)
         assert all(entry in SageZZ for entry in (relations * gram).list()), (
             "the polarization is not defined on the classes: some relation "
             "does not pair integrally with the module_generators"
@@ -201,7 +201,7 @@ class DiscriminantQuadraticModules(Category_over_base_ring):
             $\mathbb Q/\mathbb Z$.  The converse fails, which is why the
             sibling category answers this for itself.
             """
-            return all(element.q() == 0 for element in elements)
+            return all(element.norm() == 0 for element in elements)
 
         def associated_quadratic_form(self: "DiscriminantQuadraticParent") -> "DiscriminantQuadraticParent":
             r"""Return this form: it is already the quadratic one."""
@@ -278,7 +278,7 @@ class DiscriminantQuadraticModules(Category_over_base_ring):
                     SageQQ,
                     [
                         [
-                            left.q().lift() if i == j else left.b(right).lift()
+                            left.norm().lift() if i == j else left.b(right).lift()
                             for j, right in enumerate(generators)
                         ]
                         for i, left in enumerate(generators)
@@ -361,15 +361,6 @@ class DiscriminantQuadraticModules(Category_over_base_ring):
     class ElementMethods:
         r"""Methods available on elements of discriminant quadratic modules."""
 
-        def q(self: "DiscriminantQuadraticElement") -> "Element":
-            r"""Return $q(\bar x)\in\mathbb Q/2\mathbb Z$.
-
-            The same pairing the bilinear form reads modulo $\mathbb Z$, read
-            here modulo $2\mathbb Z$ instead -- Nikulin's convention, and the
-            reason $q$ and $b$ differ only in their value module.
-            """
-            return self.parent().form()(self.underlying_element())
-
         def __pow__(
             self: "DiscriminantQuadraticElement",
             exponent: "Integer",
@@ -377,11 +368,11 @@ class DiscriminantQuadraticModules(Category_over_base_ring):
         ) -> "Element":
             r"""``x ^ 2`` -> $q(x)$."""
             assert exponent == 2, f"exponent {exponent} not supported"
-            return self.q()
+            return self.norm()
 
         def is_characteristic(self: "DiscriminantQuadraticElement") -> bool:
             r"""Return whether $q(x)=b(x,v^*)$ modulo $\mathbb Z$ for every $x$."""
             return all(
-                x.q().lift() - x.b(self).lift() in SageZZ
+                x.norm().lift() - x.b(self).lift() in SageZZ
                 for x in self.parent()
             )

@@ -165,16 +165,6 @@ class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
             degree: "Integer" = self.monomial_system().degree(module_generator)
             return degree
 
-        def monomial_degree(
-            self: "GradedFreeAlgebraParent", monomial: "Element"
-        ) -> "Integer":
-            r"""Return the \(n\) with this monomial in \(T(M)[n]\).
-
-            The grading, asked of a monomial by the word this construction
-            uses for one.
-            """
-            return self.degree_on_module_generator(monomial)
-
         def graded_piece_monomials(
             self: "GradedFreeAlgebraParent", degree: "Integer | int"
         ) -> "Set | tuple":
@@ -206,18 +196,6 @@ class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
                 monomials,
                 is_injective=True,
             )
-
-        def module_generators_of_degree(
-            self: "GradedFreeAlgebraParent", degree: "Integer | int"
-        ) -> "Set | tuple":
-            r"""Return the monomials of a degree, which the grading asks for.
-
-            Asked of the monomials rather than filtered out of all of them:
-            there are infinitely many monomials and finitely many in each
-            degree, so the general reading -- run over the generators and keep
-            the ones that fit -- does not terminate here.
-            """
-            return self.graded_piece_monomials(degree)
 
         def ideal_generators_in_degree(
             self: "GradedFreeAlgebraParent",
@@ -349,9 +327,7 @@ class DividedPowerAlgebras(OwnedCategoryOverBaseRing):
             relations: tuple,
             degree: "Integer | int",
         ) -> tuple:
-            generators = GradedFreeAlgebras.ParentMethods.ideal_generators_in_degree(
-                self, relations, degree
-            )
+            generators = super().ideal_generators_in_degree(relations, degree)
             degree = int(degree)
             added = []
             for relation in relations:

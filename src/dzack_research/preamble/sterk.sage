@@ -357,14 +357,6 @@ class Sterk:
         return vectors
 
     @staticmethod
-    def diagonal_embedding() -> "ModuleMorphism":
-        r"""Return $E_8(2)\hookrightarrow T_{\mathrm{dP}}$ (AEGS diagonal).
-
-        Alias of :attr:`Embeddings.E8_2_into_TdP`.
-        """
-        return Embeddings.E8_2_into_TdP
-
-    @staticmethod
     def sterk5_in_U_E8_2() -> tuple[
         "FormModule",
         tuple["ModuleElement", ...],

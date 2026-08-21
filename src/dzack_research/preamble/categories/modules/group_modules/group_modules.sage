@@ -11,11 +11,12 @@ if TYPE_CHECKING:
     from sage.structure.parent import ElementConstructorInput, MembershipInput
 
 from sage.rings.number_field.number_field import CyclotomicField
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import FramingMorphism
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import GroupAction
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleAutomorphism
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
 from sage.matrix.special import identity_matrix
+from sage.matrix.constructor import matrix
+from sage.matrix.matrix0 import Matrix
 from sage.arith.functions import lcm
 if TYPE_CHECKING:
     from dzack_research.preamble.categories.modules.framed.formed.integrallattice.subobjects import Subobject
@@ -30,20 +31,14 @@ from sage.misc.cachefunc import cached_function, cached_method
 from dzack_research.preamble.owned_category import object_of
 from dzack_research.preamble.owned_category_bases import Category
 from dzack_research.preamble.owned_category_bases import HomsetsCategory
-from sage.categories.homset import Hom
 from sage.categories.morphism import SetMorphism
-from sage.structure.element import Element as SageElement
 from sage.structure.parent import Parent
 from sage.structure.richcmp import op_EQ, richcmp
 
 from dzack_research.preamble.categories.sets.cardinals import Cardinal
 from dzack_research.preamble.categories.modules.group_modules.characters import Character
-from dzack_research.preamble.categories.modules.module_morphisms.morphism_matrices import MorphismMatrix
 from dzack_research.preamble.categories.sets.owned_sets import Sets
-from dzack_research.preamble.categories.sets.underlying_sets import (
-    UnderlyingSet,
-    UnderlyingSets,
-)
+from dzack_research.preamble.categories.sets.underlying_sets import UnderlyingSets
 
 if TYPE_CHECKING:
     # The ordered-set noun is type-only: the preamble loads into one
@@ -68,7 +63,7 @@ if TYPE_CHECKING:
         def base_ring(self) -> "Ring": ...
         def rank(self) -> "Cardinal": ...
         def group(self) -> "Group": ...
-        def action_matrix(self, element: "Element") -> MorphismMatrix: ...
+        def action_matrix(self, element: "Element") -> Matrix: ...
         def Hom(self, codomain: "Module", category: "Category | None" = ...) -> "Homset": ...
 
 
@@ -109,18 +104,9 @@ class GroupModules(Category):
 
     def super_categories(self) -> list:
         # Local: a module-level import would close a cycle; the module is built by the time this runs.
-        from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules
-        from dzack_research.preamble.categories.modules.pure.finitely_generated.finitely_generated_modules import FinitelyGeneratedModules
+        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import FinitelyGeneratedFreeModules
 
-        # The two edges named separately rather than through their meet.
-        # $R[G]$-Mod reaches a formed object -- an integral lattice with an
-        # action is one -- and naming the joint node gives that node a rank
-        # which contradicts the rank the formed branch gives it, so C3 refuses
-        # the join.  These are the same two statements, ranked on their own.
-        return [
-            FramedFreeModules(self._base_ring),
-            FinitelyGeneratedModules(self._base_ring),
-        ]
+        return [FinitelyGeneratedFreeModules(self._base_ring)]
 
     def is_semisimple(self) -> bool:
         r"""Return whether \(R[G]\)-Mod is semisimple.
@@ -200,126 +186,111 @@ class GroupModules(Category):
         return splits
 
     class ParentMethods:
-        r"""One $R[G]$-module: a finite free $M$, and an action $G\to Aut_R(M)$."""
+        r"""One finite free module with an action $G\to Aut_R(M)$."""
 
-        # The two halves of the pair $(M,\rho)$, and the same $\rho$ recorded
-        # through the element wrapping so it moves this parent's own elements.
-        _module: "Module"
         _action: GroupAction
-        _acting_automorphisms: GroupAction
+        _acting_group: "Group"
+        _action_on_module_generators: dict
 
         def __init__(
             self: Self,
-            module: "Module",
             action: GroupAction,
             **rest: "ConstructionData",
         ) -> None:
             # Local: a module-level import would close a cycle; the module is built by the time this runs.
-            from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import FinitelyGeneratedFreeModules
-            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import framing_morphism
+            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleAutomorphismGroup
             from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import group_action_homset
 
-            assert module in FinitelyGeneratedFreeModules(module.base_ring()), (
-                "an R[G]-module is constructed from an actual finite framed "
-                "free module"
+            assert (
+                isinstance(action, GroupAction)
+                and action.parent() in GroupActionHomsets()
+            ), (
+                "the action must be a morphism from the acting group into a "
+                "module automorphism group"
             )
-            assert isinstance(action, GroupAction) and action.module() is module, (
-                "the action must be a morphism into the supplied module's Aut "
-                "homset"
+            source = action.codomain().domain()
+            self._acting_group = action.domain()
+            self._action_on_module_generators = {
+                group_element: {
+                    label: tuple(
+                        automorphism(source.module_generator(label))._coordinates()
+                    )
+                    for label in source.module_generating_set()
+                }
+                for group_element, automorphism in action.values().items()
+            }
+            super().__init__(**rest)
+            assert self.base_ring() == source.base_ring(), (
+                "the group action and the constructed module must use one base ring"
             )
-            # A group module IS the pair $(M,\rho)$, and both halves arrive as
-            # constructor arguments.  They are stored before anything else so
-            # that identity -- hash, equality, repr -- is answerable from the
-            # first moment the object exists, including while construction is
-            # still running and Sage's caches hash it.
-            self._module = module
-            self._action = action
-            # $M$ with a $G$-action is the same underlying module, so the
-            # generating set the level above is constructed on is $M$'s.  This
-            # level introduces $\rho$ and nothing else; without threading the
-            # generating set the chain reaches the free-module level with no
-            # framing and an $R[G]$-module cannot be built at all.
-            super().__init__(
-                module_generating_set=module.module_generating_set(), **rest
+            assert tuple(self.module_generating_set()) == tuple(
+                source.module_generating_set()
+            ), (
+                "the group action and the constructed module must use one framing"
             )
-            source = module.framing_morphism().domain()
-            underlying_module_generator_morphism = module.module_generator_morphism()
-            lifted_module_generator_morphism = SetMorphism(
-                Hom(
-                    underlying_module_generator_morphism.domain(),
-                    UnderlyingSet(self),
-                    Sets(),
-                ),
-                lambda element_of_S: self._over(
-                    underlying_module_generator_morphism(element_of_S)
-                ),
+            automorphisms = ModuleAutomorphismGroup(self)
+            values = {
+                group_element: automorphisms(
+                    {
+                        label: self._from_coordinates(coordinates)
+                        for label, coordinates in images.items()
+                    }
+                )
+                for group_element, images in self._action_on_module_generators.items()
+            }
+            self._action = group_action_homset(self._acting_group, self)(values)
+            assert self._action.codomain().domain() is self, (
+                "the stored action must act on the constructed group module"
             )
-            self._free_module_generator_morphism = lifted_module_generator_morphism
-            self._framing_morphism = framing_morphism(
-                source,
-                self,
-                lifted_module_generator_morphism,
-            )
-
-        def framing_morphism(self: Self) -> FramingMorphism:
-            return self._framing_morphism
-
-        def rank(self: Self) -> "Cardinal":
-            return self._module.rank()
 
         def _over(self: Self, element: "Element") -> "Element":
-            r"""Return this module's element reading ``element``'s coordinates.
-
-            $M$ and this module are the free module on one framing set over
-            one ring; adding the action built a second object of that
-            category, and the isomorphism between the two is the identity on
-            the framing, hence the identity on coordinates.
-            """
+            r"""Return this module's element with ``element``'s coordinates."""
             over: "Element" = self._from_coordinates(element._coordinates())
             return over
 
-        def _element_constructor_(
-            self: Self,
-            element: "ElementConstructorInput",
-        ) -> "Element":
-            # Conversion, not just recognition: coordinate data converts through
-            # the module's own coordinate route; an element of this parent passes
-            # through unchanged.
-            if isinstance(element, SageElement) and element.parent() is self:
-                return element
-            assert isinstance(element, (tuple, list, SageElement)), (
-                f"{element} is neither an element of {self} nor coordinate "
-                "data for one"
-            )
-            return self._over(self._module(element))
-
-        def __contains__(self: Self, element: "MembershipInput") -> bool:
-            return isinstance(element, SageElement) and element.parent() is self
-
         def __hash__(self: Self) -> int:
-            return hash((type(self), self._module, self._action))
+            action = frozenset(
+                (
+                    group_element,
+                    frozenset(images.items()),
+                )
+                for group_element, images in self._action_on_module_generators.items()
+            )
+            return hash(
+                (
+                    type(self),
+                    self.base_ring(),
+                    tuple(self.module_generating_set()),
+                    self._acting_group,
+                    action,
+                )
+            )
 
         def __eq__(self: Self, other: "MembershipInput") -> bool:
             return (
                 type(other) is type(self)
-                and self._module == other._module
-                and self._action == other._action
+                and self.base_ring() == other.base_ring()
+                and tuple(self.module_generating_set())
+                == tuple(other.module_generating_set())
+                and self._acting_group == other._acting_group
+                and self._action_on_module_generators
+                == other._action_on_module_generators
             )
 
         def _repr_(self: Self) -> str:
-            return f"{self._module} with an action of {self.group()}"
-
-        def forget_action(self: Self) -> "Module":
-            return self._module
+            return (
+                f"Free {self.base_ring()}-module on "
+                f"{self.module_generating_set()} with an action of {self.group()}"
+            )
 
         def action(self: Self) -> GroupAction:
             return self._action
 
         def group(self: Self) -> "Group":
-            return self.action().domain()
+            return self._acting_group
 
         def action_of(self: Self, element: "Element") -> ModuleAutomorphism:
-            r"""Return $\rho(g)$, an automorphism of the module underneath.
+            r"""Return $\rho(g)$, an automorphism of this module.
 
             Not an element of $\operatorname{Aut}_{R[G]}(M)$: $\rho(g)$
             commutes with the whole of $\rho$ only when $g$ is central, so a
@@ -329,7 +300,7 @@ class GroupModules(Category):
             """
             return self._action(element)
 
-        def action_matrix(self: Self, element: "Element") -> MorphismMatrix:
+        def action_matrix(self: Self, element: "Element") -> Matrix:
             return self.action_of(element).matrix()
 
         def character(self: "GroupModuleParent") -> Character:
@@ -349,18 +320,18 @@ class GroupModules(Category):
             matrices instead of being named.
             """
             group = self.group()
-            class_function = group.character(
+            character = group.character(
                 [
                     self.action_matrix(element).trace()
                     for element in group.conjugacy_classes_representatives()
                 ]
             )
-            assert self.rank() == class_function.degree(), (
-                f"chi_rho(1) is {class_function.degree()} and the module has "
+            assert self.rank() == character.degree(), (
+                f"chi_rho(1) is {character.degree()} and the module has "
                 f"rank {self.rank()}: the traces were written against the "
                 "wrong conjugacy classes"
             )
-            return Character(class_function)
+            return character
 
         def Hom(self: Self, codomain: "Module", category: "Category | None" = None) -> "Homset":
             if codomain in GroupModules(self.base_ring(), self.group()):
@@ -368,13 +339,8 @@ class GroupModules(Category):
             return Parent.Hom(self, codomain, category)
 
         def act(self: Self, element: "Element", vector_: "ModuleElement") -> "ModuleElement":
-            # $\rho(g)$ is applied in its own domain and the result read back
-            # here: both modules are framed by one set, so the crossing either
-            # way is the identity on coordinates.
             acting = self.action_of(element)
-            moved: "ModuleElement" = self._over(
-                acting(acting.domain()._from_coordinates(vector_._coordinates()))
-            )
+            moved: "ModuleElement" = acting(vector_)
             return moved
 
         def is_invariant(self: Self, vector_: "ModuleElement") -> bool:
@@ -455,29 +421,6 @@ class GroupModules(Category):
         def module_coinvariants(self: Self) -> "Module":
             return _module_coinvariants(self)
 
-    class ElementMethods:
-        r"""An element of an $R[G]$-module: the action is on the parent.
-
-        $M$ with a $G$-action is the same underlying module, so its elements
-        are that module's own and this level adds no datum to them.  Addition,
-        negation, scaling, comparison, coordinates and coefficients are all
-        answered by the module level the group module is constructed through;
-        what $\rho$ gives an element is written below.
-        """
-
-        def forget_action(self: Self) -> "Element":
-            r"""Return this element read in the module with the action forgotten.
-
-            The action on elements of the functor $R[G]\text{-Mod}\to
-            R\text{-Mod}$.  The two modules are framed by one set, so the
-            arrow is the identity on coordinates; what changes is which parent
-            the element answers to.
-            """
-            forgotten: "Element" = self.parent().forget_action()._from_coordinates(
-                self._coordinates()
-            )
-            return forgotten
-
     class Homsets(HomsetsCategory):
         r"""The equivariant maps between two modules for one $G$."""
 
@@ -524,7 +467,7 @@ class GroupModules(Category):
                         group_element,
                         morphism(self.domain().module_generator(element_of_S)),
                     )
-                    for group_element in self.domain().group()
+                    for group_element in self.domain().group().group_generators()
                     for element_of_S in self.domain().module_generating_set()
                 ), "the proposed map is not equivariant"
                 return morphism
@@ -547,10 +490,19 @@ def group_module_homset(domain: "Module", codomain: "Module") -> Parent:
 
 def GroupModule(module: "Module", action: GroupAction) -> Parent:
     r"""Return the finite free module $M$ acted on by $G$ through ``action``."""
+    # Local: a module-level import would close a cycle; the module is built by the time this runs.
+    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import FinitelyGeneratedFreeModules
+
+    assert module in FinitelyGeneratedFreeModules(module.base_ring()), (
+        "an R[G]-module is constructed from an actual finite framed free module"
+    )
+    assert action.codomain().domain() is module, (
+        "the supplied action must act on the module used for construction"
+    )
     return object_of(
         GroupModules(module.base_ring(), action.domain()),
-        module=module,
         action=action,
+        module_generating_set=module.module_generating_set(),
     )
 
 
@@ -582,28 +534,21 @@ def _invariant_generators(module: "Module") -> list:
     # Local: a module-level import would close a cycle; the module is built by the time this runs.
     from dzack_research.preamble.categories.rings.rings import engine_ring
 
-    assert module.group() in Sets().Finite(), (
-        "computing invariants imposes one condition per group element, so "
-        f"it requires a finite group; {module.group()} is not known to be one"
-    )
     ring = engine_ring(module.base_ring())
     identity = identity_matrix(ring, module.rank())
-    constraints = MorphismMatrix(
-        matrix(
-            ring,
-            [
-                row
-                for element in module.group()
-                for row in (
-                    module.action_matrix(element)._sage_matrix() - identity
-                ).transpose().rows()
-            ],
-        ),
+    constraints = matrix(
         ring,
+        [
+            row
+            for element in module.group().group_generators()
+            for row in (
+                module.action_matrix(element) - identity
+            ).transpose().rows()
+        ],
     )
     generators = [
         module._from_coordinates(row)
-        for row in constraints._right_kernel_matrix().rows()
+        for row in constraints.right_kernel_matrix().rows()
     ]
     assert all(module.is_invariant(generator) for generator in generators), (
         "the solved constraint system produced a vector the group moves"
@@ -622,7 +567,7 @@ def _module_coinvariants(module: "Module") -> "Module":
         module,
         [
         module.act(group_element, generator) - generator
-        for group_element in module.group()
+        for group_element in module.group().group_generators()
         for generator in module.module_generators()
         ],
     )
@@ -655,9 +600,14 @@ def _base_field_automorphisms(category: GroupModules) -> tuple:
 
     field = category.splitting_field()
     base_field = category.base_ring().fraction_field()
+    galois_group = field.galois_group()
+    assert galois_group in Sets().Enumerated(), (
+        "the finite Galois group must supply a chosen enumeration"
+    )
+    automorphisms = tuple(galois_group)
     return tuple(
         automorphism
-        for automorphism in field.galois_group()
+        for automorphism in automorphisms
         if all(
             automorphism(field(generator)) == field(generator)
             for generator in own_ring(base_field).algebra_generators()
@@ -692,10 +642,7 @@ def _index_characters(module: "Module") -> tuple:
     are collected under.  GAP supplies the character table and Sage the
     automorphisms of \(K\); neither the table nor the action is written here.
     """
-    characters = tuple(
-        Character(class_function)
-        for class_function in module.group().irreducible_characters()
-    )
+    characters = module.group().irreducible_characters()
     category = module.category()
     if category.is_split():
         return characters
@@ -754,6 +701,10 @@ def _isotypic_projector(module: "Module", character: Character) -> "ModuleMorphi
     extended = module.vector_space()
     field = extended.base_ring()
     group = module.group()
+    assert group in Sets().Enumerated(), (
+        "the character projector sums over a chosen enumeration of the finite group"
+    )
+    group_elements = tuple(group)
     constituents = character.irreducible_constituents()
     assert constituents, "the zero class function affords no representation"
     assert all(value in field for value in character.class_values()), (
@@ -765,8 +716,8 @@ def _isotypic_projector(module: "Module", character: Character) -> "ModuleMorphi
     degree = constituents[0].degree()
     entries = (field(degree) / field(group.order())) * sum(
         field(character(element.inverse()))
-        * module.action_matrix(element).change_ring(field)._sage_matrix()
-        for element in group
+        * module.action_matrix(element).change_ring(field)
+        for element in group_elements
     )
     assert entries * entries == entries, (
         "the projector for this character is not idempotent: its constituents "
@@ -803,7 +754,7 @@ def _isotypic_component(module: "Module", character: Character) -> "Subobject":
     from dzack_research.preamble.categories.rings.rings import engine_ring
 
     projector = _isotypic_projector(module, character).matrix()
-    difference = projector._sage_matrix() - identity_matrix(
+    difference = projector - identity_matrix(
         projector.base_ring(), module.rank()
     )
     scale = lcm([entry.denominator() for entry in difference.list()])

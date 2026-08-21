@@ -434,7 +434,11 @@ def oscar_even_unimodular_primitive_embedding(
         (gram,),
         (int(positive), int(negative)),
     )
-    separator = lines.index("--")
+    separator = next(
+        position
+        for position, line in enumerate(lines)
+        if line == "--"
+    )
     codomain_gram = matrix(
         SageZZ, [[SageZZ(entry) for entry in line.split()] for line in lines[:separator] if line]
     )

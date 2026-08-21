@@ -19,6 +19,7 @@ if TYPE_CHECKING:
     from sage.rings.ring import Ring
 
 from dzack_research.preamble.owned_category import object_of
+from dzack_research.preamble.owned_category_bases import HomsetsCategory
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
 from sage.categories.algebras import Algebras as SageAlgebras
 from sage.categories.category import Category
@@ -118,26 +119,6 @@ class Algebras(OwnedCategoryOverBaseRing):
             """
             ...
 
-        def scalar_structure_morphism(self) -> "Morphism":
-            r"""Return the structure morphism, under the name it is used by."""
-            return self._ring_morphism_defining_algebra_structure()
-
-        def algebra_structure_map(self: "AlgebraParent") -> "Morphism":
-            """Return the explicit structure map from the base ring.
-
-            Asked of the engine's copy of the ring: a coercion is registered
-            from the ring this parent was constructed over, and the session's
-            name for it is a different parent with no map of its own.
-            """
-            # Local: importing the ring node here would close a cycle, and the
-            # module is built by the time this method runs.
-            from dzack_research.preamble.categories.rings.rings import engine_ring
-
-            witness = self.coerce_map_from(engine_ring(self.base_ring()))
-            if not witness:
-                assert False, f"{self} has no structure map from {self.base_ring()}"
-            return witness
-
         def base_change(self: "AlgebraParent", ring_hom: "Morphism") -> "Module":
             r"""Base change this algebra along a ring morphism."""
             # Local: importing the ring node here would close a cycle, and the
@@ -205,6 +186,48 @@ class FramedAlgebras(OwnedCategoryOverBaseRing):
             r"""Return the product of algebra_generators labelled by s and t in S."""
             ...
 
+    class Homsets(HomsetsCategory):
+        r"""Homsets of algebras with specified algebra generating sets."""
+
+        def extra_super_categories(self) -> list:
+            from dzack_research.preamble.categories.modules.pure.modules import (
+                Modules,
+            )
+
+            return [Modules(self.base_category().base_ring()).Homsets()]
+
+        class ParentMethods:
+            def __init__(
+                self,
+                domain: "Parent",
+                codomain: "Parent",
+                **rest: "ConstructionData",
+            ) -> None:
+                assert domain.base_ring() == codomain.base_ring(), (
+                    "an algebra morphism is linear over one base ring"
+                )
+                super().__init__(
+                    domain=domain,
+                    codomain=codomain,
+                    base=domain.base_ring(),
+                    check=False,
+                    **rest,
+                )
+
+        class ElementMethods:
+            def corestrict_to_center(self: "Morphism") -> "Morphism":
+                r"""Return \(f:A\to Z(S)\) when the image is central."""
+                domain = self.domain()
+                codomain = self.codomain()
+                centre = codomain.ring_center()
+                for generator in finite_algebra_generators(domain):
+                    image = self(generator)
+                    assert image in centre, (
+                        f"{image} is not central in {codomain}, so {self} "
+                        "does not corestrict to the centre"
+                    )
+                return SetMorphism(Hom(domain, centre, SageRings()), self)
+
 
 class OwnedAlgebras(OwnedCategoryOverBaseRing):
     r"""The \(R\)-algebras a ring map \(R\to A\) presents.
@@ -250,7 +273,7 @@ class OwnedAlgebras(OwnedCategoryOverBaseRing):
                 base=owned_ring_view(structure_map.domain()), **rest
             )
 
-        def algebra_structure_map(self) -> "Map":
+        def _ring_morphism_defining_algebra_structure(self) -> "Map":
             return self._structure_map
 
         def change_ring(self, ring: "Ring") -> "Parent":
@@ -258,27 +281,6 @@ class OwnedAlgebras(OwnedCategoryOverBaseRing):
 
         def _element_constructor_(self, value: "Element") -> "Element":
             return self._engine(value)
-
-        def __contains__(self, value: "Element") -> bool:
-            return value in self._engine
-
-        def one(self) -> "Element":
-            return self._engine.one()
-
-        def rank(self) -> "Integer":
-            r"""Return the rank of \(A\) as a free module over its base ring."""
-            rank: "Integer" = self._engine.rank()
-            return rank
-
-        def is_commutative(self) -> bool:
-            commutative: bool = self._engine.is_commutative()
-            return commutative
-
-        def zero(self) -> "Element":
-            return self._engine.zero()
-
-        def an_element(self) -> "Element":
-            return self._engine.an_element()
 
         def __hash__(self) -> int:
             return hash((type(self), self._structure_map))
@@ -321,47 +323,12 @@ def finite_algebra_generators(algebra: "FramedAlgebraParent") -> tuple:
     """
     from dzack_research.preamble.categories.sets.owned_sets import Sets
 
-    assert hasattr(algebra, "algebra_generating_set"), (
-        f"{algebra} cannot name a generating set, so what it generates is "
-        "not a question that can be decided here"
-    )
     labels = algebra.algebra_generating_set()
     assert labels in Sets().Finite(), (
         f"{algebra} is generated by {labels}, which is infinite: commuting "
         "with every generator is not a finite check"
     )
     return tuple(algebra.algebra_generator(label) for label in labels)
-
-
-def corestrict_to_center(morphism: "Morphism") -> "Morphism":
-    r"""Return \(f:A\to Z(S)\) for an algebra map \(f:A\to S\) landing centrally.
-
-    Checked on the generators of \(A\) alone, and that is a proof rather
-    than a sample.  \(f(A)\) is generated as a ring by the scalars
-    \(r\cdot 1_S\) and the images of \(A\)'s algebra generators.  The
-    scalars are central because \(S\) is an \(R\)-algebra, which *is* a ring
-    map \(R\to Z(S)\) -- the obligation
-    :meth:`_ring_morphism_defining_algebra_structure` states.  The central
-    elements form a subring.  So a generating set whose images are all
-    central generates a subring of \(Z(S)\), and that subring is \(f(A)\).
-
-    Sited as a function rather than as a morphism method: an algebra map in
-    this preamble is an element of a *module* homset -- ``FreeAlgebraMorphism``
-    extends ``ModuleMorphism`` -- so ``Algebras.MorphismMethods`` would never
-    be consulted, and a method on ``FreeAlgebraMorphism`` would site the
-    operation on one construction's arrow class rather than on what it
-    actually needs, which is a domain that can name its algebra generators.
-    """
-    domain = morphism.domain()
-    codomain = morphism.codomain()
-    centre = codomain.ring_center()
-    for generator in finite_algebra_generators(domain):
-        image = morphism(generator)
-        assert image in centre, (
-            f"{image} is not central in {codomain}, so {morphism} does not "
-            "corestrict to the centre"
-        )
-    return SetMorphism(Hom(domain, centre, SageRings()), morphism)
 
 
 _ALGEBRAS_INSTALLED = False

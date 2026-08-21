@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 from sage.categories.groups import Groups
 from sage.categories.modules import Modules
 from dzack_research.preamble.categories.modules.pure.modules import Modules as OwnedModules
-from dzack_research.preamble.owned_category_bases import Category_over_base_ring
+from dzack_research.preamble.owned_category_bases import Category, Category_over_base_ring
 from dzack_research.preamble.categories.sets.sets import finite_ordered_set
 from dzack_research.preamble.refine import refine
 if TYPE_CHECKING:
@@ -56,9 +56,11 @@ from sage.structure.parent import Parent
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.sets.cardinals import Cardinal, cardinal
-from dzack_research.preamble.categories.modules.module_morphisms.morphism_matrices import matrix_group
+from dzack_research.preamble.categories.modules.module_morphisms.morphism_matrices import (
+    matrix_group,
+    row_normal_form,
+)
 from dzack_research.preamble.categories.modules.group_modules.characters import Character
-from dzack_research.preamble.categories.modules.module_morphisms.morphism_matrices import MorphismMatrix
 from dzack_research.preamble.categories.sets.owned_sets import Sets
 from dzack_research.preamble.categories.sets.underlying_sets import UnderlyingSet
 
@@ -174,9 +176,11 @@ def _coordinate_vector(element: "Element") -> FreeModuleElement:
     Asked of the element.  A module whose category gives its elements a finite
     ordered framing answers this; one without such a framing has no answer.
     """
-    assert hasattr(element, "_coordinates"), (
-        f"{element} has no finite ordered framing in which a matrix "
-        "coordinate vector is defined"
+    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import FinitelyGeneratedFreeModules
+
+    assert element.parent() in FinitelyGeneratedFreeModules(element.parent().base_ring()), (
+        f"{element} is not in a finite framed free module with a matrix "
+        "coordinate vector"
     )
     coordinates: FreeModuleElement = element._coordinates()
     return coordinates
@@ -187,7 +191,9 @@ def _coefficients(element: "Element") -> dict[ElementConstructorInput, RingEleme
 
     Asked of the element, whose own category names its generators.
     """
-    assert hasattr(element, "coefficients"), (
+    from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules
+
+    assert element.parent() in FramedFreeModules(element.parent().base_ring()), (
         f"{element} is not an element of an owned framed module"
     )
     coefficient_function: dict[ElementConstructorInput, RingElement] = dict(
@@ -242,7 +248,7 @@ def _independent_module_generators(
             for coefficients in coefficient_functions
         ],
     )
-    independent = MorphismMatrix(rows, ring).normal_form().rows()
+    independent = row_normal_form(rows).rows()
     return [
         zipsum(
             row,
@@ -330,10 +336,6 @@ def _expand_subobject_dict(
 class ModuleMorphism(Morphism):
     r"""The linear extension of a morphism \(S\to U(N)\)."""
 
-    # Cached by :meth:`matrix` on first request; declared, never preset, so
-    # the AttributeError that fills it still fires.
-    _matrix: MorphismMatrix
-
     def __init__(
         self,
         parent: Parent,
@@ -380,85 +382,6 @@ class ModuleMorphism(Morphism):
     def _domain_module_generating_set(self) -> "OrderedSet":
         return self.domain().module_generating_set()
 
-    def _pointwise(self, combine: "Callable") -> "ModuleMorphism":
-        r"""Return the morphism sending \(e\) to ``combine(e)``.
-
-        A morphism is its generator morphism extended linearly, so a
-        pointwise operation is specified on the generating set and extended
-        the same way.  Stated through the generating set rather than a
-        dictionary of images, so it holds for an infinite framing too.
-        """
-        return self.parent()(
-            SetMorphism(
-                Hom(
-                    self._domain_module_generating_set(),
-                    UnderlyingSet(self.codomain()),
-                    Sets(),
-                ),
-                combine,
-            )
-        )
-
-    def __add__(self, other: ElementConstructorInput) -> "ModuleMorphism":
-        r"""Return the pointwise sum \(f+g\).
-
-        This is what makes \(\operatorname{Hom}(M,N)\) an abelian group and
-        hence \(\operatorname{End}(M)\) a ring -- the codomain a module
-        structure \(\rho:S\to\operatorname{End}(M)\) needs in order to be a
-        ring morphism at all.
-        """
-        assert (
-            isinstance(other, ModuleMorphism)
-            and other.parent() is self.parent()
-        ), "morphisms add only inside one homset"
-        def sum_at(element_of_S: "Element") -> "ModuleElement":
-            here: "ModuleElement" = self.module_generator_morphism()._call_(element_of_S)
-            there: "ModuleElement" = other.module_generator_morphism()._call_(element_of_S)
-            return here + there
-
-        return self._pointwise(sum_at)
-
-    def __neg__(self) -> "ModuleMorphism":
-        r"""Return the pointwise negation \(-f\)."""
-        return self._pointwise(
-            lambda element_of_S: -self.module_generator_morphism()._call_(
-                element_of_S
-            )
-        )
-
-    def __sub__(self, other: "ModuleMorphism") -> "ModuleMorphism":
-        return self + (-other)
-
-    def __mul__(self, other: ElementConstructorInput) -> "ModuleMorphism":
-        r"""Return the composite \(f\circ g\).
-
-        Sage's generic ``Morphism.__mul__`` builds a formal composite map,
-        which is not a ``ModuleMorphism`` and so leaves neither this homset
-        nor -- when domain and codomain agree -- the endomorphism ring closed
-        under multiplication.  Composition is written here so that
-        \(\operatorname{End}(M)\) is a ring in fact and not only by category
-        placement.
-        """
-        assert isinstance(other, ModuleMorphism), (
-            "a module morphism composes with a module morphism"
-        )
-        assert other.codomain() is self.domain(), (
-            f"cannot compose {self} after {other}: the codomain of the "
-            "second is not the domain of the first"
-        )
-        return module_homset(other.domain(), self.codomain())(
-            SetMorphism(
-                Hom(
-                    other._domain_module_generating_set(),
-                    UnderlyingSet(self.codomain()),
-                    Sets(),
-                ),
-                lambda element_of_S: self(
-                    other.module_generator_morphism()._call_(element_of_S)
-                ),
-            )
-        )
-
     def _check_relations(self) -> None:
         # Local: at module level this closes an import cycle; the presented
         # category is built by the time relations are checked.
@@ -482,538 +405,6 @@ class ModuleMorphism(Morphism):
     def module_generator_morphism(self) -> SetMorphism[Element, ModuleElement]:
         r"""Return the set morphism whose linear extension is this morphism."""
         return self._generator_morphism
-
-    def _module_generator_image(self, element_of_S: "Element") -> "ModuleElement":
-        r"""Evaluate the generator map on an element already in its domain."""
-        return self.module_generator_morphism()._call_(element_of_S)
-
-    def images(self) -> tuple[ModuleElement, ...]:
-        module_generating_set = self.domain().module_generating_set()
-        assert module_generating_set in Sets().Finite(), (
-            "listing all images requires a finite framing set"
-        )
-        return tuple(
-            self._module_generator_image(element_of_S)
-            for element_of_S in module_generating_set
-        )
-
-    def matrix(self) -> MorphismMatrix:
-        r"""Return the matrix in the finite ordered framings."""
-        try:
-            return self._matrix
-        except AttributeError:
-            # Local: at module level this closes an import cycle; the ring
-            # module is built by the time a matrix is asked for.
-            from dzack_research.preamble.categories.rings.rings import engine_ring
-
-            domain_labels = self.domain().module_generating_set()
-            codomain_labels = self.codomain().module_generating_set()
-            assert (
-                domain_labels in Sets().Finite()
-                and codomain_labels in Sets().Finite()
-            ), "a matrix requires finite ordered framings"
-            ring = engine_ring(self.codomain().base_ring())
-            images = self.images()
-            if not images:
-                m = matrix(ring, 0, len(tuple(codomain_labels)))
-            else:
-                m = matrix([_coordinate_vector(image) for image in images])
-
-            self._matrix = MorphismMatrix(m, ring)
-            return self._matrix
-
-    def _call_(self, element: ElementConstructorInput) -> "Element":
-        # This hook runs only
-        # after ``__call__`` has converted its argument into the domain,
-        # which is what the narrowing states.
-        assert isinstance(element, Element), f"{element} is not an element"
-        source: "Element" = element
-        if source.parent() is not self.domain():
-            assert source.parent() == self.domain(), (
-                f"{source} is not an element of {self.domain()}"
-            )
-            source = sum(
-                (
-                    coefficient * self.domain().module_generator(label)
-                    for label, coefficient in _coefficients(source).items()
-                ),
-                self.domain().zero(),
-            )
-        image: "Element" = sum(
-            (
-                coefficient
-                * self._module_generator_image(element_of_S)
-                for element_of_S, coefficient in _coefficients(source).items()
-            ),
-            self.codomain().zero(),
-        )
-        return image
-
-    def lift(self, element: "Element") -> "ModuleElement":
-        assert element.parent() is self.codomain(), (
-            f"{element} is not an element of {self.codomain()}"
-        )
-        # Local: at module level this closes an import cycle; the ring module
-        # is built by the time a lift is asked for.
-        from dzack_research.preamble.categories.rings.rings import engine_ring
-        system = self.matrix()
-        relations = self._codomain_relations()
-        coefficients = _solve_left_integrally(
-            system.stack(relations) if relations.nrows() else system,
-            _coordinate_vector(element),
-            engine_ring(self.domain().base_ring()),
-        )
-        coefficients = coefficients[: system.nrows()]
-        preimage = zipsum(
-            coefficients,
-            self.domain().module_generators(),
-            self.domain().zero(),
-        )
-        assert self(preimage) == element, (
-            f"{element} is not in the image of this morphism"
-        )
-        return preimage
-
-    def kernel(self) -> "Subobject":
-        assert not _is_torsion(self.domain()), (
-            "this kernel construction requires a free domain"
-        )
-        # The kernel matrix says how the kernel's generators are written in
-        # this domain's generators; it does not *name* them.  ``subobject_on``
-        # builds the abstract module and the inclusion that carries that data.
-        return self.domain().subobject_on(
-            [
-                zipsum(
-                    row,
-                    self.domain().module_generators(),
-                    self.domain().zero(),
-                )
-                for row in self.matrix()._left_kernel_matrix().rows()
-            ]
-        )
-
-    def cokernel(self) -> Parent:
-        r"""Return $\operatorname{coker}(f)=N/f(M)$, the module $f$ presents.
-
-        Not assumed torsion: for $\mathbb Zv\hookrightarrow L$ with $L$ of
-        rank 22 the cokernel has rank 21.  ``FinitelyPresentedModule``
-        refines itself into the torsion categories exactly when it is
-        torsion, so the general answer specialises rather than the special
-        answer being asserted.
-        """
-        # Local: at module level this closes an import cycle; the presented
-        # module is built by the time a cokernel is asked for.
-        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModule
-
-        return FinitelyPresentedModule(self)
-
-    def image(self) -> "Subobject":
-        return self.codomain().subobject_on(list(self.images()))
-
-    def coimage(self) -> Parent:
-        r"""Return $\operatorname{coim}(f)=M/\ker(f)$, presented by the kernel's inclusion.
-
-        The dual of :meth:`cokernel`, computed as one: the coimage is the
-        cokernel of $\ker(f)\hookrightarrow M$.  $R$-Mod is abelian, so the
-        induced arrow $\operatorname{coim}(f)\to\operatorname{im}(f)$ is an
-        isomorphism -- which is why no separate construction lives here.
-        """
-        return self.kernel().embedding().cokernel()
-
-    def equalizer(self, other: "ModuleMorphism") -> "Subobject":
-        r"""Return $\operatorname{Eq}(f,g)\hookrightarrow M$ for a parallel pair.
-
-        $R$-Mod is additive, so the equalizer of $f, g: M\to N$ is
-        $\ker(f-g)$.  This subobject *is* the proof object for morphism
-        equality: $f = g$ exactly when the equalizer is all of $M$, and a
-        module generator outside it is a counterexample in hand -- equality
-        of framed module morphisms is decided on the framing, and the
-        witness or counterexample is returned as data rather than wrapped
-        in a bespoke proof-carrying truth value (the source corpus's
-        layered equality procedure collapses to this one definition on
-        framed domains).
-        """
-        return (self - other).kernel()
-
-    def retraction(self) -> "ModuleMorphism":
-        r"""Return $r: N\to M$ with $r\circ f=\mathrm{id}_M$, for a split mono.
-
-        A retraction exists exactly when $f$ is a split monomorphism --
-        over a PID, for finitely generated modules, exactly when
-        $\operatorname{coker}(f)$ is torsion free -- and that owned
-        question gates the construction.  The matrix is produced by
-        solving $F R = I$ over the base ring and the identity
-        $r\circ f=\mathrm{id}$ is asserted on the composite.
-
-        The source corpus also carried a Moore--Penrose pseudoinverse; that
-        is a framing-dependent $\mathbb Q$-linear datum (the presentation
-        matrix's own ``pseudoinverse()``), not owned vocabulary, and it is
-        deliberately not re-landed here.
-        """
-        assert self.is_injective(), (
-            "a retraction is a left inverse; only a monomorphism has one"
-        )
-        assert self.cokernel().is_torsion_free(), (
-            "a monomorphism of finitely generated modules over a PID "
-            "splits exactly when its cokernel is torsion free"
-        )
-        domain, codomain = self.domain(), self.codomain()
-        backward = _one_sided_inverse_matrix(
-            matrix(domain.base_ring(), self.matrix()), left=True
-        )
-        retraction = _module_morphism(
-            codomain,
-            domain,
-            [
-                zipsum(row, domain.module_generators(), domain.zero())
-                for row in backward.rows()
-            ],
-        )
-        return retraction
-
-    def section(self) -> "ModuleMorphism":
-        r"""Return $s: N\to M$ with $f\circ s=\mathrm{id}_N$, for a split epi.
-
-        Every epimorphism onto a free module splits; more generally a
-        section exists exactly when $f$ is a split epimorphism, and the
-        construction is the transpose problem of :meth:`retraction`:
-        solve $S F = I$ over the base ring, then assert
-        $f\circ s=\mathrm{id}$ on the composite.
-        """
-        assert self.is_surjective(), (
-            "a section is a right inverse; only an epimorphism has one"
-        )
-        domain, codomain = self.domain(), self.codomain()
-        backward = _one_sided_inverse_matrix(
-            matrix(domain.base_ring(), self.matrix()), left=False
-        )
-        section = _module_morphism(
-            codomain,
-            domain,
-            [
-                zipsum(row, domain.module_generators(), domain.zero())
-                for row in backward.rows()
-            ],
-        )
-        return section
-
-    def image_contains(self, element: "Element") -> bool:
-        r"""Return whether ``element`` lies in this morphism's image.
-
-        A finite free domain has finitely many images.  Each image and the
-        target have finite support, so membership is a finite row-module
-        problem even when the codomain framing is infinite.
-        """
-        assert element.parent() is self.codomain(), (
-            f"{element} is not an element of {self.codomain()}"
-        )
-        codomain_labels = self.codomain().module_generating_set()
-        match codomain_labels in Sets().Finite():
-            case True:
-                system = self.matrix()
-                relations = self._codomain_relations()
-                match relations.nrows():
-                    case 0:
-                        pass
-                    case _:
-                        system = system.stack(relations)
-                return bool(_coordinate_vector(element) in system.row_module())
-            case False:
-                image_coefficients = [
-                    _coefficients(image)
-                    for image in self.images()
-                ]
-                target_coefficients = _coefficients(element)
-                support = tuple(
-                    dict.fromkeys(
-                        label
-                        for coefficients in (*image_coefficients, target_coefficients)
-                        for label in coefficients
-                    )
-                )
-                base_ring = self.codomain().base_ring()
-                system = matrix(
-                    base_ring,
-                    [
-                        [coefficients.get(label, base_ring.zero()) for label in support]
-                        for coefficients in image_coefficients
-                    ],
-                )
-                target = vector(
-                    base_ring,
-                    [target_coefficients.get(label, base_ring.zero()) for label in support],
-                )
-                return bool(target in system.row_module())
-
-    def is_injective(self) -> bool:
-        r"""Return whether this morphism is a monomorphism."""
-        # Local: at module level this closes an import cycle; the free-module
-        # category is built by the time injectivity is asked about.
-        from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules
-
-        domain = self.domain()
-        if _is_torsion(domain):
-            zero = domain.zero()
-            return all(
-                element == zero or self(element) != self.codomain().zero()
-                for element in domain
-            )
-        assert domain in FramedFreeModules(domain.base_ring()), (
-            "injectivity is implemented for free and finite torsion domains"
-        )
-        independent_images = _independent_module_generators(
-            self.codomain(),
-            self.images(),
-        )
-        return bool(len(independent_images) == domain.rank())
-
-    def index(self) -> "Integer | PlusInfinity":
-        r"""Return $[N:f(M)]=|\operatorname{coker} f|\in\mathbb Z_{\ge 1}\cup\{\infty\}$.
-
-        The definition: the index is the cardinality of the cokernel, and the
-        cokernel is a finitely presented module that owns its invariant
-        factors over the honest engine ring -- so it is asked, over every
-        base.  Over a field a full-rank image is everything and the index is
-        $1$, which is the one fast path kept.  An infinite index is an
-        answer, $+\infty$, per the cardinal contract.
-        """
-        from sage.rings.infinity import Infinity
-        # Local: at module level this closes an import cycle; the ring module
-        # is built by the time an index is asked for.
-        from dzack_research.preamble.categories.rings.rings import engine_ring
-
-        codomain = self.codomain()
-        image = self.matrix()
-        width = len(tuple(self.codomain().module_generating_set()))
-
-        if not _is_presented(codomain) and (
-            engine_ring(codomain.base_ring()).is_field()
-        ):
-            if image.rank() != width:
-                return Infinity
-            return SageZZ.one()
-
-        cardinality = self.cokernel().cardinality()
-        if not cardinality.is_finite():
-            return Infinity
-        index: "Integer" = cardinality._integer_(SageZZ)
-        return index
-
-    def orthogonal_complement(self) -> "Subobject":
-        codomain = self.codomain()
-        assert not _is_torsion(codomain), (
-            "orthogonal complement is defined here in a free codomain"
-        )
-        gram = codomain.gram_matrix()
-        pairing = MorphismMatrix(gram, gram.base_ring()) * self.matrix().transpose()
-        return codomain.subobject_on(
-            [
-                zipsum(
-            row,
-            codomain.module_generators(),
-            codomain.zero(),
-        )
-            for row in pairing._left_kernel_matrix().rows()
-        ]
-        )
-
-    def restrict(self, subobject: "Subobject") -> "ModuleMorphism":
-        r"""Return $f\circ\iota$: precomposition with a subobject's embedding.
-
-        Restriction *is* composition with the chosen monomorphism the
-        subobject carries; nothing else is consulted.
-        """
-        embedding = subobject.embedding()
-        assert embedding.codomain() == self.domain(), (
-            "restriction needs a subobject of this morphism's domain; "
-            f"the embedding lands in {embedding.codomain()}, not {self.domain()}"
-        )
-        return subobject.Hom(self.codomain())(
-            {
-                label: self(embedding(subobject.module_generator(label)))
-                for label in subobject.module_generating_set()
-            }
-        )
-
-    def preserves(self, subobject: "Subobject") -> bool:
-        r"""Return whether this endomorphism maps the subobject into itself.
-
-        The factorization question: does $f\circ\iota$ factor through
-        $\iota$ again -- i.e. does every generator image land back in the
-        embedding's image?  Asked of the embedding, which owns membership in
-        its image.
-        """
-        assert self.domain() == self.codomain(), (
-            "preservation is an endomorphism question; "
-            f"domain={self.domain()}, codomain={self.codomain()}"
-        )
-        embedding = subobject.embedding()
-        return all(
-            embedding.image_contains(self(embedding(generator)))
-            for generator in subobject.module_generators()
-        )
-
-    def saturation_factorization(self) -> "ModuleMorphism":
-        r"""Return the monomorphism $M\to\overline{f(M)}$ an injective $f$ factors through.
-
-        $\overline{f(M)}$ is the saturation (primitive closure) of the image
-        subobject; the returned arrow is the witness of the factorization
-        $f=\iota_{\overline{f(M)}}\circ g$, and its index is
-        $[\overline{f(M)}:f(M)]$ -- $1$ exactly when $f$ is a primitive
-        embedding.  The one coordinate solve lives here, on the arrow.
-        """
-        assert self.is_injective(), (
-            "the saturation factorization is monomorphism vocabulary"
-        )
-        saturated = self.image().saturation()
-        embedding_rows = matrix(SageQQ, saturated.embedding().matrix())
-        factor_rows = embedding_rows.solve_left(matrix(SageQQ, self.matrix()))
-        base_ring = self.domain().base_ring()
-        assert all(entry in base_ring for entry in factor_rows.list()), (
-            "the factorization through the saturation is integral by "
-            "construction; a non-integral solve means the saturation is wrong"
-        )
-        factor = self.domain().Hom(saturated)(
-            {
-                label: zipsum(
-                    (base_ring(entry) for entry in row),
-                    saturated.module_generators(),
-                    saturated.zero(),
-                )
-                for label, row in zip(
-                    self.domain().module_generating_set(),
-                    factor_rows.rows(),
-                )
-            }
-        )
-        embedding = saturated.embedding()
-        assert all(
-            embedding(factor(generator)) == self(generator)
-            for generator in self.domain().module_generators()
-        ), "the factorization must compose back to the morphism it factors"
-        return factor
-
-    def direct_sum(self, summands: "Iterable") -> "ModuleMorphism":
-        r"""Return $f\oplus g\oplus\cdots$: the direct sum acting on morphisms.
-
-        The functor's action on arrows, completing the object-level
-        ``direct_sum``: the domain and codomain are the object direct sums,
-        and each summand's generator images are included into the matching
-        summand of the codomain sum.  Folded pairwise exactly as the object
-        construction folds, so the two spellings label their coproducts the
-        same way.
-        """
-        from functools import reduce
-
-        def orthogonal_sum(
-            left: "ModuleMorphism", right: "ModuleMorphism"
-        ) -> "ModuleMorphism":
-            domain = left.domain().direct_sum([right.domain()])
-            codomain = left.codomain().direct_sum([right.codomain()])
-            images = {}
-            for side, inner in ((0, left), (1, right)):
-                inner_labels = tuple(inner.codomain().module_generating_set())
-                for label in inner.domain().module_generating_set():
-                    image = inner(inner.domain().module_generator(label))
-                    images[(side, label)] = zipsum(
-                        _coordinate_vector(image),
-                        tuple(
-                            codomain.module_generator((side, inner_label))
-                            for inner_label in inner_labels
-                        ),
-                        codomain.zero(),
-                    )
-            return domain.Hom(codomain)(images)
-
-        return reduce(orthogonal_sum, tuple(summands), self)
-
-    # ---- endomorphism vocabulary ----
-
-    def multiplicative_order(self) -> "RingElement":
-        r"""Return the multiplicative order of this endomorphism;
-        ``+Infinity`` for infinite order.  Computed by Sage on the matrix,
-        which is a faithful picture of the endomorphism on a framed module."""
-        assert self.domain() == self.codomain(), (
-            "multiplicative order is endomorphism vocabulary; "
-            f"domain={self.domain()}, codomain={self.codomain()}"
-        )
-        return matrix(self.matrix()).multiplicative_order()
-
-    def is_nilpotent(self) -> bool:
-        r"""Return whether $f^n=0$ for some $n$ ($n\le\mathrm{rk}$ suffices)."""
-        assert self.domain() == self.codomain(), (
-            "nilpotence is endomorphism vocabulary; "
-            f"domain={self.domain()}, codomain={self.codomain()}"
-        )
-        engine = matrix(self.matrix())
-        return bool((engine ** engine.nrows()).is_zero())
-
-    def is_idempotent(self) -> bool:
-        r"""Return whether $f\circ f=f$ (a projection onto its image)."""
-        assert self.domain() == self.codomain(), (
-            "idempotence is endomorphism vocabulary; "
-            f"domain={self.domain()}, codomain={self.codomain()}"
-        )
-        engine = matrix(self.matrix())
-        return bool(engine * engine == engine)
-
-    def is_unipotent(self) -> bool:
-        r"""Return whether $f-\mathrm{id}$ is nilpotent (parabolic type)."""
-        assert self.domain() == self.codomain(), (
-            "unipotence is endomorphism vocabulary; "
-            f"domain={self.domain()}, codomain={self.codomain()}"
-        )
-        engine = matrix(self.matrix())
-        difference = engine - engine.parent().identity_matrix()
-        return bool((difference ** engine.nrows()).is_zero())
-
-    def _codomain_relations(self) -> MorphismMatrix:
-        codomain = self.codomain()
-        match codomain:
-            case _ if _is_presented(codomain):
-                return codomain.relation_matrix()
-            case _:
-                # A free codomain imposes no relations. The empty matrix is
-                # still the matrix of a morphism, so it is wrapped like every
-                # other -- one declared return type, true on both branches.
-                return MorphismMatrix(
-                    matrix(
-                        SageZZ,
-                        0,
-                        len(tuple(self.codomain().module_generating_set())),
-                    ),
-                    SageZZ,
-                )
-
-    def _repr_type(self) -> str:
-        return "Module"
-
-    def _repr_defn(self) -> str:
-        module_generating_set = self.domain().module_generating_set()
-        if module_generating_set not in Sets().Finite():
-            return "the linear extension of a generator morphism"
-        return "\n".join(
-            f"{element_of_S!r} |--> "
-            f"{self._module_generator_image(element_of_S)}"
-            for element_of_S in module_generating_set
-        )
-
-    def __eq__(self, other: ElementConstructorInput) -> bool:
-        if not isinstance(other, ModuleMorphism) or self.parent() is not other.parent():
-            return False
-        module_generating_set = self.domain().module_generating_set()
-        assert module_generating_set in Sets().Finite(), (
-            "equality of maps on a nonenumerable framing needs an explicit theorem"
-        )
-        return self.images() == other.images()
-
-    def __hash__(self) -> int:
-        module_generating_set = self.domain().module_generating_set()
-        assert module_generating_set in Sets().Finite(), (
-            "a morphism on a nonenumerable framing is not hashable"
-        )
-        return hash((id(self.parent()), self.images()))
-
 
 class FramingMorphism(ModuleMorphism):
     r"""A declared epimorphism \(F_R(S)\twoheadrightarrow M\).
@@ -1058,9 +449,6 @@ class SubFramingMorphism(ModuleMorphism):
     """
 
     def is_injective(self) -> bool:
-        return True
-
-    def is_surjective(self) -> bool:
         return True
 
 
@@ -1142,11 +530,7 @@ class ModuleAutomorphism(ModuleMorphism):
         matrices a caller would have to translate for.  This is the
         conversion protocol ``ClassFunction`` evaluates through.
         """
-        return self.parent()._defining_matrix_group()(
-            self.matrix()._sage_matrix()
-        ).gap()
-
-    gap = _libgap_
+        return self.parent()._defining_matrix_group()(self.matrix()).gap()
 
 
 class AutomorphismSubgroup:
@@ -1183,15 +567,6 @@ class AutomorphismSubgroup:
         def is_finite(self) -> bool: ...
         def group_generators(self) -> TotallyOrderedFiniteSet["ModuleAutomorphism"]: ...
         def __iter__(self) -> Iterator["ModuleAutomorphism"]: ...
-
-    def supergroup(self: "FramedAutomorphismSubgroup") -> "Group":
-        return self.__dict__.get("_supergroup", self.domain().Aut())
-
-    def inclusion(self: "FramedAutomorphismSubgroup") -> "GroupAction":
-        from dzack_research.preamble.categories.group.groups import OwnedGroups
-
-        inclusion: "GroupAction" = OwnedGroups.ParentMethods.inclusion(self)
-        return inclusion
 
     def _subgroup_inclusion(self: "FramedAutomorphismSubgroup") -> "GroupAction":
         r"""Construct the canonical inclusion \(\rho:G\hookrightarrow\operatorname{Aut}(M)\).
@@ -1235,64 +610,14 @@ class AutomorphismSubgroup:
         )
 
     @cached_method
-    def _by_matrix(self) -> dict[MorphismMatrix, ModuleAutomorphism]:
+    def _by_matrix(self) -> dict[Matrix, ModuleAutomorphism]:
         r"""Index this group's own elements by their matrices."""
-        return {element.matrix(): element for element in self}
-
-    def conjugacy_classes_representatives(
-        self,
-    ) -> tuple[ModuleAutomorphism, ...]:
-        r"""Return one element of this group from each conjugacy class.
-
-        In this group's own elements, and in the order the character table is
-        written in: a class function is declared by its values in this order,
-        so returning representatives from a parallel model would silently
-        write every character against the wrong classes.
-        """
-        # Local: at module level this closes an import cycle; the ring module
-        # is built by the time conjugacy classes are asked for.
-        from dzack_research.preamble.categories.rings.rings import engine_ring
-
-        ring = engine_ring(self.domain().base_ring())
-        by_matrix = self._by_matrix()
-        representatives = tuple(
-            by_matrix.get(MorphismMatrix(representative.matrix(), ring))
-            for representative in
-            self._defining_matrix_group().conjugacy_classes_representatives()
-        )
-        assert all(
-            representative is not None for representative in representatives
-        ), (
-            "a class representative of the model is not an element of this "
-            "subgroup: the model does not present this group"
-        )
-        return representatives
-
-    def irreducible_characters(self) -> tuple[Character, ...]:
-        r"""Return the absolutely irreducible characters of this group.
-
-        Class functions on this group, whatever module it goes on to act on:
-        the conjugacy classes, the table, and the values are GAP's, computed
-        from the group alone.  The character of a *representation* is a
-        separate composite, \(g\mapsto\operatorname{tr}\rho(g)\), and is the
-        only place a module enters.
-        """
-        return tuple(
-            Character(class_function)
-            for class_function in
-            self._defining_matrix_group().irreducible_characters()
-        )
-
-    def character(self, values: "OrderedSet") -> Character:
-        r"""Return the class function taking ``values`` on the conjugacy classes.
-
-        In the order ``conjugacy_classes_representatives`` returns them.
-        """
-        return Character(self._defining_matrix_group().character(list(values)))
-
-    def trivial_character(self) -> Character:
-        return Character(self._defining_matrix_group().trivial_character())
-
+        indexed = {}
+        for element in self:
+            coordinates = matrix(element.matrix())
+            coordinates.set_immutable()
+            indexed[coordinates] = element
+        return indexed
 
 class ModuleAutomorphismGroups(Category_over_base_ring):
     r"""$\operatorname{Aut}_R(M)$, and its finitely generated subgroups.
@@ -1308,12 +633,61 @@ class ModuleAutomorphismGroups(Category_over_base_ring):
         return "module automorphism groups"
 
     def super_categories(self) -> list:
-        return [OwnedModules(self.base_ring()).Homsets()]
+        from dzack_research.preamble.categories.group.groups import OwnedGroups
+
+        return [OwnedModules(self.base_ring()).Homsets(), OwnedGroups()]
 
     class ParentMethods(AutomorphismSubgroup):
         r"""The automorphism group, or a finite subgroup with the same elements."""
 
         Element = ModuleAutomorphism
+
+        def conjugacy_classes_representatives(
+            self,
+        ) -> tuple[ModuleAutomorphism, ...]:
+            r"""Return this group's representatives in character-table order."""
+            by_matrix = self._by_matrix()
+            representatives = []
+            engine_group = self._defining_matrix_group()
+            for representative in engine_group.conjugacy_classes_representatives():
+                coordinates = matrix(representative.matrix())
+                coordinates.set_immutable()
+                representatives.append(by_matrix.get(coordinates))
+            representatives = tuple(representatives)
+            assert all(
+                representative is not None for representative in representatives
+            ), "the matrix model does not present this automorphism subgroup"
+            return representatives
+
+        def irreducible_characters(self) -> tuple[Character, ...]:
+            r"""Return the absolutely irreducible characters of this group."""
+            engine_group = self._defining_matrix_group()
+            return tuple(
+                Character(
+                    class_function,
+                    self,
+                    element_argument=lambda element: engine_group(element.matrix()),
+                )
+                for class_function in engine_group.irreducible_characters()
+            )
+
+        def character(self, values: "OrderedSet") -> Character:
+            r"""Return the character with the stated conjugacy-class values."""
+            class_function = self._defining_matrix_group().character(list(values))
+            return Character(
+                class_function,
+                self,
+                element_argument=lambda element: self._defining_matrix_group()(element.matrix()),
+            )
+
+        def trivial_character(self) -> Character:
+            r"""Return the trivial character of this group."""
+            class_function = self._defining_matrix_group().trivial_character()
+            return Character(
+                class_function,
+                self,
+                element_argument=lambda element: self._defining_matrix_group()(element.matrix()),
+            )
 
         if TYPE_CHECKING:
             # The elements here are automorphisms, narrower than the module
@@ -1333,6 +707,7 @@ class ModuleAutomorphismGroups(Category_over_base_ring):
             **rest: "ModuleMorphismData",
         ) -> None:
             super().__init__(domain=module, codomain=module, **rest)
+            self._supergroup = self
             self._group_generators = None
             self._elements = None
             if group_generators is not None:
@@ -1348,19 +723,19 @@ class ModuleAutomorphismGroups(Category_over_base_ring):
                 )
                 self._elements = self._close()
 
+        def supergroup(self) -> "Group":
+            return self._supergroup
+
         def _element_constructor_(
             self,
             images: "ModuleMorphismData",
         ) -> ModuleAutomorphism:
             return ModuleAutomorphism(self, images)
 
-        def module(self) -> "Module":
-            return self.domain()
-
         def one(
             self,
         ) -> ModuleAutomorphism:
-            return self(self.module().module_generator_morphism())
+            return self(self.domain().module_generator_morphism())
 
         def subgroup_on(
             self,
@@ -1370,7 +745,7 @@ class ModuleAutomorphismGroups(Category_over_base_ring):
             assert all(generator in self for generator in group_generators), (
                 "each subgroup generator must belong to this automorphism group"
             )
-            subgroup = ModuleAutomorphismGroup(self.module(), group_generators)
+            subgroup = ModuleAutomorphismGroup(self.domain(), group_generators)
             subgroup._supergroup = self
             # Local: a module-level import would close a cycle; the module is
             # built by the time this runs.
@@ -1441,8 +816,8 @@ class ModuleAutomorphismGroups(Category_over_base_ring):
 
         def _repr_(self) -> str:
             if self.is_finite():
-                return f"Subgroup of Aut({self.module()}) of order {self.order()}"
-            return f"Aut({self.module()})"
+                return f"Subgroup of Aut({self.domain()}) of order {self.order()}"
+            return f"Aut({self.domain()})"
 
 def ModuleAutomorphismGroup(
     module: "Module",
@@ -1456,8 +831,137 @@ def ModuleAutomorphismGroup(
     )
 
 
+class GroupAction(Morphism):
+    r"""Construction class for \(\rho:G\to\operatorname{Aut}_R(M)\)."""
+
+    if TYPE_CHECKING:
+        def parent(self) -> "GroupActionHomset": ...
+
+
+class GroupActionHomsets(Category):
+    r"""Homsets \(\operatorname{Hom}(G,\operatorname{Aut}_R(M))\)."""
+
+    def super_categories(self) -> list:
+        from dzack_research.preamble.categories.group.groups import OwnedGroups
+
+        return [OwnedGroups().Homsets()]
+
+    class ParentMethods:
+        def module(self) -> "Module":
+            r"""Return the module acted on by this homset's codomain."""
+            return self.codomain().domain()
+
+        def _element_constructor_(self, images: "OrderedSet | dict") -> "GroupAction":
+            match images:
+                case dict():
+                    return self.element_class(self, images)
+                case _:
+                    values = self._values_on_generators(tuple(images))
+                    return self.element_class(self, values)
+
+        def _values_on_generators(
+            self,
+            images: "OrderedSet[ModuleAutomorphism]",
+        ) -> dict[MultiplicativeGroupElement, ModuleAutomorphism]:
+            r"""Extend generator images across a finite group."""
+            group = self.domain()
+            assert group.is_finite(), (
+                "extension from generator images requires a finite group"
+            )
+            automorphisms = self.codomain()
+            generators = tuple(group.group_generators())
+            assert len(images) == len(generators), (
+                f"{group} has {len(generators)} generators, got {len(images)} images"
+            )
+            assert all(image in automorphisms for image in images), (
+                "each image belongs to the stated automorphism group"
+            )
+            values = {group.one(): automorphisms.one()}
+            frontier = [group.one()]
+            while frontier:
+                current = frontier.pop()
+                for generator, image in zip(generators, images, strict=True):
+                    product = current * generator
+                    candidate = values[current] * image
+                    if product in values:
+                        assert values[product] == candidate, (
+                            "the images do not respect the relations of the group"
+                        )
+                    else:
+                        values[product] = candidate
+                        frontier.append(product)
+            return values
+
+        def __contains__(self, action: "ElementConstructorInput") -> bool:
+            return isinstance(action, GroupAction) and action.parent() is self
+
+    class ElementMethods:
+        def __init__(
+            self,
+            parent: "GroupActionHomset",
+            values: dict[MultiplicativeGroupElement, ModuleAutomorphism],
+        ) -> None:
+            super().__init__(parent)
+            group = parent.domain()
+            automorphisms = parent.codomain()
+            assert all(
+                isinstance(value, ModuleAutomorphism)
+                for value in values.values()
+            ), "each value of a group action must be a module automorphism"
+            values = {
+                group_element: (
+                    value
+                    if value in automorphisms
+                    else automorphisms(value.module_generator_morphism())
+                )
+                for group_element, value in values.items()
+            }
+            assert all(value in automorphisms for value in values.values()), (
+                "each action value belongs to the stated automorphism group"
+            )
+            from dzack_research.preamble.categories.group.groups import OwnedFinitelyGeneratedGroups
+
+            if group in OwnedFinitelyGeneratedGroups():
+                assert set(group.group_generators()) <= set(values), (
+                    "the action names the image of each group generator"
+                )
+            self._values = dict(values)
+
+        def _call_(self, element: "ElementConstructorInput") -> ModuleAutomorphism:
+            r"""Return \(\rho(g)\) where the defining assignment names it."""
+            assert element in self.values(), (
+                f"the action has no stated value at {element}; computing one "
+                f"requires a word for it in {self.domain()}"
+            )
+            return self.values()[element]
+
+        def values(
+            self,
+        ) -> dict[MultiplicativeGroupElement, ModuleAutomorphism]:
+            r"""Return the defining values of this action."""
+            return dict(self._values)
+
+        def is_injective(self) -> bool:
+            r"""Return whether the stated values define a faithful action."""
+            values = self.values()
+            return len(set(values.values())) == len(values)
+
+        def __eq__(self, other: "ElementConstructorInput") -> bool:
+            return (
+                isinstance(other, GroupAction)
+                and self.domain() == other.domain()
+                and self.codomain() == other.codomain()
+                and self.values() == other.values()
+            )
+
+        def __hash__(self) -> int:
+            return hash((type(self), self.domain(), self.codomain()))
+
+
 class GroupActionHomset(GroupActionHomsetBase):
     r"""Homomorphisms from a group to the automorphisms of one module."""
+
+    Element = GroupAction
 
     if TYPE_CHECKING:
         # An action goes from a group to the automorphism group of the
@@ -1467,202 +971,22 @@ class GroupActionHomset(GroupActionHomsetBase):
         def codomain(self) -> "ModuleAutomorphismGroup": ...
 
     def __init__(self, group: "Group", module: "Module") -> None:
-        self._module = module
+        from dzack_research.preamble.categories.group.groups import refine_group
+
+        group = refine_group(group)
         Homset.__init__(
             self,
             group,
-            module.Aut(),
+            ModuleAutomorphismGroup(module),
             category=Groups(),
             check=False,
         )
-
-    def module(self) -> "Module":
-        return self._module
-
-    def _element_constructor_(self, images: "OrderedSet | dict") -> "GroupAction":
-        r"""Return the \(\rho:G\to\operatorname{Aut}_R(M)\) that ``images`` names.
-
-        A homomorphism out of \(G\) is named either by its values on all of
-        \(G\) -- a dictionary, which is what a transported action has to hand
-        -- or by the images of the distinguished generators, which is how a
-        caller names one.  The second is the presentation route: the images
-        determine \(\rho\) if and only if they satisfy the relations of
-        \(G\), and that is what :meth:`_values_on_generators` decides.
-
-        Naming \(\rho\) is the business of the category of groups and of this
-        homset in it.  A module is equipped with an action already
-        constructed; it does not build one.
-        """
-        match images:
-            case dict():
-                return GroupAction(self, images)
-            case _:
-                return GroupAction(self, self._values_on_generators(tuple(images)))
-
-    def _values_on_generators(
-        self,
-        images: "OrderedSet[ModuleAutomorphism]",
-    ) -> dict[MultiplicativeGroupElement, ModuleAutomorphism]:
-        r"""Extend generator images over \(G\), refusing a broken relation.
-
-        The extension is the closure of the assignment over the Cayley graph
-        of \(G\) on its distinguished generators: every element is reached as
-        a word, and its image is the corresponding word in the automorphisms.
-        A relation of \(G\) is a pair of words meeting at one element, so a
-        second arrival at an element already reached is exactly a relation,
-        and the images satisfy it precisely when the two words agree.
-        Checking every such meeting is checking every relation, which is the
-        whole content of "\(\rho\) is a homomorphism"; no presentation has to
-        be supplied, because the group states its own generators.
-        """
-        group = self.domain()
-        assert group.is_finite(), (
-            "extending generator images closes the Cayley graph of G, which "
-            "terminates exactly when G is finite; name the action by a "
-            "dictionary of values instead"
-        )
-        automorphisms = self.codomain()
-        generators = tuple(group.group_generators())
-        assert len(images) == len(generators), (
-            f"{group} has {len(generators)} generators, got {len(images)} images"
-        )
-        assert all(image in automorphisms for image in images), (
-            "the generator images must belong to the automorphism group of this homset"
-        )
-        values = {group.one(): automorphisms.one()}
-        frontier = [group.one()]
-        while frontier:
-            current = frontier.pop()
-            for generator, image in zip(generators, images, strict=True):
-                product = current * generator
-                candidate = values[current] * image
-                match product in values:
-                    case True:
-                        assert values[product] == candidate, (
-                            "the images do not respect the relations of the group"
-                        )
-                    case False:
-                        values[product] = candidate
-                        frontier.append(product)
-        return values
-
-    def __contains__(self, action: ElementConstructorInput) -> bool:
-        return (
-            isinstance(action, GroupAction)
-            and action.parent() is self
-        )
+        refine(self, GroupActionHomsets())
 
 
 def group_action_homset(group: "Group", module: "Module") -> GroupActionHomset:
-    r"""Return the canonical homset \(G\to\operatorname{Aut}_R(M)\).
-
-    Keyed by identity: distinct subgroups of one automorphism
-    group share ``Homset`` equality (domain, codomain, category), so a
-    content-keyed cache would hand one subgroup's homset to another.
-    """
-    cache = module.__dict__.setdefault("_group_action_homsets", {})
-    homset: GroupActionHomset | None = cache.get(id(group))
-    if homset is None:
-        homset = GroupActionHomset(group, module)
-        cache[id(group)] = homset
-    return homset
-
-
-class GroupAction(Morphism):
-    r"""A homomorphism \(G\to\operatorname{Aut}_R(M)\)."""
-
-    if TYPE_CHECKING:
-        # An action's parent is the homset it was named in; ``Element.parent``
-        # states only that it is some parent.  Declared, never defined: the
-        # inherited implementation is the one that runs.
-        def parent(self) -> GroupActionHomset: ...
-
-    def __init__(
-        self,
-        parent: GroupActionHomset,
-        values: dict[MultiplicativeGroupElement, ModuleAutomorphism],
-    ) -> None:
-        Morphism.__init__(self, parent)
-        group = parent.domain()
-        automorphisms = parent.codomain()
-        assert all(value in automorphisms for value in values.values()), (
-            "every value must belong to the stated automorphism group"
-        )
-        # $\rho$ is determined by its values on a generating set, so that is
-        # what the assignment must name.  Ranging over $G$ instead -- to check
-        # coverage, the identity and the homomorphism law pairwise -- required
-        # $G$ to be finite and cost $|G|^2$, which rules out every ordinary
-        # input here: $\mathrm{GL}_n(R)$, $O(L)$ for indefinite $L$, and the
-        # infinite cyclic group a single isometry generates.  The law itself
-        # is not checkable on generators without the relations, so it is not
-        # claimed rather than claimed on the finite cases alone.
-        # Whether a generating set exists is category membership, and the
-        # owned finitely generated groups are where it is stated; Sage's
-        # ``FinitelyGenerated`` is a declaration none of these groups carry.
-        # Local: at module level this closes an import cycle; the group node
-        # is built by the time an action is named.
-        from dzack_research.preamble.categories.group.groups import OwnedFinitelyGeneratedGroups
-
-        if group in OwnedFinitelyGeneratedGroups():
-            assert set(group.group_generators()) <= set(values), (
-                "the action must name the image of every group generator"
-            )
-        self._values = dict(values)
-
-    def module(self) -> "Module":
-        return self.parent().module()
-
-    def _call_(self, element: ElementConstructorInput) -> ModuleAutomorphism:
-        r"""Return \(\rho(g)\) where the assignment names it.
-
-        \(\rho\) is a homomorphism on all of \(G\); what this object holds is
-        the assignment it was named by.  Reaching an element that assignment
-        does not name means writing it as a word in the ones it does, which is
-        the word problem -- undecidable in general, and decidable for a group
-        carrying an automatic structure, which is what KBMAG computes.
-        Neither is done here, so the answer is an absence.
-
-        The absence is not a claim about the element.  It may well be in
-        \(G\), and for a group named by generators most of \(G\) is: the
-        finite case reaches every element only because the Cayley-graph
-        extension in :meth:`GroupActionHomset._values_on_generators` ran
-        first and named them all.
-        """
-        assert element in self._values, (
-            f"this action names no value at {element}; finding one means "
-            f"writing it as a word in the elements it does name, which is the "
-            f"word problem for {self.domain()} and is not solved here.  The "
-            f"element may well be in the group."
-        )
-        automorphism: ModuleAutomorphism = self._values[element]
-        return automorphism
-
-    def values(self) -> dict[MultiplicativeGroupElement, ModuleAutomorphism]:
-        return dict(self._values)
-
-    def is_injective(self) -> bool:
-        r"""Return whether distinct group elements have distinct images."""
-        return len(set(self._values.values())) == len(self._values)
-
-    def __eq__(self, other: ElementConstructorInput) -> bool:
-        r"""Return whether these are the same homomorphism.
-
-        Two homomorphisms out of one group into one \(\operatorname{Aut}\)
-        agree exactly when they agree at every element, and the values are
-        what record that.  Sage's generic morphism comparison declines to
-        answer for these and raises, so without this a group module could not
-        be compared -- its identity is the pair \((M,\rho)\), and one half of
-        the pair was unaskable.
-        """
-        return (
-            type(other) is type(self)
-            and self.domain() == other.domain()
-            and self.module() == other.module()
-            and self._values == other._values
-        )
-
-    def __hash__(self) -> int:
-        return hash((type(self), self.domain(), self.module()))
+    r"""Return \(\operatorname{Hom}(G,\operatorname{Aut}_R(M))\)."""
+    return GroupActionHomset(group, module)
 
 
 class AutomorphismSubgroupInclusion(GroupAction):
@@ -1673,7 +997,7 @@ class AutomorphismSubgroupInclusion(GroupAction):
 
     def _call_(self, element: ElementConstructorInput) -> ModuleAutomorphism:
         assert element in self.domain(), f"{element} is not in {self.domain()}"
-        module = self.module()
+        module = self.codomain().domain()
         return self.codomain()(
             {
                 label: element(module.module_generator(label))
@@ -1701,7 +1025,7 @@ class AutomorphismSubgroupInclusion(GroupAction):
 
 
 def _solve_left_integrally(
-    system: MorphismMatrix, target: "Vector", ring: "Ring"
+    system: Matrix, target: "Vector", ring: "Ring"
 ) -> "Vector":
     r"""Return a solution of \(aS=t\) over ``ring``, or fail.
 
@@ -1714,10 +1038,9 @@ def _solve_left_integrally(
     """
     # The Smith factors act here on coordinate vectors, not on framings: a
     # morphism matrix times a vector is not a morphism matrix, so this solve
-    # runs on the underlying matrices -- the module's own linear algebra,
-    # which is what ``_sage_matrix`` exists for.
+    # runs on coordinate vectors in the module's base ring.
     smith, left, right = system.transpose().smith_form()
-    shifted = left._sage_matrix() * vector(ring, target)
+    shifted = left * vector(ring, target)
     width = smith.ncols()
     solution = [ring.zero()] * width
     for index, value in enumerate(shifted):
@@ -1731,4 +1054,4 @@ def _solve_left_integrally(
                 f"{value}/{divisor}"
             )
             solution[index] = ring(value / divisor)
-    return right._sage_matrix() * vector(ring, solution)
+    return right * vector(ring, solution)

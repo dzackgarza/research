@@ -374,12 +374,6 @@ class BilinearFormMorphism(Morphism):
         )
         self._gram_matrix = gram
 
-    def module(self) -> "Module":
-        return self.parent().module()
-
-    def value_module(self) -> "Module":
-        return self.codomain()
-
     def gram_matrix(self) -> GramMatrix:
         r"""Return the matrix of the form in the module's framing.
 
@@ -388,7 +382,7 @@ class BilinearFormMorphism(Morphism):
         to run over otherwise.
         """
         assert self._gram_matrix is not None, (
-            f"{self.module()} has no finite generating set, so its form has "
+            f"{self.domain()} has no finite generating set, so its form has "
             "no Gram matrix; the form is its pairing"
         )
         return GramMatrix(self._gram_matrix)
@@ -420,9 +414,9 @@ class BilinearFormMorphism(Morphism):
         # reaches it through the forgetful map, which is what
         # ``FormedModules.ElementMethods.b`` applies before calling here.
         assert all(
-            element in self.module()
+            element in self.domain()
             for element in (left, right)
-        ), f"the form pairs elements of {self.module()}"
+        ), f"the form pairs elements of {self.domain()}"
         if self._pairing is not None:
             return self.codomain()(self._pairing(left, right))
         return self.codomain()(
@@ -430,9 +424,6 @@ class BilinearFormMorphism(Morphism):
             * self._gram_matrix
             * _coordinate_vector(right)
         )
-
-    def b(self, left: "Element", right: "Element") -> "Element":
-        return self(left, right)
 
     def norm(self, element: "Element") -> "Element":
         return self(element, element)
@@ -450,26 +441,26 @@ class BilinearFormMorphism(Morphism):
         $\mathbb Q/\mathbb Z\to\mathbb Q/2\mathbb Z$.
         """
         assert self._gram_matrix is not None, (
-            f"{self.module()} has no finite generating set, so its polar "
+            f"{self.domain()} has no finite generating set, so its polar "
             "form has no Gram matrix; polarize the pairing instead"
         )
-        return BilinearForms(self.module(), self.codomain())(
+        return BilinearForms(self.domain(), self.codomain())(
             2 * self._gram_matrix
         )
 
     def on_module(self, module: "Module") -> "BilinearFormMorphism":
         assert self._gram_matrix is not None, (
-            f"{self.module()} has no finite generating set, so its form has "
+            f"{self.domain()} has no finite generating set, so its form has "
             "no Gram matrix; the form is its pairing"
         )
         return BilinearForms(module, self.codomain())(self._gram_matrix)
 
     def reduced(self, value_module: "Module") -> "BilinearFormMorphism":
         assert self._gram_matrix is not None, (
-            f"{self.module()} has no finite generating set, so its form has "
+            f"{self.domain()} has no finite generating set, so its form has "
             "no Gram matrix; the form is its pairing"
         )
-        return BilinearForms(self.module(), value_module)(self._gram_matrix)
+        return BilinearForms(self.domain(), value_module)(self._gram_matrix)
 
     def base_changed(self, module: "Module") -> "BilinearFormMorphism":
         r"""Return this form on ``module``, valued in ``module``'s base ring.
@@ -484,7 +475,7 @@ class BilinearFormMorphism(Morphism):
         from dzack_research.preamble.categories.rings.rings import engine_ring
 
         assert self._gram_matrix is not None, (
-            f"{self.module()} has no finite generating set, so this form has "
+            f"{self.domain()} has no finite generating set, so this form has "
             "no matrix of entries to carry along the ring map"
         )
         value_ring = module.base_ring()
@@ -493,7 +484,7 @@ class BilinearFormMorphism(Morphism):
         )
 
     def pullback(self, morphism: "ModuleMorphism") -> "BilinearFormMorphism":
-        matrix_of_map = morphism.matrix()._sage_matrix()
+        matrix_of_map = morphism.matrix()
         domain = morphism.domain()
         return BilinearForms(domain, self.codomain())(
             GramMatrix(
@@ -518,9 +509,9 @@ class BilinearFormMorphism(Morphism):
         # The compatibility the pairing loop below silently assumes: the
         # inclusion lands in this form's module, which is where both the
         # images of N and the generating family of M are paired.
-        assert codomain is self.module(), (
+        assert codomain is self.domain(), (
             f"the inclusion lands in {codomain}, but this form pairs "
-            f"elements of {self.module()}"
+            f"elements of {self.domain()}"
         )
         assert value_projection.domain() is self.codomain(), (
             f"the value projection starts at {value_projection.domain()}, "
@@ -541,7 +532,7 @@ class BilinearFormMorphism(Morphism):
 
     def values_matrix(self) -> tuple:
         assert self._gram_matrix is not None, (
-            f"{self.module()} has no finite generating set, so this form has "
+            f"{self.domain()} has no finite generating set, so this form has "
             "no finite family of values to tabulate"
         )
         return tuple(
@@ -607,12 +598,6 @@ class QuadraticFormMorphism(Morphism):
         )
         self._lift_matrix = gram
 
-    def module(self) -> "Module":
-        return self.parent().module()
-
-    def value_module(self) -> "Module":
-        return self.codomain()
-
     def __call__(
         self,
         x: "ElementConstructorInput",
@@ -631,20 +616,17 @@ class QuadraticFormMorphism(Morphism):
             "a quadratic form is evaluated on an element"
         )
         # Membership, for the reason given on the bilinear ``__call__``.
-        assert element in self.module(), (
-            f"{element} is not an element of {self.module()}"
+        assert element in self.domain(), (
+            f"{element} is not an element of {self.domain()}"
         )
         coordinates = _coordinate_vector(element)
         return self.codomain()(
             coordinates * self._lift_matrix * coordinates
         )
 
-    def norm(self, element: "Element") -> "Element":
-        return self(element)
-
     def lift_form(self) -> BilinearFormMorphism:
         r"""Return the symmetric bilinear lift, valued where its entries live."""
-        return BilinearForms(self.module(), self._lift_matrix.base_ring())(
+        return BilinearForms(self.domain(), self._lift_matrix.base_ring())(
             self._lift_matrix
         )
 
@@ -658,7 +640,7 @@ class QuadraticFormMorphism(Morphism):
 
     def polar_form(self) -> BilinearFormMorphism:
         return BilinearForms(
-            self.module(),
+            self.domain(),
             self._polar_value_module(),
         )(self._lift_matrix)
 
@@ -703,7 +685,7 @@ class QuadraticFormMorphism(Morphism):
         )
 
     def pullback(self, morphism: "ModuleMorphism") -> "QuadraticFormMorphism":
-        matrix_of_map = morphism.matrix()._sage_matrix()
+        matrix_of_map = morphism.matrix()
         domain = morphism.domain()
         return QuadraticForms(domain, self.codomain())(
             matrix_of_map

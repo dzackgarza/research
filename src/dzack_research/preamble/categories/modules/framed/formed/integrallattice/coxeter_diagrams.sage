@@ -341,24 +341,6 @@ class CoxeterDiagrams(Category):
                 domain = self.domain()
                 return tuple(self(domain.vertex(i)) for i in range(domain.cardinality()))
 
-            def __mul__(
-                self,
-                other: "ElementConstructorInput",
-            ) -> Morphism:
-                assert isinstance(other, CoxeterDiagrams.Homsets.ElementMethods), (
-                    "morphism composition needs a diagram morphism; "
-                    f"found={type(other)}"
-                )
-                assert other.codomain() is self.domain(), "morphisms compose only when the inner codomain is the outer domain"
-                domain = other.domain()
-                codomain = self.codomain()
-                composite: Morphism = domain.hom(
-                    [self(other(domain.vertex(i))).value for i in range(domain.cardinality())],
-                    codomain=codomain,
-                )
-                return composite
-
-
     class ElementMethods(ElementWrapper):
         r"""A vertex of a finite Coxeter diagram."""
 
@@ -368,7 +350,7 @@ class CoxeterDiagrams(Category):
 
         def _repr_(self) -> str:
             parent = self.parent()
-            name: str = parent.variable_names()[parent.index_set().index(self.value)]
+            name: str = parent.variable_names()[parent.index_set().position(self.value)]
             return name
 
 
@@ -389,7 +371,7 @@ class CoxeterDiagrams(Category):
           matrix entries: single for ``3``, double for ``4``, triple for ``6``.
 
         Use :meth:`drawing_conventions`, :meth:`node_color`, :meth:`roots`,
-        :meth:`root_intersection_matrix`, and :meth:`preferred_positions` to extract
+        and :meth:`preferred_positions` to extract
         the packaged data from a diagram object.
         """
 
@@ -501,57 +483,57 @@ class CoxeterDiagrams(Category):
         def vertices(self) -> tuple[Element, ...]:
             return tuple(self)
 
+        def num_vertices(self) -> int:
+            return int(self.cardinality())
+
+        @cached_method
+        def _projective_weight_space(self):
+            from sage.rings.qqbar import AA
+            from sage.schemes.projective.projective_space import ProjectiveSpace
+
+            return ProjectiveSpace(AA, 1, "x,y")
+
+        def vertex_weight(self, vertex: Hashable):
+            self._element_constructor_(vertex)
+            return self._projective_weight_space()([4, 1])
+
+        def edge_weight(self, left: Hashable, right: Hashable):
+            left_vertex = self._element_constructor_(left).value
+            right_vertex = self._element_constructor_(right).value
+            entry = _schlafli_entry(
+                self._coxeter_matrix[left_vertex, right_vertex]
+            )
+            return self._projective_weight_space()([entry**2, 1])
+
         def index_set(self) -> "OrderedSet":
             return self._index_set
 
         def coxeter_matrix(self) -> CoxeterMatrix:
             return self._coxeter_matrix
 
-        def schlafli_matrix(self) -> "GramMatrix":
-            r"""Return the Schläfli matrix $C_{ij} = -2\cos(\pi/m_{ij})$ over $AA$.
-
-            The literature's form: the Gram matrix of the unit normals to the
-            mirrors, with $C_{ii} = -2\cos\pi = 2$ and $C_{ij} = -2$ on a bond
-            $m_{ij} = \infty$.  Under it, elliptic reads as positive definite and
-            parabolic as positive semidefinite.
-
-            **This repository's sign is the opposite one.**  The convention fixed
-            by ``tests/coxeter_tdd_specs/literature/PROJECT_CONVENTIONS.md`` and
-            realized by :meth:`root_intersection_matrix` is
-            $B_{ij} = +2\cos(\pi/m_{ij})$, so $B = -C$: roots have square $-2$ and
-            $-4$, elliptic is negative definite, and a single edge is
-            $[[-2,1],[1,-2]]$.  The two differ by negating a subset of basis
-            vectors on a tree diagram, and $\det B = (-1)^n \det C$, so
-            determinant claims transfer unchanged in even rank only.  This method
-            is where the literature's spelling is available; every other matrix on
-            this class is in the repository's sign.
-
-            Exact throughout: $2\cos(\pi/m) = \zeta + \zeta^{-1}$ for $\zeta$ a
-            primitive $2m$-th root of unity, so no floating cosine is taken.
-            """
-            # Local: AA/QQbar are needed only here, and the module otherwise
-            # stays inside ZZ and QQ.
-            from sage.rings.qqbar import AA
-
-            return matrix(
-                AA,
-                [
-                    [_schlafli_entry(matrix_entry) for matrix_entry in row]
-                    for row in self._matrix_entries()
-                ],
-            )
-
         def graph(self) -> Graph:
-            return self._coxeter_matrix.coxeter_graph()
+            graph = Graph()
+            graph.add_vertices(self._index_set)
+            vertices = tuple(self._index_set)
+            graph.add_edges(
+                (
+                    left,
+                    right,
+                    self._coxeter_matrix[left, right],
+                )
+                for i, left in enumerate(vertices)
+                for right in vertices[i + 1 :]
+                if self._coxeter_matrix[left, right] != 2
+            )
+            return graph
 
         def is_connected(self) -> bool:
             r"""Return whether the Coxeter graph of this diagram is connected.
 
-            A thin delegation to :meth:`graph`.  Sage's convention that the empty
-            graph is connected stands: the empty subdiagram is a legitimate member
-            of the induced-subdiagram enumeration, and it is connected.
+            The empty diagram is connected.  It is a legitimate member of the
+            induced-subdiagram enumeration.
             """
-            return bool(self.graph().is_connected())
+            return self._index_set.cardinality() == 0 or len(self.connected_components()) == 1
 
         def connected_components(self) -> tuple[Parent, ...]:
             r"""Return the connected components as induced subdiagrams.
@@ -570,32 +552,6 @@ class CoxeterDiagrams(Category):
                     [vertex for vertex in self._index_set if vertex in component]
                 )
                 for component in components
-            )
-
-        def is_elliptic(self) -> bool:
-            r"""Return whether this diagram is elliptic (spherical).
-
-            Coxeter's classification, asked of Sage exactly: a diagram is
-            elliptic when its Coxeter group is finite, which is
-            ``coxeter_matrix().is_finite()``.  The empty diagram is elliptic --
-            its Coxeter group is trivial -- and is answered directly, because
-            Sage's rank-zero Coxeter matrix carries no recognized Coxeter type
-            and its stored ``is_finite`` flag reports ``False``.
-            """
-            if self._index_set.cardinality() == 0:
-                return True
-            return bool(self._coxeter_matrix.is_finite())
-
-        def is_parabolic(self) -> bool:
-            r"""Return whether this diagram is parabolic (euclidean).
-
-            The standard definition: the diagram is nonempty and every connected
-            component is affine, asked componentwise of Sage's classification
-            through ``is_affine()`` on each component's Coxeter matrix.
-            """
-            components = self.connected_components()
-            return bool(components) and all(
-                component.coxeter_matrix().is_affine() for component in components
             )
 
         def coxeter_group(self) -> "Parent":
@@ -827,11 +783,7 @@ class CoxeterDiagrams(Category):
         def root(self, vertex: Hashable) -> "ModuleElement":
             r"""Return the root element attached to ``vertex``."""
             vertex = self._element_constructor_(vertex).value
-            return self.roots()[self._index_set.index(vertex)]
-
-        def root_intersection_matrix(self) -> "GramMatrix":
-            r"""Return the Gram matrix of the abstract root lattice."""
-            return self.root_lattice().gram_matrix()
+            return self.roots()[self._index_set.position(vertex)]
 
         def root_intersection_graph(self) -> Graph:
             r"""Return the root graph, with loop labels recording root squares.
@@ -840,7 +792,7 @@ class CoxeterDiagrams(Category):
             are not rendered by :meth:`tikz`, which draws only Coxeter edges between
             distinct vertices.
             """
-            intersections = self.root_intersection_matrix()
+            intersections = self.root_lattice().gram_matrix()
             graph = Graph(loops=True)
             graph_add = graph
             graph_add.add_vertices(self._index_set)
@@ -897,7 +849,7 @@ class CoxeterDiagrams(Category):
             assert self.is_elliptic(), (
                 "only an elliptic diagram realizes a finite root system"
             )
-            intersections = self.root_intersection_matrix()
+            intersections = self.root_lattice().gram_matrix()
             rank = intersections.nrows()
             squares = [-intersections[i, i] for i in range(rank)]
             shortest = min(squares)
@@ -1064,8 +1016,8 @@ class CoxeterDiagrams(Category):
             convention of rooted Coxeter diagrams, not a Sterk fixture.
             """
             vertex = self._element_constructor_(vertex).value
-            index = self._index_set.index(vertex)
-            square = self.root_intersection_matrix()[index, index]
+            index = self._index_set.position(vertex)
+            square = self.root_lattice().gram_matrix()[index, index]
             assert square in COXETER_NODE_COLORS, f"no Coxeter node color is defined for square {square}"
             return COXETER_NODE_COLORS[square]
 
@@ -1073,13 +1025,13 @@ class CoxeterDiagrams(Category):
             selected = tuple(self._element_constructor_(vertex).value for vertex in vertices)
             assert len(selected) == len(set(selected)), f"an induced subdiagram requires distinct vertices; vertices={selected!r}"
             entries = [[self._coxeter_matrix[left, right] for right in selected] for left in selected]
-            names = tuple(self.variable_names()[self._index_set.index(vertex)] for vertex in selected)
+            names = tuple(self.variable_names()[self._index_set.position(vertex)] for vertex in selected)
             positions = None if self._preferred_positions is None else {vertex: self._preferred_positions[vertex] for vertex in selected}
             # The empty subdiagram carries no root: an empty selection has no
             # realization to be rooted in, so it is the unrooted empty diagram.
             if self._root_morphism is not None and selected:
                 roots = tuple(
-                    self.roots()[self._index_set.index(vertex)]
+                    self.roots()[self._index_set.position(vertex)]
                     for vertex in selected
                 )
                 return CoxeterDiagrams().from_roots(
@@ -1128,7 +1080,7 @@ class CoxeterDiagrams(Category):
             """
             selected_positions = _normalize_positions(self._index_set, positions) if positions is not None else self.preferred_positions()
             assert selected_positions is not None
-            intersections = self.root_intersection_matrix()
+            intersections = self.root_lattice().gram_matrix()
             header = [
                 rf"\begin{{tikzpicture}}[scale={scale}]",
                 r"\definecolor{coxeterNegativeFour}{HTML}{F8F9FE}",

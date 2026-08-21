@@ -51,8 +51,6 @@ if TYPE_CHECKING:
         def __call__(self, x: Element) -> Element: ...
         def domain(self) -> Parent: ...
         def codomain(self) -> Parent: ...
-        def source(self) -> Parent: ...
-        def target(self) -> Parent: ...
 
 
 class _OnACategory:
@@ -88,14 +86,6 @@ class ArrowCategory(_OnACategory, Category):
     class MorphismMethods:
         r"""The methods of an *object* of \(\operatorname{Ar}(\mathbf{C})\)."""
 
-        def source(self: "ArrowObject") -> Parent:
-            r"""Return \(X\), for this object \(f:X\to Y\)."""
-            return self.domain()
-
-        def target(self: "ArrowObject") -> Parent:
-            r"""Return \(Y\), for this object \(f:X\to Y\)."""
-            return self.codomain()
-
         def is_commuting_square(
             self: "ArrowObject",
             other: "ArrowObject",
@@ -116,16 +106,16 @@ class ArrowCategory(_OnACategory, Category):
             from dzack_research.preamble.categories.abstract_categories.slice_categories import sole_structure_generators
 
             assert (
-                left.domain() is self.source()
-                and left.codomain() is other.source()
+                left.domain() is self.domain()
+                and left.codomain() is other.domain()
             ), "the left edge of the square runs between the two sources"
             assert (
-                right.domain() is self.target()
-                and right.codomain() is other.target()
+                right.domain() is self.codomain()
+                and right.codomain() is other.codomain()
             ), "the right edge of the square runs between the two targets"
             return all(
                 other(left(generator)) == right(self(generator))
-                for generator in sole_structure_generators(self.source())
+                for generator in sole_structure_generators(self.domain())
             )
 
 

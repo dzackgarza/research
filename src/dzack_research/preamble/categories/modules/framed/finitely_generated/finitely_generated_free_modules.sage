@@ -33,10 +33,9 @@ from sage.modules.free_module_element import FreeModuleElement, vector
 from sage.rings.integer import Integer as SageInteger
 from sage.structure.element import Element, Element as SageElement, ModuleElement
 from sage.structure.parent import Parent
-from sage.structure.richcmp import op_EQ, richcmp
+from sage.structure.richcmp import richcmp
 from dzack_research.preamble.categories.sets.cardinals import Cardinal
 
-from dzack_research.preamble.categories.modules.module_morphisms.morphism_matrices import MorphismMatrix
 from dzack_research.preamble.categories.sets.owned_sets import Sets
 
 if TYPE_CHECKING:
@@ -60,6 +59,7 @@ if TYPE_CHECKING:
         def base_ring(self) -> "Ring": ...
         def module_generating_set(self) -> "OrderedSet": ...
         def module_generators(self) -> "OrderedSet": ...
+        def number_of_module_generators(self) -> int: ...
         def is_zero(self) -> bool: ...
         def zero(self) -> "FinitelyGeneratedFreeModules.ElementMethods": ...
         def rank(self) -> "Cardinal": ...
@@ -179,21 +179,6 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
         def _richcmp_(self: Self, other: Self, op: int) -> bool:
             return bool(richcmp(self._coordinates_, other._coordinates_, op))
 
-        def __eq__(self: Self, other: "MembershipInput") -> bool:
-            # Identification across parents is a stated morphism, never coercion
-            # (AGENTS.md: coercion must not erase the element/image distinction),
-            # so equality outside this parent is plain False and Sage's
-            # conversion fallback never consults a constructor.
-            if not (
-                isinstance(other, FinitelyGeneratedFreeModules.ElementMethods)
-                and other.parent() is self.parent()
-            ):
-                return False
-            return bool(richcmp(self._coordinates_, other._coordinates_, op_EQ))
-
-        def __ne__(self: Self, other: "MembershipInput") -> bool:
-            return not self.__eq__(other)
-
         def __hash__(self: Self) -> int:
             return hash(tuple(self._coordinates_))
 
@@ -232,18 +217,12 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
             super().__init__(module_generating_set=module_generating_set, **rest)
 
         def _module_generator_element(self, element_of_S: SageElement) -> FinitelyGeneratedFreeModules.ElementMethods:
-            module_generating_set = self.__dict__.get("_module_generating_set")
-            assert module_generating_set is not None, (
-                "a framed free module stores its canonical generating set"
-            )
+            module_generating_set = self.module_generating_set()
             assert element_of_S in module_generating_set, (
                 f"{element_of_S!r} is not in {module_generating_set}"
             )
-            index = module_generating_set.index(element_of_S)
-            return self._from_coordinates(self._coordinate_module().gen(index))
-
-        def number_of_module_generators(self) -> int:
-            return _finite_rank(self.module_generating_set())
+            position = module_generating_set.position(element_of_S)
+            return self._from_coordinates(self._coordinate_module().gen(position))
 
         @cached_method
         def _coordinate_module(self) -> "FreeModule_generic":
@@ -269,7 +248,11 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
             return member
 
         def rank(self) -> "Cardinal":
-            return self.module_generating_set().cardinality()
+            # Local: the cardinals module reaches this node, so a module-level
+            # import would close that cycle.
+            from dzack_research.preamble.categories.sets.cardinals import cardinal
+
+            return cardinal(self.module_generating_set().cardinality())
 
         def _element_constructor_(
             self,
@@ -293,40 +276,12 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
                 return self.zero()
             assert False, f"{value} is not an element of {self}"
 
-        def __contains__(self, value: "MembershipInput") -> bool:
-            match value:
-                case FinitelyGeneratedFreeModules.ElementMethods() if value.parent() is self:
-                    return True
-                case Element() if (
-                    "_structure_morphism" in self.__dict__
-                    and value.parent() is self._structure_morphism.codomain()
-                ):
-                    return bool(self._structure_morphism.image_contains(value))
-                case _:
-                    return False
-
-        def _stored_module_generating_set(self) -> "OrderedSet":
-            r"""Return the generating set the constructor stored.
-
-            Identity reads the stored set rather than
-            ``module_generating_set()``, which derives it from the generator
-            morphism.  Building that morphism constructs ``UnderlyingSet(self)``,
-            a ``UniqueRepresentation`` whose cache looks ``self`` up by hash and
-            equality -- so identity computed through the accessor would ask for
-            identity to answer.
-            """
-            module_generating_set = self.__dict__.get("_module_generating_set")
-            assert module_generating_set is not None, (
-                "a based free module stores its canonical generating set"
-            )
-            return module_generating_set
-
         def __eq__(self, other: "MembershipInput") -> bool:
             return (
                 type(other) is type(self)
                 and self.base_ring() == other.base_ring()
-                and tuple(self._stored_module_generating_set())
-                == tuple(other._stored_module_generating_set())
+                and tuple(self.module_generating_set())
+                == tuple(other.module_generating_set())
             )
 
         def __hash__(self) -> int:
@@ -334,7 +289,7 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
                 (
                     type(self),
                     self.base_ring(),
-                    tuple(self._stored_module_generating_set()),
+                    tuple(self.module_generating_set()),
                 )
             )
 
@@ -343,19 +298,6 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
                 f"Free {self.base_ring()}-module on the ordered set "
                 f"{self.module_generating_set()}"
             )
-        def rank(self: "FiniteFreeModuleParent") -> "Cardinal":
-            r"""Return the cardinality of the finite generating set.
-
-            A cardinal, not an integer: a set the engine built and the
-            preamble refined answers its size as an ``Integer``, so the rank
-            says what it is here rather than passing that on.
-            """
-            # Local: the cardinals module reaches this node, so a module-level
-            # import would close that cycle.
-            from dzack_research.preamble.categories.sets.cardinals import cardinal
-
-            return cardinal(self.module_generating_set().cardinality())
-
         def relations(self: "FiniteFreeModuleParent") -> "OrderedSet":
             r"""Return the relations among the module generators: none.
 
@@ -368,7 +310,7 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
             """
             return finite_ordered_set(())
 
-        def relation_matrix(self: "FiniteFreeModuleParent") -> "MorphismMatrix":
+        def relation_matrix(self: "FiniteFreeModuleParent") -> "Matrix":
             r"""Return the relations as the matrix a presentation asks for.
 
             The same answer as ``relations``, written the way a presentation
@@ -382,14 +324,7 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
             from dzack_research.preamble.categories.rings.rings import engine_ring
 
             ring = engine_ring(self.base_ring())
-            return MorphismMatrix(
-                matrix(ring, 0, _finite_rank(self.module_generating_set())),
-                ring,
-            )
-
-        def number_of_module_generators(self: "FiniteFreeModuleParent") -> "Integer":
-            count: "Integer" = self.module_generating_set().cardinality()
-            return count
+            return matrix(ring, 0, _finite_rank(self.module_generating_set()))
 
         def is_torsion(self: "FiniteFreeModuleParent") -> bool:
             return bool(self.is_zero())
@@ -415,15 +350,13 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
             return ModuleAutomorphismGroup(self)
 
         def subobject_on(self: "FiniteFreeModuleParent", module_generators: "OrderedSet") -> "Subobject":
-            from dzack_research.preamble.categories.modules.framed.framed_modules import FramedModules
-
             module_generators = tuple(
                 generator if isinstance(generator, Element)
                 and generator.parent() is self
                 else self._from_coordinates(generator)
                 for generator in module_generators
             )
-            return FramedModules.ParentMethods.subobject_on(self, module_generators)
+            return super().subobject_on(module_generators)
 
         def hom(self: "FiniteFreeModuleParent", images: "GeneratorAssignment", codomain: "Module | None" = None) -> "ModuleMorphism":
             r"""Construct the map specified on the finite generating set."""

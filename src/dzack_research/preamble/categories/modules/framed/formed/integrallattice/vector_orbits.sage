@@ -116,7 +116,7 @@ def _validated_anisotropic_vector(
     orbit question on $v$ and asking it twice would be two spellings.
     """
     held = _held(lattice, element)
-    assert held.q() != 0, (
+    assert held.norm() != 0, (
         f"{held} is isotropic; the orbits of isotropic vectors are lines, "
         "asked of isotropic_line_orbit_representatives"
     )
@@ -151,7 +151,7 @@ def orthogonal_group_vector_equivalence_witness(
     from dzack_research.preamble.categories.modules.framed.formed.integrallattice.engines import vector_equivalence_witness
     source = _validated_anisotropic_vector(lattice, left)
     target = _validated_anisotropic_vector(lattice, right)
-    if source.q() != target.q():
+    if source.norm() != target.norm():
         return None
     witness = vector_equivalence_witness(
         matrix(SageZZ, lattice.gram_matrix()),
@@ -230,7 +230,7 @@ class VectorPrimitiveExtension:
 
         vector = _validated_anisotropic_vector(lattice, element)
         line = lattice.subobject_on((vector,))
-        complement = line.embedding().orthogonal_complement()
+        complement = line.structure_morphism().orthogonal_complement()
         assert complement.rank() >= 1, (
             f"{lattice} has rank one, where w spans it rationally and two "
             "primitive vectors of equal square differ by a sign; there is no "
@@ -242,8 +242,8 @@ class VectorPrimitiveExtension:
         )
         sum_lattice = line.direct_sum((complement,))
 
-        inclusion_rows = matrix(SageZZ, line.embedding().matrix()).stack(
-            matrix(SageZZ, complement.embedding().matrix())
+        inclusion_rows = matrix(SageZZ, line.structure_morphism().matrix()).stack(
+            matrix(SageZZ, complement.structure_morphism().matrix())
         )
         index = abs(SageZZ(inclusion_rows.determinant()))
         assert index != 0, "the two summands do not span L rationally"
@@ -425,7 +425,7 @@ class VectorPrimitiveExtension:
 
 def _subobject_images(subobject: "FormModule") -> tuple:
     r"""Return a subobject's elements seen in the codomain of its embedding."""
-    embedding = subobject.embedding()
+    embedding = subobject.structure_morphism()
     return tuple(embedding(element) for element in subobject)
 
 
@@ -460,7 +460,7 @@ def definite_complement_extensions(
     that way.  For an indefinite complement that group is infinite and the
     question moves to :func:`gluing_route_discriminant_classes`.
     """
-    if _held(lattice, left).q() != _held(lattice, right).q():
+    if _held(lattice, left).norm() != _held(lattice, right).norm():
         return
     source = vector_primitive_extension(lattice, left)
     target = vector_primitive_extension(lattice, right)
@@ -543,7 +543,7 @@ def gluing_route_discriminant_classes(
         f"forms; {lattice} is odd, the stated absence "
         "IntegralLattices.glue_map also declares"
     )
-    if _held(lattice, left).q() != _held(lattice, right).q():
+    if _held(lattice, left).norm() != _held(lattice, right).norm():
         return
     source = vector_primitive_extension(lattice, left)
     target = vector_primitive_extension(lattice, right)
@@ -666,7 +666,7 @@ def stable_complement_root_reflections(
     as the absence of an adjusting isometry.
     """
     held = _validated_anisotropic_vector(lattice, element)
-    complement = lattice.subobject_on((held,)).embedding().orthogonal_complement()
+    complement = lattice.subobject_on((held,)).structure_morphism().orthogonal_complement()
     positive, negative = complement.signature_pair()
     assert positive != 0 and negative != 0, (
         f"{complement} is definite, where the roots are finitely many and "
@@ -674,7 +674,7 @@ def stable_complement_root_reflections(
         "family is the indefinite statement"
     )
     stable = lattice.stable_orthogonal_group()
-    embedding = complement.embedding()
+    embedding = complement.structure_morphism()
     reflections = []
     for square in (2, -2):
         for root in complement.Aut().vector_orbit_representatives(square):

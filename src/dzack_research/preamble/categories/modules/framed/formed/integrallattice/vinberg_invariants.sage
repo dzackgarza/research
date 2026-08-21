@@ -87,12 +87,14 @@ from sage.functions.trig import cos
 from sage.graphs.graph import Graph
 from sage.matrix.constructor import matrix
 from sage.matrix.matrix0 import Matrix
+from sage.misc.abstract_method import abstract_method
 from sage.rings.infinity import Infinity, PlusInfinity, infinity
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.imaginary_unit import I
 from sage.rings.qqbar import QQbar
 from sage.rings.rational_field import QQ as SageQQ
+from sage.symbolic.constants import pi
 from sage.schemes.projective.projective_point import SchemeMorphism_point_projective_ring
 from sage.schemes.projective.projective_space import ProjectiveSpace
 from sage.structure.parent import Parent
@@ -171,7 +173,7 @@ class ReflectionCosineSets(Category):
             r"""Return cos(pi/n) for n >= 1."""
             n_int = Integer(n)
             assert n_int >= 1, "Index must be an integer n >= 1"
-            return cos(SageQQ.pi() / n_int) if hasattr(SageQQ, "pi") else cos(SageZZ(1) * SageQQ(1) / n_int)
+            return cos(pi / n_int)
 
         def index_of(self, x: "AlgebraicNumber | Element") -> Integer:
             r"""Return the exact integer n such that x = cos(pi/n)."""
@@ -205,10 +207,57 @@ class ProjectiveWeightedGraphs(Category):
     class ParentMethods:
         r"""Universal methods and predicates for all projective weighted graphs."""
 
-        def _get_n_and_verts(self) -> tuple[int, tuple[str, ...]]:
-            n = self.num_vertices() if hasattr(self, "num_vertices") else self.rank()
-            verts = self.vertices() if hasattr(self, "vertices") else tuple(str(v) for v in range(n))
-            return n, verts
+        @abstract_method
+        def vertices(self) -> tuple:
+            r"""Return the declared vertex labels."""
+            ...
+
+        @abstract_method
+        def num_vertices(self) -> int:
+            r"""Return the number of declared vertices."""
+            ...
+
+        @abstract_method
+        def vertex_weight(
+            self, vertex: "VertexLabel"
+        ) -> SchemeMorphism_point_projective_ring:
+            r"""Return the declared projective weight of a vertex."""
+            ...
+
+        @abstract_method
+        def edge_weight(
+            self, left: "VertexLabel", right: "VertexLabel"
+        ) -> SchemeMorphism_point_projective_ring:
+            r"""Return the declared projective weight of a directed edge."""
+            ...
+
+        @abstract_method
+        def subdiagram(self, vertices: "Sequence[VertexLabel]") -> Parent:
+            r"""Return the induced projective weighted subgraph."""
+            ...
+
+        def _get_n_and_verts(self) -> tuple[int, tuple]:
+            return self.num_vertices(), self.vertices()
+
+        def coxeter_order(
+            self, left: int, right: int
+        ) -> "Integer | PlusInfinity":
+            r"""Return the Coxeter order determined by an edge weight."""
+            if left == right:
+                return Integer(1)
+            vertices = self.vertices()
+            point = self.edge_weight(vertices[left], vertices[right])
+            if point[1] == 0:
+                return infinity
+            ratio = point[0] / point[1]
+            if ratio >= 4:
+                return infinity
+            assert ratio >= 0, "a projective reflection weight is nonnegative"
+            order = X_ref._exact_n(sqrt(ratio) / 2)
+            assert order is not None, (
+                f"the projective weight {point} is not a Coxeter angle"
+            )
+            return order
 
         def is_symmetric(self) -> bool:
             r"""Return True if the directed edge weights are symmetric."""
@@ -216,8 +265,8 @@ class ProjectiveWeightedGraphs(Category):
             for i in range(n):
                 for j in range(i + 1, n):
                     u, v = verts[i], verts[j]
-                    w1 = self.edge_weight(u, v) if hasattr(self, "edge_weight") else self[i, j]
-                    w2 = self.edge_weight(v, u) if hasattr(self, "edge_weight") else self[j, i]
+                    w1 = self.edge_weight(u, v)
+                    w2 = self.edge_weight(v, u)
                     if w1[0] * w2[1] != w2[0] * w1[1]:
                         return False
             return True
@@ -229,12 +278,12 @@ class ProjectiveWeightedGraphs(Category):
             n, verts = self._get_n_and_verts()
             for i in range(n):
                 u = verts[i]
-                diag = self.vertex_weight(u) if hasattr(self, "vertex_weight") else self[i, i]
+                diag = self.vertex_weight(u)
                 if diag[0] * 1 != 4 * diag[1]:
                     return False
                 for j in range(i + 1, n):
                     v = verts[j]
-                    wt = self.edge_weight(u, v) if hasattr(self, "edge_weight") else self[i, j]
+                    wt = self.edge_weight(u, v)
                     if wt[1] == 0:
                         continue
                     ratio = wt[0] / wt[1]
@@ -259,8 +308,8 @@ class ProjectiveWeightedGraphs(Category):
             n, verts = self._get_n_and_verts()
             for i in range(n):
                 for j in range(i + 1, n):
-                    m = self.coxeter_order(i, j) if hasattr(self, "coxeter_order") else None
-                    if m is not None and m is not infinity:
+                    m = self.coxeter_order(i, j)
+                    if m is not infinity:
                         if m not in (2, 3, 4, 6):
                             return False
             return True
@@ -272,8 +321,8 @@ class ProjectiveWeightedGraphs(Category):
             n, verts = self._get_n_and_verts()
             for i in range(n):
                 for j in range(i + 1, n):
-                    m = self.coxeter_order(i, j) if hasattr(self, "coxeter_order") else None
-                    if m is not None and m is not infinity:
+                    m = self.coxeter_order(i, j)
+                    if m is not infinity:
                         if m not in (2, 3):
                             return False
             return True
@@ -346,11 +395,7 @@ class ProjectiveWeightedGraphs(Category):
             ]
 
             def leq(D1: Parent, D2: Parent) -> bool:
-                v1 = getattr(D1, "vertices", None) or getattr(D1, "variable_names", None)
-                v2 = getattr(D2, "vertices", None) or getattr(D2, "variable_names", None)
-                names1 = set(v1()) if v1 is not None else set()
-                names2 = set(v2()) if v2 is not None else set()
-                return names1.issubset(names2)
+                return set(D1.vertices()).issubset(D2.vertices())
 
             return Poset((subdiagrams, leq))
 
@@ -361,7 +406,7 @@ class ProjectiveWeightedGraphs(Category):
             full_P = self.subdiagram_poset()
             parabolics = [
                 D for D in full_P
-                if (D.num_vertices() if hasattr(D, "num_vertices") else D.rank()) > 0 and D.is_parabolic()
+                if D.num_vertices() > 0 and D.is_parabolic()
             ]
             return full_P.subposet(parabolics)
 
@@ -408,7 +453,7 @@ class ProjectiveWeightedGraphs(Category):
             full_P = self.subdiagram_poset()
             hyperbolics = [
                 D for D in full_P
-                if (D.num_vertices() if hasattr(D, "num_vertices") else D.rank()) > 0 and D.is_hyperbolic()
+                if D.num_vertices() > 0 and D.is_hyperbolic()
             ]
             return full_P.subposet(hyperbolics)
 
@@ -448,10 +493,10 @@ class SymmetricProjectiveWeightedGraphs(Category):
             r"""
             Reconstruct the Schläfli matrix $S = (s_{ij})$ where $s_{ii} = 1$ and $s_{ij} = -\sqrt{t_{ij}}/2$.
             """
-            n = self.num_vertices() if hasattr(self, "num_vertices") else self.rank()
+            n = self.num_vertices()
             idx_list = list(range(n)) if indices is None else list(indices)
             k = len(idx_list)
-            verts = self.vertices() if hasattr(self, "vertices") else tuple(str(v) for v in range(n))
+            verts = self.vertices()
             S_mat = [[SageQQ.zero() for _ in range(k)] for _ in range(k)]
 
             for i_idx, i in enumerate(idx_list):
@@ -459,7 +504,7 @@ class SymmetricProjectiveWeightedGraphs(Category):
                 for j_idx in range(i_idx + 1, k):
                     j = idx_list[j_idx]
                     u, v = verts[i], verts[j]
-                    pt = self.edge_weight(u, v) if hasattr(self, "edge_weight") else self[i, j]
+                    pt = self.edge_weight(u, v)
                     assert pt[1] != 0, (
                         "Cannot reconstruct finite Schläfli entry from "
                         "infinite ratio [1 : 0]"
@@ -479,10 +524,10 @@ class SymmetricProjectiveWeightedGraphs(Category):
             r"""
             Reconstruct the Gram matrix $G = (b(v_i, v_j))$ given diagonal root norms $q_i = b(v_i, v_i)$.
             """
-            n = self.num_vertices() if hasattr(self, "num_vertices") else self.rank()
+            n = self.num_vertices()
             idx_list = list(range(n)) if indices is None else list(indices)
             k = len(idx_list)
-            verts = self.vertices() if hasattr(self, "vertices") else tuple(str(v) for v in range(n))
+            verts = self.vertices()
 
             ring = self.base_ring()
             if isinstance(root_norms, Sequence):
@@ -497,7 +542,7 @@ class SymmetricProjectiveWeightedGraphs(Category):
                 for j_idx in range(i_idx + 1, k):
                     j = idx_list[j_idx]
                     u, v = verts[i], verts[j]
-                    pt = self.edge_weight(u, v) if hasattr(self, "edge_weight") else self[i, j]
+                    pt = self.edge_weight(u, v)
                     assert pt[1] != 0, (
                         "Cannot reconstruct finite Gram entry from infinite "
                         "Vinberg ratio [1 : 0]"
@@ -579,6 +624,41 @@ class CombinatorialVinbergInvariantMatrices(Category):
         def variable_names(self) -> tuple[str, ...]:
             r"""Return vertex / generator names."""
             return self._names
+
+        def vertices(self) -> tuple[str, ...]:
+            r"""Return the declared vertex labels."""
+            return self.variable_names()
+
+        def num_vertices(self) -> int:
+            r"""Return the number of declared vertices."""
+            return self.rank()
+
+        def _vertex_index(self, vertex: "VertexLabel") -> int:
+            r"""Return the matrix index of a declared vertex label."""
+            if isinstance(vertex, (int, Integer)):
+                index = int(vertex)
+            else:
+                index = self.variable_names().index(str(vertex))
+            assert 0 <= index < self.rank(), (
+                f"{vertex} is not a vertex of this graph"
+            )
+            return index
+
+        def vertex_weight(
+            self, vertex: "VertexLabel"
+        ) -> SchemeMorphism_point_projective_ring:
+            r"""Return the diagonal projective weight of a vertex."""
+            index = self._vertex_index(vertex)
+            return self[index, index]
+
+        def edge_weight(
+            self, left: "VertexLabel", right: "VertexLabel"
+        ) -> SchemeMorphism_point_projective_ring:
+            r"""Return the projective weight of a directed edge."""
+            return self[
+                self._vertex_index(left),
+                self._vertex_index(right),
+            ]
 
         def projective_space(self) -> ProjectiveSpace:
             r"""Return the projective space $\mathbb{P}^1(R)$ the invariants live in."""
@@ -1066,4 +1146,3 @@ def projective_weighted_digraph(
         vertex_weights=vertex_weights,
         edges=edges,
     )
-

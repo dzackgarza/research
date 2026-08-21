@@ -27,7 +27,6 @@ if TYPE_CHECKING:
 
 from sage.rings.integer_ring import ZZ as SageZZ
 from dzack_research.preamble.lexicon import Element
-from sage.arith.misc import next_prime
 
 if TYPE_CHECKING:
     from sage.rings.number_field.galois_group import GaloisGroup_v2, GaloisGroupElement
@@ -35,7 +34,6 @@ if TYPE_CHECKING:
     from dzack_research.preamble.categories.group.profinite.galois_choice_policy import (
         GaloisChoicePolicy,
     )
-    from dzack_research.preamble.categories.sets.cardinals import Cardinal
     from dzack_research.preamble.owned_category import ConstructionData
     from sage.rings.integer import Integer
     from sage.categories.rings import Ring
@@ -51,33 +49,33 @@ from sage.structure.parent import Parent
 
 
 class FrobeniusElement(Morphism):
-    r"""The Frobenius automorphism \(x\mapsto x^{p}\) of a field.
+    r"""The Frobenius automorphism \(x\mapsto x^{q}\) of a finite field.
 
     A group element of \(G_K\) *is* a field automorphism fixing \(K\);
     the map on elements is the morphism itself.  Concrete for finite
     fields and their powers.
     """
 
-    def __init__(self, parent: "Parent", prime: "Integer") -> None:
+    def __init__(self, parent: "Parent", field_order: "Integer") -> None:
         field = parent.base_field()
         Morphism.__init__(self, Hom(field, field, SageFields()))
-        self._p = prime
+        self._field_order = field_order
 
     def _call_(self, element: "Element") -> "Element":
-        r"""Return \(x^{p}\), the Frobenius at ``self._p``."""
-        image: "Element" = element**self._p
+        r"""Return \(x^{q}\)."""
+        image: "Element" = element**self._field_order
         return image
 
     def _repr_(self) -> str:
-        return f"Arithmetic Frobenius (x |-> x^{self._p})"
+        return f"Arithmetic Frobenius (x |-> x^{self._field_order})"
 
     def __hash__(self) -> int:
-        return hash((type(self), self._p))
+        return hash((type(self), self._field_order))
 
     def __eq__(self, other: "MembershipInput") -> bool:
         return (
             type(other) is type(self)
-            and self._p == other._p
+            and self._field_order == other._field_order
             and self.domain() == other.domain()
         )
 
@@ -197,98 +195,6 @@ class RealizedAbsoluteGaloisGroups(Category_singleton):
             r"""Return the identity; no canonical nontrivial element exists generically."""
             return self.one()
 
-        def gens(self) -> tuple:
-            r"""Raise :exc:`NotImplementedError`; a generic \(G_K\) has no finite generating set."""
-            raise NotImplementedError(
-                f"{self} has no canonical finite generating set"
-            )
-
-        def group_generators(self) -> tuple:
-            r"""Raise :exc:`NotImplementedError`; a generic \(G_K\) has no finite generating set."""
-            raise NotImplementedError(
-                f"{self} has no canonical finite generating set"
-            )
-
-        def topological_generating_family(self) -> "Family":
-            r"""Return a lazy family topologically generating \(G_K\).
-
-            For every finite Galois extension \(L/K\subset\bar K\), lift
-            generators of \(\operatorname{Gal}(L/K)\) to \(G_K\); the union
-            topologically generates.  This is a lazy :class:`Family`, not a
-            finite tuple.
-            """
-            from sage.sets.family import Family
-
-            def _generators() -> "Iterator[AbsoluteGaloisGroupElement]":
-                for L in self._finite_galois_extensions():
-                    Q = self.finite_quotient(L)
-                    for sigma in Q.gens():
-                        yield self.lift(sigma)
-
-            family: "Family" = Family(list(_generators()))
-            return family
-
-        def topological_group_generators(self) -> "Iterator[FrobeniusElement]":
-            r"""Yield some topological generators as an infinite stream.
-
-            No exhaustivity is claimed.  For a profinite group the supply is
-            infinite; the caller takes what it needs with ``next``.
-            """
-            characteristic = self._field.characteristic()
-            if characteristic > 0:
-                yield FrobeniusElement(self, characteristic)
-            prime = SageZZ(2)
-            while True:
-                yield FrobeniusElement(self, prime)
-                prime = next_prime(prime)
-
-        def lift(self, sigma: "GaloisGroupElement") -> AbsoluteGaloisGroupElement:
-            r"""Lift a finite-quotient element \(\sigma\in\operatorname{Gal}(L/K)\) to \(G_K\).
-
-            Every \(\sigma\in\operatorname{Gal}(L/K)\) extends to some
-            automorphism of \(\bar K\) by the normal-extension theorem (Stacks
-            0BME).  This returns one such lift as a lazy
-            :class:`AbsoluteGaloisGroupElement`.
-            """
-            return AbsoluteGaloisGroupElement(
-                self, sigma.parent().top_field(), sigma.as_hom()
-            )
-
-        def lifts(self, sigma: "GaloisGroupElement") -> "LiftCoset":
-            r"""Return the open coset \(g\cdot G_L\) of all lifts of \(\sigma\).
-
-            Canonical once \(L\subset\bar K\) is fixed; the coset is the set
-            of all automorphisms of \(\bar K\) restricting to \(\sigma\) on
-            \(L\).
-            """
-            return LiftCoset(self, sigma, sigma.parent().top_field())
-
-        def is_abelian(self) -> bool:
-            r"""Return whether \(G_K\) is abelian.
-
-            Almost never: a finite field is the procyclic case
-            (\(\hat{\mathbb Z}\), abelian); a finite extension of
-            \(\mathbb{Q}_p\) is abelian iff the extension is
-            cyclotomic-tame-plus-unramified; the general number field case is
-            nonabelian.
-            """
-            characteristic = self._field.characteristic()
-            if characteristic > 0:
-                return True
-            return False
-
-        def order(self) -> "Cardinal":
-            r"""Return the cardinality of \(G_K\) as a set.
-
-            For a finite field, \(G_K\cong\hat{\mathbb{Z}}\) is countably
-            infinite; for a characteristic-zero field it is uncountable.
-            """
-            infinite: "Cardinal" = Infinity
-            return infinite
-
-        def cardinality(self) -> "Cardinal":
-            return self.order()
-
         def __contains__(self, element: "MembershipInput") -> bool:
             r"""Return whether ``element`` is a field automorphism of the base field."""
             if not isinstance(element, Morphism):
@@ -297,14 +203,6 @@ class RealizedAbsoluteGaloisGroups(Category_singleton):
                 return False
             return True
 
-        def __iter__(self) -> "Iterator[FrobeniusElement]":
-            r"""Yield some elements of the group.
-
-            No exhaustivity is claimed.  An infinite group yields at best a
-            countable subset.
-            """
-            yield from self.topological_group_generators()
-
         def _finite_galois_extensions(self) -> "Iterator[Ring | None]":
             r"""Yield finite Galois extensions \(L/K\subset\bar K\), lazily.
 
@@ -312,12 +210,9 @@ class RealizedAbsoluteGaloisGroups(Category_singleton):
             enumerate by extension degree.  This is the supply for
             :meth:`topological_generating_family`.
             """
-            K = self._field
             degree = 1
             while True:
-                yield K.algebraic_closure().subfield_degree(degree) if hasattr(
-                    self._closure, "subfield_degree"
-                ) else None
+                yield self.algebraic_closure().subfield_degree(degree)
                 degree += 1
 
         def _normal_closure_containing(
@@ -373,19 +268,11 @@ class AbsoluteGaloisGroupsOfFiniteFields(Category_singleton):
     class ParentMethods:
         def frobenius(self) -> FrobeniusElement:
             r"""Return the arithmetic Frobenius \(x\mapsto x^q\), the canonical topological generator."""
-            return FrobeniusElement(self, self._field.characteristic())
+            return FrobeniusElement(self, SageZZ(self.base_field().order()))
 
-        def topological_generators(self) -> tuple:
-            r"""Return \((\operatorname{Frob}_q,)\), the canonical topological generating tuple."""
-            return (self.frobenius(),)
-
-        def gens(self) -> tuple:
-            r"""Return the topological generators; for \(\hat{\mathbb{Z}}\) this is Frobenius."""
-            return self.topological_generators()
-
-        def group_generators(self) -> tuple:
-            r"""Return the topological generators; for \(\hat{\mathbb{Z}}\) this is Frobenius."""
-            return self.topological_generators()
+        def topological_group_generators(self) -> "Iterator[FrobeniusElement]":
+            r"""Yield the canonical topological generator \(\operatorname{Frob}_q\)."""
+            yield self.frobenius()
 
         def is_abelian(self) -> bool:
             r"""Return ``True``; \(G_{\mathbb{F}_q}\cong\hat{\mathbb{Z}}\) is procyclic."""
@@ -457,5 +344,8 @@ def absolute_galois_group(
 ) -> Parent:
     r"""Return \(G_K=\operatorname{Gal}(\bar K/K)\) with chosen realization."""
     return object_of(
-        absolute_galois_group_category(field), field=field, **kwargs
+        absolute_galois_group_category(field),
+        field=field,
+        cardinality=Infinity,
+        **kwargs,
     )

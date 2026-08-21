@@ -37,7 +37,7 @@ if TYPE_CHECKING:
 
         def parent(self) -> "DiscriminantBilinearParent": ...
         def underlying_element(self) -> "ModuleElement": ...
-        def q(self) -> "Element": ...
+        def norm(self) -> "Element": ...
         def b(self, other: "Element") -> "Element": ...
 
 
@@ -82,7 +82,7 @@ class DiscriminantBilinearModules(Category_over_base_ring):
         assert gram.is_symmetric(), (
             "a discriminant bilinear form is symmetric"
         )
-        relations = module.relation_matrix()._sage_matrix().change_ring(SageZZ)
+        relations = module.relation_matrix().change_ring(SageZZ)
         assert all(entry in SageZZ for entry in (relations * gram).list()), (
             "b is not defined on the classes: some relation does not pair "
             "integrally with the module_generators"
