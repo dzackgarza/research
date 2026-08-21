@@ -199,7 +199,7 @@ class FormModules(OwnedCategoryOverBaseRing):
                         "a formed module requires a bilinear or quadratic "
                         "form morphism"
                     )
-            module = form.domain()
+            module = form.module()
             self._form = form
             super().__init__(**rest)
             source = module.framing_morphism().domain()
@@ -373,7 +373,11 @@ class FormModules(OwnedCategoryOverBaseRing):
                     target = images.codomain().structured_parent()
                     assignment = images
                 case dict() if images:
-                    target = next(iter(images.values())).parent()
+                    target = (
+                        codomain
+                        if codomain is not None
+                        else next(iter(images.values())).parent()
+                    )
                     assignment = images
                 case dict():
                     assert codomain is not None, (
@@ -733,8 +737,6 @@ class FormModules(OwnedCategoryOverBaseRing):
                 super().__init__(
                     domain=domain,
                     codomain=codomain,
-                    base=domain.base_ring(),
-                    check=False,
                     **rest,
                 )
             def _element_constructor_(
@@ -743,6 +745,13 @@ class FormModules(OwnedCategoryOverBaseRing):
                 # Local: a module-level import here would close a cycle; by call time this module is built.
                 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 
+                if isinstance(images, list | tuple):
+                    assert len(images) == self.domain().number_of_module_generators(), (
+                        "the number of images does not match the domain framing"
+                    )
+                    images = dict(
+                        zip(self.domain().module_generating_set(), images)
+                    )
                 module_homset_for_forms = module_homset(self.domain(), self.codomain())
                 match images:
                     case Morphism():
@@ -787,7 +796,7 @@ class FormModules(OwnedCategoryOverBaseRing):
                 # module the pullback lives on before the two are compared.
                 pulled_back = parent.codomain().form().pullback(module_morphism)
                 expected_form = parent.domain().form().on_module(
-                    pulled_back.domain()
+                    pulled_back.module()
                 )
                 if pulled_back.codomain() is not expected_form.codomain():
                     pulled_back = pulled_back.reduced(expected_form.codomain())
@@ -1268,7 +1277,7 @@ def FormModule(form: "Form") -> Parent:
         with_chosen_arrows_forgotten,
     )
 
-    module = form.domain()
+    module = form.module()
     category = SageCategory.join(
         [
             with_chosen_arrows_forgotten(module.category()),
