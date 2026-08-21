@@ -147,6 +147,22 @@ sage-init-check:
     "$(just --evaluate sage_bin 2>/dev/null || echo "${SAGE_BIN:-sage}")" \
         -c "exec(open('${probe}').read())"
 
+# Rebuild the Sage development environment, then install the current preparser and research package
+sage-rebuild:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    research_root="{{justfile_directory()}}"
+    sage_root="${SAGE_DEV_ROOT:-/home/dzack/gitclones/sage-dev-allopts}"
+    sage_python_version="${SAGE_PYTHON_VERSION:-3.14}"
+    [ -f "${sage_root}/uv.lock" ] || { echo "sage-rebuild: missing ${sage_root}/uv.lock" >&2; exit 1; }
+    cd "${sage_root}"
+    uv sync --python "${sage_python_version}" --frozen --inexact --no-install-project
+    uv sync --python "${sage_python_version}" --frozen --inexact --no-build-isolation --reinstall-package sagemath
+    sage_python="${sage_root}/.venv/bin/python"
+    uv pip install --python "${sage_python}" --reinstall-package tree-sitter-sage \
+        "tree-sitter-sage @ git+https://github.com/dzackgarza/tree-sitter-sage@main"
+    uv pip install --python "${sage_python}" --no-deps --editable "${research_root}"
+
 [private]
 _lock:
     uv lock
