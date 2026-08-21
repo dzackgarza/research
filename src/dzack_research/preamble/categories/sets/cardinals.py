@@ -26,7 +26,7 @@ from __future__ import annotations
 from collections.abc import Iterator
 from dataclasses import dataclass
 from enum import Enum
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, TypeIs
 
 from dzack_research.preamble.categories.sets.owned_sets import Sets
 from dzack_research.preamble.owned_category import object_of
@@ -396,8 +396,24 @@ class Cardinalities(Category):
         target: Cardinal,
     ) -> CardinalityHomset:
         homset = Hom(source, target, self)
-        assert isinstance(homset, CardinalityHomset)
+        assert self.is_homset(homset)
         return homset
+
+    def is_homset(
+        self,
+        homset: Homset[Cardinal, Cardinal],
+    ) -> TypeIs[CardinalityHomset]:
+        r"""Return whether ``homset`` is a cardinality hom-set.
+
+        The hom-set category owns the runtime narrowing boundary.  It covers
+        both ordinary hom-sets and endomorphism sets.
+        """
+        return homset in self.Homsets() or homset in self.Endsets()
+
+    def is_morphism(self, morphism: Morphism) -> TypeIs[CardinalityMorphism]:
+        r"""Return whether ``morphism`` is a morphism of ``Cardinalities``."""
+        homset = morphism.parent()
+        return homset in self.Homsets() or homset in self.Endsets()
 
 
     class ParentMethods:
@@ -614,7 +630,7 @@ class Cardinalities(Category):
             codomain: Cardinal,
             category: Category | None = None,
         ) -> CardinalityHomset:
-            assert isinstance(codomain, Cardinal), (
+            assert codomain in Cardinalities(), (
                 "a cardinality morphism has cardinal objects at both ends"
             )
             assert category is None or category == Cardinalities(), (
@@ -714,8 +730,8 @@ class CardinalityMorphism(Morphism):
         right: Morphism,
         homset: Homset[Cardinal, Cardinal],
     ) -> CardinalityMorphism:
-        assert isinstance(right, CardinalityMorphism)
-        assert isinstance(homset, CardinalityHomset)
+        assert Cardinalities().is_morphism(right)
+        assert Cardinalities().is_homset(homset)
         return homset.unique_morphism()
 
 

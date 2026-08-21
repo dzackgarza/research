@@ -4,15 +4,21 @@ Yes, the preamble should own every mathematical category and every inclusion.
 
 Sage’s native category graph provides no essential mathematical value here. Its useful behavior comes from Sage’s runtime machinery, not its category definitions.
 
-## Mathematical assertions
+## Assertion semantics
 
-Every executable assertion must state a mathematical proposition.
+Every test assertion must state a mathematical proposition.
 
 Mathematics fixes its truth. Code can satisfy or violate the proposition. Code does not define its truth.
 
 Assert cardinalities, universal properties, algebraic identities, and functor laws.
 
-Do not assert method placement, class layout, source text, diagnostic totals, or past defects.
+Implementation assertions can gate dependent functionality.
+They can also narrow a value to its true program type.
+
+Prefer category containment when the claim is mathematical membership.
+Keep concrete class recognition inside the category-owned containment operation.
+
+Do not test method placement, class layout, source text, diagnostic totals, caches, or past defects.
 
 Inspect source ownership to verify architecture. Use mathematical specimens to verify behavior.
 

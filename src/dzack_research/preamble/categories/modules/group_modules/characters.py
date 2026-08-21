@@ -81,7 +81,10 @@ class Character:
 
     def __add__(self, other: ElementConstructorInput) -> Character:
         r"""Return $\chi+\psi$, the character of a direct sum."""
-        assert isinstance(other, Character), (
+        assert (
+            isinstance(other, Character)
+            and self.group() is other.group()
+        ), (
             "a character is added to another character of the same group"
         )
         return Character(self._class_function + other._class_function)
