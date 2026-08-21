@@ -192,6 +192,20 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
                 category = IntegralLattices(self.base_ring())
             return super()._Hom_(codomain, category)
 
+        def Aut(self: "LatticeParent") -> Parent:
+            r"""Return the orthogonal endset of this integral lattice."""
+            from dzack_research.preamble.refine import refine
+            from dzack_research.preamble.categories.group.groups import OwnedGroups
+
+            endomorphisms = refine(
+                self.Hom(self),
+                IntegralLattices(self.base_ring()).Homsets().Endset(),
+            )
+            assert endomorphisms in OwnedGroups(), (
+                "Aut(L) requires the integral-lattice endset to be a group"
+            )
+            return endomorphisms
+
         @cached_method
         def decomposition(self: "LatticeParent") -> "DirectSumObject | None":
             r"""Return the chosen block decomposition, or ``None``.
