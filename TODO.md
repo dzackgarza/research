@@ -1,3 +1,7 @@
+# Broader TODO
+
+Arrive at the correct preamble architecture, under which all strictly mathematical tests pass. Type-checking is a non-concern for this phase.
+
 Correct. The plans supply the architectural model, not a progress ledger.
 
 The broad design requires:
