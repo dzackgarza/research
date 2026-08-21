@@ -20,12 +20,14 @@ The broad design requires:
 
 These are examples of what the architecture should make true. They are not independent goals.
 
+Every example factors through immediate declared supercategories. If \(\mathbf C\) declares \(\mathbf D\) as an immediate supercategory, each \(\mathbf C\)-constructor invokes and extends the corresponding \(\mathbf D\)-constructor through cooperative `super()`. This rule applies separately to objects, homsets, and their elements. The result at each surface is one object whose construction contains the immediate supercategory construction, not a wrapper storing a second object. Repeating these immediate steps reaches the set level. No leaf category constructs or interprets a lower-level object or morphism directly.
+
 - For a finite field \(\mathbb F_q\), the free module \(\mathbb F_q^n\) is constructed as a module whose underlying set is an \(n\)-fold product. The set construction therefore gives \(\lvert\mathbb F_q^n\rvert=q^n\).
 - A finite free \(R\)-algebra of rank \(n\), with finite base ring \(R\), receives cardinality \(\lvert R\rvert^n\) from its underlying free module. The final cardinality is owned by its underlying set, not by an algebra-specific method.
 - The tensor algebra \(T_R(M)=\bigoplus_{d\geq 0}M^{\otimes d}\) receives set-theoretic facts through its graded module construction. In particular, \(T_R(0)\cong R\), and countability of the latter is inherited through construction.
 - A finite-rank integral lattice is constructed through its formed free \(\mathbb Z\)-module and then through its underlying set. Its bilinear form adds structure without creating a second owner for set operations or cardinality.
 - A group module is constructed through its module and set levels, with the action added at the group-module level. A standalone functor forgets the action; the object does not store a second module.
-- A lattice isometry is an element of a homset. Its underlying function comes from the set level, linearity comes from the module level, and form preservation comes from the lattice level. Identity and composition belong to the corresponding homset and arrow-category structures.
+- For lattices \(L\) and \(M\), an isometry \(f\in\operatorname{Hom}_{\mathbf{Lat}}(L,M)\) is an element of the lattice homset. Its constructor invokes the corresponding formed-module morphism constructor. Each successive constructor invokes only the morphism constructor from its immediate module-category supercategory. This chain reaches a module homomorphism in \(\operatorname{Hom}_{\mathbf{Mod}_{\mathbb Z}}(L,M)\), whose immediate set-level constructor gives an element of \(\operatorname{Hom}_{\mathbf{Set}}(L,M)\). The lattice level adds form preservation, the module level adds linearity, and the set level owns the function. Homset construction, identity, and composition follow the same immediate-supercategory chain.
 
 The current implementation largely matches the first, fourth, and fifth points. Category-owned classes, cooperative construction, homsets, and standalone functors exist.
 
