@@ -4,13 +4,27 @@ Yes, the preamble should own every mathematical category and every inclusion.
 
 Sage’s native category graph provides no essential mathematical value here. Its useful behavior comes from Sage’s runtime machinery, not its category definitions.
 
+## Mathematical assertions
+
+Every executable assertion must state a mathematical proposition.
+
+Mathematics fixes its truth. Code can satisfy or violate the proposition. Code does not define its truth.
+
+Assert cardinalities, universal properties, algebraic identities, and functor laws.
+
+Do not assert method placement, class layout, source text, diagnostic totals, or past defects.
+
+Inspect source ownership to verify architecture. Use mathematical specimens to verify behavior.
+
+State the mathematical proposition before the code path that must realize it.
+
 ## Keep these Sage components
 
 - `Parent` and `Element`
 - `Homset` and `Morphism`
 - The coercion model
 - Dynamic method installation
-- Category refinement on existing Sage objects
+- Category refinement by properties and axioms
 - Join and construction-class generation
 
 These parts are not trivial to reproduce. Sage creates parent, element, and morphism classes from the category graph. It also changes classes during refinement. [Sage’s category documentation](https://doc.sagemath.org/html/en/reference/categories/sage/categories/category.html) describes this mechanism.
@@ -40,7 +54,9 @@ Such links mainly provide generic methods:
 - `Monoids()` provides `prod`, powers, and inverse operations.
 - `Sets()` provides sample elements and product constructions.
 
-These methods need not make Sage categories mathematical supercategories. The owned methods can delegate directly to Sage implementations. The preamble already does this with `SageGroups().ParentMethods.group_generators(self)` in [groups.sage](/home/dzack/research/src/dzack_research/preamble/categories/group/groups.sage#L488).
+These methods need not make Sage categories mathematical supercategories. The owned category remains the mathematical owner.
+
+A Sage implementation can supply an algorithm. Do not keep a same-name forwarding method as a second owner.
 
 The Sage graph also contains known mathematical defects. These include missing inclusions and weak join semantics. See [Sage-Category-Framework-Inventory.md](/home/dzack/research/docs/sage/Sage-Category-Framework-Inventory.md#L114).
 
@@ -60,6 +76,16 @@ Removing even this link requires replacing part of Sage parent initialization. T
 - Native Sage categories do not occur as mathematical supercategories.
 - The Sage category engine remains until the preamble replaces dynamic refinement.
 - The coercion model remains independent of Sage’s mathematical category graph. [Sage coercion documentation](https://doc.sagemath.org/html/en/reference/coercion/sage/structure/coerce.html)
+
+## Current architectural closeout
+
+- Put set-theoretic answers at the owned `Sets()` layer.
+- Construct each enriched object as the structure it claims to be.
+- Represent forgetting with a functor. Do not use `forget_*` methods.
+- Put element and morphism operations on their category surfaces.
+- Send data through construction. Use refinement only for properties and axioms.
+- Replace instance-dictionary probes with category membership, accessors, or `cached_method`.
+- Remove same-name forwarding and duplicate mathematical owners.
 
 Therefore:
 
