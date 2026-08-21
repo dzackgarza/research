@@ -188,7 +188,7 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             category: "Category | None" = None,
         ) -> "Parent":
             r"""Build the lattice homset through its owned arrow category."""
-            if category is None and codomain in IntegralLattices(self.base_ring()):
+            if codomain in IntegralLattices(self.base_ring()):
                 category = IntegralLattices(self.base_ring())
             return super()._Hom_(codomain, category)
 
