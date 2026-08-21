@@ -16,6 +16,17 @@ The broad design requires:
 - Standalone functors forget structure.
 - `refine()` adds properties or axioms only.
 
+## Illustrative vertical consequences
+
+These are examples of what the architecture should make true. They are not independent goals.
+
+- For a finite field \(\mathbb F_q\), the free module \(\mathbb F_q^n\) is constructed as a module whose underlying set is an \(n\)-fold product. The set construction therefore gives \(\lvert\mathbb F_q^n\rvert=q^n\).
+- A finite free \(R\)-algebra of rank \(n\), with finite base ring \(R\), receives cardinality \(\lvert R\rvert^n\) from its underlying free module. The final cardinality is owned by its underlying set, not by an algebra-specific method.
+- The tensor algebra \(T_R(M)=\bigoplus_{d\geq 0}M^{\otimes d}\) receives set-theoretic facts through its graded module construction. In particular, \(T_R(0)\cong R\), and countability of the latter is inherited through construction.
+- A finite-rank integral lattice is constructed through its formed free \(\mathbb Z\)-module and then through its underlying set. Its bilinear form adds structure without creating a second owner for set operations or cardinality.
+- A group module is constructed through its module and set levels, with the action added at the group-module level. A standalone functor forgets the action; the object does not store a second module.
+- A lattice isometry is an element of a homset. Its underlying function comes from the set level, linearity comes from the module level, and form preservation comes from the lattice level. Identity and composition belong to the corresponding homset and arrow-category structures.
+
 The current implementation largely matches the first, fourth, and fifth points. Category-owned classes, cooperative construction, homsets, and standalone functors exist.
 
 The current mathematical failure exposes the main remaining gap:
