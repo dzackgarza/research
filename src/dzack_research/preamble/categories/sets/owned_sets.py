@@ -478,7 +478,7 @@ class Sets(Category):
             # Dispatch, not a fallback: a Sage category gets Sage's homset and
             # an owned category gets the owned one, which is the routing this
             # repo already settled for ``Hom``.
-            if not category.is_subcategory(Sets()):
+            if not isinstance(category, OwnedCategoryMixin):
                 return SageHomset(self, codomain, category=category)
             homset: SageParent = category.Homsets().parent_class(
                 domain=self, codomain=codomain, category=category
