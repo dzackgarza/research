@@ -38,6 +38,6 @@ The next architectural repair is therefore precise:
 2. Keep the assertion unchanged.
 3. Run the existing mathematical specimens again.
 4. Use the next mathematical failure to locate the next missing construction datum.
-5. Inspect data-bearing `refine()` calls only after the preamble loads.
+5. Inspect remaining `refine()` calls against the architectural boundary. Owned constructors build objects through cooperative `super()` calls. Each leaf category constructs only its immediate declared supercategory object. Refinement is limited to constructor-computed membership in subcategories that add properties or axioms. It never adopts Sage objects into the owned hierarchy or supplies construction data after instantiation.
 
 This follows the goals recorded in the [threading architecture](/home/dzack/.agent-memory-vault/projects/github.com__dzackgarza__research/plans/features/FEATURE-category-foundations/plans/PLAN-coxeter-gitclones-absorption/plans/PLAN-threading-set-behaviour/PLAN-threading-set-behaviour.md:42) and [category construction model](/home/dzack/.agent-memory-vault/projects/github.com__dzackgarza__research/plans/features/FEATURE-category-foundations/plans/PLAN-coxeter-gitclones-absorption/plans/PLAN-threading-set-behaviour/plans/PLAN-cat-model-migration/PLAN-cat-model-migration.md:88).
