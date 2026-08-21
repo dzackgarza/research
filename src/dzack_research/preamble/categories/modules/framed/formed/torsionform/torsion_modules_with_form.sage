@@ -11,6 +11,7 @@ if TYPE_CHECKING:
     from sage.categories.modules import Module
     from dzack_research.preamble.lexicon import ModuleElement
 
+from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModules
 from dzack_research.preamble.categories.modules.framed.formed.integrallattice.subobjects import Subobject
 if TYPE_CHECKING:
     from dzack_research.preamble.categories.modules.framed.formed.form_modules import is_form_morphism
@@ -704,6 +705,17 @@ class TorsionModulesWithForm(OwnedCategoryOverBaseRing):
     class Homsets(HomsetsCategory):
         r"""The form-preserving maps between two finite torsion forms."""
 
+        def extra_super_categories(self) -> list:
+            r"""A morphism of torsion forms is a morphism of formed modules.
+
+            Sage does not carry this over on its own: the homsets of a
+            category default to $\mathbf{Set}$'s homsets and nothing else, so
+            without this the orthogonal group of a discriminant form had no
+            way to make its own element out of a generator assignment -- which
+            is how every form morphism is made.
+            """
+            return [FormModules(self.base_category().base_ring()).Homsets()]
+
         class Endset(CategoryWithAxiom):
             r"""$O(A)$: the automorphisms of a finite torsion form, in its category.
 
@@ -1089,11 +1101,18 @@ class DiscriminantForms(Category_over_base_ring):
                 f"{overlattice} was glued from {lattice} and does not contain it"
             )
             coordinates = coordinates.change_ring(SageZZ)
+            # Keyed by the generating set, not a positional list: a generating
+            # set is a set, and which generator each row is the image of is
+            # what the assignment has to say.
             return lattice.Hom(overlattice)(
-                [
-                    zipsum(row, overlattice.module_generators(), overlattice.zero())
-                    for row in coordinates.rows()
-                ]
+                {
+                    label: zipsum(
+                        row, overlattice.module_generators(), overlattice.zero()
+                    )
+                    for label, row in zip(
+                        lattice.module_generating_set(), coordinates.rows()
+                    )
+                }
             )
 
         def discriminant_form_of_overlattice(

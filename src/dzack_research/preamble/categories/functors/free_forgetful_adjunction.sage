@@ -250,17 +250,16 @@ class FreeModuleFunctorClass(Functor):
     def _apply_functor(self, set_object: "Set") -> "Module":
         r"""Return \(F_R(S)\), the same object on every call.
 
-        ``FreeModuleOnSet`` is not a ``UniqueRepresentation``, so
-        constructing it twice yields two parents.  A functor must be
-        well-defined on objects -- \(F(\operatorname{dom} f)\) has to *be*
-        the domain of \(F(f)\), not merely be isomorphic to it -- so the
-        result is cached here.
+        A functor must be well-defined on objects -- \(F(\operatorname{dom}
+        f)\) has to *be* the domain of \(F(f)\), not merely be isomorphic to
+        it.  ``FreeModuleOn`` already answers with one object per \((R,S)\);
+        the cache here says the functor depends on nothing else.
         """
         # Local: the free-module node imports this module, so a module-level
         # import would close that cycle; it is built by call time.
-        from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreeModuleOnSet
+        from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreeModuleOn
 
-        return FreeModuleOnSet(self._base_ring, set_object)
+        return FreeModuleOn(self._base_ring, set_object)
 
     def _apply_functor_to_morphism(self, set_morphism: Morphism) -> "Morphism":
         r"""Apply F_R to a set morphism f: S -> T, producing F_R(f): F_R(S) -> F_R(T)."""

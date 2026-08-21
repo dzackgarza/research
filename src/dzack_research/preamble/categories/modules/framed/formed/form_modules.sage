@@ -916,11 +916,14 @@ class FormModules(OwnedCategoryOverBaseRing):
                 return str(self._module_morphism._repr_defn())
 
         class Endset(CategoryWithAxiom):
-            r"""$\operatorname{Aut}(M)$: the endset of a finite free formed module.
+            r"""$\operatorname{Aut}(M)$: the endset of a formed module.
 
             Its morphisms are the form-preserving maps, so on these objects
             $\operatorname{End}(M)=\operatorname{Aut}(M)$ and the endset is a
-            group.
+            group.  That is true of a formed module of any kind -- a torsion
+            form's orthogonal group is this endset too; what a *free* one adds
+            is a matrix, and the determinant test that goes with it, which is
+            why those live one category down.
             """
 
             class ParentMethods:
@@ -929,9 +932,6 @@ class FormModules(OwnedCategoryOverBaseRing):
                     from dzack_research.preamble.refine import refine
 
                     super().__init__(**rest)
-                    assert self.domain() in FinitelyGeneratedFreeFormModules(
-                        self.domain().base_ring()
-                    ), "form automorphisms here require a finite free module"
                     # $\operatorname{Aut}$ in formed modules is a group, so that
                     # is the placement.  Not the module-homset category as well:
                     # that carries the additive axioms of $\operatorname{End}$,
@@ -941,16 +941,6 @@ class FormModules(OwnedCategoryOverBaseRing):
                     # multiplicative semigroup, and constructions keyed on that,
                     # $R[G]$ among them, rightly refuse it as ambiguous.
                     refine(self, [Groups()])
-
-                def _element_constructor_(
-                    self, images: "GeneratorAssignment | ModuleMorphism"
-                ) -> "Morphism":
-                    morphism = super()._element_constructor_(images)
-                    determinant = morphism.matrix().det()
-                    assert determinant.is_unit(), (
-                        f"the determinant {determinant} is not a unit"
-                    )
-                    return morphism
 
                 def one(self) -> "Morphism":
                     return self(self.domain().module_generator_morphism())
@@ -1244,6 +1234,26 @@ class FinitelyGeneratedFreeFormModules(OwnedCategoryOverBaseRing):
             FinitelyGeneratedFreeModules(self.base_ring()),
         ]
 
+    class Homsets(HomsetsCategory):
+        r"""Form-preserving maps of finite free formed modules."""
+
+        class Endset(CategoryWithAxiom):
+            r"""$\operatorname{Aut}(M)$ where $M$ has a basis, so its
+            morphisms have matrices."""
+
+            class ParentMethods:
+                def _element_constructor_(
+                    self, images: "GeneratorAssignment | ModuleMorphism"
+                ) -> "Morphism":
+                    r"""An automorphism of a based module is invertible over
+                    $R$, which is what a unit determinant says."""
+                    morphism = super()._element_constructor_(images)
+                    determinant = morphism.matrix().det()
+                    assert determinant.is_unit(), (
+                        f"the determinant {determinant} is not a unit"
+                    )
+                    return morphism
+
     class ParentMethods:
         # ---- the radical, and the predicates the axioms gate on ----
         #
@@ -1389,9 +1399,17 @@ def FormModule(form: "Form") -> Parent:
     # and action, and the framing comes from that module rather than twice.
     # $R[G]$-Mod is named by its group, and only a module carrying an action
     # can say which group that is, so the module is asked for it first.
-    group = getattr(module, "group", None)
+    # Being a $G$-module is category membership, so it is read off the
+    # categories the module is in.  Asked by attribute instead, the question
+    # was whether the name ``group`` resolves -- which any object may answer
+    # for reasons of its own, and which no longer names the group when the
+    # module carries the action without exposing it.
+    group_module_category = next(
+        (member for member in module.categories() if isinstance(member, GroupModules)),
+        None,
+    )
     data: dict[str, "ConstructionData"] = {"form": form}
-    if group is not None and module in GroupModules(module.base_ring(), group()):
+    if group_module_category is not None:
         data["module"] = module.forget_action()
         data["action"] = module.action()
     elif module in FinitelyPresentedModules(module.base_ring()):
