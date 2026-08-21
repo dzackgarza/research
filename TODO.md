@@ -2,6 +2,8 @@
 
 Arrive at the correct preamble architecture, under which all strictly mathematical tests pass. Type-checking is a non-concern for this phase.
 
+Here, the correct architecture means that each category is unified with its implementation classes. The preamble constructs every required object through the owned category hierarchy instead of refining Sage objects into that hierarchy. A leaf category constructs only its immediate declared supercategory object through cooperative `super()` calls. Construction data passes down this chain, while inherited mathematical operations pass back up it. Refinement remains only for constructor-computed membership in subcategories that add properties or axioms without new construction data.
+
 Correct. The plans supply the architectural model, not a progress ledger.
 
 The broad design requires:
