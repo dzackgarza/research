@@ -526,14 +526,24 @@ class FinitelySupportedFunctionSets(Category):
             self._basepoint = basepoint
             # The cardinality belongs to the finitely supported-function set
             # constructed here, before any algebraic enrichment is added.
+            cardinality = self._finitely_supported_cardinality()
+            if cardinality.is_finite():
+                placement = Sets().Finite()
+            elif cardinality.is_countable():
+                placement = Sets().Countable()
+            else:
+                placement = Sets().Uncountable()
+            category = rest.get("category")
+            assert category is not None, "owned constructions require a category"
+            rest["category"] = SageCategory.join((category, placement))
             super().__init__(
-                cardinality=self._finitely_supported_cardinality(),
+                cardinality=cardinality,
                 **rest,
             )
 
             from dzack_research.preamble.refine import refine
 
-            refine(self, placement_of(self))
+            refine(self, placement)
 
         def index_set(self) -> SageParent:
             return self._index_set
