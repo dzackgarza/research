@@ -629,10 +629,13 @@ class EndCategoryConstruction(EndCategoryOf):
         return []
 
     def inherited_hom_category_families(self) -> list[Category]:
-        return [EndCategoryOf(self._base_category), *self.extra_super_categories()]
+        return [
+            *EndCategoryOf.inherited_hom_category_families(self),
+            *self.extra_super_categories(),
+        ]
 
     def super_categories(self) -> list[Category]:
-        return [EndCategoryOf(self._base_category), *self.extra_super_categories()]
+        return self.inherited_hom_category_families()
 
 
 class MonoCategoryConstruction(MonoCategoryOf):
@@ -642,10 +645,13 @@ class MonoCategoryConstruction(MonoCategoryOf):
         return []
 
     def inherited_hom_category_families(self) -> list[Category]:
-        return [MonoCategoryOf(self._base_category), *self.extra_super_categories()]
+        return [
+            *MonoCategoryOf.inherited_hom_category_families(self),
+            *self.extra_super_categories(),
+        ]
 
     def super_categories(self) -> list[Category]:
-        return [MonoCategoryOf(self._base_category), *self.extra_super_categories()]
+        return self.inherited_hom_category_families()
 
 
 class EpiCategoryConstruction(EpiCategoryOf):
@@ -655,10 +661,13 @@ class EpiCategoryConstruction(EpiCategoryOf):
         return []
 
     def inherited_hom_category_families(self) -> list[Category]:
-        return [EpiCategoryOf(self._base_category), *self.extra_super_categories()]
+        return [
+            *EpiCategoryOf.inherited_hom_category_families(self),
+            *self.extra_super_categories(),
+        ]
 
     def super_categories(self) -> list[Category]:
-        return [EpiCategoryOf(self._base_category), *self.extra_super_categories()]
+        return self.inherited_hom_category_families()
 
 
 class IsoCategoryConstruction(IsoCategoryOf):
@@ -668,10 +677,13 @@ class IsoCategoryConstruction(IsoCategoryOf):
         return []
 
     def inherited_hom_category_families(self) -> list[Category]:
-        return [IsoCategoryOf(self._base_category), *self.extra_super_categories()]
+        return [
+            *IsoCategoryOf.inherited_hom_category_families(self),
+            *self.extra_super_categories(),
+        ]
 
     def super_categories(self) -> list[Category]:
-        return [IsoCategoryOf(self._base_category), *self.extra_super_categories()]
+        return self.inherited_hom_category_families()
 
 
 class AutCategoryConstruction(AutCategoryOf):
@@ -681,7 +693,10 @@ class AutCategoryConstruction(AutCategoryOf):
         return []
 
     def inherited_hom_category_families(self) -> list[Category]:
-        return [AutCategoryOf(self._base_category), *self.extra_super_categories()]
+        return [
+            *AutCategoryOf.inherited_hom_category_families(self),
+            *self.extra_super_categories(),
+        ]
 
     def super_categories(self) -> list[Category]:
-        return [AutCategoryOf(self._base_category), *self.extra_super_categories()]
+        return self.inherited_hom_category_families()
