@@ -947,8 +947,15 @@ class Sets(Category):
             target: SageParent,
             category: SageCategory | None = None,
         ) -> SageCategory:
-            r"""Return the hom category by delegation to the owning category."""
-            source_category = self.category() if category is None else category
+            r"""Return the hom category in the most specific category containing both sets."""
+            if category is None:
+                from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+                    common_category,
+                )
+
+                source_category = common_category((self, target))
+            else:
+                source_category = category
             assert self in source_category and target in source_category
             return source_category.Hom(self, target)
 
