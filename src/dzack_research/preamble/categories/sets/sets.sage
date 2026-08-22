@@ -31,6 +31,7 @@ from sage.sets.totally_ordered_finite_set import TotallyOrderedFiniteSet
 from sage.structure.element import Element
 from sage.structure.element_wrapper import ElementWrapper
 from sage.structure.parent import Parent
+from sage.structure.richcmp import richcmp
 from sage.misc.cachefunc import cached_function
 
 from dzack_research.preamble.categories.sets.cardinals import Cardinal
@@ -494,8 +495,9 @@ type annotation all name.
 class FiniteSubsetElement(ElementWrapper):
     r"""A finite subset as an element of its subset parent.
 
-    Sage's ``ElementWrapper`` supplies the parent, equality, and hashing.
-    The wrapped value is the immutable finite set of members.
+    Sage's ``ElementWrapper`` supplies the parent.  The wrapped value is the
+    immutable finite set of members, which supplies extensional equality and
+    hashing across the sets of subsets that contain it.
     """
 
     def __iter__(self) -> Iterator[Element]:
@@ -506,6 +508,28 @@ class FiniteSubsetElement(ElementWrapper):
 
     def __contains__(self, member: Element) -> bool:
         return member in self.value
+
+    def _richcmp_(self, other: "FiniteSubsetElement", op: int) -> bool:
+        return bool(richcmp(self.value, other.value, op))
+
+    def __eq__(self, other: "FiniteSubsetElement") -> bool:
+        return (
+            isinstance(other, FiniteSubsetElement)
+            and self.value == other.value
+        )
+
+    def __ne__(self, other: "FiniteSubsetElement") -> bool:
+        return not self == other
+
+    def __hash__(self) -> int:
+        return hash(self.value)
+
+    def __or__(self, other: "FiniteSubsetElement") -> "FiniteSubsetElement":
+        r"""Return the union in the finite power set of the common source."""
+        assert self.parent().source() is other.parent().source(), (
+            "set union requires subsets of one source"
+        )
+        return FiniteSubsets(self.parent().source())(self.value | other.value)
 
     def _repr_(self) -> str:
         return repr(SageSet(self.value))
