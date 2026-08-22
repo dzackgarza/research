@@ -39,8 +39,10 @@ from sage.structure.richcmp import richcmp
 from dzack_research.preamble.lexicon.interop import SageParent
 from dzack_research.preamble.owned_category import OwnedParent
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    EpiCategoryConstruction,
     HomCategoryConstruction,
     IsoCategoryConstruction,
+    MonoCategoryConstruction,
 )
 from dzack_research.preamble.categories.abstract_categories.functor_images import (
     _FunctorImageParameters,
@@ -675,6 +677,167 @@ class Sets(Category):
             def __call__(self, element: "SetElementInput") -> "SetElementInput":
                 return self.forward()(element)
 
+    class _MonoCategory(MonoCategoryConstruction):
+        r"""Set monomorphisms with their declared injective function."""
+
+        class ElementMethods:
+            def __init__(
+                self,
+                hom_category: SageCategory,
+                underlying_arrow: "Sets.ArrowType",
+            ) -> None:
+                self._power_set: SageParent | None = None
+                self._characteristic_morphism: Sets.ArrowType | None = None
+                self._members: frozenset[SageElement] | None = None
+                super().__init__(
+                    hom_category=hom_category,
+                    underlying_arrow=underlying_arrow,
+                )
+
+            def __call__(self, element: "SetElementInput") -> "SetElementInput":
+                return self.underlying_arrow()(element)
+
+            def inclusion(self) -> "Sets.MonoArrowType":
+                return self
+
+            def power_set(self) -> SageParent:
+                if self._power_set is None:
+                    from dzack_research.preamble.categories.sets.sets import PowerSet
+
+                    self._power_set = PowerSet(self.codomain())
+                return self._power_set
+
+            def members(self) -> frozenset[SageElement] | None:
+                return self._members
+
+            def underlying_set(self) -> SageParent:
+                return self.domain()
+
+            def characteristic_morphism(self) -> "Sets.ArrowType":
+                if self._characteristic_morphism is None:
+                    raise NotImplementedError(
+                        "this Set monomorphism has no represented characteristic morphism"
+                    )
+                return self._characteristic_morphism
+
+            def __contains__(self, member: "SetElementInput") -> bool:
+                return self.characteristic_morphism()(member) == Sets.Δ[1](1)
+
+            def __iter__(self) -> Iterator[SageElement]:
+                return iter(self.domain())
+
+            def cardinality(self) -> Cardinal:
+                if self._members is not None:
+                    from dzack_research.preamble.categories.sets.cardinals import cardinal
+
+                    return cardinal(len(self._members))
+                return self.domain().cardinality()
+
+            def __len__(self) -> int:
+                size = self.cardinality()
+                assert size.is_finite(), "length is defined only for a finite subset"
+                return int(size)
+
+            def _decidable_finite_equality(
+                self,
+                other: "Sets.MonoArrowType",
+            ) -> bool:
+                base_set = self.codomain()
+                if base_set in Sets().Finite():
+                    return all(
+                        (member in self) == (member in other)
+                        for member in base_set
+                    )
+                if self._members is None or other.members() is None:
+                    return False
+                return self._members == other.members()
+
+            def __eq__(self, other: "SetElementInput") -> bool:
+                if self is other:
+                    return True
+                from dzack_research.preamble.categories.sets.sets import SubsetsOfSet
+
+                if other not in SubsetsOfSet(self.codomain()):
+                    return False
+                if self._characteristic_morphism is other._characteristic_morphism:
+                    return True
+                return self._decidable_finite_equality(other)
+
+            def __ne__(self, other: "SetElementInput") -> bool:
+                return not self == other
+
+            def __hash__(self) -> int:
+                base_set = self.codomain()
+                if base_set in Sets().Finite():
+                    return hash(
+                        (self.power_set(), tuple(member in self for member in base_set))
+                    )
+                if self._members is not None:
+                    return hash((self.power_set(), self._members))
+                return hash(self.characteristic_morphism())
+
+            def __le__(self, other: "Sets.MonoArrowType") -> bool:
+                assert self.codomain() is other.codomain(), (
+                    "subset order requires a common inclusion codomain"
+                )
+                base_set = self.codomain()
+                if base_set in Sets().Finite():
+                    return all(
+                        member not in self or member in other
+                        for member in base_set
+                    )
+                assert self._members is not None, (
+                    "this subset relation has no available decision procedure"
+                )
+                return all(member in other for member in self._members)
+
+            def union(self, other: "Sets.MonoArrowType") -> "Sets.MonoArrowType":
+                return self.power_set().from_predicate(
+                    lambda member: member in self or member in other
+                )
+
+            def intersection(
+                self,
+                other: "Sets.MonoArrowType",
+            ) -> "Sets.MonoArrowType":
+                return self.power_set().from_predicate(
+                    lambda member: member in self and member in other
+                )
+
+            def difference(
+                self,
+                other: "Sets.MonoArrowType",
+            ) -> "Sets.MonoArrowType":
+                return self.power_set().from_predicate(
+                    lambda member: member in self and member not in other
+                )
+
+            def symmetric_difference(
+                self,
+                other: "Sets.MonoArrowType",
+            ) -> "Sets.MonoArrowType":
+                return self.power_set().from_predicate(
+                    lambda member: (member in self) != (member in other)
+                )
+
+            def complement(self) -> "Sets.MonoArrowType":
+                return self.power_set().from_predicate(
+                    lambda member: member not in self
+                )
+
+            def __or__(self, other: "Sets.MonoArrowType") -> "Sets.MonoArrowType":
+                return self.union(other)
+
+            def _repr_(self) -> str:
+                return f"Subobject of {self.codomain()} defined by {self.domain()}"
+
+    class _EpiCategory(EpiCategoryConstruction):
+        r"""Set epimorphisms with their declared surjective function."""
+
+        class ElementMethods:
+            def __call__(self, element: "SetElementInput") -> "SetElementInput":
+                return self.underlying_arrow()(element)
+
     class ElementMethods(SageElement):
         r"""An element of an owned set: the element implementation class.
 
@@ -858,7 +1021,7 @@ class FinitelySupportedFunctionSets(Category):
             from sage.rings.infinity import Infinity
 
             value_count = self.value_set().cardinality()
-            if not isinstance(value_count, Cardinal) and value_count == Infinity:
+            if value_count not in Cardinalities() and value_count == Infinity:
                 assert "Countable" in placement_of(self.value_set()).axioms(), (
                     f"{self.value_set()} reports only +Infinity and does not "
                     "declare countability, so its cardinality is not determined"
@@ -868,7 +1031,7 @@ class FinitelySupportedFunctionSets(Category):
                 return cardinal(1)
 
             index_count = self.index_set().cardinality()
-            if not isinstance(index_count, Cardinal) and index_count == Infinity:
+            if index_count not in Cardinalities() and index_count == Infinity:
                 assert "Countable" in placement_of(self.index_set()).axioms(), (
                     f"{self.index_set()} reports only +Infinity and does not "
                     "declare countability, so its cardinality is not determined"

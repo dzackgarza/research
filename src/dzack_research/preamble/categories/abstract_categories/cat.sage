@@ -35,23 +35,26 @@ from dzack_research.preamble.owned_category import (
     OwnedCategoryMixin,
     declared_implementation_types,
 )
-from sage.categories.morphism import Morphism
 from sage.structure.parent import Parent
 
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
     ArrowCategory as ArrowCategoryOf,
     AutomorphismArrowCategory as AutomorphismArrowCategoryOf,
     Core,
+    EpimorphismArrowCategory as EpimorphismArrowCategoryOf,
     EndArrowCategory as EndArrowCategoryOf,
     IsoArrowCategory,
+    MonomorphismArrowCategory as MonomorphismArrowCategoryOf,
 )
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     AutCategoryOf,
+    EpiCategoryOf,
     EndCategoryOf,
     HomCategoryConstruction,
     HomCategoryOf,
     IsoCategoryConstruction,
     IsoCategoryOf,
+    MonoCategoryOf,
 )
 from dzack_research.preamble.categories.abstract_categories.slice_categories import (
     CosliceUnderCategory,
@@ -79,7 +82,7 @@ class Cat(OwnedCategoryMixin, Category):
         return "Category of categories"
 
     def super_categories(self) -> list[Category]:
-        # A category is an object.  Hom, End, Aut, and arrow categories are
+        # A category is an object.  Hom, End, Mono, Epi, Aut, and arrow categories are
         # Cat-level constructions declared below, not consequences of this
         # Sage runtime edge.
         return [Objects()]
@@ -292,6 +295,26 @@ class Cat(OwnedCategoryMixin, Category):
                 return IsoCategoryOf(self)
             return construction(self)
 
+        @cached_method
+        def MonoCategory(self) -> Category:
+            r"""Return the category of monomorphism categories of \(\mathbf C\)."""
+            construction, _ = declared_implementation_types(
+                type(self), ("_MonoCategory",)
+            )
+            if construction is None:
+                return MonoCategoryOf(self)
+            return construction(self)
+
+        @cached_method
+        def EpiCategory(self) -> Category:
+            r"""Return the category of epimorphism categories of \(\mathbf C\)."""
+            construction, _ = declared_implementation_types(
+                type(self), ("_EpiCategory",)
+            )
+            if construction is None:
+                return EpiCategoryOf(self)
+            return construction(self)
+
         @property
         def HomCatType(self) -> type:
             return self.HomCategory().ObjectType
@@ -309,6 +332,14 @@ class Cat(OwnedCategoryMixin, Category):
             return self.IsoCategory().ObjectType
 
         @property
+        def MonoCatType(self) -> type:
+            return self.MonoCategory().ObjectType
+
+        @property
+        def EpiCatType(self) -> type:
+            return self.EpiCategory().ObjectType
+
+        @property
         def ArrowType(self) -> type:
             return self.HomCatType.ObjectType
 
@@ -323,6 +354,14 @@ class Cat(OwnedCategoryMixin, Category):
         @property
         def IsoArrowType(self) -> type:
             return self.IsoCatType.ObjectType
+
+        @property
+        def MonoArrowType(self) -> type:
+            return self.MonoCatType.ObjectType
+
+        @property
+        def EpiArrowType(self) -> type:
+            return self.EpiCatType.ObjectType
 
         @cached_method
         def ArrowCategory(self) -> Category:
@@ -347,6 +386,18 @@ class Cat(OwnedCategoryMixin, Category):
             r"""Return the full subcategory of \(\operatorname{Ar}(\mathbf{C})\) on automorphisms."""
             automorphisms: Category = AutomorphismArrowCategoryOf(self)
             return automorphisms
+
+        @cached_method
+        def MonomorphismArrowCategory(self) -> Category:
+            r"""Return the subcategory of \(\operatorname{Ar}(\mathbf C)\) on monomorphisms."""
+            monomorphisms: Category = MonomorphismArrowCategoryOf(self)
+            return monomorphisms
+
+        @cached_method
+        def EpimorphismArrowCategory(self) -> Category:
+            r"""Return the subcategory of \(\operatorname{Ar}(\mathbf C)\) on epimorphisms."""
+            epimorphisms: Category = EpimorphismArrowCategoryOf(self)
+            return epimorphisms
 
         @cached_method
         def core(self) -> Category:
@@ -428,6 +479,26 @@ class Cat(OwnedCategoryMixin, Category):
             assert source in self and target in self
             return self.IsoCategory().Of(source, target)
 
+        @cached_method
+        def Mono(
+            self,
+            source: "ObjectOfCategory",
+            target: "ObjectOfCategory",
+        ) -> Category:
+            r"""Return the monomorphism category from ``source`` to ``target``."""
+            assert source in self and target in self
+            return self.MonoCategory().Of(source, target)
+
+        @cached_method
+        def Epi(
+            self,
+            source: "ObjectOfCategory",
+            target: "ObjectOfCategory",
+        ) -> Category:
+            r"""Return the epimorphism category from ``source`` to ``target``."""
+            assert source in self and target in self
+            return self.EpiCategory().Of(source, target)
+
         def identity(
             self,
             obj: "ObjectOfCategory",
@@ -461,32 +532,32 @@ class Cat(OwnedCategoryMixin, Category):
             coproducts: Category = CoproductCoconeCategory(self, cofactors)
             return coproducts
 
-        def SliceOver(self, X: "Parent | Morphism") -> Category:
+        def SliceOver(self, X: "ObjectOfCategory") -> Category:
             r"""Return the slice category \(\mathbf{C}/X\), whose objects are the arrows \(A\to X\)."""
             slices: Category = SliceOverCategory(self, X)
             return slices
 
-        def CosliceUnder(self, X: "Parent | Morphism") -> Category:
+        def CosliceUnder(self, X: "ObjectOfCategory") -> Category:
             r"""Return the coslice category \(X\setminus\mathbf{C}\), whose objects are the arrows \(X\to A\)."""
             coslices: Category = CosliceUnderCategory(self, X)
             return coslices
 
-        def SubObject(self, X: "Parent | Morphism") -> Category:
+        def SubObject(self, X: "ObjectOfCategory") -> Category:
             r"""Return the category of subobjects of \(X\): the monomorphisms \(A\hookrightarrow X\)."""
             subobjects: Category = SubobjectCategory(self, X)
             return subobjects
 
-        def SuperObject(self, X: "Parent | Morphism") -> Category:
+        def SuperObject(self, X: "ObjectOfCategory") -> Category:
             r"""Return the category of superobjects of \(X\): the monomorphisms \(X\hookrightarrow B\)."""
             superobjects: Category = SuperobjectCategory(self, X)
             return superobjects
 
-        def CoveringObject(self, X: "Parent | Morphism") -> Category:
+        def CoveringObject(self, X: "ObjectOfCategory") -> Category:
             r"""Return the category of covering objects of \(X\): the epimorphisms \(A\twoheadrightarrow X\)."""
             coverings: Category = CoveringObjectCategory(self, X)
             return coverings
 
-        def CoveredObject(self, X: "Parent | Morphism") -> Category:
+        def CoveredObject(self, X: "ObjectOfCategory") -> Category:
             r"""Return the category of covered objects of \(X\): the epimorphisms \(X\twoheadrightarrow B\)."""
             covereds: Category = CoveredObjectCategory(self, X)
             return covereds

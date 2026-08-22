@@ -175,6 +175,54 @@ class IsoArrowCategory(_OnACategory, Category):
         return arrow
 
 
+class MonomorphismArrowCategory(_OnACategory, Category):
+    r"""The subcategory of \(\operatorname{Ar}(\mathbf C)\) on monomorphisms."""
+
+    def _repr_(self) -> str:
+        return f"Category of monomorphisms in {self._base_category}"
+
+    @property
+    def ObjectType(self) -> type:
+        return self._base_category.MonoArrowType
+
+    def super_categories(self) -> list[Category]:
+        return [ArrowCategory(self._base_category)]
+
+    def __contains__(self, candidate: "MembershipInput") -> bool:
+        return candidate in ArrowCategory(self._base_category) and (
+            candidate.parent() in self._base_category.MonoCategory()
+            or candidate.parent() in self._base_category.IsoCategory()
+        )
+
+    def __call__(self, arrow: SageElement) -> SageElement:
+        assert arrow in self
+        return arrow
+
+
+class EpimorphismArrowCategory(_OnACategory, Category):
+    r"""The subcategory of \(\operatorname{Ar}(\mathbf C)\) on epimorphisms."""
+
+    def _repr_(self) -> str:
+        return f"Category of epimorphisms in {self._base_category}"
+
+    @property
+    def ObjectType(self) -> type:
+        return self._base_category.EpiArrowType
+
+    def super_categories(self) -> list[Category]:
+        return [ArrowCategory(self._base_category)]
+
+    def __contains__(self, candidate: "MembershipInput") -> bool:
+        return candidate in ArrowCategory(self._base_category) and (
+            candidate.parent() in self._base_category.EpiCategory()
+            or candidate.parent() in self._base_category.IsoCategory()
+        )
+
+    def __call__(self, arrow: SageElement) -> SageElement:
+        assert arrow in self
+        return arrow
+
+
 class EndArrowCategory(_OnACategory, Category):
     r"""The full subcategory of \(\operatorname{Ar}(\mathbf{C})\) on endomorphisms."""
 

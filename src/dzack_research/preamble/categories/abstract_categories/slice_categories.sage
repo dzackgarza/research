@@ -13,11 +13,13 @@ read from that arrow.  No endpoint is mutated or given a second category.
 
 
 from dzack_research.preamble.owned_category_bases import Category
-from sage.categories.morphism import Morphism
 from sage.structure.parent import Parent
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+        HomCategoryOf,
+    )
     from sage.structure.parent import MembershipInput
 
 class _OverAnObject:
@@ -33,7 +35,11 @@ class _OverAnObject:
     one set of bases, which no method resolution order can satisfy.
     """
 
-    def __init__(self, ambient_category: Category, X: "Parent | Morphism") -> None:
+    def __init__(
+        self,
+        ambient_category: Category,
+        X: "Parent | HomCategoryOf.ElementMethods",
+    ) -> None:
         self._ambient_category = ambient_category
         self._target_object = X
         super().__init__()
@@ -52,7 +58,11 @@ class _UnderAnObject:
     Read :class:`_OverAnObject` for why this is not a category.
     """
 
-    def __init__(self, ambient_category: Category, X: "Parent | Morphism") -> None:
+    def __init__(
+        self,
+        ambient_category: Category,
+        X: "Parent | HomCategoryOf.ElementMethods",
+    ) -> None:
         self._ambient_category = ambient_category
         self._source_object = X
         super().__init__()
@@ -74,8 +84,7 @@ class SliceOverCategory(_OverAnObject, Category):
 
     def __contains__(self, candidate: "MembershipInput") -> bool:
         return (
-            isinstance(candidate, Morphism)
-            and candidate in self.super_categories()[0]
+            candidate in self._ambient_category.ArrowCategory()
             and candidate.codomain() is self._target_object
         )
 
@@ -93,8 +102,7 @@ class CosliceUnderCategory(_UnderAnObject, Category):
 
     def __contains__(self, candidate: "MembershipInput") -> bool:
         return (
-            isinstance(candidate, Morphism)
-            and candidate in self.super_categories()[0]
+            candidate in self._ambient_category.ArrowCategory()
             and candidate.domain() is self._source_object
         )
 
@@ -111,12 +119,8 @@ class SubobjectCategory(_OverAnObject, Category):
     def __contains__(self, candidate: "MembershipInput") -> bool:
         return (
             candidate in self.super_categories()[0]
-            and isinstance(candidate, SubobjectCategory.MorphismMethods)
+            and candidate in self._ambient_category.MonomorphismArrowCategory()
         )
-
-    class MorphismMethods:
-        def is_monomorphism(self) -> bool:
-            return True
 
 class SuperobjectCategory(_UnderAnObject, Category):
     r"""Subcategory of ``CosliceUnder(X)`` represented by monomorphisms \(X\hookrightarrow B\)."""
@@ -130,12 +134,8 @@ class SuperobjectCategory(_UnderAnObject, Category):
     def __contains__(self, candidate: "MembershipInput") -> bool:
         return (
             candidate in self.super_categories()[0]
-            and isinstance(candidate, SuperobjectCategory.MorphismMethods)
+            and candidate in self._ambient_category.MonomorphismArrowCategory()
         )
-
-    class MorphismMethods:
-        def is_monomorphism(self) -> bool:
-            return True
 
 
 class CoveringObjectCategory(_OverAnObject, Category):
@@ -150,12 +150,8 @@ class CoveringObjectCategory(_OverAnObject, Category):
     def __contains__(self, candidate: "MembershipInput") -> bool:
         return (
             candidate in self.super_categories()[0]
-            and isinstance(candidate, CoveringObjectCategory.MorphismMethods)
+            and candidate in self._ambient_category.EpimorphismArrowCategory()
         )
-
-    class MorphismMethods:
-        def is_epimorphism(self) -> bool:
-            return True
 
 
 class CoveredObjectCategory(_UnderAnObject, Category):
@@ -170,80 +166,82 @@ class CoveredObjectCategory(_UnderAnObject, Category):
     def __contains__(self, candidate: "MembershipInput") -> bool:
         return (
             candidate in self.super_categories()[0]
-            and isinstance(candidate, CoveredObjectCategory.MorphismMethods)
+            and candidate in self._ambient_category.EpimorphismArrowCategory()
         )
 
-    class MorphismMethods:
-        def is_epimorphism(self) -> bool:
-            return True
 
-
-def Slice(structure_morphism: Morphism, is_mono: bool = False, is_epi: bool = False) -> Morphism:
+def Slice(
+    structure_morphism: "HomCategoryOf.ElementMethods",
+    is_mono: bool = False,
+    is_epi: bool = False,
+) -> "HomCategoryOf.ElementMethods":
     r"""Construct the slice object represented by a morphism \(A\to X\).
 
-    The returned object is the morphism itself.  It is refined into
-    ``SliceOver(X)`` by default, ``SubObject(X)`` when ``is_mono``, or
-    ``CoveringObject(X)`` when ``is_epi``.
+    A general slice keeps the arrow.  A subobject or covering object uses the
+    corresponding proof-carrying arrow type.
     """
-    # Local: refine is imported here rather than at module level, where it
-    # would close a cycle; it is built by the time this function runs.
     from dzack_research.preamble.categories.abstract_categories.arrow_categories import common_category
-    from dzack_research.preamble.refine import refine
-
-    assert isinstance(structure_morphism, Morphism), (
-        "the structure morphism of a slice object must be a Morphism"
-    )
     domain = structure_morphism.domain()
     codomain = structure_morphism.codomain()
     cat = common_category((domain, codomain))
+    assert structure_morphism in cat.ArrowCategory()
     if is_mono:
-        category = cat.SubObject(codomain)
+        if structure_morphism not in cat.MonomorphismArrowCategory():
+            structure_morphism = cat.Mono(domain, codomain)(structure_morphism)
+        assert structure_morphism in cat.SubObject(codomain)
     elif is_epi:
-        category = cat.CoveringObject(codomain)
+        if structure_morphism not in cat.EpimorphismArrowCategory():
+            structure_morphism = cat.Epi(domain, codomain)(structure_morphism)
+        assert structure_morphism in cat.CoveringObject(codomain)
     else:
-        category = cat.SliceOver(codomain)
-    sliced: Morphism = refine(structure_morphism, category)
-    return sliced
+        assert structure_morphism in cat.SliceOver(codomain)
+    return structure_morphism
 
 
-def Coslice(costructure_morphism: Morphism, is_mono: bool = False, is_epi: bool = False) -> Morphism:
+def Coslice(
+    costructure_morphism: "HomCategoryOf.ElementMethods",
+    is_mono: bool = False,
+    is_epi: bool = False,
+) -> "HomCategoryOf.ElementMethods":
     r"""Construct the coslice object represented by a morphism \(X\to B\).
 
-    The returned object is the morphism itself.  It is refined into
-    ``CosliceUnder(X)`` by default, ``SuperObject(X)`` when ``is_mono``, or
-    ``CoveredObject(X)`` when ``is_epi``.
+    A general coslice keeps the arrow.  A superobject or covered object uses
+    the corresponding proof-carrying arrow type.
     """
-    # Local: refine is imported here rather than at module level, where it
-    # would close a cycle; it is built by the time this function runs.
     from dzack_research.preamble.categories.abstract_categories.arrow_categories import common_category
-    from dzack_research.preamble.refine import refine
-
-    assert isinstance(costructure_morphism, Morphism), (
-        "the costructure morphism of a coslice object must be a Morphism"
-    )
     codomain = costructure_morphism.codomain()
     source = costructure_morphism.domain()
     cat = common_category((source, codomain))
+    assert costructure_morphism in cat.ArrowCategory()
     if is_mono:
-        category = cat.SuperObject(source)
+        if costructure_morphism not in cat.MonomorphismArrowCategory():
+            costructure_morphism = cat.Mono(source, codomain)(costructure_morphism)
+        assert costructure_morphism in cat.SuperObject(source)
     elif is_epi:
-        category = cat.CoveredObject(source)
+        if costructure_morphism not in cat.EpimorphismArrowCategory():
+            costructure_morphism = cat.Epi(source, codomain)(costructure_morphism)
+        assert costructure_morphism in cat.CoveredObject(source)
     else:
-        category = cat.CosliceUnder(source)
-    cosliced: Morphism = refine(costructure_morphism, category)
-    return cosliced
+        assert costructure_morphism in cat.CosliceUnder(source)
+    return costructure_morphism
 
 
-def Superobject(costructure_morphism: Morphism) -> Morphism:
+def Superobject(
+    costructure_morphism: "HomCategoryOf.ElementMethods",
+) -> "HomCategoryOf.ElementMethods":
     r"""Construct the superobject represented by a monomorphism \(X\hookrightarrow B\)."""
     return Coslice(costructure_morphism, is_mono=True)
 
 
-def Covering(structure_morphism: Morphism) -> Morphism:
+def Covering(
+    structure_morphism: "HomCategoryOf.ElementMethods",
+) -> "HomCategoryOf.ElementMethods":
     r"""Construct the covering object represented by an epimorphism \(A\twoheadrightarrow X\)."""
     return Slice(structure_morphism, is_epi=True)
 
 
-def Covered(costructure_morphism: Morphism) -> Morphism:
+def Covered(
+    costructure_morphism: "HomCategoryOf.ElementMethods",
+) -> "HomCategoryOf.ElementMethods":
     r"""Construct the covered object represented by an epimorphism \(X\twoheadrightarrow B\)."""
     return Coslice(costructure_morphism, is_epi=True)

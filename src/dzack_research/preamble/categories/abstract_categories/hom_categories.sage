@@ -8,9 +8,9 @@ so its object type is C.ArrowType:
     C.HomCatType = C.HomCategory().ObjectType
     C.ArrowType = C.HomCatType.ObjectType = C.HomCatType.ElementType
 
-The End, Iso, and Aut towers are the corresponding restricted families.
-Nothing in this module assumes local smallness. No hom category is defined
-as a set.
+The End, Mono, Epi, Iso, and Aut towers are the corresponding restricted
+families.  Nothing in this module assumes local smallness.  No hom category
+is defined as a set.
 """
 
 from typing import TYPE_CHECKING
@@ -191,6 +191,12 @@ class HomCategoryOf(_OverACategory, Category):
         def is_automorphism(self) -> bool:
             return self in self.base_category().AutArrowCategory()
 
+        def is_monomorphism(self) -> bool:
+            return self in self.base_category().MonomorphismArrowCategory()
+
+        def is_epimorphism(self) -> bool:
+            return self in self.base_category().EpimorphismArrowCategory()
+
 
 class HomCategoryConstruction(HomCategoryOf):
     r"""A category-specific Hom-family specialization."""
@@ -248,6 +254,184 @@ class EndCategoryOf(_OverACategory, Category):
 
     class ElementMethods:
         def is_endomorphism(self) -> bool:
+            return True
+
+
+class MonoCategoryOf(_OverACategory, Category):
+    r"""The category of monomorphism categories of \(\mathbf C\)."""
+
+    def _repr_(self) -> str:
+        return f"Category of monomorphism categories of {self._base_category}"
+
+    def inherited_hom_category_families(self) -> list[Category]:
+        return [
+            self._base_category.HomCategory(),
+            *(
+                category.MonoCategory()
+                for category in self.inherited_base_categories()
+            ),
+        ]
+
+    def super_categories(self) -> list[Category]:
+        return self.inherited_hom_category_families()
+
+    def _object_type_of_object_type(self) -> type:
+        return self.ElementType
+
+    def Of(
+        self,
+        domain: "ObjectOfCategory",
+        codomain: "ObjectOfCategory",
+    ) -> Category:
+        assert domain in self._base_category and codomain in self._base_category
+        return self.ObjectType(
+            domain=domain,
+            codomain=codomain,
+            hom_category=self,
+        )
+
+    def Between(
+        self,
+        domain: "ObjectOfCategory",
+        codomain: "ObjectOfCategory",
+    ) -> Category:
+        return self.Of(domain, codomain)
+
+    class ParentMethods:
+        def __call__(
+            self,
+            underlying_arrow: "HomCategoryOf.ElementMethods",
+        ) -> "MonoCategoryOf.ElementMethods":
+            assert underlying_arrow in self.base_category().Hom(
+                self.domain(),
+                self.codomain(),
+            )
+            return self.ObjectType(
+                hom_category=self,
+                underlying_arrow=underlying_arrow,
+            )
+
+        def identity(self) -> "MonoCategoryOf.ElementMethods":
+            assert self.domain() is self.codomain()
+            return self(
+                self.base_category().Hom(self.domain(), self.codomain()).identity()
+            )
+
+        def compose(
+            self,
+            second: "MonoCategoryOf.ElementMethods",
+            first: "MonoCategoryOf.ElementMethods",
+        ) -> "MonoCategoryOf.ElementMethods":
+            assert first.codomain() is second.domain()
+            return self(
+                self.base_category().compose(
+                    second.underlying_arrow(),
+                    first.underlying_arrow(),
+                )
+            )
+
+    class ElementMethods:
+        def __init__(
+            self,
+            hom_category: Category,
+            underlying_arrow: "HomCategoryOf.ElementMethods",
+        ) -> None:
+            self._underlying_arrow = underlying_arrow
+            super().__init__(hom_category=hom_category)
+
+        def underlying_arrow(self) -> "HomCategoryOf.ElementMethods":
+            return self._underlying_arrow
+
+        def is_monomorphism(self) -> bool:
+            return True
+
+
+class EpiCategoryOf(_OverACategory, Category):
+    r"""The category of epimorphism categories of \(\mathbf C\)."""
+
+    def _repr_(self) -> str:
+        return f"Category of epimorphism categories of {self._base_category}"
+
+    def inherited_hom_category_families(self) -> list[Category]:
+        return [
+            self._base_category.HomCategory(),
+            *(
+                category.EpiCategory()
+                for category in self.inherited_base_categories()
+            ),
+        ]
+
+    def super_categories(self) -> list[Category]:
+        return self.inherited_hom_category_families()
+
+    def _object_type_of_object_type(self) -> type:
+        return self.ElementType
+
+    def Of(
+        self,
+        domain: "ObjectOfCategory",
+        codomain: "ObjectOfCategory",
+    ) -> Category:
+        assert domain in self._base_category and codomain in self._base_category
+        return self.ObjectType(
+            domain=domain,
+            codomain=codomain,
+            hom_category=self,
+        )
+
+    def Between(
+        self,
+        domain: "ObjectOfCategory",
+        codomain: "ObjectOfCategory",
+    ) -> Category:
+        return self.Of(domain, codomain)
+
+    class ParentMethods:
+        def __call__(
+            self,
+            underlying_arrow: "HomCategoryOf.ElementMethods",
+        ) -> "EpiCategoryOf.ElementMethods":
+            assert underlying_arrow in self.base_category().Hom(
+                self.domain(),
+                self.codomain(),
+            )
+            return self.ObjectType(
+                hom_category=self,
+                underlying_arrow=underlying_arrow,
+            )
+
+        def identity(self) -> "EpiCategoryOf.ElementMethods":
+            assert self.domain() is self.codomain()
+            return self(
+                self.base_category().Hom(self.domain(), self.codomain()).identity()
+            )
+
+        def compose(
+            self,
+            second: "EpiCategoryOf.ElementMethods",
+            first: "EpiCategoryOf.ElementMethods",
+        ) -> "EpiCategoryOf.ElementMethods":
+            assert first.codomain() is second.domain()
+            return self(
+                self.base_category().compose(
+                    second.underlying_arrow(),
+                    first.underlying_arrow(),
+                )
+            )
+
+    class ElementMethods:
+        def __init__(
+            self,
+            hom_category: Category,
+            underlying_arrow: "HomCategoryOf.ElementMethods",
+        ) -> None:
+            self._underlying_arrow = underlying_arrow
+            super().__init__(hom_category=hom_category)
+
+        def underlying_arrow(self) -> "HomCategoryOf.ElementMethods":
+            return self._underlying_arrow
+
+        def is_epimorphism(self) -> bool:
             return True
 
 
@@ -362,6 +546,12 @@ class IsoCategoryOf(_OverACategory, Category):
         def is_automorphism(self) -> bool:
             return self.domain() is self.codomain()
 
+        def is_monomorphism(self) -> bool:
+            return True
+
+        def is_epimorphism(self) -> bool:
+            return True
+
 
 class AutCategoryOf(_OverACategory, Category):
     r"""The category of automorphism categories of \(\mathbf C\)."""
@@ -438,6 +628,32 @@ class EndCategoryConstruction(EndCategoryOf):
 
     def super_categories(self) -> list[Category]:
         return [EndCategoryOf(self._base_category), *self.extra_super_categories()]
+
+
+class MonoCategoryConstruction(MonoCategoryOf):
+    r"""A category-specific monomorphism-family specialization."""
+
+    def extra_super_categories(self) -> list[Category]:
+        return []
+
+    def inherited_hom_category_families(self) -> list[Category]:
+        return [MonoCategoryOf(self._base_category), *self.extra_super_categories()]
+
+    def super_categories(self) -> list[Category]:
+        return [MonoCategoryOf(self._base_category), *self.extra_super_categories()]
+
+
+class EpiCategoryConstruction(EpiCategoryOf):
+    r"""A category-specific epimorphism-family specialization."""
+
+    def extra_super_categories(self) -> list[Category]:
+        return []
+
+    def inherited_hom_category_families(self) -> list[Category]:
+        return [EpiCategoryOf(self._base_category), *self.extra_super_categories()]
+
+    def super_categories(self) -> list[Category]:
+        return [EpiCategoryOf(self._base_category), *self.extra_super_categories()]
 
 
 class IsoCategoryConstruction(IsoCategoryOf):

@@ -308,7 +308,7 @@ def CartesianProductMorphismOfFamily(
     return Sets().ProductFunctor(index_category)(transformation)
 
 
-def cartesian_product_morphism(*maps: Morphism) -> "Sets.ArrowType":
+def cartesian_product_morphism(*maps: "Sets.ArrowType") -> "Sets.ArrowType":
     r"""Return the componentwise morphism between finite products."""
     map_family = tuple(maps)
     indices = Sets.Δ[len(map_family) - 1]
@@ -358,7 +358,7 @@ def CoproductMorphismOfFamily(
     return Sets().CoproductFunctor(index_category)(transformation)
 
 
-def coproduct_morphism(*maps: Morphism) -> "Sets.ArrowType":
+def coproduct_morphism(*maps: "Sets.ArrowType") -> "Sets.ArrowType":
     r"""Return the componentwise morphism between finite coproducts."""
     map_family = tuple(maps)
     indices = Sets.Δ[len(map_family) - 1]
@@ -426,9 +426,10 @@ def _has_canonical_set_inclusion(domain: Parent, codomain: Parent) -> bool:
 class SubsetsOfSet(CategoryWithParameters):
     r"""The canonical set-valued subobjects of one set.
 
-    An object is its inclusion morphism.  The categorical structure comes
-    from ``Sets().SubObject(X)``.  This level adds only the characteristic
-    morphism and the Boolean operations specific to sets.
+    This category only fixes the codomain of a Set monomorphism.  The generic
+    subobject structure comes from ``Sets().SubObject(X)``.  Set-specific
+    characteristic morphisms and Boolean operations belong to
+    ``Sets.MonoArrowType``.
     """
 
     def __init__(self, base_set: "lexicon.Set") -> None:
@@ -444,124 +445,11 @@ class SubsetsOfSet(CategoryWithParameters):
     def _repr_object_names(self) -> str:
         return f"subsets of {self._base_set}"
 
-    class MorphismMethods:
-        _power_set: Parent
-        _characteristic_morphism: "Sets.ArrowType"
-        _members: "frozenset[Element] | None"
-
-        def inclusion(self) -> Morphism:
-            r"""Return this subset as its defining monomorphism."""
-            return self
-
-        def power_set(self) -> Parent:
-            return self._power_set
-
-        def members(self) -> "frozenset[Element] | None":
-            r"""Return the explicit finite members, when available."""
-            return self._members
-
-        def underlying_set(self) -> "lexicon.Set":
-            r"""Return the domain of the inclusion."""
-            return self.domain()
-
-        def characteristic_morphism(self) -> "Sets.ArrowType":
-            r"""Return the classifying morphism into ``Delta[1]``."""
-            return self._characteristic_morphism
-
-        def __contains__(self, member: Element) -> bool:
-            return self._characteristic_morphism(member) == Sets.Δ[1](1)
-
-        def __iter__(self) -> Iterator[Element]:
-            return iter(self.domain())
-
-        def cardinality(self) -> Cardinal:
-            r"""Return the cardinality of the domain of the inclusion."""
-            if self._members is not None:
-                from dzack_research.preamble.categories.sets.cardinals import cardinal
-
-                return cardinal(len(self._members))
-            return self.domain().cardinality()
-
-        def __len__(self) -> int:
-            size = self.cardinality()
-            assert size.is_finite(), "length is defined only for a finite subset"
-            return int(size)
-
-        def _decidable_finite_equality(self, other: "PowerSetElement") -> bool:
-            base_set = self.codomain()
-            if base_set in Sets().Finite():
-                return all((member in self) == (member in other) for member in base_set)
-            if self._members is None or other.members() is None:
-                return False
-            return self._members == other.members()
-
-        def __eq__(self, other: "PowerSetElement") -> bool:
-            match other:
-                case _ if self is other:
-                    return True
-                case SubsetsOfSet.MorphismMethods() if self.codomain() is not other.codomain():
-                    return False
-                case SubsetsOfSet.MorphismMethods() if self._characteristic_morphism is other._characteristic_morphism:
-                    return True
-                case SubsetsOfSet.MorphismMethods():
-                    return self._decidable_finite_equality(other)
-                case _:
-                    return False
-
-        def __ne__(self, other: "PowerSetElement") -> bool:
-            return not self == other
-
-        def __hash__(self) -> int:
-            base_set = self.codomain()
-            if base_set in Sets().Finite():
-                return hash((self._power_set, tuple(member in self for member in base_set)))
-            if self._members is not None:
-                return hash((self._power_set, self._members))
-            return hash(self._characteristic_morphism)
-
-        def __le__(self, other: "PowerSetElement") -> bool:
-            assert self.codomain() is other.codomain(), (
-                "subset order requires a common inclusion codomain"
-            )
-            base_set = self.codomain()
-            if base_set in Sets().Finite():
-                return all(member not in self or member in other for member in base_set)
-            assert self._members is not None, (
-                "this subset relation has no available decision procedure"
-            )
-            return all(member in other for member in self._members)
-
-        def union(self, other: "PowerSetElement") -> "PowerSetElement":
-            return self._power_set.from_predicate(
-                lambda member: member in self or member in other
-            )
-
-        def intersection(self, other: "PowerSetElement") -> "PowerSetElement":
-            return self._power_set.from_predicate(
-                lambda member: member in self and member in other
-            )
-
-        def difference(self, other: "PowerSetElement") -> "PowerSetElement":
-            return self._power_set.from_predicate(
-                lambda member: member in self and member not in other
-            )
-
-        def symmetric_difference(self, other: "PowerSetElement") -> "PowerSetElement":
-            return self._power_set.from_predicate(
-                lambda member: (member in self) != (member in other)
-            )
-
-        def complement(self) -> "PowerSetElement":
-            return self._power_set.from_predicate(lambda member: member not in self)
-
-        def __or__(self, other: "PowerSetElement") -> "PowerSetElement":
-            return self.union(other)
-
-        def _repr_(self) -> str:
-            return f"Subobject of {self.codomain()} defined by {self.domain()}"
-
-
-PowerSetElement = SubsetsOfSet.MorphismMethods
+    def __contains__(self, candidate: "ElementConstructorInput") -> bool:
+        return (
+            candidate in Sets().SubObject(self._base_set)
+            and candidate.parent() in Sets().MonoCategory()
+        )
 
 
 class PowerSets(_FunctorImageParameters, CategoryWithParameters):
@@ -597,22 +485,21 @@ class PowerSets(_FunctorImageParameters, CategoryWithParameters):
             subset: "lexicon.Set",
             characteristic_morphism: "Sets.ArrowType",
             members: "frozenset[Element] | None" = None,
-        ) -> PowerSetElement:
-            inclusion = Sets().Hom(subset, self.base_set())(
+        ) -> "Sets.MonoArrowType":
+            set_arrow = Sets().Hom(subset, self.base_set())(
                 lambda member: self.base_set()(member)
             )
+            inclusion = Sets().Mono(subset, self.base_set())(set_arrow)
             inclusion._power_set = self
             inclusion._characteristic_morphism = characteristic_morphism
             inclusion._members = members
-            subset_object: PowerSetElement = refine(
-                inclusion, SubsetsOfSet(self.base_set())
-            )
-            return subset_object
+            assert inclusion in SubsetsOfSet(self.base_set())
+            return inclusion
 
         def _subset_from_predicate(
             self,
             predicate: "Callable[[Element], bool]",
-        ) -> PowerSetElement:
+        ) -> "Sets.MonoArrowType":
             subset = ConditionSet(self.base_set(), predicate)
             truth_values = Sets.Δ[1]
             characteristic_morphism = self.characteristic_hom_category()(
@@ -623,7 +510,7 @@ class PowerSets(_FunctorImageParameters, CategoryWithParameters):
         def _subset_from_finite_members(
             self,
             members: "lexicon.Set",
-        ) -> PowerSetElement:
+        ) -> "Sets.MonoArrowType":
             subset = ConditionSet(self.base_set(), lambda member: member in members)
             truth_values = Sets.Δ[1]
             characteristic_morphism = self.characteristic_hom_category()(
@@ -637,14 +524,11 @@ class PowerSets(_FunctorImageParameters, CategoryWithParameters):
 
         def _element_constructor_(
             self,
-            candidate: "PowerSetElement | Parent | Iterable[Element]",
-        ) -> PowerSetElement:
+            candidate: "Sets.MonoArrowType | Parent | Iterable[Element]",
+        ) -> "Sets.MonoArrowType":
+            if candidate in SubsetsOfSet(self.base_set()):
+                return candidate
             match candidate:
-                case PowerSetElement():
-                    assert candidate.inclusion().codomain() is self.base_set(), (
-                        "a subset must have the required inclusion codomain"
-                    )
-                    return candidate
                 case Parent() if candidate is self.base_set():
                     characteristic = self.characteristic_hom_category()(
                         lambda member: Sets.Δ[1](1)
@@ -674,11 +558,11 @@ class PowerSets(_FunctorImageParameters, CategoryWithParameters):
 
         def __contains__(
             self,
-            candidate: "PowerSetElement | Parent | Iterable[Element]",
+            candidate: "Sets.MonoArrowType | Parent | Iterable[Element]",
         ) -> bool:
+            if candidate in SubsetsOfSet(self.base_set()):
+                return True
             match candidate:
-                case PowerSetElement():
-                    return candidate.inclusion().codomain() is self.base_set()
                 case Parent() if candidate in Sets().Finite():
                     return all(member in self.base_set() for member in candidate)
                 case Parent():
@@ -693,14 +577,14 @@ class PowerSets(_FunctorImageParameters, CategoryWithParameters):
         def from_predicate(
             self,
             predicate: "Callable[[Element], bool]",
-        ) -> PowerSetElement:
+        ) -> "Sets.MonoArrowType":
             r"""Return the subobject defined by ``predicate``."""
             return self._subset_from_predicate(predicate)
 
         def from_characteristic_morphism(
             self,
             characteristic_morphism: "Sets.ArrowType",
-        ) -> PowerSetElement:
+        ) -> "Sets.MonoArrowType":
             r"""Return the subset classified by ``base_set -> Delta[1]``."""
             assert characteristic_morphism in self.characteristic_hom_category(), (
                 "a characteristic morphism must lie in Hom(base_set, Delta[1])"
@@ -711,15 +595,18 @@ class PowerSets(_FunctorImageParameters, CategoryWithParameters):
             )
             return self._from_subset(subset, characteristic_morphism)
 
-        def top(self) -> PowerSetElement:
+        def top(self) -> "Sets.MonoArrowType":
             r"""Return the greatest subset, the base set itself."""
             return self(self.base_set())
 
-        def bottom(self) -> PowerSetElement:
+        def bottom(self) -> "Sets.MonoArrowType":
             r"""Return the empty subset."""
             return self(())
 
-        def inverse_image_morphism(self, morphism: Morphism) -> "Sets.ArrowType":
+        def inverse_image_morphism(
+            self,
+            morphism: "Sets.ArrowType",
+        ) -> "Sets.ArrowType":
             r"""Return the inverse-image map ``P(codomain) -> P(domain)``."""
             assert morphism.codomain() is self.base_set(), (
                 "inverse image requires the morphism codomain to equal the base set"
@@ -731,7 +618,10 @@ class PowerSets(_FunctorImageParameters, CategoryWithParameters):
                 )
             )
 
-        def direct_image_morphism(self, morphism: Morphism) -> "Sets.ArrowType":
+        def direct_image_morphism(
+            self,
+            morphism: "Sets.ArrowType",
+        ) -> "Sets.ArrowType":
             r"""Return the direct-image map ``P(domain) -> P(codomain)``."""
             assert morphism.domain() is self.base_set(), (
                 "direct image requires the morphism domain to equal the base set"
@@ -747,16 +637,16 @@ class PowerSets(_FunctorImageParameters, CategoryWithParameters):
 
         def _finite_direct_image(
             self,
-            subset: PowerSetElement,
-            morphism: Morphism,
+            subset: "Sets.MonoArrowType",
+            morphism: "Sets.ArrowType",
             codomain_power_set: Parent,
-        ) -> PowerSetElement:
+        ) -> "Sets.MonoArrowType":
             assert subset.underlying_set() in Sets().Finite(), (
                 "direct-image membership requires a finite subset or an image decision procedure"
             )
             return codomain_power_set(tuple(morphism(member) for member in subset))
 
-        def __iter__(self) -> "Iterator[PowerSetElement]":
+        def __iter__(self) -> "Iterator[Sets.MonoArrowType]":
             assert self.base_set() in Sets().Finite(), (
                 "an uncountable power set has no enumeration"
             )
@@ -857,7 +747,7 @@ class FixedCardinalitySubsets(CategoryWithParameters):
         def _element_constructor_(
             self,
             members: Iterable[Element],
-        ) -> PowerSetElement:
+        ) -> "Sets.MonoArrowType":
             subset = self.power_set()(members)
             assert subset.cardinality() == self._subset_cardinality, (
                 f"a member has cardinality {self._subset_cardinality}"
@@ -869,7 +759,7 @@ class FixedCardinalitySubsets(CategoryWithParameters):
             x: ElementConstructorInput = (),
             *arguments: ElementConstructorInput,
             **keywords: ElementConstructorInput,
-        ) -> PowerSetElement:
+        ) -> "Sets.MonoArrowType":
             return self._element_constructor_(x)
 
         def __contains__(self, candidate: ElementConstructorInput) -> bool:
@@ -877,7 +767,7 @@ class FixedCardinalitySubsets(CategoryWithParameters):
                 return False
             return self.power_set()(candidate).cardinality() == self._subset_cardinality
 
-        def __iter__(self) -> Iterator[PowerSetElement]:
+        def __iter__(self) -> "Iterator[Sets.MonoArrowType]":
             from sage.combinat.subset import Subsets as SageSubsets
 
             if self._source in Sets().Finite():
@@ -964,7 +854,7 @@ class FinitePowerSets(CategoryWithParameters):
         def _element_constructor_(
             self,
             members: Iterable[Element],
-        ) -> PowerSetElement:
+        ) -> "Sets.MonoArrowType":
             return self.power_set()(members)
 
         def __call__(
@@ -972,7 +862,7 @@ class FinitePowerSets(CategoryWithParameters):
             x: ElementConstructorInput = (),
             *arguments: ElementConstructorInput,
             **keywords: ElementConstructorInput,
-        ) -> PowerSetElement:
+        ) -> "Sets.MonoArrowType":
             return self._element_constructor_(x)
 
         def __contains__(self, candidate: ElementConstructorInput) -> bool:
@@ -982,7 +872,7 @@ class FinitePowerSets(CategoryWithParameters):
             r"""Return the position of ``subset`` in the chosen enumeration."""
             return self.position(self(subset))
 
-        def __iter__(self) -> Iterator[PowerSetElement]:
+        def __iter__(self) -> "Iterator[Sets.MonoArrowType]":
             from sage.combinat.subset import Subsets as SageSubsets
 
             if self._source in Sets().Finite():
