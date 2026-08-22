@@ -1129,8 +1129,9 @@ class FiniteSets(CategoryWithAxiom):
         """
         if super().__contains__(parent):
             return True
-
-        return False
+        if parent not in Sets():
+            return False
+        return parent.is_finite()
 
     class ParentMethods:
         if TYPE_CHECKING:
@@ -1751,7 +1752,7 @@ def placement_of(parent: SageParent[_E]) -> Sets:
 
         try:
             declared_cardinality = parent.cardinality()
-        except AttributeError:
+        except (AttributeError, NotImplementedError):
             declared_cardinality = None
         if declared_cardinality is not None and declared_cardinality != Infinity:
             cardinality = cardinal(declared_cardinality)
