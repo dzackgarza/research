@@ -156,6 +156,10 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
         def _coordinates(self: Self) -> "Vector":
             return self._coordinates_
 
+        def coordinates(self: Self) -> "Vector":
+            r"""Return the coordinates in the chosen ordered framing."""
+            return self._coordinates_
+
         def _add_(self: Self, other: Self) -> Self:
             return self.parent()._from_coordinates(
                     self._coordinates_ + other._coordinates_

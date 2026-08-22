@@ -180,13 +180,6 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
                 .change_ring(base_ring)
                 .stack(images)
             )
-            from sage.categories.category import Category as SageCategory
-
-            category = rest.get("category")
-            assert category is not None, "presented modules require a category"
-            rest["category"] = SageCategory.join(
-                (category, Sets().Countable())
-            )
             # The base is not stated here.  ``Modules.ParentMethods`` assigns
             # it, from the ring its own category names, and a second statement
             # of it arrives at that level as a duplicate keyword.
@@ -262,7 +255,7 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
         def _repr_(self: Self) -> str:
             return (
                 f"Finitely presented module on "
-                f"{self.relation_matrix().ncols()} module generators over "
+                f"{self.number_of_module_generators()} module generators over "
                 f"{self.base_ring()}"
             )
 
@@ -520,6 +513,10 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
             super().__init__(parent, **rest)
 
         def _coordinates(self: Self) -> "Vector":
+            return self._coordinates_
+
+        def coordinates(self: Self) -> "Vector":
+            r"""Return the coordinates in the distinguished presentation."""
             return self._coordinates_
 
         def _lift(self: Self) -> "ModuleElement":
