@@ -489,7 +489,7 @@ class OrthogonalPredicateSubgroups(Category_singleton):
             $\rho^{-1}(\operatorname{Stab}(h/2))\cap O^+(L)$.
             """
             assert (
-                other in OrthogonalPredicateSubgroups()
+                other in OrthogonalPredicateSubgroups().Endsets()
                 and other.supergroup() is self.supergroup()
             ), "an intersection of subgroups happens inside one group"
             left_predicate = self.defining_predicate()
