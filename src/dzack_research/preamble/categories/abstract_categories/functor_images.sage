@@ -14,6 +14,9 @@ from dzack_research.preamble.owned_category_bases import (
     Category as OwnedCategory,
     CategoryWithParameters,
 )
+from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    HomCategoryConstruction,
+)
 
 if TYPE_CHECKING:
     from typing import TypeIs
@@ -86,6 +89,49 @@ class ImageOfFunctor(_FunctorImageParameters, CategoryWithParameters):
 
     def _repr_(self) -> str:
         return f"Category of objects in the image of {self._functor}"
+
+    class _HomCategory(HomCategoryConstruction):
+        r"""The codomain arrows between represented image objects."""
+
+        def _object_type_of_object_type(self) -> type:
+            image = self.base_category()
+            return image.functor().codomain().ArrowType
+
+        class ParentMethods:
+            def codomain_hom_category(self) -> "Category":
+                image = self.base_category()
+                return image.functor().codomain().Hom(
+                    self.domain(),
+                    self.codomain(),
+                )
+
+            def __contains__(self, arrow: "Element") -> bool:
+                return arrow in self.codomain_hom_category()
+
+            def __call__(self, arrow: "Element") -> "Element":
+                assert arrow in self
+                return arrow
+
+            def objects(self) -> "Parent":
+                codomain = self.base_category().functor().codomain()
+                assert codomain.is_locally_discrete(), (
+                    "an object set exists here only for a locally discrete codomain"
+                )
+                return self.codomain_hom_category().objects()
+
+            def identity(self) -> "Element":
+                assert self.domain() is self.codomain()
+                identity = self.base_category().functor().codomain().identity(
+                    self.domain()
+                )
+                assert identity in self
+                return identity
+
+            def compose(self, second: "Element", first: "Element") -> "Element":
+                codomain = self.base_category().functor().codomain()
+                composite = codomain.compose(second, first)
+                assert composite in self
+                return composite
 
     class ParentMethods:
         r"""An output of ``functor`` with its chosen source object."""
