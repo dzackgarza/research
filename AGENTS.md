@@ -1366,20 +1366,43 @@ The exceptions are narrow, and each must be nameable at the site:
 Nothing else qualifies. A probe outside these sites is a defect, and it is
 where a non-mathematical shortcut hides.
 
-## Counting, containers, and where comparison lives
+## A list is not a mathematical object
 
-`len` is almost never correct. Use `cardinality`.
+`list` and `tuple` are programming constructs. They are not mathematical
+primitives, and they do not belong in the preamble's public vocabulary.
 
-- A collection of mathematical objects is a **set**. `tuple` and `list` are
-  almost never the right return type: they add an order the mathematics did not
-  supply, and they carry a length instead of a cardinality.
-- A length is an `int` and assumes finiteness. A cardinality is a cardinal and
-  does not. Every `len` is therefore a silent finiteness hypothesis, at a site
-  that never stated one. The order of a group and the order of an element are
-  cardinalities, not integers.
+Order is not the objection. Most objects here are ordered. The objection is
+that `[1, 2, 1]` is Python, while $\{1, 2, 1\}$ regarded as an **ordered
+multiset** is mathematics. Name the notion you actually have — a set, an
+ordered set, a multiset, an ordered multiset, an indexed family — and each of
+those is a real object that arrives carrying its own structure:
+
+- a cardinality, and membership;
+- unions, intersections, and the other set operations;
+- an enumeration function where one exists;
+- homs into other sets, so it composes with everything else;
+- a place in a category, so its operations are inherited rather than written.
+
+A `list` carries indexing, `len`, and `append`. None of those is a mathematical
+operation. Concatenation is not union. A list has no homs and sits in no
+category, so every operation on it must be hand-written.
+
+**A list in one signature cascades.** The next caller writes
+`range(len(xs))`, then `xs[0]`, then `zip`, then a comprehension building
+another list — and the engineering idiom propagates from the type outward
+through everything downstream. This is the mechanism by which mathematical code
+turns into Python that happens to be about mathematics. The preamble must read
+as a mathematical DSL, not as mathematics written in Python.
+
+Consequences:
+
+- `len` is almost never correct. Use `cardinality`. A length is an `int` and
+  assumes finiteness; a cardinality is a cardinal and does not, so every `len`
+  is a silent finiteness hypothesis at a site that never stated one. The order
+  of a group and the order of an element are cardinalities, not integers.
 - Do not loop to accumulate. **Sum over a set.** An index loop imposes an
-  enumeration on an object that may have none, and it hides the operation
-  behind the iteration.
+  enumeration on an object that may have none, and hides the operation behind
+  the iteration.
 - Compare cardinalities, never lengths.
 
 **Comparison itself is localized.** Do not compare coarse numerical invariants
