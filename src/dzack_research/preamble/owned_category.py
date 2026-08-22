@@ -421,9 +421,6 @@ class OwnedCategoryMixin(CatConstructionsMixin):
             "cache here rather than being silently dropped."
         )
         category = self
-        assert isinstance(category, Category), (
-            "OwnedCategoryMixin is mixed into a Category"
-        )
         declaring_class = type(category)
         if declaring_class.__name__.endswith("_with_category"):
             declaring_class = declaring_class.__base__

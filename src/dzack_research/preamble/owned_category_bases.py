@@ -140,9 +140,10 @@ class _SingletonClasscallMixin:
     @staticmethod
     @final
     def __classcall__(cls: type[SageCategorySingleton]) -> SageCategory:
-        if isinstance(cls, DynamicMetaclass):
-            cls = cls.__base__
-        obj = getattr(super(SageCategorySingleton, cls), "__classcall__")(cls)
+        match cls:
+            case DynamicMetaclass():
+                cls = cls.__base__
+        obj = super(SageCategorySingleton, cls).__classcall__(cls)
         cls._set_classcall(ConstantFunction(obj))
         obj.__class__._set_classcall(ConstantFunction(obj))
         return obj
@@ -167,12 +168,14 @@ class _SingletonAxiomClasscallMixin:
         cls: type[SageCategoryWithAxiomSingleton],
         base_category: SageCategory | None = None,
     ) -> SageCategory:
-        if isinstance(cls, DynamicMetaclass):
-            cls = cls.__base__
+        match cls:
+            case DynamicMetaclass():
+                cls = cls.__base__
         if base_category is None:
-            return getattr(SageCategoryWithAxiom, "__classcall__")(cls)
-        obj = getattr(super(SageCategorySingleton, cls), "__classcall__")(
-            cls, base_category
+            return SageCategoryWithAxiom.__classcall__(cls)
+        obj = super(SageCategorySingleton, cls).__classcall__(
+            cls,
+            base_category,
         )
         cls._set_classcall(ConstantFunction(obj))
         obj.__class__._set_classcall(ConstantFunction(obj))
