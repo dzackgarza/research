@@ -20,7 +20,7 @@ from dzack_research.preamble.owned_category_bases import (
 )
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Iterator
+    from collections.abc import Callable
 
     from sage.categories.category import Category
     from sage.categories.morphism import Morphism
@@ -76,15 +76,16 @@ class DiscreteCategories(OwnedCategory):
                 return [DiscreteCategories()]
 
             class ParentMethods:
-                def __bool__(self) -> bool:
-                    return self.domain() is self.codomain()
+                @cached_method
+                def objects(self) -> "Parent":
+                    from dzack_research.preamble.categories.sets.sets import Set
 
-                def __len__(self) -> int:
-                    return 1 if self else 0
-
-                def __iter__(self) -> "Iterator[HomCategoryOf.ElementMethods]":
-                    if self:
-                        yield self.identity()
+                    arrows = (
+                        (self.identity(),)
+                        if self.domain() is self.codomain()
+                        else ()
+                    )
+                    return Set(arrows)
 
                 def __call__(
                     self,
@@ -93,6 +94,7 @@ class DiscreteCategories(OwnedCategory):
                     assert arrow is None or arrow in self
                     return self.identity()
 
+                @cached_method
                 def identity(self) -> "HomCategoryOf.ElementMethods":
                     assert self.domain() is self.codomain(), (
                         "a discrete category has an arrow only from an object to itself"

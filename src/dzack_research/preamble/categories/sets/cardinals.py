@@ -1,15 +1,8 @@
 r"""Cardinal numbers, their arithmetic, and their thin category.
 
 ``Cardinalities`` is the category associated to the cardinal order.  Its
-objects are cardinals.  ``Hom(kappa, lambda)`` is a singleton when
+objects are cardinal values.  ``Hom(kappa, lambda)`` is a singleton when
 ``kappa <= lambda`` and is empty otherwise.
-
-A cardinal is an initial ordinal, thus a set, and the owned ``Sets()`` is
-this category's super category.  The subcategory is not full: a cardinal
-object keeps its own thin Hom categories.  What it gains is the set surface, which
-it already answered -- ``is_finite``, ``is_countable`` and ``is_uncountable``
-are the questions about the set of that size -- and now answers as a member
-of the owned sets.
 
 The objects are closed under finite and set-indexed cardinal addition and
 multiplication, and under exponentiation.  A finite supremum records the maximum of infinite cardinals
@@ -23,7 +16,7 @@ normalization theorems in Mathlib's ``SetTheory/Cardinal/Defs.lean``,
 from __future__ import annotations
 
 
-from collections.abc import Callable, Iterator
+from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum
 from typing import TYPE_CHECKING
@@ -32,14 +25,16 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     HomCategoryConstruction,
 )
 from dzack_research.preamble.categories.sets.owned_sets import Sets
-from dzack_research.preamble.owned_category import object_of
+from dzack_research.preamble.owned_category import OwnedParent, object_of
 from dzack_research.preamble.owned_category_bases import Category
 from sage.categories.category import Category as SageCategory
+from sage.categories.objects import Objects
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.infinity import Infinity, PlusInfinity
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
+from sage.structure.parent import Parent as SageParent
 
 if TYPE_CHECKING:
     from dzack_research.preamble.categories.sets.ordinals import Ordinal, OrdinalInput
@@ -112,7 +107,7 @@ class Cardinalities(Category):
     r"""The thin category associated to the represented cardinal order."""
 
     def super_categories(self) -> list[SageCategory]:
-        return [Sets()]
+        return [Objects()]
 
     def _repr_(self) -> str:
         return "Category of cardinalities"
@@ -120,22 +115,24 @@ class Cardinalities(Category):
     class _HomCategory(HomCategoryConstruction):
         r"""The empty or terminal Hom categories of the cardinal order."""
 
+        def extra_super_categories(self) -> list[SageCategory]:
+            from dzack_research.preamble.categories.abstract_categories.functors import (
+                DiscreteCategories,
+            )
+
+            return [DiscreteCategories()]
+
         class ParentMethods:
-            def __bool__(self) -> bool:
-                return self.base_category().le(self.domain(), self.codomain())
+            @cached_method
+            def objects(self) -> Parent:
+                from dzack_research.preamble.categories.sets.sets import Set
 
-            def __len__(self) -> int:
-                return 1 if self else 0
-
-            def cardinality(self) -> Cardinal:
-                return cardinal(len(self))
-
-            def is_finite(self) -> bool:
-                return True
-
-            def __iter__(self) -> Iterator[CardinalityMorphism]:
-                if self:
-                    yield self.unique_morphism()
+                arrows = (
+                    (self.unique_morphism(),)
+                    if self.base_category().le(self.domain(), self.codomain())
+                    else ()
+                )
+                return Set(arrows)
 
             def __contains__(self, candidate: CardinalityMorphism) -> bool:
                 return (
@@ -145,7 +142,7 @@ class Cardinalities(Category):
 
             @cached_method
             def unique_morphism(self) -> CardinalityMorphism:
-                assert self, (
+                assert self.base_category().le(self.domain(), self.codomain()), (
                     f"there is no cardinality morphism "
                     f"{self.domain()} -> {self.codomain()}"
                 )
@@ -521,9 +518,8 @@ class Cardinalities(Category):
     ) -> bool:
         return not self.le(source, target) and not self.le(target, source)
 
-    class ParentMethods:
-        r"""A cardinal: an object of :class:`Cardinalities`, and the set of
-        that size.
+    class ParentMethods(OwnedParent, SageParent):
+        r"""A cardinal value: an object of :class:`Cardinalities`.
 
         The expression is the one datum this level introduces.  Every answer
         below reads it.
@@ -533,7 +529,7 @@ class Cardinalities(Category):
             self, expression: _CardinalExpression, **rest: ConstructionData
         ) -> None:
             self._expression = expression
-            super().__init__(**rest)
+            SageParent.__init__(self, **rest)
 
         def cardinality(self) -> Cardinal:
             r"""Return $|\kappa|$, which is $\kappa$.
@@ -795,7 +791,7 @@ def cardinal(value: Cardinal | CardinalScalar) -> Cardinal:
     ``ZZ ∪ {oo}`` and consume the extended-scalar spelling (``index()``),
     never a cardinal.
     """
-    if isinstance(value, Cardinal):
+    if value in Cardinalities():
         return value
     assert value == Infinity or value in ZZ, (
         f"a cardinal is a count (a Cardinal, an integer, or oo); found the "

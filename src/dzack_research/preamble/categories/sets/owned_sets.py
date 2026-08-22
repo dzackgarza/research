@@ -617,10 +617,6 @@ class Sets(Category):
                 r"""Return the set of functions that are objects of this category."""
                 return self.object_set()
 
-            def cardinality(self) -> Cardinal:
-                r"""Return the cardinality of this Hom category's object set."""
-                return self.object_set().cardinality()
-
         class ElementMethods:
             r"""A function between two sets.
 
