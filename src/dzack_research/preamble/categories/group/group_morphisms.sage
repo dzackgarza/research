@@ -254,7 +254,7 @@ class GroupAutomorphismGroups(Category):
             from sage.groups.finitely_presented import FinitelyPresentedGroup
             from sage.groups.free_group import FreeGroup_class
             from dzack_research.preamble.categories.group.predicate_subgroups import (
-                PredicateSubgroups,
+                is_predicate_subgroup,
             )
 
             group = self.domain()
@@ -264,7 +264,7 @@ class GroupAutomorphismGroups(Category):
                         f"Aut({group}) exists, but computing it from a bare "
                         "presentation requires coset enumeration"
                     )
-                case _ if group in PredicateSubgroups():
+                case _ if is_predicate_subgroup(group):
                     assert False, (
                         f"{group} has no generating set from which to compute Aut"
                     )

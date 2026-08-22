@@ -55,7 +55,6 @@ from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.group.predicate_subgroups import (
     PredicateSubgroups,
-    predicate_subgroup_category,
 )
 from dzack_research.preamble.owned_category import object_of
 from dzack_research.preamble.owned_category_bases import Category_singleton
@@ -443,7 +442,11 @@ class OrthogonalPredicateSubgroups(Category_singleton):
         return "predicate subgroups of an orthogonal group"
 
     def super_categories(self) -> list:
-        return [PredicateSubgroups()]
+        from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModules
+
+        return [
+            PredicateSubgroups(FormModules(SageZZ).Homsets().Endset())
+        ]
 
     class ParentMethods:
         def __init__(
@@ -763,12 +766,8 @@ def orthogonal_predicate_subgroup(
     discriminant_preimages: tuple = (),
 ) -> "Parent":
     r"""Return $\Gamma\le O(L)$, with the character data that cuts it out."""
-    from sage.categories.category import Category
-
     return object_of(
-        Category.join(
-            (OrthogonalPredicateSubgroups(), predicate_subgroup_category())
-        ),
+        OrthogonalPredicateSubgroups(),
         containing_group=isometry_group,
         predicate=predicate,
         description=description,

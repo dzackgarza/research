@@ -391,8 +391,12 @@ class Sets(Category):
         directly stopped there, and the morphism came out with no domain.
         """
 
-        def __init__(self, parent: SageParent) -> None:
-            super().__init__(parent)
+        def __init__(
+            self,
+            parent: SageParent,
+            *morphism: SageMorphism,
+        ) -> None:
+            super().__init__(parent, *morphism)
 
     class ParentMethods(OwnedParent, SageParent):
         def __init__(
@@ -480,7 +484,12 @@ class Sets(Category):
             # repo already settled for ``Hom``.
             if not isinstance(category, OwnedCategoryMixin):
                 return SageHomset(self, codomain, category=category)
-            homset: SageParent = category.Homsets().parent_class(
+            homset_category = (
+                category.Homsets().Endset()
+                if self is codomain
+                else category.Homsets()
+            )
+            homset: SageParent = homset_category.parent_class(
                 domain=self, codomain=codomain, category=category
             )
             return homset

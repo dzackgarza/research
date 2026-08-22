@@ -32,10 +32,10 @@ from sage.categories.category import Category as SageCategory
 from sage.structure.parent import Parent
 
 from dzack_research.preamble.owned_category import object_of
-from dzack_research.preamble.owned_category_bases import Category
+from dzack_research.preamble.owned_category_bases import CategoryWithParameters
 
 
-class PredicateSubgroups(Category):
+class PredicateSubgroups(CategoryWithParameters):
     r"""The subgroup \(\{g\in G: P(g)\}\) of an ambient group \(G\).
 
     The data of this level are the containing group, the predicate, and the
@@ -43,12 +43,18 @@ class PredicateSubgroups(Category):
     group it reaches through the owned groups node.
     """
 
-    @classmethod
-    def _repr_object_names(cls) -> str:
+    def __init__(self, host_category: SageCategory) -> None:
+        self._host_category = host_category
+        super().__init__()
+
+    def _make_named_class_key(self, name: str) -> SageCategory:
+        return self._host_category
+
+    def _repr_object_names(self) -> str:
         return "predicate subgroups"
 
     def super_categories(self) -> list:
-        return []
+        return [self._host_category]
 
     class ParentMethods:
         def __init__(
@@ -122,13 +128,22 @@ class PredicateSubgroups(Category):
             return f"{{g in {self._containing_group} : {self._description}}}"
 
 
+def is_predicate_subgroup(group: "Group") -> bool:
+    return any(
+        isinstance(category, PredicateSubgroups)
+        for category in group.category().all_super_categories(
+            proper=False
+        )
+    )
+
+
 def predicate_subgroup_category() -> "SageCategory":
     r"""Return where a predicate subgroup is built: a subobject of a group."""
     # Local: a module-level import would close a cycle; the module is built
     # by the time this runs.
     from dzack_research.preamble.categories.group.groups import OwnedGroups
 
-    return SageCategory.join([PredicateSubgroups(), OwnedGroups().Subobjects()])
+    return PredicateSubgroups(OwnedGroups().Subobjects())
 
 
 def predicate_subgroup(

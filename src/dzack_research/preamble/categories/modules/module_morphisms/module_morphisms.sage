@@ -195,9 +195,9 @@ def _coefficients(element: "Element") -> dict[ElementConstructorInput, RingEleme
 
     Asked of the element, whose own category names its generators.
     """
-    from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules
+    from dzack_research.preamble.categories.modules.framed.framed_modules import FramedModules
 
-    assert element.parent() in FramedFreeModules(element.parent().base_ring()), (
+    assert element.parent() in FramedModules(element.parent().base_ring()), (
         f"{element} is not an element of an owned framed module"
     )
     coefficient_function: dict[ElementConstructorInput, RingElement] = dict(

@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
     from sage.categories.morphism import Morphism
 
-from dzack_research.preamble.owned_category import object_of
+from dzack_research.preamble.owned_category import OwnedCategoryMixin, object_of
 from dzack_research.preamble.owned_category_bases import (
     Category,
     Category_over_base_ring,
@@ -145,6 +145,19 @@ class TorsionModulesWithForm(OwnedCategoryOverBaseRing):
         r"""Methods shared by bilinear and quadratic discriminant modules."""
 
         _subdivided_gram_matrix: GramMatrix | None = None
+
+        def _Hom_(
+            self: "TorsionFormParent",
+            codomain: "Module",
+            category: "Category | None" = None,
+        ) -> Parent:
+            if (
+                codomain in TorsionModulesWithForm(self.base_ring())
+                and self.form().codomain() is codomain.form().codomain()
+                and not isinstance(category, OwnedCategoryMixin)
+            ):
+                category = TorsionModulesWithForm(self.base_ring())
+            return super()._Hom_(codomain, category)
 
         def gram_matrix(self: "TorsionFormParent") -> GramMatrix:
             r"""Return the form's matrix with its entries read in the value module.
@@ -699,12 +712,11 @@ class TorsionModulesWithForm(OwnedCategoryOverBaseRing):
             """
 
             def extra_super_categories(self) -> list:
-                return [OwnedFiniteGroups()]
+                return []
 
             class ParentMethods:
                 def __init__(
                     self,
-                    quadratic: bool,
                     **rest: "ConstructionData",
                 ) -> None:
                     super().__init__(**rest)
@@ -713,9 +725,12 @@ class TorsionModulesWithForm(OwnedCategoryOverBaseRing):
                     # one, so the group placement is stated here.
                     # Local: a module-level import here would close a cycle.
                     from dzack_research.preamble.refine import refine
+                    from dzack_research.preamble.categories.forms.forms import QuadraticFormMorphism
                     from sage.categories.groups import Groups as SageGroups
 
-                    refine(self, [SageGroups().Finite()])
+                    quadratic = isinstance(
+                        self.domain().form(), QuadraticFormMorphism
+                    )
                     self._engine_module = _engine_torsion_module(
                         self.domain(), quadratic
                     )
@@ -728,6 +743,7 @@ class TorsionModulesWithForm(OwnedCategoryOverBaseRing):
                             for generator in self._engine_group.gens()
                         )
                     )
+                    refine(self, [OwnedFiniteGroups(), SageGroups().Finite()])
 
                 def one(self) -> "Morphism":
                     return self(
@@ -1201,28 +1217,14 @@ def _engine_normal_form_key(form: "Module", quadratic: bool) -> tuple:
 
 
 @cached_function
-def _torsion_form_automorphism_group(
-    form: "Module", quadratic: bool
-) -> Parent:
+def _torsion_form_automorphism_group(form: "Module") -> Parent:
     r"""Return the cached $O(A)$ of ``form``.
 
     Cached because a group is an object, not a value: its elements carry it
     as their parent, and two calls answering with two objects would make
     composition across them undefined.
     """
-    # Asked of the category that declares the construction, not of the form's
-    # own category.  The latter is a join, and Sage builds a join's
-    # ``Homsets()`` generically -- ``HomsetsOf`` -- which carries none of the
-    # levels' homset content and so has nothing to construct with.  The
-    # subcategories a discriminant form additionally belongs to are properties
-    # of the object, not extra structure on the arrows, so the endset is the
-    # same one either way.
-    automorphisms: Parent = object_of(
-        TorsionModulesWithForm(form.base_ring()).Homsets().Endset(),
-        domain=form,
-        codomain=form,
-        quadratic=quadratic,
-    )
+    automorphisms: Parent = form.Hom(form)
     return automorphisms
 
 
@@ -1580,7 +1582,9 @@ class TorsionFormOrthogonalSubgroups(Category):
         # construction is reached from there through ``super_categories()``.
         from dzack_research.preamble.categories.group.predicate_subgroups import PredicateSubgroups
 
-        return [OwnedFiniteGroups().Subobjects(), PredicateSubgroups()]
+        return [
+            PredicateSubgroups(OwnedFiniteGroups().Subobjects())
+        ]
 
     class ParentMethods:
         def __init__(

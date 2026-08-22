@@ -319,7 +319,7 @@ class DiscriminantQuadraticModules(Category_over_base_ring):
             """
             # Local: a module-level import here would close a cycle; by call time this module is built.
             from dzack_research.preamble.categories.modules.framed.formed.torsionform.torsion_modules_with_form import _torsion_form_automorphism_group
-            return _torsion_form_automorphism_group(self, quadratic=True)
+            return _torsion_form_automorphism_group(self)
 
         def twist(self: "DiscriminantQuadraticParent", scalar: "Integer") -> "FormModule":
             r"""Return $(A, s\cdot q)$: the same group, the form rescaled.
