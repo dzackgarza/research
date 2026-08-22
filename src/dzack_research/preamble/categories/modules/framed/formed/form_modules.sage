@@ -235,6 +235,17 @@ class FormModules(OwnedCategoryOverBaseRing):
             r"""Return the form morphism classifying this object."""
             return self._form_morphism()
 
+        def b(
+            self: "FormedParent",
+            left: "FormedElement",
+            right: "FormedElement",
+        ) -> "Element":
+            r"""Return the bilinear pairing of two elements of this module."""
+            assert left.parent() is self and right.parent() is self, (
+                "a form pairs two elements of one formed module"
+            )
+            return left.b(right)
+
         def twist(self: "FormedParent", scalar: "RingElement") -> Parent:
             r"""Return $M(s)$: the same underlying module, the form rescaled by ``scalar``.
 
