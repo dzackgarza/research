@@ -2140,6 +2140,26 @@ def test_a_cuspidal_plane_cubic_has_distinct_genera() -> None:
     assert cubic.geometric_genus() == 0
 
 
+def test_affine_and_projective_space_divisor_groups_over_a_field() -> None:
+    r"""Over a field, \(\operatorname{Pic}(\mathbb A^2)=0\) and \(\operatorname{Pic}(\mathbb P^2)=\mathbb Z\)."""
+    from dzack_research.preamble.categories.schemes.schemes import (
+        AffineSpaces,
+        ProjectiveSpaces,
+    )
+    from sage.rings.rational_field import QQ as SageQQ
+
+    affine_plane = refine(AffineSpace(2, SageQQ), AffineSpaces(SageQQ))
+    projective_plane = refine(
+        ProjectiveSpace(2, SageQQ),
+        ProjectiveSpaces(SageQQ),
+    )
+
+    assert affine_plane.picard_group().rank() == 0
+    assert affine_plane.class_group().rank() == 0
+    assert projective_plane.picard_group().rank() == 1
+    assert projective_plane.class_group().rank() == 1
+
+
 def test_the_two_cuspidal_cubics_meet_to_order_four_at_the_origin() -> None:
     r"""Gat23 Example 2.13: \(\mu_0(y^2-x^3,\; x^2-y^3)=4\).
 

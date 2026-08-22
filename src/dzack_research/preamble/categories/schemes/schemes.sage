@@ -165,6 +165,11 @@ class AffineSpaces(OwnedCategoryOverBaseRing):
             # Local: a module-level import would close a cycle; the module is built by the time this runs.
             from dzack_research.preamble.categories.divisors.picard_groups import PicardGroup
             from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import Free_ZZ
+            from dzack_research.preamble.categories.rings.rings import engine_ring
+
+            assert engine_ring(self.base_ring()).is_field(), (
+                "the affine-space Picard group is implemented here over fields"
+            )
 
             picard: "PicardGroup" = PicardGroup(Free_ZZ(Sets.Δ[-1]))
             return picard
@@ -175,6 +180,11 @@ class AffineSpaces(OwnedCategoryOverBaseRing):
             # Local: a module-level import would close a cycle; the module is built by the time this runs.
             from dzack_research.preamble.categories.divisors.class_groups import ClassGroup
             from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import Free_ZZ
+            from dzack_research.preamble.categories.rings.rings import engine_ring
+
+            assert engine_ring(self.base_ring()).is_field(), (
+                "the affine-space class group is implemented here over fields"
+            )
 
             divisor_classes: "ClassGroup" = ClassGroup(Free_ZZ(Sets.Δ[-1]))
             return divisor_classes
@@ -230,8 +240,14 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
             # Local: a module-level import would close a cycle; the module is built by the time this runs.
             from dzack_research.preamble.categories.divisors.picard_groups import PicardGroup
             from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import Free_ZZ
+            from dzack_research.preamble.categories.rings.rings import engine_ring
 
-            picard: "PicardGroup" = PicardGroup(Free_ZZ(Sets.Δ[0]))
+            assert engine_ring(self.base_ring()).is_field(), (
+                "the projective-space Picard group is implemented here over fields"
+            )
+
+            last_generator = 0 if self.dimension_relative() > 0 else -1
+            picard: "PicardGroup" = PicardGroup(Free_ZZ(Sets.Δ[last_generator]))
             return picard
 
         @cached_method
@@ -240,8 +256,16 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
             # Local: a module-level import would close a cycle; the module is built by the time this runs.
             from dzack_research.preamble.categories.divisors.class_groups import ClassGroup
             from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import Free_ZZ
+            from dzack_research.preamble.categories.rings.rings import engine_ring
 
-            divisor_classes: "ClassGroup" = ClassGroup(Free_ZZ(Sets.Δ[0]))
+            assert engine_ring(self.base_ring()).is_field(), (
+                "the projective-space class group is implemented here over fields"
+            )
+
+            last_generator = 0 if self.dimension_relative() > 0 else -1
+            divisor_classes: "ClassGroup" = ClassGroup(
+                Free_ZZ(Sets.Δ[last_generator])
+            )
             return divisor_classes
 
         def hyperplane(self: "SchemeParent", i: "Integer" = 0) -> Parent:
