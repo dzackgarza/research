@@ -118,7 +118,7 @@ class EquationDefinedClosedSubschemes(OwnedCategoryOverBaseRing):
                 if dimension is None
                 else int(dimension)
             )
-            super().__init__(base=scheme.base_ring(), **rest)
+            super().__init__(base_ring=scheme.base_ring(), **rest)
             from dzack_research.preamble.categories.schemes.schemes import Schemes
 
             self._inclusion = SetMorphism(
