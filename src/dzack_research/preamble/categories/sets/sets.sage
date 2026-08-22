@@ -18,6 +18,7 @@ from collections.abc import Callable, Hashable, Iterable, Iterator, Sequence
 from typing import TYPE_CHECKING, TypeVar
 
 from sage.categories.category import Category as SageCategory
+from sage.categories.enumerated_sets import EnumeratedSets as SageEnumeratedSets
 from sage.categories.homset import Hom, Homset
 from sage.categories.morphism import Morphism, SetMorphism
 from sage.rings.integer import Integer as SageInteger
@@ -512,13 +513,20 @@ class FiniteSubsetElement(ElementWrapper):
     def _richcmp_(self, other: "FiniteSubsetElement", op: int) -> bool:
         return bool(richcmp(self.value, other.value, op))
 
-    def __eq__(self, other: "FiniteSubsetElement") -> bool:
-        return (
-            isinstance(other, FiniteSubsetElement)
-            and self.value == other.value
-        )
+    def __eq__(
+        self,
+        other: "FiniteSubsetElement | Set_generic",
+    ) -> bool:
+        if isinstance(other, FiniteSubsetElement):
+            return self.value == other.value
+        if isinstance(other, Set_generic):
+            return self.value == frozenset(other)
+        return False
 
-    def __ne__(self, other: "FiniteSubsetElement") -> bool:
+    def __ne__(
+        self,
+        other: "FiniteSubsetElement | Set_generic",
+    ) -> bool:
         return not self == other
 
     def __hash__(self) -> int:
@@ -551,7 +559,7 @@ class FixedCardinalitySubsets(CategoryWithParameters):
         super().__init__()
 
     def super_categories(self) -> list[SageCategory]:
-        return [self._placement]
+        return [self._placement, SageEnumeratedSets()]
 
     def _make_named_class_key(self, name: str) -> SageCategory:
         r"""The classes of this level depend on the placement alone."""
@@ -677,7 +685,7 @@ class FinitePowerSets(CategoryWithParameters):
         super().__init__()
 
     def super_categories(self) -> list[SageCategory]:
-        return [self._placement]
+        return [self._placement, SageEnumeratedSets()]
 
     def _make_named_class_key(self, name: str) -> SageCategory:
         r"""The classes of this level depend on the placement alone."""
@@ -739,6 +747,10 @@ class FinitePowerSets(CategoryWithParameters):
                 return False
             subset = frozenset(candidate)
             return all(member in self._source for member in subset)
+
+        def index(self, subset: Iterable[Element]) -> int:
+            r"""Return the position of ``subset`` in the chosen enumeration."""
+            return self.position(self(subset))
 
         def __iter__(self) -> Iterator[FiniteSubsetElement]:
             from sage.combinat.subset import Subsets as SageSubsets
