@@ -159,6 +159,17 @@ def test_divided_powers_of_linear_combinations_satisfy_the_pd_laws() -> None:
     assert algebra.divided_power(2 * x, 3) == 8 * algebra.divided_power(0, 3)
 
 
+def test_divided_power_substitution_uses_divided_powers() -> None:
+    r"""Substitution sends \(\gamma_2(x)\) to \(\gamma_2(2x)=4\gamma_2(x)\)."""
+    _ensure_preamble()
+    algebra = DividedPowerAlgebraOn(ZZ, Sets.Δ[0])
+    x = algebra.algebra_generator(0)
+    gamma_two = algebra.divided_power(x, 2)
+
+    assert gamma_two.subs({0: 2 * x}) == 4 * gamma_two
+    assert gamma_two.subs({0: 2 * x}) != (2 * x) ** 2
+
+
 def test_the_divided_power_ideal_contains_all_divided_relations() -> None:
     r"""For \(M=\mathbb Z/2\), \(\Gamma^3M=\mathbb Z/2\) and \(\Gamma^4M=\mathbb Z/8\)."""
     _ensure_preamble()

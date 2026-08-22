@@ -143,6 +143,12 @@ if TYPE_CHECKING:
         def _extend_to_monomials(
             self, image_of_generator: "Callable", codomain: "Module"
         ) -> "Callable": ...
+        def _monomial_factor_image(
+            self,
+            value: "Element",
+            exponent: "Integer | int",
+            codomain: "Module",
+        ) -> "Element": ...
         def _from_algebra_generator_values(
             self, codomain: "Module", values: tuple
         ) -> dict: ...
@@ -1256,10 +1262,27 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
             def image_of_monomial(monomial: "Element") -> "Element":
                 image = codomain.one()
                 for label, exponent in self.monomial_system().factors(monomial):
-                    image *= image_of_generator(label) ** exponent
+                    image *= self._monomial_factor_image(
+                        image_of_generator(label),
+                        exponent,
+                        codomain,
+                    )
                 return image
 
             return image_of_monomial
+
+        def _monomial_factor_image(
+            self: "FreeAlgebraParent",
+            value: "Element",
+            exponent: "Integer | int",
+            codomain: "Module",
+        ) -> "Element":
+            if isinstance(self.monomial_system(), DividedMonomials):
+                assert codomain in DividedPowerAlgebras(self.base_ring()), (
+                    "a divided-power monomial requires a divided-power algebra target"
+                )
+                return codomain.divided_power(value, exponent)
+            return value**exponent
 
         def _from_algebra_generator_values(
             self: "FreeAlgebraParent",
@@ -1693,10 +1716,16 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
             for monomial, coefficient in self.coefficients().items():
                 term = coefficient
                 for label, exponent in system.factors(monomial):
-                    if label in values:
-                        term = term * values[label] ** exponent
-                    else:
-                        term = term * parent.algebra_generator(label) ** exponent
+                    value = (
+                        values[label]
+                        if label in values
+                        else parent.algebra_generator(label)
+                    )
+                    term *= parent._monomial_factor_image(
+                        value,
+                        exponent,
+                        parent,
+                    )
                 total = total + term
             return total
 
