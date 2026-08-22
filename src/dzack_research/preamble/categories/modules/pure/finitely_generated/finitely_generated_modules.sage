@@ -39,6 +39,7 @@ class FreeResolution(SageObject):
         # Local: at module level this closes an import cycle; the ring module
         # is built by the time a resolution is asked for.
         from dzack_research.preamble.categories.rings.rings import engine_ring
+        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import _presentation_matrix
 
         base_ring = engine_ring(module.base_ring())
         assert base_ring in PrincipalIdealDomains(), (
@@ -47,7 +48,7 @@ class FreeResolution(SageObject):
         )
         augmentation = module.framing_morphism()
         free_on_generators = augmentation.domain()
-        relations = module.relation_matrix()
+        relations = _presentation_matrix(module)
         # Sage resolves $F/N$ for a submodule $N\subseteq F$, so handing it
         # the relation module is handing it this module.  What comes back is
         # a basis of the relations as the columns of the first differential:

@@ -731,11 +731,7 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
                 }
             )
             def order(form: "FormModule") -> "Integer":
-                return reduce(
-                    lambda product, invariant: product * invariant,
-                    form.invariants(),
-                    SageZZ(1),
-                )
+                return form.cardinality().finite_value()
 
             extension_index = order(domain)
             assert extension_index == order(codomain), (
@@ -1757,15 +1753,37 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
 
         def _pure_tensor(self: "LatticeParent", left: "ModuleElement", right: "ModuleElement") -> "ModuleElement":
             r"""Return \(x\otimes y\) in the generators laid out in pairs."""
-            # Local: a module-level import here would close a cycle; by call time this module is built.
-            from dzack_research.preamble.utilities import zipsum
-            return zipsum(
-                [
-                    a * b
-                    for a in left._coordinates()
-                    for b in right._coordinates()
-                ],
-                self.module_generators(),
+            left_coefficients = left.coefficients()
+            right_coefficients = right.coefficients()
+            left_terms = (
+                (
+                    label,
+                    left_coefficients.get(
+                        left.parent().module_generator(label),
+                        left.parent().base_ring().zero(),
+                    ),
+                )
+                for label in left.parent().module_generating_set()
+            )
+            right_terms = tuple(
+                (
+                    label,
+                    right_coefficients.get(
+                        right.parent().module_generator(label),
+                        right.parent().base_ring().zero(),
+                    ),
+                )
+                for label in right.parent().module_generating_set()
+            )
+            return sum(
+                (
+                    left_coefficient
+                    * right_coefficient
+                    * self.module_generator((left_label, right_label))
+                    for left_label, left_coefficient in left_terms
+                    for right_label, right_coefficient in right_terms
+                    if left_coefficient != 0 and right_coefficient != 0
+                ),
                 self.zero(),
             )
 
@@ -2112,15 +2130,20 @@ class Genus:
         return not result
 
     def __hash__(self) -> int:
+        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import _invariant_factors
+
         return hash(
-            (self._signature_pair, self._discriminant_quadratic_form.invariants())
+            (
+                self._signature_pair,
+                _invariant_factors(self._discriminant_quadratic_form),
+            )
         )
 
     def __repr__(self) -> str:
         return (
             f"Genus of even lattices with signature {self._signature_pair} and "
-            f"discriminant group invariants "
-            f"{self._discriminant_quadratic_form.invariants()}"
+            f"discriminant group "
+            f"{self._discriminant_quadratic_form.invariant_factor_form().target()}"
         )
 
 

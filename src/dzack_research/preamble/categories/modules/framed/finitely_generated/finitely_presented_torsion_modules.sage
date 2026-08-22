@@ -24,7 +24,7 @@ from dzack_research.preamble.utilities import zipsum
 if TYPE_CHECKING:
     from sage.categories.groups import Group
 
-from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModule
+from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModule, _invariant_factors, _presentation_matrix
 from dzack_research.preamble.categories.sets.sets import finite_ordered_set
 from sage.misc.misc_c import prod
 from sage.modules.free_module_element import vector
@@ -69,17 +69,49 @@ def _is_additive(group: "Group") -> bool:
     return additive
 
 
+def _torsion_module_presented_by_matrix(
+    relations: "Matrix",
+    module_generating_set: "OrderedSet" = None,
+) -> FinitelyPresentedModule:
+    r"""Construct a torsion module from a presentation matrix internally."""
+    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import BasedFreeModule
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _module_morphism
+
+    relations = relations.change_ring(SageZZ)
+    domain = BasedFreeModule(ℤ, Sets.Δ[relations.nrows() - 1])
+    match module_generating_set:
+        case None:
+            module_generating_set = Sets.Δ[relations.ncols() - 1]
+        case Parent() | Iterable():
+            module_generating_set = finite_ordered_set(module_generating_set)
+            assert module_generating_set.cardinality() == relations.ncols(), (
+                "the generating set and presentation have different widths"
+            )
+        case _:
+            assert False, "a generating set is a finite set or finite iterable"
+    codomain = BasedFreeModule(ℤ, module_generating_set)
+    presentation = _module_morphism(
+        domain,
+        codomain,
+        dict(
+            zip(
+                domain.module_generating_set(),
+                (codomain._from_coordinates(row) for row in relations.rows()),
+            )
+        ),
+    )
+    return TorsionModule(presentation)
+
+
 if TYPE_CHECKING:
     class TorsionModuleParent(Protocol):
         r"""What a parent placed in ``FinitelyPresentedTorsionModules(R)``
         supplies: the presentation, the generating set and its size, the zero,
         the coordinate route in, the invariant factors, and the exponent."""
 
-        def relation_matrix(self) -> Matrix: ...
         def number_of_module_generators(self) -> int: ...
         def module_generators(self) -> "OrderedSet": ...
         def zero(self) -> "Element": ...
-        def invariants(self) -> tuple: ...
         def exponent(self) -> "Integer": ...
         def annihilator(self) -> "Ideal_pid": ...
         def presenting_free_group(self) -> "Group": ...
@@ -148,7 +180,7 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
         assert all(d > 1 for d in orders), (
             f"each summand needs an order greater than 1, got {orders}"
         )
-        return self.from_relations(
+        return _torsion_module_presented_by_matrix(
             diagonal_matrix(SageZZ, orders)
         )
 
@@ -179,7 +211,7 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
         ), f"{group} is not abelian, so it is not a torsion Z-module"
         generators = tuple(group.group_generators())
         if not generators:
-            return self.from_relations(
+            return _torsion_module_presented_by_matrix(
                 matrix(SageZZ, 0, 0),
                 Sets.Δ[-1],
             )
@@ -203,7 +235,7 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
         # Square again: the relation lattice has full rank, so its Hermite form
         # has one nonzero row per generator and the rest are padding.
         reduced = row_normal_form(relations, include_zero_rows=True)
-        return self.from_relations(
+        return _torsion_module_presented_by_matrix(
             reduced[: len(orders), :],
             finite_ordered_set(generators),
         )
@@ -235,51 +267,6 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
             ),
             identity,
         )
-
-    def from_relations(
-        self,
-        relations: "Matrix",
-        module_generating_set: "OrderedSet" = None,
-    ) -> FinitelyPresentedModule:
-        r"""Return the module presented by ``relations``, as a morphism.
-
-        The matrix is turned into the morphism it is the matrix of, because
-        that is what a presentation is; nothing downstream sees the matrix
-        except the linear algebra.
-        """
-        # Local: at module level these close an import cycle; the free module
-        # and morphism modules are built by the time one is presented.
-        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import BasedFreeModule
-        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _module_morphism
-
-        relations = relations.change_ring(SageZZ)
-        domain = BasedFreeModule(ℤ, Sets.Δ[relations.nrows() - 1])
-        match module_generating_set:
-            case None:
-                module_generating_set = Sets.Δ[relations.ncols() - 1]
-            case Parent() | Iterable():
-                module_generating_set = finite_ordered_set(module_generating_set)
-                assert module_generating_set.cardinality() == relations.ncols(), (
-                    "the generating set and presentation have different widths"
-                )
-            case _:
-                assert False, (
-                    "a generating set is a finite set or finite iterable"
-                )
-        codomain = BasedFreeModule(ℤ, module_generating_set)
-        return TorsionModule(
-            _module_morphism(
-                domain,
-                codomain,
-                dict(
-                    zip(
-                        domain.module_generating_set(),
-                        (codomain._from_coordinates(row) for row in relations.rows()),
-                    )
-                )
-            )
-        )
-
 
     class ElementMethods(SageModuleElement):
         r"""What torsion adds to being a module element, which is one thing.
@@ -373,7 +360,7 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
                 return f"{''.join(terms) if terms else '0'}=0"
 
             relations = tuple(
-                relation(row) for row in self.relation_matrix().rows()
+                relation(row) for row in _presentation_matrix(self).rows()
             )
             presentation: str = _fp_format_presentation_latex(
                 generators,
@@ -430,7 +417,7 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
                     ),
                     free.one(),
                 )
-                for row in self.relation_matrix().rows()
+                for row in _presentation_matrix(self).rows()
             )
             return finite_ordered_set(words)
 
@@ -455,7 +442,7 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
             """
             prime_powers = tuple(
                 (prime, prime ** exponent)
-                for factor_ in self.invariants()
+                for factor_ in _invariant_factors(self)
                 for prime, exponent in factor_.factor()
             )
             return {
@@ -470,7 +457,7 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
         def __iter__(self: "TorsionModuleParent") -> "Iterator[Element]":
             from sage.misc.mrange import cartesian_product_iterator
 
-            reduced = row_normal_form(self.relation_matrix())
+            reduced = row_normal_form(_presentation_matrix(self))
             bounds = [reduced[i, i] for i in range(self.number_of_module_generators())]
             for point in cartesian_product_iterator(
                 [range(bound) for bound in bounds]

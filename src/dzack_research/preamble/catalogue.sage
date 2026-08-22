@@ -371,6 +371,8 @@ else:
             Lattices.U,
             Lattices.U_2,
         )
+        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import _invariant_factors
+
         block_data = []
         for block in blocks:
             assert block.is_even() and block.is_p_elementary(SageZZ(2)), (
@@ -381,7 +383,7 @@ else:
             # $\ell(A_L)$, the minimal number of generators of the
             # discriminant group: the number of invariant factors.  For a
             # 2-elementary lattice this is Nikulin's $a$.
-            length = SageZZ(len(block.discriminant_group().invariants()))
+            length = SageZZ(len(_invariant_factors(block.discriminant_group())))
             block_data.append(
                 (block, positive, negative, length, block.delta())
             )

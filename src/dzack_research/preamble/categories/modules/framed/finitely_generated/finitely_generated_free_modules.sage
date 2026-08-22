@@ -28,7 +28,6 @@ from sage.misc.cachefunc import cached_method
 from sage.misc.lazy_attribute import lazy_attribute
 from sage.rings.integer import Integer
 from sage.categories.morphism import SetMorphism
-from sage.matrix.constructor import matrix
 from sage.modules.free_module_element import FreeModuleElement, vector
 from sage.rings.integer import Integer as SageInteger
 from sage.structure.element import Element, Element as SageElement, ModuleElement
@@ -154,10 +153,6 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
             return vector
 
         def _coordinates(self: Self) -> "Vector":
-            return self._coordinates_
-
-        def coordinates(self: Self) -> "Vector":
-            r"""Return the coordinates in the chosen ordered framing."""
             return self._coordinates_
 
         def _add_(self: Self, other: Self) -> Self:
@@ -314,36 +309,8 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
             """
             return finite_ordered_set(())
 
-        def relation_matrix(self: "FiniteFreeModuleParent") -> "Matrix":
-            r"""Return the relations as the matrix a presentation asks for.
-
-            The same answer as ``relations``, written the way a presentation
-            reads it: $n$ columns for the generators and no rows, because
-            there is nothing to impose on them.  A caller that presents this
-            module -- a resolution, a normal form -- needs the matrix and
-            gets it here rather than rebuilding it from the empty Set.
-            """
-            # Local: at module level this closes an import cycle; the ring
-            # module is built by the time a relation matrix is asked for.
-            from dzack_research.preamble.categories.rings.rings import engine_ring
-
-            ring = engine_ring(self.base_ring())
-            return matrix(ring, 0, _finite_rank(self.module_generating_set()))
-
         def is_torsion(self: "FiniteFreeModuleParent") -> bool:
             return bool(self.is_zero())
-
-        def invariants(self: "FiniteFreeModuleParent") -> tuple["Integer", ...]:
-            r"""Return the invariant factors, which a free module has none of.
-
-            The structure theorem writes $M\cong\bigoplus R/(d_i)\oplus R^r$
-            and this repository's ``invariants`` names the $d_i$ exceeding a
-            unit, so a free module answers the empty family -- not an
-            absence.  The zero module is where it is asked: being free and
-            torsion at once, it is the one object the torsion categories and
-            this one share, and they ask the underlying module this.
-            """
-            return ()
 
         @cached_method
         def Aut(self: "FiniteFreeModuleParent") -> "ModuleAutomorphismGroup":

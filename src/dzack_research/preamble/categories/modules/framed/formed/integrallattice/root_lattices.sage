@@ -221,7 +221,7 @@ class RootLattices(Category):
             """
             return bool(
                 self.is_root()
-                and all(entry >= 0 for entry in self._coordinates())
+                and all(coefficient >= 0 for coefficient in self.coefficients().values())
             )
 
         def is_negative_root(self: "RootLatticeElement") -> bool:
@@ -235,7 +235,7 @@ class RootLattices(Category):
             simple system, so the sum is read off the coordinates and the
             simple roots have height $1$.
             """
-            return sum(self._coordinates())
+            return sum(self.coefficients().values())
 
         def coroot(self: "RootLatticeElement") -> "ModuleElement":
             r"""Return $\alpha^\vee=\dfrac{2}{q(\alpha)}\,\alpha$, transported to $L^\vee$.

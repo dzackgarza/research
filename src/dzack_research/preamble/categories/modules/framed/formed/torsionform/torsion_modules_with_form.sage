@@ -60,7 +60,6 @@ if TYPE_CHECKING:
         def module_generators(self) -> tuple: ...
         def module_generating_set(self) -> "OrderedSet": ...
         def smith_form_module_generators(self) -> "OrderedSet": ...
-        def invariants(self) -> tuple["Integer", ...]: ...
         def cardinality(self) -> "Cardinal": ...
         def annihilator(self) -> "Ideal_pid": ...
         def zero(self) -> "Element": ...
@@ -645,7 +644,9 @@ class TorsionModulesWithForm(OwnedCategoryOverBaseRing):
 
         def _latex_(self: "TorsionFormParent") -> str:
             r"""Return multi-line LaTeX for the torsion module and its form."""
-            invs = self.invariants()
+            from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import _invariant_factors
+
+            invs = _invariant_factors(self)
             n = self.gram_matrix().nrows()
 
             fp_latex = str(_latex_fn(self))
@@ -1318,8 +1319,10 @@ def relations_among(form: "Morphism", module_generators: "OrderedSet") -> "Matri
     is where the wrapper stops -- so what comes back is one, and the consumer
     (``from_relations``) wraps it into the presentation it is the matrix of.
     """
+    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import _presentation_matrix
+
     module_generators = list(module_generators)
-    known = form.relation_matrix()
+    known = _presentation_matrix(form)
     width = known.ncols()
     underlying_set = tuple(form.module_generating_set())
     lifts = matrix(
@@ -1504,8 +1507,9 @@ def _format_primary_decomp_latex(invariants: tuple[int, ...]) -> str:
 def _form_gram_matrix_latex(module: "Module") -> str:
     r"""Return LaTeX for a form Gram matrix."""
     import re
+    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import _invariant_factors
 
-    if not module.invariants():
+    if not _invariant_factors(module):
         return "()"
     gram_str = str(_latex_fn(module.gram_matrix()))
     # Local: a module-level import here would close a cycle; by call time this module is built.

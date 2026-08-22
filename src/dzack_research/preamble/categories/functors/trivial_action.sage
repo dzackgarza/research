@@ -110,11 +110,17 @@ class TrivialActionFunctor(Functor):
         """
         domain = morphism.domain()
         codomain = self(morphism.codomain())
+        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
+
+        transport = module_homset(morphism.codomain(), codomain)(
+            {
+                label: codomain.module_generator(label)
+                for label in morphism.codomain().module_generating_set()
+            }
+        )
         return self(domain).Hom(codomain)(
             {
-                label: codomain._from_coordinates(
-                    morphism(domain.module_generator(label))._coordinates()
-                )
+                label: transport(morphism(domain.module_generator(label)))
                 for label in domain.module_generating_set()
             }
         )

@@ -107,6 +107,36 @@ def _change_of_module_generators(
     )
 
 
+def _presentation_matrix(module: "Module") -> Matrix:
+    r"""Return the coordinate matrix of a finite module presentation."""
+    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import FinitelyGeneratedFreeModules
+    from dzack_research.preamble.categories.rings.rings import engine_ring
+
+    base_ring = engine_ring(module.base_ring())
+    if module in FinitelyPresentedModules(base_ring):
+        return module.presentation().matrix().change_ring(base_ring)
+    assert module in FinitelyGeneratedFreeModules(base_ring), (
+        "a finite module presentation requires a finite free or finitely "
+        "presented module"
+    )
+    return matrix(
+        base_ring,
+        0,
+        module.module_generating_set().cardinality(),
+    )
+
+
+def _invariant_factors(module: "Module") -> tuple:
+    r"""Return the nonunit invariant factors used by internal algorithms."""
+    from dzack_research.preamble.categories.rings.rings import engine_ring
+
+    assert engine_ring(module.base_ring()) is SageZZ, (
+        "invariant factors are computed here for finitely generated abelian groups"
+    )
+    smith = _presentation_matrix(module).smith_form()[0]
+    return tuple(abs(entry) for entry in smith.diagonal() if abs(entry) > 1)
+
+
 if TYPE_CHECKING:
     class PresentedModuleParent(Protocol):
         r"""What a parent placed in ``FinitelyPresentedModules(R)`` supplies:
@@ -114,7 +144,7 @@ if TYPE_CHECKING:
         the generator count, and the coordinate route in."""
 
         def base_ring(self) -> "Ring": ...
-        def relation_matrix(self) -> Matrix: ...
+        def presentation(self) -> "ModuleMorphism": ...
         def number_of_module_generators(self) -> int: ...
         def _smith(self) -> tuple: ...
         def _from_coordinates(self, coordinates: "Vector") -> "Element": ...
@@ -149,8 +179,10 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
             # Local: at module level these close an import cycle; the morphism,
             # form and torsion modules are built by the time one is presented.
             from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_torsion_modules import FinitelyPresentedTorsionModules
+            from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import BasedFreeModule
             from dzack_research.preamble.categories.modules.framed.formed.form_modules import is_form_morphism
             from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
+            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _module_morphism
             from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _coordinate_vector
             from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import framing_morphism
             from dzack_research.preamble.categories.rings.rings import engine_ring
@@ -177,11 +209,21 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
             assert engine_ring(base_ring) is SageZZ or base_ring.is_field(), (
                 "finitely presented modules currently require ZZ or a field"
             )
-            self._presentation = presentation
-            self._relations = (
-                underlying.relation_matrix()
-                .change_ring(base_ring)
-                .stack(images)
+            relations = _presentation_matrix(underlying).stack(images)
+            source = underlying.framing_morphism().domain()
+            relation_domain = BasedFreeModule(
+                base_ring,
+                Sets.Δ[relations.nrows() - 1],
+            )
+            self._presentation = _module_morphism(
+                relation_domain,
+                source,
+                dict(
+                    zip(
+                        relation_domain.module_generating_set(),
+                        (source._from_coordinates(row) for row in relations.rows()),
+                    )
+                ),
             )
             # The base is not stated here.  ``Modules.ParentMethods`` assigns
             # it, from the ring its own category names, and a second statement
@@ -190,7 +232,6 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
             # The classes are named by $N$'s generators, and those generators are
             # named by $N$'s own presenting free module -- itself when $N$ is
             # free, its cover when $N$ is already a quotient.
-            source = underlying.framing_morphism().domain()
             source_module_generator_morphism = source.module_generator_morphism()
             quotient_generator_morphism = SetMorphism(
                 Hom(
@@ -212,23 +253,9 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
             if engine_ring(base_ring) is SageZZ and self.is_torsion():
                 refine(self, FinitelyPresentedTorsionModules(base_ring))
 
-        def relation_matrix(self: "PresentedModuleParent") -> Matrix:
-            r"""Return the relations of the chosen presentation.
-
-            A finitely presented module is a module together with a chosen
-            finite presentation, and the rows of this matrix are the relations
-            that presentation imposes on the chosen generators.  Every
-            invariant below -- rank, torsion, the invariant factors, the
-            reduction of a coordinate vector -- is read off it, so it is the
-            one route by which the mathematics reaches the presentation.  A
-            construction that reaches this category another way states its own
-            relations here.
-            """
-            return self._relations
-
         def number_of_module_generators(self: "PresentedModuleParent") -> int:
             r"""Return the number of distinguished presentation generators."""
-            return self.relation_matrix().ncols()
+            return _presentation_matrix(self).ncols()
 
         def framing_morphism(self: Self) -> "FramingMorphism":
             return self._framing_morphism
@@ -278,7 +305,7 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
 
             return cardinal(
                 self.number_of_module_generators()
-                - self.relation_matrix().rank()
+                - _presentation_matrix(self).rank()
             )
 
         def is_torsion(self: "PresentedModuleParent") -> "bool | Unknown":
@@ -302,13 +329,13 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
             decomposition, so it is computed once and named rather than
             recomputed at each question.
             """
-            decomposition: tuple = self.relation_matrix().smith_form()
+            decomposition: tuple = _presentation_matrix(self).smith_form()
             return decomposition
 
         @cached_method
         def _relations_normal_form(self: "PresentedModuleParent") -> Matrix:
             r"""Return the relations row-reduced, as the reduction below uses them."""
-            reduced: Matrix = row_normal_form(self.relation_matrix())
+            reduced: Matrix = row_normal_form(_presentation_matrix(self))
             return reduced
 
         def torsion_free_quotient(self: "PresentedModuleParent") -> "ModuleMorphism":
@@ -360,17 +387,6 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
         def is_zero(self: "PresentedModuleParent") -> bool:
             return all(generator == self.zero() for generator in self.module_generators())
 
-        def invariants(self: "PresentedModuleParent") -> tuple:
-            # Local: at module level this closes an import cycle; the ring module
-            # is built by the time invariants are asked for.
-            from dzack_research.preamble.categories.rings.rings import engine_ring
-
-            assert engine_ring(self.base_ring()) is SageZZ, "invariants are defined here over ZZ"
-            smith = self._smith()[0]
-            return tuple(
-                abs(entry) for entry in smith.diagonal() if abs(entry) > 1
-            )
-
         def cardinality(self: "PresentedModuleParent") -> "Cardinal | Unknown":
             r"""Return \(|M|\).
 
@@ -390,7 +406,7 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
                 return Unknown
             if not self.is_torsion():
                 return Sets.ℵ[0]
-            return cardinal(prod(self.invariants(), 1))
+            return cardinal(prod(_invariant_factors(self), 1))
 
         def exponent(self: "PresentedModuleParent") -> "Integer":
             from dzack_research.preamble.categories.rings.rings import engine_ring
@@ -400,8 +416,8 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
             )
             if not self.is_torsion():
                 return SageZZ.zero()
-            invariants = self.invariants()
-            return invariants[-1] if invariants else 1
+            invariant_factors = _invariant_factors(self)
+            return invariant_factors[-1] if invariant_factors else 1
 
         def _reduce(self: "PresentedModuleParent", coordinates: "Vector") -> "Vector":
             # Local: at module level this closes an import cycle; the ring module
@@ -452,7 +468,7 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
             from dzack_research.preamble.categories.abstract_categories.arrow_categories import Isomorphism
             from dzack_research.preamble.categories.rings.rings import engine_ring
 
-            target = _presented_on(self, row_normal_form(self.relation_matrix()))
+            target = _presented_on(self, row_normal_form(_presentation_matrix(self)))
             unchanged = identity_matrix(
                 engine_ring(self.base_ring()), self.number_of_module_generators()
             ).rows()
@@ -542,10 +558,6 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
             super().__init__(parent, **rest)
 
         def _coordinates(self: Self) -> "Vector":
-            return self._coordinates_
-
-        def coordinates(self: Self) -> "Vector":
-            r"""Return the coordinates in the distinguished presentation."""
             return self._coordinates_
 
         def _lift(self: Self) -> "ModuleElement":

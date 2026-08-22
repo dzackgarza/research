@@ -2562,8 +2562,10 @@ def _free_algebra_of_module(
     construction: str,
     constructor: "Callable[[Ring, OrderedSet], FreeAlgebraParent]",
 ) -> "Parent":
+    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import _presentation_matrix
+
     source = constructor(module.base_ring(), module.module_generating_set())
-    if module.relation_matrix().nrows() == 0:
+    if _presentation_matrix(module).nrows() == 0:
         return source
     return object_of(
         PresentedFreeAlgebras(module.base_ring()),

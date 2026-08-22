@@ -526,6 +526,7 @@ class DefiniteLattices(Category):
             up, which it must once the relevant vectors are inside.
             """
             from sage.geometry.polyhedron.constructor import Polyhedron as polyhedron
+            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _coordinate_vector
             from sage.modules.free_module_element import vector
 
             gram = self._positive_definite_gram_matrix()
@@ -809,7 +810,7 @@ class DefiniteLattices(Category):
             sign = 1 if negative == 0 else -1
             return polyhedron(
                 vertices=[
-                    element._coordinates()
+                    _coordinate_vector(element)
                     for element in self.vectors_of_square(sign * minimal)
                 ],
                 base_ring=SageQQ,

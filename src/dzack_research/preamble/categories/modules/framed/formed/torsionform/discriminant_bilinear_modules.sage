@@ -82,7 +82,9 @@ class DiscriminantBilinearModules(Category_over_base_ring):
         assert gram.is_symmetric(), (
             "a discriminant bilinear form is symmetric"
         )
-        relations = module.relation_matrix().change_ring(SageZZ)
+        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import _presentation_matrix
+
+        relations = _presentation_matrix(module).change_ring(SageZZ)
         assert all(entry in SageZZ for entry in (relations * gram).list()), (
             "b is not defined on the classes: some relation does not pair "
             "integrally with the module_generators"
@@ -107,8 +109,8 @@ class DiscriminantBilinearModules(Category_over_base_ring):
         classes exactly when a relation pairs integrally with every generator.
         """
         # Local: a module-level import here would close a cycle; by call time this module is built.
-        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_torsion_modules import FinitelyPresentedTorsionModules
-        module = FinitelyPresentedTorsionModules(SageZZ).from_relations(relations)
+        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_torsion_modules import _torsion_module_presented_by_matrix
+        module = _torsion_module_presented_by_matrix(relations)
         return self.from_module(module, gram)
 
     def cokernel(self, morphism: "Morphism") -> "FormModule":
@@ -149,12 +151,12 @@ class DiscriminantBilinearModules(Category_over_base_ring):
             on a new set, presented by the morphism that set induces.
             """
             # Local: a module-level import here would close a cycle; by call time this module is built.
-            from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_torsion_modules import FinitelyPresentedTorsionModules
+            from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_torsion_modules import _torsion_module_presented_by_matrix
             from dzack_research.preamble.categories.sets.sets import finite_ordered_set
             from dzack_research.preamble.categories.modules.framed.formed.torsionform.torsion_modules_with_form import regenerating_data
             module_generators = tuple(module_generators)
             relations, gram = regenerating_data(self, module_generators)
-            module = FinitelyPresentedTorsionModules(SageZZ).from_relations(
+            module = _torsion_module_presented_by_matrix(
                 relations,
                 finite_ordered_set(module_generators),
             )

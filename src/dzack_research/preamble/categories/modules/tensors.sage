@@ -126,6 +126,7 @@ def _entries_by_index(components: "Components", shape: tuple) -> dict:
 def DualModule(module: "Module") -> "Module":
     r"""Return (M^*=\operatorname{Hom}_R(M,R)) from a presentation of (M)."""
     from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import BasedFreeModule
+    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import _presentation_matrix
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
     from dzack_research.preamble.categories.sets.sets import finite_ordered_set
     from dzack_research.preamble.utilities import zipsum
@@ -134,7 +135,7 @@ def DualModule(module: "Module") -> "Module":
         module.base_ring(),
         module.module_generating_set(),
     )
-    relations = module.relation_matrix()
+    relations = _presentation_matrix(module)
     if relations.nrows() == 0:
         return dual_frame
 
@@ -167,7 +168,7 @@ def TensorProductModule(left: "Module", right: "Module") -> "Module":
     presentation: relations are (K\otimes F_N+F_M\otimes L).
     """
     from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import BasedFreeModule
-    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModule
+    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModule, _presentation_matrix
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
     from dzack_research.preamble.categories.sets.sets import finite_ordered_set
     from dzack_research.preamble.utilities import zipsum
@@ -181,8 +182,8 @@ def TensorProductModule(left: "Module", right: "Module") -> "Module":
         tuple(_index_product(left_labels, right_labels))
     )
     free_product = BasedFreeModule(left.base_ring(), product_labels)
-    left_relations = left.relation_matrix().rows()
-    right_relations = right.relation_matrix().rows()
+    left_relations = _presentation_matrix(left).rows()
+    right_relations = _presentation_matrix(right).rows()
     relations = []
     for relation in left_relations:
         for right_label in right_labels:
@@ -232,7 +233,7 @@ def _degree_construction(
     assert degree >= 0, "a graded degree is nonnegative"
 
     from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import BasedFreeModule
-    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModule
+    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModule, _presentation_matrix
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
     from dzack_research.preamble.categories.sets.owned_sets import Sets
 
@@ -240,7 +241,7 @@ def _degree_construction(
         module.base_ring(), module.module_generating_set()
     )
     piece: "_GradedPiece" = algebra.graded_piece(degree)
-    relations = module.relation_matrix()
+    relations = _presentation_matrix(module)
     match relations.nrows():
         case 0:
             return piece

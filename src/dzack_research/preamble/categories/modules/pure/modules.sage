@@ -667,18 +667,10 @@ class Modules(Category_over_base_ring):
                 )
 
             def _codomain_relations(self: Self) -> "Matrix":
-                from sage.matrix.constructor import matrix
-                from sage.rings.integer_ring import ZZ as SageZZ
+                from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import _presentation_matrix
 
-                from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _is_presented
                 codomain = self.codomain()
-                if _is_presented(codomain):
-                    return codomain.relation_matrix()
-                return matrix(
-                    SageZZ,
-                    0,
-                    len(tuple(codomain.module_generating_set())),
-                )
+                return _presentation_matrix(codomain)
 
             def _kernel_coordinates(self: Self) -> tuple:
                 r"""Return the domain coordinates of the finite syzygies."""

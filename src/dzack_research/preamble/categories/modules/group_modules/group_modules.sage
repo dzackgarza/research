@@ -212,15 +212,6 @@ class GroupModules(Category):
             )
             source = action.codomain().domain()
             self._acting_group = action.domain()
-            self._action_on_module_generators = {
-                group_element: {
-                    label: tuple(
-                        automorphism(source.module_generator(label))._coordinates()
-                    )
-                    for label in source.module_generating_set()
-                }
-                for group_element, automorphism in action.values().items()
-            }
             super().__init__(**rest)
             assert self.base_ring() == source.base_ring(), (
                 "the group action and the constructed module must use one base ring"
@@ -230,13 +221,25 @@ class GroupModules(Category):
             ), (
                 "the group action and the constructed module must use one framing"
             )
+            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
+
+            transport = module_homset(source, self)(
+                {
+                    label: self.module_generator(label)
+                    for label in source.module_generating_set()
+                }
+            )
+            self._action_on_module_generators = {
+                group_element: {
+                    label: transport(automorphism(source.module_generator(label)))
+                    for label in source.module_generating_set()
+                }
+                for group_element, automorphism in action.values().items()
+            }
             automorphisms = ModuleAutomorphismGroup(self)
             values = {
                 group_element: automorphisms(
-                    {
-                        label: self._from_coordinates(coordinates)
-                        for label, coordinates in images.items()
-                    }
+                    images
                 )
                 for group_element, images in self._action_on_module_generators.items()
             }
@@ -250,8 +253,17 @@ class GroupModules(Category):
             )
 
         def _over(self: Self, element: "Element") -> "Element":
-            r"""Return this module's element with ``element``'s coordinates."""
-            over: "Element" = self._from_coordinates(element._coordinates())
+            r"""Transport ``element`` through the common framing."""
+            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
+
+            source = element.parent()
+            transport = module_homset(source, self)(
+                {
+                    label: self.module_generator(label)
+                    for label in source.module_generating_set()
+                }
+            )
+            over: "Element" = transport(element)
             return over
 
         def __hash__(self: Self) -> int:

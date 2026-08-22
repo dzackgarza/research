@@ -239,7 +239,7 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
             module's.
             """
             # Local: a module-level import here would close a cycle; by call time this module is built.
-            from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_torsion_modules import FinitelyPresentedTorsionModules
+            from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_torsion_modules import _torsion_module_presented_by_matrix
             from dzack_research.preamble.categories.modules.framed.formed.integrallattice.subobjects import Subobject
             from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 
@@ -258,7 +258,7 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
                 tuple(self.lift(element) for element in classes),
                 self.modulus(),
             )
-            source = FinitelyPresentedTorsionModules(SageZZ).from_relations(
+            source = _torsion_module_presented_by_matrix(
                 matrix(SageZZ, [[order]])
             )
             inclusion = module_homset(source, self)(

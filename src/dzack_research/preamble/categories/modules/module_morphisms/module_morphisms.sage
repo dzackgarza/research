@@ -186,7 +186,7 @@ def _coordinate_vector(element: "Element") -> FreeModuleElement:
         f"{element} is not in a finite free or presented module with a matrix "
         "coordinate vector"
     )
-    coordinates: FreeModuleElement = element.coordinates()
+    coordinates: FreeModuleElement = element._coordinates()
     return coordinates
 
 
@@ -392,6 +392,8 @@ class ModuleMorphism(Morphism):
         domain = self.domain()
         if not _is_presented(domain):
             return
+        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import _presentation_matrix
+
         module_generating_set = tuple(self.domain().module_generating_set())
         zero = self.codomain().zero()
         assert all(
@@ -403,7 +405,7 @@ class ModuleMorphism(Morphism):
                     * self._module_generator_image(element_of_S),
         )
             == zero
-            for relation in domain.relation_matrix().rows()
+            for relation in _presentation_matrix(domain).rows()
         ), "the assignment does not kill every relation"
 
     def module_generator_morphism(self) -> SetMorphism[Element, ModuleElement]:

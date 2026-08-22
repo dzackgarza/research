@@ -420,11 +420,6 @@ class IsometryHomsets(Category):
                 return True
             if left.discriminant() != right.discriminant():
                 return True
-            if (
-                left.discriminant_group().invariants()
-                != right.discriminant_group().invariants()
-            ):
-                return True
             from sage.rings.rational_field import QQ as SageQQ
             if not QuadraticForm(
                 SageQQ, 2 * matrix(SageQQ, gram_left)

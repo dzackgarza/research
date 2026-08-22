@@ -170,15 +170,10 @@ class Subobjects(Category):
             than $M$; the two are the same only when $S$ is already of finite
             index.
 
-            The torsion of $M/S$ is what the invariant factors of $M/S$ that
-            are not zero multiply to.  That decomposition is the presented
-            module's own, asked of it, and not a normal form computed here.
+            The order of the torsion module $M/S$ is its cardinality.
             """
-            index: "Integer" = prod(
-                invariant
-                for invariant in self.structure_morphism().cokernel().invariants()
-                if invariant != 0
-            )
+            quotient = self.structure_morphism().cokernel()
+            index: "Integer" = quotient.cardinality().finite_value()
             return index
 
         def sum(self: "SubobjectParent", other: "SubobjectParent") -> "SubobjectParent":
