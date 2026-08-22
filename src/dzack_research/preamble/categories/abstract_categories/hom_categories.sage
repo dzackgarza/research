@@ -447,6 +447,8 @@ class IsoCategoryOf(_OverACategory, Category):
     def inherited_hom_category_families(self) -> list[Category]:
         return [
             self._base_category.HomCategory(),
+            self._base_category.MonoCategory(),
+            self._base_category.EpiCategory(),
             *(
                 category.IsoCategory()
                 for category in self.inherited_base_categories()

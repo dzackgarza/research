@@ -162,7 +162,10 @@ class IsoArrowCategory(_OnACategory, Category):
         return self._base_category.IsoArrowType
 
     def super_categories(self) -> list[Category]:
-        return [ArrowCategory(self._base_category)]
+        return [
+            MonomorphismArrowCategory(self._base_category),
+            EpimorphismArrowCategory(self._base_category),
+        ]
 
     def __contains__(self, candidate: "MembershipInput") -> bool:
         return (

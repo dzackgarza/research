@@ -83,6 +83,10 @@ class _UnderAnObject:
 class SliceOverCategory(_OverAnObject, Category):
     r"""Slice category \(\mathbf{C}/X\) of objects over \(X\)."""
 
+    @property
+    def ObjectType(self) -> type:
+        return self._ambient_category.ArrowType
+
     def _repr_(self) -> str:
         return f"Category of objects over {self._target_object} in {self._ambient_category}"
 
@@ -154,6 +158,10 @@ class SliceOverCategory(_OverAnObject, Category):
 
 class CosliceUnderCategory(_UnderAnObject, Category):
     r"""Coslice category \(X \setminus \mathbf{C}\) of objects under \(X\)."""
+
+    @property
+    def ObjectType(self) -> type:
+        return self._ambient_category.ArrowType
 
     def _repr_(self) -> str:
         return f"Category of objects under {self._source_object} in {self._ambient_category}"
@@ -227,6 +235,10 @@ class CosliceUnderCategory(_UnderAnObject, Category):
 class SubobjectCategory(_OverAnObject, Category):
     r"""Subcategory of ``SliceOver(X)`` represented by monomorphisms \(A\hookrightarrow X\)."""
 
+    @property
+    def ObjectType(self) -> type:
+        return self._ambient_category.MonoArrowType
+
     def _repr_(self) -> str:
         return f"Category of subobjects of {self._target_object} in {self._ambient_category}"
 
@@ -241,6 +253,10 @@ class SubobjectCategory(_OverAnObject, Category):
 
 class SuperobjectCategory(_UnderAnObject, Category):
     r"""Subcategory of ``CosliceUnder(X)`` represented by monomorphisms \(X\hookrightarrow B\)."""
+
+    @property
+    def ObjectType(self) -> type:
+        return self._ambient_category.MonoArrowType
 
     def _repr_(self) -> str:
         return f"Category of superobjects of {self._source_object} in {self._ambient_category}"
@@ -258,6 +274,10 @@ class SuperobjectCategory(_UnderAnObject, Category):
 class CoveringObjectCategory(_OverAnObject, Category):
     r"""Subcategory of ``SliceOver(X)`` represented by epimorphisms \(A\twoheadrightarrow X\)."""
 
+    @property
+    def ObjectType(self) -> type:
+        return self._ambient_category.EpiArrowType
+
     def _repr_(self) -> str:
         return f"Category of covering objects of {self._target_object} in {self._ambient_category}"
 
@@ -273,6 +293,10 @@ class CoveringObjectCategory(_OverAnObject, Category):
 
 class CoveredObjectCategory(_UnderAnObject, Category):
     r"""Subcategory of ``CosliceUnder(X)`` represented by epimorphisms \(X\twoheadrightarrow B\)."""
+
+    @property
+    def ObjectType(self) -> type:
+        return self._ambient_category.EpiArrowType
 
     def _repr_(self) -> str:
         return f"Category of covered objects of {self._source_object} in {self._ambient_category}"
