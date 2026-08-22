@@ -652,7 +652,8 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
             )
             self._monomial_parent = self._monomial_system.parent()
             super().__init__(
-                module_generating_set=_as_set(self._monomial_parent), **rest
+                module_generating_set=UnderlyingSet(self._monomial_parent),
+                **rest,
             )
             self._algebra_generator_morphism = SetMorphism(
                 Hom(
