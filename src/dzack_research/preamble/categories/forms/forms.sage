@@ -19,6 +19,7 @@ from dzack_research.preamble.categories.sets.underlying_sets import UnderlyingSe
 from sage.matrix.constructor import matrix
 from sage.matrix.matrix0 import Matrix
 from sage.structure.parent import Parent
+from sage.structure.richcmp import op_EQ, op_NE
 from dzack_research.preamble.lexicon import GramMatrix
 from dzack_research.preamble.categories.sets.cardinals import Cardinal
 from sage.rings.integer_ring import ZZ as SageZZ
@@ -549,6 +550,11 @@ class BilinearFormMorphism(Morphism):
             for right in module_generators
         )
 
+    def _richcmp_(self, other: "MembershipInput", op: int) -> bool:
+        assert op in (op_EQ, op_NE), "forms only have equality comparisons"
+        equal = self.__eq__(other)
+        return equal if op == op_EQ else not equal
+
     def __hash__(self) -> int:
         assert _is_framed(self.module()), (
             "a form without a finite generating family has no computable hash"
@@ -773,6 +779,11 @@ class QuadraticFormMorphism(Morphism):
             for right in module_generators[index + 1:]
         )
         return all(self(element) == other(element) for element in probes)
+
+    def _richcmp_(self, other: "MembershipInput", op: int) -> bool:
+        assert op in (op_EQ, op_NE), "forms only have equality comparisons"
+        equal = self.__eq__(other)
+        return equal if op == op_EQ else not equal
 
     def __hash__(self) -> int:
         assert _is_framed(self.module()), (
