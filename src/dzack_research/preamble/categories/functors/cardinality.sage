@@ -15,7 +15,7 @@ from dzack_research.preamble.categories.sets.owned_sets import Sets
 
 if TYPE_CHECKING:
     from dzack_research.preamble import lexicon
-    from dzack_research.preamble.categories.sets.sets import (
+    from dzack_research.preamble.categories.abstract_categories.products import (
         CoproductsOfSets,
     )
     from dzack_research.preamble.categories.abstract_categories.arrow_categories import (

@@ -90,7 +90,7 @@ def _bilinear_form_domain(module: "Module") -> Parent:
     nothing is lost by siting the unframed form on the product of sets.
     """
     # Local: the product node is loaded before this one; see above.
-    from dzack_research.preamble.categories.sets.sets import CartesianProductOfSets
+    from dzack_research.preamble.categories.abstract_categories.products import CartesianProductOfSets
 
     if _is_framed(module):
         return TensorSquare(module)
