@@ -23,7 +23,7 @@ if TYPE_CHECKING:
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     HomCategoryConstruction,
 )
-from dzack_research.preamble.owned_category_bases import Category
+from dzack_research.preamble.owned_category_bases import Category, CategoryWithParameters
 from sage.categories.category import Category as SageCategory
 from sage.categories.objects import Objects
 from sage.structure.element import Element as SageElement
@@ -274,50 +274,97 @@ class AutomorphismArrowCategory(_OnACategory, Category):
         return arrow
 
 
-class Core(_OnACategory, Category):
-    r"""\(\operatorname{core}(\mathbf{C})\): the objects of \(\mathbf{C}\), its isomorphisms alone.
+class _WithArrows:
+    def __init__(
+        self,
+        base_category: SageCategory,
+        arrows: Category,
+    ) -> None:
+        assert arrows.is_subcategory(base_category.ArrowCategory())
+        self._base_category = base_category
+        self._arrows = arrows
+        super().__init__()
 
-    The maximal subgroupoid.  A construction that is functorial only on
-    isomorphisms names this as its source, and the naming is the point: the
-    refusal of a non-invertible arrow becomes part of what the functor *is*,
-    rather than a check each call site has to remember.  \(Z\) is such a
-    construction -- an isomorphism \(A\to B\) restricts to \(Z(A)\to Z(B)\)
-    and a general ring map does not.
+    def base_category(self) -> SageCategory:
+        return self._base_category
 
-    Invertibility is read off the arrow and never searched for, as
-    :func:`Isomorphism` records it: an identity is invertible by itself, and
-    every other arrow of the core is one that was declared with its inverse.
-    """
+    def arrows(self) -> Category:
+        return self._arrows
 
-    def _repr_(self) -> str:
-        return f"Core of {self._base_category}"
+    def _make_named_class_key(
+        self,
+        name: str,
+    ) -> tuple[SageCategory, Category]:
+        return self._base_category, self._arrows
+
+
+class WideSubcategory(_WithArrows, CategoryWithParameters):
+    r"""The objects of \(\mathbf C\) with a chosen subcategory of its arrows."""
+
+    @property
+    def ObjectType(self) -> type:
+        return self._base_category.ObjectType
+
+    @property
+    def ElementType(self) -> type:
+        return self._base_category.ElementType
 
     def super_categories(self) -> list[Category]:
-        # Objects, for ArrowCategory's reason read the other way round: what
-        # separates the core from C is which *arrows* it has, and Sage's
-        # subcategory relation is about objects satisfying more.  Naming C
-        # here would say the core has fewer objects, which is the one thing
-        # it does not.
         return [Objects()]
 
     def __contains__(self, candidate: "MembershipInput") -> bool:
-        r"""Return whether ``candidate`` is an object of \(\mathbf{C}\): the core keeps them all."""
         return candidate in self._base_category
 
-    def admits(self, morphism: SageElement) -> bool:
-        r"""Return whether ``morphism`` is an arrow of the core, i.e. invertible."""
-        return morphism in self._base_category.IsomorphismArrowCategory()
+    def admits(self, arrow: SageElement) -> bool:
+        return arrow in self._arrows
 
-    def arrow(self, morphism: SageElement) -> SageElement:
-        r"""Return ``morphism`` as an arrow of the core, refusing one that is not.
+    def arrow(self, arrow: SageElement) -> SageElement:
+        assert self.admits(arrow)
+        return arrow
 
-        The gate a functor out of the core passes its argument through.
-        """
-        assert self.admits(morphism), (
-            f"{morphism} is not a declared isomorphism, so it is not an arrow "
-            f"of {self}"
-        )
-        return morphism
+    def _repr_(self) -> str:
+        if self._arrows is self._base_category.IsomorphismArrowCategory():
+            return f"Core of {self._base_category}"
+        return f"Wide subcategory of {self._base_category} with arrows in {self._arrows}"
+
+    class _HomCategory(HomCategoryConstruction):
+        def _object_type_of_object_type(self) -> type:
+            return self.base_category().base_category().ArrowType
+
+        class ParentMethods:
+            def __contains__(self, arrow: SageElement) -> bool:
+                wide = self.base_category()
+                return (
+                    arrow in wide.base_category().Hom(
+                        self.domain(),
+                        self.codomain(),
+                    )
+                    and wide.admits(arrow)
+                )
+
+            def __call__(self, arrow: SageElement) -> SageElement:
+                assert arrow in self
+                return arrow
+
+            def identity(self) -> SageElement:
+                wide = self.base_category()
+                identity = wide.base_category().identity(self.domain())
+                assert identity in self
+                return identity
+
+            def compose(self, second: SageElement, first: SageElement) -> SageElement:
+                wide = self.base_category()
+                composite = wide.base_category().compose(second, first)
+                assert composite in self
+                return composite
+
+
+def Core(base_category: SageCategory) -> WideSubcategory:
+    r"""Return the maximal subgroupoid of ``base_category``."""
+    return WideSubcategory(
+        base_category,
+        base_category.IsomorphismArrowCategory(),
+    )
 
 
 def Isomorphism(forward: SageElement, backward: SageElement) -> SageElement:

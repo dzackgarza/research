@@ -240,7 +240,7 @@ class ExponentialFunctor(Functor):
         )
 
 
-class PowerSetFunctor(Functor):
+class InverseImagePowerSetFunctor(Functor):
     r"""The contravariant power-set functor, represented on ``Sets().OppositeCategory()``."""
 
     def __init__(self) -> None:
@@ -262,6 +262,47 @@ class PowerSetFunctor(Functor):
     def _apply_functor_to_morphism(self, morphism: Element) -> "Sets.ArrowType":
         source = self(morphism.domain())
         return source.inverse_image_morphism(morphism.underlying_arrow())
+
+
+class FinitePowerSetFunctor(Functor):
+    r"""The covariant finite-power-set functor under direct image."""
+
+    def __init__(self) -> None:
+        Functor.__init__(self, Sets(), Sets())
+
+    def _image_category(self) -> SageCategory:
+        return FinitePowerSets(self)
+
+    @cached_method
+    def _apply_functor(self, source: Parent) -> Parent:
+        from dzack_research.preamble.categories.sets.cardinals import (
+            Cardinalities,
+            cardinal,
+        )
+
+        source_cardinality = cardinal(source.cardinality())
+        size = (
+            cardinal(2) ** source_cardinality
+            if source_cardinality.is_finite()
+            else Cardinalities().supremum(source_cardinality, cardinal(1))
+        )
+        categories = [self.Image(), _placement_for_cardinality(size)]
+        if source in Sets().Countable():
+            categories.append(SageEnumeratedSets())
+        return object_of(
+            SageCategory.join(categories),
+            preimage=source,
+        )
+
+    def _apply_functor_to_morphism(
+        self,
+        morphism: "Sets.ArrowType",
+    ) -> "Sets.ArrowType":
+        source = self(morphism.domain())
+        target = self(morphism.codomain())
+        return Sets().Hom(source, target)(
+            lambda subset: target(tuple(morphism(member) for member in subset))
+        )
 
 
 def CartesianProductOfFamily(
@@ -795,27 +836,18 @@ class FixedCardinalitySubsets(CategoryWithParameters):
             )
 
 
-class FinitePowerSets(CategoryWithParameters):
+class FinitePowerSets(_FunctorImageParameters, CategoryWithParameters):
     r"""The set of all finite subsets of a countable set.
 
     The finite case delegates to Sage's mature ``sage.combinat.subset.Subsets``.
     The countable case extends it by increasing greatest index.
 
-    The parameter is the owned ``Sets()`` placement of \(P_{\mathrm{fin}}(S)\),
-    which the source decides.  The placement is this category's super
-    category, so this level answers before the placement does.
+    This is the image of the covariant finite-power-set functor.  Direct image
+    transports its elements along every Set arrow.
     """
 
-    def __init__(self, placement: SageCategory) -> None:
-        self._placement = placement
-        super().__init__()
-
     def super_categories(self) -> list[SageCategory]:
-        return [self._placement, SageEnumeratedSets()]
-
-    def _make_named_class_key(self, name: str) -> SageCategory:
-        r"""The classes of this level depend on the placement alone."""
-        return self._placement
+        return [ImageOfFunctor(self.functor())]
 
     def _repr_object_names(self) -> str:
         return "sets of finite subsets"
@@ -823,18 +855,12 @@ class FinitePowerSets(CategoryWithParameters):
     class ParentMethods:
         r"""\(P_{\mathrm{fin}}(S)\): the finite subsets of ``S``."""
 
-        def __init__(
-            self, source: "lexicon.Set", **rest: "ConstructionData"
-        ) -> None:
-            self._source = source
-            super().__init__(**rest)
-
         def source(self) -> "lexicon.Set":
-            return self._source
+            return self.preimage()
 
         @cached_method
         def power_set(self) -> Parent:
-            return PowerSet(self._source)
+            return PowerSet(self.source())
 
         def cardinality(self) -> Cardinal:
             r"""Return \(\bigl|\{A\subseteq S:A\text{ finite}\}\bigr|\).
@@ -847,8 +873,8 @@ class FinitePowerSets(CategoryWithParameters):
             """
             from dzack_research.preamble.categories.sets.cardinals import aleph0, cardinal
 
-            if self._source in Sets().Finite():
-                return cardinal(2) ** self._source.cardinality()
+            if self.source() in Sets().Finite():
+                return cardinal(2) ** self.source().cardinality()
             return aleph0
 
         def _element_constructor_(
@@ -875,25 +901,28 @@ class FinitePowerSets(CategoryWithParameters):
         def __iter__(self) -> "Iterator[Sets.MonoArrowType]":
             from sage.combinat.subset import Subsets as SageSubsets
 
-            if self._source in Sets().Finite():
-                for subset in SageSubsets(self._source):
+            assert self.source() in Sets().Countable(), (
+                "enumeration of finite subsets requires a countable source"
+            )
+            if self.source() in Sets().Finite():
+                for subset in SageSubsets(self.source()):
                     yield self(tuple(subset))
                 return
 
             yield self(())
             preceding: list[Element] = []
-            for maximum in self._source:
+            for maximum in self.source():
                 for initial in SageSubsets(tuple(preceding)):
                     yield self(tuple(initial) + (maximum,))
                 preceding.append(maximum)
 
         def _repr_(self) -> str:
-            return f"Finite subsets of {self._source}"
+            return f"Finite subsets of {self.source()}"
 
 
 def _power_set_of(base_set: "lexicon.Set") -> Parent:
     r"""Apply the contravariant power-set functor to \(X\)."""
-    return Sets().PowerSetFunctor()(base_set)
+    return Sets().InverseImagePowerSetFunctor()(base_set)
 
 
 @cached_function
@@ -939,17 +968,8 @@ def SubsetsOfSize(
 @cached_function
 def FiniteSubsets(source: "lexicon.Set") -> Parent:
     r"""Return \(P_{\mathrm{fin}}(S)\), the finite subsets of ``source``."""
-    if source not in Sets().Countable():
-        source = _as_set(source)
-    assert source in Sets().Countable(), (
-        "finite subsets currently require a chosen countable enumeration"
-    )
-    placement = (
-        Sets().Finite()
-        if source in Sets().Finite()
-        else Sets().Countable().Infinite()
-    )
-    return object_of(FinitePowerSets(placement), source=source)
+    assert source in Sets()
+    return Sets().FinitePowerSetFunctor()(source)
 
 
 E = TypeVar("E", bound=Element)

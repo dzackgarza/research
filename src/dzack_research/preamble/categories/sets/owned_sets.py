@@ -74,7 +74,8 @@ if TYPE_CHECKING:
         CartesianProductFunctor,
         DisjointUnionFunctor,
         ExponentialFunctor,
-        PowerSetFunctor,
+        FinitePowerSetFunctor,
+        InverseImagePowerSetFunctor,
     )
 
     from collections.abc import Hashable, Iterable
@@ -182,13 +183,24 @@ class SetSubcategoryMethods:
         return self.ExponentialFunctor().Image()
 
     @cached_method
-    def PowerSetFunctor(self) -> "PowerSetFunctor":
-        from dzack_research.preamble.categories.sets.sets import PowerSetFunctor
+    def InverseImagePowerSetFunctor(self) -> "InverseImagePowerSetFunctor":
+        from dzack_research.preamble.categories.sets.sets import (
+            InverseImagePowerSetFunctor,
+        )
 
-        return PowerSetFunctor()
+        return InverseImagePowerSetFunctor()
 
     def PowerSets(self) -> SageCategory:
-        return self.PowerSetFunctor().Image()
+        return self.InverseImagePowerSetFunctor().Image()
+
+    @cached_method
+    def FinitePowerSetFunctor(self) -> "FinitePowerSetFunctor":
+        from dzack_research.preamble.categories.sets.sets import FinitePowerSetFunctor
+
+        return FinitePowerSetFunctor()
+
+    def FinitePowerSets(self) -> SageCategory:
+        return self.FinitePowerSetFunctor().Image()
 
 
 class Sets(Category):
