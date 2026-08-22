@@ -29,6 +29,7 @@ from collections.abc import Iterable, MutableMapping, Sequence
 from typing import Self, TYPE_CHECKING
 
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
+from dzack_research.preamble.owned_category import OwnedCategoryMixin
 from sage.misc.abstract_method import abstract_method
 from sage.misc.cachefunc import cached_method
 from sage.sets.image_set import ImageSubobject
@@ -303,8 +304,13 @@ class FramedModules(OwnedCategoryOverBaseRing):
             category: "Category | None" = None,
         ) -> "Homset":
             r"""Build the homset through the framed-module arrow level."""
-            if category is None and codomain in FramedModules(self.base_ring()):
-                category = FramedModules(self.base_ring())
+            if (
+                codomain in FramedModules(self.base_ring())
+                and not isinstance(category, OwnedCategoryMixin)
+            ):
+                from dzack_research.preamble.categories.modules.pure.modules import Modules as OwnedModules
+
+                category = OwnedModules(self.base_ring())
             homset: "Homset" = super()._Hom_(codomain, category)
             return homset
 
