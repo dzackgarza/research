@@ -18,7 +18,7 @@ Hierarchy:
 
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
 from dzack_research.preamble.owned_category_bases import (
-    HomsetsCategory,
+    HomCategoryConstruction,
     SubobjectsCategory,
 )
 from sage.structure.parent import Parent
@@ -121,7 +121,7 @@ class Schemes(OwnedCategoryOverBaseRing):
     class ElementMethods:
         r"""Scheme element methods: a point or a section."""
 
-    class Homsets(HomsetsCategory):
+    class _HomCategory(HomCategoryConstruction):
         r"""Homsets in \(\operatorname{Sch}/S\)."""
 
         class ElementMethods:

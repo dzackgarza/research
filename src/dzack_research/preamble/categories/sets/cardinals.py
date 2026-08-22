@@ -408,12 +408,12 @@ class Cardinalities(Category):
         The hom-set category owns the runtime narrowing boundary.  It covers
         both ordinary hom-sets and endomorphism sets.
         """
-        return homset in self.Homsets() or homset in self.Endsets()
+        return homset in self.HomCategory() or homset in self.EndCategory()
 
     def is_morphism(self, morphism: Morphism) -> TypeIs[CardinalityMorphism]:
         r"""Return whether ``morphism`` is a morphism of ``Cardinalities``."""
         homset = morphism.parent()
-        return homset in self.Homsets() or homset in self.Endsets()
+        return homset in self.HomCategory() or homset in self.EndCategory()
 
 
     class ParentMethods:
@@ -639,7 +639,7 @@ class Cardinalities(Category):
             return CardinalityHomset(self, codomain)
 
 
-Cardinal = Cardinalities.ParentMethods
+Cardinal = Cardinalities.ObjectType
 r"""The class of a cardinal object.
 
 The category is the class, so the implementation class of

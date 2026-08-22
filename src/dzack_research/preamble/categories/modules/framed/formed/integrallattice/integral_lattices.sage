@@ -79,9 +79,11 @@ from sage.arith.functions import lcm
 from sage.arith.misc import gcd
 from sage.categories.category import Category
 from dzack_research.preamble.owned_category_bases import (
-    CategoryWithAxiom,
     CategoryWithAxiom_over_base_ring,
-    HomsetsCategory,
+    HomCategoryConstruction,
+)
+from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    AutCategoryConstruction,
 )
 from dzack_research.preamble.categories.modules.framed.formed.lattices import Lattices
 from dzack_research.preamble.categories.modules.framed.formed.lattice_axioms import FinitelyGeneratedLattices
@@ -155,7 +157,7 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
         "Nondegenerate",
     )
 
-    class Homsets(HomsetsCategory):
+    class _HomCategory(HomCategoryConstruction):
         r"""Form-preserving maps between integral lattices."""
 
         def extra_super_categories(self) -> list:
@@ -163,17 +165,17 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
 
             return [LatticeHomomorphisms()]
 
-        class Endset(CategoryWithAxiom):
-            r"""The orthogonal group of one integral lattice."""
+    class _AutCategory(AutCategoryConstruction):
+        r"""Orthogonal groups of integral lattices."""
 
-            def extra_super_categories(self) -> list:
-                from dzack_research.preamble.categories.group.groups import OwnedFinitelyPresentedGroups
-                from dzack_research.preamble.categories.modules.framed.formed.integrallattice.lattice_isometries import LatticeIsometries
+        def extra_super_categories(self) -> list:
+            from dzack_research.preamble.categories.group.groups import OwnedFinitelyPresentedGroups
+            from dzack_research.preamble.categories.modules.framed.formed.integrallattice.lattice_isometries import LatticeIsometries
 
-                return [
-                    LatticeIsometries(),
-                    OwnedFinitelyPresentedGroups(),
-                ]
+            return [
+                LatticeIsometries(),
+                OwnedFinitelyPresentedGroups(),
+            ]
 
     class ParentMethods:
         r"""Methods available on every integral lattice parent refined into this category."""
@@ -196,18 +198,8 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             return super()._Hom_(codomain, category)
 
         def Aut(self: "LatticeParent") -> Parent:
-            r"""Return the orthogonal endset of this integral lattice."""
-            from dzack_research.preamble.refine import refine
-            from dzack_research.preamble.categories.group.groups import OwnedGroups
-
-            endomorphisms = refine(
-                self.Hom(self),
-                IntegralLattices(self.base_ring()).Homsets().Endset(),
-            )
-            assert endomorphisms in OwnedGroups(), (
-                "Aut(L) requires the integral-lattice endset to be a group"
-            )
-            return endomorphisms
+            r"""Return the orthogonal automorphism object of this lattice."""
+            return IntegralLattices(self.base_ring()).Aut(self)
 
         @cached_method
         def decomposition(self: "LatticeParent") -> "DirectSumObject | None":
@@ -1316,7 +1308,7 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             r"""Return whether the discriminant quadratic module $A_L$ is elementary
             abelian of exponent $p$.
 
-            Defers to :meth:`DiscriminantQuadraticModules.ParentMethods.is_p_elementary`
+            Defers to :meth:`DiscriminantQuadraticModules.ObjectType.is_p_elementary`
             on ``self.discriminant_group()``.
             """
             disc = self.discriminant_group()
@@ -1615,7 +1607,7 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
 
             The trivial isotypic component of the $\mathbb Z[G]$-module, with
             the form restricted to it -- see
-            :meth:`GroupLattices.ParentMethods.invariant_lattice`.  Not
+            :meth:`GroupLattices.ObjectType.invariant_lattice`.  Not
             $\ker(g-\mathrm{id})$: that is one way to compute this component,
             and computing it that way here would state the method as the
             definition.

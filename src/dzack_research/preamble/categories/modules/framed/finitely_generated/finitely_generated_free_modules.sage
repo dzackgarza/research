@@ -60,10 +60,10 @@ if TYPE_CHECKING:
         def module_generators(self) -> "OrderedSet": ...
         def number_of_module_generators(self) -> int: ...
         def is_zero(self) -> bool: ...
-        def zero(self) -> "FinitelyGeneratedFreeModules.ElementMethods": ...
+        def zero(self) -> "FinitelyGeneratedFreeModules.ElementType": ...
         def rank(self) -> "Cardinal": ...
         def Hom(self, codomain: "Module", category: "Category | None" = ...) -> Parent: ...
-        def _from_coordinates(self, coordinates: "Vector") -> "FinitelyGeneratedFreeModules.ElementMethods": ...
+        def _from_coordinates(self, coordinates: "Vector") -> "FinitelyGeneratedFreeModules.ElementType": ...
 
 
 def _finite_rank(module_generating_set: "OrderedSet") -> int:
@@ -215,7 +215,7 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
                 module_generating_set = _as_set(module_generating_set)
             super().__init__(module_generating_set=module_generating_set, **rest)
 
-        def _module_generator_element(self, element_of_S: SageElement) -> FinitelyGeneratedFreeModules.ElementMethods:
+        def _module_generator_element(self, element_of_S: SageElement) -> FinitelyGeneratedFreeModules.ElementType:
             module_generating_set = self.module_generating_set()
             assert element_of_S in module_generating_set, (
                 f"{element_of_S!r} is not in {module_generating_set}"
@@ -239,11 +239,11 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
             )
             return coordinates
 
-        def zero(self) -> FinitelyGeneratedFreeModules.ElementMethods:
+        def zero(self) -> FinitelyGeneratedFreeModules.ElementType:
             return self._from_coordinates(self._coordinate_module().zero())
 
-        def _from_coordinates(self, coordinates: "Vector") -> FinitelyGeneratedFreeModules.ElementMethods:
-            member: FinitelyGeneratedFreeModules.ElementMethods = self.element_class(self, coordinates)
+        def _from_coordinates(self, coordinates: "Vector") -> FinitelyGeneratedFreeModules.ElementType:
+            member: FinitelyGeneratedFreeModules.ElementType = self.ElementType(self, coordinates)
             return member
 
         def rank(self) -> "Cardinal":
@@ -256,8 +256,8 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
         def _element_constructor_(
             self,
             value: "ElementConstructorInput",
-        ) -> FinitelyGeneratedFreeModules.ElementMethods:
-            if isinstance(value, FinitelyGeneratedFreeModules.ElementMethods) and value.parent() is self:
+        ) -> FinitelyGeneratedFreeModules.ElementType:
+            if value in self:
                 return value
             match value:
                 case Sequence() | FreeModuleElement():

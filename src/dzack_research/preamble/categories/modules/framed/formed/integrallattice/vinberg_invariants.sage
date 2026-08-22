@@ -677,7 +677,7 @@ class CombinatorialVinbergInvariantMatrices(Category):
 
         def __eq__(self, other: "MembershipInput") -> bool:
             r"""Return True if other is a Vinberg invariant matrix with equal projective entries."""
-            if not isinstance(other, CombinatorialVinbergInvariantMatrices.ParentMethods):
+            if not isinstance(other, CombinatorialVinbergInvariantMatrices.ObjectType):
                 return False
             if self._rank != other._rank:
                 return False
@@ -1043,7 +1043,7 @@ class ProjectiveWeightedDiGraphs(Category):
 
         def __eq__(self, other: "MembershipInput") -> bool:
             r"""Return True if other is a projective weighted digraph with equal vertices and weights."""
-            if not isinstance(other, ProjectiveWeightedDiGraphs.ParentMethods):
+            if not isinstance(other, ProjectiveWeightedDiGraphs.ObjectType):
                 return False
             if self._vertices != other._vertices:
                 return False

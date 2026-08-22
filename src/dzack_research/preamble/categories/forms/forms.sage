@@ -429,7 +429,7 @@ class BilinearFormMorphism(Morphism):
         # element of a module *enriched* over this one (a formed module's
         # element over its underlying module) is not in this domain and
         # reaches it through the forgetful map, which is what
-        # ``FormedModules.ElementMethods.b`` applies before calling here.
+        # ``FormedModules.ElementType.b`` applies before calling here.
         assert all(
             element in self.module()
             for element in (left, right)

@@ -44,7 +44,7 @@ class AlgebraBaseChangeFunctor(Functor):
         r"""Return \(f\), the morphism the coefficients travel along."""
         return self._ring_map
 
-    def _apply_functor(self, algebra: "Algebras.ParentMethods") -> "Parent":
+    def _apply_functor(self, algebra: "Algebras.ObjectType") -> "Parent":
         r"""Return \(A\otimes_RS\).
 
         The presentation does not move: the same generators, the same

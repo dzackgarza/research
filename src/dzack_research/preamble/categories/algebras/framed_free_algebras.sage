@@ -35,7 +35,7 @@ from dzack_research.preamble.categories.algebras.free_algebras import SymmetricA
 from dzack_research.preamble.categories.algebras.free_algebras import TensorAlgebras
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
 from dzack_research.preamble.owned_category import object_of
-from dzack_research.preamble.owned_category_bases import HomsetsCategory
+from dzack_research.preamble.owned_category_bases import HomCategoryConstruction
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.sets import _as_set
@@ -108,17 +108,17 @@ if TYPE_CHECKING:
         _algebra_generator_morphism: SetMorphism
 
         def base_ring(self) -> "Ring": ...
-        def one(self) -> "FramedFreeAlgebras.ElementMethods": ...
-        def zero(self) -> "FramedFreeAlgebras.ElementMethods": ...
+        def one(self) -> "FramedFreeAlgebras.ElementType": ...
+        def zero(self) -> "FramedFreeAlgebras.ElementType": ...
         def number_of_algebra_generators(self) -> "Cardinal": ...
         def monomial_system(self) -> "MonomialSystem": ...
         def algebra_generating_set(self) -> "OrderedSet": ...
-        def algebra_generator(self, label: "Element") -> "FramedFreeAlgebras.ElementMethods": ...
+        def algebra_generator(self, label: "Element") -> "FramedFreeAlgebras.ElementType": ...
         def algebra_generators(self) -> tuple: ...
         def module_generating_set(self) -> "OrderedSet": ...
         def module_generator(
             self, monomial: "Element"
-        ) -> "FramedFreeAlgebras.ElementMethods": ...
+        ) -> "FramedFreeAlgebras.ElementType": ...
         def _algebra_generator_label(self, monomial: "Element") -> "Element": ...
         def _require_symmetric_polynomial_structure(self) -> None: ...
         def _polynomial_ring(self) -> "_PolynomialRing": ...
@@ -128,8 +128,8 @@ if TYPE_CHECKING:
         ) -> "_EnginePolynomial": ...
         def _from_polynomial(
             self, polynomial: "_EnginePolynomial"
-        ) -> "FramedFreeAlgebras.ElementMethods": ...
-        def _engine_base_ring(self) -> "SageRings.ParentMethods": ...
+        ) -> "FramedFreeAlgebras.ElementType": ...
+        def _engine_base_ring(self) -> "SageRings.ObjectType": ...
         def _as_engine_coefficient(
             self, coefficient: "_NumberFieldCoefficient"
         ) -> "RingElement": ...
@@ -581,7 +581,7 @@ class FreeAlgebraIdeal(Ideal_generic):
         # generators are elements of that algebra -- which is what carries
         # the polynomial presentation read below.
         def ring(self) -> "FreeAlgebraParent": ...
-        def gens(self) -> tuple["FramedFreeAlgebras.ElementMethods", ...]: ...
+        def gens(self) -> tuple["FramedFreeAlgebras.ElementType", ...]: ...
 
     @cached_method
     def _polynomial_ideal(self) -> "_EngineIdeal":
@@ -591,15 +591,15 @@ class FreeAlgebraIdeal(Ideal_generic):
         )
 
     def reduce(
-        self, element: "FramedFreeAlgebras.ElementMethods"
-    ) -> "FramedFreeAlgebras.ElementMethods":
+        self, element: "FramedFreeAlgebras.ElementType"
+    ) -> "FramedFreeAlgebras.ElementType":
         r"""Return the normal form of ``element`` modulo this ideal."""
         algebra = self.ring()
         return algebra._from_polynomial(
             self._polynomial_ideal().reduce(algebra._as_polynomial(element))
         )
 
-    def _contains_(self, element: "FramedFreeAlgebras.ElementMethods") -> bool:
+    def _contains_(self, element: "FramedFreeAlgebras.ElementType") -> bool:
         algebra = self.ring()
         return algebra._as_polynomial(element) in self._polynomial_ideal()
 
@@ -844,8 +844,8 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
 
         def _element_constructor_(
             self: "FreeAlgebraParent",
-            value: "FramedFreeAlgebras.ElementMethods | RingElement",
-        ) -> "FramedFreeAlgebras.ElementMethods":
+            value: "FramedFreeAlgebras.ElementType | RingElement",
+        ) -> "FramedFreeAlgebras.ElementType":
             r"""Return ``value`` as an element of this algebra.
 
             An \(R\)-algebra comes with its structure map \(R\to A\), so a
@@ -854,8 +854,8 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
             too, which is what makes \(0\) and \(1\) elements here and lets
             Sage's ring machinery build ideals over it.
             """
-            if isinstance(value, FramedFreeModules.ElementMethods) and value.parent() is self:
-                own_element: "FramedFreeAlgebras.ElementMethods" = value
+            if value in self:
+                own_element: "FramedFreeAlgebras.ElementType" = value
                 return own_element
             assert value in self.base_ring(), (
                 f"{value} is neither an element of {self} nor a scalar of "
@@ -873,7 +873,7 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
                 if isinstance(system, AlternatingMonomials)
                 else system.parent().one()
             )
-            scalar_multiple: "FramedFreeAlgebras.ElementMethods" = self.element_class(
+            scalar_multiple: "FramedFreeAlgebras.ElementType" = self.ElementType(
                 self,
                 {monomial_one: self.base_ring()(value)},
             )
@@ -890,7 +890,7 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
 
         def _engine_base_ring(
             self: "FreeAlgebraParent",
-        ) -> "SageRings.ParentMethods":
+        ) -> "SageRings.ObjectType":
             r"""Return the base ring as the engine knows how to compute in it.
 
             A base ring the preamble presents as a quotient -- a number field
@@ -906,12 +906,12 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
 
             base_ring = self.base_ring()
             if base_ring.category().is_subcategory(OwnedNumberFields()):
-                engine_field: "SageRings.ParentMethods" = base_ring._engine_field()
+                engine_field: "SageRings.ObjectType" = base_ring._engine_field()
                 return engine_field
             # A ring the session names is reported in the session's word;
             # Singular is not told about that word, so the crossing unwraps it
             # here.
-            engine_base_ring: "SageRings.ParentMethods" = engine_ring(base_ring)
+            engine_base_ring: "SageRings.ObjectType" = engine_ring(base_ring)
             return engine_base_ring
 
         def _as_engine_coefficient(
@@ -1055,7 +1055,7 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
 
         def _from_polynomial(
             self: "FreeAlgebraParent", polynomial: "_EnginePolynomial"
-        ) -> "FramedFreeAlgebras.ElementMethods":
+        ) -> "FramedFreeAlgebras.ElementType":
             r"""Transport ``polynomial`` back along the polynomial presentation.
 
             A polynomial in one variable indexes its coefficients by an
@@ -1065,7 +1065,7 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
             """
             system = self.monomial_system()
             labels = tuple(self._algebra_generating_set)
-            result: "FramedFreeAlgebras.ElementMethods" = self.zero()
+            result: "FramedFreeAlgebras.ElementType" = self.zero()
             for exponents, coefficient in polynomial.dict().items():
                 # One variable indexes by an exponent, several by a sequence
                 # of them -- and the engine's sequence is its own type, not a
@@ -1159,12 +1159,12 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
 
         def algebra_generator(
             self: "FreeAlgebraParent", s: "_SageElement"
-        ) -> "FramedFreeAlgebras.ElementMethods":
+        ) -> "FramedFreeAlgebras.ElementType":
             r"""Return the degree-1 monomial ``[s]`` in ``FreeAlg_R(S)``."""
             assert s in self._algebra_generating_set, (
                 f"{s!r} is not in {self._algebra_generating_set}"
             )
-            generator: "FramedFreeAlgebras.ElementMethods" = self.module_generator(
+            generator: "FramedFreeAlgebras.ElementType" = self.module_generator(
                 self._algebra_to_monomial(s)
             )
             return generator
@@ -1182,9 +1182,9 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
 
         def product_on_algebra_generators(
             self: "FreeAlgebraParent", s: "_SageElement", t: "_SageElement"
-        ) -> "FramedFreeAlgebras.ElementMethods":
+        ) -> "FramedFreeAlgebras.ElementType":
             r"""Return the product of algebra generators s and t."""
-            product: "FramedFreeAlgebras.ElementMethods" = (
+            product: "FramedFreeAlgebras.ElementType" = (
                 self.algebra_generator(s) * self.algebra_generator(t)
             )
             return product
@@ -1301,7 +1301,7 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
             )
             return dict(zip(self._algebra_generating_set, values, strict=True))
 
-        def one(self: "FreeAlgebraParent") -> "FramedFreeAlgebras.ElementMethods":
+        def one(self: "FreeAlgebraParent") -> "FramedFreeAlgebras.ElementType":
             r"""Return the multiplicative identity: the empty monomial."""
             system = self.monomial_system()
             monomial_one = (
@@ -1309,7 +1309,7 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
                 if isinstance(system, AlternatingMonomials)
                 else system.parent().one()
             )
-            one: "FramedFreeAlgebras.ElementMethods" = self.module_generator(
+            one: "FramedFreeAlgebras.ElementType" = self.module_generator(
                 monomial_one
             )
             return one
@@ -1324,7 +1324,7 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
             return tuple(self.algebra_generators())[:count]
 
     class ElementMethods:
-        def _mod_(self, other: "Element") -> "FramedFreeAlgebras.ElementMethods":
+        def _mod_(self, other: "Element") -> "FramedFreeAlgebras.ElementType":
             r"""Return this element reduced modulo ``other``.
 
             Equality in \(A/(g)\) is equality of remainders, so a quotient of
@@ -1332,7 +1332,7 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
             available here.
             """
             parent = self.parent()
-            reduced: "FramedFreeAlgebras.ElementMethods" = parent._from_polynomial(
+            reduced: "FramedFreeAlgebras.ElementType" = parent._from_polynomial(
                 parent._as_polynomial(self) % parent._as_polynomial(other)
             )
             return reduced
@@ -1355,11 +1355,10 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
         def _mul_(
             self,
             other: "ElementConstructorInput",
-        ) -> "FramedFreeAlgebras.ElementMethods":
-            assert (
-                isinstance(other, FramedFreeAlgebras.ElementMethods)
-                and other.parent() is self.parent()
-            ), "free-algebra multiplication requires elements of one parent"
+        ) -> "FramedFreeAlgebras.ElementType":
+            assert other in self.parent(), (
+                "free-algebra multiplication requires elements of one parent"
+            )
             parent = self.parent()
             zero = parent.base_ring().zero()
             coefficients: dict["Element", "RingElement"] = {}
@@ -1374,7 +1373,7 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
                         coefficients.get(monomial, zero)
                         + sign * left_coefficient * right_coefficient
                     )
-            product: "FramedFreeAlgebras.ElementMethods" = parent.element_class(
+            product: "FramedFreeAlgebras.ElementType" = parent.ElementType(
                 parent, coefficients
             )
             return product
@@ -1737,11 +1736,11 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
             )
             return self.subs(dict(zip(labels, values)))
 
-    class Homsets(HomsetsCategory):
+    class _HomCategory(HomCategoryConstruction):
         r"""Algebra homsets whose domain is free on a specified set."""
 
         def extra_super_categories(self) -> list:
-            return [FramedAlgebras(self.base_category().base_ring()).Homsets()]
+            return [FramedAlgebras(self.base_category().base_ring()).HomCategory()]
 
         class ElementMethods:
             def then(
@@ -1793,7 +1792,7 @@ def free_algebra_homset(
 ) -> Parent:
     r"""Return the algebra homset from a specified free algebra."""
     return object_of(
-        FramedFreeAlgebras(domain.base_ring()).Homsets(),
+        FramedFreeAlgebras(domain.base_ring()).HomCategory(),
         domain=domain,
         codomain=codomain,
     )
@@ -1804,7 +1803,7 @@ def divided_power_algebra_homset(
 ) -> Parent:
     r"""Return the divided-power algebra homset with the stated ends."""
     return object_of(
-        FramedDividedPowerAlgebras(domain.base_ring()).Homsets(),
+        FramedDividedPowerAlgebras(domain.base_ring()).HomCategory(),
         domain=domain,
         codomain=codomain,
     )
@@ -2034,7 +2033,7 @@ class FramedDividedPowerAlgebras(OwnedCategoryOverBaseRing):
             exponent = int(exponent)
             system = self.monomial_system()
             match value:
-                case FramedFreeAlgebras.ElementMethods() if value.parent() is self:
+                case FramedFreeAlgebras.ElementType() if value.parent() is self:
                     assert value.degree() == 1 or value == self.zero(), (
                         "divided powers are defined here on degree-one elements"
                     )
@@ -2088,12 +2087,12 @@ class FramedDividedPowerAlgebras(OwnedCategoryOverBaseRing):
             DividedPowerAlgebraMorphism.preserves_divided_power
         )
 
-    class Homsets(HomsetsCategory):
+    class _HomCategory(HomCategoryConstruction):
         r"""Divided-power algebra homsets."""
 
         def extra_super_categories(self) -> list:
             return [
-                FramedFreeAlgebras(self.base_category().base_ring()).Homsets()
+                FramedFreeAlgebras(self.base_category().base_ring()).HomCategory()
             ]
 
 
@@ -2418,7 +2417,7 @@ class PresentedFreeAlgebras(OwnedCategoryOverBaseRing):
             return self(self._one_representative)
 
         def _element_constructor_(
-            self, representative: "PresentedFreeAlgebraElement | FramedFreeAlgebras.ElementMethods"
+            self, representative: "PresentedFreeAlgebraElement | FramedFreeAlgebras.ElementType"
         ) -> "PresentedFreeAlgebraElement":
             if isinstance(representative, PresentedFreeAlgebraElement):
                 assert representative.parent() is self, "an algebra element has one parent"
@@ -2464,7 +2463,7 @@ class PresentedFreeAlgebras(OwnedCategoryOverBaseRing):
 
         def divided_power(
             self,
-            element: "PresentedFreeAlgebraElement | FramedFreeAlgebras.ElementMethods",
+            element: "PresentedFreeAlgebraElement | FramedFreeAlgebras.ElementType",
             degree: int,
         ) -> "PresentedFreeAlgebraElement":
             assert self._construction == "divided", (
@@ -2528,24 +2527,24 @@ class PresentedFreeAlgebras(OwnedCategoryOverBaseRing):
 
 class PresentedFreeAlgebraElement(
     ModuleElement,
-    PresentedFreeAlgebras.ElementMethods,
+    PresentedFreeAlgebras.ElementType,
 ):
     r"""A class in a free algebra modulo relations generated in degree one."""
 
-    _add_ = PresentedFreeAlgebras.ElementMethods._add_
-    _neg_ = PresentedFreeAlgebras.ElementMethods._neg_
-    _mul_ = PresentedFreeAlgebras.ElementMethods._mul_
-    _lmul_ = PresentedFreeAlgebras.ElementMethods._lmul_
-    _rmul_ = PresentedFreeAlgebras.ElementMethods._rmul_
-    __eq__ = PresentedFreeAlgebras.ElementMethods.__eq__
-    _repr_ = PresentedFreeAlgebras.ElementMethods._repr_
+    _add_ = PresentedFreeAlgebras.ElementType._add_
+    _neg_ = PresentedFreeAlgebras.ElementType._neg_
+    _mul_ = PresentedFreeAlgebras.ElementType._mul_
+    _lmul_ = PresentedFreeAlgebras.ElementType._lmul_
+    _rmul_ = PresentedFreeAlgebras.ElementType._rmul_
+    __eq__ = PresentedFreeAlgebras.ElementType.__eq__
+    _repr_ = PresentedFreeAlgebras.ElementType._repr_
     homogeneous_components = (
-        PresentedFreeAlgebras.ElementMethods.homogeneous_components
+        PresentedFreeAlgebras.ElementType.homogeneous_components
     )
-    degree = PresentedFreeAlgebras.ElementMethods.degree
+    degree = PresentedFreeAlgebras.ElementType.degree
 
     def __init__(
-        self, parent: "Parent", representative: "FramedFreeAlgebras.ElementMethods"
+        self, parent: "Parent", representative: "FramedFreeAlgebras.ElementType"
     ) -> None:
         ModuleElement.__init__(self, parent)
         assert representative.parent() is parent.presentation_algebra(), (
@@ -2553,7 +2552,7 @@ class PresentedFreeAlgebraElement(
         )
         self._representative = representative
 
-    def representative(self) -> "FramedFreeAlgebras.ElementMethods":
+    def representative(self) -> "FramedFreeAlgebras.ElementType":
         return self._representative
 
 

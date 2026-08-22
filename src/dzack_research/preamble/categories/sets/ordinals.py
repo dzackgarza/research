@@ -104,7 +104,7 @@ class OrdinalSemirings(Category):
 
         def _from_expression(self, expression: _OrdinalExpression) -> Ordinal:
             r"""Return the ordinal this expression denotes."""
-            element: Ordinal = self.element_class(
+            element: Ordinal = self.ElementType(
                 expression=expression, parent=self
             )
             return element
@@ -364,7 +364,7 @@ class OrdinalSemirings(Category):
             return f"({expression.base} ^o {expression.exponent})"
 
 
-Ordinal = OrdinalSemirings.ElementMethods
+Ordinal = OrdinalSemirings.ElementType
 r"""The class of an ordinal.
 
 The category is the class, so the element implementation class of

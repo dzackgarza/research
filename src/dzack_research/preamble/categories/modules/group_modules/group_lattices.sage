@@ -26,7 +26,7 @@ from typing import Self, TYPE_CHECKING
 
 from sage.misc.cachefunc import cached_function, cached_method
 from dzack_research.preamble.owned_category import object_of
-from dzack_research.preamble.owned_category_bases import Category, HomsetsCategory
+from dzack_research.preamble.owned_category_bases import Category, HomCategoryConstruction
 from sage.categories.morphism import SetMorphism
 
 if TYPE_CHECKING:
@@ -154,7 +154,7 @@ class GroupLattices(Category):
             )
             return _formed_group_subobject(self, submodule)
 
-    class Homsets(HomsetsCategory):
+    class _HomCategory(HomCategoryConstruction):
         r"""Form-preserving equivariant maps of two lattices for one \(G\)."""
 
         def extra_super_categories(self) -> list:
@@ -171,7 +171,7 @@ class GroupLattices(Category):
             from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModules
 
             return super().extra_super_categories() + [
-                FormModules(SageZZ).Homsets()
+                FormModules(SageZZ).HomCategory()
             ]
 
         class ParentMethods:

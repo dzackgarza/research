@@ -34,7 +34,7 @@ from typing import Self
 from sage.categories.additive_groups import AdditiveGroups
 from sage.categories.category import Category
 from dzack_research.preamble.owned_category_bases import Category_over_base_ring
-from dzack_research.preamble.owned_category_bases import HomsetsCategory
+from dzack_research.preamble.owned_category_bases import HomCategoryConstruction
 from sage.categories.fields import Fields as SageFields
 from sage.categories.modules import Modules as SageModules
 from sage.categories.homset import Hom
@@ -144,7 +144,7 @@ class Modules(Category_over_base_ring):
                 return refine(homset, Rings())
             return homset
 
-    class Homsets(HomsetsCategory):
+    class _HomCategory(HomCategoryConstruction):
         r"""$\operatorname{Hom}_R(M,N)$ of two modules over one ring."""
 
         class ParentMethods:
@@ -904,7 +904,7 @@ class VectorSpaces(Category_over_base_ring):
             Category_over_base_ring.__classcall__(Modules, self.base_ring()),
         ]
 
-    class Homsets(Modules.Homsets):
+    class _HomCategory(Modules._HomCategory):
         r"""$\operatorname{Hom}_K(V,W)$, which is the module homset.
 
         Sage reads a functorial construction off the category's *class* with

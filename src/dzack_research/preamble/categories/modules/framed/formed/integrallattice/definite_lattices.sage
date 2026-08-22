@@ -152,7 +152,7 @@ class DefiniteLattices(Category):
 
             The divisibility of $x$ is the positive generator of the pairing
             ideal $b(x, L)\subseteq\mathbb Z$ -- the owned
-            :meth:`IntegralLattices.ElementMethods.div` -- so this set is
+            :meth:`IntegralLattices.ElementType.div` -- so this set is
             the square's vectors filtered by their own divisibility, which
             is the definition (reference operation: Hecke
             ``vectors_of_square_and_divisibility``).
@@ -876,7 +876,7 @@ class DefiniteLattices(Category):
             ) -> "DefiniteSubobjectParent":
                 from dzack_research.preamble.categories.modules.framed.formed.integrallattice.subobjects import Subobjects
 
-                return Subobjects.ParentMethods.sum(self, other)
+                return Subobjects.ObjectType.sum(self, other)
 
             def intersection(
                 self: "DefiniteSubobjectParent",
@@ -884,7 +884,7 @@ class DefiniteLattices(Category):
             ) -> "DefiniteSubobjectParent":
                 from dzack_research.preamble.categories.modules.framed.formed.integrallattice.subobjects import Subobjects
 
-                return Subobjects.ParentMethods.intersection(self, other)
+                return Subobjects.ObjectType.intersection(self, other)
 
             def LLL(self: "DefiniteSubobjectParent") -> "Module":
                 r"""Return this subobject on an LLL reduced framing.

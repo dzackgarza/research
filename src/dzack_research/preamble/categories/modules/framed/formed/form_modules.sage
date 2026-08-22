@@ -55,7 +55,7 @@ if TYPE_CHECKING:
 
     # The form itself: the morphism out of $M\otimes_R M$ (or the quadratic
     # map) that a formed module is equipped with.  Not an element of
-    # ``FormModules.Homsets``, which is a map *between* two formed modules.
+    # ``FormModules._HomCategory``, which is a map *between* two formed modules.
     Form: TypeAlias = BilinearFormMorphism | QuadraticFormMorphism
 
     # How a map out of a formed module may be named: an assignment on the
@@ -348,10 +348,10 @@ class FormModules(OwnedCategoryOverBaseRing):
 
             Built by ``Hom(X, Y, C)`` with ``C`` the category of the
             *objects*, which is the constructor of every owned homset: Sage's
-            ``Homset.__init__`` is what places the result in ``C.Homsets()``
-            or ``C.Endsets()``, so handing it ``C.Homsets()`` would place the
+            ``Homset.__init__`` is what places the result in ``C.HomCategory()``
+            or ``C.EndCategory()``, so handing it ``C.HomCategory()`` would place the
             homset in the homsets of the homsets and its morphisms would
-            never reach ``FormModules.Homsets.ElementMethods``.
+            never reach ``FormModules._HomCategory.ElementType``.
             """
             if (
                 codomain in FormModules(self.base_ring())
@@ -738,11 +738,11 @@ class FormModules(OwnedCategoryOverBaseRing):
             return quotient
 
 
-    class Homsets(OwnedModules.Homsets):
+    class _HomCategory(OwnedModules._HomCategory):
         r"""The form-preserving maps between two formed modules.
 
         The homset is the parent and the morphism is its element, so this is
-        where both live.  The level below is the owned ``Sets().Homsets()``,
+        where both live.  The level below is the owned ``Sets().HomCategory()``,
         which supplies Sage's ``Homset`` and ``Morphism``; nothing here names
         a base.
         """
@@ -792,7 +792,7 @@ class FormModules(OwnedCategoryOverBaseRing):
                         assert False, (
                             "a form morphism is specified by its generator morphism"
                         )
-                morphism: "Morphism" = self.element_class(self, module_morphism)
+                morphism: "Morphism" = self.ElementType(self, module_morphism)
                 return morphism
 
             def _repr_(self) -> str:
@@ -1379,7 +1379,7 @@ def is_form_morphism(morphism: "MembershipInput") -> bool:
         return False
     return morphism.parent() in FormModules(
         morphism.domain().base_ring()
-    ).Homsets()
+    ).HomCategory()
 
 
 

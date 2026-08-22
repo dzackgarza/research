@@ -53,7 +53,7 @@ class CardinalityFunctor(Functor):
 
     def cartesian_product_comparison(
         self,
-        product: "Sets.CartesianProducts.ParentMethods",
+        product: "Sets.CartesianProducts.ObjectType",
     ) -> CardinalityMorphism:
         r"""Return the equality arrow ``#(prod X_i) -> prod #X_i``."""
         source = self._apply_functor(product)
@@ -65,7 +65,7 @@ class CardinalityFunctor(Functor):
 
     def coproduct_comparison(
         self,
-        coproduct: "CoproductsOfSets.ParentMethods",
+        coproduct: "CoproductsOfSets.ObjectType",
     ) -> CardinalityMorphism:
         r"""Return the equality arrow ``#(coprod X_i) -> sum #X_i``."""
         source = self._apply_functor(coproduct)
@@ -77,7 +77,7 @@ class CardinalityFunctor(Functor):
 
     def power_set_comparison(
         self,
-        power_set: "PowerSets.ParentMethods",
+        power_set: "PowerSets.ObjectType",
     ) -> CardinalityMorphism:
         r"""Return the equality arrow ``#P(X) -> 2 ^ #X``."""
         source = self._apply_functor(power_set)

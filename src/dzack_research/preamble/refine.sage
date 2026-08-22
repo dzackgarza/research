@@ -53,7 +53,8 @@ from sage.structure.dynamic_class import dynamic_class
 from sage.structure.element import Element
 
 from dzack_research.preamble.owned_category import (
-    declared_method_providers as _declared_method_providers,
+    OwnedCategoryMixin,
+    declared_implementation_types,
 )
 
 __all__ = [
@@ -174,7 +175,10 @@ def _preamble_mixins(category: "Category", attr: str) -> tuple[type, ...]:
         # construction base and declares its own methods class would
         # otherwise hide the base's, and the base would reach exactly those
         # categories with nothing of their own to add.
-        provider, inherited = _declared_method_providers(cat, category_type, attr)
+        provider, inherited = declared_implementation_types(
+            category_type,
+            OwnedCategoryMixin._IMPLEMENTATION_PROVIDER_NAMES[attr],
+        )
         if provider is None:
             continue
         for nested in (provider,) + inherited:
@@ -209,8 +213,11 @@ def _method_mixins(category: "Category", attr: str) -> tuple[type, ...]:
         return cached
     mixins = _preamble_mixins(category, attr)
     if not mixins:
-        nested = getattr(type(category), attr, None)
-        mixins = (nested,) if nested is not None else ()
+        provider, inherited = declared_implementation_types(
+            type(category),
+            OwnedCategoryMixin._IMPLEMENTATION_PROVIDER_NAMES[attr],
+        )
+        mixins = (() if provider is None else (provider,) + inherited)
     _MIXIN_CACHE[key] = mixins
     return mixins
 
@@ -267,8 +274,9 @@ def _resolved_requirements(category: "Category") -> type | None:
         category_type = type(cat)
         if not _is_owned_category(category_type):
             continue
-        provider, inherited = _declared_method_providers(
-            cat, category_type, "ParentMethods"
+        provider, inherited = declared_implementation_types(
+            category_type,
+            OwnedCategoryMixin._IMPLEMENTATION_PROVIDER_NAMES["ParentMethods"],
         )
         if provider is None:
             continue

@@ -296,7 +296,7 @@ class RestrictedScalarsModules(Category_over_base_ring):
             member = self._module(element)
             if member.parent() is self:
                 return member
-            assert isinstance(member, FinitelyGeneratedFreeModules.ElementMethods), (
+            assert member in self._module, (
                 f"restriction of scalars re-homes coordinate elements; "
                 f"{member!r} is not one"
             )

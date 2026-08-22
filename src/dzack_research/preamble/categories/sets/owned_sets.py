@@ -42,7 +42,7 @@ from dzack_research.preamble.owned_category_bases import (
     CartesianProductsCategory,
     Category,
     CategoryWithAxiom,
-    HomsetsCategory,
+    HomCategoryConstruction,
 )
 
 if TYPE_CHECKING:
@@ -130,7 +130,7 @@ class Sets(Category):
     uncountability, enumeration, indexing, and reverse lookup.
 
     It is also the **root of the owned construction chain**.  Its
-    ``ParentMethods`` is the parent implementation class of everything built
+    ``ObjectType`` is the parent implementation class of everything built
     through the chain: it declares Sage's ``Parent`` as a base and makes the
     one non-cooperative ``Parent.__init__`` call, so a level above it supplies
     only the datum it introduces and reaches this one by ``super()``.
@@ -214,7 +214,7 @@ class Sets(Category):
                 the name Sage's product machinery reads.
 
                 Sage states the enumeration of a product of sets
-                (``Sets.CartesianProducts.ParentMethods.__iter__``) in terms of
+                (``Sets.CartesianProducts.ObjectType.__iter__``) in terms of
                 this name and of :meth:`cartesian_factors`, so supplying it is
                 what makes that enumeration the enumeration of this product:
                 lexicographic when every factor after the first is finite, and
@@ -285,7 +285,7 @@ class Sets(Category):
                 assert components in self, (
                     f"{components} is not a tuple of elements of the factors of {self}"
                 )
-                return self.element_class(components=components, parent=self)
+                return self.ElementType(components=components, parent=self)
 
             def _repr_(self) -> str:
                 return " x ".join(str(factor) for factor in self._factors)
@@ -333,11 +333,11 @@ class Sets(Category):
             def _repr_(self) -> str:
                 return "(%s)" % ", ".join(repr(component) for component in self._components)
 
-    class Homsets(HomsetsCategory):
+    class _HomCategory(HomCategoryConstruction):
         r"""The **root of the owned homset chain**.
 
         A homset is a parent whose elements are the morphisms, and Sage's
-        ``Homset.__init__`` already places one in ``C.Homsets()``.  So the
+        ``Homset.__init__`` already places one in ``C.HomCategory()``.  So the
         homsets of a category form an ordinary owned chain, parallel to the
         chain of the objects, and this is its bottom: the one level that names
         Sage's classes as bases and makes the one non-cooperative
@@ -353,12 +353,12 @@ class Sets(Category):
 
         **The constructor is ``Hom(X, Y, C)``, not ``object_of``.**  Sage's
         ``Hom`` asks the domain through ``_Hom_``, which
-        ``Sets.ParentMethods`` answers; that method says why no other route
+        ``Sets.ObjectType`` answers; that method says why no other route
         is available.  ``category`` here is therefore the category of the
         *objects*, which is what Sage's ``Homset.__init__`` takes, and Sage
-        derives ``C.Homsets()`` or ``C.Endsets()`` from it.  A level whose
+        derives ``C.HomCategory()`` or ``C.EndCategory()`` from it.  A level whose
         homsets carry a datum declares ``_Hom_`` on its objects, supplies the
-        datum there, and consumes it in its own ``Homsets.ParentMethods``.
+        datum there, and consumes it in its own ``Homsets.ObjectType``.
         """
 
         class ParentMethods(OwnedParent, SageHomset):
@@ -384,7 +384,7 @@ class Sets(Category):
     class ElementMethods(SageElement):
         r"""An element of an owned set: the element implementation class.
 
-        The element half of what ``ParentMethods`` is for parents.  It carries
+        The element half of what ``ObjectType`` is for parents.  It carries
         ``Element`` so that everything built through the chain has a parent,
         and it carries nothing else: what an element of a bare *set* is, is a
         member of that set.  Structure is added by the levels above, which is
@@ -394,7 +394,7 @@ class Sets(Category):
         *group* -- \(O(L)\) is one -- has both element roots in its chain,
         with Sage's linearization free to put this one first.  So the call
         below is cooperative: reached from a morphism it goes on to
-        ``Sets.Homsets.ElementMethods`` and thence to ``Map.__init__``, which
+        ``Sets.HomCategory.ElementType`` and thence to ``Map.__init__``, which
         is what gives the morphism its two ends.  Calling ``Element.__init__``
         directly stopped there, and the morphism came out with no domain.
         """
@@ -460,6 +460,25 @@ class Sets(Category):
             r"""Whether $|X| > \aleph_0$."""
             return bool(self.cardinality().is_uncountable())
 
+        def Hom(
+            self,
+            target: SageParent,
+            category: SageCategory | None = None,
+        ) -> SageParent:
+            r"""Return the hom object by delegation to the owning category."""
+            source_category = self.category() if category is None else category
+            if isinstance(source_category, OwnedCategoryMixin):
+                return source_category.Hom(self, target)
+            return SageHomset(self, target, category=source_category)
+
+        def End(self) -> SageParent:
+            r"""Return the endomorphism object by delegation to the category."""
+            return self.category().End(self)
+
+        def Aut(self) -> SageParent:
+            r"""Return the automorphism object by delegation to the category."""
+            return self.category().Aut(self)
+
         def _Hom_(
             self,
             codomain: SageParent,
@@ -467,11 +486,11 @@ class Sets(Category):
         ) -> SageParent:
             r"""Build \(\operatorname{Hom}(X, Y)\) through the owned homset chain.
 
-            ``Sets.Homsets.ParentMethods`` is the homset implementation
+            ``Sets.HomCategory.ObjectType`` is the homset implementation
             class, so a homset of an owned category has to be built as that
             class.  A plain Sage ``Homset`` cannot become one afterwards:
             ``Parent._init_category_`` rewraps a fresh homset into
-            ``dynamic_class(name, (Homset, category.parent_class))``, and the
+            ``dynamic_class(name, (Homset, category.ObjectType))``, and the
             second base is now a subclass of the first, which C3 refuses.
             Sage asks the domain first, so the construction happens here,
             where the class is right from the start.
@@ -485,22 +504,7 @@ class Sets(Category):
             homset asked for in a category the preamble does not own stays
             Sage's to build.
             """
-            if category is None:
-                category = self.category()
-            # Dispatch, not a fallback: a Sage category gets Sage's homset and
-            # an owned category gets the owned one, which is the routing this
-            # repo already settled for ``Hom``.
-            if not isinstance(category, OwnedCategoryMixin):
-                return SageHomset(self, codomain, category=category)
-            homset_category = (
-                category.Homsets().Endset()
-                if self is codomain
-                else category.Homsets()
-            )
-            homset: SageParent = homset_category.parent_class(
-                domain=self, codomain=codomain, category=category
-            )
-            return homset
+            return self.Hom(codomain, category=category)
 
 
 class FinitelySupportedFunctionSets(Category):
@@ -1241,7 +1245,7 @@ def install_poset_display() -> None:
     r"""Route Sage's ``FinitePoset`` into ``PartiallyOrderedSets``.
 
     The category owns the Hasse-diagram display methods
-    (``PartiallyOrderedSets.ParentMethods`` above); this hook refines every
+    (``PartiallyOrderedSets.ObjectType`` above); this hook refines every
     finite poset Sage constructs into that category after ``__init__`` -- the
     sanctioned refinement route, never a monkey-patch onto Sage's class, and
     a failure here is loud.

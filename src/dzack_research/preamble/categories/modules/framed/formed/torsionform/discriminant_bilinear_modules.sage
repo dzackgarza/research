@@ -185,7 +185,7 @@ class DiscriminantBilinearModules(Category_over_base_ring):
             because moving a lift by $\ell\in L$ shifts $b(\tilde x,\tilde x)$
             by $b(\ell,\ell)$, which lies in $2\mathbb Z$ only then.  So this
             passage goes back through the lattice, unlike
-            :meth:`~DiscriminantQuadraticModules.ParentMethods.associated_bilinear_form`,
+            :meth:`~DiscriminantQuadraticModules.ObjectType.associated_bilinear_form`,
             which polarizes $q$ and needs nothing else.
 
             So the passage is defined exactly on a discriminant form -- a

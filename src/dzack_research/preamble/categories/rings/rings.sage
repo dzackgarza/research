@@ -22,7 +22,7 @@ recognizes it.  The multiplicative and additive roots are the owned ones in
 ``group/magmas.sage``, which is the spine that carries a ring to the owned
 ``Sets()``.  A ring is built as a set before it is built as a ring, so this
 edge is what makes the construction chain reach the root: without it
-``OwnedRings().parent_class`` inherits no ``Parent`` and nothing can be
+``OwnedRings().ObjectType`` inherits no ``Parent`` and nothing can be
 constructed in the category at all.
 """
 
@@ -164,7 +164,7 @@ class OwnedRings(Category):
             if engine is None:
                 from sage.categories.unital_algebras import UnitalAlgebras
 
-                return UnitalAlgebras.ParentMethods._coerce_map_from_(self, source)
+                return UnitalAlgebras.ObjectType._coerce_map_from_(self, source)
             if source is not engine:
                 return None
 
@@ -338,7 +338,7 @@ class OwnedFields(Category):
             r"""Return \(G_K=\operatorname{Gal}(\bar K/K)\).
 
             Sited here because this is the node the preamble owns.  It stood
-            on Sage's own ``Fields().ParentMethods`` as an assignment made
+            on Sage's own ``Fields().ObjectType`` as an assignment made
             when the preamble installed itself -- which is after Sage has
             built and cached every ``parent_class`` that would have inherited
             it, so no field ever answered.  A category the preamble declares

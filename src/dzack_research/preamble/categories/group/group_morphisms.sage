@@ -197,7 +197,7 @@ class GroupHomset(GroupHomset_libgap):
                 generator_models,
                 image_models,
             )
-        homomorphism: GroupHomomorphism = self.element_class(
+        homomorphism: GroupHomomorphism = self.ElementType(
             self, engine_morphism, check=False
         )
         return homomorphism
@@ -291,7 +291,7 @@ class GroupAutomorphismGroups(Category):
         ) -> "GroupAutomorphism":
             match images:
                 case GapElement():
-                    automorphism: "GroupAutomorphism" = self.element_class(
+                    automorphism: "GroupAutomorphism" = self.ElementType(
                         self, images, check=False
                     )
                 case _:

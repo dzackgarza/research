@@ -71,7 +71,7 @@ if TYPE_CHECKING:
         r"""Sage's \(\QQ[x]/(f)\), which the arithmetic algorithms run in.
 
         Reached only through
-        :meth:`OwnedNumberFields.ParentMethods._engine_field`, and only for
+        :meth:`OwnedNumberFields.ObjectType._engine_field`, and only for
         the five computations below: each is an algorithm rather than a
         definition, so each crosses once and comes back.
         """
@@ -264,7 +264,7 @@ class OwnedNumberFields(Category):
             relation is the same \(f\), which needs integral coefficients and
             a unit leading one for that to be a presentation over \(R\) at all.
             \(A\otimes_R\operatorname{Frac}(R)=K\) is then the base change,
-            which :meth:`FinitelyPresentedAlgebras.ParentMethods.base_change`
+            which :meth:`FinitelyPresentedAlgebras.ObjectType.base_change`
             computes -- so the relation between the two is an arrow and not a
             resemblance.
 
@@ -486,7 +486,7 @@ class OwnedNumberFields(Category):
 
             An embedding is fixed by where \(\alpha\) goes, so a conjugate of
             \(a\) is its representative evaluated at a root of \(f\) --
-            :meth:`OwnedNumberFields.ParentMethods.embedding_images` names
+            :meth:`OwnedNumberFields.ObjectType.embedding_images` names
             those roots.
             """
             field = self.parent()

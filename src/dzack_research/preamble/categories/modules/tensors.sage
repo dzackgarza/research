@@ -660,7 +660,7 @@ class TensorModules(Category_over_base_ring):
             return f"Type-({contravariant},{covariant}) tensors on {self._module}"
 
         def _element_constructor_(self, entries: dict) -> "Element":
-            tensor_element: "Element" = self.element_class(self, entries)
+            tensor_element: "Element" = self.ElementType(self, entries)
             return tensor_element
 
         def zero(self) -> "Element":
@@ -1008,7 +1008,7 @@ class MixedTensorAlgebras(Category_over_base_ring):
             return self({tensor_element.valence(): tensor_element})
 
         def _element_constructor_(self, components: dict) -> "Element":
-            mixed_element: "Element" = self.element_class(self, components)
+            mixed_element: "Element" = self.ElementType(self, components)
             return mixed_element
 
         def zero(self) -> "Element":

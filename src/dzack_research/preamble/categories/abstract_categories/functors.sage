@@ -48,12 +48,13 @@ from typing import TYPE_CHECKING
 from sage.categories.morphism import Morphism as SageMorphism
 from sage.misc.cachefunc import cached_function
 from sage.structure.element import Element as SageElement
-from sage.categories.homset import Homset as SageHomset
 from sage.categories.objects import Objects
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.owned_category_bases import Category as OwnedCategory
-from dzack_research.preamble.refine import refine
+from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    HomCategoryOf,
+)
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -107,7 +108,7 @@ class Functor(SageElement):
     _faithful: bool = False
 
     def __init__(self, domain: "Category", codomain: "Category") -> None:
-        SageElement.__init__(self, FunctorHomset(domain, codomain))
+        SageElement.__init__(self, domain.FunctorCategory(codomain))
 
     def domain(self) -> "Category":
         r"""The source category, read off the homset this functor lives in."""
@@ -130,13 +131,17 @@ class Functor(SageElement):
         is one of its elements, wrong here, where the domain is a category and
         the argument is one of its objects.
         """
-        if isinstance(x, SageMorphism) and not isinstance(x, Functor):
-            return self._apply_functor_to_morphism(x)
+        if x in self.domain().ArrowCategory():
+            image = self._apply_functor_to_morphism(x)
+            assert image in self.codomain().ArrowCategory(), (
+                f"{self} sends {x} outside the arrows of {self.codomain()}"
+            )
+            return image
         assert x in self.domain(), (
             f"{x} is not an object of {self.domain()}, the domain of {self}"
         )
         image = self._apply_functor(x)
-        assert image in self.codomain() or image in self.codomain().Homsets(), (
+        assert image in self.codomain(), (
             f"{self} is ill-defined: it sends {x} outside {self.codomain()}"
         )
         return image
@@ -241,86 +246,10 @@ class ComposedFunctor(Functor):
         return " . ".join(str(factor) for factor in reversed(self._factors))
 
 
-class FunctorHomsets(OwnedCategory):
-    r"""\(\operatorname{Hom}_{\mathbf{Cat}}(C,D)\), the set of functors \(C\to D\).
-
-    An object is a homset of \(\mathbf{Cat}\).  Membership is exact boundary
-    agreement.  The endofunctor space owns its identity.  Existence and
-    element handling are the contract; no enumeration is promised.
-
-    **This category adopts a Sage parent; it does not construct one.**  Sage's
-    ``Homset.__init__`` supplies the boundary accessors and the homset
-    semantics, and it is also what decides the placement: its last act is
-    ``Parent.__init__(category=category.Endsets() if X is Y else
-    category.Homsets())``.  So a functor homset is already an object of
-    ``Cat().Homsets()`` before this category sees it, and the route in is
-    :func:`~dzack_research.preamble.refine.refine`, which puts these methods
-    ahead of ``Homset``'s own.  The construction chain is not available here:
-    it would have to write ``Homset``'s private boundary fields by hand.
-
-    The methods a functor homset's *elements* have stay on :class:`Functor`
-    below, which every owned functor derives from.
-    """
-
-    def _repr_object_names(self) -> str:
-        return "functor homsets"
-
-    def super_categories(self) -> list["Category"]:
-        return [Cat().Homsets()]
-
-    class ParentMethods:
-        def _repr_(self) -> str:
-            return f"Hom_Cat({self.domain()}, {self.codomain()})"
-
-        def __contains__(self, functor: "Functor") -> bool:
-            r"""Membership is parenthood: a functor lives in exactly one homset.
-
-            Not a type probe plus a boundary comparison.  A functor is an
-            element of its homset, so the mathematical question -- is this a
-            functor \(C\to D\)? -- is answered by the structure that already
-            holds it.
-            """
-            return isinstance(functor, Functor) and functor.parent() is self
-
-        def _element_constructor_(self, functor: "Functor") -> "Functor":
-            r"""Admit a functor of this boundary.
-
-            A functor is not assembled from raw data here: each owned functor
-            is its own construction, declaring what it does to objects and to
-            morphisms.  What this owns is the parenthood check.
-            """
-            assert functor in self, f"{functor} is not a functor in {self}"
-            return functor
-
-        def identity(self) -> "IdentityFunctor":
-            assert self.domain() == self.codomain(), (
-                f"only an endofunctor space has an identity; "
-                f"found Hom_Cat({self.domain()}, {self.codomain()})"
-            )
-            return IdentityFunctor(self.domain())
-
-
-@cached_function
-def FunctorHomset(domain: "Category", codomain: "Category") -> "Parent":
-    r"""Return \(\operatorname{Hom}_{\mathbf{Cat}}(C,D)\), the set of functors \(C\to D\).
-
-    One homset per boundary pair, because a functor's parent is its identity:
-    ``FunctorHomsets.ParentMethods.__contains__`` reads membership off
-    ``parent() is self``, so two spaces on one boundary would make one functor
-    fail to be in its own space.
-    """
-    cat = Cat()
-    assert domain in cat and codomain in cat, (
-        f"a functor homset's boundary must be objects of Cat; "
-        f"found {domain!r} and {codomain!r}"
-    )
-    space = SageHomset(domain, codomain, category=cat, check=False)
-    functor_homset: "Parent" = refine(space, FunctorHomsets())
-    return functor_homset
-
-
 class FunctorCategory(OwnedCategory):
     r"""The category \([C,D]\) of functors and natural transformations."""
+
+    ElementType = Functor
 
     def __init__(self, domain: "Category", codomain: "Category") -> None:
         self._domain = domain
@@ -341,89 +270,34 @@ class FunctorCategory(OwnedCategory):
 
     def __contains__(self, candidate: "Functor") -> bool:
         return (
-            isinstance(candidate, Functor)
+            candidate.parent() is self
             and candidate.domain() == self._domain
             and candidate.codomain() == self._codomain
         )
 
-    def homset(self, source: "Functor", target: "Functor") -> "Parent":
-        assert source in self and target in self
-        return NaturalTransformationHomset(source, target)
+    class _HomCategory(HomCategoryOf):
+        r"""Category-valued hom objects of a functor category."""
 
+        @property
+        def ObjectType(self) -> type:
+            return NaturalTransformationCategory
 
-class NaturalTransformationHomsets(OwnedCategory):
-    r"""The sets of natural transformations between parallel functors."""
-
-    def _repr_object_names(self) -> str:
-        return "natural-transformation homsets"
-
-    def super_categories(self) -> list["Category"]:
-        from dzack_research.preamble.categories.sets.owned_sets import Sets
-
-        return [Sets()]
-
-    class ParentMethods:
-        def __init__(
+        def Of(
             self,
             source: "Functor",
             target: "Functor",
-            **rest: "ConstructionData",
-        ) -> None:
-            self._source = source
-            self._target = target
-            super().__init__(**rest)
+        ) -> "NaturalTransformationCategory":
+            assert source in self.base_category()
+            assert target in self.base_category()
+            return NaturalTransformations(source, target)
 
-        def domain(self) -> "Functor":
-            return self._source
-
-        def codomain(self) -> "Functor":
-            return self._target
-
-        def __contains__(self, transformation: "NaturalTransformation") -> bool:
-            return (
-                isinstance(transformation, NaturalTransformation)
-                and transformation.parent() is self
-            )
-
-        def _element_constructor_(
+        def _object(
             self,
-            components: "Callable",
-        ) -> "NaturalTransformation":
-            return NaturalTransformation(self, components)
-
-        def identity(self) -> "NaturalTransformation":
-            source = self._source
-            assert source is self._target, (
-                "only an endomorphism set has an identity transformation"
-            )
-            return NaturalTransformation(
-                self,
-                lambda obj: source(obj).Hom(source(obj)).identity(),
-            )
-
-        def _repr_(self) -> str:
-            return f"Natural transformations from {self._source} to {self._target}"
-
-
-@cached_function
-def NaturalTransformationHomset(source: "Functor", target: "Functor") -> "Parent":
-    r"""Return the natural transformations from ``source`` to ``target``."""
-    parallel = (
-        source.domain() == target.domain()
-        and source.codomain() == target.codomain()
-    )
-    assert parallel, (
-        f"natural transformations require parallel functors; found "
-        f"{source.domain()} -> {source.codomain()} and "
-        f"{target.domain()} -> {target.codomain()}"
-    )
-    from dzack_research.preamble.owned_category import object_of
-
-    return object_of(
-        NaturalTransformationHomsets(),
-        source=source,
-        target=target,
-    )
+            source: "Functor",
+            target: "Functor",
+            placement: "Category",
+        ) -> "NaturalTransformationCategory":
+            return NaturalTransformations(source, target)
 
 
 class NaturalTransformation(SageElement):
@@ -466,11 +340,68 @@ class NaturalTransformation(SageElement):
         assert first.target() is self.source(), (
             "natural transformations compose only when the middle functor agrees"
         )
-        homset = NaturalTransformationHomset(first.source(), self.target())
-        return homset(lambda obj: self.component(obj) * first.component(obj))
+        transformations = NaturalTransformations(first.source(), self.target())
+        return transformations(
+            lambda obj: self.component(obj) * first.component(obj)
+        )
 
     def _repr_(self) -> str:
         return f"Natural transformation from {self.source()} to {self.target()}"
+
+
+class NaturalTransformationCategory(OwnedCategory):
+    r"""The category of natural transformations between parallel functors."""
+
+    ElementType = NaturalTransformation
+
+    def __init__(self, source: Functor, target: Functor) -> None:
+        parallel = (
+            source.domain() == target.domain()
+            and source.codomain() == target.codomain()
+        )
+        assert parallel, (
+            f"natural transformations require parallel functors; found "
+            f"{source.domain()} -> {source.codomain()} and "
+            f"{target.domain()} -> {target.codomain()}"
+        )
+        self._source = source
+        self._target = target
+        super().__init__()
+
+    def super_categories(self) -> list["Category"]:
+        return [Objects()]
+
+    def domain(self) -> Functor:
+        return self._source
+
+    def codomain(self) -> Functor:
+        return self._target
+
+    def __contains__(self, transformation: NaturalTransformation) -> bool:
+        return transformation.parent() is self
+
+    def __call__(self, components: "Callable") -> NaturalTransformation:
+        return self.ElementType(self, components)
+
+    def identity(self) -> NaturalTransformation:
+        assert self._source is self._target, (
+            "only an endomorphism category has an identity transformation"
+        )
+        return self(
+            lambda obj: self._source(obj).End().identity()
+        )
+
+    def _repr_(self) -> str:
+        return f"Natural transformations from {self._source} to {self._target}"
+
+
+@cached_function
+def NaturalTransformations(
+    source: Functor,
+    target: Functor,
+) -> NaturalTransformationCategory:
+    r"""Return the category of natural transformations from ``source`` to ``target``."""
+    return NaturalTransformationCategory(source, target)
 
 
 class NaturalIsomorphism(NaturalTransformation):
@@ -502,7 +433,7 @@ class NaturalIsomorphism(NaturalTransformation):
         self._inverse_components = inverse_components
         NaturalTransformation.__init__(
             self,
-            NaturalTransformationHomset(source, target),
+            NaturalTransformations(source, target),
             components,
         )
 

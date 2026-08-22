@@ -9,8 +9,10 @@ Dynkin diagram instead of from a search over the Gram matrix.
 
 from typing import Protocol, Self, TYPE_CHECKING
 
-from dzack_research.preamble.owned_category_bases import Category, HomsetsCategory
-from sage.categories.category_with_axiom import CategoryWithAxiom
+from dzack_research.preamble.owned_category_bases import Category
+from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    AutCategoryConstruction,
+)
 from sage.combinat.root_system.weyl_group import WeylGroup
 from sage.misc.lazy_attribute import lazy_attribute
 from sage.rings.integer_ring import ZZ as SageZZ
@@ -64,10 +66,9 @@ class RootLattices(Category):
         from dzack_research.preamble.categories.modules.framed.formed.integrallattice.integral_lattices import IntegralLattices
         return [IntegralLattices(SageZZ)]
 
-    class Homsets(HomsetsCategory):
-        class Endset(CategoryWithAxiom):
-            def extra_super_categories(self) -> list:
-                return [RootLatticeIsometries()]
+    class _AutCategory(AutCategoryConstruction):
+        def extra_super_categories(self) -> list:
+            return [RootLatticeIsometries()]
 
     class ParentMethods:
         # Recorded by ``refine_root_lattice`` when the Cartan matrix becomes
@@ -163,7 +164,7 @@ class RootLattices(Category):
             the simple roots, as elements of $\mathrm{Aut}(L)$.
 
             Each $s_\alpha(x)=x-\dfrac{2\,b(x,\alpha)}{q(\alpha)}\,\alpha$ is
-            built by :meth:`IntegralLattices.ParentMethods.reflection` from
+            built by :meth:`IntegralLattices.ObjectType.reflection` from
             its images on the framing, with the form -- never a matrix
             assembled entrywise -- so each is an isometry by construction and
             an involution by the mathematics.
@@ -180,7 +181,7 @@ class RootLattices(Category):
             sign, so $\alpha^\vee=\varepsilon\,\alpha$ and the weights are the
             dual generators up to that one sign:
             $\omega_j=\varepsilon\,e_j^\vee$.  Like the dual generators
-            (:meth:`IntegralLattices.ParentMethods.dual_basis`) they are
+            (:meth:`IntegralLattices.ObjectType.dual_basis`) they are
             elements of $L^\vee$ -- for a simply laced root system the weight
             lattice *is* the dual of the root lattice.
             """

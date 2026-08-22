@@ -174,7 +174,7 @@ def character_set(group: "Group") -> "Parent":
     return object_of(CharacterSets(), group=group)
 
 
-class Character(CharacterSets().element_class):
+class Character(CharacterSets().ElementType):
     r"""Construction data for an element of \(\operatorname{Char}(G)\)."""
 
     def __init__(

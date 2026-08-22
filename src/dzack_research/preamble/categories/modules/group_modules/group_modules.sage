@@ -30,7 +30,7 @@ from typing import Protocol, Self, TYPE_CHECKING
 from sage.misc.cachefunc import cached_function, cached_method
 from dzack_research.preamble.owned_category import object_of
 from dzack_research.preamble.owned_category_bases import Category
-from dzack_research.preamble.owned_category_bases import HomsetsCategory
+from dzack_research.preamble.owned_category_bases import HomCategoryConstruction
 from sage.categories.morphism import SetMorphism
 from sage.structure.parent import Parent
 from sage.structure.richcmp import op_EQ, richcmp
@@ -445,13 +445,13 @@ class GroupModules(Category):
         def module_coinvariants(self: Self) -> "Module":
             return _module_coinvariants(self)
 
-    class Homsets(HomsetsCategory):
+    class _HomCategory(HomCategoryConstruction):
         r"""The equivariant maps between two modules for one $G$."""
 
         def extra_super_categories(self) -> list:
             from dzack_research.preamble.categories.modules.pure.modules import Modules
 
-            return [Modules(self.base_category().base_ring()).Homsets()]
+            return [Modules(self.base_category().base_ring()).HomCategory()]
 
         class ParentMethods:
             r"""The homset of equivariant maps between two modules for one \(G\)."""

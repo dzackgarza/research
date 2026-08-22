@@ -435,12 +435,12 @@ class FunctionModules(Category_over_base_ring):
             if isinstance(function, SageElement) and function.parent() is self:
                 return function
             _certify_membership(self._kind, self._domain_name, function)
-            member: "Element" = self.element_class(self, function)
+            member: "Element" = self.ElementType(self, function)
             return member
 
         def zero(self: Self) -> "Element":
             r"""Return the zero function, a member of anything by closure."""
-            zero_function: "Element" = self.element_class(self, SR.zero())
+            zero_function: "Element" = self.ElementType(self, SR.zero())
             return zero_function
 
         def _ring_morphism_defining_module_action(self: Self) -> "Morphism":
@@ -505,7 +505,7 @@ class FunctionModules(Category_over_base_ring):
             this goes around the certifier instead of asking it again.
             """
             parent = self.parent()
-            member: "Element" = parent.element_class(parent, function)
+            member: "Element" = parent.ElementType(parent, function)
             return member
 
         def _add_(self: Self, other: Self) -> "Element":

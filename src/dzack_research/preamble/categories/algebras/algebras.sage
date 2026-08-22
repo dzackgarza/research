@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from sage.rings.ring import Ring
 
 from dzack_research.preamble.owned_category import object_of
-from dzack_research.preamble.owned_category_bases import HomsetsCategory
+from dzack_research.preamble.owned_category_bases import HomCategoryConstruction
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
 from sage.categories.algebras import Algebras as SageAlgebras
 from sage.categories.category import Category
@@ -42,7 +42,7 @@ if TYPE_CHECKING:
         r"""A parent in ``Algebras(R)``.
 
         ``change_ring`` is this category's own requirement, not a ring's:
-        :meth:`Algebras.ParentMethods.base_change` is written against it, so
+        :meth:`Algebras.ObjectType.base_change` is written against it, so
         an algebra that cannot move its base cannot answer base change.
         """
 
@@ -195,7 +195,7 @@ class FramedAlgebras(OwnedCategoryOverBaseRing):
             r"""Return the product of algebra_generators labelled by s and t in S."""
             ...
 
-    class Homsets(HomsetsCategory):
+    class _HomCategory(HomCategoryConstruction):
         r"""Homsets of algebras with specified algebra generating sets."""
 
         def extra_super_categories(self) -> list:
@@ -203,7 +203,7 @@ class FramedAlgebras(OwnedCategoryOverBaseRing):
                 Modules,
             )
 
-            return [Modules(self.base_category().base_ring()).Homsets()]
+            return [Modules(self.base_category().base_ring()).HomCategory()]
 
         class ParentMethods:
             def __init__(

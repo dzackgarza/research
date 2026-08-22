@@ -301,36 +301,62 @@ class Category_ideal(
         SageCategoryIdeal.__init__(self, ring, name)
 
 
-class HomsetsCategory(
+class HomCategoryConstruction(
     OwnedCategoryMixin, OwnedCategoryObject, SageHomsetsCategory, Parent
 ):
-    r"""Owned base over Sage's homsets construction category."""
+    r"""Sage-homset backend for a category's ``HomCategory``.
+
+    This class is a specialization, not the definition of a hom category.
+    Categories whose hom objects are not sets use another implementation.
+    """
 
     def __init__(self, category: SageCategory) -> None:
         self._init_cat_object()
         SageHomsetsCategory.__init__(self, category)
 
     def extra_super_categories(self) -> list:
-        r"""A homset of owned objects is an owned homset.
+        r"""A set-valued hom object inherits the owned set Hom implementation.
 
         Sage's ``HomsetsOf`` answers a flat ``[Homsets()]``: it does not carry
         a category's own super categories across the construction, so
-        ``Modules(R).Homsets()`` would not be a subcategory of
-        ``Sets().Homsets()``.  The owned homset chain has a root, and a chain
+        ``Modules(R).HomCategory()`` would not inherit
+        ``Sets().HomCategory()``.  The owned set-valued Hom chain has a root, and a chain
         that does not reach its root cannot construct -- cooperative
         ``super().__init__`` runs off the end into ``object``.  This states
-        the missing edge once, for every owned category's nested ``Homsets``.
+        the missing edge once for every category using this backend.
         """
         from dzack_research.preamble.categories.sets.owned_sets import Sets
+        from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+            HomCategoryOf,
+        )
 
         owned_sets = Sets()
+        categorical_hom = HomCategoryOf(self.base_category())
         if self.base_category() is owned_sets:
-            # The root has no edge to itself.
-            return []
-        return [owned_sets.Homsets()]
+            return [categorical_hom]
+        return [categorical_hom, owned_sets.HomCategory()]
+
+    def Of(self, source: Parent, target: Parent) -> Parent:
+        r"""Return the set-valued hom object supplied by Sage's Hom backend."""
+        return self._object(source, target, self)
+
+    def _object(
+        self,
+        source: Parent,
+        target: Parent,
+        placement: SageCategory,
+    ) -> Parent:
+        r"""Construct one locally small hom object through its owned type."""
+        return placement.ObjectType(
+            domain=source,
+            codomain=target,
+            category=self.base_category(),
+        )
 
 
-class HomsetsOf(OwnedCategoryMixin, OwnedCategoryObject, SageHomsetsOf, Parent):
+class _SageHomCategoryOf(
+    OwnedCategoryMixin, OwnedCategoryObject, SageHomsetsOf, Parent
+):
     r"""Owned base over Sage's category-specific homsets base."""
 
     def __init__(self, category: SageCategory) -> None:
@@ -338,7 +364,7 @@ class HomsetsOf(OwnedCategoryMixin, OwnedCategoryObject, SageHomsetsOf, Parent):
         SageHomsetsOf.__init__(self, category)
 
 
-class Homsets(
+class _SageHomCategoryRoot(
     _SingletonClasscallMixin,
     OwnedCategoryMixin,
     OwnedCategoryObject,

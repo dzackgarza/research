@@ -22,8 +22,10 @@ from dzack_research.preamble.owned_category import OwnedCategoryMixin, object_of
 from dzack_research.preamble.owned_category_bases import (
     Category,
     Category_over_base_ring,
-    CategoryWithAxiom,
-    HomsetsCategory,
+    HomCategoryConstruction,
+)
+from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    AutCategoryConstruction,
 )
 from dzack_research.preamble.categories.group.groups import OwnedFiniteGroups, OwnedGroups
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
@@ -686,7 +688,7 @@ class TorsionModulesWithForm(OwnedCategoryOverBaseRing):
             r"""Return the LaTeX codomain for this form's Gram matrix entries."""
             return "\\mathbb{Q}/\\mathbb{Z}"
 
-    class Homsets(HomsetsCategory):
+    class _HomCategory(HomCategoryConstruction):
         r"""The form-preserving maps between two finite torsion forms."""
 
         def extra_super_categories(self) -> list:
@@ -698,225 +700,225 @@ class TorsionModulesWithForm(OwnedCategoryOverBaseRing):
             way to make its own element out of a generator assignment -- which
             is how every form morphism is made.
             """
-            return [FormModules(self.base_category().base_ring()).Homsets()]
+            return [FormModules(self.base_category().base_ring()).HomCategory()]
 
-        class Endset(CategoryWithAxiom):
-            r"""$O(A)$: the automorphisms of a finite torsion form, in its category.
+    class _AutCategory(AutCategoryConstruction):
+        r"""$O(A)$: the automorphisms of a finite torsion form, in its category.
 
-            FOUNDATIONS Def 26.2: the orthogonal group of a discriminant form *is*
-            $\operatorname{Aut}$ in its category -- a homset whose elements are the
-            category's own form-preserving morphisms, with matrices derived views
-            only (Remark 26.5: the matrix-subgroup description is invalid outside the
-            homocyclic case, so no matrix group is built).  The engine supplies
-            generator and cardinality data.  Each generator crosses back as a
-            morphism of this homset.
-            """
+        FOUNDATIONS Def 26.2: the orthogonal group of a discriminant form *is*
+        $\operatorname{Aut}$ in its category -- a homset whose elements are the
+        category's own form-preserving morphisms, with matrices derived views
+        only (Remark 26.5: the matrix-subgroup description is invalid outside the
+        homocyclic case, so no matrix group is built).  The engine supplies
+        generator and cardinality data.  Each generator crosses back as a
+        morphism of this homset.
+        """
 
-            def extra_super_categories(self) -> list:
-                return []
+        def extra_super_categories(self) -> list:
+            return []
 
-            class ParentMethods:
-                def __init__(
-                    self,
-                    **rest: "ConstructionData",
-                ) -> None:
-                    super().__init__(**rest)
-                    # Aut in formed modules is a group, and a finite form has
-                    # a finite one.  Sage has an Endset axiom but no Autset
-                    # one, so the group placement is stated here.
-                    # Local: a module-level import here would close a cycle.
-                    from dzack_research.preamble.refine import refine
-                    from dzack_research.preamble.categories.forms.forms import QuadraticFormMorphism
-                    from sage.categories.groups import Groups as SageGroups
+        class ParentMethods:
+            def __init__(
+                self,
+                **rest: "ConstructionData",
+            ) -> None:
+                super().__init__(**rest)
+                # Aut in formed modules is a group, and a finite form has
+                # a finite one.  Sage has an Endset axiom but no Autset
+                # one, so the group placement is stated here.
+                # Local: a module-level import here would close a cycle.
+                from dzack_research.preamble.refine import refine
+                from dzack_research.preamble.categories.forms.forms import QuadraticFormMorphism
+                from sage.categories.groups import Groups as SageGroups
 
-                    quadratic = isinstance(
-                        self.domain().form(), QuadraticFormMorphism
+                quadratic = isinstance(
+                    self.domain().form(), QuadraticFormMorphism
+                )
+                self._engine_module = _engine_torsion_module(
+                    self.domain(), quadratic
+                )
+                self._engine_group = self._engine_module.orthogonal_group()
+                self._cardinality = cardinal(self._engine_group.order())
+                from dzack_research.preamble.categories.sets.sets import finite_ordered_set
+                self._group_generators = finite_ordered_set(
+                    tuple(
+                        self._from_engine(generator)
+                        for generator in self._engine_group.gens()
                     )
-                    self._engine_module = _engine_torsion_module(
-                        self.domain(), quadratic
+                )
+                refine(self, [OwnedFiniteGroups(), SageGroups().Finite()])
+
+            def one(self) -> "Morphism":
+                return self(
+                    {
+                        label: self.domain().module_generator(label)
+                        for label in self.domain().module_generating_set()
+                    }
+                )
+
+            def _from_engine(self, engine_automorphism: "Element") -> "Morphism":
+                r"""Return the engine's automorphism as a morphism of this homset.
+
+                The engine's cover basis corresponds to this object's generators
+                (see :func:`_engine_torsion_module`), so the image of each generator
+                is read off the engine's own right action and re-expressed as a
+                combination of the owned generators.
+                """
+                # Local: a module-level import here would close a cycle; by call time this module is built.
+                from dzack_research.preamble.utilities import zipsum
+                form = self.domain()
+                cover = self._engine_module.V()
+                generators = tuple(form.module_generators())
+                images = {}
+                for label, basis_vector in zip(
+                    form.module_generating_set(), cover.basis()
+                ):
+                    image = self._engine_module(basis_vector) * engine_automorphism
+                    coordinates = cover.coordinates(image.lift())
+                    images[label] = zipsum(
+                        tuple(SageZZ(coordinate) for coordinate in coordinates),
+                        generators,
+                        form.zero(),
                     )
-                    self._engine_group = self._engine_module.orthogonal_group()
-                    self._cardinality = cardinal(self._engine_group.order())
-                    from dzack_research.preamble.categories.sets.sets import finite_ordered_set
-                    self._group_generators = finite_ordered_set(
-                        tuple(
-                            self._from_engine(generator)
-                            for generator in self._engine_group.gens()
-                        )
+                return self(images)
+
+            def _to_engine(self, morphism: "Morphism") -> "Element":
+                r"""Return the engine element of an owned automorphism of $A$.
+
+                The inverse crossing of :meth:`_from_engine`, and the only one: the
+                engine constructs its elements from the matrix on the *smith*
+                generators, so each smith generator is lifted to the cover, crossed
+                to an owned element through the generator correspondence
+                (:func:`_engine_torsion_module`), moved by the morphism, and crossed
+                back -- the rows of that matrix.
+                """
+                # Local: a module-level import here would close a cycle; by call time this module is built.
+                from dzack_research.preamble.utilities import zipsum
+                form = self.domain()
+                assert morphism.domain() is form and morphism.codomain() is form, (
+                    "the engine crossing is for automorphisms of this form"
+                )
+                cover = self._engine_module.V()
+                cover_basis = tuple(cover.basis())
+                owned_generators = tuple(form.module_generators())
+                generating_set = form.module_generating_set()
+                rows = []
+                for smith_generator in self._engine_module.smith_form_gens():
+                    coordinates = cover.coordinates(smith_generator.lift())
+                    owned = zipsum(
+                        tuple(SageZZ(coordinate) for coordinate in coordinates),
+                        owned_generators,
+                        form.zero(),
                     )
-                    refine(self, [OwnedFiniteGroups(), SageGroups().Finite()])
-
-                def one(self) -> "Morphism":
-                    return self(
-                        {
-                            label: self.domain().module_generator(label)
-                            for label in self.domain().module_generating_set()
-                        }
+                    image = morphism(owned)
+                    image_coordinates = _coordinates_in_module_generators(
+                        image, generating_set
                     )
-
-                def _from_engine(self, engine_automorphism: "Element") -> "Morphism":
-                    r"""Return the engine's automorphism as a morphism of this homset.
-
-                    The engine's cover basis corresponds to this object's generators
-                    (see :func:`_engine_torsion_module`), so the image of each generator
-                    is read off the engine's own right action and re-expressed as a
-                    combination of the owned generators.
-                    """
-                    # Local: a module-level import here would close a cycle; by call time this module is built.
-                    from dzack_research.preamble.utilities import zipsum
-                    form = self.domain()
-                    cover = self._engine_module.V()
-                    generators = tuple(form.module_generators())
-                    images = {}
-                    for label, basis_vector in zip(
-                        form.module_generating_set(), cover.basis()
-                    ):
-                        image = self._engine_module(basis_vector) * engine_automorphism
-                        coordinates = cover.coordinates(image.lift())
-                        images[label] = zipsum(
-                            tuple(SageZZ(coordinate) for coordinate in coordinates),
-                            generators,
-                            form.zero(),
-                        )
-                    return self(images)
-
-                def _to_engine(self, morphism: "Morphism") -> "Element":
-                    r"""Return the engine element of an owned automorphism of $A$.
-
-                    The inverse crossing of :meth:`_from_engine`, and the only one: the
-                    engine constructs its elements from the matrix on the *smith*
-                    generators, so each smith generator is lifted to the cover, crossed
-                    to an owned element through the generator correspondence
-                    (:func:`_engine_torsion_module`), moved by the morphism, and crossed
-                    back -- the rows of that matrix.
-                    """
-                    # Local: a module-level import here would close a cycle; by call time this module is built.
-                    from dzack_research.preamble.utilities import zipsum
-                    form = self.domain()
-                    assert morphism.domain() is form and morphism.codomain() is form, (
-                        "the engine crossing is for automorphisms of this form"
-                    )
-                    cover = self._engine_module.V()
-                    cover_basis = tuple(cover.basis())
-                    owned_generators = tuple(form.module_generators())
-                    generating_set = form.module_generating_set()
-                    rows = []
-                    for smith_generator in self._engine_module.smith_form_gens():
-                        coordinates = cover.coordinates(smith_generator.lift())
-                        owned = zipsum(
-                            tuple(SageZZ(coordinate) for coordinate in coordinates),
-                            owned_generators,
-                            form.zero(),
-                        )
-                        image = morphism(owned)
-                        image_coordinates = _coordinates_in_module_generators(
-                            image, generating_set
-                        )
-                        engine_image = self._engine_module(
-                            zipsum(
-                                tuple(SageZZ(coordinate) for coordinate in image_coordinates),
-                                cover_basis,
-                                cover.zero(),
-                            )
-                        )
-                        rows.append([SageZZ(entry) for entry in engine_image.vector()])
-                    return self._engine_group(matrix(SageZZ, rows))
-
-                def _engine_group_element_of(self, element: "Element") -> "Element":
-                    r"""Return the GAP group element of a class of $A$.
-
-                    The engine's automorphism group acts on a GAP abelian group whose
-                    generators are the smith generators of $A$ in order, so a class is
-                    named there by its smith coordinates -- which is the presentation
-                    crossing GAP's orbit-stabilizer machinery needs, made once.
-                    """
-                    # Local: a module-level import here would close a cycle; by call time this module is built.
-                    from dzack_research.preamble.utilities import zipsum
-                    form = self.domain()
-                    cover = self._engine_module.V()
-                    engine_element = self._engine_module(
+                    engine_image = self._engine_module(
                         zipsum(
-                            tuple(
-                                SageZZ(coordinate)
-                                for coordinate in _coordinates_in_module_generators(
-                                    form(element), form.module_generating_set()
-                                )
-                            ),
-                            tuple(cover.basis()),
+                            tuple(SageZZ(coordinate) for coordinate in image_coordinates),
+                            cover_basis,
                             cover.zero(),
                         )
                     )
-                    abelian_group = self._engine_group.domain()
-                    gap_element = abelian_group.one()
-                    for coordinate, generator in zip(
-                        engine_element.vector(), abelian_group.gens(), strict=True
-                    ):
-                        gap_element = gap_element * generator ** SageZZ(coordinate)
-                    return gap_element
+                    rows.append([SageZZ(entry) for entry in engine_image.vector()])
+                return self._engine_group(matrix(SageZZ, rows))
 
-                def stabilizer_of_element(
-                    self, element: "Element"
-                ) -> "Parent":
-                    r"""Return $\operatorname{Stab}_{O(A)}(x)=\{g\in O(A): g(x)=x\}$.
+            def _engine_group_element_of(self, element: "Element") -> "Element":
+                r"""Return the GAP group element of a class of $A$.
 
-                    The point stabilizer of one discriminant class -- the datum the
-                    degree-two Enriques group is defined by, which is then
-                    $\rho_L^{-1}(\operatorname{Stab}_{O(A_L)}(h/2))\cap O^+(L)$ as a
-                    composition of already-owned constructions
-                    (``Aut().discriminant_preimage`` and ``intersection``).
-
-                    $O(A)$ is finite but large -- for $A_{S_{En}}$ it has order
-                    $46\,998\,591\,897\,600$ -- so the stabilizer is *not* found by
-                    filtering an enumeration of the group.  It is GAP's orbit-stabilizer
-                    on the action of the engine's automorphism group on the finite group
-                    $A$, whose orbits are bounded by $|A|$; the returned generators cross
-                    back as morphisms of this homset, and the fixing is asserted on them
-                    rather than trusted.
-                    """
-                    from sage.libs.gap.libgap import libgap
-
-                    target = self.domain()(element)
-                    gap_stabilizer = libgap.Stabilizer(
-                        self._engine_group.gap(),
-                        self._engine_group_element_of(target).gap(),
-                        libgap.OnPoints,
-                    )
-                    stabilizer = self.subgroup_on(
+                The engine's automorphism group acts on a GAP abelian group whose
+                generators are the smith generators of $A$ in order, so a class is
+                named there by its smith coordinates -- which is the presentation
+                crossing GAP's orbit-stabilizer machinery needs, made once.
+                """
+                # Local: a module-level import here would close a cycle; by call time this module is built.
+                from dzack_research.preamble.utilities import zipsum
+                form = self.domain()
+                cover = self._engine_module.V()
+                engine_element = self._engine_module(
+                    zipsum(
                         tuple(
-                            self._from_engine(generator)
-                            for generator in self._engine_group._subgroup_constructor(
-                                gap_stabilizer
-                            ).gens()
-                        )
+                            SageZZ(coordinate)
+                            for coordinate in _coordinates_in_module_generators(
+                                form(element), form.module_generating_set()
+                            )
+                        ),
+                        tuple(cover.basis()),
+                        cover.zero(),
                     )
-                    assert all(
-                        generator(target) == target
-                        for generator in stabilizer.group_generators()
-                    ), "an engine stabilizer generator moves the class it must fix"
-                    return stabilizer
+                )
+                abelian_group = self._engine_group.domain()
+                gap_element = abelian_group.one()
+                for coordinate, generator in zip(
+                    engine_element.vector(), abelian_group.gens(), strict=True
+                ):
+                    gap_element = gap_element * generator ** SageZZ(coordinate)
+                return gap_element
 
-                def subgroup_on(
-                    self, group_generators: "Set"
-                ) -> "Parent":
-                    r"""Return the subgroup of $O(A)$ generated by a set of its elements.
+            def stabilizer_of_element(
+                self, element: "Element"
+            ) -> "Parent":
+                r"""Return $\operatorname{Stab}_{O(A)}(x)=\{g\in O(A): g(x)=x\}$.
 
-                    The receiving home for generator data -- the image of a
-                    discriminant representation, a named family of automorphisms.
-                    $O(A)$ is finite, so the generated subgroup is its closure under
-                    composition, computed once.
-                    """
-                    supplied = tuple(group_generators)
-                    assert all(
-                        generator.parent() is self for generator in supplied
-                    ), "each subgroup generator must belong to this orthogonal group"
-                    return object_of(
-                        TorsionFormOrthogonalSubgroups(),
-                        supergroup=self,
-                        group_generators=supplied,
+                The point stabilizer of one discriminant class -- the datum the
+                degree-two Enriques group is defined by, which is then
+                $\rho_L^{-1}(\operatorname{Stab}_{O(A_L)}(h/2))\cap O^+(L)$ as a
+                composition of already-owned constructions
+                (``Aut().discriminant_preimage`` and ``intersection``).
+
+                $O(A)$ is finite but large -- for $A_{S_{En}}$ it has order
+                $46\,998\,591\,897\,600$ -- so the stabilizer is *not* found by
+                filtering an enumeration of the group.  It is GAP's orbit-stabilizer
+                on the action of the engine's automorphism group on the finite group
+                $A$, whose orbits are bounded by $|A|$; the returned generators cross
+                back as morphisms of this homset, and the fixing is asserted on them
+                rather than trusted.
+                """
+                from sage.libs.gap.libgap import libgap
+
+                target = self.domain()(element)
+                gap_stabilizer = libgap.Stabilizer(
+                    self._engine_group.gap(),
+                    self._engine_group_element_of(target).gap(),
+                    libgap.OnPoints,
+                )
+                stabilizer = self.subgroup_on(
+                    tuple(
+                        self._from_engine(generator)
+                        for generator in self._engine_group._subgroup_constructor(
+                            gap_stabilizer
+                        ).gens()
                     )
+                )
+                assert all(
+                    generator(target) == target
+                    for generator in stabilizer.group_generators()
+                ), "an engine stabilizer generator moves the class it must fix"
+                return stabilizer
 
-                def _repr_(self) -> str:
-                    return f"Orthogonal group of {self.domain()}"
+            def subgroup_on(
+                self, group_generators: "Set"
+            ) -> "Parent":
+                r"""Return the subgroup of $O(A)$ generated by a set of its elements.
+
+                The receiving home for generator data -- the image of a
+                discriminant representation, a named family of automorphisms.
+                $O(A)$ is finite, so the generated subgroup is its closure under
+                composition, computed once.
+                """
+                supplied = tuple(group_generators)
+                assert all(
+                    generator.parent() is self for generator in supplied
+                ), "each subgroup generator must belong to this orthogonal group"
+                return object_of(
+                    TorsionFormOrthogonalSubgroups(),
+                    supergroup=self,
+                    group_generators=supplied,
+                )
+
+            def _repr_(self) -> str:
+                return f"Orthogonal group of {self.domain()}"
 
 
 class CokernelForms(Category):
@@ -984,7 +986,7 @@ class CokernelForms(Category):
             r"""Return a lift of this class in the cover: a section of $\pi$.
 
             A class is a coset, and the cover is where its representatives
-            live, so the answer is an element of :meth:`~CokernelForms.ParentMethods.cover`
+            live, so the answer is an element of :meth:`~CokernelForms.ObjectType.cover`
             projecting back to this one -- asked of the projection morphism,
             whose ``lift`` is the section.
             """

@@ -10,7 +10,7 @@ category and are never re-declared here.
 The abstract ``SubobjectCategory`` (``slice_categories.sage``) supplies
 ``embedding()`` for a subobject in any \(\mathbf{C}\).  What this file adds
 needs cosets, hence an abelian ambient category -- see
-:meth:`Subobjects.ParentMethods.index`.
+:meth:`Subobjects.ObjectType.index`.
 """
 
 from dzack_research.preamble.categories.rings.rings import ℤ

@@ -534,7 +534,7 @@ def gluing_route_discriminant_classes(
     isometry of $L$ can match them), and $\rho_L:O(L)\to O(A_L)$ is
     surjective -- which is what makes a class yielded here the class of an
     actual isometry of $L$, asked of the lattice by
-    :meth:`IntegralLattices.ParentMethods.discriminant_representation_is_surjective`.
+    :meth:`IntegralLattices.ObjectType.discriminant_representation_is_surjective`.
     """
     from sage.misc.unknown import Unknown
 

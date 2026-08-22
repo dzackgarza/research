@@ -32,7 +32,7 @@ from itertools import combinations
 from typing import TYPE_CHECKING, cast
 
 from dzack_research.preamble.owned_category import object_of
-from dzack_research.preamble.owned_category_bases import Category, HomsetsCategory
+from dzack_research.preamble.owned_category_bases import Category, HomCategoryConstruction
 from sage.categories.morphism import Morphism
 from sage.combinat.posets.posets import Poset
 from sage.misc.cachefunc import cached_method
@@ -80,7 +80,7 @@ class CoxeterDiagrams(Category):
     r"""Finite Coxeter diagrams and Coxeter-matrix-preserving maps.
 
     Rooted diagrams use the drawing convention documented on
-    :class:`CoxeterDiagrams.ParentMethods`: square ``-4`` roots are white nodes, square
+    :class:`CoxeterDiagrams.ObjectType`: square ``-4`` roots are white nodes, square
     ``-2`` roots are black nodes, root squares are stored as self-loops in the
     root-intersection graph, and the TikZ renderer omits those self-loops.
     """
@@ -246,7 +246,7 @@ class CoxeterDiagrams(Category):
         )
 
 
-    class Homsets(HomsetsCategory):
+    class _HomCategory(HomCategoryConstruction):
         r"""The Coxeter-matrix-preserving maps between two diagrams.
 
         A morphism of diagrams is an element of one of these homsets.  The
@@ -272,12 +272,12 @@ class CoxeterDiagrams(Category):
                 self,
                 images: Mapping[Hashable, Hashable] | Sequence[Hashable],
             ) -> "Morphism":
-                return self.element_class(self, images)
+                return self.ElementType(self, images)
 
             def __contains__(self, morphism: "MembershipInput") -> bool:
                 # ``in`` is asked of an arbitrary value.
                 return (
-                    isinstance(morphism, self.element_class)
+                    isinstance(morphism, self.ElementType)
                     and morphism.parent() is self
                 )
 
@@ -460,7 +460,7 @@ class CoxeterDiagrams(Category):
             )
 
         def __contains__(self, vertex: "MembershipInput") -> bool:
-            if isinstance(vertex, self.element_class):
+            if isinstance(vertex, self.ElementType):
                 return vertex.parent() is self
             return vertex in self._index_set
 
@@ -468,11 +468,11 @@ class CoxeterDiagrams(Category):
             self,
             vertex: "ElementConstructorInput",
         ) -> Element:
-            if isinstance(vertex, self.element_class):
+            if isinstance(vertex, self.ElementType):
                 assert vertex.parent() is self, f"a vertex belongs to a different Coxeter diagram; vertex={vertex!r}"
                 return vertex
             assert vertex in self._index_set, f"a vertex must lie in the index set; vertex={vertex!r}, index_set={self._index_set!r}"
-            return self.element_class(self, vertex)
+            return self.ElementType(self, vertex)
 
         def __iter__(self) -> Iterator[Element]:
             return (self(vertex) for vertex in self._index_set)

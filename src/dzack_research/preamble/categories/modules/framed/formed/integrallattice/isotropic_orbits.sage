@@ -430,7 +430,7 @@ class OrthogonalPredicateSubgroups(Category_singleton):
     real-spinor-norm kernel, preimages of subgroups of $O(A_L)$ -- because
     that data is exactly what makes orbit questions decidable by double
     cosets in a finite quotient.  Standing hypothesis, guaranteed by the
-    named constructors on ``LatticeIsometries.ParentMethods`` and preserved
+    named constructors on ``LatticeIsometries.ObjectType`` and preserved
     by :meth:`intersection`: the subgroup *is* the full preimage of its
     character data, so it contains $\ker\varphi$ and the quotient decides
     faithfully.  A subgroup carrying no character data still answers
@@ -445,7 +445,7 @@ class OrthogonalPredicateSubgroups(Category_singleton):
         from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModules
 
         return [
-            PredicateSubgroups(FormModules(SageZZ).Homsets().Endset())
+            PredicateSubgroups(FormModules(SageZZ).EndCategory())
         ]
 
     class ParentMethods:
@@ -489,7 +489,7 @@ class OrthogonalPredicateSubgroups(Category_singleton):
             $\rho^{-1}(\operatorname{Stab}(h/2))\cap O^+(L)$.
             """
             assert (
-                other in OrthogonalPredicateSubgroups().Endsets()
+                other in OrthogonalPredicateSubgroups().EndCategory()
                 and other.supergroup() is self.supergroup()
             ), "an intersection of subgroups happens inside one group"
             left_predicate = self.defining_predicate()
@@ -656,7 +656,7 @@ class OrthogonalPredicateSubgroups(Category_singleton):
             The $O(L)$-orbits of vectors $v$ with $q(v)$ equal to
             ``square`` are finitely many for an indefinite lattice and the engine
             enumerates them
-            (:meth:`LatticeIsometries.ParentMethods.vector_orbit_representatives`);
+            (:meth:`LatticeIsometries.ObjectType.vector_orbit_representatives`);
             each splits into the double cosets of $\Gamma$ against the vector's
             pointwise stabilizer.
             """

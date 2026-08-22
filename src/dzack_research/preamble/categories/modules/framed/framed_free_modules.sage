@@ -66,7 +66,7 @@ if TYPE_CHECKING:
         def module_generating_set(self) -> "OrderedSet": ...
         def module_generator_morphism(self) -> SetMorphism: ...
         def Hom(self, codomain: "Module", category: "Category | None" = ...) -> Parent: ...
-        def _module_generator_element(self, element_of_S: SageElement) -> "FramedFreeModules.ElementMethods": ...
+        def _module_generator_element(self, element_of_S: SageElement) -> "FramedFreeModules.ElementType": ...
 from sage.structure.richcmp import richcmp
 
 from dzack_research.preamble.categories.sets.owned_sets import (
@@ -115,7 +115,7 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
 
             # Negation is parent-preserving on a module element; ``Element.__neg__``
             # is deliberately wider, for the extended reals where it is not.
-            def __neg__(self) -> "FramedFreeModules.ElementMethods": ...
+            def __neg__(self) -> "FramedFreeModules.ElementType": ...
 
         def __init__(
             self,
@@ -138,10 +138,10 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
         def coefficients(self) -> Mapping["Element", "RingElement"]:
             return dict(self._coefficients)
 
-        def _add_(self, other: "FramedFreeModules.ElementMethods") -> "FramedFreeModules.ElementMethods":
+        def _add_(self, other: "FramedFreeModules.ElementType") -> "FramedFreeModules.ElementType":
             zero = self.parent().base_ring().zero()
             support = self._coefficients.keys() | other._coefficients.keys()
-            total: "FramedFreeModules.ElementMethods" = self.parent().element_class(
+            total: "FramedFreeModules.ElementType" = self.parent().ElementType(
                 self.parent(),
                 {
                     element_of_S: (
@@ -153,11 +153,11 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
             )
             return total
 
-        def _sub_(self, other: "FramedFreeModules.ElementMethods") -> "FramedFreeModules.ElementMethods":
+        def _sub_(self, other: "FramedFreeModules.ElementType") -> "FramedFreeModules.ElementType":
             return self._add_(-other)
 
-        def _neg_(self) -> "FramedFreeModules.ElementMethods":
-            negated: "FramedFreeModules.ElementMethods" = self.parent().element_class(
+        def _neg_(self) -> "FramedFreeModules.ElementType":
+            negated: "FramedFreeModules.ElementType" = self.parent().ElementType(
                 self.parent(),
                 {
                     element_of_S: -coefficient
@@ -166,9 +166,9 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
             )
             return negated
 
-        def _lmul_(self, factor: "RingElement") -> "FramedFreeModules.ElementMethods":
+        def _lmul_(self, factor: "RingElement") -> "FramedFreeModules.ElementType":
             factor = self.parent().base_ring()(factor)
-            scaled: "FramedFreeModules.ElementMethods" = self.parent().element_class(
+            scaled: "FramedFreeModules.ElementType" = self.parent().ElementType(
                 self.parent(),
                 {
                     element_of_S: factor * coefficient
@@ -179,7 +179,7 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
 
         _rmul_ = _lmul_
 
-        def _richcmp_(self, other: "FramedFreeModules.ElementMethods", op: int) -> bool:
+        def _richcmp_(self, other: "FramedFreeModules.ElementType", op: int) -> bool:
             return richcmp(self._coefficients, other._coefficients, op)
 
         def __hash__(self) -> int:
@@ -274,35 +274,29 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
 
         def _module_generator_element(
             self: "FreeModuleParent", element_of_S: SageElement
-        ) -> FramedFreeModules.ElementMethods:
+        ) -> FramedFreeModules.ElementType:
             assert element_of_S in self._module_generating_set, (
                 f"{element_of_S!r} is not in {self._module_generating_set}"
             )
-            generator: FramedFreeModules.ElementMethods = self.element_class(
+            generator: FramedFreeModules.ElementType = self.ElementType(
                 self, {element_of_S: self.base_ring().one()}
             )
             return generator
 
-        def zero(self: "FreeModuleParent") -> FramedFreeModules.ElementMethods:
-            zero_element: FramedFreeModules.ElementMethods = self.element_class(self, {})
+        def zero(self: "FreeModuleParent") -> FramedFreeModules.ElementType:
+            zero_element: FramedFreeModules.ElementType = self.ElementType(self, {})
             return zero_element
 
         def _element_constructor_(
-            self: "FreeModuleParent", value: FramedFreeModules.ElementMethods
-        ) -> FramedFreeModules.ElementMethods:
-            assert (
-                isinstance(value, FramedFreeModules.ElementMethods)
-                and value.parent() is self
-            ), f"{value} is not an element of {self}"
+            self: "FreeModuleParent", value: FramedFreeModules.ElementType
+        ) -> FramedFreeModules.ElementType:
+            assert value in self, f"{value} is not an element of {self}"
             return value
 
         def __contains__(
             self: "FreeModuleParent", value: "MembershipInput"
         ) -> bool:
-            return (
-                isinstance(value, FramedFreeModules.ElementMethods)
-                and value.parent() is self
-            )
+            return value.parent() is self
 
         def _repr_(self: "FreeModuleParent") -> str:
             return (

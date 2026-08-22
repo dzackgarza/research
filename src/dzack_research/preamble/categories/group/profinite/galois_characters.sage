@@ -52,7 +52,7 @@ class ProfiniteCharacterHomsets(Category):
             AbsoluteGaloisGroups,
         )
 
-        return [AbsoluteGaloisGroups().Homsets()]
+        return [AbsoluteGaloisGroups().HomCategory()]
 
     class ParentMethods(OwnedParent, SageHomset):
         def __init__(
@@ -107,7 +107,7 @@ def profinite_character_homset(
     )
 
 
-class CyclotomicCharacter(ProfiniteCharacterHomsets().element_class):
+class CyclotomicCharacter(ProfiniteCharacterHomsets().ElementType):
     r"""The cyclotomic character \(\chi_n:G_K\to(\mathbb Z/n\mathbb Z)^\times\)."""
 
     def __init__(
@@ -119,7 +119,7 @@ class CyclotomicCharacter(ProfiniteCharacterHomsets().element_class):
         )
 
 
-class QuadraticCharacter(ProfiniteCharacterHomsets().element_class):
+class QuadraticCharacter(ProfiniteCharacterHomsets().ElementType):
     r"""The quadratic character \(G_K\to\{\pm1\}\) attached to \(K(\sqrt a)/K\)."""
 
     def __init__(self, restriction_map: "GaloisRestrictionMap") -> None:

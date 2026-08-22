@@ -69,7 +69,7 @@ class DiscriminantQuadraticModules(Category_over_base_ring):
 
     Its objects carry $q:A\to\mathbb Q/2\mathbb Z$; the polarization
     $b_q:A\times A\to\mathbb Q/\mathbb Z$ is reachable through
-    :meth:`~DiscriminantQuadraticModules.ParentMethods.associated_bilinear_form`,
+    :meth:`~DiscriminantQuadraticModules.ObjectType.associated_bilinear_form`,
     which lands in the sibling category.
     """
 

@@ -85,7 +85,7 @@ class ArrowCategory(_OnACategory, Category):
 
     def __contains__(self, candidate: "MembershipInput") -> bool:
         return (
-            isinstance(candidate, Morphism)
+            candidate.parent() in self._ambient_category.HomCategory()
             and candidate.domain() in self._ambient_category
             and candidate.codomain() in self._ambient_category
         )
@@ -209,7 +209,7 @@ def ArrowHomset(source: Morphism, target: Morphism) -> Parent:
         target.domain(),
         target.codomain(),
     )
-    arrow_category = common_category(endpoints).Ar()
+    arrow_category = common_category(endpoints).ArrowCategory()
     assert source.domain() in arrow_category.ambient_category()
     assert source.codomain() in arrow_category.ambient_category()
     assert target.domain() in arrow_category.ambient_category()
@@ -267,16 +267,8 @@ class EndArrowCategory(_OnACategory, Category):
         )
 
     def __call__(self, arrow: Morphism) -> Morphism:
-        from dzack_research.preamble.refine import refine
-
-        assert arrow in EndArrowCategory(self._ambient_category)
-        assert isinstance(arrow._inverse_morphism, Morphism)
-        placed: Morphism = refine(arrow, self)
-        return placed
-
-    class MorphismMethods:
-        def is_endomorphism(self) -> bool:
-            return True
+        assert arrow in self
+        return arrow
 
 
 class AutomorphismArrowCategory(_OnACategory, Category):
@@ -293,20 +285,13 @@ class AutomorphismArrowCategory(_OnACategory, Category):
 
     def __contains__(self, candidate: "MembershipInput") -> bool:
         return (
-            candidate in EndArrowCategory(self._ambient_category)
-            and candidate in IsoArrowCategory(self._ambient_category)
+            candidate in ArrowCategory(self._ambient_category)
+            and candidate.parent() in self._ambient_category.AutCategory()
         )
 
     def __call__(self, arrow: Morphism) -> Morphism:
-        from dzack_research.preamble.refine import refine
-
         assert arrow in self
-        placed: Morphism = refine(arrow, self)
-        return placed
-
-    class MorphismMethods:
-        def is_automorphism(self) -> bool:
-            return True
+        return arrow
 
 
 class Core(_OnACategory, Category):
@@ -445,7 +430,7 @@ def IsoAr(source: Parent, target: Parent) -> Parent:
     r"""Return \(\operatorname{IsoAr}(X,Y)\), the isomorphisms \(X\to Y\).
 
     The construction is the category: what an isomorphism set *is* is declared
-    once on ``IsomorphismSets.ParentMethods``, and the object is that
+    once on ``IsomorphismSets.ObjectType``, and the object is that
     category's parent class carrying the two ends.
     """
     return object_of(IsomorphismSets(), source=source, target=target)
@@ -480,9 +465,9 @@ def Isomorphism(forward: Morphism, backward: Morphism) -> Morphism:
     backward._inverse_morphism = forward
     category = common_category((forward.domain(), forward.codomain()))
     iso_arrows = (
-        category.AutAr()
+        category.AutArrowCategory()
         if forward.domain() is forward.codomain()
-        else category.IsoAr()
+        else category.IsomorphismArrowCategory()
     )
     iso_arrows(backward)
     isomorphism: Morphism = iso_arrows(forward)

@@ -737,7 +737,7 @@ class FixedCardinalitySubsets(CategoryWithParameters):
             self,
             members: Iterable[Element],
         ) -> FiniteSubsetElement:
-            subset = self.element_class(self, frozenset(members))
+            subset = self.ElementType(self, frozenset(members))
             assert len(subset) == self._subset_cardinality, (
                 f"a member has cardinality {self._subset_cardinality}"
             )
@@ -850,7 +850,7 @@ class FinitePowerSets(CategoryWithParameters):
             self,
             members: Iterable[Element],
         ) -> FiniteSubsetElement:
-            subset = self.element_class(self, frozenset(members))
+            subset = self.ElementType(self, frozenset(members))
             assert all(member in self._source for member in subset), (
                 "every member of a subset must lie in its source set"
             )

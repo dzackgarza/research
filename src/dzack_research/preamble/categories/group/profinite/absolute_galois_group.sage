@@ -112,7 +112,7 @@ class RealizedAbsoluteGaloisGroups(Category_singleton):
 
     class ParentMethods:
         if TYPE_CHECKING:
-            # Supplied by ``AbsoluteGaloisGroups().ParentMethods``: the
+            # Supplied by ``AbsoluteGaloisGroups().ObjectType``: the
             # finite coordinates are declared one level up.
             def finite_quotient(self, L: "Ring") -> "GaloisGroup_v2": ...
 

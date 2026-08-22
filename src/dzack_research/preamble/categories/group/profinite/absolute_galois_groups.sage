@@ -17,7 +17,7 @@ choice-independent conjugacy classes are first-class *projections* of
 the concrete objects, available via ``_class`` variants.
 
 The constructor is installed on every field via
-``Fields().ParentMethods.absolute_galois_group()``, so::
+``Fields().ObjectType.absolute_galois_group()``, so::
 
     sage: G = QQ.absolute_galois_group()
     sage: G.base_field()
@@ -290,9 +290,9 @@ class AbsoluteGaloisGroups(Category_singleton):
             return family
 
 
-# ``absolute_galois_group`` is declared on ``OwnedFields.ParentMethods``, in
+# ``absolute_galois_group`` is declared on ``OwnedFields.ObjectType``, in
 # the scalar hierarchy.  It stood here as an assignment onto Sage's own
-# ``Fields().ParentMethods``, made while the preamble installed itself -- by
+# ``Fields().ObjectType``, made while the preamble installed itself -- by
 # which time Sage has built and cached every ``parent_class`` that would have
 # inherited it, so no field ever answered.
 

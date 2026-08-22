@@ -29,7 +29,7 @@ from typing import Self
 from sage.misc.cachefunc import cached_method
 from dzack_research.preamble.owned_category_bases import (
     Category,
-    HomsetsCategory,
+    HomCategoryConstruction,
     SubobjectsCategory,
 )
 from sage.categories.commutative_additive_groups import CommutativeAdditiveGroups
@@ -126,7 +126,7 @@ if TYPE_CHECKING:
 
     class GroupParent(Protocol):
         r"""What a group parent has from its placement: an identity, supplied
-        by Sage's ``Groups().ParentMethods``."""
+        by Sage's ``Groups().ObjectType``."""
 
         _group_generators: "OrderedSet"
 
@@ -316,7 +316,7 @@ def _finiteness(group: "Group") -> "bool | Unknown":
     The group's own answer wherever it has one, so a category that decides
     finiteness -- ``LatticeIsometries`` puts the question to GAP -- is the one
     that answers.  A group placed in no owned category has not got
-    :meth:`OwnedGroups.ParentMethods.is_finite` yet, which is why the decline
+    :meth:`OwnedGroups.ObjectType.is_finite` yet, which is why the decline
     is caught here too.
     """
     if group in SageFiniteGroups() or group in OwnedFiniteGroups():
@@ -572,7 +572,7 @@ class OwnedGroups(Category):
             found = _gap_model(self).IsomorphismGroups(_gap_model(other))
             return str(found) != "fail"
 
-    class Homsets(HomsetsCategory):
+    class _HomCategory(HomCategoryConstruction):
         r"""Homsets of groups and their homomorphisms."""
 
         class ElementMethods:
@@ -952,7 +952,7 @@ class AbelianGroupEndomorphismRings(Category):
         def _element_constructor_(
             self, mapping: "Callable[[GroupElement], GroupElement]"
         ) -> "Element":
-            endomorphism: "Element" = self.element_class(self, mapping)
+            endomorphism: "Element" = self.ElementType(self, mapping)
             return endomorphism
 
         def one(self) -> "Element":
@@ -1157,7 +1157,7 @@ def _group_categories(group: "Group") -> list[Category]:
     # The probe, not ``ngens`` directly: a group that cannot answer must not
     # take the placement down with it, and Unknown is the honest outcome for
     # one whose generators nobody knows how to produce.
-    if not finite and OwnedGroups.ParentMethods.is_finitely_generated(group) is True:
+    if not finite and OwnedGroups.ObjectType.is_finitely_generated(group) is True:
         categories.append(OwnedFinitelyGeneratedGroups())
     if not finite and isinstance(group, (FinitelyPresentedGroup, FreeGroup_class)):
         categories.append(OwnedFinitelyPresentedGroups())

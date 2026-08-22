@@ -100,8 +100,8 @@ def module_homset(domain: "Module", codomain: "Module") -> Parent:
     r"""Return the canonical module homset after forgetting extra structure.
 
     ``Hom(X, Y, C)`` with ``C`` the category of the *objects*: Sage's
-    ``Homset.__init__`` is what places the result in ``C.Homsets()`` or
-    ``C.Endsets()``, so handing it ``C.Homsets()`` places the homset in the
+    ``Homset.__init__`` is what places the result in ``C.HomCategory()`` or
+    ``C.EndCategory()``, so handing it ``C.HomCategory()`` places the homset in the
     homsets of the homsets and its morphisms reach none of the homset
     methods.
     """
@@ -724,7 +724,7 @@ class ModuleAutomorphismGroups(Category_over_base_ring):
         return "module automorphism groups"
 
     def super_categories(self) -> list:
-        return [OwnedModules(self.base_ring()).Homsets()]
+        return [OwnedModules(self.base_ring()).HomCategory()]
 
     class ParentMethods(AutomorphismSubgroup):
         r"""The automorphism group, or a finite subgroup with the same elements."""
@@ -940,7 +940,7 @@ class GroupActionHomsets(Category):
     def super_categories(self) -> list:
         from dzack_research.preamble.categories.group.groups import OwnedGroups
 
-        return [OwnedGroups().Homsets()]
+        return [OwnedGroups().HomCategory()]
 
     class ParentMethods:
         def module(self) -> "Module":
@@ -953,10 +953,10 @@ class GroupActionHomsets(Category):
         def _element_constructor_(self, images: "OrderedSet | dict") -> "GroupAction":
             match images:
                 case dict():
-                    return self.element_class(self, images)
+                    return self.ElementType(self, images)
                 case _:
                     values = self._values_on_generators(tuple(images))
-                    return self.element_class(self, values)
+                    return self.ElementType(self, values)
 
         def _values_on_generators(
             self,

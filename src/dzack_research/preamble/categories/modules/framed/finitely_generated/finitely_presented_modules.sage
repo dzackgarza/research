@@ -225,7 +225,7 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
                     )
                 ),
             )
-            # The base is not stated here.  ``Modules.ParentMethods`` assigns
+            # The base is not stated here.  ``Modules.ObjectType`` assigns
             # it, from the ring its own category names, and a second statement
             # of it arrives at that level as a duplicate keyword.
             super().__init__(**rest)
@@ -269,7 +269,7 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
             )
 
         def _from_coordinates(self: Self, coordinates: "Vector") -> "Element":
-            member: "Element" = self.element_class(self, coordinates)
+            member: "Element" = self.ElementType(self, coordinates)
             return member
 
         def _element_constructor_(self: Self, x: "ElementConstructorInput") -> "Element":

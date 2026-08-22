@@ -1,4 +1,14 @@
-r"""The category is the class: ``ParentMethods`` as the implementation class.
+r"""Category-owned implementation types.
+
+The public protocol is ``ObjectType`` and ``ElementType``.  A category's
+``ObjectType`` is its complete object implementation, and that type's
+``ElementType`` is the complete implementation of its elements.  The same
+protocol applied to the Hom, End, and Aut categories gives the arrow types.
+
+Sage's ``ParentMethods`` / ``ElementMethods`` / ``MorphismMethods`` names are
+an internal input format for its named-class builder.  The adapter in this
+module consumes that format.  No preamble constructor or mathematical surface
+needs to expose it.
 
 Sage builds a whole method MRO out of ``super_categories()`` and then throws
 away the one thing that would make those method classes implementation
@@ -239,7 +249,12 @@ class CatConstructionsMixin:
             "OwnedCategoryMixin is mixed into a Category"
         )
         cat_constructions = _cat_constructions()
-        provider = getattr(category, method_provider, None)
+        provider, inherited = declared_implementation_types(
+            type(category), (method_provider,)
+        )
+        assert not inherited, (
+            "subcategory implementation declarations must have one owner"
+        )
         if provider is cat_constructions:
             return super()._make_named_class(  # type: ignore[misc]
                 "subcategory_class", method_provider,
@@ -275,10 +290,11 @@ class CatConstructionsMixin:
         )
 
 
-def declared_method_providers(
-    category: Category, declaring_class: type, method_provider: str
+def declared_implementation_types(
+    declaring_class: type,
+    provider_names: tuple[str, ...],
 ) -> tuple[type | None, tuple[type, ...]]:
-    r"""The declarations of ``method_provider`` the category's class graph makes.
+    r"""The implementation declarations made by the category's class graph.
 
     Returns the most derived one, which Sage would have taken alone, and the
     ones its declaration hides.
@@ -308,16 +324,17 @@ def declared_method_providers(
         # was written as, so that is the graph read here.
         declaring_class = declaring_class.__base__
     declared: list[type] = []
-    most_derived = getattr(category, method_provider, None)
-    if most_derived is not None:
-        declared.append(most_derived)
     for ancestor in declaring_class.__mro__:
-        inherited = ancestor.__dict__.get(method_provider)
-        if inherited is None:
-            continue
-        if any(issubclass(seen, inherited) for seen in declared):
-            continue
-        declared.append(inherited)
+        for provider_name in provider_names:
+            inherited = ancestor.__dict__.get(provider_name)
+            if inherited is None:
+                continue
+            assert isinstance(inherited, type), (
+                f"{ancestor.__name__}.{provider_name} must be a type"
+            )
+            if any(issubclass(seen, inherited) for seen in declared):
+                continue
+            declared.append(inherited)
     if not declared:
         return None, ()
     return declared[0], tuple(declared[1:])
@@ -353,6 +370,21 @@ class OwnedCategoryMixin(CatConstructionsMixin):
         ("parent_class", "element_class", "morphism_class")
     )
 
+    _IMPLEMENTATION_PROVIDER_NAMES = {
+        "ParentMethods": ("ObjectType", "ParentMethods"),
+        "ElementMethods": ("ElementType", "ElementMethods"),
+        "MorphismMethods": ("MorphismMethods",),
+    }
+
+    def _object_type_of_object_type(self) -> type | None:
+        r"""Return the object type carried by this category's object type.
+
+        Most objects are not categories, so the default has no second object
+        type.  Categories of hom categories override this: a hom category is
+        itself a category, and its objects are the arrows.
+        """
+        return None
+
     def _make_named_class(
         self,
         name: str,
@@ -378,12 +410,27 @@ class OwnedCategoryMixin(CatConstructionsMixin):
         declaring_class = type(category)
         if declaring_class.__name__.endswith("_with_category"):
             declaring_class = declaring_class.__base__
-        bases = tuple(
-            getattr(super_category, name)
-            for super_category in category._super_categories_for_classes
-        )
-        provider, inherited = declared_method_providers(
-            category, declaring_class, method_provider
+        match name:
+            case "parent_class":
+                bases = tuple(
+                    super_category.parent_class
+                    for super_category in category._super_categories_for_classes
+                )
+            case "element_class":
+                bases = tuple(
+                    super_category.element_class
+                    for super_category in category._super_categories_for_classes
+                )
+            case "morphism_class":
+                bases = tuple(
+                    super_category.morphism_class
+                    for super_category in category._super_categories_for_classes
+                )
+            case _:
+                raise AssertionError(f"unsupported implementation type {name}")
+        provider, inherited = declared_implementation_types(
+            declaring_class,
+            self._IMPLEMENTATION_PROVIDER_NAMES[method_provider],
         )
         # Ahead of the super categories, behind the level's own declaration.
         # The owned construction base states what being a subobject *is*, and
@@ -464,6 +511,11 @@ class OwnedCategoryMixin(CatConstructionsMixin):
                     name, method_provider, cache=cache, picklable=picklable
                 )
             category._make_named_class_cache[key] = result
+        if name == "parent_class":
+            result.ElementType = category.element_class
+            arrow_type = category._object_type_of_object_type()
+            if arrow_type is not None:
+                result.ObjectType = arrow_type
         return result
 
 
@@ -486,7 +538,7 @@ def object_of(category: Category, **data: ConstructionData) -> Parent:
     homset does, because a level may name a base its category does not -- and
     injecting one here would arrive twice at the levels that already do.
     """
-    return category.parent_class(category=category, **data)
+    return category.ObjectType(category=category, **data)
 
 
 def _cat() -> Category:
@@ -497,7 +549,7 @@ def _cat() -> Category:
 
 
 def _cat_constructions() -> type:
-    r"""``Cat.ParentMethods``: what a category can do as an object of Cat."""
+    r"""``Cat.ObjectType``: what a category can do as an object of Cat."""
     from dzack_research.preamble.categories.abstract_categories.cat import Cat
 
     return Cat.ParentMethods
@@ -522,7 +574,7 @@ class OwnedParent:
 
     @lazy_attribute
     def element_class(self) -> type:
-        return self.category().element_class
+        return self.category().ElementType
 
 
 class _BaseRingOfACategoryOverABase:
@@ -617,5 +669,3 @@ class OwnedCategoryObject:
 
     def category(self) -> Category:
         return _cat()
-
-

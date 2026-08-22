@@ -3,14 +3,14 @@ r"""``Cat``: the category whose objects are categories.
 The constructions in this directory -- slices, arrows, diagrams, limits --
 each take a category as their argument, so a category is the *object* they
 are performed on and \(\mathbf{Cat}\) is where they are declared.  That is
-what this module is: ``Cat.ParentMethods`` holds the constructions that every
+what this module is: ``Cat.ObjectType`` holds the constructions that every
 category supports.  Each method delegates to the categorical owner.
 
 A category reaches them by inheritance, through its own
 ``subcategory_class``: Sage sets a category's class to ``dynamic_class(name,
 (cls, self.subcategory_class))`` and builds that from the super categories'
 ``subcategory_class``es, so ``dzack_research.preamble.owned_category`` ties
-``Cat.ParentMethods`` in once at each owned root and every category below --
+``Cat.ObjectType`` in once at each owned root and every category below --
 axiom categories, functorial constructions, and the ``JoinCategory``
 instances Sage builds internally, which is what most owned categories
 actually are -- inherits it.  Nothing is written on a Sage class, so a
@@ -27,16 +27,25 @@ if TYPE_CHECKING:
 from sage.categories.category import Category
 from sage.categories.objects import Objects
 
-from dzack_research.preamble.owned_category import OwnedCategoryMixin
+from dzack_research.preamble.owned_category import (
+    OwnedCategoryMixin,
+    declared_implementation_types,
+    object_of,
+)
 from sage.categories.morphism import Morphism
 from sage.structure.parent import Parent
 
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-    ArrowCategory,
-    AutomorphismArrowCategory,
+    ArrowCategory as ArrowCategoryOf,
+    AutomorphismArrowCategory as AutomorphismArrowCategoryOf,
     Core,
-    EndArrowCategory,
+    EndArrowCategory as EndArrowCategoryOf,
     IsoArrowCategory,
+)
+from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    AutCategoryOf,
+    EndCategoryOf,
+    HomCategoryOf,
 )
 from dzack_research.preamble.categories.abstract_categories.slice_categories import (
     CosliceUnderCategory,
@@ -64,15 +73,45 @@ class Cat(OwnedCategoryMixin, Category):
         return "Category of categories"
 
     def super_categories(self) -> list[Category]:
-        # A category is an object.  ``Objects()`` is where Sage declares
-        # ``Homsets``/``Endsets``, which is how every ordinary category comes
-        # by them -- so without this, ``Hom(C, D)`` between categories cannot
-        # build its homset at all.
+        # A category is an object.  Hom, End, Aut, and arrow categories are
+        # Cat-level constructions declared below, not consequences of this
+        # Sage runtime edge.
         return [Objects()]
 
     def __contains__(self, candidate: "MembershipInput") -> bool:
         r"""Return whether ``candidate`` is a category, hence an object here."""
         return isinstance(candidate, Category)
+
+    def _hom_object(
+        self,
+        source: Category,
+        target: Category,
+        hom_category: Category,
+    ) -> Category:
+        r"""Construct \(\operatorname{Hom}_{\mathbf{Cat}}(C,D)=[C,D]\)."""
+        return source.FunctorCategory(target)
+
+    class _HomCategory(HomCategoryOf):
+        r"""Functor categories as the hom objects of \(\mathbf{Cat}\)."""
+
+        @property
+        def ObjectType(self) -> type:
+            from dzack_research.preamble.categories.abstract_categories.functors import (
+                FunctorCategory,
+            )
+
+            return FunctorCategory
+
+        def Of(self, source: Category, target: Category) -> Category:
+            return source.FunctorCategory(target)
+
+        def _object(
+            self,
+            source: Category,
+            target: Category,
+            placement: Category,
+        ) -> Category:
+            return source.FunctorCategory(target)
 
     class ParentMethods:
         r"""What a category \(\mathbf{C}\) can do because it is an object of
@@ -83,24 +122,85 @@ class Cat(OwnedCategoryMixin, Category):
         returns and hands the work to the class that already builds it.
         """
 
-        def Ar(self) -> Category:
+        @property
+        def ObjectType(self) -> type:
+            r"""Return the complete implementation type for objects of \(\mathbf{C}\)."""
+            return self.parent_class
+
+        @property
+        def ElementType(self) -> type:
+            r"""Return the complete implementation type for their elements."""
+            return self.element_class
+
+        def HomCategory(self) -> Category:
+            r"""Return the category of hom objects of \(\mathbf{C}\)."""
+            construction, _ = declared_implementation_types(
+                type(self), ("_HomCategory",)
+            )
+            if construction is None:
+                return HomCategoryOf(self)
+            return construction(self)
+
+        def EndCategory(self) -> Category:
+            r"""Return the category of endomorphism objects of \(\mathbf{C}\)."""
+            construction, _ = declared_implementation_types(
+                type(self), ("_EndCategory",)
+            )
+            if construction is None:
+                return EndCategoryOf(self)
+            return construction(self)
+
+        def AutCategory(self) -> Category:
+            r"""Return the category of automorphism objects of \(\mathbf{C}\)."""
+            construction, _ = declared_implementation_types(
+                type(self), ("_AutCategory",)
+            )
+            if construction is None:
+                return AutCategoryOf(self)
+            return construction(self)
+
+        @property
+        def HomCatType(self) -> type:
+            return self.HomCategory().ObjectType
+
+        @property
+        def EndCatType(self) -> type:
+            return self.EndCategory().ObjectType
+
+        @property
+        def AutCatType(self) -> type:
+            return self.AutCategory().ObjectType
+
+        @property
+        def ArrowType(self) -> type:
+            return self.HomCatType.ElementType
+
+        @property
+        def EndArrowType(self) -> type:
+            return self.EndCatType.ElementType
+
+        @property
+        def AutArrowType(self) -> type:
+            return self.AutCatType.ElementType
+
+        def ArrowCategory(self) -> Category:
             r"""Return \(\operatorname{Ar}(\mathbf{C})\), whose objects are the arrows of \(\mathbf{C}\)."""
-            arrows: Category = ArrowCategory(self)
+            arrows: Category = ArrowCategoryOf(self)
             return arrows
 
-        def EndAr(self) -> Category:
+        def EndArrowCategory(self) -> Category:
             r"""Return the full subcategory of \(\operatorname{Ar}(\mathbf{C})\) on endomorphisms."""
-            endomorphisms: Category = EndArrowCategory(self)
+            endomorphisms: Category = EndArrowCategoryOf(self)
             return endomorphisms
 
-        def IsoAr(self) -> Category:
+        def IsomorphismArrowCategory(self) -> Category:
             r"""Return the subcategory of \(\operatorname{Ar}(\mathbf{C})\) whose objects are the isomorphisms."""
             isomorphisms: Category = IsoArrowCategory(self)
             return isomorphisms
 
-        def AutAr(self) -> Category:
+        def AutArrowCategory(self) -> Category:
             r"""Return the full subcategory of \(\operatorname{Ar}(\mathbf{C})\) on automorphisms."""
-            automorphisms: Category = AutomorphismArrowCategory(self)
+            automorphisms: Category = AutomorphismArrowCategoryOf(self)
             return automorphisms
 
         def core(self) -> Category:
@@ -110,9 +210,9 @@ class Cat(OwnedCategoryMixin, Category):
 
         def Diagram(self, index_category: Category) -> Category:
             r"""Return the functor category \([J,\mathbf{C}]\) of diagrams of shape \(J\)."""
-            return index_category.Fun(self)
+            return index_category.FunctorCategory(self)
 
-        def Fun(self, codomain: Category) -> Category:
+        def FunctorCategory(self, codomain: Category) -> Category:
             r"""Return the functor category \(\operatorname{Fun}(\mathbf{C},\mathbf{D})\)."""
             from dzack_research.preamble.categories.abstract_categories.functors import FunctorCategory
 
@@ -120,12 +220,32 @@ class Cat(OwnedCategoryMixin, Category):
             return functors
 
         def Hom(self, source: Parent, target: Parent) -> Parent:
-            r"""Return \(\operatorname{Hom}_{\mathbf{C}}(X,Y)\) as an object of ``Sets``."""
-            from dzack_research.preamble.categories.abstract_categories.arrow_categories import HomSet
-
+            r"""Return \(\operatorname{Hom}_{\mathbf{C}}(X,Y)\)."""
             assert source in self and target in self
-            homset: Parent = HomSet(source, target)
-            return homset
+            return self.HomCategory().Of(source, target)
+
+        def End(self, obj: Parent) -> Parent:
+            r"""Return \(\operatorname{End}_{\mathbf{C}}(X)\)."""
+            assert obj in self
+            return self.EndCategory().Of(obj)
+
+        def Aut(self, obj: Parent) -> Parent:
+            r"""Return \(\operatorname{Aut}_{\mathbf{C}}(X)\)."""
+            assert obj in self
+            return self.AutCategory().Of(obj)
+
+        def _hom_object(
+            self,
+            source: Parent,
+            target: Parent,
+            hom_category: Category,
+        ) -> Parent:
+            r"""Construct a hom object through its category-owned type."""
+            return object_of(
+                hom_category,
+                source=source,
+                target=target,
+            )
 
         def Product(self, factors: "Iterable[Parent]") -> Category:
             r"""Return the category of product cones on the given objects."""
@@ -174,9 +294,4 @@ class Cat(OwnedCategoryMixin, Category):
             the homset of \(\mathbf{Cat}\) is the functor space rather than
             the generic id-equality fallback.
             """
-            # Local: the functor-space module imports this one for ``Cat``,
-            # so a module-level import here would close that cycle.
-            from dzack_research.preamble.categories.abstract_categories.functors import FunctorHomset
-
-            functor_homset: "Parent" = FunctorHomset(self, codomain)
-            return functor_homset
+            return self.FunctorCategory(codomain)
