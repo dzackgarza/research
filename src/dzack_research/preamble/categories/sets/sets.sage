@@ -51,6 +51,7 @@ if TYPE_CHECKING:
     from dzack_research.preamble.lexicon import OrderedSet
     from dzack_research.preamble.owned_category import ConstructionData
     from sage.structure.parent import ElementConstructorInput
+    from sage.categories.poor_man_map import PoorManMap
     from dzack_research.preamble.categories.sets.cardinals import Cardinal
 
 
@@ -83,9 +84,10 @@ def ConditionSet(
 
 
 def ImageSet(
-    map_: "Morphism",
+    map_: "Morphism | PoorManMap",
     domain_subset: "lexicon.Set",
     *,
+    category: "SageCategory | None" = None,
     is_injective: bool | None = None,
     inverse: "Morphism | None" = None,
 ) -> "lexicon.Set":
@@ -93,6 +95,7 @@ def ImageSet(
     result = SageImageSet(
         map_,
         domain_subset,
+        category=category,
         is_injective=is_injective,
         inverse=inverse,
     )

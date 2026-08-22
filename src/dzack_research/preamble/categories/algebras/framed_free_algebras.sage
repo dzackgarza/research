@@ -251,6 +251,25 @@ assert "module_homset" in globals(), (
 )
 
 
+def _place_free_monoid(
+    monoid: "_MonomialParent",
+    labels: "OrderedSet",
+) -> "_MonomialParent":
+    r"""Place the free monoid by the cardinality of its generating set."""
+    if labels not in Sets().Countable():
+        return monoid
+
+    from dzack_research.preamble.refine import refine
+
+    placement = (
+        Sets().Finite()
+        if labels.cardinality() == 0
+        else Sets().Countable().Infinite()
+    )
+    placed: "_MonomialParent" = refine(monoid, placement)
+    return placed
+
+
 class MonomialSystem:
     r"""How one free construction indexes its monomials and multiplies them.
 
@@ -336,9 +355,12 @@ class MonomialSystem:
     ) -> Parent:
         r"""Return degree monomials as the image of length-``degree`` words."""
         from sage.categories.cartesian_product import cartesian_product
+        from sage.categories.poor_man_map import PoorManMap
         from dzack_research.preamble.categories.sets.sets import ImageSet
         from dzack_research.preamble.categories.sets.sets import finite_ordered_set
-        from dzack_research.preamble.refine import refine
+        from dzack_research.preamble.categories.sets.underlying_sets import (
+            UnderlyingSet,
+        )
 
         degree = int(degree)
         assert degree >= 0, "a graded degree is nonnegative"
@@ -353,22 +375,25 @@ class MonomialSystem:
                 monomial *= self._parent.gen(label)
             return monomial
 
-        def word_of_monomial(monomial: "Element") -> "Element":
+        def word_of_monomial(monomial: "Element") -> tuple:
             letters = tuple(
                 label
                 for label, exponent in self.factors(monomial)
                 for _ in range(exponent)
             )
-            return words(letters)
+            return letters
 
-        monomials: Parent = refine(
-            ImageSet(
-                monomial_of_word,
-                words,
-                is_injective=injective,
-                inverse=word_of_monomial,
-            ),
-            Sets().Infinite(),
+        monomial_map = PoorManMap(
+            monomial_of_word,
+            domain=words,
+            codomain=UnderlyingSet(self._parent),
+        )
+        monomials: Parent = ImageSet(
+            monomial_map,
+            words,
+            category=Sets().Countable().Infinite(),
+            is_injective=injective,
+            inverse=word_of_monomial,
         )
         return monomials
 
@@ -379,7 +404,7 @@ class CommutativeMonomials(MonomialSystem):
     @staticmethod
     def _build_parent(labels: "OrderedSet") -> "_MonomialParent":
         monoid: "_MonomialParent" = FreeAbelianMonoid(labels)
-        return monoid
+        return _place_free_monoid(monoid, labels)
 
     def factors(self, monomial: "Element") -> tuple:
         return tuple(monomial.dict().items())
@@ -405,7 +430,7 @@ class WordMonomials(MonomialSystem):
     @staticmethod
     def _build_parent(labels: "OrderedSet") -> "_MonomialParent":
         monoid: "_MonomialParent" = _FreeMonoid(labels)
-        return monoid
+        return _place_free_monoid(monoid, labels)
 
     def factors(self, monomial: "Element") -> tuple:
         return tuple((letter, 1) for letter in monomial.to_word_list())
@@ -519,7 +544,7 @@ class DividedMonomials(MonomialSystem):
     @staticmethod
     def _build_parent(labels: "OrderedSet") -> "_MonomialParent":
         monoid: "_MonomialParent" = FreeAbelianMonoid(labels)
-        return monoid
+        return _place_free_monoid(monoid, labels)
 
     def factors(self, monomial: "Element") -> tuple:
         return tuple(monomial.dict().items())

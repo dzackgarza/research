@@ -295,10 +295,12 @@ class Sets(Category):
             """
 
             def __init__(
-                self, components: tuple[SageElement, ...], **rest: ConstructionData
+                self,
+                parent: SageParent,
+                components: tuple[SageElement, ...],
             ) -> None:
                 self._components = tuple(components)
-                super().__init__(**rest)
+                super().__init__(parent=parent)
 
             def components(self) -> tuple[SageElement, ...]:
                 return self._components
