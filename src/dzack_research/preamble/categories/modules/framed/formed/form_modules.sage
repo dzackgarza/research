@@ -221,6 +221,15 @@ class FormModules(OwnedCategoryOverBaseRing):
                 self,
                 lifted_module_generator_morphism,
             )
+            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
+
+            forget_form = module_homset(self, module)(
+                {
+                    label: module.module_generator(label)
+                    for label in self.module_generating_set()
+                }
+            )
+            self._form = form.pullback(forget_form)
 
         def _form_morphism(self: "FormedParent") -> "Form":
             r"""Return the morphism this object's form *is*.
@@ -591,7 +600,7 @@ class FormModules(OwnedCategoryOverBaseRing):
             wrapped -- the element is this module's own, made the way this
             module makes elements.
             """
-            formed: "Element" = self(element.coordinates())
+            formed: "Element" = self._from_coordinates(element.coordinates())
             return formed
 
         def _repr_(self: Self) -> str:

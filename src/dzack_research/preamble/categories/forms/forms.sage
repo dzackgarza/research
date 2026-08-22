@@ -473,18 +473,10 @@ class BilinearFormMorphism(Morphism):
         )
         domain = morphism.domain()
         forms = BilinearForms(domain, self.codomain())
-        if domain.module_generating_set() in Sets().Finite():
-            module_generators = tuple(domain.module_generators())
+        if self._gram_matrix is not None:
+            linear_map = morphism.matrix()
             return forms(
-                matrix(
-                    [
-                        [
-                            self(morphism(left), morphism(right))
-                            for right in module_generators
-                        ]
-                        for left in module_generators
-                    ]
-                )
+                linear_map * self._gram_matrix * linear_map.transpose()
             )
         return forms(
             lambda left, right: self(morphism(left), morphism(right))
@@ -719,6 +711,11 @@ class QuadraticFormMorphism(Morphism):
             f"the pullback morphism lands in {morphism.codomain()}, but this "
             f"form is defined on {self.module()}"
         )
+        if self._lift_matrix is not None:
+            linear_map = morphism.matrix()
+            return QuadraticForms(morphism.domain(), self.codomain())(
+                linear_map * self._lift_matrix * linear_map.transpose()
+            )
         return QuadraticForms(morphism.domain(), self.codomain())(
             lambda element: self(morphism(element))
         )
