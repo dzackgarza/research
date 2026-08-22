@@ -13,6 +13,9 @@ read from that arrow.  No endpoint is mutated or given a second category.
 
 
 from dzack_research.preamble.owned_category_bases import Category
+from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    HomCategoryConstruction,
+)
 from sage.structure.parent import Parent
 from typing import TYPE_CHECKING
 
@@ -47,6 +50,9 @@ class _OverAnObject:
     def ambient_category(self) -> Category:
         return self._ambient_category
 
+    def target_object(self) -> "Parent | HomCategoryOf.ElementMethods":
+        return self._target_object
+
 
 class _UnderAnObject:
     r"""The two parameters a coslice category takes.
@@ -70,6 +76,9 @@ class _UnderAnObject:
     def ambient_category(self) -> Category:
         return self._ambient_category
 
+    def source_object(self) -> "Parent | HomCategoryOf.ElementMethods":
+        return self._source_object
+
 
 class SliceOverCategory(_OverAnObject, Category):
     r"""Slice category \(\mathbf{C}/X\) of objects over \(X\)."""
@@ -88,6 +97,60 @@ class SliceOverCategory(_OverAnObject, Category):
             and candidate.codomain() is self._target_object
         )
 
+    class _HomCategory(HomCategoryConstruction):
+        r"""Commuting triangles over the fixed target object."""
+
+        class ParentMethods:
+            def __call__(
+                self,
+                left: "HomCategoryOf.ElementMethods",
+            ) -> "HomCategoryOf.ElementMethods":
+                source = self.domain()
+                target = self.codomain()
+                category = self.base_category().ambient_category()
+                assert left in category.Hom(source.domain(), target.domain())
+                square = category.ArrowCategory().Hom(source, target)(
+                    left,
+                    category.identity(source.codomain()),
+                )
+                return self.ObjectType(
+                    hom_category=self,
+                    underlying_square=square,
+                )
+
+            def identity(self) -> "HomCategoryOf.ElementMethods":
+                source = self.domain()
+                assert source is self.codomain()
+                category = self.base_category().ambient_category()
+                return self(category.identity(source.domain()))
+
+            def compose(
+                self,
+                second: "HomCategoryOf.ElementMethods",
+                first: "HomCategoryOf.ElementMethods",
+            ) -> "HomCategoryOf.ElementMethods":
+                assert first.codomain() is second.domain()
+                category = self.base_category().ambient_category()
+                return self(category.compose(second.left(), first.left()))
+
+        class ElementMethods:
+            def __init__(
+                self,
+                hom_category: Category,
+                underlying_square: "HomCategoryOf.ElementMethods",
+            ) -> None:
+                self._underlying_square = underlying_square
+                super().__init__(hom_category=hom_category)
+
+            def underlying_square(self) -> "HomCategoryOf.ElementMethods":
+                return self._underlying_square
+
+            def left(self) -> "HomCategoryOf.ElementMethods":
+                return self._underlying_square.left()
+
+            def right(self) -> "HomCategoryOf.ElementMethods":
+                return self._underlying_square.right()
+
 
 class CosliceUnderCategory(_UnderAnObject, Category):
     r"""Coslice category \(X \setminus \mathbf{C}\) of objects under \(X\)."""
@@ -105,6 +168,60 @@ class CosliceUnderCategory(_UnderAnObject, Category):
             candidate in self._ambient_category.ArrowCategory()
             and candidate.domain() is self._source_object
         )
+
+    class _HomCategory(HomCategoryConstruction):
+        r"""Commuting triangles under the fixed source object."""
+
+        class ParentMethods:
+            def __call__(
+                self,
+                right: "HomCategoryOf.ElementMethods",
+            ) -> "HomCategoryOf.ElementMethods":
+                source = self.domain()
+                target = self.codomain()
+                category = self.base_category().ambient_category()
+                assert right in category.Hom(source.codomain(), target.codomain())
+                square = category.ArrowCategory().Hom(source, target)(
+                    category.identity(source.domain()),
+                    right,
+                )
+                return self.ObjectType(
+                    hom_category=self,
+                    underlying_square=square,
+                )
+
+            def identity(self) -> "HomCategoryOf.ElementMethods":
+                source = self.domain()
+                assert source is self.codomain()
+                category = self.base_category().ambient_category()
+                return self(category.identity(source.codomain()))
+
+            def compose(
+                self,
+                second: "HomCategoryOf.ElementMethods",
+                first: "HomCategoryOf.ElementMethods",
+            ) -> "HomCategoryOf.ElementMethods":
+                assert first.codomain() is second.domain()
+                category = self.base_category().ambient_category()
+                return self(category.compose(second.right(), first.right()))
+
+        class ElementMethods:
+            def __init__(
+                self,
+                hom_category: Category,
+                underlying_square: "HomCategoryOf.ElementMethods",
+            ) -> None:
+                self._underlying_square = underlying_square
+                super().__init__(hom_category=hom_category)
+
+            def underlying_square(self) -> "HomCategoryOf.ElementMethods":
+                return self._underlying_square
+
+            def left(self) -> "HomCategoryOf.ElementMethods":
+                return self._underlying_square.left()
+
+            def right(self) -> "HomCategoryOf.ElementMethods":
+                return self._underlying_square.right()
 
 
 class SubobjectCategory(_OverAnObject, Category):
