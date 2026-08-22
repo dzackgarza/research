@@ -102,6 +102,145 @@ def ImageSet(
     return refine(result, placement_of(result))
 
 
+def _cartesian_product_placement(factors: tuple[Parent, ...]) -> Sets:
+    r"""Return the cardinality placement of a finite cartesian product."""
+    if not factors or any(factor.cardinality() == 0 for factor in factors):
+        return Sets().Finite()
+    axiom_families = [frozenset(placement_of(factor).axioms()) for factor in factors]
+    if all("Finite" in axioms for axioms in axiom_families):
+        return Sets().Finite()
+    if all(
+        "Finite" in axioms or "Countable" in axioms
+        for axioms in axiom_families
+    ):
+        return Sets().Countable()
+    if any("Uncountable" in axioms for axioms in axiom_families):
+        return Sets().Uncountable()
+    if any("Infinite" in axioms for axioms in axiom_families):
+        return Sets().Infinite()
+    return Sets()
+
+
+def CartesianProductOfSets(factors: Iterable[Parent]) -> Parent:
+    r"""Return the cartesian product of the given sets."""
+    family = tuple(factors)
+    return object_of(
+        _cartesian_product_placement(family).CartesianProducts(),
+        factors=family,
+    )
+
+
+def cartesian_product_morphism(*maps: Morphism) -> SetMorphism:
+    r"""Return the componentwise morphism between cartesian products."""
+    domain = CartesianProductOfSets(tuple(map_.domain() for map_ in maps))
+    codomain = CartesianProductOfSets(tuple(map_.codomain() for map_ in maps))
+    return SetMorphism(
+        Hom(domain, codomain, Sets()),
+        lambda point: codomain(
+            tuple(map_(value) for map_, value in zip(maps, point))
+        ),
+    )
+
+
+class CoproductsOfSets(CategoryWithParameters):
+    r"""Tagged disjoint unions of families of sets."""
+
+    def __init__(self, placement: SageCategory) -> None:
+        self._placement = placement
+        super().__init__()
+
+    def super_categories(self) -> list[SageCategory]:
+        return [self._placement]
+
+    def _make_named_class_key(self, name: str) -> SageCategory:
+        return self._placement
+
+    def _repr_object_names(self) -> str:
+        return "coproducts of sets"
+
+    class ParentMethods:
+        def __init__(
+            self,
+            cofactors: Iterable[Parent],
+            **rest: "ConstructionData",
+        ) -> None:
+            self._cofactors = tuple(cofactors)
+            super().__init__(**rest)
+
+        def cofactors(self) -> tuple[Parent, ...]:
+            return self._cofactors
+
+        def cardinality(self) -> Cardinal:
+            from dzack_research.preamble.categories.sets.cardinals import Cardinalities
+
+            return Cardinalities().sum(
+                *(cofactor.cardinality() for cofactor in self._cofactors)
+            )
+
+        def __iter__(self) -> Iterator[tuple[int, Element]]:
+            from sage.sets.disjoint_union_enumerated_sets import (
+                DisjointUnionEnumeratedSets,
+            )
+            from sage.sets.family import Family
+
+            return iter(
+                DisjointUnionEnumeratedSets(
+                    Family(list(self._cofactors)),
+                    keepkey=True,
+                )
+            )
+
+        def __contains__(self, tagged_element: "ElementConstructorInput") -> bool:
+            if not isinstance(tagged_element, tuple) or len(tagged_element) != 2:
+                return False
+            index, element = tagged_element
+            if not isinstance(index, (int, SageInteger)):
+                return False
+            position = int(index)
+            return (
+                0 <= position < len(self._cofactors)
+                and element in self._cofactors[position]
+            )
+
+        def injection(self, index: int) -> SetMorphism:
+            assert 0 <= index < len(self._cofactors), (
+                f"no coproduct cofactor has index {index}"
+            )
+            cofactor = self._cofactors[index]
+            return SetMorphism(
+                Hom(cofactor, self, Sets()),
+                lambda element: (index, element),
+            )
+
+        def _repr_(self) -> str:
+            if not self._cofactors:
+                return "Empty coproduct of sets"
+            return " + ".join(str(cofactor) for cofactor in self._cofactors)
+
+
+def CoproductOfSets(cofactors: Iterable[Parent]) -> Parent:
+    r"""Return the tagged disjoint union of the given sets."""
+    family = tuple(cofactors)
+    axiom_families = [frozenset(placement_of(cofactor).axioms()) for cofactor in family]
+    if all("Finite" in axioms for axioms in axiom_families):
+        placement = Sets().Finite()
+    elif all(
+        "Finite" in axioms or "Countable" in axioms
+        for axioms in axiom_families
+    ):
+        placement = Sets().Countable()
+    elif any("Uncountable" in axioms for axioms in axiom_families):
+        placement = Sets().Uncountable()
+    elif any("Infinite" in axioms for axioms in axiom_families):
+        placement = Sets().Infinite()
+    else:
+        placement = Sets()
+    return object_of(
+        CoproductsOfSets(placement),
+        cofactors=family,
+    )
+
+
 def _has_canonical_set_inclusion(domain: Parent, codomain: Parent) -> bool:
     r"""Return whether the standard catalogue supplies ``domain -> codomain``.
 
