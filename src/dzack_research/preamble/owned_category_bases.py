@@ -420,6 +420,14 @@ class SubobjectsCategory(
 ):
     r"""Owned base over Sage's subobject construction base."""
 
+    @classmethod
+    def default_super_categories(
+        cls,
+        category: SageCategory,
+    ) -> SageCategory:
+        r"""Keep the object category without adding set-theoretic subquotients."""
+        return category
+
     def __init__(self, category: SageCategory) -> None:
         self._init_cat_object()
         SageSubobjectsCategory.__init__(self, category)

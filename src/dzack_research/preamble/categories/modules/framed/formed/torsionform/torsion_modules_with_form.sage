@@ -1577,13 +1577,14 @@ class TorsionFormOrthogonalSubgroups(Category):
     """
 
     def super_categories(self) -> list:
-        # ``OwnedFiniteGroups()`` and not ``OwnedGroups().Finite()``: the owned
-        # tree states finiteness by a node of its own, and the subobject
-        # construction is reached from there through ``super_categories()``.
-        from dzack_research.preamble.categories.group.predicate_subgroups import PredicateSubgroups
+        from dzack_research.preamble.categories.group.groups import OwnedGroups
+        from dzack_research.preamble.categories.group.predicate_subgroups import (
+            PredicateSubgroups,
+        )
 
         return [
-            PredicateSubgroups(OwnedFiniteGroups().Subobjects())
+            PredicateSubgroups(OwnedGroups().Subobjects()),
+            OwnedFiniteGroups(),
         ]
 
     class ParentMethods:
