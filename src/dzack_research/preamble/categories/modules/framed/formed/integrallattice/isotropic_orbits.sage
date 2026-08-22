@@ -459,7 +459,9 @@ class OrthogonalPredicateSubgroups(Category_singleton):
             self._determinant_kernel = bool(determinant_kernel)
             self._spinor_kernel = bool(spinor_kernel)
             self._discriminant_preimages = tuple(discriminant_preimages)
-            super().__init__(**rest)
+            containing_group = rest["containing_group"]
+            lattice = containing_group.domain()
+            super().__init__(domain=lattice, codomain=lattice, **rest)
             self._domain = self.supergroup().domain()
 
         def domain(self) -> "FormModule":
