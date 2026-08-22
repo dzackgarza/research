@@ -61,10 +61,12 @@ class OppositeCategory(_OnACategory, CategoryWithParameters):
         return self._base_category.ElementType
 
     def super_categories(self) -> list[SageCategory]:
+        from dzack_research.preamble.categories.abstract_categories.cat import Cat
+
         inherited = [
             category.OppositeCategory()
             for category in self._base_category.super_categories()
-            if category.category() is self.category()
+            if category in Cat()
         ]
         return inherited or [Objects()]
 

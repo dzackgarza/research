@@ -88,10 +88,10 @@ class Cat(OwnedCategoryMixin, Category):
         return [Objects()]
 
     def __contains__(self, candidate: "MembershipInput") -> bool:
-        r"""Return whether ``candidate`` is a category, hence an object here."""
+        r"""Return whether ``candidate`` is represented as an object of ``Cat``."""
         match candidate:
             case Category():
-                return True
+                return candidate.category() is self
             case _:
                 return False
 

@@ -1772,7 +1772,7 @@ def placement_of(parent: SageParent[_E]) -> Sets:
         placement = placement.PartiallyOrdered()
     else:
         from sage.categories.posets import Posets as SagePosets
-        if parent.category().is_subcategory(SagePosets()):
+        if parent in SagePosets():
             placement = placement.PartiallyOrdered()
     return placement
 

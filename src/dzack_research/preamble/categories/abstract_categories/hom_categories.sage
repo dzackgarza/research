@@ -41,7 +41,7 @@ class _OverACategory:
         return [
             super_category
             for super_category in self._base_category.super_categories()
-            if super_category.category() is Cat()
+            if super_category in Cat()
         ]
 
     def __contains__(self, candidate: "ObjectOfCategory") -> bool:
