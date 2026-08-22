@@ -51,7 +51,7 @@ from dzack_research.preamble.categories.abstract_categories.products import (
     ProductCategory,
 )
 
-if TYPE_CHECKING:
+
 class Cat(OwnedCategoryMixin, Category):
     r"""The category \(\mathbf{Cat}\), whose objects are categories.
 
