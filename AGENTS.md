@@ -1349,25 +1349,32 @@ reaches into a private method. The moment `X._f()` is called from outside `X`,
 its primitive signature is a public interface and the concession is void. *Public
 interfaces and encapsulation* above owns that boundary.
 
-**Never invent a type to satisfy these rules.** A constructor that took a list,
-a tuple and two integers does not become correct when those become
-`MyCustomClassCreationDatum`. Nothing was fixed: the caller still assembles the
-same unstructured data, the same mathematics is still missing, and now there is
-a class with no referent to maintain as well. Every type names a real
-mathematical object. Where the field has a word, use the field's word; where it
-has none, the absence is a signal to check the notion, never a licence to coin
-one. The datum being packaged is almost always something with a name already —
-a morphism, a generating set, a presentation, an indexed family — and once it is
-named the signature is right without a wrapper.
+**Minting a type that names actual mathematics is welcome.** It is what the
+preamble is for. A notion the work needs and the tree does not yet hold gets
+its own object, its own place in the category graph, and its own name, and
+that is a good day's work rather than a rule being bent. The test is never
+novelty. It is whether the type has a mathematical referent a mathematician
+would recognise, and it applies equally to a type that already exists.
 
-Over-compliance is the same defect from the other side. A class minted so a
-line technically passes, a name coined because the rule said not to write
-`tuple`, a type introduced to quiet a checker: each satisfies the letter and
-breaks the statement, and each is worse than the original violation, which at
-least stayed visible. These rules restate what the mathematics already
-requires. If following one produces something a mathematician cannot name, the
-rule was not the problem — stop and say so. The menagerie of inventions this
-has already produced is in `.agents/references/mathematical-auditor-priming.md`.
+**What is banned is a type invented to satisfy these rules.** A constructor
+that took a list, a tuple and two integers does not become correct when those
+become `MyCustomClassCreationDatum`. Nothing was fixed: the caller still
+assembles the same unstructured data, the same mathematics is still missing,
+and now there is a class with no referent to maintain as well. Ask what the
+datum *is*. Usually it already has a name — a morphism, a generating set, a
+presentation, an indexed family — and naming it makes the signature right with
+no new type at all. When it genuinely has none and the notion is real, define
+it properly: that is the welcome case above, and a real addition to the
+category graph is a design decision to raise, never a wrapper to drop in.
+
+Over-compliance is the failure from the other side. A class minted so a line
+technically passes, a name coined because the rule said not to write `tuple`,
+a type introduced to quiet a checker: each satisfies the letter and breaks the
+statement, and each is worse than the original violation, which at least
+stayed visible. These rules restate what the mathematics already requires. If
+following one produces something a mathematician cannot name, the rule was not
+the problem — stop and say so. The inventions this has already produced are
+catalogued in `.agents/references/mathematical-auditor-priming.md`.
 
 ## Dynamic peeking is prohibited; the category is the type
 
