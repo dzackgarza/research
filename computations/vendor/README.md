@@ -19,9 +19,9 @@ with no restart and no per-package step:
     vendor/*/src      ->  src layouts:   vendor/bar/src/bar/ imports as `bar`
 
 A clone whose module sits deeper than that needs one explicit line from whichever
-module imports it — `vendor.activate_clone("vinal", "src", "sage")` — because no
-general glob can find `vinal/src/sage/vinal.py`, and adding `vinal/src` would put
-a `sage/` directory on `sys.path`.
+module imports it — `vendor.activate_clone("pkg", "src", "lib")` — because no
+general glob can find `pkg/src/lib/pkg.py`, and adding `pkg/src` would put a
+`lib/` directory on `sys.path`.
 
 Non-interactive callers (`sage -c`, `sage -python`, pytest) do **not** get this
 automatically, because Sage only reads its startup file for interactive sessions.
@@ -47,16 +47,4 @@ Check the mechanism:
 
 ## Current clones
 
-- **`vinal`** — [aperep/vinberg-algorithm](https://github.com/aperep/vinberg-algorithm),
-  the Vinberg root-enumeration algorithm; the clone the old `~/.sage/init.sage`
-  loaded from `~/gitclones/vinal`, which no longer existed.
-  **Does not currently run against this Sage.** `VinAl.__init__`
-  (`src/sage/vinal.py:61`) calls `M.adjoint()`, removed from Sage in favour of
-  `adjugate()`:
-
-      sage -c 'from dzack_research.preamble import catalogue;
-               catalogue.Lattices.U.direct_sum(catalogue.Lattices.E8).vinberg_algorithm()'
-      # AttributeError: 'Matrix_integer_dense' object has no attribute 'adjoint'
-
-  Unfixed on purpose: patching the working copy would be invisible to git and lost
-  on re-clone.
+None.

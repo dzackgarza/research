@@ -50,8 +50,8 @@ if TYPE_CHECKING:
 class HyperbolicLattices(Category):
     r"""Category of hyperbolic integral lattices (signature ``(n, 1)``).
 
-    Provides one Vinberg root enumeration implementation (via the vendored
-    ``vinal`` clone). Isotropic-element classification is inherited from
+    Provides one Vinberg root enumeration implementation (via the ``vinal``
+    package). Isotropic-element classification is inherited from
     ``IntegralLattices``.
     """
 
@@ -164,9 +164,8 @@ class HyperbolicLattices(Category):
 
             Hypothesis on the signature: in signature $(1,1)$ the domain is
             a half-line in $H^1$, of infinite covolume, so no
-            fundamental-polyhedron criterion can fire (observed on the
-            vendored ``vinal`` fork, commit ``c817ecc``); the same guard
-            applies here.
+            fundamental-polyhedron criterion can fire (observed on ``vinal``
+            at commit ``c817ecc``); the same guard applies here.
             """
             # Local: a module-level import here would close a cycle; by call time this module is built.
             from dzack_research.preamble.categories.modules.framed.formed.integrallattice.engines import lorentz_edgewalk_fundamental_domain
@@ -201,9 +200,7 @@ class HyperbolicLattices(Category):
             max_decompositions: int | None = None,
             verbose: bool = False,
         ) -> list["Element"]:
-            r"""Enumerate roots using the vendored Vinberg algorithm.
-
-            Requires the ``vinal`` clone in ``computations/vendor/``.
+            r"""Enumerate roots using the Vinberg algorithm in ``vinal``.
 
             Parameters
             ----------

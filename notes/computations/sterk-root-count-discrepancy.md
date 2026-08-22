@@ -10,7 +10,7 @@ Reference, as the corpus cites it (`writing/NewCoble/coble_research_report/coble
 
 > Sterk, Hans. *Compactifications of the Period Space of Enriques Surfaces I*. Mathematische Zeitschrift **207** (1991), no. 1, 1–36.
 
-Per-cusp comparison (published breakdowns as transcribed in the in-tree comments, `init.sage` lines 722–860):
+Per-cusp comparison (published breakdowns as transcribed in the in-tree comments, `init.sage` lines 720–858):
 
 | Cusp | Sterk (published) | Julia (Vinberg.jl) | VinAl |
 | --- | --- | --- | --- |
@@ -28,13 +28,13 @@ The two counts measure **different group actions**. The computation takes orbits
 
 All data lives in `computations/scripts/init.sage`.
 
-- **The lattice everything below is computed in**: `TEn = U ⊕ E10(2)` (basis `e, f, ep, fp, a1..a8`), lines 322–349.
-- **The five cusps** are the isotropic vectors `TEn.isotropic_vectors_Sterk = [e, ep, ep+fp+ω, ep+2fp+α, 2e+2f+α]` with `ω = 2·w8`, `α = 2·w1` in the dual basis (lines 337–349).
-- **The rank-10 quotients** `Sterk_j = e_perp_mod_e(v_j)` (lines 356–363). Per the in-tree isometry tests: `Sterk_1 ≅ U(2) ⊕ E8(2) = E10(2)` (two-elementary type $(10,10,0)$); `Sterk_2..5 ≅ U ⊕ E8(2)` (type $(10,8,0)$).
-- **The Vinberg runs** use `vinal` (loaded from `~/gitclones/vinal/src/sage`, lines 9–10; wrapper at lines 40–42 calls `VinAl(gram, v0).FindRoots()`) and a Julia implementation ("Julia" in the comments). Each root below is a 10-tuple of coordinates in the recorded basis of the respective rank-10 lattice.
-- **Sterk's own root sets, hand-entered from the paper**, are also in-tree for comparison: `Sterk_roots["Sterk_1".."Sterk_5"]` built inside the $(20,2,0)$ model `L_20_2_0 = U ⊕ U(2) ⊕ E8²` (lines 487–581), and direct `sterks1..sterks5` vectors in `TEn` coordinates (lines 585–680). These realize the published counts 12, 10, 12, 11, 14.
+- **The lattice everything below is computed in**: `TEn = U ⊕ E10(2)` (basis `e, f, ep, fp, a1..a8`), lines 320–347.
+- **The five cusps** are the isotropic vectors `TEn.isotropic_vectors_Sterk = [e, ep, ep+fp+ω, ep+2fp+α, 2e+2f+α]` with `ω = 2·w8`, `α = 2·w1` in the dual basis (lines 335–347).
+- **The rank-10 quotients** `Sterk_j = e_perp_mod_e(v_j)` (lines 354–361). Per the in-tree isometry tests: `Sterk_1 ≅ U(2) ⊕ E8(2) = E10(2)` (two-elementary type $(10,10,0)$); `Sterk_2..5 ≅ U ⊕ E8(2)` (type $(10,8,0)$).
+- **The Vinberg runs** use `vinal` (imported at line 8 as the installed package; wrapper at lines 38–40 calls `VinAl(gram, v0).FindRoots()`) and a Julia implementation ("Julia" in the comments). Each root below is a 10-tuple of coordinates in the recorded basis of the respective rank-10 lattice.
+- **Sterk's own root sets, hand-entered from the paper**, are also in-tree for comparison: `Sterk_roots["Sterk_1".."Sterk_5"]` built inside the $(20,2,0)$ model `L_20_2_0 = U ⊕ U(2) ⊕ E8²` (lines 485–579), and direct `sterks1..sterks5` vectors in `TEn` coordinates (lines 583–678). These realize the published counts 12, 10, 12, 11, 14.
 
-## Computed root sets (verbatim from `init.sage` lines 720–860)
+## Computed root sets (verbatim from `init.sage` lines 718–858)
 
 ```python
 ##### [12, 10, 12, 11, 14] ##################
@@ -182,7 +182,7 @@ Sterk5_vinal = [
 
 ## Pointers
 
-- Computation and data: `computations/scripts/init.sage` — cusp construction lines 322–363; Sterk's hand-entered root sets lines 487–581 (in the $(20,2,0)$ model) and 585–680 (in `TEn`); computed Julia/VinAl root sets lines 720–860.
+- Computation and data: `computations/scripts/init.sage` — cusp construction lines 320–361; Sterk's hand-entered root sets lines 485–579 (in the $(20,2,0)$ model) and 583–678 (in `TEn`); computed Julia/VinAl root sets lines 718–858.
 - Downstream consumer: `archives/notebooks/Classification of Sterk Elliptic Subdiagrams.ipynb` (elliptic-subdiagram classification over `Sterk_roots`), whose plot output is `computations/enriques-paper-artifacts/Sterk/Sterk_1..5/`.
 - Cross-reference: `computations/enriques-paper-artifacts/Sterk/README.md`.
 
@@ -191,4 +191,4 @@ Sterk5_vinal = [
 1. Identify the reflection subgroup Sterk works with per cusp, and exhibit his 12/10/12/11/14-wall domain as a union of full-group chambers bounded by the computed 9–10 walls.
 2. Reconcile the ideal vertices: VinAl reports 1–2 ideal vertices per cusp that Sterk's finite root lists do not carry; determine how they correspond under the chamber decomposition.
 3. The two computed sets themselves differ (Sterk 1: Julia 9 vs VinAl 10); check whether the Julia run terminated early or the sets generate the same reflection group.
-4. Check which lattice the recorded runs were actually given. `run_vin` (`init.sage:943–960`) intends to hand `vinal` the twist of a signature-$(1,n)$ lattice, because `vinal` expects signature $(n,1)$, and then to negate the returned roots. It initializes `doTwist = False` and then assigns to a differently spelled name `do_twist` inside the branch, so `doTwist` is never true and the negation never runs. Whether the recorded root lists came through that path is not recorded. The preamble's own delegation (`preamble/.../hyperbolic_lattices.sage`, `vinberg_algorithm`) handles the signature convention explicitly and is the surface to re-run against.
+4. Check which lattice the recorded runs were actually given. `run_vin` (`init.sage:941–958`) intends to hand `vinal` the twist of a signature-$(1,n)$ lattice, because `vinal` expects signature $(n,1)$, and then to negate the returned roots. It initializes `doTwist = False` and then assigns to a differently spelled name `do_twist` inside the branch, so `doTwist` is never true and the negation never runs. Whether the recorded root lists came through that path is not recorded. The preamble's own delegation (`preamble/.../hyperbolic_lattices.sage`, `vinberg_algorithm`) handles the signature convention explicitly and is the surface to re-run against.

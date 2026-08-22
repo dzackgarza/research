@@ -31,7 +31,7 @@ nothing an engine returns leaves this module unverified over $\mathbb Z$.
 
 * **VinbergsAlgorithmNF** (Bottinelli) enumerates Vinberg roots over
   totally real number fields; the seam runs it over $\mathbb Q$ as a second
-  engine beside the vendored ``vinal``.
+  engine beside ``vinal``.
 
 Matrix convention at this boundary: the preamble reads a morphism matrix in
 rows -- row $i$ is the image of the $i$-th framing label -- so an isometry
@@ -663,7 +663,7 @@ def vinbergs_algorithm_nf_root_rows(
     real number fields; this seam presents $\mathbb Q$ as
     ``rationals_as_number_field`` and asks for the next ``count`` roots --
     the program the source corpus ran.  A second engine for the owned
-    ``vinberg_algorithm`` (whose default engine is the vendored ``vinal``);
+    ``vinberg_algorithm`` (whose default engine is ``vinal``);
     root normalization differs per engine, so this seam only shapes the
     rows and the owned caller verifies them against the lattice.
     """

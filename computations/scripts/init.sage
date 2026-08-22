@@ -5,8 +5,6 @@ import pandas as pd
 from IPython.display import HTML
 from collections import Counter
 from sage.modules.free_module_integer import IntegerLattice
-import sys
-sys.path.append('/home/dzack/gitclones/vinal/src/sage')
 from vinal import *
 import subprocess
 import tempfile
