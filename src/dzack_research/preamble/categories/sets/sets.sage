@@ -113,6 +113,131 @@ def _has_canonical_set_inclusion(domain: Parent, codomain: Parent) -> bool:
     return domain is NN and engine_ring(codomain) is SageZZ
 
 
+class SubsetsOfSet(CategoryWithParameters):
+    r"""The canonical set-valued subobjects of one set.
+
+    An object is its inclusion morphism.  The categorical structure comes
+    from ``Sets().SubObject(X)``.  This level adds only the characteristic
+    morphism and the Boolean operations specific to sets.
+    """
+
+    def __init__(self, base_set: "lexicon.Set") -> None:
+        self._base_set = base_set
+        super().__init__()
+
+    def super_categories(self) -> list[SageCategory]:
+        return [Sets().SubObject(self._base_set)]
+
+    def _make_named_class_key(self, name: str) -> SageCategory:
+        return Sets()
+
+    def _repr_object_names(self) -> str:
+        return f"subsets of {self._base_set}"
+
+    class MorphismMethods:
+        _power_set: Parent
+        _characteristic_morphism: SetMorphism
+        _members: "frozenset[Element] | None"
+
+        def inclusion(self) -> Morphism:
+            r"""Return this subset as its defining monomorphism."""
+            return self
+
+        def power_set(self) -> Parent:
+            return self._power_set
+
+        def members(self) -> "frozenset[Element] | None":
+            r"""Return the explicit finite members, when available."""
+            return self._members
+
+        def underlying_set(self) -> "lexicon.Set":
+            r"""Return the domain of the inclusion."""
+            return self.domain()
+
+        def characteristic_morphism(self) -> SetMorphism:
+            r"""Return the classifying morphism into ``Delta[1]``."""
+            return self._characteristic_morphism
+
+        def __contains__(self, member: Element) -> bool:
+            return self._characteristic_morphism(member) == Sets.Δ[1](1)
+
+        def __iter__(self) -> Iterator[Element]:
+            return iter(self.domain())
+
+        def _decidable_finite_equality(self, other: "PowerSetElement") -> bool:
+            base_set = self.codomain()
+            if base_set in Sets().Finite():
+                return all((member in self) == (member in other) for member in base_set)
+            if self._members is None or other.members() is None:
+                return False
+            return self._members == other.members()
+
+        def __eq__(self, other: "PowerSetElement") -> bool:
+            match other:
+                case _ if self is other:
+                    return True
+                case SubsetsOfSet.MorphismMethods() if self.codomain() is not other.codomain():
+                    return False
+                case SubsetsOfSet.MorphismMethods() if self._characteristic_morphism is other._characteristic_morphism:
+                    return True
+                case SubsetsOfSet.MorphismMethods():
+                    return self._decidable_finite_equality(other)
+                case _:
+                    return False
+
+        def __ne__(self, other: "PowerSetElement") -> bool:
+            return not self == other
+
+        def __hash__(self) -> int:
+            base_set = self.codomain()
+            if base_set in Sets().Finite():
+                return hash((self._power_set, tuple(member in self for member in base_set)))
+            if self._members is not None:
+                return hash((self._power_set, self._members))
+            return hash(self._characteristic_morphism)
+
+        def __le__(self, other: "PowerSetElement") -> bool:
+            assert self.codomain() is other.codomain(), (
+                "subset order requires a common inclusion codomain"
+            )
+            base_set = self.codomain()
+            if base_set in Sets().Finite():
+                return all(member not in self or member in other for member in base_set)
+            assert self._members is not None, (
+                "this subset relation has no available decision procedure"
+            )
+            return all(member in other for member in self._members)
+
+        def union(self, other: "PowerSetElement") -> "PowerSetElement":
+            return self._power_set.from_predicate(
+                lambda member: member in self or member in other
+            )
+
+        def intersection(self, other: "PowerSetElement") -> "PowerSetElement":
+            return self._power_set.from_predicate(
+                lambda member: member in self and member in other
+            )
+
+        def difference(self, other: "PowerSetElement") -> "PowerSetElement":
+            return self._power_set.from_predicate(
+                lambda member: member in self and member not in other
+            )
+
+        def symmetric_difference(self, other: "PowerSetElement") -> "PowerSetElement":
+            return self._power_set.from_predicate(
+                lambda member: (member in self) != (member in other)
+            )
+
+        def complement(self) -> "PowerSetElement":
+            return self._power_set.from_predicate(lambda member: member not in self)
+
+        def _repr_(self) -> str:
+            return f"Subobject of {self.codomain()} defined by {self.domain()}"
+
+
+PowerSetElement = SubsetsOfSet.MorphismMethods
+
+
 class PowerSets(CategoryWithParameters):
     r"""The power object of a set.
 
@@ -158,16 +283,19 @@ class PowerSets(CategoryWithParameters):
             self,
             subset: "lexicon.Set",
             characteristic_morphism: SetMorphism,
+            members: "frozenset[Element] | None" = None,
         ) -> PowerSetElement:
             inclusion = SetMorphism(
                 Hom(subset, self._base_set, Sets()),
                 lambda member: self._base_set(member),
             )
-            return self.element_class(
-                inclusion=inclusion,
-                characteristic_morphism=characteristic_morphism,
-                parent=self,
+            inclusion._power_set = self
+            inclusion._characteristic_morphism = characteristic_morphism
+            inclusion._members = members
+            subset_object: PowerSetElement = refine(
+                inclusion, SubsetsOfSet(self._base_set)
             )
+            return subset_object
 
         def _subset_from_predicate(
             self,
@@ -191,15 +319,10 @@ class PowerSets(CategoryWithParameters):
                 self.characteristic_homset(),
                 lambda member: truth_values(SageInteger(member in members)),
             )
-            inclusion = SetMorphism(
-                Hom(subset, self._base_set, Sets()),
-                lambda member: self._base_set(member),
-            )
-            return self.element_class(
-                inclusion=inclusion,
-                characteristic_morphism=characteristic_morphism,
-                members=frozenset(members),
-                parent=self,
+            return self._from_subset(
+                subset,
+                characteristic_morphism,
+                frozenset(members),
             )
 
         def _element_constructor_(
@@ -217,13 +340,7 @@ class PowerSets(CategoryWithParameters):
                         self.characteristic_homset(),
                         lambda member: Sets.Δ[1](1),
                     )
-                    return self.element_class(
-                        inclusion=Hom(
-                            self._base_set, self._base_set, Sets()
-                        ).identity(),
-                        characteristic_morphism=characteristic,
-                        parent=self,
-                    )
+                    return self._from_subset(self._base_set, characteristic)
                 case Parent() if _has_canonical_set_inclusion(candidate, self._base_set):
                     truth_values = Sets.Δ[1]
                     characteristic_morphism = SetMorphism(
@@ -349,145 +466,6 @@ class PowerSets(CategoryWithParameters):
 
         def _repr_(self) -> str:
             return f"Power set of {self._base_set}"
-
-    class ElementMethods:
-        r"""A subobject of ``X`` represented by ``A -> X`` and ``X -> Delta[1]``.
-
-        A parent has one element class, so the two ways to present a
-        subobject are one class here.  The classifying morphism is always
-        present.  ``members`` holds the explicit finite subset when the
-        caller supplied one, and is ``None`` otherwise; the decisions that
-        need an explicit subset ask for it and say so when it is absent.
-        """
-
-        def __init__(
-            self,
-            inclusion: Morphism,
-            characteristic_morphism: SetMorphism,
-            members: "frozenset[Element] | None" = None,
-            **rest: "ConstructionData",
-        ) -> None:
-            self._inclusion = inclusion
-            self._characteristic_morphism = characteristic_morphism
-            self._members = members
-            super().__init__(**rest)
-
-        def inclusion(self) -> Morphism:
-            r"""Return the monomorphism that defines this subobject."""
-            return self._inclusion
-
-        def members(self) -> "frozenset[Element] | None":
-            r"""Return the explicit finite members, if the caller gave them."""
-            return self._members
-
-        def underlying_set(self) -> "lexicon.Set":
-            r"""Return the domain of the defining monomorphism."""
-            return self._inclusion.domain()
-
-        def characteristic_morphism(self) -> SetMorphism:
-            r"""Return the classifying morphism into ``Delta[1]``."""
-            return self._characteristic_morphism
-
-        def __contains__(self, member: Element) -> bool:
-            return self._characteristic_morphism(member) == Sets.Δ[1](1)
-
-        def __iter__(self) -> Iterator[Element]:
-            return iter(self.underlying_set())
-
-        def _decidable_finite_equality(self, other: PowerSetElement) -> bool:
-            base_set = self.parent().base_set()
-            match base_set in Sets().Finite():
-                case True:
-                    return all(
-                        (member in self) == (member in other)
-                        for member in base_set
-                    )
-                case False:
-                    if self._members is None or other.members() is None:
-                        return False
-                    return self._members == other.members()
-
-        def __eq__(self, other: "PowerSetElement") -> bool:
-            match other:
-                case _ if self is other:
-                    return True
-                case PowerSetElement() if (
-                    self.inclusion().codomain() is not other.inclusion().codomain()
-                ):
-                    return False
-                case PowerSetElement() if (
-                    self._characteristic_morphism is other._characteristic_morphism
-                ):
-                    return True
-                case PowerSetElement():
-                    return self._decidable_finite_equality(other)
-                case _:
-                    return False
-
-        def __ne__(self, other: "PowerSetElement") -> bool:
-            return not self == other
-
-        def __hash__(self) -> int:
-            base_set = self.parent().base_set()
-            if base_set in Sets().Finite():
-                return hash(
-                    (
-                        self.parent(),
-                        tuple(member in self for member in base_set),
-                    )
-                )
-            if self._members is not None:
-                return hash((self.parent(), self._members))
-            return hash(self._characteristic_morphism)
-
-        def __le__(self, other: PowerSetElement) -> bool:
-            assert self.inclusion().codomain() is other.inclusion().codomain(), (
-                "subset order requires a common inclusion codomain"
-            )
-            base_set = self.parent().base_set()
-            if base_set in Sets().Finite():
-                return all(
-                    member not in self or member in other for member in base_set
-                )
-            assert self._members is not None, (
-                "this subset relation has no available decision procedure"
-            )
-            return all(member in other for member in self._members)
-
-        def union(self, other: PowerSetElement) -> PowerSetElement:
-            return self.parent().from_predicate(
-                lambda member: member in self or member in other
-            )
-
-        def intersection(self, other: PowerSetElement) -> PowerSetElement:
-            return self.parent().from_predicate(
-                lambda member: member in self and member in other
-            )
-
-        def difference(self, other: PowerSetElement) -> PowerSetElement:
-            return self.parent().from_predicate(
-                lambda member: member in self and member not in other
-            )
-
-        def symmetric_difference(self, other: PowerSetElement) -> PowerSetElement:
-            return self.parent().from_predicate(
-                lambda member: (member in self) != (member in other)
-            )
-
-        def complement(self) -> PowerSetElement:
-            return self.parent().from_predicate(lambda member: member not in self)
-
-        def _repr_(self) -> str:
-            return f"Subobject of {self.inclusion().codomain()} defined by {self.underlying_set()}"
-
-
-PowerSetElement = PowerSets.ElementMethods
-r"""The class of a subobject of a set.
-
-The category is the class, so the element implementation class of
-:class:`PowerSets` is what an ``isinstance`` question, a match pattern and a
-type annotation all name.
-"""
 
 
 class FiniteSubsetElement(ElementWrapper):
