@@ -114,7 +114,7 @@ class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
 
             return SetMorphism(
                 Hom(self.base_ring(), self, Rings()),
-                lambda scalar: scalar * self.one(),
+                lambda scalar: self(scalar),
             )
 
         def graded_piece(
