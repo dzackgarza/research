@@ -246,9 +246,6 @@ class Sterk:
             half = SageZZ(v["v22"].b(x) / 2)
             return x + half * v["v22"]
 
-        def involute(x: "ModuleElement") -> "ModuleElement":
-            return x + reflect(x)
-
         configurations: dict[str, tuple["ModuleElement", ...]] = {
             "Sterk_1": (
                 v["v3"] + v["v11"],
@@ -287,8 +284,8 @@ class Sterk:
                 v["v4"] + v["v6"],
                 v["v5"],
                 v["v17"] + v["v19"],
-                involute(v["v20"]),
-                involute(v["v18"]),
+                reflect(v["v20"]),
+                reflect(v["v18"]),
             ),
             "Sterk_4": (
                 v["v15"],
@@ -327,8 +324,10 @@ class Sterk:
                 assert norm in (-2, -4), (
                     f"{name} root {index} has norm {norm}"
                 )
-        assert involute(v["v20"]) == v["v22"] + 2 * v["v20"]
-        assert involute(v["v18"]) == v["v22"] + 2 * v["v18"]
+        assert reflect(v["v20"]) == v["v22"] + v["v20"]
+        assert reflect(v["v18"]) == v["v22"] + v["v18"]
+        assert reflect(reflect(v["v20"])) == v["v20"]
+        assert reflect(reflect(v["v18"])) == v["v18"]
         return configurations
 
     @staticmethod

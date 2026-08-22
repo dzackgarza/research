@@ -2193,6 +2193,22 @@ def test_the_two_cuspidal_cubics_meet_to_order_four_at_the_origin() -> None:
 # printed form and a Gram matrix get confused for one another.
 # ---------------------------------------------------------------------------
 
+
+def test_sterk_root_configurations_use_the_lattice_reflection() -> None:
+    r"""Sterk's five configurations consist only of roots of norm \(-2\) or \(-4\)."""
+    from dzack_research.preamble.sterk import Sterk
+
+    configurations = Sterk.sterk_roots()
+
+    assert set(configurations) == {
+        "Sterk_1",
+        "Sterk_2",
+        "Sterk_3",
+        "Sterk_4",
+        "Sterk_5",
+    }
+    assert tuple(map(len, configurations.values())) == (12, 10, 12, 11, 14)
+
 # Section 6.1, verbatim: f(x) = 3x_0^2 + 14x_0x_1 + 98x_0x_2 + 49x_2^2.
 _BK_NON_REFLECTIVE_GRAM = matrix(ZZ, [[3, 7, 49], [7, 0, 0], [49, 0, 49]])
 # Section 6.2, verbatim: f(x) = 49x_1^2 + 98x_0x_2 + 14x_1x_2 + 3x_2^2.
