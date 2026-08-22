@@ -137,9 +137,7 @@ class AbsoluteGaloisGroups(Category_singleton):
             literally one of the defining coordinates of the profinite
             group, not an approximation.
             """
-            quotient: "GaloisGroup_v2" = (
-                self.base_field()._absolute_galois_finite_quotient_(L)
-            )
+            quotient: "GaloisGroup_v2" = L.galois_group()
             return quotient
 
         def restriction_map(self: "AbsoluteGaloisGroupParent", L: "Ring") -> "GaloisRestrictionMap":
@@ -192,9 +190,17 @@ class AbsoluteGaloisGroups(Category_singleton):
             r"""Return the quadratic character attached to \(K(\sqrt a)/K\)."""
             # Local: a module-level import would close a cycle; the module is built by the time this runs.
             from dzack_research.preamble.categories.group.profinite.galois_characters import QuadraticCharacter
+            from dzack_research.preamble.categories.rings.rings import engine_ring
+            from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
 
             K = self.base_field()
-            L = K.extension(K.gen()**2 - a, "sqrt_a")
+            computation_field = engine_ring(K)
+            polynomial_ring = PolynomialRing(computation_field, "x")
+            x = polynomial_ring.gen()
+            L = computation_field.extension(
+                x**2 - computation_field(a),
+                "sqrt_a",
+            )
             pi = self.restriction_map(L)
             return QuadraticCharacter(pi)
 

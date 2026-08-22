@@ -534,6 +534,14 @@ def test_finite_field_frobenius_uses_the_field_order() -> None:
     assert frobenius(primitive_element) != primitive_element**finite_field.characteristic()
 
 
+def test_quadratic_character_uses_the_quadratic_extension() -> None:
+    r"""The character of \(2\) factors through \(\mathbb Q(\sqrt 2)\)."""
+    extension = QQ.absolute_galois_group().quadratic_character(2).extension()
+
+    assert extension.degree() == 2
+    assert extension.gen() ** 2 == 2
+
+
 # ---------------------------------------------------------------------------
 # Restriction to a subfield, on the tower $\QQ\subset\QQ(i),\QQ(\sqrt3)\subset
 # \QQ(\zeta_{12})$.

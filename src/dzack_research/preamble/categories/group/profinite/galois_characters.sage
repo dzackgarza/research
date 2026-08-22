@@ -32,8 +32,9 @@ from typing import TYPE_CHECKING
 
 from sage.misc.cachefunc import cached_function
 from sage.categories.groups import Groups as SageGroups
-
-from dzack_research.preamble.owned_category import object_of
+from sage.categories.homset import Homset as SageHomset
+from sage.categories.morphism import Morphism as SageMorphism
+from dzack_research.preamble.owned_category import OwnedParent, object_of
 from dzack_research.preamble.owned_category_bases import Category
 
 if TYPE_CHECKING:
@@ -53,29 +54,30 @@ class ProfiniteCharacterHomsets(Category):
 
         return [AbsoluteGaloisGroups().Homsets()]
 
-    class ParentMethods:
+    class ParentMethods(OwnedParent, SageHomset):
         def __init__(
             self,
             domain: "Parent",
             codomain: "Group",
             **rest: "ConstructionData",
         ) -> None:
-            super().__init__(
-                domain=domain,
-                codomain=codomain,
+            rest.pop("category")
+            SageHomset.__init__(
+                self,
+                domain,
+                codomain,
                 category=SageGroups(),
                 check=False,
-                **rest,
             )
 
-    class ElementMethods:
+    class ElementMethods(SageMorphism):
         def __init__(
             self,
             parent: "Parent",
             extension: "Ring",
         ) -> None:
             self._extension = extension
-            super().__init__(parent)
+            SageMorphism.__init__(self, parent)
 
         def extension(self) -> "Ring":
             r"""Return the finite extension through which the character factors."""

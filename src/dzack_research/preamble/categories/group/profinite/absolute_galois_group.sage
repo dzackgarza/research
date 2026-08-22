@@ -126,12 +126,14 @@ class RealizedAbsoluteGaloisGroups(Category_singleton):
         ) -> None:
             # Local: a module-level import would close a cycle; the module is built by the time this runs.
             from dzack_research.preamble.categories.group.profinite.galois_choice_policy import default_choice_policy
+            from dzack_research.preamble.categories.rings.rings import engine_ring
 
             self._field = field
+            computation_field = engine_ring(field)
 
             # Choose the algebraic closure
             if closure is None:
-                closure = field.algebraic_closure()
+                closure = computation_field.algebraic_closure()
             self._closure = closure
 
             # Choose the base embedding iota: K -> bar K
@@ -140,7 +142,7 @@ class RealizedAbsoluteGaloisGroups(Category_singleton):
             self._choice_policy = choice_policy
 
             if embedding is None:
-                embedding = choice_policy.choose_embedding(field, closure)
+                embedding = choice_policy.choose_embedding(computation_field, closure)
             self._embedding = embedding
 
             super().__init__(**rest)
