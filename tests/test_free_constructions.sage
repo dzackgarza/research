@@ -450,17 +450,22 @@ def test_degree_two_pieces_exist_for_countably_many_generators() -> None:
 
 
 def test_tensor_and_divided_squares_respect_a_module_presentation() -> None:
-    r"""$T^2(\mathbb Z/2)=\mathbb Z/2$ and $\Gamma^2(\mathbb Z/2)=\mathbb Z/4$.
+    r"""The divided square uses the divided-power ideal of the relations.
 
-    The first relation is $2(x\otimes x)=0$.  The divided-power relation is
-    $\gamma_2(2x)=4\gamma_2(x)=0$.  Thus the two square constructions cannot
-    use the same quotient presentation.
+    For \(M=\mathbb Z/n\), multiplication by the relation gives
+    \(2n\gamma_2(x)=0\), while its divided square gives
+    \(n^2\gamma_2(x)=0\).  Their greatest common divisor gives order \(n\)
+    for odd \(n\) and order \(2n\) for even \(n\).
     """
     _ensure_preamble()
     module = FinitelyPresentedTorsionModules(ZZ).from_relations(matrix(ZZ, [[2]]))
+    odd_module = FinitelyPresentedTorsionModules(ZZ).from_relations(
+        matrix(ZZ, [[3]])
+    )
 
     assert TensorSquare(module).invariants() == (2,)
     assert DividedSquare(module).invariants() == (4,)
+    assert DividedSquare(odd_module).invariants() == (3,)
     assert TensorPower(module, 3).invariants() == (2,)
     assert DividedPower(module, 3).invariants() == (2,)
     assert DividedPower(module, 4).invariants() == (8,)
