@@ -296,6 +296,10 @@ class MonomialSystem:
         r"""Return the parent the monomials live in."""
         return self._parent
 
+    def generator(self, label: "Element") -> "Element":
+        r"""Return the degree-one monomial indexed by ``label``."""
+        return self._parent.gen(label)
+
     def degree(self, monomial: "Element") -> int:
         r"""Return the total degree: the sum of the exponents."""
         return sum(exponent for _, exponent in self.factors(monomial))
@@ -456,10 +460,7 @@ class AlternatingMonomials(MonomialSystem):
 
     def _subset(self, members: "_Iterable[Element]") -> "Element":
         r"""Return the monomial that is the subset with these members."""
-        from dzack_research.preamble.categories.sets.sets import SubsetsOfSize
-
-        members = tuple(members)
-        return SubsetsOfSize(self._labels, len(members))(members)
+        return self._parent(tuple(members))
 
     def _sorted(self, monomial: "Element") -> tuple:
         r"""Return the members in the generating set's own order.

@@ -23,12 +23,13 @@ from sage.categories.morphism import Morphism, SetMorphism
 from sage.rings.integer import Integer as SageInteger
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.sets.condition_set import ConditionSet as SageConditionSet
-from sage.sets.set import Set_generic, Set_object_enumerated
+from sage.sets.set import Set_generic
 from sage.sets.image_set import ImageSet as SageImageSet
 from sage.sets.integer_range import IntegerRange
 from sage.sets.set import Set as SageSet
 from sage.sets.totally_ordered_finite_set import TotallyOrderedFiniteSet
 from sage.structure.element import Element
+from sage.structure.element_wrapper import ElementWrapper
 from sage.structure.parent import Parent
 from sage.misc.cachefunc import cached_function
 
@@ -490,6 +491,26 @@ type annotation all name.
 """
 
 
+class FiniteSubsetElement(ElementWrapper):
+    r"""A finite subset as an element of its subset parent.
+
+    Sage's ``ElementWrapper`` supplies the parent, equality, and hashing.
+    The wrapped value is the immutable finite set of members.
+    """
+
+    def __iter__(self) -> Iterator[Element]:
+        return iter(self.value)
+
+    def __len__(self) -> int:
+        return len(self.value)
+
+    def __contains__(self, member: Element) -> bool:
+        return member in self.value
+
+    def _repr_(self) -> str:
+        return repr(SageSet(self.value))
+
+
 class FixedCardinalitySubsets(CategoryWithParameters):
     r"""The subsets of ``S`` with one fixed finite cardinality.
 
@@ -518,7 +539,7 @@ class FixedCardinalitySubsets(CategoryWithParameters):
     class ParentMethods:
         r"""\([S]^k\): the subsets of ``S`` of cardinality ``k``."""
 
-        element_class = Set_object_enumerated
+        element_class = FiniteSubsetElement
 
         def __init__(
             self,
@@ -560,8 +581,8 @@ class FixedCardinalitySubsets(CategoryWithParameters):
         def _element_constructor_(
             self,
             members: Iterable[Element],
-        ) -> Set_object_enumerated:
-            subset = self.element_class(members)
+        ) -> FiniteSubsetElement:
+            subset = self.element_class(self, frozenset(members))
             assert len(subset) == self._subset_cardinality, (
                 f"a member has cardinality {self._subset_cardinality}"
             )
@@ -575,27 +596,28 @@ class FixedCardinalitySubsets(CategoryWithParameters):
             x: ElementConstructorInput = (),
             *arguments: ElementConstructorInput,
             **keywords: ElementConstructorInput,
-        ) -> Set_object_enumerated:
+        ) -> FiniteSubsetElement:
             assert isinstance(x, Iterable), "a subset is built from its members"
             return self._element_constructor_(x)
 
         def __contains__(self, candidate: ElementConstructorInput) -> bool:
             if not isinstance(candidate, Iterable):
                 return False
-            subset = SageSet(candidate)
+            subset = frozenset(candidate)
             return (
                 len(subset) == self._subset_cardinality
                 and all(member in self._source for member in subset)
             )
 
-        def __iter__(self) -> Iterator[Set_object_enumerated]:
+        def __iter__(self) -> Iterator[FiniteSubsetElement]:
             from sage.combinat.subset import Subsets as SageSubsets
 
             if self._source in Sets().Finite():
-                yield from SageSubsets(self._source, self._subset_cardinality)
+                for subset in SageSubsets(self._source, self._subset_cardinality):
+                    yield self(tuple(subset))
                 return
             if self._subset_cardinality == 0:
-                yield self.element_class(())
+                yield self(())
                 return
 
             preceding: list[Element] = []
@@ -605,7 +627,7 @@ class FixedCardinalitySubsets(CategoryWithParameters):
                         tuple(preceding),
                         self._subset_cardinality - 1,
                     ):
-                        yield self.element_class(tuple(initial) + (maximum,))
+                        yield self(tuple(initial) + (maximum,))
                 preceding.append(maximum)
 
         def _repr_(self) -> str:
@@ -643,7 +665,7 @@ class FinitePowerSets(CategoryWithParameters):
     class ParentMethods:
         r"""\(P_{\mathrm{fin}}(S)\): the finite subsets of ``S``."""
 
-        element_class = Set_object_enumerated
+        element_class = FiniteSubsetElement
 
         def __init__(
             self, source: "lexicon.Set", **rest: "ConstructionData"
@@ -672,8 +694,8 @@ class FinitePowerSets(CategoryWithParameters):
         def _element_constructor_(
             self,
             members: Iterable[Element],
-        ) -> Set_object_enumerated:
-            subset = self.element_class(members)
+        ) -> FiniteSubsetElement:
+            subset = self.element_class(self, frozenset(members))
             assert all(member in self._source for member in subset), (
                 "every member of a subset must lie in its source set"
             )
@@ -684,28 +706,29 @@ class FinitePowerSets(CategoryWithParameters):
             x: ElementConstructorInput = (),
             *arguments: ElementConstructorInput,
             **keywords: ElementConstructorInput,
-        ) -> Set_object_enumerated:
+        ) -> FiniteSubsetElement:
             assert isinstance(x, Iterable), "a subset is built from its members"
             return self._element_constructor_(x)
 
         def __contains__(self, candidate: ElementConstructorInput) -> bool:
             if not isinstance(candidate, Iterable):
                 return False
-            subset = SageSet(candidate)
+            subset = frozenset(candidate)
             return all(member in self._source for member in subset)
 
-        def __iter__(self) -> Iterator[Set_object_enumerated]:
+        def __iter__(self) -> Iterator[FiniteSubsetElement]:
             from sage.combinat.subset import Subsets as SageSubsets
 
             if self._source in Sets().Finite():
-                yield from SageSubsets(self._source)
+                for subset in SageSubsets(self._source):
+                    yield self(tuple(subset))
                 return
 
-            yield self.element_class(())
+            yield self(())
             preceding: list[Element] = []
             for maximum in self._source:
                 for initial in SageSubsets(tuple(preceding)):
-                    yield self.element_class(tuple(initial) + (maximum,))
+                    yield self(tuple(initial) + (maximum,))
                 preceding.append(maximum)
 
         def _repr_(self) -> str:
@@ -799,7 +822,10 @@ def _as_set(source: lexicon.Set[E] | lexicon.OrderedSet[E]) -> "lexicon.Set[E]":
     # asking that returned the semiring $\NN$ where the set of its elements
     # was wanted.  What is asked is whether the source already *is* the set of
     # its elements, and a parent carrying structure is not.
-    if isinstance(source, Set_generic):
+    if isinstance(source, Set_generic) or isinstance(
+        source.category(),
+        (PowerSets, FixedCardinalitySubsets, FinitePowerSets),
+    ):
         return source
     return Set(source)
 
