@@ -499,6 +499,26 @@ def test_the_absolute_galois_group_of_the_rationals_is_constructible() -> None:
     assert galois_group in Groups()
 
 
+def test_absolute_galois_group_abelianity_uses_the_field_category() -> None:
+    r"""Finite fields are procyclic; the general field category makes no such claim."""
+    from dzack_research.preamble.categories.group.profinite.absolute_galois_group import (
+        RealizedAbsoluteGaloisGroups,
+        absolute_galois_group,
+        absolute_galois_group_category,
+    )
+    from sage.rings.finite_rings.finite_field_constructor import GF as SageGF
+    from sage.rings.rational_field import QQ as SageQQ
+
+    finite_field = SageGF(25)
+    rational_function_field = FunctionField(SageGF(5), "t")
+
+    assert absolute_galois_group_category(
+        rational_function_field
+    ) == RealizedAbsoluteGaloisGroups()
+    assert absolute_galois_group(finite_field).is_abelian() is True
+    assert absolute_galois_group(SageQQ).is_abelian() is Unknown
+
+
 # ---------------------------------------------------------------------------
 # Restriction to a subfield, on the tower $\QQ\subset\QQ(i),\QQ(\sqrt3)\subset
 # \QQ(\zeta_{12})$.

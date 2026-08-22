@@ -90,6 +90,10 @@ class AbsoluteGaloisGroups(Category_singleton):
             r"""Return ``True``; an absolute Galois group is profinite."""
             return True
 
+        def is_abelian(self) -> "bool | Unknown":
+            r"""Return whether \(G_K\) is abelian when this category decides it."""
+            return Unknown
+
         def is_finitely_generated(
             self: "AbsoluteGaloisGroupParent",
         ) -> "bool | Unknown":
