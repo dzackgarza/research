@@ -607,7 +607,7 @@ class Sets(Category):
 
             def objects(self) -> SageParent:
                 r"""Return the set of functions that are objects of this category."""
-                if self.base_category() is Sets():
+                if self.hom_category() is Sets().HomCategory():
                     from dzack_research.preamble.categories.sets.sets import (
                         ExponentialOfSets,
                     )
