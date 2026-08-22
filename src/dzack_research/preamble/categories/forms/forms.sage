@@ -471,7 +471,22 @@ class BilinearFormMorphism(Morphism):
             f"the pullback morphism lands in {morphism.codomain()}, but this "
             f"form is defined on {self.module()}"
         )
-        return BilinearForms(morphism.domain(), self.codomain())(
+        domain = morphism.domain()
+        forms = BilinearForms(domain, self.codomain())
+        if domain.module_generating_set() in Sets().Finite():
+            module_generators = tuple(domain.module_generators())
+            return forms(
+                matrix(
+                    [
+                        [
+                            self(morphism(left), morphism(right))
+                            for right in module_generators
+                        ]
+                        for left in module_generators
+                    ]
+                )
+            )
+        return forms(
             lambda left, right: self(morphism(left), morphism(right))
         )
 
