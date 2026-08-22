@@ -105,6 +105,8 @@ def _canonical_subgroup_inclusion(subgroup: "Group") -> SetMorphism:
     returned.
     """
     containing_group = subgroup.supergroup()
+    if hasattr(subgroup, "automorphism_subgroup_inclusion"):
+        return subgroup.automorphism_subgroup_inclusion()
     # In the owned category, because both ends are owned groups: an object
     # reached only through the owned tree -- a predicate subgroup among them --
     # is in no Sage group category at all, and asking for the homset there

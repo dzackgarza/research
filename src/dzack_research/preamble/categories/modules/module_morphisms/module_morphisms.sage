@@ -618,6 +618,29 @@ class AutomorphismSubgroup:
         module = self.domain()
         return AutomorphismSubgroupInclusion(group_action_homset(self, module))
 
+    def automorphism_subgroup_inclusion(
+        self: "FramedAutomorphismSubgroup",
+    ) -> "GroupAction":
+        r"""Return the faithful action that includes this subgroup in \(\operatorname{Aut}(M)\)."""
+        return AutomorphismSubgroupInclusion(
+            group_action_homset(self, self.domain())
+        )
+
+    def automorphism_subgroup_identity(
+        self: "FramedAutomorphismSubgroup",
+    ) -> ModuleAutomorphism:
+        r"""Return the identity in the containing automorphism group."""
+        return self.supergroup().one()
+
+    def automorphism_subgroup_element(
+        self: "FramedAutomorphismSubgroup",
+        datum: "ElementConstructorInput",
+    ) -> ModuleAutomorphism:
+        r"""Return ``datum`` as an automorphism in this subgroup."""
+        automorphism = self.supergroup()(datum)
+        assert automorphism in self, f"{automorphism} is not in {self}"
+        return automorphism
+
     @cached_method
     def _defining_matrix_group(self) -> "Group":
         r"""Return the GAP-backed matrix model of this group.
@@ -1006,7 +1029,7 @@ class GroupActionHomset(GroupActionHomsetBase):
         Homset.__init__(
             self,
             group,
-            ModuleAutomorphismGroup(module),
+            module.Aut(),
             category=Groups(),
             check=False,
         )
