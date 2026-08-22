@@ -520,7 +520,7 @@ def test_absolute_galois_group_abelianity_uses_the_field_category() -> None:
 
 
 def test_finite_field_frobenius_uses_the_field_order() -> None:
-    r"""The canonical generator of (G_{\mathbb F_q}) is (x\mapsto x^q)."""
+    r"""The canonical generator of \(G_{\mathbb F_q}\) is \(x\mapsto x^q\)."""
     from dzack_research.preamble.categories.group.profinite.absolute_galois_group import (
         absolute_galois_group,
     )
