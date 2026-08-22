@@ -161,7 +161,7 @@ class Cat(OwnedCategoryMixin, Category):
             """
             # Local: the functor-space module imports this one for ``Cat``,
             # so a module-level import here would close that cycle.
-            from dzack_research.preamble.categories.abstract_categories.functors import FunctorSpace
+            from dzack_research.preamble.categories.abstract_categories.functors import FunctorHomset
 
-            functor_space: "Parent" = FunctorSpace(self, codomain)
-            return functor_space
+            functor_homset: "Parent" = FunctorHomset(self, codomain)
+            return functor_homset
