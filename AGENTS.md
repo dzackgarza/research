@@ -1366,6 +1366,33 @@ The exceptions are narrow, and each must be nameable at the site:
 Nothing else qualifies. A probe outside these sites is a defect, and it is
 where a non-mathematical shortcut hides.
 
+## Counting, containers, and where comparison lives
+
+`len` is almost never correct. Use `cardinality`.
+
+- A collection of mathematical objects is a **set**. `tuple` and `list` are
+  almost never the right return type: they add an order the mathematics did not
+  supply, and they carry a length instead of a cardinality.
+- A length is an `int` and assumes finiteness. A cardinality is a cardinal and
+  does not. Every `len` is therefore a silent finiteness hypothesis, at a site
+  that never stated one. The order of a group and the order of an element are
+  cardinalities, not integers.
+- Do not loop to accumulate. **Sum over a set.** An index loop imposes an
+  enumeration on an object that may have none, and it hides the operation
+  behind the iteration.
+- Compare cardinalities, never lengths.
+
+**Comparison itself is localized.** Do not compare coarse numerical invariants
+in ordinary code at all. Every comparison belongs in `__eq__` or in
+`is_isomorphic`, which are the two methods whose whole job is to decide
+sameness. Everywhere else, ask the object.
+
+Inside those two methods you `case`/`match` to route. One of the routes may
+legitimately compare numerical invariants internally — but only in a case whose
+hypotheses are stated in the match itself, so a reader sees the hypothesis
+beside the comparison that needs it. A numerical comparison written outside
+such a case is a criterion smuggled in without its theorem.
+
 ## Simplicity and prior art
 
 - Choose the smallest implementation that satisfies the complete mathematical requirement.
