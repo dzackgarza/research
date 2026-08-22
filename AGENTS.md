@@ -1349,6 +1349,26 @@ reaches into a private method. The moment `X._f()` is called from outside `X`,
 its primitive signature is a public interface and the concession is void. *Public
 interfaces and encapsulation* above owns that boundary.
 
+**Never invent a type to satisfy these rules.** A constructor that took a list,
+a tuple and two integers does not become correct when those become
+`MyCustomClassCreationDatum`. Nothing was fixed: the caller still assembles the
+same unstructured data, the same mathematics is still missing, and now there is
+a class with no referent to maintain as well. Every type names a real
+mathematical object. Where the field has a word, use the field's word; where it
+has none, the absence is a signal to check the notion, never a licence to coin
+one. The datum being packaged is almost always something with a name already —
+a morphism, a generating set, a presentation, an indexed family — and once it is
+named the signature is right without a wrapper.
+
+Over-compliance is the same defect from the other side. A class minted so a
+line technically passes, a name coined because the rule said not to write
+`tuple`, a type introduced to quiet a checker: each satisfies the letter and
+breaks the statement, and each is worse than the original violation, which at
+least stayed visible. These rules restate what the mathematics already
+requires. If following one produces something a mathematician cannot name, the
+rule was not the problem — stop and say so. The menagerie of inventions this
+has already produced is in `.agents/references/mathematical-auditor-priming.md`.
+
 ## Dynamic peeking is prohibited; the category is the type
 
 `getattr`, `setattr`, `hasattr`, `isinstance`, `type(...)` comparisons, `cast`,
