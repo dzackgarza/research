@@ -733,7 +733,7 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
                 Sets(),
             ), "the map must have the two algebra generating sets as endpoints"
             induced: "Morphism" = self.hom(
-                lambda label: codomain.algebra_generator(set_morphism._call_(label)),
+                lambda label: codomain.algebra_generator(set_morphism(label)),
                 codomain,
             )
             return induced
@@ -2354,7 +2354,7 @@ class PresentedFreeAlgebras(OwnedCategoryOverBaseRing):
         def algebra_generator(
             self, label: "_SageElement"
         ) -> "PresentedFreeAlgebraElement":
-            return self._algebra_generator_morphism._call_(label)
+            return self._algebra_generator_morphism(label)
 
         def algebra_generators(self) -> tuple:
             return tuple(

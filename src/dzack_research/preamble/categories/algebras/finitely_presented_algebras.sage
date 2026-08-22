@@ -178,7 +178,7 @@ class FinitelyPresentedAlgebras(OwnedCategoryOverBaseRing):
         def algebra_generator(
             self: "PresentedAlgebraParent", label: "Element"
         ) -> "Element":
-            return self.algebra_generator_morphism()._call_(label)
+            return self.algebra_generator_morphism()(label)
 
         def algebra_generators(self: "PresentedAlgebraParent") -> "OrderedSet":
             assert self.algebra_generating_set() in Sets().Finite(), (

@@ -223,7 +223,7 @@ class Modules(Category_over_base_ring):
             def _module_generator_image(
                 self: Self, element_of_S: "Element"
             ) -> "ModuleElement":
-                return self.module_generator_morphism()._call_(element_of_S)
+                return self.module_generator_morphism()(element_of_S)
 
             def _pointwise(self, combine: "Callable") -> "Morphism":
                 r"""Return the morphism sending \(e\) to ``combine(e)``.
@@ -257,8 +257,8 @@ class Modules(Category_over_base_ring):
                     and other.parent() is self.parent()
                 ), "morphisms add only inside one homset"
                 def sum_at(element_of_S: "Element") -> "ModuleElement":
-                    here: "ModuleElement" = self.module_generator_morphism()._call_(element_of_S)
-                    there: "ModuleElement" = other.module_generator_morphism()._call_(element_of_S)
+                    here: "ModuleElement" = self.module_generator_morphism()(element_of_S)
+                    there: "ModuleElement" = other.module_generator_morphism()(element_of_S)
                     return here + there
 
                 return self._pointwise(sum_at)
@@ -266,7 +266,7 @@ class Modules(Category_over_base_ring):
             def __neg__(self) -> "Morphism":
                 r"""Return the pointwise negation \(-f\)."""
                 return self._pointwise(
-                    lambda element_of_S: -self.module_generator_morphism()._call_(
+                    lambda element_of_S: -self.module_generator_morphism()(
                         element_of_S
                     )
                 )
@@ -300,7 +300,7 @@ class Modules(Category_over_base_ring):
                             Sets(),
                         ),
                         lambda element_of_S: self(
-                            other.module_generator_morphism()._call_(element_of_S)
+                            other.module_generator_morphism()(element_of_S)
                         ),
                     )
                 )

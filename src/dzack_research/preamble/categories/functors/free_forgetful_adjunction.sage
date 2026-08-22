@@ -270,7 +270,7 @@ class FreeModuleFunctorClass(Functor):
         # through.  This is the spelling the rest of the preamble uses when
         # applying a set morphism to its own elements.
         mapping = {
-            s: codomain_free.module_generator(set_morphism._call_(s))
+            s: codomain_free.module_generator(set_morphism(s))
             for s in set_morphism.domain()
         }
         free_morphism: "Morphism" = domain_free.Hom(codomain_free)(mapping)
