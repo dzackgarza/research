@@ -67,6 +67,9 @@ if TYPE_CHECKING:
     from dzack_research.preamble.categories.abstract_categories.functors import (
         DiscreteCategory,
     )
+    from dzack_research.preamble.categories.functors.cardinality import (
+        CardinalityFunctor,
+    )
     from dzack_research.preamble.categories.sets.cardinals import (
         Cardinal,
         CardinalityMorphism,
@@ -217,6 +220,14 @@ class SetSubcategoryMethods:
 
     def FixedCardinalitySubsets(self, subset_cardinality: Integer) -> SageCategory:
         return self.FixedCardinalitySubsetFunctor(subset_cardinality).Image()
+
+    @cached_method
+    def CardinalityFunctor(self) -> "CardinalityFunctor":
+        from dzack_research.preamble.categories.functors.cardinality import (
+            cardinality_functor,
+        )
+
+        return cardinality_functor()
 
 
 class Sets(Category):
@@ -981,6 +992,24 @@ class Sets(Category):
 
         def __pow__(self, exponent: SageParent) -> SageParent:
             return self.exponential(exponent)
+
+        def power_set(self) -> SageParent:
+            r"""Return the set of subobjects of this set."""
+            from dzack_research.preamble.categories.sets.sets import PowerSet
+
+            return PowerSet(self)
+
+        def subsets_of_size(self, size: Integer) -> SageParent:
+            r"""Return the set of subsets with cardinality ``size``."""
+            from dzack_research.preamble.categories.sets.sets import SubsetsOfSize
+
+            return SubsetsOfSize(self, size)
+
+        def finite_subsets(self) -> SageParent:
+            r"""Return the set of finite subobjects of this set."""
+            from dzack_research.preamble.categories.sets.sets import FiniteSubsets
+
+            return FiniteSubsets(self)
 
         def _Hom_(
             self,
