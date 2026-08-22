@@ -45,6 +45,13 @@ class MonoCapableArrow(Protocol):
     def is_injective(self) -> bool: ...
 
 
+@runtime_checkable
+class DecidableImageArrow(Protocol):
+    r"""A morphism with a decision procedure for membership in its image."""
+
+    def is_in_image(self, element: Element) -> bool: ...
+
+
 if TYPE_CHECKING:
     # The ordered-set noun is type-only: the preamble loads into one
     # shared namespace and nothing named OrderedSet may bind there.
@@ -185,6 +192,24 @@ class SubobjectCategory(_OverAnObject, Category):
 
     def super_categories(self) -> list[Category]:
         return [SliceOverCategory(self._ambient_category, self._target_object)]
+
+    class ParentMethods:
+        def inclusion(self: "SliceParent") -> Morphism:
+            r"""Return the monomorphism that represents this subobject."""
+            return self.structure_morphism()
+
+        def __contains__(self: "SliceParent", element: Element) -> bool:
+            r"""Return whether ``element`` lies in the image of the inclusion."""
+            if not isinstance(element, Element):
+                return False
+            if element.parent() is self:
+                return True
+            inclusion = self.structure_morphism()
+            assert isinstance(inclusion, DecidableImageArrow), (
+                f"image membership is not decidable for {inclusion}"
+            )
+            return inclusion.is_in_image(element)
+
 
 class SuperobjectCategory(_UnderAnObject, Category):
     r"""Subcategory of ``CosliceUnder(X)`` represented by monomorphisms \(X\hookrightarrow B\)."""

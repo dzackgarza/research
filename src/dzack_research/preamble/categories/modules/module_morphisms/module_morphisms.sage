@@ -481,6 +481,27 @@ class SubFramingMorphism(ModuleMorphism):
     def is_injective(self) -> bool:
         return True
 
+    def is_in_image(self, element: Element) -> bool:
+        r"""Return whether ``element`` is supported on the source framing."""
+        if element.parent() is not self.codomain():
+            return False
+        source_labels = self.domain().module_generating_set()
+        return all(label in source_labels for label in _coefficients(element))
+
+    def lift(self, element: Element) -> Element:
+        r"""Return the unique source element mapped to ``element``."""
+        assert self.is_in_image(element), (
+            f"{element} is not in the image of {self}"
+        )
+        domain = self.domain()
+        return sum(
+            (
+                coefficient * domain.module_generator(label)
+                for label, coefficient in _coefficients(element).items()
+            ),
+            domain.zero(),
+        )
+
 
 def framing_morphism(
     domain: "Module",
