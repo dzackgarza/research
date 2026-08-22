@@ -48,11 +48,7 @@ class PredicateSubgroups(Category):
         return "predicate subgroups"
 
     def super_categories(self) -> list:
-        # Local: a module-level import would close a cycle; the module is
-        # built by the time this runs.
-        from dzack_research.preamble.categories.group.groups import OwnedGroups
-
-        return [OwnedGroups()]
+        return []
 
     class ParentMethods:
         def __init__(
@@ -93,8 +89,16 @@ class PredicateSubgroups(Category):
             r"""Return whether \(g\in G\) and \(P(g)\) -- the one always-available operation."""
             return element in self._containing_group and bool(self._predicate(element))
 
-        def _element_constructor_(self, element: "Element") -> "Element":
-            assert element in self, f"{element} does not satisfy {self._description}"
+        def __call__(self, datum: "Element") -> "Element":
+            if datum in self._containing_group:
+                assert datum in self, (
+                    f"{datum} does not satisfy {self._description}"
+                )
+                return datum
+            element = super().__call__(datum)
+            assert element in self, (
+                f"{element} does not satisfy {self._description}"
+            )
             return element
 
         def one(self) -> "Element":
