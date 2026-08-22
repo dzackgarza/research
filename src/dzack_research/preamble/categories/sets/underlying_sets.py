@@ -17,15 +17,13 @@ from typing import cast, Generic, TYPE_CHECKING, TypeVar
 
 from sage.categories.category import Category as SageCategory
 from sage.misc.cachefunc import cached_function
-from sage.rings.infinity import Infinity
-
 from dzack_research.preamble.lexicon.interop import SageParent
-from dzack_research.preamble.categories.sets.cardinals import Cardinal, cardinal
 from dzack_research.preamble.categories.sets.owned_sets import placement_of
 from dzack_research.preamble.owned_category import object_of
 from dzack_research.preamble.owned_category_bases import CategoryWithParameters
 
 if TYPE_CHECKING:
+    from dzack_research.preamble.categories.sets.cardinals import Cardinal
     from sage.categories.morphism import SetMorphism
     from sage.rings.integer import Integer
     from dzack_research.preamble.owned_category import ConstructionData
@@ -104,6 +102,15 @@ class UnderlyingSets(CategoryWithParameters):
             r"""The structured parent this set underlies."""
             return self._structured
 
+        def cardinality(self) -> Cardinal:
+            r"""Return \(|U(X)|=|X|\).
+
+            Forgetting structure changes neither the elements nor their
+            cardinality.  Read the invariant only when it is requested;
+            constructing \(U(X)\) does not compute an invariant of \(X\).
+            """
+            return self._structured.cardinality()
+
         def chosen_enumeration(self) -> Iterator[_E]:
             assert self._enumeration is not None, (
                 f"{self} has no chosen enumeration"
@@ -117,25 +124,10 @@ def _underlying_set_of(
 ) -> SageParent:
     r"""Build ``U(X)`` over the owned placement its structured parent carries."""
     placement = placement_of(structured)
-    try:
-        counted: Cardinal | None = structured.cardinality()
-    except AttributeError:
-        counted = None
-    if counted is None:
-        return object_of(
-            UnderlyingSets(placement.Facade()),
-            structured=structured,
-            enumeration=enumeration,
-        )
-    assert counted != Infinity or "Countable" in placement.axioms(), (
-        f"{structured} answers +Infinity and does not declare itself countable, "
-        "so its cardinal is not determined"
-    )
     return object_of(
         UnderlyingSets(placement.Facade()),
         structured=structured,
         enumeration=enumeration,
-        cardinality=cardinal(counted),
     )
 
 
