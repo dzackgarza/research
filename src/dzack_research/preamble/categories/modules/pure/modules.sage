@@ -764,8 +764,9 @@ class Modules(Category_over_base_ring):
                 """
                 from dzack_research.preamble.utilities import zipsum
 
+                domain = self.domain()
                 kernel_coordinates = self._kernel_coordinates()
-                return self.domain().subobject_on(
+                return domain.subobject_on(
                     [
                         zipsum(
                             coordinates,
