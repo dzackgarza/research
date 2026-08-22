@@ -34,6 +34,7 @@ from typing import Self
 from sage.categories.additive_groups import AdditiveGroups
 from sage.categories.category import Category
 from dzack_research.preamble.owned_category_bases import Category_over_base_ring
+from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.owned_category_bases import HomsetsCategory
 from sage.categories.fields import Fields as SageFields
 from sage.categories.modules import Modules as SageModules
@@ -141,6 +142,14 @@ class Modules(Category_over_base_ring):
 
     class Homsets(HomsetsCategory):
         r"""$\operatorname{Hom}_R(M,N)$ of two modules over one ring."""
+
+        class Endset(CategoryWithAxiom):
+            r"""The endomorphism ring $\operatorname{End}_R(M)$."""
+
+            def extra_super_categories(self) -> list:
+                from sage.categories.rings import Rings
+
+                return [Rings()]
 
         class ParentMethods:
             def __init__(
