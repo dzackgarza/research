@@ -1752,6 +1752,16 @@ class FreeAlgebraMorphism(ModuleMorphism):
 class DividedPowerAlgebraMorphism(FreeAlgebraMorphism):
     r"""An algebra morphism constructed to preserve all divided powers."""
 
+    def preserves_divided_power(
+        self,
+        element: "Element",
+        degree: int,
+    ) -> bool:
+        r"""Return whether \(f(\gamma_n(x))=\gamma_n(f(x))\)."""
+        return self(
+            self.domain().divided_power(element, degree)
+        ) == self.codomain().divided_power(self(element), degree)
+
 
 def free_algebra_homset(
     domain: "FreeAlgebraParent", codomain: "Module"
@@ -2048,24 +2058,18 @@ class FramedDividedPowerAlgebras(OwnedCategoryOverBaseRing):
                 f"{self.algebra_generating_set()}"
             )
 
+    class MorphismMethods:
+        preserves_divided_power = (
+            DividedPowerAlgebraMorphism.preserves_divided_power
+        )
+
     class Homsets(HomsetsCategory):
-        r"""Divided-power algebra homsets and their morphisms."""
+        r"""Divided-power algebra homsets."""
 
         def extra_super_categories(self) -> list:
             return [
                 FramedFreeAlgebras(self.base_category().base_ring()).Homsets()
             ]
-
-        class ElementMethods:
-            def preserves_divided_power(
-                self: "FreeAlgebraMorphism",
-                element: "Element",
-                degree: int,
-            ) -> bool:
-                r"""Return whether \(f(\gamma_n(x))=\gamma_n(f(x))\)."""
-                return self(
-                    self.domain().divided_power(element, degree)
-                ) == self.codomain().divided_power(self(element), degree)
 
 
 def DividedPowerAlgebraOn(
