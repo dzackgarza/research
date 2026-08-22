@@ -32,16 +32,6 @@ if TYPE_CHECKING:
     from sage.categories.rings import Ring
     from dzack_research.preamble.lexicon import OrderedSet
 
-    from typing import Protocol
-
-    class CurveParent(Protocol):
-        r"""What a curve has from its placement: Sage's
-        ``sage.schemes.curves.curve`` computes the genus, and the two genera
-        below are named views of it."""
-
-        def genus(self) -> "Integer": ...
-
-
 _NativeToricVariety = _sage_toric.ToricVariety
 _NativeCurve = _sage_curve_const.Curve
 
@@ -141,14 +131,6 @@ class Curves(OwnedCategoryOverBaseRing):
         def dimension(self: Self) -> "Integer":
             r"""Return 1."""
             return 1
-
-        def arithmetic_genus(self: "CurveParent") -> "Integer":
-            r"""Return p_a = 1 - chi(O_C), the arithmetic genus of the curve."""
-            return self.genus()
-
-        def geometric_genus(self: "CurveParent") -> "Integer":
-            r"""Return p_g = g(C_tilde), the geometric genus."""
-            return self.genus()
 
     class ElementMethods:
         r"""Curve element methods."""

@@ -2128,6 +2128,18 @@ def test_s6_has_outer_automorphisms_of_index_two() -> None:
 # ---------------------------------------------------------------------------
 
 
+def test_a_cuspidal_plane_cubic_has_distinct_genera() -> None:
+    r"""The cubic \(y^2z=x^3\) has arithmetic genus one and geometric genus zero."""
+    from sage.rings.rational_field import QQ as SageQQ
+
+    plane = ProjectiveSpace(2, SageQQ, "x,y,z")
+    x, y, z = plane.gens()
+    cubic = Curve(y**2 * z - x**3, plane)
+
+    assert cubic.arithmetic_genus() == 1
+    assert cubic.geometric_genus() == 0
+
+
 def test_the_two_cuspidal_cubics_meet_to_order_four_at_the_origin() -> None:
     r"""Gat23 Example 2.13: \(\mu_0(y^2-x^3,\; x^2-y^3)=4\).
 
