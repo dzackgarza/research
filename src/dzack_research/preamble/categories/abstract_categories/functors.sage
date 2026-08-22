@@ -220,6 +220,50 @@ class IdentityFunctor(Functor):
         return f"Identity functor of {self.domain()}"
 
 
+class DomainFunctor(Functor):
+    r"""The domain functor \(\operatorname{Ar}(\mathbf C)\to\mathbf C\)."""
+
+    def __init__(self, category: "Category") -> None:
+        Functor.__init__(self, category.ArrowCategory(), category)
+
+    def _apply_functor(
+        self,
+        arrow: "HomCategoryOf.ElementMethods",
+    ) -> "ObjectOfCategory":
+        return arrow.domain()
+
+    def _apply_functor_to_morphism(
+        self,
+        square: "HomCategoryOf.ElementMethods",
+    ) -> "HomCategoryOf.ElementMethods":
+        return square.left()
+
+    def _repr_(self) -> str:
+        return f"Domain functor from {self.domain()} to {self.codomain()}"
+
+
+class CodomainFunctor(Functor):
+    r"""The codomain functor \(\operatorname{Ar}(\mathbf C)\to\mathbf C\)."""
+
+    def __init__(self, category: "Category") -> None:
+        Functor.__init__(self, category.ArrowCategory(), category)
+
+    def _apply_functor(
+        self,
+        arrow: "HomCategoryOf.ElementMethods",
+    ) -> "ObjectOfCategory":
+        return arrow.codomain()
+
+    def _apply_functor_to_morphism(
+        self,
+        square: "HomCategoryOf.ElementMethods",
+    ) -> "HomCategoryOf.ElementMethods":
+        return square.right()
+
+    def _repr_(self) -> str:
+        return f"Codomain functor from {self.domain()} to {self.codomain()}"
+
+
 def compose_functors(
     second: Functor,
     first: Functor,

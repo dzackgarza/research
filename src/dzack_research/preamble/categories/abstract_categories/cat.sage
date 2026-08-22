@@ -388,6 +388,24 @@ class Cat(OwnedCategoryMixin, Category):
             return arrows
 
         @cached_method
+        def DomainFunctor(self) -> "Cat.ArrowType":
+            r"""Return \(\operatorname{dom}:\operatorname{Ar}(\mathbf C)\to\mathbf C\)."""
+            from dzack_research.preamble.categories.abstract_categories.functors import (
+                DomainFunctor,
+            )
+
+            return DomainFunctor(self)
+
+        @cached_method
+        def CodomainFunctor(self) -> "Cat.ArrowType":
+            r"""Return \(\operatorname{cod}:\operatorname{Ar}(\mathbf C)\to\mathbf C\)."""
+            from dzack_research.preamble.categories.abstract_categories.functors import (
+                CodomainFunctor,
+            )
+
+            return CodomainFunctor(self)
+
+        @cached_method
         def EndArrowCategory(self) -> Category:
             r"""Return the full subcategory of \(\operatorname{Ar}(\mathbf{C})\) on endomorphisms."""
             endomorphisms: Category = EndArrowCategoryOf(self)
