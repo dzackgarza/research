@@ -91,11 +91,11 @@ class Cat(OwnedCategoryMixin, Category):
             core_category: Category = Core(self)
             return core_category
 
-        def Diagram(self, index_category: Category) -> Parent:
-            r"""Return the functor space \([J,\mathbf{C}]\) of diagrams of shape \(J\)."""
-            from dzack_research.preamble.categories.abstract_categories.functors import FunctorSpace
+        def Diagram(self, index_category: Category) -> Category:
+            r"""Return the functor category \([J,\mathbf{C}]\) of diagrams of shape \(J\)."""
+            from dzack_research.preamble.categories.abstract_categories.functors import FunctorCategory
 
-            diagrams: Parent = FunctorSpace(index_category, self)
+            diagrams: Category = FunctorCategory(index_category, self)
             return diagrams
 
         def SliceOver(self, X: "Parent | Morphism") -> Category:
