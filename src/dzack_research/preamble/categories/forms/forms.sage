@@ -452,13 +452,6 @@ class BilinearFormMorphism(Morphism):
             2 * self._gram_matrix
         )
 
-    def on_module(self, module: "Module") -> "BilinearFormMorphism":
-        assert self._gram_matrix is not None, (
-            f"{self.domain()} has no finite generating set, so its form has "
-            "no Gram matrix; the form is its pairing"
-        )
-        return BilinearForms(module, self.codomain())(self._gram_matrix)
-
     def reduced(self, value_module: "Module") -> "BilinearFormMorphism":
         assert self._gram_matrix is not None, (
             f"{self.domain()} has no finite generating set, so its form has "
@@ -488,14 +481,12 @@ class BilinearFormMorphism(Morphism):
         )
 
     def pullback(self, morphism: "ModuleMorphism") -> "BilinearFormMorphism":
-        matrix_of_map = morphism.matrix()
-        domain = morphism.domain()
-        return BilinearForms(domain, self.codomain())(
-            GramMatrix(
-                matrix_of_map
-                * self._gram_matrix
-                * matrix_of_map.transpose()
-            )
+        assert morphism.codomain() is self.module(), (
+            f"the pullback morphism lands in {morphism.codomain()}, but this "
+            f"form is defined on {self.module()}"
+        )
+        return BilinearForms(morphism.domain(), self.codomain())(
+            lambda left, right: self(morphism(left), morphism(right))
         )
 
     def descends_along(
@@ -556,15 +547,39 @@ class BilinearFormMorphism(Morphism):
         return _value_submodule(self)
 
     def __eq__(self, other: "MembershipInput") -> bool:
-        return (
-            isinstance(other, BilinearFormMorphism)
-            and self.domain() is other.domain()
-            and self.codomain() is other.codomain()
-            and self.values_matrix() == other.values_matrix()
+        if not isinstance(other, BilinearFormMorphism):
+            return False
+        if self.module() is not other.module() or self.codomain() is not other.codomain():
+            return False
+        if self is other:
+            return True
+        assert _is_framed(self.module()), (
+            "equality of forms without a finite generating family is not "
+            "decidable from their pairings"
+        )
+        module_generators = self.module().module_generators()
+        return all(
+            self(left, right) == other(left, right)
+            for left in module_generators
+            for right in module_generators
         )
 
     def __hash__(self) -> int:
-        return hash((id(self.domain()), id(self.codomain()), self.values_matrix()))
+        assert _is_framed(self.module()), (
+            "a form without a finite generating family has no computable hash"
+        )
+        module_generators = self.module().module_generators()
+        return hash(
+            (
+                id(self.module()),
+                id(self.codomain()),
+                tuple(
+                    self(left, right)
+                    for left in module_generators
+                    for right in module_generators
+                ),
+            )
+        )
 
     def _repr_type(self) -> str:
         return "Bilinear form"
@@ -674,9 +689,6 @@ class QuadraticFormMorphism(Morphism):
         )
         upper.subdivide(*self._lift_matrix.subdivisions())
         return GramMatrix(upper)
-
-    def on_module(self, module: "Module") -> "QuadraticFormMorphism":
-        return QuadraticForms(module, self.codomain())(self._lift_matrix)
 
     def base_changed(self, module: "Module") -> "QuadraticFormMorphism":
         r"""Return this form on ``module``, valued in ``module``'s base ring.

@@ -269,18 +269,25 @@ def group_lattice_homset(domain: "Module", codomain: "Module") -> Parent:
 
 def _action_preserves_form(formed_module: "Module") -> bool:
     r"""Whether every $g$ acts by an isometry: $\rho(g)^*b = b$.
-
-    An equation between two forms *on one module*.  The pullback is written
-    on the acting morphism's domain, while the module's own form is written
-    on the module the form classifies, one level of enrichment below, so the
-    latter is read there before the two are compared.
     """
+    from dzack_research.preamble.categories.modules.pure.modules import Modules
+
     form = formed_module.form()
-    return all(
-        (pulled := form.pullback(formed_module.action_of(element)))
-        == form.on_module(pulled.codomain().domain())
-        for element in formed_module.group().group_generators()
-    )
+    module = form.module()
+    for element in formed_module.group().group_generators():
+        action = formed_module.action_of(element)
+        underlying_action = module.Hom(module, Modules(module.base_ring()))(
+            {
+                label: action(generator).underlying_element()
+                for label, generator in zip(
+                    module.module_generating_set(),
+                    formed_module.module_generators(),
+                )
+            }
+        )
+        if form.pullback(underlying_action) != form:
+            return False
+    return True
 
 
 
@@ -342,7 +349,6 @@ def group_lattice(lattice: "FormModule", action: GroupAction) -> FormModule:
         action=action,
         module_generating_set=lattice.module_generating_set(),
     )
-    formed_module._form = lattice.form().on_module(formed_module)
     formed_module._refine_from_form()
     assert formed_module in GroupLattices(action.domain()), (
         "the supplied action did not refine to isometries"

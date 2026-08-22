@@ -788,16 +788,22 @@ class FormModules(OwnedCategoryOverBaseRing):
                 self._generator_morphism = (
                     module_morphism.module_generator_morphism()
                 )
-                # $f$ preserves the form when $f^*b_N = b_M$, which is an
-                # equation between two forms *on one module*.  The pullback is
-                # written on the morphism's domain; the domain's own form is
-                # written on the module the form classifies, one level of
-                # enrichment below.  So the domain's form is read on the
-                # module the pullback lives on before the two are compared.
-                pulled_back = parent.codomain().form().pullback(module_morphism)
-                expected_form = parent.domain().form().on_module(
-                    pulled_back.module()
+                source_module = parent.domain().form().module()
+                target_module = parent.codomain().form().module()
+                underlying_morphism = source_module.Hom(
+                    target_module,
+                    OwnedModules(source_module.base_ring()),
+                )(
+                    {
+                        label: module_morphism(generator).underlying_element()
+                        for label, generator in zip(
+                            source_module.module_generating_set(),
+                            parent.domain().module_generators(),
+                        )
+                    }
                 )
+                pulled_back = parent.codomain().form().pullback(underlying_morphism)
+                expected_form = parent.domain().form()
                 if pulled_back.codomain() is not expected_form.codomain():
                     pulled_back = pulled_back.reduced(expected_form.codomain())
                 assert expected_form == pulled_back, (
@@ -1318,11 +1324,6 @@ def FormModule(form: "Form") -> Parent:
     elif module in FramedModules(module.base_ring()):
         data["module_generating_set"] = module.module_generating_set()
     formed = object_of(category, **data)
-    # The form is re-read on the object it is the form *of*.  It arrives here
-    # written on $M$, because $L$ did not exist when it was stated; but $L$ is
-    # $M$ with that form, so a form of $L$ that its own elements cannot be fed
-    # to is a form of something else.
-    formed._form = form.on_module(formed)
     formed._refine_from_form()
     return formed
 
