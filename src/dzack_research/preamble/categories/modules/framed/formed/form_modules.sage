@@ -973,6 +973,11 @@ class QuadraticFormModules(OwnedCategoryOverBaseRing):
     def super_categories(self) -> list:
         return [FormModules(self.base_ring())]
 
+    class ElementMethods:
+        def q(self: "FormedElement") -> "Element":
+            r"""Return the value of the quadratic form on this element."""
+            return self.norm()
+
 
 class FreeFormModules(OwnedCategoryOverBaseRing):
     r"""Form modules whose image after forgetting the form is free."""
