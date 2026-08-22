@@ -2,11 +2,13 @@ r"""Arrow categories: \(\operatorname{Ar}(\mathbf{C})\), its hom-sets, and the i
 
 - ``ArrowCategory(C)`` -- \(\operatorname{Ar}(\mathbf{C})\): its objects are
   the *morphisms* of \(\mathbf{C}\) and its morphisms are commuting squares.
+- ``EndArrowCategory(C)`` -- the full subcategory on endomorphisms.
+- ``AutomorphismArrowCategory(C)`` -- the full subcategory on automorphisms.
 - ``IsoArrowCategory(C)`` -- the subcategory whose objects are the
   isomorphisms.  Invertibility is a declared datum, exactly as surjectivity is
   for a framing: the inverse is supplied and checked at construction, never
   searched for afterwards.
-- ``Ar(X, Y)`` -- the arrows \(X\to Y\) as one object.
+- ``HomSet(X, Y)`` -- the arrows \(X\to Y\) as one set object.
 - ``IsoAr(X, Y)`` -- the isomorphisms inside \(\operatorname{Ar}(X,Y)\).
 - ``Isomorphism(f, g)`` -- the construction: declare \(f\) invertible with
   inverse \(g\), and get back \(f\) as an object of
@@ -199,7 +201,7 @@ def ArrowHomset(source: Morphism, target: Morphism) -> Parent:
         target.domain(),
         target.codomain(),
     )
-    arrow_category = common_category(endpoints).Arrow()
+    arrow_category = common_category(endpoints).Ar()
     assert source.domain() in arrow_category.ambient_category()
     assert source.codomain() in arrow_category.ambient_category()
     assert target.domain() in arrow_category.ambient_category()
@@ -230,6 +232,49 @@ class IsoArrowCategory(_OnACategory, Category):
             return self._inverse_morphism
 
         def is_isomorphism(self) -> bool:
+            return True
+
+
+class EndArrowCategory(_OnACategory, Category):
+    r"""The full subcategory of \(\operatorname{Ar}(\mathbf{C})\) on endomorphisms."""
+
+    def _repr_(self) -> str:
+        return f"Category of endomorphisms in {self._ambient_category}"
+
+    def super_categories(self) -> list[Category]:
+        return [ArrowCategory(self._ambient_category)]
+
+    def __contains__(self, candidate: "MembershipInput") -> bool:
+        return (
+            candidate in ArrowCategory(self._ambient_category)
+            and candidate.domain() is candidate.codomain()
+        )
+
+    class MorphismMethods:
+        def is_endomorphism(self) -> bool:
+            return True
+
+
+class AutomorphismArrowCategory(_OnACategory, Category):
+    r"""The full subcategory of \(\operatorname{Ar}(\mathbf{C})\) on automorphisms."""
+
+    def _repr_(self) -> str:
+        return f"Category of automorphisms in {self._ambient_category}"
+
+    def super_categories(self) -> list[Category]:
+        return [
+            EndArrowCategory(self._ambient_category),
+            IsoArrowCategory(self._ambient_category),
+        ]
+
+    def __contains__(self, candidate: "MembershipInput") -> bool:
+        return (
+            candidate in EndArrowCategory(self._ambient_category)
+            and candidate in IsoArrowCategory(self._ambient_category)
+        )
+
+    class MorphismMethods:
+        def is_automorphism(self) -> bool:
             return True
 
 
@@ -285,8 +330,8 @@ class Core(_OnACategory, Category):
         return morphism
 
 
-def Ar(source: Parent, target: Parent) -> "Homset":
-    r"""Return \(\operatorname{Ar}(X,Y)\), the arrows \(X\to Y\), as one object.
+def HomSet(source: Parent, target: Parent) -> "Homset":
+    r"""Return \(\operatorname{Hom}_{\mathbf{C}}(X,Y)\), the arrows \(X\to Y\), as one set.
 
     This is the canonical hom-set and not a wrapper of it.  A morphism's
     identity in this repo *is* its parent -- the module homsets' ``__contains__`` is
@@ -339,7 +384,7 @@ class IsomorphismSets(Category):
 
         def arrow_set(self) -> "Homset":
             r"""Return \(\operatorname{Ar}(X,Y)\), the arrow set this sits inside."""
-            return Ar(self._source, self._target)
+            return HomSet(self._source, self._target)
 
         def __contains__(self, arrow: "MembershipInput") -> bool:
             match arrow:
@@ -402,7 +447,12 @@ def Isomorphism(forward: Morphism, backward: Morphism) -> Morphism:
     # the inverse is declared here, not held by any Sage class.
     setattr(forward, "_inverse_morphism", backward)
     setattr(backward, "_inverse_morphism", forward)
-    iso_arrows = common_category((forward.domain(), forward.codomain())).IsoArrow()
+    category = common_category((forward.domain(), forward.codomain()))
+    iso_arrows = (
+        category.AutAr()
+        if forward.domain() is forward.codomain()
+        else category.IsoAr()
+    )
     refine(backward, iso_arrows)
     isomorphism: Morphism = refine(forward, iso_arrows)
     return isomorphism

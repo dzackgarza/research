@@ -32,7 +32,9 @@ from sage.structure.parent import Parent
 
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
     ArrowCategory,
+    AutomorphismArrowCategory,
     Core,
+    EndArrowCategory,
     IsoArrowCategory,
 )
 from dzack_research.preamble.categories.abstract_categories.slice_categories import (
@@ -76,15 +78,25 @@ class Cat(OwnedCategoryMixin, Category):
         returns and hands the work to the class that already builds it.
         """
 
-        def Arrow(self) -> Category:
+        def Ar(self) -> Category:
             r"""Return \(\operatorname{Ar}(\mathbf{C})\), whose objects are the arrows of \(\mathbf{C}\)."""
             arrows: Category = ArrowCategory(self)
             return arrows
 
-        def IsoArrow(self) -> Category:
+        def EndAr(self) -> Category:
+            r"""Return the full subcategory of \(\operatorname{Ar}(\mathbf{C})\) on endomorphisms."""
+            endomorphisms: Category = EndArrowCategory(self)
+            return endomorphisms
+
+        def IsoAr(self) -> Category:
             r"""Return the subcategory of \(\operatorname{Ar}(\mathbf{C})\) whose objects are the isomorphisms."""
             isomorphisms: Category = IsoArrowCategory(self)
             return isomorphisms
+
+        def AutAr(self) -> Category:
+            r"""Return the full subcategory of \(\operatorname{Ar}(\mathbf{C})\) on automorphisms."""
+            automorphisms: Category = AutomorphismArrowCategory(self)
+            return automorphisms
 
         def core(self) -> Category:
             r"""Return \(\operatorname{core}(\mathbf{C})\): the same objects, the isomorphisms as the only arrows."""
@@ -93,10 +105,22 @@ class Cat(OwnedCategoryMixin, Category):
 
         def Diagram(self, index_category: Category) -> Category:
             r"""Return the functor category \([J,\mathbf{C}]\) of diagrams of shape \(J\)."""
+            return index_category.Fun(self)
+
+        def Fun(self, codomain: Category) -> Category:
+            r"""Return the functor category \(\operatorname{Fun}(\mathbf{C},\mathbf{D})\)."""
             from dzack_research.preamble.categories.abstract_categories.functors import FunctorCategory
 
-            diagrams: Category = FunctorCategory(index_category, self)
-            return diagrams
+            functors: Category = FunctorCategory(self, codomain)
+            return functors
+
+        def Hom(self, source: Parent, target: Parent) -> Parent:
+            r"""Return \(\operatorname{Hom}_{\mathbf{C}}(X,Y)\) as an object of ``Sets``."""
+            from dzack_research.preamble.categories.abstract_categories.arrow_categories import HomSet
+
+            assert source in self and target in self
+            homset: Parent = HomSet(source, target)
+            return homset
 
         def SliceOver(self, X: "Parent | Morphism") -> Category:
             r"""Return the slice category \(\mathbf{C}/X\), whose objects are the arrows \(A\to X\)."""
