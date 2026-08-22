@@ -1,4 +1,4 @@
-r"""Slice, coslice, subobject, superobject, covering, covered, kernel, and cokernel categories.
+r"""Slice, coslice, subobject, superobject, covering, and covered categories.
 
 Symmetric parameterized abstract categories over an ambient \(\mathbf{C}\):
 
@@ -7,11 +7,6 @@ Symmetric parameterized abstract categories over an ambient \(\mathbf{C}\):
   (slice) / \(X\hookrightarrow B\) (coslice).
 - ``CoveringObject(X)`` / ``CoveredObject(X)``: epimorphisms
   \(A\twoheadrightarrow X\) (slice) / \(X\twoheadrightarrow B\) (coslice).
-- ``Kernel(f)`` / ``Cokernel(f)``: the kernel \(\ker(f)\hookrightarrow\operatorname{dom}f\)
-  is a subobject of \(\operatorname{dom}f\); the cokernel
-  \(\operatorname{cod}f\twoheadrightarrow\operatorname{coker}(f)\) is a covered
-  object of \(\operatorname{cod}f\).
-
 An object of each category is the arrow itself.  Its domain and codomain are
 read from that arrow.  No endpoint is mutated or given a second category.
 """
@@ -123,34 +118,6 @@ class CoveredObjectCategory(_UnderAnObject, Category):
 
     def super_categories(self) -> list[Category]:
         return [CosliceUnderCategory(self._ambient_category, self._source_object)]
-
-
-class KernelCategory(_OverAnObject, Category):
-    r"""Subcategory of ``SubObject(f.domain())``: the kernel \(\ker(f)\hookrightarrow\operatorname{dom}f\)."""
-
-    def _repr_(self) -> str:
-        return f"Category of kernels of {self._target_object} in {self._ambient_category}"
-
-    def super_categories(self) -> list[Category]:
-        map_taken = self._target_object
-        assert isinstance(map_taken, Morphism), (
-            "a kernel category is parameterized by the morphism it is the kernel of"
-        )
-        return [SubobjectCategory(self._ambient_category, map_taken.domain())]
-
-
-class CokernelCategory(_UnderAnObject, Category):
-    r"""Subcategory of ``CoveredObject(f.codomain())``: the cokernel \(\operatorname{cod}f\twoheadrightarrow\operatorname{coker}f\)."""
-
-    def _repr_(self) -> str:
-        return f"Category of cokernels of {self._source_object} in {self._ambient_category}"
-
-    def super_categories(self) -> list[Category]:
-        map_taken = self._source_object
-        assert isinstance(map_taken, Morphism), (
-            "a cokernel category is parameterized by the morphism it is the cokernel of"
-        )
-        return [CoveredObjectCategory(self._ambient_category, map_taken.codomain())]
 
 
 def Slice(structure_morphism: Morphism, is_mono: bool = False, is_epi: bool = False) -> Morphism:

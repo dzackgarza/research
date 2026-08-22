@@ -3,9 +3,8 @@ r"""``Cat``: the category whose objects are categories.
 The constructions in this directory -- slices, arrows, diagrams, limits --
 each take a category as their argument, so a category is the *object* they
 are performed on and \(\mathbf{Cat}\) is where they are declared.  That is
-what this module is: ``Cat.ParentMethods`` holds all twenty-one of them as
-the methods an object of \(\mathbf{Cat}\) has, and each one delegates to the
-owned class that already builds the construction.
+what this module is: ``Cat.ParentMethods`` holds the constructions that every
+category supports.  Each method delegates to the categorical owner.
 
 A category reaches them by inheritance, through its own
 ``subcategory_class``: Sage sets a category's class to ``dynamic_class(name,
@@ -36,37 +35,16 @@ from dzack_research.preamble.categories.abstract_categories.arrow_categories imp
     Core,
     IsoArrowCategory,
 )
-from dzack_research.preamble.categories.abstract_categories.products import (
-    BiproductCategory,
-    CoconeCategory,
-    ConeCategory,
-    CoproductCategory,
-    DiagramCategory,
-    DirectSumCategory,
-    DirectedSystem,
-    InverseSystem,
-    ProductCategory,
-    TensorProductCategory,
-)
 from dzack_research.preamble.categories.abstract_categories.slice_categories import (
-    CokernelCategory,
     CosliceUnderCategory,
     CoveredObjectCategory,
     CoveringObjectCategory,
-    KernelCategory,
     SliceOverCategory,
     SubobjectCategory,
     SuperobjectCategory,
 )
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable
-
-    # The ordered-set noun is type-only: the preamble loads into one
-    # shared namespace and nothing named OrderedSet may bind there.
-    from dzack_research.preamble.lexicon import OrderedSet
-
-
 class Cat(OwnedCategoryMixin, Category):
     r"""The category \(\mathbf{Cat}\), whose objects are categories.
 
@@ -113,79 +91,12 @@ class Cat(OwnedCategoryMixin, Category):
             core_category: Category = Core(self)
             return core_category
 
-        def Diagram(
-            self,
-            objects: "Iterable[Parent]",
-            morphisms: "Iterable[Morphism]" = (),
-        ) -> Category:
-            r"""Return the category of diagrams \(F:J\to\mathbf{C}\) on these objects and morphisms."""
-            diagrams: Category = DiagramCategory(self, objects, morphisms)
+        def Diagram(self, index_category: Category) -> Parent:
+            r"""Return the functor space \([J,\mathbf{C}]\) of diagrams of shape \(J\)."""
+            from dzack_research.preamble.categories.abstract_categories.functors import FunctorSpace
+
+            diagrams: Parent = FunctorSpace(index_category, self)
             return diagrams
-
-        def DirectedSystem(
-            self,
-            index_set: "OrderedSet",
-            objects: "Iterable[Parent]",
-            morphisms: "Iterable[Morphism]" = (),
-        ) -> Category:
-            r"""Return the category of directed systems \((X_i)_{i\in I}\) with morphisms \(X_i\to X_j\)."""
-            systems: Category = DirectedSystem(self, index_set, objects, morphisms)
-            return systems
-
-        def InverseSystem(
-            self,
-            index_set: "OrderedSet",
-            objects: "Iterable[Parent]",
-            morphisms: "Iterable[Morphism]" = (),
-        ) -> Category:
-            r"""Return the category of inverse systems \((X_i)_{i\in I}\) with morphisms \(X_j\to X_i\)."""
-            systems: Category = InverseSystem(self, index_set, objects, morphisms)
-            return systems
-
-        def Cone(
-            self,
-            index_set: "OrderedSet",
-            objects: "Iterable[Parent]",
-            morphisms: "Iterable[Morphism]" = (),
-        ) -> Category:
-            r"""Return the category of cones: an apex \(A\) with projections \(\pi_i:A\to X_i\)."""
-            cones: Category = ConeCategory(self, index_set, objects, morphisms)
-            return cones
-
-        def Cocone(
-            self,
-            index_set: "OrderedSet",
-            objects: "Iterable[Parent]",
-            morphisms: "Iterable[Morphism]" = (),
-        ) -> Category:
-            r"""Return the category of cocones: a coapex \(A\) with injections \(\iota_i:X_i\to A\)."""
-            cocones: Category = CoconeCategory(self, index_set, objects, morphisms)
-            return cocones
-
-        def Product(self, factors: "Iterable[Parent]") -> Category:
-            r"""Return the category of products \(\prod_i X_i\) of these factors."""
-            products: Category = ProductCategory(self, factors)
-            return products
-
-        def Coproduct(self, cofactors: "Iterable[Parent]") -> Category:
-            r"""Return the category of coproducts \(\coprod_i X_i\) of these cofactors."""
-            coproducts: Category = CoproductCategory(self, cofactors)
-            return coproducts
-
-        def Biproduct(self, factors: "Iterable[Parent]") -> Category:
-            r"""Return the category of biproducts of these factors: product and coproduct at once."""
-            biproducts: Category = BiproductCategory(self, factors)
-            return biproducts
-
-        def DirectSum(self, factors: "Iterable[Parent]") -> Category:
-            r"""Return the category of direct sums \(\bigoplus_i X_i\), the additive name for the biproduct."""
-            direct_sums: Category = DirectSumCategory(self, factors)
-            return direct_sums
-
-        def TensorProduct(self, factors: "Iterable[Parent]") -> Category:
-            r"""Return the category of tensor products \(X_1\otimes\cdots\otimes X_n\) of these factors."""
-            tensor_products: Category = TensorProductCategory(self, factors)
-            return tensor_products
 
         def SliceOver(self, X: "Parent | Morphism") -> Category:
             r"""Return the slice category \(\mathbf{C}/X\), whose objects are the arrows \(A\to X\)."""
@@ -216,16 +127,6 @@ class Cat(OwnedCategoryMixin, Category):
             r"""Return the category of covered objects of \(X\): the epimorphisms \(X\twoheadrightarrow B\)."""
             covereds: Category = CoveredObjectCategory(self, X)
             return covereds
-
-        def Kernel(self, f: Morphism) -> Category:
-            r"""Return the category of kernels of \(f\): the subobject \(\ker f\hookrightarrow\operatorname{dom}f\)."""
-            kernels: Category = KernelCategory(self, f)
-            return kernels
-
-        def Cokernel(self, f: Morphism) -> Category:
-            r"""Return the category of cokernels of \(f\): the covered object \(\operatorname{cod}f\twoheadrightarrow\operatorname{coker}f\)."""
-            cokernels: Category = CokernelCategory(self, f)
-            return cokernels
 
         def _Hom_(self, codomain: Category, category: "Category | None" = None) -> "Parent":
             r"""Return \(\operatorname{Hom}_{\mathbf{Cat}}(\mathbf{C},\mathbf{D})=\operatorname{Fun}(\mathbf{C},\mathbf{D})\).
