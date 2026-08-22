@@ -454,13 +454,6 @@ class BilinearFormMorphism(Morphism):
             2 * self._gram_matrix
         )
 
-    def reduced(self, value_module: "Module") -> "BilinearFormMorphism":
-        assert self._gram_matrix is not None, (
-            f"{self.domain()} has no finite generating set, so its form has "
-            "no Gram matrix; the form is its pairing"
-        )
-        return BilinearForms(self.module(), value_module)(self._gram_matrix)
-
     def base_changed(self, module: "Module") -> "BilinearFormMorphism":
         r"""Return this form on ``module``, valued in ``module``'s base ring.
 

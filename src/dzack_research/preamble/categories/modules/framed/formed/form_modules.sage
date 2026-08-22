@@ -802,8 +802,9 @@ class FormModules(OwnedCategoryOverBaseRing):
                 )
                 pulled_back = parent.codomain().form().pullback(underlying_morphism)
                 expected_form = parent.domain().form()
-                if pulled_back.codomain() is not expected_form.codomain():
-                    pulled_back = pulled_back.reduced(expected_form.codomain())
+                assert pulled_back.codomain() is expected_form.codomain(), (
+                    "form preservation compares forms with one value module"
+                )
                 assert expected_form == pulled_back, (
                     "the module morphism does not preserve the stated form"
                 )
