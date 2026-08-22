@@ -25,6 +25,7 @@ the whole reason this construction is worth having: a normal form can be
 track \(M'\) separately.
 """
 
+from collections.abc import Iterable
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from dzack_research.preamble.owned_category import ConstructionData
@@ -34,13 +35,20 @@ if TYPE_CHECKING:
 from dzack_research.preamble.categories.sets.owned_sets import Sets
 from dzack_research.preamble.owned_category import object_of
 from dzack_research.preamble.owned_category_bases import Category
+from sage.categories.category import Category as SageCategory
 from sage.categories.morphism import IdentityMorphism
 from sage.categories.morphism import Morphism
 from sage.categories.objects import Objects
+from sage.structure.element import Element as SageElement
 from sage.structure.parent import Parent
 
 if TYPE_CHECKING:
     from sage.categories.homset import Homset
+
+
+def common_category(objects: Iterable[Parent]) -> SageCategory:
+    r"""Return the most specific category containing all given objects."""
+    return SageCategory.meet([obj.category() for obj in objects])
 
 
 class _OnACategory:
@@ -73,6 +81,131 @@ class ArrowCategory(_OnACategory, Category):
         # an inclusion, so there is nothing above this but Objects.
         return [Objects()]
 
+    def __contains__(self, candidate: "MembershipInput") -> bool:
+        return (
+            isinstance(candidate, Morphism)
+            and candidate.domain() in self._ambient_category
+            and candidate.codomain() in self._ambient_category
+        )
+
+    def homset(self, source: Morphism, target: Morphism) -> Parent:
+        r"""Return the commuting squares from ``source`` to ``target``."""
+        assert source.domain() in self._ambient_category
+        assert source.codomain() in self._ambient_category
+        assert target.domain() in self._ambient_category
+        assert target.codomain() in self._ambient_category
+        return ArrowHomset(source, target)
+
+
+class ArrowHomsets(Category):
+    r"""Sets of morphisms in arrow categories."""
+
+    def _repr_object_names(self) -> str:
+        return "arrow-category homsets"
+
+    def super_categories(self) -> list[Category]:
+        return [Sets()]
+
+    class ParentMethods:
+        def __init__(
+            self,
+            source: Morphism,
+            target: Morphism,
+            **rest: "ConstructionData",
+        ) -> None:
+            self._source = source
+            self._target = target
+            super().__init__(**rest)
+
+        def domain(self) -> Morphism:
+            return self._source
+
+        def codomain(self) -> Morphism:
+            return self._target
+
+        def __contains__(self, square: "CommutativeSquare") -> bool:
+            return isinstance(square, CommutativeSquare) and square.parent() is self
+
+        def _element_constructor_(
+            self,
+            left: Morphism,
+            right: Morphism,
+        ) -> "CommutativeSquare":
+            return CommutativeSquare(self, left, right)
+
+        def identity(self) -> "CommutativeSquare":
+            source = self._source
+            assert source is self._target, (
+                "only an endomorphism set has an identity square"
+            )
+            left = source.domain().Hom(source.domain()).identity()
+            right = source.codomain().Hom(source.codomain()).identity()
+            return CommutativeSquare(self, left, right)
+
+        def _repr_(self) -> str:
+            return f"Commuting squares from {self._source} to {self._target}"
+
+
+class CommutativeSquare(SageElement):
+    r"""A morphism in an arrow category.
+
+    For ``source: X -> Y`` and ``target: X' -> Y'``, the left and right
+    edges have boundaries ``X -> X'`` and ``Y -> Y'``.  Commutativity is
+    declared structure.  This general layer does not decide morphism equality.
+    """
+
+    def __init__(self, parent: Parent, left: Morphism, right: Morphism) -> None:
+        source = parent.domain()
+        target = parent.codomain()
+        assert left.domain() is source.domain()
+        assert left.codomain() is target.domain()
+        assert right.domain() is source.codomain()
+        assert right.codomain() is target.codomain()
+        self._left = left
+        self._right = right
+        SageElement.__init__(self, parent)
+
+    def domain(self) -> Morphism:
+        return self.parent().domain()
+
+    def codomain(self) -> Morphism:
+        return self.parent().codomain()
+
+    def left(self) -> Morphism:
+        return self._left
+
+    def right(self) -> Morphism:
+        return self._right
+
+    def __mul__(self, first: "CommutativeSquare") -> "CommutativeSquare":
+        r"""Compose two commuting squares componentwise."""
+        assert first.codomain() is self.domain(), (
+            "commuting squares compose only when their middle arrow agrees"
+        )
+        return ArrowHomset(first.domain(), self.codomain())(
+            self._left * first.left(),
+            self._right * first.right(),
+        )
+
+    def _repr_(self) -> str:
+        return f"Commuting square from {self.domain()} to {self.codomain()}"
+
+
+def ArrowHomset(source: Morphism, target: Morphism) -> Parent:
+    r"""Return the homset of commuting squares from ``source`` to ``target``."""
+    endpoints = (
+        source.domain(),
+        source.codomain(),
+        target.domain(),
+        target.codomain(),
+    )
+    arrow_category = common_category(endpoints).Arrow()
+    assert source.domain() in arrow_category.ambient_category()
+    assert source.codomain() in arrow_category.ambient_category()
+    assert target.domain() in arrow_category.ambient_category()
+    assert target.codomain() in arrow_category.ambient_category()
+    return object_of(ArrowHomsets(), source=source, target=target)
+
 class IsoArrowCategory(_OnACategory, Category):
     r"""The subcategory of \(\operatorname{Ar}(\mathbf{C})\) of isomorphisms."""
 
@@ -81,6 +214,12 @@ class IsoArrowCategory(_OnACategory, Category):
 
     def super_categories(self) -> list[Category]:
         return [ArrowCategory(self._ambient_category)]
+
+    def __contains__(self, candidate: "MembershipInput") -> bool:
+        return (
+            candidate in ArrowCategory(self._ambient_category)
+            and isinstance(candidate, IsoArrowCategory.MorphismMethods)
+        )
 
     class MorphismMethods:
         # Installed on the arrow by ``Isomorphism`` below.
@@ -250,7 +389,6 @@ def Isomorphism(forward: Morphism, backward: Morphism) -> Morphism:
     arbitrary morphisms.  A category with decidable morphism equality can
     validate the two inverse equations before it calls this constructor.
     """
-    from dzack_research.preamble.categories.abstract_categories.products import ambient_category_of
     from dzack_research.preamble.refine import refine
 
     assert isinstance(forward, Morphism) and isinstance(backward, Morphism), (
@@ -264,7 +402,7 @@ def Isomorphism(forward: Morphism, backward: Morphism) -> Morphism:
     # the inverse is declared here, not held by any Sage class.
     setattr(forward, "_inverse_morphism", backward)
     setattr(backward, "_inverse_morphism", forward)
-    iso_arrows = ambient_category_of((forward.domain(), forward.codomain())).IsoArrow()
+    iso_arrows = common_category((forward.domain(), forward.codomain())).IsoArrow()
     refine(backward, iso_arrows)
     isomorphism: Morphism = refine(forward, iso_arrows)
     return isomorphism

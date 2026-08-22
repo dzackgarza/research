@@ -15,6 +15,10 @@ read from that arrow.  No endpoint is mutated or given a second category.
 from dzack_research.preamble.owned_category_bases import Category
 from sage.categories.morphism import Morphism
 from sage.structure.parent import Parent
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from sage.structure.parent import MembershipInput
 
 class _OverAnObject:
     r"""The two parameters a slice category takes.
@@ -68,6 +72,13 @@ class SliceOverCategory(_OverAnObject, Category):
 
         return [ArrowCategory(self._ambient_category)]
 
+    def __contains__(self, candidate: "MembershipInput") -> bool:
+        return (
+            isinstance(candidate, Morphism)
+            and candidate in self.super_categories()[0]
+            and candidate.codomain() is self._target_object
+        )
+
 
 class CosliceUnderCategory(_UnderAnObject, Category):
     r"""Coslice category \(X \setminus \mathbf{C}\) of objects under \(X\)."""
@@ -80,6 +91,13 @@ class CosliceUnderCategory(_UnderAnObject, Category):
 
         return [ArrowCategory(self._ambient_category)]
 
+    def __contains__(self, candidate: "MembershipInput") -> bool:
+        return (
+            isinstance(candidate, Morphism)
+            and candidate in self.super_categories()[0]
+            and candidate.domain() is self._source_object
+        )
+
 
 class SubobjectCategory(_OverAnObject, Category):
     r"""Subcategory of ``SliceOver(X)`` represented by monomorphisms \(A\hookrightarrow X\)."""
@@ -90,6 +108,16 @@ class SubobjectCategory(_OverAnObject, Category):
     def super_categories(self) -> list[Category]:
         return [SliceOverCategory(self._ambient_category, self._target_object)]
 
+    def __contains__(self, candidate: "MembershipInput") -> bool:
+        return (
+            candidate in self.super_categories()[0]
+            and isinstance(candidate, SubobjectCategory.MorphismMethods)
+        )
+
+    class MorphismMethods:
+        def is_monomorphism(self) -> bool:
+            return True
+
 class SuperobjectCategory(_UnderAnObject, Category):
     r"""Subcategory of ``CosliceUnder(X)`` represented by monomorphisms \(X\hookrightarrow B\)."""
 
@@ -98,6 +126,16 @@ class SuperobjectCategory(_UnderAnObject, Category):
 
     def super_categories(self) -> list[Category]:
         return [CosliceUnderCategory(self._ambient_category, self._source_object)]
+
+    def __contains__(self, candidate: "MembershipInput") -> bool:
+        return (
+            candidate in self.super_categories()[0]
+            and isinstance(candidate, SuperobjectCategory.MorphismMethods)
+        )
+
+    class MorphismMethods:
+        def is_monomorphism(self) -> bool:
+            return True
 
 
 class CoveringObjectCategory(_OverAnObject, Category):
@@ -109,6 +147,16 @@ class CoveringObjectCategory(_OverAnObject, Category):
     def super_categories(self) -> list[Category]:
         return [SliceOverCategory(self._ambient_category, self._target_object)]
 
+    def __contains__(self, candidate: "MembershipInput") -> bool:
+        return (
+            candidate in self.super_categories()[0]
+            and isinstance(candidate, CoveringObjectCategory.MorphismMethods)
+        )
+
+    class MorphismMethods:
+        def is_epimorphism(self) -> bool:
+            return True
+
 
 class CoveredObjectCategory(_UnderAnObject, Category):
     r"""Subcategory of ``CosliceUnder(X)`` represented by epimorphisms \(X\twoheadrightarrow B\)."""
@@ -118,6 +166,16 @@ class CoveredObjectCategory(_UnderAnObject, Category):
 
     def super_categories(self) -> list[Category]:
         return [CosliceUnderCategory(self._ambient_category, self._source_object)]
+
+    def __contains__(self, candidate: "MembershipInput") -> bool:
+        return (
+            candidate in self.super_categories()[0]
+            and isinstance(candidate, CoveredObjectCategory.MorphismMethods)
+        )
+
+    class MorphismMethods:
+        def is_epimorphism(self) -> bool:
+            return True
 
 
 def Slice(structure_morphism: Morphism, is_mono: bool = False, is_epi: bool = False) -> Morphism:
@@ -129,7 +187,7 @@ def Slice(structure_morphism: Morphism, is_mono: bool = False, is_epi: bool = Fa
     """
     # Local: refine is imported here rather than at module level, where it
     # would close a cycle; it is built by the time this function runs.
-    from dzack_research.preamble.categories.abstract_categories.products import ambient_category_of
+    from dzack_research.preamble.categories.abstract_categories.arrow_categories import common_category
     from dzack_research.preamble.refine import refine
 
     assert isinstance(structure_morphism, Morphism), (
@@ -137,7 +195,7 @@ def Slice(structure_morphism: Morphism, is_mono: bool = False, is_epi: bool = Fa
     )
     domain = structure_morphism.domain()
     codomain = structure_morphism.codomain()
-    cat = ambient_category_of((domain, codomain))
+    cat = common_category((domain, codomain))
     if is_mono:
         category = cat.SubObject(codomain)
     elif is_epi:
@@ -157,7 +215,7 @@ def Coslice(costructure_morphism: Morphism, is_mono: bool = False, is_epi: bool 
     """
     # Local: refine is imported here rather than at module level, where it
     # would close a cycle; it is built by the time this function runs.
-    from dzack_research.preamble.categories.abstract_categories.products import ambient_category_of
+    from dzack_research.preamble.categories.abstract_categories.arrow_categories import common_category
     from dzack_research.preamble.refine import refine
 
     assert isinstance(costructure_morphism, Morphism), (
@@ -165,7 +223,7 @@ def Coslice(costructure_morphism: Morphism, is_mono: bool = False, is_epi: bool 
     )
     codomain = costructure_morphism.codomain()
     source = costructure_morphism.domain()
-    cat = ambient_category_of((source, codomain))
+    cat = common_category((source, codomain))
     if is_mono:
         category = cat.SuperObject(source)
     elif is_epi:
