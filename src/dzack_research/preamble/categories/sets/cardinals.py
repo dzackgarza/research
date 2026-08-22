@@ -11,8 +11,8 @@ it already answered -- ``is_finite``, ``is_countable`` and ``is_uncountable``
 are the questions about the set of that size -- and now answers as a member
 of the owned sets.
 
-The objects are closed under cardinal addition, multiplication, and
-exponentiation.  A finite supremum records the maximum of infinite cardinals
+The objects are closed under finite and set-indexed cardinal addition and
+multiplication, and under exponentiation.  A finite supremum records the maximum of infinite cardinals
 when the represented order does not compare the inputs.  This keeps
 expressions such as ``aleph(2) + continuum`` defined without adding a
 continuum-hypothesis assumption.  The arithmetic follows the definitions and
@@ -23,7 +23,7 @@ normalization theorems in Mathlib's ``SetTheory/Cardinal/Defs.lean``,
 from __future__ import annotations
 
 
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
 from dataclasses import dataclass
 from enum import Enum
 from typing import TYPE_CHECKING, TypeIs
@@ -45,6 +45,8 @@ if TYPE_CHECKING:
     from dzack_research.preamble.owned_category import ConstructionData
     from sage.rings.rational import Rational
     from sage.rings.ring import Ring
+    from sage.structure.element import Element as SageElement
+    from sage.structure.parent import Parent
 
 
 type CardinalScalar = Integer | int | PlusInfinity
@@ -71,8 +73,25 @@ class _SupremumCardinal:
     terms: tuple[Cardinal, ...]
 
 
+@dataclass(frozen=True)
+class _IndexedSumCardinal:
+    index_set: Parent
+    summands: "Callable[[SageElement], Cardinal | CardinalScalar]"
+
+
+@dataclass(frozen=True)
+class _IndexedProductCardinal:
+    index_set: Parent
+    factors: "Callable[[SageElement], Cardinal | CardinalScalar]"
+
+
 type _CardinalExpression = (
-    _FiniteCardinal | _AlephCardinal | _PowerCardinal | _SupremumCardinal
+    _FiniteCardinal
+    | _AlephCardinal
+    | _PowerCardinal
+    | _SupremumCardinal
+    | _IndexedSumCardinal
+    | _IndexedProductCardinal
 )
 type CardinalInput = CardinalScalar | _CardinalExpression
 
@@ -140,6 +159,32 @@ class Cardinalities(Category):
             elif factor.is_infinite():
                 result = self.supremum(result, factor)
         return result
+
+    def indexed_sum(
+        self,
+        index_set: "Parent",
+        summands: "Callable[[SageElement], Cardinal | CardinalScalar]",
+    ) -> Cardinal:
+        r"""Return the cardinal sum of a set-indexed family."""
+        assert index_set in Sets()
+        if index_set in Sets().Finite():
+            return self.sum(*(summands(index) for index in index_set))
+        return _cardinal_with_expression(
+            _IndexedSumCardinal(index_set, summands)
+        )
+
+    def indexed_product(
+        self,
+        index_set: "Parent",
+        factors: "Callable[[SageElement], Cardinal | CardinalScalar]",
+    ) -> Cardinal:
+        r"""Return the cardinal product of a set-indexed family."""
+        assert index_set in Sets()
+        if index_set in Sets().Finite():
+            return self.product(*(factors(index) for index in index_set))
+        return _cardinal_with_expression(
+            _IndexedProductCardinal(index_set, factors)
+        )
 
     def power(
         self,
@@ -283,6 +328,14 @@ class Cardinalities(Category):
             return all(self.le(term, right) for term in left_expression.terms)
         if isinstance(right_expression, _SupremumCardinal):
             return any(self.le(left, term) for term in right_expression.terms)
+        if isinstance(
+            left_expression,
+            _IndexedSumCardinal | _IndexedProductCardinal,
+        ) or isinstance(
+            right_expression,
+            _IndexedSumCardinal | _IndexedProductCardinal,
+        ):
+            return False
 
         if left.is_finite():
             if right.is_finite():
@@ -333,6 +386,14 @@ class Cardinalities(Category):
             return all(self.lt(term, right) for term in left_expression.terms)
         if isinstance(right_expression, _SupremumCardinal):
             return any(self.lt(left, term) for term in right_expression.terms)
+        if isinstance(
+            left_expression,
+            _IndexedSumCardinal | _IndexedProductCardinal,
+        ) or isinstance(
+            right_expression,
+            _IndexedSumCardinal | _IndexedProductCardinal,
+        ):
+            return False
         if left.is_finite():
             if right.is_finite():
                 return left.finite_value() < right.finite_value()
@@ -450,7 +511,9 @@ class Cardinalities(Category):
                 return (1, str(expression.index))
             if isinstance(expression, _PowerCardinal):
                 return (2, repr(self))
-            return (3, repr(self))
+            if isinstance(expression, _SupremumCardinal):
+                return (3, repr(self))
+            return (4, repr(self))
 
         def _repr_(self) -> str:
             expression = self.expression()
@@ -460,9 +523,18 @@ class Cardinalities(Category):
                 return f"\N{HEBREW LETTER ALEF}_{expression.index}"
             if isinstance(expression, _PowerCardinal):
                 return f"({expression.base})^({expression.exponent})"
-            return "sup(" + ", ".join(map(str, expression.terms)) + ")"
+            if isinstance(expression, _SupremumCardinal):
+                return "sup(" + ", ".join(map(str, expression.terms)) + ")"
+            if isinstance(expression, _IndexedSumCardinal):
+                return f"sum_{{i in {expression.index_set}}} kappa_i"
+            return f"prod_{{i in {expression.index_set}}} kappa_i"
 
         def __hash__(self) -> int:
+            if isinstance(
+                self.expression(),
+                _IndexedSumCardinal | _IndexedProductCardinal,
+            ):
+                return hash(self.expression())
             if self.is_finite():
                 return hash(self.finite_value())
             if self.is_countably_infinite():
@@ -542,7 +614,15 @@ class Cardinalities(Category):
             return Cardinalities().power(base, self)
 
         def is_finite(self) -> bool:
-            return isinstance(self.expression(), _FiniteCardinal)
+            expression = self.expression()
+            if isinstance(
+                expression,
+                _IndexedSumCardinal | _IndexedProductCardinal,
+            ):
+                raise NotImplementedError(
+                    "finiteness of an arbitrary indexed cardinal family is not decidable"
+                )
+            return isinstance(expression, _FiniteCardinal)
 
         def is_infinite(self) -> bool:
             return not self.is_finite()
@@ -562,9 +642,16 @@ class Cardinalities(Category):
             return self.is_finite() or self.is_countably_infinite()
 
         def is_uncountable(self) -> bool:
+            expression = self.expression()
+            if isinstance(
+                expression,
+                _IndexedSumCardinal | _IndexedProductCardinal,
+            ):
+                raise NotImplementedError(
+                    "countability of an arbitrary indexed cardinal family is not decidable"
+                )
             if self.is_finite() or self.is_countably_infinite():
                 return False
-            expression = self.expression()
             if isinstance(expression, _SupremumCardinal):
                 return any(term.is_uncountable() for term in expression.terms)
             return True
@@ -686,7 +773,7 @@ class CardinalityHomset(CardinalityHomsetBase):
 
     def __contains__(self, candidate: Morphism) -> bool:
         return (
-            isinstance(candidate, CardinalityMorphism)
+            candidate in Cardinalities().ArrowCategory()
             and candidate.parent() is self
         )
 

@@ -42,9 +42,16 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     HomCategoryConstruction,
     IsoCategoryConstruction,
 )
+from dzack_research.preamble.categories.abstract_categories.functor_images import (
+    _FunctorImageParameters,
+)
+from dzack_research.preamble.categories.abstract_categories.products import (
+    CoproductsOfCategory,
+    ProductsOfCategory,
+)
 from dzack_research.preamble.owned_category_bases import (
-    CartesianProductsCategory,
     Category,
+    CategoryWithParameters,
     CategoryWithAxiom,
 )
 
@@ -57,7 +64,14 @@ if TYPE_CHECKING:
     from abc import abstractmethod as abstract_method
     from sage.structure.parent import ElementConstructorInput
 
+    from dzack_research.preamble.categories.abstract_categories.functors import (
+        DiscreteCategory,
+    )
     from dzack_research.preamble.categories.sets.cardinals import Cardinal
+    from dzack_research.preamble.categories.sets.sets import (
+        CartesianProductFunctor,
+        DisjointUnionFunctor,
+    )
 
     from collections.abc import Hashable, Iterable
     from sage.combinat.posets.posets import FinitePoset
@@ -95,10 +109,8 @@ def register_set_axioms() -> None:
 register_set_axioms()
 
 
-class CountabilitySubcategoryMethods:
-    r"""The ``Countable``/``Uncountable``/``PartiallyOrdered``/``TotallyOrdered``
-    axiom requests with their disjointness guards. Shared by the owned ``Sets()``
-    root and by every owned structured root whose objects carry set axioms."""
+class SetSubcategoryMethods:
+    r"""Set axioms and Set-valued functorial constructions."""
 
     # Runtime Sage mixes this class into every subcategory, so ``self``
     # is a SageCategory there; the casts state that fact for the checker.
@@ -127,6 +139,34 @@ class CountabilitySubcategoryMethods:
         r"""Objects whose underlying set is equipped with a total order."""
         category = cast(SageCategory, self)
         return category._with_axiom("TotallyOrdered")
+
+    @cached_method
+    def ProductFunctor(
+        self,
+        index_category: "DiscreteCategory",
+    ) -> "CartesianProductFunctor":
+        from dzack_research.preamble.categories.sets.sets import (
+            CartesianProductFunctor,
+        )
+
+        return CartesianProductFunctor(Sets(), index_category)
+
+    def Products(self, index_category: "DiscreteCategory") -> SageCategory:
+        return self.ProductFunctor(index_category).Image()
+
+    @cached_method
+    def CoproductFunctor(
+        self,
+        index_category: "DiscreteCategory",
+    ) -> "DisjointUnionFunctor":
+        from dzack_research.preamble.categories.sets.sets import (
+            DisjointUnionFunctor,
+        )
+
+        return DisjointUnionFunctor(Sets(), index_category)
+
+    def Coproducts(self, index_category: "DiscreteCategory") -> SageCategory:
+        return self.CoproductFunctor(index_category).Image()
 
 
 class Sets(Category):
@@ -158,68 +198,53 @@ class Sets(Category):
         def Finite(self) -> Sets: ...
         def Infinite(self) -> Sets: ...
         def Facade(self) -> Sets: ...
-    SubcategoryMethods = CountabilitySubcategoryMethods
+    SubcategoryMethods = SetSubcategoryMethods
 
-    class CartesianProducts(CartesianProductsCategory):
-        r"""The cartesian product \(U(X_1)\times\cdots\times U(X_n)\) of sets.
+    class _Products(_FunctorImageParameters, CategoryWithParameters):
+        r"""Cartesian products as the Set-specific image of a product functor."""
 
-        A *set*, not a module.  The module-level product of \(M\) and \(N\) is
-        their biproduct \(M\oplus N\); this is the different object whose
-        elements are pairs and out of which bilinear maps are defined.  The
-        two have the same elements and different structure, and conflating
-        them is what makes the tensor product's universal property unstatable.
+        def super_categories(self) -> list[SageCategory]:
+            return [ProductsOfCategory(self.functor())]
 
-        The factors stored are the objects \(X_i\) themselves, and a point is a
-        family \((x_i)\) with \(x_i\in X_i\), so membership is read component by
-        component as ``component in X_i``.  Parent identity is not membership.
-        A set can contain elements whose parent differs from that set.  Reading
-        membership from ``component.parent()`` therefore asks a different
-        question.
+        def _repr_(self) -> str:
+            return f"Category of cartesian products constructed by {self.functor()}"
 
-        The one datum this level introduces is the family of factors, so it is
-        the one argument its ``__init__`` consumes; everything a product *is*
-        as a set it reaches by ``super()``.
-        """
+        class ObjectType:
 
-        def extra_super_categories(self) -> list[SageCategory]:
-            return [Sets()]
-
-        class ParentMethods:
-            def __init__(
-                self, factors: tuple[SageParent, ...], **rest: ConstructionData
-            ) -> None:
-                self._factors = tuple(factors)
-                super().__init__(**rest)
-
-            def factors(self) -> tuple[SageParent, ...]:
-                return self._factors
+            @cached_method
+            def factor_cardinalities(
+                self,
+            ) -> "Callable[[SetElementInput], Cardinal]":
+                return lambda index: self.diagram()(index).cardinality()
 
             def cartesian_factors(self) -> tuple[SageParent, ...]:
-                r"""The factors, under the name Sage's product machinery reads."""
-                return self._factors
+                r"""The finite factor family under Sage's enumeration protocol."""
+                assert self.index_category().objects() in Sets().Finite()
+                return tuple(self.factors())
 
             def _sets_keys(self) -> range:
-                r"""The indices of the factors: a finite family is indexed by position."""
-                return range(len(self._factors))
+                r"""The positions used by Sage's finite-product enumerator."""
+                return range(len(self.cartesian_factors()))
 
+            @cached_method
             def cardinality(self) -> Cardinal:
                 r"""Return ``prod(#X_i)`` for the cartesian factors ``X_i``."""
                 from dzack_research.preamble.categories.sets.cardinals import (
                     Cardinalities,
                 )
 
-                return Cardinalities().product(
-                    *(factor.cardinality() for factor in self.cartesian_factors())
+                return Cardinalities().indexed_product(
+                    self.index_category().objects(),
+                    self.factor_cardinalities(),
                 )
 
             def _cartesian_product_of_elements(
                 self, elements: Iterable[SageElement]
-            ) -> tuple[SageElement, ...]:
+            ) -> SageElement:
                 r"""The point \((x_i)\) assembled from its components, under
                 the name Sage's product machinery reads.
 
-                Sage states the enumeration of a product of sets
-                (``Sets.CartesianProducts.ObjectType.__iter__``) in terms of
+                Sage states the enumeration of a product of sets in terms of
                 this name and of :meth:`cartesian_factors`, so supplying it is
                 what makes that enumeration the enumeration of this product:
                 lexicographic when every factor after the first is finite, and
@@ -227,68 +252,84 @@ class Sets(Category):
                 factors.  The empty product yields the one empty family, and a
                 product with an empty factor yields nothing.
                 """
-                return self(tuple(elements))
+                indices = tuple(self.index_category().objects())
+                return self(dict(zip(indices, elements)))
 
-            def projection(self, index: int) -> "Sets.ArrowType":
+            __iter__ = SageSets.CartesianProducts.ParentMethods.__iter__
+
+            def projection(self, index: "SetElementInput") -> "Sets.ArrowType":
                 r"""The ``index``-th product projection \(\pi_i:\prod_j X_j\to X_i\)."""
-                factor = self._factors[index]
-                return Sets().Hom(self, factor)(lambda point: point[index])
+                factor = self.diagram()(index)
 
-            def product_cone(self) -> SageParent:
-                r"""Return this set product with its categorical projections."""
-                from dzack_research.preamble.categories.abstract_categories.products import Product
+                def project(point: "SetElementInput") -> "SetElementInput":
+                    match point:
+                        case SageElement() if point.parent() is self:
+                            return point[index]
+                        case _:
+                            return self(point)[index]
 
-                return Product(
-                    self,
-                    tuple(self.projection(index) for index in self._sets_keys())
-                )
+                return Sets().Hom(self, factor)(project)
 
             def cartesian_projection(self, index: int) -> "Sets.ArrowType":
                 r"""The projection, under the name Sage's product machinery reads."""
-                return self.projection(index)
+                indices = tuple(self.index_category().objects())
+                return self.projection(indices[index])
+
+            def universal_morphism(self, cone: SageElement) -> "Sets.ArrowType":
+                constant_diagram = cone.domain()
+                assert constant_diagram.domain() is self.index_category()
+                return Sets().Hom(constant_diagram.constant_value(), self)(
+                    lambda element: self(
+                        lambda index: cone.component(index)(element)
+                    )
+                )
+
+            def cardinality_comparison(self) -> SageMorphism:
+                from dzack_research.preamble.categories.sets.cardinals import (
+                    Cardinalities,
+                )
+
+                cardinals = Cardinalities()
+                source = self.cardinality()
+                target = cardinals.indexed_product(
+                    self.index_category().objects(),
+                    self.factor_cardinalities(),
+                )
+                assert source == target
+                return cardinals.hom(source, target).identity()
 
             def __contains__(self, element: ElementConstructorInput) -> bool:
                 r"""Whether ``element`` is a point of \(\prod_i X_i\).
 
-                A point this product built is one of its own elements, which
-                its parent settles.  A raw family is one when it has the right
-                length and its \(i\)-th component lies in \(X_i\) -- read as
-                ``component in X_i`` and never from ``component.parent()``.
+                A point built by this product is one of its own elements.  A
+                callable declares an indexed section.  An explicit mapping is
+                admitted only for a finite index set and is checked at every
+                index.
                 """
-                if isinstance(element, SageElement) and element.parent() is self:
-                    return True
-                return (
-                    isinstance(element, tuple)
-                    and len(element) == len(self._factors)
-                    and all(
-                        component in factor
-                        for component, factor in zip(element, self._factors)
-                    )
-                )
+                match element:
+                    case SageElement() if element.parent() is self:
+                        return True
+                    case Mapping() if self.index_category().objects() in Sets().Finite():
+                        indices = self.index_category().objects()
+                        return all(key in indices for key in element) and all(
+                            index in element
+                            and element[index] in self.diagram()(index)
+                            for index in indices
+                        )
+                    case Callable():
+                        return True
+                    case _:
+                        return False
 
             def _element_constructor_(
-                self, element: Iterable[SageElement]
+                self, definition: "SetMapDefinition"
             ) -> SageElement:
-                r"""Return the family \((x_i)\) as an element of this product.
-
-                Each component is put into its factor rather than merely
-                checked against it: a point of \(\prod_i X_i\) has \(x_i\in
-                X_i\), and admitting whatever compared equal left arithmetic
-                running in whichever parent the caller happened to pass --
-                \((1,0)-(0,1)\) came back as \((1,-1)\) over
-                \(\mathbb{F}_3\) instead of \((1,2)\).
-                """
-                components = tuple(
-                    factor(component)
-                    for factor, component in zip(self._factors, tuple(element))
-                )
-                assert components in self, (
-                    f"{components} is not a tuple of elements of the factors of {self}"
-                )
-                return self.ElementType(components=components, parent=self)
+                r"""Return the indexed family \((x_i)\) in this product."""
+                assert definition in self
+                return self.ElementType(definition=definition, parent=self)
 
             def _repr_(self) -> str:
-                return " x ".join(str(factor) for factor in self._factors)
+                return f"Product of {self.diagram()}"
 
         class ElementMethods:
             r"""A point of \(\prod_i X_i\): the family \((x_i)\) and nothing more.
@@ -303,35 +344,165 @@ class Sets(Category):
             def __init__(
                 self,
                 parent: SageParent,
-                components: tuple[SageElement, ...],
+                definition: "SetMapDefinition",
             ) -> None:
-                self._components = tuple(components)
+                self._definition = definition
                 super().__init__(parent=parent)
 
-            def components(self) -> tuple[SageElement, ...]:
-                return self._components
+            def components(self) -> "SetMapDefinition":
+                return self._definition
 
             def cartesian_projection(self, index: int) -> SageElement:
                 r"""The ``index``-th component, under the name Sage's machinery reads."""
-                return self._components[index]
+                indices = tuple(self.parent().index_category().objects())
+                return self[indices[index]]
 
-            def __getitem__(self, index: int) -> SageElement:
-                return self._components[index]
-
-            def __len__(self) -> int:
-                return len(self._components)
+            def __getitem__(self, index: "SetElementInput") -> SageElement:
+                parent = self.parent()
+                assert index in parent.index_category()
+                match self._definition:
+                    case Mapping():
+                        value = self._definition[index]
+                    case Callable():
+                        value = self._definition(index)
+                    case _:
+                        raise AssertionError("invalid product-element representation")
+                return parent.diagram()(index)(value)
 
             def __iter__(self) -> Iterator[SageElement]:
-                return iter(self._components)
-
-            def _richcmp_(self, other: SageElement, op: int) -> bool:
-                return bool(richcmp(self._components, other.components(), op))
-
-            def __hash__(self) -> int:
-                return hash((id(self.parent()), self._components))
+                indices = self.parent().index_category().objects()
+                assert indices in Sets().Finite()
+                return iter(tuple(self[index] for index in indices))
 
             def _repr_(self) -> str:
-                return "(%s)" % ", ".join(repr(component) for component in self._components)
+                indices = self.parent().index_category().objects()
+                if indices in Sets().Finite():
+                    return "(%s)" % ", ".join(
+                        repr(self[index]) for index in indices
+                    )
+                return f"Element of {self.parent()}"
+
+    class _Coproducts(_FunctorImageParameters, CategoryWithParameters):
+        r"""Disjoint unions as the Set-specific image of a coproduct functor."""
+
+        def super_categories(self) -> list[SageCategory]:
+            return [CoproductsOfCategory(self.functor())]
+
+        def _repr_(self) -> str:
+            return f"Category of disjoint unions constructed by {self.functor()}"
+
+        class ObjectType:
+            @cached_method
+            def cofactor_cardinalities(
+                self,
+            ) -> "Callable[[SetElementInput], Cardinal]":
+                return lambda index: self.diagram()(index).cardinality()
+
+            @cached_method
+            def cardinality(self) -> Cardinal:
+                from dzack_research.preamble.categories.sets.cardinals import (
+                    Cardinalities,
+                )
+
+                return Cardinalities().indexed_sum(
+                    self.index_category().objects(),
+                    self.cofactor_cardinalities(),
+                )
+
+            def __iter__(self) -> Iterator[SageElement]:
+                from sage.sets.disjoint_union_enumerated_sets import (
+                    DisjointUnionEnumeratedSets,
+                )
+                from sage.sets.family import Family
+
+                index_set = self.index_category().objects()
+                family = Family(index_set, self.diagram())
+                for tagged_element in DisjointUnionEnumeratedSets(
+                    family,
+                    keepkey=True,
+                ):
+                    yield self(tagged_element)
+
+            def __contains__(self, tagged_element: "SetElementInput") -> bool:
+                match tagged_element:
+                    case SageElement() if tagged_element.parent() is self:
+                        return True
+                    case tuple() if len(tagged_element) == 2:
+                        index, element = tagged_element
+                        return (
+                            index in self.index_category()
+                            and element in self.diagram()(index)
+                        )
+                    case _:
+                        return False
+
+            def _element_constructor_(
+                self,
+                tagged_element: tuple["SetElementInput", "SetElementInput"],
+            ) -> SageElement:
+                assert tagged_element in self
+                index, element = tagged_element
+                return self.ElementType(
+                    parent=self,
+                    index=index,
+                    value=self.diagram()(index)(element),
+                )
+
+            def injection(self, index: "SetElementInput") -> "Sets.ArrowType":
+                assert index in self.index_category()
+                cofactor = self.diagram()(index)
+                return Sets().Hom(cofactor, self)(
+                    lambda element: self((index, element))
+                )
+
+            def universal_morphism(self, cocone: SageElement) -> "Sets.ArrowType":
+                constant_diagram = cocone.codomain()
+                assert constant_diagram.domain() is self.index_category()
+
+                def copair(tagged_element: "SetElementInput") -> "SetElementInput":
+                    element = self(tagged_element)
+                    return cocone.component(element.index())(element.value())
+
+                return Sets().Hom(self, constant_diagram.constant_value())(
+                    copair
+                )
+
+            def cardinality_comparison(self) -> SageMorphism:
+                from dzack_research.preamble.categories.sets.cardinals import (
+                    Cardinalities,
+                )
+
+                cardinals = Cardinalities()
+                source = self.cardinality()
+                target = cardinals.indexed_sum(
+                    self.index_category().objects(),
+                    self.cofactor_cardinalities(),
+                )
+                assert source == target
+                return cardinals.hom(source, target).identity()
+
+            def _repr_(self) -> str:
+                return f"Coproduct of {self.diagram()}"
+
+        class ElementMethods:
+            def __init__(
+                self,
+                parent: SageParent,
+                index: "SetElementInput",
+                value: "SetElementInput",
+            ) -> None:
+                self._index = index
+                self._value = value
+                super().__init__(parent=parent)
+
+            def index(self) -> "SetElementInput":
+                return self._index
+
+            def value(self) -> "SetElementInput":
+                return self._value
+
+            def _repr_(self) -> str:
+                return f"({self._index}, {self._value})"
 
     class _HomCategory(HomCategoryConstruction):
         r"""Set-valued arrows, represented by functions.

@@ -20,7 +20,10 @@ Sage-native category correctly has none of this.
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterable
+    from sage.structure.element import Element as SageElement
     from sage.structure.parent import MembershipInput
+
+    type ObjectOfCategory = Parent | Category | SageElement
 
 # Sage's ``Category``, not the owned base.  An owned base makes its category an
 # object of ``Cat()``, and ``Cat()`` is not an object of itself.
@@ -128,7 +131,7 @@ class Cat(OwnedCategoryMixin, Category):
                 class ParentMethods:
                     def __call__(
                         self,
-                        components: "Callable",
+                        components: "Callable[[ObjectOfCategory], HomCategoryOf.ElementMethods]",
                     ) -> "HomCategoryOf.ElementMethods":
                         return self.ObjectType(
                             hom_category=self,
@@ -159,14 +162,14 @@ class Cat(OwnedCategoryMixin, Category):
                     def __init__(
                         self,
                         hom_category: Category,
-                        components: "Callable",
+                        components: "Callable[[ObjectOfCategory], HomCategoryOf.ElementMethods]",
                     ) -> None:
                         self._components = components
                         super().__init__(hom_category=hom_category)
 
                     def component(
                         self,
-                        obj: "Parent | Category",
+                        obj: "ObjectOfCategory",
                     ) -> "HomCategoryOf.ElementMethods":
                         source = self.domain()
                         target = self.codomain()
@@ -183,7 +186,7 @@ class Cat(OwnedCategoryMixin, Category):
                 class ElementMethods:
                     def component(
                         self,
-                        obj: "Parent | Category",
+                        obj: "ObjectOfCategory",
                     ) -> "HomCategoryOf.ElementMethods":
                         return self.forward().component(obj)
 
@@ -194,8 +197,8 @@ class Cat(OwnedCategoryMixin, Category):
 
             def __call__(
                 self,
-                value: "Parent | Category | HomCategoryOf.ElementMethods",
-            ) -> "Parent | Category | HomCategoryOf.ElementMethods":
+                value: "ObjectOfCategory | HomCategoryOf.ElementMethods",
+            ) -> "ObjectOfCategory | HomCategoryOf.ElementMethods":
                 if value in self.domain().ArrowCategory():
                     image = self._apply_functor_to_morphism(value)
                     assert image in self.codomain().ArrowCategory()
@@ -220,8 +223,8 @@ class Cat(OwnedCategoryMixin, Category):
         class ElementMethods:
             def __call__(
                 self,
-                value: "Parent | Category | HomCategoryOf.ElementMethods",
-            ) -> "Parent | Category | HomCategoryOf.ElementMethods":
+                value: "ObjectOfCategory | HomCategoryOf.ElementMethods",
+            ) -> "ObjectOfCategory | HomCategoryOf.ElementMethods":
                 return self.forward()(value)
 
             def factors(self) -> tuple["Cat.ArrowType", ...]:
@@ -355,28 +358,43 @@ class Cat(OwnedCategoryMixin, Category):
             r"""Return the functor category \([J,\mathbf{C}]\) of diagrams of shape \(J\)."""
             return index_category.FunctorCategory(self)
 
+        @cached_method
+        def DiagonalFunctor(self, index_category: Category) -> "Cat.ArrowType":
+            r"""Return \(\Delta:\mathbf C\to[J,\mathbf C]\)."""
+            from dzack_research.preamble.categories.abstract_categories.functors import (
+                DiagonalFunctor,
+            )
+
+            return DiagonalFunctor(self, index_category)
+
         def FunctorCategory(self, codomain: Category) -> Category:
             r"""Return the functor category \(\operatorname{Fun}(\mathbf{C},\mathbf{D})\)."""
             return Cat().Hom(self, codomain)
 
+        def ImageOf(self, functor: "Cat.ArrowType") -> Category:
+            r"""Return the image category of a functor with codomain ``self``."""
+            assert functor in Cat().ArrowCategory()
+            assert functor.codomain() is self
+            return functor.Image()
+
         @cached_method
         def Hom(
             self,
-            source: "Parent | Category",
-            target: "Parent | Category",
+            source: "ObjectOfCategory",
+            target: "ObjectOfCategory",
         ) -> Category:
             r"""Return \(\operatorname{Hom}_{\mathbf{C}}(X,Y)\)."""
             assert source in self and target in self
             return self.HomCategory().Of(source, target)
 
         @cached_method
-        def End(self, obj: "Parent | Category") -> Category:
+        def End(self, obj: "ObjectOfCategory") -> Category:
             r"""Return \(\operatorname{End}_{\mathbf{C}}(X)\)."""
             assert obj in self
             return self.EndCategory().Of(obj)
 
         @cached_method
-        def Aut(self, obj: "Parent | Category") -> Category:
+        def Aut(self, obj: "ObjectOfCategory") -> Category:
             r"""Return \(\operatorname{Aut}_{\mathbf{C}}(X)\)."""
             assert obj in self
             return self.AutCategory().Of(obj)
@@ -384,8 +402,8 @@ class Cat(OwnedCategoryMixin, Category):
         @cached_method
         def Iso(
             self,
-            source: "Parent | Category",
-            target: "Parent | Category",
+            source: "ObjectOfCategory",
+            target: "ObjectOfCategory",
         ) -> Category:
             r"""Return the isomorphism category from ``source`` to ``target``."""
             assert source in self and target in self
@@ -393,7 +411,7 @@ class Cat(OwnedCategoryMixin, Category):
 
         def identity(
             self,
-            obj: "Parent | Category",
+            obj: "ObjectOfCategory",
         ) -> "HomCategoryOf.ElementMethods":
             r"""Return the identity arrow of ``obj``."""
             return self.Aut(obj).identity()

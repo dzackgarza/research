@@ -15,13 +15,9 @@ from dzack_research.preamble.categories.sets.owned_sets import Sets
 
 if TYPE_CHECKING:
     from dzack_research.preamble import lexicon
-    from dzack_research.preamble.categories.sets.sets import (
-        CoproductsOfSets,
-    )
     from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
         Core,
     )
-    from dzack_research.preamble.categories.sets.sets import PowerSets
 
 
 class CardinalityFunctor(Functor):
@@ -36,7 +32,7 @@ class CardinalityFunctor(Functor):
 
     def _apply_functor(self, source: "lexicon.Set") -> Cardinal:
         cardinal_number = source.cardinality()
-        assert isinstance(cardinal_number, Cardinal), (
+        assert cardinal_number in Cardinalities(), (
             "an object of the owned Sets category has an exact cardinal object"
         )
         return cardinal_number
@@ -50,43 +46,6 @@ class CardinalityFunctor(Functor):
         target = self._apply_functor(isomorphism.codomain())
         assert source == target, "isomorphic sets have equal cardinality"
         return self.codomain().hom(source, target).unique_morphism()
-
-    def cartesian_product_comparison(
-        self,
-        product: "Sets.CartesianProducts.ObjectType",
-    ) -> CardinalityMorphism:
-        r"""Return the equality arrow ``#(prod X_i) -> prod #X_i``."""
-        source = self._apply_functor(product)
-        target = self.codomain().product(
-            *(self._apply_functor(factor) for factor in product.factors())
-        )
-        assert source == target, "#(prod X_i) equals prod #X_i"
-        return self.codomain().hom(source, target).identity()
-
-    def coproduct_comparison(
-        self,
-        coproduct: "CoproductsOfSets.ObjectType",
-    ) -> CardinalityMorphism:
-        r"""Return the equality arrow ``#(coprod X_i) -> sum #X_i``."""
-        source = self._apply_functor(coproduct)
-        target = self.codomain().sum(
-            *(self._apply_functor(cofactor) for cofactor in coproduct.cofactors())
-        )
-        assert source == target, "#(coprod X_i) equals sum #X_i"
-        return self.codomain().hom(source, target).identity()
-
-    def power_set_comparison(
-        self,
-        power_set: "PowerSets.ObjectType",
-    ) -> CardinalityMorphism:
-        r"""Return the equality arrow ``#P(X) -> 2 ^ #X``."""
-        source = self._apply_functor(power_set)
-        target = self.codomain().power(
-            2,
-            self._apply_functor(power_set.base_set()),
-        )
-        assert source == target, "#P(X) equals 2 ^ #X"
-        return self.codomain().hom(source, target).identity()
 
     def _repr_(self) -> str:
         return "The cardinality functor # : core(Sets) -> Cardinalities"

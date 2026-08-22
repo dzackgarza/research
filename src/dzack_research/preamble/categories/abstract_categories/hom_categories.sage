@@ -24,6 +24,8 @@ from dzack_research.preamble.owned_category_bases import Category
 if TYPE_CHECKING:
     from sage.structure.parent import Parent
 
+    type ObjectOfCategory = Parent | SageCategory | SageElement
+
 
 class _OverACategory:
     def __init__(self, base_category: SageCategory) -> None:
@@ -42,7 +44,7 @@ class _OverACategory:
             if super_category.category() is Cat()
         ]
 
-    def __contains__(self, candidate: "Parent | Category") -> bool:
+    def __contains__(self, candidate: "ObjectOfCategory") -> bool:
         match candidate:
             case HomCategoryOf.ParentMethods():
                 family = candidate.hom_category()
@@ -78,8 +80,8 @@ class HomCategoryOf(_OverACategory, Category):
 
     def Of(
         self,
-        domain: "Parent | Category",
-        codomain: "Parent | Category",
+        domain: "ObjectOfCategory",
+        codomain: "ObjectOfCategory",
     ) -> Category:
         r"""Return \(\operatorname{Hom}_{\mathbf C}(X,Y)\)."""
         assert domain in self._base_category
@@ -92,8 +94,8 @@ class HomCategoryOf(_OverACategory, Category):
 
     def Between(
         self,
-        domain: "Parent | Category",
-        codomain: "Parent | Category",
+        domain: "ObjectOfCategory",
+        codomain: "ObjectOfCategory",
     ) -> Category:
         return self.Of(domain, codomain)
 
@@ -102,8 +104,8 @@ class HomCategoryOf(_OverACategory, Category):
 
         def __init__(
             self,
-            domain: "Parent | Category",
-            codomain: "Parent | Category",
+            domain: "ObjectOfCategory",
+            codomain: "ObjectOfCategory",
             hom_category: "HomCategoryOf | EndCategoryOf | IsoCategoryOf | AutCategoryOf",
         ) -> None:
             self._domain = domain
@@ -111,10 +113,10 @@ class HomCategoryOf(_OverACategory, Category):
             self._hom_category = hom_category
             Category.__init__(self)
 
-        def domain(self) -> "Parent | Category":
+        def domain(self) -> "ObjectOfCategory":
             return self._domain
 
-        def codomain(self) -> "Parent | Category":
+        def codomain(self) -> "ObjectOfCategory":
             return self._codomain
 
         def hom_category(
@@ -162,16 +164,16 @@ class HomCategoryOf(_OverACategory, Category):
         def base_category(self) -> Category:
             return self.hom_category().base_category()
 
-        def domain(self) -> "Parent | Category":
+        def domain(self) -> "ObjectOfCategory":
             return self.hom_category().domain()
 
-        def codomain(self) -> "Parent | Category":
+        def codomain(self) -> "ObjectOfCategory":
             return self.hom_category().codomain()
 
-        def source(self) -> "Parent | Category":
+        def source(self) -> "ObjectOfCategory":
             return self.domain()
 
-        def target(self) -> "Parent | Category":
+        def target(self) -> "ObjectOfCategory":
             return self.codomain()
 
         def __mul__(
@@ -227,7 +229,7 @@ class EndCategoryOf(_OverACategory, Category):
     def _object_type_of_object_type(self) -> type:
         return self.ElementType
 
-    def Of(self, obj: "Parent | Category") -> Category:
+    def Of(self, obj: "ObjectOfCategory") -> Category:
         r"""Return \(\operatorname{End}_{\mathbf C}(X)\)."""
         assert obj in self._base_category
         return self.ObjectType(
@@ -238,8 +240,8 @@ class EndCategoryOf(_OverACategory, Category):
 
     def Between(
         self,
-        domain: "Parent | Category",
-        codomain: "Parent | Category",
+        domain: "ObjectOfCategory",
+        codomain: "ObjectOfCategory",
     ) -> Category:
         assert domain is codomain
         return self.Of(domain)
@@ -272,8 +274,8 @@ class IsoCategoryOf(_OverACategory, Category):
 
     def Of(
         self,
-        domain: "Parent | Category",
-        codomain: "Parent | Category",
+        domain: "ObjectOfCategory",
+        codomain: "ObjectOfCategory",
     ) -> Category:
         r"""Return the isomorphisms \(X\mathrel{\cong}Y\)."""
         assert domain in self._base_category
@@ -286,8 +288,8 @@ class IsoCategoryOf(_OverACategory, Category):
 
     def Between(
         self,
-        domain: "Parent | Category",
-        codomain: "Parent | Category",
+        domain: "ObjectOfCategory",
+        codomain: "ObjectOfCategory",
     ) -> Category:
         return self.Of(domain, codomain)
 
@@ -383,7 +385,7 @@ class AutCategoryOf(_OverACategory, Category):
     def _object_type_of_object_type(self) -> type:
         return self.ElementType
 
-    def Of(self, obj: "Parent | Category") -> Category:
+    def Of(self, obj: "ObjectOfCategory") -> Category:
         r"""Return \(\operatorname{Aut}_{\mathbf C}(X)\)."""
         assert obj in self._base_category
         return self.ObjectType(
@@ -394,8 +396,8 @@ class AutCategoryOf(_OverACategory, Category):
 
     def Between(
         self,
-        domain: "Parent | Category",
-        codomain: "Parent | Category",
+        domain: "ObjectOfCategory",
+        codomain: "ObjectOfCategory",
     ) -> Category:
         assert domain is codomain
         return self.Of(domain)

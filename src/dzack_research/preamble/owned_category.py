@@ -363,7 +363,7 @@ class OwnedCategoryMixin(CatConstructionsMixin):
     A mixin rather than a ``Category`` subclass because
     ``CategoryWithParameters._make_named_class`` -- inherited by
     ``Category_over_base``, ``JoinCategory``, ``CategoryWithAxiom`` and the
-    functorial-construction categories such as ``CartesianProductsCategory``
+    Sage functorial-construction categories
     -- calls ``Category._make_named_class`` *by name*, so an override placed
     further down the ``Category`` hierarchy is bypassed.  Placed first in the
     bases it handles the tied names itself and delegates the rest along the
@@ -548,7 +548,7 @@ def object_of(category: Category, **data: ConstructionData) -> Parent:
 
     A free function rather than a method on :class:`OwnedCategoryMixin`
     because the category an object is built in is routinely a
-    ``JoinCategory`` -- ``Sets().Finite().CartesianProducts()`` already is --
+    ``JoinCategory`` -- construction images joined with set axioms are --
     and a join is Sage's class, which the preamble consumes and does not
     extend.  The join's ``parent_class`` has the owned levels among its bases,
     so it constructs exactly the same way.

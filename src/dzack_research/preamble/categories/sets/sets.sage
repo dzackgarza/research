@@ -32,12 +32,20 @@ from sage.structure.element import Element
 from sage.structure.element_wrapper import ElementWrapper
 from sage.structure.parent import Parent
 from sage.structure.richcmp import richcmp
-from sage.misc.cachefunc import cached_function
+from sage.misc.cachefunc import cached_function, cached_method
 
 from dzack_research.preamble.categories.sets.cardinals import Cardinal
 from dzack_research.preamble.categories.sets.owned_sets import (
     Sets,
     placement_of,
+)
+from dzack_research.preamble.categories.abstract_categories.functors import (
+    CoproductFunctor,
+    DiscreteCategory,
+    DiscreteDiagram,
+    Functor,
+    NaturalTransformation,
+    ProductFunctor,
 )
 from dzack_research.preamble.owned_category import object_of
 from dzack_research.preamble.owned_category_bases import Category, CategoryWithParameters
@@ -119,130 +127,171 @@ def _cartesian_product_placement(factors: tuple[Parent, ...]) -> Sets:
     return Sets()
 
 
-def CartesianProductOfSets(factors: Iterable[Parent]) -> Parent:
-    r"""Return the cartesian product of the given sets."""
-    family = tuple(factors)
-    return object_of(
-        _cartesian_product_placement(family).CartesianProducts(),
-        factors=family,
-    )
-
-
-def cartesian_product_morphism(*maps: Morphism) -> "Sets.ArrowType":
-    r"""Return the componentwise morphism between cartesian products."""
-    domain = CartesianProductOfSets(tuple(map_.domain() for map_ in maps))
-    codomain = CartesianProductOfSets(tuple(map_.codomain() for map_ in maps))
-    return Sets().Hom(domain, codomain)(
-        lambda point: codomain(
-            tuple(map_(value) for map_, value in zip(maps, point))
-        ),
-    )
-
-
-class CoproductsOfSets(CategoryWithParameters):
-    r"""Tagged disjoint unions of families of sets."""
-
-    def __init__(self, placement: SageCategory) -> None:
-        self._placement = placement
-        super().__init__()
-
-    def super_categories(self) -> list[SageCategory]:
-        return [self._placement]
-
-    def _make_named_class_key(self, name: str) -> SageCategory:
-        return self._placement
-
-    def _repr_object_names(self) -> str:
-        return "coproducts of sets"
-
-    class ParentMethods:
-        def __init__(
-            self,
-            cofactors: Iterable[Parent],
-            **rest: "ConstructionData",
-        ) -> None:
-            self._cofactors = tuple(cofactors)
-            super().__init__(**rest)
-
-        def cofactors(self) -> tuple[Parent, ...]:
-            return self._cofactors
-
-        def cardinality(self) -> Cardinal:
-            from dzack_research.preamble.categories.sets.cardinals import Cardinalities
-
-            return Cardinalities().sum(
-                *(cofactor.cardinality() for cofactor in self._cofactors)
-            )
-
-        def __iter__(self) -> Iterator[tuple[int, Element]]:
-            from sage.sets.disjoint_union_enumerated_sets import (
-                DisjointUnionEnumeratedSets,
-            )
-            from sage.sets.family import Family
-
-            return iter(
-                DisjointUnionEnumeratedSets(
-                    Family(list(self._cofactors)),
-                    keepkey=True,
-                )
-            )
-
-        def __contains__(self, tagged_element: "ElementConstructorInput") -> bool:
-            if not isinstance(tagged_element, tuple) or len(tagged_element) != 2:
-                return False
-            index, element = tagged_element
-            if not isinstance(index, (int, SageInteger)):
-                return False
-            position = int(index)
-            return (
-                0 <= position < len(self._cofactors)
-                and element in self._cofactors[position]
-            )
-
-        def injection(self, index: int) -> "Sets.ArrowType":
-            assert 0 <= index < len(self._cofactors), (
-                f"no coproduct cofactor has index {index}"
-            )
-            cofactor = self._cofactors[index]
-            return Sets().Hom(cofactor, self)(
-                lambda element: (index, element)
-            )
-
-        def coproduct_cocone(self) -> Parent:
-            r"""Return this set coproduct with its categorical injections."""
-            from dzack_research.preamble.categories.abstract_categories.products import Coproduct
-
-            return Coproduct(
-                self,
-                tuple(self.injection(index) for index in range(len(self._cofactors)))
-            )
-
-        def _repr_(self) -> str:
-            if not self._cofactors:
-                return "Empty coproduct of sets"
-            return " + ".join(str(cofactor) for cofactor in self._cofactors)
-
-
-def CoproductOfSets(cofactors: Iterable[Parent]) -> Parent:
-    r"""Return the tagged disjoint union of the given sets."""
-    family = tuple(cofactors)
-    axiom_families = [frozenset(placement_of(cofactor).axioms()) for cofactor in family]
+def _coproduct_placement(cofactors: tuple[Parent, ...]) -> Sets:
+    r"""Return the cardinality placement of a finite disjoint union."""
+    axiom_families = [
+        frozenset(placement_of(cofactor).axioms())
+        for cofactor in cofactors
+    ]
     if all("Finite" in axioms for axioms in axiom_families):
-        placement = Sets().Finite()
-    elif all(
+        return Sets().Finite()
+    if all(
         "Finite" in axioms or "Countable" in axioms
         for axioms in axiom_families
     ):
-        placement = Sets().Countable()
-    elif any("Uncountable" in axioms for axioms in axiom_families):
-        placement = Sets().Uncountable()
-    elif any("Infinite" in axioms for axioms in axiom_families):
-        placement = Sets().Infinite()
-    else:
+        return Sets().Countable()
+    if any("Uncountable" in axioms for axioms in axiom_families):
+        return Sets().Uncountable()
+    if any("Infinite" in axioms for axioms in axiom_families):
+        return Sets().Infinite()
+    return Sets()
+
+
+class CartesianProductFunctor(ProductFunctor):
+    r"""The product functor on Set-valued diagrams of one discrete shape."""
+
+    def _image_category(self) -> SageCategory:
+        return Sets._Products(self)
+
+    @cached_method
+    def _apply_functor(self, diagram: Functor) -> Parent:
+        assert diagram.domain() is self.index_category()
+        indices = diagram.domain().objects()
         placement = Sets()
-    return object_of(
-        CoproductsOfSets(placement),
-        cofactors=family,
+        if indices in Sets().Finite():
+            placement = _cartesian_product_placement(
+                tuple(diagram(index) for index in indices)
+            )
+        image = self.Image()
+        return object_of(
+            SageCategory.join((image, placement)),
+            preimage=diagram,
+        )
+
+
+class DisjointUnionFunctor(CoproductFunctor):
+    r"""The coproduct functor on Set-valued diagrams of one discrete shape."""
+
+    def _image_category(self) -> SageCategory:
+        return Sets._Coproducts(self)
+
+    @cached_method
+    def _apply_functor(self, diagram: Functor) -> Parent:
+        assert diagram.domain() is self.index_category()
+        indices = diagram.domain().objects()
+        placement = Sets()
+        if indices in Sets().Finite():
+            placement = _coproduct_placement(
+                tuple(diagram(index) for index in indices)
+            )
+        image = self.Image()
+        return object_of(
+            SageCategory.join((image, placement)),
+            preimage=diagram,
+        )
+
+
+def CartesianProductOfFamily(
+    index_set: Parent,
+    factors: "Callable[[ElementConstructorInput], Parent]",
+) -> Parent:
+    r"""Return the product of a set-indexed family of sets."""
+    index_category = DiscreteCategory(index_set)
+    diagram = DiscreteDiagram(index_category, Sets(), factors)
+    return Sets().ProductFunctor(index_category)(diagram)
+
+
+def CartesianProductOfSets(factors: Iterable[Parent]) -> Parent:
+    r"""Return the product of a finite sequence of sets."""
+    family = tuple(factors)
+    indices = Sets.Δ[len(family) - 1]
+    return CartesianProductOfFamily(
+        indices,
+        lambda index: family[int(index)],
+    )
+
+
+def CartesianProductMorphismOfFamily(
+    index_set: Parent,
+    maps: "Callable[[ElementConstructorInput], Sets.ArrowType]",
+) -> "Sets.ArrowType":
+    r"""Apply the product functor to an indexed natural transformation."""
+    index_category = DiscreteCategory(index_set)
+    source = DiscreteDiagram(
+        index_category,
+        Sets(),
+        lambda index: maps(index).domain(),
+    )
+    target = DiscreteDiagram(
+        index_category,
+        Sets(),
+        lambda index: maps(index).codomain(),
+    )
+    transformation = NaturalTransformation(
+        source,
+        target,
+        maps,
+    )
+    return Sets().ProductFunctor(index_category)(transformation)
+
+
+def cartesian_product_morphism(*maps: Morphism) -> "Sets.ArrowType":
+    r"""Return the componentwise morphism between finite products."""
+    map_family = tuple(maps)
+    indices = Sets.Δ[len(map_family) - 1]
+    return CartesianProductMorphismOfFamily(
+        indices,
+        lambda index: map_family[int(index)],
+    )
+
+
+def CoproductOfFamily(
+    index_set: Parent,
+    cofactors: "Callable[[ElementConstructorInput], Parent]",
+) -> Parent:
+    r"""Return the coproduct of a set-indexed family of sets."""
+    index_category = DiscreteCategory(index_set)
+    diagram = DiscreteDiagram(index_category, Sets(), cofactors)
+    return Sets().CoproductFunctor(index_category)(diagram)
+
+
+def CoproductOfSets(cofactors: Iterable[Parent]) -> Parent:
+    r"""Return the coproduct of a finite sequence of sets."""
+    family = tuple(cofactors)
+    indices = Sets.Δ[len(family) - 1]
+    return CoproductOfFamily(
+        indices,
+        lambda index: family[int(index)],
+    )
+
+
+def CoproductMorphismOfFamily(
+    index_set: Parent,
+    maps: "Callable[[ElementConstructorInput], Sets.ArrowType]",
+) -> "Sets.ArrowType":
+    r"""Apply the coproduct functor to an indexed natural transformation."""
+    index_category = DiscreteCategory(index_set)
+    source = DiscreteDiagram(
+        index_category,
+        Sets(),
+        lambda index: maps(index).domain(),
+    )
+    target = DiscreteDiagram(
+        index_category,
+        Sets(),
+        lambda index: maps(index).codomain(),
+    )
+    transformation = NaturalTransformation(source, target, maps)
+    return Sets().CoproductFunctor(index_category)(transformation)
+
+
+def coproduct_morphism(*maps: Morphism) -> "Sets.ArrowType":
+    r"""Return the componentwise morphism between finite coproducts."""
+    map_family = tuple(maps)
+    indices = Sets.Δ[len(map_family) - 1]
+    return CoproductMorphismOfFamily(
+        indices,
+        lambda index: map_family[int(index)],
     )
 
 
@@ -658,6 +707,17 @@ class PowerSets(CategoryWithParameters):
             from dzack_research.preamble.categories.sets.cardinals import cardinal
 
             return cardinal(2) ** self._base_set.cardinality()
+
+        def cardinality_comparison(self) -> Morphism:
+            from dzack_research.preamble.categories.sets.cardinals import (
+                Cardinalities,
+            )
+
+            cardinals = Cardinalities()
+            source = self.cardinality()
+            target = cardinals.power(2, self._base_set.cardinality())
+            assert source == target
+            return cardinals.hom(source, target).identity()
 
         def _repr_(self) -> str:
             return f"Power set of {self._base_set}"

@@ -48,9 +48,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, final
 
 from sage.categories.algebra_functor import AlgebrasCategory as SageAlgebrasCategory
-from sage.categories.cartesian_product import (
-    CartesianProductsCategory as SageCartesianProductsCategory,
-)
 from sage.categories.category import Category as SageCategory
 from sage.categories.category import (
     CategoryWithParameters as SageCategoryWithParameters,
@@ -400,8 +397,8 @@ class FunctorialConstructionCategory(
 ):
     r"""Owned base over Sage's functorial construction category.
 
-    Sage's construction methods -- ``C.Subobjects()``, ``C.Quotients()``,
-    ``C.CartesianProducts()`` -- do not build axiom categories; they build
+    Sage's construction methods for subobjects, quotients, and similar
+    constructions do not build axiom categories; they build
     ``FunctorialConstructionCategory`` descendants.  A construction declared
     over Sage's raw base keeps ``category() == Objects()`` and leaves
     :math:`\mathbf{Cat}` even when the base category it is taken over is owned.
@@ -496,16 +493,6 @@ class SubquotientsCategory(
     def __init__(self, category: SageCategory) -> None:
         self._init_cat_object()
         SageSubquotientsCategory.__init__(self, category)
-
-
-class CartesianProductsCategory(
-    OwnedCategoryMixin, OwnedCategoryObject, SageCartesianProductsCategory, Parent
-):
-    r"""Owned base over Sage's Cartesian-product construction base."""
-
-    def __init__(self, category: SageCategory) -> None:
-        self._init_cat_object()
-        SageCartesianProductsCategory.__init__(self, category)
 
 
 class IsomorphicObjectsCategory(

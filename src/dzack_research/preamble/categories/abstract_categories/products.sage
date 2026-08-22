@@ -11,10 +11,6 @@ Each cone object carries ``structure_morphisms()`` (the projections);
 each cocone object carries ``costructure_morphisms()`` (the injections).
 """
 
-# The owned root, not Sage's: the preamble places every set in it, and a
-# parent left in Sage's ``Sets()`` is not in the owned one, so a ``Hom`` out
-# of it in the preamble's category is refused.
-from dzack_research.preamble.categories.sets.owned_sets import Sets
 from dzack_research.preamble.owned_category import object_of
 from collections.abc import Callable, Iterable, Iterator
 from typing import Self, TYPE_CHECKING
@@ -22,7 +18,11 @@ if TYPE_CHECKING:
     from dzack_research.preamble.owned_category import ConstructionData
     from sage.structure.parent import ElementConstructorInput
 
-from dzack_research.preamble.owned_category_bases import Category
+from dzack_research.preamble.owned_category_bases import Category, CategoryWithParameters
+from dzack_research.preamble.categories.abstract_categories.functor_images import (
+    _FunctorImageParameters,
+    ImageOfFunctor,
+)
 # The category a diagram sits in is any category, and the objects that carry
 # diagrams have joined categories -- so the ambient is typically a
 # ``JoinCategory``, which is Sage's class and not an owned one.  Every
@@ -30,8 +30,11 @@ from dzack_research.preamble.owned_category_bases import Category
 # base of the diagram categories themselves.
 from sage.categories.category import Category as AmbientCategory
 from sage.categories.morphism import Morphism
+from sage.misc.cachefunc import cached_method
+from sage.sets.family import Family
 from sage.structure.element import Element
 from sage.structure.parent import Parent
+from sage.misc.abstract_method import abstract_method
 
 if TYPE_CHECKING:
     from typing import Protocol
@@ -117,6 +120,132 @@ class _IndexedDiagramParameters(_DiagramParameters):
 
     def index_set(self) -> "OrderedSet":
         return self._index_set
+
+
+class LimitsOfCategory(_FunctorImageParameters, CategoryWithParameters):
+    r"""Chosen limits of diagrams, typed as objects of the codomain category."""
+
+    def super_categories(self) -> list[AmbientCategory]:
+        return [ImageOfFunctor(self.functor())]
+
+    def _repr_(self) -> str:
+        return f"Category of limits constructed by {self.functor()}"
+
+    class ObjectType:
+        def diagram(self) -> Element:
+            return self.preimage()
+
+        @abstract_method
+        def limit_cone(self) -> Element:
+            pass
+
+        @abstract_method
+        def universal_morphism(self, cone: Element) -> Morphism:
+            pass
+
+
+class ColimitsOfCategory(_FunctorImageParameters, CategoryWithParameters):
+    r"""Chosen colimits of diagrams, typed as objects of the codomain category."""
+
+    def super_categories(self) -> list[AmbientCategory]:
+        return [ImageOfFunctor(self.functor())]
+
+    def _repr_(self) -> str:
+        return f"Category of colimits constructed by {self.functor()}"
+
+    class ObjectType:
+        def diagram(self) -> Element:
+            return self.preimage()
+
+        @abstract_method
+        def colimit_cocone(self) -> Element:
+            pass
+
+        @abstract_method
+        def universal_morphism(self, cocone: Element) -> Morphism:
+            pass
+
+
+class ProductsOfCategory(_FunctorImageParameters, CategoryWithParameters):
+    r"""Chosen products of one fixed discrete diagram shape."""
+
+    def super_categories(self) -> list[AmbientCategory]:
+        return [LimitsOfCategory(self.functor())]
+
+    def _repr_(self) -> str:
+        return f"Category of products constructed by {self.functor()}"
+
+    class ObjectType:
+        def index_category(self) -> AmbientCategory:
+            return self.diagram().domain()
+
+        def factors(self) -> Family:
+            return Family(self.index_category().objects(), self.diagram())
+
+        @abstract_method
+        def projection(self, index: "ElementConstructorInput") -> Morphism:
+            pass
+
+        @cached_method
+        def product_cone(self) -> Element:
+            from dzack_research.preamble.categories.abstract_categories.functors import (
+                ConstantDiagram,
+                NaturalTransformation,
+            )
+
+            return NaturalTransformation(
+                ConstantDiagram(
+                    self.index_category(),
+                    self.diagram().codomain(),
+                    self,
+                ),
+                self.diagram(),
+                self.projection,
+            )
+
+        def limit_cone(self) -> Element:
+            return self.product_cone()
+
+
+class CoproductsOfCategory(_FunctorImageParameters, CategoryWithParameters):
+    r"""Chosen coproducts of one fixed discrete diagram shape."""
+
+    def super_categories(self) -> list[AmbientCategory]:
+        return [ColimitsOfCategory(self.functor())]
+
+    def _repr_(self) -> str:
+        return f"Category of coproducts constructed by {self.functor()}"
+
+    class ObjectType:
+        def index_category(self) -> AmbientCategory:
+            return self.diagram().domain()
+
+        def cofactors(self) -> Family:
+            return Family(self.index_category().objects(), self.diagram())
+
+        @abstract_method
+        def injection(self, index: "ElementConstructorInput") -> Morphism:
+            pass
+
+        @cached_method
+        def coproduct_cocone(self) -> Element:
+            from dzack_research.preamble.categories.abstract_categories.functors import (
+                ConstantDiagram,
+                NaturalTransformation,
+            )
+
+            return NaturalTransformation(
+                self.diagram(),
+                ConstantDiagram(
+                    self.index_category(),
+                    self.diagram().codomain(),
+                    self,
+                ),
+                self.injection,
+            )
+
+        def colimit_cocone(self) -> Element:
+            return self.coproduct_cocone()
 
 
 class DiagramCategory(_DiagramParameters, Category):
@@ -352,8 +481,6 @@ class ProductCategory(_IndexedDiagramParameters, Category):
         return constructed
 
     def __init__(self, ambient_category: AmbientCategory, factors: tuple) -> None:
-        from dzack_research.preamble.categories.sets.sets import CartesianProductOfSets
-
         factors = tuple(factors)
         super().__init__(ambient_category, tuple(range(len(factors))), factors, ())
 
@@ -637,6 +764,8 @@ class TensorProductCategory(_IndexedDiagramParameters, Category):
         return constructed
 
     def __init__(self, ambient_category: AmbientCategory, factors: tuple) -> None:
+        from dzack_research.preamble.categories.sets.sets import CartesianProductOfSets
+
         factors = tuple(factors)
         self._tensor_factors: "tuple[ModuleParent, ...]" = factors
         source = CartesianProductOfSets(factors)
