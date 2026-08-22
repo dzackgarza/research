@@ -186,7 +186,7 @@ def _coordinate_vector(element: "Element") -> FreeModuleElement:
         f"{element} is not in a finite free or presented module with a matrix "
         "coordinate vector"
     )
-    coordinates: FreeModuleElement = element._coordinates()
+    coordinates: FreeModuleElement = element.coordinates()
     return coordinates
 
 
@@ -429,7 +429,7 @@ class ModuleMorphism(Morphism):
             )
         return sum(
             (
-                coefficient * self._generator_morphism._call_(element_of_S)
+                coefficient * self._generator_morphism(element_of_S)
                 for element_of_S, coefficient in _coefficients(source).items()
             ),
             self.codomain().zero(),
@@ -520,7 +520,7 @@ class ModuleAutomorphism(ModuleMorphism):
                     Sets(),
                 ),
                 lambda element_of_S: self(
-                    other.module_generator_morphism()._call_(element_of_S)
+                    other.module_generator_morphism()(element_of_S)
                 ),
             )
         )

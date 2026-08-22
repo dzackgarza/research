@@ -211,7 +211,7 @@ class FormModules(OwnedCategoryOverBaseRing):
                     Sets(),
                 ),
                 lambda element_of_S: self._over(
-                    underlying_module_generator_morphism._call_(element_of_S)
+                    underlying_module_generator_morphism(element_of_S)
                 ),
             )
             self._free_module_generator_morphism = lifted_module_generator_morphism
@@ -575,7 +575,7 @@ class FormModules(OwnedCategoryOverBaseRing):
             wrapped -- the element is this module's own, made the way this
             module makes elements.
             """
-            formed: "Element" = self._from_coordinates(element._coordinates())
+            formed: "Element" = self(element.coordinates())
             return formed
 
         def _repr_(self: Self) -> str:
@@ -605,9 +605,7 @@ class FormModules(OwnedCategoryOverBaseRing):
             on \(M\)'s elements.
             """
             module: "Module" = self.parent().form().module()
-            underlying: "UnderlyingElement" = module._from_coordinates(
-                self._coordinates()
-            )
+            underlying: "UnderlyingElement" = module(self.coordinates())
             return underlying
 
         def b(self: "FormedElement", other: "Element") -> "Element":
@@ -700,7 +698,7 @@ class FormModules(OwnedCategoryOverBaseRing):
             assert not self.parent().is_torsion(), (
                 "division is not single-valued in a torsion module"
             )
-            coordinates = self._coordinates() / divisor
+            coordinates = self.coordinates() / divisor
             coefficient_ring = self.parent().base_ring()
             assert all(
                 entry in coefficient_ring for entry in coordinates
@@ -852,7 +850,7 @@ class FormModules(OwnedCategoryOverBaseRing):
                             Sets(),
                         ),
                         lambda element_of_S: other(
-                            module_generator_morphism._call_(element_of_S)
+                            module_generator_morphism(element_of_S)
                         ),
                     )
                 )
@@ -872,7 +870,7 @@ class FormModules(OwnedCategoryOverBaseRing):
                             Sets(),
                         ),
                         lambda element_of_S: self(
-                            module_generator_morphism._call_(element_of_S)
+                            module_generator_morphism(element_of_S)
                         ),
                     )
                 )

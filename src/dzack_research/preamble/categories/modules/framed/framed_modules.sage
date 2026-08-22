@@ -210,7 +210,7 @@ class FramedModules(OwnedCategoryOverBaseRing):
 
         def module_generator(self, element_of_S: "Element") -> "ModuleElement":
             r"""Return the distinguished module generator associated to \(s\in S\)."""
-            return self.module_generator_morphism()._call_(element_of_S)
+            return self.module_generator_morphism()(element_of_S)
 
         def module_generators(self) -> "Set":
             r"""Return the framed generators as a mathematical set.
