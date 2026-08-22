@@ -665,6 +665,18 @@ def test_integral_and_fractional_Z_ideals_are_explicit_modules() -> None:
     )
 
 
+def test_ideal_membership_uses_the_span_of_all_module_generators() -> None:
+    r"""The ideal \((2,3)\subset\mathbb Z\) contains \(1=3-2\)."""
+    from dzack_research.preamble.categories.modules.fractional_ideals import (
+        FractionalIdeal,
+    )
+
+    ideal = FractionalIdeal(ZZ, (ZZ(2), ZZ(3)))
+
+    assert ZZ(1) in ideal
+    assert ZZ(1) / 2 not in ideal
+
+
 def test_fractional_ideals_in_quadratic_integer_rings_are_explicit_modules() -> None:
     """Quadratic-order ideals verify ideal generators equal module generators."""
     _ensure_preamble()

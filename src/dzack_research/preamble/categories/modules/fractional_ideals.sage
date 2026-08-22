@@ -180,13 +180,17 @@ class OwnedIdeals(OwnedCategoryOverBaseRing):
             )
 
         def __contains__(self: Self, element: "Element") -> bool:
-            # The codomain of the inclusion \(I\hookrightarrow\operatorname{Frac}(R)\),
-            # read off the ring on demand.
-            fraction_field = self._ring.fraction_field()
-            return element in fraction_field and any(
-                (fraction_field(element) / generator) in self._ring
-                for generator in self._generators
+            if all(generator in self._ring for generator in self._generators):
+                return bool(
+                    element in self._ring
+                    and element in self._ring.ideal(self._generators)
+                )
+
+            fractional_ideal = getattr(self._ring, "fractional_ideal", None)
+            assert fractional_ideal is not None, (
+                f"{self._ring} supplies no fractional-ideal membership algorithm"
             )
+            return bool(element in fractional_ideal(self._generators))
 
         def __hash__(self: Self) -> int:
             return hash((type(self), self._ring, self._generators))
