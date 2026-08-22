@@ -676,6 +676,46 @@ class Modules(Category_over_base_ring):
                     len(tuple(codomain.module_generating_set())),
                 )
 
+            def _kernel_coordinates(self: Self) -> tuple:
+                r"""Return the domain coordinates of the finite syzygies."""
+                from sage.rings.integer_ring import ZZ as SageZZ
+
+                from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import FinitelyGeneratedFreeModules
+                from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModules
+                from dzack_research.preamble.categories.rings.rings import engine_ring
+
+                domain = self.domain()
+                codomain = self.codomain()
+                base_ring = domain.base_ring()
+                coefficient_ring = engine_ring(base_ring)
+                assert domain in FinitelyGeneratedFreeModules(base_ring), (
+                    "this kernel algorithm requires a finitely generated free domain"
+                )
+                assert (
+                    codomain in FinitelyGeneratedFreeModules(base_ring)
+                    or codomain in FinitelyPresentedModules(base_ring)
+                ), (
+                    "this kernel algorithm requires a finite free or finitely "
+                    "presented codomain"
+                )
+                assert coefficient_ring is SageZZ or coefficient_ring.is_field(), (
+                    "kernels of presented modules are decided here over ZZ or a field"
+                )
+                image_matrix = self.matrix()
+                codomain_relations = self._codomain_relations()
+                equations = (
+                    image_matrix.stack(codomain_relations)
+                    if codomain_relations.nrows()
+                    else image_matrix
+                )
+                domain_generator_count = len(
+                    tuple(domain.module_generating_set())
+                )
+                return tuple(
+                    relation[:domain_generator_count]
+                    for relation in equations.left_kernel_matrix().rows()
+                )
+
             def lift(self: Self, element: "Element") -> "ModuleElement":
                 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _coordinate_vector
                 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _solve_left_integrally
@@ -716,44 +756,9 @@ class Modules(Category_over_base_ring):
                 modules over a general ring, where this repository has no
                 syzygy decision algorithm.
                 """
-                from sage.rings.integer_ring import ZZ as SageZZ
-
-                from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import FinitelyGeneratedFreeModules
-                from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModules
-                from dzack_research.preamble.categories.rings.rings import engine_ring
                 from dzack_research.preamble.utilities import zipsum
 
-                domain = self.domain()
-                codomain = self.codomain()
-                base_ring = domain.base_ring()
-                coefficient_ring = engine_ring(base_ring)
-                assert domain in FinitelyGeneratedFreeModules(base_ring), (
-                    "this kernel algorithm requires a finitely generated free domain"
-                )
-                assert (
-                    codomain in FinitelyGeneratedFreeModules(base_ring)
-                    or codomain in FinitelyPresentedModules(base_ring)
-                ), (
-                    "this kernel algorithm requires a finite free or finitely "
-                    "presented codomain"
-                )
-                assert coefficient_ring is SageZZ or coefficient_ring.is_field(), (
-                    "kernels of presented modules are decided here over ZZ or a field"
-                )
-                image_matrix = self.matrix()
-                codomain_relations = self._codomain_relations()
-                equations = (
-                    image_matrix.stack(codomain_relations)
-                    if codomain_relations.nrows()
-                    else image_matrix
-                )
-                domain_generator_count = len(
-                    tuple(domain.module_generating_set())
-                )
-                kernel_coordinates = (
-                    relation[:domain_generator_count]
-                    for relation in equations.left_kernel_matrix().rows()
-                )
+                kernel_coordinates = self._kernel_coordinates()
                 return self.domain().subobject_on(
                     [
                         zipsum(
@@ -783,8 +788,16 @@ class Modules(Category_over_base_ring):
                 kernel above.
                 """
                 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _is_torsion
+                from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import FinitelyGeneratedFreeModules
 
                 domain = self.domain()
+                if domain in FinitelyGeneratedFreeModules(domain.base_ring()) and domain.is_zero():
+                    return True
+                if domain in FinitelyGeneratedFreeModules(domain.base_ring()):
+                    return not any(
+                        any(coefficient != 0 for coefficient in coordinates)
+                        for coordinates in self._kernel_coordinates()
+                    )
                 if _is_torsion(domain):
                     zero = domain.zero()
                     return all(
