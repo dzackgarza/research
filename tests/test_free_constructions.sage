@@ -703,6 +703,31 @@ def test_presented_free_algebras_are_quotients_by_the_module_relations() -> None
     assert tensor.graded_piece(3).invariants() == (2,)
 
 
+def test_a_free_presented_abelian_group_has_infinite_exponent() -> None:
+    r"""A copy of \(\mathbb Z\) has no positive annihilator."""
+    _ensure_preamble()
+    free = BasedFreeModule(ZZ, Sets.Δ[0])
+    zero_relation = module_homset(free, free)({0: free.zero()})
+    presented = FinitelyPresentedModule(zero_relation)
+
+    assert presented.is_torsion_free() is True
+    assert presented.cardinality() == Sets.ℵ[0]
+    assert presented.exponent() == 0
+
+
+def test_a_presented_line_over_a_finite_field_has_field_cardinality() -> None:
+    r"""A one-dimensional \(\mathbb F_2\)-space has two elements."""
+    from sage.rings.finite_rings.finite_field_constructor import GF as SageGF
+
+    _ensure_preamble()
+    free = BasedFreeModule(SageGF(2), Sets.Δ[0])
+    zero_relation = module_homset(free, free)({0: free.zero()})
+    presented = FinitelyPresentedModule(zero_relation)
+
+    assert presented.is_torsion_free() is True
+    assert presented.cardinality() == 2
+
+
 def test_all_four_presented_constructions_have_their_defining_products() -> None:
     r"""The relation (2x=0) descends through (T,\operatorname{Sym},\Lambda,\Gamma)."""
     _ensure_preamble()

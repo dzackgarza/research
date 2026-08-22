@@ -38,6 +38,7 @@ from sage.matrix.constructor import matrix
 from sage.matrix.matrix0 import Matrix
 from sage.matrix.special import identity_matrix
 from sage.misc.misc_c import prod
+from sage.misc.unknown import Unknown
 from sage.modules.free_module_element import FreeModuleElement, vector
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.element import Element as SageElement
@@ -132,7 +133,10 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
         # built by the time supercategories are asked for.
         from dzack_research.preamble.categories.modules.pure.finitely_generated.finitely_generated_modules import FinitelyGeneratedModules
 
-        return [FinitelyGeneratedModules(self.base_ring())]
+        super_categories = [FinitelyGeneratedModules(self.base_ring())]
+        if self.base_ring() in Sets().Countable():
+            super_categories.append(Sets().Countable())
+        return super_categories
 
     class ParentMethods(OwnedBaseRing):
         r"""One presented module: the presenting morphism, and its relations."""
@@ -278,12 +282,17 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
                 - self.relation_matrix().rank()
             )
 
-        def is_torsion(self: "PresentedModuleParent") -> bool:
+        def is_torsion(self: "PresentedModuleParent") -> "bool | Unknown":
             # Local: at module level this closes an import cycle; the ring module
             # is built by the time a module answers about its torsion.
             from dzack_research.preamble.categories.rings.rings import engine_ring
 
-            return engine_ring(self.base_ring()) is SageZZ and self.rank() == 0
+            ring = engine_ring(self.base_ring())
+            if ring is SageZZ:
+                return self.rank() == 0
+            if ring.is_field():
+                return self.is_zero()
+            return Unknown
 
         @cached_method
         def _smith(self: "PresentedModuleParent") -> tuple:
@@ -336,13 +345,16 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
                 }
             )
 
-        def is_torsion_free(self: "PresentedModuleParent") -> bool:
+        def is_torsion_free(self: "PresentedModuleParent") -> "bool | Unknown":
             # Local: at module level this closes an import cycle; the ring module
             # is built by the time a module answers about its torsion.
             from dzack_research.preamble.categories.rings.rings import engine_ring
 
-            if engine_ring(self.base_ring()) is not SageZZ:
+            ring = engine_ring(self.base_ring())
+            if ring.is_field():
                 return True
+            if ring is not SageZZ:
+                return Unknown
             smith = self._smith()[0]
             return all(abs(entry) == 1 for entry in smith.diagonal() if entry != 0)
 
@@ -360,17 +372,35 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
                 abs(entry) for entry in smith.diagonal() if abs(entry) > 1
             )
 
-        def cardinality(self: "PresentedModuleParent") -> "Cardinal":
+        def cardinality(self: "PresentedModuleParent") -> "Cardinal | Unknown":
             r"""Return \(|M|\).
 
             Total, so positive rank is answered rather than refused: a module
             with a free part is countably infinite, not an error.
             """
+            from dzack_research.preamble.categories.rings.rings import engine_ring
+            from dzack_research.preamble.categories.sets.cardinals import Cardinalities
+
+            ring = engine_ring(self.base_ring())
+            if ring.is_field():
+                return Cardinalities().power(
+                    cardinal(ring.cardinality()),
+                    self.rank(),
+                )
+            if ring is not SageZZ:
+                return Unknown
             if not self.is_torsion():
                 return Sets.ℵ[0]
             return cardinal(prod(self.invariants(), 1))
 
         def exponent(self: "PresentedModuleParent") -> "Integer":
+            from dzack_research.preamble.categories.rings.rings import engine_ring
+
+            assert engine_ring(self.base_ring()) is SageZZ, (
+                "the exponent algorithm is defined here for abelian groups"
+            )
+            if not self.is_torsion():
+                return SageZZ.zero()
             invariants = self.invariants()
             return invariants[-1] if invariants else 1
 
