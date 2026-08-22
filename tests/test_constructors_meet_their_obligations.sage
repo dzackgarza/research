@@ -261,7 +261,7 @@ def _constructions() -> "dict[str, Callable[[], Parent]]":
         "lattice polytope": lambda: LatticePolytope([[0, 0], [1, 0], [0, 1]]),
         "lattice polygon": lambda: LatticePolygon([[0, 0], [1, 0], [0, 1]]),
         "toric scheme": lambda: ToricScheme(LatticePolytope([[0, 0], [1, 0], [0, 1]])),
-        "toric subscheme": lambda: ToricSubscheme(
+        "equation-defined closed subscheme": lambda: EquationDefinedClosedSubscheme(
             ToricScheme(LatticePolytope([[0, 0], [1, 0], [0, 1]])), (0,)
         ),
         "toric variety": lambda: ToricVariety(
