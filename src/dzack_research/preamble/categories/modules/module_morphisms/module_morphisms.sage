@@ -903,6 +903,9 @@ class GroupActionHomsets(Category):
             r"""Return the module acted on by this homset's codomain."""
             return self.codomain().domain()
 
+        def __call__(self, images: "OrderedSet | dict") -> "GroupAction":
+            return self._element_constructor_(images)
+
         def _element_constructor_(self, images: "OrderedSet | dict") -> "GroupAction":
             match images:
                 case dict():
@@ -956,10 +959,6 @@ class GroupActionHomsets(Category):
             super().__init__(parent)
             group = parent.domain()
             automorphisms = parent.codomain()
-            assert all(
-                isinstance(value, ModuleAutomorphism)
-                for value in values.values()
-            ), "each value of a group action must be a module automorphism"
             values = {
                 group_element: (
                     value
@@ -1061,10 +1060,10 @@ class AutomorphismSubgroupInclusion(GroupAction):
         return True
 
     def values(self) -> dict[MultiplicativeGroupElement, ModuleAutomorphism]:
-        assert self.domain().is_finite(), (
-            "the values of an infinite-group inclusion cannot be enumerated"
-        )
-        return {element: self(element) for element in self.domain()}
+        return {
+            group_generator: self(group_generator)
+            for group_generator in self.domain().group_generators()
+        }
 
     def __eq__(self, other: ElementConstructorInput) -> bool:
         return (

@@ -198,8 +198,10 @@ class GroupModules(Category):
             **rest: "ConstructionData",
         ) -> None:
             # Local: a module-level import would close a cycle; the module is built by the time this runs.
-            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleAutomorphismGroup
-            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import group_action_homset
+            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+                GroupActionHomsets,
+                group_action_homset,
+            )
 
             assert (
                 isinstance(action, GroupAction)
@@ -228,7 +230,7 @@ class GroupModules(Category):
             ), (
                 "the group action and the constructed module must use one framing"
             )
-            automorphisms = ModuleAutomorphismGroup(self)
+            automorphisms = self.Aut()
             values = {
                 group_element: automorphisms(
                     {
