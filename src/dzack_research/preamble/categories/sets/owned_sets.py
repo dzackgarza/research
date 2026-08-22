@@ -562,6 +562,13 @@ class Sets(Category):
         those objects and is constructed separately.
         """
 
+        def extra_super_categories(self) -> list[SageCategory]:
+            from dzack_research.preamble.categories.abstract_categories.functors import (
+                DiscreteCategories,
+            )
+
+            return [DiscreteCategories()]
+
         class ParentMethods:
             def __call__(
                 self,
@@ -605,6 +612,10 @@ class Sets(Category):
                 )
 
                 return ExponentialOfSets(self.codomain(), self.domain())
+
+            def objects(self) -> SageParent:
+                r"""Return the set of functions that are objects of this category."""
+                return self.object_set()
 
             def cardinality(self) -> Cardinal:
                 r"""Return the cardinality of this Hom category's object set."""

@@ -12,6 +12,7 @@ from dzack_research.preamble.categories.abstract_categories.arrow_categories imp
 )
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     HomCategoryConstruction,
+    HomCategoryOf,
 )
 from dzack_research.preamble.owned_category_bases import (
     Category as OwnedCategory,
@@ -19,7 +20,7 @@ from dzack_research.preamble.owned_category_bases import (
 )
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
+    from collections.abc import Callable, Iterator
 
     from sage.categories.category import Category
     from sage.categories.morphism import Morphism
@@ -60,8 +61,55 @@ class DiscreteCategories(OwnedCategory):
         match candidate:
             case DiscreteCategory():
                 return True
+            case HomCategoryOf.ParentMethods():
+                return candidate.hom_category().is_subcategory(self)
             case _:
                 return False
+
+    class ParentMethods:
+        r"""The implementation common to categories declared discrete."""
+
+        class _HomCategory(HomCategoryConstruction):
+            r"""Identity arrows between equal objects, and no other arrows."""
+
+            def extra_super_categories(self) -> list[SageCategory]:
+                return [DiscreteCategories()]
+
+            class ParentMethods:
+                def __bool__(self) -> bool:
+                    return self.domain() is self.codomain()
+
+                def __len__(self) -> int:
+                    return 1 if self else 0
+
+                def __iter__(self) -> "Iterator[HomCategoryOf.ElementMethods]":
+                    if self:
+                        yield self.identity()
+
+                def __call__(
+                    self,
+                    arrow: "HomCategoryOf.ElementMethods | None" = None,
+                ) -> "HomCategoryOf.ElementMethods":
+                    assert arrow is None or arrow in self
+                    return self.identity()
+
+                def identity(self) -> "HomCategoryOf.ElementMethods":
+                    assert self.domain() is self.codomain(), (
+                        "a discrete category has an arrow only from an object to itself"
+                    )
+                    return self.ObjectType(hom_category=self)
+
+                def compose(
+                    self,
+                    second: "HomCategoryOf.ElementMethods",
+                    first: "HomCategoryOf.ElementMethods",
+                ) -> "HomCategoryOf.ElementMethods":
+                    assert first in self and second in self
+                    return self.identity()
+
+            class ElementMethods:
+                def __init__(self, hom_category: SageCategory) -> None:
+                    super().__init__(hom_category=hom_category)
 
 
 class DiscreteCategory(_OnObjectSet, CategoryWithParameters):
@@ -85,27 +133,8 @@ class DiscreteCategory(_OnObjectSet, CategoryWithParameters):
     def _repr_(self) -> str:
         return f"Discrete category on {self._object_set}"
 
-    class _HomCategory(HomCategoryConstruction):
-        r"""Identity arrows of a discrete category."""
-
-        class ParentMethods:
-            def identity(self) -> "DiscreteCategory.EndArrowType":
-                assert self.domain() is self.codomain()
-                return self.ObjectType(hom_category=self)
-
-            def compose(
-                self,
-                second: "DiscreteCategory.ArrowType",
-                first: "DiscreteCategory.ArrowType",
-            ) -> "DiscreteCategory.ArrowType":
-                assert first.codomain() is second.domain()
-                assert self.domain() is first.domain()
-                assert self.codomain() is second.codomain()
-                return self.identity()
-
-        class ElementMethods:
-            def __init__(self, hom_category: SageCategory) -> None:
-                super().__init__(hom_category=hom_category)
+    class _HomCategory(DiscreteCategories.ParentMethods._HomCategory):
+        r"""The discrete Hom-category implementation."""
 
 
 class Functor(Cat().ArrowType):
