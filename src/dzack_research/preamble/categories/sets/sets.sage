@@ -19,8 +19,7 @@ from typing import TYPE_CHECKING, TypeVar
 
 from sage.categories.category import Category as SageCategory
 from sage.categories.enumerated_sets import EnumeratedSets as SageEnumeratedSets
-from sage.categories.homset import Hom, Homset
-from sage.categories.morphism import Morphism, SetMorphism
+from sage.categories.morphism import Morphism
 from sage.rings.integer import Integer as SageInteger
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.sets.condition_set import ConditionSet as SageConditionSet
@@ -39,11 +38,9 @@ from dzack_research.preamble.categories.sets.cardinals import Cardinal
 from dzack_research.preamble.categories.sets.owned_sets import (
     Sets,
     placement_of,
-    PosetHomset,
-    PosetMorphism,
 )
 from dzack_research.preamble.owned_category import object_of
-from dzack_research.preamble.owned_category_bases import CategoryWithParameters
+from dzack_research.preamble.owned_category_bases import Category, CategoryWithParameters
 
 if TYPE_CHECKING:
     # Type-only: the preamble loads into one shared namespace and nothing
@@ -53,6 +50,7 @@ if TYPE_CHECKING:
     from sage.structure.parent import ElementConstructorInput
     from sage.categories.poor_man_map import PoorManMap
     from dzack_research.preamble.categories.sets.cardinals import Cardinal
+    from dzack_research.preamble.categories.sets.owned_sets import SetMapDefinition
 
 
 def Set(source: Parent | Iterable[Element]) -> "lexicon.Set":
@@ -130,12 +128,11 @@ def CartesianProductOfSets(factors: Iterable[Parent]) -> Parent:
     )
 
 
-def cartesian_product_morphism(*maps: Morphism) -> SetMorphism:
+def cartesian_product_morphism(*maps: Morphism) -> "Sets.ArrowType":
     r"""Return the componentwise morphism between cartesian products."""
     domain = CartesianProductOfSets(tuple(map_.domain() for map_ in maps))
     codomain = CartesianProductOfSets(tuple(map_.codomain() for map_ in maps))
-    return SetMorphism(
-        Hom(domain, codomain, Sets()),
+    return Sets().Hom(domain, codomain)(
         lambda point: codomain(
             tuple(map_(value) for map_, value in zip(maps, point))
         ),
@@ -202,14 +199,13 @@ class CoproductsOfSets(CategoryWithParameters):
                 and element in self._cofactors[position]
             )
 
-        def injection(self, index: int) -> SetMorphism:
+        def injection(self, index: int) -> "Sets.ArrowType":
             assert 0 <= index < len(self._cofactors), (
                 f"no coproduct cofactor has index {index}"
             )
             cofactor = self._cofactors[index]
-            return SetMorphism(
-                Hom(cofactor, self, Sets()),
-                lambda element: (index, element),
+            return Sets().Hom(cofactor, self)(
+                lambda element: (index, element)
             )
 
         def coproduct_cocone(self) -> Parent:
@@ -250,6 +246,64 @@ def CoproductOfSets(cofactors: Iterable[Parent]) -> Parent:
     )
 
 
+class ExponentialsOfSets(Category):
+    r"""Function sets \(Y^X\), as the object sets of Set hom categories."""
+
+    def super_categories(self) -> list[SageCategory]:
+        return [Sets()]
+
+    def _repr_object_names(self) -> str:
+        return "exponentials of sets"
+
+    class ParentMethods:
+        def __init__(
+            self,
+            codomain: Parent,
+            exponent: Parent,
+            **rest: "ConstructionData",
+        ) -> None:
+            assert codomain in Sets() and exponent in Sets()
+            self._codomain = codomain
+            self._exponent = exponent
+            self._hom_category = Sets().Hom(exponent, codomain)
+            super().__init__(**rest)
+
+        def base(self) -> Parent:
+            return self._codomain
+
+        def exponent(self) -> Parent:
+            return self._exponent
+
+        def hom_category(self) -> SageCategory:
+            return self._hom_category
+
+        def __contains__(self, function: "Sets.ArrowType") -> bool:
+            return function in self._hom_category
+
+        def _element_constructor_(
+            self,
+            definition: "SetMapDefinition | Sets.ArrowType",
+        ) -> "Sets.ArrowType":
+            return self._hom_category(definition)
+
+        def cardinality(self) -> Cardinal:
+            return self._hom_category.cardinality()
+
+        def _repr_(self) -> str:
+            return f"{self._codomain}^{self._exponent}"
+
+
+@cached_function
+def ExponentialOfSets(codomain: Parent, exponent: Parent) -> Parent:
+    r"""Return \(Y^X\), the set of functions from ``exponent`` to ``codomain``."""
+    assert codomain in Sets() and exponent in Sets()
+    return object_of(
+        ExponentialsOfSets(),
+        codomain=codomain,
+        exponent=exponent,
+    )
+
+
 def _has_canonical_set_inclusion(domain: Parent, codomain: Parent) -> bool:
     r"""Return whether the standard catalogue supplies ``domain -> codomain``.
 
@@ -284,7 +338,7 @@ class SubsetsOfSet(CategoryWithParameters):
 
     class MorphismMethods:
         _power_set: Parent
-        _characteristic_morphism: SetMorphism
+        _characteristic_morphism: "Sets.ArrowType"
         _members: "frozenset[Element] | None"
 
         def inclusion(self) -> Morphism:
@@ -302,7 +356,7 @@ class SubsetsOfSet(CategoryWithParameters):
             r"""Return the domain of the inclusion."""
             return self.domain()
 
-        def characteristic_morphism(self) -> SetMorphism:
+        def characteristic_morphism(self) -> "Sets.ArrowType":
             r"""Return the classifying morphism into ``Delta[1]``."""
             return self._characteristic_morphism
 
@@ -423,19 +477,18 @@ class PowerSets(CategoryWithParameters):
         def base_set(self) -> "lexicon.Set":
             return self._base_set
 
-        def characteristic_homset(self) -> Homset:
+        def characteristic_hom_category(self) -> SageCategory:
             r"""Return ``Hom(base_set, Delta[1])``."""
-            return Hom(self._base_set, Sets.Δ[1], Sets())
+            return Sets().Hom(self._base_set, Sets.Δ[1])
 
         def _from_subset(
             self,
             subset: "lexicon.Set",
-            characteristic_morphism: SetMorphism,
+            characteristic_morphism: "Sets.ArrowType",
             members: "frozenset[Element] | None" = None,
         ) -> PowerSetElement:
-            inclusion = SetMorphism(
-                Hom(subset, self._base_set, Sets()),
-                lambda member: self._base_set(member),
+            inclusion = Sets().Hom(subset, self._base_set)(
+                lambda member: self._base_set(member)
             )
             inclusion._power_set = self
             inclusion._characteristic_morphism = characteristic_morphism
@@ -451,9 +504,8 @@ class PowerSets(CategoryWithParameters):
         ) -> PowerSetElement:
             subset = ConditionSet(self._base_set, predicate)
             truth_values = Sets.Δ[1]
-            characteristic_morphism = SetMorphism(
-                self.characteristic_homset(),
-                lambda member: truth_values(SageInteger(predicate(member))),
+            characteristic_morphism = self.characteristic_hom_category()(
+                lambda member: truth_values(SageInteger(predicate(member)))
             )
             return self._from_subset(subset, characteristic_morphism)
 
@@ -463,9 +515,8 @@ class PowerSets(CategoryWithParameters):
         ) -> PowerSetElement:
             subset = ConditionSet(self._base_set, lambda member: member in members)
             truth_values = Sets.Δ[1]
-            characteristic_morphism = SetMorphism(
-                self.characteristic_homset(),
-                lambda member: truth_values(SageInteger(member in members)),
+            characteristic_morphism = self.characteristic_hom_category()(
+                lambda member: truth_values(SageInteger(member in members))
             )
             return self._from_subset(
                 subset,
@@ -484,18 +535,16 @@ class PowerSets(CategoryWithParameters):
                     )
                     return candidate
                 case Parent() if candidate is self._base_set:
-                    characteristic = SetMorphism(
-                        self.characteristic_homset(),
-                        lambda member: Sets.Δ[1](1),
+                    characteristic = self.characteristic_hom_category()(
+                        lambda member: Sets.Δ[1](1)
                     )
                     return self._from_subset(self._base_set, characteristic)
                 case Parent() if _has_canonical_set_inclusion(candidate, self._base_set):
                     truth_values = Sets.Δ[1]
-                    characteristic_morphism = SetMorphism(
-                        self.characteristic_homset(),
+                    characteristic_morphism = self.characteristic_hom_category()(
                         lambda member: truth_values(
                             SageInteger(member in candidate)
-                        ),
+                        )
                     )
                     return self._from_subset(candidate, characteristic_morphism)
                 case Parent() if candidate in Sets().Finite():
@@ -539,10 +588,10 @@ class PowerSets(CategoryWithParameters):
 
         def from_characteristic_morphism(
             self,
-            characteristic_morphism: SetMorphism,
+            characteristic_morphism: "Sets.ArrowType",
         ) -> PowerSetElement:
             r"""Return the subset classified by ``base_set -> Delta[1]``."""
-            assert characteristic_morphism.parent() is self.characteristic_homset(), (
+            assert characteristic_morphism in self.characteristic_hom_category(), (
                 "a characteristic morphism must lie in Hom(base_set, Delta[1])"
             )
             subset = ConditionSet(
@@ -559,32 +608,30 @@ class PowerSets(CategoryWithParameters):
             r"""Return the empty subset."""
             return self(())
 
-        def inverse_image_morphism(self, morphism: Morphism) -> SetMorphism:
+        def inverse_image_morphism(self, morphism: Morphism) -> "Sets.ArrowType":
             r"""Return the inverse-image map ``P(codomain) -> P(domain)``."""
             assert morphism.codomain() is self._base_set, (
                 "inverse image requires the morphism codomain to equal the base set"
             )
             domain_power_set = PowerSet(morphism.domain())
-            return SetMorphism(
-                Hom(self, domain_power_set, Sets()),
+            return Sets().Hom(self, domain_power_set)(
                 lambda subset: domain_power_set.from_predicate(
                     lambda member: morphism(member) in subset
-                ),
+                )
             )
 
-        def direct_image_morphism(self, morphism: Morphism) -> SetMorphism:
+        def direct_image_morphism(self, morphism: Morphism) -> "Sets.ArrowType":
             r"""Return the direct-image map ``P(domain) -> P(codomain)``."""
             assert morphism.domain() is self._base_set, (
                 "direct image requires the morphism domain to equal the base set"
             )
             codomain_power_set = PowerSet(morphism.codomain())
-            return SetMorphism(
-                Hom(self, codomain_power_set, Sets()),
+            return Sets().Hom(self, codomain_power_set)(
                 lambda subset: self._finite_direct_image(
                     subset,
                     morphism,
                     codomain_power_set,
-                ),
+                )
             )
 
         def _finite_direct_image(
@@ -1098,7 +1145,7 @@ class _Delta:
 
 
 _DELTA = _Delta()
-setattr(Sets, "Δ", _DELTA)
+Sets.Δ = _DELTA
 
 
 class _Aleph:
@@ -1118,5 +1165,5 @@ class _Aleph:
 
 
 _ALEPH = _Aleph()
-setattr(Sets, "ℵ", _ALEPH)
-setattr(Sets, "א", _ALEPH)
+Sets.ℵ = _ALEPH
+Sets.א = _ALEPH

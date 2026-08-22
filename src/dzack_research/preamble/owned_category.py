@@ -61,6 +61,7 @@ from __future__ import annotations
 
 import copyreg
 from abc import ABCMeta
+from collections.abc import Hashable
 from typing import TYPE_CHECKING
 
 from sage.categories.category import Category, CategoryWithParameters
@@ -171,6 +172,22 @@ def _abc_metaclass_for(bases: tuple[type, ...]) -> type:
         f"no crossed metaclass dominates the bases of {bases}"
     )
     return metaclass
+
+
+def _subcategory_class_of(category: Category) -> type:
+    return category.subcategory_class
+
+
+def _parent_class_of(category: Category) -> type:
+    return category.parent_class
+
+
+def _element_class_of(category: Category) -> type:
+    return category.element_class
+
+
+def _morphism_class_of(category: Category) -> type:
+    return category.morphism_class
 
 
 class CatConstructionsMixin:
@@ -285,7 +302,7 @@ class CatConstructionsMixin:
             bases,
             None,
             doccls=doccls,
-            reduction=(getattr, (category, "subcategory_class")) if picklable else None,
+            reduction=(_subcategory_class_of, (category,)) if picklable else None,
             cache=cache,
         )
 
@@ -299,8 +316,8 @@ def declared_implementation_types(
     Returns the most derived one, which Sage would have taken alone, and the
     ones its declaration hides.
 
-    Sage reads the methods class with one ``getattr``, which returns the most
-    derived declaration and nothing else.  A category class that both derives
+    Sage's dynamic lookup returns the most derived declaration and nothing
+    else.  A category class that both derives
     from an owned construction base -- :class:`SubobjectsCategory`, say -- and
     declares its own ``ParentMethods`` therefore *replaces* the base's rather
     than extending it, so the base can only reach categories with nothing of
@@ -416,16 +433,19 @@ class OwnedCategoryMixin(CatConstructionsMixin):
                     super_category.parent_class
                     for super_category in category._super_categories_for_classes
                 )
+                reduction_function = _parent_class_of
             case "element_class":
                 bases = tuple(
                     super_category.element_class
                     for super_category in category._super_categories_for_classes
                 )
+                reduction_function = _element_class_of
             case "morphism_class":
                 bases = tuple(
                     super_category.morphism_class
                     for super_category in category._super_categories_for_classes
                 )
+                reduction_function = _morphism_class_of
             case _:
                 raise AssertionError(f"unsupported implementation type {name}")
         provider, inherited = declared_implementation_types(
@@ -456,7 +476,7 @@ class OwnedCategoryMixin(CatConstructionsMixin):
             bases = tuple(base for base in bases if base is not object)
         doccls = provider or declaring_class
         class_name = f"{declaring_class.__name__}.{name}"
-        reduction = (getattr, (category, name)) if picklable else None
+        reduction = (reduction_function, (category,)) if picklable else None
 
         # Sharing the named class between categories that differ only in a
         # parameter is ``CategoryWithParameters``' whole reason to exist, and
@@ -467,7 +487,7 @@ class OwnedCategoryMixin(CatConstructionsMixin):
         # class: two such categories have the same ``ParentMethods`` and the
         # same super-category named classes, hence literally the same bases,
         # and each object carries its own parameter as instance data.
-        key: tuple[object, ...] | None = None
+        key: tuple[type, str, Hashable] | None = None
         if isinstance(category, CategoryWithParameters):
             key = (declaring_class, name, category._make_named_class_key(name))
             shared = category._make_named_class_cache.get(key)

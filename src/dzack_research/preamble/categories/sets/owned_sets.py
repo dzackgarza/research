@@ -22,7 +22,7 @@ through the join and are never reimplemented here.
 
 from __future__ import annotations
 
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator, Mapping
 from typing import cast, Generic, TYPE_CHECKING, TypeVar
 
 from sage.categories.category import Category as SageCategory
@@ -37,12 +37,15 @@ from sage.structure.element import Element as SageElement
 from sage.structure.richcmp import richcmp
 
 from dzack_research.preamble.lexicon.interop import SageParent
-from dzack_research.preamble.owned_category import OwnedCategoryMixin, OwnedParent
+from dzack_research.preamble.owned_category import OwnedParent
+from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    HomCategoryConstruction,
+    IsoCategoryConstruction,
+)
 from dzack_research.preamble.owned_category_bases import (
     CartesianProductsCategory,
     Category,
     CategoryWithAxiom,
-    HomCategoryConstruction,
 )
 
 if TYPE_CHECKING:
@@ -52,12 +55,11 @@ if TYPE_CHECKING:
     # abc.abstractmethod (typed, and permits the empty abstract bodies
     # below). Runtime uses Sage's.
     from abc import abstractmethod as abstract_method
-    from sage.categories.morphism import SetMorphism
     from sage.structure.parent import ElementConstructorInput
 
     from dzack_research.preamble.categories.sets.cardinals import Cardinal
 
-    from collections.abc import Callable, Hashable, Iterable
+    from collections.abc import Hashable, Iterable
     from sage.combinat.posets.posets import FinitePoset
     from sage.repl.rich_output.display_manager import DisplayManager
     from sage.repl.rich_output.output_basic import OutputBase
@@ -65,6 +67,9 @@ if TYPE_CHECKING:
     # A finite poset's elements are arbitrary hashable objects; this alias
     # names that genuine generality once, instead of scattering ``Any``.
     type PosetElement = Hashable
+    type SetElementInput = ElementConstructorInput
+    type SetMap = Callable[[SetElementInput], SetElementInput]
+    type SetMapDefinition = SetMap | Mapping[SetElementInput, SetElementInput]
 
     class _ParentWithIsFinite(SageParent[_E], Generic[_E]):
         def is_finite(self) -> bool: ...
@@ -224,15 +229,10 @@ class Sets(Category):
                 """
                 return self(tuple(elements))
 
-            def projection(self, index: int) -> SetMorphism:
+            def projection(self, index: int) -> "Sets.ArrowType":
                 r"""The ``index``-th product projection \(\pi_i:\prod_j X_j\to X_i\)."""
-                from sage.categories.homset import Hom
-                from sage.categories.morphism import SetMorphism
-
                 factor = self._factors[index]
-                return SetMorphism(
-                    Hom(self, factor, SageSets()), lambda point: point[index]
-                )
+                return Sets().Hom(self, factor)(lambda point: point[index])
 
             def product_cone(self) -> SageParent:
                 r"""Return this set product with its categorical projections."""
@@ -243,7 +243,7 @@ class Sets(Category):
                     tuple(self.projection(index) for index in self._sets_keys())
                 )
 
-            def cartesian_projection(self, index: int) -> SetMorphism:
+            def cartesian_projection(self, index: int) -> "Sets.ArrowType":
                 r"""The projection, under the name Sage's product machinery reads."""
                 return self.projection(index)
 
@@ -334,52 +334,155 @@ class Sets(Category):
                 return "(%s)" % ", ".join(repr(component) for component in self._components)
 
     class _HomCategory(HomCategoryConstruction):
-        r"""The **root of the owned homset chain**.
+        r"""Set-valued arrows, represented by functions.
 
-        A homset is a parent whose elements are the morphisms, and Sage's
-        ``Homset.__init__`` already places one in ``C.HomCategory()``.  So the
-        homsets of a category form an ordinary owned chain, parallel to the
-        chain of the objects, and this is its bottom: the one level that names
-        Sage's classes as bases and makes the one non-cooperative
-        ``Homset.__init__`` call.
-
-        A level above declares its own nested ``Homsets`` with methods only.
-        It names no base.  It reaches these through ``super_categories()``,
-        and it reaches this constructor by ``super().__init__(**rest)``.
-
-        This level carries what every homset has: the two objects it is taken
-        between.  Sage's ``Homset`` holds them, and ``domain()`` and
-        ``codomain()`` read them back.
-
-        **The constructor is ``Hom(X, Y, C)``, not ``object_of``.**  Sage's
-        ``Hom`` asks the domain through ``_Hom_``, which
-        ``Sets.ObjectType`` answers; that method says why no other route
-        is available.  ``category`` here is therefore the category of the
-        *objects*, which is what Sage's ``Homset.__init__`` takes, and Sage
-        derives ``C.HomCategory()`` or ``C.EndCategory()`` from it.  A level whose
-        homsets carry a datum declares ``_Hom_`` on its objects, supplies the
-        datum there, and consumes it in its own ``Homsets.ObjectType``.
+        The object built by this category is still a hom category.  Its
+        objects are functions.  The associated exponential is the set of
+        those objects and is constructed separately.
         """
 
-        class ParentMethods(OwnedParent, SageHomset):
-            def __init__(
+        class ParentMethods:
+            def __call__(
                 self,
-                domain: SageParent,
-                codomain: SageParent,
-                **rest: ConstructionData,
-            ) -> None:
-                SageHomset.__init__(self, domain, codomain, **rest)
+                definition: "SetMapDefinition | Sets.ArrowType",
+            ) -> "Sets.ArrowType":
+                match definition:
+                    case SageElement() if definition in self:
+                        return definition
+                    case Mapping() | Callable():
+                        return self.ObjectType(
+                            hom_category=self,
+                            definition=definition,
+                        )
+                    case _:
+                        raise TypeError(
+                            "a set arrow requires a callable or an explicit mapping"
+                        )
 
-        class ElementMethods(SageMorphism):
-            r"""A morphism: an element of the homset it belongs to.
+            def identity(self) -> "Sets.ArrowType":
+                assert self.domain() is self.codomain(), (
+                    "an identity belongs to an endomorphism category"
+                )
+                return self(lambda element: element)
 
-            It carries ``Morphism`` so that everything built through this
-            chain is one, and it carries nothing else.  What the morphism
-            does is declared by the levels above.
+            def compose(
+                self,
+                second: "Sets.ArrowType",
+                first: "Sets.ArrowType",
+            ) -> "Sets.ArrowType":
+                assert first.codomain() is second.domain(), (
+                    "set arrows compose only when their middle object agrees"
+                )
+                assert self.domain() is first.domain()
+                assert self.codomain() is second.codomain()
+                return self(lambda element: second(first(element)))
+
+            def object_set(self) -> SageParent:
+                r"""Return the exponential whose members are this category's objects."""
+                from dzack_research.preamble.categories.sets.sets import (
+                    ExponentialOfSets,
+                )
+
+                return ExponentialOfSets(self.codomain(), self.domain())
+
+            def cardinality(self) -> Cardinal:
+                r"""Return the number of functions from the domain to the codomain."""
+                from dzack_research.preamble.categories.sets.cardinals import (
+                    Cardinalities,
+                )
+
+                return Cardinalities().power(
+                    self.codomain().cardinality(),
+                    self.domain().cardinality(),
+                )
+
+        class ElementMethods:
+            r"""A function between two sets.
+
+            A callable declares a total function.  Each application checks
+            its input and output.  An explicit mapping defines a function
+            only when its finite domain is exactly the mapping's key set.
             """
 
-            def __init__(self, parent: SageParent) -> None:
-                SageMorphism.__init__(self, parent)
+            def __init__(
+                self,
+                hom_category: SageCategory,
+                definition: "SetMapDefinition",
+            ) -> None:
+                match definition:
+                    case Mapping():
+                        assert hom_category.domain() in Sets().Finite(), (
+                            "an explicit mapping requires a finite domain"
+                        )
+                        assert all(
+                            key in hom_category.domain() for key in definition
+                        ), "every mapping key must belong to the domain"
+                        assert all(
+                            element in definition for element in hom_category.domain()
+                        ), "an explicit mapping must define every domain element"
+                        assert all(
+                            value in hom_category.codomain()
+                            for value in definition.values()
+                        ), "every mapping value must belong to the codomain"
+                        self._definition = dict(definition)
+                    case Callable():
+                        self._definition = definition
+                    case _:
+                        raise TypeError(
+                            "a set arrow requires a callable or an explicit mapping"
+                        )
+                super().__init__(hom_category=hom_category)
+
+            def __call__(self, element: "SetElementInput") -> "SetElementInput":
+                assert element in self.domain(), (
+                    f"{element!r} is not in the domain of {self}"
+                )
+                match self._definition:
+                    case Mapping():
+                        image = self._definition[element]
+                    case Callable():
+                        image = self._definition(element)
+                    case _:
+                        raise AssertionError("invalid set-arrow representation")
+                assert image in self.codomain(), (
+                    f"{self} sends {element!r} outside its codomain"
+                )
+                return image
+
+    class _IsoCategory(IsoCategoryConstruction):
+        r"""Isomorphisms of sets with declared inverse functions."""
+
+        class ParentMethods:
+            def __call__(
+                self,
+                definition: "SetMapDefinition | Sets.IsoArrowType",
+                inverse_definition: "SetMapDefinition | None" = None,
+            ) -> "Sets.IsoArrowType":
+                match definition:
+                    case SageElement() if definition in self:
+                        return definition
+                    case Mapping() | Callable():
+                        assert inverse_definition is not None, (
+                            "a set isomorphism requires its inverse function"
+                        )
+                        forward = self.base_category().Hom(
+                            self.domain(), self.codomain()
+                        )(definition)
+                        backward = self.base_category().Hom(
+                            self.codomain(), self.domain()
+                        )(inverse_definition)
+                        return super().__call__(
+                            forward,
+                            backward,
+                        )
+                    case _:
+                        raise TypeError(
+                            "a set isomorphism requires a callable or an explicit mapping"
+                        )
+
+        class ElementMethods:
+            def __call__(self, element: "SetElementInput") -> "SetElementInput":
+                return self.forward()(element)
 
     class ElementMethods(SageElement):
         r"""An element of an owned set: the element implementation class.
@@ -389,22 +492,10 @@ class Sets(Category):
         and it carries nothing else: what an element of a bare *set* is, is a
         member of that set.  Structure is added by the levels above, which is
         where the arithmetic lives.
-
-        A morphism is an element too, and a homset whose objects are also a
-        *group* -- \(O(L)\) is one -- has both element roots in its chain,
-        with Sage's linearization free to put this one first.  So the call
-        below is cooperative: reached from a morphism it goes on to
-        ``Sets.HomCategory.ElementType`` and thence to ``Map.__init__``, which
-        is what gives the morphism its two ends.  Calling ``Element.__init__``
-        directly stopped there, and the morphism came out with no domain.
         """
 
-        def __init__(
-            self,
-            parent: SageParent,
-            *morphism: SageMorphism,
-        ) -> None:
-            super().__init__(parent, *morphism)
+        def __init__(self, parent: SageParent) -> None:
+            SageElement.__init__(self, parent)
 
     class ParentMethods(OwnedParent, SageParent):
         def __init__(
@@ -464,46 +555,37 @@ class Sets(Category):
             self,
             target: SageParent,
             category: SageCategory | None = None,
-        ) -> SageParent:
-            r"""Return the hom object by delegation to the owning category."""
+        ) -> SageCategory:
+            r"""Return the hom category by delegation to the owning category."""
             source_category = self.category() if category is None else category
-            if isinstance(source_category, OwnedCategoryMixin):
-                return source_category.Hom(self, target)
-            return SageHomset(self, target, category=source_category)
+            assert self in source_category and target in source_category
+            return source_category.Hom(self, target)
 
-        def End(self) -> SageParent:
-            r"""Return the endomorphism object by delegation to the category."""
+        def End(self) -> SageCategory:
+            r"""Return the endomorphism category by delegation to the category."""
             return self.category().End(self)
 
-        def Aut(self) -> SageParent:
-            r"""Return the automorphism object by delegation to the category."""
+        def Aut(self) -> SageCategory:
+            r"""Return the automorphism category by delegation to the category."""
             return self.category().Aut(self)
+
+        def exponential(self, exponent: SageParent) -> SageParent:
+            r"""Return the set \(Y^X\) of functions \(X\to Y\)."""
+            from dzack_research.preamble.categories.sets.sets import (
+                ExponentialOfSets,
+            )
+
+            return ExponentialOfSets(self, exponent)
+
+        def __pow__(self, exponent: SageParent) -> SageParent:
+            return self.exponential(exponent)
 
         def _Hom_(
             self,
             codomain: SageParent,
             category: SageCategory | None = None,
-        ) -> SageParent:
-            r"""Build \(\operatorname{Hom}(X, Y)\) through the owned homset chain.
-
-            ``Sets.HomCategory.ObjectType`` is the homset implementation
-            class, so a homset of an owned category has to be built as that
-            class.  A plain Sage ``Homset`` cannot become one afterwards:
-            ``Parent._init_category_`` rewraps a fresh homset into
-            ``dynamic_class(name, (Homset, category.ObjectType))``, and the
-            second base is now a subclass of the first, which C3 refuses.
-            Sage asks the domain first, so the construction happens here,
-            where the class is right from the start.
-
-            ``Hom`` is therefore the constructor of every owned homset.  A
-            level whose homsets carry a datum declares its own ``_Hom_``,
-            supplies that datum, and reaches this one by ``super()``.
-
-            A parent with its own ``_Hom_`` -- a ring, a free module -- keeps
-            it, because its concrete class precedes the category methods.  A
-            homset asked for in a category the preamble does not own stays
-            Sage's to build.
-            """
+        ) -> SageCategory:
+            r"""Route Sage's ``Hom`` entry point to the owned Hom category."""
             return self.Hom(codomain, category=category)
 
 
@@ -768,25 +850,21 @@ class CountableSets(CategoryWithAxiom):
                     return position
             assert False, f"{element} is not in the enumeration of {self}"
 
-        def enumeration_injection(self) -> SetMorphism[SageElement, Integer]:
+        def enumeration_injection(self) -> "Sets.ArrowType":
             r"""The monomorphism into the SET of nonnegative integers
             realized by the chosen enumeration, ``x -> position(x)``, as an
             element of the actual homset — the constructed effective
             witness of countability. (The codomain is the underlying set of
             the naturals: the injection is a set map, so it forgets the
             semiring structure of its codomain.)"""
-            from sage.categories.homset import Hom
-            from sage.categories.morphism import SetMorphism
-
             # Quoted: ``cast`` evaluates its first argument, and Sage's
             # ``Parent`` is a Cython class that cannot be subscripted.
             domain = cast("SageParent[SageElement]", self)
             naturals = cast("SageParent[Integer]", NN)
-            homset = Hom(domain, naturals, SageSets())
             # naturals[n] IS the natural number n (identity enumeration),
             # already normalized into the host parent.
-            return SetMorphism(
-                homset, lambda element: naturals[self.position(element)]
+            return Sets().Hom(domain, naturals)(
+                lambda element: naturals[self.position(element)]
             )
 
         def is_countable(self) -> bool:

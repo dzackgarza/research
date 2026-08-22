@@ -19,18 +19,18 @@ Sage-native category correctly has none of this.
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from collections.abc import Iterable
+    from collections.abc import Callable, Iterable
     from sage.structure.parent import MembershipInput
 
 # Sage's ``Category``, not the owned base.  An owned base makes its category an
 # object of ``Cat()``, and ``Cat()`` is not an object of itself.
 from sage.categories.category import Category
 from sage.categories.objects import Objects
+from sage.misc.cachefunc import cached_method
 
 from dzack_research.preamble.owned_category import (
     OwnedCategoryMixin,
     declared_implementation_types,
-    object_of,
 )
 from sage.categories.morphism import Morphism
 from sage.structure.parent import Parent
@@ -45,7 +45,10 @@ from dzack_research.preamble.categories.abstract_categories.arrow_categories imp
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     AutCategoryOf,
     EndCategoryOf,
+    HomCategoryConstruction,
     HomCategoryOf,
+    IsoCategoryConstruction,
+    IsoCategoryOf,
 )
 from dzack_research.preamble.categories.abstract_categories.slice_categories import (
     CosliceUnderCategory,
@@ -80,38 +83,152 @@ class Cat(OwnedCategoryMixin, Category):
 
     def __contains__(self, candidate: "MembershipInput") -> bool:
         r"""Return whether ``candidate`` is a category, hence an object here."""
-        return isinstance(candidate, Category)
-
-    def _hom_object(
-        self,
-        source: Category,
-        target: Category,
-        hom_category: Category,
-    ) -> Category:
-        r"""Construct \(\operatorname{Hom}_{\mathbf{Cat}}(C,D)=[C,D]\)."""
-        return source.FunctorCategory(target)
+        match candidate:
+            case Category():
+                return True
+            case _:
+                return False
 
     class _HomCategory(HomCategoryOf):
-        r"""Functor categories as the hom objects of \(\mathbf{Cat}\)."""
+        r"""The functor categories \([\mathbf C,\mathbf D]\).
 
-        @property
-        def ObjectType(self) -> type:
-            from dzack_research.preamble.categories.abstract_categories.functors import (
-                FunctorCategory,
-            )
+        This declaration specializes the arrows of :math:`\mathbf{Cat}`.
+        The generic Hom-family still constructs each functor category through
+        ``HomCatType`` and makes its objects instances of ``ArrowType``.
+        """
 
-            return FunctorCategory
+        class ParentMethods:
+            def identity(self) -> "Cat.ArrowType":
+                assert self.domain() is self.codomain(), (
+                    "an identity functor belongs to an endomorphism category"
+                )
+                from dzack_research.preamble.categories.abstract_categories.functors import (
+                    IdentityFunctor,
+                )
 
-        def Of(self, source: Category, target: Category) -> Category:
-            return source.FunctorCategory(target)
+                return IdentityFunctor(self.domain(), hom_category=self)
 
-        def _object(
-            self,
-            source: Category,
-            target: Category,
-            placement: Category,
-        ) -> Category:
-            return source.FunctorCategory(target)
+            def compose(
+                self,
+                second: "Cat.ArrowType",
+                first: "Cat.ArrowType",
+            ) -> "Cat.ArrowType":
+                from dzack_research.preamble.categories.abstract_categories.functors import (
+                    compose_functors,
+                )
+
+                assert first.codomain() is second.domain()
+                assert self.domain() is first.domain()
+                assert self.codomain() is second.codomain()
+                return compose_functors(second, first, hom_category=self)
+
+            class _HomCategory(HomCategoryConstruction):
+                r"""Categories of natural transformations between functors."""
+
+                class ParentMethods:
+                    def __call__(
+                        self,
+                        components: "Callable",
+                    ) -> "HomCategoryOf.ElementMethods":
+                        return self.ObjectType(
+                            hom_category=self,
+                            components=components,
+                        )
+
+                    def identity(self) -> "HomCategoryOf.ElementMethods":
+                        source = self.domain()
+                        assert source is self.codomain(), (
+                            "an identity transformation belongs to an endomorphism category"
+                        )
+                        return self(
+                            lambda obj: source.codomain().identity(source(obj))
+                        )
+
+                    def compose(
+                        self,
+                        second: "HomCategoryOf.ElementMethods",
+                        first: "HomCategoryOf.ElementMethods",
+                    ) -> "HomCategoryOf.ElementMethods":
+                        assert first.codomain() is second.domain()
+                        return self(
+                            lambda obj: second.component(obj)
+                            * first.component(obj)
+                        )
+
+                class ElementMethods:
+                    def __init__(
+                        self,
+                        hom_category: Category,
+                        components: "Callable",
+                    ) -> None:
+                        self._components = components
+                        super().__init__(hom_category=hom_category)
+
+                    def component(
+                        self,
+                        obj: "Parent | Category",
+                    ) -> "HomCategoryOf.ElementMethods":
+                        source = self.domain()
+                        target = self.codomain()
+                        assert obj in source.domain()
+                        component = self._components(obj)
+                        assert component in source.codomain().Hom(
+                            source(obj), target(obj)
+                        )
+                        return component
+
+            class _IsoCategory(IsoCategoryConstruction):
+                r"""Natural isomorphisms as inverse natural transformations."""
+
+                class ElementMethods:
+                    def component(
+                        self,
+                        obj: "Parent | Category",
+                    ) -> "HomCategoryOf.ElementMethods":
+                        return self.forward().component(obj)
+
+        class ElementMethods:
+            r"""The implementation common to functors."""
+
+            _faithful: bool = False
+
+            def __call__(
+                self,
+                value: "Parent | Category | HomCategoryOf.ElementMethods",
+            ) -> "Parent | Category | HomCategoryOf.ElementMethods":
+                if value in self.domain().ArrowCategory():
+                    image = self._apply_functor_to_morphism(value)
+                    assert image in self.codomain().ArrowCategory()
+                    return image
+                assert value in self.domain()
+                image = self._apply_functor(value)
+                assert image in self.codomain()
+                return image
+
+            def is_faithful(self) -> bool:
+                return self._faithful
+
+            def factors(self) -> tuple["Cat.ArrowType", ...]:
+                return (self,)
+
+            def _repr_(self) -> str:
+                return f"Functor from {self.domain()} to {self.codomain()}"
+
+    class _IsoCategory(IsoCategoryConstruction):
+        r"""Invertible functors, represented by mutually inverse functors."""
+
+        class ElementMethods:
+            def __call__(
+                self,
+                value: "Parent | Category | HomCategoryOf.ElementMethods",
+            ) -> "Parent | Category | HomCategoryOf.ElementMethods":
+                return self.forward()(value)
+
+            def factors(self) -> tuple["Cat.ArrowType", ...]:
+                return self.forward().factors()
+
+            def is_faithful(self) -> bool:
+                return self.forward().is_faithful()
 
     class ParentMethods:
         r"""What a category \(\mathbf{C}\) can do because it is an object of
@@ -132,6 +249,7 @@ class Cat(OwnedCategoryMixin, Category):
             r"""Return the complete implementation type for their elements."""
             return self.element_class
 
+        @cached_method
         def HomCategory(self) -> Category:
             r"""Return the category of hom objects of \(\mathbf{C}\)."""
             construction, _ = declared_implementation_types(
@@ -141,6 +259,7 @@ class Cat(OwnedCategoryMixin, Category):
                 return HomCategoryOf(self)
             return construction(self)
 
+        @cached_method
         def EndCategory(self) -> Category:
             r"""Return the category of endomorphism objects of \(\mathbf{C}\)."""
             construction, _ = declared_implementation_types(
@@ -150,6 +269,7 @@ class Cat(OwnedCategoryMixin, Category):
                 return EndCategoryOf(self)
             return construction(self)
 
+        @cached_method
         def AutCategory(self) -> Category:
             r"""Return the category of automorphism objects of \(\mathbf{C}\)."""
             construction, _ = declared_implementation_types(
@@ -157,6 +277,16 @@ class Cat(OwnedCategoryMixin, Category):
             )
             if construction is None:
                 return AutCategoryOf(self)
+            return construction(self)
+
+        @cached_method
+        def IsoCategory(self) -> Category:
+            r"""Return the category of isomorphism categories of \(\mathbf{C}\)."""
+            construction, _ = declared_implementation_types(
+                type(self), ("_IsoCategory",)
+            )
+            if construction is None:
+                return IsoCategoryOf(self)
             return construction(self)
 
         @property
@@ -172,37 +302,50 @@ class Cat(OwnedCategoryMixin, Category):
             return self.AutCategory().ObjectType
 
         @property
+        def IsoCatType(self) -> type:
+            return self.IsoCategory().ObjectType
+
+        @property
         def ArrowType(self) -> type:
-            return self.HomCatType.ElementType
+            return self.HomCatType.ObjectType
 
         @property
         def EndArrowType(self) -> type:
-            return self.EndCatType.ElementType
+            return self.EndCatType.ObjectType
 
         @property
         def AutArrowType(self) -> type:
-            return self.AutCatType.ElementType
+            return self.AutCatType.ObjectType
 
+        @property
+        def IsoArrowType(self) -> type:
+            return self.IsoCatType.ObjectType
+
+        @cached_method
         def ArrowCategory(self) -> Category:
             r"""Return \(\operatorname{Ar}(\mathbf{C})\), whose objects are the arrows of \(\mathbf{C}\)."""
             arrows: Category = ArrowCategoryOf(self)
             return arrows
 
+        @cached_method
         def EndArrowCategory(self) -> Category:
             r"""Return the full subcategory of \(\operatorname{Ar}(\mathbf{C})\) on endomorphisms."""
             endomorphisms: Category = EndArrowCategoryOf(self)
             return endomorphisms
 
+        @cached_method
         def IsomorphismArrowCategory(self) -> Category:
             r"""Return the subcategory of \(\operatorname{Ar}(\mathbf{C})\) whose objects are the isomorphisms."""
             isomorphisms: Category = IsoArrowCategory(self)
             return isomorphisms
 
+        @cached_method
         def AutArrowCategory(self) -> Category:
             r"""Return the full subcategory of \(\operatorname{Ar}(\mathbf{C})\) on automorphisms."""
             automorphisms: Category = AutomorphismArrowCategoryOf(self)
             return automorphisms
 
+        @cached_method
         def core(self) -> Category:
             r"""Return \(\operatorname{core}(\mathbf{C})\): the same objects, the isomorphisms as the only arrows."""
             core_category: Category = Core(self)
@@ -214,37 +357,61 @@ class Cat(OwnedCategoryMixin, Category):
 
         def FunctorCategory(self, codomain: Category) -> Category:
             r"""Return the functor category \(\operatorname{Fun}(\mathbf{C},\mathbf{D})\)."""
-            from dzack_research.preamble.categories.abstract_categories.functors import FunctorCategory
+            return Cat().Hom(self, codomain)
 
-            functors: Category = FunctorCategory(self, codomain)
-            return functors
-
-        def Hom(self, source: Parent, target: Parent) -> Parent:
+        @cached_method
+        def Hom(
+            self,
+            source: "Parent | Category",
+            target: "Parent | Category",
+        ) -> Category:
             r"""Return \(\operatorname{Hom}_{\mathbf{C}}(X,Y)\)."""
             assert source in self and target in self
             return self.HomCategory().Of(source, target)
 
-        def End(self, obj: Parent) -> Parent:
+        @cached_method
+        def End(self, obj: "Parent | Category") -> Category:
             r"""Return \(\operatorname{End}_{\mathbf{C}}(X)\)."""
             assert obj in self
             return self.EndCategory().Of(obj)
 
-        def Aut(self, obj: Parent) -> Parent:
+        @cached_method
+        def Aut(self, obj: "Parent | Category") -> Category:
             r"""Return \(\operatorname{Aut}_{\mathbf{C}}(X)\)."""
             assert obj in self
             return self.AutCategory().Of(obj)
 
-        def _hom_object(
+        @cached_method
+        def Iso(
             self,
-            source: Parent,
-            target: Parent,
-            hom_category: Category,
-        ) -> Parent:
-            r"""Construct a hom object through its category-owned type."""
-            return object_of(
-                hom_category,
-                source=source,
-                target=target,
+            source: "Parent | Category",
+            target: "Parent | Category",
+        ) -> Category:
+            r"""Return the isomorphism category from ``source`` to ``target``."""
+            assert source in self and target in self
+            return self.IsoCategory().Of(source, target)
+
+        def identity(
+            self,
+            obj: "Parent | Category",
+        ) -> "HomCategoryOf.ElementMethods":
+            r"""Return the identity arrow of ``obj``."""
+            return self.Aut(obj).identity()
+
+        def compose(
+            self,
+            second: "HomCategoryOf.ElementMethods",
+            first: "HomCategoryOf.ElementMethods",
+        ) -> "HomCategoryOf.ElementMethods":
+            r"""Return ``second`` after ``first`` through their Hom category."""
+            assert first in self.ArrowCategory()
+            assert second in self.ArrowCategory()
+            assert first.codomain() is second.domain(), (
+                "arrows compose only when their middle object agrees"
+            )
+            return self.Hom(first.domain(), second.codomain()).compose(
+                second,
+                first,
             )
 
         def Product(self, factors: "Iterable[Parent]") -> Category:
@@ -291,7 +458,7 @@ class Cat(OwnedCategoryMixin, Category):
             r"""Return \(\operatorname{Hom}_{\mathbf{Cat}}(\mathbf{C},\mathbf{D})=\operatorname{Fun}(\mathbf{C},\mathbf{D})\).
 
             Sage's ``Hom(C, D)`` between two categories dispatches here, so
-            the homset of \(\mathbf{Cat}\) is the functor space rather than
+            the Hom category of \(\mathbf{Cat}\) is the functor category, not
             the generic id-equality fallback.
             """
-            return self.FunctorCategory(codomain)
+            return Cat().Hom(self, codomain)

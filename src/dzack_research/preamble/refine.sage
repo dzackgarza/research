@@ -40,10 +40,7 @@ from collections.abc import Callable, Iterable
 from sage.categories.category import Category
 from sage.categories.morphism import Morphism
 from sage.structure.parent import Parent
-try:
-    from sage.structure.parent import ElementConstructorInput
-except ImportError:
-    ElementConstructorInput = object
+from sage.structure.parent import ElementConstructorInput
 from sage.structure.sage_object import SageObject
 from sage.cpython.type import can_assign_class
 from sage.misc.abstract_method import AbstractMethod
@@ -107,7 +104,7 @@ def _implemented_mixin(mixin: type) -> type:
 def _concrete_base(obj: "SageObject") -> type:
     """Return the non-dynamic concrete class Sage would use as ``__base__``."""
     cls = type(obj)
-    cached: type | None = getattr(cls, "_preamble_concrete", None)
+    cached: type | None = cls.__dict__.get("_preamble_concrete")
     if cached is not None:
         return cached
 
@@ -286,7 +283,7 @@ def _resolved_requirements(category: "Category") -> type | None:
                 for name, value in vars(methods).items()
                 if isinstance(value, AbstractMethod)
             )
-    resolved: dict[str, object] = {}
+    resolved: dict[str, Callable[..., ElementConstructorInput]] = {}
     for name in required:
         for klass in category.parent_class.__mro__:
             value = vars(klass).get(name)
@@ -335,7 +332,7 @@ def _rebuild_parent_class(obj: "Parent", category: "Category") -> None:
     # the preamble does not restate: ``CoxeterGroup.order()`` calls
     # ``len(self)``, and ``__len__`` is on ``FiniteEnumeratedSets.parent_class``.
     # Kept across a second refinement so the wrappers do not nest.
-    inherited = getattr(type(obj), "_preamble_inherited", type(obj))
+    inherited = type(obj).__dict__.get("_preamble_inherited", type(obj))
     # Hoist only what that class does not already carry.  A methods class
     # already inside it is installed, in category order, and C3 refuses a base
     # placed in front of a class that contains it: ``TypeError: Cannot create
@@ -380,7 +377,14 @@ def _rebuild_element_class(parent: "Parent", category: "Category") -> None:
     if not mixins:
         return
 
-    native = getattr(parent, "Element", Element)
+    native = next(
+        (
+            candidate.__dict__["Element"]
+            for candidate in type(parent).__mro__
+            if "Element" in candidate.__dict__
+        ),
+        Element,
+    )
 
     for key in ("element_class", "_abstract_element_class"):
         parent.__dict__.pop(key, None)
@@ -412,10 +416,30 @@ def _assert_certifying_predicates_hold(
             continue
         # Read through the class: Sage hands out ``<Class>_with_category``
         # dynamic subclasses, so the marker sits one level up the MRO.
-        predicate_name = getattr(category_type, "_certifying_predicate", None)
+        predicate_name = next(
+            (
+                candidate.__dict__["_certifying_predicate"]
+                for candidate in category_type.__mro__
+                if "_certifying_predicate" in candidate.__dict__
+            ),
+            None,
+        )
         if predicate_name is None:
             continue
-        assert getattr(obj, predicate_name)() is True, (
+        match predicate_name:
+            case "is_finitely_generated":
+                certified = obj.is_finitely_generated()
+            case "is_integral":
+                certified = obj.is_integral()
+            case "is_nondegenerate":
+                certified = obj.is_nondegenerate()
+            case "is_even":
+                certified = obj.is_even()
+            case _:
+                raise AssertionError(
+                    f"unknown certifying predicate {predicate_name!r}"
+                )
+        assert certified is True, (
             f"refining {obj} into {cat} requires {predicate_name}() to hold, "
             "and the object answers otherwise"
         )
@@ -441,11 +465,17 @@ def _assert_preamble_obligations_are_met(
                 for name, value in vars(methods).items()
                 if isinstance(value, AbstractMethod)
             )
-    missing = []
+    missing: list[str] = []
     for name in required:
-        try:
-            getattr(obj, name)
-        except (AttributeError, NotImplementedError):
+        implementation = next(
+            (
+                candidate.__dict__[name]
+                for candidate in type(obj).__mro__
+                if name in candidate.__dict__
+            ),
+            None,
+        )
+        if implementation is None or isinstance(implementation, AbstractMethod):
             missing.append(name)
     assert not missing, (
         f"refining {obj} into {category} requires implementations of "
@@ -561,7 +591,12 @@ def hook_post_init(
     if cls not in _ORIGINAL_INIT:
         # Looked up dynamically: the initializer to preserve is whichever one
         # ``cls`` resolves today, its own or an inherited one.
-        _ORIGINAL_INIT[cls] = getattr(cls, "__init__")
+        original_init = next(
+            candidate.__dict__["__init__"]
+            for candidate in cls.__mro__
+            if "__init__" in candidate.__dict__
+        )
+        _ORIGINAL_INIT[cls] = original_init
 
         def _init(
             self: "SageObject",
