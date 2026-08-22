@@ -90,6 +90,14 @@ class ArrowCategory(_OnACategory, Category):
             and candidate.codomain() in self._ambient_category
         )
 
+    def __call__(self, arrow: Morphism) -> Morphism:
+        r"""Place ``arrow`` as an object of \(\operatorname{Ar}(\mathbf{C})\)."""
+        from dzack_research.preamble.refine import refine
+
+        assert arrow in self
+        placed: Morphism = refine(arrow, self)
+        return placed
+
     def homset(self, source: Morphism, target: Morphism) -> Parent:
         r"""Return the commuting squares from ``source`` to ``target``."""
         assert source.domain() in self._ambient_category
@@ -220,8 +228,15 @@ class IsoArrowCategory(_OnACategory, Category):
     def __contains__(self, candidate: "MembershipInput") -> bool:
         return (
             candidate in ArrowCategory(self._ambient_category)
-            and isinstance(candidate, IsoArrowCategory.MorphismMethods)
+            and isinstance(getattr(candidate, "_inverse_morphism", None), Morphism)
         )
+
+    def __call__(self, arrow: Morphism) -> Morphism:
+        from dzack_research.preamble.refine import refine
+
+        assert arrow in self
+        placed: Morphism = refine(arrow, self)
+        return placed
 
     class MorphismMethods:
         # Installed on the arrow by ``Isomorphism`` below.
@@ -250,6 +265,13 @@ class EndArrowCategory(_OnACategory, Category):
             and candidate.domain() is candidate.codomain()
         )
 
+    def __call__(self, arrow: Morphism) -> Morphism:
+        from dzack_research.preamble.refine import refine
+
+        assert arrow in self
+        placed: Morphism = refine(arrow, self)
+        return placed
+
     class MorphismMethods:
         def is_endomorphism(self) -> bool:
             return True
@@ -272,6 +294,13 @@ class AutomorphismArrowCategory(_OnACategory, Category):
             candidate in EndArrowCategory(self._ambient_category)
             and candidate in IsoArrowCategory(self._ambient_category)
         )
+
+    def __call__(self, arrow: Morphism) -> Morphism:
+        from dzack_research.preamble.refine import refine
+
+        assert arrow in self
+        placed: Morphism = refine(arrow, self)
+        return placed
 
     class MorphismMethods:
         def is_automorphism(self) -> bool:
@@ -453,6 +482,6 @@ def Isomorphism(forward: Morphism, backward: Morphism) -> Morphism:
         if forward.domain() is forward.codomain()
         else category.IsoAr()
     )
-    refine(backward, iso_arrows)
-    isomorphism: Morphism = refine(forward, iso_arrows)
+    iso_arrows(backward)
+    isomorphism: Morphism = iso_arrows(forward)
     return isomorphism
