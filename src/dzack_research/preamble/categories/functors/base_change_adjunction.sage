@@ -66,6 +66,10 @@ class BaseChangeFunctor(Functor):
         # Local: the module nodes import this module, so module-level imports
         # here would close those cycles; they are built by call time.
         from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import BasedFreeModule
+        from dzack_research.preamble.categories.forms.forms import BilinearFormMorphism
+        from dzack_research.preamble.categories.forms.forms import BilinearForms
+        from dzack_research.preamble.categories.forms.forms import QuadraticFormMorphism
+        from dzack_research.preamble.categories.forms.forms import QuadraticForms
         from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModule
         from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModules
         from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules
@@ -83,7 +87,65 @@ class BaseChangeFunctor(Functor):
         )
         if not formed:
             return changed
-        return FormModule(module.form().base_changed(changed))
+        form = module.form()
+        source_generators = tuple(
+            generator.underlying_element()
+            for generator in module.module_generators()
+        )
+
+        def changed_bilinear_value(left: "Element", right: "Element") -> "Element":
+            left_coordinates = left.coordinates()
+            right_coordinates = right.coordinates()
+            return changed.base_ring().sum(
+                left_coefficient
+                * right_coefficient
+                * self.ring_map()(form(source_left, source_right))
+                for left_coefficient, source_left in zip(
+                    left_coordinates, source_generators
+                )
+                for right_coefficient, source_right in zip(
+                    right_coordinates, source_generators
+                )
+            )
+
+        match form:
+            case BilinearFormMorphism():
+                changed_form = BilinearForms(changed, changed.base_ring())(
+                    changed_bilinear_value
+                )
+            case QuadraticFormMorphism():
+                def changed_quadratic_value(element: "Element") -> "Element":
+                    coordinates = element.coordinates()
+                    diagonal = changed.base_ring().sum(
+                        coefficient**2 * self.ring_map()(form(source))
+                        for coefficient, source in zip(
+                            coordinates, source_generators
+                        )
+                    )
+                    cross_terms = changed.base_ring().sum(
+                        coordinates[left_index]
+                        * coordinates[right_index]
+                        * self.ring_map()(
+                            form(
+                                source_generators[left_index]
+                                + source_generators[right_index]
+                            )
+                            - form(source_generators[left_index])
+                            - form(source_generators[right_index])
+                        )
+                        for left_index in range(len(source_generators))
+                        for right_index in range(
+                            left_index + 1, len(source_generators)
+                        )
+                    )
+                    return diagonal + cross_terms
+
+                changed_form = QuadraticForms(changed, changed.base_ring())(
+                    changed_quadratic_value
+                )
+            case _:
+                assert False, f"{form} is not a bilinear or quadratic form"
+        return FormModule(changed_form)
 
     def _apply_functor_to_morphism(self, morphism: "ModuleMorphism") -> "ModuleMorphism":
         r"""Return \(f\otimes S\), the same matrix read over \(S\)."""

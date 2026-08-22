@@ -465,27 +465,6 @@ class BilinearFormMorphism(Morphism):
             2 * self._gram_matrix
         )
 
-    def base_changed(self, module: "Module") -> "BilinearFormMorphism":
-        r"""Return this form on ``module``, valued in ``module``'s base ring.
-
-        The transport of a form along a ring map \(f:R\to S\).  The entries do
-        not change -- they are carried by \(f\) -- and what changes is the ring
-        they are read in, which is the ring the pairings of \(M\otimes_RS\)
-        take their values in.
-        """
-        # Local: importing the ring node here would close a cycle, and the
-        # module is built by the time this method runs.
-        from dzack_research.preamble.categories.rings.rings import engine_ring
-
-        assert self._gram_matrix is not None, (
-            f"{self.domain()} has no finite generating set, so this form has "
-            "no matrix of entries to carry along the ring map"
-        )
-        value_ring = module.base_ring()
-        return BilinearForms(module, value_ring)(
-            self._gram_matrix.change_ring(engine_ring(value_ring))
-        )
-
     def pullback(self, morphism: "ModuleMorphism") -> "BilinearFormMorphism":
         assert morphism.codomain() is self.module(), (
             f"the pullback morphism lands in {morphism.codomain()}, but this "
@@ -713,21 +692,6 @@ class QuadraticFormMorphism(Morphism):
         )
         upper.subdivide(*self._lift_matrix.subdivisions())
         return GramMatrix(upper)
-
-    def base_changed(self, module: "Module") -> "QuadraticFormMorphism":
-        r"""Return this form on ``module``, valued in ``module``'s base ring.
-
-        A quadratic form is transported by its lift, which is the matrix that
-        records it, so the transport is the bilinear one on that matrix.
-        """
-        # Local: importing the ring node here would close a cycle, and the
-        # module is built by the time this method runs.
-        from dzack_research.preamble.categories.rings.rings import engine_ring
-
-        value_ring = module.base_ring()
-        return QuadraticForms(module, value_ring)(
-            self._lift_matrix.change_ring(engine_ring(value_ring))
-        )
 
     def pullback(self, morphism: "ModuleMorphism") -> "QuadraticFormMorphism":
         assert morphism.codomain() is self.module(), (
