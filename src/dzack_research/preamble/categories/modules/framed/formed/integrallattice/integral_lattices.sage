@@ -37,6 +37,7 @@ EXAMPLES::
 
 from typing import TYPE_CHECKING
 from dzack_research.preamble.categories.sets.underlying_sets import UnderlyingSet
+from dzack_research.preamble.owned_category import OwnedCategoryMixin
 from dzack_research.preamble.categories.modules.module_morphisms.morphism_matrices import (
     row_normal_form,
 )
@@ -188,7 +189,10 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             category: "Category | None" = None,
         ) -> "Parent":
             r"""Build the lattice homset through its owned arrow category."""
-            if codomain in IntegralLattices(self.base_ring()):
+            if (
+                codomain in IntegralLattices(self.base_ring())
+                and not isinstance(category, OwnedCategoryMixin)
+            ):
                 category = IntegralLattices(self.base_ring())
             return super()._Hom_(codomain, category)
 
