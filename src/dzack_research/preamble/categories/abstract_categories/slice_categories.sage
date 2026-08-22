@@ -305,9 +305,6 @@ def Slice(structure_morphism: Morphism, is_mono: bool = False, is_epi: bool = Fa
         "the structure morphism of a slice object must be a Morphism"
     )
     if is_mono:
-        assert isinstance(structure_morphism, MonoCapableArrow), (
-            "is_mono requires an arrow that can decide injectivity"
-        )
         assert structure_morphism.is_injective(), (
             "is_mono requires the structure morphism to be a monomorphism"
         )
