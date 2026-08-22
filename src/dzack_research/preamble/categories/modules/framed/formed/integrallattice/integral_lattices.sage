@@ -2258,15 +2258,8 @@ def _apply_optional_names(lattice: "FormModule", names: "OrderedSet") -> "FormMo
             assert False, "lattice names are supplied as a finite tuple or list"
 
 def _subdivide_gram(L: "FormModule", *cuts: list["Integer"]) -> None:
-    r"""Subdivide a lattice's Gram matrix, handling immutability."""
-    form = L.form()
-    gram = form.gram_matrix()
-    if gram.is_immutable():
-        from copy import copy
-
-        gram = copy(gram)
-        form._gram_matrix = gram
-    gram.subdivide(*cuts)
+    r"""Mark block boundaries in a lattice's coordinate matrix."""
+    L.form().subdivide_gram_matrix(*cuts)
 
 def _decompose_lattice(L: "FormModule") -> "DirectSumObject | None":
     r"""Split \(L\) along its generators and record the summands.

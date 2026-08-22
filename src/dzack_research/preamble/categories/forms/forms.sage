@@ -393,6 +393,17 @@ class BilinearFormMorphism(Morphism):
         )
         return GramMatrix(self._gram_matrix)
 
+    def subdivide_gram_matrix(self, *cuts: list["Integer"]) -> None:
+        r"""Mark block boundaries in this form's coordinate matrix."""
+        assert self._gram_matrix is not None, (
+            "only a form given in finite coordinates has block boundaries"
+        )
+        if self._gram_matrix.is_immutable():
+            from copy import copy
+
+            self._gram_matrix = copy(self._gram_matrix)
+        self._gram_matrix.subdivide(*cuts)
+
     def __call__(
         self,
         x: "ElementConstructorInput",
