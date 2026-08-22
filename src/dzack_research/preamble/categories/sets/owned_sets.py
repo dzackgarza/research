@@ -887,6 +887,8 @@ class Sets(Category):
             SageElement.__init__(self, parent)
 
     class ParentMethods(OwnedParent, SageParent):
+        _cardinality: Cardinal | None = None
+
         def __init__(
             self, cardinality: Cardinal | Integer | None = None, **rest: ConstructionData
         ) -> None:
@@ -917,6 +919,10 @@ class Sets(Category):
             A set that was not built with a size does not have one to give,
             and says so by having no answer here rather than by counting.
             """
+            if self._cardinality is None:
+                raise NotImplementedError(
+                    f"{self} has no represented cardinality"
+                )
             return self._cardinality
 
         def is_finite(self) -> bool:

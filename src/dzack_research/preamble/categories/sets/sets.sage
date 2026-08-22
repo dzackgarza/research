@@ -65,10 +65,10 @@ if TYPE_CHECKING:
 
 def Set(source: Parent | Iterable[Element]) -> "lexicon.Set":
     r"""Return ``source`` as an object of the owned category of sets."""
+    if source in Sets():
+        return source
     match source:
         case Parent():
-            if source.category().is_subcategory(Sets()):
-                return source
             result = SageSet(source)
         case Iterable():
             result = SageSet(source)
@@ -76,7 +76,7 @@ def Set(source: Parent | Iterable[Element]) -> "lexicon.Set":
             assert False, (
                 f"a set is constructed from a parent or iterable, got {source!r}"
             )
-    if result.category().is_subcategory(Sets()):
+    if result in Sets():
         return result
     return refine(result, placement_of(result))
 
