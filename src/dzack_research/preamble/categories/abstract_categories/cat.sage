@@ -131,6 +131,16 @@ class Cat(OwnedCategoryMixin, Category):
             class _HomCategory(HomCategoryConstruction):
                 r"""Categories of natural transformations between functors."""
 
+                def extra_super_categories(self) -> list[Category]:
+                    functor_category = self.base_category()
+                    if not functor_category.codomain().is_locally_discrete():
+                        return []
+                    from dzack_research.preamble.categories.abstract_categories.functors import (
+                        DiscreteCategories,
+                    )
+
+                    return [DiscreteCategories()]
+
                 class ParentMethods:
                     def __call__(
                         self,
@@ -362,6 +372,14 @@ class Cat(OwnedCategoryMixin, Category):
         @property
         def EpiArrowType(self) -> type:
             return self.EpiCatType.ObjectType
+
+        def is_locally_discrete(self) -> bool:
+            r"""Return whether every Hom category is discrete."""
+            from dzack_research.preamble.categories.abstract_categories.functors import (
+                DiscreteCategories,
+            )
+
+            return self.HomCategory().is_subcategory(DiscreteCategories())
 
         @cached_method
         def ArrowCategory(self) -> Category:

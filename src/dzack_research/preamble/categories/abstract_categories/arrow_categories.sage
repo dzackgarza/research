@@ -87,6 +87,15 @@ class ArrowCategory(_OnACategory, Category):
     class _HomCategory(HomCategoryConstruction):
         r"""Categories of commuting squares between arrows."""
 
+        def extra_super_categories(self) -> list[SageCategory]:
+            if not self.base_category().base_category().is_locally_discrete():
+                return []
+            from dzack_research.preamble.categories.abstract_categories.functors import (
+                DiscreteCategories,
+            )
+
+            return [DiscreteCategories()]
+
         class ParentMethods:
             def __call__(
                 self,

@@ -81,6 +81,15 @@ class OppositeCategory(_OnACategory, CategoryWithParameters):
         return f"Opposite of {self._base_category}"
 
     class _HomCategory(HomCategoryConstruction):
+        def extra_super_categories(self) -> list[SageCategory]:
+            if not self.base_category().base_category().is_locally_discrete():
+                return []
+            from dzack_research.preamble.categories.abstract_categories.functors import (
+                DiscreteCategories,
+            )
+
+            return [DiscreteCategories()]
+
         class ElementMethods:
             def __init__(
                 self,
@@ -211,6 +220,19 @@ class ProductCategory(_OfTwoCategories, CategoryWithParameters):
             return f"({self._first}, {self._second})"
 
     class _HomCategory(HomCategoryConstruction):
+        def extra_super_categories(self) -> list[SageCategory]:
+            product = self.base_category()
+            if not (
+                product.first_category().is_locally_discrete()
+                and product.second_category().is_locally_discrete()
+            ):
+                return []
+            from dzack_research.preamble.categories.abstract_categories.functors import (
+                DiscreteCategories,
+            )
+
+            return [DiscreteCategories()]
+
         class ElementMethods:
             def __init__(
                 self,
