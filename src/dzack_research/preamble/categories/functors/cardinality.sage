@@ -3,7 +3,6 @@ r"""The cardinality functor ``# : core(Sets) -> Cardinalities``."""
 from typing import TYPE_CHECKING
 
 from dzack_research.preamble.categories.abstract_categories.functors import Functor
-from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_function
 
 from dzack_research.preamble.categories.sets.cardinals import (
@@ -39,13 +38,13 @@ class CardinalityFunctor(Functor):
 
     def _apply_functor_to_morphism(
         self,
-        morphism: Morphism,
+        morphism: "Sets.IsoArrowType",
     ) -> CardinalityMorphism:
         isomorphism = self.domain().arrow(morphism)
         source = self._apply_functor(isomorphism.domain())
         target = self._apply_functor(isomorphism.codomain())
         assert source == target, "isomorphic sets have equal cardinality"
-        return self.codomain().hom(source, target).unique_morphism()
+        return self.codomain().Hom(source, target).unique_morphism()
 
     def _repr_(self) -> str:
         return "The cardinality functor # : core(Sets) -> Cardinalities"

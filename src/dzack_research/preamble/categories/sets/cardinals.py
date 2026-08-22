@@ -6,7 +6,7 @@ objects are cardinals.  ``Hom(kappa, lambda)`` is a singleton when
 
 A cardinal is an initial ordinal, thus a set, and the owned ``Sets()`` is
 this category's super category.  The subcategory is not full: a cardinal
-object keeps its own thin hom-sets.  What it gains is the set surface, which
+object keeps its own thin Hom categories.  What it gains is the set surface, which
 it already answered -- ``is_finite``, ``is_countable`` and ``is_uncountable``
 are the questions about the set of that size -- and now answers as a member
 of the owned sets.
@@ -26,14 +26,15 @@ from __future__ import annotations
 from collections.abc import Callable, Iterator
 from dataclasses import dataclass
 from enum import Enum
-from typing import TYPE_CHECKING, TypeIs
+from typing import TYPE_CHECKING
 
+from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    HomCategoryConstruction,
+)
 from dzack_research.preamble.categories.sets.owned_sets import Sets
 from dzack_research.preamble.owned_category import object_of
 from dzack_research.preamble.owned_category_bases import Category
 from sage.categories.category import Category as SageCategory
-from sage.categories.homset import Hom, Homset
-from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.infinity import Infinity, PlusInfinity
 from sage.rings.integer import Integer
@@ -115,6 +116,75 @@ class Cardinalities(Category):
 
     def _repr_(self) -> str:
         return "Category of cardinalities"
+
+    class _HomCategory(HomCategoryConstruction):
+        r"""The empty or terminal Hom categories of the cardinal order."""
+
+        class ParentMethods:
+            def __bool__(self) -> bool:
+                return self.base_category().le(self.domain(), self.codomain())
+
+            def __len__(self) -> int:
+                return 1 if self else 0
+
+            def cardinality(self) -> Cardinal:
+                return cardinal(len(self))
+
+            def is_finite(self) -> bool:
+                return True
+
+            def __iter__(self) -> Iterator[CardinalityMorphism]:
+                if self:
+                    yield self.unique_morphism()
+
+            def __contains__(self, candidate: CardinalityMorphism) -> bool:
+                return (
+                    candidate in self.base_category().ArrowCategory()
+                    and candidate.parent() is self
+                )
+
+            @cached_method
+            def unique_morphism(self) -> CardinalityMorphism:
+                assert self, (
+                    f"there is no cardinality morphism "
+                    f"{self.domain()} -> {self.codomain()}"
+                )
+                return self.ObjectType(hom_category=self)
+
+            def _an_element_(self) -> CardinalityMorphism:
+                return self.unique_morphism()
+
+            def __call__(
+                self,
+                morphism: CardinalityMorphism | None = None,
+            ) -> CardinalityMorphism:
+                assert morphism is None or morphism in self, (
+                    f"{morphism} is not in {self}"
+                )
+                return self.unique_morphism()
+
+            def identity(self) -> CardinalityMorphism:
+                assert self.domain() is self.codomain(), (
+                    "identity is defined only in an endomorphism category"
+                )
+                return self.unique_morphism()
+
+            def compose(
+                self,
+                second: CardinalityMorphism,
+                first: CardinalityMorphism,
+            ) -> CardinalityMorphism:
+                assert first.codomain() is second.domain()
+                assert first.domain() is self.domain()
+                assert second.codomain() is self.codomain()
+                return self.unique_morphism()
+
+        class ElementMethods:
+            def __init__(self, hom_category: Category) -> None:
+                super().__init__(hom_category=hom_category)
+
+            def _repr_(self) -> str:
+                return f"{self.domain()} <= {self.codomain()}"
 
     def zero(self) -> Cardinal:
         r"""Return the additive identity."""
@@ -253,7 +323,7 @@ class Cardinalities(Category):
         r"""Apply cardinal addition to a finite family of morphisms."""
         source = self.sum(*(morphism.domain() for morphism in morphisms))
         target = self.sum(*(morphism.codomain() for morphism in morphisms))
-        return self.hom(source, target).unique_morphism()
+        return self.Hom(source, target).unique_morphism()
 
     def product_morphism(
         self,
@@ -262,7 +332,7 @@ class Cardinalities(Category):
         r"""Apply cardinal multiplication to a finite family of morphisms."""
         source = self.product(*(morphism.domain() for morphism in morphisms))
         target = self.product(*(morphism.codomain() for morphism in morphisms))
-        return self.hom(source, target).unique_morphism()
+        return self.Hom(source, target).unique_morphism()
 
     def power_morphism(
         self,
@@ -281,7 +351,7 @@ class Cardinalities(Category):
             base_morphism.codomain(),
             exponent_morphism.codomain(),
         )
-        return self.hom(source, target).unique_morphism()
+        return self.Hom(source, target).unique_morphism()
 
     def supremum(
         self,
@@ -450,32 +520,6 @@ class Cardinalities(Category):
         target: Cardinal | CardinalScalar,
     ) -> bool:
         return not self.le(source, target) and not self.le(target, source)
-
-    def hom(
-        self,
-        source: Cardinal,
-        target: Cardinal,
-    ) -> CardinalityHomset:
-        homset = Hom(source, target, self)
-        assert self.is_homset(homset)
-        return homset
-
-    def is_homset(
-        self,
-        homset: Homset[Cardinal, Cardinal],
-    ) -> TypeIs[CardinalityHomset]:
-        r"""Return whether ``homset`` is a cardinality hom-set.
-
-        The hom-set category owns the runtime narrowing boundary.  It covers
-        both ordinary hom-sets and endomorphism sets.
-        """
-        return homset in self.HomCategory() or homset in self.EndCategory()
-
-    def is_morphism(self, morphism: Morphism) -> TypeIs[CardinalityMorphism]:
-        r"""Return whether ``morphism`` is a morphism of ``Cardinalities``."""
-        homset = morphism.parent()
-        return homset in self.HomCategory() or homset in self.EndCategory()
-
 
     class ParentMethods:
         r"""A cardinal: an object of :class:`Cardinalities`, and the set of
@@ -712,20 +756,6 @@ class Cardinalities(Category):
                 )
             return QQ(self.finite_value())
 
-        def _Hom_(
-            self,
-            codomain: Cardinal,
-            category: Category | None = None,
-        ) -> CardinalityHomset:
-            assert codomain in Cardinalities(), (
-                "a cardinality morphism has cardinal objects at both ends"
-            )
-            assert category is None or category == Cardinalities(), (
-                "the requested hom-set is not in Cardinalities"
-            )
-            return CardinalityHomset(self, codomain)
-
-
 Cardinal = Cardinalities().ObjectType
 r"""The class of a cardinal object.
 
@@ -734,90 +764,11 @@ named here.  A cardinal is built by :func:`cardinal` or :func:`aleph`.
 """
 
 
-# A homset is a parent whose elements are its morphisms.  The runtime class
-# is a Cython extension type and cannot be subscripted at class-creation
-# time, so the binding goes through an alias, per the note in
-# ``typings/sage/structure/parent.pyi``.
-if TYPE_CHECKING:
-    CardinalityHomsetBase = Homset[Cardinal, Cardinal]
-else:
-    CardinalityHomsetBase = Homset
+CardinalityHomCategory = Cardinalities().HomCatType
+r"""The implementation type of a cardinal Hom category."""
 
-
-class CardinalityHomset(CardinalityHomsetBase):
-    r"""The empty or singleton hom-set between two cardinal objects."""
-
-    def __init__(self, source: Cardinal, target: Cardinal) -> None:
-        Homset.__init__(self, source, target, category=Cardinalities())
-
-    def _repr_(self) -> str:
-        return f"Hom({self.domain()}, {self.codomain()}) in Cardinalities"
-
-    def __bool__(self) -> bool:
-        return Cardinalities().le(self.domain(), self.codomain())
-
-    def __len__(self) -> int:
-        return 1 if self else 0
-
-    def cardinality(self) -> Integer:
-        return ZZ(len(self))
-
-    def is_finite(self) -> bool:
-        return True
-
-    def __iter__(self) -> Iterator[CardinalityMorphism]:
-        if self:
-            yield self.unique_morphism()
-
-    def __contains__(self, candidate: Morphism) -> bool:
-        return (
-            candidate in Cardinalities().ArrowCategory()
-            and candidate.parent() is self
-        )
-
-    @cached_method
-    def unique_morphism(self) -> CardinalityMorphism:
-        assert self, (
-            f"there is no cardinality morphism {self.domain()} -> {self.codomain()}"
-        )
-        return CardinalityMorphism(self)
-
-    def _an_element_(self) -> CardinalityMorphism:
-        return self.unique_morphism()
-
-    def _element_constructor_(
-        self,
-        morphism: CardinalityMorphism | None = None,
-    ) -> CardinalityMorphism:
-        assert morphism is None or morphism in self, (
-            f"{morphism} is not in {self}"
-        )
-        return self.unique_morphism()
-
-    def identity(self) -> CardinalityMorphism:
-        assert self.is_endomorphism_set(), (
-            "identity is defined only for an endomorphism set"
-        )
-        return self.unique_morphism()
-
-
-class CardinalityMorphism(Morphism):
-    r"""The unique morphism witnessing one represented cardinal inequality."""
-
-    def __init__(self, parent: CardinalityHomset) -> None:
-        Morphism.__init__(self, parent)
-
-    def _repr_(self) -> str:
-        return f"{self.domain()} <= {self.codomain()}"
-
-    def _composition_(
-        self,
-        right: Morphism,
-        homset: Homset[Cardinal, Cardinal],
-    ) -> CardinalityMorphism:
-        assert Cardinalities().is_morphism(right)
-        assert Cardinalities().is_homset(homset)
-        return homset.unique_morphism()
+CardinalityMorphism = Cardinalities().ArrowType
+r"""The implementation type of a cardinal comparison morphism."""
 
 
 @cached_function

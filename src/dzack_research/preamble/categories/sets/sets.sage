@@ -491,7 +491,14 @@ class ExponentialsOfSets(_FunctorImageParameters, CategoryWithParameters):
             return self.hom_category()(definition)
 
         def cardinality(self) -> Cardinal:
-            return self.hom_category().cardinality()
+            from dzack_research.preamble.categories.sets.cardinals import (
+                Cardinalities,
+            )
+
+            return Cardinalities().power(
+                self.base().cardinality(),
+                self.exponent().cardinality(),
+            )
 
         def _repr_(self) -> str:
             return f"{self.base()}^{self.exponent()}"
@@ -763,7 +770,7 @@ class PowerSets(_FunctorImageParameters, CategoryWithParameters):
             source = self.cardinality()
             target = cardinals.power(2, self.base_set().cardinality())
             assert source == target
-            return cardinals.hom(source, target).identity()
+            return cardinals.Hom(source, target).identity()
 
         def _repr_(self) -> str:
             return f"Power set of {self.base_set()}"

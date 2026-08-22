@@ -345,7 +345,7 @@ class Sets(Category):
                     self.factor_cardinalities(),
                 )
                 assert source == target
-                return cardinals.hom(source, target).identity()
+                return cardinals.Hom(source, target).identity()
 
             def __contains__(self, element: ElementConstructorInput) -> bool:
                 r"""Whether ``element`` is a point of \(\prod_i X_i\).
@@ -528,7 +528,7 @@ class Sets(Category):
                     self.cofactor_cardinalities(),
                 )
                 assert source == target
-                return cardinals.hom(source, target).identity()
+                return cardinals.Hom(source, target).identity()
 
             def _repr_(self) -> str:
                 return f"Coproduct of {self.diagram()}"
