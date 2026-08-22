@@ -305,7 +305,7 @@ This is the fourth graduation of one lesson (tests assert accomplishment, not de
 
 - **mypy is a discovery tool, not a gate.** A type error is a signal about the actual code: a wrong return type, a missing method on a real class, a type hierarchy that doesn't match the mathematics. The correct response is to understand what the code's types actually are and fix them — never to silence the checker with `object`, `Any`, `type`, deleted annotations, `# type: ignore`, or config loopholes. Those carry zero type information; a function annotated `-> object` passes on literally anything, which means it asserts nothing.
   When a type is genuinely unnameable because the object is load-injected from a `.sage` file mypy cannot import, the fix is to make it importable (move to `.py`, add a stub, or restructure the import boundary) — not to annotate around the absence.
-  Never probe the QC config (`mypy-global.ini`, `ai-review-ci`) looking for what `Any`-related settings might be allowed. The rule is: never use `object`, and use `Any` only where *Where `Any` is valid, and what replaces it everywhere else* permits it. That is already known from the errors mypy reports. Looking for a loophole is hacking the gate, not doing the work.
+  Never probe the QC config (`mypy-global.ini`, `ai-review-ci`) looking for what `Any`-related settings might be allowed. The rule is: never use `object`, and use `Any` only where *`object` is never a type; `Any` has exactly one position* permits it. That is already known from the errors mypy reports. Looking for a loophole is hacking the gate, not doing the work.
 
 Work-shape catalogue with this repo's exemplars and the meaningful-vs-noise litmus: `.agents/references/displacement-pattern-index.md` (D1–D6). These are review criteria for plans and completion claims alike — the Review Guidelines below guard completion *claims*; this section guards the loop that never claims.
 This discipline is culture, not a gate: do not build detectors, hooks, or mandatory checklists from it.
@@ -1305,15 +1305,21 @@ If that cannot be done exactly, surface the nuance and defer the mathematical de
 - Never weaken an annotation to silence the checker.
 - Make stable `.sage` definitions importable when their real types cannot otherwise be named.
 
-## Where `Any` is valid, and what replaces it everywhere else
+## `object` is never a type; `Any` has exactly one position
 
-`Any` has exactly one legitimate position: a **parameter of a method whose job
-is to decide about an arbitrary argument**. So far as is known those are
-`__eq__` and `__contains__`. `[1, 2] in MyModules` returning `False` is a
-perfectly valid line of code — the argument really can be anything, and
-answering is the method's whole purpose. If some other site appears to take
-genuinely arbitrary input, that is a finding to raise, not a licence to widen
-an annotation.
+**`object` is never allowed as a type. There is no exception.** Not as a
+parameter, not as a return, not inside a container, not under `TYPE_CHECKING`.
+A value annotated `object` supports no arithmetic, no membership and no method,
+so the annotation states nothing about the value and the checker admits
+anything at all. It marks a place where a type was owed and not written.
+
+`Any` is narrower. It has exactly one legitimate position: a **parameter of a
+method whose job is to decide about an arbitrary argument**. So far as is
+known those are `__eq__` and `__contains__`. `[1, 2] in MyModules` returning
+`False` is a perfectly valid line of code — the argument really can be
+anything, and answering is the method's whole purpose. If some other site
+appears to take genuinely arbitrary input, that is a finding to raise, not a
+licence to widen an annotation.
 
 **`Any` is never valid as a return type.** A method knows what it produces.
 Write the type:
