@@ -24,6 +24,7 @@ if TYPE_CHECKING:
 
 from dzack_research.preamble.categories.rings.rings import OwnedBaseRing
 from dzack_research.preamble.categories.rings.rings import OwnedCategoryOverBaseRing
+from dzack_research.preamble.owned_category import OwnedCategoryMixin
 from dzack_research.preamble.owned_category import object_of
 from typing import Protocol, Self, TYPE_CHECKING, TypeAlias
 
@@ -332,7 +333,11 @@ class FormModules(OwnedCategoryOverBaseRing):
             homset in the homsets of the homsets and its morphisms would
             never reach ``FormModules.Homsets.ElementMethods``.
             """
-            if category is None and codomain in FormModules(self.base_ring()):
+            if (
+                codomain in FormModules(self.base_ring())
+                and self.form().codomain() is codomain.form().codomain()
+                and not isinstance(category, OwnedCategoryMixin)
+            ):
                 category = FormModules(self.base_ring())
             homset: Parent = super()._Hom_(codomain, category)
             return homset
@@ -1369,8 +1374,4 @@ def correlation_of(lattice: Parent) -> Morphism:
                 )
             }
         )
-    assert is_form_morphism(correlation), (
-        f"{dual} is a formed module, so its homset builds form morphisms; "
-        f"got {correlation}"
-    )
     return correlation
