@@ -113,13 +113,10 @@ class SliceOverCategory(_OverAnObject, Category):
                 target = self.codomain()
                 category = self.base_category().ambient_category()
                 assert left in category.Hom(source.domain(), target.domain())
-                square = category.ArrowCategory().Hom(source, target)(
-                    left,
-                    category.identity(source.codomain()),
-                )
                 return self.ObjectType(
                     hom_category=self,
-                    underlying_square=square,
+                    left=left,
+                    right=category.identity(source.codomain()),
                 )
 
             def identity(self) -> "HomCategoryOf.ElementMethods":
@@ -136,24 +133,6 @@ class SliceOverCategory(_OverAnObject, Category):
                 assert first.codomain() is second.domain()
                 category = self.base_category().ambient_category()
                 return self(category.compose(second.left(), first.left()))
-
-        class ElementMethods:
-            def __init__(
-                self,
-                hom_category: Category,
-                underlying_square: "HomCategoryOf.ElementMethods",
-            ) -> None:
-                self._underlying_square = underlying_square
-                super().__init__(hom_category=hom_category)
-
-            def underlying_square(self) -> "HomCategoryOf.ElementMethods":
-                return self._underlying_square
-
-            def left(self) -> "HomCategoryOf.ElementMethods":
-                return self._underlying_square.left()
-
-            def right(self) -> "HomCategoryOf.ElementMethods":
-                return self._underlying_square.right()
 
 
 class CosliceUnderCategory(_UnderAnObject, Category):
@@ -189,13 +168,10 @@ class CosliceUnderCategory(_UnderAnObject, Category):
                 target = self.codomain()
                 category = self.base_category().ambient_category()
                 assert right in category.Hom(source.codomain(), target.codomain())
-                square = category.ArrowCategory().Hom(source, target)(
-                    category.identity(source.domain()),
-                    right,
-                )
                 return self.ObjectType(
                     hom_category=self,
-                    underlying_square=square,
+                    left=category.identity(source.domain()),
+                    right=right,
                 )
 
             def identity(self) -> "HomCategoryOf.ElementMethods":
@@ -212,24 +188,6 @@ class CosliceUnderCategory(_UnderAnObject, Category):
                 assert first.codomain() is second.domain()
                 category = self.base_category().ambient_category()
                 return self(category.compose(second.right(), first.right()))
-
-        class ElementMethods:
-            def __init__(
-                self,
-                hom_category: Category,
-                underlying_square: "HomCategoryOf.ElementMethods",
-            ) -> None:
-                self._underlying_square = underlying_square
-                super().__init__(hom_category=hom_category)
-
-            def underlying_square(self) -> "HomCategoryOf.ElementMethods":
-                return self._underlying_square
-
-            def left(self) -> "HomCategoryOf.ElementMethods":
-                return self._underlying_square.left()
-
-            def right(self) -> "HomCategoryOf.ElementMethods":
-                return self._underlying_square.right()
 
 
 class SubobjectCategory(_OverAnObject, Category):

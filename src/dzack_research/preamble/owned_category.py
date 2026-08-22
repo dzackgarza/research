@@ -457,12 +457,17 @@ class OwnedCategoryMixin(CatConstructionsMixin):
         # replace.  A super category that already reached this declaration is
         # skipped: it has it at the end of its own linearization, and asking
         # for it earlier contradicts that order, which C3 refuses.
+        declared = (
+            ()
+            if provider is None or any(provider in base.mro() for base in bases)
+            else (provider,)
+        )
         carried = tuple(
             ancestor_provider
             for ancestor_provider in inherited
             if not any(ancestor_provider in base.mro() for base in bases)
         )
-        bases = ((provider,) if provider is not None else ()) + carried + bases
+        bases = declared + carried + bases
         if len(bases) > 1 and object in bases:
             # A super category with no methods class of its own contributes
             # ``object``.  Left in place beside a real base it is a base that

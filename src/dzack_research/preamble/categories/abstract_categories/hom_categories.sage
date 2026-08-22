@@ -205,13 +205,16 @@ class HomCategoryConstruction(HomCategoryOf):
         return []
 
     def inherited_hom_category_families(self) -> list[Category]:
-        return [
-            HomCategoryOf(self._base_category),
-            *HomCategoryOf.inherited_hom_category_families(self),
-        ]
+        return HomCategoryOf.inherited_hom_category_families(self)
 
     def super_categories(self) -> list[Category]:
-        return [HomCategoryOf(self._base_category), *self.extra_super_categories()]
+        inherited = self.inherited_hom_category_families()
+        extra = self.extra_super_categories()
+        if inherited or extra:
+            return [*inherited, *extra]
+        from dzack_research.preamble.categories.abstract_categories.cat import Cat
+
+        return [Cat()]
 
 
 class EndCategoryOf(_OverACategory, Category):
