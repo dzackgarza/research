@@ -45,7 +45,6 @@ Sage's singleton classcall makes an assertion about ``__mro__[1]``.  See
 
 from __future__ import annotations
 
-from abc import abstractmethod
 from typing import TYPE_CHECKING, final
 
 from sage.categories.algebra_functor import AlgebrasCategory as SageAlgebrasCategory
@@ -443,10 +442,9 @@ class SubobjectsCategory(
         data-accessor obligation.  The construction chain supplies such data.
         """
 
-        @abstractmethod
         def inclusion(self) -> Morphism:
             r"""Return the inclusion morphism of this subobject."""
-            ...
+            return self.structure_morphism()
 
         @final
         def lift(self, x: CategoryElement) -> CategoryElement:
