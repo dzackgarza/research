@@ -27,9 +27,7 @@ from typing import cast, Generic, TYPE_CHECKING, TypeVar
 
 from sage.categories.category import Category as SageCategory
 from sage.categories.category_with_axiom import all_axioms
-from sage.categories.homset import Homset as SageHomset
 from sage.misc.cachefunc import cached_method
-from sage.categories.morphism import Morphism as SageMorphism
 from sage.categories.sets_cat import Sets as SageSets
 from sage.rings.integer import Integer
 from sage.rings.semirings.non_negative_integer_semiring import NN
@@ -69,7 +67,10 @@ if TYPE_CHECKING:
     from dzack_research.preamble.categories.abstract_categories.functors import (
         DiscreteCategory,
     )
-    from dzack_research.preamble.categories.sets.cardinals import Cardinal
+    from dzack_research.preamble.categories.sets.cardinals import (
+        Cardinal,
+        CardinalityMorphism,
+    )
     from dzack_research.preamble.categories.sets.sets import (
         CartesianProductFunctor,
         DisjointUnionFunctor,
@@ -333,7 +334,7 @@ class Sets(Category):
                     )
                 )
 
-            def cardinality_comparison(self) -> SageMorphism:
+            def cardinality_comparison(self) -> "CardinalityMorphism":
                 from dzack_research.preamble.categories.sets.cardinals import (
                     Cardinalities,
                 )
@@ -516,7 +517,7 @@ class Sets(Category):
                     copair
                 )
 
-            def cardinality_comparison(self) -> SageMorphism:
+            def cardinality_comparison(self) -> "CardinalityMorphism":
                 from dzack_research.preamble.categories.sets.cardinals import (
                     Cardinalities,
                 )
@@ -661,6 +662,15 @@ class Sets(Category):
                     f"{self} sends {element!r} outside its codomain"
                 )
                 return image
+
+            def is_injective(self) -> bool:
+                return self.is_monomorphism()
+
+            def is_surjective(self) -> bool:
+                return self.is_epimorphism()
+
+            def is_bijective(self) -> bool:
+                return self.is_isomorphism()
 
     class _IsoCategory(IsoCategoryConstruction):
         r"""Isomorphisms of sets with declared inverse functions."""
@@ -1280,94 +1290,6 @@ class UncountableSets(CategoryWithAxiom):
             return True
 
 
-class PosetMorphism(SageMorphism):
-    r"""Morphism of partially ordered sets (order-preserving map)."""
-
-    def __init__(
-        self,
-        parent: PosetHomset,
-        function: Callable[[PosetElement], PosetElement],
-    ) -> None:
-        SageMorphism.__init__(self, parent)
-        self._function = function
-
-    def __call__(self, x: PosetElement) -> PosetElement:
-        return self._function(x)
-
-    def is_order_preserving(self) -> bool:
-        r"""Return True if x <= y implies f(x) <= f(y)."""
-        dom = self.domain()
-        codom = self.codomain()
-        for x, y in dom.cover_relations():
-            if not codom.is_lequal(self(x), self(y)):
-                return False
-        return True
-
-    def is_order_reflecting(self) -> bool:
-        r"""Return True if f(x) <= f(y) implies x <= y."""
-        dom = self.domain()
-        codom = self.codomain()
-        for x in dom:
-            for y in dom:
-                if codom.is_lequal(self(x), self(y)) and not dom.is_lequal(x, y):
-                    return False
-        return True
-
-    def is_order_embedding(self) -> bool:
-        r"""Return True if x <= y iff f(x) <= f(y)."""
-        return self.is_order_preserving() and self.is_order_reflecting()
-
-    def is_injective(self) -> bool:
-        r"""Return True if f is one-to-one."""
-        images = [self(x) for x in self.domain()]
-        return len(images) == len(set(images))
-
-    def is_surjective(self) -> bool:
-        r"""Return True if f maps onto the codomain."""
-        images = set(self(x) for x in self.domain())
-        return images == set(self.codomain())
-
-    def is_bijective(self) -> bool:
-        return self.is_injective() and self.is_surjective()
-
-    def is_order_isomorphism(self) -> bool:
-        r"""Return True if f is a bijective order embedding."""
-        return self.is_order_embedding() and self.is_bijective()
-
-    def inverse(self) -> "PosetMorphism":
-        r"""Return the inverse poset isomorphism."""
-        assert self.is_order_isomorphism(), (
-            "inverse only exists for order isomorphisms"
-        )
-        inv_map = {self(x): x for x in self.domain()}
-        return PosetHomset(self.codomain(), self.domain())(lambda y: inv_map[y])
-
-    def __mul__(self, other: "PosetMorphism") -> "PosetMorphism":
-        assert self.domain() == other.codomain(), (
-            "domains and codomains do not match for composition"
-        )
-        return PosetHomset(other.domain(), self.codomain())(lambda x: self(other(x)))
-
-    def _repr_(self) -> str:
-        return f"Poset morphism from {self.domain()} to {self.codomain()}"
-
-
-class PosetHomset(SageHomset):
-    r"""Set of morphisms between partially ordered sets."""
-
-    Element = PosetMorphism
-
-    def _element_constructor_(
-        self, f: Callable[[PosetElement], PosetElement]
-    ) -> PosetMorphism:
-        mor = PosetMorphism(self, f)
-        assert mor.is_order_preserving(), (
-            f"function {f} does not preserve the partial order "
-            "(not a poset homomorphism)"
-        )
-        return mor
-
-
 class PosetTikz:
     r"""TikZ Hasse diagram representation."""
 
@@ -1650,6 +1572,53 @@ class PartiallyOrderedSets(CategoryWithAxiom):
 
     _base_category_class_and_axiom = (Sets, "PartiallyOrdered")
 
+    class _HomCategory(HomCategoryConstruction):
+        r"""Order-preserving functions, declared as arrows of ordered sets."""
+
+        class ParentMethods:
+            def __call__(
+                self,
+                definition: "SetMapDefinition | PartiallyOrderedSets.ArrowType",
+            ) -> "PartiallyOrderedSets.ArrowType":
+                morphism = super().__call__(definition)
+                assert morphism in self
+                return morphism
+
+        class ElementMethods:
+            def is_order_preserving(self) -> bool:
+                return self in self.base_category().ArrowCategory()
+
+            def is_order_reflecting(self) -> bool:
+                r"""Return whether the represented finite map reflects order."""
+                assert self.domain() in Sets().Finite(), (
+                    "order reflection requires a finite represented domain"
+                )
+                return all(
+                    not self.codomain().is_lequal(self(x), self(y))
+                    or self.domain().is_lequal(x, y)
+                    for x in self.domain()
+                    for y in self.domain()
+                )
+
+            def is_order_embedding(self) -> bool:
+                return self.is_order_preserving() and self.is_order_reflecting()
+
+            def is_order_isomorphism(self) -> bool:
+                return self.is_order_embedding() and self.is_bijective()
+
+            def inverse(self) -> "PartiallyOrderedSets.ArrowType":
+                assert self.is_order_isomorphism(), (
+                    "inverse only exists for an order isomorphism"
+                )
+                inverse_values = {self(x): x for x in self.domain()}
+                return self.base_category().Hom(
+                    self.codomain(),
+                    self.domain(),
+                )(lambda y: inverse_values[y])
+
+            def _repr_(self) -> str:
+                return f"Poset morphism from {self.domain()} to {self.codomain()}"
+
     class ParentMethods:
         def hasse_layout(self) -> dict[PosetElement, tuple[float, float]]:
             r"""Compute ranked (x, y) coordinates for the Hasse diagram without dot2tex."""
@@ -1691,7 +1660,6 @@ class PartiallyOrderedSets(CategoryWithAxiom):
             exclude: Iterable[str] | None = None,
         ) -> dict[str, str]:
             return _poset_repr_mimebundle(self, include=include, exclude=exclude)
-
 
 def install_poset_display() -> None:
     r"""Route Sage's ``FinitePoset`` into ``PartiallyOrderedSets``.
