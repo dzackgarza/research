@@ -1335,6 +1335,23 @@ def FormModule(form: "Form") -> Parent:
         (member for member in module.categories() if isinstance(member, GroupModules)),
         None,
     )
+    if group_module_category is not None:
+        from dzack_research.preamble.categories.modules.group_modules.group_lattices import (
+            GroupLattices,
+            _module_action_preserves_form,
+        )
+
+        if _module_action_preserves_form(module, form):
+            from dzack_research.preamble.refine import refine
+
+            group_lattices = GroupLattices(module.group())
+            formed_group_module = object_of(
+                group_lattices,
+                form=form,
+                action=module.action(),
+                module_generating_set=module.module_generating_set(),
+            )
+            return refine(formed_group_module, group_lattices)
     data: dict[str, "ConstructionData"] = {"form": form}
     if group_module_category is not None:
         data["action"] = module.action()

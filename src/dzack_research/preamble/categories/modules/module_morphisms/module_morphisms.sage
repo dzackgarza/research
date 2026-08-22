@@ -53,6 +53,7 @@ from sage.rings.rational_field import QQ as SageQQ
 from sage.sets.totally_ordered_finite_set import TotallyOrderedFiniteSet
 from sage.structure.element import Element, MultiplicativeGroupElement, RingElement
 from sage.structure.parent import Parent
+from sage.structure.richcmp import op_EQ, op_NE
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.sets.cardinals import Cardinal, cardinal
@@ -499,6 +500,7 @@ class ModuleAutomorphism(ModuleMorphism):
         images: "ModuleMorphismData",
     ) -> None:
         ModuleMorphism.__init__(self, parent, images)
+        refine(self, parent.category())
         assert self.domain() is self.codomain(), (
             "an automorphism is an endomorphism"
         )
@@ -524,6 +526,21 @@ class ModuleAutomorphism(ModuleMorphism):
                 ),
             )
         )
+
+    def _richcmp_(self, other: ElementConstructorInput, op: int) -> bool:
+        assert op in (op_EQ, op_NE), (
+            "module automorphisms only have equality comparisons"
+        )
+        equal = (
+            isinstance(other, ModuleAutomorphism)
+            and other.parent() is self.parent()
+            and all(
+                self.module_generator_morphism()(label)
+                == other.module_generator_morphism()(label)
+                for label in self.domain().module_generating_set()
+            )
+        )
+        return equal if op == op_EQ else not equal
 
     def inverse(self) -> "ModuleAutomorphism":
         # The engine view of the actual base ring: an automorphism's inverse
@@ -623,7 +640,7 @@ class AutomorphismSubgroup:
     ) -> "GroupAction":
         r"""Return the faithful action that includes this subgroup in \(\operatorname{Aut}(M)\)."""
         return AutomorphismSubgroupInclusion(
-            group_action_homset(self, self.domain())
+            group_action_homset(self, self.domain(), self.supergroup())
         )
 
     def automorphism_subgroup_identity(
@@ -685,9 +702,7 @@ class ModuleAutomorphismGroups(Category_over_base_ring):
         return "module automorphism groups"
 
     def super_categories(self) -> list:
-        from dzack_research.preamble.categories.group.groups import OwnedGroups
-
-        return [OwnedModules(self.base_ring()).Homsets(), OwnedGroups()]
+        return [OwnedModules(self.base_ring()).Homsets()]
 
     class ParentMethods(AutomorphismSubgroup):
         r"""The automorphism group, or a finite subgroup with the same elements."""
@@ -758,7 +773,14 @@ class ModuleAutomorphismGroups(Category_over_base_ring):
             group_generators: "OrderedSet | None" = None,
             **rest: "ModuleMorphismData",
         ) -> None:
+            rest["category"] = OwnedModules(module.base_ring())
             super().__init__(domain=module, codomain=module, **rest)
+            from dzack_research.preamble.categories.group.groups import OwnedGroups
+
+            refine(
+                self,
+                [ModuleAutomorphismGroups(module.base_ring()), OwnedGroups()],
+            )
             self._supergroup = self
             self._group_generators = None
             self._elements = None
@@ -1021,23 +1043,37 @@ class GroupActionHomset(GroupActionHomsetBase):
         def domain(self) -> "Group": ...
         def codomain(self) -> "ModuleAutomorphismGroup": ...
 
-    def __init__(self, group: "Group", module: "Module") -> None:
+    def __init__(
+        self,
+        group: "Group",
+        module: "Module",
+        automorphism_group: "Parent | None" = None,
+    ) -> None:
         from dzack_research.preamble.categories.group.groups import refine_group
 
         group = refine_group(group)
+        if automorphism_group is None:
+            automorphism_group = module.Aut()
+        assert automorphism_group.domain() is module, (
+            "the automorphism group must act on the stated module"
+        )
         Homset.__init__(
             self,
             group,
-            module.Aut(),
+            automorphism_group,
             category=Groups(),
             check=False,
         )
         refine(self, GroupActionHomsets())
 
 
-def group_action_homset(group: "Group", module: "Module") -> GroupActionHomset:
+def group_action_homset(
+    group: "Group",
+    module: "Module",
+    automorphism_group: "Parent | None" = None,
+) -> GroupActionHomset:
     r"""Return \(\operatorname{Hom}(G,\operatorname{Aut}_R(M))\)."""
-    return GroupActionHomset(group, module)
+    return GroupActionHomset(group, module, automorphism_group)
 
 
 class AutomorphismSubgroupInclusion(GroupAction):

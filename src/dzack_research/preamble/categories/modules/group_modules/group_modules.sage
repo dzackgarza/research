@@ -200,6 +200,7 @@ class GroupModules(Category):
             # Local: a module-level import would close a cycle; the module is built by the time this runs.
             from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
                 GroupActionHomsets,
+                ModuleAutomorphismGroup,
                 group_action_homset,
             )
 
@@ -230,7 +231,7 @@ class GroupModules(Category):
             ), (
                 "the group action and the constructed module must use one framing"
             )
-            automorphisms = self.Aut()
+            automorphisms = ModuleAutomorphismGroup(self)
             values = {
                 group_element: automorphisms(
                     {
@@ -240,7 +241,11 @@ class GroupModules(Category):
                 )
                 for group_element, images in self._action_on_module_generators.items()
             }
-            self._action = group_action_homset(self._acting_group, self)(values)
+            self._action = group_action_homset(
+                self._acting_group,
+                self,
+                automorphisms,
+            )(values)
             assert self._action.codomain().domain() is self, (
                 "the stored action must act on the constructed group module"
             )
@@ -336,9 +341,19 @@ class GroupModules(Category):
             return character
 
         def Hom(self: Self, codomain: "Module", category: "Category | None" = None) -> "Homset":
-            if codomain in GroupModules(self.base_ring(), self.group()):
-                return group_module_homset(self, codomain)
-            return Parent.Hom(self, codomain, category)
+            return self._Hom_(codomain, category)
+
+        def _Hom_(
+            self: Self,
+            codomain: "Module",
+            category: "Category | None" = None,
+        ) -> "Homset":
+            if (
+                category is None
+                and codomain in GroupModules(self.base_ring(), self.group())
+            ):
+                category = GroupModules(self.base_ring(), self.group())
+            return super()._Hom_(codomain, category)
 
         def act(self: Self, element: "Element", vector_: "ModuleElement") -> "ModuleElement":
             acting = self.action_of(element)
@@ -426,6 +441,11 @@ class GroupModules(Category):
     class Homsets(HomsetsCategory):
         r"""The equivariant maps between two modules for one $G$."""
 
+        def extra_super_categories(self) -> list:
+            from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+            return [Modules(self.base_category().base_ring()).Homsets()]
+
         class ParentMethods:
             r"""The homset of equivariant maps between two modules for one \(G\)."""
 
@@ -479,16 +499,6 @@ class GroupModules(Category):
                     f"Hom_{self.domain().group()}("
                     f"{self.domain()}, {self.codomain()})"
                 )
-
-@cached_function
-def group_module_homset(domain: "Module", codomain: "Module") -> Parent:
-    r"""Return the canonical equivariant homset of two \(G\)-modules."""
-    return object_of(
-        GroupModules(domain.base_ring(), domain.group()).Homsets(),
-        domain=domain,
-        codomain=codomain,
-    )
-
 
 def GroupModule(module: "Module", action: GroupAction) -> Parent:
     r"""Return the finite free module $M$ acted on by $G$ through ``action``."""
@@ -782,7 +792,7 @@ def _restricted_action_automorphisms(
     # fact about the base ring rather than about which base ring it happens to
     # be: a field is its own fraction field, so naming the fraction field says
     # it once for every R.  The solution is asserted back into R below.
-    field = module.base_ring().fraction_field()
+    field = engine_ring(module.base_ring()).fraction_field()
     inclusion_matrix = matrix(
         field,
         [_coordinate_vector(generator) for generator in module_generators],
@@ -804,7 +814,8 @@ def _restricted_action_automorphisms(
             "the proposed submodule is not stable under the action"
         )
         assert all(
-            entry in submodule.base_ring() for entry in coefficients.list()
+            entry in engine_ring(submodule.base_ring())
+            for entry in coefficients.list()
         ), "the restricted action is not defined over the base ring"
         coefficients = coefficients.change_ring(engine_ring(submodule.base_ring()))
         return submodule.Aut()(

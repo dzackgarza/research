@@ -129,6 +129,11 @@ class FinitelyGeneratedIntegralLattices(CategoryWithAxiom_over_base_ring):
 
     _base_category_class_and_axiom = (FinitelyGeneratedLattices, "Integral")
 
+    def extra_super_categories(self) -> list:
+        from dzack_research.preamble.categories.modules.framed.formed.form_modules import FinitelyGeneratedFreeFormModules
+
+        return [FinitelyGeneratedFreeFormModules(self.base_ring())]
+
     @classmethod
     def _repr_object_names(cls) -> str:
         return "finitely generated integral-valued lattices"

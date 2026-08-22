@@ -82,6 +82,9 @@ class GroupLattices(Category):
     def acting_group(self) -> "Group":
         return self._group
 
+    def base_ring(self) -> "Ring":
+        return SageZZ
+
     def _repr_object_names(self) -> str:
         return f"integral lattices with an action of {self._group}"
 
@@ -290,6 +293,17 @@ def _action_preserves_form(formed_module: "Module") -> bool:
     return True
 
 
+def _module_action_preserves_form(
+    module: "Module",
+    form: "Form",
+) -> bool:
+    r"""Return whether the stated module action fixes ``form``."""
+    return all(
+        form.pullback(module.action_of(group_generator)) == form
+        for group_generator in module.group().group_generators()
+    )
+
+
 
 
 def _formed_group_subobject(
@@ -299,11 +313,24 @@ def _formed_group_subobject(
     r"""Equip a \(G\)-submodule with the pulled-back form and its inclusion."""
     # Local: a module-level import would close a cycle; the module is built by the time this runs.
     from dzack_research.preamble.categories.modules.framed.formed.integrallattice.subobjects import Subobject
+    from dzack_research.preamble.categories.modules.pure.modules import Modules
 
     module_embedding = representation_subobject.structure_morphism()
     representation = module_embedding.domain()
+    form_module = group_lattice_.form().module()
+    underlying_embedding = representation.Hom(
+        form_module,
+        Modules(representation.base_ring()),
+    )(
+        {
+            label: module_embedding(
+                representation.module_generator(label)
+            ).underlying_element()
+            for label in representation.module_generating_set()
+        }
+    )
     restricted = FormModule(
-        group_lattice_.form().pullback(module_embedding)
+        group_lattice_.form().pullback(underlying_embedding)
     )
     assert restricted in GroupLattices(group_lattice_.group()), (
         "a stable submodule of a group lattice must inherit the isometric action"
@@ -322,10 +349,8 @@ def _formed_group_subobject(
 def group_lattice(lattice: "FormModule", action: GroupAction) -> FormModule:
     r"""Equip ``lattice`` with the specified action by isometries."""
     # Local: a module-level import would close a cycle; the module is built by the time this runs.
-    from sage.categories.category import Category as SageCategory
-    from dzack_research.preamble.categories.abstract_categories.slice_categories import with_chosen_arrows_forgotten
     from dzack_research.preamble.categories.modules.framed.formed.integrallattice.integral_lattices import IntegralLattices
-    from dzack_research.preamble.categories.modules.group_modules.group_modules import GroupModules
+    from dzack_research.preamble.refine import refine
 
     assert lattice in IntegralLattices(SageZZ), (
         "a group lattice is constructed from an actual integral lattice"
@@ -336,21 +361,10 @@ def group_lattice(lattice: "FormModule", action: GroupAction) -> FormModule:
         and action.parent() in GroupActionHomsets()
     ), "the action must be an element of the lattice's action homset"
 
-    category = SageCategory.join(
-        [
-            with_chosen_arrows_forgotten(lattice.category()),
-            GroupModules(lattice.base_ring(), action.domain()),
-            FormModules(lattice.base_ring()),
-        ]
-    )
     formed_module = object_of(
-        category,
+        GroupLattices(action.domain()),
         form=lattice.form(),
         action=action,
         module_generating_set=lattice.module_generating_set(),
     )
-    formed_module._refine_from_form()
-    assert formed_module in GroupLattices(action.domain()), (
-        "the supplied action did not refine to isometries"
-    )
-    return formed_module
+    return refine(formed_module, GroupLattices(action.domain()))
