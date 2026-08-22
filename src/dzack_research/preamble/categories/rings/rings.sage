@@ -149,6 +149,27 @@ class OwnedRings(Category):
         def _element_constructor_(self: "Ring", value: "Element") -> "Element":
             return self._engine(value)
 
+        def _coerce_map_from_(
+            self: "Ring",
+            source: "Parent",
+        ) -> "Morphism | None":
+            r"""Identify the engine parent with this owned view of the ring."""
+            engine: "Ring | None" = self.__dict__.get("_engine")
+            if engine is None:
+                from sage.categories.unital_algebras import UnitalAlgebras
+
+                return UnitalAlgebras.ParentMethods._coerce_map_from_(self, source)
+            if source is not engine:
+                return None
+
+            from sage.categories.homset import Hom
+            from sage.categories.morphism import SetMorphism
+
+            return SetMorphism(
+                Hom(source, self, SageRings()),
+                lambda element: element,
+            )
+
         def __getitem__(self: "Ring", names: "OrderedSet | str | int") -> "Parent":
             r"""Return \(R[x_s:s\in S]\), the free \(R\)-algebra on the names.
 

@@ -852,6 +852,15 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
             )
             return scalar_multiple
 
+        def _coerce_map_from_base_ring(
+            self: "FreeAlgebraParent",
+        ) -> "Morphism":
+            r"""Return the algebra structure morphism as Sage's coercion map."""
+            return SetMorphism(
+                Hom(self.base_ring(), self, SageRings()),
+                lambda scalar: self._element_constructor_(scalar),
+            )
+
         def _engine_base_ring(
             self: "FreeAlgebraParent",
         ) -> "SageRings.ParentMethods":
