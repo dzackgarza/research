@@ -1253,10 +1253,10 @@ class CountableSets(CategoryWithAxiom):
                     return position
             assert False, f"{element} is not in the enumeration of {self}"
 
-        def enumeration_injection(self) -> "Sets.ArrowType":
+        def enumeration_injection(self) -> "Sets.MonoArrowType":
             r"""The monomorphism into the SET of nonnegative integers
             realized by the chosen enumeration, ``x -> position(x)``, as an
-            element of the actual homset — the constructed effective
+            object of the corresponding Hom category — the constructed effective
             witness of countability. (The codomain is the underlying set of
             the naturals: the injection is a set map, so it forgets the
             semiring structure of its codomain.)"""
@@ -1266,9 +1266,10 @@ class CountableSets(CategoryWithAxiom):
             naturals = cast("SageParent[Integer]", NN)
             # naturals[n] IS the natural number n (identity enumeration),
             # already normalized into the host parent.
-            return Sets().Hom(domain, naturals)(
+            set_arrow = Sets().Hom(domain, naturals)(
                 lambda element: naturals[self.position(element)]
             )
+            return Sets().Mono(domain, naturals)(set_arrow)
 
         def is_countable(self) -> bool:
             return True

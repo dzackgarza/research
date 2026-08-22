@@ -19,7 +19,6 @@ from typing import TYPE_CHECKING, TypeVar
 
 from sage.categories.category import Category as SageCategory
 from sage.categories.enumerated_sets import EnumeratedSets as SageEnumeratedSets
-from sage.categories.morphism import Morphism
 from sage.rings.integer import Integer as SageInteger
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.sets.condition_set import ConditionSet as SageConditionSet
@@ -58,8 +57,12 @@ if TYPE_CHECKING:
     from dzack_research.preamble.lexicon import OrderedSet
     from dzack_research.preamble.owned_category import ConstructionData
     from sage.structure.parent import ElementConstructorInput
+    from sage.categories.morphism import Morphism
     from sage.categories.poor_man_map import PoorManMap
-    from dzack_research.preamble.categories.sets.cardinals import Cardinal
+    from dzack_research.preamble.categories.sets.cardinals import (
+        Cardinal,
+        CardinalityMorphism,
+    )
     from dzack_research.preamble.categories.sets.owned_sets import SetMapDefinition
 
 
@@ -824,7 +827,7 @@ class PowerSets(_FunctorImageParameters, CategoryWithParameters):
 
             return cardinal(2) ** self.base_set().cardinality()
 
-        def cardinality_comparison(self) -> Morphism:
+        def cardinality_comparison(self) -> "CardinalityMorphism":
             from dzack_research.preamble.categories.sets.cardinals import (
                 Cardinalities,
             )
