@@ -29,7 +29,7 @@ constructed in the category at all.
 from dzack_research.preamble.refine import refine
 from dzack_research.preamble.owned_category import object_of
 from dzack_research.preamble.categories.sets.owned_sets import Sets as OwnedSets
-from collections.abc import Callable, Iterator
+from collections.abc import Callable
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from typing import Protocol
@@ -151,15 +151,6 @@ class OwnedRings(Category):
 
         def cardinality(self: "Ring") -> "Cardinal":
             return self._cardinality
-
-        def __iter__(self: "Ring") -> "Iterator[Element]":
-            return iter(self._engine)
-
-        def gen(self: "Ring", index: "Integer" = 0) -> "Element":
-            return self._engine.gen(index)
-
-        def gens(self: "Ring") -> "tuple[Element, ...]":
-            return tuple(self._engine.gens())
 
         def _element_constructor_(self: "Ring", value: "Element") -> "Element":
             return self._engine(value)
