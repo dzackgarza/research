@@ -11,6 +11,8 @@ Each cone object carries ``structure_morphisms()`` (the projections);
 each cocone object carries ``costructure_morphisms()`` (the injections).
 """
 
+from __future__ import annotations
+
 from dzack_research.preamble.owned_category import object_of
 from collections.abc import Callable, Iterable, Iterator
 from typing import Self, TYPE_CHECKING
@@ -29,7 +31,6 @@ from dzack_research.preamble.categories.abstract_categories.functor_images impor
 # ``ambient_category`` below is this type; the owned ``Category`` above is the
 # base of the diagram categories themselves.
 from sage.categories.category import Category as AmbientCategory
-from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_method
 from sage.sets.family import Family
 from sage.structure.element import Element
@@ -39,7 +40,12 @@ from sage.misc.abstract_method import abstract_method
 if TYPE_CHECKING:
     from typing import Protocol
 
+    from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+        HomCategoryOf,
+    )
     from dzack_research.preamble.categories.sets.cardinals import Cardinal
+
+    type Morphism = HomCategoryOf.ElementMethods
 
     # The ordered-set noun is type-only: the preamble loads into one
     # shared namespace and nothing named OrderedSet may bind there.
@@ -88,6 +94,9 @@ class _DiagramParameters:
     def __init__(
         self, ambient_category: AmbientCategory, objects: tuple, morphisms: tuple = ()
     ) -> None:
+        from dzack_research.preamble.categories.abstract_categories.cat import Cat
+
+        assert ambient_category in Cat()
         self._ambient_category = ambient_category
         self._diagram_objects = tuple(objects)
         self._diagram_morphisms = tuple(morphisms)
@@ -270,8 +279,6 @@ class DiagramCategory(_DiagramParameters, Category):
         # so it is protocol plumbing; the mathematics is on the normalizer.
         ambient_category, objects, *optional = arguments
         morphisms = optional[0] if optional else keywords.get("morphisms", ())
-        assert isinstance(ambient_category, AmbientCategory)
-        assert isinstance(objects, Iterable) and isinstance(morphisms, Iterable)
         constructed: DiagramCategory = Category.__classcall__(
             cls, *DiagramCategory._diagram_arguments(ambient_category, objects, morphisms)
         )
@@ -307,8 +314,6 @@ class DirectedSystem(_IndexedDiagramParameters, Category):
         # so it is protocol plumbing; the mathematics is on the normalizer.
         ambient_category, index_set, objects, *optional = arguments
         morphisms = optional[0] if optional else keywords.get("morphisms", ())
-        assert isinstance(ambient_category, AmbientCategory)
-        assert isinstance(objects, Iterable) and isinstance(morphisms, Iterable)
         constructed: DirectedSystem = Category.__classcall__(
             cls,
             *DirectedSystem._directed_system_arguments(ambient_category, index_set, objects, morphisms),
@@ -345,8 +350,6 @@ class InverseSystem(_IndexedDiagramParameters, Category):
         # so it is protocol plumbing; the mathematics is on the normalizer.
         ambient_category, index_set, objects, *optional = arguments
         morphisms = optional[0] if optional else keywords.get("morphisms", ())
-        assert isinstance(ambient_category, AmbientCategory)
-        assert isinstance(objects, Iterable) and isinstance(morphisms, Iterable)
         constructed: InverseSystem = Category.__classcall__(
             cls,
             *InverseSystem._inverse_system_arguments(ambient_category, index_set, objects, morphisms),
@@ -400,11 +403,14 @@ class ConeCategory(_IndexedDiagramParameters, Category):
 
         def factors(self: "ConeParent") -> "tuple[Parent, ...]":
             r"""Return the factor objects \(X_i\) of the diagram."""
-            return construction_category_of(self, ConeCategory).diagram_objects()
+            return tuple(
+                morphism.codomain()
+                for morphism in self.structure_morphisms()
+            )
 
         def factor(self: "ConeParent", i: "Integer") -> Parent:
             r"""Return the \(i\)-th factor \(X_i\)."""
-            return construction_category_of(self, ConeCategory).diagram_objects()[i]
+            return self.structure_morphism(i).codomain()
 
 
 class CoconeCategory(_IndexedDiagramParameters, Category):
@@ -447,11 +453,14 @@ class CoconeCategory(_IndexedDiagramParameters, Category):
 
         def cofactors(self: "CoconeParent") -> "tuple[Parent, ...]":
             r"""Return the cofactor objects \(X_i\) of the diagram."""
-            return construction_category_of(self, CoconeCategory).diagram_objects()
+            return tuple(
+                morphism.domain()
+                for morphism in self.costructure_morphisms()
+            )
 
         def cofactor(self: "CoconeParent", i: "Integer") -> Parent:
             r"""Return the \(i\)-th cofactor \(X_i\)."""
-            return construction_category_of(self, CoconeCategory).diagram_objects()[i]
+            return self.costructure_morphism(i).domain()
 
 
 class ProductConeCategory(_IndexedDiagramParameters, Category):
@@ -473,8 +482,6 @@ class ProductConeCategory(_IndexedDiagramParameters, Category):
         # Sage reads this slot out of ``cls.__dict__`` and never inherits it,
         # so it is protocol plumbing; the mathematics is on the normalizer.
         ambient_category, factors = arguments
-        assert isinstance(ambient_category, AmbientCategory)
-        assert isinstance(factors, Iterable)
         constructed: ProductConeCategory = Category.__classcall__(
             cls, *ProductConeCategory._product_arguments(ambient_category, factors)
         )
@@ -510,8 +517,6 @@ class CoproductCoconeCategory(_IndexedDiagramParameters, Category):
         # Sage reads this slot out of ``cls.__dict__`` and never inherits it,
         # so it is protocol plumbing; the mathematics is on the normalizer.
         ambient_category, cofactors = arguments
-        assert isinstance(ambient_category, AmbientCategory)
-        assert isinstance(cofactors, Iterable)
         constructed: CoproductCoconeCategory = Category.__classcall__(
             cls, *CoproductCoconeCategory._coproduct_arguments(ambient_category, cofactors)
         )
@@ -552,8 +557,6 @@ class BiproductCategory(_IndexedDiagramParameters, Category):
         # Sage reads this slot out of ``cls.__dict__`` and never inherits it,
         # so it is protocol plumbing; the mathematics is on the normalizer.
         ambient_category, factors = arguments
-        assert isinstance(ambient_category, AmbientCategory)
-        assert isinstance(factors, Iterable)
         constructed: BiproductCategory = Category.__classcall__(
             cls, *BiproductCategory._biproduct_arguments(ambient_category, factors)
         )
@@ -577,22 +580,6 @@ class BiproductCategory(_IndexedDiagramParameters, Category):
 DirectSumCategory = BiproductCategory
 
 
-def construction_category_of(obj: Parent, construction: type) -> "AmbientCategory":
-    r"""Return the ``construction`` category ``obj`` sits in.
-
-    An object is in many categories, and after a construction it is in a join:
-    the construction's own level is one member of that join, and the data the
-    construction carries -- its diagram objects, its factors -- is on that
-    member.  Asking ``obj.category()`` for it reaches the join, which has
-    none of them.
-    """
-    for member in obj.categories():
-        if isinstance(member, construction):
-            found: "AmbientCategory" = member
-            return found
-    assert False, f"{obj} is in no {construction.__name__}"
-
-
 def ambient_category_of(objects: "Iterable[Parent]") -> "AmbientCategory":
     r"""Return the category these objects share, which a construction over
     them is taken in.
@@ -612,14 +599,17 @@ def ambient_category_of(objects: "Iterable[Parent]") -> "AmbientCategory":
 def Cone(apex: Parent, structure_morphisms: "tuple[Morphism, ...]") -> Parent:
     r"""Construct a cone: an apex \(A\) with projections \(\pi_i:A\to X_i\)."""
     projections = tuple(structure_morphisms)
-    assert all(isinstance(m, Morphism) for m in projections), (
-        "the projections of a cone must be Morphisms"
+    assert all(
+        morphism in apex.category().ArrowCategory()
+        for morphism in projections
     )
     assert all(m.domain() is apex for m in projections)
     objects = tuple(m.codomain() for m in projections)
+    category = ambient_category_of((apex, *objects))
+    assert all(morphism in category.ArrowCategory() for morphism in projections)
     index_set = tuple(range(len(projections)))
     constructed = object_of(
-        ambient_category_of((apex, *objects)).Cone(index_set, objects),
+        category.Cone(index_set, objects),
         apex=apex,
         structure_morphisms=projections,
     )
@@ -629,14 +619,17 @@ def Cone(apex: Parent, structure_morphisms: "tuple[Morphism, ...]") -> Parent:
 def Cocone(apex: Parent, costructure_morphisms: "tuple[Morphism, ...]") -> Parent:
     r"""Construct a cocone: a coapex \(A\) with injections \(\iota_i:X_i\to A\)."""
     injections = tuple(costructure_morphisms)
-    assert all(isinstance(m, Morphism) for m in injections), (
-        "the injections of a cocone must be Morphisms"
+    assert all(
+        morphism in apex.category().ArrowCategory()
+        for morphism in injections
     )
     assert all(m.codomain() is apex for m in injections)
     objects = tuple(m.domain() for m in injections)
+    category = ambient_category_of((apex, *objects))
+    assert all(morphism in category.ArrowCategory() for morphism in injections)
     index_set = tuple(range(len(injections)))
     constructed = object_of(
-        ambient_category_of((apex, *objects)).Cocone(index_set, objects),
+        category.Cocone(index_set, objects),
         apex=apex,
         costructure_morphisms=injections,
     )
@@ -646,13 +639,16 @@ def Cocone(apex: Parent, costructure_morphisms: "tuple[Morphism, ...]") -> Paren
 def Product(apex: Parent, structure_morphisms: "tuple[Morphism, ...]") -> Parent:
     r"""Construct the product: a cone over a discrete diagram."""
     projections = tuple(structure_morphisms)
-    assert all(isinstance(m, Morphism) for m in projections), (
-        "the projections of a product must be Morphisms"
+    assert all(
+        morphism in apex.category().ArrowCategory()
+        for morphism in projections
     )
     assert all(m.domain() is apex for m in projections)
     factors = tuple(m.codomain() for m in projections)
+    category = ambient_category_of((apex, *factors))
+    assert all(morphism in category.ArrowCategory() for morphism in projections)
     constructed = object_of(
-        ambient_category_of((apex, *factors)).Product(factors),
+        category.Product(factors),
         apex=apex,
         structure_morphisms=projections,
     )
@@ -662,13 +658,16 @@ def Product(apex: Parent, structure_morphisms: "tuple[Morphism, ...]") -> Parent
 def Coproduct(apex: Parent, costructure_morphisms: "tuple[Morphism, ...]") -> Parent:
     r"""Construct the coproduct: a cocone under a discrete diagram."""
     injections = tuple(costructure_morphisms)
-    assert all(isinstance(m, Morphism) for m in injections), (
-        "the injections of a coproduct must be Morphisms"
+    assert all(
+        morphism in apex.category().ArrowCategory()
+        for morphism in injections
     )
     assert all(m.codomain() is apex for m in injections)
     cofactors = tuple(m.domain() for m in injections)
+    category = ambient_category_of((apex, *cofactors))
+    assert all(morphism in category.ArrowCategory() for morphism in injections)
     constructed = object_of(
-        ambient_category_of((apex, *cofactors)).Coproduct(cofactors),
+        category.Coproduct(cofactors),
         apex=apex,
         costructure_morphisms=injections,
     )
@@ -687,11 +686,9 @@ def Biproduct(
     """
     projections = tuple(structure_morphisms)
     injections = tuple(costructure_morphisms)
-    assert all(isinstance(m, Morphism) for m in projections), (
-        "the projections of a biproduct must be Morphisms"
-    )
-    assert all(isinstance(m, Morphism) for m in injections), (
-        "the injections of a biproduct must be Morphisms"
+    assert all(
+        morphism in apex.category().ArrowCategory()
+        for morphism in (*projections, *injections)
     )
     assert all(morphism.domain() is apex for morphism in projections)
     assert all(morphism.codomain() is apex for morphism in injections)
@@ -702,8 +699,11 @@ def Biproduct(
     assert tuple(m.domain() for m in injections) == factors, (
         "the projection codomains and injection domains are the same factors"
     )
+    category = ambient_category_of((apex, *factors))
+    assert all(morphism in category.ArrowCategory() for morphism in projections)
+    assert all(morphism in category.ArrowCategory() for morphism in injections)
     constructed = object_of(
-        ambient_category_of((apex, *factors)).Biproduct(factors),
+        category.Biproduct(factors),
         apex=apex,
         structure_morphisms=projections,
         costructure_morphisms=injections,
@@ -756,8 +756,6 @@ class TensorProductCategory(_IndexedDiagramParameters, Category):
         # Sage reads this slot out of ``cls.__dict__`` and never inherits it,
         # so it is protocol plumbing; the mathematics is on the normalizer.
         ambient_category, factors = arguments
-        assert isinstance(ambient_category, AmbientCategory)
-        assert isinstance(factors, Iterable)
         constructed: TensorProductCategory = Category.__classcall__(
             cls, *TensorProductCategory._tensor_product_arguments(ambient_category, factors)
         )
@@ -793,7 +791,10 @@ class TensorProductCategory(_IndexedDiagramParameters, Category):
     class ParentMethods:
         def tensor_factors(self: "TensorProductParent") -> "tuple[ModuleParent, ...]":
             r"""Return the factors \(X_i\)."""
-            return construction_category_of(self, TensorProductCategory)._tensor_factors
+            factors: "tuple[ModuleParent, ...]" = tuple(
+                self.cartesian_source().factors()
+            )
+            return factors
 
         def tensor_factor(self: "TensorProductParent", i: "Integer") -> "ModuleParent":
             r"""Return the \(i\)-th factor \(X_i\)."""
@@ -801,10 +802,7 @@ class TensorProductCategory(_IndexedDiagramParameters, Category):
 
         def cartesian_source(self: "TensorProductParent") -> Parent:
             r"""Return \(M\times N\), the object this cocone sits under."""
-            source: Parent = construction_category_of(
-                self, TensorProductCategory
-            ).diagram_objects()[0]
-            return source
+            return self.costructure_morphism(0).domain()
 
         def universal_bilinear_map(self: "TensorProductParent") -> Morphism:
             r"""Return \(\otimes:M\times N\to M\otimes N\), the cocone's structure map."""

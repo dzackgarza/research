@@ -161,10 +161,11 @@ class ProductCategory(_OfTwoCategories, CategoryWithParameters):
         return [Objects()]
 
     def __contains__(self, candidate: "MembershipInput") -> bool:
-        try:
-            return candidate.parent() is self
-        except AttributeError:
-            return False
+        match candidate:
+            case SageElement():
+                return candidate.parent() is self
+            case _:
+                return False
 
     def pair(
         self,
