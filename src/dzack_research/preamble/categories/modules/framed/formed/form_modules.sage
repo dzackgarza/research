@@ -178,7 +178,7 @@ class FormModules(OwnedCategoryOverBaseRing):
 
         def __init__(
             self: Self,
-            form: "Form",
+            form: "Form | None" = None,
             **rest: "ConstructionData",
         ) -> None:
             r"""Equip the module ``form`` is defined on with that form.
@@ -192,6 +192,10 @@ class FormModules(OwnedCategoryOverBaseRing):
             from dzack_research.preamble.categories.forms.forms import BilinearFormMorphism
             from dzack_research.preamble.categories.forms.forms import QuadraticFormMorphism
             from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import framing_morphism
+            if form is None:
+                super().__init__(**rest)
+                self._form = self._form_morphism()
+                return
             match form:
                 case BilinearFormMorphism() | QuadraticFormMorphism():
                     pass
