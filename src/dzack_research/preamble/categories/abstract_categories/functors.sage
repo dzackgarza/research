@@ -421,6 +421,17 @@ class LimitFunctor(Functor):
 
         return LimitsOfCategory(self)
 
+    def _apply_functor(self, diagram: Functor) -> "ObjectOfCategory":
+        r"""Construct the chosen limit from its diagram.
+
+        The image category supplies the representation and universal
+        property.  This functor only passes the diagram to that object type.
+        """
+        from dzack_research.preamble.owned_category import object_of
+
+        assert diagram in self.domain()
+        return object_of(self.Image(), preimage=diagram)
+
     def _apply_functor_to_morphism(
         self,
         transformation: "HomCategoryOf.ElementMethods",
@@ -456,6 +467,17 @@ class ColimitFunctor(Functor):
         )
 
         return ColimitsOfCategory(self)
+
+    def _apply_functor(self, diagram: Functor) -> "ObjectOfCategory":
+        r"""Construct the chosen colimit from its diagram.
+
+        The image category supplies the representation and universal
+        property.  This functor only passes the diagram to that object type.
+        """
+        from dzack_research.preamble.owned_category import object_of
+
+        assert diagram in self.domain()
+        return object_of(self.Image(), preimage=diagram)
 
     def _apply_functor_to_morphism(
         self,

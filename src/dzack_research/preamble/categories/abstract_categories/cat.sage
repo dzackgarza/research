@@ -458,6 +458,58 @@ class Cat(OwnedCategoryMixin, Category):
 
             return DiagonalFunctor(self, index_category)
 
+        @cached_method
+        def LimitFunctor(self, index_category: Category) -> "Cat.ArrowType":
+            r"""Return the chosen limit functor \([J,\mathbf C]\to\mathbf C\)."""
+            from dzack_research.preamble.categories.abstract_categories.functors import (
+                LimitFunctor,
+            )
+
+            return LimitFunctor(self, index_category)
+
+        def Limits(self, index_category: Category) -> Category:
+            r"""Return the image category of the chosen limit functor."""
+            return self.LimitFunctor(index_category).Image()
+
+        @cached_method
+        def ColimitFunctor(self, index_category: Category) -> "Cat.ArrowType":
+            r"""Return the chosen colimit functor \([J,\mathbf C]\to\mathbf C\)."""
+            from dzack_research.preamble.categories.abstract_categories.functors import (
+                ColimitFunctor,
+            )
+
+            return ColimitFunctor(self, index_category)
+
+        def Colimits(self, index_category: Category) -> Category:
+            r"""Return the image category of the chosen colimit functor."""
+            return self.ColimitFunctor(index_category).Image()
+
+        @cached_method
+        def ProductFunctor(self, index_category: Category) -> "Cat.ArrowType":
+            r"""Return the chosen product functor on discrete \(J\)-diagrams."""
+            from dzack_research.preamble.categories.abstract_categories.functors import (
+                ProductFunctor,
+            )
+
+            return ProductFunctor(self, index_category)
+
+        def Products(self, index_category: Category) -> Category:
+            r"""Return the image category of the chosen product functor."""
+            return self.ProductFunctor(index_category).Image()
+
+        @cached_method
+        def CoproductFunctor(self, index_category: Category) -> "Cat.ArrowType":
+            r"""Return the chosen coproduct functor on discrete \(J\)-diagrams."""
+            from dzack_research.preamble.categories.abstract_categories.functors import (
+                CoproductFunctor,
+            )
+
+            return CoproductFunctor(self, index_category)
+
+        def Coproducts(self, index_category: Category) -> Category:
+            r"""Return the image category of the chosen coproduct functor."""
+            return self.CoproductFunctor(index_category).Image()
+
         def FunctorCategory(self, codomain: Category) -> Category:
             r"""Return the functor category \(\operatorname{Fun}(\mathbf{C},\mathbf{D})\)."""
             return Cat().Hom(self, codomain)

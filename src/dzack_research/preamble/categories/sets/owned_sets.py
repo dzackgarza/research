@@ -161,9 +161,6 @@ class SetSubcategoryMethods:
 
         return CartesianProductFunctor(Sets(), index_category)
 
-    def Products(self, index_category: "DiscreteCategory") -> SageCategory:
-        return self.ProductFunctor(index_category).Image()
-
     @cached_method
     def CoproductFunctor(
         self,
@@ -174,9 +171,6 @@ class SetSubcategoryMethods:
         )
 
         return DisjointUnionFunctor(Sets(), index_category)
-
-    def Coproducts(self, index_category: "DiscreteCategory") -> SageCategory:
-        return self.CoproductFunctor(index_category).Image()
 
     @cached_method
     def ExponentialFunctor(self) -> "ExponentialFunctor":
