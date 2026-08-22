@@ -370,24 +370,36 @@ def Subobject(embedding: "ModuleMorphism") -> "Module":
     ring = codomain.base_ring()
     match (domain in FormModules(ring), codomain in FormModules(ring)):
         case (True, _):
-            form = domain.form()
-            underlying_module = domain
-        case (False, True):
-            form = codomain.form().pullback(embedding)
-            underlying_module = domain
-        case (False, False):
-            form = None
-            underlying_module = None
-    subobject = Slice(embedding, is_mono=True)
-    # The form is attached *before* refinement: admission into a category is
-    # allowed to interrogate the candidate -- obligations, certifying
-    # predicates, even its repr -- and a formed subobject that cannot answer
-    # ``form()`` yet would be refused for the wrong reason.
-    match form:
-        case None:
             pass
-        case _:
-            subobject._form = form
+        case (False, True):
+            from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModule
+            from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+            target_module = codomain.form().module()
+            underlying_embedding = domain.Hom(
+                target_module,
+                Modules(domain.base_ring()),
+            )(
+                {
+                    label: embedding(domain.module_generator(label)).underlying_element()
+                    for label in domain.module_generating_set()
+                }
+            )
+            formed_domain = FormModule(codomain.form().pullback(underlying_embedding))
+            embedding = formed_domain.Hom(
+                codomain,
+                FormModules(domain.base_ring()),
+            )(
+                {
+                    label: embedding(domain.module_generator(label))
+                    for label in domain.module_generating_set()
+                }
+            )
+            domain = formed_domain
+            domain_category = domain.category()
+        case (False, False):
+            pass
+    subobject = Slice(embedding, is_mono=True)
     categories = [domain_category, subobject.category(), Subobjects()]
     # A submodule of a definite lattice is where reduction is defined, so the
     # axiom is joined here rather than asserted at each call site.

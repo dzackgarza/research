@@ -786,6 +786,7 @@ class FormModules(OwnedCategoryOverBaseRing):
                 self._generator_morphism = (
                     module_morphism.module_generator_morphism()
                 )
+                self._module_morphism = module_morphism
                 source_module = parent.domain().form().module()
                 target_module = parent.codomain().form().module()
                 underlying_morphism = source_module.Hom(
@@ -814,6 +815,13 @@ class FormModules(OwnedCategoryOverBaseRing):
 
             def module_generator_morphism(self) -> SetMorphism:
                 return self._generator_morphism
+
+            def underlying_module_morphism(self) -> ModuleMorphism:
+                r"""Return the module morphism that preserves the forms."""
+                return self._module_morphism
+
+            def is_injective(self) -> bool:
+                return bool(self.underlying_module_morphism().is_injective())
 
             def orthogonal_complement(self) -> "Subobject":
                 from dzack_research.preamble.utilities import zipsum
@@ -990,7 +998,9 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
             labels = finite_ordered_set(tuple(module_generators))
             sub = self._sub_form_module(gram, labels)
             images = {generator: generator for generator in labels}
-            return Subobject(sub.Hom(self)(images))
+            return Subobject(
+                sub.Hom(self, FormModules(self.base_ring()))(images)
+            )
 
         def _sub_form_module(
             self: "FormedParent",
