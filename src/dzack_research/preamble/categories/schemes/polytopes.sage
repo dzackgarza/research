@@ -49,6 +49,7 @@ from dzack_research.preamble.categories.sets.owned_sets import Sets
 from sage.structure.parent import Parent
 from sage.geometry.toric_lattice import ToricLattice, ToricLattice_generic
 from sage.geometry.polyhedron.constructor import Polyhedron as polyhedron
+from sage.misc.cachefunc import cached_method
 
 from dzack_research.preamble.lexicon import Polyhedron
 
@@ -471,55 +472,52 @@ class LatticePolytopes(Category):
             **rest: "ConstructionData",
         ) -> None:
             super().__init__(**rest)
-            self._is_reflexive = bool(self.polyhedron().is_reflexive())
-            self._is_smooth = bool(self.normal_fan().is_smooth())
-            self._ehrhart_polynomial = self.polyhedron().ehrhart_polynomial()
-            self._h_star_vector = tuple(self.polyhedron().h_star_vector())
-            origin = self.ambient_space()([0] * self.dimension())
-            if self.polyhedron().interior_contains(origin):
-                polar = self.polyhedron().polar()
-                self._polar_vertices = tuple(
-                    tuple(coordinate for coordinate in vertex)
-                    for vertex in polar.vertices()
-                )
-            else:
-                self._polar_vertices = None
 
         def _repr_(self: _LatticePolytopeInterface) -> str:
             return f"Lattice Polytope of dimension {self.dimension()} with {len(self.vertices())} vertices"
 
+        @cached_method
         def is_reflexive(self: _LatticePolytopeInterface) -> bool:
             """Return True if P is a reflexive lattice polytope."""
-            return self._is_reflexive
+            return bool(self.polyhedron().is_reflexive())
 
+        @cached_method
         def is_smooth(self: _LatticePolytopeInterface) -> bool:
             """Return True if the normal fan of P is smooth (Delzant polytope)."""
-            return self._is_smooth
+            return bool(self.normal_fan().is_smooth())
 
+        @cached_method
         def polar_dual(self: _LatticePolytopeInterface) -> Parent:
             """Return the polar dual polytope P*."""
-            assert self._polar_vertices is not None, (
+            origin = self.ambient_space()([0] * self.dimension())
+            assert self.polyhedron().interior_contains(origin), (
                 "the polar dual is a polytope only when the origin is in the interior"
             )
-            if all(coordinate in ZZ for vertex in self._polar_vertices for coordinate in vertex):
+            polar_vertices = tuple(
+                tuple(coordinate for coordinate in vertex)
+                for vertex in self.polyhedron().polar().vertices()
+            )
+            if all(coordinate in ZZ for vertex in polar_vertices for coordinate in vertex):
                 return LatticePolytope(
-                    self._polar_vertices,
+                    polar_vertices,
                     lattice=self.ambient_space().dual(),
                 )
             return ConvexPolytope(
-                self._polar_vertices,
+                polar_vertices,
                 lattice=self.ambient_space().dual(),
             )
 
+        @cached_method
         def ehrhart_polynomial(self: _LatticePolytopeInterface):
             """Return the Ehrhart polynomial counting lattice points in dilations k*P."""
-            return self._ehrhart_polynomial
+            return self.polyhedron().ehrhart_polynomial()
 
+        @cached_method
         def h_star_vector(self: _LatticePolytopeInterface) -> tuple[Integer, ...]:
             r"""
             Return the coefficients of the h*-polynomial (Ehrhart delta-series).
             """
-            return self._h_star_vector
+            return tuple(self.polyhedron().h_star_vector())
 
 
 class ConvexPolygons(Category):
