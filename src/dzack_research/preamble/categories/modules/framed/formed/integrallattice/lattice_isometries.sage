@@ -656,7 +656,9 @@ class LatticeIsometries(Category):
             """
             # Local: a module-level import here would close a cycle; by call time this module is built.
             from dzack_research.preamble.categories.sets.sets import finite_ordered_set
-            stored: TotallyOrderedFiniteSet["Morphism"] | None = self._group_generators
+            stored: TotallyOrderedFiniteSet["Morphism"] | None = getattr(
+                self, "_group_generators", None
+            )
             if stored is None:
                 stored = finite_ordered_set(
                     tuple(
