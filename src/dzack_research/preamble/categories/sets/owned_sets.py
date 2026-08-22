@@ -605,17 +605,15 @@ class Sets(Category):
                 assert self.codomain() is second.codomain()
                 return self(lambda element: second(first(element)))
 
-            def object_set(self) -> SageParent:
-                r"""Return the exponential whose members are this category's objects."""
-                from dzack_research.preamble.categories.sets.sets import (
-                    ExponentialOfSets,
-                )
-
-                return ExponentialOfSets(self.codomain(), self.domain())
-
             def objects(self) -> SageParent:
                 r"""Return the set of functions that are objects of this category."""
-                return self.object_set()
+                if self.base_category() is Sets():
+                    from dzack_research.preamble.categories.sets.sets import (
+                        ExponentialOfSets,
+                    )
+
+                    return ExponentialOfSets(self.codomain(), self.domain())
+                return super().objects()
 
         class ElementMethods:
             r"""A function between two sets.

@@ -38,6 +38,7 @@ from dzack_research.preamble.categories.sets.owned_sets import (
 )
 from dzack_research.preamble.categories.abstract_categories.functors import (
     CoproductFunctor,
+    DiscreteCategories,
     DiscreteCategory,
     DiscreteDiagram,
     Functor,
@@ -159,6 +160,25 @@ def _placement_for_cardinality(size: Cardinal) -> Sets:
     if size.is_infinite():
         return Sets().Infinite()
     return Sets()
+
+
+class ObjectSetFunctor(Functor):
+    r"""The object-set functor from discrete categories to sets."""
+
+    def __init__(self) -> None:
+        Functor.__init__(self, DiscreteCategories(), Sets())
+
+    def _image_category(self) -> SageCategory:
+        return ObjectSetsOfDiscreteCategories(self)
+
+    @cached_method
+    def _apply_functor(self, category: SageCategory) -> Parent:
+        return object_of(self.Image(), preimage=category)
+
+    def _apply_functor_to_morphism(self, functor: Element) -> "Sets.ArrowType":
+        source = self(functor.domain())
+        target = self(functor.codomain())
+        return Sets().Hom(source, target)(lambda obj: functor(obj))
 
 
 class CartesianProductFunctor(ProductFunctor):
@@ -460,6 +480,49 @@ def coproduct_morphism(*maps: "Sets.ArrowType") -> "Sets.ArrowType":
         indices,
         lambda index: map_family[int(index)],
     )
+
+
+class ObjectSetsOfDiscreteCategories(
+    _FunctorImageParameters,
+    CategoryWithParameters,
+):
+    r"""Object sets of discrete categories."""
+
+    def super_categories(self) -> list[SageCategory]:
+        return [ImageOfFunctor(self.functor())]
+
+    def _repr_object_names(self) -> str:
+        return "object sets of discrete categories"
+
+    class ParentMethods:
+        def discrete_category(self) -> SageCategory:
+            return self.preimage()
+
+        def __contains__(self, candidate: ElementConstructorInput) -> bool:
+            return candidate in self.discrete_category()
+
+        def _element_constructor_(
+            self,
+            candidate: ElementConstructorInput,
+        ) -> ElementConstructorInput:
+            assert candidate in self
+            return candidate
+
+        def _repr_(self) -> str:
+            return f"Objects of {self.discrete_category()}"
+
+
+@cached_function
+def object_set_functor() -> ObjectSetFunctor:
+    r"""Return the object-set functor on discrete categories."""
+    return ObjectSetFunctor()
+
+
+@cached_function
+def ObjectSet(discrete_category: SageCategory) -> Parent:
+    r"""Return the set of objects of ``discrete_category``."""
+    assert discrete_category in DiscreteCategories()
+    return object_set_functor()(discrete_category)
 
 
 class ExponentialsOfSets(_FunctorImageParameters, CategoryWithParameters):

@@ -69,6 +69,12 @@ class DiscreteCategories(OwnedCategory):
     class ParentMethods:
         r"""The implementation common to categories declared discrete."""
 
+        @cached_method
+        def objects(self) -> "Parent":
+            from dzack_research.preamble.categories.sets.sets import ObjectSet
+
+            return ObjectSet(self)
+
         class _HomCategory(HomCategoryConstruction):
             r"""Identity arrows between equal objects, and no other arrows."""
 
