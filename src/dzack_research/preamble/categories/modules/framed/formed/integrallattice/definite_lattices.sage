@@ -869,6 +869,22 @@ class DefiniteLattices(Category):
         r"""Submodules of a definite lattice, framed by their inclusion."""
 
         class ParentMethods:
+            def sum(
+                self: "DefiniteSubobjectParent",
+                other: "DefiniteSubobjectParent",
+            ) -> "DefiniteSubobjectParent":
+                from dzack_research.preamble.categories.modules.framed.formed.integrallattice.subobjects import Subobjects
+
+                return Subobjects.ParentMethods.sum(self, other)
+
+            def intersection(
+                self: "DefiniteSubobjectParent",
+                other: "DefiniteSubobjectParent",
+            ) -> "DefiniteSubobjectParent":
+                from dzack_research.preamble.categories.modules.framed.formed.integrallattice.subobjects import Subobjects
+
+                return Subobjects.ParentMethods.intersection(self, other)
+
             def LLL(self: "DefiniteSubobjectParent") -> "Module":
                 r"""Return this subobject on an LLL reduced framing.
 
