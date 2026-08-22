@@ -228,13 +228,14 @@ class IsoArrowCategory(_OnACategory, Category):
     def __contains__(self, candidate: "MembershipInput") -> bool:
         return (
             candidate in ArrowCategory(self._ambient_category)
-            and isinstance(getattr(candidate, "_inverse_morphism", None), Morphism)
+            and isinstance(candidate, IsoArrowCategory.MorphismMethods)
         )
 
     def __call__(self, arrow: Morphism) -> Morphism:
         from dzack_research.preamble.refine import refine
 
-        assert arrow in self
+        assert arrow in ArrowCategory(self._ambient_category)
+        assert isinstance(arrow._inverse_morphism, Morphism)
         placed: Morphism = refine(arrow, self)
         return placed
 
@@ -268,7 +269,8 @@ class EndArrowCategory(_OnACategory, Category):
     def __call__(self, arrow: Morphism) -> Morphism:
         from dzack_research.preamble.refine import refine
 
-        assert arrow in self
+        assert arrow in EndArrowCategory(self._ambient_category)
+        assert isinstance(arrow._inverse_morphism, Morphism)
         placed: Morphism = refine(arrow, self)
         return placed
 
@@ -474,8 +476,8 @@ def Isomorphism(forward: Morphism, backward: Morphism) -> Morphism:
     ), "the inverse of an arrow X -> Y is an arrow Y -> X"
     # Installed on the arrows themselves: ``Morphism`` is a cython class and
     # the inverse is declared here, not held by any Sage class.
-    setattr(forward, "_inverse_morphism", backward)
-    setattr(backward, "_inverse_morphism", forward)
+    forward._inverse_morphism = backward
+    backward._inverse_morphism = forward
     category = common_category((forward.domain(), forward.codomain()))
     iso_arrows = (
         category.AutAr()
