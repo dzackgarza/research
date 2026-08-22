@@ -569,29 +569,7 @@ def Biproduct(
 DirectSum = Biproduct
 
 def _is_known_empty(factor: "Parent") -> bool:
-    r"""Whether ``factor`` is known to be empty, from its owned placement.
-
-    Infinite or uncountable placement is nonemptiness; finite placement
-    answers by exact cardinality; countable placement by a terminating
-    first-element probe.  A parent with no placement deciding the question
-    is refused by name — this is a helper of the product constructions,
-    never a general ``is_empty`` on ``Sets().ParentMethods``.
-    """
-    from dzack_research.preamble.categories.sets.owned_sets import placement_of
-
-    axioms = frozenset(placement_of(factor).axioms())
-    if "Uncountable" in axioms or "Infinite" in axioms:
-        return False
-    if "Finite" in axioms:
-        return bool(factor.cardinality() == 0)
-    if "Countable" in axioms:
-        for _ in factor:
-            return False
-        return True
-    # No placement decides it, so ask the object.  A placement is one way to
-    # know a set's size and not the only one: a set built through the chain
-    # states its size from its factors, with no axiom stamped on it, and this
-    # used to refuse such a set outright "for want of a placement".
+    r"""Whether ``factor`` is empty, from its owned cardinality."""
     return bool(factor.cardinality() == 0)
 
 
