@@ -15,7 +15,7 @@ each cocone object carries ``costructure_morphisms()`` (the injections).
 # parent left in Sage's ``Sets()`` is not in the owned one, so a ``Hom`` out
 # of it in the preamble's category is refused.
 from dzack_research.preamble.categories.sets.owned_sets import Sets
-from dzack_research.preamble.refine import refine
+from dzack_research.preamble.owned_category import object_of
 from collections.abc import Callable, Iterable, Iterator
 from typing import Self, TYPE_CHECKING
 if TYPE_CHECKING:
@@ -238,12 +238,24 @@ class ConeCategory(_IndexedDiagramParameters, Category):
         return f"Category of cones over {self._diagram_objects} in {self._ambient_category}"
 
     def super_categories(self) -> list[Category]:
-        return [DirectedSystem(self._ambient_category, self._index_set, self._diagram_objects, self._diagram_morphisms)]
+        from sage.categories.objects import Objects
+
+        return [Objects()]
 
     class ParentMethods:
-        # Installed on the apex by the ``Cone`` constructor below: no Python
-        # class holds the projections, so they are declared, not defined.
         _structure_morphisms: "tuple[Morphism, ...]"
+
+        def __init__(
+            self,
+            structure_morphisms: "tuple[Morphism, ...]",
+            **rest: "ConstructionData",
+        ) -> None:
+            self._structure_morphisms = tuple(structure_morphisms)
+            self._apex = self._structure_morphisms[0].domain()
+            super().__init__(**rest)
+
+        def apex(self) -> Parent:
+            return self._apex
 
         def structure_morphisms(self: Self) -> "tuple[Morphism, ...]":
             r"""Return the projections \(\pi_i:A\to X_i\)."""
@@ -269,11 +281,24 @@ class CoconeCategory(_IndexedDiagramParameters, Category):
         return f"Category of cocones under {self._diagram_objects} in {self._ambient_category}"
 
     def super_categories(self) -> list[Category]:
-        return [InverseSystem(self._ambient_category, self._index_set, self._diagram_objects, self._diagram_morphisms)]
+        from sage.categories.objects import Objects
+
+        return [Objects()]
 
     class ParentMethods:
-        # Installed on the coapex by the ``Cocone`` constructor below.
         _costructure_morphisms: "tuple[Morphism, ...]"
+
+        def __init__(
+            self,
+            costructure_morphisms: "tuple[Morphism, ...]",
+            **rest: "ConstructionData",
+        ) -> None:
+            self._costructure_morphisms = tuple(costructure_morphisms)
+            self._apex = self._costructure_morphisms[0].codomain()
+            super().__init__(**rest)
+
+        def apex(self) -> Parent:
+            return self._apex
 
         def costructure_morphisms(self: Self) -> "tuple[Morphism, ...]":
             r"""Return the injections \(\iota_i:X_i\to A\)."""
@@ -458,12 +483,12 @@ def Cone(structure_morphisms: "tuple[Morphism, ...]") -> Parent:
     assert len({m.domain() for m in projections}) == 1, (
         "the projections of a cone share one apex"
     )
-    apex = projections[0].domain()
-    apex._structure_morphisms = projections
     objects = tuple(m.codomain() for m in projections)
     index_set = tuple(range(len(projections)))
-    refine(apex, ambient_category_of(objects).Cone(index_set, objects))
-    constructed: Parent = apex
+    constructed = object_of(
+        ambient_category_of(objects).Cone(index_set, objects),
+        structure_morphisms=projections,
+    )
     return constructed
 
 
@@ -476,12 +501,12 @@ def Cocone(costructure_morphisms: "tuple[Morphism, ...]") -> Parent:
     assert len({m.codomain() for m in injections}) == 1, (
         "the injections of a cocone share one coapex"
     )
-    coapex = injections[0].codomain()
-    coapex._costructure_morphisms = injections
     objects = tuple(m.domain() for m in injections)
     index_set = tuple(range(len(injections)))
-    refine(coapex, ambient_category_of(objects).Cocone(index_set, objects))
-    constructed: Parent = coapex
+    constructed = object_of(
+        ambient_category_of(objects).Cocone(index_set, objects),
+        costructure_morphisms=injections,
+    )
     return constructed
 
 
@@ -494,11 +519,11 @@ def Product(structure_morphisms: "tuple[Morphism, ...]") -> Parent:
     assert len({m.domain() for m in projections}) == 1, (
         "the projections of a product share one domain"
     )
-    domain = projections[0].domain()
-    domain._structure_morphisms = projections
     factors = tuple(m.codomain() for m in projections)
-    refine(domain, ambient_category_of(factors).Product(factors))
-    constructed: Parent = domain
+    constructed = object_of(
+        ambient_category_of(factors).Product(factors),
+        structure_morphisms=projections,
+    )
     return constructed
 
 
@@ -511,11 +536,11 @@ def Coproduct(costructure_morphisms: "tuple[Morphism, ...]") -> Parent:
     assert len({m.codomain() for m in injections}) == 1, (
         "the injections of a coproduct share one codomain"
     )
-    codomain = injections[0].codomain()
-    codomain._costructure_morphisms = injections
     cofactors = tuple(m.domain() for m in injections)
-    refine(codomain, ambient_category_of(cofactors).Coproduct(cofactors))
-    constructed: Parent = codomain
+    constructed = object_of(
+        ambient_category_of(cofactors).Coproduct(cofactors),
+        costructure_morphisms=injections,
+    )
     return constructed
 
 
@@ -525,8 +550,8 @@ def Biproduct(
 ) -> Parent:
     r"""Construct the biproduct: a product and coproduct with \(\pi_j\circ\iota_i=\delta_{ij}\).
 
-    Both the projections and injections are stored on the object; the object
-    is refined into ``Biproduct((X_i)_i)``.
+    The returned cone stores both families of arrows.  Its apex remains an
+    unchanged object of the base category.
     """
     projections = tuple(structure_morphisms)
     injections = tuple(costructure_morphisms)
@@ -554,10 +579,11 @@ def Biproduct(
     assert tuple(m.domain() for m in injections) == factors, (
         "the projection codomains and injection domains are the same factors"
     )
-    obj._structure_morphisms = projections
-    obj._costructure_morphisms = injections
-    refine(obj, ambient_category_of(factors).Biproduct(factors))
-    constructed: Parent = obj
+    constructed = object_of(
+        ambient_category_of(factors).Biproduct(factors),
+        structure_morphisms=projections,
+        costructure_morphisms=injections,
+    )
     return constructed
 
 
