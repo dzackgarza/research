@@ -28,10 +28,12 @@ from dzack_research.preamble.categories.sets.owned_sets import Sets
 
 if TYPE_CHECKING:
     Pairing = Callable[[Element, Element], Element]
+    QuadraticValueMap = Callable[[Element], Element]
     # The two ways one bilinear form is handed over: written down on a
     # framing, as a Gram matrix, or stated as the pairing it is.  A Gram
     # matrix is a ``NewType`` over ``Matrix``, which is the spelling here.
     FormDatum = Matrix | Pairing
+    QuadraticFormDatum = Matrix | QuadraticValueMap
 
     # The ordered-set noun is type-only: the preamble loads into one
     # shared namespace and nothing named OrderedSet may bind there.
@@ -268,8 +270,8 @@ class QuadraticFormHomset(Homset):
         r"""Return \(M\), which the domain is the divided square of."""
         return self._module
 
-    def _element_constructor_(self, gram: "GramMatrix") -> "QuadraticFormMorphism":
-        return QuadraticFormMorphism(self, gram)
+    def _element_constructor_(self, datum: "QuadraticFormDatum") -> "QuadraticFormMorphism":
+        return QuadraticFormMorphism(self, datum)
 
     def __contains__(self, form: "Morphism") -> bool:
         return (
@@ -557,7 +559,7 @@ class BilinearFormMorphism(Morphism):
             "equality of forms without a finite generating family is not "
             "decidable from their pairings"
         )
-        module_generators = self.module().module_generators()
+        module_generators = tuple(self.module().module_generators())
         return all(
             self(left, right) == other(left, right)
             for left in module_generators
@@ -568,7 +570,7 @@ class BilinearFormMorphism(Morphism):
         assert _is_framed(self.module()), (
             "a form without a finite generating family has no computable hash"
         )
-        module_generators = self.module().module_generators()
+        module_generators = tuple(self.module().module_generators())
         return hash(
             (
                 id(self.module()),
@@ -602,9 +604,14 @@ class QuadraticFormMorphism(Morphism):
     a morphism without pretending it is linear on \(M\).
     """
 
-    def __init__(self, parent: QuadraticFormHomset, gram: "GramMatrix") -> None:
+    def __init__(self, parent: QuadraticFormHomset, datum: "QuadraticFormDatum") -> None:
         Morphism.__init__(self, parent)
-        gram = gram if isinstance(gram, Matrix) else matrix(gram)
+        if callable(datum) and not isinstance(datum, Matrix):
+            self._value_map = datum
+            self._lift_matrix = None
+            return
+        self._value_map = None
+        gram = datum if isinstance(datum, Matrix) else matrix(datum)
         size = _framing_rank(parent.module().module_generating_set())
         assert gram.is_symmetric(), (
             "the diagonal lift of a quadratic form is symmetric"
@@ -643,6 +650,8 @@ class QuadraticFormMorphism(Morphism):
         assert element in self.module(), (
             f"{element} is not an element of {self.module()}"
         )
+        if self._value_map is not None:
+            return self.codomain()(self._value_map(element))
         coordinates = _coordinate_vector(element)
         return self.codomain()(
             coordinates * self._lift_matrix * coordinates
@@ -650,6 +659,10 @@ class QuadraticFormMorphism(Morphism):
 
     def lift_form(self) -> BilinearFormMorphism:
         r"""Return the symmetric bilinear lift, valued where its entries live."""
+        assert self._lift_matrix is not None, (
+            "a quadratic form supplied by its value map has no chosen "
+            "bilinear lift matrix"
+        )
         return BilinearForms(self.module(), self._lift_matrix.base_ring())(
             self._lift_matrix
         )
@@ -663,6 +676,10 @@ class QuadraticFormMorphism(Morphism):
         return QmodnZ(self.codomain().n / 2)
 
     def polar_form(self) -> BilinearFormMorphism:
+        if self._lift_matrix is None:
+            return BilinearForms(self.module(), self._polar_value_module())(
+                lambda left, right: self(left + right) - self(left) - self(right)
+            )
         return BilinearForms(
             self.module(),
             self._polar_value_module(),
@@ -672,6 +689,9 @@ class QuadraticFormMorphism(Morphism):
         return self.polar_form()(left, right)
 
     def gram_matrix(self) -> GramMatrix:
+        assert self._lift_matrix is not None, (
+            "a quadratic form supplied by its value map has no Gram matrix"
+        )
         size = self._lift_matrix.nrows()
         upper = matrix(
             self._lift_matrix.base_ring(),
@@ -706,12 +726,12 @@ class QuadraticFormMorphism(Morphism):
         )
 
     def pullback(self, morphism: "ModuleMorphism") -> "QuadraticFormMorphism":
-        matrix_of_map = morphism.matrix()
-        domain = morphism.domain()
-        return QuadraticForms(domain, self.codomain())(
-            matrix_of_map
-            * self._lift_matrix
-            * matrix_of_map.transpose()
+        assert morphism.codomain() is self.module(), (
+            f"the pullback morphism lands in {morphism.codomain()}, but this "
+            f"form is defined on {self.module()}"
+        )
+        return QuadraticForms(morphism.domain(), self.codomain())(
+            lambda element: self(morphism(element))
         )
 
     def descends_along(
@@ -768,20 +788,49 @@ class QuadraticFormMorphism(Morphism):
         return _value_submodule(self)
 
     def __eq__(self, other: "MembershipInput") -> bool:
-        return (
-            isinstance(other, QuadraticFormMorphism)
-            and self.domain() is other.domain()
-            and self.codomain() is other.codomain()
-            and self.values_matrix() == other.values_matrix()
+        if not isinstance(other, QuadraticFormMorphism):
+            return False
+        if self.module() is not other.module() or self.codomain() is not other.codomain():
+            return False
+        if self is other:
+            return True
+        assert _is_framed(self.module()), (
+            "equality of quadratic forms without a finite generating family "
+            "is not decidable from their value maps"
         )
+        module_generators = tuple(self.module().module_generators())
+        probes = module_generators + tuple(
+            left + right
+            for index, left in enumerate(module_generators)
+            for right in module_generators[index + 1:]
+        )
+        return all(self(element) == other(element) for element in probes)
 
     def __hash__(self) -> int:
-        return hash((id(self.domain()), id(self.codomain()), self.values_matrix()))
+        assert _is_framed(self.module()), (
+            "a quadratic form without a finite generating family has no "
+            "computable hash"
+        )
+        module_generators = tuple(self.module().module_generators())
+        probes = module_generators + tuple(
+            left + right
+            for index, left in enumerate(module_generators)
+            for right in module_generators[index + 1:]
+        )
+        return hash(
+            (
+                id(self.module()),
+                id(self.codomain()),
+                tuple(self(element) for element in probes),
+            )
+        )
 
     def _repr_type(self) -> str:
         return "Quadratic form"
 
     def _repr_defn(self) -> str:
+        if self._lift_matrix is None:
+            return "the quadratic value map it is given by"
         return repr(self.gram_matrix())
 
 
