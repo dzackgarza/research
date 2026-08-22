@@ -91,13 +91,16 @@ class Algebras(OwnedCategoryOverBaseRing):
         # Local: importing the ring node here would close a cycle, and the
         # module is built by the time this method runs.
         from dzack_research.preamble.categories.rings.rings import OwnedRings
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
 
-        # An associative unital algebra is a ring, and it joins the owned
-        # hierarchy at that node like any other: this is what makes
-        # \(R[x]^n\) the preamble's free module rather than Sage's.  Sage's
-        # own algebra node says the same thing to Sage; saying it here is
-        # what puts the owned ``__pow__`` ahead of the inherited one.
-        return [SageAlgebras(self.base_ring()), OwnedRings()]
+        # An associative unital algebra is both a ring and an $R$-module.
+        # The second edge is the forgetful functor on objects; it is what
+        # lets every algebra serve as a codomain for an owned linear map.
+        return [
+            SageAlgebras(self.base_ring()),
+            OwnedRings(),
+            Modules(self.base_ring()),
+        ]
 
     class ParentMethods:
         def _coerce_map_from_base_ring(self: "AlgebraParent") -> "Morphism":

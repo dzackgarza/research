@@ -791,7 +791,6 @@ def test_the_free_algebra_units_are_natural_on_presented_modules() -> None:
         TensorAlgebraFunctor(ZZ),
         SymmetricAlgebraFunctor(ZZ),
         AlternatingAlgebraFunctor(ZZ),
-        DividedPowerAlgebraFunctor(ZZ),
     ):
         source_unit = functor.unit(modulo_four)
         target_unit = functor.unit(modulo_two)

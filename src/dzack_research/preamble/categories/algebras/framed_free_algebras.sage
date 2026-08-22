@@ -2354,7 +2354,7 @@ class PresentedFreeAlgebras(OwnedCategoryOverBaseRing):
             self._algebra_generating_set = module.module_generating_set()
             self._zero_representative = presentation_algebra.zero()
             self._one_representative = presentation_algebra.one()
-            super().__init__(base=module.base_ring(), **rest)
+            super().__init__(**rest)
             self._algebra_generator_morphism = SetMorphism(
                 Hom(
                     self._algebra_generating_set,
