@@ -180,12 +180,17 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
                 .change_ring(base_ring)
                 .stack(images)
             )
+            from sage.categories.category import Category as SageCategory
+
+            category = rest.get("category")
+            assert category is not None, "presented modules require a category"
+            rest["category"] = SageCategory.join(
+                (category, Sets().Countable())
+            )
             # The base is not stated here.  ``Modules.ParentMethods`` assigns
             # it, from the ring its own category names, and a second statement
             # of it arrives at that level as a duplicate keyword.
             super().__init__(**rest)
-            if engine_ring(base_ring) is SageZZ and self.is_torsion():
-                refine(self, FinitelyPresentedTorsionModules(base_ring))
             # The classes are named by $N$'s generators, and those generators are
             # named by $N$'s own presenting free module -- itself when $N$ is
             # free, its cover when $N$ is already a quotient.
@@ -208,6 +213,8 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
                 self,
                 quotient_generator_morphism,
             )
+            if engine_ring(base_ring) is SageZZ and self.is_torsion():
+                refine(self, FinitelyPresentedTorsionModules(base_ring))
 
         def relation_matrix(self: "PresentedModuleParent") -> Matrix:
             r"""Return the relations of the chosen presentation.
@@ -222,6 +229,10 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
             relations here.
             """
             return self._relations
+
+        def number_of_module_generators(self: "PresentedModuleParent") -> int:
+            r"""Return the number of distinguished presentation generators."""
+            return self.relation_matrix().ncols()
 
         def framing_morphism(self: Self) -> "FramingMorphism":
             return self._framing_morphism
@@ -251,7 +262,7 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
         def _repr_(self: Self) -> str:
             return (
                 f"Finitely presented module on "
-                f"{self.number_of_module_generators()} generators over "
+                f"{self.relation_matrix().ncols()} module generators over "
                 f"{self.base_ring()}"
             )
 
