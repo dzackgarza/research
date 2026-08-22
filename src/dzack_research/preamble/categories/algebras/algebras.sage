@@ -100,6 +100,10 @@ class Algebras(OwnedCategoryOverBaseRing):
         return [SageAlgebras(self.base_ring()), OwnedRings()]
 
     class ParentMethods:
+        def _coerce_map_from_base_ring(self: "AlgebraParent") -> "Morphism":
+            r"""Return the declared algebra structure morphism."""
+            return self._ring_morphism_defining_algebra_structure()
+
         @abstract_method
         def _ring_morphism_defining_algebra_structure(self) -> "Morphism":
             r"""Return $R\to Z(A)$, which is what makes $A$ an $R$-algebra.

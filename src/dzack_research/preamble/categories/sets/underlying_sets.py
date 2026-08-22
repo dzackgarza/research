@@ -117,7 +117,16 @@ def _underlying_set_of(
 ) -> SageParent:
     r"""Build ``U(X)`` over the owned placement its structured parent carries."""
     placement = placement_of(structured)
-    counted = structured.cardinality()
+    try:
+        counted: Cardinal | None = structured.cardinality()
+    except AttributeError:
+        counted = None
+    if counted is None:
+        return object_of(
+            UnderlyingSets(placement.Facade()),
+            structured=structured,
+            enumeration=enumeration,
+        )
     assert counted != Infinity or "Countable" in placement.axioms(), (
         f"{structured} answers +Infinity and does not declare itself countable, "
         "so its cardinal is not determined"

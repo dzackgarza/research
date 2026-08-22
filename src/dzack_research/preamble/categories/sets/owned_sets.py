@@ -1304,8 +1304,11 @@ def placement_of(parent: SageParent[_E]) -> Sets:
 
         from dzack_research.preamble.categories.sets.cardinals import cardinal
 
-        declared_cardinality = parent.cardinality()
-        if declared_cardinality != Infinity:
+        try:
+            declared_cardinality = parent.cardinality()
+        except AttributeError:
+            declared_cardinality = None
+        if declared_cardinality is not None and declared_cardinality != Infinity:
             cardinality = cardinal(declared_cardinality)
             if cardinality.is_finite():
                 placement = placement.Finite()

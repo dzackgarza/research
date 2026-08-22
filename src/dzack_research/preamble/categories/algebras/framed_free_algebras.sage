@@ -1144,7 +1144,7 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
 
             return SetMorphism(
                 Hom(self.base_ring(), self, Rings()),
-                lambda scalar: scalar * self.one(),
+                lambda scalar: self._element_constructor_(scalar),
             )
 
         def algebra_generating_set(self: "FreeAlgebraParent") -> "OrderedSet":
@@ -2325,22 +2325,6 @@ def divided_power_extension(
     )
 
 
-class PresentedFreeAlgebraElement(ModuleElement):
-    r"""A class in a free algebra modulo relations generated in degree one."""
-
-    def __init__(
-        self, parent: "Parent", representative: "FramedFreeAlgebras.ElementMethods"
-    ) -> None:
-        ModuleElement.__init__(self, parent)
-        assert representative.parent() is parent.presentation_algebra(), (
-            "a representative lies in this presentation algebra"
-        )
-        self._representative = representative
-
-    def representative(self) -> "FramedFreeAlgebras.ElementMethods":
-        return self._representative
-
-
 class PresentedFreeAlgebras(OwnedCategoryOverBaseRing):
     r"""The graded algebras \(A(F)/\langle K\rangle\) of a presented module."""
 
@@ -2424,7 +2408,9 @@ class PresentedFreeAlgebras(OwnedCategoryOverBaseRing):
 
             return SetMorphism(
                 Hom(self.base_ring(), self, Rings()),
-                lambda scalar: scalar * self.one(),
+                lambda scalar: self._element_constructor_(
+                    self._presentation_algebra._element_constructor_(scalar)
+                ),
             )
 
         def graded_piece(self, degree: int) -> "Module":
@@ -2513,6 +2499,37 @@ class PresentedFreeAlgebras(OwnedCategoryOverBaseRing):
 
         def degree(self) -> "Integer":
             return self._representative.degree()
+
+
+class PresentedFreeAlgebraElement(
+    ModuleElement,
+    PresentedFreeAlgebras.ElementMethods,
+):
+    r"""A class in a free algebra modulo relations generated in degree one."""
+
+    _add_ = PresentedFreeAlgebras.ElementMethods._add_
+    _neg_ = PresentedFreeAlgebras.ElementMethods._neg_
+    _mul_ = PresentedFreeAlgebras.ElementMethods._mul_
+    _lmul_ = PresentedFreeAlgebras.ElementMethods._lmul_
+    _rmul_ = PresentedFreeAlgebras.ElementMethods._rmul_
+    __eq__ = PresentedFreeAlgebras.ElementMethods.__eq__
+    _repr_ = PresentedFreeAlgebras.ElementMethods._repr_
+    homogeneous_components = (
+        PresentedFreeAlgebras.ElementMethods.homogeneous_components
+    )
+    degree = PresentedFreeAlgebras.ElementMethods.degree
+
+    def __init__(
+        self, parent: "Parent", representative: "FramedFreeAlgebras.ElementMethods"
+    ) -> None:
+        ModuleElement.__init__(self, parent)
+        assert representative.parent() is parent.presentation_algebra(), (
+            "a representative lies in this presentation algebra"
+        )
+        self._representative = representative
+
+    def representative(self) -> "FramedFreeAlgebras.ElementMethods":
+        return self._representative
 
 
 def _free_algebra_of_module(
