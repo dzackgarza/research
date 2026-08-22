@@ -1,7 +1,7 @@
 r"""Subtree for open subschemes and closed embeddings.
 
 Hierarchy:
-  Schemes(S).Subobjects()
+  Schemes(S)
     ├── OpenSubschemes(S)
     └── ClosedSubschemes(S)
 
@@ -44,11 +44,11 @@ class ClosedSubschemes(OwnedCategoryOverBaseRing):
         return f"closed subschemes over {self.base_ring()}"
 
     def super_categories(self) -> list:
-        r"""Return [Schemes(S).Subobjects()]."""
+        r"""Return [Schemes(S)]."""
         # Local: a module-level import would close a cycle; the module is built by the time this runs.
         from dzack_research.preamble.categories.schemes.schemes import Schemes
 
-        return [Schemes(self.base_ring()).Subobjects()]
+        return [Schemes(self.base_ring())]
 
     class ParentMethods:
         r"""Parent methods for closed subschemes V -> X."""
@@ -167,11 +167,11 @@ class OpenSubschemes(OwnedCategoryOverBaseRing):
         return f"open subschemes over {self.base_ring()}"
 
     def super_categories(self) -> list:
-        r"""Return [Schemes(S).Subobjects()]."""
+        r"""Return [Schemes(S)]."""
         # Local: a module-level import would close a cycle; the module is built by the time this runs.
         from dzack_research.preamble.categories.schemes.schemes import Schemes
 
-        return [Schemes(self.base_ring()).Subobjects()]
+        return [Schemes(self.base_ring())]
 
     class ParentMethods:
         r"""Parent methods for open subschemes U -> X."""

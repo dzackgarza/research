@@ -114,8 +114,8 @@ def ToricVariety(
 def Curve(F: "Parent", A: "Parent | None" = None) -> "Parent":
     r"""Construct the curve cut out by ``F``, placing it in ``Curves(R)``.
 
-    ``F`` cuts the curve out of an ambient space, so what is built is also a
-    closed subscheme of that space, and it is placed there too.  Codimension
+    ``F`` cuts the curve out of a scheme, so what is built is also a
+    closed subscheme of that scheme, and it is placed there too.  Codimension
     and intersection multiplicity are read off that placement; dimension one
     is what ``Curves(R)`` states.
     """
