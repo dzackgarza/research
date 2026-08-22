@@ -99,6 +99,16 @@ class GroupLattices(Category):
         ]
 
     class ParentMethods:
+        def is_integral(self: "GroupLatticeParent") -> bool:
+            return all(
+                bool(entry.is_integral())
+                for row in self.gram_matrix().rows()
+                for entry in row
+            )
+
+        def is_nondegenerate(self: "GroupLatticeParent") -> bool:
+            return bool(self.gram_matrix().determinant() != 0)
+
         def _Hom_(self: Self, codomain: "Module", category: "Category | None" = None) -> "Homset":
             r"""Return the homset in the strongest owned category of both ends."""
             from dzack_research.preamble.categories.modules.group_modules.group_modules import GroupModules
@@ -293,19 +303,6 @@ def _action_preserves_form(formed_module: "Module") -> bool:
     return True
 
 
-def _module_action_preserves_form(
-    module: "Module",
-    form: "Form",
-) -> bool:
-    r"""Return whether the stated module action fixes ``form``."""
-    return all(
-        form.pullback(module.action_of(group_generator)) == form
-        for group_generator in module.group().group_generators()
-    )
-
-
-
-
 def _formed_group_subobject(
     group_lattice_: "FormModule",
     representation_subobject: "Subobject",
@@ -329,12 +326,16 @@ def _formed_group_subobject(
             for label in representation.module_generating_set()
         }
     )
-    restricted = FormModule(
-        group_lattice_.form().pullback(underlying_embedding)
+    from dzack_research.preamble.refine import refine
+
+    group_lattices = GroupLattices(group_lattice_.group())
+    restricted = object_of(
+        group_lattices,
+        form=group_lattice_.form().pullback(underlying_embedding),
+        action=representation.action(),
+        module_generating_set=representation.module_generating_set(),
     )
-    assert restricted in GroupLattices(group_lattice_.group()), (
-        "a stable submodule of a group lattice must inherit the isometric action"
-    )
+    restricted = refine(restricted, group_lattices)
     embedding = restricted.Hom(group_lattice_)(
         {
             label: group_lattice_._over(

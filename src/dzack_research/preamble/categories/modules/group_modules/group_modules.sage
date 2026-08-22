@@ -859,8 +859,8 @@ def _equivariant_hom(domain: "Module", codomain: "Module", images: "EquivariantA
 
 def _group_subobject(module: "Module", module_generators: "OrderedSet") -> "Subobject":
     # Local: a module-level import would close a cycle; the module is built by the time this runs.
+    from dzack_research.preamble.categories.abstract_categories.slice_categories import Slice
     from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import BasedFreeModule
-    from dzack_research.preamble.categories.modules.framed.formed.integrallattice.subobjects import Subobject
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import _independent_module_generators
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import group_action_homset
     from dzack_research.preamble.categories.sets.sets import finite_ordered_set
@@ -878,12 +878,13 @@ def _group_subobject(module: "Module", module_generators: "OrderedSet") -> "Subo
     restricted = _restricted_action_automorphisms(module, free, module_generators)
     action = group_action_homset(module.group(), free)(restricted)
     submodule = GroupModule(free, action)
-    return Subobject(
+    return Slice(
         _equivariant_hom(
             submodule,
             module,
             tuple(labels),
-        )
+        ),
+        is_mono=True,
     )
 
 
