@@ -211,8 +211,6 @@ class FramedAlgebras(OwnedCategoryOverBaseRing):
                 super().__init__(
                     domain=domain,
                     codomain=codomain,
-                    base=domain.base_ring(),
-                    check=False,
                     **rest,
                 )
 
