@@ -37,7 +37,6 @@ from sage.categories.sets_cat import Sets
 from sage.misc.abstract_method import abstract_method
 from sage.structure.sage_object import SageObject
 from sage.categories.morphism import SetMorphism
-from dzack_research.preamble.categories.sets.underlying_sets import UnderlyingSet
 
 
 def _value_lookup(mapping: dict) -> "Callable[[Element], Element]":
@@ -265,10 +264,9 @@ class FreeModuleFunctorClass(Functor):
         r"""Apply F_R to a set morphism f: S -> T, producing F_R(f): F_R(S) -> F_R(T)."""
         domain_free = self._apply_functor(set_morphism.domain())
         codomain_free = self._apply_functor(set_morphism.codomain())
-        # ``_call_`` and not ``__call__``: the labels come out of the domain
-        # already, and a facade set has no conversion to put them back
-        # through.  This is the spelling the rest of the preamble uses when
-        # applying a set morphism to its own elements.
+        # ``_call_`` and not ``__call__``: the labels already belong to the
+        # domain.  This is the spelling the preamble uses when applying a set
+        # morphism to its own elements.
         mapping = {
             s: codomain_free.module_generator(set_morphism(s))
             for s in set_morphism.domain()
@@ -290,13 +288,13 @@ class UnderlyingSetOfGroupFunctor(Functor):
         super().__init__(Groups(), Sets())
 
     def _apply_functor(self, group: "Group") -> "Set":
-        return UnderlyingSet(group)
+        return group
 
     def _apply_functor_to_morphism(self, group_morphism: "Morphism") -> SetMorphism:
         return SetMorphism(
             Hom(
-                UnderlyingSet(group_morphism.domain()),
-                UnderlyingSet(group_morphism.codomain()),
+                group_morphism.domain(),
+                group_morphism.codomain(),
                 Sets(),
             ),
             group_morphism,
@@ -418,19 +416,14 @@ class ForgetfulFunctorClass(Functor):
         self._base_ring = base_ring
         super().__init__(Modules(base_ring), Sets())
 
-    def _apply_functor(self, module_object: "Module") -> "Module":
-        return UnderlyingSet(module_object)
+    def _apply_functor(self, module_object: "Module") -> "Set":
+        return module_object
 
     def _apply_functor_to_morphism(self, module_morphism: "ModuleMorphism") -> SetMorphism:
         r"""Apply U to a module morphism \phi: M -> N, producing U(\phi): U(M) -> U(N)."""
-        domain_set = UnderlyingSet(module_morphism.domain())
-        codomain_set = UnderlyingSet(module_morphism.codomain())
-        mapping = {
-            s: codomain_set.element_class(codomain_set, module_morphism(s.value))
-            for s in domain_set
-        }
         return SetMorphism(
-            Hom(domain_set, codomain_set, Sets()), _value_lookup(mapping)
+            Hom(module_morphism.domain(), module_morphism.codomain(), Sets()),
+            module_morphism,
         )
 
 

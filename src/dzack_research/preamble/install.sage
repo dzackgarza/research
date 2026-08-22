@@ -103,9 +103,6 @@ def install_preamble(namespace: dict) -> None:
             "categories.sets.ordinals",
             "categories.sets.cardinals",
             "categories.sets.sets",
-            # After the sets node it takes its placement from, and after
-            # ``cardinals``, whose ``cardinal`` it answers with.
-            "categories.sets.underlying_sets",
             "categories.rings.rings",
             "categories.rings.predicate_subrings",
             "categories.abstract_categories.slice_categories",

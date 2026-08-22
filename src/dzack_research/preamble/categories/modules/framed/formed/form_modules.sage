@@ -39,10 +39,6 @@ from dzack_research.preamble.lexicon import GramMatrix
 from dzack_research.preamble.categories.modules.pure.modules import Modules as OwnedModules
 
 from dzack_research.preamble.categories.sets.owned_sets import Sets
-from dzack_research.preamble.categories.sets.underlying_sets import (
-    UnderlyingSet,
-    UnderlyingSets,
-)
 
 if TYPE_CHECKING:
     # The ordered-set noun is type-only: the preamble loads into one
@@ -212,7 +208,7 @@ class FormModules(OwnedCategoryOverBaseRing):
             lifted_module_generator_morphism = SetMorphism(
                 Hom(
                     underlying_module_generator_morphism.domain(),
-                    UnderlyingSet(self),
+                    self,
                     Sets(),
                 ),
                 lambda element_of_S: self._over(
@@ -395,11 +391,7 @@ class FormModules(OwnedCategoryOverBaseRing):
             assignment: "GeneratorAssignment"
             match images:
                 case SetMorphism():
-                    assert isinstance(images.codomain(), UnderlyingSets.ParentMethods), (
-                        "a generator morphism lands in the underlying set of "
-                        "its module codomain"
-                    )
-                    target = images.codomain().structured_parent()
+                    target = images.codomain()
                     assignment = images
                 case dict() if images:
                     target = (
@@ -890,7 +882,7 @@ class FormModules(OwnedCategoryOverBaseRing):
                     SetMorphism(
                         Hom(
                             module_generator_morphism.domain(),
-                            UnderlyingSet(other.codomain()),
+                            other.codomain(),
                             Sets(),
                         ),
                         lambda element_of_S: other(
@@ -910,7 +902,7 @@ class FormModules(OwnedCategoryOverBaseRing):
                     SetMorphism(
                         Hom(
                             module_generator_morphism.domain(),
-                            UnderlyingSet(self.codomain()),
+                            self.codomain(),
                             Sets(),
                         ),
                         lambda element_of_S: self(

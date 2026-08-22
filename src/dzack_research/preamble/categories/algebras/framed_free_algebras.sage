@@ -76,7 +76,6 @@ from sage.structure.unique_representation import UniqueRepresentation
 assert "_as_set" in globals(), "Framed free algebras requires Set() from the preamble"
 
 from dzack_research.preamble.categories.sets.owned_sets import Sets
-from dzack_research.preamble.categories.sets.underlying_sets import UnderlyingSet
 
 if TYPE_CHECKING:
     from sage.categories.sets_cat import Set
@@ -364,9 +363,6 @@ class MonomialSystem:
         from sage.categories.poor_man_map import PoorManMap
         from dzack_research.preamble.categories.sets.sets import ImageSet
         from dzack_research.preamble.categories.sets.sets import finite_ordered_set
-        from dzack_research.preamble.categories.sets.underlying_sets import (
-            UnderlyingSet,
-        )
 
         degree = int(degree)
         assert degree >= 0, "a graded degree is nonnegative"
@@ -392,7 +388,7 @@ class MonomialSystem:
         monomial_map = PoorManMap(
             monomial_of_word,
             domain=words,
-            codomain=UnderlyingSet(self._parent),
+            codomain=self._parent,
         )
         monomials: Parent = ImageSet(
             monomial_map,
@@ -684,13 +680,13 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
             )
             self._monomial_parent = self._monomial_system.parent()
             super().__init__(
-                module_generating_set=UnderlyingSet(self._monomial_parent),
+                module_generating_set=self._monomial_parent,
                 **rest,
             )
             self._algebra_generator_morphism = SetMorphism(
                 Hom(
                     self._algebra_generating_set_for_morphism,
-                    UnderlyingSet(self),
+                    self,
                     Sets(),
                 ),
                 self.algebra_generator,
@@ -742,7 +738,7 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
                 SetMorphism(
                     Hom(
                         self.module_generating_set(),
-                        UnderlyingSet(codomain_parent),
+                        codomain_parent,
                         Sets(),
                     ),
                     self._extend_to_monomials(image_of_generator, codomain_parent),
@@ -1762,7 +1758,7 @@ class FramedFreeAlgebras(OwnedCategoryOverBaseRing):
                     SetMorphism(
                         Hom(
                             domain.module_generating_set(),
-                            UnderlyingSet(codomain),
+                            codomain,
                             Sets(),
                         ),
                         lambda module_generator: other(self(module_generator)),
@@ -2183,7 +2179,7 @@ def divided_to_symmetric(source: "FreeAlgebraParent") -> FreeAlgebraMorphism:
         SetMorphism(
             Hom(
                 source.module_generating_set(),
-                UnderlyingSet(target),
+                target,
                 Sets(),
             ),
             image_of_monomial,
@@ -2249,7 +2245,7 @@ def alternating_extension(module_morphism: ModuleMorphism) -> FreeAlgebraMorphis
         SetMorphism(
             Hom(
                 source.module_generating_set(),
-                UnderlyingSet(target),
+                target,
                 Sets(),
             ),
             source._extend_to_monomials(image_by_label.__getitem__, target),
@@ -2311,7 +2307,7 @@ def divided_power_induced_morphism(
         SetMorphism(
             Hom(
                 source.module_generating_set(),
-                UnderlyingSet(target),
+                target,
                 Sets(),
             ),
             image_of_monomial,
@@ -2346,7 +2342,7 @@ def divided_power_extension(
         SetMorphism(
             Hom(
                 source.module_generating_set(),
-                UnderlyingSet(target),
+                target,
                 Sets(),
             ),
             image_of_monomial,
@@ -2387,7 +2383,7 @@ class PresentedFreeAlgebras(OwnedCategoryOverBaseRing):
             self._algebra_generator_morphism = SetMorphism(
                 Hom(
                     self._algebra_generating_set,
-                    UnderlyingSet(self),
+                    self,
                     Sets(),
                 ),
                 lambda label: self(

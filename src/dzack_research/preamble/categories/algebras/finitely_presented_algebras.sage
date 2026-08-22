@@ -24,7 +24,6 @@ from sage.structure.parent import Parent
 from sage.categories.rings import Rings as SageRings
 
 from dzack_research.preamble.categories.sets.owned_sets import Sets
-from dzack_research.preamble.categories.sets.underlying_sets import UnderlyingSet
 
 if TYPE_CHECKING:
     # The ordered-set noun is type-only: the preamble loads into one
@@ -317,7 +316,7 @@ def FinitelyPresentedAlgebra(
     presented._algebra_generator_morphism = SetMorphism(
         Hom(
             generator_set,
-            UnderlyingSet(presented),
+            presented,
             Sets(),
         ),
         lambda label: presented(presentation_ring.algebra_generator(label)),

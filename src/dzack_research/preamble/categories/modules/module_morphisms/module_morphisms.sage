@@ -63,7 +63,6 @@ from dzack_research.preamble.categories.modules.module_morphisms.morphism_matric
 )
 from dzack_research.preamble.categories.modules.group_modules.characters import Character
 from dzack_research.preamble.categories.sets.owned_sets import Sets
-from dzack_research.preamble.categories.sets.underlying_sets import UnderlyingSet
 
 if TYPE_CHECKING:
     # The ordered-set noun is type-only: the preamble loads into one
@@ -350,7 +349,7 @@ class ModuleMorphism(Morphism):
         module_generating_set = self._domain_module_generating_set()
         set_homset = Hom(
             module_generating_set,
-            UnderlyingSet(parent.codomain()),
+            parent.codomain(),
             Sets(),
         )
         match images:
@@ -539,7 +538,7 @@ class ModuleAutomorphism(ModuleMorphism):
             SetMorphism(
                 Hom(
                     self.domain().module_generating_set(),
-                    UnderlyingSet(self.codomain()),
+                    self.codomain(),
                     Sets(),
                 ),
                 lambda element_of_S: self(

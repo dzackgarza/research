@@ -110,13 +110,7 @@ def _has_canonical_set_inclusion(domain: Parent, codomain: Parent) -> bool:
     parents; it is not inferred from enumeration.
     """
     from dzack_research.preamble.categories.rings.rings import engine_ring
-    from dzack_research.preamble.categories.sets.underlying_sets import (
-        UnderlyingSets,
-    )
-
-    if not isinstance(codomain, UnderlyingSets.ParentMethods):
-        return False
-    return domain is NN and engine_ring(codomain.structured_parent()) is SageZZ
+    return domain is NN and engine_ring(codomain) is SageZZ
 
 
 class PowerSets(CategoryWithParameters):
@@ -796,20 +790,13 @@ def _cached_power_set(base_set: "lexicon.Set") -> Parent:
 
 
 def PowerSet(base_set: "lexicon.Set") -> Parent:
-    from dzack_research.preamble.categories.sets.underlying_sets import UnderlyingSet
-
-    match base_set.category().is_subcategory(Sets()):
-        case True:
-            underlying_set = base_set
-        case False:
-            underlying_set = UnderlyingSet(base_set)
-    match underlying_set:
+    match base_set:
         case SageImageSet():
-            return _power_set_of(underlying_set)
+            return _power_set_of(base_set)
         case Hashable():
-            return _cached_power_set(underlying_set)
+            return _cached_power_set(base_set)
         case _:
-            return _power_set_of(underlying_set)
+            return _power_set_of(base_set)
 
 
 @cached_function

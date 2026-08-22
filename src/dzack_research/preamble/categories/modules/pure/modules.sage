@@ -43,7 +43,6 @@ from sage.matrix.constructor import matrix
 from sage.modules.free_module_element import vector
 from sage.rings.rational_field import QQ as SageQQ
 from dzack_research.preamble.categories.sets.owned_sets import Sets
-from dzack_research.preamble.categories.sets.underlying_sets import UnderlyingSet
 from dzack_research.preamble.utilities import zipsum
 from sage.misc.abstract_method import abstract_method
 from sage.misc.cachefunc import cached_method
@@ -176,7 +175,6 @@ class Modules(Category_over_base_ring):
                 # Local: a module-level import here would close a cycle; by call time this module is built.
                 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import ModuleMorphism
                 from dzack_research.preamble.categories.sets.owned_sets import Sets
-                from dzack_research.preamble.categories.sets.underlying_sets import UnderlyingSet
                 from sage.categories.homset import Hom
                 from sage.categories.morphism import SetMorphism
 
@@ -185,7 +183,7 @@ class Modules(Category_over_base_ring):
                     SetMorphism(
                         Hom(
                             self.domain().module_generating_set(),
-                            UnderlyingSet(self.codomain()),
+                            self.codomain(),
                             Sets(),
                         ),
                         lambda element_of_S: self.codomain().zero(),
@@ -243,7 +241,7 @@ class Modules(Category_over_base_ring):
                     SetMorphism(
                         Hom(
                             self._domain_module_generating_set(),
-                            UnderlyingSet(self.codomain()),
+                            self.codomain(),
                             Sets(),
                         ),
                         combine,
@@ -302,7 +300,7 @@ class Modules(Category_over_base_ring):
                     SetMorphism(
                         Hom(
                             other._domain_module_generating_set(),
-                            UnderlyingSet(self.codomain()),
+                            self.codomain(),
                             Sets(),
                         ),
                         lambda element_of_S: self(

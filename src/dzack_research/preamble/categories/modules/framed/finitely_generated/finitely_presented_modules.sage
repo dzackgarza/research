@@ -50,7 +50,6 @@ from dzack_research.preamble.categories.modules.module_morphisms.morphism_matric
     row_normal_form,
 )
 from dzack_research.preamble.categories.sets.owned_sets import Sets
-from dzack_research.preamble.categories.sets.underlying_sets import UnderlyingSet
 
 
 def _presented_on(module: "Module", relations: Matrix) -> Parent:
@@ -196,7 +195,7 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
             quotient_generator_morphism = SetMorphism(
                 Hom(
                     source_module_generator_morphism.domain(),
-                    UnderlyingSet(self),
+                    self,
                     Sets(),
                 ),
                 lambda element_of_S: self._from_coordinates(

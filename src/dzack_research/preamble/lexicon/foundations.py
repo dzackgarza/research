@@ -57,8 +57,7 @@ if TYPE_CHECKING:
         ``refine`` installs the category's ``ParentMethods`` *ahead* of the
         concrete class, so the owned placement is what answers; ``Finite``
         implies ``Countable``, whose ``ParentMethods`` own the two operations
-        below.  Same technique, same reason, as ``UnderlyingSet``'s
-        ``TYPE_CHECKING`` surface block."""
+        below."""
 
         def position(self, element: E) -> int: ...
         def __getitem__(self, n: int) -> E: ...

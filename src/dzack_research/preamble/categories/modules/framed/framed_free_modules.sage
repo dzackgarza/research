@@ -73,10 +73,6 @@ from dzack_research.preamble.categories.sets.owned_sets import (
     FinitelySupportedFunctionSets,
     Sets,
 )
-from dzack_research.preamble.categories.sets.underlying_sets import (
-    UnderlyingSet,
-    UnderlyingSets,
-)
 
 if TYPE_CHECKING:
     # The ordered-set noun is type-only: the preamble loads into one
@@ -338,7 +334,7 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
             r"""Return the canonical set morphism \(S\to U(F_R(S))\)."""
             module_generating_set = self.module_generating_set()
             return SetMorphism(
-                Hom(module_generating_set, UnderlyingSet(self), Sets()),
+                Hom(module_generating_set, self, Sets()),
                 self._module_generator_element,
             )
 
@@ -346,11 +342,7 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
             r"""Extend a set morphism \(S\to U(N)\) \(R\)-linearly."""
             match images:
                 case SetMorphism():
-                    assert isinstance(images.codomain(), UnderlyingSets.ParentMethods), (
-                        "a generator morphism lands in the underlying set of "
-                        "its module codomain"
-                    )
-                    target = images.codomain().structured_parent()
+                    target = images.codomain()
                 case dict():
                     assert images, (
                         "an empty assignment does not determine its codomain; "

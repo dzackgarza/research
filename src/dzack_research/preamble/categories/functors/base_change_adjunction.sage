@@ -205,9 +205,8 @@ class RestrictedScalarsModules(Category_over_base_ring):
     The restriction of scalars of \(N\) is \(N\) itself as an additive group,
     with the action \(\rho_N\circ f\): the datum that *is* an \(R\)-module is
     the ring morphism \(R\to\operatorname{End}(N)\), and composing \(\rho_N\)
-    with \(f\) is the whole construction.  The elements do not move, so the
-    object is a facade over \(N\), the way ``UnderlyingSet`` realizes the
-    other forgetful functors' object actions.
+    with \(f\) is the whole construction.  The elements do not move.  Only
+    the scalar action changes.
 
     Not free and not framed: \(N\)'s framing over \(S\) is not one over
     \(R\) unless \(S\) itself is framed free over \(R\), which

@@ -166,12 +166,10 @@ class Sets(Category):
 
         The factors stored are the objects \(X_i\) themselves, and a point is a
         family \((x_i)\) with \(x_i\in X_i\), so membership is read component by
-        component as ``component in X_i``.  Parent identity is not membership:
-        a facade set — which is what every \(U(X)\) is — holds the elements of
-        its host \(X\), so its members' parent is \(X\) and never the facade.
-        Reading membership off ``component.parent()`` therefore asks a different
-        question, and gets it wrong for exactly the sets this product is built
-        from.
+        component as ``component in X_i``.  Parent identity is not membership.
+        A set can contain elements whose parent differs from that set.  Reading
+        membership from ``component.parent()`` therefore asks a different
+        question.
 
         The one datum this level introduces is the family of factors, so it is
         the one argument its ``__init__`` consumes; everything a product *is*
@@ -246,8 +244,7 @@ class Sets(Category):
                 A point this product built is one of its own elements, which
                 its parent settles.  A raw family is one when it has the right
                 length and its \(i\)-th component lies in \(X_i\) -- read as
-                ``component in X_i`` and never off ``component.parent()``,
-                because a facade set holds the elements of its host.
+                ``component in X_i`` and never from ``component.parent()``.
                 """
                 if isinstance(element, SageElement) and element.parent() is self:
                     return True
@@ -768,18 +765,15 @@ class CountableSets(CategoryWithAxiom):
             from sage.categories.homset import Hom
             from sage.categories.morphism import SetMorphism
 
-            from dzack_research.preamble.categories.sets.underlying_sets import UnderlyingSet
-
             # Quoted: ``cast`` evaluates its first argument, and Sage's
             # ``Parent`` is a Cython class that cannot be subscripted.
             domain = cast("SageParent[SageElement]", self)
             naturals = cast("SageParent[Integer]", NN)
-            target = UnderlyingSet(naturals)
-            homset = Hom(domain, target, SageSets())
-            # target[n] IS the natural number n (identity enumeration),
+            homset = Hom(domain, naturals, SageSets())
+            # naturals[n] IS the natural number n (identity enumeration),
             # already normalized into the host parent.
             return SetMorphism(
-                homset, lambda element: target[self.position(element)]
+                homset, lambda element: naturals[self.position(element)]
             )
 
         def is_countable(self) -> bool:

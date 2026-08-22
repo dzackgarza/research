@@ -15,7 +15,6 @@ from sage.categories.homset import Homset
 from sage.categories.homset import Hom
 from sage.categories.morphism import Morphism, SetMorphism
 from sage.structure.element import ModuleElement
-from dzack_research.preamble.categories.sets.underlying_sets import UnderlyingSet
 from sage.matrix.constructor import matrix
 from sage.matrix.matrix0 import Matrix
 from sage.structure.parent import Parent
@@ -127,8 +126,8 @@ def QuadraticMap(
     r"""Return a quadratic map \(M\to W\) supplied by its value function."""
     quadratic = QuadraticMapMorphism(
         Hom(
-            UnderlyingSet(module),
-            UnderlyingSet(value_module),
+            module,
+            value_module,
             Sets(),
         ),
         function,

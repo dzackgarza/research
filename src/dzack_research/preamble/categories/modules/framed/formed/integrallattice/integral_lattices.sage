@@ -36,7 +36,6 @@ EXAMPLES::
 """
 
 from typing import TYPE_CHECKING
-from dzack_research.preamble.categories.sets.underlying_sets import UnderlyingSet
 from dzack_research.preamble.owned_category import OwnedCategoryMixin
 from dzack_research.preamble.categories.modules.module_morphisms.morphism_matrices import (
     row_normal_form,
@@ -1750,7 +1749,7 @@ class IntegralLattices(CategoryWithAxiom_over_base_ring):
             source = result.cartesian_source()
             result._costructure_morphisms = (
                 SetMorphism(
-                    Hom(source, UnderlyingSet(result), Sets()),
+                    Hom(source, result, Sets()),
                     lambda pair: result._pure_tensor(*pair),
                 ),
             )

@@ -38,7 +38,6 @@ from sage.structure.richcmp import op_EQ, richcmp
 from dzack_research.preamble.categories.sets.cardinals import Cardinal
 from dzack_research.preamble.categories.modules.group_modules.characters import Character
 from dzack_research.preamble.categories.sets.owned_sets import Sets
-from dzack_research.preamble.categories.sets.underlying_sets import UnderlyingSets
 
 if TYPE_CHECKING:
     # The ordered-set noun is type-only: the preamble loads into one
@@ -385,11 +384,7 @@ class GroupModules(Category):
 
             match images:
                 case SetMorphism():
-                    assert isinstance(images.codomain(), UnderlyingSets.ParentMethods), (
-                        "a generator morphism lands in the underlying set of "
-                        "its module codomain"
-                    )
-                    target = images.codomain().structured_parent()
+                    target = images.codomain()
                     assignment: "EquivariantAssignment" = images
                 case dict() if images:
                     target = next(iter(images.values())).parent()
