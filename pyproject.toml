@@ -23,9 +23,14 @@ where = ["src"]
 [tool.setuptools.package-data]
 dzack_research = ["py.typed"]
 
+# Fetched from its repository, not a sibling directory. A relative path here
+# is inherited by every consumer that fetches this project from git, where it
+# resolves against the wrong root -- uv rewrites it as a subdirectory of this
+# repo, which does not exist. The Sage fork's research-environment reinstalls
+# local checkouts over the resolved copies, so editing stays live.
 [tool.uv.sources]
 sage-stubs = { git = "https://github.com/dzackgarza/sage-stubs.git" }
-tree-sitter-sage = { path = "../gitclones/tree-sitter-sage", editable = true }
+tree-sitter-sage = { git = "https://github.com/dzackgarza/tree-sitter-sage" }
 
 
 [tool.pytest.ini_options]
