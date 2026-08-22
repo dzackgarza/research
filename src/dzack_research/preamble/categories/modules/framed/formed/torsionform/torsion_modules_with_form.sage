@@ -1617,6 +1617,10 @@ class TorsionFormOrthogonalSubgroups(Category):
             r"""Return $A$, the form whose orthogonal group this sits inside."""
             return self._domain
 
+        def cardinality(self) -> "Cardinal":
+            r"""Return the cardinality supplied by the subgroup constructor."""
+            return self._cardinality
+
         def intersection(
             self, other: "Parent"
         ) -> "Parent":
