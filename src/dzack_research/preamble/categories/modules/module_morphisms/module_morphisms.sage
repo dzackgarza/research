@@ -177,9 +177,13 @@ def _coordinate_vector(element: "Element") -> FreeModuleElement:
     ordered framing answers this; one without such a framing has no answer.
     """
     from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import FinitelyGeneratedFreeModules
+    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModules
 
-    assert element.parent() in FinitelyGeneratedFreeModules(element.parent().base_ring()), (
-        f"{element} is not in a finite framed free module with a matrix "
+    assert (
+        element.parent() in FinitelyGeneratedFreeModules(element.parent().base_ring())
+        or element.parent() in FinitelyPresentedModules(element.parent().base_ring())
+    ), (
+        f"{element} is not in a finite free or presented module with a matrix "
         "coordinate vector"
     )
     coordinates: FreeModuleElement = element._coordinates()
@@ -405,6 +409,31 @@ class ModuleMorphism(Morphism):
     def module_generator_morphism(self) -> SetMorphism[Element, ModuleElement]:
         r"""Return the set morphism whose linear extension is this morphism."""
         return self._generator_morphism
+
+    def _call_(self, element: "ElementConstructorInput") -> "Element":
+        r"""Evaluate the linear extension on a module element."""
+        from sage.structure.element import Element
+
+        assert isinstance(element, Element), f"{element} is not an element"
+        source = element
+        if source.parent() is not self.domain():
+            assert source.parent() == self.domain(), (
+                f"{source} is not an element of {self.domain()}"
+            )
+            source = sum(
+                (
+                    coefficient * self.domain().module_generator(label)
+                    for label, coefficient in _coefficients(source).items()
+                ),
+                self.domain().zero(),
+            )
+        return sum(
+            (
+                coefficient * self._generator_morphism._call_(element_of_S)
+                for element_of_S, coefficient in _coefficients(source).items()
+            ),
+            self.codomain().zero(),
+        )
 
 class FramingMorphism(ModuleMorphism):
     r"""A declared epimorphism \(F_R(S)\twoheadrightarrow M\).
