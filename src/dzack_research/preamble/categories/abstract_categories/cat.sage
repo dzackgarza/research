@@ -19,6 +19,7 @@ Sage-native category correctly has none of this.
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
+    from collections.abc import Iterable
     from sage.structure.parent import MembershipInput
 
 # Sage's ``Category``, not the owned base.  An owned base makes its category an
@@ -44,6 +45,10 @@ from dzack_research.preamble.categories.abstract_categories.slice_categories imp
     SliceOverCategory,
     SubobjectCategory,
     SuperobjectCategory,
+)
+from dzack_research.preamble.categories.abstract_categories.products import (
+    CoproductCategory,
+    ProductCategory,
 )
 
 if TYPE_CHECKING:
@@ -121,6 +126,16 @@ class Cat(OwnedCategoryMixin, Category):
             assert source in self and target in self
             homset: Parent = HomSet(source, target)
             return homset
+
+        def Product(self, factors: "Iterable[Parent]") -> Category:
+            r"""Return the category of product cones on the given objects."""
+            products: Category = ProductCategory(self, factors)
+            return products
+
+        def Coproduct(self, cofactors: "Iterable[Parent]") -> Category:
+            r"""Return the category of coproduct cocones on the given objects."""
+            coproducts: Category = CoproductCategory(self, cofactors)
+            return coproducts
 
         def SliceOver(self, X: "Parent | Morphism") -> Category:
             r"""Return the slice category \(\mathbf{C}/X\), whose objects are the arrows \(A\to X\)."""

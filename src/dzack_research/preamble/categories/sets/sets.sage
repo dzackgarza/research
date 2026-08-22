@@ -212,6 +212,15 @@ class CoproductsOfSets(CategoryWithParameters):
                 lambda element: (index, element),
             )
 
+        def coproduct_cocone(self) -> Parent:
+            r"""Return this set coproduct with its categorical injections."""
+            from dzack_research.preamble.categories.abstract_categories.products import Coproduct
+
+            return Coproduct(
+                self,
+                tuple(self.injection(index) for index in range(len(self._cofactors)))
+            )
+
         def _repr_(self) -> str:
             if not self._cofactors:
                 return "Empty coproduct of sets"

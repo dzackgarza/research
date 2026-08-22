@@ -1305,6 +1305,67 @@ If that cannot be done exactly, surface the nuance and defer the mathematical de
 - Never weaken an annotation to silence the checker.
 - Make stable `.sage` definitions importable when their real types cannot otherwise be named.
 
+## Dynamic peeking is prohibited; the category is the type
+
+`getattr`, `setattr`, `hasattr`, `isinstance`, `type(...)` comparisons, `cast`,
+and instance-dictionary reads are explicitly prohibited in mathematical code in
+the preamble.
+
+- Never duck-type. Asking an object whether it happens to carry a name asks at
+  runtime what the category graph already states.
+- **Categorical containment is typing information.** Write `assert X in C`.
+  Never write `isinstance(X, SomeClassRelatedToC)`. Membership is the
+  mathematical statement; the class is an implementation accident, and one
+  mathematical notion is realized by several unrelated classes.
+- Assert the membership that *defines* an operation before using it. Every line
+  below is then provably defined wherever it is reached.
+- **Route by `case`/`match` on categorical containment.** `if`/`else` chains are
+  almost never right here. A mathematical routing decision has one branch per
+  category, and the reader must see the categories. Match a category with a
+  guard, `case _ if x in FormModules(R):`, not a class pattern; a class pattern
+  is `isinstance` written in different syntax.
+- When an object lacks a capability, repair its placement. Do not probe. Refine
+  it, construct it correctly, or state the gap on the owned interface.
+
+| Peek | Write instead |
+| --- | --- |
+| `hasattr(x, "gram_matrix")` | `x in FormModules(R)` |
+| `"_form" in x.__dict__` | `x in FormModules(R)` |
+| `isinstance(x, SomeFormModuleClass)` | `x in FormModules(R)` |
+| `isinstance(image, Vector)` | delete the branch; assert the parent |
+| `getattr(g, "presented_group", None)` | `g in OwnedFinitelyPresentedGroups()`, then call it |
+| `type(x) is X` | membership, or an owned element class |
+| `cast(T, x)` | make the type real, or narrow by assertion |
+| `x.__dict__.setdefault("_cache", {})` | `cached_method` |
+| `setattr` on a class imported from `sage.*` | own the category; see the ontology section above |
+
+**Every use of `setattr` is suspect, not only on Sage's classes.** A reader of a
+class must be able to see its fields by reading it. `setattr` puts state on an
+object that the class never declares, so an auditor meets a field at runtime
+that appears nowhere in the source, cannot tell which level introduced it, and
+cannot tell whether it is always present. That is the same defect as
+`__dict__` reads, arriving from the other direction.
+
+There is no typing problem that forces it. The claim that a checker, a dynamic
+class, or a mechanism made `setattr` necessary is a report that the
+architecture is wrong at that point. Re-architect instead: declare the datum at
+the category level that introduces it, establish it in that level's
+constructor, and let it thread by cooperative `super().__init__`. If the field
+cannot be declared where it belongs, the placement is wrong, and that is the
+finding.
+
+The exceptions are narrow, and each must be nameable at the site:
+
+- `__contains__`, where the argument is genuinely arbitrary and deciding is the
+  method's whole job.
+- `_element_constructor_`, the one boundary that admits foreign data.
+- A read that Sage's own documented protocol performs that way, with the reason
+  recorded in a comment at the site.
+- Declarations under `if TYPE_CHECKING`, which have no runtime effect.
+
+Nothing else qualifies. A probe outside these sites is a defect, and it is
+where a non-mathematical shortcut hides.
+
 ## Simplicity and prior art
 
 - Choose the smallest implementation that satisfies the complete mathematical requirement.

@@ -248,10 +248,14 @@ class ConeCategory(_IndexedDiagramParameters, Category):
         def __init__(
             self,
             structure_morphisms: "tuple[Morphism, ...]",
+            apex: "Parent | None" = None,
             **rest: "ConstructionData",
         ) -> None:
             self._structure_morphisms = tuple(structure_morphisms)
-            self._apex = self._structure_morphisms[0].domain()
+            if apex is None:
+                apex = self._structure_morphisms[0].domain()
+            assert all(morphism.domain() is apex for morphism in self._structure_morphisms)
+            self._apex = apex
             super().__init__(**rest)
 
         def apex(self) -> Parent:
@@ -291,10 +295,14 @@ class CoconeCategory(_IndexedDiagramParameters, Category):
         def __init__(
             self,
             costructure_morphisms: "tuple[Morphism, ...]",
+            apex: "Parent | None" = None,
             **rest: "ConstructionData",
         ) -> None:
             self._costructure_morphisms = tuple(costructure_morphisms)
-            self._apex = self._costructure_morphisms[0].codomain()
+            if apex is None:
+                apex = self._costructure_morphisms[0].codomain()
+            assert all(morphism.codomain() is apex for morphism in self._costructure_morphisms)
+            self._apex = apex
             super().__init__(**rest)
 
         def apex(self) -> Parent:
@@ -474,77 +482,74 @@ def ambient_category_of(objects: "Iterable[Parent]") -> "AmbientCategory":
     return ambient
 
 
-def Cone(structure_morphisms: "tuple[Morphism, ...]") -> Parent:
+def Cone(apex: Parent, structure_morphisms: "tuple[Morphism, ...]") -> Parent:
     r"""Construct a cone: an apex \(A\) with projections \(\pi_i:A\to X_i\)."""
     projections = tuple(structure_morphisms)
     assert all(isinstance(m, Morphism) for m in projections), (
         "the projections of a cone must be Morphisms"
     )
-    assert len({m.domain() for m in projections}) == 1, (
-        "the projections of a cone share one apex"
-    )
+    assert all(m.domain() is apex for m in projections)
     objects = tuple(m.codomain() for m in projections)
     index_set = tuple(range(len(projections)))
     constructed = object_of(
-        ambient_category_of(objects).Cone(index_set, objects),
+        ambient_category_of((apex, *objects)).Cone(index_set, objects),
+        apex=apex,
         structure_morphisms=projections,
     )
     return constructed
 
 
-def Cocone(costructure_morphisms: "tuple[Morphism, ...]") -> Parent:
+def Cocone(apex: Parent, costructure_morphisms: "tuple[Morphism, ...]") -> Parent:
     r"""Construct a cocone: a coapex \(A\) with injections \(\iota_i:X_i\to A\)."""
     injections = tuple(costructure_morphisms)
     assert all(isinstance(m, Morphism) for m in injections), (
         "the injections of a cocone must be Morphisms"
     )
-    assert len({m.codomain() for m in injections}) == 1, (
-        "the injections of a cocone share one coapex"
-    )
+    assert all(m.codomain() is apex for m in injections)
     objects = tuple(m.domain() for m in injections)
     index_set = tuple(range(len(injections)))
     constructed = object_of(
-        ambient_category_of(objects).Cocone(index_set, objects),
+        ambient_category_of((apex, *objects)).Cocone(index_set, objects),
+        apex=apex,
         costructure_morphisms=injections,
     )
     return constructed
 
 
-def Product(structure_morphisms: "tuple[Morphism, ...]") -> Parent:
+def Product(apex: Parent, structure_morphisms: "tuple[Morphism, ...]") -> Parent:
     r"""Construct the product: a cone over a discrete diagram."""
     projections = tuple(structure_morphisms)
     assert all(isinstance(m, Morphism) for m in projections), (
         "the projections of a product must be Morphisms"
     )
-    assert len({m.domain() for m in projections}) == 1, (
-        "the projections of a product share one domain"
-    )
+    assert all(m.domain() is apex for m in projections)
     factors = tuple(m.codomain() for m in projections)
     constructed = object_of(
-        ambient_category_of(factors).Product(factors),
+        ambient_category_of((apex, *factors)).Product(factors),
+        apex=apex,
         structure_morphisms=projections,
     )
     return constructed
 
 
-def Coproduct(costructure_morphisms: "tuple[Morphism, ...]") -> Parent:
+def Coproduct(apex: Parent, costructure_morphisms: "tuple[Morphism, ...]") -> Parent:
     r"""Construct the coproduct: a cocone under a discrete diagram."""
     injections = tuple(costructure_morphisms)
     assert all(isinstance(m, Morphism) for m in injections), (
         "the injections of a coproduct must be Morphisms"
     )
-    assert len({m.codomain() for m in injections}) == 1, (
-        "the injections of a coproduct share one codomain"
-    )
+    assert all(m.codomain() is apex for m in injections)
     cofactors = tuple(m.domain() for m in injections)
     constructed = object_of(
-        ambient_category_of(cofactors).Coproduct(cofactors),
+        ambient_category_of((apex, *cofactors)).Coproduct(cofactors),
+        apex=apex,
         costructure_morphisms=injections,
     )
     return constructed
 
 
 def Biproduct(
+    apex: Parent,
     structure_morphisms: "tuple[Morphism, ...]",
     costructure_morphisms: "tuple[Morphism, ...]",
 ) -> Parent:
@@ -561,17 +566,8 @@ def Biproduct(
     assert all(isinstance(m, Morphism) for m in injections), (
         "the injections of a biproduct must be Morphisms"
     )
-    assert len({m.domain() for m in projections}) == 1, (
-        "the projections of a biproduct share one domain"
-    )
-    assert len({m.codomain() for m in injections}) == 1, (
-        "the injections of a biproduct share one codomain"
-    )
-    obj = projections[0].domain()
-    coapex = injections[0].codomain()
-    assert obj is coapex, (
-        "the product domain and coproduct codomain of a biproduct coincide"
-    )
+    assert all(morphism.domain() is apex for morphism in projections)
+    assert all(morphism.codomain() is apex for morphism in injections)
     assert len(projections) == len(injections), (
         "a biproduct has as many projections as injections"
     )
@@ -580,7 +576,8 @@ def Biproduct(
         "the projection codomains and injection domains are the same factors"
     )
     constructed = object_of(
-        ambient_category_of(factors).Biproduct(factors),
+        ambient_category_of((apex, *factors)).Biproduct(factors),
+        apex=apex,
         structure_morphisms=projections,
         costructure_morphisms=injections,
     )

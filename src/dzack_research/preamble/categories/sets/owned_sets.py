@@ -234,6 +234,15 @@ class Sets(Category):
                     Hom(self, factor, SageSets()), lambda point: point[index]
                 )
 
+            def product_cone(self) -> SageParent:
+                r"""Return this set product with its categorical projections."""
+                from dzack_research.preamble.categories.abstract_categories.products import Product
+
+                return Product(
+                    self,
+                    tuple(self.projection(index) for index in self._sets_keys())
+                )
+
             def cartesian_projection(self, index: int) -> SetMorphism:
                 r"""The projection, under the name Sage's product machinery reads."""
                 return self.projection(index)
