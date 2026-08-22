@@ -1279,6 +1279,22 @@ If that cannot be done exactly, surface the nuance and defer the mathematical de
 - Compare valid constructions, methods, category membership, result parents, and notebook behavior.
 - Compare semantics, not filenames, class counts, method counts, or structural similarity.
 
+## Public interfaces and encapsulation
+
+- Treat a leading underscore as a non-public interface marker.
+- Call `self._f()` only inside the class that owns `_f` or inside a documented subclass contract.
+- Treat every unrelated call to `x._f()` as a defect unless `_f` is a documented extension protocol.
+- Treat `X._f(x)` as a defect when it bypasses instance dispatch.
+- Do not read or write another object's `_state` directly.
+- Ask another object through its public methods. Move missing behavior to the object that owns it.
+- Do not expose internal state only to let callers reproduce the owner's behavior.
+- Implement Python and framework hooks at the owning class boundary.
+- Invoke those hooks through their public syntax or public dispatcher.
+- Write `f(x)`, `parent(data)`, `iter(x)`, and `len(x)`. Do not call their protocol methods directly.
+- In Sage code, callers use morphisms, parents, and elements through their public operations.
+- A direct private access across modules or objects requires a documented protected contract at the declaration.
+- Review every cross-object underscore access before committing Python or Sage code.
+
 ## Types
 
 - Give each value the type that names its mathematical role.
