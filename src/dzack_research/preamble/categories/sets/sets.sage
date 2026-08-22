@@ -273,20 +273,20 @@ class FinitePowerSetFunctor(Functor):
     def _image_category(self) -> SageCategory:
         return FinitePowerSets(self)
 
-    @cached_method
-    def _apply_functor(self, source: Parent) -> Parent:
-        from dzack_research.preamble.categories.sets.cardinals import (
-            Cardinalities,
-            cardinal,
-        )
+    def image_cardinality(self, source: Parent) -> Cardinal:
+        from dzack_research.preamble.categories.sets.cardinals import cardinal
 
         source_cardinality = cardinal(source.cardinality())
-        size = (
-            cardinal(2) ** source_cardinality
-            if source_cardinality.is_finite()
-            else Cardinalities().supremum(source_cardinality, cardinal(1))
-        )
-        categories = [self.Image(), _placement_for_cardinality(size)]
+        if source_cardinality.is_finite():
+            return cardinal(2) ** source_cardinality
+        return source_cardinality
+
+    @cached_method
+    def _apply_functor(self, source: Parent) -> Parent:
+        categories = [
+            self.Image(),
+            _placement_for_cardinality(self.image_cardinality(source)),
+        ]
         if source in Sets().Countable():
             categories.append(SageEnumeratedSets())
         return object_of(
@@ -297,6 +297,59 @@ class FinitePowerSetFunctor(Functor):
     def _apply_functor_to_morphism(
         self,
         morphism: "Sets.ArrowType",
+    ) -> "Sets.ArrowType":
+        source = self(morphism.domain())
+        target = self(morphism.codomain())
+        return Sets().Hom(source, target)(
+            lambda subset: target(tuple(morphism(member) for member in subset))
+        )
+
+
+class FixedCardinalitySubsetFunctor(Functor):
+    r"""Direct image on subsets of one finite cardinality, along injections."""
+
+    def __init__(self, subset_cardinality: SageInteger) -> None:
+        self._subset_cardinality = SageInteger(subset_cardinality)
+        assert self._subset_cardinality >= 0, "a subset cardinality is nonnegative"
+        domain = Sets().WideSubcategory(Sets().MonomorphismArrowCategory())
+        Functor.__init__(self, domain, Sets())
+
+    def subset_cardinality(self) -> SageInteger:
+        return self._subset_cardinality
+
+    def _image_category(self) -> SageCategory:
+        return FixedCardinalitySubsets(self)
+
+    def image_cardinality(self, source: Parent) -> Cardinal:
+        from sage.arith.misc import binomial
+
+        from dzack_research.preamble.categories.sets.cardinals import cardinal
+
+        source_cardinality = cardinal(source.cardinality())
+        if self._subset_cardinality == 0:
+            return cardinal(1)
+        if source_cardinality.is_finite():
+            return cardinal(
+                binomial(SageZZ(source_cardinality), self._subset_cardinality)
+            )
+        return source_cardinality
+
+    @cached_method
+    def _apply_functor(self, source: Parent) -> Parent:
+        categories = [
+            self.Image(),
+            _placement_for_cardinality(self.image_cardinality(source)),
+        ]
+        if source in Sets().Countable():
+            categories.append(SageEnumeratedSets())
+        return object_of(
+            SageCategory.join(categories),
+            preimage=source,
+        )
+
+    def _apply_functor_to_morphism(
+        self,
+        morphism: "Sets.MonoArrowType",
     ) -> "Sets.ArrowType":
         source = self(morphism.domain())
         target = self(morphism.codomain())
@@ -716,27 +769,16 @@ class PowerSets(_FunctorImageParameters, CategoryWithParameters):
             return f"Power set of {self.base_set()}"
 
 
-class FixedCardinalitySubsets(CategoryWithParameters):
+class FixedCardinalitySubsets(_FunctorImageParameters, CategoryWithParameters):
     r"""The subsets of ``S`` with one fixed finite cardinality.
 
-    The finite case delegates to Sage's mature ``sage.combinat.subset.Subsets``.
-    The countable case extends its ordering by increasing greatest index.
-
-    The parameter is the owned ``Sets()`` placement of \([S]^k\), which the
-    source and the size decide.  The placement is this category's super
-    category, so this level answers before the placement does.
+    Direct image preserves this cardinality along injections.  Thus these
+    objects form the image of a functor from the wide subcategory of sets and
+    injective maps.
     """
 
-    def __init__(self, placement: SageCategory) -> None:
-        self._placement = placement
-        super().__init__()
-
     def super_categories(self) -> list[SageCategory]:
-        return [self._placement, SageEnumeratedSets()]
-
-    def _make_named_class_key(self, name: str) -> SageCategory:
-        r"""The classes of this level depend on the placement alone."""
-        return self._placement
+        return [ImageOfFunctor(self.functor())]
 
     def _repr_object_names(self) -> str:
         return "sets of subsets of one fixed cardinality"
@@ -744,45 +786,26 @@ class FixedCardinalitySubsets(CategoryWithParameters):
     class ParentMethods:
         r"""\([S]^k\): the subsets of ``S`` of cardinality ``k``."""
 
-        def __init__(
-            self,
-            source: "lexicon.Set",
-            subset_cardinality: "Integer",
-            **rest: "ConstructionData",
-        ) -> None:
-            self._source = source
-            self._subset_cardinality = subset_cardinality
-            super().__init__(**rest)
-
         def source(self) -> "lexicon.Set":
-            return self._source
+            return self.preimage()
 
         @cached_method
         def power_set(self) -> Parent:
-            return PowerSet(self._source)
+            return PowerSet(self.source())
 
         def cardinality(self) -> Cardinal:
             r"""Return \(\bigl|\{A\subseteq S:|A|=k\}\bigr|\).
 
-            Stated from this object's own data, never counted: for finite \(S\)
-            it is \(\binom{|S|}{k}\), and for countably infinite \(S\) there are
-            \(\aleph_0\) subsets of each positive size \(k\) (choose the largest
-            member freely), while the empty subset is the only one of size zero.
+            For finite \(S\), this is \(\binom{|S|}{k}\).  For infinite \(S\)
+            and positive finite \(k\), this is \(|S|\).  The empty subset is
+            the only subset of cardinality zero.
             """
-            from sage.arith.misc import binomial
-
-            from dzack_research.preamble.categories.sets.cardinals import aleph0, cardinal
-
-            if self._source in Sets().Finite():
-                return cardinal(
-                    binomial(SageZZ(self._source.cardinality()), self._subset_cardinality)
-                )
-            if self._subset_cardinality == 0:
-                return cardinal(1)
-            return aleph0
+            return self.constructing_functor().image_cardinality(self.source())
 
         def subset_cardinality(self) -> SageInteger:
-            cardinality: SageInteger = self._subset_cardinality
+            cardinality: SageInteger = (
+                self.constructing_functor().subset_cardinality()
+            )
             return cardinality
 
         def _element_constructor_(
@@ -790,8 +813,8 @@ class FixedCardinalitySubsets(CategoryWithParameters):
             members: Iterable[Element],
         ) -> "Sets.MonoArrowType":
             subset = self.power_set()(members)
-            assert subset.cardinality() == self._subset_cardinality, (
-                f"a member has cardinality {self._subset_cardinality}"
+            assert subset.cardinality() == self.subset_cardinality(), (
+                f"a member has cardinality {self.subset_cardinality()}"
             )
             return subset
 
@@ -806,41 +829,47 @@ class FixedCardinalitySubsets(CategoryWithParameters):
         def __contains__(self, candidate: ElementConstructorInput) -> bool:
             if candidate not in self.power_set():
                 return False
-            return self.power_set()(candidate).cardinality() == self._subset_cardinality
+            return (
+                self.power_set()(candidate).cardinality()
+                == self.subset_cardinality()
+            )
 
         def __iter__(self) -> "Iterator[Sets.MonoArrowType]":
             from sage.combinat.subset import Subsets as SageSubsets
 
-            if self._source in Sets().Finite():
-                for subset in SageSubsets(self._source, self._subset_cardinality):
+            assert self.source() in Sets().Countable(), (
+                "enumeration of fixed-cardinality subsets requires a countable source"
+            )
+            if self.source() in Sets().Finite():
+                for subset in SageSubsets(self.source(), self.subset_cardinality()):
                     yield self(tuple(subset))
                 return
-            if self._subset_cardinality == 0:
+            if self.subset_cardinality() == 0:
                 yield self(())
                 return
 
             preceding: list[Element] = []
-            for maximum in self._source:
-                if len(preceding) >= self._subset_cardinality - 1:
+            for maximum in self.source():
+                if len(preceding) >= self.subset_cardinality() - 1:
                     for initial in SageSubsets(
                         tuple(preceding),
-                        self._subset_cardinality - 1,
+                        self.subset_cardinality() - 1,
                     ):
                         yield self(tuple(initial) + (maximum,))
                 preceding.append(maximum)
 
         def _repr_(self) -> str:
             return (
-                f"Subsets of {self._source} of cardinality "
-                f"{self._subset_cardinality}"
+                f"Subsets of {self.source()} of cardinality "
+                f"{self.subset_cardinality()}"
             )
 
 
 class FinitePowerSets(_FunctorImageParameters, CategoryWithParameters):
-    r"""The set of all finite subsets of a countable set.
+    r"""The set of all finite subsets of a set.
 
-    The finite case delegates to Sage's mature ``sage.combinat.subset.Subsets``.
-    The countable case extends it by increasing greatest index.
+    Countable sources also receive an enumeration.  Finite sources delegate
+    that enumeration to Sage's mature ``sage.combinat.subset.Subsets``.
 
     This is the image of the covariant finite-power-set functor.  Direct image
     transports its elements along every Set arrow.
@@ -865,17 +894,10 @@ class FinitePowerSets(_FunctorImageParameters, CategoryWithParameters):
         def cardinality(self) -> Cardinal:
             r"""Return \(\bigl|\{A\subseteq S:A\text{ finite}\}\bigr|\).
 
-            Stated from this object's own data, never counted: for finite \(S\)
-            every subset is finite, so this is the whole power set, \(2^{|S|}\).
-            For countably infinite \(S\) the finite subsets are countable -- a
-            finite subset of \(\mathbb N\) is a finite binary string -- so there
-            are \(\aleph_0\) of them.
+            For finite \(S\), every subset is finite, so this is \(2^{|S|}\).
+            For infinite \(S\), the finite subsets have cardinality \(|S|\).
             """
-            from dzack_research.preamble.categories.sets.cardinals import aleph0, cardinal
-
-            if self.source() in Sets().Finite():
-                return cardinal(2) ** self.source().cardinality()
-            return aleph0
+            return self.constructing_functor().image_cardinality(self.source())
 
         def _element_constructor_(
             self,
@@ -946,23 +968,11 @@ def SubsetsOfSize(
     cardinality: "Integer",
 ) -> Parent:
     r"""Return \([S]^k\), the subsets of ``source`` of the given cardinality."""
-    if source not in Sets().Countable():
+    if source not in Sets():
         source = _as_set(source)
     subset_cardinality = SageInteger(cardinality)
     assert subset_cardinality >= 0, "a subset cardinality is nonnegative"
-    assert source in Sets().Countable(), (
-        "fixed-cardinality subsets currently require a chosen countable enumeration"
-    )
-    placement = (
-        Sets().Finite()
-        if source in Sets().Finite() or subset_cardinality == 0
-        else Sets().Countable().Infinite()
-    )
-    return object_of(
-        FixedCardinalitySubsets(placement),
-        source=source,
-        subset_cardinality=subset_cardinality,
-    )
+    return Sets().FixedCardinalitySubsetFunctor(subset_cardinality)(source)
 
 
 @cached_function

@@ -310,7 +310,7 @@ class WideSubcategory(_WithArrows, CategoryWithParameters):
         return self._base_category.ElementType
 
     def super_categories(self) -> list[Category]:
-        return [Objects()]
+        return [self._base_category]
 
     def __contains__(self, candidate: "MembershipInput") -> bool:
         return candidate in self._base_category

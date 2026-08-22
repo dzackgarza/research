@@ -40,11 +40,11 @@ from sage.structure.parent import Parent
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
     ArrowCategory as ArrowCategoryOf,
     AutomorphismArrowCategory as AutomorphismArrowCategoryOf,
-    Core,
     EpimorphismArrowCategory as EpimorphismArrowCategoryOf,
     EndArrowCategory as EndArrowCategoryOf,
     IsoArrowCategory,
     MonomorphismArrowCategory as MonomorphismArrowCategoryOf,
+    WideSubcategory as WideSubcategoryOf,
 )
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     AutCategoryOf,
@@ -402,8 +402,12 @@ class Cat(OwnedCategoryMixin, Category):
         @cached_method
         def core(self) -> Category:
             r"""Return \(\operatorname{core}(\mathbf{C})\): the same objects, the isomorphisms as the only arrows."""
-            core_category: Category = Core(self)
-            return core_category
+            return self.WideSubcategory(self.IsomorphismArrowCategory())
+
+        @cached_method
+        def WideSubcategory(self, arrows: Category) -> Category:
+            r"""Keep all objects of \(\mathbf C\) and restrict its arrows to ``arrows``."""
+            return WideSubcategoryOf(self, arrows)
 
         def Diagram(self, index_category: Category) -> Category:
             r"""Return the functor category \([J,\mathbf{C}]\) of diagrams of shape \(J\)."""

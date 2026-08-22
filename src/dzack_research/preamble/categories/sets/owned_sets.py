@@ -75,6 +75,7 @@ if TYPE_CHECKING:
         DisjointUnionFunctor,
         ExponentialFunctor,
         FinitePowerSetFunctor,
+        FixedCardinalitySubsetFunctor,
         InverseImagePowerSetFunctor,
     )
 
@@ -201,6 +202,20 @@ class SetSubcategoryMethods:
 
     def FinitePowerSets(self) -> SageCategory:
         return self.FinitePowerSetFunctor().Image()
+
+    @cached_method
+    def FixedCardinalitySubsetFunctor(
+        self,
+        subset_cardinality: Integer,
+    ) -> "FixedCardinalitySubsetFunctor":
+        from dzack_research.preamble.categories.sets.sets import (
+            FixedCardinalitySubsetFunctor,
+        )
+
+        return FixedCardinalitySubsetFunctor(subset_cardinality)
+
+    def FixedCardinalitySubsets(self, subset_cardinality: Integer) -> SageCategory:
+        return self.FixedCardinalitySubsetFunctor(subset_cardinality).Image()
 
 
 class Sets(Category):
@@ -591,15 +606,8 @@ class Sets(Category):
                 return ExponentialOfSets(self.codomain(), self.domain())
 
             def cardinality(self) -> Cardinal:
-                r"""Return the number of functions from the domain to the codomain."""
-                from dzack_research.preamble.categories.sets.cardinals import (
-                    Cardinalities,
-                )
-
-                return Cardinalities().power(
-                    self.codomain().cardinality(),
-                    self.domain().cardinality(),
-                )
+                r"""Return the cardinality of this Hom category's object set."""
+                return self.object_set().cardinality()
 
         class ElementMethods:
             r"""A function between two sets.
