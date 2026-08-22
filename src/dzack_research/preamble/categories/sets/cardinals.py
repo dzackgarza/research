@@ -726,13 +726,11 @@ class Cardinalities(Category):
             return CardinalityHomset(self, codomain)
 
 
-Cardinal = Cardinalities.ObjectType
+Cardinal = Cardinalities().ObjectType
 r"""The class of a cardinal object.
 
-The category is the class, so the implementation class of
-:class:`Cardinalities` is what an ``isinstance`` question and a type
-annotation both name.  A cardinal is built by :func:`cardinal` or
-:func:`aleph`.
+The complete object implementation of :class:`Cardinalities` is the type
+named here.  A cardinal is built by :func:`cardinal` or :func:`aleph`.
 """
 
 

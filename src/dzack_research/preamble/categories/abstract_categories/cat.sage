@@ -62,8 +62,8 @@ from dzack_research.preamble.categories.abstract_categories.slice_categories imp
     SuperobjectCategory,
 )
 from dzack_research.preamble.categories.abstract_categories.products import (
-    CoproductCategory,
-    ProductCategory,
+    CoproductCoconeCategory,
+    ProductConeCategory,
 )
 
 
@@ -371,6 +371,25 @@ class Cat(OwnedCategoryMixin, Category):
             r"""Return the functor category \(\operatorname{Fun}(\mathbf{C},\mathbf{D})\)."""
             return Cat().Hom(self, codomain)
 
+        @cached_method
+        def OppositeCategory(self) -> Category:
+            r"""Return the opposite category :math:`\mathbf C^{\mathrm{op}}`."""
+            from dzack_research.preamble.categories.abstract_categories.category_constructions import (
+                OppositeCategory,
+            )
+
+            return OppositeCategory(self)
+
+        @cached_method
+        def ProductCategory(self, other: Category) -> Category:
+            r"""Return the product category :math:`\mathbf C\times\mathbf D`."""
+            from dzack_research.preamble.categories.abstract_categories.category_constructions import (
+                ProductCategory,
+            )
+
+            assert other in Cat()
+            return ProductCategory(self, other)
+
         def ImageOf(self, functor: "Cat.ArrowType") -> Category:
             r"""Return the image category of a functor with codomain ``self``."""
             assert functor in Cat().ArrowCategory()
@@ -434,12 +453,12 @@ class Cat(OwnedCategoryMixin, Category):
 
         def Product(self, factors: "Iterable[Parent]") -> Category:
             r"""Return the category of product cones on the given objects."""
-            products: Category = ProductCategory(self, factors)
+            products: Category = ProductConeCategory(self, factors)
             return products
 
         def Coproduct(self, cofactors: "Iterable[Parent]") -> Category:
             r"""Return the category of coproduct cocones on the given objects."""
-            coproducts: Category = CoproductCategory(self, cofactors)
+            coproducts: Category = CoproductCoconeCategory(self, cofactors)
             return coproducts
 
         def SliceOver(self, X: "Parent | Morphism") -> Category:

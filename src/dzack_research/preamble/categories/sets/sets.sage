@@ -23,15 +23,12 @@ from sage.categories.morphism import Morphism
 from sage.rings.integer import Integer as SageInteger
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.sets.condition_set import ConditionSet as SageConditionSet
-from sage.sets.set import Set_generic
 from sage.sets.image_set import ImageSet as SageImageSet
 from sage.sets.integer_range import IntegerRange
 from sage.sets.set import Set as SageSet
 from sage.sets.totally_ordered_finite_set import TotallyOrderedFiniteSet
 from sage.structure.element import Element
-from sage.structure.element_wrapper import ElementWrapper
 from sage.structure.parent import Parent
-from sage.structure.richcmp import richcmp
 from sage.misc.cachefunc import cached_function, cached_method
 
 from dzack_research.preamble.categories.sets.cardinals import Cardinal
@@ -46,6 +43,10 @@ from dzack_research.preamble.categories.abstract_categories.functors import (
     Functor,
     NaturalTransformation,
     ProductFunctor,
+)
+from dzack_research.preamble.categories.abstract_categories.functor_images import (
+    _FunctorImageParameters,
+    ImageOfFunctor,
 )
 from dzack_research.preamble.owned_category import object_of
 from dzack_research.preamble.owned_category_bases import Category, CategoryWithParameters
@@ -147,6 +148,19 @@ def _coproduct_placement(cofactors: tuple[Parent, ...]) -> Sets:
     return Sets()
 
 
+def _placement_for_cardinality(size: Cardinal) -> Sets:
+    r"""Return the strongest Set placement decided by one cardinal."""
+    if size.is_finite():
+        return Sets().Finite()
+    if size.is_countable():
+        return Sets().Countable().Infinite()
+    if size.is_uncountable():
+        return Sets().Uncountable()
+    if size.is_infinite():
+        return Sets().Infinite()
+    return Sets()
+
+
 class CartesianProductFunctor(ProductFunctor):
     r"""The product functor on Set-valued diagrams of one discrete shape."""
 
@@ -189,6 +203,65 @@ class DisjointUnionFunctor(CoproductFunctor):
             SageCategory.join((image, placement)),
             preimage=diagram,
         )
+
+
+class ExponentialFunctor(Functor):
+    r"""The internal-hom bifunctor :math:`\mathbf{Set}^{op}\times\mathbf{Set}\to\mathbf{Set}`."""
+
+    def __init__(self) -> None:
+        domain = Sets().OppositeCategory().ProductCategory(Sets())
+        Functor.__init__(self, domain, Sets())
+
+    def _image_category(self) -> SageCategory:
+        return ExponentialsOfSets(self)
+
+    @cached_method
+    def _apply_functor(self, pair: Element) -> Parent:
+        from dzack_research.preamble.categories.sets.cardinals import Cardinalities
+
+        size = Cardinalities().power(
+            pair.second().cardinality(),
+            pair.first().cardinality(),
+        )
+        return object_of(
+            SageCategory.join((self.Image(), _placement_for_cardinality(size))),
+            preimage=pair,
+        )
+
+    def _apply_functor_to_morphism(self, pair: Element) -> "Sets.ArrowType":
+        source = self(pair.domain())
+        target = self(pair.codomain())
+        precompose = pair.first().underlying_arrow()
+        postcompose = pair.second()
+        return Sets().Hom(source, target)(
+            lambda function: target(
+                lambda element: postcompose(function(precompose(element)))
+            )
+        )
+
+
+class PowerSetFunctor(Functor):
+    r"""The contravariant power-set functor, represented on ``Sets().OppositeCategory()``."""
+
+    def __init__(self) -> None:
+        Functor.__init__(self, Sets().OppositeCategory(), Sets())
+
+    def _image_category(self) -> SageCategory:
+        return PowerSets(self)
+
+    @cached_method
+    def _apply_functor(self, base_set: Parent) -> Parent:
+        from dzack_research.preamble.categories.sets.cardinals import cardinal
+
+        size = cardinal(2) ** base_set.cardinality()
+        return object_of(
+            SageCategory.join((self.Image(), _placement_for_cardinality(size))),
+            preimage=base_set,
+        )
+
+    def _apply_functor_to_morphism(self, morphism: Element) -> "Sets.ArrowType":
+        source = self(morphism.domain())
+        return source.inverse_image_morphism(morphism.underlying_arrow())
 
 
 def CartesianProductOfFamily(
@@ -295,62 +368,48 @@ def coproduct_morphism(*maps: Morphism) -> "Sets.ArrowType":
     )
 
 
-class ExponentialsOfSets(Category):
+class ExponentialsOfSets(_FunctorImageParameters, CategoryWithParameters):
     r"""Function sets \(Y^X\), as the object sets of Set hom categories."""
 
     def super_categories(self) -> list[SageCategory]:
-        return [Sets()]
+        return [ImageOfFunctor(self.functor())]
 
     def _repr_object_names(self) -> str:
         return "exponentials of sets"
 
     class ParentMethods:
-        def __init__(
-            self,
-            codomain: Parent,
-            exponent: Parent,
-            **rest: "ConstructionData",
-        ) -> None:
-            assert codomain in Sets() and exponent in Sets()
-            self._codomain = codomain
-            self._exponent = exponent
-            self._hom_category = Sets().Hom(exponent, codomain)
-            super().__init__(**rest)
-
         def base(self) -> Parent:
-            return self._codomain
+            return self.preimage().second()
 
         def exponent(self) -> Parent:
-            return self._exponent
+            return self.preimage().first()
 
         def hom_category(self) -> SageCategory:
-            return self._hom_category
+            return Sets().Hom(self.exponent(), self.base())
 
         def __contains__(self, function: "Sets.ArrowType") -> bool:
-            return function in self._hom_category
+            return function in self.hom_category()
 
         def _element_constructor_(
             self,
             definition: "SetMapDefinition | Sets.ArrowType",
         ) -> "Sets.ArrowType":
-            return self._hom_category(definition)
+            return self.hom_category()(definition)
 
         def cardinality(self) -> Cardinal:
-            return self._hom_category.cardinality()
+            return self.hom_category().cardinality()
 
         def _repr_(self) -> str:
-            return f"{self._codomain}^{self._exponent}"
+            return f"{self.base()}^{self.exponent()}"
 
 
 @cached_function
 def ExponentialOfSets(codomain: Parent, exponent: Parent) -> Parent:
     r"""Return \(Y^X\), the set of functions from ``exponent`` to ``codomain``."""
     assert codomain in Sets() and exponent in Sets()
-    return object_of(
-        ExponentialsOfSets(),
-        codomain=codomain,
-        exponent=exponent,
-    )
+    functor = Sets().ExponentialFunctor()
+    pair = functor.domain()(exponent, codomain)
+    return functor(pair)
 
 
 def _has_canonical_set_inclusion(domain: Parent, codomain: Parent) -> bool:
@@ -414,6 +473,19 @@ class SubsetsOfSet(CategoryWithParameters):
 
         def __iter__(self) -> Iterator[Element]:
             return iter(self.domain())
+
+        def cardinality(self) -> Cardinal:
+            r"""Return the cardinality of the domain of the inclusion."""
+            if self._members is not None:
+                from dzack_research.preamble.categories.sets.cardinals import cardinal
+
+                return cardinal(len(self._members))
+            return self.domain().cardinality()
+
+        def __len__(self) -> int:
+            size = self.cardinality()
+            assert size.is_finite(), "length is defined only for a finite subset"
+            return int(size)
 
         def _decidable_finite_equality(self, other: "PowerSetElement") -> bool:
             base_set = self.codomain()
@@ -482,6 +554,9 @@ class SubsetsOfSet(CategoryWithParameters):
         def complement(self) -> "PowerSetElement":
             return self._power_set.from_predicate(lambda member: member not in self)
 
+        def __or__(self, other: "PowerSetElement") -> "PowerSetElement":
+            return self.union(other)
+
         def _repr_(self) -> str:
             return f"Subobject of {self.codomain()} defined by {self.domain()}"
 
@@ -489,29 +564,20 @@ class SubsetsOfSet(CategoryWithParameters):
 PowerSetElement = SubsetsOfSet.MorphismMethods
 
 
-class PowerSets(CategoryWithParameters):
+class PowerSets(_FunctorImageParameters, CategoryWithParameters):
     r"""The power object of a set.
 
     An object is \(P(X)\) for a set \(X\).  Its elements are subobjects of
     \(X\): each has an inclusion into \(X\) and the equivalent characteristic
     morphism into ``Delta[1]``.
 
-    The parameter is the owned ``Sets()`` placement of \(P(X)\), which the
-    size of \(X\) decides: \(P(X)\) is finite for finite \(X\) and
-    uncountable otherwise.  The placement is this category's super category,
-    so this level answers before the placement does.
+    The construction is the image of the contravariant power-set functor.
+    Thus the object retains only its preimage \(X\); its complete Set
+    implementation comes from the functor codomain.
     """
 
-    def __init__(self, placement: SageCategory) -> None:
-        self._placement = placement
-        super().__init__()
-
     def super_categories(self) -> list[SageCategory]:
-        return [self._placement]
-
-    def _make_named_class_key(self, name: str) -> SageCategory:
-        r"""The classes of this level depend on the placement alone."""
-        return self._placement
+        return [ImageOfFunctor(self.functor())]
 
     def _repr_object_names(self) -> str:
         return "power sets"
@@ -519,16 +585,12 @@ class PowerSets(CategoryWithParameters):
     class ParentMethods:
         r"""\(P(X)\): the subobjects of the base set \(X\)."""
 
-        def __init__(self, base_set: "lexicon.Set", **rest: "ConstructionData") -> None:
-            self._base_set = base_set
-            super().__init__(**rest)
-
         def base_set(self) -> "lexicon.Set":
-            return self._base_set
+            return self.preimage()
 
         def characteristic_hom_category(self) -> SageCategory:
             r"""Return ``Hom(base_set, Delta[1])``."""
-            return Sets().Hom(self._base_set, Sets.Δ[1])
+            return Sets().Hom(self.base_set(), Sets.Δ[1])
 
         def _from_subset(
             self,
@@ -536,14 +598,14 @@ class PowerSets(CategoryWithParameters):
             characteristic_morphism: "Sets.ArrowType",
             members: "frozenset[Element] | None" = None,
         ) -> PowerSetElement:
-            inclusion = Sets().Hom(subset, self._base_set)(
-                lambda member: self._base_set(member)
+            inclusion = Sets().Hom(subset, self.base_set())(
+                lambda member: self.base_set()(member)
             )
             inclusion._power_set = self
             inclusion._characteristic_morphism = characteristic_morphism
             inclusion._members = members
             subset_object: PowerSetElement = refine(
-                inclusion, SubsetsOfSet(self._base_set)
+                inclusion, SubsetsOfSet(self.base_set())
             )
             return subset_object
 
@@ -551,7 +613,7 @@ class PowerSets(CategoryWithParameters):
             self,
             predicate: "Callable[[Element], bool]",
         ) -> PowerSetElement:
-            subset = ConditionSet(self._base_set, predicate)
+            subset = ConditionSet(self.base_set(), predicate)
             truth_values = Sets.Δ[1]
             characteristic_morphism = self.characteristic_hom_category()(
                 lambda member: truth_values(SageInteger(predicate(member)))
@@ -562,7 +624,7 @@ class PowerSets(CategoryWithParameters):
             self,
             members: "lexicon.Set",
         ) -> PowerSetElement:
-            subset = ConditionSet(self._base_set, lambda member: member in members)
+            subset = ConditionSet(self.base_set(), lambda member: member in members)
             truth_values = Sets.Δ[1]
             characteristic_morphism = self.characteristic_hom_category()(
                 lambda member: truth_values(SageInteger(member in members))
@@ -579,16 +641,16 @@ class PowerSets(CategoryWithParameters):
         ) -> PowerSetElement:
             match candidate:
                 case PowerSetElement():
-                    assert candidate.inclusion().codomain() is self._base_set, (
+                    assert candidate.inclusion().codomain() is self.base_set(), (
                         "a subset must have the required inclusion codomain"
                     )
                     return candidate
-                case Parent() if candidate is self._base_set:
+                case Parent() if candidate is self.base_set():
                     characteristic = self.characteristic_hom_category()(
                         lambda member: Sets.Δ[1](1)
                     )
-                    return self._from_subset(self._base_set, characteristic)
-                case Parent() if _has_canonical_set_inclusion(candidate, self._base_set):
+                    return self._from_subset(self.base_set(), characteristic)
+                case Parent() if _has_canonical_set_inclusion(candidate, self.base_set()):
                     truth_values = Sets.Δ[1]
                     characteristic_morphism = self.characteristic_hom_category()(
                         lambda member: truth_values(
@@ -597,18 +659,18 @@ class PowerSets(CategoryWithParameters):
                     )
                     return self._from_subset(candidate, characteristic_morphism)
                 case Parent() if candidate in Sets().Finite():
-                    assert all(member in self._base_set for member in candidate), (
+                    assert all(member in self.base_set() for member in candidate), (
                         "every member of a subset must lie in its base set"
                     )
                     return self._subset_from_finite_members(candidate)
                 case Iterable():
                     members = Set(candidate)
-                    assert all(member in self._base_set for member in members), (
+                    assert all(member in self.base_set() for member in members), (
                         "every member of a subset must lie in its base set"
                     )
                     return self._subset_from_finite_members(members)
                 case _:
-                    assert False, f"{candidate!r} does not present a subset of {self._base_set}"
+                    assert False, f"{candidate!r} does not present a subset of {self.base_set()}"
 
         def __contains__(
             self,
@@ -616,15 +678,15 @@ class PowerSets(CategoryWithParameters):
         ) -> bool:
             match candidate:
                 case PowerSetElement():
-                    return candidate.inclusion().codomain() is self._base_set
+                    return candidate.inclusion().codomain() is self.base_set()
                 case Parent() if candidate in Sets().Finite():
-                    return all(member in self._base_set for member in candidate)
+                    return all(member in self.base_set() for member in candidate)
                 case Parent():
-                    return candidate is self._base_set or _has_canonical_set_inclusion(
-                        candidate, self._base_set
+                    return candidate is self.base_set() or _has_canonical_set_inclusion(
+                        candidate, self.base_set()
                     )
                 case Iterable():
-                    return all(member in self._base_set for member in candidate)
+                    return all(member in self.base_set() for member in candidate)
                 case _:
                     return False
 
@@ -644,14 +706,14 @@ class PowerSets(CategoryWithParameters):
                 "a characteristic morphism must lie in Hom(base_set, Delta[1])"
             )
             subset = ConditionSet(
-                self._base_set,
+                self.base_set(),
                 lambda member: characteristic_morphism(member) == Sets.Δ[1](1),
             )
             return self._from_subset(subset, characteristic_morphism)
 
         def top(self) -> PowerSetElement:
             r"""Return the greatest subset, the base set itself."""
-            return self(self._base_set)
+            return self(self.base_set())
 
         def bottom(self) -> PowerSetElement:
             r"""Return the empty subset."""
@@ -659,7 +721,7 @@ class PowerSets(CategoryWithParameters):
 
         def inverse_image_morphism(self, morphism: Morphism) -> "Sets.ArrowType":
             r"""Return the inverse-image map ``P(codomain) -> P(domain)``."""
-            assert morphism.codomain() is self._base_set, (
+            assert morphism.codomain() is self.base_set(), (
                 "inverse image requires the morphism codomain to equal the base set"
             )
             domain_power_set = PowerSet(morphism.domain())
@@ -671,7 +733,7 @@ class PowerSets(CategoryWithParameters):
 
         def direct_image_morphism(self, morphism: Morphism) -> "Sets.ArrowType":
             r"""Return the direct-image map ``P(domain) -> P(codomain)``."""
-            assert morphism.domain() is self._base_set, (
+            assert morphism.domain() is self.base_set(), (
                 "direct image requires the morphism domain to equal the base set"
             )
             codomain_power_set = PowerSet(morphism.codomain())
@@ -695,18 +757,18 @@ class PowerSets(CategoryWithParameters):
             return codomain_power_set(tuple(morphism(member) for member in subset))
 
         def __iter__(self) -> "Iterator[PowerSetElement]":
-            assert self._base_set in Sets().Finite(), (
+            assert self.base_set() in Sets().Finite(), (
                 "an uncountable power set has no enumeration"
             )
             from sage.combinat.subset import Subsets as SageSubsets
 
-            for members in SageSubsets(self._base_set):
+            for members in SageSubsets(self.base_set()):
                 yield self(members)
 
         def cardinality(self) -> Cardinal:
             from dzack_research.preamble.categories.sets.cardinals import cardinal
 
-            return cardinal(2) ** self._base_set.cardinality()
+            return cardinal(2) ** self.base_set().cardinality()
 
         def cardinality_comparison(self) -> Morphism:
             from dzack_research.preamble.categories.sets.cardinals import (
@@ -715,62 +777,12 @@ class PowerSets(CategoryWithParameters):
 
             cardinals = Cardinalities()
             source = self.cardinality()
-            target = cardinals.power(2, self._base_set.cardinality())
+            target = cardinals.power(2, self.base_set().cardinality())
             assert source == target
             return cardinals.hom(source, target).identity()
 
         def _repr_(self) -> str:
-            return f"Power set of {self._base_set}"
-
-
-class FiniteSubsetElement(ElementWrapper):
-    r"""A finite subset as an element of its subset parent.
-
-    Sage's ``ElementWrapper`` supplies the parent.  The wrapped value is the
-    immutable finite set of members, which supplies extensional equality and
-    hashing across the sets of subsets that contain it.
-    """
-
-    def __iter__(self) -> Iterator[Element]:
-        return iter(self.value)
-
-    def __len__(self) -> int:
-        return len(self.value)
-
-    def __contains__(self, member: Element) -> bool:
-        return member in self.value
-
-    def _richcmp_(self, other: "FiniteSubsetElement", op: int) -> bool:
-        return bool(richcmp(self.value, other.value, op))
-
-    def __eq__(
-        self,
-        other: "FiniteSubsetElement | Set_generic",
-    ) -> bool:
-        if isinstance(other, FiniteSubsetElement):
-            return self.value == other.value
-        if isinstance(other, Set_generic):
-            return self.value == frozenset(other)
-        return False
-
-    def __ne__(
-        self,
-        other: "FiniteSubsetElement | Set_generic",
-    ) -> bool:
-        return not self == other
-
-    def __hash__(self) -> int:
-        return hash(self.value)
-
-    def __or__(self, other: "FiniteSubsetElement") -> "FiniteSubsetElement":
-        r"""Return the union in the finite power set of the common source."""
-        assert self.parent().source() is other.parent().source(), (
-            "set union requires subsets of one source"
-        )
-        return FiniteSubsets(self.parent().source())(self.value | other.value)
-
-    def _repr_(self) -> str:
-        return repr(SageSet(self.value))
+            return f"Power set of {self.base_set()}"
 
 
 class FixedCardinalitySubsets(CategoryWithParameters):
@@ -801,8 +813,6 @@ class FixedCardinalitySubsets(CategoryWithParameters):
     class ParentMethods:
         r"""\([S]^k\): the subsets of ``S`` of cardinality ``k``."""
 
-        element_class = FiniteSubsetElement
-
         def __init__(
             self,
             source: "lexicon.Set",
@@ -815,6 +825,10 @@ class FixedCardinalitySubsets(CategoryWithParameters):
 
         def source(self) -> "lexicon.Set":
             return self._source
+
+        @cached_method
+        def power_set(self) -> Parent:
+            return PowerSet(self._source)
 
         def cardinality(self) -> Cardinal:
             r"""Return \(\bigl|\{A\subseteq S:|A|=k\}\bigr|\).
@@ -843,13 +857,10 @@ class FixedCardinalitySubsets(CategoryWithParameters):
         def _element_constructor_(
             self,
             members: Iterable[Element],
-        ) -> FiniteSubsetElement:
-            subset = self.ElementType(self, frozenset(members))
-            assert len(subset) == self._subset_cardinality, (
+        ) -> PowerSetElement:
+            subset = self.power_set()(members)
+            assert subset.cardinality() == self._subset_cardinality, (
                 f"a member has cardinality {self._subset_cardinality}"
-            )
-            assert all(member in self._source for member in subset), (
-                "every member of a subset must lie in its source set"
             )
             return subset
 
@@ -858,20 +869,15 @@ class FixedCardinalitySubsets(CategoryWithParameters):
             x: ElementConstructorInput = (),
             *arguments: ElementConstructorInput,
             **keywords: ElementConstructorInput,
-        ) -> FiniteSubsetElement:
-            assert isinstance(x, Iterable), "a subset is built from its members"
+        ) -> PowerSetElement:
             return self._element_constructor_(x)
 
         def __contains__(self, candidate: ElementConstructorInput) -> bool:
-            if not isinstance(candidate, Iterable):
+            if candidate not in self.power_set():
                 return False
-            subset = frozenset(candidate)
-            return (
-                len(subset) == self._subset_cardinality
-                and all(member in self._source for member in subset)
-            )
+            return self.power_set()(candidate).cardinality() == self._subset_cardinality
 
-        def __iter__(self) -> Iterator[FiniteSubsetElement]:
+        def __iter__(self) -> Iterator[PowerSetElement]:
             from sage.combinat.subset import Subsets as SageSubsets
 
             if self._source in Sets().Finite():
@@ -927,8 +933,6 @@ class FinitePowerSets(CategoryWithParameters):
     class ParentMethods:
         r"""\(P_{\mathrm{fin}}(S)\): the finite subsets of ``S``."""
 
-        element_class = FiniteSubsetElement
-
         def __init__(
             self, source: "lexicon.Set", **rest: "ConstructionData"
         ) -> None:
@@ -937,6 +941,10 @@ class FinitePowerSets(CategoryWithParameters):
 
         def source(self) -> "lexicon.Set":
             return self._source
+
+        @cached_method
+        def power_set(self) -> Parent:
+            return PowerSet(self._source)
 
         def cardinality(self) -> Cardinal:
             r"""Return \(\bigl|\{A\subseteq S:A\text{ finite}\}\bigr|\).
@@ -956,33 +964,25 @@ class FinitePowerSets(CategoryWithParameters):
         def _element_constructor_(
             self,
             members: Iterable[Element],
-        ) -> FiniteSubsetElement:
-            subset = self.ElementType(self, frozenset(members))
-            assert all(member in self._source for member in subset), (
-                "every member of a subset must lie in its source set"
-            )
-            return subset
+        ) -> PowerSetElement:
+            return self.power_set()(members)
 
         def __call__(
             self,
             x: ElementConstructorInput = (),
             *arguments: ElementConstructorInput,
             **keywords: ElementConstructorInput,
-        ) -> FiniteSubsetElement:
-            assert isinstance(x, Iterable), "a subset is built from its members"
+        ) -> PowerSetElement:
             return self._element_constructor_(x)
 
         def __contains__(self, candidate: ElementConstructorInput) -> bool:
-            if not isinstance(candidate, Iterable):
-                return False
-            subset = frozenset(candidate)
-            return all(member in self._source for member in subset)
+            return candidate in self.power_set() and self.power_set()(candidate).cardinality().is_finite()
 
         def index(self, subset: Iterable[Element]) -> int:
             r"""Return the position of ``subset`` in the chosen enumeration."""
             return self.position(self(subset))
 
-        def __iter__(self) -> Iterator[FiniteSubsetElement]:
+        def __iter__(self) -> Iterator[PowerSetElement]:
             from sage.combinat.subset import Subsets as SageSubsets
 
             if self._source in Sets().Finite():
@@ -1002,19 +1002,8 @@ class FinitePowerSets(CategoryWithParameters):
 
 
 def _power_set_of(base_set: "lexicon.Set") -> Parent:
-    r"""Build \(P(X)\), placed by the size of \(X\).
-
-    \(2^{|X|}\) is finite exactly when \(|X|\) is, so the placement reads the
-    size of \(X\) and leaves the power to the object's own count.
-    """
-    from dzack_research.preamble.categories.sets.cardinals import cardinal
-
-    placement = (
-        Sets().Finite()
-        if cardinal(base_set.cardinality()).is_finite()
-        else Sets().Uncountable()
-    )
-    return object_of(PowerSets(placement), base_set=base_set)
+    r"""Apply the contravariant power-set functor to \(X\)."""
+    return Sets().PowerSetFunctor()(base_set)
 
 
 @cached_function
@@ -1077,15 +1066,6 @@ E = TypeVar("E", bound=Element)
 
 
 def _as_set(source: lexicon.Set[E] | lexicon.OrderedSet[E]) -> "lexicon.Set[E]":
-    # Membership in ``Sets()`` is not the question: every parent is in it, so
-    # asking that returned the semiring $\NN$ where the set of its elements
-    # was wanted.  What is asked is whether the source already *is* the set of
-    # its elements, and a parent carrying structure is not.
-    if isinstance(source, Set_generic) or isinstance(
-        source.category(),
-        (PowerSets, FixedCardinalitySubsets, FinitePowerSets),
-    ):
-        return source
     return Set(source)
 
 
@@ -1109,8 +1089,11 @@ def finite_ordered_set(
     ``TotallyOrderedFiniteSet``; category placement is not standing in for
     the relation.
     """
-    if isinstance(source, (list, tuple)):
-        return _ordered_set_on(tuple(dict.fromkeys(_owned_members(source))))
+    match source:
+        case list() | tuple():
+            return _ordered_set_on(tuple(dict.fromkeys(_owned_members(source))))
+        case _:
+            pass
     source = _as_set(source)
     assert source in Sets().Finite(), f"{source} is not a finite set"
     if source in Sets().TotallyOrdered():
@@ -1131,10 +1114,14 @@ def _owned_members(
     The repo bans that fork elsewhere for the same reason; this is where it
     would otherwise enter.
     """
-    return tuple(
-        SageZZ(member) if isinstance(member, int) else member
-        for member in members
-    )
+    def owned(member: Element | int) -> Element:
+        match member:
+            case int():
+                return SageZZ(member)
+            case _:
+                return member
+
+    return tuple(owned(member) for member in members)
 
 
 def ordered_set_owned_by[E: Element](

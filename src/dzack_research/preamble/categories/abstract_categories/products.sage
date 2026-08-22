@@ -131,7 +131,7 @@ class LimitsOfCategory(_FunctorImageParameters, CategoryWithParameters):
     def _repr_(self) -> str:
         return f"Category of limits constructed by {self.functor()}"
 
-    class ObjectType:
+    class ParentMethods:
         def diagram(self) -> Element:
             return self.preimage()
 
@@ -153,7 +153,7 @@ class ColimitsOfCategory(_FunctorImageParameters, CategoryWithParameters):
     def _repr_(self) -> str:
         return f"Category of colimits constructed by {self.functor()}"
 
-    class ObjectType:
+    class ParentMethods:
         def diagram(self) -> Element:
             return self.preimage()
 
@@ -175,7 +175,7 @@ class ProductsOfCategory(_FunctorImageParameters, CategoryWithParameters):
     def _repr_(self) -> str:
         return f"Category of products constructed by {self.functor()}"
 
-    class ObjectType:
+    class ParentMethods:
         def index_category(self) -> AmbientCategory:
             return self.diagram().domain()
 
@@ -216,7 +216,7 @@ class CoproductsOfCategory(_FunctorImageParameters, CategoryWithParameters):
     def _repr_(self) -> str:
         return f"Category of coproducts constructed by {self.functor()}"
 
-    class ObjectType:
+    class ParentMethods:
         def index_category(self) -> AmbientCategory:
             return self.diagram().domain()
 
@@ -454,7 +454,7 @@ class CoconeCategory(_IndexedDiagramParameters, Category):
             return construction_category_of(self, CoconeCategory).diagram_objects()[i]
 
 
-class ProductCategory(_IndexedDiagramParameters, Category):
+class ProductConeCategory(_IndexedDiagramParameters, Category):
     r"""A product: a cone over a discrete diagram. Parameterized by factors."""
 
     @staticmethod
@@ -469,14 +469,14 @@ class ProductCategory(_IndexedDiagramParameters, Category):
         cls: type,
         *arguments: "ElementConstructorInput",
         **keywords: "ElementConstructorInput",
-    ) -> "ProductCategory":
+    ) -> "ProductConeCategory":
         # Sage reads this slot out of ``cls.__dict__`` and never inherits it,
         # so it is protocol plumbing; the mathematics is on the normalizer.
         ambient_category, factors = arguments
         assert isinstance(ambient_category, AmbientCategory)
         assert isinstance(factors, Iterable)
-        constructed: ProductCategory = Category.__classcall__(
-            cls, *ProductCategory._product_arguments(ambient_category, factors)
+        constructed: ProductConeCategory = Category.__classcall__(
+            cls, *ProductConeCategory._product_arguments(ambient_category, factors)
         )
         return constructed
 
@@ -491,7 +491,7 @@ class ProductCategory(_IndexedDiagramParameters, Category):
         return [ConeCategory(self._ambient_category, self._index_set, self._diagram_objects, self._diagram_morphisms)]
 
 
-class CoproductCategory(_IndexedDiagramParameters, Category):
+class CoproductCoconeCategory(_IndexedDiagramParameters, Category):
     r"""A coproduct: a cocone under a discrete diagram. Parameterized by cofactors."""
 
     @staticmethod
@@ -506,14 +506,14 @@ class CoproductCategory(_IndexedDiagramParameters, Category):
         cls: type,
         *arguments: "ElementConstructorInput",
         **keywords: "ElementConstructorInput",
-    ) -> "CoproductCategory":
+    ) -> "CoproductCoconeCategory":
         # Sage reads this slot out of ``cls.__dict__`` and never inherits it,
         # so it is protocol plumbing; the mathematics is on the normalizer.
         ambient_category, cofactors = arguments
         assert isinstance(ambient_category, AmbientCategory)
         assert isinstance(cofactors, Iterable)
-        constructed: CoproductCategory = Category.__classcall__(
-            cls, *CoproductCategory._coproduct_arguments(ambient_category, cofactors)
+        constructed: CoproductCoconeCategory = Category.__classcall__(
+            cls, *CoproductCoconeCategory._coproduct_arguments(ambient_category, cofactors)
         )
         return constructed
 
@@ -568,8 +568,8 @@ class BiproductCategory(_IndexedDiagramParameters, Category):
 
     def super_categories(self) -> list[Category]:
         return [
-            ProductCategory(self._ambient_category, self._diagram_objects),
-            CoproductCategory(self._ambient_category, self._diagram_objects),
+            ProductConeCategory(self._ambient_category, self._diagram_objects),
+            CoproductCoconeCategory(self._ambient_category, self._diagram_objects),
         ]
 
 

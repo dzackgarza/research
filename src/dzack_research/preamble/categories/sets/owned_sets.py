@@ -71,6 +71,8 @@ if TYPE_CHECKING:
     from dzack_research.preamble.categories.sets.sets import (
         CartesianProductFunctor,
         DisjointUnionFunctor,
+        ExponentialFunctor,
+        PowerSetFunctor,
     )
 
     from collections.abc import Hashable, Iterable
@@ -168,6 +170,24 @@ class SetSubcategoryMethods:
     def Coproducts(self, index_category: "DiscreteCategory") -> SageCategory:
         return self.CoproductFunctor(index_category).Image()
 
+    @cached_method
+    def ExponentialFunctor(self) -> "ExponentialFunctor":
+        from dzack_research.preamble.categories.sets.sets import ExponentialFunctor
+
+        return ExponentialFunctor()
+
+    def Exponentials(self) -> SageCategory:
+        return self.ExponentialFunctor().Image()
+
+    @cached_method
+    def PowerSetFunctor(self) -> "PowerSetFunctor":
+        from dzack_research.preamble.categories.sets.sets import PowerSetFunctor
+
+        return PowerSetFunctor()
+
+    def PowerSets(self) -> SageCategory:
+        return self.PowerSetFunctor().Image()
+
 
 class Sets(Category):
     r"""The owned category of sets: declaration owner of the generic
@@ -209,7 +229,7 @@ class Sets(Category):
         def _repr_(self) -> str:
             return f"Category of cartesian products constructed by {self.functor()}"
 
-        class ObjectType:
+        class ParentMethods:
 
             @cached_method
             def factor_cardinalities(
@@ -391,7 +411,7 @@ class Sets(Category):
         def _repr_(self) -> str:
             return f"Category of disjoint unions constructed by {self.functor()}"
 
-        class ObjectType:
+        class ParentMethods:
             @cached_method
             def cofactor_cardinalities(
                 self,

@@ -364,12 +364,11 @@ class OrdinalSemirings(Category):
             return f"({expression.base} ^o {expression.exponent})"
 
 
-Ordinal = OrdinalSemirings.ElementType
+Ordinal = OrdinalSemirings().ElementType
 r"""The class of an ordinal.
 
-The category is the class, so the element implementation class of
-:class:`OrdinalSemirings` is what an ``isinstance`` question and a type
-annotation both name.
+The complete element implementation of :class:`OrdinalSemirings` is the type
+named here.
 """
 
 

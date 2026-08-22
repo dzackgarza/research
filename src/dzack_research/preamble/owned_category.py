@@ -388,8 +388,8 @@ class OwnedCategoryMixin(CatConstructionsMixin):
     )
 
     _IMPLEMENTATION_PROVIDER_NAMES = {
-        "ParentMethods": ("ObjectType", "ParentMethods"),
-        "ElementMethods": ("ElementType", "ElementMethods"),
+        "ParentMethods": ("ParentMethods",),
+        "ElementMethods": ("ElementMethods",),
         "MorphismMethods": ("MorphismMethods",),
     }
 

@@ -87,7 +87,7 @@ class ImageOfFunctor(_FunctorImageParameters, CategoryWithParameters):
     def _repr_(self) -> str:
         return f"Category of objects in the image of {self._functor}"
 
-    class ObjectType:
+    class ParentMethods:
         r"""An output of ``functor`` with its chosen source object."""
 
         def __init__(
