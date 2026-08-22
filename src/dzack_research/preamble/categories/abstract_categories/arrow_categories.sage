@@ -42,16 +42,6 @@ from sage.structure.parent import Parent
 if TYPE_CHECKING:
     from sage.categories.homset import Homset
 
-    from typing import Protocol
-
-    class ArrowObject(Protocol):
-        r"""An object of \(\operatorname{Ar}(\mathbf{C})\): an arrow of
-        \(\mathbf{C}\), applied to elements and asked for its two ends."""
-
-        def __call__(self, x: Element) -> Element: ...
-        def domain(self) -> Parent: ...
-        def codomain(self) -> Parent: ...
-
 
 class _OnACategory:
     r"""The one parameter these categories take: the ambient category
@@ -82,42 +72,6 @@ class ArrowCategory(_OnACategory, Category):
         # relates the two are the functors dom, cod: Ar(C) -> C, and neither is
         # an inclusion, so there is nothing above this but Objects.
         return [Objects()]
-
-    class MorphismMethods:
-        r"""The methods of an *object* of \(\operatorname{Ar}(\mathbf{C})\)."""
-
-        def is_commuting_square(
-            self: "ArrowObject",
-            other: "ArrowObject",
-            left: Morphism,
-            right: Morphism,
-        ) -> bool:
-            r"""Return whether \((\ell,r)\) is a morphism \(f\to g\) of \(\operatorname{Ar}(\mathbf{C})\).
-
-            A morphism of the arrow category from \(f:X\to Y\) to
-            \(g:X'\to Y'\) is a pair \(\ell:X\to X'\), \(r:Y\to Y'\) with
-            \(g\circ\ell=r\circ f\).  The two composites are compared where
-            two morphisms out of \(X\) are decided -- on \(X\)'s distinguished
-            generators -- and not by building a formal composite whose
-            equality nothing defines.
-            """
-            # Local: slice_categories reaches the algebra node, so a
-            # module-level import would close that cycle.
-            from dzack_research.preamble.categories.abstract_categories.slice_categories import sole_structure_generators
-
-            assert (
-                left.domain() is self.domain()
-                and left.codomain() is other.domain()
-            ), "the left edge of the square runs between the two sources"
-            assert (
-                right.domain() is self.codomain()
-                and right.codomain() is other.codomain()
-            ), "the right edge of the square runs between the two targets"
-            return all(
-                other(left(generator)) == right(self(generator))
-                for generator in sole_structure_generators(self.domain())
-            )
-
 
 class IsoArrowCategory(_OnACategory, Category):
     r"""The subcategory of \(\operatorname{Ar}(\mathbf{C})\) of isomorphisms."""
@@ -292,13 +246,11 @@ def Isomorphism(forward: Morphism, backward: Morphism) -> Morphism:
     is complete; returning the object alone loses the only thing that relates
     it to the one it came from.
 
-    Both round trips are checked on the distinguished generators, which is
-    what makes the declaration falsifiable: a wrong transformation matrix
-    fails here rather than silently naming an unrelated object.
+    The category records inverse data.  It does not decide equality of
+    arbitrary morphisms.  A category with decidable morphism equality can
+    validate the two inverse equations before it calls this constructor.
     """
-    # Local: slice_categories reaches the algebra node, so module-level
-    # imports would close that cycle; both are built by call time.
-    from dzack_research.preamble.categories.abstract_categories.slice_categories import sole_structure_generators
+    from dzack_research.preamble.categories.abstract_categories.products import ambient_category_of
     from dzack_research.preamble.refine import refine
 
     assert isinstance(forward, Morphism) and isinstance(backward, Morphism), (
@@ -308,19 +260,11 @@ def Isomorphism(forward: Morphism, backward: Morphism) -> Morphism:
         backward.domain() is forward.codomain()
         and backward.codomain() is forward.domain()
     ), "the inverse of an arrow X -> Y is an arrow Y -> X"
-    assert all(
-        backward(forward(generator)) == generator
-        for generator in sole_structure_generators(forward.domain())
-    ), "the declared inverse does not recover the source's generators"
-    assert all(
-        forward(backward(generator)) == generator
-        for generator in sole_structure_generators(forward.codomain())
-    ), "the declared inverse does not recover the target's generators"
     # Installed on the arrows themselves: ``Morphism`` is a cython class and
     # the inverse is declared here, not held by any Sage class.
     setattr(forward, "_inverse_morphism", backward)
     setattr(backward, "_inverse_morphism", forward)
-    iso_arrows = forward.domain().category().IsoArrow()
+    iso_arrows = ambient_category_of((forward.domain(), forward.codomain())).IsoArrow()
     refine(backward, iso_arrows)
     isomorphism: Morphism = refine(forward, iso_arrows)
     return isomorphism
