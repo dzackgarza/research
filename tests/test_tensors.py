@@ -535,3 +535,23 @@ def test_a_vector_reports_the_operands_own_variance_when_it_cannot_multiply() ->
         raise AssertionError("a vector has no covariant index to contract")
 
 
+
+
+def test_morphism_and_endomorphism_name_codomain_and_domain_indices() -> None:
+    f = tensor.morphism(ZZ, 2, 3, [[1, 0, 2], [0, 1, 3]])
+    t = tensor.endomorphism(ZZ, 2, [[0, 1], [1, 0]])
+
+    assert f.tensor_valence() == (1, 1)
+    assert f.upper_ranks() == (2,) and f.lower_ranks() == (3,)
+    assert (f * tensor.vector(ZZ, [1, 1, 1])).list() == [3, 4]
+    assert t.upper_ranks() == t.lower_ranks() == (2,)
+    assert t.trace() == 0
+    assert t * t == tensor.endomorphism(ZZ, 2, [[1, 0], [0, 1]])
+
+
+def test_row_span_normal_form_decides_spans_not_morphism_equality() -> None:
+    left = tensor.morphism(ZZ, 2, 2, [[2, 4], [1, 3]])
+    right = tensor.morphism(ZZ, 2, 2, [[1, 1], [0, 2]])
+
+    assert left.row_span_normal_form() == right.row_span_normal_form()
+    assert left != right

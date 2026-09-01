@@ -544,6 +544,30 @@ class Tensor:
             basis.list(),
         )
 
+    def row_span_normal_form(self):
+        r"""Return the canonical tensor with the same row span.
+
+        Two two-index tensors have the same row span exactly when their
+        normal forms agree, which decides equality of the submodules the
+        rows generate.  It does not decide equality of morphisms: in a
+        framed module those are equal only when the components themselves
+        are equal, never merely when a normal form is shared.
+        """
+        if self.tensor_order() != 2:
+            raise TypeError("a row span here is defined for a two-index tensor")
+        engine = _engine_component_matrix(self)
+        normal = (
+            engine.echelon_form()
+            if engine.base_ring().is_field()
+            else engine.hermite_form(include_zero_rows=False)
+        )
+        return tensor(
+            self.base_ring(),
+            (int(normal.nrows()),),
+            (int(normal.ncols()),),
+            normal.list(),
+        )
+
     def row(self, index):
         r"""Return one contravariant slice of a two-index tensor as a vector."""
         if self.tensor_order() != 2:
@@ -760,6 +784,80 @@ class _TensorCovectorConstructor:
             contravariant.upper_ranks(),
             contravariant.list(),
         )
+
+
+class _TensorMorphismConstructor:
+    r"""A type-``(1,1)`` tensor read as representing a morphism.
+
+    A tensor represents a morphism through the evaluation map
+
+    .. math:: N\otimes_R M^* \longrightarrow \operatorname{Hom}_R(M,N),
+              \qquad n\otimes\varphi \mapsto (m\mapsto \varphi(m)\,n),
+
+    and the morphism a tensor represents is its image there.  Only this map
+    is needed.  It is neither injective nor surjective in general: distinct
+    tensors can represent one morphism, and not every morphism is
+    represented.  It is an isomorphism when \(M\) is finitely generated
+    projective, which is the regime the coordinate constructors work in.
+
+    So this constructor says that the component array is *meant to*
+    represent a morphism.  The contravariant index is the codomain and the
+    covariant index the domain, which is what removes the row-versus-column
+    reading a bare matrix leaves open.
+
+    **The type-``(1,1)`` reading is a specialization, not the general
+    case.**  A morphism always pairs with \(M\otimes N^*\) by
+    \(\langle f,\,m\otimes\psi\rangle = \psi(f(m))\), so what one has in
+    general is an element of \((M\otimes N^*)^*\), which is of a different
+    valence.  It refines to a type-``(1,1)`` tensor only when the modules
+    are known to lie in a subcategory where the two agree, and the
+    dividing line is finite generation: at infinite rank
+    \((M\otimes N^*)^*\) is not \(N\otimes M^*\).
+    :class:`TensorModule` already records that boundary, naming an
+    infinite-rank mixed space ``Hom(...)`` and an infinite-rank type-
+    ``(0,q)`` space \((M^{\otimes q})^*\) rather than \((M^*)^{\otimes q}\).
+    Taking integer ranks and a finite component array is exactly what
+    places this constructor on the finitely generated side of it.
+
+    EXAMPLES::
+
+        sage: from dzack_research.preamble.tensors import tensor
+        sage: f = tensor.morphism(ZZ, 2, 3, [[1, 0, 2], [0, 1, 3]])
+        sage: f.tensor_valence()
+        (1, 1)
+        sage: f.parent()
+        ZZ^2 ⊗ (ZZ^3)*
+        sage: f * tensor.vector(ZZ, [1, 1, 1])
+        Type (1, 0) tensor in ZZ^2
+        (3, 4)
+    """
+
+    def __call__(self, base_ring, codomain_rank, domain_rank, components=None):
+        return tensor(base_ring, (codomain_rank,), (domain_rank,), components)
+
+
+class _TensorEndomorphismConstructor:
+    r"""The square case of :class:`_TensorMorphismConstructor`, where ``M`` is ``N``.
+
+    One rank suffices, and the represented morphism is an endomorphism.
+    The same specialization applies: in general an endomorphism gives an
+    element of \((M\otimes_R M^*)^*\) through the trace pairing, and only
+    finite generation refines that to a type-``(1,1)`` tensor.
+
+    EXAMPLES::
+
+        sage: from dzack_research.preamble.tensors import tensor
+        sage: t = tensor.endomorphism(ZZ, 2, [[0, 1], [1, 0]])
+        sage: t.tensor_valence()
+        (1, 1)
+        sage: t.trace()
+        0
+        sage: t * t == tensor.endomorphism(ZZ, 2, [[1, 0], [0, 1]])
+        True
+    """
+
+    def __call__(self, base_ring, rank, components=None):
+        return tensor(base_ring, (rank,), (rank,), components)
 
 
 class _TensorMatrixConstructor:
@@ -1552,6 +1650,8 @@ class _TensorConstructor:
     vector = _TensorVectorConstructor()
     covector = _TensorCovectorConstructor()
     matrix = _TensorMatrixConstructor()
+    morphism = _TensorMorphismConstructor()
+    endomorphism = _TensorEndomorphismConstructor()
 
     def __call__(
         self,
