@@ -1,20 +1,41 @@
 """Owned categories of modules and vector spaces."""
 
-from sage.categories.additive_groups import AdditiveGroups as SageAdditiveGroups
-from sage.categories.modules import Modules as SageModules
-from sage.categories.vector_spaces import VectorSpaces as SageVectorSpaces
+import operator
+
+from sage.categories.action import Action
 from sage.misc.cachefunc import cached_method
 
-from dzack_research.preamble.categories.group.magmas import AdditiveGroups
+from dzack_research.preamble.categories.group.magmas import CommutativeAdditiveGroups
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    EndCategoryConstruction,
     HomCategoryConstruction,
+)
+from dzack_research.preamble.categories.modules.internal_hom import (
+    LinearEndCategoryConstruction,
 )
 from dzack_research.preamble.categories.rings import (
     OwnedCategoryOverBaseRing,
+    engine_element,
     engine_ring,
     owned_ring_view,
 )
+
+
+class _ModuleScalarAction(Action):
+    r"""The selected scalar action of the base ring on one module parent."""
+
+    def __init__(self, scalar_parent, module, is_left) -> None:
+        self._module = module
+        Action.__init__(self, scalar_parent, module, is_left, operator.mul)
+
+    def _act_(self, scalar, element):
+        return self._module.scalar_multiple(scalar, element)
+
+
+def register_module_scalar_action(module) -> None:
+    r"""Register ordinary ``r*m``/``m*r`` syntax for an owned module parent."""
+    scalar_parent = engine_ring(module.base_ring())
+    module.register_action(_ModuleScalarAction(scalar_parent, module, True))
+    module.register_action(_ModuleScalarAction(scalar_parent, module, False))
 
 
 class ModuleHomCategoryConstruction(HomCategoryConstruction):
@@ -26,33 +47,8 @@ class ModuleHomCategoryConstruction(HomCategoryConstruction):
         return ModuleHomset
 
 
-class ModuleEndCategoryConstruction(EndCategoryConstruction):
+class ModuleEndCategoryConstruction(LinearEndCategoryConstruction):
     r"""The ring-valued endomorphism family ``M |-> End_R(M)``."""
-
-    def Of(self, obj, codomain=None):
-        if codomain is not None and codomain is not obj:
-            raise ValueError("an endomorphism category has equal endpoints")
-        if obj not in self.base_category():
-            raise TypeError("the endomorphism object must lie in the module category")
-        key = id(obj), id(obj)
-        cached = self._objects.get(key)
-        if cached is not None and cached.domain_object() is obj:
-            return cached
-
-        endomorphisms = self.base_category().Hom(obj, obj)
-        endomorphisms.attach_end_family(self)
-        from dzack_research.preamble.categories.rings import OwnedRings
-        from dzack_research.preamble.refine import refine
-
-        refine(endomorphisms, OwnedRings())
-        self._objects[key] = endomorphisms
-        return endomorphisms
-
-    def __contains__(self, candidate) -> bool:
-        return (
-            hasattr(candidate, "end_family")
-            and candidate.end_family() is self
-        )
 
 
 class Modules(OwnedCategoryOverBaseRing):
@@ -63,11 +59,7 @@ class Modules(OwnedCategoryOverBaseRing):
         return "modules"
 
     def super_categories(self):
-        return [
-            SageModules(engine_ring(self.base_ring())),
-            AdditiveGroups(),
-            SageAdditiveGroups().AdditiveCommutative(),
-        ]
+        return [CommutativeAdditiveGroups()]
 
     def homset(self, domain, codomain):
         r"""Return the unique Hom-set ``Hom_R(domain,codomain)``."""
@@ -102,7 +94,7 @@ class Modules(OwnedCategoryOverBaseRing):
             if element not in self:
                 raise TypeError(f"{element} is not an element of {self}")
             engine = engine_ring(self.base_ring())
-            engine_scalar = engine(scalar)
+            engine_scalar = engine_element(self.base_ring(), scalar)
 
             # Category refinement makes ``base_ring()`` return the owned
             # facade, while the concrete Sage module still stores its native
@@ -116,30 +108,54 @@ class Modules(OwnedCategoryOverBaseRing):
             if isinstance(self, CombinatorialFreeModule):
                 return self._from_dict(
                     {
-                        label: engine_scalar * coefficient
+                        label: engine_scalar
+                        * engine_element(self.base_ring(), coefficient)
                         for label, coefficient in element.monomial_coefficients().items()
                     },
                     coerce=False,
                 )
             if isinstance(self, FreeModule_generic):
-                return self(tuple(engine_scalar * coefficient for coefficient in element))
+                return self(
+                    tuple(
+                        engine_scalar * engine_element(self.base_ring(), coefficient)
+                        for coefficient in element
+                    )
+                )
             if isinstance(self, FGP_Module_class):
                 return self(engine_scalar * element.lift())
+            lift = getattr(element, "lift", None)
+            cover = getattr(self, "V", None)
+            if lift is not None and cover is not None:
+                lifted = lift()
+                selected_cover = cover()
+                if getattr(lifted, "parent", lambda: None)() is selected_cover:
+                    return self(
+                        selected_cover(
+                            tuple(
+                                engine_scalar
+                                * engine_element(self.base_ring(), coefficient)
+                                for coefficient in lifted
+                            )
+                        )
+                    )
             return engine_scalar * element
 
         @cached_method
         def _ring_morphism_defining_module_action(self):
             r"""Return ``rho_M : R -> End_R(M)``, the module structure itself."""
-            from sage.categories.homset import Hom
-            from sage.categories.morphism import SetMorphism
-            from sage.categories.rings import Rings as SageRings
-
+            selected = self.__dict__.get("_preamble_scalar_action_morphism")
+            if selected is not None:
+                return selected
             ring = self.base_ring()
             endomorphisms = Modules(ring).End(self)
-            return SetMorphism(
-                Hom(ring, endomorphisms, SageRings()),
+            from dzack_research.preamble.categories.rings import ring_morphism
+
+            return ring_morphism(
+                ring,
+                endomorphisms,
                 lambda scalar: endomorphisms.elementwise(
-                    lambda element: self._engine_scalar_multiple(scalar, element)
+                    lambda element: self._engine_scalar_multiple(scalar, element),
+                    verify_linearity=False,
                 ),
             )
 
@@ -166,6 +182,43 @@ class Modules(OwnedCategoryOverBaseRing):
 
             return twist_scalar_action(self, ring_endomorphism)
 
+        def localize(self, *datum):
+            r"""Return ``S^{-1}M`` by scalar extension to ``S^{-1}R``.
+
+            ``datum`` may be a represented localization ring, a represented
+            submonoid ``S <= (R,*)``, or the finite generators used by the
+            ring-localization convenience API.
+            """
+            from dzack_research.preamble.categories.rings import LocalizationRings
+            from dzack_research.preamble.categories.functors.module_localization import (
+                module_localization_functor,
+            )
+
+            ring = self.base_ring()
+            if len(datum) == 1 and datum[0] in LocalizationRings():
+                localization_ring = datum[0]
+                if localization_ring.localization_source() is not ring:
+                    raise ValueError("the localization ring has the wrong source ring")
+            else:
+                localization_ring = ring.localization(*datum)
+            return module_localization_functor(localization_ring)(self)
+
+        localization = localize
+
+        def localize_at_prime(self, prime):
+            r"""Return the localized module ``M_p`` at a represented prime."""
+            ring = self.base_ring()
+            if getattr(prime, "parent", lambda: None)() is ring.spectrum():
+                point = prime
+            else:
+                point = ring.spectrum()(prime)
+            localization_ring = point.local_ring()
+            localized = self.localize(localization_ring)
+            localized._preamble_localization_prime_point = point
+            return localized
+
+        localization_at_prime = localize_at_prime
+
         def internal_hom(self, target):
             r"""Return the enriched Hom object ``Hom_R(self,target)``.
 
@@ -181,9 +234,7 @@ class Modules(OwnedCategoryOverBaseRing):
             return InternalHom(self, target)
 
         def _Hom_(self, codomain, category=None):
-            if category is not None and not category.is_subcategory(
-                SageModules(engine_ring(self.base_ring()))
-            ):
+            if category is not None and not category.is_subcategory(Modules(self.base_ring())):
                 raise TypeError("this is not a module homset category")
             from dzack_research.preamble.categories.modules.framed.framed_modules import (
                 FramedModules,
@@ -211,7 +262,4 @@ class VectorSpaces(OwnedCategoryOverBaseRing):
         return "vector spaces"
 
     def super_categories(self):
-        return [
-            SageVectorSpaces(engine_ring(self.base_ring())),
-            Modules(self.base_ring()),
-        ]
+        return [Modules(self.base_ring())]

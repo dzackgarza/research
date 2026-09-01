@@ -7,10 +7,16 @@ algebra generators and evaluated by the formal chain rule on a selected
 presentation representative.
 """
 
-from sage.structure.element import ModuleElement
-from sage.structure.parent import Parent
-from sage.structure.sage_object import SageObject
+from sage.categories.action import Action
+from sage.categories.homset import Hom, Homset
+from sage.categories.morphism import Morphism, SetMorphism
+from sage.categories.rings import Rings as SageRings
+from sage.categories.sets_cat import Sets
+import operator
 
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    ModuleMorphism,
+)
 from dzack_research.preamble.categories.rings import engine_ring
 
 
@@ -56,9 +62,16 @@ def _differentiate_representative(algebra, representative, variables):
     return tuple(target(source.derivative(variable)) for variable in variables)
 
 
-class Derivation(ModuleElement):
+class Derivation(Morphism):
+    r"""An actual ``R``-linear arrow ``A -> Res_R(M)`` satisfying Leibniz.
+
+    The public codomain of a derivation remains the original ``A``-module
+    ``M``.  :meth:`underlying_linear_morphism` is the corresponding element of
+    the canonical ``Hom_R(A, Res_R(M))`` containing this derivation subobject.
+    """
+
     def __init__(self, parent, generator_images) -> None:
-        ModuleElement.__init__(self, parent)
+        Morphism.__init__(self, parent)
         labels = parent.generator_labels()
         if isinstance(generator_images, dict):
             missing = [label for label in labels if label not in generator_images]
@@ -84,6 +97,9 @@ class Derivation(ModuleElement):
 
     def codomain(self):
         return self.parent().target_module()
+
+    def restricted_codomain(self):
+        return self.parent().restricted_target_module()
 
     def generator_image(self, label):
         return self._generator_images[label]
@@ -130,7 +146,20 @@ class Derivation(ModuleElement):
         )
         return self._evaluate_coefficients(coefficients)
 
-    def _add_(self, other):
+    def _call_(self, element):
+        return self.__call__(element)
+
+    def underlying_linear_morphism(self):
+        morphism = self.parent().ambient_hom().elementwise(
+            lambda element: self.restricted_codomain()(self(element))
+        )
+        morphism._preamble_is_derivation = True
+        morphism._preamble_derivation = self
+        return morphism
+
+    def __add__(self, other):
+        if not isinstance(other, Derivation) or other.parent() is not self.parent():
+            return NotImplemented
         return self.parent()(
             {
                 label: self.generator_image(label) + other.generator_image(label)
@@ -138,7 +167,7 @@ class Derivation(ModuleElement):
             }
         )
 
-    def _neg_(self):
+    def __neg__(self):
         return self.parent()(
             {
                 label: -self.generator_image(label)
@@ -146,22 +175,55 @@ class Derivation(ModuleElement):
             }
         )
 
-    def _lmul_(self, scalar):
-        target = self.codomain()
-        return self.parent()(
-            {
-                label: target.scalar_multiple(scalar, self.generator_image(label))
-                for label in self.parent().generator_labels()
-            }
-        )
+    def __sub__(self, other):
+        return self + (-other)
 
-    _rmul_ = _lmul_
+    def _richcmp_(self, other, op):
+        from sage.structure.richcmp import op_EQ, op_NE
+
+        if op not in (op_EQ, op_NE):
+            return NotImplemented
+        equal = (
+            isinstance(other, Derivation)
+            and other.parent() is self.parent()
+            and all(
+                self.generator_image(label) == other.generator_image(label)
+                for label in self.parent().generator_labels()
+            )
+        )
+        return equal if op == op_EQ else not equal
+
+    def __rmul__(self, scalar):
+        return self.parent().algebra_multiple(scalar, self)
+
+    def _acted_upon_(self, actor, self_on_left):
+        try:
+            return self.parent().algebra_multiple(actor, self)
+        except (TypeError, ValueError):
+            return None
 
     def _repr_(self):
         return f"Derivation {self.domain()} -> {self.codomain()}"
 
 
-class DerivationSpace(Parent):
+class _DerivationAlgebraAction(Action):
+    def __init__(self, algebra, derivations, is_left) -> None:
+        self._derivations = derivations
+        Action.__init__(self, engine_ring(algebra), derivations, is_left, operator.mul)
+
+    def _act_(self, scalar, derivation):
+        return self._derivations.algebra_multiple(scalar, derivation)
+
+
+class DerivationSpace(Homset):
+    r"""The ``A``-module ``Der_R(A,M)`` with its restricted Hom inclusion.
+
+    The actual subobject of ``Hom_R(A,Res_R M)`` is
+    ``Res_R Der_R(A,M)``.  Keeping these two scalar structures distinct is
+    essential: the derivation module is canonically an ``A``-module, whereas
+    its inclusion into the ambient Hom is only ``R``-linear.
+    """
+
     Element = Derivation
 
     def __init__(self, algebra, target_module) -> None:
@@ -173,9 +235,40 @@ class DerivationSpace(Parent):
             algebra
         )
         self._generator_labels = labels
-        from dzack_research.preamble.categories.modules import Modules
+        from dzack_research.preamble.categories.modules import (
+            ModuleSubobjects,
+            Modules,
+            module_embedding,
+            restrict_scalars,
+        )
+        from dzack_research.preamble.refine import refine
 
-        Parent.__init__(self, base=algebra, category=Modules(algebra))
+        base = algebra.base_ring()
+        structure_map = algebra.algebra_structure_morphism()
+        self._restricted_target = restrict_scalars(
+            target_module,
+            structure_map,
+        )
+        Homset.__init__(self, algebra, target_module, category=Sets())
+        self._preamble_base_ring = algebra
+        refine(self, Modules(algebra))
+        self.register_action(_DerivationAlgebraAction(algebra, self, True))
+        self.register_action(_DerivationAlgebraAction(algebra, self, False))
+        self._restricted_module = restrict_scalars(self, structure_map)
+        self._ambient_hom = Modules(base).Hom(algebra, self._restricted_target)
+        self._preamble_inclusion = module_embedding(
+            self._restricted_module,
+            self._ambient_hom,
+            lambda restricted_derivation: (
+                restricted_derivation.underlying_element().underlying_linear_morphism()
+            ),
+            verify_linearity=False,
+        )
+        self._restricted_module._preamble_inclusion = self._preamble_inclusion
+        refine(self._restricted_module, ModuleSubobjects(base))
+
+    def base_ring(self):
+        return self._preamble_base_ring
 
     def algebra(self):
         return self._algebra
@@ -183,16 +276,70 @@ class DerivationSpace(Parent):
     def target_module(self):
         return self._target_module
 
+    def restricted_target_module(self):
+        return self._restricted_target
+
+    def restricted_module(self):
+        return self._restricted_module
+
+    def ambient_hom(self):
+        return self._ambient_hom
+
+    def inclusion(self):
+        return self._preamble_inclusion
+
     def generator_labels(self):
         return self._generator_labels
 
     def _element_constructor_(self, generator_images):
         if isinstance(generator_images, Derivation) and generator_images.parent() is self:
             return generator_images
+        if isinstance(generator_images, Morphism):
+            if (
+                generator_images.domain() is not self.algebra()
+                or generator_images.codomain() is not self.restricted_target_module()
+            ):
+                raise ValueError("the linear map has the wrong derivation endpoints")
+            if not getattr(generator_images, "_preamble_is_derivation", False):
+                raise ValueError(
+                    "an arbitrary R-linear map cannot be certified as a derivation by this backend"
+                )
+            generator_images = {
+                label: generator_images(self.algebra().algebra_generator(label)).underlying_element()
+                for label in self.generator_labels()
+            }
         return self.element_class(self, generator_images)
 
     def zero(self):
         return self({label: self.target_module().zero() for label in self.generator_labels()})
+
+    def algebra_multiple(self, scalar, derivation):
+        if derivation.parent() is not self:
+            derivation = self(derivation)
+        scalar = self.algebra()(scalar)
+        target = self.target_module()
+        return self(
+            {
+                label: target.scalar_multiple(scalar, derivation.generator_image(label))
+                for label in self.generator_labels()
+            }
+        )
+
+    def scalar_multiple(self, scalar, derivation):
+        return self.algebra_multiple(scalar, derivation)
+
+    def algebra_action(self):
+        from dzack_research.preamble.categories.modules import Modules
+
+        endomorphisms = Modules(self.algebra()).End(self)
+        return SetMorphism(
+            Hom(self.algebra(), endomorphisms, SageRings()),
+            lambda scalar: endomorphisms.elementwise(
+                lambda derivation: self.algebra_multiple(scalar, derivation)
+            ),
+        )
+
+    scalar_action = algebra_action
 
     def _repr_(self):
         return f"Der_{self.algebra().base_ring()}({self.algebra()}, {self.target_module()})"
@@ -215,41 +362,48 @@ def Derivations(algebra, target_module) -> DerivationSpace:
     return result
 
 
-class GradedDerivation(SageObject):
+class GradedDerivation(ModuleMorphism):
     r"""A homogeneous graded derivation of a represented graded algebra.
 
     For shift ``r`` this represents a map ``D : A^p -> M^(p+r)`` satisfying
-    ``D(ab) = D(a)b + (-1)^(r p) a D(b)`` on homogeneous ``a``.  The live
-    carrier is intentionally generic: concrete structured constructions may
-    provide stronger finite checks through :meth:`check_on_generators`.
+    ``D(ab) = D(a)b + (-1)^(r p) a D(b)`` on homogeneous ``a``.  It is an
+    actual ``R``-linear morphism, lying in a represented submodule of
+    ``Hom_R(A,M)``.
     """
 
-    def __init__(self, algebra, target, shift, function) -> None:
-        self._algebra = algebra
-        self._target = target
-        self._shift = int(shift)
+    def __init__(self, parent, function) -> None:
         if not callable(function):
             raise TypeError("a graded derivation is specified by an element map")
-        self._function = function
+        ModuleMorphism.__init__(
+            self,
+            parent,
+            function,
+            elementwise=True,
+            verify_linearity=False,
+        )
+        if not self.check_on_generators():
+            raise ValueError(
+                f"the proposed map is not a degree-{self.degree_shift()} graded derivation"
+            )
 
     def algebra(self):
-        return self._algebra
-
-    domain = algebra
+        return self.parent().algebra()
 
     def target(self):
-        return self._target
-
-    codomain = target
+        return self.parent().target()
 
     def degree_shift(self):
-        return self._shift
+        return self.parent().degree_shift()
 
-    def __call__(self, element):
-        if element.parent() is not self.algebra():
-            element = self.algebra()(element)
-        image = self._function(element)
-        return image if image.parent() is self.target() else self.target()(image)
+    def underlying_linear_morphism(self):
+        morphism = self.parent().ambient_hom().elementwise(
+            lambda element: self(element),
+            verify_linearity=False,
+        )
+        morphism._preamble_is_graded_derivation = True
+        morphism._preamble_graded_derivation = self
+        morphism._preamble_degree_shift = self.degree_shift()
+        return morphism
 
     def check_on_generators(self) -> bool:
         r"""Check degree and graded Leibniz on a selected finite algebra framing."""
@@ -281,16 +435,38 @@ class GradedDerivation(SageObject):
         return True
 
 
-class GradedDerivationSpace(Parent):
+class GradedDerivationSpace(Homset):
+    r"""The ``R``-submodule of degree-``r`` graded derivations in ``Hom_R``."""
+
     Element = GradedDerivation
 
     def __init__(self, algebra, target, shift) -> None:
+        if algebra.base_ring() is not target.base_ring():
+            raise ValueError("a graded derivation requires one coefficient ring")
         self._algebra = algebra
         self._target = target
         self._shift = int(shift)
-        from sage.categories.sets_cat import Sets
+        from dzack_research.preamble.categories.modules import (
+            ModuleSubobjects,
+            Modules,
+            module_embedding,
+        )
+        from dzack_research.preamble.refine import refine
 
-        Parent.__init__(self, category=Sets())
+        ring = algebra.base_ring()
+        self._ambient_hom = Modules(ring).Hom(algebra, target)
+        Homset.__init__(self, algebra, target, category=Sets())
+        self._preamble_base_ring = ring
+        refine(self, [Modules(ring), ModuleSubobjects(ring)])
+        self._preamble_inclusion = module_embedding(
+            self,
+            self._ambient_hom,
+            lambda derivation: derivation.underlying_linear_morphism(),
+            verify_linearity=False,
+        )
+
+    def base_ring(self):
+        return self._preamble_base_ring
 
     def algebra(self):
         return self._algebra
@@ -302,11 +478,43 @@ class GradedDerivationSpace(Parent):
         return self._shift
 
     def _element_constructor_(self, function):
-        return self.element_class(
-            self.algebra(),
-            self.target(),
-            self.degree_shift(),
-            function,
+        if isinstance(function, GradedDerivation) and function.parent() is self:
+            return function
+        if isinstance(function, Morphism):
+            if function.domain() is not self.algebra() or function.codomain() is not self.target():
+                raise ValueError("the linear map has the wrong graded-derivation endpoints")
+            derivation = getattr(function, "_preamble_graded_derivation", None)
+            if (
+                derivation is None
+                or getattr(function, "_preamble_degree_shift", None) != self.degree_shift()
+            ):
+                raise ValueError(
+                    "an arbitrary R-linear map cannot be certified as a graded derivation by this backend"
+                )
+            return self.element_class(self, lambda element: derivation(element))
+        return self.element_class(self, function)
+
+    def ambient_hom(self):
+        return self._ambient_hom
+
+    def inclusion(self):
+        return self._preamble_inclusion
+
+    def zero(self):
+        return self.elementwise(lambda _element: self.target().zero())
+
+    def elementwise(self, function):
+        if not callable(function):
+            raise TypeError("a graded derivation is specified by an element map")
+        return self.element_class(self, function)
+
+    def scalar_multiple(self, scalar, derivation):
+        if derivation.parent() is not self:
+            derivation = self(derivation)
+        scalar = self.base_ring()(scalar)
+        target = self.target()
+        return self.elementwise(
+            lambda element: target.scalar_multiple(scalar, derivation(element))
         )
 
     def _repr_(self):

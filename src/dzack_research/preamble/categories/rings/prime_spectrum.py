@@ -4,7 +4,10 @@ from sage.structure.element import Element
 from sage.structure.parent import Parent
 from sage.misc.cachefunc import cached_method
 
-from dzack_research.preamble.categories.rings.commutative_algebra import _engine_ideal
+from dzack_research.preamble.categories.rings.commutative_algebra import (
+    _engine_ideal,
+    _owned_ideal,
+)
 from dzack_research.preamble.categories.rings.rings import (
     OwnedCommutativeRings,
     engine_ring,
@@ -35,24 +38,37 @@ class PrimeIdealPoint(Element):
     def residue_field(self):
         return self.local_ring().residue_field()
 
+    @cached_method
+    def residue_map(self):
+        r"""Return the canonical map ``R -> kappa(p)`` attached to this point."""
+        local = self.local_ring()
+        selected = getattr(local, "_preamble_source_residue_map", None)
+        if selected is not None:
+            return selected
+        return local.residue_map() * local.localization_map()
+
     def specializes_to(self, other) -> bool:
         if other.parent() is not self.parent():
             raise ValueError("specialization compares points of one spectrum")
-        return bool(self.ideal() <= other.ideal())
+        ring = self.parent().ring()
+        return bool(_engine_ideal(ring, self.ideal()) <= _engine_ideal(ring, other.ideal()))
 
     def _richcmp_(self, other, op):
         if not isinstance(other, PrimeIdealPoint) or other.parent() is not self.parent():
             return NotImplemented
         from sage.structure.richcmp import op_EQ, op_LE, op_LT, op_NE
 
+        ring = self.parent().ring()
+        left_ideal = _engine_ideal(ring, self.ideal())
+        right_ideal = _engine_ideal(ring, other.ideal())
         if op == op_EQ:
-            return self.ideal() == other.ideal()
+            return left_ideal == right_ideal
         if op == op_NE:
-            return self.ideal() != other.ideal()
+            return left_ideal != right_ideal
         if op == op_LE:
             return self.specializes_to(other)
         if op == op_LT:
-            return self.ideal() != other.ideal() and self.specializes_to(other)
+            return left_ideal != right_ideal and self.specializes_to(other)
         return NotImplemented
 
     def _repr_(self):
@@ -68,7 +84,10 @@ class ZariskiClosedSubobject(SetInclusion):
 
         domain = ConditionSet(
             spectrum,
-            lambda point: bool(self.defining_ideal() <= point.ideal()),
+            lambda point: bool(
+                _engine_ideal(spectrum.ring(), self.defining_ideal())
+                <= _engine_ideal(spectrum.ring(), point.ideal())
+            ),
         )
         SetInclusion.__init__(self, domain, spectrum)
 
@@ -80,7 +99,11 @@ class ZariskiClosedSubobject(SetInclusion):
             point = self.codomain()(point)
         except (TypeError, ValueError):
             return False
-        return bool(self.defining_ideal() <= point.ideal())
+        ring = self.codomain().ring()
+        return bool(
+            _engine_ideal(ring, self.defining_ideal())
+            <= _engine_ideal(ring, point.ideal())
+        )
 
     def _repr_(self):
         return f"V({self.defining_ideal()}) in {self.codomain()}"
@@ -95,7 +118,8 @@ class DistinguishedOpenSubobject(SetInclusion):
 
         domain = ConditionSet(
             spectrum,
-            lambda point: self.function() not in point.ideal(),
+            lambda point: engine_ring(spectrum.ring())(self.function())
+            not in _engine_ideal(spectrum.ring(), point.ideal()),
         )
         SetInclusion.__init__(self, domain, spectrum)
 
@@ -107,7 +131,8 @@ class DistinguishedOpenSubobject(SetInclusion):
             point = self.codomain()(point)
         except (TypeError, ValueError):
             return False
-        return self.function() not in point.ideal()
+        ring = self.codomain().ring()
+        return engine_ring(ring)(self.function()) not in _engine_ideal(ring, point.ideal())
 
     def coordinate_ring(self):
         return self.codomain().ring().localization(self.function())
@@ -130,13 +155,17 @@ class PrimeSpectrum(Parent):
 
     coordinate_ring = ring
 
+    def __call__(self, ideal):
+        r"""Construct a prime point directly from its represented ideal."""
+        return self._element_constructor_(ideal)
+
     def _element_constructor_(self, ideal):
         if isinstance(ideal, PrimeIdealPoint) and ideal.parent() is self:
             return ideal
         candidate = _engine_ideal(self.ring(), ideal)
         if not bool(candidate.is_prime()):
             raise ValueError(f"{candidate} is not a prime ideal of {self.ring()}")
-        return self.element_class(self, candidate)
+        return self.element_class(self, _owned_ideal(self.ring(), candidate))
 
     def __contains__(self, candidate) -> bool:
         if isinstance(candidate, PrimeIdealPoint):
@@ -148,10 +177,12 @@ class PrimeSpectrum(Parent):
             return False
 
     def le(self, left, right) -> bool:
-        return self(left).specializes_to(self(right))
+        return self._element_constructor_(left).specializes_to(
+            self._element_constructor_(right)
+        )
 
     def closed_set(self, ideal):
-        return ZariskiClosedSubobject(self, _engine_ideal(self.ring(), ideal))
+        return ZariskiClosedSubobject(self, _owned_ideal(self.ring(), ideal))
 
     V = closed_set
 
@@ -165,7 +196,7 @@ class PrimeSpectrum(Parent):
         zero = engine.ideal(0)
         if not bool(zero.is_prime()):
             raise ValueError(f"{self.ring()} is not integral, so Spec has no unique generic point")
-        return self(zero)
+        return self._element_constructor_(zero)
 
     def _repr_(self):
         return f"Spec({self.ring()})"

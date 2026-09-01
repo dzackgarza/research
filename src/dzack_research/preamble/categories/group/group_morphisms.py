@@ -1,8 +1,9 @@
 """Homsets, homomorphisms, and automorphism groups for owned groups."""
 
 from sage.categories.category import Category
-from sage.categories.homset import Hom, Homset
+from sage.categories.homset import Hom
 from sage.categories.morphism import Morphism, SetMorphism
+from sage.categories.objects import Objects
 from sage.categories.sets_cat import Sets
 from sage.groups.finitely_presented import FinitelyPresentedGroup
 from sage.groups.free_group import FreeGroup_class
@@ -13,10 +14,15 @@ from sage.groups.perm_gps.permgroup import PermutationGroup_generic
 from sage.libs.gap.element import GapElement
 from sage.libs.gap.libgap import libgap
 from sage.misc.cachefunc import cached_function, cached_method
+from sage.misc.classcall_metaclass import typecall
 from sage.rings.integer_ring import ZZ
 from sage.rings.infinity import infinity
 
 from dzack_research.preamble.refine import refine
+from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    CategoricalHomset,
+    category_packet,
+)
 
 
 def _element_to_engine(group, element):
@@ -108,15 +114,21 @@ class IndexedFreeGroupHomomorphism(Morphism):
         )
 
 
-class IndexedFreeGroupHomset(Homset):
+class IndexedFreeGroupHomset(CategoricalHomset):
     """The canonical Hom-set out of an indexed free group."""
 
     Element = IndexedFreeGroupHomomorphism
 
-    def __init__(self, domain, codomain) -> None:
+    def __init__(self, hom_family, domain, codomain) -> None:
         from dzack_research.preamble.categories.group.groups import OwnedGroups
 
-        Homset.__init__(self, domain, codomain, category=OwnedGroups())
+        CategoricalHomset.__init__(
+            self,
+            hom_family,
+            domain,
+            codomain,
+            homset_category=OwnedGroups(),
+        )
 
     def _element_constructor_(self, images, **_options):
         return self.element_class(self, images)
@@ -134,13 +146,24 @@ class GroupHomomorphism(GroupMorphism_libgap):
         return super().__mul__(other)
 
 
-class GroupHomset(GroupHomset_libgap):
+class GroupHomset(GroupHomset_libgap, CategoricalHomset):
     """The canonical owned homset Hom(G,H)."""
 
     Element = GroupHomomorphism
 
-    def __init__(self, domain, codomain):
+    @staticmethod
+    def __classcall__(cls, family, domain, codomain):
+        return typecall(cls, family, domain, codomain)
+
+    def __init__(self, hom_family, domain, codomain):
         from dzack_research.preamble.categories.group.groups import OwnedGroups
+        self._family = hom_family
+        self._end_family = None
+        self._aut_family = None
+        self._domain_object = domain
+        self._codomain_object = codomain
+        self._super_categories_for_classes = [Objects()]
+        Category.__init__(self)
         GroupHomset_libgap.__init__(
             self, domain, codomain, category=OwnedGroups(), check=False
         )
@@ -190,9 +213,9 @@ class GroupHomset(GroupHomset_libgap):
 
 @cached_function
 def group_homset(domain, codomain):
-    if isinstance(domain, IndexedFreeGroup):
-        return IndexedFreeGroupHomset(domain, codomain)
-    return GroupHomset(domain, codomain)
+    from dzack_research.preamble.categories.group.groups import OwnedGroups
+
+    return OwnedGroups().Hom(domain, codomain)
 
 
 class GroupAutomorphism(GroupHomomorphism):
@@ -254,11 +277,54 @@ class GroupAutomorphismGroups(Category):
 class GroupAutomorphismGroup(GroupHomset):
     Element = GroupAutomorphism
 
-    def __init__(self, group, engine_subgroup=None):
-        GroupHomset.__init__(self, group, group)
+    @staticmethod
+    def __classcall__(cls, hom_family, group, engine_subgroup=None):
+        return typecall(cls, hom_family, group, engine_subgroup=engine_subgroup)
+
+    def __init__(self, hom_family, group, engine_subgroup=None):
+        GroupHomset.__init__(self, hom_family, group, group)
         self._engine_subgroup = engine_subgroup
         self._supergroup = self
-        refine(self, GroupAutomorphismGroups())
+        from dzack_research.preamble.categories.group.groups import (
+            OwnedFiniteGroups,
+            OwnedGroups,
+            _finiteness,
+        )
+
+        categories = [GroupAutomorphismGroups(), OwnedGroups()]
+        if _finiteness(group) is True:
+            categories.append(OwnedFiniteGroups())
+        refine(self, categories)
+
+    def super_categories(self):
+        packet = category_packet(self.base_category())
+        group = self.domain()
+        supers = [
+            packet.Homs().Of(group, group),
+            packet.Monos().Of(group, group),
+            packet.Epis().Of(group, group),
+        ]
+        supers.extend(
+            superpacket.Isos().Of(group, group)
+            for superpacket in packet.super_packets()
+            if group in superpacket.C()
+        )
+        if self.aut_family() is not None:
+            supers.append(packet.Ends().Of(group))
+            supers.extend(
+                superpacket.Auts().Of(group)
+                for superpacket in packet.super_packets()
+                if group in superpacket.C()
+            )
+        return supers
+
+    def identity(self):
+        from dzack_research.preamble.categories.group.groups import _gap_model
+
+        return self(libgap.IdentityMapping(_gap_model(self.domain())), check=False)
+
+    one = identity
+    identity_automorphism = identity
 
     def engine_subgroup(self):
         return self._engine_subgroup
@@ -279,6 +345,10 @@ class GroupAutomorphismGroup(GroupHomset):
         return automorphism
 
     def _subgroup_from_engine(self, engine_subgroup):
-        subgroup = GroupAutomorphismGroup(self.domain(), engine_subgroup=engine_subgroup)
+        subgroup = GroupAutomorphismGroup(
+            self.hom_family(),
+            self.domain(),
+            engine_subgroup=engine_subgroup,
+        )
         subgroup.set_supergroup(self)
         return subgroup

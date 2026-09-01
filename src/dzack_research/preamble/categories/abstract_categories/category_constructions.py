@@ -1,5 +1,6 @@
 r"""Opposite categories and binary products of categories."""
 
+from sage.misc.cachefunc import cached_method
 from sage.categories.category import Category
 from sage.categories.homset import Hom, Homset
 from sage.categories.morphism import Morphism
@@ -78,7 +79,6 @@ class OppositeCategory(Category):
 
     def __init__(self, base_category) -> None:
         self._base_category = base_category
-        self._objects = {}
         super().__init__()
 
     def _make_named_class_key(self, name):
@@ -90,16 +90,11 @@ class OppositeCategory(Category):
     def super_categories(self):
         return [SageSets()]
 
+    @cached_method
     def object(self, underlying_object):
         if underlying_object not in self.base_category():
             raise TypeError("the object lies outside the base category")
-        key = id(underlying_object)
-        cached = self._objects.get(key)
-        if cached is not None and cached.underlying_object() is underlying_object:
-            return cached
-        result = OppositeObject(self, underlying_object)
-        self._objects[key] = result
-        return result
+        return OppositeObject(self, underlying_object)
 
     __call__ = object
 
@@ -201,7 +196,6 @@ class ProductCategory(Category):
     def __init__(self, first_category, second_category) -> None:
         self._first_category = first_category
         self._second_category = second_category
-        self._objects = {}
         super().__init__()
 
     def _make_named_class_key(self, name):
@@ -216,16 +210,11 @@ class ProductCategory(Category):
     def super_categories(self):
         return [SageSets()]
 
+    @cached_method
     def pair(self, first, second):
         if first not in self.first_category() or second not in self.second_category():
             raise TypeError("the pair lies outside the product category")
-        key = id(first), id(second)
-        cached = self._objects.get(key)
-        if cached is not None and cached.first() is first and cached.second() is second:
-            return cached
-        result = ProductObject(self, first, second)
-        self._objects[key] = result
-        return result
+        return ProductObject(self, first, second)
 
     __call__ = pair
 

@@ -1,9 +1,6 @@
 r"""Restriction of scalars along a specified ring morphism."""
 
 from sage.categories.category import Category
-from sage.categories.homset import Hom
-from sage.categories.morphism import SetMorphism
-from sage.categories.sets_cat import Sets
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.element import ModuleElement
 from sage.structure.parent import Parent
@@ -154,17 +151,21 @@ class RestrictedScalarsModuleView(Parent):
             return value
         if isinstance(value, RestrictedScalarsModuleView.Element):
             value = value.underlying_element()
-        return self.element_class(
-            self,
-            self._preamble_extension_module(value),
-        )
+        return self.wrap(self._preamble_extension_module(value))
+
+    def wrap(self, underlying_element):
+        r"""Read an element of the extension module in this restricted module."""
+        extension_module = self._preamble_extension_module
+        if getattr(underlying_element, "parent", lambda: None)() is not extension_module:
+            underlying_element = extension_module(underlying_element)
+        return self.element_class(self, underlying_element)
 
     def _coerce_map_from_(self, source):
+        # Restriction of scalars is a change of structure, not a coercion of
+        # mathematical objects.  Call ``wrap`` explicitly when the same
+        # underlying additive-group element is to be read in this parent.
         if source is self._preamble_extension_module:
-            return SetMorphism(
-                Hom(source, self, Sets()),
-                lambda element: self.element_class(self, element),
-            )
+            return None
         return super()._coerce_map_from_(source)
 
     def __contains__(self, value) -> bool:

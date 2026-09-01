@@ -17,6 +17,14 @@ from dzack_research.preamble.categories.algebras.algebras import (
     own_algebra,
     refine_algebra,
 )
+from dzack_research.preamble.categories.algebras.commutative_pushouts import (
+    CommutativeAlgebraPushouts,
+    commutative_algebra_pushout,
+)
+from dzack_research.preamble.categories.algebras.commutative_coproducts import (
+    CommutativeAlgebraCoproducts,
+    commutative_algebra_coproduct,
+)
 from dzack_research.preamble.categories.algebras.free_algebras import (
     AlternatingAlgebras,
     DividedPowerAlgebras,
@@ -106,6 +114,13 @@ from dzack_research.preamble.categories.algebras.de_rham_algebras import (
     DeRhamAlgebra,
     DeRhamAlgebras,
 )
+from dzack_research.preamble.categories.algebras.cartan_calculus import (
+    GradedCommutator,
+    InteriorProduct,
+    LieBracket,
+    LieDerivative,
+    VectorFields,
+)
 from dzack_research.preamble.categories.algebras.cohomology_algebras import (
     CohomologyAlgebra,
     CohomologyAlgebraElement,
@@ -123,6 +138,10 @@ __all__ = [
     "AlgebrasWithChosenMultiplication",
     "AssociativeAlgebras",
     "AssociativeAlgebrasWithChosenMultiplication",
+    "CommutativeAlgebraCoproducts",
+    "commutative_algebra_pushout",
+    "CommutativeAlgebraPushouts",
+    "commutative_algebra_coproduct",
     "CommutativeAlgebras",
     "CommutativeDifferentialGradedAlgebras",
     "CohomologyAlgebra",
@@ -143,6 +162,11 @@ __all__ = [
     "GradedDerivation",
     "GradedDerivationSpace",
     "GradedDerivations",
+    "GradedCommutator",
+    "InteriorProduct",
+    "LieBracket",
+    "LieDerivative",
+    "VectorFields",
     "DeRhamAlgebra",
     "DeRhamAlgebras",
     "DGAHomset",

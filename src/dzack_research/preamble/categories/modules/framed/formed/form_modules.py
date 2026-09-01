@@ -10,6 +10,10 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.parent import Parent
 
 from dzack_research.preamble.categories.rings import OwnedCategoryOverBaseRing, engine_ring
+from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    CategoricalHomset,
+    HomCategoryConstruction,
+)
 from dzack_research.preamble.refine import refine
 
 
@@ -84,11 +88,10 @@ def form_embedding(domain, codomain, images, *, quadratic: bool | None = None) -
 def _represented_value_module(formed_module):
     r"""Return the actual module object underlying a form's public value object.
 
-    A scalar-valued form publicly takes values in the ring ``R``.  The ring
-    facade is not itself forced into ``Modules(R)`` merely for implementation
-    convenience; its canonical value-module realization is the rank-one
-    module ``R`` over itself.  Genuine module-valued forms are returned
-    unchanged.
+    A scalar-valued form publicly takes values in the ring ``R``.  When ``R``
+    is already carrying its canonical self-module structure it is returned
+    directly; otherwise :func:`ring_as_module` supplies the canonical rank-one
+    realization over itself.  Genuine module-valued forms are unchanged.
     """
     from dzack_research.preamble.categories.modules import Modules, ring_as_module
 
@@ -219,20 +222,40 @@ class FormedModuleMorphism(Morphism):
         )
 
 
-class FormedModuleHomset(Homset):
+class FormedModuleHomset(CategoricalHomset):
     Element = FormedModuleMorphism
 
-    def __init__(self, domain, codomain) -> None:
+    def __init__(self, hom_family, domain, codomain) -> None:
         if domain.base_ring() != codomain.base_ring():
             raise ValueError("fixed-fiber formed morphisms require one base ring")
-        Homset.__init__(
+        CategoricalHomset.__init__(
             self,
+            hom_family,
             domain,
             codomain,
-            category=SageModules(engine_ring(domain.base_ring())),
+            homset_category=Sets(),
         )
 
     def _element_constructor_(self, datum):
+        if isinstance(datum, FormedModuleMorphism):
+            if datum.domain() is not self.domain() or datum.codomain() is not self.codomain():
+                raise ValueError("the formed morphism has the wrong endpoints")
+            if datum.parent() is self:
+                return datum
+            datum = (datum.module_morphism(), datum.value_morphism())
+        elif isinstance(datum, ModuleMorphism):
+            if datum.domain() is not self.domain() or datum.codomain() is not self.codomain():
+                raise ValueError("the underlying module morphism has the wrong endpoints")
+            source_values = _represented_value_module(self.domain())
+            target_values = _represented_value_module(self.codomain())
+            if source_values is not target_values:
+                raise TypeError(
+                    "a bare module morphism determines a formed morphism only "
+                    "when the value module is unchanged"
+                )
+            from dzack_research.preamble.categories.modules import module_homset
+
+            datum = (datum, module_homset(source_values, target_values).identity())
         module_morphism, value_morphism = datum
         return self.element_class(self, module_morphism, value_morphism)
 
@@ -248,8 +271,19 @@ class FormedModuleHomset(Homset):
         )
 
 
+class FormedModuleHomCategoryConstruction(HomCategoryConstruction):
+    def fixed_category_class(self):
+        return FormedModuleHomset
+
+
 def formed_module_homset(domain, codomain) -> FormedModuleHomset:
-    return FormedModuleHomset(domain, codomain)
+    ring = domain.base_ring()
+    if codomain.base_ring() != ring:
+        raise ValueError("fixed-fiber formed morphisms require one base ring")
+    category = FormModules(ring)
+    if domain not in category or codomain not in category:
+        raise TypeError("formed Hom endpoints must lie in one formed-module category")
+    return category.Hom(domain, codomain)
 
 
 def _base_change_element(module, changed_module, ring_map, element):
@@ -574,6 +608,8 @@ class FormModules(OwnedCategoryOverBaseRing):
 
         return [Modules(self.base_ring())]
 
+    _HomCategory = FormedModuleHomCategoryConstruction
+
     class ParentMethods:
         def form(self):
             return self._form
@@ -604,6 +640,15 @@ class FormModules(OwnedCategoryOverBaseRing):
             return fibered_formed_module_homset(self, codomain, ring_map)(
                 (module_morphism, value_morphism)
             )
+
+        def _Hom_(self, codomain, category=None):
+            ring = self.base_ring()
+            formed = FormModules(ring)
+            if codomain in formed and (category is None or category.is_subcategory(formed)):
+                return formed_module_homset(self, codomain)
+            from dzack_research.preamble.categories.modules import module_homset
+
+            return module_homset(self, codomain)
 
         def b(self, left, right):
             if left.parent() is not self or right.parent() is not self:
@@ -798,6 +843,8 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
     def super_categories(self):
         return [FormModules(self.base_ring())]
 
+    _HomCategory = FormedModuleHomCategoryConstruction
+
 
 class SymmetricBilinearFormModules(OwnedCategoryOverBaseRing):
     @classmethod
@@ -807,6 +854,47 @@ class SymmetricBilinearFormModules(OwnedCategoryOverBaseRing):
     def super_categories(self):
         return [BilinearFormModules(self.base_ring())]
 
+    _HomCategory = FormedModuleHomCategoryConstruction
+
+    class ParentMethods:
+        def algebraic_correlation_morphism(self):
+            from dzack_research.preamble.categories.modules.hodge import (
+                AlgebraicCorrelationMorphism,
+            )
+
+            return AlgebraicCorrelationMorphism(self)
+
+        def correlation_isomorphism(self):
+            from dzack_research.preamble.categories.modules.hodge import (
+                CorrelationIsomorphism,
+            )
+
+            return CorrelationIsomorphism(self)
+
+        def hodge_discriminant(self, volume):
+            from dzack_research.preamble.categories.modules.hodge import HodgeDiscriminant
+
+            return HodgeDiscriminant(self, volume)
+
+        def hodge_star(self, volume, degree):
+            from dzack_research.preamble.categories.modules.hodge import HodgeStar
+
+            return HodgeStar(self, volume, degree)
+
+        def hodge_star_over_fraction_field(self, volume, degree):
+            from dzack_research.preamble.categories.modules.hodge import (
+                HodgeStarOverFractionField,
+            )
+
+            return HodgeStarOverFractionField(self, volume, degree)
+
+        def multivector_hodge_star(self, volume, degree):
+            from dzack_research.preamble.categories.modules.hodge import (
+                MultivectorHodgeStar,
+            )
+
+            return MultivectorHodgeStar(self, volume, degree)
+
 
 class QuadraticFormModules(OwnedCategoryOverBaseRing):
     @classmethod
@@ -815,6 +903,8 @@ class QuadraticFormModules(OwnedCategoryOverBaseRing):
 
     def super_categories(self):
         return [FormModules(self.base_ring())]
+
+    _HomCategory = FormedModuleHomCategoryConstruction
 
     class ParentMethods:
         def q(self, element):

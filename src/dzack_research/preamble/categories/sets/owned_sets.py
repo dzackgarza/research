@@ -56,18 +56,34 @@ class Sets(Category):
     א = ℵ
 
     def super_categories(self):
-        return [SageSets()]
+        return []
 
     def __contains__(self, candidate) -> bool:
-        return candidate in SageSets()
+        try:
+            if candidate.category().is_subcategory(self):
+                return True
+        except AttributeError:
+            pass
+        try:
+            return candidate in SageSets()
+        except (TypeError, ValueError):
+            return False
 
     def hom(self, domain, codomain):
         if domain not in self or codomain not in self:
             raise TypeError("a set morphism requires two set objects")
-        return Hom(domain, codomain, SageSets())
+        return Hom(domain, codomain, self)
 
     Hom = hom
     homset = hom
+
+    def Homsets(self):
+        r"""Fixed-endpoint Hom objects in ``Set`` are themselves sets."""
+        return self
+
+    def Endsets(self):
+        r"""Endomorphism sets in ``Set`` are themselves sets."""
+        return self
 
     def identity(self, set_object):
         return self.hom(set_object, set_object).identity()
@@ -116,7 +132,7 @@ class FiniteSets(Category):
     r"""Sets whose cardinality is finite."""
 
     def super_categories(self):
-        return [Sets(), SageSets().Finite()]
+        return [Sets()]
 
     def __contains__(self, candidate) -> bool:
         if candidate not in Sets():
@@ -131,7 +147,7 @@ class InfiniteSets(Category):
     r"""Sets whose cardinality is infinite."""
 
     def super_categories(self):
-        return [Sets(), SageSets().Infinite()]
+        return [Sets()]
 
     def __contains__(self, candidate) -> bool:
         if candidate not in Sets():
@@ -146,7 +162,7 @@ class CountableSets(Category):
     r"""Sets equipped with a countable enumeration."""
 
     def super_categories(self):
-        return [Sets(), SageSets().Enumerated()]
+        return [Sets()]
 
     def __contains__(self, candidate) -> bool:
         if candidate not in Sets():
@@ -197,9 +213,7 @@ class PartiallyOrderedSets(Category):
     r"""Sets equipped with a partial order."""
 
     def super_categories(self):
-        from sage.categories.posets import Posets
-
-        return [Sets(), Posets()]
+        return [Sets()]
 
 
 class TotallyOrderedSets(Category):

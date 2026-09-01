@@ -11,7 +11,8 @@ from sage.modules.free_module import FreeModule_generic
 from sage.rings.integer import Integer
 from sage.structure.parent import Parent
 from sage.categories.sets_cat import Sets
-from sage.structure.element import Element
+from sage.structure.element import Element, ModuleElement
+from sage.structure.richcmp import op_EQ, op_NE
 from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.rings import (
@@ -21,6 +22,154 @@ from dzack_research.preamble.categories.rings import (
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
 from dzack_research.preamble.refine import refine
+
+
+class _SparseFreeModuleElement(ModuleElement):
+    """Finite-support coordinates in the owned free module ``R^(I)``."""
+
+    def __init__(self, parent, coefficients) -> None:
+        ModuleElement.__init__(self, parent)
+        ring = parent.base_ring()
+        self._coefficients = {
+            label: ring(coefficient)
+            for label, coefficient in coefficients.items()
+            if ring(coefficient) != ring.zero()
+        }
+
+    def monomial_coefficients(self):
+        return dict(self._coefficients)
+
+    def _add_(self, other):
+        ring = self.parent().base_ring()
+        coefficients = dict(self._coefficients)
+        for label, coefficient in other._coefficients.items():
+            value = coefficients.get(label, ring.zero()) + coefficient
+            if value == ring.zero():
+                coefficients.pop(label, None)
+            else:
+                coefficients[label] = value
+        return self.parent()._element_constructor_(coefficients)
+
+    def _neg_(self):
+        return self.parent()._element_constructor_(
+            {label: -coefficient for label, coefficient in self._coefficients.items()}
+        )
+
+    def _lmul_(self, scalar):
+        return self.parent()._raw_scalar_multiple(scalar, self)
+
+    _rmul_ = _lmul_
+
+    def _richcmp_(self, other, op):
+        if op not in (op_EQ, op_NE):
+            return NotImplemented
+        equal = (
+            isinstance(other, _SparseFreeModuleElement)
+            and other.parent() is self.parent()
+            and other._coefficients == self._coefficients
+        )
+        return equal if op == op_EQ else not equal
+
+    def _repr_(self):
+        if not self._coefficients:
+            return "0"
+        return " + ".join(
+            f"{coefficient}*B[{label!r}]"
+            for label, coefficient in self._coefficients.items()
+        )
+
+
+class _SparseFreeModuleParent(Parent):
+    """Owned finite-support carrier for the free module on arbitrary labels."""
+
+    Element = _SparseFreeModuleElement
+
+    def __init__(self, ring, labels) -> None:
+        from sage.categories.category import Category
+        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import (
+            FinitelyGeneratedFreeModules,
+        )
+
+        self._preamble_base_ring = ring
+        self._preamble_module_generating_set = labels
+        self._preamble_module_generator_function = self._basis_element
+        categories = [FramedFreeModules(ring)]
+        if labels.cardinality() in SageZZ:
+            categories.append(FinitelyGeneratedFreeModules(ring))
+        Parent.__init__(self, base=ring, category=Category.join(tuple(categories)))
+        refine(self, categories)
+
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
+        from dzack_research.preamble.categories.rings import ring_morphism
+
+        endomorphisms = Modules(ring).End(self)
+        self._preamble_scalar_action_morphism = ring_morphism(
+            ring,
+            endomorphisms,
+            lambda scalar: endomorphisms.elementwise(
+                lambda element: self._raw_scalar_multiple(scalar, element),
+                verify_linearity=False,
+            ),
+        )
+        from dzack_research.preamble.categories.modules.pure.modules import (
+            register_module_scalar_action,
+        )
+
+        register_module_scalar_action(self)
+
+    def _basis_element(self, label):
+        if label not in self._preamble_module_generating_set:
+            raise ValueError(f"{label!r} is not a module-generator label")
+        return self.element_class(self, {label: self.base_ring().one()})
+
+    def _element_constructor_(self, value):
+        if isinstance(value, self.element_class) and value.parent() is self:
+            return value
+        if isinstance(value, dict):
+            return self.element_class(self, value)
+        if isinstance(value, (tuple, list)):
+            labels = tuple(self.module_generating_set())
+            if len(value) != len(labels):
+                raise ValueError("coordinate tuple has the wrong length")
+            return self.element_class(
+                self,
+                {
+                    label: coefficient
+                    for label, coefficient in zip(labels, value, strict=True)
+                    if coefficient != 0
+                },
+            )
+        raise TypeError(f"{value!r} does not describe an element of {self}")
+
+    def zero(self):
+        return self.element_class(self, {})
+
+    def an_element(self):
+        try:
+            label = next(iter(self.module_generating_set()))
+        except StopIteration:
+            return self.zero()
+        return self._basis_element(label)
+
+    def _raw_scalar_multiple(self, scalar, element):
+        scalar = self.base_ring()(scalar)
+        element = self._element_constructor_(element)
+        return self.element_class(
+            self,
+            {
+                label: scalar * coefficient
+                for label, coefficient in element._coefficients.items()
+            },
+        )
+
+    def rank(self):
+        return self.module_generating_set().cardinality()
+
+    def is_finite_rank(self):
+        return self.rank() in SageZZ
+
+    def _repr_(self):
+        return f"Free module on {self.module_generating_set()} over {self.base_ring()}"
 
 
 class FramedFreeModules(OwnedCategoryOverBaseRing):
@@ -59,6 +208,9 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
                     )
 
         def module_generator(self, label):
+            selected_function = self.__dict__.get("_preamble_module_generator_function")
+            if selected_function is not None:
+                return selected_function(label)
             selected_values = self.__dict__.get("_preamble_module_generator_values")
             if selected_values is not None:
                 if label not in self.module_generating_set():
@@ -194,7 +346,10 @@ def FreeModule(base_ring, rank_or_index_set):
         return _owned_finite_free_module(ring, rank_or_index_set)
     if isinstance(rank_or_index_set, (tuple, list)):
         rank_or_index_set = finite_ordered_set(rank_or_index_set)
-    module = CombinatorialFreeModule(engine, rank_or_index_set)
+    try:
+        module = CombinatorialFreeModule(engine, rank_or_index_set)
+    except (TypeError, ValueError):
+        return _SparseFreeModuleParent(ring, rank_or_index_set)
     return refine_free_module(module, ring)
 
 
@@ -205,7 +360,10 @@ def FreeModuleOn(base_ring, module_generating_set):
         module_generating_set = finite_ordered_set(range(int(module_generating_set)))
     elif isinstance(module_generating_set, (tuple, list)):
         module_generating_set = finite_ordered_set(module_generating_set)
-    module = CombinatorialFreeModule(engine_ring(ring), module_generating_set)
+    try:
+        module = CombinatorialFreeModule(engine_ring(ring), module_generating_set)
+    except (TypeError, ValueError):
+        return _SparseFreeModuleParent(ring, module_generating_set)
     module._preamble_module_generating_set = module_generating_set
     return refine_free_module(module, ring)
 
@@ -230,11 +388,14 @@ def FreshFreeModuleOn(base_ring, module_generating_set):
     elif isinstance(module_generating_set, (tuple, list)):
         module_generating_set = finite_ordered_set(module_generating_set)
     construction_prefix = f"_preamble_fresh_{next(_fresh_free_module_counter)}"
-    module = CombinatorialFreeModule(
-        engine_ring(ring),
-        module_generating_set,
-        prefix=construction_prefix,
-    )
+    try:
+        module = CombinatorialFreeModule(
+            engine_ring(ring),
+            module_generating_set,
+            prefix=construction_prefix,
+        )
+    except (TypeError, ValueError):
+        return _SparseFreeModuleParent(ring, module_generating_set)
     module.print_options(prefix="B")
     module._preamble_module_generating_set = module_generating_set
     return refine_free_module(module, ring)

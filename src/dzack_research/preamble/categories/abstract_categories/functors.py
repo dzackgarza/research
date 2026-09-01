@@ -1,6 +1,7 @@
 r"""Basic categorical functors used by the abstract construction layer."""
 
 from sage.categories.category import Category
+from sage.misc.cachefunc import cached_method
 from sage.categories.homset import Hom, Homset
 from sage.categories.morphism import Morphism, SetMorphism
 from sage.categories.objects import Objects
@@ -137,7 +138,6 @@ class DiscreteCategory(Category):
         if object_set not in Sets():
             raise TypeError("a discrete category is constructed from a set")
         self._object_set = object_set
-        self._objects = {}
         super().__init__()
 
     def _make_named_class_key(self, name):
@@ -150,14 +150,11 @@ class DiscreteCategory(Category):
         return [Objects()]
 
     def object(self, value):
-        normalized = self.object_set()(value)
-        key = normalized
-        cached = self._objects.get(key)
-        if cached is not None:
-            return cached
-        result = DiscreteObject(self, normalized)
-        self._objects[key] = result
-        return result
+        return self._object_on(self.object_set()(value))
+
+    @cached_method
+    def _object_on(self, normalized):
+        return DiscreteObject(self, normalized)
 
     __call__ = object
 

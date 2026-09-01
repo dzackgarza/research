@@ -1,5 +1,6 @@
 r"""Categories of objects equipped with a chosen presentation as a functor image."""
 
+from sage.misc.cachefunc import cached_method
 from sage.categories.category import Category
 from sage.categories.homset import Homset
 from sage.categories.morphism import Morphism
@@ -102,7 +103,6 @@ class ImageOfFunctor(Category):
 
     def __init__(self, functor) -> None:
         self._functor = functor
-        self._objects = {}
         super().__init__()
 
     def _make_named_class_key(self, name):
@@ -114,16 +114,11 @@ class ImageOfFunctor(Category):
     def super_categories(self):
         return [Objects()]
 
+    @cached_method
     def present(self, preimage):
         if preimage not in self.functor().domain():
             raise TypeError("the chosen preimage lies outside the functor domain")
-        key = id(preimage)
-        cached = self._objects.get(key)
-        if cached is not None and cached.preimage() is preimage:
-            return cached
-        result = FunctorImageObject(self, preimage, self.functor()(preimage))
-        self._objects[key] = result
-        return result
+        return FunctorImageObject(self, preimage, self.functor()(preimage))
 
     __call__ = present
 

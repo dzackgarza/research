@@ -9,13 +9,20 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     ModuleHomset,
     ModuleMorphism,
 )
+from dzack_research.preamble.categories.modules.internal_hom import (
+    LinearEndCategoryConstruction,
+)
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
     CategoryPacketMethods,
     HomCategoryConstruction,
 )
 
-from dzack_research.preamble.categories.rings import engine_ring, owned_ring_view
+from dzack_research.preamble.categories.rings import (
+    engine_element,
+    engine_ring,
+    owned_ring_view,
+)
 from dzack_research.preamble.refine import refine
 
 
@@ -57,6 +64,7 @@ class GroupModules(CategoryPacketMethods, Category):
         return [Modules(self.base_ring())]
 
     _HomCategory = GroupModuleHomCategoryConstruction
+    _EndCategory = LinearEndCategoryConstruction
 
     def is_semisimple(self) -> bool:
         r"""Return the conclusion of Maschke's theorem when it applies."""
@@ -325,7 +333,13 @@ class GroupModules(CategoryPacketMethods, Category):
                 changed_tensor = tensor.matrix(
                     engine_ring(target_ring),
                     [
-                        [base_change_scalar(ring_map, entry) for entry in row]
+                        [
+                            engine_element(
+                                target_ring,
+                                base_change_scalar(ring_map, entry),
+                            )
+                            for entry in row
+                        ]
                         for row in source_tensor.rows()
                     ],
                 )
@@ -434,8 +448,20 @@ def _apply_action(action, group_element, vector):
 class GroupModuleMorphism(ModuleMorphism):
     r"""An ``R``-linear map commuting with the chosen ``G``-actions."""
 
-    def __init__(self, parent, images) -> None:
-        super().__init__(parent, images)
+    def __init__(
+        self,
+        parent,
+        images,
+        *,
+        elementwise=False,
+        verify_linearity=True,
+    ) -> None:
+        super().__init__(
+            parent,
+            images,
+            elementwise=elementwise,
+            verify_linearity=verify_linearity,
+        )
         group = self.domain().group()
         if group.is_finitely_generated() is not True:
             raise NotImplementedError(
@@ -448,6 +474,15 @@ class GroupModuleMorphism(ModuleMorphism):
                     group_generator, self(source)
                 ):
                     raise ValueError("the stated module map is not G-equivariant")
+
+    def __mul__(self, other):
+        if not isinstance(other, GroupModuleMorphism):
+            return super().__mul__(other)
+        if other.codomain() is not self.domain():
+            return NotImplemented
+        return group_module_homset(other.domain(), self.codomain()).elementwise(
+            lambda element: self(other(element))
+        )
 
 
 class GroupModuleHomset(CategoricalHomset):
@@ -471,8 +506,7 @@ class GroupModuleHomset(CategoricalHomset):
     identity = ModuleHomset.identity
     one = ModuleHomset.one
 
-    def _element_constructor_(self, images):
-        return self.element_class(self, images)
+    _element_constructor_ = ModuleHomset._element_constructor_
 
     def _repr_(self):
         return f"Hom_{self.domain().group()}({self.domain()}, {self.codomain()})"

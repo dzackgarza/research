@@ -73,6 +73,20 @@ class _PredicateSubringParent(Parent):
             raise ValueError(f"{candidate} does not satisfy {self._description}")
         return candidate
 
+    def __contains__(self, element):
+        from dzack_research.preamble.categories.rings.rings import engine_ring
+
+        try:
+            candidate = engine_ring(self._ambient_ring)(element)
+        except (TypeError, ValueError):
+            return False
+        answer = self._predicate(candidate)
+        if answer is True or answer is False:
+            return answer
+        raise NotImplementedError(
+            f"membership in {self} is not decided for {candidate}"
+        )
+
 
 def predicate_subring(ambient_ring, predicate, description, category=None):
     placement = PredicateSubrings()

@@ -17,8 +17,9 @@ def base_change_codomain(module, ring_map):
 
 
 def base_change_scalar(ring_map, scalar):
-    r"""Apply the coefficient map and return its computation-ring element."""
-    return engine_ring(ring_map.codomain())(ring_map(scalar))
+    r"""Apply ``R -> S`` and return the resulting element of the owned ring ``S``."""
+    target = owned_ring_view(ring_map.codomain())
+    return target(ring_map(scalar))
 
 
 __all__ = ["base_change_codomain", "base_change_scalar"]

@@ -944,17 +944,15 @@ class _TorsionFormIsoCategoryConstruction(IsoCategoryConstruction):
             codomain = domain
         if domain is not codomain:
             return super().Of(domain, codomain)
-        key = id(domain), id(codomain)
-        cached = self._objects.get(key)
-        if cached is not None:
-            return cached
-        result = TorsionFormOrthogonalGroup(
+        return self._orthogonal_group_on(domain)
+
+    @cached_method
+    def _orthogonal_group_on(self, domain):
+        return TorsionFormOrthogonalGroup(
             self,
             domain,
             quadratic=self.quadratic,
         )
-        self._objects[key] = result
-        return result
 
 
 class TorsionBilinearFormIsoCategoryConstruction(_TorsionFormIsoCategoryConstruction):

@@ -54,6 +54,90 @@ class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
                 }
             )
 
+        def derivation_classifier_isomorphism(self, target_module):
+            r"""Return ``Hom_A(Omega^1_{A/R},M) ~= Der_R(A,M)`` as an ``A``-module isomorphism."""
+            from dzack_research.preamble.categories.abstract_categories import Isomorphism
+            from dzack_research.preamble.categories.algebras.derivations import Derivations
+            from dzack_research.preamble.categories.modules import (
+                InternalHom,
+                Modules,
+                ModulesWithChosenFinitePresentation,
+                module_homset,
+            )
+            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+                module_coefficients,
+            )
+
+            algebra = self.source_algebra()
+            if target_module.base_ring() is not algebra:
+                raise TypeError("the Kähler representing property targets an A-module")
+            classifiers = InternalHom(self, target_module)
+            if classifiers not in ModulesWithChosenFinitePresentation(algebra):
+                raise NotImplementedError(
+                    "the represented Kähler Hom isomorphism currently requires a finite presentation of Hom_A(Omega^1,M)"
+                )
+            derivations = Derivations(algebra, target_module)
+            labels = tuple(classifiers.module_generating_set())
+
+            def to_derivation(classifier):
+                return derivations(
+                    {
+                        label: classifier(self.differential_generator(label))
+                        for label in derivations.generator_labels()
+                    }
+                )
+
+            def to_classifier(derivation):
+                return self.from_derivation(derivation)
+
+            # Transport the already-computed internal-Hom presentation to the
+            # actual derivation parent.  This adds coordinates to the same
+            # derivation object; it does not create a second Der_R carrier.
+            if derivations.__dict__.get("_preamble_kahler_classifier_module") is None:
+                derivations._preamble_module_generating_set = (
+                    classifiers.module_generating_set()
+                )
+                derivations._preamble_relation_matrix = classifiers.presentation_matrix()
+                derivations._preamble_presentation = classifiers.presentation()
+                derivations._preamble_module_generator_function = (
+                    lambda label: to_derivation(classifiers.module_generator(label))
+                )
+                derivations._preamble_module_coordinate_function = (
+                    lambda derivation: tuple(
+                        module_coefficients(
+                            to_classifier(derivation),
+                            classifiers,
+                        ).get(label, algebra.zero())
+                        for label in labels
+                    )
+                )
+                derivations._preamble_kahler_classifier_module = classifiers
+                refine(
+                    derivations,
+                    ModulesWithChosenFinitePresentation(algebra),
+                )
+
+            forward = module_homset(classifiers, derivations)(
+                {
+                    label: derivations.module_generator(label)
+                    for label in labels
+                }
+            )
+            inverse = module_homset(derivations, classifiers)(
+                {
+                    label: classifiers.module_generator(label)
+                    for label in labels
+                }
+            )
+            result = Isomorphism(forward, inverse)
+            if result not in Modules(algebra).Iso(classifiers, derivations):
+                raise ArithmeticError(
+                    "the represented Kähler classifier maps failed to define an A-module isomorphism"
+                )
+            return result
+
+        representing_isomorphism = derivation_classifier_isomorphism
+
 
 _KAHLER_CACHE = {}
 

@@ -46,14 +46,13 @@ class StructureSheaf(SageObject):
         r"""Return ``Gamma(X,O_X)`` in the exact cases represented live."""
         scheme = self.scheme()
         base_ring = scheme.scheme_base_ring()
-        from dzack_research.preamble.categories.rings import own_ring
         from dzack_research.preamble.categories.schemes.schemes import (
             AffineSchemes,
             ProjectiveSpaces,
         )
 
         if scheme in AffineSchemes(base_ring):
-            return own_ring(scheme.coordinate_ring())
+            return scheme.coordinate_algebra()
         if scheme in ProjectiveSpaces(base_ring):
             return base_ring
         raise NotImplementedError(
@@ -119,12 +118,11 @@ class RingedSpaces(CategoryPacketMethods, Category):
 
         @cached_method
         def underlying_space(self):
-            from dzack_research.preamble.categories.rings import own_ring
             from dzack_research.preamble.categories.schemes.schemes import AffineSchemes
 
             base_ring = self.scheme_base_ring()
             if self in AffineSchemes(base_ring):
-                return own_ring(self.coordinate_ring()).spectrum()
+                return self.coordinate_algebra().spectrum()
             return SchemeUnderlyingSpace(self)
 
 

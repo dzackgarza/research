@@ -225,11 +225,32 @@ class Ideals(OwnedCategoryOverBaseRing):
         return "ideals"
 
     def super_categories(self):
-        return [FractionalIdeals(self.base_ring())]
+        from dzack_research.preamble.categories.rings.commutative_ideals import (
+            CommutativeIdeals,
+        )
+
+        return [
+            FractionalIdeals(self.base_ring()),
+            CommutativeIdeals(self.base_ring()),
+        ]
 
     class ParentMethods:
         def ring(self):
             return self.base_ring()
+
+        def ideal_generators(self):
+            return tuple(
+                self.base_ring()(value)
+                for value in self._preamble_module_generator_values
+            )
+
+        gens = ideal_generators
+
+        def _engine_ideal(self):
+            engine = engine_ring(self.base_ring())
+            return engine.ideal(
+                tuple(engine(value) for value in self._preamble_module_generator_values)
+            )
 
         def _repr_(self):
             listed = ", ".join(str(value) for value in self._preamble_module_generator_values)
@@ -285,6 +306,29 @@ class FractionalIdealModule(Parent):
         self._preamble_module_generating_set = finite_ordered_set(
             range(len(self._preamble_module_generator_values))
         )
+        if engine_ring(ring) is SageZZ:
+            values = self._preamble_module_generator_values
+            if not values:
+                self._preamble_module_coordinate_function = lambda element: ()
+            else:
+                (principal,) = values
+
+                def principal_coordinates(element):
+                    value = (
+                        element._inclusion_value()
+                        if isinstance(element, FractionalIdealElement)
+                        else engine_ring(self._preamble_fraction_field)(element)
+                    )
+                    if principal == 0:
+                        if value != 0:
+                            raise ValueError("a nonzero element has no coordinates in the zero ideal")
+                        return ()
+                    coefficient = SageQQ(value / principal)
+                    if coefficient.denominator() != 1:
+                        raise ValueError("the element is not in this integral ideal")
+                    return (SageZZ(coefficient),)
+
+                self._preamble_module_coordinate_function = principal_coordinates
         categories = [FractionalIdeals(ring)]
         if integral:
             categories.append(Ideals(ring))
@@ -347,8 +391,16 @@ class FractionalIdealInclusion(ModuleEmbedding):
 
         if target in RestrictedScalarsModules(self.domain().base_ring()):
             extension_module = target.module_over_extension()
-            return target(extension_module((value,)))
-        return target((self.domain().base_ring()(value),))
+            labels = tuple(extension_module.module_generating_set())
+            if len(labels) != 1:
+                raise ArithmeticError("the fraction field is not represented as a rank-one module over itself")
+            return target(
+                extension_module.scalar_multiple(
+                    value,
+                    extension_module.module_generator(labels[0]),
+                )
+            )
+        return target(self.domain().base_ring()(value))
 
     def lift(self, element):
         r"""Return the ideal element mapping to ``element`` when it belongs to the ideal."""
@@ -360,12 +412,23 @@ class FractionalIdealInclusion(ModuleEmbedding):
         if target in RestrictedScalarsModules(self.domain().base_ring()):
             if element.parent() is not target:
                 element = target(element)
-            coordinates = tuple(element.underlying_element())
-            value = coordinates[0]
+            extension_module = target.module_over_extension()
+            labels = tuple(extension_module.module_generating_set())
+            if len(labels) != 1:
+                raise ArithmeticError("the fraction field is not represented as a rank-one module over itself")
+            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+                module_coefficients,
+            )
+
+            coefficients = module_coefficients(
+                element.underlying_element(),
+                extension_module,
+            )
+            value = coefficients.get(labels[0], extension_module.base_ring().zero())
         else:
             if element.parent() is not target:
                 element = target(element)
-            value = tuple(element)[0]
+            value = element
         return self.domain()(value)
 
     def is_in_image(self, element) -> bool:
@@ -419,18 +482,23 @@ def _fractional_ideal_inclusion(ideal, integral):
     )
 
     target = ring_as_module(ideal.base_ring()) if integral else _fraction_field_as_module(ideal.base_ring())
-    images = {
-        label: (
-            target((ideal.base_ring()(ideal.module_generator(label)._inclusion_value()),))
-            if integral
-            else target(
-                target.module_over_extension()(
-                    (ideal.module_generator(label)._inclusion_value(),)
+    images = {}
+    for label in ideal.module_generating_set():
+        value = ideal.module_generator(label)._inclusion_value()
+        if integral:
+            value = ideal.base_ring()(value)
+            images[label] = value if target is ideal.base_ring() else target((value,))
+        else:
+            extension_module = target.module_over_extension()
+            labels = tuple(extension_module.module_generating_set())
+            if len(labels) != 1:
+                raise ArithmeticError("the fraction field is not represented as a rank-one module over itself")
+            images[label] = target(
+                extension_module.scalar_multiple(
+                    value,
+                    extension_module.module_generator(labels[0]),
                 )
             )
-        )
-        for label in ideal.module_generating_set()
-    }
     return FractionalIdealInclusion(module_homset(ideal, target), images)
 
 

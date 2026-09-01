@@ -1,5 +1,6 @@
 r"""A represented category ``Cat`` of categories, functors, and natural transformations."""
 
+from sage.misc.cachefunc import cached_method
 from sage.categories.category import Category
 from sage.categories.homset import Homset
 from sage.categories.morphism import Morphism
@@ -89,7 +90,6 @@ class Cat(Category):
     r"""The represented category of categories."""
 
     def __init__(self) -> None:
-        self._objects = {}
         self._arrows = {}
         super().__init__()
 
@@ -104,13 +104,11 @@ class Cat(Category):
             return category
         if not isinstance(category, Category):
             raise TypeError("an object of Cat is a category")
-        key = id(category)
-        cached = self._objects.get(key)
-        if cached is not None and cached.represented_category() is category:
-            return cached
-        result = CategoryObject(self, category)
-        self._objects[key] = result
-        return result
+        return self._object_on(category)
+
+    @cached_method
+    def _object_on(self, category):
+        return CategoryObject(self, category)
 
     def functor_homset(self, domain, codomain):
         return CategoryFunctorHomset(self, self.object(domain), self.object(codomain))
@@ -224,7 +222,6 @@ class FunctorCategory(Category):
         self._cat = category_of_categories
         self._domain_category = domain
         self._codomain_category = codomain
-        self._objects = {}
         super().__init__()
 
     def _make_named_class_key(self, name):
@@ -242,15 +239,11 @@ class FunctorCategory(Category):
     def object(self, functor):
         if functor.domain() != self.domain_category() or functor.codomain() != self.codomain_category():
             raise ValueError("the functor has the wrong functor-category endpoints")
-        cat_arrow = self._cat.arrow(functor)
-        arrows = self._cat.ArrowCategory()
-        key = id(functor)
-        cached = self._objects.get(key)
-        if cached is not None and cached.arrow() is cat_arrow:
-            return cached
-        result = arrows(cat_arrow)
-        self._objects[key] = result
-        return result
+        return self._object_on(functor)
+
+    @cached_method
+    def _object_on(self, functor):
+        return self._cat.ArrowCategory()(self._cat.arrow(functor))
 
     __call__ = object
 

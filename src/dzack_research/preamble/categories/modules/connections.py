@@ -1,11 +1,10 @@
 r"""Algebraic connections on represented modules over commutative algebras."""
 
 from sage.categories.category_types import Category_over_base
-from sage.categories.homset import Homset
+from sage.categories.homset import Hom, Homset
 from sage.categories.modules import Modules as SageModules
+from sage.categories.morphism import Morphism, SetMorphism
 from sage.categories.sets_cat import Sets
-from sage.structure.element import Element
-from sage.structure.parent import Parent
 
 from dzack_research.preamble.categories.algebras import (
     CommutativeAlgebras,
@@ -74,11 +73,11 @@ class ModulesWithFlatConnection(Category_over_base):
             return True
 
 
-class Connection(Element):
+class Connection(Morphism):
     r"""An ``R``-connection ``E -> E tensor_A Omega^1_{A/R}``."""
 
     def __init__(self, parent, generator_images) -> None:
-        Element.__init__(self, parent)
+        Morphism.__init__(self, parent)
         labels = tuple(self.module().module_generating_set())
         if isinstance(generator_images, dict):
             missing = [label for label in labels if label not in generator_images]
@@ -160,6 +159,19 @@ class Connection(Element):
             element = self.module()(element)
         return self._from_coefficients(module_coefficients(element, self.module()))
 
+    def _call_(self, element):
+        return self.__call__(element)
+
+    def underlying_linear_morphism(self):
+        source = self.parent().restricted_source_module()
+        target = self.parent().restricted_target_module()
+        morphism = self.parent().ambient_hom().elementwise(
+            lambda element: target(self(element.underlying_element()))
+        )
+        morphism._preamble_is_connection = True
+        morphism._preamble_connection = self
+        return morphism
+
     def curvature_target(self):
         from dzack_research.preamble.categories.abstract_categories import TensorProduct
 
@@ -237,7 +249,7 @@ class Connection(Element):
         return ConnectionDeRhamModule(self)
 
 
-class ConnectionSpace(Parent):
+class ConnectionSpace(Homset):
     Element = Connection
 
     def __init__(self, module) -> None:
@@ -250,9 +262,21 @@ class ConnectionSpace(Parent):
         self._algebra = algebra
         self._one_forms = KahlerDifferentials(algebra)
         from dzack_research.preamble.categories.abstract_categories import TensorProduct
+        from dzack_research.preamble.categories.modules import Modules, restrict_scalars
 
         self._target_module = TensorProduct(module, self._one_forms)
-        Parent.__init__(self, category=Sets())
+        ring_map = algebra.algebra_structure_morphism()
+        self._restricted_source = restrict_scalars(module, ring_map)
+        self._restricted_target = restrict_scalars(self._target_module, ring_map)
+        self._ambient_hom = Modules(algebra.base_ring()).Hom(
+            self._restricted_source,
+            self._restricted_target,
+        )
+        Homset.__init__(self, module, self._target_module, category=Sets())
+        self._inclusion = SetMorphism(
+            Hom(self, self._ambient_hom, Sets()),
+            lambda connection: connection.underlying_linear_morphism(),
+        )
 
     def module(self):
         return self._module
@@ -266,9 +290,38 @@ class ConnectionSpace(Parent):
     def target_module(self):
         return self._target_module
 
+    def restricted_source_module(self):
+        return self._restricted_source
+
+    def restricted_target_module(self):
+        return self._restricted_target
+
+    def ambient_hom(self):
+        return self._ambient_hom
+
+    def inclusion(self):
+        return self._inclusion
+
     def _element_constructor_(self, generator_images):
         if isinstance(generator_images, Connection) and generator_images.parent() is self:
             return generator_images
+        if isinstance(generator_images, Morphism):
+            if (
+                generator_images.domain() is not self.restricted_source_module()
+                or generator_images.codomain() is not self.restricted_target_module()
+            ):
+                raise ValueError("the linear map has the wrong connection endpoints")
+            connection = getattr(generator_images, "_preamble_connection", None)
+            if connection is None:
+                raise ValueError(
+                    "an arbitrary R-linear map cannot be certified as a connection by this backend"
+                )
+            return self(
+                {
+                    label: connection.generator_image(label)
+                    for label in self.module().module_generating_set()
+                }
+            )
         return self.element_class(self, generator_images)
 
     def _repr_(self):

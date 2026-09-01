@@ -1,5 +1,14 @@
 """Owned algebraic-geometry and polyhedral categories."""
 
+from dzack_research.preamble.categories.schemes.affine_spec import (
+    AffineSpecFunctor,
+    SpecFunctor,
+    affine_spec_functor,
+)
+from dzack_research.preamble.categories.schemes.fiber_products import (
+    FiberProductSchemes,
+    scheme_fiber_product,
+)
 from dzack_research.preamble.categories.schemes.ringed_spaces import (
     LocallyRingedSpaces,
     RingedSpaces,
@@ -53,6 +62,9 @@ from dzack_research.preamble.categories.schemes.polytopes import (
 )
 
 __all__ = [
+    "AffineSpecFunctor",
+    "SpecFunctor",
+    "affine_spec_functor",
     "AffineSchemes",
     "AffineSpace",
     "AffineSpaces",
@@ -63,6 +75,7 @@ __all__ = [
     "ConvexPolytopes",
     "Curves",
     "EquationDefinedClosedSubschemes",
+    "FiberProductSchemes",
     "FiniteTypeSchemes",
     "IntegralSchemes",
     "LatticePolygon",
@@ -92,5 +105,6 @@ __all__ = [
     "refine_closed_subscheme",
     "refine_scheme",
     "refine_scheme_morphism",
+    "scheme_fiber_product",
     "scheme_product",
 ]

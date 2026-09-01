@@ -51,6 +51,19 @@ def Biproduct(left, right):
     )
 
 
+def _common_commutative_algebra_ring(left, right):
+    try:
+        ring = left.base_ring()
+    except AttributeError:
+        return None
+    if ring is None or right.base_ring() is not ring:
+        return None
+    from dzack_research.preamble.categories.algebras import CommutativeAlgebras
+
+    category = CommutativeAlgebras(ring)
+    return ring if left in category and right in category else None
+
+
 def _common_module_ring(left, right):
     try:
         ring = left.base_ring()
@@ -67,6 +80,10 @@ def _common_module_ring(left, right):
 
 def Product(left, right):
     r"""Return the categorical binary product in the strongest represented category."""
+    if _common_commutative_algebra_ring(left, right) is not None:
+        raise NotImplementedError(
+            "the categorical product of commutative algebras is not the module biproduct; its ring-product backend is not yet represented"
+        )
     if _common_module_ring(left, right) is not None:
         return Biproduct(left, right)
     from dzack_research.preamble.categories.sets import CartesianProductOfSets, Sets
@@ -78,6 +95,12 @@ def Product(left, right):
 
 def Coproduct(left, right):
     r"""Return the categorical binary coproduct in the strongest represented category."""
+    if _common_commutative_algebra_ring(left, right) is not None:
+        from dzack_research.preamble.categories.algebras import (
+            commutative_algebra_coproduct,
+        )
+
+        return commutative_algebra_coproduct(left, right)
     if _common_module_ring(left, right) is not None:
         return Biproduct(left, right)
     from dzack_research.preamble.categories.sets import CoproductOfSets, Sets
@@ -85,6 +108,52 @@ def Coproduct(left, right):
     if left in Sets() and right in Sets():
         return CoproductOfSets(left, right)
     raise NotImplementedError(f"no represented binary coproduct backend for {left} and {right}")
+
+
+def Pushout(left_morphism, right_morphism):
+    r"""Return the categorical pushout of two arrows with one common domain."""
+    if left_morphism.domain() is not right_morphism.domain():
+        raise ValueError("pushout arrows require one common domain")
+    common = left_morphism.domain()
+    try:
+        ring = common.base_ring()
+    except AttributeError as error:
+        raise NotImplementedError(
+            f"no represented pushout backend for {left_morphism} and {right_morphism}"
+        ) from error
+    from dzack_research.preamble.categories.algebras import (
+        AlgebraMorphism,
+        CommutativeAlgebras,
+        commutative_algebra_pushout,
+    )
+
+    if (
+        isinstance(left_morphism, AlgebraMorphism)
+        and isinstance(right_morphism, AlgebraMorphism)
+        and common in CommutativeAlgebras(ring)
+    ):
+        return commutative_algebra_pushout(left_morphism, right_morphism)
+    raise NotImplementedError(
+        f"no represented pushout backend for {left_morphism} and {right_morphism}"
+    )
+
+
+def FiberProduct(left_morphism, right_morphism):
+    r"""Return the categorical pullback of two arrows with one common codomain."""
+    if left_morphism.codomain() is not right_morphism.codomain():
+        raise ValueError("fiber-product arrows require one common codomain")
+    from dzack_research.preamble.categories.schemes import (
+        SchemeMorphism,
+        scheme_fiber_product,
+    )
+
+    if isinstance(left_morphism, SchemeMorphism) and isinstance(
+        right_morphism, SchemeMorphism
+    ):
+        return scheme_fiber_product(left_morphism, right_morphism)
+    raise NotImplementedError(
+        f"no represented fiber-product backend for {left_morphism} and {right_morphism}"
+    )
 
 
 def Kernel(morphism):
@@ -130,8 +199,10 @@ __all__ = [
     "Biproduct",
     "Cokernel",
     "Coproduct",
+    "FiberProduct",
     "Kernel",
     "Product",
+    "Pushout",
     "Subobjects",
     "TensorProduct",
     "TensorSquare",

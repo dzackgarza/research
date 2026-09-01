@@ -1,17 +1,18 @@
 """Submonoids represented as monomorphism subobjects of an ambient monoid."""
 
-from sage.categories.homset import Hom
 from sage.categories.monoids import Monoids as SageMonoids
-from sage.categories.morphism import SetMorphism
 from sage.structure.parent import Parent
 
 from dzack_research.preamble.categories.abstract_categories import SubobjectsOf
-from dzack_research.preamble.categories.group.magmas import Monoids
+from dzack_research.preamble.categories.group.magmas import (
+    MonoidMorphism,
+    Monoids,
+)
 from dzack_research.preamble.categories.sets import finite_ordered_set
 from dzack_research.preamble.refine import refine
 
 
-class SubmonoidInclusion(SetMorphism):
+class SubmonoidInclusion(MonoidMorphism):
     """The chosen monomorphism ``S -> M`` representing a submonoid."""
 
     def is_injective(self):
@@ -21,10 +22,7 @@ class SubmonoidInclusion(SetMorphism):
         if target_inclusion.codomain() is not self.codomain():
             raise ValueError("submonoid factorization requires one ambient monoid")
         if target_inclusion is self:
-            return SetMorphism(
-                Hom(self.domain(), self.domain(), SageMonoids()),
-                lambda element: element,
-            )
+            return Monoids().homset(self.domain(), self.domain()).identity()
         source = self.domain()
         target = target_inclusion.domain()
         try:
@@ -35,9 +33,8 @@ class SubmonoidInclusion(SetMorphism):
             ) from error
         if not all(generator in target for generator in generators):
             raise ValueError("the source submonoid is not contained in the target")
-        return SetMorphism(
-            Hom(source, target, SageMonoids()),
-            lambda element: target(element),
+        return Monoids().homset(source, target)(
+            lambda element: target(element)
         )
 
 
@@ -66,7 +63,7 @@ class _SubmonoidParent(Parent):
         )
         Parent.__init__(self, facade=ambient, category=Monoids())
         self._preamble_inclusion = SubmonoidInclusion(
-            Hom(self, ambient, SageMonoids()),
+            Monoids().homset(self, ambient),
             lambda element: element,
         )
         refine(self, Submonoids(ambient))

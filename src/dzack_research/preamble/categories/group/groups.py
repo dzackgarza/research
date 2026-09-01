@@ -8,7 +8,6 @@ from sage.categories.groups import Groups as SageGroups
 from sage.categories.homset import Hom
 from sage.categories.morphism import SetMorphism
 from sage.categories.rings import Rings
-from sage.categories.commutative_additive_groups import CommutativeAdditiveGroups
 from sage.groups.abelian_gps.abelian_group import (
     AbelianGroup_class,
     AbelianGroup_subgroup,
@@ -34,7 +33,16 @@ from sage.rings.integer_ring import ZZ
 from sage.structure.parent import Parent
 from sage.structure.element import RingElement
 
-from dzack_research.preamble.categories.group.magmas import Monoids
+from dzack_research.preamble.categories.group.magmas import (
+    CommutativeAdditiveGroups,
+    Monoids,
+)
+from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    CategoryPacketMethods,
+    EndCategoryConstruction,
+    HomCategoryConstruction,
+    IsoCategoryConstruction,
+)
 from dzack_research.preamble.categories.sets import finite_ordered_set
 from dzack_research.preamble.refine import hook_post_init, refine
 
@@ -154,6 +162,9 @@ def _Coxeter(data, implementation="reflection", base_ring=None, index_set=None):
 
 
 def _native_supergroup(group):
+    selected = getattr(group, "__dict__", {}).get("_supergroup")
+    if selected is not None:
+        return selected
     match group:
         case PermutationGroup_subgroup() | AbelianGroup_subgroup():
             return refine_group(group.ambient_group())
@@ -179,13 +190,88 @@ def _group_inclusion_image(subgroup, containing_group, element):
 
 def _canonical_subgroup_inclusion(subgroup):
     containing_group = subgroup.supergroup()
+    homset = OwnedGroups().Hom(subgroup, containing_group)
     return SubgroupInclusion(
-        Hom(subgroup, containing_group, SageGroups()),
+        homset,
         lambda element: _group_inclusion_image(subgroup, containing_group, element),
     )
 
 
-class OwnedGroups(Category):
+class GroupHomCategoryConstruction(HomCategoryConstruction):
+    r"""The represented Hom categories of owned groups."""
+
+    def Of(self, domain, codomain=None):
+        if codomain is None:
+            codomain = domain
+        if domain not in self.base_category() or codomain not in self.base_category():
+            raise TypeError("a group Hom requires two owned groups")
+        key = id(domain), id(codomain)
+        cached = self._objects.get(key)
+        if cached is not None and cached.domain_object() is domain and cached.codomain_object() is codomain:
+            return cached
+
+        from sage.groups.indexed_free_group import IndexedFreeGroup
+        from dzack_research.preamble.categories.group.group_morphisms import (
+            GroupHomset,
+            IndexedFreeGroupHomset,
+        )
+
+        fixed_class = IndexedFreeGroupHomset if isinstance(domain, IndexedFreeGroup) else GroupHomset
+        result = fixed_class(self, domain, codomain)
+        self._objects[key] = result
+        return result
+
+
+class GroupEndCategoryConstruction(EndCategoryConstruction):
+    r"""Endomorphism monoids of groups, on the same carrier as ``Hom(G,G)``."""
+
+    def Of(self, obj, codomain=None):
+        if codomain is not None and codomain is not obj:
+            raise ValueError("a group endomorphism category has equal endpoints")
+        if obj not in self.base_category():
+            raise TypeError("the endomorphism object must be an owned group")
+        key = id(obj), id(obj)
+        cached = self._objects.get(key)
+        if cached is not None and cached.domain_object() is obj:
+            return cached
+        endomorphisms = self.base_category().Hom(obj, obj)
+        endomorphisms.attach_end_family(self)
+        refine(endomorphisms, Monoids())
+        self._objects[key] = endomorphisms
+        return endomorphisms
+
+
+class GroupIsoCategoryConstruction(IsoCategoryConstruction):
+    r"""Group isomorphisms, using the maintained automorphism group on the diagonal."""
+
+    def Of(self, domain, codomain=None):
+        if codomain is None:
+            codomain = domain
+        if domain is not codomain:
+            return super().Of(domain, codomain)
+
+        from sage.groups.indexed_free_group import IndexedFreeGroup
+
+        # Indexed free groups deliberately have no GAP elementwise model.  The
+        # categorical automorphism group still exists, but at present it has no
+        # stronger computational group parent than the generic Iso carrier.
+        if isinstance(domain, IndexedFreeGroup):
+            return super().Of(domain, codomain)
+
+        key = id(domain), id(domain)
+        cached = self._objects.get(key)
+        if cached is not None:
+            return cached
+        from dzack_research.preamble.categories.group.group_morphisms import (
+            GroupAutomorphismGroup,
+        )
+
+        result = GroupAutomorphismGroup(self, domain)
+        self._objects[key] = result
+        return result
+
+
+class OwnedGroups(CategoryPacketMethods, Category):
     """Groups whose notebook-facing group interface is owned by the preamble."""
 
     from sage.groups.lie_gps.catalog import Nilpotent as _SageNilpotent
@@ -274,14 +360,39 @@ class OwnedGroups(Category):
 
         return group_homset(domain, codomain)
 
+    _HomCategory = GroupHomCategoryConstruction
+    _EndCategory = GroupEndCategoryConstruction
+    _IsoCategory = GroupIsoCategoryConstruction
+
     @classmethod
     def _repr_object_names(cls):
         return "groups"
 
     def super_categories(self):
-        return [SageGroups(), Monoids()]
+        return [Monoids()]
 
     class ParentMethods:
+        def _Hom_(self, codomain, category=None):
+            groups = OwnedGroups()
+            if codomain in groups and (
+                category is None or category.is_subcategory(groups)
+            ):
+                return groups.Hom(self, codomain)
+            if category is not None and category.is_subcategory(SageGroups()):
+                from sage.groups.indexed_free_group import IndexedFreeGroup
+                from sage.groups.libgap_morphism import GroupHomset_libgap
+                from sage.categories.homset import Homset
+
+                if isinstance(self, IndexedFreeGroup):
+                    return Homset(self, codomain, category=category)
+                return GroupHomset_libgap(
+                    self,
+                    codomain,
+                    category=category,
+                    check=False,
+                )
+            raise TypeError("the requested Hom category is not a group category")
+
         def is_finitely_generated(self):
             if self in OwnedFinitelyGeneratedGroups():
                 return True
@@ -304,18 +415,11 @@ class OwnedGroups(Category):
             return _canonical_subgroup_inclusion(self)
 
         def End(self):
-            from dzack_research.preamble.categories.group.group_morphisms import group_homset
-            return group_homset(self, self)
+            return OwnedGroups().End(self)
 
         @cached_method
         def Aut(self):
-            from dzack_research.preamble.categories.group.group_morphisms import GroupAutomorphismGroup
-            automorphisms = GroupAutomorphismGroup(self)
-            categories = [OwnedGroups()]
-            if _finiteness(self) is True:
-                categories.append(OwnedFiniteGroups())
-            refine(automorphisms, categories)
-            return automorphisms
+            return OwnedGroups().Aut(self)
 
         def is_isomorphic_to(self, other):
             if _finiteness(self) is not True or _finiteness(other) is not True:
@@ -481,7 +585,7 @@ class OwnedAbelianGroups(Category):
         return "abelian groups"
 
     def super_categories(self):
-        return [OwnedGroups(), SageGroups().Commutative()]
+        return [OwnedGroups()]
 
     class ParentMethods:
         @cached_method
@@ -513,7 +617,7 @@ class OwnedFiniteGroups(Category):
         return "finite groups"
 
     def super_categories(self):
-        return [OwnedFinitelyPresentedGroups(), SageFiniteGroups()]
+        return [OwnedFinitelyPresentedGroups()]
 
     class ParentMethods:
         def is_finite(self):
@@ -627,12 +731,10 @@ def _has_chosen_generators(group):
 def _has_chosen_presentation(group):
     if isinstance(group, (FreeGroup_class, FinitelyPresentedGroup, CoxeterMatrixGroup)):
         return True
-    if _finiteness(group) is True and isinstance(
+    return _finiteness(group) is True and isinstance(
         group,
         (PermutationGroup_generic, AbelianGroup_class, NamedMatrixGroup_generic, NamedMatrixGroup_gap),
-    ):
-        return True
-    return False
+    )
 
 
 def _is_finitely_generated_witness(group):

@@ -8,7 +8,10 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     CategoricalHomset,
     HomCategoryConstruction,
 )
-from dzack_research.preamble.categories.algebras.derivations import GradedDerivation
+from dzack_research.preamble.categories.algebras.derivations import (
+    GradedDerivation,
+    GradedDerivations,
+)
 from dzack_research.preamble.categories.rings import OwnedCategoryOverBaseRing
 
 
@@ -152,9 +155,11 @@ class Differential(GradedDerivation):
     r"""A represented degree-one square-zero graded derivation."""
 
     def __init__(self, algebra, function) -> None:
-        GradedDerivation.__init__(self, algebra, algebra, 1, function)
-        if not self.check_on_generators():
-            raise ValueError("the proposed differential is not a degree-one graded derivation")
+        GradedDerivation.__init__(
+            self,
+            GradedDerivations(algebra, algebra, shift=1),
+            function,
+        )
         for label in algebra.algebra_generating_set():
             generator = algebra.algebra_generator(label)
             if self(self(generator)) != algebra.zero():

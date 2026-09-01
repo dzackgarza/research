@@ -19,16 +19,13 @@ from sage.all import (
     LaurentPolynomialRing as _SageLaurentPolynomialRing,
 )
 from sage.categories.category import Category
-from sage.categories.category_types import Category_over_base_ring
+from sage.categories.category_types import Category_over_base
 from sage.categories.commutative_rings import CommutativeRings as SageCommutativeRings
 from sage.categories.division_rings import DivisionRings as SageDivisionRings
 from sage.categories.fields import Fields as SageFields
-from sage.categories.finite_fields import FiniteFields as SageFiniteFields
 from sage.categories.integral_domains import IntegralDomains as SageIntegralDomains
 from sage.categories.number_fields import NumberFields as SageNumberFields
 from sage.categories.rings import Rings as SageRings
-from sage.categories.rngs import Rngs as SageRngs
-from sage.categories.semirings import Semirings as SageSemirings
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.latex import latex
 from sage.rings.abc import Order as SageNumberFieldOrder
@@ -51,21 +48,28 @@ class OwnedSemirings(Category):
     """Semirings on the owned operation spine."""
 
     def super_categories(self):
-        return [SageSemirings(), Monoids(), AdditiveMonoids()]
+        return [Monoids(), AdditiveMonoids()]
 
 
 class OwnedRngs(Category):
     """Rngs on the owned operation spine."""
 
     def super_categories(self):
-        return [SageRngs(), Semigroups(), AdditiveGroups()]
+        return [Semigroups(), AdditiveGroups()]
 
 
 class OwnedRings(Category):
     """Unital rings whose notebook-facing ring interface is owned here."""
 
     def super_categories(self):
-        return [SageRings(), OwnedSemirings(), OwnedRngs()]
+        return [OwnedSemirings(), OwnedRngs()]
+
+    def homset(self, domain, codomain):
+        if domain not in self or codomain not in self:
+            raise TypeError("a ring Hom requires two owned rings")
+        from dzack_research.preamble.categories.rings.ring_morphisms import ring_homset
+
+        return ring_homset(domain, codomain)
 
     class ParentMethods:
         def __getitem__(self, names):
@@ -134,7 +138,7 @@ class OwnedRings(Category):
             r"""Return whether ``element`` is central when this is decidable here."""
             if element not in self:
                 return False
-            if self in SageCommutativeRings():
+            if self in OwnedCommutativeRings():
                 return True
             from dzack_research.preamble.categories.algebras.algebras import (
                 finite_algebra_generators,
@@ -155,16 +159,15 @@ class OwnedRings(Category):
         @cached_method
         def _ring_morphism_defining_algebra_structure(self):
             r"""Return the canonical ring map \(R\to Z(R)\) when it is the identity."""
-            from sage.categories.homset import Hom
-            from sage.categories.morphism import SetMorphism
-
-            if self not in SageCommutativeRings():
+            if self not in OwnedCommutativeRings():
                 raise TypeError(
                     f"{self} is noncommutative, so the identity does not land "
                     "in its center"
                 )
             center = self.ring_center()
-            return SetMorphism(Hom(self, center, SageRings()), lambda scalar: scalar)
+            from dzack_research.preamble.categories.rings.ring_morphisms import ring_morphism
+
+            return ring_morphism(self, center, lambda scalar: scalar)
 
         def algebra_structure_morphism(self):
             r"""The structure morphism of this ring as an algebra over itself.
@@ -176,7 +179,7 @@ class OwnedRings(Category):
         @cached_method
         def ring_center(self):
             r"""Return the centre ``Z(R)`` as a predicate-defined subring."""
-            if self in SageCommutativeRings():
+            if self in OwnedCommutativeRings():
                 return self
             from dzack_research.preamble.categories.rings.predicate_subrings import (
                 predicate_subring,
@@ -186,12 +189,12 @@ class OwnedRings(Category):
                 self,
                 self.is_central,
                 "z commutes with every element",
-                SageCommutativeRings(),
+                OwnedCommutativeRings(),
             )
 
         def fraction_field(self):
             r"""Return the fraction field through the computation ring."""
-            if self in SageFields():
+            if self in OwnedFields():
                 return self
             return own_ring(engine_ring(self).fraction_field())
 
@@ -232,7 +235,7 @@ class OwnedCommutativeRings(Category):
     r"""Commutative unital rings in the owned mathematical graph."""
 
     def super_categories(self):
-        return [OwnedRings(), SageCommutativeRings()]
+        return [OwnedRings()]
 
     class ParentMethods:
         def is_commutative(self):
@@ -250,6 +253,21 @@ class OwnedCommutativeRings(Category):
 
         def as_ZZ_algebra(self):
             return self.as_algebra_over(own_ring(SageZZ))
+
+        def ideal(self, *generators):
+            engine = engine_ring(self)
+            if engine is SageZZ:
+                from dzack_research.preamble.categories.modules.fractional_ideals import Ideal
+
+                return Ideal(self, generators)
+            backend = engine.ideal(*generators)
+            if hasattr(backend, "syzygy_module"):
+                from dzack_research.preamble.categories.rings.commutative_ideals import (
+                    CommutativeIdeal,
+                )
+
+                return CommutativeIdeal(self, *generators)
+            return backend
 
         def quotient_ring(self, ideal):
             from dzack_research.preamble.categories.rings.commutative_algebra import (
@@ -292,7 +310,7 @@ class OwnedIntegralDomains(Category):
     r"""Commutative rings without zero divisors."""
 
     def super_categories(self):
-        return [OwnedCommutativeRings(), SageIntegralDomains()]
+        return [OwnedCommutativeRings()]
 
     class ParentMethods:
         def is_integral_domain(self, *args, **kwargs):
@@ -350,6 +368,17 @@ class OwnedLocalRings(Category):
                 raise NotImplementedError(f"the residue field of {self} is not represented")
             return residue
 
+        def residue_map(self):
+            r"""Return the represented local quotient map ``R -> kappa(m)``."""
+            morphism = getattr(self, "_preamble_residue_map", None)
+            if morphism is not None:
+                return morphism
+            if self.residue_field() is self:
+                from dzack_research.preamble.categories.rings.ring_morphisms import ring_homset
+
+                return ring_homset(self, self).identity()
+            raise NotImplementedError(f"the residue map of {self} is not represented")
+
         def fraction_field(self):
             represented = getattr(self, "_preamble_fraction_field", None)
             if represented is not None:
@@ -388,13 +417,12 @@ class OwnedCompleteLocalRings(Category):
 
 class OwnedDivisionRings(Category):
     def super_categories(self):
-        return [SageDivisionRings(), OwnedRings()]
+        return [OwnedRings()]
 
 
 class OwnedFields(Category):
     def super_categories(self):
         return [
-            SageFields(),
             OwnedDivisionRings(),
             OwnedIntegralDomains(),
             OwnedNoetherianRings(),
@@ -408,6 +436,11 @@ class OwnedFields(Category):
 
         def residue_field(self):
             return self
+
+        def residue_map(self):
+            from dzack_research.preamble.categories.rings.ring_morphisms import ring_homset
+
+            return ring_homset(self, self).identity()
 
 
 class OwnedOrders(Category):
@@ -535,7 +568,7 @@ class PrimeFields(Category):
     r"""Prime fields \(\mathbf F_p\)."""
 
     def super_categories(self):
-        return [SageFiniteFields(), OwnedFields()]
+        return [OwnedFields()]
 
 
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (  # noqa: E402
@@ -543,17 +576,26 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
 )
 
 
-class OwnedCategoryOverBaseRing(CategoryPacketMethods, Category_over_base_ring):
+class OwnedCategoryOverBaseRing(CategoryPacketMethods, Category_over_base):
     r"""A category over a ring, normalized to the session's owned ring."""
 
     @staticmethod
     def __classcall__(cls, base_ring, *args, **kwargs):
-        return Category_over_base_ring.__classcall__(
+        return Category_over_base.__classcall__(
             cls,
             owned_ring_view(base_ring),
             *args,
             **kwargs,
         )
+
+    def base_ring(self):
+        return self.base()
+
+    def __contains__(self, candidate) -> bool:
+        try:
+            return self in candidate.category().all_super_categories(proper=False)
+        except (AttributeError, TypeError, ValueError):
+            return False
 
 
 class OwnedRingView(UniqueRepresentation, Parent):
@@ -576,6 +618,9 @@ class OwnedRingView(UniqueRepresentation, Parent):
 
     def engine(self) -> Ring:
         return self._engine
+
+    def _engine_element(self, value):
+        return self._engine(value)
 
     def _element_constructor_(self, value):
         return self._engine(value)
@@ -627,9 +672,26 @@ class OwnedRingView(UniqueRepresentation, Parent):
 
     def _coerce_map_from_(self, source):
         computation_source = engine_ring(source)
-        if computation_source is self._engine:
-            return True
-        return True if self._engine.has_coerce_map_from(computation_source) else None
+        if computation_source is not self._engine and not self._engine.has_coerce_map_from(
+            computation_source
+        ):
+            return None
+
+        # Returning bare ``True`` asks Sage to fabricate a default conversion
+        # map in the source engine's strongest native category.  An owned
+        # facade deliberately need not itself be an object of that native
+        # category (notably ``NumberFields()``), even though it represents the
+        # same ring.  Supply the exact facade map instead.
+        from sage.categories.homset import Hom
+        from sage.categories.morphism import SetMorphism
+        from sage.categories.sets_cat import Sets as SageSets
+        from sage.sets.pythonclass import Set_PythonType
+
+        map_source = Set_PythonType(source) if isinstance(source, type) else source
+        return SetMorphism(
+            Hom(map_source, self, SageSets()),
+            lambda value: self._engine(value),
+        )
 
     def _repr_(self):
         return repr(self._engine)
@@ -658,7 +720,7 @@ def _owned_ring_category(engine: Ring) -> Category:
         placement = OwnedDivisionRings()
     else:
         placement = OwnedRings()
-    joined = Category.join((category, placement, _owned_ring_size(engine), *extra))
+    joined = Category.join((placement, _owned_ring_size(engine), *extra))
     match engine:
         case SageNumberFieldOrder():
             return Category.join((joined, OwnedOrders()))
@@ -784,11 +846,34 @@ def owned_ring_view(ring):
 
 def engine_ring(ring):
     r"""Return the Sage computation parent behind an owned ring."""
+    represented = getattr(ring, "_preamble_engine_ring", None)
+    if represented is not None:
+        return represented
     match ring:
         case OwnedRingView():
             return ring.engine()
         case _:
             return ring
+
+
+def engine_element(ring, element):
+    r"""Return the private computation-engine realization of ``element``.
+
+    ``engine_ring(R)`` identifies a currently selected CAS realization of the
+    owned ring ``R``.  This companion crossing converts an element of the
+    *owned* ring into that engine without asking the engine's coercion graph to
+    know about the owned parent.  Quotients, localizations, completions, and
+    future Julia/OSCAR-backed rings can therefore keep one public mathematical
+    parent while changing computational realizations independently.
+    """
+    owned = own_ring(ring)
+    converter = getattr(owned, "_engine_element", None)
+    if converter is not None:
+        return converter(element)
+    engine = engine_ring(owned)
+    if engine is owned:
+        return owned(element)
+    return engine(element)
 
 
 def _owning_constructor(constructor):
@@ -887,8 +972,22 @@ def PolynomialRing(base_ring, *args, **kwargs):
         from dzack_research.preamble.categories.algebras.algebras import refine_algebra
 
         labels = tuple(engine_ring(result).variable_names())
-        algebra = refine_algebra(result, base_ring, labels)
-        if own_ring(base_ring) in OwnedNoetherianRings():
+        from dzack_research.preamble.categories.algebras.free_algebras import (
+            FreeAlgebras,
+            GradedFreeAlgebras,
+            SymmetricAlgebras,
+        )
+
+        base = own_ring(base_ring)
+        algebra = refine_algebra(
+            result,
+            base,
+            labels,
+            FreeAlgebras(base),
+            GradedFreeAlgebras(base),
+            SymmetricAlgebras(base),
+        )
+        if base in OwnedNoetherianRings():
             refine(algebra, OwnedNoetherianRings())
         return algebra
     except ImportError:

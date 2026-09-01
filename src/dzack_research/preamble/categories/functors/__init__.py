@@ -115,6 +115,10 @@ from dzack_research.preamble.categories.functors.scalar_change import (
     ScalarExtensionFunctor,
     base_change_adjunction,
 )
+from dzack_research.preamble.categories.functors.module_localization import (
+    ModuleLocalizationFunctor,
+    module_localization_functor,
+)
 from dzack_research.preamble.categories.functors.orders_number_fields import (
     FractionFieldFunctor,
     OrderNumberFieldAdjunction,
@@ -248,6 +252,7 @@ __all__ = [
     "InternalHomFromFunctor",
     "InverseImageSubobjectFunctor",
     "KernelArrowFunctor",
+    "ModuleLocalizationFunctor",
     "GroupModuleBaseChangeAdjunction",
     "GroupModuleRestrictionOfScalarsFunctor",
     "GroupModuleScalarExtensionFunctor",
@@ -322,6 +327,7 @@ __all__ = [
     "order_number_field_adjunction",
     "quadratic_free_form_adjunction",
     "restriction_coinduction_adjunction",
+    "module_localization_functor",
     "trivial_invariants_adjunction",
     "underlying_cofree_g_set_adjunction",
     "CoinductionFunctor",

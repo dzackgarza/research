@@ -1,43 +1,47 @@
 """The owned operation spine below groups."""
 
-from sage.categories.additive_groups import AdditiveGroups as SageAdditiveGroups
-from sage.categories.additive_magmas import AdditiveMagmas as SageAdditiveMagmas
-from sage.categories.additive_monoids import AdditiveMonoids as SageAdditiveMonoids
-from sage.categories.additive_semigroups import AdditiveSemigroups as SageAdditiveSemigroups
 from sage.categories.category import Category
-from sage.categories.magmas import Magmas as SageMagmas
-from sage.categories.monoids import Monoids as SageMonoids
-from sage.categories.semigroups import Semigroups as SageSemigroups
+from sage.categories.homset import Homset
+from sage.categories.morphism import Morphism
+
+from dzack_research.preamble.categories.sets import Sets
 
 
 class Magmas(Category):
     def super_categories(self):
-        return [SageMagmas()]
+        return [Sets()]
 
 
 class Semigroups(Category):
     def super_categories(self):
-        return [SageSemigroups(), Magmas()]
+        return [Magmas()]
 
 
 class Monoids(Category):
     def super_categories(self):
-        return [SageMonoids(), Semigroups()]
+        return [Semigroups()]
+
+    def homset(self, domain, codomain):
+        if domain not in self or codomain not in self:
+            raise TypeError("a monoid Hom requires two monoids")
+        return MonoidHomset(domain, codomain)
+
+    Hom = homset
 
 
 class AdditiveMagmas(Category):
     def super_categories(self):
-        return [SageAdditiveMagmas()]
+        return [Sets()]
 
 
 class AdditiveSemigroups(Category):
     def super_categories(self):
-        return [SageAdditiveSemigroups(), AdditiveMagmas()]
+        return [AdditiveMagmas()]
 
 
 class AdditiveMonoids(Category):
     def super_categories(self):
-        return [SageAdditiveMonoids(), AdditiveSemigroups()]
+        return [AdditiveSemigroups()]
 
     class ParentMethods:
         def monoidal_unit(self):
@@ -46,4 +50,59 @@ class AdditiveMonoids(Category):
 
 class AdditiveGroups(Category):
     def super_categories(self):
-        return [SageAdditiveGroups(), AdditiveMonoids()]
+        return [AdditiveMonoids()]
+
+
+class CommutativeAdditiveGroups(Category):
+    """Additive groups whose addition is commutative."""
+
+    def super_categories(self):
+        return [AdditiveGroups()]
+
+
+class MonoidMorphism(Morphism):
+    """A morphism in the owned category of monoids."""
+
+    def __init__(self, parent, function) -> None:
+        Morphism.__init__(self, parent)
+        if not callable(function):
+            raise TypeError("a monoid morphism requires an exact element map")
+        self._function = function
+
+    def __call__(self, element):
+        return self._call_(element)
+
+    def _call_(self, element):
+        return self.codomain()(self._function(self.domain()(element)))
+
+    def __mul__(self, other):
+        if not isinstance(other, MonoidMorphism) or other.codomain() is not self.domain():
+            return NotImplemented
+        return MonoidHomset(other.domain(), self.codomain())(
+            lambda element: self(other(element))
+        )
+
+
+class MonoidHomset(Homset):
+    """The owned set ``Hom_Mon(A,B)``."""
+
+    Element = MonoidMorphism
+
+    def __init__(self, domain, codomain) -> None:
+        Homset.__init__(self, domain, codomain, category=Sets())
+
+    def __call__(self, function):
+        if isinstance(function, MonoidMorphism):
+            if function.domain() is not self.domain() or function.codomain() is not self.codomain():
+                raise ValueError("the monoid morphism has the wrong source or target")
+            if function.parent() is self:
+                return function
+            function = function.__call__
+        return self.element_class(self, function)
+
+    _element_constructor_ = __call__
+
+    def identity(self):
+        if self.domain() is not self.codomain():
+            raise ValueError("identity is defined only on a monoid endomorphism Hom-set")
+        return self(lambda element: element)

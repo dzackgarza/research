@@ -17,11 +17,12 @@ from sage.structure.element import Element
 from sage.structure.parent import Parent
 
 from dzack_research.preamble.categories.sets.cardinals import cardinal
+from dzack_research.preamble.categories.sets.owned_sets import Sets as OwnedSets
 
 
 def Set(source):
     r"""Return ``source`` as a Sage set object."""
-    return source if source in SageSets() else SageSet(source)
+    return source if source in OwnedSets() or source in SageSets() else SageSet(source)
 
 
 def ConditionSet(universe, predicate):
@@ -55,11 +56,11 @@ class SetSurjection(SetMorphism):
 
 
 def set_injection(domain, codomain, function):
-    return SetInjection(Hom(domain, codomain, SageSets()), function)
+    return SetInjection(Hom(domain, codomain, OwnedSets()), function)
 
 
 def set_surjection(domain, codomain, function):
-    return SetSurjection(Hom(domain, codomain, SageSets()), function)
+    return SetSurjection(Hom(domain, codomain, OwnedSets()), function)
 
 
 class SetInclusion(SetMorphism):
@@ -72,7 +73,7 @@ class SetInclusion(SetMorphism):
         characteristic_morphism=None,
         finite_members=None,
     ) -> None:
-        parent = Hom(domain, codomain, SageSets())
+        parent = Hom(domain, codomain, OwnedSets())
         SetMorphism.__init__(self, parent, lambda member: codomain(member))
         self._characteristic_morphism = characteristic_morphism
         self._finite_members = finite_members
@@ -90,7 +91,7 @@ class SetInclusion(SetMorphism):
         if not self <= target_inclusion:
             raise ValueError("the first subset is not contained in the second")
         return SetMorphism(
-            Hom(self.domain(), target_inclusion.domain(), SageSets()),
+            Hom(self.domain(), target_inclusion.domain(), OwnedSets()),
             lambda member: target_inclusion.domain()(self(member)),
         )
 

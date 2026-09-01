@@ -106,11 +106,45 @@ class DiscriminantBilinearModules(OwnedCategoryOverBaseRing):
         return "discriminant bilinear modules"
 
     def super_categories(self):
-        return [DiscriminantModules(self.base_ring())]
+        from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import (
+            TorsionBilinearFormModules,
+        )
+
+        return [
+            DiscriminantModules(self.base_ring()),
+            TorsionBilinearFormModules(self.base_ring()),
+        ]
 
     class ParentMethods:
         def bilinear_value_module(self):
             return self._preamble_bilinear_value_module
+
+        def value_module(self):
+            return self.bilinear_value_module()
+
+        @cached_method
+        def form(self):
+            from dzack_research.preamble.categories.forms import BilinearForms
+
+            generators = tuple(self.module_generators())
+            values = tuple(
+                tuple(self.b(left, right) for right in generators)
+                for left in generators
+            )
+            return BilinearForms(self, self.bilinear_value_module())(values)
+
+        def unformed_module(self):
+            return self
+
+        @cached_method
+        def forget_form_morphism(self):
+            from dzack_research.preamble.categories.modules import module_homset
+
+            return module_homset(self, self).identity()
+
+        @cached_method
+        def equip_form_morphism(self):
+            return self.forget_form_morphism()
 
         def b(self, left, right):
             if left.parent() is not self or right.parent() is not self:
@@ -303,11 +337,43 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
         return "discriminant quadratic modules"
 
     def super_categories(self):
-        return [DiscriminantBilinearModules(self.base_ring())]
+        from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import (
+            TorsionQuadraticFormModules,
+        )
+
+        return [
+            DiscriminantBilinearModules(self.base_ring()),
+            TorsionQuadraticFormModules(self.base_ring()),
+        ]
 
     class ParentMethods:
         def quadratic_value_module(self):
             return self._preamble_quadratic_value_module
+
+        def value_module(self):
+            return self.quadratic_value_module()
+
+        @cached_method
+        def form(self):
+            from dzack_research.preamble.categories.forms import QuadraticForms
+
+            generators = tuple(self.module_generators())
+            quadratic_values = self.quadratic_value_module()
+            bilinear_values = self.bilinear_value_module()
+            gram = []
+            for i, left in enumerate(generators):
+                row = []
+                for j, right in enumerate(generators):
+                    if i == j:
+                        row.append(self.q(left))
+                    else:
+                        row.append(
+                            quadratic_values(
+                                bilinear_values.lift(self.b(left, right))
+                            )
+                        )
+                gram.append(tuple(row))
+            return QuadraticForms(self, quadratic_values)(tuple(gram))
 
         def q(self, element):
             if element.parent() is not self:

@@ -35,6 +35,33 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
 
             return FreeModuleOn(self.base_ring(), self.module_generating_set())
 
+        def determinant_line(self):
+            from dzack_research.preamble.categories.modules.hodge import DeterminantLine
+
+            return DeterminantLine(self)
+
+        def exterior_forms(self, degree):
+            from dzack_research.preamble.categories.modules.hodge import ExteriorForms
+
+            return ExteriorForms(self, degree)
+
+        def volume_trivialization(self, forward, inverse):
+            from dzack_research.preamble.categories.modules.hodge import VolumeTrivialization
+
+            return VolumeTrivialization(self, forward, inverse)
+
+        def framing_volume_trivialization(self, unit=None):
+            from dzack_research.preamble.categories.modules.hodge import (
+                FramingVolumeTrivialization,
+            )
+
+            return FramingVolumeTrivialization(self, unit=unit)
+
+        def poincare_duality(self, volume, degree):
+            from dzack_research.preamble.categories.modules.hodge import PoincareDuality
+
+            return PoincareDuality(self, volume, degree)
+
 
 def BasedFreeModule(base_ring, rank_or_labels):
     from dzack_research.preamble.categories.modules.framed.framed_free_modules import (

@@ -17,6 +17,9 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     ModuleMorphism,
     _initialize_module_hom_parent,
 )
+from dzack_research.preamble.categories.modules.internal_hom import (
+    LinearEndCategoryConstruction,
+)
 from dzack_research.preamble.categories.rings import (
     OwnedCategoryOverBaseRing,
     engine_ring,
@@ -72,6 +75,15 @@ class GradedModuleMorphism(ModuleMorphism):
                 raise ValueError("a graded-module map has a nonhomogeneous target carrier") from error
             if not target_homogeneous or target_degree != source_degree:
                 raise ValueError("a graded-module morphism must preserve degree")
+
+    def __mul__(self, other):
+        if not isinstance(other, GradedModuleMorphism):
+            return super().__mul__(other)
+        if other.codomain() is not self.domain():
+            return NotImplemented
+        return graded_module_homset(other.domain(), self.codomain()).elementwise(
+            lambda element: self(other(element))
+        )
 
 
 class GradedModuleHomset(CategoricalHomset):
@@ -154,6 +166,7 @@ class GradedModules(OwnedCategoryOverBaseRing):
         return [modules]
 
     _HomCategory = GradedModuleHomCategoryConstruction
+    _EndCategory = LinearEndCategoryConstruction
 
     class ParentMethods:
         def is_graded(self) -> bool:

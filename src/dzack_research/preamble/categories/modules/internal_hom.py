@@ -7,6 +7,9 @@ from dzack_research.preamble.categories.rings import (
     engine_ring,
     owned_ring_view,
 )
+from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    EndCategoryConstruction,
+)
 from dzack_research.preamble.categories.sets import finite_ordered_set
 from dzack_research.preamble.refine import refine
 
@@ -39,7 +42,7 @@ class LinearHomModules(OwnedCategoryOverBaseRing):
             r"""Return the pointwise scalar multiple in this linear Hom."""
             if morphism.parent() is not self:
                 morphism = self(morphism)
-            scalar = self.base_ring()(scalar)
+            scalar = engine_ring(self.base_ring())(scalar)
             return self.elementwise(
                 lambda element: self.codomain().scalar_multiple(
                     scalar,
@@ -55,6 +58,30 @@ class LinearHomModules(OwnedCategoryOverBaseRing):
 
         def evaluation(self, map_element, source_element):
             return self(map_element)(source_element)
+
+
+class LinearEndCategoryConstruction(EndCategoryConstruction):
+    r"""Endomorphism rings for categories enriched in ``R``-modules.
+
+    ``End_C(M)`` is the same parent as ``Hom_C(M,M)``.  The End construction
+    only records that equal-endpoint Hom as an End object and adds the ring
+    structure supplied by pointwise addition and composition.
+    """
+
+    def Of(self, obj, codomain=None):
+        if codomain is not None and codomain is not obj:
+            raise ValueError("an endomorphism category has equal endpoints")
+        if obj not in self.base_category():
+            raise TypeError("the endomorphism object must lie in the base category")
+        endomorphisms = super().Of(obj)
+        endomorphisms.attach_end_family(self)
+        from dzack_research.preamble.categories.rings import OwnedRings
+
+        refine(endomorphisms, OwnedRings())
+        return endomorphisms
+
+    def __contains__(self, candidate) -> bool:
+        return hasattr(candidate, "end_family") and candidate.end_family() is self
 
 
 class InternalHomModules(OwnedCategoryOverBaseRing):
@@ -168,27 +195,35 @@ def InternalHom(source, target):
         generator_assignments,
         relation_assignments,
     )(images)
-    kernel = _native_fgp_morphism(relation_evaluation).kernel()
-    kernel_relations = kernel._relative_matrix().change_ring(engine_ring(ring))
-    kernel_labels = finite_ordered_set(range(int(kernel.V().rank())))
-    kernel_relation_labels = finite_ordered_set(range(kernel_relations.nrows()))
-    kernel_presentation = _presentation_from_relation_rows(
-        ring,
-        kernel_labels,
-        kernel_relation_labels,
-        kernel_relations,
-    )
-    model = FinitelyPresentedModule(kernel_presentation)
-    inclusion = module_embedding(
-        model,
-        generator_assignments,
-        {
-            label: generator_assignments(
-                kernel(kernel.V().gen(position)).lift()
-            )
-            for position, label in enumerate(model.module_generating_set())
-        },
-    )
+    from sage.modules.fg_pid.fgp_module import FGP_Module_class
+
+    if isinstance(generator_assignments, FGP_Module_class) and isinstance(
+        relation_assignments, FGP_Module_class
+    ):
+        kernel = _native_fgp_morphism(relation_evaluation).kernel()
+        kernel_relations = kernel._relative_matrix().change_ring(engine_ring(ring))
+        kernel_labels = finite_ordered_set(range(int(kernel.V().rank())))
+        kernel_relation_labels = finite_ordered_set(range(kernel_relations.nrows()))
+        kernel_presentation = _presentation_from_relation_rows(
+            ring,
+            kernel_labels,
+            kernel_relation_labels,
+            kernel_relations,
+        )
+        model = FinitelyPresentedModule(kernel_presentation)
+        inclusion = module_embedding(
+            model,
+            generator_assignments,
+            {
+                label: generator_assignments(
+                    kernel(kernel.V().gen(position)).lift()
+                )
+                for position, label in enumerate(model.module_generating_set())
+            },
+        )
+    else:
+        model = relation_evaluation.kernel()
+        inclusion = model.inclusion()
     homset._install_internal_hom_model(model, inclusion)
     from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
         ModulesWithChosenFinitePresentation,
@@ -236,6 +271,7 @@ def internal_hom_morphism(source_internal_hom, target_internal_hom, source_map, 
 __all__ = [
     "InternalHom",
     "InternalHomModules",
+    "LinearEndCategoryConstruction",
     "LinearHomModules",
     "internal_hom_morphism",
 ]

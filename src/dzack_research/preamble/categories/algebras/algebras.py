@@ -76,6 +76,8 @@ class AlgebraHomCategoryConstruction(HomCategoryConstruction):
     def Of(self, domain, codomain):
         if domain not in self.base_category() or codomain not in self.base_category():
             raise TypeError("algebra Hom endpoints must lie in the base algebra category")
+        # Endpoint identity, not a hash: hashing a Hom endpoint re-enters Hom
+        # construction, so Sage's cached_method recurses here.
         key = id(domain), id(codomain)
         cached = self._objects.get(key)
         if (

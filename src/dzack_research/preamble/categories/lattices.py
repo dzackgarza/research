@@ -14,7 +14,6 @@ calling that category.
 """
 
 from sage.arith.misc import gcd
-from sage.categories.rings import Rings
 from sage.misc.cachefunc import cached_method
 from sage.misc.latex import latex
 from sage.misc.unknown import Unknown
@@ -22,16 +21,54 @@ from sage.rings.infinity import Infinity
 from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories._lattice import diagonal_gram as diagonal_gram
+from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    HomCategoryConstruction,
+    IsoCategoryConstruction,
+    MonoCategoryConstruction,
+)
 from dzack_research.preamble.categories.modules import FramedFreeModules
 from dzack_research.preamble.categories.rings import (
     OwnedCategoryOverBaseRing,
+    OwnedRings,
     engine_ring,
+    own_ring,
 )
 
-_Rings = Rings()
+_Rings = OwnedRings()
 
 
 _INDECOMPOSABLE_NAMES = {}
+
+
+class LatticeHomCategoryConstruction(HomCategoryConstruction):
+    r"""The strict form-preserving Hom categories of lattices."""
+
+    def fixed_category_class(self):
+        from dzack_research.preamble.categories.lattice_morphisms import LatticeHomset
+
+        return LatticeHomset
+
+
+class LatticeMonoCategoryConstruction(MonoCategoryConstruction):
+    r"""The form-preserving monomorphisms of lattices."""
+
+    def fixed_category_class(self):
+        from dzack_research.preamble.categories.lattice_morphisms import (
+            LatticeEmbeddingHomset,
+        )
+
+        return LatticeEmbeddingHomset
+
+
+class LatticeIsoCategoryConstruction(IsoCategoryConstruction):
+    r"""The isometries of lattices."""
+
+    def fixed_category_class(self):
+        from dzack_research.preamble.categories.lattice_morphisms import (
+            LatticeIsometryHomset,
+        )
+
+        return LatticeIsometryHomset
 
 
 def _gram_key(gram):
@@ -280,9 +317,17 @@ class Lattices(OwnedCategoryOverBaseRing):
         This is not a lattice constructor.  An object is
         ``Lattices(R)(data)``.
         """
-        if len(args) != 1 or args[0] not in _Rings:
+        if len(args) != 1:
             raise TypeError("Lattices(R) takes a ring R; construct an object as Lattices(R)(data)")
-        return super().__classcall__(cls, args[0])
+        try:
+            ring = own_ring(args[0])
+        except TypeError as error:
+            raise TypeError(
+                "Lattices(R) takes a ring R; construct an object as Lattices(R)(data)"
+            ) from error
+        if ring not in _Rings:
+            raise TypeError("Lattices(R) takes a ring R; construct an object as Lattices(R)(data)")
+        return super().__classcall__(cls, ring)
 
     def _call_(self, data, basis=None, names=None, form=None, module_generators=None):
         r"""Construct a lattice in this category.
@@ -367,7 +412,18 @@ class Lattices(OwnedCategoryOverBaseRing):
             sage: Lattices(ZZ).super_categories()
             [Category of framed free modules]
         """
-        return [FramedFreeModules(self.base_ring())]
+        from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
+            SymmetricBilinearFormModules,
+        )
+
+        return [
+            FramedFreeModules(self.base_ring()),
+            SymmetricBilinearFormModules(self.base_ring()),
+        ]
+
+    _HomCategory = LatticeHomCategoryConstruction
+    _MonoCategory = LatticeMonoCategoryConstruction
+    _IsoCategory = LatticeIsoCategoryConstruction
 
     def _repr_(self):
         r"""Return ``Lattices(R)`` with the session name of the base ring.
@@ -404,12 +460,41 @@ class Lattices(OwnedCategoryOverBaseRing):
     class ParentMethods:
         """Operations generic to every lattice."""
 
+        @cached_method
+        def form(self):
+            r"""Return the existing lattice pairing as a bilinear-form morphism."""
+            from dzack_research.preamble.categories.forms import BilinearForms
+
+            return BilinearForms(self, self.base_ring())(
+                lambda left, right: self.b(left, right)
+            )
+
+        def value_module(self):
+            return self.base_ring()
+
+        def unformed_module(self):
+            r"""Read this same parent at its weaker module level."""
+            return self
+
+        @cached_method
+        def forget_form_morphism(self):
+            from dzack_research.preamble.categories.modules import module_homset
+
+            return module_homset(self, self).identity()
+
+        @cached_method
+        def equip_form_morphism(self):
+            return self.forget_form_morphism()
+
         def _Hom_(self, codomain, category=None):
             from dzack_research.preamble.categories.lattice_morphisms import (
                 lattice_homset,
             )
 
-            if codomain in Lattices(self.base_ring()) and category is None:
+            lattices = Lattices(self.base_ring())
+            if codomain in lattices and (
+                category is None or category.is_subcategory(lattices)
+            ):
                 return lattice_homset(self, codomain)
             return super()._Hom_(codomain, category)
 

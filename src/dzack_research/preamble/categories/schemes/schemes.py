@@ -1,6 +1,6 @@
 """Owned categories and basic constructors for schemes over a base ring."""
 
-from sage.misc.cachefunc import cached_method
+from sage.misc.cachefunc import cached_function, cached_method
 from sage.categories.morphism import Morphism
 from sage.schemes.affine.affine_space import AffineSpace as _SageAffineSpace
 from sage.schemes.generic.scheme import Scheme as _SageScheme
@@ -53,7 +53,13 @@ class SchemeMorphism(Morphism):
             if isinstance(other, SchemeMorphism)
             else other
         )
-        return categorical_scheme_morphism(self.native_morphism() * other_native)
+        result = categorical_scheme_morphism(self.native_morphism() * other_native)
+        if isinstance(other, SchemeMorphism):
+            left_pullback = getattr(self, "_preamble_coordinate_algebra_morphism", None)
+            right_pullback = getattr(other, "_preamble_coordinate_algebra_morphism", None)
+            if left_pullback is not None and right_pullback is not None:
+                result._preamble_coordinate_algebra_morphism = right_pullback * left_pullback
+        return result
 
     def compose(self, before):
         result = self * before
@@ -66,6 +72,16 @@ class SchemeMorphism(Morphism):
 
     def evaluate_at(self, point):
         return self.compose(point)
+
+    def coordinate_algebra_morphism(self):
+        morphism = getattr(self, "_preamble_coordinate_algebra_morphism", None)
+        if morphism is None:
+            raise NotImplementedError(
+                "this scheme morphism has no represented pullback on affine coordinate algebras"
+            )
+        return morphism
+
+    pullback_on_coordinate_algebras = coordinate_algebra_morphism
 
     def _repr_(self) -> str:
         return repr(self.native_morphism())
@@ -196,6 +212,9 @@ class Schemes(OwnedCategoryOverBaseRing):
             return Spec(self.scheme_base_ring())
 
         def structure_morphism(self):
+            selected = getattr(self, "_preamble_structure_morphism", None)
+            if selected is not None:
+                return selected
             base = self.base_scheme()
             if self is base:
                 return refine_scheme_morphism(self.identity_morphism(), self.scheme_base_ring())
@@ -317,6 +336,19 @@ class AffineSchemes(_SchemePropertyCategory):
     class ParentMethods:
         def is_affine(self):
             return True
+
+        def coordinate_algebra(self):
+            selected = getattr(self, "_preamble_coordinate_algebra", None)
+            if selected is not None:
+                return selected
+            from dzack_research.preamble.categories.algebras.algebras import refine_algebra
+
+            engine = self.coordinate_ring()
+            base = self.scheme_base_ring()
+            labels = tuple(getattr(engine, "variable_names", lambda: ())()) or None
+            selected = refine_algebra(own_ring(engine), base, labels)
+            self._preamble_coordinate_algebra = selected
+            return selected
 
         def closed_subscheme(self, *equations):
             from dzack_research.preamble.categories.schemes.subschemes import (
@@ -505,18 +537,67 @@ def _integral_placement(base_ring):
         return False
 
 
-def Spec(base_ring):
-    r"""Return ``Spec(R)`` as the terminal object of the represented ``Sch/R``."""
-    base = own_ring(base_ring)
-    scheme = _SageSpec(engine_ring(base))
-    categories = [
-        AffineSchemes(base),
-        FiniteTypeSchemes(base),
-        SmoothSchemes(base),
-    ]
-    if _integral_placement(base):
+@cached_function
+def Spec(ring_or_algebra):
+    r"""Return the affine scheme ``Spec(A)`` over the represented scalar base.
+
+    If ``A`` is an owned commutative ``R``-algebra, the returned object lies in
+    ``Schemes(R)`` and its structure morphism is induced contravariantly by
+    ``R -> A``.  A bare commutative ring ``R`` is read as an ``R``-algebra over
+    itself, so ``Spec(R)`` remains the terminal affine ``R``-scheme.
+    """
+    algebra = own_ring(ring_or_algebra)
+    try:
+        base = algebra.algebra_base_ring()
+    except AttributeError:
+        base = algebra
+    base = own_ring(base)
+
+    scheme = _SageSpec(engine_ring(algebra))
+    categories = [AffineSchemes(base)]
+    from dzack_research.preamble.categories.algebras import FramedAlgebras
+
+    if algebra is base or algebra in FramedAlgebras(base):
+        categories.append(FiniteTypeSchemes(base))
+    if algebra is base:
+        categories.append(SmoothSchemes(base))
+    if _integral_placement(algebra):
         categories.append(IntegralSchemes(base))
-    return refine_scheme(scheme, base, categories)
+    refine_scheme(scheme, base, categories)
+    scheme._preamble_coordinate_algebra = algebra
+
+    if algebra is base:
+        scheme._preamble_structure_morphism = refine_scheme_morphism(
+            scheme.identity_morphism(), base
+        )
+    else:
+        base_scheme = Spec(base)
+        engine_map = engine_ring(algebra).coerce_map_from(engine_ring(base))
+        if engine_map is None:
+            raise NotImplementedError(
+                "the affine Spec structure morphism currently requires an exact engine realization of the algebra structure map"
+            )
+        native = scheme.Hom(base_scheme)(engine_map)
+        scheme._preamble_structure_morphism = refine_scheme_morphism(native, base)
+    return scheme
+
+
+def affine_spec_morphism(algebra_morphism):
+    r"""Return the affine scheme morphism contravariantly induced by an algebra map."""
+    from dzack_research.preamble.categories.algebras import AlgebraMorphism
+
+    if not isinstance(algebra_morphism, AlgebraMorphism):
+        raise TypeError("affine Spec acts on a represented algebra morphism")
+    source_algebra = algebra_morphism.domain()
+    target_algebra = algebra_morphism.codomain()
+    if source_algebra.base_ring() is not target_algebra.base_ring():
+        raise ValueError("affine Spec requires an algebra morphism over one scalar base")
+    source_scheme = Spec(target_algebra)
+    target_scheme = Spec(source_algebra)
+    native = source_scheme.Hom(target_scheme)(algebra_morphism.engine_morphism())
+    morphism = refine_scheme_morphism(native, source_algebra.base_ring())
+    morphism._preamble_coordinate_algebra_morphism = algebra_morphism
+    return morphism
 
 
 def AffineSpace(dimension, base_ring, names=None):
@@ -529,7 +610,14 @@ def AffineSpace(dimension, base_ring, names=None):
     categories = [AffineSpaces(base)]
     if _integral_placement(base):
         categories.append(IntegralSchemes(base))
-    return refine_scheme(scheme, base, categories)
+    refine_scheme(scheme, base, categories)
+    from dzack_research.preamble.categories.algebras.algebras import refine_algebra
+
+    labels = tuple(scheme.coordinate_ring().variable_names())
+    scheme._preamble_coordinate_algebra = refine_algebra(
+        own_ring(scheme.coordinate_ring()), base, labels
+    )
+    return scheme
 
 
 def ProjectiveSpace(dimension, base_ring, names=None):
@@ -610,9 +698,24 @@ def scheme_product(*schemes):
                 )
             )
             offset += width
+    elif all(scheme in AffineSchemes(base) for scheme in schemes):
+        from dzack_research.preamble.categories.abstract_categories import Coproduct
+        algebras = tuple(scheme.coordinate_algebra() for scheme in schemes)
+        algebra = Coproduct(algebras[0], algebras[1])
+        factor_maps = list(algebra.coproduct_injections())
+        for next_algebra in algebras[2:]:
+            new_algebra = Coproduct(algebra, next_algebra)
+            left_map, right_map = new_algebra.coproduct_injections()
+            factor_maps = [left_map * factor_map for factor_map in factor_maps] + [
+                right_map
+            ]
+            algebra = new_algebra
+        product = Spec(algebra)
+        projections = [affine_spec_morphism(factor_map) for factor_map in factor_maps]
+        refine_scheme(product, base, [ProductSchemes(base)])
     else:
         raise NotImplementedError(
-            "general or mixed scheme products require the affine tensor-product/fiber-product layer"
+            "mixed affine/projective scheme products are not yet represented"
         )
 
     product._preamble_product_factors = tuple(schemes)
@@ -643,4 +746,5 @@ __all__ = [
     "refine_scheme_morphism",
     "categorical_scheme_morphism",
     "scheme_product",
+    "affine_spec_morphism",
 ]

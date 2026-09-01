@@ -18,6 +18,7 @@ from sage.categories.homset import Hom, Homset
 from sage.categories.morphism import Morphism
 from sage.categories.objects import Objects
 from sage.categories.sets_cat import Sets as SageSets
+from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.classcall_metaclass import typecall
 from sage.structure.sage_object import SageObject
 from sage.structure.parent import Parent
@@ -45,7 +46,7 @@ def _category_homset(category, domain, codomain):
 
 
 class CategoryPacketMethods:
-    r"""The coordinated ``C/Hom_C/End_C/Aut_C`` construction surface.
+    r"""The coordinated ``C/Hom_C/End_C/Iso_C/Aut_C`` construction surface.
 
     This is deliberately a small live analogue of the archived ``Cat``
     construction kernel.  It belongs on owned category base classes, not on
@@ -59,6 +60,15 @@ class CategoryPacketMethods:
     def EndCategory(self):
         return category_packet(self).Ends()
 
+    def MonoCategory(self):
+        return category_packet(self).Monos()
+
+    def EpiCategory(self):
+        return category_packet(self).Epis()
+
+    def IsoCategory(self):
+        return category_packet(self).Isos()
+
     def AutCategory(self):
         return category_packet(self).Auts()
 
@@ -67,6 +77,15 @@ class CategoryPacketMethods:
 
     def End(self, obj):
         return self.EndCategory().Of(obj)
+
+    def Mono(self, source, target):
+        return self.MonoCategory().Of(source, target)
+
+    def Epi(self, source, target):
+        return self.EpiCategory().Of(source, target)
+
+    def Iso(self, source, target):
+        return self.IsoCategory().Of(source, target)
 
     def Aut(self, obj):
         return self.AutCategory().Of(obj)
@@ -107,6 +126,7 @@ _ARROW_OBJECTS = {}
 
 
 def _arrow_object(arrow) -> HomArrowObject:
+    # Arrow identity, not a hash: an arbitrary arrow need not be hashable.
     key = id(arrow)
     cached = _ARROW_OBJECTS.get(key)
     if cached is not None and cached.arrow() is arrow:
@@ -165,6 +185,7 @@ class CategoricalHomset(Homset, Category):
     def __init__(self, family, domain, codomain, *, homset_category=None) -> None:
         self._family = family
         self._end_family = None
+        self._aut_family = None
         self._domain_object = domain
         self._codomain_object = codomain
         # The semantic Hom/End supertree is deliberately richer than the
@@ -195,6 +216,24 @@ class CategoricalHomset(Homset, Category):
 
     def end_family(self):
         return self._end_family
+
+    def attach_aut_family(self, family) -> None:
+        if self.domain_object() is not self.codomain_object():
+            raise ValueError("only an equal-endpoint Iso category can carry an Aut-family role")
+        if self._aut_family is not None and self._aut_family is not family:
+            raise ValueError("one fixed Iso category cannot carry two Aut-family roles")
+        self._aut_family = family
+
+    def aut_family(self):
+        return self._aut_family
+
+    def identity_endomorphism(self):
+        if self.end_family() is None:
+            raise ValueError("this fixed Hom category has not been given an End-family role")
+        identity = self.arrow_set().identity()
+        return self(identity)
+
+    one = identity_endomorphism
 
     def base_category(self):
         return self.hom_family().base_category()
@@ -265,11 +304,27 @@ class CategoricalHomset(Homset, Category):
 class FixedHomCategory(Category):
     r"""The category ``Hom_C(A,B)`` of arrows with fixed endpoints."""
 
+    @staticmethod
+    def __classcall__(cls, family, domain, codomain):
+        # The owning Hom-family already interns fixed categories by their
+        # endpoint identities.  Sage ``Category``'s UniqueRepresentation cache
+        # does not include those endpoints and can otherwise collapse
+        # ``Hom_C(A,B)`` with a previously created ``Hom_C(A',B')``.
+        return typecall(cls, family, domain, codomain)
+
     def __init__(self, family, domain, codomain) -> None:
         self._family = family
         self._end_family = None
+        self._aut_family = None
         self._domain_object = domain
         self._codomain_object = codomain
+        # As for ``CategoricalHomset``, semantic packet supercategories are
+        # not Python implementation mixins.  In particular ``Iso_C(A,B)``
+        # simultaneously lies over ``Hom_C``, ``Mono_C`` and ``Epi_C``; asking
+        # Sage to synthesize one C3 class from those fixed categories creates
+        # artificial MRO cycles.  Keep the runtime method spine discrete while
+        # exposing the full mathematical supertree through ``super_categories``.
+        self._super_categories_for_classes = [Objects()]
         super().__init__()
 
     def _make_named_class_key(self, name):
@@ -287,6 +342,23 @@ class FixedHomCategory(Category):
 
     def end_family(self):
         return self._end_family
+
+    def attach_aut_family(self, family) -> None:
+        if self.domain_object() is not self.codomain_object():
+            raise ValueError("only an equal-endpoint Iso category can carry an Aut-family role")
+        if self._aut_family is not None and self._aut_family is not family:
+            raise ValueError("one fixed Iso category cannot carry two Aut-family roles")
+        self._aut_family = family
+
+    def aut_family(self):
+        return self._aut_family
+
+    def identity_endomorphism(self):
+        if self.end_family() is None:
+            raise ValueError("this fixed Hom category has not been given an End-family role")
+        return self(self.arrow_set().identity())
+
+    one = identity_endomorphism
 
     def base_category(self):
         return self.hom_family().base_category()
@@ -403,10 +475,83 @@ class FixedRestrictedHomCategory(FixedHomCategory):
     def accepts(self, arrow) -> bool:
         return super().accepts(arrow) and self.hom_family().accepts(arrow)
 
+    def super_categories(self):
+        base = category_packet(self.base_category()).Homs().Of(
+            self.domain_object(), self.codomain_object()
+        )
+        inherited = [
+            self.hom_family().family_over(supercategory).Of(
+                self.domain_object(), self.codomain_object()
+            )
+            for supercategory in _packet_supercategories(self.base_category())
+            if self.domain_object() in supercategory
+            and self.codomain_object() in supercategory
+        ]
+        return [base, *inherited]
+
 
 class FixedIsoCategory(FixedHomCategory):
     def accepts(self, arrow) -> bool:
-        return isinstance(arrow, CategoricalIsomorphism) and super().accepts(arrow)
+        if not isinstance(arrow, CategoricalIsomorphism):
+            return False
+        if (
+            arrow.domain() is not self.domain_object()
+            or arrow.codomain() is not self.codomain_object()
+        ):
+            return False
+        packet = category_packet(self.base_category())
+        return (
+            arrow.forward()
+            in packet.Homs().Of(self.domain_object(), self.codomain_object())
+            and arrow.inverse()
+            in packet.Homs().Of(self.codomain_object(), self.domain_object())
+        )
+
+    def super_categories(self):
+        packet = category_packet(self.base_category())
+        domain = self.domain_object()
+        codomain = self.codomain_object()
+        inherited = [
+            self.hom_family().family_over(supercategory).Of(domain, codomain)
+            for supercategory in _packet_supercategories(self.base_category())
+            if domain in supercategory and codomain in supercategory
+        ]
+        supers = [
+            packet.Homs().Of(domain, codomain),
+            packet.Monos().Of(domain, codomain),
+            packet.Epis().Of(domain, codomain),
+            *inherited,
+        ]
+        if self.aut_family() is not None:
+            supers.append(packet.Ends().Of(domain))
+            supers.extend(
+                self.aut_family().family_over(supercategory).Of(domain)
+                for supercategory in _packet_supercategories(self.base_category())
+                if domain in supercategory
+            )
+        return supers
+
+    def identity_automorphism(self):
+        if self.aut_family() is None:
+            raise ValueError("this isomorphism category has not been given an Aut-family role")
+        if self.domain_object() is not self.codomain_object():
+            raise ValueError("an automorphism category has equal endpoints")
+        identity = self.arrow_set().identity()
+        from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+            Isomorphism,
+        )
+
+        return self(Isomorphism(identity, identity))
+
+    one = identity_automorphism
+
+    def _repr_(self) -> str:
+        if self.aut_family() is not None:
+            return f"Aut_{self.base_category()}({self.domain_object()})"
+        return (
+            f"Iso_{self.base_category()}({self.domain_object()}, "
+            f"{self.codomain_object()})"
+        )
 
 
 class FixedAutCategory(FixedIsoCategory):
@@ -419,6 +564,20 @@ class FixedAutCategory(FixedIsoCategory):
         return self(Isomorphism(identity, identity))
 
     one = identity_automorphism
+
+    def super_categories(self):
+        packet = category_packet(self.base_category())
+        obj = self.domain_object()
+        inherited = [
+            self.hom_family().family_over(supercategory).Of(obj)
+            for supercategory in _packet_supercategories(self.base_category())
+            if obj in supercategory
+        ]
+        return [
+            packet.Ends().Of(obj),
+            packet.Isos().Of(obj, obj),
+            *inherited,
+        ]
 
     def _repr_(self) -> str:
         return f"Aut_{self.base_category()}({self.domain_object()})"
@@ -435,13 +594,22 @@ class HomCategories(Category):
 
 
 class CategoryPacket(SageObject):
-    r"""The coordinated ``C / Hom_C / End_C / Aut_C`` packet."""
+    r"""The coordinated ``C / Hom_C / End_C / Iso_C / Aut_C`` packet."""
 
     def __init__(self, category) -> None:
         self._category = category
-        self._homs = _declared_family(category, "_HomCategory", HomCategoryOf)
-        self._ends = _declared_family(category, "_EndCategory", EndCategoryOf)
-        self._auts = _declared_family(category, "_AutCategory", AutCategoryOf)
+        # Family objects are deliberately lazy.  A family category such as
+        # ``Mono_C`` has ``Hom_C`` as a semantic supercategory, and Sage asks
+        # for that supercategory while constructing ``Mono_C`` itself.  Eager
+        # construction therefore recurses through an only half-built packet.
+        # The packet object is interned first; each family can then safely ask
+        # for its siblings during category initialization.
+        self._homs = None
+        self._ends = None
+        self._monos = None
+        self._epis = None
+        self._isos = None
+        self._auts = None
 
     def category(self):
         return self._category
@@ -449,12 +617,45 @@ class CategoryPacket(SageObject):
     C = category
 
     def Homs(self):
+        if self._homs is None:
+            self._homs = _declared_family(
+                self.category(), "_HomCategory", HomCategoryOf
+            )
         return self._homs
 
     def Ends(self):
+        if self._ends is None:
+            self._ends = _declared_family(
+                self.category(), "_EndCategory", EndCategoryOf
+            )
         return self._ends
 
+    def Monos(self):
+        if self._monos is None:
+            self._monos = _declared_family(
+                self.category(), "_MonoCategory", MonoCategoryOf
+            )
+        return self._monos
+
+    def Epis(self):
+        if self._epis is None:
+            self._epis = _declared_family(
+                self.category(), "_EpiCategory", EpiCategoryOf
+            )
+        return self._epis
+
+    def Isos(self):
+        if self._isos is None:
+            self._isos = _declared_family(
+                self.category(), "_IsoCategory", IsoCategoryOf
+            )
+        return self._isos
+
     def Auts(self):
+        if self._auts is None:
+            self._auts = _declared_family(
+                self.category(), "_AutCategory", AutCategoryOf
+            )
         return self._auts
 
     def super_packets(self):
@@ -465,9 +666,6 @@ class CategoryPacket(SageObject):
 
     def _repr_(self) -> str:
         return f"Category packet of {self.category()}"
-
-
-_CATEGORY_PACKETS = {}
 
 
 def _declared_family(category, declaration_name, default):
@@ -482,14 +680,9 @@ def _declared_family(category, declaration_name, default):
     return default(category)
 
 
+@cached_function
 def category_packet(category) -> CategoryPacket:
-    key = id(category)
-    cached = _CATEGORY_PACKETS.get(key)
-    if cached is not None and cached.category() is category:
-        return cached
-    result = CategoryPacket(category)
-    _CATEGORY_PACKETS[key] = result
-    return result
+    return CategoryPacket(category)
 
 
 class HomCategoryOf(Category):
@@ -499,6 +692,10 @@ class HomCategoryOf(Category):
 
     def __init__(self, base_category) -> None:
         self._base_category = base_category
+        # Several owned Hom-family specializations choose a concrete fixed
+        # Hom parent class from the endpoints.  Keep that endpoint cache on
+        # the common family object rather than relying on Sage category
+        # internals for it.
         self._objects = {}
         super().__init__()
 
@@ -524,6 +721,8 @@ class HomCategoryOf(Category):
     def Of(self, domain, codomain):
         if domain not in self.base_category() or codomain not in self.base_category():
             raise TypeError("Hom endpoints must lie in the base category")
+        # Endpoint identity, not a hash: hashing a Hom endpoint re-enters Hom
+        # construction, so Sage's cached_method recurses here.
         key = id(domain), id(codomain)
         cached = self._objects.get(key)
         if (
@@ -533,12 +732,31 @@ class HomCategoryOf(Category):
         ):
             return cached
         fixed_class = self.fixed_category_class()
-        if fixed_class is self.FixedCategoryClass:
-            represented = _category_homset(self.base_category(), domain, codomain)
-            if isinstance(represented, Category):
-                result = represented
+        if self.FixedCategoryClass is FixedHomCategory and fixed_class is FixedHomCategory:
+            inherited = []
+            for supercategory in _packet_supercategories(self.base_category()):
+                if domain not in supercategory or codomain not in supercategory:
+                    continue
+                candidate = self.family_over(supercategory).Of(domain, codomain)
+                if all(candidate is not known for known in inherited):
+                    inherited.append(candidate)
+
+            if len(inherited) == 1:
+                # No new Hom declaration means this is a full/property
+                # subcategory for morphism purposes.  Reuse the inherited Hom
+                # object literally rather than fabricating a second carrier.
+                result = inherited[0]
+            elif len(inherited) > 1:
+                raise TypeError(
+                    f"{self.base_category()} inherits incompatible Hom constructions; "
+                    "declare _HomCategory explicitly"
+                )
             else:
-                result = fixed_class(self, domain, codomain)
+                represented = _category_homset(self.base_category(), domain, codomain)
+                if isinstance(represented, Category):
+                    result = represented
+                else:
+                    result = fixed_class(self, domain, codomain)
         else:
             result = fixed_class(self, domain, codomain)
         self._objects[key] = result
@@ -547,10 +765,14 @@ class HomCategoryOf(Category):
     Between = Of
 
     def __contains__(self, candidate) -> bool:
-        return (
-            isinstance(candidate, self.FixedCategoryClass)
-            and candidate.hom_family().base_category() == self.base_category()
-        )
+        try:
+            domain = candidate.domain_object()
+            codomain = candidate.codomain_object()
+        except AttributeError:
+            return False
+        if domain not in self.base_category() or codomain not in self.base_category():
+            return False
+        return self.Of(domain, codomain) is candidate
 
     def _repr_(self) -> str:
         return f"Hom-category packet of {self.base_category()}"
@@ -595,8 +817,18 @@ class _RestrictedCategoryOf(HomCategoryOf):
     def accepts(self, arrow) -> bool:
         raise NotImplementedError
 
+    def super_categories(self):
+        inherited = [
+            self.family_over(category)
+            for category in _packet_supercategories(self.base_category())
+        ]
+        return [category_packet(self.base_category()).Homs(), *inherited, HomCategories()]
+
 
 class MonoCategoryOf(_RestrictedCategoryOf):
+    def family_over(self, category):
+        return category_packet(category).Monos()
+
     def accepts(self, arrow) -> bool:
         try:
             return arrow.is_injective() is True
@@ -605,6 +837,9 @@ class MonoCategoryOf(_RestrictedCategoryOf):
 
 
 class EpiCategoryOf(_RestrictedCategoryOf):
+    def family_over(self, category):
+        return category_packet(category).Epis()
+
     def accepts(self, arrow) -> bool:
         try:
             return arrow.is_surjective() is True
@@ -615,6 +850,23 @@ class EpiCategoryOf(_RestrictedCategoryOf):
 class IsoCategoryOf(HomCategoryOf):
     FixedCategoryClass = FixedIsoCategory
 
+    def family_over(self, category):
+        return category_packet(category).Isos()
+
+    def super_categories(self):
+        packet = category_packet(self.base_category())
+        inherited = [
+            self.family_over(category)
+            for category in _packet_supercategories(self.base_category())
+        ]
+        return [
+            packet.Homs(),
+            packet.Monos(),
+            packet.Epis(),
+            *inherited,
+            HomCategories(),
+        ]
+
 
 class AutCategoryOf(IsoCategoryOf):
     r"""The family ``A |-> Aut_C(A)``."""
@@ -624,10 +876,30 @@ class AutCategoryOf(IsoCategoryOf):
     def family_over(self, category):
         return category_packet(category).Auts()
 
+    def super_categories(self):
+        packet = category_packet(self.base_category())
+        inherited = [
+            self.family_over(category)
+            for category in _packet_supercategories(self.base_category())
+        ]
+        return [packet.Ends(), packet.Isos(), *inherited, HomCategories()]
+
     def Of(self, obj, codomain=None):
         if codomain is not None and codomain is not obj:
             raise ValueError("an automorphism category has equal endpoints")
-        return super().Of(obj, obj)
+        if obj not in self.base_category():
+            raise TypeError("the automorphism object must lie in the base category")
+        key = id(obj), id(obj)
+        cached = self._objects.get(key)
+        if cached is not None:
+            return cached
+        automorphisms = category_packet(self.base_category()).Isos().Of(obj, obj)
+        attach = getattr(automorphisms, "attach_aut_family", None)
+        if attach is None:
+            raise TypeError("the represented equal-endpoint Iso object cannot carry an Aut-family role")
+        attach(self)
+        self._objects[key] = automorphisms
+        return automorphisms
 
     def Between(self, domain, codomain):
         if domain is not codomain:

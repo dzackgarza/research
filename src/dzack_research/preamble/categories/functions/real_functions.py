@@ -509,10 +509,10 @@ class _FunctionSpace(UniqueRepresentation, Parent):
         return Hom(self.domain(), self.codomain(), Sets())
 
     def zero(self):
-        return self(ZZ.zero())
+        return self._element_constructor_(ZZ.zero())
 
     def one(self):
-        return self(ZZ.one())
+        return self._element_constructor_(ZZ.one())
 
     def _an_element_(self):
         return self.zero()
