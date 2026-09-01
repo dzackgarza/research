@@ -77,6 +77,11 @@ Each policy has a unique alphanumeric identifier.
 - **Rationale**: Progress is measured by mathematical specimens that can fail, not by uninstantiated schemas.
 - **Violation Example**: Adding abstract category definitions without a test specimen or executable verification.
 
+#### `DEV-03`: Consult the Preamble Megadoc Before Adding Code
+- **Rule**: Always consult the preamble megadoc (`just preamble-megadoc`) before implementing any new category, functor, morphism, constructor, or mathematical helper.
+- **Rationale**: Prevents duplicate definitions, competing APIs, and accidental re-implementation of existing repository constructions.
+- **Violation Example**: Writing a custom tensor product or biproduct constructor without checking `dzack_research.preamble` universal constructions.
+
 ---
 
 ## Detailed Documentation References
