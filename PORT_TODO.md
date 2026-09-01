@@ -200,32 +200,95 @@ Coxeter/Vinberg algorithms. Original section numbers are retained for provenance
 - [ ] Restricted automorphism actions on invariant/isotypic pieces.
 - [ ] `(4,4)` involution example with `13+12` section-space decomposition after geometry lands.
 
-### 3. Foundational exact lattice algebra and invariant primitives (Required Input Substrate)
+## 3. Integral Lattices, Elements, Reductions, and Arithmetic Groups (Semantic API Contracts)
 
-### 3.1 Exact lattice algebra and subobject operations
+### 3.1 Lattices (`L`)
 
-- [ ] **Saturation and primitive closure**: `L.saturation(S)` and primitive closure of submodules via Smith normal form of the quotient $L/S$.
-- [ ] **Dual lattices and duality functor**: `L.dual_lattice()` with canonical evaluation pairing into $\mathbb{Q}$ and exact dual basis tracking.
-- [ ] **Discriminant quadratic module**: `L.discriminant_module()` constructing $(A_L = L^\vee/L, q_{A_L})$ as an exact finite formed $\mathbb{Z}$-module with isotropic subgroups and quadratic form $q(x + L) \in \mathbb{Q}/2\mathbb{Z}$ (or $\mathbb{Q}/\mathbb{Z}$).
-- [ ] **Vector divisibility and discriminant class**: `L.divisibility(v)` returning the positive generator of $b(v, L) \subset \mathbb{Z}$ and the associated class $[v/\operatorname{div}(v)] \in A_L$.
-- [ ] **Orthogonal complements**: `L.orthogonal_complement(S)` constructing the subobject pair $(S^\perp, \iota: S^\perp \hookrightarrow L)$ via exact integral kernel.
-- [ ] **Formed quotients for isotropic sublattices**: `L.formed_quotient(I)` constructing the non-degenerate formed module $(I^\perp/I, \bar{b})$.
-- [ ] **Local Jordan data and genus invariants**: Exact $p$-adic Jordan symbols and genus pre-sieve obstructions to detect non-isometric lattices before running reduction.
-- [ ] **Exact basis transformation tracking**: Morphism matrix tracking in $\operatorname{GL}_n(\mathbb{Z})$ and formed isometries in $\operatorname{Isom}(L, M)$.
+- [ ] `B = L.gram_tensor()`: actual symmetric $(0,2)$-tensor.
+- [ ] `M = L.gram_matrix(basis=None)`: coordinate presentation of $B$.
+- [ ] `L.b(v, w)`: bilinear pairing $b_L(v,w)$.
+- [ ] `L.q(v)`: quadratic evaluation $b_L(v,v)$.
+- [ ] `L.metric_map()`: canonical map $L \to L.\operatorname{linear\_dual}()$.
+- [ ] `L.linear_dual()`: exact module dual $\operatorname{Hom}_{\mathbb{Z}}(L, \mathbb{Z})$.
+- [ ] `L.dual_lattice()`: dual lattice $L^\vee$ inside $L \otimes \mathbb{Q}$.
+- [ ] `L.discriminant_module()`: finite formed module $A_L = L^\vee/L$ with finite quadratic form $q(x + L) \in \mathbb{Q}/2\mathbb{Z}$.
+- [ ] Invariant predicates: `L.signature()`, `L.radical()`, `L.is_even()`, `L.is_nondegenerate()`.
+- [ ] `L.sublattice_from(vectors, saturate=False)`: returns a subobject pair $(S, \iota: S \hookrightarrow L)$ with inclusion morphism, never an unattached Gram matrix.
+- [ ] `L.primitive_sublattice_from(vectors)`: saturated subobject via Smith normal form of the quotient.
+- [ ] `L.orthogonal_complement(I)` / `L.perp(I)`: orthogonal subobject pair $(I^\perp, \iota: I^\perp \hookrightarrow L)$.
+- [ ] `L.O()`: full finitely generated arithmetic group $O(L)$.
+- [ ] `L.O_plus()`: stable orthogonal group $\widetilde{O}(L) = \ker(O(L) \to O(A_L))$.
+- [ ] `L.O_component()`: positive cone component group $O^\Omega(L)$, when a component is specified.
+- [ ] `L.isometry_to(M)`: returns an actual `LatticeIsometry` morphism $f: L \to M$ or `None`.
+- [ ] `L.is_isometric_to(M)`: verified boolean predicate.
+- [ ] Locus objects: `L.vector_locus(norm=m, primitive=False)`, `L.isotropic_sublattice_locus(rank=k)`, `L.isotropic_flag_locus(ranks=(d1, ..., dr))`.
 
-### 3.2 Finite configuration, graph labeling, and polyhedral primitives
+### 3.2 Lattice Elements (`v`)
+
+- [ ] `v.parent()`: lattice $L$.
+- [ ] `v.to_vector(basis=None)`: coordinate row vector.
+- [ ] `v.to_covector()`: dual evaluation $\beta_L(v) \in L.\operatorname{linear\_dual}()$.
+- [ ] `v.is_primitive()`: primitivity test in $L$.
+- [ ] `v.divisor()`: positive generator of the ideal $b(v, L) \subset \mathbb{Z}$.
+- [ ] `v.discriminant_class()`: associated class $[v / \operatorname{div}(v)] \in A_L$ for primitive $v$.
+- [ ] `v.is_isotropic()`: test $L.q(v) == 0$.
+- [ ] `v.sublattice()`: rank-1 subobject $\mathbb{Z}v \hookrightarrow L$ with inclusion morphism.
+- [ ] `v.orthogonal_complement()` / `v.perp()`: orthogonal complement $(v^\perp, \iota: v^\perp \hookrightarrow L)$.
+- [ ] `v.isotropic_reduction()`: rank-1 isotropic reduction object.
+
+### 3.3 Sublattices and Isotropic Reductions (`I`, `R`)
+
+- [ ] `I.ambient_lattice()`: derived codomain of inclusion morphism $\iota.\operatorname{codomain}()$.
+- [ ] `I.inclusion()`: embedding morphism $\iota: I \hookrightarrow L$.
+- [ ] `I.basis()`: basis elements of $I$.
+- [ ] `I.rank()`: rank of $I$.
+- [ ] `I.saturation()`: saturated closure $I_{\text{sat}} \hookrightarrow L$.
+- [ ] `I.is_primitive()`: saturation test via Smith invariants of $L/I$.
+- [ ] `I.is_totally_isotropic()`: test $b(x,y) = 0$ for all $x,y \in I$.
+- [ ] `I.perp()`: orthogonal complement $(I^\perp, I^\perp \hookrightarrow L)$.
+- [ ] `R = I.isotropic_reduction()`: structured reduction object for $K_I := I^\perp / I$ (torsion-free, non-degenerate of signature $(p-k, q-k)$ for $\operatorname{rk}(I)=k$ and $\operatorname{sig}(L)=(p,q)$):
+  - `R.isotropic_sublattice()`: original subobject $I$.
+  - `R.orthogonal_complement()`: $I^\perp$.
+  - `R.quotient_lattice()`: non-degenerate formed quotient lattice $K_I = I^\perp / I$.
+  - `R.inclusion()`: inclusion morphism $I \hookrightarrow I^\perp$.
+  - `R.projection()`: canonical projection morphism $I^\perp \twoheadrightarrow K_I$.
+  - `R.levi_action()`.
+  - `R.unipotent_kernel()`.
+  - `R.lift_isometry(...)`.
+
+### 3.4 Orthogonal and Arithmetic Groups (`G = L.O()`) and Subgroup Constructors
+
+- [ ] `G.ambient_lattice()`: underlying lattice $L$.
+- [ ] `G.gens()`, `G.one()`, `G.element(matrix)`, `G.contains(g)`.
+- [ ] `G.discriminant_representation()`: reduction homomorphism $\rho_A: G \to O(A_L)$.
+- [ ] `G.component_character()`: character $\chi_\Omega$, when defined.
+- [ ] `G.kernel(phi)`: kernel subgroup for homomorphisms $\phi$.
+- [ ] `G.preimage(phi, H)`: preimage subgroup.
+- [ ] `G.stable_subgroup()`: kernel of $\rho_A$ on discriminant form.
+- [ ] `G.component_subgroup()`.
+- [ ] `G.centralizer(f)`: centralizer $Z_G(f)$.
+- [ ] `G.stabilizer(v)`: point stabilizer of vector $v$.
+- [ ] `G.stabilizer(I, action="setwise")` and `G.stabilizer(I, action="pointwise")`: setwise and pointwise stabilizers of sublattice $I$.
+- [ ] `G.intersection(H1, ..., Hr)`: intersection of subgroups.
+- [ ] `G.transporter(x, y)`: element $g \in G$ mapping $x \mapsto y$.
+- [ ] `G.orbit_decomposition(X)`: orbit representatives, stabilizers, and transporters on locus $X$.
+- [ ] Structured subgroup parents retaining construction provenance:
+  - `GeneratedSubgroup(generators)`
+  - `KernelSubgroup(phi)`
+  - `PreimageSubgroup(phi, H)`
+  - `StabilizerSubgroup(G, object, action)`
+  - `CentralizerSubgroup(G, f)`
+  - `IntersectionSubgroup(G1, ..., Gr)`
+
+### 3.5 Finite Configuration, Graph Labeling, and Polyhedral Primitives
 
 - [ ] **Pairing configuration graphs**: Encoding vector/facet pairings into colored graphs with vertex/edge invariants.
 - [ ] **Graph canonization interface**: Interface to Sage's Bliss/Nauty backend for canonical graph labeling and automorphism groups.
 - [ ] **Permutation lifting**: Lifting graph automorphism permutations to integral lattice isometries via `libgap`.
 - [ ] **Exact rational polyhedral cones**: Facet enumeration, extreme rays, incidence, and face stabilizers delegating to Normaliz, cddlib, or PPL.
+- [ ] **Reduction cell and transporter interfaces**: Structured `ReductionCell` and `AdjacentCell` records.
 
-### 3.3 Reduction-complex and transporter data structures
-
-- [ ] **Reduction cell interface**: Structured representation holding cell representative, facet data, and cell stabilizer generators.
-- [ ] **Adjacency transporters**: Structured representation holding adjacent cells and exact integral transporter morphisms.
-
-## 5. Parabolic and unipotent orbit primitives (Required Input Substrate)
+## 5. Parabolic and Unipotent Orbit Primitives
 
 - [ ] **Parabolic subgroup stabilizers**: Setwise stabilizer $P(I) \subset O(L)$ for primitive isotropic sublattices $I$, with projections onto $\operatorname{GL}(I)$ and $O(I^\perp/I)$.
 - [ ] **Unipotent radical extraction**: Exact unipotent radical $U(I) = \ker(P(I) \to \operatorname{GL}(I) \times O(I^\perp/I))$ and its action on integral liftings.
