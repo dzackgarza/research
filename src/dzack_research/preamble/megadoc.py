@@ -200,57 +200,49 @@ class PreambleExtractor:
 
     def _determine_subsystem(self, rel_path: str, name: str) -> str:
         parts = Path(rel_path).parts
-        if len(parts) > 1 and parts[0] == "categories":
-            cat_sub = parts[1]
-            if cat_sub in (
-                "abstract_categories",
-                "functors",
-                "lattices",
-                "modules",
-                "algebras",
-                "group",
-                "rings",
-                "schemes",
-                "divisors",
-                "forms",
-                "functions",
-                "sets",
-            ):
+        if not parts:
+            return "preamble_root"
+        if parts[0] == "categories":
+            if len(parts) > 2:
+                # categories/<subsystem_dir>/...
+                return parts[1]
+            if len(parts) == 2:
+                cat_sub = parts[1]
+                if cat_sub.endswith(".py"):
+                    stem = Path(cat_sub).stem
+                    if stem in (
+                        "lattices",
+                        "_lattice",
+                        "definite_lattices",
+                        "rational_lattices",
+                        "root_lattices",
+                        "lattice_morphisms",
+                        "lattice_properties",
+                        "lattice_engines",
+                        "isotropic_orbits",
+                        "vector_orbits",
+                        "orthogonal_quotients",
+                        "coxeter_diagrams",
+                    ):
+                        return "lattices"
+                    if stem in ("free_modules",):
+                        return "modules"
+                    return stem
                 return cat_sub
-            if cat_sub.endswith(".py"):
-                stem = Path(cat_sub).stem
-                if stem in (
-                    "lattices",
-                    "_lattice",
-                    "definite_lattices",
-                    "rational_lattices",
-                    "root_lattices",
-                    "lattice_morphisms",
-                    "lattice_properties",
-                    "lattice_engines",
-                    "isotropic_orbits",
-                    "vector_orbits",
-                    "orthogonal_quotients",
-                    "coxeter_diagrams",
-                ):
-                    return "lattices"
-                if stem in ("free_modules",):
-                    return "modules"
-        if len(parts) > 0:
-            top = parts[0]
-            if top == "catalogue.py":
-                return "catalogue"
-            if top == "rings":
-                return "rings"
-            if top == "tensors":
-                return "tensors"
-            if top == "logic.py":
-                return "logic"
-            if top in ("coble.py", "sterk.py"):
-                return "geometry_specialized"
-            if top == "lexicon":
-                return "lexicon"
-        return "preamble_root"
+        if len(parts) > 1:
+            # <top_dir>/...
+            return parts[0]
+        # Top-level file
+        top = parts[0]
+        if top == "catalogue.py":
+            return "catalogue"
+        if top == "logic.py":
+            return "logic"
+        if top in ("coble.py", "sterk.py"):
+            return "geometry_specialized"
+        if top in ("all.py", "utilities.py", "refine.py", "__init__.py"):
+            return "preamble_root"
+        return Path(top).stem
 
     def _classify_class(self, name: str, bases: list[str], body: list[ast.stmt], rel_path: str) -> SymbolKind:
         bases_str = " ".join(bases)
@@ -506,6 +498,21 @@ class PreambleRenderer:
         return first
 
     @classmethod
+    def _get_subsystem_sequence(cls, symbols: list[SymbolDoc]) -> list[tuple[str, str, str]]:
+        known_map = {key: (title, desc) for key, title, desc in SUBSYSTEM_ORDER}
+        found_keys = {s.subsystem for s in symbols}
+        result: list[tuple[str, str, str]] = []
+        for key, title, desc in SUBSYSTEM_ORDER:
+            if key in found_keys:
+                result.append((key, title, desc))
+        for key in sorted(found_keys):
+            if key not in known_map:
+                title = key.replace("_", " ").title()
+                desc = f"Constructions defined in subsystem {key}."
+                result.append((key, title, desc))
+        return result
+
+    @classmethod
     def render_markdown(
         cls,
         symbols: list[SymbolDoc],
@@ -516,6 +523,7 @@ class PreambleRenderer:
         summary_only: bool = False,
     ) -> str:
         filtered = cls._filter_symbols(symbols, subsystem_filter, kind_filter, search_query, session_only)
+        subsystems = cls._get_subsystem_sequence(filtered)
         lines: list[str] = []
 
         lines.append("# Preamble Mathematical Constructions Megadoc\n")
@@ -547,7 +555,7 @@ class PreambleRenderer:
         lines.append("## Table of Subsystems\n")
         lines.append("| Subsystem | Key Domains | Items |")
         lines.append("| :--- | :--- | :--- |")
-        for key, title, desc in SUBSYSTEM_ORDER:
+        for key, title, desc in subsystems:
             sub_count = sum(1 for s in filtered if s.subsystem == key)
             if sub_count > 0:
                 slug = key.replace("_", "-")
@@ -564,7 +572,7 @@ class PreambleRenderer:
                 lines.append(f"| `{s.name}` {export_badge} | `{s.kind}` | `{s.subsystem}` | `{s.file_path}:{s.line_number}` | {first} |")
             return "\n".join(lines)
 
-        for key, title, desc in SUBSYSTEM_ORDER:
+        for key, title, desc in subsystems:
             sub_symbols = [s for s in filtered if s.subsystem == key]
             if not sub_symbols:
                 continue
@@ -823,12 +831,13 @@ class PreambleRenderer:
         session_only: bool = False,
     ) -> str:
         filtered = cls._filter_symbols(symbols, subsystem_filter, kind_filter, search_query, session_only)
+        subsystems = cls._get_subsystem_sequence(filtered)
         lines: list[str] = []
         lines.append("=" * 80)
         lines.append(f"PREAMBLE MATHEMATICAL CONSTRUCTIONS ({len(filtered)} items)")
         lines.append("=" * 80)
 
-        for key, title, _ in SUBSYSTEM_ORDER:
+        for key, title, _ in subsystems:
             sub_symbols = [s for s in filtered if s.subsystem == key]
             if not sub_symbols:
                 continue
