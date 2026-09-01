@@ -79,15 +79,17 @@ docs-preview: docs-bib
     # ponytail: two previews on the same dir cross-trigger each other's watchers
     # (each renders output back into docs/) → endless ~10s reload loop. Kill any
     # stale instance first so this always replaces rather than duplicates.
-    -pkill -f 'quarto preview docs --no-browser --port 7654'
-    @sleep 1
     uvx --from quarto-cli quarto preview docs --no-browser --port 7654
+
+# Surface a programmatic megadoc of all reusable constructions in the preamble (classes, methods, categories, functors, constructions)
+preamble-megadoc *ARGS:
+    python3 -m dzack_research.preamble.megadoc {{ARGS}}
 
 # Link sage-init.sage as Sage's startup file (${DOT_SAGE:-~/.sage}/init.sage), giving every Sage process — terminal REPL and every Jupyter kernel — implicit LaTeX rendering of cell results. Idempotent, and refuses to replace anything it did not create.
 sage-init-install:
     #!/usr/bin/env bash
     set -euo pipefail
-    source="{{justfile_directory()}}/src/dzack_research/preamble/init.sage"
+    source="{{justfile_directory()}}/sage-init.sage"
     target="${DOT_SAGE:-$HOME/.sage}/init.sage"
     [ -f "${source}" ] || { echo "sage-init-install: missing ${source}" >&2; exit 1; }
     mkdir -p "$(dirname "${target}")"
@@ -125,11 +127,8 @@ sage-init-check:
     km, kc = start_new_kernel(kernel_name="sagemath")
     try:
         results = {}
-        # A matrix, not ``QQ['t']``: in a preamble session ``PolynomialRing``
-        # is the owned free-algebra constructor, so that expression no longer
-        # names a Sage object at all.  The rule under test is that an object
-        # able to typeset does, and a matrix is the specimen a session still
-        # gets from the engine.
+        # The rule under test is that an object able to typeset does, and a
+        # matrix is a specimen the engine still supplies.
         for label, code in [("typeset", "matrix(ZZ, [[1, 2], [3, 4]])"), ("plain", "'a plain string'")]:
             got = {}
             kc.execute_interactive(
@@ -209,10 +208,10 @@ review-packet:
     cat > "$staging/PROMPT.md" <<'PROMPT'
     # Review focus: mathematical research repository
 
-    This repository is a mathematical research monorepo. The active code
-    surface is the preamble under `src/dzack_research/preamble/` (the
-    earlier lattice spikes were absorbed into it and deleted). Reviews
-    here are advisory: they feed a triage ledger and never block work. An
+    This repository is a mathematical research monorepo. The former
+    preamble lives under `archives/preamble/` and is not a live surface.
+    Reviews here are advisory: they feed a triage ledger and never block
+    work. An
     empty report is always preferable to a stretched finding.
 
     Prioritize, in order:
