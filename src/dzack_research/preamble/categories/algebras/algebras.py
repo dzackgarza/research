@@ -1,13 +1,9 @@
 """Associative unital algebras over an owned base ring."""
 
-from sage.categories.algebras import Algebras as SageAlgebras
-from sage.categories.associative_algebras import (
-    AssociativeAlgebras as SageAssociativeAlgebras,
-)
 from sage.categories.commutative_algebras import (
     CommutativeAlgebras as SageCommutativeAlgebras,
 )
-from sage.categories.homset import Hom, Homset
+from sage.categories.homset import Hom
 from sage.categories.morphism import SetMorphism
 from sage.categories.map import Map
 from sage.categories.morphism import Morphism
@@ -46,10 +42,7 @@ class AssociativeAlgebras(OwnedCategoryOverBaseRing):
     def super_categories(self):
         from dzack_research.preamble.categories.modules.pure.modules import Modules
 
-        return [
-            SageAssociativeAlgebras(engine_ring(self.base_ring())),
-            Modules(self.base_ring()),
-        ]
+        return [Modules(self.base_ring())]
 
     def _call_(self, multiplication):
         return algebra_from_multiplication(
@@ -137,7 +130,6 @@ class Algebras(OwnedCategoryOverBaseRing):
         from dzack_research.preamble.categories.modules import Modules
 
         return [
-            SageAlgebras(engine_ring(self.base_ring())),
             OwnedRings(),
             AssociativeAlgebras(self.base_ring()),
             Modules(self.base_ring()),
@@ -168,8 +160,11 @@ class Algebras(OwnedCategoryOverBaseRing):
         def _ring_morphism_defining_algebra_structure(self):
             base = self.algebra_base_ring()
             center = self.ring_center()
-            return SetMorphism(
-                Hom(base, center, SageRings()),
+            from dzack_research.preamble.categories.rings import ring_morphism
+
+            return ring_morphism(
+                base,
+                center,
                 lambda scalar: self(engine_ring(base)(scalar)),
             )
 
@@ -180,7 +175,9 @@ class Algebras(OwnedCategoryOverBaseRing):
             center = self.ring_center()
             if eta.codomain() is center:
                 return eta
-            return SetMorphism(Hom(eta.domain(), center, SageRings()), eta)
+            from dzack_research.preamble.categories.rings import ring_morphism
+
+            return ring_morphism(eta.domain(), center, eta)
 
         @cached_method
         def multiplication_morphism(self):
@@ -237,7 +234,7 @@ class Algebras(OwnedCategoryOverBaseRing):
 
         def _Hom_(self, codomain, category=None):
             if category is not None and not category.is_subcategory(
-                SageAlgebras(engine_ring(self.base_ring()))
+                Algebras(self.base_ring())
             ):
                 raise TypeError("this is not an algebra homset category")
             return algebra_homset(self, codomain)
@@ -284,8 +281,11 @@ class AlgebrasWithChosenMultiplication(OwnedCategoryOverBaseRing):
             base = self.algebra_base_ring()
             center = self.ring_center()
             unit = self.one()
-            return SetMorphism(
-                Hom(base, center, SageRings()),
+            from dzack_research.preamble.categories.rings import ring_morphism
+
+            return ring_morphism(
+                base,
+                center,
                 lambda scalar: self.scalar_multiple(base(scalar), unit),
             )
 
@@ -298,10 +298,7 @@ class CommutativeAlgebras(OwnedCategoryOverBaseRing):
         return "commutative algebras"
 
     def super_categories(self):
-        return [
-            Algebras(self.base_ring()),
-            SageCommutativeAlgebras(engine_ring(self.base_ring())),
-        ]
+        return [Algebras(self.base_ring())]
 
     class ParentMethods:
         def is_commutative(self) -> bool:
@@ -508,6 +505,29 @@ class AlgebraMorphism(Morphism):
             self._generator_images.__getitem__,
         )
 
+    def _richcmp_(self, other, op):
+        from sage.structure.richcmp import op_EQ, op_NE
+
+        if op not in (op_EQ, op_NE):
+            return NotImplemented
+        if self is other:
+            return op == op_EQ
+        if not isinstance(other, AlgebraMorphism) or other.parent() is not self.parent():
+            return op == op_NE
+
+        if self._generator_images is not None and other._generator_images is not None:
+            equal = all(
+                self(self.domain().algebra_generator(label))
+                == other(self.domain().algebra_generator(label))
+                for label in self.domain().algebra_generating_set()
+            )
+        else:
+            try:
+                equal = bool(self.engine_morphism() == other.engine_morphism())
+            except (TypeError, ValueError, NotImplementedError):
+                return NotImplemented
+        return equal if op == op_EQ else not equal
+
     def __mul__(self, other):
         if other.codomain() is not self.domain():
             return NotImplemented
@@ -610,8 +630,11 @@ class OwnedAlgebraView(OwnedRingView):
 
 def _default_structure_map(base, algebra):
     center = algebra.ring_center()
-    return SetMorphism(
-        Hom(base, center, SageRings()),
+    from dzack_research.preamble.categories.rings import ring_morphism
+
+    return ring_morphism(
+        base,
+        center,
         lambda scalar: algebra(engine_ring(base)(scalar)),
     )
 
@@ -633,6 +656,8 @@ def refine_algebra(algebra, base_ring, labels=None, *categories):
     labels_tuple = None if labels is None else tuple(labels)
     algebra = _owned_algebra_view(engine_ring(algebra), base, labels_tuple)
     placement = [Algebras(base), OwnedAlgebras(base)]
+    if engine_ring(algebra) in SageCommutativeAlgebras(engine_ring(base)):
+        placement.append(CommutativeAlgebras(base))
     if labels is not None:
         placement.append(FramedAlgebras(base))
     placement.extend(categories)
@@ -696,10 +721,6 @@ def _module_presented_by_multiplication(module):
 def _unit_from_multiplication(multiplication):
     from sage.rings.infinity import Infinity
     from dzack_research.preamble.tensors import tensor
-    from dzack_research.preamble.tensors.tensor import (
-        _engine_component_matrix,
-        _engine_component_vector,
-    )
 
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
         module_coefficients,
@@ -713,10 +734,14 @@ def _unit_from_multiplication(multiplication):
     ring = module.base_ring()
     engine = engine_ring(ring)
     rank = int(module.module_generating_set().cardinality())
-    system = tensor.matrix(engine, rank * rank, rank)
-    target = tensor.vector(engine, rank * rank)
+    # A left unit e satisfies e.x = x for every generator x, which is one
+    # linear system in the coordinates of e.
+    system_entries = [
+        [engine.zero() for _ in range(rank)] for _ in range(rank * rank)
+    ]
+    target_entries = [engine.zero() for _ in range(rank * rank)]
     for right_index, right_label in enumerate(labels):
-        target[right_index * rank + right_index] = engine.one()
+        target_entries[right_index * rank + right_index] = engine.one()
         for left_index, left_label in enumerate(labels):
             product = multiplication(
                 tensor_square.pure_tensor(
@@ -726,14 +751,13 @@ def _unit_from_multiplication(multiplication):
             )
             coefficients = module_coefficients(product, module)
             for out_index, out_label in enumerate(labels):
-                system[right_index * rank + out_index, left_index] = engine(
+                system_entries[right_index * rank + out_index][left_index] = engine(
                     coefficients.get(out_label, ring.zero())
                 )
+    system = tensor.matrix(engine, rank * rank, rank, system_entries)
+    target = tensor.vector(engine, target_entries)
     try:
-        engine_solution = _engine_component_matrix(system).solve_right(
-            _engine_component_vector(target)
-        )
-        coefficients = tensor.vector(engine, engine_solution)
+        coefficients = system.solve_right(target)
     except (ValueError, ArithmeticError) as error:
         raise TypeError("the multiplication morphism has no left unit") from error
     unit = module.linear_combination(

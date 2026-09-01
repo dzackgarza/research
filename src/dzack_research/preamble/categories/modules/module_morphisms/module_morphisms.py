@@ -1,12 +1,14 @@
-"""Linear maps between framed modules."""
+"""Linear maps between represented modules."""
 
+import logging
 import operator
+from itertools import product
 
 from sage.categories.action import Action
 from sage.categories.homset import Hom
 from sage.categories.morphism import Morphism, SetMorphism
-from sage.categories.sets_cat import Sets
 from sage.combinat.free_module import CombinatorialFreeModule
+from sage.misc.cachefunc import cached_method
 from sage.modules.free_module import FreeModule_generic
 from sage.rings.integer_ring import ZZ as SageZZ
 
@@ -14,7 +16,11 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     CategoricalHomset,
 )
 from dzack_research.preamble.categories.rings import engine_ring
+from dzack_research.preamble.categories.sets import Sets
 from dzack_research.preamble.tensors import tensor
+
+
+_LOGGER = logging.getLogger(__name__)
 
 
 def _solve_left_integrally(system, target, ring):
@@ -25,15 +31,17 @@ def _solve_left_integrally(system, target, ring):
     followed by denominator inspection.
     """
     from dzack_research.preamble.tensors import Tensor, tensor
+    from dzack_research.preamble.tensors.tensor import _engine_component_matrix
 
     if not isinstance(system, Tensor):
         system = tensor.matrix(ring, system)
-    engine_smith, engine_left, engine_right = system.dual_tensor().smith_form()
+    engine_system = _engine_component_matrix(system.dual_tensor())
+    engine_smith, engine_left, engine_right = engine_system.smith_form()
     smith = tensor.matrix(ring, engine_smith)
     left = tensor.matrix(ring, engine_left)
     right = tensor.matrix(ring, engine_right)
     shifted = left * tensor.vector(ring, target)
-    width = smith.ncols()
+    width = smith.lower_ranks()[0]
     solution = [ring.zero()] * width
     for index, value in enumerate(shifted):
         divisor = smith[index, index] if index < width else ring.zero()
@@ -57,6 +65,25 @@ def module_coefficients(element, module=None) -> dict:
     """
     if module is None:
         module = element.parent()
+    if (
+        hasattr(module, "localization_source_module")
+        and hasattr(element, "numerator")
+        and hasattr(element, "denominator")
+    ):
+        source_module = module.localization_source_module()
+        source_coefficients = module_coefficients(
+            element.numerator(),
+            source_module,
+        )
+        localization_ring = module.base_ring()
+        denominator = localization_ring.localization_map()(element.denominator())
+        denominator_inverse = denominator**-1
+        return {
+            label: localization_ring.localization_map()(coefficient)
+            * denominator_inverse
+            for label, coefficient in source_coefficients.items()
+            if coefficient != 0
+        }
     coordinate_function = module.__dict__.get("_preamble_module_coordinate_function")
     if coordinate_function is not None:
         labels = tuple(module.module_generating_set())
@@ -149,7 +176,14 @@ def module_coefficients(element, module=None) -> dict:
 class ModuleMorphism(Morphism):
     r"""The linear extension of a function on a chosen module framing."""
 
-    def __init__(self, parent, images, *, elementwise=False) -> None:
+    def __init__(
+        self,
+        parent,
+        images,
+        *,
+        elementwise=False,
+        verify_linearity=True,
+    ) -> None:
         Morphism.__init__(self, parent)
         self._element_function = None
         from dzack_research.preamble.categories.modules.framed.framed_modules import (
@@ -165,6 +199,8 @@ class ModuleMorphism(Morphism):
             self._element_function = images
             self._generator_image = None
             self._generator_morphism = None
+            if verify_linearity:
+                self._verify_elementwise_linearity_when_decidable()
             return
         labels = self.domain().module_generating_set()
         set_homset = Hom(labels, self.codomain(), Sets())
@@ -197,6 +233,161 @@ class ModuleMorphism(Morphism):
         else:
             raise TypeError("a module morphism is specified on the domain framing")
         self._check_selected_domain_relations()
+
+    def _verify_elementwise_linearity_when_decidable(self) -> None:
+        r"""Check an elementwise callable exactly in represented decidable regimes.
+
+        A Python callable does not carry a proof of linearity.  When both the
+        scalar ring and the source module are finite and enumerable, linearity
+        is decidable by exhaustive verification.  Over ``ZZ`` a finite source
+        only needs exhaustive additivity, since every additive-group map is
+        automatically ``ZZ``-linear.  Outside such regimes the callable is a
+        declared linear map; a DEBUG diagnostic records that no exhaustive
+        verification was available.
+        """
+        function = self._element_function
+        if function is None:
+            return
+
+        domain = self.domain()
+        codomain = self.codomain()
+        source_elements = self._finite_source_elements_for_verification()
+        if source_elements is not None:
+            self._verify_elementwise_on_finite_source(source_elements)
+            return
+
+        try:
+            source_finite = bool(domain.is_finite())
+        except (AttributeError, NotImplementedError, TypeError, ValueError):
+            source_finite = False
+
+        if not source_finite:
+            self._check_elementwise_zero_when_possible()
+            _LOGGER.debug(
+                "Elementwise module morphism %s -> %s accepted without exhaustive "
+                "linearity verification; source carrier is not represented as finite",
+                domain,
+                codomain,
+            )
+            return
+
+        try:
+            source_elements = tuple(domain)
+        except (AttributeError, TypeError):
+            self._check_elementwise_zero_when_possible()
+            _LOGGER.debug(
+                "Elementwise module morphism %s -> %s accepted without exhaustive "
+                "linearity verification; finite source has no represented enumeration",
+                domain,
+                codomain,
+            )
+            return
+
+        self._verify_elementwise_on_finite_source(source_elements)
+
+    def _finite_source_elements_for_verification(self):
+        r"""Enumerate a finitely generated module over a finite ring via its framing."""
+        domain = self.domain()
+        ring = domain.base_ring()
+        from dzack_research.preamble.categories.modules.framed.framed_modules import (
+            FramedModules,
+        )
+        from dzack_research.preamble.categories.rings import engine_ring
+
+        if domain not in FramedModules(ring):
+            return None
+        try:
+            labels = tuple(domain.module_generating_set())
+        except (AttributeError, TypeError):
+            return None
+        engine = engine_ring(ring)
+        try:
+            if not bool(engine.is_finite()):
+                return None
+            scalars = tuple(engine)
+        except (AttributeError, NotImplementedError, TypeError, ValueError):
+            return None
+        elements = []
+        seen = set()
+        for coefficients in product(scalars, repeat=len(labels)):
+            element = domain.linear_combination(
+                {
+                    label: coefficient
+                    for label, coefficient in zip(labels, coefficients, strict=True)
+                    if coefficient != 0
+                }
+            )
+            try:
+                key = element
+                if key in seen:
+                    continue
+                seen.add(key)
+            except TypeError:
+                if any(element == previous for previous in elements):
+                    continue
+            elements.append(element)
+        return tuple(elements)
+
+    def _verify_elementwise_on_finite_source(self, source_elements) -> None:
+        function = self._element_function
+        domain = self.domain()
+        codomain = self.codomain()
+        ring = domain.base_ring()
+        zero = domain.zero()
+        if function(zero) != codomain.zero():
+            raise ValueError("an elementwise module morphism must send zero to zero")
+        for left in source_elements:
+            for right in source_elements:
+                if function(left + right) != function(left) + function(right):
+                    raise ValueError("the supplied elementwise map is not additive")
+
+        from sage.rings.integer_ring import ZZ as SageZZ
+
+        from dzack_research.preamble.categories.rings import engine_ring
+
+        if engine_ring(ring) is SageZZ:
+            return
+
+        try:
+            scalar_finite = bool(ring.is_finite())
+        except (AttributeError, NotImplementedError, TypeError, ValueError):
+            scalar_finite = False
+        if not scalar_finite:
+            _LOGGER.debug(
+                "Elementwise map %s -> %s is exhaustively additive on its finite source, "
+                "but scalar-linearity over infinite %s was not exhaustively verified",
+                domain,
+                codomain,
+                ring,
+            )
+            return
+        try:
+            scalars = tuple(engine_ring(ring))
+        except TypeError:
+            _LOGGER.debug(
+                "Elementwise map %s -> %s is exhaustively additive, but finite scalar "
+                "ring %s has no represented enumeration",
+                domain,
+                codomain,
+                ring,
+            )
+            return
+        for scalar in scalars:
+            for element in source_elements:
+                if function(domain.scalar_multiple(scalar, element)) != codomain.scalar_multiple(
+                    scalar, function(element)
+                ):
+                    raise ValueError("the supplied elementwise map is not scalar-linear")
+
+    def _check_elementwise_zero_when_possible(self) -> None:
+        try:
+            source_zero = self.domain().zero()
+            target_zero = self.codomain().zero()
+            image = self._element_function(source_zero)
+        except (AttributeError, NotImplementedError, TypeError, ValueError):
+            return
+        if image != target_zero:
+            raise ValueError("an elementwise module morphism must send zero to zero")
 
     def _check_selected_domain_relations(self) -> None:
         if self._element_function is not None:
@@ -237,19 +428,43 @@ class ModuleMorphism(Morphism):
             return NotImplemented
         parent = self.parent()
         return parent.elementwise(
-            lambda element: self(element) + other(element)
+            lambda element: self(element) + other(element),
+            verify_linearity=False,
         )
 
     def __neg__(self):
         parent = self.parent()
         return parent.elementwise(
-            lambda element: -self(element)
+            lambda element: -self(element),
+            verify_linearity=False,
         )
 
     def __sub__(self, other):
         if not isinstance(other, ModuleMorphism):
             return NotImplemented
         return self + (-other)
+
+    def _richcmp_(self, other, op):
+        from sage.structure.richcmp import op_EQ, op_NE
+        from dzack_research.preamble.categories.modules.framed.framed_modules import (
+            FramedModules,
+        )
+
+        if op not in (op_EQ, op_NE):
+            return NotImplemented
+        if self is other:
+            return op == op_EQ
+        if not isinstance(other, ModuleMorphism) or other.parent() is not self.parent():
+            return op == op_NE
+        domain = self.domain()
+        if domain not in FramedModules(domain.base_ring()):
+            return NotImplemented
+        equal = all(
+            self(domain.module_generator(label))
+            == other(domain.module_generator(label))
+            for label in domain.module_generating_set()
+        )
+        return equal if op == op_EQ else not equal
 
     def __rmul__(self, scalar):
         return self.parent().scalar_multiple(scalar, self)
@@ -290,8 +505,10 @@ class ModuleMorphism(Morphism):
             # necessary.  Its native additive group and R-action are exact.
             return sum(
                 (
-                    ring(source_coefficient)
-                    * self._generator_image(source_label)
+                    codomain.scalar_multiple(
+                        ring(source_coefficient),
+                        self._generator_image(source_label),
+                    )
                     for source_label, source_coefficient in coefficients.items()
                 ),
                 codomain.zero(),
@@ -303,7 +520,10 @@ class ModuleMorphism(Morphism):
         if codomain not in FramedModules(ring):
             return sum(
                 (
-                    ring(source_coefficient) * self._generator_image(source_label)
+                    codomain.scalar_multiple(
+                        ring(source_coefficient),
+                        self._generator_image(source_label),
+                    )
                     for source_label, source_coefficient in coefficients.items()
                 ),
                 codomain.zero(),
@@ -363,20 +583,24 @@ class ModuleMorphism(Morphism):
             )
         if not columns:
             return tensor.matrix(
-                engine_ring(self.domain().base_ring()),
+                self.domain().base_ring(),
                 len(codomain_labels),
                 0,
+                (),
             )
         if not codomain_labels:
             return tensor.matrix(
-                engine_ring(self.domain().base_ring()),
+                self.domain().base_ring(),
                 0,
                 len(domain_labels),
+                (),
             )
         rows = tuple(zip(*columns, strict=True))
         return tensor.matrix(
-            engine_ring(self.domain().base_ring()),
-            rows,
+            self.domain().base_ring(),
+            len(codomain_labels),
+            len(domain_labels),
+            tuple(entry for row in rows for entry in row),
         )
 
     def matrix(self):
@@ -387,29 +611,72 @@ class ModuleMorphism(Morphism):
         """
         return self.tensor()
 
+    @cached_method
     def kernel(self):
         r"""Return ``ker(self)`` as a subobject of the domain."""
+        source_morphism = getattr(
+            self,
+            "_preamble_localization_source_morphism",
+            None,
+        )
+        localization_functor = getattr(
+            self,
+            "_preamble_localization_functor",
+            None,
+        )
+        if source_morphism is not None and localization_functor is not None:
+            source_kernel = source_morphism.kernel()
+            localized_kernel = localization_functor(source_kernel)
+            localized_inclusion = localization_functor(source_kernel.inclusion())
+            if localized_inclusion.codomain() is not self.domain():
+                raise ArithmeticError(
+                    "localized kernel inclusion does not land in the cached localized domain"
+                )
+            localized_kernel._preamble_inclusion = localized_inclusion
+            from dzack_research.preamble.categories.modules.subobjects import (
+                ModuleSubobjects,
+            )
+            from dzack_research.preamble.refine import refine
+
+            refine(
+                localized_kernel,
+                ModuleSubobjects(localization_functor.localization_ring()),
+            )
+            return localized_kernel
+
         from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import (
             FinitelyGeneratedFreeModules,
         )
+        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+            ModulesWithChosenFinitePresentation,
+            _singular_presentation_kernel,
+        )
 
         ring = self.domain().base_ring()
-        assert (
+        if (
             self.domain() in FinitelyGeneratedFreeModules(ring)
             and self.codomain() in FinitelyGeneratedFreeModules(ring)
-        )
-        rows = self.tensor().dual_tensor().left_kernel().basis_matrix().rows()
-        return self.domain().subobject_on(
-            self.domain().linear_combination(
-                {
-                    label: coefficient
-                    for label, coefficient in zip(
-                        self.domain().module_generating_set(), row, strict=True
-                    )
-                    if coefficient
-                }
+        ):
+            rows = self.tensor().dual_tensor().left_kernel_tensor().rows()
+            return self.domain().subobject_on(
+                self.domain().linear_combination(
+                    {
+                        label: coefficient
+                        for label, coefficient in zip(
+                            self.domain().module_generating_set(), row, strict=True
+                        )
+                        if coefficient
+                    }
+                )
+                for row in rows
             )
-            for row in rows
+        if (
+            self.domain() in ModulesWithChosenFinitePresentation(ring)
+            and self.codomain() in ModulesWithChosenFinitePresentation(ring)
+        ):
+            return _singular_presentation_kernel(self)
+        raise NotImplementedError(
+            "this kernel has no represented finite-free or general polynomial-presentation backend"
         )
 
     def image(self):
@@ -429,6 +696,40 @@ class ModuleMorphism(Morphism):
     def is_surjective(self) -> bool:
         r"""Return whether ``coker(self)=0`` when the cokernel is computable."""
         return self.cokernel().is_zero()
+
+    def residue_morphism(self):
+        r"""Return ``f tensor_R k`` for a morphism of finite modules over a local ring."""
+        from dzack_research.preamble.categories.modules.pure.finitely_generated.finitely_generated_modules import (
+            FinitelyGeneratedModules,
+        )
+        from dzack_research.preamble.categories.rings import LocalRings
+        from dzack_research.preamble.categories.functors.scalar_change import (
+            ScalarExtensionFunctor,
+        )
+
+        ring = self.domain().base_ring()
+        if self.codomain().base_ring() is not ring:
+            raise ValueError("a residue morphism requires one common base ring")
+        if ring not in LocalRings():
+            raise TypeError("reduction modulo the maximal ideal requires a represented local ring")
+        if (
+            self.domain() not in FinitelyGeneratedModules(ring)
+            or self.codomain() not in FinitelyGeneratedModules(ring)
+        ):
+            raise TypeError(
+                "the active Nakayama interface requires finitely generated source and target"
+            )
+        return ScalarExtensionFunctor(ring.residue_map())(self)
+
+    reduction_mod_maximal_ideal = residue_morphism
+
+    def is_surjective_mod_maximal_ideal(self) -> bool:
+        r"""Return whether ``f tensor_R k`` is surjective."""
+        return self.residue_morphism().is_surjective()
+
+    def is_surjective_by_nakayama(self) -> bool:
+        r"""Use Nakayama: a map onto a finite local module is surjective iff its residue map is."""
+        return self.is_surjective_mod_maximal_ideal()
 
     def is_primitive(self) -> bool:
         r"""Return whether this monomorphism has torsion-free cokernel."""
@@ -457,6 +758,9 @@ class ModuleMorphism(Morphism):
 
     def lift(self, element):
         r"""Return the unique preimage of ``element`` for an injective free map."""
+        custom = self.__dict__.get("_preamble_lift")
+        if custom is not None:
+            return custom(element)
         from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import (
             FinitelyGeneratedFreeModules,
         )
@@ -569,6 +873,7 @@ class ModuleMorphism(Morphism):
         except (TypeError, ValueError):
             return NotImplemented
 
+    @cached_method
     def cokernel(self):
         r"""Return the selected quotient ``codomain(self) / image(self)``."""
         from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
@@ -682,6 +987,10 @@ class ModuleHomset(CategoricalHomset):
             full_internal_hom=True,
         )
 
+    def __call__(self, images):
+        r"""Construct a module morphism without Sage coercion discovery."""
+        return self._element_constructor_(images)
+
     def _element_constructor_(self, images):
         if isinstance(images, ModuleMorphism):
             if images.domain() is not self.domain() or images.codomain() is not self.codomain():
@@ -717,24 +1026,34 @@ class ModuleHomset(CategoricalHomset):
     def scalar_multiple(self, scalar, morphism):
         if morphism.parent() is not self:
             morphism = self(morphism)
-        scalar = self.base_ring()(scalar)
+        scalar = engine_ring(self.base_ring())(scalar)
         return self.elementwise(
             lambda element: self.codomain().scalar_multiple(
                 scalar,
                 morphism(element),
-            )
+            ),
+            verify_linearity=False,
         )
 
-    def elementwise(self, function):
-        r"""Construct an exact linear map from its action on arbitrary elements.
+    def elementwise(self, function, *, verify_linearity=True):
+        r"""Construct a declared linear map from its action on arbitrary elements.
 
-        This is the representation used when no finite framing is selected.
-        The caller is responsible for supplying an actual linear map; finite
-        framed constructors continue to validate the selected generator data.
+        Exact verification is performed when the represented source/scalar
+        carriers make it decidable (notably finite carriers).  Otherwise the
+        callable is accepted as the defining elementwise realization and a
+        DEBUG diagnostic records that its linearity was not mechanically
+        certified.  For finitely generated/presented objects, prefer the
+        generator-assignment constructor when possible: its linear extension
+        is linear by construction and presentation relations are checked.
         """
         if not callable(function):
             raise TypeError("an elementwise module map must be callable")
-        return self.element_class(self, function, elementwise=True)
+        return self.element_class(
+            self,
+            function,
+            elementwise=True,
+            verify_linearity=verify_linearity,
+        )
 
     def source_module(self):
         return self.domain()
@@ -815,10 +1134,18 @@ class ModuleHomset(CategoricalHomset):
                 self.codomain(),
             ).items():
                 coefficients[(source_label, target_label)] = coefficient
-        return model(power.linear_combination(coefficients))
+        assignment = power.linear_combination(coefficients)
+        inclusion = self.inclusion_into_generator_maps()
+        custom_lift = inclusion.__dict__.get("_preamble_lift")
+        if custom_lift is not None:
+            return inclusion.lift(assignment)
+        return model(assignment)
 
     def zero(self):
-        return self.elementwise(lambda _element: self.codomain().zero())
+        return self.elementwise(
+            lambda _element: self.codomain().zero(),
+            verify_linearity=False,
+        )
 
     def linear_combination(self, coefficients):
         result = self.zero()
@@ -838,7 +1165,10 @@ class ModuleHomset(CategoricalHomset):
         )
 
         if self.domain() not in FramedModules(self.base_ring()):
-            return self.elementwise(lambda element: element)
+            return self.elementwise(
+                lambda element: element,
+                verify_linearity=False,
+            )
         labels = self.domain().module_generating_set()
         try:
             finite = labels.cardinality() in SageZZ
@@ -851,7 +1181,10 @@ class ModuleHomset(CategoricalHomset):
                     for label in labels
                 }
             )
-        return self.elementwise(lambda element: element)
+        return self.elementwise(
+            lambda element: element,
+            verify_linearity=False,
+        )
 
     def one(self):
         r"""Return the multiplicative unit when this is an endomorphism ring."""
@@ -876,6 +1209,16 @@ def framing_morphism(domain, codomain, images) -> FramingMorphism:
     return framing
 
 
-def module_embedding(domain, codomain, images) -> ModuleEmbedding:
+def module_embedding(
+    domain,
+    codomain,
+    images,
+    *,
+    verify_linearity=True,
+) -> ModuleEmbedding:
     r"""Construct a declared module monomorphism on a chosen framing."""
-    return ModuleEmbedding(module_homset(domain, codomain), images)
+    return ModuleEmbedding(
+        module_homset(domain, codomain),
+        images,
+        verify_linearity=verify_linearity,
+    )

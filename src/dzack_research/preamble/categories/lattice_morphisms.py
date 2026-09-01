@@ -1,6 +1,5 @@
 r"""Form-preserving morphisms, embeddings, and isometries of lattices."""
 
-from sage.categories.homset import Homset
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.unknown import Unknown
 from sage.quadratic_forms.quadratic_form import QuadraticForm
@@ -9,20 +8,34 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
 )
+from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    CategoricalHomset,
+    category_packet,
+)
 from dzack_research.preamble.categories.rings import engine_ring
 
 
 class LatticeMorphism(ModuleMorphism):
     r"""A module morphism preserving the lattice form."""
 
-    def __init__(self, parent, images) -> None:
-        ModuleMorphism.__init__(self, parent, images)
+    def __init__(self, parent, images, *, elementwise=False) -> None:
+        ModuleMorphism.__init__(self, parent, images, elementwise=elementwise)
         domain = self.domain()
         codomain = self.codomain()
         if domain.is_finite_rank() and codomain.is_finite_rank():
             pulled_back = codomain.gram_tensor().pullback(self.tensor())
             if not pulled_back.is_equal_tensor(domain.gram_tensor()):
                 raise ValueError("the stated module morphism does not preserve the lattice form")
+
+    def __mul__(self, other):
+        if not isinstance(other, LatticeMorphism):
+            return super().__mul__(other)
+        if other.codomain() is not self.domain():
+            return NotImplemented
+        source = other.domain()
+        return lattice_homset(source, self.codomain())(
+            lambda label: self(other(source.module_generator(label)))
+        )
 
 
 class LatticeEmbedding(LatticeMorphism):
@@ -35,6 +48,16 @@ class LatticeEmbedding(LatticeMorphism):
 
     def is_injective(self) -> bool:
         return True
+
+    def __mul__(self, other):
+        if not isinstance(other, LatticeEmbedding):
+            return super().__mul__(other)
+        if other.codomain() is not self.domain():
+            return NotImplemented
+        source = other.domain()
+        return lattice_embedding_homset(source, self.codomain())(
+            lambda label: self(other(source.module_generator(label)))
+        )
 
     def discriminant_inclusion(self):
         r"""Return ``A_S -> A_L`` for an orthogonal direct-summand embedding.
@@ -184,8 +207,13 @@ class LatticeIsometry(LatticeEmbedding):
         return self.tensor().det()
 
     def __mul__(self, other):
-        if self.domain() is self.codomain() and other.parent() is self.parent():
-            return self.parent().compose(self, other)
+        if isinstance(other, LatticeIsometry) and other.codomain() is self.domain():
+            if self.domain() is self.codomain() and other.parent() is self.parent():
+                return self.parent().compose(self, other)
+            source = other.domain()
+            return lattice_isometry_homset(source, self.codomain())(
+                lambda label: self(other(source.module_generator(label)))
+            )
         return super().__mul__(other)
 
     @cached_method
@@ -394,29 +422,86 @@ class LatticeIsometry(LatticeEmbedding):
         return image
 
 
-class LatticeHomset(Homset):
+class LatticeHomset(CategoricalHomset):
     Element = LatticeMorphism
 
-    def __init__(self, domain, codomain) -> None:
+    def __init__(self, hom_family, domain, codomain) -> None:
         from dzack_research.preamble.categories.lattices import Lattices
 
         ring = domain.base_ring()
         if domain not in Lattices(ring) or codomain not in Lattices(ring):
             raise TypeError("a lattice homset has lattices as its domain and codomain")
-        Homset.__init__(self, domain, codomain, category=Lattices(ring))
+        CategoricalHomset.__init__(
+            self,
+            hom_family,
+            domain,
+            codomain,
+        )
 
     def _element_constructor_(self, images):
+        if isinstance(images, ModuleMorphism):
+            if images.domain() is not self.domain() or images.codomain() is not self.codomain():
+                raise ValueError("the module morphism has the wrong lattice endpoints")
+            if images.parent() is self:
+                return images
+            return self.elementwise(lambda element: images(element))
         return self.element_class(self, images)
+
+    def elementwise(self, function):
+        if not callable(function):
+            raise TypeError("an elementwise lattice map must be callable")
+        source = self.domain()
+        return self.element_class(
+            self,
+            lambda label: function(source.module_generator(label)),
+        )
+
+    def identity(self):
+        if self.domain() is not self.codomain():
+            raise ValueError("identity belongs to a lattice endomorphism homset")
+        return self.elementwise(lambda element: element)
 
     def _repr_(self):
         return f"LatticeHom({self.domain()}, {self.codomain()})"
 
 
-class LatticeEmbeddingHomset(LatticeHomset):
+class LatticeEmbeddingHomset(CategoricalHomset):
     Element = LatticeEmbedding
 
+    def __init__(self, hom_family, domain, codomain) -> None:
+        from dzack_research.preamble.categories.lattices import Lattices
+
+        ring = domain.base_ring()
+        if domain not in Lattices(ring) or codomain not in Lattices(ring):
+            raise TypeError("a lattice embedding homset has lattice endpoints")
+        CategoricalHomset.__init__(self, hom_family, domain, codomain)
+
     def _element_constructor_(self, images):
+        if isinstance(images, ModuleMorphism):
+            if (
+                images.domain() is not self.domain()
+                or images.codomain() is not self.codomain()
+            ):
+                raise ValueError("the module morphism has the wrong lattice endpoints")
+            if images.parent() is self:
+                return images
+            source = self.domain()
+            return self.element_class(
+                self,
+                lambda label: images(source.module_generator(label)),
+            )
         return self.element_class(self, images)
+
+    def super_categories(self):
+        packet = category_packet(self.base_category())
+        source = self.domain()
+        target = self.codomain()
+        inherited = [
+            superpacket.Monos().Of(source, target)
+            for superpacket in packet.super_packets()
+            if source in superpacket.C() and target in superpacket.C()
+        ]
+        return [packet.Homs().Of(source, target), *inherited]
 
     def _repr_(self):
         return f"Emb({self.domain()}, {self.codomain()})"
@@ -534,8 +619,63 @@ class LatticeEmbeddingHomset(LatticeHomset):
 class LatticeIsometryHomset(LatticeEmbeddingHomset):
     Element = LatticeIsometry
 
+    def __init__(self, hom_family, domain, codomain) -> None:
+        LatticeEmbeddingHomset.__init__(self, hom_family, domain, codomain)
+        if domain is codomain:
+            from dzack_research.preamble.categories.group.groups import (
+                OwnedFiniteGroups,
+                OwnedGroups,
+            )
+            from dzack_research.preamble.refine import refine
+
+            categories = [OwnedGroups()]
+            if (
+                engine_ring(domain.base_ring()) is SageZZ
+                and domain.is_finite_rank()
+                and domain.is_definite()
+            ):
+                categories.append(OwnedFiniteGroups())
+            refine(self, categories)
+
     def _element_constructor_(self, images):
+        if isinstance(images, LatticeIsometry):
+            if (
+                images.domain() is not self.domain()
+                or images.codomain() is not self.codomain()
+            ):
+                raise ValueError("the isometry has the wrong lattice endpoints")
+            if images.parent() is self:
+                return images
+            source = self.domain()
+            return self.element_class(
+                self,
+                lambda label: images(source.module_generator(label)),
+            )
         return self.element_class(self, images)
+
+    def super_categories(self):
+        packet = category_packet(self.base_category())
+        source = self.domain()
+        target = self.codomain()
+        inherited = [
+            superpacket.Isos().Of(source, target)
+            for superpacket in packet.super_packets()
+            if source in superpacket.C() and target in superpacket.C()
+        ]
+        supers = [
+            packet.Homs().Of(source, target),
+            packet.Monos().Of(source, target),
+            packet.Epis().Of(source, target),
+            *inherited,
+        ]
+        if self.aut_family() is not None:
+            supers.append(packet.Ends().Of(source))
+            supers.extend(
+                superpacket.Auts().Of(source)
+                for superpacket in packet.super_packets()
+                if source in superpacket.C()
+            )
+        return supers
 
     def identity(self):
         if self.domain() is not self.codomain():
@@ -544,6 +684,8 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
 
     def one(self):
         return self.identity()
+
+    identity_automorphism = identity
 
     def acting_group(self):
         r"""Return ``O(codomain)`` acting by postcomposition on this homset."""
@@ -924,15 +1066,17 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
         from sage.quadratic_forms.genera.genus import LocalGenusSymbol
         from sage.rings.rational_field import QQ as SageQQ
 
-        rational_domain = QuadraticForm(SageQQ, 2 * domain_gram.change_ring(SageQQ))
-        rational_codomain = QuadraticForm(SageQQ, 2 * codomain_gram.change_ring(SageQQ))
+        domain_engine = domain_gram
+        codomain_engine = codomain_gram
+        rational_domain = QuadraticForm(SageQQ, 2 * domain_engine.change_ring(SageQQ))
+        rational_codomain = QuadraticForm(SageQQ, 2 * codomain_engine.change_ring(SageQQ))
         if not rational_domain.is_rationally_isometric(rational_codomain):
             return True
 
         determinant = abs(SageZZ(domain_gram.det()))
         for prime in (2 * determinant).prime_divisors():
-            if LocalGenusSymbol(domain_gram, prime) != LocalGenusSymbol(
-                codomain_gram, prime
+            if LocalGenusSymbol(domain_engine, prime) != LocalGenusSymbol(
+                codomain_engine, prime
             ):
                 return True
 
@@ -945,9 +1089,9 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
         if not (positive and negative):
             sign = SageZZ.one() if negative == 0 else -SageZZ.one()
             transformation = QuadraticForm(
-                SageZZ, 2 * sign * codomain_gram
+                SageZZ, 2 * sign * codomain_engine
             ).is_globally_equivalent_to(
-                QuadraticForm(SageZZ, 2 * sign * domain_gram),
+                QuadraticForm(SageZZ, 2 * sign * domain_engine),
                 return_matrix=True,
             )
             if transformation is False:
@@ -986,7 +1130,7 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
             return False
 
         if domain.rank() >= 3:
-            spinor_generators = SageGenus(domain_gram).spinor_generators(proper=False)
+            spinor_generators = SageGenus(domain_engine).spinor_generators(proper=False)
             if not spinor_generators:
                 self._nonconstructive_nonempty_reason = (
                     "Eichler's theorem and uniqueness of the improper spinor genus"
@@ -1034,33 +1178,33 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
 
 @cached_function
 def lattice_homset(domain, codomain) -> LatticeHomset:
-    return LatticeHomset(domain, codomain)
+    from dzack_research.preamble.categories.lattices import Lattices
+
+    ring = domain.base_ring()
+    if codomain.base_ring() != ring:
+        raise ValueError("lattice morphisms require one common base ring")
+    return Lattices(ring).Hom(domain, codomain)
 
 
 @cached_function
 def lattice_embedding_homset(domain, codomain) -> LatticeEmbeddingHomset:
-    return LatticeEmbeddingHomset(domain, codomain)
+    from dzack_research.preamble.categories.lattices import Lattices
+
+    ring = domain.base_ring()
+    if codomain.base_ring() != ring:
+        raise ValueError("lattice embeddings require one common base ring")
+    return Lattices(ring).Mono(domain, codomain)
 
 
 @cached_function
 def lattice_isometry_homset(domain, codomain) -> LatticeIsometryHomset:
-    homset = LatticeIsometryHomset(domain, codomain)
-    if domain is codomain:
-        from dzack_research.preamble.categories.group.groups import (
-            OwnedFiniteGroups,
-            OwnedGroups,
-        )
-        from dzack_research.preamble.refine import refine
+    from dzack_research.preamble.categories.lattices import Lattices
 
-        categories = [OwnedGroups()]
-        if (
-            engine_ring(domain.base_ring()) is SageZZ
-            and domain.is_finite_rank()
-            and domain.is_definite()
-        ):
-            categories.append(OwnedFiniteGroups())
-        return refine(homset, categories)
-    return homset
+    ring = domain.base_ring()
+    if codomain.base_ring() != ring:
+        raise ValueError("lattice isometries require one common base ring")
+    category = Lattices(ring)
+    return category.Aut(domain) if domain is codomain else category.Iso(domain, codomain)
 
 
 __all__ = [

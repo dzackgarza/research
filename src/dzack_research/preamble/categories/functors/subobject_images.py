@@ -10,18 +10,16 @@ def _inverse_image_subobject(morphism, subobject):
     if subobject.inclusion().codomain() is not morphism.codomain():
         raise ValueError("the subobject is not in the morphism codomain")
     source = morphism.domain()
+    # The preimage is carried by the source half of the left kernel of the
+    # induced map (f, -i) into the direct sum.
     left = morphism.tensor().dual_tensor()
     right = subobject.inclusion().tensor().dual_tensor()
-    from dzack_research.preamble.tensors import tensor
-
-    stacked = tensor.matrix(left.base_ring(), left.stack(-right))
-    kernel = tensor.matrix(left.base_ring(), stacked.left_kernel().basis_matrix())
-    source_coefficients = tensor.matrix(
-        left.base_ring(), kernel.matrix_from_columns(range(left.nrows()))
+    kernel = left.stack(-right).left_kernel_tensor()
+    source_coefficients = kernel.restricted_to_lower_indices(
+        range(left.upper_ranks()[0])
     )
     return source.subobject_on(
-        _element_from_row(source, row)
-        for row in source_coefficients.rows()
+        _element_from_row(source, row) for row in source_coefficients.rows()
     )
 
 

@@ -192,7 +192,7 @@ def isotypic_component(module, character):
         raise ValueError(f"{character!r} is not an irreducible-character index for this module")
     projector = _central_projector(module, selected)
     ring = engine_ring(module.base_ring())
-    identity = tensor.matrix.identity(projector.base_ring(), projector.nrows())
+    identity = tensor.matrix.identity(projector.base_ring(), projector.tensor_shape()[0])
     if ring is SageZZ:
         denominators = [entry.denominator() for entry in (projector - identity).list()]
         denominator = lcm(denominators) if denominators else SageZZ.one()

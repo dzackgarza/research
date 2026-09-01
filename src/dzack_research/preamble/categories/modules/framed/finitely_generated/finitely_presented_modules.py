@@ -79,6 +79,107 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
             r"""Return its relation rows in the selected target framing."""
             return self._preamble_relation_matrix
 
+        def fitting_ideal(self, index):
+            r"""Return ``Fitt_index(M)`` from the selected finite presentation."""
+            from dzack_research.preamble.tensors.tensor import _engine_component_matrix
+
+            index = int(index)
+            if index < 0:
+                raise ValueError("a Fitting-ideal index is nonnegative")
+            ring = self.base_ring()
+            n = int(self.number_of_module_generators())
+            minor_size = n - index
+            if minor_size <= 0:
+                return ring.ideal(ring.one())
+            matrix = _engine_component_matrix(self.presentation_matrix())
+            if minor_size > min(matrix.nrows(), matrix.ncols()):
+                return ring.ideal(ring.zero())
+            minors = tuple(matrix.minors(minor_size))
+            return ring.ideal(*(minors or (ring.zero(),)))
+
+        def annihilator(self):
+            r"""Return ``Ann_R(M)`` in exact currently represented regimes."""
+            ring = self.base_ring()
+            if isinstance(self, FGP_Module_class):
+                invariants = tuple(self.invariants(include_ones=True))
+                if not invariants or all(invariant.is_unit() for invariant in invariants):
+                    return ring.ideal(ring.one())
+                if any(invariant == 0 for invariant in invariants):
+                    return ring.ideal(ring.zero())
+                nonunits = tuple(
+                    invariant for invariant in invariants if not invariant.is_unit()
+                )
+                return ring.ideal(nonunits[-1])
+
+            if int(self.number_of_module_generators()) == 1:
+                from dzack_research.preamble.tensors.tensor import _engine_component_matrix
+
+                matrix = _engine_component_matrix(self.presentation_matrix())
+                entries = tuple(matrix[row, 0] for row in range(matrix.nrows()))
+                return ring.ideal(*(entries or (ring.zero(),)))
+
+            raise NotImplementedError(
+                "annihilator of this general finite presentation requires a commutative-algebra backend"
+            )
+
+        def support(self):
+            r"""Return ``Supp(M)=V(Fitt_0(M))`` in ``Spec(R)``."""
+            return self.base_ring().spectrum().V(self.fitting_ideal(0))
+
+        def minimal_module_generators(self):
+            r"""Return a minimal selected generating set over a local base ring.
+
+            By Nakayama, a set of generators is minimal exactly when its image
+            is a basis of ``M/mM``.  The selected presentation gives
+            ``M/mM = k^n / row(relations mod m)``; non-pivot standard basis
+            classes therefore give a basis of the quotient.
+            """
+            from sage.matrix.constructor import matrix
+
+            from dzack_research.preamble.categories.rings import (
+                LocalRings,
+                engine_ring,
+            )
+            from dzack_research.preamble.categories.sets import finite_ordered_set
+            ring = self.base_ring()
+            if ring not in LocalRings():
+                raise TypeError(
+                    "minimal generators via Nakayama require a represented local base ring"
+                )
+            relation_rows = tuple(self.presentation_matrix().rows())
+            residue = ring.residue_field()
+            residue_engine = engine_ring(residue)
+            residue_map = ring.residue_map()
+            specialized = matrix(
+                residue_engine,
+                len(relation_rows),
+                int(self.number_of_module_generators()),
+                [
+                    residue_engine(residue_map(coefficient))
+                    for row in relation_rows
+                    for coefficient in row
+                ],
+            )
+            pivot_columns = frozenset(specialized.echelon_form().pivots())
+            labels = tuple(self.module_generating_set())
+            return finite_ordered_set(
+                self.module_generator(label)
+                for position, label in enumerate(labels)
+                if position not in pivot_columns
+            )
+
+        def annihilator_support(self):
+            r"""Return ``V(Ann(M))`` when the annihilator is represented."""
+            return self.base_ring().spectrum().V(self.annihilator())
+
+        def fiber_dimension_at_least(self, dimension):
+            r"""Return the closed locus where ``dim_{kappa(p)} M(p) >= dimension``."""
+            dimension = int(dimension)
+            spectrum = self.base_ring().spectrum()
+            if dimension <= 0:
+                return spectrum.V(self.base_ring().ideal(self.base_ring().zero()))
+            return spectrum.V(self.fitting_ideal(dimension - 1))
+
         def module_generating_set(self):
             return self._preamble_module_generating_set
 
@@ -142,15 +243,24 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
             from sage.modules.fg_pid.fgp_module import FGP_Module_class
             from sage.rings.integer_ring import ZZ as SageZZ
 
+            from dzack_research.preamble.tensors.tensor import _engine_vector
+
+            # This implements Sage's FGP coordinate protocol, so every branch
+            # returns the engine vector Sage's own code consumes.
             custom = self.__dict__.get("_preamble_module_coordinate_function")
             if custom is not None:
-                return tensor.vector(
+                return _engine_vector(
                     engine_ring(self.base_ring()),
                     tuple(custom(element)),
                 )
 
             if not isinstance(self, FGP_Module_class):
                 lift = element.lift() if hasattr(element, "lift") else element
+                if getattr(lift, "parent", lambda: None)() is self.V():
+                    return _engine_vector(
+                        engine_ring(self.base_ring()),
+                        tuple(lift),
+                    )
                 return self.V().coordinate_vector(lift)
 
             coordinates = FGP_Module_class.coordinate_vector(self, element, reduce=False)
@@ -158,7 +268,7 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
             if not reduce or engine is not SageZZ:
                 return coordinates
             invariants = self.invariants()
-            return tensor.vector(
+            return _engine_vector(
                 engine,
                 [
                     coordinates[index]
@@ -170,6 +280,14 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
 
         def rank(self):
             r"""Return the rank of the free summand."""
+            engine = engine_ring(self.base_ring())
+            if engine.is_field():
+                from dzack_research.preamble.tensors.tensor import (
+                    _engine_component_matrix,
+                )
+
+                relations = _engine_component_matrix(self.presentation_matrix())
+                return self.number_of_module_generators() - relations.rank()
             if not isinstance(self, FGP_Module_class):
                 raise NotImplementedError(
                     "free-summand rank is currently computed from PID invariant factors"
@@ -181,16 +299,18 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
             )
 
         def is_torsion(self):
+            engine = engine_ring(self.base_ring())
+            if engine.is_field():
+                return self.is_zero()
             if not isinstance(self, FGP_Module_class):
                 raise NotImplementedError(
                     "torsion detection is currently computed from PID invariant factors"
                 )
-            engine = engine_ring(self.base_ring())
-            if engine.is_field():
-                return self.is_zero()
             return self.rank() == 0
 
         def is_torsion_free(self):
+            if engine_ring(self.base_ring()).is_field():
+                return True
             if not isinstance(self, FGP_Module_class):
                 raise NotImplementedError(
                     "torsion-freeness is currently computed from PID invariant factors"
@@ -201,6 +321,8 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
             )
 
         def is_zero(self):
+            if engine_ring(self.base_ring()).is_field():
+                return self.rank() == 0
             if not isinstance(self, FGP_Module_class):
                 raise NotImplementedError(
                     "zero detection is currently computed from PID invariant factors"
@@ -209,6 +331,12 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
                 invariant.is_unit()
                 for invariant in self.invariants(include_ones=True)
             )
+
+        def dimension(self):
+            r"""Return vector-space dimension when the base ring is a field."""
+            if not engine_ring(self.base_ring()).is_field():
+                raise TypeError("dimension is defined here for modules over a field")
+            return self.rank()
 
         def invariant_factors(self):
             return tuple(
@@ -236,7 +364,7 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
                 )
             _smith, _left, engine_right = self._smith_form()
             right = tensor.matrix(engine_ring(self.base_ring()), engine_right)
-            inverse_right = right**-1
+            inverse_right = right.inverse_tensor()
             basis = tensor.matrix(
                 engine_ring(self.base_ring()),
                 self.V().basis_matrix(),
@@ -285,7 +413,7 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
             engine = engine_ring(self.base_ring())
             _smith, _left, engine_right = self._smith_form()
             right = tensor.matrix(engine, engine_right)
-            inverse_right = (right**-1).change_ring(engine)
+            inverse_right = right.inverse_tensor().change_ring(engine)
             invariants = tuple(self.invariants(include_ones=True))
             retained_positions = tuple(
                 position
@@ -448,8 +576,10 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
             images = {
                 relation_label: sum(
                     (
-                        base_change_scalar(ring_map, coefficient)
-                        * target.module_generator(module_label)
+                        target.scalar_multiple(
+                            base_change_scalar(ring_map, coefficient),
+                            target.module_generator(module_label),
+                        )
                         for module_label, coefficient in zip(
                             target.module_generating_set(), row, strict=True
                         )
@@ -560,6 +690,8 @@ class _GeneralPresentedModule(Parent):
         try:
             coefficient_base = base_ring.base_ring()
         except AttributeError:
+            return None
+        if coefficient_base is None:
             return None
 
         from dzack_research.preamble.categories.algebras import (
@@ -722,6 +854,311 @@ def _relation_element(module, row):
     )
 
 
+def _singular_presentation_kernel(morphism):
+    r"""Return ``ker(morphism)`` for polynomial-presentation coefficient rings.
+
+    Let ``A=P/I`` with ``P`` a polynomial ring over a field, and let
+
+    ``f : A^n/D -> A^m/Q``.
+
+    Lifting to ``P``, a vector ``x`` represents a kernel element exactly when
+
+    ``F x - Q^t y - I z = 0``
+
+    for some ``y,z``.  Singular syzygies of that augmented matrix therefore
+    generate the kernel lifts.  A second syzygy computation against the source
+    relations ``D`` gives an exact finite presentation of the kernel itself.
+
+    This is a private computation crossing.  The returned object is the owned
+    finitely presented module equipped with its actual inclusion into the
+    domain; no Singular module escapes into the public API.
+    """
+    from sage.libs.singular.function_factory import ff
+    from sage.matrix.constructor import matrix
+    from sage.matrix.special import identity_matrix
+    from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
+    from dzack_research.preamble.categories.algebras import (
+        AlgebrasWithChosenFinitePresentation,
+    )
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+        module_coefficients,
+        module_embedding,
+    )
+    from dzack_research.preamble.categories.modules.subobjects import ModuleSubobjects
+
+    domain = morphism.domain()
+    codomain = morphism.codomain()
+    ring = owned_ring_view(domain.base_ring())
+    if owned_ring_view(codomain.base_ring()) is not ring:
+        raise ValueError("a kernel presentation requires one coefficient ring")
+
+    engine = engine_ring(ring)
+    coefficient_base = ring.base_ring()
+    if ring in AlgebrasWithChosenFinitePresentation(coefficient_base):
+        presentation_ring = engine_ring(ring.presentation_ring())
+        algebra_relations = tuple(presentation_ring(relation) for relation in ring.relations())
+
+        def lift_scalar(value):
+            return presentation_ring(
+                ring.lift_to_presentation(engine(value))
+            )
+
+        def descend_scalar(value):
+            return engine(presentation_ring(value))
+
+    else:
+        presentation_ring = engine
+        algebra_relations = ()
+
+        def lift_scalar(value):
+            return presentation_ring(value)
+
+        def descend_scalar(value):
+            return engine(value)
+
+    try:
+        coefficient_field = presentation_ring.base_ring()
+        field_coefficients = bool(coefficient_field.is_field())
+    except (AttributeError, NotImplementedError):
+        field_coefficients = False
+    if not field_coefficients:
+        raise NotImplementedError(
+            "the general presented-kernel backend currently uses Singular over a polynomial ring over a field"
+        )
+
+    # Singular's syz entry point requires a multivariate polynomial parent,
+    # even in one variable.  Cross only this backend representation.
+    if presentation_ring.ngens() == 1 and "multi_polynomial" not in type(presentation_ring).__module__:
+        singular_ring = PolynomialRing(
+            coefficient_field,
+            1,
+            presentation_ring.variable_names(),
+        )
+    else:
+        singular_ring = presentation_ring
+
+    def to_singular(value):
+        return singular_ring(presentation_ring(value))
+
+    def from_singular(value):
+        return descend_scalar(presentation_ring(value))
+
+    source_labels = tuple(domain.module_generating_set())
+    target_labels = tuple(codomain.module_generating_set())
+    source_relations = _presentation_matrix(domain)
+    target_relations = _presentation_matrix(codomain)
+    n = len(source_labels)
+    m = len(target_labels)
+
+    def singular_syzygies(columns_matrix):
+        total_columns = columns_matrix.ncols()
+        if total_columns == 0:
+            return matrix(singular_ring, 0, 0, [])
+        result = ff.syz(columns_matrix)
+        rows = [tuple(row) for row in result]
+        return matrix(
+            singular_ring,
+            len(rows),
+            total_columns,
+            [entry for row in rows for entry in row],
+        )
+
+    if m == 0:
+        kernel_lifts = [
+            tuple(
+                singular_ring.one() if i == j else singular_ring.zero()
+                for i in range(n)
+            )
+            for j in range(n)
+        ]
+    else:
+        coordinate_columns = []
+        for source_label in source_labels:
+            image = morphism(domain.module_generator(source_label))
+            coefficients = module_coefficients(image, codomain)
+            coordinate_columns.append(
+                tuple(
+                    to_singular(lift_scalar(coefficients.get(label, engine.zero())))
+                    for label in target_labels
+                )
+            )
+        f_matrix = matrix(
+            singular_ring,
+            m,
+            n,
+            [
+                coordinate_columns[column][row]
+                for row in range(m)
+                for column in range(n)
+            ],
+        )
+        augmented = f_matrix
+        if target_relations.nrows():
+            lifted_target_relations = matrix(
+                singular_ring,
+                target_relations.nrows(),
+                m,
+                [
+                    to_singular(lift_scalar(entry))
+                    for row in target_relations.rows()
+                    for entry in row
+                ],
+            )
+            augmented = augmented.augment(-lifted_target_relations.transpose())
+        for relation in algebra_relations:
+            augmented = augmented.augment(
+                -to_singular(relation) * identity_matrix(singular_ring, m)
+            )
+        first_syzygies = singular_syzygies(augmented)
+        kernel_lifts = [
+            tuple(row[position] for position in range(n))
+            for row in first_syzygies.rows()
+        ]
+
+    kernel_count = len(kernel_lifts)
+    kernel_labels = finite_ordered_set(range(kernel_count))
+    if kernel_count:
+        kernel_columns = matrix(
+            singular_ring,
+            n,
+            kernel_count,
+            [
+                kernel_lifts[column][row]
+                for row in range(n)
+                for column in range(kernel_count)
+            ],
+        )
+    else:
+        kernel_columns = matrix(singular_ring, n, 0, [])
+
+    relation_augmented = kernel_columns
+    if source_relations.nrows():
+        lifted_source_relations = matrix(
+            singular_ring,
+            source_relations.nrows(),
+            n,
+            [
+                to_singular(lift_scalar(entry))
+                for row in source_relations.rows()
+                for entry in row
+            ],
+        )
+        relation_augmented = relation_augmented.augment(
+            -lifted_source_relations.transpose()
+        )
+    for relation in algebra_relations:
+        relation_augmented = relation_augmented.augment(
+            -to_singular(relation) * identity_matrix(singular_ring, n)
+        )
+
+    if n == 0:
+        kernel_relation_rows = []
+    else:
+        second_syzygies = singular_syzygies(relation_augmented)
+        kernel_relation_rows = [
+            tuple(from_singular(row[position]) for position in range(kernel_count))
+            for row in second_syzygies.rows()
+            if any(row[position] != 0 for position in range(kernel_count))
+        ]
+    relation_labels = finite_ordered_set(range(len(kernel_relation_rows)))
+    relation_matrix = matrix(
+        engine,
+        len(kernel_relation_rows),
+        kernel_count,
+        [entry for row in kernel_relation_rows for entry in row],
+    )
+    presentation = _presentation_from_relation_rows(
+        ring,
+        kernel_labels,
+        relation_labels,
+        relation_matrix,
+    )
+    kernel = FinitelyPresentedModule(presentation)
+    inclusion = module_embedding(
+        kernel,
+        domain,
+        {
+            label: domain.linear_combination(
+                {
+                    source_label: from_singular(kernel_lifts[int(label)][position])
+                    for position, source_label in enumerate(source_labels)
+                    if kernel_lifts[int(label)][position] != 0
+                }
+            )
+            for label in kernel_labels
+        },
+    )
+
+    kernel_generator_matrix = matrix(
+        singular_ring,
+        kernel_count,
+        n,
+        [entry for row in kernel_lifts for entry in row],
+    )
+    lifted_source_relation_rows = matrix(
+        singular_ring,
+        source_relations.nrows(),
+        n,
+        [
+            to_singular(lift_scalar(entry))
+            for row in source_relations.rows()
+            for entry in row
+        ],
+    )
+
+    def lift_from_domain(element):
+        if element.parent() is not domain:
+            element = domain(element)
+        if kernel_count == 0:
+            if element == domain.zero():
+                return kernel.zero()
+            raise ValueError("the element does not lie in the represented kernel")
+        coefficients = module_coefficients(element, domain)
+        requested = matrix(
+            singular_ring,
+            1,
+            n,
+            [
+                to_singular(
+                    lift_scalar(coefficients.get(label, engine.zero()))
+                )
+                for label in source_labels
+            ],
+        )
+        spanning = kernel_generator_matrix
+        if source_relations.nrows():
+            spanning = spanning.stack(lifted_source_relation_rows)
+        for relation in algebra_relations:
+            spanning = spanning.stack(
+                to_singular(relation) * identity_matrix(singular_ring, n)
+            )
+        try:
+            lifted = matrix(
+                singular_ring,
+                ff.lift(
+                    spanning.transpose(),
+                    requested.transpose(),
+                ),
+            )
+        except RuntimeError as error:
+            raise ValueError(
+                "the element does not lie in the represented kernel"
+            ) from error
+        return kernel.linear_combination(
+            {
+                label: from_singular(lifted[position, 0])
+                for position, label in enumerate(kernel_labels)
+                if lifted[position, 0] != 0
+            }
+        )
+
+    inclusion._preamble_lift = lift_from_domain
+    kernel._preamble_inclusion = inclusion
+    refine(kernel, ModuleSubobjects(ring))
+    return kernel
+
+
 def _presentation_from_relation_rows(
     base_ring,
     labels,
@@ -755,7 +1192,7 @@ def FinitelyPresentedModule(presentation):
     labels = codomain.module_generating_set()
     existing = _presentation_matrix(codomain)
     added = presentation.tensor().dual_tensor().change_ring(engine)
-    relations = tensor.matrix(engine, existing.stack(added))
+    relations = existing.change_ring(engine).stack(added)
     if codomain in ModulesWithChosenFinitePresentation(base_ring):
         existing_labels = tuple(
             codomain.presentation().domain().module_generating_set()
@@ -779,7 +1216,7 @@ def FinitelyPresentedModule(presentation):
     free = SageFreeModule(engine, int(labels.cardinality()))
     relation_submodule = (
         free.zero_submodule()
-        if relations.nrows() == 0
+        if relations.upper_ranks()[0] == 0
         else free.submodule([free(row) for row in relations.rows()])
     )
     pid_backend = (

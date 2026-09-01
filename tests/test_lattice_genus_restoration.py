@@ -1,0 +1,54 @@
+from dzack_research.preamble.all import ZZ, Genus, Lattices
+
+
+def test_level_uses_the_quadratic_discriminant_form_for_even_lattices() -> None:
+    lattice = Lattices(ZZ)([[2]])
+
+    assert lattice.discriminant_module().exponent() == 2
+    assert lattice.level() == 4
+
+
+def test_level_of_an_odd_lattice_is_the_bilinear_level() -> None:
+    lattice = Lattices(ZZ)([[3]])
+
+    assert not lattice.is_even()
+    assert lattice.discriminant_module().exponent() == 3
+    assert lattice.level() == 3
+
+
+def test_unimodular_even_lattice_has_level_one() -> None:
+    lattice = Lattices(ZZ)("E8")
+
+    assert lattice.is_even() and lattice.is_unimodular()
+    assert lattice.level() == 1
+
+
+def test_genus_is_reconstructed_from_signature_and_discriminant_form() -> None:
+    lattice = Lattices(ZZ)("A2")
+    genus = lattice.genus()
+
+    assert isinstance(genus, Genus)
+    assert genus.signature_pair() == (0, 2)
+    assert genus.discriminant_form() is lattice.discriminant_quadratic_form()
+    assert genus.exists()
+    assert genus.determinant() == lattice.gram_tensor().det() == 3
+    assert genus.representative().genus() == genus
+
+
+def test_local_genus_symbol_and_excess_detect_nonisometry() -> None:
+    a2 = Lattices(ZZ)("A2")
+    diagonal = Lattices(ZZ)([[-2, 0], [0, -2]])
+    genus = a2.genus()
+
+    assert genus.level(3) == 3
+    assert genus.excess(3) == 2
+    assert a2.is_locally_isometric(a2, 3)
+    assert not a2.is_locally_isometric(diagonal, 3)
+
+
+def test_definite_genus_mass_and_class_number_are_exact() -> None:
+    genus = Lattices(ZZ)("A2").genus()
+
+    assert genus.class_number() == 1
+    assert len(genus.representatives()) == 1
+    assert genus.mass() == ZZ(1) / 12

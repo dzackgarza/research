@@ -7,10 +7,11 @@ descent before equipping the module with the form.
 """
 
 from sage.categories.groups import Groups as SageGroups
-from sage.categories.homset import Hom, Homset
+from sage.categories.homset import Hom
 from sage.categories.morphism import SetMorphism
 from sage.libs.gap.libgap import libgap
 from sage.misc.cachefunc import cached_method
+from sage.misc.classcall_metaclass import typecall
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 
@@ -18,13 +19,20 @@ from dzack_research.preamble.categories.abstract_categories.arrow_categories imp
     CategoricalIsomorphism,
     CoreHomset,
 )
+from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    CategoricalHomset,
+    IsoCategoryConstruction,
+    category_packet,
+)
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_torsion_modules import (
     FinitelyPresentedTorsionModules,
 )
 from dzack_research.preamble.categories.rings import OwnedCategoryOverBaseRing
 from dzack_research.preamble.refine import refine
 from dzack_research.preamble.tensors import tensor
-from dzack_research.preamble.tensors.tensor import _engine_component_matrix
+from dzack_research.preamble.tensors.tensor import (
+    _engine_component_matrix,
+)
 
 
 def _gram_rows(gram, rank):
@@ -225,11 +233,13 @@ def _relations_among_generators(form, generators):
     module = _underlying_presented_module(form)
     engine = engine_ring(module.base_ring())
     lifts = _coordinate_rows(form, generators)
-    known = tensor.matrix(engine, _presentation_matrix(module))
-    stacked = tensor.matrix(engine, lifts.stack(known))
-    kernel = tensor.matrix(engine, stacked.left_kernel_matrix())
+    known = _presentation_matrix(module).change_ring(engine)
+    kernel = lifts.stack(known).left_kernel_tensor()
     width = len(generators)
-    rows = [tuple(kernel[i, j] for j in range(width)) for i in range(kernel.nrows())]
+    rows = [
+        tuple(kernel[i, j] for j in range(width))
+        for i in range(kernel.upper_ranks()[0])
+    ]
     return tensor.matrix(
         engine,
         len(rows),
@@ -301,8 +311,8 @@ def _regenerate_form_on_generators(form, generators, *, quadratic: bool):
     )
 
     lifts = _coordinate_rows(form, generators)
-    known = tensor.matrix(engine, _presentation_matrix(module))
-    system = tensor.matrix(engine, lifts.stack(known))
+    known = _presentation_matrix(module).change_ring(engine)
+    system = lifts.stack(known)
     source_labels = tuple(form.module_generating_set())
     regenerated_generators = tuple(regenerated.module_generators())
     forward_images = {}
@@ -568,13 +578,18 @@ class TorsionFormAutomorphism(TorsionFormIsometry):
         return repr(self.tensor())
 
 
-class TorsionFormOrthogonalGroup(Homset):
+class TorsionFormOrthogonalGroup(CategoricalHomset):
     r"""The finite group of live automorphisms preserving one finite form."""
 
     Element = TorsionFormAutomorphism
 
+    @staticmethod
+    def __classcall__(cls, hom_family, form, **options):
+        return typecall(cls, hom_family, form, **options)
+
     def __init__(
         self,
+        hom_family,
         form,
         *,
         quadratic: bool,
@@ -606,17 +621,40 @@ class TorsionFormOrthogonalGroup(Homset):
             else engine_group
         )
         self._supergroup = self if supergroup is None else supergroup
-        Homset.__init__(
+        CategoricalHomset.__init__(
             self,
+            hom_family,
             form,
             form,
-            category=OwnedFiniteGroups(),
-            check=False,
         )
         refine(self, OwnedFiniteGroups())
 
     def is_quadratic(self) -> bool:
         return self._quadratic
+
+    def super_categories(self):
+        if self.supergroup() is not self:
+            return [self.supergroup()]
+        packet = category_packet(self.base_category())
+        form = self.domain()
+        supers = [
+            packet.Homs().Of(form, form),
+            packet.Monos().Of(form, form),
+            packet.Epis().Of(form, form),
+        ]
+        supers.extend(
+            superpacket.Isos().Of(form, form)
+            for superpacket in packet.super_packets()
+            if form in superpacket.C()
+        )
+        if self.aut_family() is not None:
+            supers.append(packet.Ends().Of(form))
+            supers.extend(
+                superpacket.Auts().Of(form)
+                for superpacket in packet.super_packets()
+                if form in superpacket.C()
+            )
+        return supers
 
     def invariant_form(self):
         return self.domain()
@@ -723,6 +761,9 @@ class TorsionFormOrthogonalGroup(Homset):
     def one(self):
         return self._from_engine(self._engine_group.one())
 
+    identity = one
+    identity_automorphism = one
+
     @cached_method
     def group_generators(self):
         from dzack_research.preamble.categories.sets import finite_ordered_set
@@ -813,6 +854,7 @@ class TorsionFormOrthogonalGroup(Homset):
             [generator._engine() for generator in supplied]
         )
         return TorsionFormOrthogonalGroup(
+            self.hom_family(),
             self.domain(),
             quadratic=self.is_quadratic(),
             normalization=self._normalization,
@@ -830,6 +872,7 @@ class TorsionFormOrthogonalGroup(Homset):
         )
         engine_subgroup = self._engine_group._subgroup_constructor(gap_stabilizer)
         return TorsionFormOrthogonalGroup(
+            self.hom_family(),
             self.domain(),
             quadratic=self.is_quadratic(),
             normalization=self._normalization,
@@ -854,6 +897,7 @@ class TorsionFormOrthogonalGroup(Homset):
         )
         engine_subgroup = self._engine_group._subgroup_constructor(gap_stabilizer)
         return TorsionFormOrthogonalGroup(
+            self.hom_family(),
             self.domain(),
             quadratic=self.is_quadratic(),
             normalization=self._normalization,
@@ -882,7 +926,43 @@ class TorsionFormOrthogonalGroup(Homset):
 
 
 def _torsion_form_automorphism_group(form, *, quadratic: bool):
-    return TorsionFormOrthogonalGroup(form, quadratic=quadratic)
+    category = (
+        TorsionQuadraticFormModules(form.base_ring())
+        if quadratic
+        else TorsionBilinearFormModules(form.base_ring())
+    )
+    return category.Aut(form)
+
+
+class _TorsionFormIsoCategoryConstruction(IsoCategoryConstruction):
+    r"""Finite torsion-form isometries with maintained orthogonal groups on the diagonal."""
+
+    quadratic = False
+
+    def Of(self, domain, codomain=None):
+        if codomain is None:
+            codomain = domain
+        if domain is not codomain:
+            return super().Of(domain, codomain)
+        key = id(domain), id(codomain)
+        cached = self._objects.get(key)
+        if cached is not None:
+            return cached
+        result = TorsionFormOrthogonalGroup(
+            self,
+            domain,
+            quadratic=self.quadratic,
+        )
+        self._objects[key] = result
+        return result
+
+
+class TorsionBilinearFormIsoCategoryConstruction(_TorsionFormIsoCategoryConstruction):
+    quadratic = False
+
+
+class TorsionQuadraticFormIsoCategoryConstruction(_TorsionFormIsoCategoryConstruction):
+    quadratic = True
 
 
 def _invariant_factor_form_isomorphism(form, quadratic: bool):
@@ -964,6 +1044,8 @@ class TorsionBilinearFormModules(OwnedCategoryOverBaseRing):
             FinitelyPresentedTorsionModules(self.base_ring()),
             FinitelyPresentedBilinearFormModules(self.base_ring()),
         ]
+
+    _IsoCategory = TorsionBilinearFormIsoCategoryConstruction
 
     def from_module(self, module, gram, value_module):
         r"""Equip ``module`` with the bilinear form represented by ``gram``.
@@ -1098,6 +1180,8 @@ class TorsionQuadraticFormModules(OwnedCategoryOverBaseRing):
             FinitelyPresentedTorsionModules(self.base_ring()),
             FinitelyPresentedQuadraticFormModules(self.base_ring()),
         ]
+
+    _IsoCategory = TorsionQuadraticFormIsoCategoryConstruction
 
     def from_module(self, module, gram, value_module):
         r"""Equip ``module`` with ``q(x)=x^T gram x`` valued in ``value_module``.

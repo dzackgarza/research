@@ -80,14 +80,14 @@ def _free_degree_labels(rank: int, degree: int, flavor: str):
     raise ValueError(f"unknown power flavor {flavor!r}")
 
 
-def _symmetric_relation_rows(relation_rows, rank: int, degree: int, labels):
+def _symmetric_relation_rows(relation_rows, rank: int, degree: int, labels, ring):
     if degree == 0:
         return []
     position = {label: index for index, label in enumerate(labels)}
     rows = []
     for relation in relation_rows:
         for monomial in _free_degree_labels(rank, degree - 1, "symmetric"):
-            row = [relation.base_ring().zero()] * len(labels)
+            row = [ring.zero()] * len(labels)
             for index, coefficient in enumerate(relation):
                 if not coefficient:
                     continue
@@ -99,7 +99,7 @@ def _symmetric_relation_rows(relation_rows, rank: int, degree: int, labels):
     return rows
 
 
-def _alternating_relation_rows(relation_rows, rank: int, degree: int, labels):
+def _alternating_relation_rows(relation_rows, rank: int, degree: int, labels, ring):
     if degree == 0:
         return []
     position = {label: index for index, label in enumerate(labels)}
@@ -107,7 +107,7 @@ def _alternating_relation_rows(relation_rows, rank: int, degree: int, labels):
     for relation in relation_rows:
         for monomial in combinations(range(rank), degree - 1):
             monomial_set = set(monomial)
-            row = [relation.base_ring().zero()] * len(labels)
+            row = [ring.zero()] * len(labels)
             for index, coefficient in enumerate(relation):
                 if not coefficient or index in monomial_set:
                     continue
@@ -126,13 +126,13 @@ def _divided_product_coefficient(left, right):
     return coefficient
 
 
-def _divided_relation_rows(relation_rows, rank: int, degree: int, labels):
+def _divided_relation_rows(relation_rows, rank: int, degree: int, labels, ring):
     if degree == 0:
         return []
     position = {label: index for index, label in enumerate(labels)}
     rows = []
     for relation in relation_rows:
-        ring = relation.base_ring()
+
         for divided_degree in range(1, degree + 1):
             gamma_terms = []
             for exponent in _free_degree_labels(rank, divided_degree, "divided"):
@@ -189,11 +189,11 @@ def _presented_degree_power(module, degree: int, flavor: str):
 
     relations = tuple(_presentation_matrix(module).change_ring(engine_ring(ring)).rows())
     if flavor == "symmetric":
-        rows = _symmetric_relation_rows(relations, rank, degree, labels)
+        rows = _symmetric_relation_rows(relations, rank, degree, labels, engine_ring(ring))
     elif flavor == "alternating":
-        rows = _alternating_relation_rows(relations, rank, degree, labels)
+        rows = _alternating_relation_rows(relations, rank, degree, labels, engine_ring(ring))
     elif flavor == "divided":
-        rows = _divided_relation_rows(relations, rank, degree, labels)
+        rows = _divided_relation_rows(relations, rank, degree, labels, engine_ring(ring))
     else:
         raise ValueError(f"unknown power flavor {flavor!r}")
 

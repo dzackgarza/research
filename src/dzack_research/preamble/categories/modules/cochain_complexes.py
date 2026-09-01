@@ -16,6 +16,9 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     _initialize_module_hom_parent,
     module_homset,
 )
+from dzack_research.preamble.categories.modules.internal_hom import (
+    LinearEndCategoryConstruction,
+)
 from dzack_research.preamble.categories.rings import (
     OwnedCategoryOverBaseRing,
     engine_ring,
@@ -388,6 +391,7 @@ class CochainHomCategoryConstruction(HomCategoryConstruction):
 # The declaration is placed after the concrete fixed-Hom class to avoid a
 # module-level forward-reference helper or a second registration mechanism.
 CochainComplexes._HomCategory = CochainHomCategoryConstruction
+CochainComplexes._EndCategory = LinearEndCategoryConstruction
 
 
 def cochain_homset(domain, codomain):
@@ -497,7 +501,7 @@ def Cohomology(complex_, degree):
         len(current_labels) + target_relation_count,
         block_entries,
     )
-    kernel_rows = tuple(block.right_kernel().basis_matrix().rows())
+    kernel_rows = tuple(block.kernel_tensor().rows())
     projected = [tuple(row[: len(current_labels)]) for row in kernel_rows]
     free_cover = SageFreeModule(engine, len(current_labels))
     closed_submodule = (

@@ -81,7 +81,7 @@ def _torsion_module_presented_by_matrix(relations, module_generating_set=None):
     from dzack_research.preamble.categories.sets import finite_ordered_set
 
     relations = tensor.matrix(SageZZ, relations)
-    width = relations.ncols()
+    width = relations.lower_ranks()[0]
     labels = (
         finite_ordered_set(range(width))
         if module_generating_set is None
@@ -92,7 +92,7 @@ def _torsion_module_presented_by_matrix(relations, module_generating_set=None):
             "the module-generating set and relation matrix have different widths"
         )
     target = BasedFreeModule(SageZZ, labels)
-    source = BasedFreeModule(SageZZ, relations.nrows())
+    source = BasedFreeModule(SageZZ, relations.upper_ranks()[0])
     images = {
         source_label: sum(
             (

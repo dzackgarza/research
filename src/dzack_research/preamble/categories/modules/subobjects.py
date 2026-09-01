@@ -61,18 +61,17 @@ class ModuleSubobjects(OwnedCategoryOverBaseRing):
             if self.inclusion().codomain() is not other.inclusion().codomain():
                 raise ValueError("a subobject intersection requires one common codomain")
             codomain = self.inclusion().codomain()
+            # The meet is carried by the left half of the left kernel of the
+            # induced map (i_self, -i_other) into the direct sum.
             left = self.inclusion().tensor().dual_tensor()
             right = other.inclusion().tensor().dual_tensor()
-            from dzack_research.preamble.tensors import tensor
-
-            stacked = tensor.matrix(left.base_ring(), left.stack(-right))
-            kernel = tensor.matrix(left.base_ring(), stacked.left_kernel().basis_matrix())
-            left_coefficients = tensor.matrix(
-                left.base_ring(), kernel.matrix_from_columns(range(left.nrows()))
+            kernel = left.stack(-right).left_kernel_tensor()
+            left_coefficients = kernel.restricted_to_lower_indices(
+                range(left.upper_ranks()[0])
             )
-            rows = left_coefficients * left
             return codomain.subobject_on(
-                _element_from_row(codomain, row) for row in rows.rows()
+                _element_from_row(codomain, row)
+                for row in (left_coefficients * left).rows()
             )
 
         def saturation(self):

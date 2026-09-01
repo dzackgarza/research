@@ -1,0 +1,63 @@
+from sage.categories.homset import Hom
+from sage.categories.morphism import SetMorphism
+from sage.categories.sets_cat import Sets as SageSets
+
+from dzack_research.preamble.all import BasedFreeModule, Sets, ZZ, module_homset
+from dzack_research.preamble.categories.abstract_categories.functors import (
+    CoproductFunctor,
+    DiagonalFunctor,
+    ProductFunctor,
+)
+from dzack_research.preamble.categories.modules import FinitelyPresentedModules
+from dzack_research.preamble.categories.sets import finite_ordered_set
+
+
+def test_binary_set_product_coproduct_and_diagonal_are_functorial() -> None:
+    x = Sets.Δ[1]
+    y = Sets.Δ[2]
+    z = Sets.Δ[3]
+    product = ProductFunctor(Sets())
+    coproduct = CoproductFunctor(Sets())
+    diagonal = DiagonalFunctor(Sets())
+
+    pair = product.domain()(x, y)
+    product_xy = product(pair)
+    coproduct_xy = coproduct(pair)
+    assert product_xy.cardinality() == 6
+    assert coproduct_xy.cardinality() == 5
+
+    fx = SetMorphism(Hom(x, y, SageSets()), lambda value: y(value + 1))
+    fy = SetMorphism(Hom(y, z, SageSets()), lambda value: z(value + 1))
+    target_pair = product.domain()(y, z)
+    pair_map = product.domain().hom(pair, target_pair)(fx, fy)
+    carried = product(pair_map)
+    element = product_xy((x(0), y(1)))
+    assert carried(element)[0] == y(1)
+    assert carried(element)[1] == z(2)
+
+    carried_sum = coproduct(pair_map)
+    assert carried_sum(coproduct_xy.injection(0)(x(1))).summand_element() == y(2)
+
+    diagonal_map = diagonal(fx)
+    assert diagonal_map.first() is fx
+    assert diagonal_map.second() is fx
+
+
+def test_module_product_and_coproduct_reuse_the_same_biproduct_object() -> None:
+    category = FinitelyPresentedModules(ZZ)
+    left = BasedFreeModule(ZZ, finite_ordered_set(("x",)))
+    right = BasedFreeModule(ZZ, finite_ordered_set(("y",)))
+    product = ProductFunctor(category)
+    coproduct = CoproductFunctor(category)
+    pair = product.domain()(left, right)
+    product_object = product(pair)
+    coproduct_object = coproduct(pair)
+    assert product_object is coproduct_object
+
+    left_map = module_homset(left, left)({"x": 2 * left.module_generator("x")})
+    right_map = module_homset(right, right)({"y": 3 * right.module_generator("y")})
+    pair_map = product.domain().hom(pair, pair)(left_map, right_map)
+    carried = product(pair_map)
+    assert product_object.left_projection()(
+        carried(product_object.left_inclusion()(left.module_generator("x")))
+    ) == 2 * left.module_generator("x")

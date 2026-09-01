@@ -227,7 +227,7 @@ def _target_coordinates(lattice, target):
         coefficients = module_coefficients(target, lattice)
         target = [coefficients.get(label, lattice.base_ring().zero()) for label in lattice.module_generating_set()]
     point = tensor.vector(QQ, target)
-    if len(point) != lattice.rank():
+    if point.tensor_shape()[0] != lattice.rank():
         raise ValueError("a closest-vector target has one coordinate per lattice generator")
     return point
 
