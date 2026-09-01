@@ -64,7 +64,7 @@ def test_catalogue_coinvariant_embeddings_are_formed_orthogonal_complements() ->
         invariant = involution.invariant_lattice()
         formed_coinvariants = involution.formed_coinvariants()
         assert invariant.rank() + formed_coinvariants.rank() == 22
-        assert formed_coinvariants.is_equal_subobject(expected.image())
+        assert formed_coinvariants.inclusion() == expected
 
 
 def test_named_invariant_and_formed_coinvariant_lattices_are_exact() -> None:
