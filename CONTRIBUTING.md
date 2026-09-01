@@ -35,6 +35,21 @@ Each policy has a unique alphanumeric identifier.
 - **Rationale**: Custom mathematical algorithms create high maintenance overhead and lack formal verification.
 - **Violation Example**: Implementing custom Smith Normal Form or LLL reduction instead of delegating to native library routines.
 
+#### `ENG-03`: Minimal Owned Computation and Ecosystem Offloading
+- **Rule**: Keep owned algorithmic logic strictly minimal. Always offload engine computations to established computational backends:
+  - Upstream SageMath native modules
+  - Heavy Python libraries (`networkx`, `numpy`, `scipy`)
+  - Julia / OSCAR / Hecke (routed via `sage_julia_bridge`)
+  - GAP (routed via `libgap`)
+  - Singular, Macaulay2, Maxima, and PARI/GP
+- **Rationale**: The preamble owns categorical representations, universal properties, and mathematical structures. Concrete computations belong to dedicated, verified engines.
+- **Violation Example**: Writing custom graph connectivity or automorphism algorithms instead of delegating to `networkx` or Sage graph backends.
+
+#### `ENG-04`: Native Engine Implementation with Preamble Category Wrappers
+- **Rule**: When an algorithm requires multi-step engine computations, implement the engine logic directly in the target engine language (such as Julia/OSCAR or Singular) and wrap it with preamble category interfaces, whenever this reduces complexity or eliminates excessive cross-bridge data transport.
+- **Rationale**: Executes compute-heavy algebra natively in the host engine while exposing a uniform categorical interface to Sage sessions.
+- **Violation Example**: Transporting intermediate matrices back and forth across a language bridge in a loop when one native Julia routine can perform the reduction and return the final invariant.
+
 ---
 
 ### 3. Interoperability & Bridge Boundaries (`BRG-*`)
