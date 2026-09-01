@@ -1,6 +1,6 @@
 [Unit]
 Description=JupyterLab dynamic dashboard
-After=default.target
+After=network.target
 StartLimitIntervalSec=1800
 StartLimitBurst=3
 
