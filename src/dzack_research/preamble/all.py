@@ -69,6 +69,7 @@ from dzack_research.preamble.categories.abstract_categories import (  # noqa: F4
     EpiCategoryConstruction,
     EpiCategoryOf,
     EpimorphismArrowCategory,
+    FiberProduct,
     FunctorCategory,
     FunctorImageCategories,
     FunctorImageMorphism,
@@ -92,6 +93,7 @@ from dzack_research.preamble.categories.abstract_categories import (  # noqa: F4
     OppositeMorphism,
     OppositeObject,
     Product,
+    Pushout,
     ProductCategory,
     ProductConeCategory,
     ProductMorphism,
@@ -107,7 +109,6 @@ from dzack_research.preamble.categories.abstract_categories import (  # noqa: F4
     SuperobjectsOf,
     TensorProductCategory,
     WideSubcategory,
-    ambient_category_of,
     common_category,
     category_packet,
     coproduct_cocone_category,
@@ -139,7 +140,11 @@ from dzack_research.preamble.categories.algebras import (  # noqa: F401
     AssociativeAlgebras,
     AssociativeAlgebrasWithChosenMultiplication,
     AugmentedAlgebras,
+    CommutativeAlgebraCoproducts,
+    CommutativeAlgebraPushouts,
     CommutativeAlgebras,
+    commutative_algebra_coproduct,
+    commutative_algebra_pushout,
     CommutativeDifferentialGradedAlgebras,
     CohomologyAlgebra,
     CohomologyAlgebraElement,
@@ -171,9 +176,13 @@ from dzack_research.preamble.categories.algebras import (  # noqa: F401
     GradedDerivation,
     GradedDerivationSpace,
     GradedDerivations,
+    GradedCommutator,
     GradedFreeAlgebras,
+    InteriorProduct,
     KahlerDifferentialModules,
     KahlerDifferentials,
+    LieBracket,
+    LieDerivative,
     OwnedAlgebras,
     OwnedAlgebraView,
     RestrictedGradedAlgebra,
@@ -187,6 +196,7 @@ from dzack_research.preamble.categories.algebras import (  # noqa: F401
     TensorAlgebraOf,
     TensorAlgebraOn,
     TensorAlgebras,
+    VectorFields,
     algebra_from_multiplication,
     algebra_homset,
     augmented_algebra,
@@ -303,6 +313,7 @@ from dzack_research.preamble.categories.functors import (  # noqa: F401
     InverseImagePowerSetFunctor,
     InverseImageSubobjectFunctor,
     KernelArrowFunctor,
+    ModuleLocalizationFunctor,
     NaturalTransformation,
     OrderNumberFieldAdjunction,
     OrthogonalDirectSumBifunctor,
@@ -361,6 +372,7 @@ from dzack_research.preamble.categories.functors import (  # noqa: F401
     order_number_field_adjunction,
     quadratic_free_form_adjunction,
     restriction_coinduction_adjunction,
+    module_localization_functor,
     subobject_image_adjunction,
     symmetric_algebra_adjunction,
     symmetric_algebra_functor,
@@ -454,7 +466,6 @@ from dzack_research.preamble.categories.group import (  # noqa: F401
     open_absolute_galois_subgroup,
     predicate_subgroup,
     predicate_submonoid,
-    refine_group,
     restrict_along,
     trivial_g_set,
 )
@@ -474,9 +485,6 @@ from dzack_research.preamble.categories.lattices import (  # noqa: F401
     Genus,
     Lattices,
     diagonal_gram,
-    indecomposable_name,
-    register_indecomposable,
-    register_indecomposable_gram,
 )
 from dzack_research.preamble.categories.modules import (  # noqa: F401
     BasedFreeModule,
@@ -501,6 +509,8 @@ from dzack_research.preamble.categories.modules import (  # noqa: F401
     ConnectionMorphism,
     ConnectionSpace,
     Connections,
+    CorrelationIsomorphism,
+    DeterminantLine,
     DiscriminantBilinearModules,
     DiscriminantModule,
     DiscriminantModules,
@@ -510,6 +520,7 @@ from dzack_research.preamble.categories.modules import (  # noqa: F401
     DividedSquareModules,
     FiberedFormedModuleHomset,
     FiberedFormedModuleMorphism,
+    ExteriorForms,
     FinitelyGeneratedFormModules,
     FinitelyGeneratedFreeFormModules,
     FinitelyGeneratedFreeGroupModules,
@@ -534,11 +545,15 @@ from dzack_research.preamble.categories.modules import (  # noqa: F401
     FractionFieldQuotients,
     FramedFreeModules,
     FramedModules,
+    FramingVolumeTrivialization,
     FreeFormModules,
     FreeModule,
     FreeModuleOn,
     FreeModules,
     FreeResolution,
+    GeneralModule,
+    GeneralModuleElement,
+    GeneralModuleParent,
     GradedModules,
     GradedAlgebraModules,
     GroupLattice,
@@ -547,12 +562,17 @@ from dzack_research.preamble.categories.modules import (  # noqa: F401
     GroupModuleHomset,
     GroupModuleMorphism,
     GroupModules,
+    HodgeDiscriminant,
+    HodgeStar,
+    HodgeStarOverFractionField,
     Ideal,
     Ideals,
     InternalHom,
     InternalHomModules,
     LinearHomModules,
+    LocalizedModules,
     ModuleEmbedding,
+    MultivectorHodgeStar,
     ModuleWithConnection,
     Modules,
     ModulesWithFlatConnection,
@@ -560,6 +580,7 @@ from dzack_research.preamble.categories.modules import (  # noqa: F401
     ModuleSubobjects,
     ModulesWithChosenFinitePresentation,
     PairedModules,
+    PoincareDuality,
     ProjectiveModules,
     QuadraticFormModules,
     QuadraticSquare,
@@ -576,6 +597,8 @@ from dzack_research.preamble.categories.modules import (  # noqa: F401
     TorsionModules,
     TorsionQuadraticFormModules,
     VectorSpaces,
+    VolumeTrivialization,
+    AlgebraicCorrelationMorphism,
     biproduct_morphism,
     cochain_homset,
     connection_homset,
@@ -588,6 +611,7 @@ from dzack_research.preamble.categories.modules import (  # noqa: F401
     group_module_homset,
     internal_hom_morphism,
     module_embedding,
+    module_from_action,
     module_homset,
     regular_dg_module,
     restrict_scalars,
@@ -604,6 +628,9 @@ from dzack_research.preamble.categories.vector_orbits import (  # noqa: F401
     gluing_route_discriminant_classes,
 )
 from dzack_research.preamble.categories.schemes import (  # noqa: F401
+    AffineSpecFunctor,
+    SpecFunctor,
+    affine_spec_functor,
     AffineSchemes,
     AffineSpace,
     AffineSpaces,
@@ -614,6 +641,7 @@ from dzack_research.preamble.categories.schemes import (  # noqa: F401
     ConvexPolytopes,
     Curves,
     EquationDefinedClosedSubschemes,
+    FiberProductSchemes,
     FiniteTypeSchemes,
     IntegralSchemes,
     LatticePolygon,
@@ -640,6 +668,7 @@ from dzack_research.preamble.categories.schemes import (  # noqa: F401
     StructureSheaf,
     Surfaces,
     Varieties,
+    scheme_fiber_product,
     scheme_product,
 )
 from dzack_research.preamble.categories.sets import (  # noqa: F401
@@ -698,7 +727,6 @@ from dzack_research.preamble.categories.sets import (  # noqa: F401
     omega,
     omega0,
     ordinal,
-    placement_of,
     set_injection,
     set_surjection,
 )
@@ -712,6 +740,8 @@ from dzack_research.preamble.rings import (  # noqa: F401
     CompleteLocalRings,
     DualNumbers,
     RR,
+    CommutativeIdeal,
+    CommutativeIdeals,
     DistinguishedOpenSubobject,
     DivisionRings,
     ExactRealField,
@@ -744,11 +774,14 @@ from dzack_research.preamble.rings import (  # noqa: F401
     Rings,
     ZariskiClosedSubobject,
     UnitInterval,
+    engine_element,
     engine_ring,
     install_session_rings,
     own_ring,
     predicate_subring,
-    refine_number_field,
+)
+from dzack_research.preamble.categories.rings.rings import (  # noqa: F401
+    install_session_rings as _install_session_rings,
 )
 from dzack_research.preamble.sterk import Sterk  # noqa: F401
 from dzack_research.preamble.tensors import Tensor, TensorModule, tensor  # noqa: F401
@@ -758,7 +791,7 @@ def load(filename: str, globals: dict | None = None, attach: bool = False) -> No
     r"""Load a Sage file and restore this session's owned scalar vocabulary."""
     scope = _sys._getframe(1).f_globals if globals is None else globals
     _sage_load(filename, scope, attach)
-    install_session_rings(scope)
+    _install_session_rings(scope)
     scope["GradedLebesgueAlgebra"] = graded_lebesgue_algebra()
     scope["LebesgueConvolutionAlgebra"] = lebesgue_convolution_algebra()
     scope["load"] = load
@@ -767,6 +800,6 @@ def load(filename: str, globals: dict | None = None, attach: bool = False) -> No
 # This is deliberately last.  ``sage.all`` and the modules imported above use
 # Sage's engine names while they load; a notebook receives the owned scalar
 # objects and owned constructors only after the active preamble is complete.
-install_session_rings(globals())
+_install_session_rings(globals())
 GradedLebesgueAlgebra = graded_lebesgue_algebra()
 LebesgueConvolutionAlgebra = lebesgue_convolution_algebra()

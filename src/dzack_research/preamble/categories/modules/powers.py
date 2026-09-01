@@ -306,20 +306,10 @@ def DividedPower(module, degree):
     return _store_module_power("divided", module, degree, result)
 
 
-def _flatten_tensor_label(label, degree: int):
-    if degree == 1:
-        return (label,)
-    left, right = label
-    return _flatten_tensor_label(left, degree - 1) + (right,)
-
-
-def _nested_tensor_label(word):
-    if not word:
-        return 0
-    result = word[0]
-    for label in word[1:]:
-        result = (result, label)
-    return result
+from dzack_research.preamble.categories.modules.tensor_products import (
+    _flatten_tensor_label,
+    _nested_tensor_label,
+)
 
 
 def tensor_power_permutation(module, degree, positions):

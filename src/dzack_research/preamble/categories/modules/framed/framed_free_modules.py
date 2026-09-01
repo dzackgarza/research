@@ -343,6 +343,17 @@ def FreeModule(base_ring, rank_or_index_set):
     if isinstance(rank_or_index_set, (int, Integer)):
         if rank_or_index_set < 0:
             raise ValueError("the rank of a free module is nonnegative")
+        # A Sage free-module carrier is appropriate only when elements of the
+        # owned coefficient ring are already elements of its selected Sage
+        # engine.  Literal owned quotients/localizations have their own element
+        # classes; putting a Sage free module over such a ring would make Sage's
+        # internal basis/coercion code confuse the public ring with its private
+        # engine.  Use the owned sparse carrier in that representation regime.
+        if getattr(ring.one(), "parent", lambda: None)() is not engine:
+            return _SparseFreeModuleParent(
+                ring,
+                finite_ordered_set(range(int(rank_or_index_set))),
+            )
         return _owned_finite_free_module(ring, rank_or_index_set)
     if isinstance(rank_or_index_set, (tuple, list)):
         rank_or_index_set = finite_ordered_set(rank_or_index_set)

@@ -27,21 +27,10 @@ from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.rings import engine_ring, owned_ring_view
 
 
-def _nested_tensor_label(word):
-    word = tuple(word)
-    if not word:
-        return 0
-    result = word[0]
-    for label in word[1:]:
-        result = (result, label)
-    return result
-
-
-def _flatten_tensor_label(label, degree):
-    if degree == 1:
-        return (label,)
-    left, right = label
-    return _flatten_tensor_label(left, degree - 1) + (right,)
+from dzack_research.preamble.categories.modules.tensor_products import (
+    _flatten_tensor_label,
+    _nested_tensor_label,
+)
 
 
 def _presentation_element(algebra, element):

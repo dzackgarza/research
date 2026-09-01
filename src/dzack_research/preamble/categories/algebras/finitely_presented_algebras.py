@@ -24,19 +24,10 @@ from dzack_research.preamble.categories.rings import (
 from dzack_research.preamble.refine import refine
 
 
-def _nested_tensor_label(word):
-    iterator = iter(word)
-    label = next(iterator)
-    for next_label in iterator:
-        label = (label, next_label)
-    return label
-
-
-def _flatten_tensor_label(label, degree):
-    if degree == 1:
-        return (label,)
-    left, right = label
-    return _flatten_tensor_label(left, degree - 1) + (right,)
+from dzack_research.preamble.categories.modules.tensor_products import (
+    _flatten_tensor_label,
+    _nested_tensor_label,
+)
 
 
 def _canonical_smith_representative(module, element):

@@ -44,7 +44,9 @@ def _engine_ideal(ring, ideal):
         return engine.ideal(tuple(engine(value) for value in values))
     ideal_generators = getattr(ideal, "ideal_generators", None)
     if ideal_generators is not None:
-        return engine.ideal(tuple(engine(value) for value in ideal_generators()))
+        return engine.ideal(
+            tuple(engine_element(ring, value) for value in ideal_generators())
+        )
     generators = getattr(ideal, "gens", None)
     if generators is not None and not isinstance(ideal, (tuple, list)):
         try:
@@ -155,6 +157,28 @@ class GeneralQuotientRingElement(CommutativeRingElement):
     def _neg_(self):
         return self.parent()(-self.lift())
 
+    def is_unit(self):
+        parent = self.parent()
+        if parent._preamble_engine_ring is None:
+            raise NotImplementedError(
+                "unit testing in this quotient has no selected computation realization"
+            )
+        return bool(parent._engine_element(self).is_unit())
+
+    def inverse_of_unit(self):
+        parent = self.parent()
+        if parent._preamble_engine_ring is None:
+            raise NotImplementedError(
+                "unit inversion in this quotient has no selected computation realization"
+            )
+        represented = parent._engine_element(self)
+        if not represented.is_unit():
+            raise ZeroDivisionError(f"{self} is not a unit")
+        return parent(represented**-1)
+
+    def __truediv__(self, other):
+        return self * self.parent()(other).inverse_of_unit()
+
     def _richcmp_(self, other, op):
         if not isinstance(other, GeneralQuotientRingElement) or other.parent() is not self.parent():
             return NotImplemented
@@ -190,7 +214,19 @@ class GeneralQuotientRingParent(Parent):
     def _element_constructor_(self, value):
         if isinstance(value, GeneralQuotientRingElement) and value.parent() is self:
             return value
+        if self._preamble_engine_ring is not None and (
+            getattr(value, "parent", lambda: None)() is self._preamble_engine_ring
+        ):
+            lift = getattr(value, "lift", None)
+            if lift is None:
+                raise TypeError(
+                    "the selected quotient-engine element has no lift to the source ring"
+                )
+            value = self.quotient_source()(lift())
         return self.element_class(self, value)
+
+    def __call__(self, value):
+        return self._element_constructor_(value)
 
     def _engine_element(self, value):
         engine = self._preamble_engine_ring
@@ -216,6 +252,39 @@ class GeneralQuotientRingParent(Parent):
 
     def an_element(self):
         return self.one()
+
+    def is_finite(self):
+        if self._preamble_engine_ring is None:
+            from sage.misc.unknown import Unknown
+
+            return Unknown
+        return bool(self._preamble_engine_ring.is_finite())
+
+    def cardinality(self):
+        if self._preamble_engine_ring is None:
+            raise NotImplementedError(
+                "this quotient ring has no selected finite-cardinality computation"
+            )
+        return self._preamble_engine_ring.cardinality()
+
+    def is_field(self):
+        if self._preamble_engine_ring is None:
+            return False
+        return bool(self._preamble_engine_ring.is_field())
+
+    def is_integral_domain(self):
+        if self._preamble_engine_ring is None:
+            raise NotImplementedError(
+                "integral-domain testing for this quotient has no selected computation"
+            )
+        return bool(self._preamble_engine_ring.is_integral_domain())
+
+    def krull_dimension(self):
+        if self._preamble_engine_ring is None:
+            raise NotImplementedError(
+                "Krull dimension of this quotient has no selected computation"
+            )
+        return self._preamble_engine_ring.krull_dimension()
 
     def _repr_(self):
         return f"{self.quotient_source()} / {self.defining_ideal()}"
@@ -500,6 +569,9 @@ class GeneralLocalizationRingParent(Parent):
         if difference == source.zero():
             return True
 
+        if source in OwnedIntegralDomains():
+            return False
+
         if source in QuotientRings():
             try:
                 source_ring = source.quotient_source()
@@ -627,29 +699,44 @@ def QuotientRing(ring, ideal):
     engine = engine_ring(source)
     defining_ideal = _owned_ideal(source, ideal)
     defining = _engine_ideal(source, defining_ideal)
-    if source in LocalizationRings():
-        quotient = GeneralQuotientRingParent(source, defining_ideal)
-        _refine_noetherian_from_source(quotient, source)
-        return quotient
     try:
         quotient_engine = engine.quotient(defining)
     except (AttributeError, NotImplementedError, TypeError, ValueError):
-        quotient = GeneralQuotientRingParent(source, defining_ideal)
-        _refine_noetherian_from_source(quotient, source)
-        return quotient
+        quotient_engine = None
 
-    from dzack_research.preamble.categories.algebras.algebras import refine_algebra
-
-    quotient = refine_algebra(own_ring(quotient_engine), source)
-    refine(quotient, [OwnedCommutativeRings(), QuotientRings()])
-    _refine_noetherian_from_source(quotient, source)
-    quotient._preamble_quotient_source = source
-    quotient._preamble_defining_ideal = defining_ideal
-    quotient._preamble_quotient_map = _canonical_map(
+    quotient = GeneralQuotientRingParent(
         source,
-        quotient,
-        quotient_engine.coerce_map_from(engine),
+        defining_ideal,
+        engine_ring=quotient_engine,
     )
+    placements = [OwnedCommutativeRings(), QuotientRings()]
+    _refine_noetherian_from_source(quotient, source)
+    if quotient_engine is not None:
+        try:
+            if bool(quotient_engine.is_field()):
+                placements.append(OwnedFields())
+            elif bool(quotient_engine.is_integral_domain()):
+                placements.append(OwnedIntegralDomains())
+        except (AttributeError, NotImplementedError, TypeError, ValueError):
+            pass
+        try:
+            if bool(quotient_engine.is_finite()):
+                from dzack_research.preamble.categories.sets import FiniteSets
+
+                placements.append(FiniteSets())
+        except (AttributeError, NotImplementedError, TypeError, ValueError):
+            pass
+        try:
+            if source in OwnedNoetherianRings() and quotient_engine.krull_dimension() == 0:
+                placements.append(OwnedArtinianRings())
+        except (AttributeError, NotImplementedError, TypeError, ValueError):
+            pass
+    quotient._preamble_algebra_base_ring = source
+    quotient._preamble_base_ring = source
+    refine(quotient, placements)
+    from dzack_research.preamble.categories.algebras import CommutativeAlgebras
+
+    refine(quotient, CommutativeAlgebras(source))
     return quotient
 
 
@@ -663,7 +750,7 @@ def _finite_generated_localization(source, submonoid):
         ) from error
     if not generators:
         return source
-    values = tuple(engine(value) for value in generators)
+    values = tuple(engine_element(source, value) for value in generators)
     try:
         localization_engine = engine.localization(values)
     except (AttributeError, NotImplementedError, TypeError, ValueError):

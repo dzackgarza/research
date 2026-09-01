@@ -15,7 +15,7 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
 )
-from dzack_research.preamble.categories.rings import engine_ring
+from dzack_research.preamble.categories.rings import engine_element, engine_ring
 from dzack_research.preamble.categories.sets import Sets
 from dzack_research.preamble.tensors import tensor
 
@@ -535,7 +535,9 @@ class ModuleMorphism(Morphism):
                 self._generator_image(source_label), codomain
             )
             for target_label, image_coefficient in image_coefficients.items():
-                contribution = engine(source_coefficient) * engine(image_coefficient)
+                contribution = engine_element(
+                    ring, source_coefficient
+                ) * engine_element(ring, image_coefficient)
                 accumulated[target_label] = (
                     accumulated.get(target_label, engine.zero()) + contribution
                 )

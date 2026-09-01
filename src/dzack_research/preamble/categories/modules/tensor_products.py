@@ -14,6 +14,29 @@ from dzack_research.preamble.tensors import tensor
 from dzack_research.preamble.refine import refine
 
 
+def _nested_tensor_label(word):
+    r"""Return the label of the iterated tensor of the factors in ``word``.
+
+    Iterated tensor products are left-associated, so the label of
+    ``a (x) b (x) c`` is ``((a, b), c)``.  The empty word labels the unit.
+    """
+    word = tuple(word)
+    if not word:
+        return 0
+    label = word[0]
+    for next_label in word[1:]:
+        label = (label, next_label)
+    return label
+
+
+def _flatten_tensor_label(label, degree):
+    r"""Return the ``degree`` factor labels of a left-associated tensor label."""
+    if degree == 1:
+        return (label,)
+    left, right = label
+    return _flatten_tensor_label(left, degree - 1) + (right,)
+
+
 class BilinearMap(SageObject):
     r"""A bilinear map specified on selected module generators.
 

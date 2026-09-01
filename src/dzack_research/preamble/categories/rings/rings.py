@@ -260,14 +260,11 @@ class OwnedCommutativeRings(Category):
                 from dzack_research.preamble.categories.modules.fractional_ideals import Ideal
 
                 return Ideal(self, generators)
-            backend = engine.ideal(*generators)
-            if hasattr(backend, "syzygy_module"):
-                from dzack_research.preamble.categories.rings.commutative_ideals import (
-                    CommutativeIdeal,
-                )
+            from dzack_research.preamble.categories.rings.commutative_ideals import (
+                CommutativeIdeal,
+            )
 
-                return CommutativeIdeal(self, *generators)
-            return backend
+            return CommutativeIdeal(self, *generators)
 
         def quotient_ring(self, ideal):
             from dzack_research.preamble.categories.rings.commutative_algebra import (

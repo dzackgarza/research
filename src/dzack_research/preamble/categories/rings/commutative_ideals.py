@@ -2,7 +2,9 @@
 
 from dzack_research.preamble.categories.abstract_categories import SubobjectsOf
 from dzack_research.preamble.categories.rings.rings import (
+    OwnedIntegralDomains,
     OwnedCategoryOverBaseRing,
+    engine_element,
     engine_ring,
     own_ring,
 )
@@ -42,7 +44,10 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                 )
             try:
                 return engine.ideal(
-                    tuple(engine(generator) for generator in self.ideal_generators())
+                    tuple(
+                        engine_element(self.ring(), generator)
+                        for generator in self.ideal_generators()
+                    )
                 )
             except (AttributeError, NotImplementedError, TypeError, ValueError) as error:
                 raise NotImplementedError(
@@ -167,7 +172,7 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                 saturated = result[0] if isinstance(result, tuple) else result
                 return _from_engine_ideal(source_ring, saturated)
 
-            # Principal-ideal-domain fallback.  If I=(a), saturation by
+            # Principal-ideal-domain computation.  If I=(a), saturation by
             # <s_1,...,s_n> removes from a every prime factor occurring in
             # one of the s_i.  Repeated gcd division does this without a
             # separate factorization algorithm.
@@ -206,7 +211,7 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                 contracted = self.contraction_from_localization()
                 return numerator in contracted._engine_ideal()
             try:
-                return engine_ring(ring)(value) in self._engine_ideal()
+                return engine_element(ring, value) in self._engine_ideal()
             except NotImplementedError as error:
                 raise NotImplementedError(
                     "ambient ideal membership has no active backend in this regime"
@@ -299,11 +304,39 @@ def CommutativeIdeal(ring, *generators):
     if not values:
         values = (engine.zero(),)
     backend = engine.ideal(values)
-    if not hasattr(backend, "syzygy_module"):
-        raise NotImplementedError(
-            "the general owned ideal constructor currently requires an exact syzygy backend"
-        )
     selected = tuple(backend.gens())
+    if not hasattr(backend, "syzygy_module"):
+        if source not in OwnedIntegralDomains() or len(selected) != 1:
+            raise NotImplementedError(
+                "this ideal has no selected exact module-presentation backend"
+            )
+        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import (
+            BasedFreeModule,
+        )
+        from dzack_research.preamble.categories.modules.framed.finitely_generated.ring_as_module import (
+            ring_as_module,
+        )
+        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+            module_embedding,
+        )
+
+        generator = selected[0]
+        ambient_module = ring_as_module(source)
+        if generator == engine.zero():
+            ideal = BasedFreeModule(source, 0)
+            inclusion = module_embedding(ideal, ambient_module, {})
+        else:
+            ideal = BasedFreeModule(source, 1)
+            inclusion = module_embedding(
+                ideal,
+                ambient_module,
+                {0: ambient_module((source(generator),))},
+            )
+        ideal._preamble_inclusion = inclusion
+        ideal._preamble_engine_ideal = backend
+        ideal._preamble_ideal_generators = (source(generator),)
+        refine(ideal, CommutativeIdeals(source))
+        return ideal
     syzygies = backend.syzygy_module()
 
     from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import (
