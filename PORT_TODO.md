@@ -200,54 +200,36 @@ Coxeter/Vinberg algorithms. Original section numbers are retained for provenance
 - [ ] Restricted automorphism actions on invariant/isotypic pieces.
 - [ ] `(4,4)` involution example with `13+12` section-space decomposition after geometry lands.
 
-## 3. Integral-lattice classification, isometry, and embedding algorithms
+### 3. Foundational exact lattice algebra and invariant primitives (Required Input Substrate)
 
-### 3.1 Local and genus data & invariant pre-sieves
+### 3.1 Exact lattice algebra and subobject operations
 
-- [ ] Invariant pre-sieve rejecting non-isometric lattices immediately on rank, signature, parity, discriminant form $A_L \cong A_M$, and $p$-adic Jordan symbols.
-- [ ] Exact canonical discriminant module $(A_L = L^\vee/L, q_{A_L})$ with finite quadratic form as a first-class formed module.
+- [ ] **Saturation and primitive closure**: `L.saturation(S)` and primitive closure of submodules via Smith normal form of the quotient $L/S$.
+- [ ] **Dual lattices and duality functor**: `L.dual_lattice()` with canonical evaluation pairing into $\mathbb{Q}$ and exact dual basis tracking.
+- [ ] **Discriminant quadratic module**: `L.discriminant_module()` constructing $(A_L = L^\vee/L, q_{A_L})$ as an exact finite formed $\mathbb{Z}$-module with isotropic subgroups and quadratic form $q(x + L) \in \mathbb{Q}/2\mathbb{Z}$ (or $\mathbb{Q}/\mathbb{Z}$).
+- [ ] **Vector divisibility and discriminant class**: `L.divisibility(v)` returning the positive generator of $b(v, L) \subset \mathbb{Z}$ and the associated class $[v/\operatorname{div}(v)] \in A_L$.
+- [ ] **Orthogonal complements**: `L.orthogonal_complement(S)` constructing the subobject pair $(S^\perp, \iota: S^\perp \hookrightarrow L)$ via exact integral kernel.
+- [ ] **Formed quotients for isotropic sublattices**: `L.formed_quotient(I)` constructing the non-degenerate formed module $(I^\perp/I, \bar{b})$.
+- [ ] **Local Jordan data and genus invariants**: Exact $p$-adic Jordan symbols and genus pre-sieve obstructions to detect non-isometric lattices before running reduction.
+- [ ] **Exact basis transformation tracking**: Morphism matrix tracking in $\operatorname{GL}_n(\mathbb{Z})$ and formed isometries in $\operatorname{Isom}(L, M)$.
 
-### 3.2 Isometry homsets and witnesses
+### 3.2 Finite configuration, graph labeling, and polyhedral primitives
 
-- [ ] Priority API: `L.isometry_to(M)` returning a live formed module isomorphism $f: L \xrightarrow{\cong} M$ with certified basis transformation matrix $P \in \operatorname{GL}_n(\mathbb{Z})$ satisfying $P^T B_M P = B_L$.
-- [ ] Priority API: `L.is_isometric(M)` / `L.isometric_to(M)` predicate returning verified booleans with exact counterexample / certification data.
-- [ ] Resolve or explicitly retain the gap of placing a lattice in a spinor genus when one genus has multiple improper spinor genera.
+- [ ] **Pairing configuration graphs**: Encoding vector/facet pairings into colored graphs with vertex/edge invariants.
+- [ ] **Graph canonization interface**: Interface to Sage's Bliss/Nauty backend for canonical graph labeling and automorphism groups.
+- [ ] **Permutation lifting**: Lifting graph automorphism permutations to integral lattice isometries via `libgap`.
+- [ ] **Exact rational polyhedral cones**: Facet enumeration, extreme rays, incidence, and face stabilizers delegating to Normaliz, cddlib, or PPL.
 
-### 3.3 Embedding homsets
+### 3.3 Reduction-complex and transporter data structures
 
-- [ ] Existence for indefinite codomains that are not even unimodular.
-- [ ] Useful enumeration/parametrization when an indefinite embedding homset is infinite.
+- [ ] **Reduction cell interface**: Structured representation holding cell representative, facet data, and cell stabilizer generators.
+- [ ] **Adjacency transporters**: Structured representation holding adjacent cells and exact integral transporter morphisms.
 
-### 3.4 Orthogonal and arithmetic automorphism groups
+## 5. Parabolic and unipotent orbit primitives (Required Input Substrate)
 
-- [ ] Priority API: `L.orthogonal_group()` returning full arithmetic group $O(L)$ equipped with finite generating sets.
-- [ ] Priority API: `L.stable_orthogonal_group()` / `O_stable` returning the kernel on the discriminant form $\ker(O(L) \to O(A_L))$.
-- [ ] Separate mathematical objects for $O(L)$, $SO(L)$, positive-cone subgroup $O^+(L)$, and stable orthogonal group $\widetilde{O}(L)$.
-- [ ] Explicit distinction between setwise stabilizers `O.stabilizer(X, action="setwise")` and pointwise stabilizers `action="pointwise"`.
-- [ ] Finite-presentation metadata only where an actual presentation is known, using the correct Borel--Serre/Raghunathan finiteness result.
-
-## 5. Vector, isotropic-subspace, and gluing orbits
-
-### 5.1 Primitive isotropic vectors & cusp orbits
-
-- [ ] Priority API: `L.primitive_isotropic_vectors()` returning the domain/enumeration of primitive isotropic vectors $v \in L$ ($b_L(v,v)=0$, $\operatorname{div}(v)=1$ in $\mathbb{Z}v$).
-- [ ] Priority API: `O.orbit_decomposition(X)` for primitive isotropic vectors returning exact cusp orbit representatives, stabilizers $\Gamma_v$, and transporter isometries.
-- [ ] Exact cusp invariants: divisibility $\operatorname{div}(v) = \gcd(b_L(v, L))$ and associated discriminant class $[v/\operatorname{div}(v)] \in A_L = L^\vee/L$.
-
-### 5.2 Saturated isotropic sublattices & parabolic recursion
-
-- [ ] Priority API: `L.primitive_isotropic_sublattices(rank=k)` returning saturated isotropic submodules $(I, \iota: I \hookrightarrow L)$ satisfying $I^\perp \cap I = I$ (primitivity certified by Smith invariants of $L/I$, never raw basis matrices).
-- [ ] Rigorous semantic distinction between:
-  - isotropic vector $v$ vs. primitive rank-1 sublattice $\mathbb{Z}v$;
-  - rational isotropic $k$-plane $W \subset L \otimes \mathbb{Q}$ vs. primitive integral sublattice $L \cap W$;
-  - basis matrix $X$ vs. saturated subobject parent.
-- [ ] Parabolic subgroup stabilizers for isotropic sublattices: setwise stabilizer $P(I) \subset O(L)$, induced action on $I$ and on $I^\perp/I$, and unipotent radical $U(I) = \ker(P(I) \to \operatorname{GL}(I) \times O(I^\perp/I))$.
-- [ ] Recursive parabolic orbit enumeration algorithm: lifting isotropic data from $(v^\perp/\mathbb{Z}v)$ across unipotent torsors.
-
-### 5.3 Backend boundary & engine integration
-
-- [ ] Clean coordinate isolation: no internal coordinate matrices, temporary files, or CLI executable names leaked in public category APIs.
-- [ ] Delegate compute-heavy indefinite reduction and orbit decomposition to `sage-indefinite-port` / `sage-julia-bridge` / exact backends with verified return boundaries.
+- [ ] **Parabolic subgroup stabilizers**: Setwise stabilizer $P(I) \subset O(L)$ for primitive isotropic sublattices $I$, with projections onto $\operatorname{GL}(I)$ and $O(I^\perp/I)$.
+- [ ] **Unipotent radical extraction**: Exact unipotent radical $U(I) = \ker(P(I) \to \operatorname{GL}(I) \times O(I^\perp/I))$ and its action on integral liftings.
+- [ ] **Integral lifting torsors**: Computing integral liftings of isotropic data from $(v^\perp/\mathbb{Z}v)$ across unipotent torsors.
 
 ## 6. Coxeter diagrams, reflection groups, and Vinberg theory
 
