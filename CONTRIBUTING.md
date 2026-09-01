@@ -20,6 +20,11 @@ Each policy has a unique alphanumeric identifier.
 - **Rationale**: Mathematical invariants depend on the embedding morphism, not on presentation-dependent coordinate choices.
 - **Violation Example**: Storing ambient coordinates or adding `ambient=` parameters directly to parent objects.
 
+#### `ARC-03`: Build Structural Objects Before Downstream Numerical Invariants
+- **Rule**: Never bypass an intermediate mathematical object or functorial stage (such as the localized module $M_{\mathfrak{p}} = M \otimes_R R_{\mathfrak{p}}$, base-changed algebras $K \otimes_R \mathcal{O}$, or derived complexes) to compute a single numerical scalar or pointwise fiber (such as $\dim_{\kappa(\mathfrak{p})}(M \otimes_R \kappa(\mathfrak{p}))$). Always construct the foundational parent object and base-change/localization functor first; derive pointwise invariants as generic operations on the resulting object.
+- **Rationale**: Bypassing structural objects destroys mathematical compression and composability. When the structural object exists ($M_{\mathfrak{p}}$ as an $R_{\mathfrak{p}}$-module), all local invariants (rank, minimal generators, local torsion, localization of morphisms) become generic consequences of base change. Skipping to point queries forces every downstream invariant to reinvent ad-hoc algorithmic logic.
+- **Violation Example**: Implementing `local_number_of_generators(p)` by evaluating the residue field vector-space dimension $M \otimes_R \kappa(\mathfrak{p})$ while the localized module $M_{\mathfrak{p}}$ over the local ring $R_{\mathfrak{p}}$ remains absent from the category layer.
+
 ---
 
 ### 2. Computational Backend Delegation (`ENG-*`)
