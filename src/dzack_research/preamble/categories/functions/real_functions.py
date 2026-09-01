@@ -52,7 +52,7 @@ from sage.symbolic.expression import Expression
 from sage.symbolic.function import Function as SymbolicMap
 from sage.symbolic.ring import SR
 
-from dzack_research.preamble.categories.algebras import Algebras
+from dzack_research.preamble.categories.algebras import Algebras, CommutativeAlgebras
 from dzack_research.preamble.categories.forms.forms import BilinearForms, Pairings
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
     FormedModules,
@@ -119,7 +119,7 @@ def _is_rr_module(space) -> bool:
 def _mapping_space_category(codomain):
     r"""Vector spaces when \(Y\) is an \(\mathbb R\)-module; the function algebra when \(Y=\mathbb R\)."""
     if codomain is RR:
-        return VectorSpaces(RR) & Algebras(RR).Commutative()
+        return VectorSpaces(RR) & CommutativeAlgebras(RR)
     if _is_rr_module(codomain):
         return VectorSpaces(RR)
     return Sets()

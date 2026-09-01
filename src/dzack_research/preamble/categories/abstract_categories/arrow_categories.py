@@ -5,6 +5,7 @@ from sage.categories.finite_enumerated_sets import FiniteEnumeratedSets
 from sage.categories.homset import Hom, Homset
 from sage.categories.morphism import Morphism
 from sage.categories.sets_cat import Sets as SageSets
+from dzack_research.preamble.categories.sets.owned_sets import Sets as _OwnedSets
 from sage.structure.parent import Parent
 
 
@@ -60,7 +61,7 @@ def _identity_morphism(obj):
     try:
         return Hom(obj, obj).identity()
     except (TypeError, ValueError):
-        return Hom(obj, obj, SageSets()).identity()
+        return Hom(obj, obj, _OwnedSets()).identity()
 
 
 class ArrowObject(Parent):

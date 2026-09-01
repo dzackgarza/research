@@ -19,6 +19,7 @@ from sage.rings.infinity import Infinity
 from sage.rings.semirings.non_negative_integer_semiring import NN
 
 from dzack_research.preamble.all import (
+    CommutativeAlgebras,
     Algebras,
     C,
     FormModules,
@@ -39,7 +40,7 @@ def test_c_is_parameterized_by_regularity_and_spaces() -> None:
     assert maps is C(Infinity, RR)
     assert maps in VectorSpaces(RR)
     assert maps in Algebras(RR)
-    assert maps in Algebras(RR).Commutative()
+    assert maps in CommutativeAlgebras(RR)
     assert maps.differentiability() is Infinity
     assert maps.domain() is RR
     assert maps.codomain() is RR

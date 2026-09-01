@@ -717,14 +717,7 @@ def _owned_ring_category(engine: Ring) -> Category:
         placement = OwnedDivisionRings()
     else:
         placement = OwnedRings()
-    # The facade represents the same ring as its engine, so it is a member of
-    # Sage's own ring category too.  Without that join every Sage constructor
-    # that tests membership -- Modules(base), Hom endpoints, quotient and
-    # localization parents -- refuses an owned ring.  Owned categories are
-    # joined first, so owned methods still precede Sage's.
-    joined = Category.join(
-        (placement, _owned_ring_size(engine), *extra, engine.category())
-    )
+    joined = Category.join((placement, _owned_ring_size(engine), *extra))
     match engine:
         case SageNumberFieldOrder():
             return Category.join((joined, OwnedOrders()))

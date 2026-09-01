@@ -24,7 +24,7 @@ def _identity(obj):
     try:
         return Hom(obj, obj).identity()
     except (TypeError, ValueError):
-        return Hom(obj, obj, SageSets()).identity()
+        return Hom(obj, obj, Sets()).identity()
 
 
 class ImageInclusionFunctor(Functor):

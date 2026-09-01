@@ -288,7 +288,7 @@ class PowerSetParent(Parent):
             raise ValueError("inverse image requires the morphism codomain to be the base set")
         target = PowerSet(morphism.domain())
         return SetMorphism(
-            Hom(self, target, SageSets()),
+            Hom(self, target, OwnedSets()),
             lambda subset: target.from_predicate(lambda member: morphism(member) in subset),
         )
 
@@ -304,7 +304,7 @@ class PowerSetParent(Parent):
                 return SetInclusion(image_domain, morphism.codomain())
             return target(tuple(morphism(member) for member in subset))
 
-        return SetMorphism(Hom(self, target, SageSets()), direct_image)
+        return SetMorphism(Hom(self, target, OwnedSets()), direct_image)
 
     def __iter__(self):
         if self.base_set() not in FiniteEnumeratedSets():
@@ -608,7 +608,7 @@ class CartesianProductOfFamilyParent(Parent):
     def from_maps(self, source, maps):
         r"""Return the unique map into the product with the stated components."""
         return SetMorphism(
-            Hom(source, self, SageSets()),
+            Hom(source, self, OwnedSets()),
             lambda element: self(lambda index: maps(index)(element)),
         )
 
@@ -661,7 +661,7 @@ def CartesianProductMorphism(source, target, component_morphisms):
     if source.index_set() != target.index_set():
         raise ValueError("componentwise product maps require one index set")
     return SetMorphism(
-        Hom(source, target, SageSets()),
+        Hom(source, target, OwnedSets()),
         lambda element: target(
             lambda index: component_morphisms(index)(element.component(index))
         ),
@@ -742,7 +742,7 @@ class CoproductOfFamilyParent(Parent):
     def from_maps(self, target, maps):
         r"""Return the unique map out of the coproduct extending the stated maps."""
         return SetMorphism(
-            Hom(self, target, SageSets()),
+            Hom(self, target, OwnedSets()),
             lambda element: maps(element.summand_index())(element.summand_element()),
         )
 
@@ -788,7 +788,7 @@ def CoproductMorphism(source, target, component_morphisms):
     if source.index_set() != target.index_set():
         raise ValueError("componentwise coproduct maps require one index set")
     return SetMorphism(
-        Hom(source, target, SageSets()),
+        Hom(source, target, OwnedSets()),
         lambda element: target(
             element.summand_index(),
             component_morphisms(element.summand_index())(element.summand_element()),

@@ -18,6 +18,7 @@ from sage.categories.homset import Hom, Homset
 from sage.categories.morphism import Morphism
 from sage.categories.objects import Objects
 from sage.categories.sets_cat import Sets as SageSets
+from dzack_research.preamble.categories.sets.owned_sets import Sets as _OwnedSets
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.classcall_metaclass import typecall
 from sage.structure.sage_object import SageObject
@@ -42,7 +43,7 @@ def _category_homset(category, domain, codomain):
     try:
         return Hom(domain, codomain, category)
     except (TypeError, ValueError):
-        return Hom(domain, codomain, SageSets())
+        return Hom(domain, codomain, _OwnedSets())
 
 
 class CategoryPacketMethods:
