@@ -73,10 +73,8 @@ def test_group_lattice_invariants_and_formed_coinvariants_keep_the_form() -> Non
 
     assert decomposition.trivial_component().gram_tensor() == invariants.gram_tensor()
     assert decomposition.nontrivial_components()[0].gram_tensor() == formed_coinvariants.gram_tensor()
-    assert decomposition.trivial_component().inclusion().matrix().dual_tensor().echelon_tensor()\
-        == invariants.inclusion().matrix().dual_tensor().echelon_tensor()
-    assert decomposition.nontrivial_components()[0].inclusion().matrix().dual_tensor().echelon_tensor()\
-        == formed_coinvariants.inclusion().matrix().dual_tensor().echelon_tensor()
+    assert decomposition.trivial_component().is_equal_subobject(invariants)
+    assert decomposition.nontrivial_components()[0].is_equal_subobject(formed_coinvariants)
     assert invariants.gram_tensor() == tensor(ZZ, (), (1, 1), [[2]])
     assert formed_coinvariants.gram_tensor() == tensor(ZZ, (), (1, 1), [[-2]])
     assert module_coinvariants.rank() == 1

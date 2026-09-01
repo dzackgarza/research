@@ -544,22 +544,6 @@ class Tensor:
             basis.list(),
         )
 
-    def echelon_tensor(self):
-        r"""Return the row-echelon normal form of a two-index tensor.
-
-        Over a PID this is the Hermite normal form, so two tensors have the
-        same row span exactly when their echelon tensors are equal.
-        """
-        if self.tensor_order() != 2:
-            raise TypeError("an echelon form here is defined for a two-index tensor")
-        echelon = _engine_component_matrix(self).echelon_form()
-        return tensor(
-            self.base_ring(),
-            (int(echelon.nrows()),),
-            (int(echelon.ncols()),),
-            echelon.list(),
-        )
-
     def row(self, index):
         r"""Return one contravariant slice of a two-index tensor as a vector."""
         if self.tensor_order() != 2:
