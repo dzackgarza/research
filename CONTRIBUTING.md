@@ -77,10 +77,10 @@ Each policy has a unique alphanumeric identifier.
 - **Rationale**: Progress is measured by mathematical specimens that can fail, not by uninstantiated schemas.
 - **Violation Example**: Adding abstract category definitions without a test specimen or executable verification.
 
-#### `DEV-03`: Consult the Preamble Megadoc Before Adding Code
-- **Rule**: Always consult the preamble megadoc (`just preamble-megadoc`) before implementing any new category, functor, morphism, constructor, or mathematical helper.
-- **Rationale**: Prevents duplicate definitions, competing APIs, and accidental re-implementation of existing repository constructions.
-- **Violation Example**: Writing a custom tensor product or biproduct constructor without checking `dzack_research.preamble` universal constructions.
+#### `DEV-03`: Consult Megadoc, Reuse Constructions, and Implement at Maximal Generality
+- **Rule**: Always consult the preamble megadoc (`just preamble-megadoc`) before adding code. Always reuse existing constructions when they are mathematically correct and principled. When a required construction does not exist, implement it at its most mathematically general level (in its native abstract category or module layer) and progressively specialize and share it across concrete domains.
+- **Rationale**: Prevents duplicate definitions, competing APIs, and siloed mathematical implementations while ensuring global functorial coherence.
+- **Violation Example**: Implementing an ad-hoc direct sum or orthogonal quotient exclusively for lattices without connecting to the general module or categorical construction.
 
 ---
 
