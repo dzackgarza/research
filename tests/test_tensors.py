@@ -555,3 +555,43 @@ def test_row_span_normal_form_decides_spans_not_morphism_equality() -> None:
 
     assert left.row_span_normal_form() == right.row_span_normal_form()
     assert left != right
+
+
+def test_morphism_constructors_refuse_the_infinite_rank_reading() -> None:
+    from sage.rings.infinity import Infinity
+
+    for build in (
+        lambda: tensor.morphism(ZZ, Infinity, 2),
+        lambda: tensor.endomorphism(ZZ, Infinity),
+    ):
+        try:
+            build()
+        except ValueError as error:
+            assert "finitely generated" in str(error)
+        else:
+            raise AssertionError("a type-(1,1) reading needs finite generation")
+
+
+def test_row_span_normal_form_requires_a_field_or_a_pid() -> None:
+    ring = FreeAlgebra(QQ, 2, names=("x", "y"))
+    x, y = ring.gens()
+
+    try:
+        tensor.morphism(ring, 2, 2, [[x, y], [y, x]]).row_span_normal_form()
+    except NotImplementedError as error:
+        assert "principal ideal domain" in str(error)
+    else:
+        raise AssertionError("a canonical row span needs a field or a PID")
+
+
+def test_a_tensor_is_component_data_only_where_a_shape_makes_sense() -> None:
+    covector = tensor.covector(ZZ, [1, 2, 3])
+
+    assert tensor.matrix(ZZ, covector).components() == [[1, 2, 3]]
+
+    try:
+        tensor.matrix(ZZ, tensor(ZZ, (2, 2), (2,), range(8)))
+    except TypeError as error:
+        assert "component data" in str(error)
+    else:
+        raise AssertionError("a three-index tensor is not a matrix's components")

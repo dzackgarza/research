@@ -220,10 +220,14 @@ def _engine_argument(value):
     the constructors accept one and cross it here rather than at each site.
     """
     if isinstance(value, Tensor):
-        if value.tensor_valence() == (1, 0):
-            return _engine_component_vector(value)
+        if value.tensor_order() == 1:
+            return _engine_vector(value.base_ring(), value.list())
         if value.tensor_order() == 2:
             return _engine_component_matrix(value)
+        raise TypeError(
+            f"a tensor of shape {value.tensor_shape()} is not component data for "
+            "a vector or a matrix"
+        )
     return _engine_if_ring(value)
 
 
@@ -552,13 +556,26 @@ class Tensor:
         rows generate.  It does not decide equality of morphisms: in a
         framed module those are equal only when the components themselves
         are equal, never merely when a normal form is shared.
+
+        The normal form is canonical over a field and over a principal
+        ideal domain, and the base ring must be one of those; over a
+        general ring the row span has no such representative here.
         """
+        from sage.categories.principal_ideal_domains import PrincipalIdealDomains
+
         if self.tensor_order() != 2:
             raise TypeError("a row span here is defined for a two-index tensor")
         engine = _engine_component_matrix(self)
+        ring = engine.base_ring()
+        if not ring.is_field() and ring not in PrincipalIdealDomains():
+            raise NotImplementedError(
+                f"a canonical row-span representative over {ring} is not "
+                "available; this normal form is canonical over a field or a "
+                "principal ideal domain"
+            )
         normal = (
             engine.echelon_form()
-            if engine.base_ring().is_field()
+            if ring.is_field()
             else engine.hermite_form(include_zero_rows=False)
         )
         return tensor(
@@ -833,6 +850,14 @@ class _TensorMorphismConstructor:
     """
 
     def __call__(self, base_ring, codomain_rank, domain_rank, components=None):
+        for rank in (codomain_rank, domain_rank):
+            if rank == Infinity:
+                raise ValueError(
+                    "the type-(1,1) reading of a morphism needs finitely "
+                    "generated modules; at infinite rank a morphism is an "
+                    "element of (M ⊗ N*)*, whose space TensorModule names "
+                    "Hom(...)"
+                )
         return tensor(base_ring, (codomain_rank,), (domain_rank,), components)
 
 
@@ -857,7 +882,7 @@ class _TensorEndomorphismConstructor:
     """
 
     def __call__(self, base_ring, rank, components=None):
-        return tensor(base_ring, (rank,), (rank,), components)
+        return _TensorMorphismConstructor()(base_ring, rank, rank, components)
 
 
 class _TensorMatrixConstructor:
