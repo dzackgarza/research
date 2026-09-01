@@ -16,10 +16,23 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
     r"""Ideals of ``R``: subobjects of the rank-one ``R``-module ``R``."""
 
     def super_categories(self):
+        from dzack_research.preamble.categories.modules import Modules
+
+        return [Modules(self.base_ring())]
+
+    def subobject_category(self):
         from dzack_research.preamble.categories.modules import Modules, ring_as_module
 
         ring = self.base_ring()
-        return [SubobjectsOf(Modules(ring), ring_as_module(ring))]
+        return SubobjectsOf(Modules(ring), ring_as_module(ring))
+
+    def __contains__(self, candidate) -> bool:
+        try:
+            if candidate.base_ring() is not self.base_ring():
+                return False
+        except (AttributeError, TypeError):
+            return False
+        return candidate in self.subobject_category()
 
     class ParentMethods:
         def ring(self):

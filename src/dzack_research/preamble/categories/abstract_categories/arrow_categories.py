@@ -165,7 +165,9 @@ class ArrowCategory(Category):
         return self._base_category
 
     def super_categories(self):
-        return [SageSets()]
+        from dzack_research.preamble.categories.sets import Sets
+
+        return [Sets()]
 
     def __contains__(self, candidate) -> bool:
         return (
@@ -453,7 +455,9 @@ class SubobjectCategory(Category):
         return self._base_object
 
     def super_categories(self):
-        return [SageSets()]
+        from dzack_research.preamble.categories.sets import Sets
+
+        return [Sets()]
 
     def slice_category(self):
         r"""Return the ambient slice ``C/X`` in which subobjects are monomorphisms."""

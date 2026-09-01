@@ -138,6 +138,7 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
 
             from dzack_research.preamble.categories.rings import (
                 LocalRings,
+                engine_element,
                 engine_ring,
             )
             from dzack_research.preamble.categories.sets import finite_ordered_set
@@ -155,7 +156,7 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
                 len(relation_rows),
                 int(self.number_of_module_generators()),
                 [
-                    residue_engine(residue_map(coefficient))
+                    engine_element(residue, residue_map(coefficient))
                     for row in relation_rows
                     for coefficient in row
                 ],

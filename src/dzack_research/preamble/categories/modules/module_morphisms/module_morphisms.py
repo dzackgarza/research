@@ -598,11 +598,16 @@ class ModuleMorphism(Morphism):
                 (),
             )
         rows = tuple(zip(*columns, strict=True))
+        ring = self.domain().base_ring()
         return tensor.matrix(
-            self.domain().base_ring(),
+            ring,
             len(codomain_labels),
             len(domain_labels),
-            tuple(entry for row in rows for entry in row),
+            tuple(
+                engine_element(ring, entry)
+                for row in rows
+                for entry in row
+            ),
         )
 
     def matrix(self):

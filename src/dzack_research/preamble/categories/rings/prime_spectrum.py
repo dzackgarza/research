@@ -71,6 +71,10 @@ class PrimeIdealPoint(Element):
             return left_ideal != right_ideal and self.specializes_to(other)
         return NotImplemented
 
+    def __hash__(self):
+        r"""Hash the prime ideal equality compares, so a point may key a cache."""
+        return hash(_engine_ideal(self.parent().ring(), self.ideal()))
+
     def _repr_(self):
         return f"Point {self.ideal()} of {self.parent()}"
 

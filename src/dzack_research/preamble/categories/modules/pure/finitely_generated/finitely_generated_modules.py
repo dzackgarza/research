@@ -56,7 +56,10 @@ class FinitelyGeneratedModules(OwnedCategoryOverBaseRing):
                 from sage.matrix.constructor import matrix
                 from sage.rings.integer_ring import ZZ as SageZZ
 
-                from dzack_research.preamble.categories.rings import engine_ring
+                from dzack_research.preamble.categories.rings import (
+                    engine_element,
+                    engine_ring,
+                )
 
                 localized = self.localize_at_prime(point)
                 relation_tensor = localized.presentation_matrix()
@@ -69,7 +72,7 @@ class FinitelyGeneratedModules(OwnedCategoryOverBaseRing):
                     len(relation_rows),
                     int(number_of_generators()),
                     [
-                        residue_engine(residue_map(coefficient))
+                        engine_element(residue, residue_map(coefficient))
                         for row in relation_rows
                         for coefficient in row
                     ],
@@ -115,7 +118,11 @@ class FinitelyGeneratedModules(OwnedCategoryOverBaseRing):
 
         def minimal_number_of_generators(self):
             r"""Return ``dim_k(M/mM)`` for a finite module over a local ring."""
-            from dzack_research.preamble.categories.rings import LocalRings, engine_ring
+            from dzack_research.preamble.categories.rings import (
+                LocalRings,
+                engine_element,
+                engine_ring,
+            )
 
             ring = self.base_ring()
             if ring not in LocalRings():
@@ -138,7 +145,7 @@ class FinitelyGeneratedModules(OwnedCategoryOverBaseRing):
                     len(relation_rows),
                     int(number_of_generators()),
                     [
-                        residue_engine(residue_map(coefficient))
+                        engine_element(residue, residue_map(coefficient))
                         for row in relation_rows
                         for coefficient in row
                     ],
