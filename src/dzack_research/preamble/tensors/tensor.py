@@ -548,43 +548,6 @@ class Tensor:
             basis.list(),
         )
 
-    def row_span_normal_form(self):
-        r"""Return the canonical tensor with the same row span.
-
-        Two two-index tensors have the same row span exactly when their
-        normal forms agree, which decides equality of the submodules the
-        rows generate.  It does not decide equality of morphisms: in a
-        framed module those are equal only when the components themselves
-        are equal, never merely when a normal form is shared.
-
-        The normal form is canonical over a field and over a principal
-        ideal domain, and the base ring must be one of those; over a
-        general ring the row span has no such representative here.
-        """
-        from sage.categories.principal_ideal_domains import PrincipalIdealDomains
-
-        if self.tensor_order() != 2:
-            raise TypeError("a row span here is defined for a two-index tensor")
-        engine = _engine_component_matrix(self)
-        ring = engine.base_ring()
-        if not ring.is_field() and ring not in PrincipalIdealDomains():
-            raise NotImplementedError(
-                f"a canonical row-span representative over {ring} is not "
-                "available; this normal form is canonical over a field or a "
-                "principal ideal domain"
-            )
-        normal = (
-            engine.echelon_form()
-            if ring.is_field()
-            else engine.hermite_form(include_zero_rows=False)
-        )
-        return tensor(
-            self.base_ring(),
-            (int(normal.nrows()),),
-            (int(normal.ncols()),),
-            normal.list(),
-        )
-
     def row(self, index):
         r"""Return one contravariant slice of a two-index tensor as a vector."""
         if self.tensor_order() != 2:

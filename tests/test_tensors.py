@@ -549,14 +549,6 @@ def test_morphism_and_endomorphism_name_codomain_and_domain_indices() -> None:
     assert t * t == tensor.endomorphism(ZZ, 2, [[1, 0], [0, 1]])
 
 
-def test_row_span_normal_form_decides_spans_not_morphism_equality() -> None:
-    left = tensor.morphism(ZZ, 2, 2, [[2, 4], [1, 3]])
-    right = tensor.morphism(ZZ, 2, 2, [[1, 1], [0, 2]])
-
-    assert left.row_span_normal_form() == right.row_span_normal_form()
-    assert left != right
-
-
 def test_morphism_constructors_refuse_the_infinite_rank_reading() -> None:
     from sage.rings.infinity import Infinity
 
@@ -570,18 +562,6 @@ def test_morphism_constructors_refuse_the_infinite_rank_reading() -> None:
             assert "finitely generated" in str(error)
         else:
             raise AssertionError("a type-(1,1) reading needs finite generation")
-
-
-def test_row_span_normal_form_requires_a_field_or_a_pid() -> None:
-    ring = FreeAlgebra(QQ, 2, names=("x", "y"))
-    x, y = ring.gens()
-
-    try:
-        tensor.morphism(ring, 2, 2, [[x, y], [y, x]]).row_span_normal_form()
-    except NotImplementedError as error:
-        assert "principal ideal domain" in str(error)
-    else:
-        raise AssertionError("a canonical row span needs a field or a PID")
 
 
 def test_a_tensor_is_component_data_only_where_a_shape_makes_sense() -> None:
