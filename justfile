@@ -11,6 +11,7 @@ ai_review_ci_release_channel := "main"
 ai_review_ci_workflow_template_version := "1"
 ai_review_ci_local_delegation := "global-justfile"
 ai_review_ci_default_branch := "main"
+preamble_megadoc_file := "docs/preamble-megadoc.md"
 
 # List available recipes
 default:
@@ -81,9 +82,9 @@ docs-preview: docs-bib
     # stale instance first so this always replaces rather than duplicates.
     uvx --from quarto-cli quarto preview docs --no-browser --port 7654
 
-# Surface a programmatic megadoc of all reusable constructions in the preamble (classes, methods, categories, functors, constructions)
-preamble-megadoc *ARGS:
-    python3 -m dzack_research.preamble.megadoc {{ARGS}}
+# Generate the canonical preamble constructions megadoc
+preamble-megadoc:
+    python3 -m dzack_research.preamble.megadoc -o "{{preamble_megadoc_file}}"
 
 # Link sage-init.sage as Sage's startup file (${DOT_SAGE:-~/.sage}/init.sage), giving every Sage process — terminal REPL and every Jupyter kernel — implicit LaTeX rendering of cell results. Idempotent, and refuses to replace anything it did not create.
 sage-init-install:

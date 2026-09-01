@@ -942,8 +942,13 @@ def main() -> None:
     parser.add_argument(
         "-o",
         "--output",
-        default=None,
-        help="Write output to specified file path instead of stdout.",
+        default="docs/preamble-megadoc.md",
+        help="Write output to specified file path. Default: docs/preamble-megadoc.md.",
+    )
+    parser.add_argument(
+        "--stdout",
+        action="store_true",
+        help="Print output directly to standard output.",
     )
     parser.add_argument(
         "--toc",
@@ -998,15 +1003,15 @@ def main() -> None:
         output = ""
 
     try:
-        if args.output:
+        if args.stdout:
+            sys.stdout.write(output)
+            sys.stdout.flush()
+        else:
             out_path = Path(args.output)
             out_path.parent.mkdir(parents=True, exist_ok=True)
             with open(out_path, "w", encoding="utf-8") as f:
                 f.write(output)
             print(f"Preamble megadoc written to {out_path} ({len(output)} bytes)")
-        else:
-            sys.stdout.write(output)
-            sys.stdout.flush()
     except BrokenPipeError:
         try:
             sys.stdout.close()
