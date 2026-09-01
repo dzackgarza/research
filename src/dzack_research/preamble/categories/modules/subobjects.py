@@ -1,5 +1,7 @@
 r"""Submodules represented by their chosen inclusion morphisms."""
 
+from weakref import WeakValueDictionary
+
 from sage.modules.free_module import FreeModule as SageFreeModule
 
 from dzack_research.preamble.categories.rings import (
@@ -173,8 +175,20 @@ def _span_basis_rows(module, module_generating_set):
     return free.submodule(rows).basis_matrix().rows()
 
 
+_SUBOBJECTS = WeakValueDictionary()
+
+
 def module_subobject_on(module, module_generating_set):
-    r"""Return the submodule spanned by the specified elements, with its inclusion."""
+    r"""Return the submodule spanned by the specified elements, with its inclusion.
+
+    A subobject of $B$ is the pair $(S, f: S \hookrightarrow B)$, and both
+    halves are determined by $B$ together with the submodule the elements
+    span: the span basis below is canonical, so the inclusion is too.  Two
+    calls naming one submodule therefore return one object, whichever
+    generating set each was given.  Without that, two constructions of the
+    same subobject would be distinct objects and their inclusions, living
+    in different homsets, could never compare equal.
+    """
     from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import (
         FinitelyGeneratedFreeModules,
     )
@@ -188,7 +202,10 @@ def module_subobject_on(module, module_generating_set):
         raise NotImplementedError(
             "the active submodule basis engine constructs subobjects of finite free modules"
         )
-    rows = tuple(_span_basis_rows(module, module_generating_set))
+    rows = tuple(tuple(row) for row in _span_basis_rows(module, module_generating_set))
+    cached = _SUBOBJECTS.get((module, rows))
+    if cached is not None:
+        return cached
     labels = finite_ordered_set(range(len(rows)))
 
     from dzack_research.preamble.categories.lattices import Lattices
@@ -244,7 +261,9 @@ def module_subobject_on(module, module_generating_set):
         },
     )
     source._preamble_inclusion = inclusion
-    return refine(source, ModuleSubobjects(ring))
+    subobject = refine(source, ModuleSubobjects(ring))
+    _SUBOBJECTS[(module, rows)] = subobject
+    return subobject
 
 
 __all__ = ["ModuleSubobjects", "module_subobject_on"]
