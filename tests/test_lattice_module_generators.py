@@ -232,3 +232,26 @@ def test_infinite_rank_form_predicates_and_finite_support_operations() -> None:
     u0 = plane.module_generator(0)
     assert u0.div() == 1
     assert plane.reflection(u0 + plane.module_generator(1))(u0) == -plane.module_generator(1)
+
+
+def test_a_lattice_is_one_object_per_module_and_gram() -> None:
+    from dzack_research.preamble.tensors import tensor
+
+    gram = tensor(ZZ, (), (2, 2), [[0, 1], [1, 0]])
+
+    assert Lattices(ZZ)(gram) is Lattices(ZZ)(gram)
+    assert Lattices(ZZ)("U") is Lattices(ZZ)("U")
+
+
+def test_distinct_sublattices_are_distinct_objects_at_equal_gram() -> None:
+    ambient = Lattices(ZZ)(ZZ**2)
+    e0, e1 = ambient.module_generators()
+
+    first = ambient.subobject_on((e0,))
+    second = ambient.subobject_on((e1,))
+
+    assert first.gram_tensor() == second.gram_tensor()
+    assert first is not second
+    assert first is ambient.subobject_on((e0,))
+    assert tuple(first.embedded_module_generators()) == (e0,)
+    assert tuple(second.embedded_module_generators()) == (e1,)

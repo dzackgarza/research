@@ -23,6 +23,7 @@ from sage.misc.repr import repr_lincomb
 from sage.modules.free_module import FreeModule_generic
 from sage.modules.free_module_element import FreeModuleElement
 from sage.quadratic_forms.quadratic_form import QuadraticForm
+from sage.misc.cachefunc import cached_function
 from sage.rings.infinity import Infinity
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ as SageZZ
@@ -206,6 +207,14 @@ class Lattice(Parent, IndexedGenerators):
             )
         return self.element_class(self, self._module(x))
 
+    def zero(self):
+        r"""Return the additive identity of the underlying free module."""
+        return self.element_class(self, self._module.zero())
+
+    def an_element(self):
+        r"""Return a represented lattice element from the underlying module."""
+        return self.element_class(self, self._module.an_element())
+
     def _first_ngens(self, n):
         r"""Return the first ``n`` module generators, for ``L.<e,f> =`` naming."""
         from itertools import islice
@@ -287,8 +296,14 @@ class Lattice(Parent, IndexedGenerators):
             )
 
 
+@cached_function
 def _lattice_parent(module, gram, category, sage_lattice, names=None):
-    r"""Construct a lattice and install the owned category surface."""
+    r"""Construct a lattice and install the owned category surface.
+
+    A lattice is its free module together with its form, so two
+    constructions naming one module and one Gram name one lattice.  Equal
+    Grams hash equally, so this is Sage's own construction cache.
+    """
     from dzack_research.preamble.categories.lattice_properties import (
         refine_lattice_properties,
     )
@@ -309,6 +324,8 @@ class _PairingGram(ModuleElement, Tensor):
     that module: \((M^*)^{\otimes 2}\) at finite rank, and
     \((M\otimes M)^*\) at infinite rank.
     """
+
+    __hash__ = Tensor._tensor_hash
 
     def _become_tensor_on(self, module) -> None:
         self._module = module

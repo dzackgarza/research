@@ -351,6 +351,20 @@ class Tensor:
             for position in cartesian_product(*(range(rank) for rank in shape))
         ]
 
+    def _tensor_hash(self) -> int:
+        r"""Hash the data equality compares: variance, ranks, components.
+
+        Equal tensors hash equally, so a tensor may key a cache and may be
+        a constructor argument of a unique representation.  At infinite
+        rank there is no component list and equality is identity, so the
+        identity hash is the honest one.
+        """
+        if Infinity in self.tensor_shape():
+            return object.__hash__(self)
+        return hash(
+            (self.tensor_valence(), self.tensor_shape(), tuple(self.list()))
+        )
+
     def is_equal_tensor(self, other) -> bool:
         r"""Return whether ``other`` is the same tensor mathematically.
 
@@ -1396,6 +1410,8 @@ class _CoordinateTensor(ModuleElement, Tensor):
 
     def _richcmp_(self, other, op):
         return _tensor_richcmp(self, other, op)
+
+    __hash__ = Tensor._tensor_hash
 
     def __reduce__(self):
         return (
