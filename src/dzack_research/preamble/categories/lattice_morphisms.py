@@ -379,6 +379,7 @@ class LatticeIsometry(LatticeEmbedding):
         from dzack_research.preamble.categories.lattice_engines import (
             oscar_centralizer_discriminant_image,
         )
+        from dzack_research.preamble.tensors.tensor import _engine_component_matrix
 
         engine_generators, expected_order, invariant_rank, coinvariant_rank = (
             oscar_centralizer_discriminant_image(
@@ -401,7 +402,7 @@ class LatticeIsometry(LatticeEmbedding):
                 orthogonal_group.engine_group()(
                     # Both OSCAR's finite discriminant group and Sage's FQF
                     # engine act on their Smith generators on the right.
-                    engine_generator
+                    _engine_component_matrix(engine_generator)
                 )
             )
             for engine_generator in engine_generators

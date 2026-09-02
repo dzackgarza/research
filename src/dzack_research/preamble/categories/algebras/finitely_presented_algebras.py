@@ -38,7 +38,6 @@ def _canonical_smith_representative(module, element):
     the invariant-factor quotients already computed by the live finitely
     presented module implementation.
     """
-    from dzack_research.preamble.tensors import tensor
 
     coordinates = tuple(module.coordinate_vector(element, reduce=False))
     invariants = tuple(module.invariants())
@@ -51,9 +50,7 @@ def _canonical_smith_representative(module, element):
     ]
     if not reduced:
         return module.zero()
-    return module.linear_combination_of_smith_form_gens(
-        tensor.vector(engine, reduced)
-    )
+    return module.linear_combination_of_smith_form_gens(reduced)
 
 
 class _LinearPresentationTensorIdeal(Ideal_nc):

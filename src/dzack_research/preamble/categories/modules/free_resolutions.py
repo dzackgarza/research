@@ -115,7 +115,9 @@ class FreeResolution:
 
         ring = self._module.base_ring()
         if self._module in ModulesWithChosenFinitePresentation(ring):
-            image_relation_module = d1.tensor().dual_tensor().row_module()
+            from dzack_research.preamble.tensors.tensor import _engine_component_matrix
+
+            image_relation_module = _engine_component_matrix(d1.tensor().dual_tensor()).row_module()
             return image_relation_module == self._module.W()
 
         if self._degree_one.rank() != 0:

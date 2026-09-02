@@ -546,6 +546,7 @@ def _integer_coordinate_submodule(ideal):
     r"""Materialize ``Res_ZZ^O(I)`` inside ``K``'s rational coordinate space."""
     from sage.modules.free_module import span
     from dzack_research.preamble.tensors import tensor
+    from dzack_research.preamble.tensors.tensor import _engine_component_vector
 
     ring = ideal.base_ring()
     order = engine_ring(ring)
@@ -559,7 +560,7 @@ def _integer_coordinate_submodule(ideal):
     ]
     if not rows:
         rows = [tensor.vector(SageQQ, [SageQQ.zero()] * int(order.rank()))]
-    return span(rows, SageZZ)
+    return span([_engine_component_vector(row) for row in rows], SageZZ)
 
 
 def _order_integer_submodule_values(base_ring, integer_submodule):
