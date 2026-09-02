@@ -300,7 +300,9 @@ class CommutativeAlgebras(OwnedCategoryOverBaseRing):
         return "commutative algebras"
 
     def super_categories(self):
-        return [Algebras(self.base_ring())]
+        from dzack_research.preamble.categories.rings.rings import OwnedCommutativeRings
+
+        return [Algebras(self.base_ring()), OwnedCommutativeRings()]
 
     class ParentMethods:
         def is_commutative(self) -> bool:

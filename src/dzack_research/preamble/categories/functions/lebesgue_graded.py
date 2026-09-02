@@ -21,7 +21,6 @@ unit piece \(A\to L^\infty=A_u\).
 from dzack_research.preamble.categories.rings import engine_ring as _engine_ring
 from sage.categories.homset import Hom, Homset
 from sage.categories.map import Map
-from sage.categories.modules import Modules as SageModules
 from sage.categories.morphism import Morphism, SetMorphism
 from dzack_research.preamble.categories.sets import Sets
 from sage.misc.cachefunc import cached_function
@@ -260,7 +259,7 @@ class LebesgueModuleHomset(Homset):
             self,
             domain,
             codomain,
-            category=SageModules(engine_ring(domain.base_ring())),
+            category=Modules(domain.base_ring()),
         )
 
     def _element_constructor_(self, evaluate):

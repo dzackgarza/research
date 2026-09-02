@@ -1,5 +1,4 @@
 from sage.all import exp, pi, sqrt
-from sage.categories.associative_algebras import AssociativeAlgebras as SageAssociativeAlgebras
 from sage.categories.map import Map
 from sage.rings.infinity import Infinity
 
@@ -152,7 +151,6 @@ def test_lebesgue_spaces_form_an_associative_algebra_under_convolution() -> None
     GradedTensorProductModules = session["GradedTensorProductModules"]
     LebesgueGradedModules = session["LebesgueGradedModules"]
     UnitInterval = session["UnitInterval"]
-    engine_ring = session["engine_ring"]
     AssociativeAlgebrasWithChosenMultiplication = session[
         "AssociativeAlgebrasWithChosenMultiplication"
     ]
@@ -169,7 +167,6 @@ def test_lebesgue_spaces_form_an_associative_algebra_under_convolution() -> None
     pairing_morphism = algebra.integral_pairing_morphism()
 
     assert algebra is not GradedLebesgueModule(UnitInterval)
-    assert algebra in SageAssociativeAlgebras(engine_ring(RR))
     assert algebra in AssociativeAlgebras(RR)
     assert algebra in AssociativeAlgebrasWithChosenMultiplication(RR)
     assert algebra in LebesgueGradedModules(RR)

@@ -595,7 +595,7 @@ class OwnedAbelianGroups(Category):
 
         @cached_method
         def scalar_action(self):
-            from dzack_research.preamble.categories.rings.rings import OwnedRings
+            from dzack_research.preamble.categories.rings.rings import OwnedRings, own_ring
 
             endomorphisms = self.endomorphism_ring()
             additive = self.category().is_subcategory(CommutativeAdditiveGroups())
@@ -604,7 +604,7 @@ class OwnedAbelianGroups(Category):
                 return exponent * element if additive else element ** exponent
 
             return SetMorphism(
-                Hom(ZZ, endomorphisms, OwnedRings()),
+                Hom(own_ring(ZZ), endomorphisms, OwnedRings()),
                 lambda exponent: endomorphisms(
                     lambda element: multiple(exponent, element)
                 ),

@@ -2,7 +2,6 @@ r"""Algebraic connections on represented modules over commutative algebras."""
 
 from sage.categories.category_types import Category_over_base
 from sage.categories.homset import Hom, Homset
-from sage.categories.modules import Modules as SageModules
 from sage.categories.morphism import Morphism, SetMorphism
 from dzack_research.preamble.categories.sets import Sets
 
@@ -378,11 +377,13 @@ class ConnectionHomset(Homset):
     def __init__(self, domain, codomain) -> None:
         if domain.base_ring() is not codomain.base_ring():
             raise ValueError("connection morphisms require one coefficient algebra")
+        from dzack_research.preamble.categories.modules import Modules
+
         Homset.__init__(
             self,
             domain,
             codomain,
-            category=SageModules(engine_ring(domain.base_ring())),
+            category=Modules(domain.base_ring()),
         )
 
     def _element_constructor_(self, images):

@@ -1,5 +1,3 @@
-from sage.categories.commutative_rings import CommutativeRings
-from sage.categories.rings import Rings as SageRings
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 
@@ -108,8 +106,8 @@ def test_noncommutative_center_is_a_predicate_subring() -> None:
     matrices = MatrixSpace(QQ, 2)
     center = matrices.ring_center()
 
-    assert center in SageRings()
-    assert center in CommutativeRings()
+    assert center in session["OwnedRings"]()
+    assert center in session["CommutativeRings"]()
     assert center.ambient_ring() is matrices
     assert center.inclusion().domain() is center
     assert center.inclusion().codomain() is matrices
