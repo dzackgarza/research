@@ -1,6 +1,8 @@
 from sage.all import AbelianGroup, FreeGroup, GF, GL, SymmetricGroup
 from sage.misc.unknown import Unknown
 
+from dzack_research.preamble.all import ZZ
+
 from dzack_research.preamble.categories.group import (
     Groups,
     GroupsWithChosenFiniteGeneratingSet,
@@ -153,7 +155,7 @@ def test_abelian_group_has_the_canonical_integer_action() -> None:
     action = group.scalar_action()
 
     assert action.domain() is group.scalar_action().domain()
-    assert action.domain() == __import__("sage.all", fromlist=["ZZ"]).ZZ
+    assert action.domain() is ZZ
     assert action.codomain() is group.endomorphism_ring()
     for element in group:
         for n in (-2, -1, 0, 1, 2, 7):

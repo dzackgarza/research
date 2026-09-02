@@ -258,7 +258,7 @@ def restrict_algebra_scalars(algebra, ring_map):
         engine_base = engine_ring(base_ring)
         source_structure = algebra.algebra_structure_morphism()
         engine_base_map = SetMorphism(
-            Hom(engine_base, algebra_engine, SageRings()),
+            engine_base.Hom(algebra_engine),
             lambda scalar: algebra_engine(
                 source_structure(ring_map(engine_base(scalar)))
             ),

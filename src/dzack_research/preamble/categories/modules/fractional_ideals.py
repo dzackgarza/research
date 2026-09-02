@@ -356,6 +356,8 @@ class FractionalIdealModule(Parent):
     def __contains__(self, value) -> bool:
         if isinstance(value, self.element_class) and value.parent() is self:
             return True
+        from dzack_research.preamble.tensors.tensor import _engine_component_vector
+
         try:
             candidate = engine_ring(self._preamble_fraction_field)(value)
         except (TypeError, ValueError):
@@ -366,7 +368,7 @@ class FractionalIdealModule(Parent):
                 return candidate == 0
             return SageQQ(candidate / principal).denominator() == 1
         return bool(
-            _order_coordinate_vector(self.base_ring(), candidate)
+            _engine_component_vector(_order_coordinate_vector(self.base_ring(), candidate))
             in _integer_coordinate_submodule(self)
         )
 

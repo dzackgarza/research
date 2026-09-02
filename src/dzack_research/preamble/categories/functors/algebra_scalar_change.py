@@ -34,7 +34,7 @@ def _engine_ring_map(ring_map):
     source = engine_ring(ring_map.domain())
     target = engine_ring(ring_map.codomain())
     return SetMorphism(
-        Hom(source, target, _OwnedRings()),
+        source.Hom(target),
         lambda scalar: target(ring_map(source(scalar))),
     )
 

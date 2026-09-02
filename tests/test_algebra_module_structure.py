@@ -1,5 +1,4 @@
 from sage.categories.homset import Hom
-from sage.categories.rings import Rings as SageRings
 import pytest
 
 from dzack_research.preamble.all import (
@@ -10,6 +9,7 @@ from dzack_research.preamble.all import (
     GradedModules,
     MatrixSpace,
     Modules,
+    OwnedRings,
     QQ,
     QuadraticField,
     SymmetricAlgebraOn,
@@ -42,7 +42,7 @@ def test_algebra_structure_morphism_lands_in_the_center() -> None:
     assert eta.domain() is ZZ
     assert eta.codomain() is order.ring_center()
     assert eta.codomain() is order
-    assert eta.parent().homset_category().is_subcategory(SageRings())
+    assert eta.parent().homset_category().is_subcategory(OwnedRings())
     assert eta(ZZ(1)) == order.one()
     assert eta(ZZ(2)) * imag == imag * eta(ZZ(2))
     assert eta(ZZ(2)) * eta(ZZ(3)) == eta(ZZ(6))

@@ -1118,9 +1118,9 @@ class TorsionBilinearFormModules(OwnedCategoryOverBaseRing):
 
         def pontryagin_dual_identification(self):
             r"""Return ``A -> Hom(A,K/R)``, ``x |-> b(x,-)``, for perfect ``b``."""
-            from sage.categories.homset import Hom as sage_hom
             from sage.categories.morphism import SetMorphism
-            from sage.categories.sets_cat import Sets as SageSets
+
+            from dzack_research.preamble.categories.sets import Sets as OwnedSets
 
             from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
                 module_homset,
@@ -1147,7 +1147,7 @@ class TorsionBilinearFormModules(OwnedCategoryOverBaseRing):
                     }
                 )
 
-            return SetMorphism(sage_hom(self, characters, SageSets()), character)
+            return SetMorphism(OwnedSets().hom(self, characters), character)
 
         @cached_method
         def automorphism_group(self):

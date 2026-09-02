@@ -383,7 +383,7 @@ class AlgebraMorphism(Morphism):
                             "the selected module generators"
                         )
             self._engine_morphism = SetMorphism(
-                Hom(engine_domain, engine_codomain, SageRings()),
+                engine_domain.Hom(engine_codomain),
                 lambda element: engine_codomain(images(domain(element))),
             )
             if framed_domain:
@@ -443,7 +443,7 @@ class AlgebraMorphism(Morphism):
         engine_base = engine_ring(domain.base_ring())
         target_structure = codomain._ring_morphism_defining_algebra_structure()
         base_map = SetMorphism(
-            Hom(engine_base, engine_codomain, SageRings()),
+            engine_base.Hom(engine_codomain),
             lambda scalar: engine_codomain(
                 target_structure(domain.base_ring()(scalar))
             ),

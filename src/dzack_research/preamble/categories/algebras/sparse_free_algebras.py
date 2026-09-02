@@ -713,7 +713,7 @@ def compose_with_free_construction(left, right):
     engine_source = engine_ring(source)
     engine_target = engine_ring(target)
     composite = SetMorphism(
-        Hom(engine_source, engine_target, SageRings()),
+        engine_source.Hom(engine_target),
         lambda element: engine_target(left(right(engine_source(element)))),
     )
     return algebra_homset(source, target)(composite)

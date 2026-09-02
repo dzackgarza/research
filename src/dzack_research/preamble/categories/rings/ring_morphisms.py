@@ -4,7 +4,7 @@ from sage.categories.homset import Homset
 from sage.categories.map import Map
 from sage.categories.morphism import Morphism
 
-from dzack_research.preamble.categories.sets import Sets
+from dzack_research.preamble.categories.rings.rings import OwnedRings
 
 
 class RingMorphism(Morphism):
@@ -48,7 +48,7 @@ class RingHomset(Homset):
     Element = RingMorphism
 
     def __init__(self, domain, codomain) -> None:
-        Homset.__init__(self, domain, codomain, category=Sets())
+        Homset.__init__(self, domain, codomain, category=OwnedRings())
 
     def __call__(self, datum):
         return self._element_constructor_(datum)
