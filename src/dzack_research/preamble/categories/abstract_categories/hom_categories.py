@@ -669,16 +669,22 @@ class CategoryPacket(SageObject):
         return f"Category packet of {self.category()}"
 
 
-def _declared_family(category, declaration_name, default):
-    r"""Construct the first packet-family declaration on the category MRO."""
+def _declared_construction(category, declaration_name):
+    r"""Return the first packet-family declaration on the category MRO, if any."""
     declaring = type(category)
     if declaring.__name__.endswith("_with_category"):
         declaring = declaring.__base__
     for ancestor in declaring.__mro__:
         construction = ancestor.__dict__.get(declaration_name)
         if isinstance(construction, type):
-            return construction(category)
-    return default(category)
+            return construction
+    return None
+
+
+def _declared_family(category, declaration_name, default):
+    r"""Construct the packet family ``category`` declares, else ``default``."""
+    construction = _declared_construction(category, declaration_name)
+    return (default if construction is None else construction)(category)
 
 
 @cached_function
@@ -690,6 +696,16 @@ class HomCategoryOf(Category):
     r"""The family ``(A,B) |-> Hom_C(A,B)`` attached to one category ``C``."""
 
     FixedCategoryClass = FixedHomCategory
+    _declaration_name = "_HomCategory"
+
+    @staticmethod
+    def __classcall__(cls, base_category):
+        # A category that declares its own Hom family has exactly one; naming
+        # the generic family on it resolves to the declared one.
+        declared = _declared_construction(base_category, cls._declaration_name)
+        if declared is not None and not issubclass(cls, declared):
+            return declared(base_category)
+        return super(HomCategoryOf, cls).__classcall__(cls, base_category)
 
     def __init__(self, base_category) -> None:
         self._base_category = base_category
@@ -783,6 +799,7 @@ class EndCategoryOf(HomCategoryOf):
     r"""The family ``A |-> End_C(A)``."""
 
     FixedCategoryClass = FixedEndCategory
+    _declaration_name = "_EndCategory"
 
     def family_over(self, category):
         return category_packet(category).Ends()
@@ -827,6 +844,8 @@ class _RestrictedCategoryOf(HomCategoryOf):
 
 
 class MonoCategoryOf(_RestrictedCategoryOf):
+    _declaration_name = "_MonoCategory"
+
     def family_over(self, category):
         return category_packet(category).Monos()
 
@@ -838,6 +857,8 @@ class MonoCategoryOf(_RestrictedCategoryOf):
 
 
 class EpiCategoryOf(_RestrictedCategoryOf):
+    _declaration_name = "_EpiCategory"
+
     def family_over(self, category):
         return category_packet(category).Epis()
 
@@ -850,6 +871,7 @@ class EpiCategoryOf(_RestrictedCategoryOf):
 
 class IsoCategoryOf(HomCategoryOf):
     FixedCategoryClass = FixedIsoCategory
+    _declaration_name = "_IsoCategory"
 
     def family_over(self, category):
         return category_packet(category).Isos()
@@ -873,6 +895,7 @@ class AutCategoryOf(IsoCategoryOf):
     r"""The family ``A |-> Aut_C(A)``."""
 
     FixedCategoryClass = FixedAutCategory
+    _declaration_name = "_AutCategory"
 
     def family_over(self, category):
         return category_packet(category).Auts()
