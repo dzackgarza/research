@@ -456,27 +456,30 @@ class AlgebraMorphism(Morphism):
             scalar_labels = tuple(domain.restricted_scalar_generator_labels())
             algebra_labels = tuple(domain.restricted_algebra_generator_labels())
             extension_engine = engine_ring(domain.extension_ring())
-            extension_map = extension_engine.hom(
+            extension_map = _engine_morphism_from_generator_images(
+                extension_engine,
+                engine_codomain,
                 [
                     engine_codomain(self._generator_images[("scalar", label)])
                     for label in scalar_labels
                 ],
-                engine_codomain,
-                base_map=base_map,
+                base_map,
             )
-            self._engine_morphism = engine_domain.hom(
+            self._engine_morphism = _engine_morphism_from_generator_images(
+                engine_domain,
+                engine_codomain,
                 [
                     engine_codomain(self._generator_images[("algebra", label)])
                     for label in algebra_labels
                 ],
-                engine_codomain,
-                base_map=extension_map,
+                extension_map,
             )
             return
-        self._engine_morphism = engine_domain.hom(
-            [engine_codomain(image) for image in generator_images],
+        self._engine_morphism = _engine_morphism_from_generator_images(
+            engine_domain,
             engine_codomain,
-            base_map=base_map,
+            [engine_codomain(image) for image in generator_images],
+            base_map,
         )
 
     def __call__(self, element):
@@ -875,6 +878,30 @@ def own_algebra(structure_map):
     engine = engine_ring(structure_map.codomain())
     algebra = OwnedAlgebraView(engine, base, None, structure_map)
     return refine(algebra, [Algebras(base), OwnedAlgebras(base)])
+
+
+def _engine_morphism_from_generator_images(engine_domain, engine_codomain, images, base_map):
+    r"""The engine morphism sending the generators of ``engine_domain`` to ``images``.
+
+    A Sage ring codomain receives Sage's own image-of-generators morphism.  An
+    owned parent that is its own engine is not a Sage ring, so the morphism is
+    then Sage's element protocol for the same thing, ``_im_gens_``, and the
+    relations of a presented domain are checked against it here.
+    """
+    if engine_codomain in SageRings():
+        return engine_domain.hom(images, engine_codomain, base_map=base_map)
+
+    def image(element):
+        return element._im_gens_(engine_codomain, images, base_map)
+
+    if engine_domain in SageRings().Quotients():
+        for relation in engine_domain.defining_ideal().gens():
+            if image(relation) != engine_codomain.zero():
+                raise ValueError(
+                    "relations do not all map to zero under the map determined by "
+                    "the images of the generators"
+                )
+    return SetMorphism(engine_domain.Hom(engine_codomain), image)
 
 
 def finite_algebra_generators(algebra):

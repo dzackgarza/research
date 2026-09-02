@@ -112,14 +112,9 @@ def test_noncommutative_center_is_a_predicate_subring() -> None:
     assert center.inclusion().domain() is center
     assert center.inclusion().codomain() is matrices
 
-    try:
-        matrices.one() in center
-    except NotImplementedError:
-        pass
-    else:
-        raise AssertionError(
-            "centrality in a matrix ring was guessed without a represented generating set"
-        )
+    # Centrality is decided on the matrix units, the chosen algebra generators.
+    assert matrices.one() in center
+    assert matrices.algebra_generator(1) not in center
 
 
 def test_owned_ring_constructors_return_owned_rings() -> None:

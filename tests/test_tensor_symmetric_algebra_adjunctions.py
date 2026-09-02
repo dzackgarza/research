@@ -398,7 +398,7 @@ def test_iterated_free_algebra_normalizes_relations_in_actual_underlying_pieces(
     exterior_module = BasedFreeModule(ZZ, finite_ordered_set(("x",)))
     exterior = AlternatingAlgebraOf(exterior_module)
     augmentation = SetMorphism(
-        Hom(exterior, iterated_free, SageRings()),
+        exterior.Hom(iterated_free),
         lambda element: element.monomial_coefficients().get((0, 0), ZZ.zero())
         * iterated_free.one(),
     )

@@ -1033,10 +1033,12 @@ def MatrixSpace(base_ring, *args, **kwargs):
     result = _SageMatrixSpace(engine_ring(base_ring), *args, **kwargs)
     if result not in SageRings():
         return result
+    engine = result
     result = own_ring(result)
     from dzack_research.preamble.categories.algebras.algebras import refine_algebra
 
-    return refine_algebra(result, base_ring)
+    # The matrix units are a chosen finite algebra generating set.
+    return refine_algebra(result, base_ring, range(engine.ngens()))
 
 
 def ring_constructor_surface() -> dict[str, object]:
