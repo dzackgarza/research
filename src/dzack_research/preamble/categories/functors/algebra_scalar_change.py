@@ -17,6 +17,7 @@ from sage.categories.morphism import SetMorphism
 from sage.categories.rings import Rings as SageRings
 from sage.misc.cachefunc import cached_function
 
+from dzack_research.preamble.categories.rings import OwnedRings as _OwnedRings
 from dzack_research.preamble.categories.algebras import (
     Algebras,
     AlgebrasWithChosenFinitePresentation,
@@ -33,7 +34,7 @@ def _engine_ring_map(ring_map):
     source = engine_ring(ring_map.domain())
     target = engine_ring(ring_map.codomain())
     return SetMorphism(
-        Hom(source, target, SageRings()),
+        Hom(source, target, _OwnedRings()),
         lambda scalar: target(ring_map(source(scalar))),
     )
 

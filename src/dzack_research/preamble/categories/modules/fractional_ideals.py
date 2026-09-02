@@ -13,6 +13,7 @@ from sage.structure.element import ModuleElement
 from sage.structure.parent import Parent
 from sage.structure.richcmp import richcmp
 
+from dzack_research.preamble.categories.rings import OwnedRings as _OwnedRings
 from dzack_research.preamble.categories.rings import (
     OwnedCategoryOverBaseRing,
     OwnedOrders,
@@ -469,7 +470,7 @@ def _fraction_field_as_module(base_ring):
     ring = owned_ring_view(base_ring)
     field = ring.fraction_field()
     scalar_map = SetMorphism(
-        Hom(ring, field, SageRings()),
+        Hom(ring, field, _OwnedRings()),
         lambda scalar: field(scalar),
     )
     return restrict_scalars(ring_as_module(field), scalar_map)

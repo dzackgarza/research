@@ -371,6 +371,16 @@ class OwnedGroups(CategoryPacketMethods, Category):
     def super_categories(self):
         return [Monoids()]
 
+    def Homsets(self):
+        r"""A Hom-set of groups is a set; composition is not a group law."""
+        from dzack_research.preamble.categories.sets import Sets
+
+        return Sets()
+
+    def Endsets(self):
+        r"""An endomorphism set of a group is a monoid under composition."""
+        return Monoids()
+
     class ParentMethods:
         def _Hom_(self, codomain, category=None):
             groups = OwnedGroups()

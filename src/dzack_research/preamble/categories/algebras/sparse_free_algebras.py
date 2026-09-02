@@ -14,6 +14,7 @@ from sage.structure.element import ModuleElement
 from sage.structure.parent import Parent
 from sage.structure.richcmp import op_EQ, op_NE
 
+from dzack_research.preamble.categories.rings import OwnedRings as _OwnedRings
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
     CommutativeAlgebras,
@@ -660,7 +661,7 @@ class SparseFreeAlgebra(Parent):
 
     def _ring_morphism_defining_algebra_structure(self):
         return SetMorphism(
-            Hom(self.base_ring(), self, SageRings()),
+            Hom(self.base_ring(), self, _OwnedRings()),
             lambda scalar: self(scalar),
         )
 

@@ -14,6 +14,7 @@ from sage.categories.rings import Rings as SageRings
 from sage.categories.sets_cat import Sets
 import operator
 
+from dzack_research.preamble.categories.rings import OwnedRings as _OwnedRings
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
 )
@@ -333,7 +334,7 @@ class DerivationSpace(Homset):
 
         endomorphisms = Modules(self.algebra()).End(self)
         return SetMorphism(
-            Hom(self.algebra(), endomorphisms, SageRings()),
+            Hom(self.algebra(), endomorphisms, _OwnedRings()),
             lambda scalar: endomorphisms.elementwise(
                 lambda derivation: self.algebra_multiple(scalar, derivation)
             ),

@@ -15,6 +15,7 @@ from sage.categories.map import Map
 from sage.categories.morphism import SetMorphism
 from sage.categories.rings import Rings as SageRings
 
+from dzack_research.preamble.categories.rings import OwnedRings as _OwnedRings
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
     FramedAlgebras,
@@ -227,7 +228,7 @@ def restrict_algebra_scalars(algebra, ring_map):
     restricted._preamble_restricted_algebra_generator_labels = restricted_algebra_labels
     source_structure = algebra.algebra_structure_morphism()
     restricted._preamble_structure_map = SetMorphism(
-        Hom(base_ring, restricted, SageRings()),
+        Hom(base_ring, restricted, _OwnedRings()),
         lambda scalar: restricted(source_structure(ring_map(scalar))),
     )
 
@@ -268,7 +269,7 @@ def restrict_algebra_scalars(algebra, ring_map):
             base_map=engine_base_map,
         )
         restricted._preamble_algebra_presentation_morphism = SetMorphism(
-            Hom(presentation_ring, restricted, SageRings()),
+            Hom(presentation_ring, restricted, _OwnedRings()),
             lambda element: restricted(
                 presentation_engine_map(presentation_engine(element))
             ),
