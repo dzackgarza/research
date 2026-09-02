@@ -19,7 +19,11 @@ from sage.misc.latex import latex
 from sage.misc.unknown import Unknown
 from sage.rings.infinity import Infinity
 from sage.rings.integer_ring import ZZ as SageZZ
+from sage.structure.parent import Parent
 
+from collections.abc import Hashable, Sequence
+
+from dzack_research.preamble.categories._lattice import Lattice
 from dzack_research.preamble.categories._lattice import diagonal_gram as diagonal_gram
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     HomCategoryConstruction,
@@ -33,6 +37,7 @@ from dzack_research.preamble.categories.rings import (
     engine_ring,
     own_ring,
 )
+from dzack_research.preamble.tensors import Tensor
 
 _Rings = OwnedRings()
 
@@ -329,7 +334,29 @@ class Lattices(OwnedCategoryOverBaseRing):
             raise TypeError("Lattices(R) takes a ring R; construct an object as Lattices(R)(data)")
         return super().__classcall__(cls, ring)
 
-    def _call_(self, data, basis=None, names=None, form=None, module_generators=None):
+    def __call__(self, data: object, *args: object, **options: object) -> Lattice:
+        r"""Return the lattice that ``data`` presents; a lattice in this category is returned as is.
+
+        EXAMPLES::
+
+            sage: from dzack_research.preamble.categories.lattices import Lattices
+            sage: L = Lattices(ZZ)("U")
+            sage: Lattices(ZZ)(L) is L
+            True
+        """
+        lattice = super().__call__(data, *args, **options)
+        if not isinstance(lattice, Lattice):
+            raise TypeError(f"{lattice!r} is not a lattice in {self}")
+        return lattice
+
+    def _call_(
+        self,
+        data: object,
+        basis: None = None,
+        names: str | Sequence[str] | None = None,
+        form: Tensor | None = None,
+        module_generators: Sequence[Hashable] | Parent | None = None,
+    ) -> Lattice:
         r"""Construct a lattice in this category.
 
         This is Sage's category constructor: ``C(x)`` for ``C`` a
