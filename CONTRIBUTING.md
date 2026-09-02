@@ -50,6 +50,39 @@ Each policy has a unique alphanumeric identifier.
 
 - **Violation Example**: Requiring a CAS-specific category membership or class (Sage, Singular, GAP, OSCAR, or Macaulay2-specific) to state, construct, or identify an object.
 
+#### `ARC-05`: An Owned Object Holds Its Engine; It Is Never Inside One
+
+- **Rule**: An owned object is a parent constructed through the owned category chain.
+  The Sage object it computes with is held as its engine, over the engine ring, and every call into that engine is an explicit crossing.
+  No Sage constructor receives an owned object as a base ring, base category, or element parent, and membership of an owned object in a Sage category is never added so that a Sage constructor will accept it.
+
+- **Rationale**: When an owned object sits inside a Sage data structure, every Sage constructor that inspects it must be taught to accept it, one category join or hook at a time, and the engine leaks back into the statement of the object.
+  Sage's fast paths, the identity of element types and the C3 order of categories, break exactly at that seam.
+
+- **Violation Example**: Joining an engine's category into an owned ring view so that `FreeModule(view, n)` is accepted; a presented module deriving from Sage's FGP class with the owned ring as its `base_ring()`.
+
+#### `ARC-06`: Adopt by Facade, Never by Reclassing
+
+- **Rule**: A Sage parent enters the session as the engine of an owned parent whose elements remain engine elements, the shape the owned ring views already have.
+  An existing Sage parent is not reclassed in place by refinement or a post-init hook, and no owned element methods are layered over a Cython element type.
+
+- **Rationale**: Reclassing leaves the elements a parent already holds in their original type.
+  Sage's arithmetic compares element types by identity and otherwise falls to coercion, which returns to the same arithmetic.
+  Owned behaviour belongs to the owned parent and its morphisms; elements are engine data.
+
+- **Violation Example**: A post-init hook on a Sage group class that refines each instance in place; rebuilding the element class of an adopted permutation group.
+
+#### `ARC-07`: A Morphism Is Asked of Its Endpoints
+
+- **Rule**: A Hom object is obtained from its endpoints, `A.Hom(B)`, so the owned `_Hom_` hook of their category chooses the homset.
+  A category is named at the call site only when the morphism deliberately lives in a coarser owned category, `Sets().hom(A, B)` for a map of underlying sets.
+  A Sage category is never named at a Hom site.
+
+- **Rationale**: Naming a category at the call site restates what the endpoints already know and, when the name is Sage's, asks Sage to admit owned objects it does not hold.
+  The endpoints' own category is the single place the choice of homset is made.
+
+- **Violation Example**: `Hom(source, target, Groups())` with owned groups as endpoints; `Hom(base_ring, self, Rings())` inside an owned algebra.
+
 * * *
 
 ### 2. Computational Backend Delegation (`ENG-*`)
