@@ -17,6 +17,7 @@ from sage.structure.parent import Parent
 from sage.structure.sage_object import SageObject
 
 _PREAMBLE_PACKAGE = __name__.rpartition(".")[0] + "."
+_PY_TPFLAGS_HEAPTYPE = 1 << 9
 _HOOKS: dict[type, list[tuple[Category, Callable | None]]] = {}
 _ORIGINAL_INIT: dict[type, Callable] = {}
 _AFTER: dict[type, list[Callable]] = {}
@@ -67,6 +68,13 @@ def _rebuild_element_class(parent: Parent, category: Category) -> None:
     if not mixins:
         return
     native = parent.element_class
+    # A Cython element type is compared by identity in Sage's arithmetic fast
+    # paths, and elements the parent already holds keep it; a per-parent
+    # subclass would make their products fall through to coercion, which
+    # hands them back to the same arithmetic.  Owned element methods can
+    # only be layered over a Python element class.
+    if not (native.__flags__ & _PY_TPFLAGS_HEAPTYPE):
+        return
     carried = frozenset(native.__mro__)
     mixins = tuple(m for m in mixins if m is not object and m not in carried)
     if not mixins:
