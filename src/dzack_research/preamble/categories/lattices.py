@@ -22,8 +22,8 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.parent import Parent
 
 from collections.abc import Hashable, Sequence
+from typing import TYPE_CHECKING, overload
 
-from dzack_research.preamble.categories._lattice import Lattice
 from dzack_research.preamble.categories._lattice import diagonal_gram as diagonal_gram
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     HomCategoryConstruction,
@@ -38,6 +38,9 @@ from dzack_research.preamble.categories.rings import (
     own_ring,
 )
 from dzack_research.preamble.tensors import Tensor
+
+if TYPE_CHECKING:
+    from dzack_research.preamble.categories.lattice_properties import FiniteRankLattices
 
 _Rings = OwnedRings()
 
@@ -334,8 +337,16 @@ class Lattices(OwnedCategoryOverBaseRing):
             raise TypeError("Lattices(R) takes a ring R; construct an object as Lattices(R)(data)")
         return super().__classcall__(cls, ring)
 
-    def __call__(self, data: object, *args: object, **options: object) -> Lattice:
+    @overload  # type: ignore[override]  # the stub promises a SageObject; the object type of this category is its provider class
+    def __call__(self, data: str | Sequence[Sequence[object]], *args: object, **options: object) -> "FiniteRankLattices.ParentMethods": ...
+
+    @overload
+    def __call__(self, data: object, *args: object, **options: object) -> "Lattices.ParentMethods": ...
+
+    def __call__(self, data: object, *args: object, **options: object) -> "Lattices.ParentMethods":
         r"""Return the lattice that ``data`` presents; a lattice in this category is returned as is.
+
+        A named form or a Gram given by rows has finite rank.
 
         EXAMPLES::
 
@@ -345,18 +356,18 @@ class Lattices(OwnedCategoryOverBaseRing):
             True
         """
         lattice = super().__call__(data, *args, **options)
-        if not isinstance(lattice, Lattice):
+        if not isinstance(lattice, Lattices.ParentMethods):
             raise TypeError(f"{lattice!r} is not a lattice in {self}")
         return lattice
 
-    def _call_(
+    def _call_(  # type: ignore[override]  # the stub promises a SageObject; the object type of this category is its provider class
         self,
         data: object,
         basis: None = None,
         names: str | Sequence[str] | None = None,
         form: Tensor | None = None,
         module_generators: Sequence[Hashable] | Parent | None = None,
-    ) -> Lattice:
+    ) -> "Lattices.ParentMethods":
         r"""Construct a lattice in this category.
 
         This is Sage's category constructor: ``C(x)`` for ``C`` a

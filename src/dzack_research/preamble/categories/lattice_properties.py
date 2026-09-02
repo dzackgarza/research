@@ -2,6 +2,7 @@ r"""Mathematical property subcategories of the active lattice category."""
 
 from sage.rings.infinity import Infinity
 
+from dzack_research.preamble.categories.lattices import Lattices
 from dzack_research.preamble.categories.rings import OwnedCategoryOverBaseRing
 from dzack_research.preamble.refine import refine
 
@@ -14,7 +15,6 @@ class FiniteRankLattices(OwnedCategoryOverBaseRing):
         return "finite-rank lattices"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.lattices import Lattices
         from dzack_research.preamble.categories.modules import FinitelyGeneratedFreeModules
 
         return [
@@ -22,7 +22,7 @@ class FiniteRankLattices(OwnedCategoryOverBaseRing):
             FinitelyGeneratedFreeModules(self.base_ring()),
         ]
 
-    class ParentMethods:
+    class ParentMethods(Lattices.ParentMethods):
         def is_finite_rank(self) -> bool:
             return True
 
@@ -35,7 +35,6 @@ class NondegenerateLattices(OwnedCategoryOverBaseRing):
         return "nondegenerate lattices"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.lattices import Lattices
 
         return [Lattices(self.base_ring())]
 
@@ -48,7 +47,6 @@ class EvenLattices(OwnedCategoryOverBaseRing):
         return "even lattices"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.lattices import Lattices
 
         return [Lattices(self.base_ring())]
 
