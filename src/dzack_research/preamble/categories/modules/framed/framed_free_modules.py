@@ -1,5 +1,6 @@
 """Free modules with their canonical framing."""
 
+from dzack_research.preamble.categories.rings import engine_ring as _engine_ring
 from itertools import count
 
 from sage.combinat.free_module import CombinatorialFreeModule
@@ -96,7 +97,7 @@ class _SparseFreeModuleParent(Parent):
         categories = [FramedFreeModules(ring)]
         if labels.cardinality() in SageZZ:
             categories.append(FinitelyGeneratedFreeModules(ring))
-        Parent.__init__(self, base=ring, category=Category.join(tuple(categories)))
+        Parent.__init__(self, base=_engine_ring(ring), category=Category.join(tuple(categories)))
         refine(self, categories)
 
         from dzack_research.preamble.categories.modules.pure.modules import Modules

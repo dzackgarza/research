@@ -1,5 +1,6 @@
 r"""Restriction of scalars along a specified ring morphism."""
 
+from dzack_research.preamble.categories.rings import engine_ring as _engine_ring
 from sage.categories.category import Category
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.element import ModuleElement
@@ -141,7 +142,7 @@ class RestrictedScalarsModuleView(Parent):
 
         Parent.__init__(
             self,
-            base=base_ring,
+            base=_engine_ring(base_ring),
             category=Category.join(tuple(categories)),
         )
         refine(self, categories)

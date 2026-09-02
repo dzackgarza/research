@@ -19,6 +19,7 @@ that parses those arguments and infers the ring; what they return crosses
 back to an owned tensor before any session sees it.
 """
 
+from dzack_research.preamble.categories.rings import engine_ring as _engine_ring
 from functools import singledispatch
 from math import prod
 
@@ -1489,7 +1490,7 @@ class TensorModule(UniqueRepresentation, Parent):
         self._lower_ranks = tuple(lower_ranks)
         from dzack_research.preamble.categories.modules.pure.modules import Modules
 
-        Parent.__init__(self, base=base_ring, category=Modules(base_ring))
+        Parent.__init__(self, base=_engine_ring(base_ring), category=Modules(base_ring))
 
     def construction(self):
         r"""Return no functorial construction.

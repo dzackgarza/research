@@ -1,5 +1,6 @@
 r"""Ideals and fractional ideals as modules represented by their inclusions."""
 
+from dzack_research.preamble.categories.rings import engine_ring as _engine_ring
 from functools import reduce
 
 from sage.categories.category import Category
@@ -341,7 +342,7 @@ class FractionalIdealModule(Parent):
         )
 
         categories.extend([FramedModules(ring), FinitelyGeneratedModules(ring)])
-        Parent.__init__(self, base=ring, category=Category.join(tuple(categories)))
+        Parent.__init__(self, base=_engine_ring(ring), category=Category.join(tuple(categories)))
         refine(self, categories)
 
     def _element_constructor_(self, value):

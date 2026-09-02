@@ -5,6 +5,7 @@ module constructions ``Lambda^n(M)`` and ``Gamma^n(M)``.  This module forms
 their direct sum as an algebra; no second quotient-ring presentation is kept.
 """
 
+from dzack_research.preamble.categories.rings import engine_ring as _engine_ring
 from itertools import count
 
 from sage.categories.category import Category
@@ -276,7 +277,7 @@ class PowerAlgebra(Parent):
             )
         Parent.__init__(
             self,
-            base=self._base_ring,
+            base=_engine_ring(self._base_ring),
             category=Category.join(tuple(categories)),
         )
         self._preamble_algebra_generating_set = module.module_generating_set()

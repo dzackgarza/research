@@ -18,6 +18,7 @@ graded augmentation of the pointwise algebra is the projection onto the
 unit piece \(A\to L^\infty=A_u\).
 """
 
+from dzack_research.preamble.categories.rings import engine_ring as _engine_ring
 from sage.categories.homset import Hom, Homset
 from sage.categories.map import Map
 from sage.categories.modules import Modules as SageModules
@@ -394,7 +395,7 @@ class GradedTensorSquare(UniqueRepresentation, Parent):
     def __init__(self, module) -> None:
         self._preamble_tensor_factors = (module, module)
         ring = _real_ring()
-        Parent.__init__(self, base=ring, category=Modules(ring))
+        Parent.__init__(self, base=_engine_ring(ring), category=Modules(ring))
         refine(self, GradedTensorProductModules(ring))
 
     def _repr_(self) -> str:
@@ -454,7 +455,7 @@ class _LebesgueAlgebraFromMultiplication(Parent):
     def __init__(self, module) -> None:
         ring = _real_ring()
         self._preamble_algebra_base_ring = ring
-        Parent.__init__(self, base=ring, category=Modules(ring))
+        Parent.__init__(self, base=_engine_ring(ring), category=Modules(ring))
         refine(
             self,
             [LebesgueGradedModules(ring), GradedModules(ring, module.grading_monoid())],
@@ -520,7 +521,7 @@ class GradedLebesgueModule(UniqueRepresentation, Parent):
     def __init__(self, grading_monoid) -> None:
         ring = _real_ring()
         self._preamble_algebra_base_ring = ring
-        Parent.__init__(self, base=ring, category=Modules(ring))
+        Parent.__init__(self, base=_engine_ring(ring), category=Modules(ring))
         refine(
             self,
             [LebesgueGradedModules(ring), GradedModules(ring, grading_monoid)],

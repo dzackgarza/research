@@ -1,5 +1,6 @@
 r"""Sparse tensor and symmetric algebras on infinitely framed free modules."""
 
+from dzack_research.preamble.categories.rings import engine_ring as _engine_ring
 from itertools import count, product
 from typing import Any, cast
 
@@ -331,7 +332,7 @@ class SparseFreeAlgebra(Parent):
             categories.append(CommutativeAlgebras(self._base_ring))
         Parent.__init__(
             self,
-            base=self._base_ring,
+            base=_engine_ring(self._base_ring),
             category=Category.join(tuple(categories)),
         )
 

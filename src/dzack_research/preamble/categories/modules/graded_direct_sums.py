@@ -1,5 +1,6 @@
 r"""Finite-support direct sums of a represented family of graded modules."""
 
+from dzack_research.preamble.categories.rings import engine_ring as _engine_ring
 from itertools import count
 from typing import Any
 
@@ -184,7 +185,7 @@ class GradedDirectSumModule(Parent):
         ]
         Parent.__init__(
             self,
-            base=self._base_ring,
+            base=_engine_ring(self._base_ring),
             category=Category.join(tuple(categories)),
         )
 

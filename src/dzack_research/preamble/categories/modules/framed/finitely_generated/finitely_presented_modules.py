@@ -1,5 +1,6 @@
 """Finitely presented modules with a selected finite presentation."""
 
+from dzack_research.preamble.categories.rings import engine_ring as _engine_ring
 from sage.categories.principal_ideal_domains import PrincipalIdealDomains
 from sage.categories.modules import Modules as SageModules
 from sage.modules.fg_pid.fgp_module import FGP_Module_class
@@ -670,7 +671,7 @@ class _GeneralPresentedModule(Parent):
         self._lifted_relation_submodule = None
         Parent.__init__(
             self,
-            base=base_ring,
+            base=_engine_ring(base_ring),
             category=SageModules(engine_ring(base_ring)),
         )
 

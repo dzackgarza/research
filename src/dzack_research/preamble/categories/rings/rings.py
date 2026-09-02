@@ -64,6 +64,18 @@ class OwnedRings(Category):
     def super_categories(self):
         return [OwnedSemirings(), OwnedRngs()]
 
+    def Homsets(self):
+        r"""A Hom-set of rings is a set; composition is not a ring law."""
+        from dzack_research.preamble.categories.sets import Sets
+
+        return Sets()
+
+    def Endsets(self):
+        r"""An endomorphism set of a ring is a monoid under composition."""
+        from dzack_research.preamble.categories.group.magmas import Monoids
+
+        return Monoids()
+
     def homset(self, domain, codomain):
         if domain not in self or codomain not in self:
             raise TypeError("a ring Hom requires two owned rings")
