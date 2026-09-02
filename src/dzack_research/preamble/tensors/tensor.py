@@ -1475,7 +1475,7 @@ class TensorModule(UniqueRepresentation, Parent):
 
         return UniqueRepresentation.__classcall__(
             cls,
-            base_ring,
+            own_ring(base_ring),
             tuple(normalize(rank) for rank in upper_ranks),
             tuple(normalize(rank) for rank in lower_ranks),
         )
