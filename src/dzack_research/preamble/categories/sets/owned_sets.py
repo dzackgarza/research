@@ -85,13 +85,14 @@ class Sets(Category):
     Hom = hom
     homset = hom
 
-    def Homsets(self):
-        r"""Fixed-endpoint Hom objects in ``Set`` are themselves sets."""
-        return self
+    class SubcategoryMethods:
+        def Homsets(self):
+            r"""A Hom object of any owned category is a set."""
+            return Homsets()
 
-    def Endsets(self):
-        r"""Endomorphism sets in ``Set`` are themselves sets."""
-        return self
+        def Endsets(self):
+            r"""An endomorphism object of any owned category is a monoid under composition."""
+            return Endsets()
 
     def identity(self, set_object):
         return self.hom(set_object, set_object).identity()
@@ -134,6 +135,30 @@ class Sets(Category):
 
 
 __all__ = ["Sets"]
+
+
+class Homsets(Category):
+    r"""Hom objects \(\operatorname{Hom}(X,Y)\), which are sets."""
+
+    def super_categories(self):
+        return [Sets()]
+
+    class ParentMethods:
+        def is_endomorphism_set(self) -> bool:
+            return self.domain() is self.codomain()
+
+
+class Endsets(Category):
+    r"""Endomorphism objects \(\operatorname{End}(X)\), monoids under composition."""
+
+    def super_categories(self):
+        from dzack_research.preamble.categories.group.magmas import Monoids
+
+        return [Homsets(), Monoids()]
+
+    class ParentMethods:
+        def is_endomorphism_set(self) -> bool:
+            return True
 
 
 class FiniteSets(Category):
