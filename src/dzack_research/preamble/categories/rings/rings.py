@@ -717,7 +717,10 @@ def _owned_ring_category(engine: Ring) -> Category:
         placement = OwnedDivisionRings()
     else:
         placement = OwnedRings()
-    joined = Category.join((placement, _owned_ring_size(engine), *extra))
+    # A view stands over a Sage ring and is handed to Sage constructors as a
+    # base ring; Sage admits it only through the engine's own category, which
+    # therefore joins the owned placement, after it.
+    joined = Category.join((placement, _owned_ring_size(engine), *extra, category))
     match engine:
         case SageNumberFieldOrder():
             return Category.join((joined, OwnedOrders()))

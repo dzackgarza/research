@@ -57,6 +57,12 @@ def _rebuild_parent_class(parent: Parent, category: Category) -> None:
 
 
 def _rebuild_element_class(parent: Parent, category: Category) -> None:
+    from sage.categories.sets_cat import Sets as SageSets
+
+    # A facade's elements belong to the parents it stands for; it has no
+    # element class of its own to rebuild.
+    if category.is_subcategory(SageSets().Facade()):
+        return
     mixins = _owned_mixins(category, "ElementMethods")
     if not mixins:
         return

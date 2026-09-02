@@ -21,6 +21,13 @@ class Monoids(Category):
     def super_categories(self):
         return [Semigroups()]
 
+    class ElementMethods:
+        def _pow_int(self, exponent):
+            r"""Integer powers by repeated squaring, from the monoid law."""
+            from sage.arith.power import generic_power
+
+            return generic_power(self, exponent)
+
     def homset(self, domain, codomain):
         if domain not in self or codomain not in self:
             raise TypeError("a monoid Hom requires two monoids")
