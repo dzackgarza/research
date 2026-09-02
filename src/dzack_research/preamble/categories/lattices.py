@@ -555,14 +555,12 @@ class Lattices(OwnedCategoryOverBaseRing):
         @cached_method
         def discriminant_representation(self):
             r"""Return ``rho_L:O(L)->O(A_L)`` by functoriality of discriminants."""
-            from sage.categories.groups import Groups as SageGroups
-            from sage.categories.homset import Hom
             from sage.categories.morphism import SetMorphism
 
             source = self.Aut()
             target = self.discriminant_group().orthogonal_group()
             return SetMorphism(
-                Hom(source, target, SageGroups()),
+                source.Hom(target),
                 lambda isometry: isometry.discriminant_morphism(),
             )
 

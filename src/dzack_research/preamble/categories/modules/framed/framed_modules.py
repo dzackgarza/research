@@ -2,7 +2,7 @@
 
 from sage.categories.homset import Hom
 from sage.categories.morphism import SetMorphism
-from sage.categories.sets_cat import Sets
+from dzack_research.preamble.categories.sets import Sets
 
 from dzack_research.preamble.categories.rings import OwnedCategoryOverBaseRing
 
@@ -26,7 +26,7 @@ class FramedModules(OwnedCategoryOverBaseRing):
         def module_generator_morphism(self):
             source = self.module_generating_set()
             return SetMorphism(
-                Hom(source, self, Sets()),
+                Sets().hom(source, self),
                 self.module_generator,
             )
 

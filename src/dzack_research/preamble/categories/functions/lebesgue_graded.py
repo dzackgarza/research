@@ -23,7 +23,7 @@ from sage.categories.homset import Hom, Homset
 from sage.categories.map import Map
 from sage.categories.modules import Modules as SageModules
 from sage.categories.morphism import Morphism, SetMorphism
-from sage.categories.sets_cat import Sets
+from dzack_research.preamble.categories.sets import Sets
 from sage.misc.cachefunc import cached_function
 from sage.rings.infinity import Infinity
 from sage.structure.element import ModuleElement, parent as element_parent
@@ -101,7 +101,7 @@ def _compose_morphisms(left, right):
             f"cannot compose: the codomain of {right} is not the domain of {left}"
         )
     return SetMorphism(
-        Hom(right.domain(), left.codomain(), Sets()),
+        Sets().hom(right.domain(), left.codomain()),
         lambda value, left=left, right=right: left(right(value)),
     )
 
@@ -122,7 +122,7 @@ class LebesgueGradedModules(OwnedCategoryOverBaseRing):
             degree = self.grading_monoid()(degree)
             piece = self.graded_piece(degree)
             return SetMorphism(
-                Hom(self, piece, Sets()),
+                Sets().hom(self, piece),
                 lambda element, parent=self, degree=degree: parent(
                     element
                 ).homogeneous_component(degree),
@@ -283,7 +283,7 @@ def integration_morphism(space):
             return RR.zero()
         return RR(_l2_pairing(function, space.one()))
 
-    return SetMorphism(Hom(space, RR, Sets()), evaluate)
+    return SetMorphism(Sets().hom(space, RR), evaluate)
 
 
 class _GradedLebesgueElement(ModuleElement):

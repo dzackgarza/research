@@ -4,7 +4,7 @@ from sage.categories.category_types import Category_over_base
 from sage.categories.homset import Hom, Homset
 from sage.categories.modules import Modules as SageModules
 from sage.categories.morphism import Morphism, SetMorphism
-from sage.categories.sets_cat import Sets
+from dzack_research.preamble.categories.sets import Sets
 
 from dzack_research.preamble.categories.algebras import (
     CommutativeAlgebras,
@@ -274,7 +274,7 @@ class ConnectionSpace(Homset):
         )
         Homset.__init__(self, module, self._target_module, category=Sets())
         self._inclusion = SetMorphism(
-            Hom(self, self._ambient_hom, Sets()),
+            Sets().hom(self, self._ambient_hom),
             lambda connection: connection.underlying_linear_morphism(),
         )
 

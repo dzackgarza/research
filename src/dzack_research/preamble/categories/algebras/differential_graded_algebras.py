@@ -2,7 +2,7 @@ r"""Differential graded algebra categories and their morphisms."""
 
 from sage.categories.homset import Hom
 from sage.categories.morphism import Morphism
-from sage.categories.sets_cat import Sets
+from dzack_research.preamble.categories.sets import Sets
 
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
@@ -31,7 +31,7 @@ class DegreewiseLinearMorphism(Morphism):
         self._function = function
         Morphism.__init__(
             self,
-            Hom(domain, codomain, Sets()),
+            Sets().hom(domain, codomain),
         )
 
     def _call_(self, element):

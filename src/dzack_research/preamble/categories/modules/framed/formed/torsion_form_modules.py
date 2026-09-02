@@ -6,7 +6,6 @@ relation submodule in the appropriate sense; these constructors check that
 descent before equipping the module with the form.
 """
 
-from sage.categories.groups import Groups as SageGroups
 from sage.categories.homset import Hom
 from sage.categories.morphism import SetMorphism
 from sage.libs.gap.libgap import libgap
@@ -911,7 +910,7 @@ class TorsionFormOrthogonalGroup(CategoricalHomset):
     def inclusion(self):
         supergroup = self.supergroup()
         return SetMorphism(
-            Hom(self, supergroup, SageGroups()),
+            self.Hom(supergroup),
             lambda element: (
                 element
                 if supergroup is self

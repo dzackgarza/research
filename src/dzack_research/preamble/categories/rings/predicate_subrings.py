@@ -1,10 +1,8 @@
 """Subrings specified by a membership predicate and their inclusion."""
 
 from sage.categories.category import Category
-from sage.categories.homset import Hom
 from sage.categories.morphism import SetMorphism
 from sage.categories.rings import Rings as SageRings
-from sage.categories.sets_cat import Sets
 from sage.structure.parent import Parent
 
 from dzack_research.preamble.categories.rings.rings import OwnedRings
@@ -45,7 +43,7 @@ class PredicateSubrings(Category):
 
         def inclusion(self):
             return SetMorphism(
-                Hom(self, self._ambient_ring, Sets()),
+                self.Hom(self._ambient_ring),
                 lambda element: element,
             )
 

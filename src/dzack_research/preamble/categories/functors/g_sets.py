@@ -15,7 +15,7 @@ from sage.categories.cartesian_product import cartesian_product
 from sage.categories.finite_enumerated_sets import FiniteEnumeratedSets
 from sage.categories.homset import Hom
 from sage.categories.morphism import SetMorphism
-from sage.categories.sets_cat import Sets
+from dzack_research.preamble.categories.sets import Sets
 from sage.misc.cachefunc import cached_function
 
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
@@ -82,7 +82,7 @@ class GSetOrbitsFunctor(Functor):
         source = self(morphism.domain())
         target = self(morphism.codomain())
         return SetMorphism(
-            Hom(source, target, Sets()),
+            Sets().hom(source, target),
             lambda orbit: target.orbit_of(morphism(orbit.representative())),
         )
 
@@ -106,7 +106,7 @@ class GSetFixedPointsFunctor(Functor):
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())
         target = self(morphism.codomain())
-        return SetMorphism(Hom(source, target, Sets()), morphism)
+        return SetMorphism(Sets().hom(source, target), morphism)
 
     def _repr_(self):
         return f"{self.group()}-fixed-point functor on finite G-sets"
@@ -128,7 +128,7 @@ class GSetOrbitsTrivialAdjunction(Adjunction):
         trivial = self.right_adjoint()(set_object)
         orbit_set = self.left_adjoint()(trivial)
         return SetMorphism(
-            Hom(orbit_set, set_object, Sets()),
+            Sets().hom(orbit_set, set_object),
             lambda orbit: orbit.representative(),
         )
 
@@ -147,7 +147,7 @@ class GSetOrbitsTrivialAdjunction(Adjunction):
             raise ValueError("the stated target is not the underlying trivial set")
         orbit_set = self.left_adjoint()(equivariant_morphism.domain())
         return SetMorphism(
-            Hom(orbit_set, target, Sets()),
+            Sets().hom(orbit_set, target),
             lambda orbit: equivariant_morphism(orbit.representative()),
         )
 
@@ -162,7 +162,7 @@ class GSetTrivialFixedAdjunction(Adjunction):
     def unit(self, set_object):
         trivial = self.left_adjoint()(set_object)
         fixed = self.right_adjoint()(trivial)
-        return SetMorphism(Hom(set_object, fixed, Sets()), lambda point: point)
+        return SetMorphism(Sets().hom(set_object, fixed), lambda point: point)
 
     def counit(self, g_set):
         fixed = self.right_adjoint()(g_set)
@@ -173,7 +173,7 @@ class GSetTrivialFixedAdjunction(Adjunction):
         source = self.left_adjoint().source_set(equivariant_morphism.domain())
         fixed = self.right_adjoint()(equivariant_morphism.codomain())
         return SetMorphism(
-            Hom(source, fixed, Sets()),
+            Sets().hom(source, fixed),
             lambda point: equivariant_morphism(point),
         )
 
@@ -250,7 +250,7 @@ class UnderlyingFiniteGSetFunctor(Functor):
         return g_set
 
     def _apply_morphism(self, morphism):
-        return SetMorphism(Hom(morphism.domain(), morphism.codomain(), Sets()), morphism)
+        return SetMorphism(Sets().hom(morphism.domain(), morphism.codomain()), morphism)
 
     def _repr_(self):
         return f"Underlying finite-set functor on {self.group()}-sets"
@@ -337,7 +337,7 @@ class FreeGSetUnderlyingAdjunction(Adjunction):
     def unit(self, set_object):
         free = self.left_adjoint()(set_object)
         return SetMorphism(
-            Hom(set_object, free, Sets()),
+            Sets().hom(set_object, free),
             lambda point: self.left_adjoint().free_point(
                 free, self.left_adjoint().group().one(), point
             ),
@@ -353,7 +353,7 @@ class FreeGSetUnderlyingAdjunction(Adjunction):
         free = equivariant_morphism.domain()
         source = self.left_adjoint().source_set(free)
         return SetMorphism(
-            Hom(source, equivariant_morphism.codomain(), Sets()),
+            Sets().hom(source, equivariant_morphism.codomain()),
             lambda point: equivariant_morphism(
                 self.left_adjoint().free_point(
                     free, self.left_adjoint().group().one(), point
@@ -390,7 +390,7 @@ class UnderlyingCofreeGSetAdjunction(Adjunction):
     def counit(self, set_object):
         cofree = self.right_adjoint()(set_object)
         return SetMorphism(
-            Hom(cofree, set_object, Sets()),
+            Sets().hom(cofree, set_object),
             lambda function_point: self.right_adjoint().function_value(
                 cofree,
                 function_point,
@@ -416,7 +416,7 @@ class UnderlyingCofreeGSetAdjunction(Adjunction):
         if codomain is not None and codomain is not target:
             raise ValueError("the stated set is not the cofree construction target")
         return SetMorphism(
-            Hom(equivariant_morphism.domain(), target, Sets()),
+            Sets().hom(equivariant_morphism.domain(), target),
             lambda point: self.right_adjoint().function_value(
                 cofree,
                 equivariant_morphism(point),

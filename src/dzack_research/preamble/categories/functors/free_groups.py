@@ -8,7 +8,7 @@ finite-rank GAP presentation.
 
 from sage.categories.homset import Hom
 from sage.categories.morphism import SetMorphism
-from sage.categories.sets_cat import Sets
+from dzack_research.preamble.categories.sets import Sets
 from sage.groups.indexed_free_group import IndexedFreeGroup
 from sage.misc.cachefunc import cached_function
 
@@ -36,7 +36,7 @@ class FreeGroupFunctor(Functor):
         target = self(set_morphism.codomain())
         return group_homset(source, target)(
             SetMorphism(
-                Hom(source.indices(), target, Sets()),
+                Sets().hom(source.indices(), target),
                 lambda index: target.gen(set_morphism(index)),
             )
         )
@@ -58,7 +58,7 @@ class GroupUnderlyingSetFunctor(Functor):
 
     def _apply_morphism(self, group_morphism):
         return SetMorphism(
-            Hom(group_morphism.domain(), group_morphism.codomain(), Sets()),
+            Sets().hom(group_morphism.domain(), group_morphism.codomain()),
             group_morphism,
         )
 
@@ -75,7 +75,7 @@ class FreeGroupUnderlyingSetAdjunction(Adjunction):
     def unit(self, set_object):
         free_group = self.left_adjoint()(set_object)
         return SetMorphism(
-            Hom(set_object, free_group, Sets()),
+            Sets().hom(set_object, free_group),
             free_group.gen,
         )
 
@@ -83,7 +83,7 @@ class FreeGroupUnderlyingSetAdjunction(Adjunction):
         free_group = self.left_adjoint()(self.right_adjoint()(group))
         return group_homset(free_group, group)(
             SetMorphism(
-                Hom(free_group.indices(), group, Sets()),
+                Sets().hom(free_group.indices(), group),
                 lambda group_element: group_element,
             )
         )
@@ -92,7 +92,7 @@ class FreeGroupUnderlyingSetAdjunction(Adjunction):
         free_group = group_morphism.domain()
         source = self.left_adjoint().source_set(free_group)
         return SetMorphism(
-            Hom(source, group_morphism.codomain(), Sets()),
+            Sets().hom(source, group_morphism.codomain()),
             lambda point: group_morphism(free_group.gen(point)),
         )
 
@@ -103,7 +103,7 @@ class FreeGroupUnderlyingSetAdjunction(Adjunction):
         free_group = self.left_adjoint()(set_morphism.domain())
         return group_homset(free_group, group)(
             SetMorphism(
-                Hom(free_group.indices(), group, Sets()),
+                Sets().hom(free_group.indices(), group),
                 set_morphism,
             )
         )

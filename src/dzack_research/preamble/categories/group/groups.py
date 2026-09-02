@@ -7,7 +7,6 @@ from sage.categories.finite_groups import FiniteGroups as SageFiniteGroups
 from sage.categories.groups import Groups as SageGroups
 from sage.categories.homset import Hom
 from sage.categories.morphism import SetMorphism
-from sage.categories.rings import Rings
 from sage.groups.abelian_gps.abelian_group import (
     AbelianGroup_class,
     AbelianGroup_subgroup,
@@ -519,7 +518,9 @@ class AbelianGroupEndomorphismRings(Category):
     """Endomorphism rings of abelian groups."""
 
     def super_categories(self):
-        return [Rings()]
+        from dzack_research.preamble.categories.rings.rings import OwnedRings
+
+        return [OwnedRings()]
 
     class ElementMethods:
         def __call__(self, element):
@@ -594,6 +595,8 @@ class OwnedAbelianGroups(Category):
 
         @cached_method
         def scalar_action(self):
+            from dzack_research.preamble.categories.rings.rings import OwnedRings
+
             endomorphisms = self.endomorphism_ring()
             additive = self.category().is_subcategory(CommutativeAdditiveGroups())
 
@@ -601,7 +604,7 @@ class OwnedAbelianGroups(Category):
                 return exponent * element if additive else element ** exponent
 
             return SetMorphism(
-                Hom(ZZ, endomorphisms, Rings()),
+                Hom(ZZ, endomorphisms, OwnedRings()),
                 lambda exponent: endomorphisms(
                     lambda element: multiple(exponent, element)
                 ),

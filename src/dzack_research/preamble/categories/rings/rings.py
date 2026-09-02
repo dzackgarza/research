@@ -679,14 +679,14 @@ class OwnedRingView(UniqueRepresentation, Parent):
         # facade deliberately need not itself be an object of that native
         # category (notably ``NumberFields()``), even though it represents the
         # same ring.  Supply the exact facade map instead.
-        from sage.categories.homset import Hom
         from sage.categories.morphism import SetMorphism
-        from sage.categories.sets_cat import Sets as SageSets
         from sage.sets.pythonclass import Set_PythonType
+
+        from dzack_research.preamble.categories.sets import Sets as OwnedSets
 
         map_source = Set_PythonType(source) if isinstance(source, type) else source
         return SetMorphism(
-            Hom(map_source, self, SageSets()),
+            OwnedSets().hom(map_source, self),
             lambda value: self._engine(value),
         )
 
