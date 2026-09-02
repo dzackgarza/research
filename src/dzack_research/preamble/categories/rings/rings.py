@@ -857,12 +857,14 @@ def engine_ring(ring):
     r"""Return the Sage computation parent behind an owned ring."""
     represented = getattr(ring, "_preamble_engine_ring", None)
     if represented is not None:
-        return represented
-    match ring:
-        case OwnedRingView():
-            return ring.engine()
-        case _:
-            return ring
+        ring = represented
+    # An owned view can stand over another owned view: an algebra view over a
+    # ring view, say.  One unwrap would then still hand back an owned parent,
+    # which is not an engine object at all, so the descent continues to the
+    # Sage parent underneath.
+    while isinstance(ring, OwnedRingView):
+        ring = ring.engine()
+    return ring
 
 
 def engine_element(ring, element):
