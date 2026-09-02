@@ -1,6 +1,5 @@
 """Algebras graded by a monoid."""
 
-from sage.categories.algebras import Algebras as SageAlgebras
 from sage.categories.morphism import Morphism
 from sage.categories.sets_cat import Sets
 from sage.rings.integer_ring import ZZ
@@ -13,10 +12,7 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
 from dzack_research.preamble.categories.modules.graded_modules import (
     require_grading_monoid,
 )
-from dzack_research.preamble.categories.rings import (
-    OwnedCategoryOverBaseRing,
-    engine_ring,
-)
+from dzack_research.preamble.categories.rings import OwnedCategoryOverBaseRing
 
 
 def _homogeneous_degree(element):
@@ -179,17 +175,6 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
 
         graded_modules = GradedModules(self.base_ring(), self.grading_monoid())
         algebra = Algebras(self.base_ring())
-        if self.grading_monoid() is ZZ:
-            try:
-                sage_graded = SageAlgebras(engine_ring(self.base_ring())).Graded()
-            except AssertionError:
-                # Sage's graded-category constructor insists on identity of
-                # several internally reconstructed coefficient-ring parents.
-                # Quotient rings can violate that engine-level identity even
-                # though the owned base ring is exact.  The owned grading and
-                # algebra edges remain the authoritative semantics here.
-                return [algebra, graded_modules]
-            return [sage_graded, algebra, graded_modules]
         return [algebra, graded_modules]
 
     def homset(self, domain, codomain):
@@ -205,12 +190,13 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
             graded = GradedAlgebras(ring, self.grading_monoid())
             if category is not None and category.is_subcategory(graded):
                 return graded_algebra_homset(self, codomain)
-            if category is not None and not category.is_subcategory(
-                SageAlgebras(engine_ring(ring))
-            ):
-                raise TypeError("this is not an algebra homset category")
-            from dzack_research.preamble.categories.algebras.algebras import algebra_homset
+            from dzack_research.preamble.categories.algebras.algebras import (
+                Algebras,
+                algebra_homset,
+            )
 
+            if category is not None and not category.is_subcategory(Algebras(ring)):
+                raise TypeError("this is not an algebra homset category")
             return algebra_homset(self, codomain)
 
     def _call_(self, multiplication):

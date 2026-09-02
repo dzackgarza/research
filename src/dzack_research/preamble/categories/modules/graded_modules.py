@@ -1,7 +1,6 @@
 """Modules graded by a monoid."""
 
 from sage.categories.additive_monoids import AdditiveMonoids as SageAdditiveMonoids
-from sage.categories.modules import Modules as SageModules
 from sage.categories.monoids import Monoids as SageMonoids
 from sage.categories.rings import Rings as SageRings
 from sage.rings.integer_ring import ZZ
@@ -157,13 +156,7 @@ class GradedModules(OwnedCategoryOverBaseRing):
     def super_categories(self):
         from dzack_research.preamble.categories.modules.pure.modules import Modules
 
-        modules = Modules(self.base_ring())
-        if self.grading_monoid() is ZZ:
-            return [
-                SageModules(engine_ring(self.base_ring())).Graded(),
-                modules,
-            ]
-        return [modules]
+        return [Modules(self.base_ring())]
 
     _HomCategory = GradedModuleHomCategoryConstruction
     _EndCategory = LinearEndCategoryConstruction

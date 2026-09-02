@@ -1,4 +1,3 @@
-from sage.categories.algebras import Algebras as SageAlgebras
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.semirings.non_negative_integer_semiring import NN
 
@@ -16,7 +15,6 @@ def test_graded_algebras_are_parameterized_by_a_monoid() -> None:
     Algebras = session["Algebras"]
     GradedAlgebras = session["GradedAlgebras"]
     GradedFreeAlgebras = session["GradedFreeAlgebras"]
-    engine_ring = session["engine_ring"]
 
     integers = GradedAlgebras(QQ)
     naturals = GradedAlgebras(QQ, NN)
@@ -26,11 +24,8 @@ def test_graded_algebras_are_parameterized_by_a_monoid() -> None:
     assert integers is not naturals
     assert integers.grading_monoid() is SageZZ
     assert naturals.grading_monoid() is NN
-    sage_graded = SageAlgebras(engine_ring(QQ)).Graded()
     assert integers.is_subcategory(Algebras(QQ))
     assert naturals.is_subcategory(Algebras(QQ))
-    assert sage_graded in integers.super_categories()
-    assert sage_graded not in naturals.super_categories()
     assert GradedFreeAlgebras(QQ).is_subcategory(integers)
     assert not GradedFreeAlgebras(QQ).is_subcategory(naturals)
     assert GradedAlgebras(QQ, session["NonNegativeReals"]) is not naturals
