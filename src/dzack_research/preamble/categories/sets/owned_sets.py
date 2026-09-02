@@ -3,6 +3,7 @@
 from sage.categories.category import Category
 from sage.categories.homset import Hom
 from sage.categories.sets_cat import Sets as SageSets
+from sage.categories.sets_with_partial_maps import SetsWithPartialMaps
 from sage.rings.integer_ring import ZZ
 from sage.rings.semirings.non_negative_integer_semiring import NN
 from sage.misc.cachefunc import cached_function
@@ -49,6 +50,13 @@ class Sets(Category):
     All Sage set objects are admitted.  The category owns the mathematical
     constructions the preamble adds; Sage remains the implementation of
     ordinary set maps.
+
+    Every owned object is realised as a Sage ``Parent``, and Sage's coercion
+    layer states one thing about every parent it converts into: it is an
+    object of ``SetsWithPartialMaps``, the category of sets whose maps may be
+    partial.  That is the single crossing between the owned graph and Sage's,
+    declared once here at the root; no owned category below it names a Sage
+    category.
     """
 
     Δ = _Delta()
@@ -56,7 +64,7 @@ class Sets(Category):
     א = ℵ
 
     def super_categories(self):
-        return []
+        return [SetsWithPartialMaps()]
 
     def __contains__(self, candidate) -> bool:
         try:
@@ -104,22 +112,6 @@ class Sets(Category):
         return TotallyOrderedSets()
 
     class ParentMethods:
-        def Hom(self, codomain, category=None):
-            r"""Return the Hom object, stated in the owned category.
-
-            Sage's coercion builds conversion maps by calling this on a
-            parent, passing its own default category.  An owned object is
-            not placed in Sage's graph, so that category cannot hold it and
-            Sage would refuse the endpoints.  The owned category is the one
-            that holds both, and it is what answers here.
-            """
-            from sage.categories.homset import Hom as engine_hom
-
-            owned = Sets()
-            if category is None or self not in category or codomain not in category:
-                category = owned
-            return engine_hom(self, codomain, category)
-
         def power_set(self):
             from dzack_research.preamble.categories.sets.sets import PowerSet
 
