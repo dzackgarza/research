@@ -9,7 +9,6 @@ that a set product is the tensor product merely to satisfy a Sage ``Homset``
 constructor.
 """
 
-from sage.categories.rings import Rings as SageRings
 from sage.categories.sets_cat import Sets
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.element import Element
@@ -18,7 +17,7 @@ from sage.structure.parent import Parent
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
 )
-from dzack_research.preamble.categories.rings import engine_ring
+from dzack_research.preamble.categories.rings import OwnedRings, engine_ring
 
 
 def _finite_framing(module) -> tuple:
@@ -33,7 +32,7 @@ def _finite_framing(module) -> tuple:
 
 
 def _coerce_value(value_module, value):
-    if value_module in SageRings():
+    if value_module in OwnedRings():
         return engine_ring(value_module)(value)
     return value_module(value)
 
@@ -136,7 +135,7 @@ class BilinearFormMorphism(Element):
         r"""Return the scalar-valued Gram tensor in the selected framing."""
         if self._gram is None:
             raise TypeError("a form supplied only by a pairing has no finite Gram tensor")
-        if self.codomain() not in SageRings():
+        if self.codomain() not in OwnedRings():
             raise TypeError("a Gram tensor here requires scalar-valued form entries")
         from dzack_research.preamble.tensors import tensor
 

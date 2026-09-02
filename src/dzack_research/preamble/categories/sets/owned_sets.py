@@ -104,6 +104,22 @@ class Sets(Category):
         return TotallyOrderedSets()
 
     class ParentMethods:
+        def Hom(self, codomain, category=None):
+            r"""Return the Hom object, stated in the owned category.
+
+            Sage's coercion builds conversion maps by calling this on a
+            parent, passing its own default category.  An owned object is
+            not placed in Sage's graph, so that category cannot hold it and
+            Sage would refuse the endpoints.  The owned category is the one
+            that holds both, and it is what answers here.
+            """
+            from sage.categories.homset import Hom as engine_hom
+
+            owned = Sets()
+            if category is None or self not in category or codomain not in category:
+                category = owned
+            return engine_hom(self, codomain, category)
+
         def power_set(self):
             from dzack_research.preamble.categories.sets.sets import PowerSet
 

@@ -264,8 +264,18 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
                     )
                 return self.V().coordinate_vector(lift)
 
-            coordinates = FGP_Module_class.coordinate_vector(self, element, reduce=False)
             engine = engine_ring(self.base_ring())
+            # Sage's own coordinate_vector ends with
+            # ``(c * T).change_ring(self.base_ring())``.  This parent's base
+            # ring is the owned one, which Sage's FreeModule cannot take, so
+            # the same computation runs with the crossing made explicit: Sage
+            # supplies the optimized cover and the linear algebra, and the
+            # result is stated over the engine ring.
+            self.optimized()
+            transformation = getattr(self, "_FGP_Module_class__T")
+            coordinates = (
+                self.V().coordinate_vector(element.lift()) * transformation
+            ).change_ring(engine)
             if not reduce or engine is not SageZZ:
                 return coordinates
             invariants = self.invariants()
@@ -373,7 +383,7 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
             lifted_rows = inverse_right * basis
             invariants = tuple(self.invariants(include_ones=True))
             return finite_ordered_set(
-                self(lifted_rows.row(position))
+                self(lifted_rows.row(position).list())
                 for position, invariant in enumerate(invariants)
                 if not invariant.is_unit()
             )
