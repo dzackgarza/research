@@ -27,3 +27,4 @@ tests/.report/
 .virtual_documents/
 .sage-tmp/
 tags
+.hypothesis/

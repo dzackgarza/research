@@ -140,9 +140,44 @@ combine is the writer's job.
 integer, a root of an integer, a simple algebraic integer, a rational, a
 real, a complex number, a Gram matrix, a Cartan type, a defining polynomial.
 By category objects: the families above.  A test that takes a parameter and
-states what it determines covers a whole family at once.  Property-based
-generation of parameters (Hypothesis, CrossHair) is welcome where the claim
-is uniform in them.
+states what it determines covers a whole family at once.
+
+**Generate the parameters.**  Where a claim is uniform in its parameter,
+let Hypothesis draw the parameter instead of choosing a few by hand.
+`construction_strategies.py` holds the strategies for both modes: integers,
+primes, squarefree radicands, rationals, symmetric Gram matrices, ranks,
+Cartan types, and `family(names)` for a catalogue member drawn by name.
+`test_properties_construct.py` is the pattern:
+
+```python
+@settings(max_examples=25, deadline=None)
+@given(gram=nondegenerate_gram_2x2)
+def test_rank_two_lattices_from_gram_matrices(gram) -> None:
+    lattice = Lattices(ZZ)(gram)
+    assert lattice.determinant() == determinant_2x2(gram)
+    assert lattice.signature_pair() == signature_pair(*signature_2x2(gram))
+```
+
+The expected value on the right comes from `natural_parameters.py`: pure
+Python arithmetic of the parameter (primality, Euler's function, the
+discriminant of $\mathbb Q(\sqrt d)$, Sylvester's criterion for a
+$2 \times 2$ Gram matrix), written with PEP 316 contracts so that CrossHair
+proves it symbolically:
+
+```bash
+uvx --from crosshair-tool crosshair check --analysis_kind=PEP316 tests/constructions/natural_parameters.py
+```
+
+That is the division of labour.  CrossHair sees through pure Python and
+nothing Sage-backed, so it certifies the side of the comparison the test
+supplies; Hypothesis drives the side the session supplies through many
+inputs, and a failure names a concrete counterexample.  Hypothesis is a
+dependency of the test interpreter (`hypothesis` in the `dev` group of
+`pyproject.toml`, installed into the Sage interpreter that runs the suite);
+its example database `.hypothesis/` is ignored by git.  Deadlines are
+disabled because the session's operations are slow by construction, and
+example counts are kept small because every example is a full mathematical
+object.
 
 ## What does not belong here
 
@@ -154,6 +189,23 @@ is uniform in them.
 - A test that compares the preamble against Sage.  The oracle is the
   mathematics; Sage is an engine the preamble may use.
 - A skipped or expected-failure test.
+
+## The files are locked
+
+Every test file in this subtree, in `tests/user_simulations/`, and the
+shared `tests/conftest.py` is read-only on disk.  An expectation, once
+written, is not edited to follow the implementation: not when a category is
+renamed, not when a constructor's signature changes, not when a red row is
+inconvenient.  If the implementation moves, the test stays and reports the
+move.  The lock is a local file mode, so it must be reapplied after a fresh
+checkout:
+
+```bash
+chmod a-w tests/conftest.py tests/constructions/* tests/user_simulations/*
+```
+
+Unlocking a file is a decision that the expectation itself was wrong as
+mathematics, made deliberately and recorded in the commit that changes it.
 
 ## Growing the subtree
 
