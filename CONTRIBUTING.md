@@ -4707,9 +4707,47 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Rationale**: A presentation-pinned assertion fails on an equal object presented differently and passes for reasons unrelated to the claim, so it discriminates against correct implementations while admitting wrong ones.  A minimal generating set is not unique: an implementation that legitimately selects another generator fails a test that named one.  An `isinstance` check asserts an implementation accident, and one mathematical notion is realised here by several unrelated classes; the category is the type, so membership is the statement and the defining property is the proof.
 
-- **Violation Example**: `assert tuple(I.ideal_generators()) == (ring(y),)`; `assert tuple(M.minimal_module_generators()) == (M.module_generator(0),)`; `assert isinstance(genus, Genus)`; `assert not hasattr(tensor, "morphism")`, which records a deletion and keeps the removed name alive for every later reader.
+  A private implementation class is a presentation too.  Assert through the public mathematical surface a consumer would actually use -- category objects, category-owned constructors, refinement declarations, and the membership and methods reached through them -- never a nested method-container class, a handwritten dummy subclass, or a concrete type that happens to realise the notion today.
+
+- **Violation Example**: `assert tuple(I.ideal_generators()) == (ring(y),)`; `assert tuple(M.minimal_module_generators()) == (M.module_generator(0),)`; `assert isinstance(genus, Genus)`; asserting against a nested `ParentMethods` class or a dummy subclass as if it were category membership; `assert not hasattr(tensor, "morphism")`, which records a deletion and keeps the removed name alive for every later reader.
 
 - **Correct Example**: `assert I.colon(divisor) == ring.ideal(ring(y))`; `assert M.submodule(M.minimal_module_generators()) == M` beside the asserted number of generators; `assert genus.signature_pair() == (0, 2)` and `genus.representative().genus() == genus`; for a derivation, the graded Leibniz rule and `d^2 = 0` rather than its class.
+
+#### `DEV-39`: Test a Weaker Notion on Objects That Are Not Equal
+
+- **Rule**: Isometry, isomorphism, same genus and same class are equivalence relations weaker than equality, and equality implies every one of them.  Assert a weaker notion only between objects that are **not equal** -- two constructions of the same lattice (Cartan against gluing, two decompositions), two lattices of the same genus built differently, two non-equal isomorphic objects.  The same applies to every other witness: a non-trivial morphism rather than the identity, a lattice with non-trivial discriminant rather than a unimodular one, an invariant whose value is a known theorem rather than one visible by inspection.
+
+- **Rationale**: The value of an assertion is proportional to how surprising its passage would be.  `L` is isometric to `L` by definition, so the assertion cannot fail and proves nothing about the isometry code; the identity morphism satisfies every morphism property trivially; a unimodular lattice has a trivial discriminant group, so a discriminant test on one exercises nothing.  A test built from the most convenient specimen is a test that passes whether or not the operation works.
+
+- **Violation Example**: `assert L.is_isometric_to(L)`; checking `is_primitive` on the identity; testing the discriminant group of a unimodular lattice; asserting that at least one element of an enumeration exists when the statement is about the whole enumeration.
+
+- **Correct Example**: build `U + E8(-1)` two ways and assert the two are isometric; a reflection or a swap where a morphism is needed; \(E_8\) has 240 roots; `D4` or `A2` where the discriminant is the point.
+
+- **Provenance**: `mem:global/advice/testing-weaker-notions-use-different-objects-not-equal-objects`, `mem:global/advice/choose-informative-cases-not-trivial-ones`.
+
+#### `DEV-40`: Do Not Unwrap Coordinates or a Matrix to Make a Mathematical Claim
+
+- **Rule**: An assertion about an element, morphism, image, kernel, cokernel or subobject is made through the semantic interface, never by comparing coordinates, a Gram or morphism matrix, a rank, a matrix kernel, a matrix image, or an eigenvalue list.  Construct the element in its parent and compare through the element interface; construct the Hom element and compare, compose or apply through the Hom interface; ask `f.kernel()`, `f.image()`, `f.cokernel()`, `f.is_surjective()` rather than reconstructing them from a matrix.  Raw unwrapping is permitted only inside the one canonical representation boundary that implements the semantic operation.
+
+- **Rationale**: Coordinates identify an element only after a parent and a basis have been chosen, and a matrix represents a morphism only after domain, codomain, side convention and bases have been chosen.  An assertion made on the unwrapped data therefore proves a property of a chosen presentation, and repeated unwrapping spreads those choices across call sites, so a test can pass while checking a different mathematical object than the one its name claims.
+
+- **Violation Example**: comparing `f.matrix()` entries to assert two morphisms agree; deriving surjectivity from a rank comparison; asserting an image by its spanning coordinates; `{tuple(v.to_tuple()) for v in representatives} == {...}`.
+
+- **Correct Example**: `f == g` between Hom elements; `f.is_surjective()`; `f.cokernel().is_torsion_free()` for primitivity; comparing owned subobjects.  After the rewrite the assertion names the mathematical object or morphism property it proves, and any surviving coordinate comparison is visibly inside the representation boundary with its parent data fixed in one place.
+
+- **Provenance**: `mem:global/traps/coordinate-and-matrix-unwrapping-in-tests-hides-math-objects`.
+
+#### `DEV-41`: A Mathematical Expectation Is Cited Data; the Test Is a Thin Driver
+
+- **Rule**: Verified mathematical facts -- named-lattice invariants, \((r,a,\delta)\) classes, genus separations, discriminant forms, cusp and orbit results, number-field facts -- are **data**, not test code.  They live in one centralised fixtures subtree organised by mathematical topic, each fact carrying its value, its citation and its verification status, and importing nothing from the code under test.  The consuming test is a thin parametrised driver containing no literal expected values.  The expected value comes from the cited source; it is never harvested by running the implementation and recording what it printed.
+
+- **Rationale**: The same fact corpus is shared by every consumer -- each spike, the preamble, future category work -- and must remain browsable and queryable independently of any of them, so scattering hand-written value assertions through suite code both duplicates the corpus and binds it to one caller.  An expectation recorded from the implementation's own output is not an oracle: it passes by construction and cannot detect the error it was copied from.
+
+- **Violation Example**: a literal invariant written inline in an assertion with no citation; a fixture that imports the module it is used to test; recording an expected value by running the code and pasting the result.
+
+- **Correct Example**: a fixture entry carrying construction, \((r,a,\delta)\), citation key and verified flag, with a short parametrised driver over it; a new fact greppable in the fixtures subtree beside its citation, and a consuming test with no literal values in it.
+
+- **Provenance**: `mem:projects/github.com__dzackgarza__research/decisions/testable-mathematical-facts-are-data-centralized-deep-fixtures-subtree-spike-independent` (user decision 2026-07-09, research#47); `mem:projects/github.com__dzackgarza__research/advice/what-a-test-cites`.
 
 * * *
 
