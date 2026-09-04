@@ -4759,6 +4759,36 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Provenance**: `mem:projects/github.com__dzackgarza__research/decisions/testable-mathematical-facts-are-data-centralized-deep-fixtures-subtree-spike-independent` (user decision 2026-07-09, research#47); `mem:projects/github.com__dzackgarza__research/advice/what-a-test-cites`.
 
+#### `DEV-42`: Prove a New Check Fires Before Trusting It to Pass
+
+- **Rule**: Before a check, gate, scan or audit is relied on, confirm it reports a **known instance**.  A clean result from a check that has never been shown to fire is not evidence.  When a check has a target-selection step -- a file list, a glob, a scan root, an ignore file -- report how many targets it examined alongside how many findings it produced, so that "nothing wrong" is distinguishable from "nothing looked at".
+
+- **Rationale**: The dangerous failure of a check is not a false positive, which is visible and annoying, but a silent pass, which is invisible and reassuring.  Target selection is where it happens: a scanner with a built-in ignore list that excludes the very directory being scanned reports zero findings over zero targets, and the output is indistinguishable from success.  A pattern language supplies the same failure from the other side -- an exclusion clause that is broader than intended disables its whole rule while the run still exits clean.  Both were observed while building `just test-universe`: semgrep's default ignore list excludes `tests/`, and a `pattern-not` of the form `tuple((...))` matches any single-argument call.  Each reported a clean scan.
+
+- **Violation Example**: adding a rule and concluding from a clean run that the code is clean; reporting a finding count with no target count; tuning a pattern until the output is empty and treating that as the fix.
+
+- **Correct Example**: running the new rule against a file known to contain the shape and seeing it reported; printing "checked N files" with the count; when a clean result arrives unexpectedly, breaking the rule down until the part that stopped matching is identified, rather than accepting it.
+
+#### `DEV-43`: A Phase's Acceptance Must Be Sensitive to Its Repair, Not Only Its Removal
+
+- **Rule**: When a plan pairs a destructive step with a repair -- remove an edge and restore what it carried, delete a layer and re-site its behaviour, drop a dependency and own what it provided -- the phase's executable acceptance must be able to fail while the repair is unfinished.  A criterion that measures only the removal is not acceptance for the phase, and a phase that names no criterion sensitive to the repair has none.
+
+- **Rationale**: An implementer who has performed the removal and hit the resulting gap has two moves: do the repair, which requires deciding where the behaviour belongs, or install the cheapest local substitute that keeps the criterion green.  If the criterion cannot tell those apart, the plan rewards the substitute -- not by anyone's choice, but because that is the only thing being measured.  The observed instance: `Priority 3` named the graph-purity specimen as its only executable acceptance, and that specimen asserts what the category graph does *not* contain, so it passes identically on a graph that is pure and answering and on one that is pure and unloadable.  It stayed green through a period in which capability probes nearly doubled.
+
+- **Violation Example**: a negative specimen (no forbidden node appears, no banned import remains, the count fell) as a phase's sole gate; declaring a migration phase complete on the strength of what is gone.
+
+- **Correct Example**: pairing the purity specimen with one that constructs the affected objects and asks them for the operations their categories promise, so the phase cannot pass until the removed behaviour has been restored at its owner.  See `DEV-28`, which is the same requirement stated for an individual test.
+
+#### `DEV-44`: A Catalogued Defect Gets an Owner in the Execution Order
+
+- **Rule**: When an assessment enumerates defects and an execution order is written from it, every catalogued defect appears in that order -- as a step, as an explicitly deferred item with the reason, or as a decision that it is not a defect.  A defect that survives the assessment but not the ordering is unowned, and unowned defects grow.
+
+- **Rationale**: Producing the assessment is the visible work and feels like the hard part, so the ordering is written from the severe rows and the rest fall out silently.  Nothing then measures the dropped ones, and every new file adds to them.  The observed instance: of seventeen defects catalogued in `TODO-ORGANIZATION.md`, three reached no priority.  One of them was the duck-typed capability probing that grew from 52 recorded sites to 78 in a single day of work on the very subsystem the assessment had examined.
+
+- **Violation Example**: an execution order derived only from the items marked severe; a defect whose absence from the plan is discovered by re-reading the assessment months later.
+
+- **Correct Example**: a plan whose items and the assessment's rows are in correspondence, deferrals included, so that a reader can check the mapping in both directions.
+
 * * *
 
 ### 13. Notebook, REPL & Mathematical Example Style (`NB-*`)
