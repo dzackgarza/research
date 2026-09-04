@@ -543,7 +543,12 @@ class CommutativeAlgebraCoproducts(OwnedCategoryOverBaseRing):
 
     class ParentMethods:
         def coproduct_factors(self):
-            return self._preamble_coproduct_factors
+            r"""Return the family of factors, indexed by the product's own index set."""
+            from dzack_research.preamble.categories.abstract_categories.products import (
+                _finite_factor_family,
+            )
+
+            return _finite_factor_family(self._preamble_coproduct_factors, name="Coproduct factors")
 
         tensor_factors = coproduct_factors
 

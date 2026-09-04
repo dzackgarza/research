@@ -282,7 +282,10 @@ def test_commutative_algebra_coproduct_is_tensor_product_with_universal_maps() -
 
     x = left.algebra_generator("x")
     y = right.algebra_generator("y")
-    assert coproduct.coproduct_factors() == (left, right)
+    _factors = coproduct.coproduct_factors()
+    assert _factors.cardinality() == 2
+    assert _factors[0] is left
+    assert _factors[1] is right
     assert left_map.domain() is left and left_map.codomain() is coproduct
     assert right_map.domain() is right and right_map.codomain() is coproduct
 

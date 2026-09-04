@@ -39,10 +39,20 @@ class SchemeMorphism(Morphism):
 
     _preamble_coordinate_algebra_morphism = None
 
-    def __init__(self, native_morphism, *, domain=None, codomain=None, homset=None) -> None:
+    def __init__(
+        self,
+        native_morphism,
+        *,
+        domain=None,
+        codomain=None,
+        homset=None,
+        pullback=None,
+    ) -> None:
         self._native_morphism = native_morphism
         self._preamble_domain_override = domain
         self._preamble_codomain_override = codomain
+        if pullback is not None:
+            self._preamble_coordinate_algebra_morphism = pullback
         if homset is None:
             engine = native_morphism.parent()
             homset = _scheme_mor_category(engine.domain(), engine.codomain())
@@ -92,7 +102,13 @@ class SchemeMorphism(Morphism):
         right_pullback = other._preamble_coordinate_algebra_morphism
         if left_pullback is not None and right_pullback is not None:
             composite = affine_spec_morphism(right_pullback * left_pullback)
-            return homset(composite.native_morphism())
+            # Re-siting the composite in the Hom of the stated endpoints must
+            # not drop the pullback it was computed from.
+            return SchemeMorphism(
+                composite.native_morphism(),
+                homset=homset,
+                pullback=composite.coordinate_algebra_morphism(),
+            )
         return homset(self.native_morphism() * other.native_morphism())
 
     def _is_the_identity(self) -> bool:
@@ -760,10 +776,15 @@ class ProductSchemes(OwnedCategoryOverBaseRing):
 
     class ParentMethods:
         def factors(self):
-            return self._preamble_product_factors
+            r"""Return the family of factors, indexed by the product's own index set."""
+            from dzack_research.preamble.categories.abstract_categories.products import (
+                _finite_factor_family,
+            )
+
+            return _finite_factor_family(self._preamble_product_factors, name="Product factors")
 
         def number_of_factors(self):
-            return len(self.factors())
+            return self.factors().cardinality()
 
         def projection(self, index):
             return self._preamble_product_projections[index]

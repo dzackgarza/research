@@ -213,7 +213,12 @@ class GradedTensorProductModules(OwnedCategoryOverBaseRing):
 
     class ParentMethods:
         def tensor_factors(self):
-            return self._preamble_tensor_factors
+            r"""Return the family of factors, indexed by the product's own index set."""
+            from dzack_research.preamble.categories.abstract_categories.products import (
+                _finite_factor_family,
+            )
+
+            return _finite_factor_family(self._preamble_tensor_factors, name="Tensor factors")
 
         def tensor_factor(self, index):
             return self.tensor_factors()[index]
