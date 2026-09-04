@@ -155,3 +155,18 @@ and leave the defect.
   can compute the parameter's own `an_object()` to instantiate the family.  This is
   the `LEX-14` item above, measured: the witness audit has to carry a hand-written
   table of ten specimens for exactly these categories.
+
+- [ ] **`Spec(A)` and `A.spectrum()` are different objects.**  One prints
+  `Spectrum of R`, the other `Spec(R)`, and they are not identical.  So the
+  session has two names for what should be one notion, and `Spec` cannot leave
+  the global surface until they are reconciled -- `ARC-12` has no owned
+  spelling to move it to.  `categories/rings/commutative_algebra.py`,
+  `categories/schemes/schemes.py`.
+
+- [ ] **Ring constructions are not interned.**  Two calls to `R.localization(f)`,
+  `R.localize_at_prime(p)`, `R.quotient_ring(I)` or `R.ideal(g)` return distinct
+  objects that are not `is`-identical, and the first three are not even equal.
+  `R.fraction_field()`, `R.adic_completion(I)`, `f.kernel()` and `f.cokernel()`
+  are interned, so the discipline exists and these four are outside it.  Every
+  `is` check and every coercion between two "equal" localizations is affected.
+  `categories/rings/commutative_algebra.py`.
