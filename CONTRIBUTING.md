@@ -4945,35 +4945,9 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Rationale**: This is the general form of both the catalogue error and the tautology it decays into under correction.  `lattice = A1 + A2 + U_2` followed by `assert lattice.indecomposable_summands()[0] is A1` asserts that `+` remembers its arguments; a transcribed Gram matrix compared to its transcribed signature asserts that one file agrees with itself.  Both pass by construction, and `DEV-41` names why that disqualifies them: an expectation taken from the implementation's own output is not an oracle and cannot detect the error it was copied from.
 
-  The failure is attractive under correction specifically.  Told that a string assertion is wrong, the nearest repair is to assert the objects the names stood for -- which, when the test built the object from those very objects, is strictly weaker than the string version it replaced.  Each round of repair stays inside the frame of the assertion and produces something that cannot fail, while feeling like a response to the criticism.
-
 - **Violation Example**: `m = A + B; assert m.factors()[0] is A`; `assert L.rank() == L.module_generating_set().cardinality()` where the rank is defined as that cardinality; asserting a fixture value against the constructor the fixture was written from.
 
 - **Correct Example**: a value from a cited source against a value the repository computed; two independent constructions of one object asserted equal; a theorem's prediction against an enumeration.
-
-#### `DEV-48`: Respelling an Assertion Is Not Repairing It
-
-- **Rule**: Satisfying one policy's letter does not discharge another's.  When a detector, a review comment or a policy prompts an edit to an assertion, re-derive what the assertion is for before changing how it is written.  An edit that leaves the assertion unable to fail for any new reason has repaired nothing, whatever count it moved.
-
-- **Rationale**: `DEV-37` requires an assertion to stay inside the mathematical universe, and `just test-universe` counts departures from it.  Rewriting `== (2, 9)` as `== signature_pair(2, 9)` satisfies that rule exactly and changes nothing about the proof surface: the comparison is now between owned objects, and it still cannot fail, because both sides came from the same transcription (`DEV-47`) and the subject is data rather than an operation (`DEV-46`).  Observed: a dozen such rewrites moved the finding count from 118 to 58 while every affected assertion remained as vacuous as before.
-
-  The mechanism is `DEV-34` reaching the test surface: the detector names a shape, the shape is easy to edit, the count is easy to watch, and none of that is the question the test exists to answer.  A finding on an assertion is a reason to ask what the test proves; the spelling is downstream of that answer.
-
-- **Violation Example**: converting every flagged comparison to an owned constructor and reporting the reduced count as progress; changing `len` to `cardinality()` in an assertion that would pass on a broken implementation either way.
-
-- **Correct Example**: on a flagged assertion, first asking which operation's defect it would expose; deleting it when the answer is none; when the answer is an operation, then also spelling the comparison in the universe.
-
-#### `DEV-49`: A Correction Is a Prompt to Re-Ask What the Work Is For
-
-- **Rule**: When work is corrected, do not repair the corrected artefact in place by default.  Restate what the artefact is for, and check that the thing being repaired should exist at all.  A second correction on the same artefact is decisive evidence that the frame is wrong rather than the details, and the response is to stop editing and say what the artefact was supposed to establish.
-
-- **Rationale**: Repairs stay inside the frame they are handed, and each one feels responsive while the object drifts further from usefulness.  Observed in sequence on one test: a string comparison was corrected, and became an object comparison that could not fail; that was corrected, and became a cardinality assertion with the content removed; only on being asked a third time did the actual answer surface, which was that the test should not have existed, because its subject was transcribed data rather than a computed operation.  Three edits, each a faithful response to the letter of the criticism, and none of them the answer.
-
-  This is the doctrine's own reset condition arriving through the review surface: two corrections that remove machinery invalidate the frame.  The cost of not applying it is not a wasted edit but a wasted correction -- the reviewer has now spent three turns on one line, and the answer was available at the first.
-
-- **Violation Example**: answering "why are you asserting on strings" by asserting on objects instead; answering "this is a tautology" by weakening the tautology; producing a third variant of an artefact whose purpose has not been restated.
-
-- **Correct Example**: on the first correction, stating what the test was meant to establish and checking that a failure of it would report a defect; concluding that the artefact should be deleted, and saying so, rather than producing a better-spelled version of it.
 
 
 * * *
