@@ -19,3 +19,53 @@
 - [ ] Audit tensor component/shape/index storage and abstract product/direct-sum factor storage under `SET-01`; retain owned index/family objects and serialize finite arrays only in private tensor/CAS adapters.
 - [ ] Finish scheme/polytope collection ownership (facets/fans and remaining factor collections) and profinite/Galois stage/embedding/conjugacy collections under the same rule.
 - [ ] Final mechanical sweep of every remaining `tuple(...)`/`list(...)` occurrence under `src/dzack_research/preamble`: each survivor must be either syntactic ingress immediately parsed into an owned object or a private finite backend serialization boundary.
+
+## Errors surfaced by the live preamble survey (2026-09-05)
+
+`just preamble-megadoc` builds every owned category from a running session and reports
+what refuses to build.  These are its findings, each to be fixed in the preamble, not
+worked around in the survey.
+
+- [ ] **The preamble is essentially unannotated.**  Of 4931 public functions and methods
+  under `src/dzack_research/preamble`, 2422 take an argument beyond `self`, and 52 of
+  those — 2.1% — annotate every argument.  Only 12.6% carry a return annotation at all.
+  The Sage QC tier reports 7142 mypy errors across 137 preamble files as a consequence.
+  Signatures are where a reader learns which category an operation is about, so an
+  unannotated parameter is missing mathematics, not missing ceremony.  Annotate with the
+  owned mathematical types (`Parent`, the owned category types, the element types), never
+  with `object` or `Any`.
+
+- [ ] **`OwnedParameterizedCategory` erases what its parameter is.**  `Subgroups`,
+  `PredicateSubgroups`, `DifferentialGradedModules` and `GradedAlgebraModules` all
+  declare `(parameter)`, so neither a reader nor a tool can tell that the first two want
+  a group, the third a DGA and the fourth a graded algebra.  Building any of them with a
+  ring fails deep inside — `TypeError: this API expects a preamble group`, or
+  `AttributeError: 'Owned_OwnedRingParent_with_category' object has no attribute
+  'grading_monoid'` — rather than at the signature.  Name each parameter for the
+  structure it is (`supergroup`, `dga`, `graded_algebra`), the way
+  `OwnedCategoryOverBaseRing` names `base_ring`.
+  `src/dzack_research/preamble/categories/group/groups.py:1826`,
+  `categories/group/predicate_subgroups.py:40`,
+  `categories/modules/dg_modules.py:10` and `:36`.
+
+- [ ] **Graded-commutative algebras exist only over the integer grading.**
+  `GradedCommutativeAlgebras(R, M)` and `StrictlyGradedCommutativeAlgebras(R, M)` raise
+  `NotImplementedError: Koszul graded commutativity is currently represented for the
+  integer grading` for every `M` other than `ZZ`, including `NN`.  Koszul signs are
+  defined for any grading monoid with a parity homomorphism to `ZZ/2`; represent that
+  instead of hard-refusing.
+  `src/dzack_research/preamble/categories/algebras/graded_commutative_algebras.py:21`
+  and `:50`.
+
+- [ ] **`OwnedCategoryOverBaseRing` is exported into the session but is not a category.**
+  `from dzack_research.preamble.all import *` binds it, and building it raises
+  `NotImplementedError: <abstract method super_categories>`.  An abstract base belongs to
+  the implementation, not to the session namespace: drop it from the export surface.
+  `src/dzack_research/preamble/categories/rings/ring_foundation.py:668`.
+
+- [ ] **Four form functors have no `_repr_`.**  `FreeBilinearFormFunctor`,
+  `BilinearUnderlyingModuleFunctor`, `FreeQuadraticFormFunctor` and
+  `QuadraticUnderlyingModuleFunctor` fall back to Python's default, so
+  `BilinearFreeFormAdjunction` and `QuadraticFreeFormAdjunction` print their adjoints as
+  `<... object at 0x...>` — every sibling functor in `categories/functors/` names itself.
+  `src/dzack_research/preamble/categories/functors/free_forms.py`.
