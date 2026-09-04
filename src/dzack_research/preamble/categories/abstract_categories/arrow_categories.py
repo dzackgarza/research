@@ -594,17 +594,19 @@ class CategoricalIsomorphism(Morphism):
     def __mul__(self, other):
         if other.codomain() is not self.domain():
             return NotImplemented
-        return CoreHomset(other.domain(), self.codomain())(
+        return core_mor(other.domain(), self.codomain())(
             self.forward() * other.forward(),
             other.inverse() * self.inverse(),
         )
 
 
-class CoreHomset(OwnedHomset):
+class CoreHomset(CategoricalHomset):
     Element = CategoricalIsomorphism
 
-    def __init__(self, domain, codomain) -> None:
-        Homset.__init__(self, domain, codomain, category=SageSets())
+    def __init__(self, core_category, domain, codomain) -> None:
+        CategoricalHomset.__init__(
+            self, HomCategoryConstruction(core_category), domain, codomain
+        )
 
     def _element_constructor_(self, forward, inverse=None):
         if inverse is None:
@@ -649,7 +651,7 @@ class CoreCategory(Category):
         cached = self._homsets.get(key)
         if cached is not None and cached.domain() is domain and cached.codomain() is codomain:
             return cached
-        result = CoreHomset(domain, codomain)
+        result = CoreHomset(self, domain, codomain)
         self._homsets[key] = result
         return result
 
@@ -681,20 +683,26 @@ def SuperobjectsOf(base_category, base_object):
     return SuperobjectCategory(base_category, base_object)
 
 
+def core_mor(domain, codomain):
+    r"""Return ``Hom`` in the core of the greatest category holding both objects."""
+    return Core(common_category(domain, codomain)).Mor(domain, codomain)
+
+
 def _isomorphism_from_known_inverse_pair(forward, inverse):
     r"""Transport a previously proved inverse pair without re-solving equality."""
-    return CoreHomset(forward.domain(), forward.codomain())._from_known_inverse_pair(
+    return core_mor(forward.domain(), forward.codomain())._from_known_inverse_pair(
         forward, inverse
     )
 
 
 def Isomorphism(forward, inverse):
     r"""Return the isomorphism represented by mutually inverse arrows."""
-    return CoreHomset(forward.domain(), forward.codomain())(forward, inverse)
+    return core_mor(forward.domain(), forward.codomain())(forward, inverse)
 
 
 __all__ = [
     "common_category",
+    "core_mor",
     "Isomorphism",
     "IsoArrowCategory",
     "EndArrowCategory",

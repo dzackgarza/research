@@ -361,8 +361,8 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
             return framing_morphism(self, self, self.module_generator)
 
         def _free_biproduct_with(self, other, labels):
-            r"""Return the free biproduct realization when both factors are free."""
-            if not hasattr(other, "_free_biproduct_with"):
+            r"""Return the free biproduct realization when both factors are framed free."""
+            if other not in FramedFreeModules(self.base_ring()):
                 return NotImplemented
             return FreeModuleOn(self.base_ring(), labels)
 
@@ -697,8 +697,22 @@ class FreeModuleGeneratorSet(Parent):
         return "{" + ", ".join(repr(generator) for generator in self) + "}"
 
 
+def _states_a_rank(labels) -> bool:
+    r"""Decide whether a free-module argument gives a rank rather than labels.
+
+    This is ingress: the argument is whatever the caller wrote.  A preamble
+    session's numeral is an owned integer, a ``.py`` caller writes a Python
+    ``int``, and engine code hands back Sage's own integers.  All three state
+    the rank \(n\), from which the construction builds the index set
+    \(\Delta[n-1]\).
+    """
+    from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+
+    return isinstance(labels, (int, Integer)) or labels in _own_ring(SageZZ)
+
+
 def _module_generating_set(labels):
-    if isinstance(labels, (int, Integer)):
+    if _states_a_rank(labels):
         return Sets.Δ[int(labels) - 1]
     if isinstance(labels, (tuple, list, range)):
         return finite_ordered_set(labels)
@@ -727,10 +741,10 @@ def FreeModule(base_ring, rank_or_index_set):
     ring = base_ring
     if ring not in OwnedRings():
         raise TypeError("FreeModule expects a preamble ring")
-    if isinstance(rank_or_index_set, (int, Integer)):
+    if _states_a_rank(rank_or_index_set):
         if rank_or_index_set < 0:
             raise ValueError("the rank of a free module is nonnegative")
-        return _owned_finite_free_module(ring, rank_or_index_set)
+        return _owned_finite_free_module(ring, int(rank_or_index_set))
     return _owned_free_module_on(ring, _module_generating_set(rank_or_index_set))
 
 

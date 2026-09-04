@@ -15,7 +15,7 @@ from sage.rings.rational_field import QQ as SageQQ
 
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
     CategoricalIsomorphism,
-    CoreHomset,
+    core_mor,
 )
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
@@ -141,7 +141,7 @@ class TorsionFormIsometry(CategoricalIsomorphism):
 def torsion_form_isometry(forward, inverse, *, quadratic: bool):
     r"""Return the form isometry represented by mutually inverse module maps."""
     return TorsionFormIsometry(
-        CoreHomset(forward.domain(), forward.codomain()),
+        core_mor(forward.domain(), forward.codomain()),
         forward,
         inverse,
         quadratic=quadratic,

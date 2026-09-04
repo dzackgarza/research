@@ -26,12 +26,31 @@ def _own_number_field(engine):
     return _refine_number_field_view(_own_ring(engine))
 
 
-def CyclotomicField(*args, **kwargs):
-    return _own_number_field(_SageCyclotomicField(*args, **kwargs))
+def _engine_scalar(engine_ring, value):
+    r"""Cross a scalar argument of an owned constructor into the engine.
+
+    A preamble session's numerals are owned ring elements, and the private
+    Sage constructors below reject them: their coercion graph has never heard
+    of the owned parent.  Crossing here keeps the owned scalar out of Sage's
+    coercion discovery, which is the same boundary ``NumberField`` observes
+    for its defining polynomial.
+    """
+    from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+
+    owned = _own_ring(engine_ring)
+    return _engine_element(owned, owned(value))
 
 
-def QuadraticField(*args, **kwargs):
-    return _own_number_field(_SageQuadraticField(*args, **kwargs))
+def CyclotomicField(order, *args, **kwargs):
+    return _own_number_field(
+        _SageCyclotomicField(_engine_scalar(SageZZ, order), *args, **kwargs)
+    )
+
+
+def QuadraticField(discriminant, *args, **kwargs):
+    return _own_number_field(
+        _SageQuadraticField(_engine_scalar(SageQQ, discriminant), *args, **kwargs)
+    )
 
 
 def NumberField(polynomial, *args, **kwargs):
@@ -175,11 +194,10 @@ class OwnedNumberFields(Category):
             from dzack_research.preamble.categories.rings.embeddings import (
                 number_field_homset,
             )
-            from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
             if target not in OwnedFields():
                 raise TypeError("number-field embeddings require an owned target field")
-            return finite_ordered_set(number_field_homset(self, target).embeddings())
+            return number_field_homset(self, target).embeddings()
 
         def is_galois(self) -> bool:
             r"""Return whether ``K/QQ`` is Galois."""

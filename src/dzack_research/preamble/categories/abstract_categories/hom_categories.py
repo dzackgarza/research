@@ -177,12 +177,13 @@ class CategoricalHomset(OwnedHomset, Category):
     """
 
     @staticmethod
-    def __classcall__(cls, family, domain, codomain, **options):
+    def __classcall__(cls, *arguments, **options):
         # ``Category`` is a UniqueRepresentation whose default classcall does
         # not include fixed Hom endpoints in the identity of this mixed
         # Homset/category object.  The owning Hom family already interns by
-        # ``(domain,codomain)``, so bypass Category's cache here.
-        return typecall(cls, family, domain, codomain, **options)
+        # ``(domain,codomain)``, so bypass Category's cache here.  Subclasses
+        # name their own construction data, so the signature stays open.
+        return typecall(cls, *arguments, **options)
 
     def __init__(self, family, domain, codomain) -> None:
         self._family = family

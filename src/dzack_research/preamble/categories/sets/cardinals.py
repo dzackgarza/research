@@ -2,16 +2,17 @@ r"""Cardinal and ordinal arithmetic in the owned set-theoretic number hierarchy.
 
 from __future__ import annotations
 
-from dzack_research.preamble.categories.abstract_categories.hom_foundation import OwnedHomset
+from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    CategoricalHomset,
+    HomCategoryConstruction,
+)
 
 from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum
 
 from sage.categories.category import Category
-from sage.categories.homset import Homset
 from sage.categories.morphism import Morphism
-from sage.categories.objects import Objects as SageObjects
 from sage.categories.semirings import Semirings
 from sage.categories.sets_cat import Sets as SageSets
 from sage.misc.cachefunc import cached_function
@@ -75,11 +76,13 @@ class CardinalityMorphism(Morphism):
         return f"{self.domain()} <= {self.codomain()}"
 
 
-class CardinalityHomset(OwnedHomset):
+class CardinalityHomset(CategoricalHomset):
     Element = CardinalityMorphism
 
-    def __init__(self, domain, codomain) -> None:
-        Homset.__init__(self, domain, codomain, category=SageObjects())
+    def __init__(self, cardinalities, domain, codomain) -> None:
+        CategoricalHomset.__init__(
+            self, HomCategoryConstruction(cardinalities), domain, codomain
+        )
 
     def cardinality(self):
         return cardinal(1 if Cardinalities().le(self.domain(), self.codomain()) else 0)
@@ -110,7 +113,7 @@ class Cardinalities(Category):
         return "Category of cardinalities"
 
     def Mor(self, domain, codomain) -> CardinalityHomset:
-        return CardinalityHomset(cardinal(domain), cardinal(codomain))
+        return CardinalityHomset(self, cardinal(domain), cardinal(codomain))
 
 
     def zero(self):
