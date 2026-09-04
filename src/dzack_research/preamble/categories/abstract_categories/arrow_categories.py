@@ -12,18 +12,6 @@ from sage.structure.parent import Parent
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
-def _identity_morphism_in_theory(arrow, obj):
-    r"""Return the identity at ``obj`` from the Hom theory containing ``arrow``."""
-    return arrow.parent().identity_at(obj)
-
-
-def _identity_morphism(obj):
-    r"""Return the identity arrow through the object's public owned Hom surface."""
-    if isinstance(obj, ArrowObject):
-        return obj.arrow_category().Mor(obj, obj).identity()
-    return obj.Mor(obj).identity()
-
-
 class ArrowObject(Parent):
     r"""A morphism of ``C`` regarded as an object of ``Arr(C)``."""
 
@@ -327,27 +315,38 @@ class AutomorphismArrowCategory(IsoArrowCategory):
 
 
 class MonomorphismArrowCategory(ArrowCategory):
-    r"""The full subcategory of the arrow category on represented monomorphisms."""
+    r"""The full subcategory of the arrow category on represented monomorphisms.
+
+    Which arrows are monic is the base category's own question, so this asks
+    the mono family that category declares.  Injectivity is the answer in sets
+    and modules and is the declared default there; it is neither necessary nor
+    sufficient in every category, so it is not the definition used here.
+    """
 
     def __contains__(self, candidate) -> bool:
         if not super().__contains__(candidate):
             return False
-        try:
-            return candidate.arrow().is_injective() is True
-        except (AttributeError, NotImplementedError):
-            return False
+        from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+            category_packet,
+        )
+
+        return category_packet(self.base_category()).Monos().accepts(candidate.arrow())
 
 
 class EpimorphismArrowCategory(ArrowCategory):
-    r"""The full subcategory of the arrow category on represented epimorphisms."""
+    r"""The full subcategory of the arrow category on represented epimorphisms.
+
+    As for monomorphisms, the base category's declared epi family answers.
+    """
 
     def __contains__(self, candidate) -> bool:
         if not super().__contains__(candidate):
             return False
-        try:
-            return candidate.arrow().is_surjective() is True
-        except (AttributeError, NotImplementedError):
-            return False
+        from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+            category_packet,
+        )
+
+        return category_packet(self.base_category()).Epis().accepts(candidate.arrow())
 
 
 def _subobject_source(subobject):
@@ -554,8 +553,23 @@ class CoreHomset(CategoricalHomset):
     Element = CategoricalIsomorphism
 
     def __init__(self, core_category, domain, codomain) -> None:
+        self._core_category = core_category
         CategoricalHomset.__init__(
             self, HomCategoryConstruction(core_category), domain, codomain
+        )
+
+    def core_category(self):
+        return self._core_category
+
+    def __contains__(self, candidate) -> bool:
+        if not isinstance(candidate, CategoricalIsomorphism):
+            return False
+        if candidate.domain() is not self.domain() or candidate.codomain() is not self.codomain():
+            return False
+        base = self.core_category().base_category()
+        return (
+            candidate.forward() in base.Mor(self.domain(), self.codomain())
+            and candidate.inverse() in base.Mor(self.codomain(), self.domain())
         )
 
     def _element_constructor_(self, forward, inverse=None):
@@ -570,7 +584,8 @@ class CoreHomset(CategoricalHomset):
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError("identity is defined only on an endomorphism Hom-set")
-        identity = _identity_morphism(self.domain())
+        base = self.core_category().base_category()
+        identity = base.Mor(self.domain(), self.domain()).identity()
         return self(identity, identity)
 
 

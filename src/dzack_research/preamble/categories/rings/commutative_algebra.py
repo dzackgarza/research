@@ -17,7 +17,9 @@ from sage.structure.sage_object import SageObject
 from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.algebras.algebras import (
+    Algebras,
     CommutativeAlgebras,
+    OwnedAlgebras,
     refine_algebra,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -809,6 +811,7 @@ class GeneralLocalizationRingParent(Parent):
         self._preamble_engine_ring = _engine_ring
         Parent.__init__(
             self,
+            base=source.base_ring(),
             category=Category.join(
                 (LocalizationRings(), CommutativeRingConstructions())
             ),
@@ -1097,6 +1100,27 @@ def QuotientRing(ring, ideal):
     return quotient
 
 
+def _localized_algebra_placement(source, localization):
+    r"""Return the algebra placement ``A[S^{-1}]`` inherits from ``A``.
+
+    For an \(R\)-algebra \(A\) the localization is again an \(R\)-algebra: its
+    structure morphism is the localization map composed with the structure
+    morphism of \(A\), so \(R \to A \to A[S^{-1}]\) commutes.  A source that is a
+    bare ring rather than an algebra contributes nothing.
+    """
+    base = source.base_ring()
+    if base is None or source not in Algebras(base):
+        return ()
+    localization._preamble_algebra_base_ring = base
+    localization._preamble_structure_map = (
+        localization.localization_map() * source.algebra_structure_morphism()
+    )
+    placement = [Algebras(base), OwnedAlgebras(base)]
+    if source in CommutativeAlgebras(base):
+        placement.append(CommutativeAlgebras(base))
+    return placement
+
+
 def _finite_generated_localization(source, submonoid):
     engine = _engine_ring(source)
     try:
@@ -1122,6 +1146,7 @@ def _finite_generated_localization(source, submonoid):
         placements.append(OwnedIntegralDomains())
     if source in OwnedNoetherianRings():
         placements.append(OwnedNoetherianRings())
+    placements.extend(_localized_algebra_placement(source, localization))
     refine(localization, placements)
     return localization
 

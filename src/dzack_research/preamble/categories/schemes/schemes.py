@@ -18,6 +18,10 @@ from dzack_research.preamble.categories.abstract_categories.arrow_categories imp
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
     HomCategoryConstruction,
+    MonoCategoryOf,
+)
+from dzack_research.preamble.categories.abstract_categories.objects import (
+    OwnedParameterizedCategory,
 )
 from dzack_research.preamble.categories.algebras.free_algebras import PolynomialRing
 from dzack_research.preamble.categories.rings.commutative_algebra import (
@@ -39,6 +43,7 @@ from dzack_research.preamble.refine import refine
 from dzack_research.preamble.categories.abstract_categories.constructions import (
     Coproduct,
     Pushout,
+    Subobjects,
 )
 from dzack_research.preamble.categories.abstract_categories.products import _finite_factor_family
 from dzack_research.preamble.categories.algebras.algebras import (
@@ -335,6 +340,15 @@ class Schemes(OwnedCategoryOverBaseRing):
         if domain not in self or codomain not in self:
             raise TypeError("a scheme Hom requires two schemes over the stated base")
         return SchemeMorCategory(self, domain, codomain)
+
+    _MonoCategory = None  # set below, once SchemeMonomorphisms is defined
+
+    class SubcategoryMethods:
+        def Subobjects(self, ambient):
+            r"""Return the category of subobjects of ``ambient``."""
+            if ambient not in self:
+                raise TypeError("a subobject category is taken of a scheme in this category")
+            return Subobjects(ambient, Schemes(ambient.scheme_base_ring()))
 
 
     @cached_method
@@ -694,11 +708,6 @@ class AffineSchemes(_SchemePropertyCategory):
             algebra = self.coordinate_algebra()
             quotient = FinitelyPresentedAlgebra(algebra, equations)
             subscheme = Spec(quotient)
-            refine_closed_subscheme(
-                subscheme,
-                self,
-                defining_equations=equations,
-            )
             spec_inclusion = affine_spec_morphism(
                 quotient.algebra_presentation_morphism()
             )
@@ -711,7 +720,33 @@ class AffineSchemes(_SchemePropertyCategory):
                 quotient.algebra_presentation_morphism()
             )
             subscheme._preamble_inclusion = inclusion
-            return subscheme
+            return refine_closed_subscheme(
+                subscheme,
+                self,
+                defining_equations=equations,
+            )
+
+        def distinguished_open(self, element):
+            r"""Return \(D(f)\subseteq X\), the open locus where ``element`` is a unit.
+
+            \(D(f)=\operatorname{Spec}A[1/f]\), and the localization map
+            \(A\to A[1/f]\) induces the open immersion.
+            """
+            from dzack_research.preamble.categories.rings.commutative_algebra import Localization
+
+            localized = Localization(self.coordinate_algebra(), element)
+            localization_map = localized.localization_map()
+            spec_inclusion = affine_spec_morphism(localization_map)
+            open_subscheme = spec_inclusion.domain()
+            inclusion = categorical_scheme_morphism(
+                spec_inclusion.native_morphism(),
+                domain=open_subscheme,
+                codomain=self,
+            )
+            inclusion._preamble_coordinate_algebra_morphism = localization_map
+            open_subscheme._preamble_inclusion = inclusion
+            base = self.scheme_base_ring()
+            return refine_scheme(open_subscheme, base, [OpenImmersions(self)])
 
 
 class QuasiAffineSchemes(_SchemePropertyCategory):
@@ -1269,42 +1304,50 @@ def scheme_fiber_product(left_map, right_map):
     )
     return refine_scheme(product, base_ring, [FiberProductSchemes(base_ring)])
 
-class ClosedSubschemes(OwnedCategoryOverBaseRing):
-    r"""Closed subschemes equipped with their ambient closed immersion."""
+class _SchemeSubobjectsOf(OwnedParameterizedCategory):
+    r"""Subobjects of one scheme, by the kind of immersion they carry."""
 
-    def an_object(self):
-        r"""The coordinate axis cut out of the affine plane."""
-        from dzack_research.preamble.categories.schemes.schemes import AffineSpace, ProjectiveSpace, scheme_product
+    def ambient_scheme(self):
+        r"""Return the scheme these subobjects are subobjects of."""
+        return self.base()
 
-        ring = self.base_ring()
-        plane = AffineSpace(2, ring)
-        first, _ = plane.coordinate_algebra().algebra_generators()
-        return plane.closed_subscheme(first)
-
-    def _repr_object_names(self):
-        return f"closed subschemes over {self.base_ring()}"
+    def _repr_object_names(self) -> str:
+        return f"{self.immersion_name} into {self.ambient_scheme()}"
 
     def super_categories(self):
-        return [Schemes(self.base_ring())]
-
-    def __contains__(self, candidate) -> bool:
-        return (
-            candidate in Schemes(self.base_ring())
-            and _has_scheme_placement(candidate, ClosedSubschemes)
-        )
+        ambient = self.ambient_scheme()
+        return [Subobjects(ambient, Schemes(ambient.scheme_base_ring()))]
 
     class ParentMethods:
-        def ambient_scheme(self):
-            ambient = getattr(self, "_preamble_ambient_scheme", None)
-            return self.ambient_space() if ambient is None else ambient
-
         def inclusion(self):
-            selected = getattr(self, "_preamble_inclusion", None)
-            if selected is not None:
-                return selected
-            morphism = self.embedding_morphism()
-            return refine_scheme_morphism(morphism, self.scheme_base_ring())
+            r"""Return the chosen monomorphism representing this subobject."""
+            return self._preamble_inclusion
 
+        def ambient_scheme(self):
+            r"""Return the ambient scheme: the codomain of the inclusion."""
+            return self.inclusion().codomain()
+
+
+class ClosedEmbeddings(_SchemeSubobjectsOf):
+    r"""Subobjects of ``X`` whose inclusion is a closed immersion.
+
+    For affine \(X=\operatorname{Spec}A\) this is
+    \(\operatorname{Spec}(A/I)\hookrightarrow X\), induced by the quotient
+    \(A\twoheadrightarrow A/I\).  Every closed subscheme of \(X\) arises this
+    way from a unique ideal \(I\), so no further subclass exists to name; a
+    chosen finite generating set of \(I\) presents the coordinate algebra and
+    is stated on that algebra.
+    """
+
+    immersion_name = "closed embeddings"
+
+    def an_object(self):
+        r"""The coordinate axis, cut out of the ambient by its first coordinate."""
+        ambient = self.ambient_scheme()
+        first = next(iter(ambient.coordinate_algebra().algebra_generators()))
+        return ambient.closed_subscheme(first)
+
+    class ParentMethods:
         def codimension(self):
             defining = getattr(self, "_preamble_defining_ideal", None)
             ambient = self.ambient_scheme()
@@ -1338,43 +1381,36 @@ class ClosedSubschemes(OwnedCategoryOverBaseRing):
             return self.defining_ideal()
 
 
-class EquationDefinedClosedSubschemes(OwnedCategoryOverBaseRing):
+class OpenImmersions(_SchemeSubobjectsOf):
+    r"""Subobjects of ``X`` whose inclusion is an open immersion.
+
+    The standard affine specimen is the distinguished open
+    \(D(f)=\operatorname{Spec}A[1/f]\subseteq\operatorname{Spec}A\), whose
+    inclusion is induced by the localization map \(A\to A[1/f]\).
+    """
+
+    immersion_name = "open immersions"
+
     def an_object(self):
-        r"""The coordinate axis, cut out by one equation."""
-        from dzack_research.preamble.categories.schemes.schemes import AffineSpace, ProjectiveSpace, scheme_product
-
-        ring = self.base_ring()
-        plane = AffineSpace(2, ring)
-        first, _ = plane.coordinate_algebra().algebra_generators()
-        return plane.closed_subscheme(first)
-
-    def _repr_object_names(self):
-        return f"equation-defined closed subschemes over {self.base_ring()}"
-
-    def super_categories(self):
-        return [ClosedSubschemes(self.base_ring())]
-
-    def __contains__(self, candidate) -> bool:
-        return (
-            candidate in ClosedSubschemes(self.base_ring())
-            and _has_scheme_placement(candidate, EquationDefinedClosedSubschemes)
-        )
+        r"""\(D(f)\) for ``f`` the ambient's first coordinate."""
+        ambient = self.ambient_scheme()
+        first = next(iter(ambient.coordinate_algebra().algebra_generators()))
+        return ambient.distinguished_open(first)
 
 
-class OpenSubschemes(OwnedCategoryOverBaseRing):
-    r"""Open subschemes equipped with their open immersion."""
+class SchemeMonomorphisms(MonoCategoryOf):
+    r"""Monomorphisms of schemes.
 
-    def _repr_object_names(self):
-        return f"open subschemes over {self.base_ring()}"
+    A closed immersion and an open immersion are monomorphisms.  Which of the
+    two an inclusion is, is declared where it is constructed, and this reads
+    that declaration.  Injectivity on points is neither necessary nor
+    sufficient for a scheme monomorphism, so the inherited test does not apply.
+    """
 
-    def super_categories(self):
-        return [Schemes(self.base_ring())]
-
-    def __contains__(self, candidate) -> bool:
-        return (
-            candidate in Schemes(self.base_ring())
-            and _has_scheme_placement(candidate, OpenSubschemes)
-        )
+    def accepts(self, arrow) -> bool:
+        ambient = arrow.codomain()
+        source = arrow.domain()
+        return source in ClosedEmbeddings(ambient) or source in OpenImmersions(ambient)
 
 
 def refine_closed_subscheme(
@@ -1385,28 +1421,30 @@ def refine_closed_subscheme(
 ):
     ambient = subscheme.ambient_space() if ambient is None else ambient
     base = ambient.scheme_base_ring()
-    subscheme._preamble_ambient_scheme = ambient
     if defining_equations is not None:
         equations = tuple(defining_equations)
         subscheme._preamble_defining_equations = equations
         subscheme._preamble_defining_ideal = ambient.coordinate_ring().ideal(*equations)
-    return refine_scheme(
-        subscheme,
-        base,
-        [ClosedSubschemes(base), EquationDefinedClosedSubschemes(base)],
-    )
+    if getattr(subscheme, "_preamble_inclusion", None) is None:
+        # The subobject is the arrow, so a route that did not build one takes
+        # the native embedding, retargeted at the stated ambient.
+        subscheme._preamble_inclusion = categorical_scheme_morphism(
+            subscheme.embedding_morphism(),
+            domain=subscheme,
+            codomain=ambient,
+        )
+    return refine_scheme(subscheme, base, [ClosedEmbeddings(ambient)])
 
 __all__ = [
     "AffineSchemes",
     "AffineSpace",
     "AffineSpaces",
-    "ClosedSubschemes",
-    "EquationDefinedClosedSubschemes",
+    "ClosedEmbeddings",
     "FiberProductSchemes",
     "FiniteTypeSchemes",
     "IntegralSchemes",
     "NormalSchemes",
-    "OpenSubschemes",
+    "OpenImmersions",
     "ProjectiveSchemes",
     "ProjectiveSpace",
     "ProjectiveSpaces",
@@ -1414,6 +1452,7 @@ __all__ = [
     "ProductSchemes",
     "QuasiAffineSchemes",
     "QuasiProjectiveSchemes",
+    "SchemeMonomorphisms",
     "Schemes",
     "SchemeMorphism",
     "SeparatedSchemes",
@@ -1427,3 +1466,5 @@ __all__ = [
     "refine_closed_subscheme",
     "scheme_fiber_product",
 ]
+
+Schemes._MonoCategory = SchemeMonomorphisms

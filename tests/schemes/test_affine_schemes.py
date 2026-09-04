@@ -1,9 +1,10 @@
+from sage.rings.integer_ring import ZZ as SageZZ
+
 from dzack_research.preamble.all import (
     AffineSchemes,
     AffineSpace,
     AffineSpaces,
-    ClosedSubschemes,
-    EquationDefinedClosedSubschemes,
+    ClosedEmbeddings,
     IntegralSchemes,
     ProjectiveSpace,
     ProjectiveSpaces,
@@ -13,6 +14,7 @@ from dzack_research.preamble.all import (
     Schemes,
     SmoothSchemes,
     Spec,
+    ZZ,
     scheme_product,
 )
 
@@ -39,6 +41,11 @@ def test_affine_projective_and_base_schemes_live_in_the_owned_scheme_graph() -> 
     assert base.relative_dimension() == 0
     assert affine.base_scheme() is base
     assert affine.relative_dimension() == 2
+
+
+def test_space_dimensions_accept_owned_and_backend_integer_numerals() -> None:
+    assert AffineSpace(ZZ(2), QQ).relative_dimension() == 2
+    assert ProjectiveSpace(SageZZ(2), QQ).relative_dimension() == 2
 
 
 def test_structure_sheaf_is_an_actual_object_with_exact_supported_global_sections() -> None:
@@ -82,14 +89,13 @@ def test_scheme_point_is_a_morphism_from_an_owned_residue_field_scheme() -> None
     assert structural_value.codomain() is Spec(QQ)
 
 
-def test_equation_defined_closed_subscheme_has_live_inclusion_and_codimension() -> None:
+def test_a_closed_subscheme_carries_its_inclusion_and_knows_its_codimension() -> None:
     affine = AffineSpace(2, QQ)
     x, _y = affine.coordinate_ring().algebra_generators()
     divisor = affine.closed_subscheme(x)
 
     assert divisor in Schemes(QQ)
-    assert divisor in ClosedSubschemes(QQ)
-    assert divisor in EquationDefinedClosedSubschemes(QQ)
+    assert divisor in ClosedEmbeddings(affine)
     assert divisor.ambient_scheme() is affine
     assert divisor.inclusion() in Schemes(QQ).Mor(divisor, affine)
     assert divisor.inclusion().domain() is divisor
