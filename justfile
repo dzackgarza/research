@@ -184,6 +184,15 @@ test-push:
 test-ci:
     @just -f ~/ai-review-ci/justfiles/sage.just -d . test-ci
 
+# Survey an operation before changing what it returns or renaming it.
+# Reports every definition with its owner and return expressions, flags
+# divergent codomains (CONTRIBUTING.md LEX-11), and censuses the call sites by
+# syntactic shape, which is the plan for the change (DEF-07, CON-15).
+#   just refactor-survey signature_pair
+#   just refactor-survey "tensor_valence tensor_shape"
+refactor-survey names:
+    PYTHONPATH=src python3 -m dzack_research.utilities.refactor_survey {{names}}
+
 # Check that the proof surface stays inside the mathematical universe.
 # Policies: CONTRIBUTING.md DEV-37 (a test stays inside the universe) and
 # DEV-38 (assert the object, not a chosen presentation).
