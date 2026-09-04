@@ -222,6 +222,17 @@ class Sets(OwnedCategory):
     Hom = hom
     homset = hom
 
+    def product(self, family):
+        r"""Return $\prod_{i \in I} X_i$ for an indexed family of objects.
+
+        A product is taken over an index set, so the family carries both the
+        index set and the factor at each index.  Asking the category is the
+        public route (`STY-02`), and naming the index set rather than an arity
+        is what `CON-14` requires; the binary `Product(A, B)` is sugar that
+        chooses `Sets.Δ[1]` for the caller.
+        """
+        return CartesianProductOfFamily(family.index_set(), family.value)
+
     def _categorical_product(self, left, right):
         return CartesianProductOfSets(left, right)
 
