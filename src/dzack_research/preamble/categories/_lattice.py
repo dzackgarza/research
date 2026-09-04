@@ -14,7 +14,6 @@ import re
 
 from sage.arith.misc import factor
 from sage.categories.category import Category
-from sage.categories.enumerated_sets import EnumeratedSets
 from sage.categories.infinite_enumerated_sets import InfiniteEnumeratedSets
 from sage.combinat.root_system.cartan_type import CartanType, CartanType_abstract
 from sage.misc.latex import latex
@@ -40,6 +39,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.static_types import ProductOfNaturalNumbers
 from dzack_research.preamble.categories.sets.set_categories import (
+    EnumeratedSets,
     NN,
     Sets,
 )
@@ -53,6 +53,23 @@ from dzack_research.preamble.tensors.tensor import (
     tensor,
 )
 from dzack_research.preamble.tensors.tensor import _engine_component_matrix
+from dzack_research.preamble.categories.abstract_categories.category_constructions import ProductCategory
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+    FramedFreeModules,
+    FreeModule,
+    FreeModuleOn,
+    FreshFreeModuleOn,
+    MatrixSpace,
+)
+from dzack_research.preamble.categories.sets.cardinals import (
+    Cardinalities,
+    cardinal,
+)
+from dzack_research.preamble.refine import refine
+from dzack_research.preamble.tensors.tensor import (
+    _component_shape,
+    _tensor_richcmp,
+)
 
 
 def _formal_symbol(index):
@@ -114,7 +131,6 @@ class _FormalSymbols(UniqueRepresentation, Parent):
 
 def _as_generating_set(keys, rank):
     r"""Return ``keys`` as an owned ordered generating set of cardinality ``rank``."""
-    from dzack_research.preamble.categories.sets.cardinals import cardinal
 
     if keys is None:
         if rank == Infinity:
@@ -147,7 +163,6 @@ def _as_generating_set(keys, rank):
 
 def _generating_set_from_names(names, rank):
     r"""Return an owned ordered family of SR symbols named by ``names``."""
-    from dzack_research.preamble.categories.sets.cardinals import cardinal
 
     if names is None or rank == Infinity:
         return None
@@ -250,7 +265,6 @@ class Lattice(Parent, IndexedGenerators):
         if isinstance(x, self.element_class) and x.parent() is self:
             return x
         if isinstance(x, (tuple, list)):
-            from dzack_research.preamble.categories.sets.cardinals import cardinal
 
             size = cardinal(self.module_generating_set().cardinality())
             if not size.is_finite():
@@ -362,7 +376,6 @@ def _lattice_parent(module, gram, category, sage_lattice, names=None):
     constructions naming one module and one Gram name one lattice.  Equal
     Grams hash equally, so this is Sage's own construction cache.
     """
-    from dzack_research.preamble.refine import refine
 
     lattice = refine(
         Lattice(module, gram, category, sage_lattice, names),
@@ -413,7 +426,6 @@ class _PairingGram(ModuleElement, Tensor):
         return self._module.base_ring()
 
     def _richcmp_(self, other, op):
-        from dzack_research.preamble.tensors.tensor import _tensor_richcmp
 
         return _tensor_richcmp(self, other, op)
 
@@ -836,7 +848,6 @@ def orthogonal_sum(left, right, *, category):
         generating_set = _as_generating_set(None, Infinity)
     else:
         generating_set = _as_generating_set(None, split + int(right_rank))
-    from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreeModuleOn
 
     module = FreeModuleOn(ring, generating_set)
     gram = _BiproductGram(module, left, right, split)
@@ -855,7 +866,6 @@ def colimit_lattice(stage, *, category):
         raise TypeError("stage(n) must be a lattice in this category")
     if probe.rank() != 2:
         raise ValueError(f"stage(n) must have rank n, got stage(2) of rank {probe.rank()}")
-    from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreshFreeModuleOn
 
     module = FreshFreeModuleOn(ring, _as_generating_set(None, Infinity))
     return _lattice_parent(
@@ -911,17 +921,12 @@ def signature_pairs():
     its standard form has \((p,q)=(\aleph_0,0)\) -- so each entry is a
     cardinal and the pair is an object of the product category.
     """
-    from dzack_research.preamble.categories.abstract_categories.category_constructions import (
-        ProductCategory,
-    )
-    from dzack_research.preamble.categories.sets.cardinals import Cardinalities
 
     return ProductCategory(Cardinalities(), Cardinalities())
 
 
 def signature_pair(positive, negative):
     r"""Return \((p,q)\) as an object of :func:`signature_pairs`."""
-    from dzack_research.preamble.categories.sets.cardinals import cardinal
 
     return signature_pairs().pair(cardinal(positive), cardinal(negative))
 
@@ -951,7 +956,6 @@ def discriminant_of_gram(gram: Tensor):
         n = int(rank)
         return (-1) ** (n * (n - 1) // 2)
     n = int(rank)
-    from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace
 
     matrix = MatrixSpace(gram.base_ring(), n).from_rows(gram.components())
     return (-1) ** (n * (n - 1) // 2) * matrix.determinant()
@@ -1067,7 +1071,6 @@ def _root_cartan_gram_tensor(ring, cartan_type) -> Tensor:
 
 
 def _nested_gram_tensor(data, ring) -> Tensor:
-    from dzack_research.preamble.tensors.tensor import _component_shape
 
     match _component_shape(data):
         case (rows, columns):
@@ -1095,10 +1098,6 @@ def _lattice_from_gram_tensor(
     if rows != columns:
         raise ValueError(f"a Gram tensor is square, got shape {gram_tensor.tensor_shape()}")
     generating_set = _generating_set_for(rows, module_generators, names)
-    from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-        FreeModuleOn,
-        FreshFreeModuleOn,
-    )
 
     module = (
         FreeModuleOn(ring, generating_set)
@@ -1140,7 +1139,6 @@ def _owned_free_module(data, ring, module_generators=None, names=None):
     lattice's generators are then ``module_generators``, ``names``, or the
     formal symbols \(e_i\).
     """
-    from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules
 
     if data not in FramedFreeModules(ring):
         raise TypeError(f"Lattices({ring}) takes a free module over {ring}, got {data}")
@@ -1156,7 +1154,6 @@ def _owned_free_module(data, ring, module_generators=None, names=None):
             or (label in NN and int(label) == position)
             for position in range(int(rank))
         )
-    from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreshFreeModuleOn
 
     if module_generators is None and not positional:
         return FreshFreeModuleOn(ring, labels)
@@ -1196,7 +1193,6 @@ def lattice(
     if basis is not None:
         raise TypeError("Lattices(R) does not take a spanning basis; construct the free module and the Gram in this category")
     ring = category.base_ring()
-    from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules
 
     framed = FramedFreeModules(ring)
 
@@ -1239,7 +1235,6 @@ def lattice(
                 category,
             )
         case Integer() | int() if int(data) >= 0:
-            from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreeModule
 
             return _identity_lattice(
                 FreeModule(ring, int(data)),

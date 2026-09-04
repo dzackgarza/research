@@ -1,6 +1,16 @@
 r"""Exact vector-orbit data for owned lattices."""
 
 from sage.misc.cachefunc import cached_method
+from dzack_research.preamble.categories.modules.framed.formed.form_modules import form_embedding
+from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import torsion_form_isometry
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+    MatrixSpace,
+    matrix_change_ring,
+)
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    module_coefficients,
+    module_homset,
+)
 
 
 class VectorPrimitiveExtension:
@@ -134,9 +144,6 @@ class VectorPrimitiveExtension:
     def representative_of(self, discriminant_class):
         r"""Return the selected representative in ``A_M`` of a class of ``A_L``."""
         discriminant_class = self.discriminant_form(discriminant_class)
-        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-            module_coefficients,
-        )
 
         coefficients = module_coefficients(
             discriminant_class,
@@ -240,10 +247,6 @@ def definite_complement_extensions(lattice, left, right):
 
     ring = lattice.base_ring()
     rationals = ring.fraction_field()
-    from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-        MatrixSpace,
-        matrix_change_ring,
-    )
 
     source_inclusion = matrix_change_ring(source.inclusion.matrix(), rationals)
     target_inclusion = matrix_change_ring(target.inclusion.matrix(), rationals)
@@ -338,9 +341,6 @@ def _finite_form_isometries(start):
     for automorphism in target.O():
         forward = automorphism.forward() * start.forward()
         inverse = start.inverse() * automorphism.inverse_morphism()
-        from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import (
-            torsion_form_isometry,
-        )
 
         yield torsion_form_isometry(
             forward,
@@ -398,12 +398,6 @@ def gluing_route_discriminant_classes(lattice, left, right):
     ):
         raise ArithmeticError("the complement discriminant isometry has the wrong endpoints")
 
-    from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
-        form_embedding,
-    )
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-        module_homset,
-    )
 
     source_sum_labels = tuple(source.sum_form.module_generating_set())
     target_glue = {

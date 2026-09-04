@@ -14,6 +14,13 @@ from dzack_research.preamble.categories.modules.cochain_complexes import (
 from dzack_research.preamble.categories.modules.pure.modules import FinitelyPresentedModules
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
+from dzack_research.preamble.categories.algebras.cohomology_algebras import (
+    CohomologyAlgebra,
+    CohomologyAlgebras,
+    cohomology_algebra_homset,
+)
+from dzack_research.preamble.categories.algebras.differential_graded_algebras import StrictlyCommutativeDifferentialGradedAlgebras
+from dzack_research.preamble.categories.functors.de_rham import de_rham_functor
 
 
 class CohomologyFunctor(Functor):
@@ -66,8 +73,6 @@ class DeRhamCohomologyFunctor(CompositeFunctor):
     r"""The literal composite ``H^p ∘ U_Coch ∘ DR_R``."""
 
     def __init__(self, base_ring, degree) -> None:
-        from dzack_research.preamble.categories.algebras.differential_graded_algebras import StrictlyCommutativeDifferentialGradedAlgebras
-        from dzack_research.preamble.categories.functors.de_rham import de_rham_functor
 
         self._base_ring = _owned_ring(base_ring)
         self._degree = int(degree)
@@ -96,8 +101,6 @@ class CohomologyAlgebraFunctor(Functor):
     r"""The graded cohomology-algebra functor ``H^*`` on strict CDGAs."""
 
     def __init__(self, base_ring) -> None:
-        from dzack_research.preamble.categories.algebras.cohomology_algebras import CohomologyAlgebras
-        from dzack_research.preamble.categories.algebras.differential_graded_algebras import StrictlyCommutativeDifferentialGradedAlgebras
 
         self._base_ring = _owned_ring(base_ring)
         super().__init__(
@@ -109,12 +112,10 @@ class CohomologyAlgebraFunctor(Functor):
         return self._base_ring
 
     def _apply_object(self, dga):
-        from dzack_research.preamble.categories.algebras.cohomology_algebras import CohomologyAlgebra
 
         return CohomologyAlgebra(dga)
 
     def _apply_morphism(self, morphism):
-        from dzack_research.preamble.categories.algebras.cohomology_algebras import cohomology_algebra_homset
 
         return cohomology_algebra_homset(
             self(morphism.domain()),
@@ -129,7 +130,6 @@ class DeRhamCohomologyAlgebraFunctor(CompositeFunctor):
     r"""The composite ``H^* ∘ DR_R``."""
 
     def __init__(self, base_ring) -> None:
-        from dzack_research.preamble.categories.functors.de_rham import de_rham_functor
 
         self._base_ring = _owned_ring(base_ring)
         super().__init__(

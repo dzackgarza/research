@@ -14,6 +14,12 @@ from dzack_research.preamble.categories.abstract_categories.objects import Objec
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.categories.sets.cardinals import cardinal
+from dzack_research.preamble.categories.abstract_categories.functors import (
+    ConstantDiagram,
+    DiscreteCategory,
+    DiscreteDiagram,
+)
+from dzack_research.preamble.categories.functors.core import NaturalTransformation
 
 
 class DiagramCategory(FunctorCategory):
@@ -227,8 +233,6 @@ class ConeCategory(Category):
         return isinstance(candidate, ConeObject) and candidate.diagram() is self.diagram()
 
     def cone(self, apex, components):
-        from dzack_research.preamble.categories.abstract_categories.functors import ConstantDiagram
-        from dzack_research.preamble.categories.functors.core import NaturalTransformation
 
         constant = ConstantDiagram(self.diagram().domain(), self.ambient_category(), apex)
         transformation = NaturalTransformation(constant, self.diagram(), components)
@@ -264,8 +268,6 @@ class CoconeCategory(Category):
         return isinstance(candidate, CoconeObject) and candidate.diagram() is self.diagram()
 
     def cocone(self, apex, components):
-        from dzack_research.preamble.categories.abstract_categories.functors import ConstantDiagram
-        from dzack_research.preamble.categories.functors.core import NaturalTransformation
 
         constant = ConstantDiagram(self.diagram().domain(), self.ambient_category(), apex)
         transformation = NaturalTransformation(self.diagram(), constant, components)
@@ -405,10 +407,6 @@ def _discrete_diagram(factors, ambient_category=None):
     if cardinal(family.cardinality()) == cardinal(0):
         raise ValueError("the current selected finite product requires at least one factor")
     ambient = ambient_category_of(family) if ambient_category is None else ambient_category
-    from dzack_research.preamble.categories.abstract_categories.functors import (
-        DiscreteCategory,
-        DiscreteDiagram,
-    )
 
     index = DiscreteCategory(family.index_set())
     return DiscreteDiagram(index, ambient, family)

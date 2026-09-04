@@ -24,6 +24,20 @@ from dzack_research.preamble.categories.sets.set_categories import (
     Sets,
 )
 from dzack_research.preamble.refine import refine
+from dzack_research.preamble.categories.abstract_categories.constructions import (
+    Biproduct,
+    TensorProduct,
+)
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    LocalRings,
+    OwnedOrders,
+)
+from dzack_research.preamble.categories.sets.cardinals import cardinal
+from dzack_research.preamble.categories.sets.indexed_families import (
+    IndexedFamily,
+    finite_indexed_family,
+    indexed_family,
+)
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -36,14 +50,12 @@ def _has_finite_free_framing(module) -> bool:
     labels = getattr(module, "module_generating_set", lambda: None)()
     if labels is None:
         return False
-    from dzack_research.preamble.categories.sets.cardinals import cardinal
 
     return cardinal(labels.cardinality()).is_finite()
 
 
 def _solve_left_integrally_element(system, target, ring):
     r"""Return the row-coefficient element ``a`` with ``a*system = target``."""
-    from dzack_research.preamble.categories.rings.ring_foundation import OwnedRings
 
     if ring not in OwnedRings():
         raise TypeError("integral solving requires an owned coefficient ring")
@@ -162,7 +174,6 @@ def module_coefficients(element, module=None) -> dict:
     selected = module._selected_module_coefficients(element)
     if selected is not None:
         return selected
-    from dzack_research.preamble.categories.rings.ring_foundation import OwnedOrders
 
     if module in OwnedOrders():
         labels = module.module_generating_set()
@@ -311,14 +322,12 @@ class ModuleMorphism(Morphism):
         r"""Enumerate a finitely generated module over a finite ring via its framing."""
         domain = self.domain()
         ring = domain.base_ring()
-        from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
 
         generating_set = getattr(domain, "module_generating_set", None)
         if not callable(generating_set):
             return None
         try:
             label_set = generating_set()
-            from dzack_research.preamble.categories.sets.cardinals import cardinal
 
             if not cardinal(label_set.cardinality()).is_finite():
                 return None
@@ -380,7 +389,6 @@ class ModuleMorphism(Morphism):
 
         from sage.rings.integer_ring import ZZ as SageZZ
 
-        from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
 
         if _engine_ring(ring) is SageZZ:
             return
@@ -497,12 +505,8 @@ class ModuleMorphism(Morphism):
             return op == op_NE
         if self is other:
             return op == op_EQ
-        from dzack_research.preamble.categories.modules.pure.modules import (
-            ModulesWithChosenFinitePresentation,
-        )
-
         domain = self.domain()
-        if domain not in ModulesWithChosenFinitePresentation(domain.base_ring()):
+        if domain._selected_presentation_rows() is None:
             raise NotImplementedError(
                 "module-morphism equality is not decidable without a chosen finite presentation of the source"
             )
@@ -580,17 +584,12 @@ class ModuleMorphism(Morphism):
                 "a coordinate matrix requires finitely generated framed free endpoints"
             )
         homset = module_homset(self.domain(), self.codomain())
-        from dzack_research.preamble.categories.modules.pure.modules import MatrixSpaces
-
-        if homset not in MatrixSpaces(ring):
-            raise ArithmeticError("the full finite-free Hom did not acquire matrix structure")
         return self if self.parent() is homset else homset(self)
 
     def stack(self, other):
         r"""Return ``(self,other)`` into the biproduct of the codomains."""
         if not isinstance(other, ModuleMorphism) or other.domain() is not self.domain():
             raise ValueError("stacking module maps requires one common domain")
-        from dzack_research.preamble.categories.abstract_categories.constructions import Biproduct
 
         target = Biproduct(self.codomain(), other.codomain())
         return target.to_product(self, other)
@@ -623,7 +622,6 @@ class ModuleMorphism(Morphism):
         from sage.rings.infinity import Infinity
 
         assert self.domain().rank() != Infinity
-        from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
 
         labels = self.domain().module_generating_set()
         return self.codomain().subobject_on(
@@ -644,19 +642,13 @@ class ModuleMorphism(Morphism):
 
     def residue_morphism(self):
         r"""Return ``f tensor_R k`` for a morphism of finite modules over a local ring."""
-        from dzack_research.preamble.categories.rings.ring_foundation import LocalRings
 
         ring = self.domain().base_ring()
         if self.codomain().base_ring() is not ring:
             raise ValueError("a residue morphism requires one common base ring")
         if ring not in LocalRings():
             raise TypeError("reduction modulo the maximal ideal requires a represented local ring")
-        from dzack_research.preamble.categories.modules.pure.modules import (
-            FinitelyGeneratedModules,
-        )
-
-        finite_modules = FinitelyGeneratedModules(ring)
-        if self.domain() not in finite_modules or self.codomain() not in finite_modules:
+        if not self.domain().is_finitely_generated() or not self.codomain().is_finitely_generated():
             raise TypeError(
                 "the active Nakayama interface requires finitely generated source and target"
             )
@@ -751,7 +743,6 @@ class ModuleMorphism(Morphism):
         if codomain.value_module() is not ring:
             raise TypeError("this orthogonal-complement construction requires a scalar-valued form")
 
-        from dzack_research.preamble.categories.sets.set_categories import Sets
 
         source_generators = tuple(self.domain().module_generators())
         labels = Sets.Δ[len(source_generators) - 1]
@@ -919,7 +910,6 @@ def _initialize_module_hom_parent(
     """
     if domain.base_ring() != codomain.base_ring():
         raise ValueError("module morphisms require a common base ring")
-    from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
 
     parent._preamble_base_ring = _owned_ring(domain.base_ring())
     CategoricalHomset.__init__(
@@ -1209,7 +1199,6 @@ class TensorProductModuleMorphism(ModuleMorphism):
         raise TypeError("a tensor-product morphism takes one tensor or two factor elements")
 
     def coordinate_values(self):
-        from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 
         labels = self.domain().module_generating_set()
         return indexed_family(
@@ -1237,7 +1226,6 @@ class TensorProductModuleMorphism(ModuleMorphism):
             raise TypeError("this pullback syntax is for a diagonal bilinear form")
         if morphism.codomain() is not self.left_module():
             raise ValueError("the pullback map must land in the form's module")
-        from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
 
         source = TensorProduct(morphism.domain(), morphism.domain())
         induced = module_homset(source, self.domain())(
@@ -1287,7 +1275,6 @@ class TensorProductModuleHomset(ModuleHomset):
         left_labels = left.module_generating_set()
         right_labels = right.module_generating_set()
 
-        from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
 
         if isinstance(images, IndexedFamily):
             source_indices = images.index_set()
@@ -1316,7 +1303,6 @@ class TensorProductModuleHomset(ModuleHomset):
             isinstance(images, (tuple, list))
             and all(isinstance(row, (tuple, list)) for row in images)
         ):
-            from dzack_research.preamble.categories.sets.cardinals import cardinal
 
             left_size = cardinal(left_labels.cardinality())
             right_size = cardinal(right_labels.cardinality())

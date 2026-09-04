@@ -3634,6 +3634,7 @@ _engine_if_ring	src/dzack_research/preamble/tensors/tensor.py	/^def _engine_if_r
 _engine_krull_dimension	src/dzack_research/preamble/categories/rings/ring_foundation.py	/^def _engine_krull_dimension(ring):$/;"	f
 _engine_matrix	src/dzack_research/preamble/categories/modules/pure/modules.py	/^def _engine_matrix(morphism):$/;"	f
 _engine_matrix	src/dzack_research/preamble/tensors/tensor.py	/^def _engine_matrix(*args, **kwds):$/;"	f
+_engine_module_matrix	src/dzack_research/preamble/tensors/tensor.py	/^    _engine_matrix as _engine_module_matrix,$/;"	Y	nameref:unknown:_engine_matrix
 _engine_morphism_crossing	src/dzack_research/preamble/categories/algebras/algebras.py	/^    def _engine_morphism_crossing(self):$/;"	m	class:AlgebraMorphism
 _engine_morphism_crossing	src/dzack_research/preamble/categories/group/profinite/field_morphisms.py	/^    def _engine_morphism_crossing(self) -> Map:$/;"	m	class:ExactFieldMorphism	typeref:typename:Map
 _engine_morphism_crossing	src/dzack_research/preamble/categories/rings/embeddings.py	/^    def _engine_morphism_crossing(self):$/;"	m	class:NumberFieldEmbedding

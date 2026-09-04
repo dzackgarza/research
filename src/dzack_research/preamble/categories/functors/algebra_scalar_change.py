@@ -33,6 +33,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _owned_ring,
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.categories.algebras.algebras import FramedAlgebras
 
 
 def _engine_ring_map(ring_map):
@@ -157,7 +158,6 @@ class AlgebraRestrictionOfScalarsFunctor(Functor):
         # the original algebra morphism.  When the restricted source retains a
         # framing, state the map on that framing so its Hom constructor can
         # check the selected relations.
-        from dzack_research.preamble.categories.algebras.algebras import FramedAlgebras
 
         if source in FramedAlgebras(source.base_ring()):
             return algebra_homset(source, target)(

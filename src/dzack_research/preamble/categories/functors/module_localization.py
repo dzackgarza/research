@@ -11,6 +11,16 @@ from dzack_research.preamble.categories.modules.localizations import (
     LocalizedModules,
 )
 from dzack_research.preamble.refine import refine
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    ModuleEmbedding,
+    module_embedding,
+    module_homset,
+)
+from dzack_research.preamble.categories.modules.pure.modules import (
+    FramedModules,
+    restrict_scalars,
+)
+from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
 
 
 class ModuleLocalizationFunctor(ScalarExtensionFunctor):
@@ -36,7 +46,6 @@ class ModuleLocalizationFunctor(ScalarExtensionFunctor):
 
     def _apply_object(self, module):
         from sage.categories.rings import Rings as SageRings
-        from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
 
         represented_by_sage_ring = _engine_ring(self.localization_ring()) in SageRings()
         if represented_by_sage_ring:
@@ -63,11 +72,6 @@ class ModuleLocalizationFunctor(ScalarExtensionFunctor):
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())
         target = self(morphism.codomain())
-        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-            ModuleEmbedding,
-            module_embedding,
-            module_homset,
-        )
 
         if isinstance(source, GeneralLocalizedModuleParent):
             if isinstance(target, GeneralLocalizedModuleParent):
@@ -93,7 +97,6 @@ class ModuleLocalizationFunctor(ScalarExtensionFunctor):
                 verify_linearity=False,
             )
         elif isinstance(target, GeneralLocalizedModuleParent):
-            from dzack_research.preamble.categories.modules.pure.modules import FramedModules
 
             if source not in FramedModules(source.base_ring()):
                 raise NotImplementedError(
@@ -117,7 +120,6 @@ class ModuleLocalizationFunctor(ScalarExtensionFunctor):
             image._preamble_localization_functor = self
             return image
 
-        from dzack_research.preamble.categories.modules.pure.modules import FramedModules
 
         if source in FramedModules(source.base_ring()):
             embedded = module_embedding(
@@ -143,8 +145,6 @@ class ModuleLocalizationFunctor(ScalarExtensionFunctor):
 
     def unit(self, module, *, localized=None):
         r"""Return ``M -> Res_R(S^{-1}M)``, the localization unit."""
-        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
-        from dzack_research.preamble.categories.modules.pure.modules import restrict_scalars
 
         image = self(module) if localized is None else localized
         restricted = restrict_scalars(image, self.ring_map())
@@ -173,8 +173,6 @@ class LocalizationCokernelComparison(SageObject):
     r"""The canonical right-exactness comparison for module localization."""
 
     def __init__(self, functor, morphism) -> None:
-        from dzack_research.preamble.categories.modules.pure.modules import FramedModules
-        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 
         self._functor = functor
         self._morphism = morphism
@@ -261,7 +259,6 @@ class LocalizationKernelComparison(SageObject):
     r"""The canonical left-exactness comparison for module localization."""
 
     def __init__(self, functor, morphism) -> None:
-        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 
         self._functor = functor
         self._morphism = morphism

@@ -25,6 +25,10 @@ from dzack_research.preamble.categories.group.magmas import (
     AdditiveMonoids,
     Monoids,
 )
+from dzack_research.preamble.categories.modules.pure.modules import (
+    FramedModules,
+    Modules,
+)
 
 
 def normalize_grading_monoid(monoid: Parent | None) -> Parent:
@@ -47,9 +51,6 @@ class GradedModuleMorphism(ModuleMorphism):
         self._check_selected_degrees()
 
     def _check_selected_degrees(self) -> None:
-        from dzack_research.preamble.categories.modules.pure.modules import (
-            FramedModules,
-        )
 
         domain = self.domain()
         if domain not in FramedModules(domain.base_ring()):
@@ -141,7 +142,6 @@ class GradedModules(OwnedCategoryOverBaseRing):
         return (super()._make_named_class_key(name), self.grading_monoid())
 
     def super_categories(self):
-        from dzack_research.preamble.categories.modules.pure.modules import Modules
 
         return [Modules(self.base_ring())]
 

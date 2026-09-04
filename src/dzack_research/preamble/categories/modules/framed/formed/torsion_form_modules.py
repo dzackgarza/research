@@ -32,6 +32,47 @@ from dzack_research.preamble.tensors.tensor import tensor
 from dzack_research.preamble.tensors.tensor import (
     _engine_component_matrix,
 )
+from dzack_research.preamble.categories.forms.forms import (
+    BilinearForms,
+    QuadraticForms,
+)
+from dzack_research.preamble.categories.group.groups import (
+    OwnedFiniteGroups,
+    Subgroups,
+)
+from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+    _module_invariant_factor_form,
+    _presentation_matrix,
+)
+from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
+    FinitelyPresentedBilinearFormModules,
+    FinitelyPresentedQuadraticFormModules,
+    FormModule,
+)
+from dzack_research.preamble.categories.modules.framed.fraction_field_quotients import FractionFieldQuotient
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    ModuleMorphism,
+    _solve_left_integrally_element,
+    module_coefficients,
+    module_homset,
+)
+from dzack_research.preamble.categories.modules.pure.modules import MatrixSpaces
+from dzack_research.preamble.categories.modules.pure.torsion_modules import _torsion_module_presented_by_matrix
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _engine_element,
+    _engine_ring,
+    _own_ring,
+)
+from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+    finite_ordered_image,
+    finite_ordered_set,
+)
+from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+from dzack_research.preamble.categories.sets.set_categories import (
+    Sets,
+    Sets as OwnedSets,
+)
 
 
 def _gram_rows(gram, rank):
@@ -40,7 +81,6 @@ def _gram_rows(gram, rank):
     except AttributeError:
         parent = None
     if parent is not None:
-        from dzack_research.preamble.categories.modules.pure.modules import MatrixSpaces
 
         try:
             is_matrix = parent in MatrixSpaces(parent.base_ring())
@@ -242,10 +282,6 @@ def _underlying_element(form, element):
 
 
 def _coordinate_rows(form, generators):
-    from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-        module_coefficients,
-    )
 
     module = _underlying_presented_module(form)
     ring = module.base_ring()
@@ -267,10 +303,6 @@ def _coordinate_rows(form, generators):
 
 def _relations_among_generators(form, generators):
     r"""Return the relation matrix for a selected generating family of ``form``."""
-    from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace
-    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-        _presentation_matrix,
-    )
 
     module = _underlying_presented_module(form)
     ring = module.base_ring()
@@ -302,18 +334,6 @@ def _quadratic_gram_on(form, generators):
 
 def _regenerate_form_on_generators(form, generators, *, quadratic: bool):
     r"""Return ``form -> form'`` for the same finite form on a new framing."""
-    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-        _presentation_matrix,
-    )
-    from dzack_research.preamble.categories.modules.pure.torsion_modules import (
-        _torsion_module_presented_by_matrix,
-    )
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-        _solve_left_integrally_element,
-        module_coefficients,
-        module_homset,
-    )
-    from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
     generators = tuple(generators)
     if any(generator not in form for generator in generators):
@@ -344,7 +364,6 @@ def _regenerate_form_on_generators(form, generators, *, quadratic: bool):
         {label: generator for label, generator in zip(labels, generators, strict=True)}
     )
 
-    from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace
 
     lifts = _coordinate_rows(form, generators)
     known_tensor = _presentation_matrix(module)
@@ -390,11 +409,6 @@ def _prime_indexed_generators(generators_by_prime):
     Two primes may carry equal-looking generating families, and the generators
     at one prime are an ordered choice, so both levels are families.
     """
-    from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-        finite_ordered_set,
-    )
-    from dzack_research.preamble.categories.sets.indexed_families import indexed_family
-    from dzack_research.preamble.categories.sets.set_categories import Sets
 
     def generators_at(prime):
         chosen = generators_by_prime[prime]
@@ -494,7 +508,6 @@ def _bilinear_p_adic_jordan_decomposition(form):
         nondegenerate_form = nondegenerate * engine * nondegenerate.transpose()
 
         if rank:
-            from dzack_research.preamble.categories.rings.ring_foundation import _engine_element
 
             backend_prime = _engine_element(ring, prime)
             precision = int(exponent.valuation(prime)) + 5
@@ -680,7 +693,6 @@ class TorsionFormOrthogonalGroup(CategoricalHomset):
         engine_group=None,
         supergroup=None,
     ) -> None:
-        from dzack_research.preamble.categories.group.groups import OwnedFiniteGroups
 
         self._quadratic = bool(quadratic)
         self._normalization = (
@@ -752,9 +764,6 @@ class TorsionFormOrthogonalGroup(CategoricalHomset):
         return self._engine_group_parent
 
     def _normalized_map(self, engine_automorphism):
-        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-            module_homset,
-        )
 
         engine_automorphism = self._engine_group_parent(engine_automorphism)
         cover = self._engine_module.V()
@@ -790,9 +799,6 @@ class TorsionFormOrthogonalGroup(CategoricalHomset):
         normalization = self.normalization_isometry()
         normalized_forward = self._normalized_map(engine_automorphism)
         normalized_inverse = self._normalized_map(~engine_automorphism)
-        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-            module_homset,
-        )
 
         original = normalization.domain()
         forward = module_homset(original, original)(
@@ -828,10 +834,6 @@ class TorsionFormOrthogonalGroup(CategoricalHomset):
             raise ValueError("the automorphism must act on this finite form")
         normalization = self.normalization_isometry()
         normalized_form = normalization.codomain()
-        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-            module_coefficients,
-            module_homset,
-        )
 
         forward = module_homset(
             normalization.domain(), normalized_form
@@ -839,10 +841,6 @@ class TorsionFormOrthogonalGroup(CategoricalHomset):
         inverse = module_homset(
             normalized_form, normalization.domain()
         )(normalization.inverse())
-        from dzack_research.preamble.categories.rings.ring_foundation import (
-            _engine_element,
-            _engine_ring,
-        )
         from sage.matrix.constructor import matrix as sage_matrix
 
         labels = tuple(normalized_form.module_generating_set())
@@ -871,9 +869,6 @@ class TorsionFormOrthogonalGroup(CategoricalHomset):
         return self._from_engine(self._engine_group_parent(engine_matrix))
 
     def _element_constructor_(self, datum):
-        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-            ModuleMorphism,
-        )
 
         if isinstance(datum, TorsionFormAutomorphism):
             if datum.parent() is self:
@@ -904,8 +899,6 @@ class TorsionFormOrthogonalGroup(CategoricalHomset):
 
     @cached_method
     def group_generators(self):
-        from dzack_research.preamble.categories.sets.set_categories import Sets
-        from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_image
 
         engine_generators = self._engine_group_parent.gens()
         positions = Sets.Δ[len(engine_generators) - 1]
@@ -916,7 +909,6 @@ class TorsionFormOrthogonalGroup(CategoricalHomset):
         )
 
     def number_of_group_generators(self):
-        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
         return _own_ring(SageZZ)(self.group_generators().cardinality())
 
@@ -929,9 +921,6 @@ class TorsionFormOrthogonalGroup(CategoricalHomset):
         return (self._from_engine(element) for element in self._engine_group_parent)
 
     def _engine_abelian_element(self, element):
-        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-            module_coefficients,
-        )
 
         element = self.domain()(element)
         normalized = self.normalization_isometry()(element)
@@ -975,7 +964,6 @@ class TorsionFormOrthogonalGroup(CategoricalHomset):
         return self.normalization_isometry().inverse()(normalized)
 
     def orbit(self, element):
-        from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
         point = self._engine_abelian_element(element)
         orbit = libgap.Orbit(
@@ -1005,10 +993,6 @@ class TorsionFormOrthogonalGroup(CategoricalHomset):
             supergroup=self,
         )
         subgroup._preamble_supergroup = self
-        from dzack_research.preamble.categories.group.groups import (
-            OwnedFiniteGroups,
-            Subgroups,
-        )
 
         return refine(subgroup, [OwnedFiniteGroups(), Subgroups(self)])
 
@@ -1119,9 +1103,6 @@ def _invariant_factor_form_isomorphism(form, quadratic: bool):
     abstract invariant-factor decomposition.
     """
     module = form.unformed_module()
-    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-        _module_invariant_factor_form,
-    )
 
     module_isomorphism = _module_invariant_factor_form(module)
     normalized_module = module_isomorphism.codomain()
@@ -1177,9 +1158,6 @@ class TorsionBilinearFormModules(OwnedCategoryOverBaseRing):
         return "finitely presented torsion modules with a bilinear form"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
-            FinitelyPresentedBilinearFormModules,
-        )
 
         return [
             FinitelyPresentedTorsionModules(self.base_ring()),
@@ -1196,11 +1174,6 @@ class TorsionBilinearFormModules(OwnedCategoryOverBaseRing):
         """
         if module not in FinitelyPresentedTorsionModules(self.base_ring()):
             module = refine_finitely_presented_torsion_module(module)
-        from dzack_research.preamble.categories.forms.forms import BilinearForms
-        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-            _presentation_matrix,
-        )
-        from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModule
 
         rank = int(module.module_generating_set().cardinality())
         values = _coerced_gram(value_module, gram, rank)
@@ -1212,9 +1185,6 @@ class TorsionBilinearFormModules(OwnedCategoryOverBaseRing):
 
     def from_relations_and_gram(self, relations, gram, value_module, module_generating_set=None):
         r"""Construct a torsion bilinear form from presentation and Gram data."""
-        from dzack_research.preamble.categories.modules.pure.torsion_modules import (
-            _torsion_module_presented_by_matrix,
-        )
 
         module = _torsion_module_presented_by_matrix(relations, module_generating_set)
         return self.from_module(module, gram, value_module)
@@ -1265,11 +1235,7 @@ class TorsionBilinearFormModules(OwnedCategoryOverBaseRing):
             r"""Return ``A -> Hom(A,K/R)``, ``x |-> b(x,-)``, for perfect ``b``."""
             from sage.categories.morphism import SetMorphism
 
-            from dzack_research.preamble.categories.sets.set_categories import Sets as OwnedSets
 
-            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-                module_homset,
-            )
 
             zero = self.zero()
             generators = tuple(self.module_generators())
@@ -1314,9 +1280,6 @@ class TorsionQuadraticFormModules(OwnedCategoryOverBaseRing):
         return "finitely presented torsion modules with a quadratic form"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
-            FinitelyPresentedQuadraticFormModules,
-        )
 
         return [
             FinitelyPresentedTorsionModules(self.base_ring()),
@@ -1334,11 +1297,6 @@ class TorsionQuadraticFormModules(OwnedCategoryOverBaseRing):
         """
         if module not in FinitelyPresentedTorsionModules(self.base_ring()):
             module = refine_finitely_presented_torsion_module(module)
-        from dzack_research.preamble.categories.forms.forms import QuadraticForms
-        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-            _presentation_matrix,
-        )
-        from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModule
 
         rank = int(module.module_generating_set().cardinality())
         values = _coerced_gram(value_module, gram, rank)
@@ -1352,9 +1310,6 @@ class TorsionQuadraticFormModules(OwnedCategoryOverBaseRing):
 
     def from_relations_and_gram(self, relations, gram, value_module, module_generating_set=None):
         r"""Construct a torsion quadratic form from presentation and Gram data."""
-        from dzack_research.preamble.categories.modules.pure.torsion_modules import (
-            _torsion_module_presented_by_matrix,
-        )
 
         module = _torsion_module_presented_by_matrix(relations, module_generating_set)
         return self.from_module(module, gram, value_module)
@@ -1422,15 +1377,10 @@ class TorsionQuadraticFormModules(OwnedCategoryOverBaseRing):
             value_module = self.value_module()
             if not hasattr(value_module, "modulus") or value_module.modulus() != 2:
                 raise TypeError("this polarization currently requires a QQ/2ZZ-valued quadratic form")
-            from dzack_research.preamble.categories.modules.framed.fraction_field_quotients import (
-                FractionFieldQuotient,
-            )
 
             bilinear_values = FractionFieldQuotient(self.base_ring(), 1)
             quadratic_form = self.form()
             module = self.unformed_module()
-            from dzack_research.preamble.categories.forms.forms import BilinearForms
-            from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModule
 
             equip = self.equip_form_morphism()
             associated = FormModule(

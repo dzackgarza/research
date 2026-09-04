@@ -8,13 +8,29 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _own_ring,
 )
+from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModule
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+    BasedFreeModule,
+    MatrixSpace,
+)
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
+from dzack_research.preamble.categories.modules.pure.modules import (
+    FinitelyPresentedModules,
+    MatrixSpaces,
+    Modules,
+)
+from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+    finite_ordered_image,
+    finite_ordered_set,
+)
+from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.refine import refine
 class TorsionModules(OwnedCategoryOverBaseRing):
     @classmethod
     def _repr_object_names(cls):
         return "torsion modules"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.modules.pure.modules import Modules
 
         return [Modules(self.base_ring())]
 
@@ -31,7 +47,6 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
         return "finitely presented torsion modules"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.modules.pure.modules import FinitelyPresentedModules
 
         return [
             FinitelyPresentedModules(self.base_ring()),
@@ -45,10 +60,6 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
         @cached_method
         def elements(self):
             r"""Return all elements through the private finite Smith workspace."""
-            from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-                finite_ordered_image,
-            )
-            from dzack_research.preamble.categories.sets.set_categories import Sets
 
             if _engine_ring(self.base_ring()) is not SageZZ:
                 raise NotImplementedError(
@@ -81,7 +92,6 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
         if any(order <= ring.one() for order in orders):
             raise ValueError("cyclic summand orders must be greater than one")
         size = len(orders)
-        from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace
 
         relations = MatrixSpace(
             ring,
@@ -101,16 +111,6 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
 
 def _torsion_module_presented_by_matrix(relations, module_generating_set=None):
     r"""Return the ``ZZ``-module presented by relation rows ``relations``."""
-    from dzack_research.preamble.categories.modules.pure.modules import MatrixSpaces
-    from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-        BasedFreeModule,
-    )
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-        module_homset,
-    )
-    from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-        finite_ordered_set,
-    )
 
     ring = _own_ring(SageZZ)
     try:
@@ -127,7 +127,6 @@ def _torsion_module_presented_by_matrix(relations, module_generating_set=None):
         rows = tuple(tuple(row) for row in relations)
         relation_count = len(rows)
         width = 0 if not rows else len(rows[0])
-        from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace
 
         relations = MatrixSpace(ring, relation_count, width).from_rows(rows)
         represented_matrix = True
@@ -165,9 +164,6 @@ def _torsion_module_presented_by_matrix(relations, module_generating_set=None):
 
 
 def TorsionModule(presentation):
-    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-        FinitelyPresentedModule,
-    )
 
     return refine_finitely_presented_torsion_module(
         FinitelyPresentedModule(presentation)
@@ -176,8 +172,6 @@ def TorsionModule(presentation):
 
 def refine_finitely_presented_torsion_module(module):
     r"""Attach the torsion intersection after verifying the represented property."""
-    from dzack_research.preamble.categories.modules.pure.modules import FinitelyPresentedModules
-    from dzack_research.preamble.refine import refine
 
     ring = module.base_ring()
     if module not in FinitelyPresentedModules(ring):

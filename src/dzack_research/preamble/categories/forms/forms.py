@@ -24,6 +24,23 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedRings,
 )
 from dzack_research.preamble.refine import refine
+from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    TensorProductModuleMorphism,
+    module_coefficients,
+    module_homset,
+)
+from dzack_research.preamble.categories.modules.powers import (
+    DividedSquare,
+    QuadraticModuleMorphism,
+)
+from dzack_research.preamble.categories.modules.pure.modules import (
+    InternalHomModules,
+    Modules,
+)
+from dzack_research.preamble.categories.sets.cardinals import cardinal
+from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
+from dzack_research.preamble.tensors.tensor import tensor
 
 
 class BilinearFormHoms(OwnedCategoryOverBaseRing):
@@ -34,9 +51,6 @@ class BilinearFormHoms(OwnedCategoryOverBaseRing):
         return "bilinear-form Hom objects"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.modules.pure.modules import (
-            InternalHomModules,
-        )
 
         return [InternalHomModules(self.base_ring())]
 
@@ -46,8 +60,6 @@ class BilinearFormHoms(OwnedCategoryOverBaseRing):
                 raise TypeError("a Gram tensor requires a diagonal bilinear form")
             if self.codomain() not in OwnedRings():
                 raise TypeError("a Gram tensor here requires scalar-valued form entries")
-            from dzack_research.preamble.categories.sets.cardinals import cardinal
-            from dzack_research.preamble.tensors.tensor import tensor
 
             labels = self.left_module().module_generating_set()
             size = cardinal(labels.cardinality())
@@ -68,10 +80,6 @@ class BilinearFormHoms(OwnedCategoryOverBaseRing):
         def pullback(self, morphism):
             if morphism.codomain() is not self.module():
                 raise ValueError("the pullback map must land in the form's module")
-            from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
-            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-                module_homset,
-            )
 
             source = TensorProduct(morphism.domain(), morphism.domain())
             induced = module_homset(source, self.domain())(
@@ -88,7 +96,6 @@ class BilinearFormHoms(OwnedCategoryOverBaseRing):
 
 
 def _value_module_over(value_module, ring) -> bool:
-    from dzack_research.preamble.categories.modules.pure.modules import Modules
 
     return value_module in Modules(ring)
 
@@ -100,7 +107,6 @@ class _CallableForm(Element):
         Element.__init__(self, parent)
         self._evaluation = None
         self._lift_evaluation = None
-        from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
 
         coordinate_datum = (
             isinstance(datum, IndexedFamily)
@@ -122,9 +128,6 @@ class _CallableForm(Element):
             )
 
             def bilinear(left, right):
-                from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-                    module_coefficients,
-                )
 
                 left_coefficients = module_coefficients(left, parent.left_module())
                 right_coefficients = module_coefficients(right, parent.right_module())
@@ -238,8 +241,6 @@ class _CallableForm(Element):
         return _coerce_value(self.codomain(), self._lift_evaluation(left, right))
 
     def gram_tensor(self):
-        from dzack_research.preamble.categories.rings.ring_foundation import OwnedRings
-        from dzack_research.preamble.tensors.tensor import tensor
 
         if self.codomain() not in OwnedRings():
             raise TypeError("a Gram tensor here requires scalar-valued form entries")
@@ -356,9 +357,6 @@ def _callable_form_space(left_module, right_module, value_module, kind):
 def is_bilinear_form(form) -> bool:
     if isinstance(form, _CallableForm):
         return form.parent().kind() == "bilinear" and form.left_module() is form.right_module()
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-        TensorProductModuleMorphism,
-    )
 
     return (
         isinstance(form, TensorProductModuleMorphism)
@@ -369,9 +367,6 @@ def is_bilinear_form(form) -> bool:
 def is_quadratic_form(form) -> bool:
     if isinstance(form, _CallableForm):
         return form.parent().kind() == "quadratic"
-    from dzack_research.preamble.categories.modules.powers import (
-        QuadraticModuleMorphism,
-    )
 
     return isinstance(form, QuadraticModuleMorphism)
 
@@ -380,8 +375,6 @@ def Pairings(left_module, right_module, value_module):
     r"""Return ``Hom_R(X tensor_R Y,W)`` whenever that universal object exists."""
     if left_module is right_module:
         return BilinearForms(left_module, value_module)
-    from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 
     if _value_module_over(value_module, left_module.base_ring()):
         try:
@@ -395,8 +388,6 @@ def Pairings(left_module, right_module, value_module):
 
 def BilinearForms(module, value_module):
     r"""Return ``Hom_R(M tensor_R M,W)`` whenever that universal object exists."""
-    from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 
     if _value_module_over(value_module, module.base_ring()):
         try:
@@ -413,8 +404,6 @@ def BilinearForms(module, value_module):
 
 def QuadraticForms(module, value_module):
     r"""Return ``Hom_R(Gamma^2(M),W)`` whenever the divided square is represented."""
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
-    from dzack_research.preamble.categories.modules.powers import DividedSquare
 
     if _value_module_over(value_module, module.base_ring()):
         try:
@@ -447,10 +436,6 @@ def QuadraticMap(module, value_module, function):
 
 def classifying_morphism(quadratic):
     r"""Return the unique linear map ``Gamma^2(M) -> W`` classifying ``quadratic``."""
-    from dzack_research.preamble.categories.modules.powers import (
-        QuadraticModuleMorphism,
-    )
-    from dzack_research.preamble.categories.modules.powers import DividedSquare
 
     if isinstance(quadratic, QuadraticModuleMorphism):
         return quadratic
@@ -460,10 +445,6 @@ def classifying_morphism(quadratic):
 
 def quadratic_map_from_morphism(module, morphism):
     r"""Recover the quadratic map classified by ``morphism: Gamma^2(M) -> W``."""
-    from dzack_research.preamble.categories.modules.powers import DividedSquare
-    from dzack_research.preamble.categories.modules.powers import (
-        QuadraticModuleMorphism,
-    )
 
     square = DividedSquare(module)
     if morphism.domain() is not square:

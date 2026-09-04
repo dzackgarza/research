@@ -15,11 +15,12 @@ from dzack_research.preamble.categories.algebras.derivations import (
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
 )
+from dzack_research.preamble.categories.algebras.de_rham_algebras import DeRhamAlgebra
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import ring_as_module
 
 
 def VectorFields(algebra):
     r"""Return ``Der_R(A,A)`` as the existing derivation module."""
-    from dzack_research.preamble.categories.modules.framed.framed_free_modules import ring_as_module
 
     return Derivations(algebra, ring_as_module(algebra))
 
@@ -105,7 +106,6 @@ def InteriorProduct(vector_field):
     if vector_field.parent() is not VectorFields(algebra):
         raise TypeError("contraction requires a derivation with values in A")
 
-    from dzack_research.preamble.categories.algebras.de_rham_algebras import DeRhamAlgebra
 
     de_rham = DeRhamAlgebra(algebra)
     exterior = de_rham.extension_algebra()

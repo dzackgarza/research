@@ -25,6 +25,33 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _owned_ring,
 )
 from dzack_research.preamble.refine import refine
+from dzack_research.preamble.categories.functors.scalar_change import ScalarExtensionFunctor
+from dzack_research.preamble.categories.group.class_functions import finite_group_class_function
+from dzack_research.preamble.categories.group.groups import (
+    _engine_group,
+    _owned_group,
+)
+from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModule
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+    BasedFreeModule,
+    FreshFreeModuleOn,
+)
+from dzack_research.preamble.categories.modules.group_modules.isotypic import (
+    _split_irreducible_characters,
+    isotypic_component,
+    isotypic_decomposition,
+)
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
+from dzack_research.preamble.categories.modules.pure.modules import (
+    FinitelyGeneratedFreeModules,
+    FinitelyPresentedModules,
+    Modules,
+    ModulesWithChosenFinitePresentation,
+)
+from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+from dzack_research.preamble.categories.sets.cardinals import cardinal
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_image
+from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
 class GroupModuleHomCategoryConstruction(HomCategoryConstruction):
@@ -37,7 +64,6 @@ class _CategoryOverRingAndActingGroup(Category):
 
     @staticmethod
     def __classcall__(cls, base_ring, group):
-        from dzack_research.preamble.categories.group.groups import _owned_group
 
         return Category.__classcall__(
             cls,
@@ -64,7 +90,6 @@ class GroupModules(CategoryPacketMethods, _CategoryOverRingAndActingGroup):
         return f"{self.base_ring()}[{self.acting_group()}]-modules"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.modules.pure.modules import Modules
 
         return [Modules(self.base_ring())]
 
@@ -123,9 +148,6 @@ class GroupModules(CategoryPacketMethods, _CategoryOverRingAndActingGroup):
 
         def action_of(self, group_element):
             r"""Return the linear automorphism induced by ``group_element``."""
-            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-                module_homset,
-            )
 
             return module_homset(self, self)(
                 {
@@ -135,7 +157,6 @@ class GroupModules(CategoryPacketMethods, _CategoryOverRingAndActingGroup):
             )
 
         def is_invariant(self, vector) -> bool:
-            from dzack_research.preamble.categories.group.groups import _owned_group
 
             group = self.group()
             if group.is_finitely_generated() is not True:
@@ -151,10 +172,6 @@ class GroupModules(CategoryPacketMethods, _CategoryOverRingAndActingGroup):
             r"""Return ``M^G`` as the equalizer subobject of the action and identity."""
             if self.is_trivial_action():
                 return self.unacted_module()
-            from dzack_research.preamble.categories.group.groups import _owned_group
-            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-                module_homset,
-            )
 
             group = self.group()
             if group.is_finitely_generated() is not True:
@@ -180,25 +197,16 @@ class GroupModules(CategoryPacketMethods, _CategoryOverRingAndActingGroup):
 
         def isotypic_characters(self):
             r"""Return the irreducible-character indices appropriate to the coefficient ring."""
-            from dzack_research.preamble.categories.modules.group_modules.isotypic import (
-                _split_irreducible_characters,
-            )
 
             return _split_irreducible_characters(self)
 
         def isotypic_component(self, character):
             r"""Return the integral/base-ring isotypic component as a subobject."""
-            from dzack_research.preamble.categories.modules.group_modules.isotypic import (
-                isotypic_component,
-            )
 
             return isotypic_component(self, character)
 
         def isotypic_decomposition(self):
             r"""Return the sum of isotypic components together with its inclusion in ``M``."""
-            from dzack_research.preamble.categories.modules.group_modules.isotypic import (
-                isotypic_decomposition,
-            )
 
             return isotypic_decomposition(self)
 
@@ -206,15 +214,6 @@ class GroupModules(CategoryPacketMethods, _CategoryOverRingAndActingGroup):
             r"""Return ``M_G = M / <g m - m>`` with the current framing retained."""
             if self.is_trivial_action():
                 return self.unacted_module()
-            from dzack_research.preamble.categories.group.groups import _owned_group
-            from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-                BasedFreeModule,
-            )
-            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-                module_homset,
-            )
-            from dzack_research.preamble.categories.sets.set_categories import Sets
-            from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_image
 
             group = self.group()
             if group.is_finitely_generated() is not True:
@@ -261,9 +260,6 @@ class GroupModules(CategoryPacketMethods, _CategoryOverRingAndActingGroup):
             traces = tuple(
                 self.action_of(group_element).trace()
                 for group_element in representatives
-            )
-            from dzack_research.preamble.categories.group.class_functions import (
-                finite_group_class_function,
             )
 
             return finite_group_class_function(
@@ -312,11 +308,6 @@ class GroupModules(CategoryPacketMethods, _CategoryOverRingAndActingGroup):
             # Sage maintains the Teichmuller-lift computation on a private
             # finite-basis representation.  Only the resulting exact values
             # cross back into the owned class-function object.
-            from dzack_research.preamble.categories.group.groups import _engine_group
-            from dzack_research.preamble.categories.group.class_functions import (
-                finite_group_class_function,
-            )
-            from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
             engine_group = _engine_group(group)
 
@@ -356,9 +347,6 @@ class GroupModules(CategoryPacketMethods, _CategoryOverRingAndActingGroup):
 
         def base_change(self, ring_map):
             r"""Transport this group module along ``R -> S`` functorially."""
-            from dzack_research.preamble.categories.functors.scalar_change import (
-                ScalarExtensionFunctor,
-            )
 
             unacted = self.unacted_module()
             scalar_extension = ScalarExtensionFunctor(ring_map)
@@ -385,7 +373,6 @@ class FinitelyGeneratedFreeGroupModules(_CategoryOverRingAndActingGroup):
         return f"finitely generated free {self.base_ring()}[{self.acting_group()}]-modules"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.modules.pure.modules import FinitelyGeneratedFreeModules
 
         return [
             GroupModules(self.base_ring(), self.acting_group()),
@@ -401,7 +388,6 @@ class FinitelyPresentedGroupModules(_CategoryOverRingAndActingGroup):
         return f"finitely presented {self.base_ring()}[{self.acting_group()}]-modules"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.modules.pure.modules import FinitelyPresentedModules
 
         return [
             GroupModules(self.base_ring(), self.acting_group()),
@@ -523,19 +509,6 @@ def GroupModule(module, group_or_action, action=None):
     parent is a distinct structured module; the selected module labels are
     transported unchanged.
     """
-    from dzack_research.preamble.categories.modules.pure.modules import (
-        FinitelyGeneratedFreeModules,
-    )
-    from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-        FreshFreeModuleOn,
-    )
-    from dzack_research.preamble.categories.modules.pure.modules import FinitelyPresentedModules
-    from dzack_research.preamble.categories.modules.pure.modules import ModulesWithChosenFinitePresentation
-    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModule
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-        module_homset,
-    )
-    from dzack_research.preamble.categories.group.groups import _owned_group
 
     base_ring = module.base_ring()
     if module not in FinitelyPresentedModules(base_ring):
@@ -553,7 +526,6 @@ def GroupModule(module, group_or_action, action=None):
         group = _owned_group(group_or_action)
 
     labels = module.module_generating_set()
-    from dzack_research.preamble.categories.sets.cardinals import cardinal
     if not cardinal(labels.cardinality()).is_finite():
         raise NotImplementedError(
             "the active native GroupModule constructor currently materializes a finite framing"

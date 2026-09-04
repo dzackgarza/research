@@ -16,6 +16,14 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.refine import refine
+from dzack_research.preamble.categories.algebras.algebras import FramedAlgebras
+from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
+from dzack_research.preamble.categories.algebras.graded_commutative_algebras import StrictlyGradedCommutativeAlgebras
+from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+from dzack_research.preamble.categories.sets.set_categories import (
+    CoproductOfFamily,
+    Sets,
+)
 
 
 class RestrictedGradedAlgebraElement(GradedDirectSumElement):
@@ -70,9 +78,6 @@ class RestrictedGradedAlgebra(GradedDirectSumModule):
             from_realization=from_realization,
         )
 
-        from dzack_research.preamble.categories.algebras.algebras import FramedAlgebras
-        from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
-        from dzack_research.preamble.categories.algebras.graded_commutative_algebras import StrictlyGradedCommutativeAlgebras
 
         categories = [
             GradedAlgebras(base),
@@ -84,9 +89,6 @@ class RestrictedGradedAlgebra(GradedDirectSumModule):
         except (AttributeError, TypeError):
             self._preamble_algebra_generating_set = None
         else:
-            from dzack_research.preamble.categories.sets.set_categories import CoproductOfFamily
-            from dzack_research.preamble.categories.sets.set_categories import Sets
-            from dzack_research.preamble.categories.sets.indexed_families import indexed_family
             framing = CoproductOfFamily(
                 Sets.Δ[1],
                 lambda index: degree_zero_labels if int(index) == 0 else degree_one_labels,

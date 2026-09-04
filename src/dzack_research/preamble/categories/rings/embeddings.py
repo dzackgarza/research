@@ -12,7 +12,6 @@ from sage.misc.cachefunc import cached_function
 from sage.rings.rational_field import QQ as SageQQ
 from sage.structure.richcmp import op_EQ, op_NE
 
-from dzack_research.preamble.categories.rings.number_fields import OwnedNumberFields
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedOrders,
     _engine_element,
@@ -103,10 +102,8 @@ class NumberFieldEmbedding(Morphism):
 class NumberFieldHomset(CategoricalHomset):
     Element = NumberFieldEmbedding
 
-    def __init__(self, domain, codomain) -> None:
-        CategoricalHomset.__init__(
-            self, HomCategoryConstruction(OwnedNumberFields()), domain, codomain
-        )
+    def __init__(self, hom_family, domain, codomain) -> None:
+        CategoricalHomset.__init__(self, hom_family, domain, codomain)
 
     def _element_constructor_(self, datum):
         if isinstance(datum, NumberFieldEmbedding):
@@ -154,7 +151,7 @@ class NumberFieldHomset(CategoricalHomset):
 
 @cached_function
 def number_field_homset(domain, codomain) -> NumberFieldHomset:
-    return NumberFieldHomset(domain, codomain)
+    return domain.Mor(codomain)
 
 
 class OrderEmbedding(Morphism):

@@ -21,6 +21,7 @@ from sage.structure.unique_representation import UniqueRepresentation
 from dzack_research.preamble.categories.group.magmas import AdditiveMonoids
 from dzack_research.preamble.refine import refine
 from dzack_research.preamble.rings.real import RR
+from dzack_research.preamble.categories.sets.cardinals import continuum
 
 
 class NonNegativeReal(Element):
@@ -129,7 +130,6 @@ class NonNegativeReals(UniqueRepresentation, Parent):
         return self.zero()
 
     def cardinality(self):
-        from dzack_research.preamble.categories.sets.cardinals import continuum
 
         return continuum
 

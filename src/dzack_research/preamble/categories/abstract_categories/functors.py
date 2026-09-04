@@ -23,13 +23,26 @@ from dzack_research.preamble.categories.functors.core import (
 )
 from dzack_research.preamble.categories.abstract_categories.objects import Objects
 from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.categories.abstract_categories.cat import CategoryObject
+from dzack_research.preamble.categories.abstract_categories.category_constructions import (
+    OppositeCategory,
+    OppositeMorphism,
+    ProductCategory,
+)
+from dzack_research.preamble.categories.abstract_categories.constructions import (
+    Coproduct,
+    Product,
+    _CoproductMorphism,
+    _ProductMorphism,
+)
+from dzack_research.preamble.categories.sets.cardinals import cardinal
+from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 
 
 class ContravariantFunctor(Functor):
     r"""A functor ``C^op -> D`` with convenience calls on arrows of ``C``."""
 
     def __init__(self, domain, codomain) -> None:
-        from dzack_research.preamble.categories.abstract_categories.category_constructions import OppositeCategory
 
         self._base_domain = domain
         super().__init__(OppositeCategory(domain), codomain)
@@ -55,7 +68,6 @@ class ContravariantFunctor(Functor):
         return super().object_image(obj)
 
     def morphism_image(self, morphism):
-        from dzack_research.preamble.categories.abstract_categories.category_constructions import OppositeMorphism
 
         if not isinstance(morphism, Map):
             raise TypeError("a contravariant functor acts on morphisms")
@@ -78,7 +90,6 @@ class Bifunctor(Functor):
     r"""A functor ``C x D -> E`` with a two-argument convenience API."""
 
     def __init__(self, left_domain, right_domain, codomain) -> None:
-        from dzack_research.preamble.categories.abstract_categories.category_constructions import ProductCategory
 
         super().__init__(ProductCategory(left_domain, right_domain), codomain)
 
@@ -224,7 +235,6 @@ class DiscreteHomset(CategoricalHomset):
         return self._discrete_category
 
     def cardinality(self):
-        from dzack_research.preamble.categories.sets.cardinals import cardinal
 
         return cardinal(1 if self.domain() is self.codomain() else 0)
 
@@ -271,7 +281,6 @@ class DiscreteCategory(Category):
         )
 
     def objects(self):
-        from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 
         return indexed_family(
             self.object_set(),
@@ -299,7 +308,6 @@ class DiscreteCategories(Category):
         return [Objects()]
 
     def __contains__(self, candidate) -> bool:
-        from dzack_research.preamble.categories.abstract_categories.cat import CategoryObject
 
         if isinstance(candidate, CategoryObject):
             candidate = candidate.represented_category()
@@ -337,7 +345,6 @@ class ObjectSetFunctor(Functor):
         super().__init__(DiscreteCategories(), Sets())
 
     def _apply_object(self, category):
-        from dzack_research.preamble.categories.abstract_categories.cat import CategoryObject
 
         if isinstance(category, CategoryObject):
             category = category.represented_category()
@@ -461,9 +468,6 @@ class DiagonalFunctor(Functor):
     r"""The diagonal functor ``C -> C x C``."""
 
     def __init__(self, category) -> None:
-        from dzack_research.preamble.categories.abstract_categories.category_constructions import (
-            ProductCategory,
-        )
 
         self._product_category = ProductCategory(category, category)
         super().__init__(category, self._product_category)
@@ -484,22 +488,17 @@ class ProductFunctor(Functor):
     r"""The binary categorical product functor ``C x C -> C`` where represented."""
 
     def __init__(self, category) -> None:
-        from dzack_research.preamble.categories.abstract_categories.category_constructions import (
-            ProductCategory,
-        )
 
         self._product_category = ProductCategory(category, category)
         super().__init__(self._product_category, category)
 
     def _apply_object(self, pair):
-        from dzack_research.preamble.categories.abstract_categories.constructions import Product
 
         return Product(pair.first(), pair.second())
 
     def _apply_morphism(self, pair_morphism):
         source = self(pair_morphism.domain())
         target = self(pair_morphism.codomain())
-        from dzack_research.preamble.categories.abstract_categories.constructions import _ProductMorphism
         return _ProductMorphism(
             pair_morphism.first(), pair_morphism.second(), source=source, target=target
         )
@@ -509,22 +508,17 @@ class CoproductFunctor(Functor):
     r"""The binary categorical coproduct functor ``C x C -> C`` where represented."""
 
     def __init__(self, category) -> None:
-        from dzack_research.preamble.categories.abstract_categories.category_constructions import (
-            ProductCategory,
-        )
 
         self._product_category = ProductCategory(category, category)
         super().__init__(self._product_category, category)
 
     def _apply_object(self, pair):
-        from dzack_research.preamble.categories.abstract_categories.constructions import Coproduct
 
         return Coproduct(pair.first(), pair.second())
 
     def _apply_morphism(self, pair_morphism):
         source = self(pair_morphism.domain())
         target = self(pair_morphism.codomain())
-        from dzack_research.preamble.categories.abstract_categories.constructions import _CoproductMorphism
         return _CoproductMorphism(
             pair_morphism.first(), pair_morphism.second(), source=source, target=target
         )

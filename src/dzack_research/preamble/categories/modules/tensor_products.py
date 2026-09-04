@@ -2,6 +2,9 @@ r"""Categorical tensor products and bilinear maps of represented modules."""
 
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 from dzack_research.preamble.categories.modules.pure.modules import _tensor_pair
+from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
+from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
 
@@ -15,7 +18,6 @@ def _nested_tensor_label(module, word):
     current_module = module
     current_label = first
     for next_label in iterator:
-        from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
 
         current_module = TensorProduct(current_module, module)
         current_label = _tensor_pair(
@@ -28,8 +30,6 @@ def _nested_tensor_label(module, word):
 
 def _flatten_tensor_label(label, degree):
     r"""Return the indexed family of factors of a left-associated tensor label."""
-    from dzack_research.preamble.categories.sets.set_categories import Sets
-    from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 
     degree = int(degree)
     indices = Sets.Δ[degree - 1]
@@ -58,11 +58,9 @@ def tensor_product_morphism(left_morphism, right_morphism, source=None, target=N
     if left_morphism.domain().base_ring() != right_morphism.domain().base_ring():
         raise ValueError("tensoring morphisms requires one common base ring")
     if source is None:
-        from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
 
         source = TensorProduct(left_morphism.domain(), right_morphism.domain())
     if target is None:
-        from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
 
         target = TensorProduct(left_morphism.codomain(), right_morphism.codomain())
     if (
@@ -76,9 +74,6 @@ def tensor_product_morphism(left_morphism, right_morphism, source=None, target=N
     ):
         raise ValueError("the target tensor product has different factors")
 
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-        module_homset,
-    )
 
     return module_homset(source, target)(
         lambda pair: target.pure_tensor(

@@ -34,6 +34,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
 from dzack_research.preamble.categories.sets.set_categories import CartesianProductOfFamily
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_image
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace
 
 
 def _subgroup_data(subgroup, supergroup=None):
@@ -106,7 +107,6 @@ def _finite_coset_sum(module, representatives):
         relation_position = int(relation_label.component(1))
         return source_relations[relation_position, source_position]
 
-    from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace
 
     relations = MatrixSpace(
         ring,

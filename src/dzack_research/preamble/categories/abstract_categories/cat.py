@@ -14,6 +14,12 @@ from dzack_research.preamble.categories.abstract_categories.objects import Objec
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
     ArrowCategory,
 )
+from dzack_research.preamble.categories.abstract_categories.arrow_categories import _identity_morphism
+from dzack_research.preamble.categories.functors.core import (
+    CompositeFunctor,
+    IdentityFunctor,
+    NaturalTransformation,
+)
 
 
 
@@ -58,7 +64,6 @@ class CategoryFunctorMorphism(Morphism):
     def __mul__(self, other):
         if other.codomain() is not self.domain():
             return NotImplemented
-        from dzack_research.preamble.categories.functors.core import CompositeFunctor
 
         return self.parent().category_of_categories().arrow(
             CompositeFunctor(other.functor(), self.functor())
@@ -86,7 +91,6 @@ class CategoryFunctorHomset(CategoricalHomset):
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError("identity belongs to an endomorphism functor Hom-set")
-        from dzack_research.preamble.categories.functors.core import IdentityFunctor
 
         return self(IdentityFunctor(self.domain().represented_category()))
 
@@ -170,7 +174,6 @@ class NaturalTransformationMorphism(Morphism):
             return NotImplemented
         source = other.domain().arrow().functor()
         target = self.codomain().arrow().functor()
-        from dzack_research.preamble.categories.functors.core import NaturalTransformation
 
         composite = NaturalTransformation(
             source,
@@ -195,7 +198,6 @@ class NaturalTransformationHomset(CategoricalHomset):
         return self._functor_category
 
     def _element_constructor_(self, transformation):
-        from dzack_research.preamble.categories.functors.core import NaturalTransformation
 
         if callable(transformation) and not isinstance(transformation, NaturalTransformation):
             transformation = NaturalTransformation(
@@ -207,11 +209,7 @@ class NaturalTransformationHomset(CategoricalHomset):
         if self.domain() is not self.codomain():
             raise ValueError("identity belongs to an endomorphism natural-transformation Hom-set")
         functor = self.domain().arrow().functor()
-        from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-            _identity_morphism,
-        )
 
-        from dzack_research.preamble.categories.functors.core import NaturalTransformation
 
         return self(
             NaturalTransformation(

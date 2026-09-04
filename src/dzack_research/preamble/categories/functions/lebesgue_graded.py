@@ -58,6 +58,7 @@ from dzack_research.preamble.refine import refine
 from dzack_research.preamble.rings.real import RR
 from dzack_research.preamble.rings.nonnegative_reals import NonNegativeReals
 from dzack_research.preamble.rings.unit_interval import UnitInterval
+from dzack_research.preamble.categories.abstract_categories.products import _finite_factor_family
 
 
 def _real_ring():
@@ -214,9 +215,6 @@ class GradedTensorProductModules(OwnedCategoryOverBaseRing):
     class ParentMethods:
         def tensor_factors(self):
             r"""Return the family of factors, indexed by the product's own index set."""
-            from dzack_research.preamble.categories.abstract_categories.products import (
-                _finite_factor_family,
-            )
 
             return _finite_factor_family(self._preamble_tensor_factors, name="Tensor factors")
 

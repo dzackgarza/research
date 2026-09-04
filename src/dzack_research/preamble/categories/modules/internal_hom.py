@@ -11,6 +11,28 @@ from dzack_research.preamble.categories.modules.pure.modules import (
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.refine import refine
+from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
+from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+    FinitelyPresentedModule,
+    _SelectedFinitePresentationModules,
+    _presentation_from_relation_rows,
+    _presentation_matrix,
+)
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+    BasedFreeModule,
+    MatrixSpace,
+)
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    module_coefficients,
+    module_embedding,
+    module_homset,
+)
+from dzack_research.preamble.categories.modules.pure.modules import (
+    ModulesWithChosenFinitePresentation,
+    _represented_finite_presentation,
+    _tensor_pair,
+)
+from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
 def _native_fgp_morphism(morphism):
@@ -37,18 +59,7 @@ def _native_fgp_morphism(morphism):
 
 def _install_internal_hom_model(homset, model, inclusion) -> None:
     r"""Install one selected finite-presentation model on the canonical Hom parent."""
-    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-        _presentation_from_relation_rows,
-        _presentation_matrix,
-    )
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-        module_coefficients,
-    )
-    from dzack_research.preamble.categories.sets.set_categories import Sets
 
-    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-        _SelectedFinitePresentationModules,
-    )
 
     relation_matrix = _presentation_matrix(model)
     presentation = (
@@ -113,17 +124,11 @@ def InternalHom(source, target):
     if _owned_ring(target.base_ring()) != ring:
         raise ValueError("an internal Hom requires one common base ring")
 
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-        module_homset,
-    )
 
     homset = module_homset(source, target)
     if homset.__dict__.get("_preamble_internal_hom_model") is not None:
         return homset
 
-    from dzack_research.preamble.categories.modules.pure.modules import (
-        _represented_finite_presentation,
-    )
 
     if (
         not _represented_finite_presentation(source)
@@ -131,23 +136,7 @@ def InternalHom(source, target):
     ):
         return homset
 
-    from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-        BasedFreeModule,
-    )
-    from dzack_research.preamble.categories.modules.pure.modules import ModulesWithChosenFinitePresentation
-    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-        FinitelyPresentedModule,
-        _SelectedFinitePresentationModules,
-        _presentation_from_relation_rows,
-        _presentation_matrix,
-    )
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-        module_embedding,
-    )
-    from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
 
-    from dzack_research.preamble.categories.sets.set_categories import Sets
-    from dzack_research.preamble.categories.modules.pure.modules import _tensor_pair
 
     source_labels = source.module_generating_set()
     target_labels = target.module_generating_set()
@@ -192,7 +181,6 @@ def InternalHom(source, target):
         kernel = _native_fgp_morphism(relation_evaluation).kernel()
         engine_ring = _engine_ring(ring)
         engine_kernel_relations = kernel._relative_matrix().change_ring(engine_ring)
-        from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace
 
         kernel_relations = MatrixSpace(
             ring,
@@ -252,9 +240,6 @@ def internal_hom_morphism(source_internal_hom, target_internal_hom, source_map, 
     if target_internal_hom.target_module() is not target_map.codomain():
         raise ValueError("the target internal Hom has the wrong target")
 
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-        module_homset,
-    )
 
     return module_homset(source_internal_hom, target_internal_hom)(
         {

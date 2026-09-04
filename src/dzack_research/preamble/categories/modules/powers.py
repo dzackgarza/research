@@ -28,6 +28,42 @@ from dzack_research.preamble.categories.sets.coordinate_families import (
 )
 from dzack_research.preamble.refine import refine
 from dzack_research.preamble.tensors.tensor import tensor
+from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
+from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+    FinitelyPresentedModule,
+    _presentation_from_relation_rows,
+    _presentation_matrix,
+    _presentation_rows,
+)
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+    FramedFreeModules,
+    FreeModuleOn,
+    MatrixSpace,
+    ring_as_module,
+)
+from dzack_research.preamble.categories.modules.pure.modules import (
+    Modules,
+    ModulesWithChosenFinitePresentation,
+)
+from dzack_research.preamble.categories.rings.ring_foundation import OwnedRings
+from dzack_research.preamble.categories.sets.cardinals import cardinal
+from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+    finite_ordered_filter,
+    finite_ordered_image,
+    finite_ordered_set,
+)
+from dzack_research.preamble.categories.sets.fixed_size_selections import (
+    multisets_of_size,
+    ordered_subsets_of_size,
+)
+from dzack_research.preamble.categories.sets.indexed_families import (
+    IndexedFamily,
+    indexed_family,
+)
+from dzack_research.preamble.categories.sets.set_categories import (
+    CartesianProductOfFamily,
+    Sets,
+)
 
 
 class TensorPowerModules(OwnedCategoryOverBaseRing):
@@ -36,7 +72,6 @@ class TensorPowerModules(OwnedCategoryOverBaseRing):
         return "tensor powers of modules"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.modules.pure.modules import Modules
 
         return [Modules(self.base_ring())]
 
@@ -47,7 +82,6 @@ class SymmetricPowerModules(OwnedCategoryOverBaseRing):
         return "symmetric powers of modules"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.modules.pure.modules import Modules
 
         return [Modules(self.base_ring())]
 
@@ -58,7 +92,6 @@ class AlternatingPowerModules(OwnedCategoryOverBaseRing):
         return "exterior powers of modules"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.modules.pure.modules import Modules
 
         return [Modules(self.base_ring())]
 
@@ -69,7 +102,6 @@ class DividedPowerModules(OwnedCategoryOverBaseRing):
         return "divided powers of modules"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.modules.pure.modules import Modules
 
         return [Modules(self.base_ring())]
 
@@ -106,9 +138,6 @@ class QuadraticModuleMorphism(ModuleMorphism):
         )
 
     def lift_pairing(self, left, right):
-        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-            module_coefficients,
-        )
 
         module = self.module()
         if left not in module or right not in module:
@@ -128,9 +157,6 @@ class QuadraticModuleMorphism(ModuleMorphism):
         return result
 
     def gram_tensor(self):
-        from dzack_research.preamble.categories.rings.ring_foundation import OwnedRings
-        from dzack_research.preamble.categories.sets.cardinals import cardinal
-        from dzack_research.preamble.tensors.tensor import tensor
 
         if self.codomain() not in OwnedRings():
             raise TypeError("a Gram tensor here requires scalar-valued lift entries")
@@ -151,9 +177,6 @@ class QuadraticModuleMorphism(ModuleMorphism):
         )
 
     def polar_form(self):
-        from dzack_research.preamble.categories.abstract_categories.constructions import (
-            TensorProduct,
-        )
 
         module = self.module()
         return module_homset(TensorProduct(module, module), self.codomain())(
@@ -273,7 +296,6 @@ class QuadraticModuleHomset(ModuleHomset):
     def _element_constructor_(self, datum):
         if isinstance(datum, ModuleMorphism):
             return ModuleHomset._element_constructor_(self, datum)
-        from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
 
         if isinstance(datum, IndexedFamily) or hasattr(datum, "rows"):
             return self._from_coordinate_datum(datum)
@@ -305,9 +327,6 @@ class DividedSquareModules(OwnedCategoryOverBaseRing):
         def quadratic(self, element):
             r"""Return the universal quadratic value ``gamma_2(element)``."""
             source = self.divided_square_source()
-            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-                module_coefficients,
-            )
 
             coefficients = module_coefficients(element, source)
             square_labels = self.module_generating_set()
@@ -357,9 +376,6 @@ class DividedSquareModules(OwnedCategoryOverBaseRing):
                     - quadratic(source.module_generator(right))
                 )
 
-            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-                module_homset,
-            )
 
             homset = module_homset(self, codomain)
             return homset.from_quadratic_map(quadratic)
@@ -373,10 +389,6 @@ def _degree(degree) -> int:
 
 
 def _free_degree_labels(source_labels, degree: int, flavor: str):
-    from dzack_research.preamble.categories.sets.fixed_size_selections import (
-        multisets_of_size,
-        ordered_subsets_of_size,
-    )
 
     if flavor in {"symmetric", "divided"}:
         return multisets_of_size(source_labels, degree)
@@ -508,23 +520,9 @@ def _divided_relation_rows(
 
 
 def _presented_degree_power(module, degree: int, flavor: str):
-    from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-        FramedFreeModules,
-        FreeModuleOn,
-    )
-    from dzack_research.preamble.categories.modules.pure.modules import ModulesWithChosenFinitePresentation
-    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-        FinitelyPresentedModule,
-        _presentation_from_relation_rows,
-        _presentation_matrix,
-    )
-    from dzack_research.preamble.categories.sets.set_categories import Sets
 
     ring = _owned_ring(module.base_ring())
     if degree == 0:
-        from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-            ring_as_module,
-        )
 
         return ring_as_module(ring)
     if degree == 1:
@@ -542,14 +540,10 @@ def _presented_degree_power(module, degree: int, flavor: str):
             "or a chosen finite presentation"
         )
 
-    from dzack_research.preamble.categories.sets.cardinals import cardinal
 
     if not cardinal(source_labels.cardinality()).is_finite():
         raise TypeError("a chosen finite presentation must have a finite framing")
 
-    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-        _presentation_rows,
-    )
 
     relation_rows = _presentation_rows(module)
     if flavor == "symmetric":
@@ -579,7 +573,6 @@ def _presented_degree_power(module, degree: int, flavor: str):
     else:
         raise ValueError(f"unknown power flavor {flavor!r}")
 
-    from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace
 
     relation_matrix = MatrixSpace(
         ring,
@@ -633,9 +626,6 @@ def TensorPower(module, degree):
     r"""Return the selected iterated tensor power ``M^{\otimes degree}``."""
     degree = _degree(degree)
     if degree == 0:
-        from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-            ring_as_module,
-        )
 
         return ring_as_module(module.base_ring())
     if degree == 1:
@@ -645,7 +635,6 @@ def TensorPower(module, degree):
 
 @cached_function(key=lambda module, degree: (id(module), int(degree)))
 def _tensor_power_nontrivial(module, degree):
-    from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
 
     result = TensorProduct(TensorPower(module, degree - 1), module)
     return refine(result, TensorPowerModules(module.base_ring()))
@@ -708,9 +697,6 @@ from dzack_research.preamble.categories.modules.tensor_products import (
 def tensor_power_permutation(module, degree, positions):
     r"""Return the permutation of tensor factors specified by ``positions``."""
     degree = _degree(degree)
-    from dzack_research.preamble.categories.sets.set_categories import Sets
-    from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-    from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 
     positions = finite_ordered_set(positions)
     if (
@@ -719,9 +705,6 @@ def tensor_power_permutation(module, degree, positions):
     ):
         raise ValueError("positions must be a permutation of the tensor slots")
     power = TensorPower(module, degree)
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-        module_homset,
-    )
 
     if degree == 0:
         return module_homset(power, power).identity()
@@ -740,14 +723,6 @@ def tensor_power_permutation(module, degree, positions):
 
 
 def _power_morphism(morphism, degree: int, flavor: str):
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-        module_coefficients,
-        module_homset,
-    )
-    from dzack_research.preamble.categories.sets.fixed_size_selections import (
-        multisets_of_size,
-        ordered_subsets_of_size,
-    )
 
     degree = _degree(degree)
     constructors = {
@@ -895,10 +870,6 @@ def divided_power_morphism(morphism, degree):
 
 def divided_power_product(module, left_degree, left, right_degree, right):
     r"""Multiply homogeneous divided-power elements into ``Gamma^{a+b} M``."""
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-        module_coefficients,
-    )
-    from dzack_research.preamble.categories.sets.fixed_size_selections import multisets_of_size
 
     left_degree = _degree(left_degree)
     right_degree = _degree(right_degree)
@@ -947,10 +918,6 @@ def divided_power_product(module, left_degree, left, right_degree, right):
 
 def alternating_power_product(module, left_degree, left, right_degree, right):
     r"""Multiply homogeneous exterior-power elements by the wedge product."""
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-        module_coefficients,
-    )
-    from dzack_research.preamble.categories.sets.fixed_size_selections import ordered_subsets_of_size
 
     left_degree = _degree(left_degree)
     right_degree = _degree(right_degree)
@@ -996,8 +963,6 @@ def alternating_power_product(module, left_degree, left, right_degree, right):
 
 
 def _ordered_coefficient_support(module, coefficients):
-    from dzack_research.preamble.categories.sets.set_categories import Sets
-    from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_image
 
     source_labels = module.module_generating_set()
     positions = Sets.Δ[len(coefficients) - 1]
@@ -1024,10 +989,6 @@ def _ordered_coefficient_support(module, coefficients):
 
 def divided_power_element(module, degree, element):
     r"""Return ``gamma_degree(element)`` in ``Gamma^degree(module)``."""
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-        module_coefficients,
-    )
-    from dzack_research.preamble.categories.sets.fixed_size_selections import multisets_of_size
 
     degree = _degree(degree)
     if degree == 0:
@@ -1062,16 +1023,6 @@ def divided_power_element(module, degree, element):
 
 def divided_power_invariant_inclusion(module, degree):
     r"""Return ``Gamma^n M -> M^{tensor n}`` as the symmetric orbit sum."""
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-        module_homset,
-    )
-    from dzack_research.preamble.categories.sets.set_categories import CartesianProductOfFamily
-    from dzack_research.preamble.categories.sets.set_categories import Sets
-    from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-        finite_ordered_filter,
-        finite_ordered_set,
-    )
-    from dzack_research.preamble.categories.sets.fixed_size_selections import multisets_of_size
 
     degree = _degree(degree)
     source = DividedPower(module, degree)
@@ -1122,9 +1073,6 @@ def divided_power_invariant_inclusion(module, degree):
 
 def tensor_power_polarization(module, degree):
     r"""Return ``M^{tensor n} -> Gamma^n M`` by divided-power multiplication."""
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-        module_homset,
-    )
 
     degree = _degree(degree)
     source = TensorPower(module, degree)

@@ -43,6 +43,18 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
 )
 from dzack_research.preamble.refine import refine
+from dzack_research.preamble.categories.group.profinite.galois_characters import (
+    CyclotomicCharacter,
+    QuadraticCharacter,
+)
+from dzack_research.preamble.categories.group.profinite.galois_decomposition import (
+    AbsoluteDecompositionGroup,
+    AbsoluteInertiaGroup,
+    DecompositionGroupConjugacyClass,
+    FrobeniusConjugacyClass,
+    InertiaGroupConjugacyClass,
+)
+from dzack_research.preamble.categories.group.profinite.galois_quotient import _relative_degree
 
 
 class AbsoluteGaloisGroupElement(Morphism):
@@ -476,9 +488,6 @@ class AbsoluteGaloisGroup(CategoricalHomset):
             raise TypeError(
                 "a non-finite field has Frobenius only at a specified prime"
             )
-        from dzack_research.preamble.categories.group.profinite.galois_decomposition import (
-            FrobeniusConjugacyClass,
-        )
 
         return FrobeniusConjugacyClass(self, prime)
 
@@ -673,51 +682,30 @@ class AbsoluteGaloisGroup(CategoricalHomset):
         return OpenGaloisSubgroupConjugacyClass(self, extension)
 
     def decomposition_group(self, prime, *, prolongation):
-        from dzack_research.preamble.categories.group.profinite.galois_decomposition import (
-            AbsoluteDecompositionGroup,
-        )
 
         return AbsoluteDecompositionGroup(self, prime, prolongation)
 
     def decomposition_group_class(self, prime):
-        from dzack_research.preamble.categories.group.profinite.galois_decomposition import (
-            DecompositionGroupConjugacyClass,
-        )
 
         return DecompositionGroupConjugacyClass(self, prime)
 
     def inertia_group(self, prime, *, prolongation):
-        from dzack_research.preamble.categories.group.profinite.galois_decomposition import (
-            AbsoluteInertiaGroup,
-        )
 
         return AbsoluteInertiaGroup(self, prime, prolongation)
 
     def inertia_group_class(self, prime):
-        from dzack_research.preamble.categories.group.profinite.galois_decomposition import (
-            InertiaGroupConjugacyClass,
-        )
 
         return InertiaGroupConjugacyClass(self, prime)
 
     def frobenius_class(self, prime):
-        from dzack_research.preamble.categories.group.profinite.galois_decomposition import (
-            FrobeniusConjugacyClass,
-        )
 
         return FrobeniusConjugacyClass(self, prime)
 
     def cyclotomic_character(self, n):
-        from dzack_research.preamble.categories.group.profinite.galois_characters import (
-            CyclotomicCharacter,
-        )
 
         return CyclotomicCharacter(self, n)
 
     def quadratic_character(self, a):
-        from dzack_research.preamble.categories.group.profinite.galois_characters import (
-            QuadraticCharacter,
-        )
 
         return QuadraticCharacter(self, a)
 
@@ -946,9 +934,6 @@ class OpenGaloisSubgroupConjugacyClass(SageObject):
         return self._base_embedding
 
     def index(self):
-        from dzack_research.preamble.categories.group.profinite.galois_quotient import (
-            _relative_degree,
-        )
 
         return _relative_degree(self._ambient.base_field(), self._extension_field)
 

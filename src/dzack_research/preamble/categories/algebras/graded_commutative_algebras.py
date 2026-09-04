@@ -15,6 +15,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     _own_ring,
 )
+from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
 
 
 class GradedCommutativeAlgebras(OwnedCategoryOverBaseRing):
@@ -42,9 +43,6 @@ class GradedCommutativeAlgebras(OwnedCategoryOverBaseRing):
         return (super()._make_named_class_key(name), self.grading_monoid())
 
     def super_categories(self):
-        from dzack_research.preamble.categories.algebras.graded_algebras import (
-            GradedAlgebras,
-        )
 
         return [GradedAlgebras(self.base_ring(), self.grading_monoid())]
 

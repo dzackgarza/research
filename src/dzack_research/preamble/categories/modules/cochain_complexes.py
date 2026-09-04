@@ -25,6 +25,26 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.refine import refine
+from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+    FinitelyPresentedModule,
+    _presentation_from_relation_rows,
+    _presentation_matrix,
+)
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+    BasedFreeModule,
+    MatrixSpace,
+)
+from dzack_research.preamble.categories.modules.graded_modules import GradedModules
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    ModuleMorphism,
+    module_coefficients,
+)
+from dzack_research.preamble.categories.modules.pure.modules import (
+    FinitelyPresentedModules,
+    _engine_matrix,
+)
+from dzack_research.preamble.categories.rings.ring_foundation import _engine_element
+from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
 class CochainComplexes(OwnedCategoryOverBaseRing):
@@ -33,7 +53,6 @@ class CochainComplexes(OwnedCategoryOverBaseRing):
         return "cochain complexes"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.modules.graded_modules import GradedModules
 
         return [GradedModules(self.base_ring())]
 
@@ -58,7 +77,6 @@ class CohomologyModules(OwnedCategoryOverBaseRing):
         return "cohomology modules"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.modules.pure.modules import FinitelyPresentedModules
 
         return [FinitelyPresentedModules(self.base_ring())]
 
@@ -73,9 +91,6 @@ class CohomologyModules(OwnedCategoryOverBaseRing):
 
         def cycle_representative(self, cohomology_class):
             r"""Return the selected closed representative in ``C^p``."""
-            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-                module_coefficients,
-            )
 
             if cohomology_class.parent() is not self:
                 cohomology_class = self(cohomology_class)
@@ -100,9 +115,6 @@ class CohomologyModules(OwnedCategoryOverBaseRing):
 
         def class_of_cycle(self, cycle):
             r"""Return the cohomology class of a closed element of ``C^p``."""
-            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-                module_coefficients,
-            )
 
             complex_ = self.cochain_complex()
             degree = self.cohomological_degree()
@@ -115,7 +127,6 @@ class CohomologyModules(OwnedCategoryOverBaseRing):
 
             coefficients = module_coefficients(cycle, current)
             current_labels = self._preamble_cohomology_current_labels
-            from dzack_research.preamble.categories.rings.ring_foundation import _engine_element
 
             vector = self._preamble_cohomology_free_cover(
                 [
@@ -185,7 +196,6 @@ class CochainComplexObject(GradedDirectSumModule):
                 "the live finite-support carrier currently materializes nonnegative cochain complexes"
             )
 
-        from dzack_research.preamble.categories.modules.framed.framed_free_modules import BasedFreeModule
 
         zero_module = BasedFreeModule(base_ring, finite_ordered_set(()))
 
@@ -451,22 +461,6 @@ def Cohomology(complex_, degree):
     from sage.categories.principal_ideal_domains import PrincipalIdealDomains
     from sage.matrix.constructor import matrix as sage_matrix
     from sage.modules.free_module import FreeModule as SageFreeModule
-    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-        FinitelyPresentedModule,
-        _presentation_from_relation_rows,
-        _presentation_matrix,
-    )
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-        ModuleMorphism,
-        module_coefficients,
-    )
-    from dzack_research.preamble.categories.rings.ring_foundation import (
-        _engine_element,
-        _engine_ring,
-    )
-    from dzack_research.preamble.categories.sets.set_categories import Sets
-    from dzack_research.preamble.categories.modules.pure.modules import _engine_matrix
-    from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace
 
     ring = complex_.base_ring()
     engine = _engine_ring(ring)
@@ -576,7 +570,6 @@ def Cohomology(complex_, degree):
 
     labels = Sets.Δ[closed_rank - 1]
     relation_labels = Sets.Δ[len(relation_coordinates) - 1]
-    from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace
 
     relations = MatrixSpace(
         ring,

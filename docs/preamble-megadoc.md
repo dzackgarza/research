@@ -4,33 +4,33 @@ Programmatic catalogue of all reusable mathematical categories, subcategories, f
 
 ## Executive Summary
 
-- **Total Constructions**: 1098
-- **Categories & Subcategories**: 267
+- **Total Constructions**: 1113
+- **Categories & Subcategories**: 272
 - **Functors & Adjunctions**: 163
 - **Universal Categorical Constructions**: 15
-- **Morphisms & Hom-Sets**: 127
-- **Mathematical Objects & Elements**: 139
+- **Morphisms & Hom-Sets**: 129
+- **Mathematical Objects & Elements**: 140
 - **Named Catalogues & Registries**: 7
-- **Factory Functions & Constructors**: 380
+- **Factory Functions & Constructors**: 387
 
 ## Table of Subsystems
 
 | Subsystem | Key Domains | Items |
 | :--- | :--- | :--- |
-| [Abstract Category Theory & Universal Constructions](#subsystem-abstract-categories) | Category of categories (Cat), Arrow and Slice categories, Limits, Colimits, Biproducts, Subobjects, and Diagram categories. | **139** |
+| [Abstract Category Theory & Universal Constructions](#subsystem-abstract-categories) | Category of categories (Cat), Arrow and Slice categories, Limits, Colimits, Biproducts, Subobjects, and Diagram categories. | **142** |
 | [Functors & Adjunctions](#subsystem-functors) | Functorial constructions, Adjunctions, Base change, Free/Forgetful, Cohomology, De Rham, Group actions, and Induction. | **139** |
-| [Lattices, Quadratic Forms & Invariants](#subsystem-lattices) | Free modules with quadratic forms, Genus, Definite/Root/Rational lattices, Isometries, Embeddings, Orbits, and Diagrams. | **82** |
-| [Modules, Complexes & Homological Algebra](#subsystem-modules) | Framed free modules, Finitely presented modules, Formed modules, Group modules, Cochain complexes, Connections, and DG modules. | **201** |
-| [Algebras & Differential Graded Algebras](#subsystem-algebras) | Associative/Commutative algebras, DGAs, Cohomology algebras, De Rham algebras, Derivations, and Graded algebras. | **124** |
-| [Groups, Profinite Groups & Galois Theory](#subsystem-group) | Groups, Finitely presented groups, G-Sets, Actions, Profinite groups, Absolute Galois groups, Characters, and Inertia. | **106** |
-| [Rings, Fields & Commutative Algebra](#subsystem-rings) | Owned rings, Fields, Number fields, Prime spectrum, Completions, Localizations, Exact real field, and Predicate subrings. | **97** |
-| [Schemes & Algebraic Geometry](#subsystem-schemes) | Schemes, Affine/Projective schemes, Subschemes, Varieties, Curves, Surfaces, Polytopes, and Structure sheaves. | **47** |
+| [Lattices, Quadratic Forms & Invariants](#subsystem-lattices) | Free modules with quadratic forms, Genus, Definite/Root/Rational lattices, Isometries, Embeddings, Orbits, and Diagrams. | **85** |
+| [Modules, Complexes & Homological Algebra](#subsystem-modules) | Framed free modules, Finitely presented modules, Formed modules, Group modules, Cochain complexes, Connections, and DG modules. | **200** |
+| [Algebras & Differential Graded Algebras](#subsystem-algebras) | Associative/Commutative algebras, DGAs, Cohomology algebras, De Rham algebras, Derivations, and Graded algebras. | **125** |
+| [Groups, Profinite Groups & Galois Theory](#subsystem-group) | Groups, Finitely presented groups, G-Sets, Actions, Profinite groups, Absolute Galois groups, Characters, and Inertia. | **107** |
+| [Rings, Fields & Commutative Algebra](#subsystem-rings) | Owned rings, Fields, Number fields, Prime spectrum, Completions, Localizations, Exact real field, and Predicate subrings. | **99** |
+| [Schemes & Algebraic Geometry](#subsystem-schemes) | Schemes, Affine/Projective schemes, Subschemes, Varieties, Curves, Surfaces, Polytopes, and Structure sheaves. | **48** |
 | [Divisors & Picard Theory](#subsystem-divisors) | Divisor groups, Cartier divisors, Weil divisors, Picard groups, Class groups, and Formal divisors. | **13** |
 | [Bilinear Forms, Quadratic Forms & Pairings](#subsystem-forms) | Bilinear/Quadratic forms, Pairings, Gram matrices, and Form spaces. | **12** |
 | [Function Spaces & Analysis](#subsystem-functions) | Lebesgue modules, Lp, ell, C(X), Graded Lebesgue algebras, and Convolution algebras. | **12** |
-| [Sets, Cardinals & Ordinals](#subsystem-sets) | Sets, Cardinalities, Ordinals, Enumerated sets, Fourier characters, Hermite polynomials, and Power sets. | **93** |
+| [Sets, Cardinals & Ordinals](#subsystem-sets) | Sets, Cardinalities, Ordinals, Enumerated sets, Fourier characters, Hermite polynomials, and Power sets. | **97** |
 | [Named Catalogue & Classification Tables](#subsystem-catalogue) | Named integral lattices (U, E8, LK3, Mukai, etc.), 2-elementary tables, Nikulin involutions, and Primitive embeddings. | **7** |
-| [Tensor Calculus](#subsystem-tensors) | Multilinear tensors, Tensor modules, Tensor shapes, and Tensor products. | **2** |
+| [Tensor Calculus](#subsystem-tensors) | Multilinear tensors, Tensor modules, Tensor shapes, and Tensor products. | **3** |
 | [Logic & Predicates](#subsystem-logic) | Three-valued logic predicates, queries, and certainty propagation. | **2** |
 | [Specialized Geometries (Coble & Sterk)](#subsystem-geometry-specialized) | Coble surfaces, Sterk invariant theory, and Automorphic forms. | **2** |
 | [Preamble Entrypoints & Utilities](#subsystem-preamble-root) | Top-level session loaders, environment initializers, and refinement helpers. | **6** |
@@ -47,7 +47,7 @@ Programmatic catalogue of all reusable mathematical categories, subcategories, f
 
 #### `ArrowCategory` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L169`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L169)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L135`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L135)
 - **Bases**: `Category`
 - **Super Categories**: `[Sets()]`
 
@@ -57,9 +57,9 @@ The category ``Arr(C)=Fun([1],C)``.
 - `ArrowCategory(self, base_category) -> None`
 
 **Category Instance Methods:**
+- `Mor(self, source, target)`
 - `base_category(self)`
 - `compose(self, second, first)`
-- `hom(self, source, target)`
 - `identity(self, arrow_object)`
 - `morphism(self, source, target, left, right)`
 - `object(self, arrow)`
@@ -67,12 +67,12 @@ The category ``Arr(C)=Fun([1],C)``.
 
 #### `AutCategoryConstruction` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L981`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L981)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L1031`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L1031)
 - **Bases**: `AutCategoryOf`
 
 #### `AutCategoryOf` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L920`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L920)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L973`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L973)
 - **Bases**: `IsoCategoryOf`
 - **Super Categories**: `[packet.Ends(), packet.Isos(), *inherited, HomCategories()]`
 
@@ -87,7 +87,7 @@ The family ``A |-> Aut_C(A)``.
 
 #### `AutomorphismArrowCategory` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L345`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L345)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L320`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L320)
 - **Bases**: `IsoArrowCategory`
 
 The full subcategory of the arrow category on automorphisms.
@@ -95,7 +95,7 @@ The full subcategory of the arrow category on automorphisms.
 
 #### `BiproductCategory` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/products.py#L340`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/products.py#L340)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/products.py#L339`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/products.py#L339)
 - **Bases**: `Category`
 - **Super Categories**: `[OwnedObjects()]`
 
@@ -110,7 +110,7 @@ Objects equipped with the selected finite biproduct structure.
 
 #### `Cat` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/cat.py#L90`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/cat.py#L90)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/cat.py#L94`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/cat.py#L94)
 - **Bases**: `Category`
 - **Super Categories**: `[Objects()]`
 
@@ -121,7 +121,7 @@ The represented category of categories.
 
 **Category Instance Methods:**
 - `ArrowCategory(self)`
-- `Hom(self, domain, codomain)`
+- `Mor(self, domain, codomain)`
 - `arrow(self, functor)`
 - `compose(self, second, first)`
 - `functor_homset(self, domain, codomain)`
@@ -131,7 +131,7 @@ The represented category of categories.
 
 #### `CategoricalHomset` `[CATEGORY]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L169`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L169)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L144`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L144)
 - **Bases**: `OwnedHomset`, `Category`
 - **Super Categories**: `supers or [Objects()]`
 
@@ -158,6 +158,7 @@ the *same object*.
 - `end_family(self)`
 - `hom_family(self)`
 - `identity_2(self, arrow)`
+- `identity_at(self, obj)`
 - `identity_endomorphism(self)`
 - `object(self, arrow)`
 - `super_categories(self)`
@@ -165,7 +166,7 @@ the *same object*.
 
 #### `CategoryPacketMethods` `[CATEGORY]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L55`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L55)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L51`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L51)
 
 The coordinated ``C/Hom_C/End_C/Iso_C/Aut_C`` construction surface.
 
@@ -177,12 +178,12 @@ The coordinated ``C/Hom_C/End_C/Iso_C/Aut_C`` construction surface.
 - `EndCategory(self)`
 - `Epi(self, source, target)`
 - `EpiCategory(self)`
-- `Hom(self, source, target)`
 - `HomCategory(self)`
 - `Iso(self, source, target)`
 - `IsoCategory(self)`
 - `Mono(self, source, target)`
 - `MonoCategory(self)`
+- `Mor(self, source, target)`
 
 #### `CoconeCategory` `[CATEGORY]` `[Exported Session]`
 
@@ -196,20 +197,20 @@ The category of cocones under one represented diagram.
 - `CoconeCategory(self, diagram) -> None`
 
 **Category Instance Methods:**
+- `Mor(self, domain, codomain)`
 - `ambient_category(self)`
 - `cocone(self, apex, components)`
 - `diagram(self)`
-- `hom(self, domain, codomain)`
 - `super_categories(self)`
 
 #### `ColimitsOfCategory` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/products.py#L303`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/products.py#L303)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/products.py#L302`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/products.py#L302)
 - **Bases**: `LimitsOfCategory`
 
 #### `ConeCategory` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/products.py#L206`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/products.py#L206)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/products.py#L207`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/products.py#L207)
 - **Bases**: `Category`
 - **Super Categories**: `[OwnedObjects()]`
 
@@ -219,15 +220,15 @@ The category of cones over one represented diagram.
 - `ConeCategory(self, diagram) -> None`
 
 **Category Instance Methods:**
+- `Mor(self, domain, codomain)`
 - `ambient_category(self)`
 - `cone(self, apex, components)`
 - `diagram(self)`
-- `hom(self, domain, codomain)`
 - `super_categories(self)`
 
 #### `CoproductCoconeCategory` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/products.py#L286`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/products.py#L286)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/products.py#L285`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/products.py#L285)
 - **Bases**: `CoconeCategory`
 
 Selected coproduct cocones under one finite discrete diagram.
@@ -235,12 +236,12 @@ Selected coproduct cocones under one finite discrete diagram.
 
 #### `CoproductsOfCategory` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/products.py#L311`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/products.py#L311)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/products.py#L310`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/products.py#L310)
 - **Bases**: `ColimitsOfCategory`
 
 #### `CoreCategory` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L637`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L637)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L578`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L578)
 - **Bases**: `Category`
 - **Super Categories**: `[self.base_category()]`
 
@@ -250,14 +251,14 @@ The maximal subgroupoid (core) of a represented category.
 - `CoreCategory(self, base_category) -> None`
 
 **Category Instance Methods:**
+- `Mor(self, domain, codomain)`
 - `base_category(self)`
-- `hom(self, domain, codomain)`
 - `identity(self, obj)`
 - `super_categories(self)`
 
 #### `CosliceCategory` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L291`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L291)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L267`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L267)
 - **Bases**: `ArrowCategory`
 
 The coslice category \(X/C\).
@@ -266,8 +267,8 @@ The coslice category \(X/C\).
 - `CosliceCategory(self, base_category, base_object) -> None`
 
 **Category Instance Methods:**
+- `Mor(self, source, target)`
 - `base_object(self)`
-- `hom(self, source, target)`
 
 #### `DirectSumObjects` `[CATEGORY]` `[Exported Session]`
 
@@ -289,7 +290,7 @@ Objects carrying a selected ordered family of direct summands.
 
 #### `DiscreteCategories` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/functors.py#L293`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/functors.py#L293)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/functors.py#L295`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/functors.py#L295)
 - **Bases**: `Category`
 - **Super Categories**: `[Objects()]`
 
@@ -301,7 +302,7 @@ The category of represented discrete categories.
 
 #### `DiscreteCategory` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/functors.py#L235`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/functors.py#L235)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/functors.py#L240`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/functors.py#L240)
 - **Bases**: `Category`
 - **Super Categories**: `[Objects()]`
 
@@ -311,7 +312,7 @@ The discrete category on one set.
 - `DiscreteCategory(self, object_set) -> None`
 
 **Category Instance Methods:**
-- `hom(self, domain, codomain)`
+- `Mor(self, domain, codomain)`
 - `identity(self, obj)`
 - `object(self, value)`
 - `object_set(self)`
@@ -320,7 +321,7 @@ The discrete category on one set.
 
 #### `EndArrowCategory` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L327`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L327)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L302`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L302)
 - **Bases**: `ArrowCategory`
 
 The full subcategory of ``Arr(C)`` on endomorphisms.
@@ -328,17 +329,17 @@ The full subcategory of ``Arr(C)`` on endomorphisms.
 
 #### `EndCategoryConstruction` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L965`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L965)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L1015`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L1015)
 - **Bases**: `EndCategoryOf`
 
 #### `EpiCategoryConstruction` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L973`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L973)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L1023`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L1023)
 - **Bases**: `EpiCategoryOf`
 
 #### `EpiCategoryOf` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L885`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L885)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L938`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L938)
 - **Bases**: `_RestrictedCategoryOf`
 
 **Category Instance Methods:**
@@ -347,7 +348,7 @@ The full subcategory of ``Arr(C)`` on endomorphisms.
 
 #### `EpimorphismArrowCategory` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L366`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L366)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L341`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L341)
 - **Bases**: `ArrowCategory`
 
 The full subcategory of the arrow category on represented epimorphisms.
@@ -355,7 +356,7 @@ The full subcategory of the arrow category on represented epimorphisms.
 
 #### `FixedAutCategory` `[CATEGORY]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L565`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L565)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L613`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L613)
 - **Bases**: `FixedIsoCategory`
 - **Super Categories**: `[packet.Ends().Of(obj), packet.Isos().Of(obj, obj), *inherited]`
 
@@ -365,7 +366,7 @@ The full subcategory of the arrow category on represented epimorphisms.
 
 #### `FixedHomCategory` `[CATEGORY]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L306`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L306)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L313`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L313)
 - **Bases**: `Category`
 - **Super Categories**: `supers or [Objects()]`
 
@@ -375,6 +376,7 @@ The category ``Hom_C(A,B)`` of arrows with fixed endpoints.
 - `FixedHomCategory(self, family, domain, codomain) -> None`
 
 **Category Instance Methods:**
+- `Mor(self, domain, codomain)`
 - `accepts(self, arrow) -> bool`
 - `arrow_set(self)`
 - `attach_aut_family(self, family) -> None`
@@ -384,7 +386,6 @@ The category ``Hom_C(A,B)`` of arrows with fixed endpoints.
 - `codomain_object(self)`
 - `domain_object(self)`
 - `end_family(self)`
-- `hom(self, domain, codomain)`
 - `hom_family(self)`
 - `identity(self, arrow_object)`
 - `identity_endomorphism(self)`
@@ -394,7 +395,7 @@ The category ``Hom_C(A,B)`` of arrows with fixed endpoints.
 
 #### `HomCategories` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L594`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L594)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L642`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L642)
 - **Bases**: `Category`
 - **Super Categories**: `[Objects()]`
 
@@ -406,7 +407,7 @@ The category of represented fixed-endpoint Hom categories.
 
 #### `HomCategoryOf` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L702`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L702)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L750`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L750)
 - **Bases**: `Category`
 - **Super Categories**: `supers + [HomCategories()]`
 
@@ -426,7 +427,7 @@ The family ``(A,B) |-> Hom_C(A,B)`` attached to one category ``C``.
 
 #### `IsoArrowCategory` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L336`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L336)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L311`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L311)
 - **Bases**: `ArrowCategory`
 
 The full subcategory of ``Arr(C)`` on explicitly represented isomorphisms.
@@ -434,12 +435,12 @@ The full subcategory of ``Arr(C)`` on explicitly represented isomorphisms.
 
 #### `IsoCategoryConstruction` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L977`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L977)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L1027`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L1027)
 - **Bases**: `IsoCategoryOf`
 
 #### `LimitsOfCategory` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/products.py#L290`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/products.py#L290)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/products.py#L289`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/products.py#L289)
 - **Bases**: `Category`
 - **Super Categories**: `[OwnedObjects()]`
 **Category Constructor:**
@@ -450,12 +451,12 @@ The full subcategory of ``Arr(C)`` on explicitly represented isomorphisms.
 
 #### `MonoCategoryConstruction` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L969`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L969)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L1019`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L1019)
 - **Bases**: `MonoCategoryOf`
 
 #### `MonoCategoryOf` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L872`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L872)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L925`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L925)
 - **Bases**: `_RestrictedCategoryOf`
 
 **Category Instance Methods:**
@@ -464,7 +465,7 @@ The full subcategory of ``Arr(C)`` on explicitly represented isomorphisms.
 
 #### `MonomorphismArrowCategory` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L354`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L354)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L329`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L329)
 - **Bases**: `ArrowCategory`
 
 The full subcategory of the arrow category on represented monomorphisms.
@@ -472,7 +473,7 @@ The full subcategory of the arrow category on represented monomorphisms.
 
 #### `OppositeCategory` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/category_constructions.py#L80`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/category_constructions.py#L80)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/category_constructions.py#L85`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/category_constructions.py#L85)
 - **Bases**: `Category`
 - **Super Categories**: `[Objects()]`
 
@@ -482,8 +483,8 @@ The opposite category ``C^op``.
 - `OppositeCategory(self, base_category) -> None`
 
 **Category Instance Methods:**
+- `Mor(self, domain, codomain)`
 - `base_category(self)`
-- `hom(self, domain, codomain)`
 - `identity(self, obj)`
 - `@cached_method` `object(self, underlying_object)`
 - `opposite_category(self)`
@@ -516,7 +517,7 @@ membership test. Subclasses normalize their own parameters when needed.
 
 #### `ProductCategory` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/category_constructions.py#L196`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/category_constructions.py#L196)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/category_constructions.py#L202`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/category_constructions.py#L202)
 - **Bases**: `Category`
 - **Super Categories**: `[Objects()]`
 
@@ -526,8 +527,8 @@ The categorical product ``C x D``.
 - `ProductCategory(self, first_category, second_category) -> None`
 
 **Category Instance Methods:**
+- `Mor(self, domain, codomain)`
 - `first_category(self)`
-- `hom(self, domain, codomain)`
 - `identity(self, obj)`
 - `@cached_method` `pair(self, first, second)`
 - `second_category(self)`
@@ -535,7 +536,7 @@ The categorical product ``C x D``.
 
 #### `ProductConeCategory` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/products.py#L282`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/products.py#L282)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/products.py#L281`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/products.py#L281)
 - **Bases**: `ConeCategory`
 
 Selected product cones over one finite discrete diagram.
@@ -543,12 +544,12 @@ Selected product cones over one finite discrete diagram.
 
 #### `ProductsOfCategory` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/products.py#L307`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/products.py#L307)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/products.py#L306`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/products.py#L306)
 - **Bases**: `LimitsOfCategory`
 
 #### `SliceCategory` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L249`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L249)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L225`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L225)
 - **Bases**: `ArrowCategory`
 
 The slice category \(C/X\).
@@ -557,12 +558,12 @@ The slice category \(C/X\).
 - `SliceCategory(self, base_category, base_object) -> None`
 
 **Category Instance Methods:**
+- `Mor(self, source, target)`
 - `base_object(self)`
-- `hom(self, source, target)`
 
 #### `SubobjectCategory` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L449`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L449)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L426`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L426)
 - **Bases**: `Category`
 - **Super Categories**: `[Sets()]`
 
@@ -576,10 +577,10 @@ triangles between those inclusions.
 - `SubobjectCategory(self, base_category, base_object) -> None`
 
 **Category Instance Methods:**
+- `Mor(self, domain, codomain)`
 - `as_slice_object(self, subobject)`
 - `base_category(self)`
 - `base_object(self)`
-- `hom(self, domain, codomain)`
 - `identity(self, subobject)`
 - `leq(self, left, right) -> bool`
 - `monomorphism_category(self)`
@@ -590,7 +591,7 @@ triangles between those inclusions.
 
 #### `SuperobjectCategory` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L522`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L522)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L505`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L505)
 - **Bases**: `CosliceCategory`
 
 The category of represented quotient/superobjects of one object.
@@ -598,7 +599,7 @@ The category of represented quotient/superobjects of one object.
 
 #### `TensorProductCategory` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/products.py#L366`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/products.py#L366)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/products.py#L365`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/products.py#L365)
 - **Bases**: `Category`
 - **Super Categories**: `[OwnedObjects()]`
 
@@ -613,7 +614,7 @@ Objects equipped with a chosen tensor-product universal bilinear map.
 
 #### `WideSubcategory` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L535`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L535)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L518`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L518)
 - **Bases**: `Category`
 - **Super Categories**: `[self.base_category()]`
 
@@ -632,7 +633,7 @@ A category with the same objects as ``C`` and a selected class of arrows.
 
 #### `Bifunctor` `[FUNCTOR]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/functors.py#L74`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/functors.py#L74)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/functors.py#L77`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/functors.py#L77)
 - **Bases**: `Functor`
 
 A functor ``C x D -> E`` with a two-argument convenience API.
@@ -649,7 +650,7 @@ A functor ``C x D -> E`` with a two-argument convenience API.
 
 #### `CartesianProductFunctor` `[FUNCTOR]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/functors.py#L531`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/functors.py#L531)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/functors.py#L533`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/functors.py#L533)
 - **Bases**: `ProductFunctor`
 
 The binary Cartesian-product functor on Set.
@@ -659,8 +660,8 @@ The binary Cartesian-product functor on Set.
 
 #### `CategoryFunctorHomset` `[FUNCTOR]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/cat.py#L69`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/cat.py#L69)
-- **Bases**: `OwnedHomset`
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/cat.py#L71`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/cat.py#L71)
+- **Bases**: `CategoricalHomset`
 **Constructors / Factory Signatures:**
 - `def __init__(self, category_of_categories, domain, codomain) -> None`
 - `def _element_constructor_(self, functor)`
@@ -671,7 +672,7 @@ The binary Cartesian-product functor on Set.
 
 #### `CategoryFunctorMorphism` `[FUNCTOR]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/cat.py#L36`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/cat.py#L36)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/cat.py#L38`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/cat.py#L38)
 - **Bases**: `Morphism`
 
 A live functor regarded as a morphism in ``Cat``.
@@ -686,7 +687,7 @@ A live functor regarded as a morphism in ``Cat``.
 
 #### `CodomainFunctor` `[FUNCTOR]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/functors.py#L166`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/functors.py#L166)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/functors.py#L169`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/functors.py#L169)
 - **Bases**: `Functor`
 
 The codomain functor ``Arr(C) -> C``.
@@ -696,7 +697,7 @@ The codomain functor ``Arr(C) -> C``.
 
 #### `ColimitFunctor` `[FUNCTOR]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/functors.py#L549`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/functors.py#L549)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/functors.py#L551`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/functors.py#L551)
 - **Bases**: `CoproductFunctor`
 
 The represented binary colimit functor; binary coproducts are its discrete case.
@@ -704,7 +705,7 @@ The represented binary colimit functor; binary coproducts are its discrete case.
 
 #### `ConstantDiagram` `[FUNCTOR]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/functors.py#L367`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/functors.py#L367)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/functors.py#L369`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/functors.py#L369)
 - **Bases**: `Functor`
 
 The constant functor from an index category at one object.
@@ -717,7 +718,7 @@ The constant functor from an index category at one object.
 
 #### `ContravariantFunctor` `[FUNCTOR]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/functors.py#L25`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/functors.py#L25)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/functors.py#L28`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/functors.py#L28)
 - **Bases**: `Functor`
 
 A functor ``C^op -> D`` with convenience calls on arrows of ``C``.
@@ -734,7 +735,7 @@ A functor ``C^op -> D`` with convenience calls on arrows of ``C``.
 
 #### `CoproductFunctor` `[FUNCTOR]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/functors.py#L506`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/functors.py#L506)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/functors.py#L508`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/functors.py#L508)
 - **Bases**: `Functor`
 
 The binary categorical coproduct functor ``C x C -> C`` where represented.
@@ -744,7 +745,7 @@ The binary categorical coproduct functor ``C x C -> C`` where represented.
 
 #### `DiagonalFunctor` `[FUNCTOR]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/functors.py#L458`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/functors.py#L458)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/functors.py#L460`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/functors.py#L460)
 - **Bases**: `Functor`
 
 The diagonal functor ``C -> C x C``.
@@ -757,7 +758,7 @@ The diagonal functor ``C -> C x C``.
 
 #### `DiagramCategory` `[FUNCTOR]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/products.py#L18`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/products.py#L18)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/products.py#L19`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/products.py#L19)
 - **Bases**: `FunctorCategory`
 
 The functor category ``[J,C]`` of diagrams of one shape.
@@ -771,7 +772,7 @@ The functor category ``[J,C]`` of diagrams of one shape.
 
 #### `DiscreteDiagram` `[FUNCTOR]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/functors.py#L348`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/functors.py#L348)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/functors.py#L350`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/functors.py#L350)
 - **Bases**: `Functor`
 
 A functor from a discrete category, specified on its objects.
@@ -784,7 +785,7 @@ A functor from a discrete category, specified on its objects.
 
 #### `DiscreteFunctor` `[FUNCTOR]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/functors.py#L307`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/functors.py#L307)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/functors.py#L309`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/functors.py#L309)
 - **Bases**: `Functor`
 
 A functor between discrete categories induced by a map of object sets.
@@ -797,7 +798,7 @@ A functor between discrete categories induced by a map of object sets.
 
 #### `DisjointUnionFunctor` `[FUNCTOR]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/functors.py#L538`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/functors.py#L538)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/functors.py#L540`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/functors.py#L540)
 - **Bases**: `CoproductFunctor`
 
 The binary disjoint-union functor on Set.
@@ -807,7 +808,7 @@ The binary disjoint-union functor on Set.
 
 #### `DomainFunctor` `[FUNCTOR]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/functors.py#L153`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/functors.py#L153)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/functors.py#L156`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/functors.py#L156)
 - **Bases**: `Functor`
 
 The domain functor ``Arr(C) -> C``.
@@ -817,7 +818,7 @@ The domain functor ``Arr(C) -> C``.
 
 #### `FunctorCategory` `[FUNCTOR]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/cat.py#L219`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/cat.py#L219)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/cat.py#L225`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/cat.py#L225)
 - **Bases**: `Category`
 
 The category ``[C,D]`` of represented functors and natural transformations.
@@ -826,16 +827,16 @@ The category ``[C,D]`` of represented functors and natural transformations.
 - `def __init__(self, category_of_categories, domain, codomain) -> None`
 
 **Functor / Adjunction Methods:**
+- `Mor(self, domain, codomain)`
 - `codomain_category(self)`
 - `domain_category(self)`
-- `hom(self, domain, codomain)`
 - `identity(self, functor_object)`
 - `object(self, functor)`
 - `super_categories(self)`
 
 #### `FunctorImageCategories` `[FUNCTOR]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/functor_images.py#L88`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/functor_images.py#L88)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/functor_images.py#L92`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/functor_images.py#L92)
 - **Bases**: `Category`
 
 The category whose objects are represented functor-image categories.
@@ -846,8 +847,8 @@ The category whose objects are represented functor-image categories.
 
 #### `FunctorImageHomset` `[FUNCTOR]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/functor_images.py#L62`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/functor_images.py#L62)
-- **Bases**: `OwnedHomset`
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/functor_images.py#L64`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/functor_images.py#L64)
+- **Bases**: `CategoricalHomset`
 **Constructors / Factory Signatures:**
 - `def __init__(self, image_category, domain, codomain) -> None`
 - `def _element_constructor_(self, codomain_arrow)`
@@ -858,7 +859,7 @@ The category whose objects are represented functor-image categories.
 
 #### `FunctorImageMorphism` `[FUNCTOR]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/functor_images.py#L39`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/functor_images.py#L39)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/functor_images.py#L41`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/functor_images.py#L41)
 - **Bases**: `Morphism`
 
 A codomain arrow between two chosen functor-image presentations.
@@ -871,7 +872,7 @@ A codomain arrow between two chosen functor-image presentations.
 
 #### `FunctorImageObject` `[FUNCTOR]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/functor_images.py#L14`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/functor_images.py#L14)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/functor_images.py#L16`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/functor_images.py#L16)
 - **Bases**: `Parent`
 
 A chosen presentation ``A`` together with its image ``F(A)``.
@@ -887,7 +888,7 @@ A chosen presentation ``A`` together with its image ``F(A)``.
 
 #### `ImageInclusionFunctor` `[FUNCTOR]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/functors.py#L131`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/functors.py#L131)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/functors.py#L134`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/functors.py#L134)
 - **Bases**: `Functor`
 
 Forget the chosen preimage of a presented functor-image object.
@@ -900,7 +901,7 @@ Forget the chosen preimage of a presented functor-image object.
 
 #### `ImageOfFunctor` `[FUNCTOR]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/functor_images.py#L98`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/functor_images.py#L98)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/functor_images.py#L102`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/functor_images.py#L102)
 - **Bases**: `Category`
 
 The category of outputs of ``F`` equipped with chosen preimages.
@@ -913,8 +914,8 @@ recover ``A`` from ``F(A)``, which is impossible for a general functor.
 - `def __init__(self, functor) -> None`
 
 **Functor / Adjunction Methods:**
+- `Mor(self, domain, codomain)`
 - `functor(self)`
-- `hom(self, domain, codomain)`
 - `identity(self, obj)`
 - `inclusion(self)`
 - `@cached_method` `present(self, preimage)`
@@ -922,7 +923,7 @@ recover ``A`` from ``F(A)``, which is impossible for a general functor.
 
 #### `LimitFunctor` `[FUNCTOR]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/functors.py#L545`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/functors.py#L545)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/functors.py#L547`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/functors.py#L547)
 - **Bases**: `ProductFunctor`
 
 The represented binary limit functor; binary products are its discrete case.
@@ -930,7 +931,7 @@ The represented binary limit functor; binary products are its discrete case.
 
 #### `NaturalIsomorphism` `[FUNCTOR]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/cat.py#L276`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/cat.py#L276)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/cat.py#L281`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/cat.py#L281)
 
 A selected pair of mutually inverse natural transformations.
 
@@ -944,7 +945,7 @@ A selected pair of mutually inverse natural transformations.
 
 #### `ObjectSetFunctor` `[FUNCTOR]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/functors.py#L331`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/functors.py#L331)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/functors.py#L333`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/functors.py#L333)
 - **Bases**: `Functor`
 
 Take the object set of a represented discrete category.
@@ -954,7 +955,7 @@ Take the object set of a represented discrete category.
 
 #### `ProductFunctor` `[FUNCTOR]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/functors.py#L481`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/functors.py#L481)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/functors.py#L483`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/functors.py#L483)
 - **Bases**: `Functor`
 
 The binary categorical product functor ``C x C -> C`` where represented.
@@ -964,7 +965,7 @@ The binary categorical product functor ``C x C -> C`` where represented.
 
 #### `compose_functors` `[FUNCTOR]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/functors.py#L386`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/functors.py#L386)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/functors.py#L388`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/functors.py#L388)
 
 Return ``second ∘ first`` in the current functor core.
 
@@ -981,7 +982,7 @@ Return ``second ∘ first`` in the current functor core.
 
 #### `Cokernel` `[CONSTRUCTION]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/constructions.py#L94`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/constructions.py#L94)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/constructions.py#L91`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/constructions.py#L91)
 - **Signature**: `def Cokernel(morphism)`
 
 #### `Coproduct` `[CONSTRUCTION]` `[Exported Session]`
@@ -991,7 +992,7 @@ Return ``second ∘ first`` in the current functor core.
 
 #### `CosliceUnder` `[CONSTRUCTION]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L678`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L678)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L625`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L625)
 - **Signature**: `def CosliceUnder(base_category, base_object)`
 
 #### `DirectSumDecomposition` `[CONSTRUCTION]` `[Exported Session]`
@@ -1018,12 +1019,12 @@ binary universal map when that is the active backend.
 
 #### `SliceOver` `[CONSTRUCTION]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L674`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L674)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L621`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L621)
 - **Signature**: `def SliceOver(base_category, base_object)`
 
 #### `Subobjects` `[CONSTRUCTION]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/constructions.py#L101`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/constructions.py#L101)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/constructions.py#L95`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/constructions.py#L95)
 - **Signature**: `def Subobjects(base_object, category=None)`
 
 #### `TensorProduct` `[CONSTRUCTION]` `[Exported Session]`
@@ -1038,12 +1039,12 @@ binary universal map when that is the active backend.
 
 #### `ambient_category_of` `[CONSTRUCTION]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/products.py#L389`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/products.py#L389)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/products.py#L388`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/products.py#L388)
 - **Signature**: `def ambient_category_of(objects)`
 
 #### `common_category` `[CONSTRUCTION]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L320`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L320)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L295`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L295)
 
 Return the greatest Sage category common to the stated objects.
 
@@ -1053,18 +1054,19 @@ Return the greatest Sage category common to the stated objects.
 
 #### `ArrowHomset` `[HOMSET]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L144`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L144)
-- **Bases**: `OwnedHomset`
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L104`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L104)
+- **Bases**: `CategoricalHomset`
 - **Constructor**: `def __init__(self, arrow_category, source, target) -> None`
 - **Constructor**: `def _element_constructor_(self, left, right=None)`
 
 **Public Methods:**
 - `arrow_category(self)`
 - `identity(self)`
+- `identity_at(self, obj)`
 
 #### `CategoricalIsomorphism` `[MORPHISM]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L571`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L571)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L503`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L503)
 - **Bases**: `Morphism`
 
 An isomorphism represented by mutually inverse arrows.
@@ -1079,8 +1081,8 @@ An isomorphism represented by mutually inverse arrows.
 
 #### `CoconeHomset` `[HOMSET]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/products.py#L192`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/products.py#L192)
-- **Bases**: `OwnedHomset`
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/products.py#L191`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/products.py#L191)
+- **Bases**: `CategoricalHomset`
 - **Constructor**: `def __init__(self, cocone_category, domain, codomain) -> None`
 - **Constructor**: `def _element_constructor_(self, apex_map)`
 
@@ -1089,7 +1091,7 @@ An isomorphism represented by mutually inverse arrows.
 
 #### `CoconeMorphism` `[MORPHISM]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/products.py#L152`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/products.py#L152)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/products.py#L149`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/products.py#L149)
 - **Bases**: `Morphism`
 
 A morphism of cocones, determined by its apex map.
@@ -1101,7 +1103,7 @@ A morphism of cocones, determined by its apex map.
 
 #### `CommutativeSquare` `[MORPHISM]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L106`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L106)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L50`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L50)
 - **Bases**: `Morphism`
 
 A morphism between two arrow objects, i.e. a commuting square.
@@ -1115,8 +1117,8 @@ A morphism between two arrow objects, i.e. a commuting square.
 
 #### `ConeHomset` `[HOMSET]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/products.py#L178`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/products.py#L178)
-- **Bases**: `OwnedHomset`
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/products.py#L175`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/products.py#L175)
+- **Bases**: `CategoricalHomset`
 - **Constructor**: `def __init__(self, cone_category, domain, codomain) -> None`
 - **Constructor**: `def _element_constructor_(self, apex_map)`
 
@@ -1125,7 +1127,7 @@ A morphism between two arrow objects, i.e. a commuting square.
 
 #### `ConeMorphism` `[MORPHISM]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/products.py#L128`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/products.py#L128)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/products.py#L125`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/products.py#L125)
 - **Bases**: `Morphism`
 
 A morphism of cones, determined by its apex map.
@@ -1137,9 +1139,9 @@ A morphism of cones, determined by its apex map.
 
 #### `CoreHomset` `[HOMSET]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L615`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L615)
-- **Bases**: `OwnedHomset`
-- **Constructor**: `def __init__(self, domain, codomain) -> None`
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L554`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L554)
+- **Bases**: `CategoricalHomset`
+- **Constructor**: `def __init__(self, core_category, domain, codomain) -> None`
 - **Constructor**: `def _element_constructor_(self, forward, inverse=None)`
 
 **Public Methods:**
@@ -1147,7 +1149,7 @@ A morphism of cones, determined by its apex map.
 
 #### `CosliceHomset` `[HOMSET]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L278`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L278)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L253`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L253)
 - **Bases**: `ArrowHomset`
 
 Morphisms in a coslice; the edge at the fixed domain is the identity.
@@ -1156,8 +1158,8 @@ Morphisms in a coslice; the edge at the fixed domain is the identity.
 
 #### `DiscreteHomset` `[HOMSET]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/functors.py#L211`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/functors.py#L211)
-- **Bases**: `OwnedHomset`
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/functors.py#L214`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/functors.py#L214)
+- **Bases**: `CategoricalHomset`
 - **Constructor**: `def __init__(self, discrete_category, domain, codomain) -> None`
 - **Constructor**: `def _element_constructor_(self, value=None)`
 
@@ -1168,7 +1170,7 @@ Morphisms in a coslice; the edge at the fixed domain is the identity.
 
 #### `DiscreteMorphism` `[MORPHISM]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/functors.py#L197`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/functors.py#L197)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/functors.py#L200`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/functors.py#L200)
 - **Bases**: `Morphism`
 
 The unique identity arrow of a discrete-category object.
@@ -1177,7 +1179,7 @@ The unique identity arrow of a discrete-category object.
 
 #### `EndCategoryOf` `[HOMSET]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L826`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L826)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L881`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L881)
 - **Bases**: `HomCategoryOf`
 
 The family ``A |-> End_C(A)``.
@@ -1190,7 +1192,7 @@ The family ``A |-> End_C(A)``.
 
 #### `FixedEndCategory` `[HOMSET]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L470`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L470)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L472`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L472)
 - **Bases**: `FixedHomCategory`
 
 The category ``End_C(A)`` of endomorphisms of one object.
@@ -1201,7 +1203,7 @@ The category ``End_C(A)`` of endomorphisms of one object.
 
 #### `FixedIsoCategory` `[HOMSET]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L501`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L501)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L549`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L549)
 - **Bases**: `FixedHomCategory`
 
 **Public Methods:**
@@ -1211,7 +1213,7 @@ The category ``End_C(A)`` of endomorphisms of one object.
 
 #### `FixedRestrictedHomCategory` `[HOMSET]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L482`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L482)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L484`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L484)
 - **Bases**: `FixedHomCategory`
 
 **Public Methods:**
@@ -1220,10 +1222,14 @@ The category ``End_C(A)`` of endomorphisms of one object.
 
 #### `HomArrowDiscreteHomset` `[HOMSET]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L148`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L148)
-- **Bases**: `OwnedHomset`
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L285`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L285)
+- **Bases**: `CategoricalHomset`
 
 The discrete 2-Hom between two arrow objects.
+
+The objects of a fixed Hom category are the arrows themselves, so this is
+the Hom object of that category: it is discrete because no 2-morphisms are
+represented.
 
 - **Constructor**: `def __init__(self, hom_category, domain, codomain) -> None`
 - **Constructor**: `def _element_constructor_(self, value=None)`
@@ -1234,7 +1240,7 @@ The discrete 2-Hom between two arrow objects.
 
 #### `HomArrowIdentity` `[MORPHISM]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L141`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L141)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L137`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L137)
 - **Bases**: `Morphism`
 
 The identity 2-arrow on one arrow object.
@@ -1243,12 +1249,12 @@ The identity 2-arrow on one arrow object.
 
 #### `HomCategoryConstruction` `[HOMSET]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L961`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L961)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L1011`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L1011)
 - **Bases**: `HomCategoryOf`
 
 #### `IsoCategoryOf` `[HOMSET]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L898`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L898)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L951`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L951)
 - **Bases**: `HomCategoryOf`
 
 **Public Methods:**
@@ -1257,8 +1263,8 @@ The identity 2-arrow on one arrow object.
 
 #### `NaturalTransformationHomset` `[HOMSET]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/cat.py#L181`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/cat.py#L181)
-- **Bases**: `OwnedHomset`
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/cat.py#L185`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/cat.py#L185)
+- **Bases**: `CategoricalHomset`
 - **Constructor**: `def __init__(self, functor_category, domain, codomain) -> None`
 - **Constructor**: `def _element_constructor_(self, transformation)`
 
@@ -1268,7 +1274,7 @@ The identity 2-arrow on one arrow object.
 
 #### `NaturalTransformationMorphism` `[MORPHISM]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/cat.py#L144`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/cat.py#L144)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/cat.py#L148`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/cat.py#L148)
 - **Bases**: `Morphism`
 
 A natural transformation as a morphism in a functor category.
@@ -1282,8 +1288,8 @@ A natural transformation as a morphism in a functor category.
 
 #### `OppositeHomset` `[HOMSET]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/category_constructions.py#L61`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/category_constructions.py#L61)
-- **Bases**: `OwnedHomset`
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/category_constructions.py#L64`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/category_constructions.py#L64)
+- **Bases**: `CategoricalHomset`
 - **Constructor**: `def __init__(self, opposite_category, domain, codomain) -> None`
 - **Constructor**: `def _element_constructor_(self, underlying_arrow)`
 
@@ -1293,7 +1299,7 @@ A natural transformation as a morphism in a functor category.
 
 #### `OppositeMorphism` `[MORPHISM]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/category_constructions.py#L39`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/category_constructions.py#L39)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/category_constructions.py#L42`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/category_constructions.py#L42)
 - **Bases**: `Morphism`
 
 An arrow of ``C^op`` represented by the reverse arrow in ``C``.
@@ -1305,7 +1311,7 @@ An arrow of ``C^op`` represented by the reverse arrow in ``C``.
 
 #### `OwnedHomset` `[HOMSET]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/hom_foundation.py#L6`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/hom_foundation.py#L6)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/hom_foundation.py#L8`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/hom_foundation.py#L8)
 - **Bases**: `Homset`
 
 A Hom-set whose elements enter through its owned constructor directly.
@@ -1317,10 +1323,13 @@ concrete Hom-set owns the interpretation implemented by
 
 - **Constructor**: `def __call__(self, *args, **kwargs)`
 
+**Public Methods:**
+- `identity_at(self, obj)`
+
 #### `ProductHomset` `[HOMSET]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/category_constructions.py#L175`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/category_constructions.py#L175)
-- **Bases**: `OwnedHomset`
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/category_constructions.py#L179`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/category_constructions.py#L179)
+- **Bases**: `CategoricalHomset`
 - **Constructor**: `def __init__(self, product_category, domain, codomain) -> None`
 - **Constructor**: `def _element_constructor_(self, first, second=None)`
 
@@ -1330,7 +1339,7 @@ concrete Hom-set owns the interpretation implemented by
 
 #### `ProductMorphism` `[MORPHISM]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/category_constructions.py#L149`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/category_constructions.py#L149)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/category_constructions.py#L153`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/category_constructions.py#L153)
 - **Bases**: `Morphism`
 
 A pair of morphisms in a product category.
@@ -1343,7 +1352,7 @@ A pair of morphisms in a product category.
 
 #### `SliceHomset` `[HOMSET]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L231`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L231)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L206`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L206)
 - **Bases**: `ArrowHomset`
 
 Morphisms in a slice; the edge at the fixed codomain is the identity.
@@ -1355,8 +1364,8 @@ Morphisms in a slice; the edge at the fixed codomain is the identity.
 
 #### `SubobjectHomset` `[HOMSET]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L415`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L415)
-- **Bases**: `OwnedHomset`
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L390`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L390)
+- **Bases**: `CategoricalHomset`
 - **Constructor**: `def __init__(self, subobject_category, domain, codomain) -> None`
 - **Constructor**: `def _element_constructor_(self, factor_morphism=None)`
 
@@ -1368,7 +1377,7 @@ Morphisms in a slice; the edge at the fixed codomain is the identity.
 
 #### `SubobjectMorphism` `[MORPHISM]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L383`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L383)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L358`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L358)
 - **Bases**: `Morphism`
 
 The unique commuting-triangle map between two represented subobjects.
@@ -1380,11 +1389,24 @@ The unique commuting-triangle map between two represented subobjects.
 **Public Methods:**
 - `factor_morphism(self)`
 
+#### `UnderlyingSetHomset` `[HOMSET]` `[Internal]`
+
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/hom_foundation.py#L28`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/hom_foundation.py#L28)
+- **Bases**: `OwnedHomset`
+
+Plain-function Homset used only when an owned category declares no stronger arrows.
+
+- **Constructor**: `def __init__(self, domain, codomain) -> None`
+- **Constructor**: `def _element_constructor_(self, datum)`
+
+**Public Methods:**
+- `identity(self)`
+
 ### 📦 Mathematical Objects & Parents
 
 #### `ArrowObject` `[OBJECT]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L82`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L82)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L26`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L26)
 - **Bases**: `Parent`
 
 A morphism of ``C`` regarded as an object of ``Arr(C)``.
@@ -1399,7 +1421,7 @@ A morphism of ``C`` regarded as an object of ``Arr(C)``.
 
 #### `CategoryObject` `[OBJECT]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/cat.py#L18`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/cat.py#L18)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/cat.py#L20`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/cat.py#L20)
 - **Bases**: `Parent`
 
 A Sage category regarded as an object of ``Cat``.
@@ -1412,7 +1434,7 @@ A Sage category regarded as an object of ``Cat``.
 
 #### `CategoryPacket` `[OBJECT]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L604`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L604)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L652`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L652)
 - **Bases**: `SageObject`
 
 The coordinated ``C / Hom_C / End_C / Iso_C / Aut_C`` packet.
@@ -1431,7 +1453,7 @@ The coordinated ``C / Hom_C / End_C / Iso_C / Aut_C`` packet.
 
 #### `CoconeObject` `[OBJECT]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/products.py#L75`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/products.py#L75)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/products.py#L76`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/products.py#L76)
 - **Bases**: `Parent`
 
 A cocone ``D => Delta(A)`` under a diagram ``D:J->C``.
@@ -1448,7 +1470,7 @@ A cocone ``D => Delta(A)`` under a diagram ``D:J->C``.
 
 #### `ConeObject` `[OBJECT]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/products.py#L39`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/products.py#L39)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/products.py#L40`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/products.py#L40)
 - **Bases**: `Parent`
 
 A cone ``Delta(A) => D`` over a diagram ``D:J->C``.
@@ -1465,7 +1487,7 @@ A cone ``Delta(A) => D`` over a diagram ``D:J->C``.
 
 #### `DirectedSystem` `[OBJECT]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/products.py#L31`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/products.py#L31)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/products.py#L32`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/products.py#L32)
 - **Bases**: `DiagramCategory`
 
 A diagram category whose index category represents a directed order.
@@ -1473,7 +1495,7 @@ A diagram category whose index category represents a directed order.
 
 #### `DiscreteObject` `[OBJECT]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/functors.py#L179`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/functors.py#L179)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/functors.py#L182`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/functors.py#L182)
 - **Bases**: `Parent`
 
 One object of the discrete category on a set.
@@ -1486,7 +1508,7 @@ One object of the discrete category on a set.
 
 #### `HomArrowObject` `[OBJECT]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L111`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L111)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L107`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L107)
 - **Bases**: `Parent`
 
 An arrow regarded as an object of a fixed-endpoint Hom category.
@@ -1498,7 +1520,7 @@ An arrow regarded as an object of a fixed-endpoint Hom category.
 
 #### `InverseSystem` `[OBJECT]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/products.py#L35`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/products.py#L35)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/products.py#L36`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/products.py#L36)
 - **Bases**: `DiagramCategory`
 
 A diagram category read contravariantly as an inverse system.
@@ -1506,7 +1528,7 @@ A diagram category read contravariantly as an inverse system.
 
 #### `NaturalTransformationSpace` `[OBJECT]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/functors.py#L407`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/functors.py#L407)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/functors.py#L409`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/functors.py#L409)
 - **Bases**: `Parent`
 
 The represented Hom-object of natural transformations ``F => G``.
@@ -1535,7 +1557,7 @@ semantic ancestors of owned categories.
 
 #### `OppositeObject` `[OBJECT]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/category_constructions.py#L21`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/category_constructions.py#L21)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/category_constructions.py#L24`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/category_constructions.py#L24)
 - **Bases**: `Parent`
 
 An object of ``C`` regarded as an object of ``C^op``.
@@ -1548,7 +1570,7 @@ An object of ``C`` regarded as an object of ``C^op``.
 
 #### `ProductObject` `[OBJECT]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/category_constructions.py#L127`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/category_constructions.py#L127)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/category_constructions.py#L131`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/category_constructions.py#L131)
 - **Bases**: `Parent`
 
 An object ``(X,Y)`` of a product category ``C x D``.
@@ -1565,17 +1587,17 @@ An object ``(X,Y)`` of a product category ``C x D``.
 #### `Cocone` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def Cocone(diagram, apex, components)`
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/products.py#L400`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/products.py#L400)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/products.py#L399`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/products.py#L399)
 
 #### `Cone` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def Cone(diagram, apex, components)`
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/products.py#L396`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/products.py#L396)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/products.py#L395`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/products.py#L395)
 
 #### `Core` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def Core(base_category)`
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L670`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L670)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L617`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L617)
 
 #### `FiberProduct` `[FUNCTION]` `[Exported Session]`
 
@@ -1585,7 +1607,7 @@ An object ``(X,Y)`` of a product category ``C x D``.
 #### `Isomorphism` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def Isomorphism(forward, inverse)`
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L697`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L697)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L649`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L649)
 
 Return the isomorphism represented by mutually inverse arrows.
 
@@ -1593,7 +1615,7 @@ Return the isomorphism represented by mutually inverse arrows.
 #### `NaturalIsomorphism` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def NaturalIsomorphism(source, target, components, inverse_components)`
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/functors.py#L425`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/functors.py#L425)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/functors.py#L427`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/functors.py#L427)
 
 Return mutually inverse natural transformations as a categorical pair.
 
@@ -1601,7 +1623,7 @@ Return mutually inverse natural transformations as a categorical pair.
 #### `NaturalTransformations` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def NaturalTransformations(source, target)`
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/functors.py#L400`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/functors.py#L400)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/functors.py#L402`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/functors.py#L402)
 
 Return the represented type of natural transformations between parallel functors.
 
@@ -1614,27 +1636,43 @@ Return the represented type of natural transformations between parallel functors
 #### `SubobjectsOf` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def SubobjectsOf(base_category, base_object)`
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L682`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L682)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L629`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L629)
 
 #### `SuperobjectsOf` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def SuperobjectsOf(base_category, base_object)`
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L686`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L686)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L633`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L633)
 
 #### `category_packet` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `@cached_function` `def category_packet(category) -> CategoryPacket`
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L698`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L698)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L746`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/hom_categories.py#L746)
 
 #### `coproduct_cocone_category` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def coproduct_cocone_category(factors, ambient_category=None)`
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/products.py#L422`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/products.py#L422)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/products.py#L421`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/products.py#L421)
+
+#### `core_mor` `[FUNCTION]` `[Internal]`
+
+- **Signature**: `def core_mor(domain, codomain)`
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L637`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py#L637)
+
+Return ``Hom`` in the core of the greatest category holding both objects.
+
 
 #### `product_cone_category` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def product_cone_category(factors, ambient_category=None)`
-- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/products.py#L418`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/products.py#L418)
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/products.py#L417`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/products.py#L417)
+
+#### `underlying_set_homset` `[FUNCTION]` `[Internal]`
+
+- **Signature**: `def underlying_set_homset(domain, codomain)`
+- **Source**: [`src/dzack_research/preamble/categories/abstract_categories/hom_foundation.py#L55`](file:///home/dzack/research/src/dzack_research/preamble/categories/abstract_categories/hom_foundation.py#L55)
+
+Return the identity-cached plain-function Homset on these endpoints.
+
 
 
 ---
@@ -1648,7 +1686,7 @@ Return the represented type of natural transformations between parallel functors
 
 #### `AbelianGroupInclusionFunctor` `[FUNCTOR]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functors/abelianization.py#L104`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/abelianization.py#L104)
+- **Source**: [`src/dzack_research/preamble/categories/functors/abelianization.py#L100`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/abelianization.py#L100)
 - **Bases**: `Functor`
 
 The full inclusion ``Ab -> Grp``.
@@ -1661,7 +1699,7 @@ The full inclusion ``Ab -> Grp``.
 
 #### `AbelianizationAdjunction` `[ADJUNCTION]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functors/abelianization.py#L125`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/abelianization.py#L125)
+- **Source**: [`src/dzack_research/preamble/categories/functors/abelianization.py#L121`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/abelianization.py#L121)
 - **Bases**: `Adjunction`
 
 ``(-)^ab ⊣ i``.
@@ -1690,7 +1728,7 @@ The full inclusion ``Ab -> Grp``.
 
 #### `Adjunction` `[ADJUNCTION]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functors/core.py#L250`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/core.py#L250)
+- **Source**: [`src/dzack_research/preamble/categories/functors/core.py#L252`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/core.py#L252)
 - **Bases**: `SageObject`
 
 An adjunction ``F ⊣ U`` with its unit, counit, and Hom-set bijection.
@@ -1712,7 +1750,7 @@ An adjunction ``F ⊣ U`` with its unit, counit, and Hom-set bijection.
 
 #### `AlgebraBaseChangeAdjunction` `[ADJUNCTION]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functors/algebra_scalar_change.py#L193`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/algebra_scalar_change.py#L193)
+- **Source**: [`src/dzack_research/preamble/categories/functors/algebra_scalar_change.py#L184`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/algebra_scalar_change.py#L184)
 - **Bases**: `Adjunction`
 
 The represented algebra adjunction ``S tensor_R - ⊣ Res_f``.
@@ -1726,7 +1764,7 @@ The represented algebra adjunction ``S tensor_R - ⊣ Res_f``.
 
 #### `AlgebraRestrictionOfScalarsFunctor` `[FUNCTOR]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functors/algebra_scalar_change.py#L141`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/algebra_scalar_change.py#L141)
+- **Source**: [`src/dzack_research/preamble/categories/functors/algebra_scalar_change.py#L132`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/algebra_scalar_change.py#L132)
 - **Bases**: `Functor`
 
 ``Res_f : Alg_S -> Alg_R`` along ``f : R -> S``.
@@ -1756,11 +1794,11 @@ algebra backend as though it had been constructed.
 **Functor / Adjunction Methods:**
 - `ring_map(self)`
 - `source_algebra(self, extended_algebra)`
-  > Return the algebra recorded by this scalar-extension construction.
+  > Return the exact source selected by this scalar-extension construction.
 
 #### `AlgebraUnderlyingModuleFunctor` `[FUNCTOR]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functors/algebra_modules.py#L251`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/algebra_modules.py#L251)
+- **Source**: [`src/dzack_research/preamble/categories/functors/algebra_modules.py#L250`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/algebra_modules.py#L250)
 - **Bases**: `Functor`
 
 \(U\colon\mathbf{Alg}_R\to\mathbf{Mod}_R\).
@@ -1773,7 +1811,7 @@ algebra backend as though it had been constructed.
 
 #### `AlternatingAlgebraFunctor` `[FUNCTOR]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functors/free_algebras.py#L97`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/free_algebras.py#L97)
+- **Source**: [`src/dzack_research/preamble/categories/functors/free_algebras.py#L96`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/free_algebras.py#L96)
 - **Bases**: `Functor`
 
 Exterior-algebra functor on represented modules.
@@ -1788,7 +1826,7 @@ No ordinary free/forgetful adjunction is asserted for this construction.
 
 #### `BaseChangeAdjunction` `[ADJUNCTION]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functors/scalar_change.py#L132`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/scalar_change.py#L132)
+- **Source**: [`src/dzack_research/preamble/categories/functors/scalar_change.py#L120`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/scalar_change.py#L120)
 - **Bases**: `Adjunction`
 
 ``S tensor_R - ⊣ Res_f``.
@@ -1829,7 +1867,7 @@ Send a set to its cardinal and a set isomorphism to the unique order arrow.
 
 #### `CategoryInclusionFunctor` `[FUNCTOR]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functors/core.py#L148`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/core.py#L148)
+- **Source**: [`src/dzack_research/preamble/categories/functors/core.py#L150`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/core.py#L150)
 - **Bases**: `Functor`
 
 The canonical functor along a declared subcategory inclusion.
@@ -1856,7 +1894,7 @@ Forget the differential while retaining the same graded carrier.
 
 #### `CofreeGSetFunctor` `[FUNCTOR]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functors/g_sets.py#L254`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/g_sets.py#L254)
+- **Source**: [`src/dzack_research/preamble/categories/functors/g_sets.py#L237`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/g_sets.py#L237)
 - **Bases**: `Functor`
 
 ``Map(G,-) : FinSet -> FinGSet_G`` with ``(a f)(h)=f(h a)``.
@@ -1900,7 +1938,7 @@ The degree-``p`` cohomology functor ``H^p : Coch_R -> Mod_R``.
 
 #### `CoinductionFunctor` `[FUNCTOR]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functors/group_induction.py#L307`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/group_induction.py#L307)
+- **Source**: [`src/dzack_research/preamble/categories/functors/group_induction.py#L298`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/group_induction.py#L298)
 - **Bases**: `Functor`
 
 ``Coind_H^G : R[H]-Mod_fp -> R[G]-Mod_fp``.
@@ -1920,7 +1958,7 @@ The degree-``p`` cohomology functor ``H^p : Coch_R -> Mod_R``.
 
 #### `CoinvariantsFunctor` `[FUNCTOR]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functors/group_actions.py#L121`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/group_actions.py#L121)
+- **Source**: [`src/dzack_research/preamble/categories/functors/group_actions.py#L118`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/group_actions.py#L118)
 - **Bases**: `Functor`
 
 ``(-)_G`` on represented finitely-presented ``R[G]``-modules.
@@ -1930,7 +1968,7 @@ The degree-``p`` cohomology functor ``H^p : Coch_R -> Mod_R``.
 
 #### `CoinvariantsTrivialAdjunction` `[ADJUNCTION]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functors/group_actions.py#L186`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/group_actions.py#L186)
+- **Source**: [`src/dzack_research/preamble/categories/functors/group_actions.py#L183`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/group_actions.py#L183)
 - **Bases**: `Adjunction`
 
 ``(-)_G ⊣ Triv_G``.
@@ -1954,7 +1992,7 @@ The cokernel functor from the finite-free module arrow category.
 
 #### `CompositeAdjunction` `[ADJUNCTION]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functors/core.py#L302`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/core.py#L302)
+- **Source**: [`src/dzack_research/preamble/categories/functors/core.py#L304`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/core.py#L304)
 - **Bases**: `Adjunction`
 
 The composite of ``F ⊣ U`` and ``G ⊣ V`` as ``GF ⊣ UV``.
@@ -1970,7 +2008,7 @@ The composite of ``F ⊣ U`` and ``G ⊣ V`` as ``GF ⊣ UV``.
 
 #### `CompositeFunctor` `[FUNCTOR]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functors/core.py#L183`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/core.py#L183)
+- **Source**: [`src/dzack_research/preamble/categories/functors/core.py#L185`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/core.py#L185)
 - **Bases**: `Functor`
 
 The composite ``second ∘ first``.
@@ -2071,7 +2109,7 @@ The monotone map ``f_* : Sub(M) -> Sub(N)``.
 
 #### `DividedPowerAlgebraFunctor` `[FUNCTOR]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functors/free_algebras.py#L125`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/free_algebras.py#L125)
+- **Source**: [`src/dzack_research/preamble/categories/functors/free_algebras.py#L124`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/free_algebras.py#L124)
 - **Bases**: `Functor`
 
 The divided-power algebra functor ``Gamma_R : Mod_R -> DPAlg_R``.
@@ -2181,7 +2219,7 @@ Send ``M`` to ``(M, M tensor M, universal pure tensor)``.
 
 #### `FreeGSetFunctor` `[FUNCTOR]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functors/g_sets.py#L165`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/g_sets.py#L165)
+- **Source**: [`src/dzack_research/preamble/categories/functors/g_sets.py#L153`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/g_sets.py#L153)
 - **Bases**: `Functor`
 
 ``G × - : FinSet -> FinGSet_G`` with left translation on ``G``.
@@ -2196,7 +2234,7 @@ Send ``M`` to ``(M, M tensor M, universal pure tensor)``.
 
 #### `FreeGSetUnderlyingAdjunction` `[ADJUNCTION]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functors/g_sets.py#L328`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/g_sets.py#L328)
+- **Source**: [`src/dzack_research/preamble/categories/functors/g_sets.py#L306`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/g_sets.py#L306)
 - **Bases**: `Adjunction`
 
 ``G × - ⊣ U`` on finite sets and represented finite ``G``-sets.
@@ -2287,7 +2325,7 @@ A functor with explicit actions on objects and morphisms.
 
 #### `GSetFixedPointsFunctor` `[FUNCTOR]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functors/g_sets.py#L102`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/g_sets.py#L102)
+- **Source**: [`src/dzack_research/preamble/categories/functors/g_sets.py#L90`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/g_sets.py#L90)
 - **Bases**: `Functor`
 
 ``(-)^G : FinGSet_G -> FinSet``.
@@ -2300,7 +2338,7 @@ A functor with explicit actions on objects and morphisms.
 
 #### `GSetOrbitsFunctor` `[FUNCTOR]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functors/g_sets.py#L71`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/g_sets.py#L71)
+- **Source**: [`src/dzack_research/preamble/categories/functors/g_sets.py#L62`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/g_sets.py#L62)
 - **Bases**: `Functor`
 
 ``(-)/G : FinGSet_G -> FinSet``.
@@ -2314,7 +2352,7 @@ A functor with explicit actions on objects and morphisms.
 
 #### `GSetOrbitsTrivialAdjunction` `[ADJUNCTION]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functors/g_sets.py#L124`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/g_sets.py#L124)
+- **Source**: [`src/dzack_research/preamble/categories/functors/g_sets.py#L112`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/g_sets.py#L112)
 - **Bases**: `Adjunction`
 
 ``(-)/G ⊣ Triv_G`` on represented finite ``G``-sets.
@@ -2328,7 +2366,7 @@ A functor with explicit actions on objects and morphisms.
 
 #### `GSetTrivialFixedAdjunction` `[ADJUNCTION]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functors/g_sets.py#L146`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/g_sets.py#L146)
+- **Source**: [`src/dzack_research/preamble/categories/functors/g_sets.py#L134`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/g_sets.py#L134)
 - **Bases**: `Adjunction`
 
 ``Triv_G ⊣ (-)^G`` on represented finite ``G``-sets.
@@ -2342,7 +2380,7 @@ A functor with explicit actions on objects and morphisms.
 
 #### `GroupModuleBaseChangeAdjunction` `[ADJUNCTION]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functors/group_scalar_change.py#L200`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/group_scalar_change.py#L200)
+- **Source**: [`src/dzack_research/preamble/categories/functors/group_scalar_change.py#L189`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/group_scalar_change.py#L189)
 - **Bases**: `Adjunction`
 
 ``S tensor_R - ⊣ Res_f`` on modules carrying a fixed ``G``-action.
@@ -2356,7 +2394,7 @@ A functor with explicit actions on objects and morphisms.
 
 #### `GroupModuleRestrictionOfScalarsFunctor` `[FUNCTOR]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functors/group_scalar_change.py#L114`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/group_scalar_change.py#L114)
+- **Source**: [`src/dzack_research/preamble/categories/functors/group_scalar_change.py#L107`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/group_scalar_change.py#L107)
 - **Bases**: `Functor`
 
 ``Res_f : S[G]-Mod -> R[G]-Mod``.
@@ -2399,7 +2437,7 @@ A functor with explicit actions on objects and morphisms.
 
 #### `IdentityFunctor` `[FUNCTOR]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functors/core.py#L123`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/core.py#L123)
+- **Source**: [`src/dzack_research/preamble/categories/functors/core.py#L125`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/core.py#L125)
 - **Bases**: `Functor`
 **Constructors / Factory Signatures:**
 - `def __init__(self, category) -> None`
@@ -2459,7 +2497,7 @@ The functor ``Hom_C(A,B) -> Hom_D(F(A),F(B))`` induced by ``F``.
 
 #### `InductionFunctor` `[FUNCTOR]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functors/group_induction.py#L189`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/group_induction.py#L189)
+- **Source**: [`src/dzack_research/preamble/categories/functors/group_induction.py#L185`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/group_induction.py#L185)
 - **Bases**: `Functor`
 
 ``Ind_H^G : R[H]-Mod_fp -> R[G]-Mod_fp``.
@@ -2477,7 +2515,7 @@ The functor ``Hom_C(A,B) -> Hom_D(F(A),F(B))`` induced by ``F``.
 
 #### `InductionRestrictionAdjunction` `[ADJUNCTION]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functors/group_induction.py#L463`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/group_induction.py#L463)
+- **Source**: [`src/dzack_research/preamble/categories/functors/group_induction.py#L449`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/group_induction.py#L449)
 - **Bases**: `Adjunction`
 
 ``Ind_H^G ⊣ Res_H^G`` on represented finitely-presented group modules.
@@ -2576,7 +2614,7 @@ The functor ``S^{-1}R tensor_R - : Mod_R -> Mod_{S^{-1}R}``.
 
 #### `NaturalTransformation` `[FUNCTOR]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functors/core.py#L219`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/core.py#L219)
+- **Source**: [`src/dzack_research/preamble/categories/functors/core.py#L221`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/core.py#L221)
 - **Bases**: `SageObject`
 
 A natural transformation ``source => target`` given by its components.
@@ -2624,7 +2662,7 @@ The divided-square quadratic-form classifier adjunction.
 
 #### `RestrictionCoinductionAdjunction` `[ADJUNCTION]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functors/group_induction.py#L503`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/group_induction.py#L503)
+- **Source**: [`src/dzack_research/preamble/categories/functors/group_induction.py#L489`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/group_induction.py#L489)
 - **Bases**: `Adjunction`
 
 ``Res_H^G ⊣ Coind_H^G`` on represented finitely-presented group modules.
@@ -2654,7 +2692,7 @@ The divided-square quadratic-form classifier adjunction.
 
 #### `RestrictionOfScalarsFunctor` `[FUNCTOR]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functors/scalar_change.py#L93`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/scalar_change.py#L93)
+- **Source**: [`src/dzack_research/preamble/categories/functors/scalar_change.py#L81`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/scalar_change.py#L81)
 - **Bases**: `Functor`
 
 ``Res_f : Mod_S -> Mod_R`` along ``f:R -> S``.
@@ -2713,7 +2751,7 @@ The Galois connection ``f_* ⊣ f^{-1}`` on fixed-ambient subobjects.
 
 #### `SymmetricAlgebraAdjunction` `[ADJUNCTION]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functors/free_algebras.py#L216`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/free_algebras.py#L216)
+- **Source**: [`src/dzack_research/preamble/categories/functors/free_algebras.py#L214`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/free_algebras.py#L214)
 - **Bases**: `_ModuleAlgebraAdjunction`
 
 The adjunction \(\operatorname{Sym}_R\dashv U\) for commutative algebras.
@@ -2721,7 +2759,7 @@ The adjunction \(\operatorname{Sym}_R\dashv U\) for commutative algebras.
 
 #### `SymmetricAlgebraFunctor` `[FUNCTOR]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functors/free_algebras.py#L89`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/free_algebras.py#L89)
+- **Source**: [`src/dzack_research/preamble/categories/functors/free_algebras.py#L88`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/free_algebras.py#L88)
 - **Bases**: `_ModuleAlgebraFunctor`
 
 The functor \(\operatorname{Sym}_R:\mathbf{Mod}_R\to\mathbf{CAlg}_R\).
@@ -2737,7 +2775,7 @@ Abstract base for a free form classified by a functorial square.
 
 #### `TensorAlgebraAdjunction` `[ADJUNCTION]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functors/free_algebras.py#L209`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/free_algebras.py#L209)
+- **Source**: [`src/dzack_research/preamble/categories/functors/free_algebras.py#L207`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/free_algebras.py#L207)
 - **Bases**: `_ModuleAlgebraAdjunction`
 
 The adjunction \(T_R\dashv U:\mathbf{Mod}_R\leftrightarrows\mathbf{Alg}_R\).
@@ -2745,7 +2783,7 @@ The adjunction \(T_R\dashv U:\mathbf{Mod}_R\leftrightarrows\mathbf{Alg}_R\).
 
 #### `TensorAlgebraFunctor` `[FUNCTOR]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functors/free_algebras.py#L81`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/free_algebras.py#L81)
+- **Source**: [`src/dzack_research/preamble/categories/functors/free_algebras.py#L80`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/free_algebras.py#L80)
 - **Bases**: `_ModuleAlgebraFunctor`
 
 The functor \(T_R:\mathbf{Mod}_R\to\mathbf{Alg}_R\).
@@ -2809,7 +2847,7 @@ The adjunction ``- tensor_R M ⊣ Hom_R(M,-)``.
 
 #### `TrivialInvariantsAdjunction` `[ADJUNCTION]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functors/group_actions.py#L153`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/group_actions.py#L153)
+- **Source**: [`src/dzack_research/preamble/categories/functors/group_actions.py#L150`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/group_actions.py#L150)
 - **Bases**: `Adjunction`
 
 ``Triv_G ⊣ (-)^G``.
@@ -2823,7 +2861,7 @@ The adjunction ``- tensor_R M ⊣ Hom_R(M,-)``.
 
 #### `UnderlyingCofreeGSetAdjunction` `[ADJUNCTION]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functors/g_sets.py#L352`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/g_sets.py#L352)
+- **Source**: [`src/dzack_research/preamble/categories/functors/g_sets.py#L330`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/g_sets.py#L330)
 - **Bases**: `Adjunction`
 
 ``U ⊣ Map(G,-)`` on represented finite ``G``-sets.
@@ -2837,7 +2875,7 @@ The adjunction ``- tensor_R M ⊣ Hom_R(M,-)``.
 
 #### `UnderlyingFiniteGSetFunctor` `[FUNCTOR]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functors/g_sets.py#L227`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/g_sets.py#L227)
+- **Source**: [`src/dzack_research/preamble/categories/functors/g_sets.py#L210`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/g_sets.py#L210)
 - **Bases**: `Functor`
 
 ``U : FinGSet_G -> FinSet``.
@@ -2861,31 +2899,31 @@ The adjunction ``- tensor_R M ⊣ Hom_R(M,-)``.
 
 #### `abelianization_adjunction` `[ADJUNCTION]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functors/abelianization.py#L162`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/abelianization.py#L162)
+- **Source**: [`src/dzack_research/preamble/categories/functors/abelianization.py#L158`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/abelianization.py#L158)
 **Constructors / Factory Signatures:**
 - `@cached_function` `def abelianization_adjunction() -> AbelianizationAdjunction`
 
 #### `algebra_base_change_adjunction` `[ADJUNCTION]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functors/algebra_scalar_change.py#L223`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/algebra_scalar_change.py#L223)
+- **Source**: [`src/dzack_research/preamble/categories/functors/algebra_scalar_change.py#L214`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/algebra_scalar_change.py#L214)
 **Constructors / Factory Signatures:**
 - `@cached_function` `def algebra_base_change_adjunction(ring_map) -> AlgebraBaseChangeAdjunction`
 
 #### `algebra_underlying_module_functor` `[FUNCTOR]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functors/algebra_modules.py#L303`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/algebra_modules.py#L303)
+- **Source**: [`src/dzack_research/preamble/categories/functors/algebra_modules.py#L302`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/algebra_modules.py#L302)
 **Constructors / Factory Signatures:**
 - `@cached_function` `def algebra_underlying_module_functor(base_ring, algebra_category=None) -> AlgebraUnderlyingModuleFunctor`
 
 #### `alternating_algebra_functor` `[FUNCTOR]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functors/free_algebras.py#L224`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/free_algebras.py#L224)
+- **Source**: [`src/dzack_research/preamble/categories/functors/free_algebras.py#L222`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/free_algebras.py#L222)
 **Constructors / Factory Signatures:**
 - `@cached_function` `def alternating_algebra_functor(base_ring) -> AlternatingAlgebraFunctor`
 
 #### `base_change_adjunction` `[ADJUNCTION]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functors/scalar_change.py#L166`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/scalar_change.py#L166)
+- **Source**: [`src/dzack_research/preamble/categories/functors/scalar_change.py#L154`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/scalar_change.py#L154)
 **Constructors / Factory Signatures:**
 - `@cached_function` `def base_change_adjunction(ring_map) -> BaseChangeAdjunction`
 
@@ -2921,13 +2959,13 @@ The adjunction ``- tensor_R M ⊣ Hom_R(M,-)``.
 
 #### `coinvariants_trivial_adjunction` `[ADJUNCTION]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functors/group_actions.py#L232`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/group_actions.py#L232)
+- **Source**: [`src/dzack_research/preamble/categories/functors/group_actions.py#L229`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/group_actions.py#L229)
 **Constructors / Factory Signatures:**
 - `@cached_function` `def coinvariants_trivial_adjunction(base_ring, group) -> CoinvariantsTrivialAdjunction`
 
 #### `compose_adjunctions` `[ADJUNCTION]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functors/core.py#L332`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/core.py#L332)
+- **Source**: [`src/dzack_research/preamble/categories/functors/core.py#L334`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/core.py#L334)
 **Constructors / Factory Signatures:**
 - `def compose_adjunctions(first: Adjunction, second: Adjunction) -> CompositeAdjunction`
 
@@ -2963,7 +3001,7 @@ The adjunction ``- tensor_R M ⊣ Hom_R(M,-)``.
 
 #### `divided_power_algebra_functor` `[FUNCTOR]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functors/free_algebras.py#L229`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/free_algebras.py#L229)
+- **Source**: [`src/dzack_research/preamble/categories/functors/free_algebras.py#L227`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/free_algebras.py#L227)
 **Constructors / Factory Signatures:**
 - `@cached_function` `def divided_power_algebra_functor(base_ring) -> DividedPowerAlgebraFunctor`
 
@@ -2993,31 +3031,31 @@ The adjunction ``- tensor_R M ⊣ Hom_R(M,-)``.
 
 #### `free_g_set_underlying_adjunction` `[ADJUNCTION]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functors/g_sets.py#L392`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/g_sets.py#L392)
+- **Source**: [`src/dzack_research/preamble/categories/functors/g_sets.py#L370`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/g_sets.py#L370)
 **Constructors / Factory Signatures:**
 - `@cached_function` `def free_g_set_underlying_adjunction(group) -> FreeGSetUnderlyingAdjunction`
 
 #### `free_group_underlying_set_adjunction` `[ADJUNCTION]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functors/free_groups.py#L103`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/free_groups.py#L103)
+- **Source**: [`src/dzack_research/preamble/categories/functors/free_groups.py#L100`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/free_groups.py#L100)
 **Constructors / Factory Signatures:**
 - `@cached_function` `def free_group_underlying_set_adjunction() -> FreeGroupUnderlyingSetAdjunction`
 
 #### `g_set_orbits_trivial_adjunction` `[ADJUNCTION]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functors/g_sets.py#L382`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/g_sets.py#L382)
+- **Source**: [`src/dzack_research/preamble/categories/functors/g_sets.py#L360`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/g_sets.py#L360)
 **Constructors / Factory Signatures:**
 - `@cached_function` `def g_set_orbits_trivial_adjunction(group) -> GSetOrbitsTrivialAdjunction`
 
 #### `g_set_trivial_fixed_adjunction` `[ADJUNCTION]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functors/g_sets.py#L387`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/g_sets.py#L387)
+- **Source**: [`src/dzack_research/preamble/categories/functors/g_sets.py#L365`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/g_sets.py#L365)
 **Constructors / Factory Signatures:**
 - `@cached_function` `def g_set_trivial_fixed_adjunction(group) -> GSetTrivialFixedAdjunction`
 
 #### `group_module_base_change_adjunction` `[ADJUNCTION]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functors/group_scalar_change.py#L266`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/group_scalar_change.py#L266)
+- **Source**: [`src/dzack_research/preamble/categories/functors/group_scalar_change.py#L255`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/group_scalar_change.py#L255)
 **Constructors / Factory Signatures:**
 - `@cached_function` `def group_module_base_change_adjunction(ring_map, group) -> GroupModuleBaseChangeAdjunction`
 
@@ -3041,7 +3079,7 @@ The adjunction ``- tensor_R M ⊣ Hom_R(M,-)``.
 
 #### `induction_restriction_adjunction` `[ADJUNCTION]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functors/group_induction.py#L551`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/group_induction.py#L551)
+- **Source**: [`src/dzack_research/preamble/categories/functors/group_induction.py#L537`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/group_induction.py#L537)
 **Constructors / Factory Signatures:**
 - `@cached_function` `def induction_restriction_adjunction(base_ring, subgroup, supergroup=None) -> InductionRestrictionAdjunction`
 
@@ -3071,7 +3109,7 @@ The adjunction ``- tensor_R M ⊣ Hom_R(M,-)``.
 
 #### `restriction_coinduction_adjunction` `[ADJUNCTION]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functors/group_induction.py#L558`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/group_induction.py#L558)
+- **Source**: [`src/dzack_research/preamble/categories/functors/group_induction.py#L544`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/group_induction.py#L544)
 **Constructors / Factory Signatures:**
 - `@cached_function` `def restriction_coinduction_adjunction(base_ring, subgroup, supergroup=None) -> RestrictionCoinductionAdjunction`
 
@@ -3083,25 +3121,25 @@ The adjunction ``- tensor_R M ⊣ Hom_R(M,-)``.
 
 #### `symmetric_algebra_adjunction` `[ADJUNCTION]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functors/free_algebras.py#L239`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/free_algebras.py#L239)
+- **Source**: [`src/dzack_research/preamble/categories/functors/free_algebras.py#L237`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/free_algebras.py#L237)
 **Constructors / Factory Signatures:**
 - `@cached_function` `def symmetric_algebra_adjunction(base_ring) -> SymmetricAlgebraAdjunction`
 
 #### `symmetric_algebra_functor` `[FUNCTOR]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functors/free_algebras.py#L156`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/free_algebras.py#L156)
+- **Source**: [`src/dzack_research/preamble/categories/functors/free_algebras.py#L155`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/free_algebras.py#L155)
 **Constructors / Factory Signatures:**
 - `@cached_function` `def symmetric_algebra_functor(base_ring) -> SymmetricAlgebraFunctor`
 
 #### `tensor_algebra_adjunction` `[ADJUNCTION]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functors/free_algebras.py#L234`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/free_algebras.py#L234)
+- **Source**: [`src/dzack_research/preamble/categories/functors/free_algebras.py#L232`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/free_algebras.py#L232)
 **Constructors / Factory Signatures:**
 - `@cached_function` `def tensor_algebra_adjunction(base_ring) -> TensorAlgebraAdjunction`
 
 #### `tensor_algebra_functor` `[FUNCTOR]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functors/free_algebras.py#L151`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/free_algebras.py#L151)
+- **Source**: [`src/dzack_research/preamble/categories/functors/free_algebras.py#L150`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/free_algebras.py#L150)
 **Constructors / Factory Signatures:**
 - `@cached_function` `def tensor_algebra_functor(base_ring) -> TensorAlgebraFunctor`
 
@@ -3113,13 +3151,13 @@ The adjunction ``- tensor_R M ⊣ Hom_R(M,-)``.
 
 #### `trivial_invariants_adjunction` `[ADJUNCTION]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functors/group_actions.py#L227`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/group_actions.py#L227)
+- **Source**: [`src/dzack_research/preamble/categories/functors/group_actions.py#L224`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/group_actions.py#L224)
 **Constructors / Factory Signatures:**
 - `@cached_function` `def trivial_invariants_adjunction(base_ring, group) -> TrivialInvariantsAdjunction`
 
 #### `underlying_cofree_g_set_adjunction` `[ADJUNCTION]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functors/g_sets.py#L397`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/g_sets.py#L397)
+- **Source**: [`src/dzack_research/preamble/categories/functors/g_sets.py#L375`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/g_sets.py#L375)
 **Constructors / Factory Signatures:**
 - `@cached_function` `def underlying_cofree_g_set_adjunction(group) -> UnderlyingCofreeGSetAdjunction`
 
@@ -3127,7 +3165,7 @@ The adjunction ``- tensor_R M ⊣ Hom_R(M,-)``.
 
 #### `UnderlyingAlgebraModuleMorphism` `[MORPHISM]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functors/algebra_modules.py#L226`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/algebra_modules.py#L226)
+- **Source**: [`src/dzack_research/preamble/categories/functors/algebra_modules.py#L225`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/algebra_modules.py#L225)
 - **Bases**: `ModuleMorphism`
 
 An algebra morphism read as its underlying linear map.
@@ -3199,7 +3237,7 @@ The orthogonal-direct-sum bifunctor on finite-rank lattices.
 #### `category_inclusion` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def category_inclusion(subcategory, supercategory) -> CategoryInclusionFunctor`
-- **Source**: [`src/dzack_research/preamble/categories/functors/core.py#L178`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/core.py#L178)
+- **Source**: [`src/dzack_research/preamble/categories/functors/core.py#L180`](file:///home/dzack/research/src/dzack_research/preamble/categories/functors/core.py#L180)
 
 Return the canonical functor attached to ``subcategory <= supercategory``.
 
@@ -3228,7 +3266,7 @@ Return the canonical functor attached to ``subcategory <= supercategory``.
 
 #### `EvenLattices` `[SUBCATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/lattices.py#L2447`](file:///home/dzack/research/src/dzack_research/preamble/categories/lattices.py#L2447)
+- **Source**: [`src/dzack_research/preamble/categories/lattices.py#L2487`](file:///home/dzack/research/src/dzack_research/preamble/categories/lattices.py#L2487)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[Lattices(self.base_ring())]`
 
@@ -3240,7 +3278,7 @@ Lattices satisfying ``b(x,x) in 2R`` for every lattice vector ``x``.
 
 #### `FiniteRankLattices` `[SUBCATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/lattices.py#L2416`](file:///home/dzack/research/src/dzack_research/preamble/categories/lattices.py#L2416)
+- **Source**: [`src/dzack_research/preamble/categories/lattices.py#L2456`](file:///home/dzack/research/src/dzack_research/preamble/categories/lattices.py#L2456)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[Lattices(self.base_ring()), FinitelyGeneratedFreeModules(self.base_ring())]`
 
@@ -3255,7 +3293,7 @@ Lattices whose underlying free module has finite rank.
 
 #### `LatticeHomCategoryConstruction` `[CATEGORY]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/lattices.py#L52`](file:///home/dzack/research/src/dzack_research/preamble/categories/lattices.py#L52)
+- **Source**: [`src/dzack_research/preamble/categories/lattices.py#L60`](file:///home/dzack/research/src/dzack_research/preamble/categories/lattices.py#L60)
 - **Bases**: `HomCategoryConstruction`
 
 The strict form-preserving Hom categories of lattices.
@@ -3266,7 +3304,7 @@ The strict form-preserving Hom categories of lattices.
 
 #### `LatticeIsoCategoryConstruction` `[CATEGORY]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/lattices.py#L72`](file:///home/dzack/research/src/dzack_research/preamble/categories/lattices.py#L72)
+- **Source**: [`src/dzack_research/preamble/categories/lattices.py#L80`](file:///home/dzack/research/src/dzack_research/preamble/categories/lattices.py#L80)
 - **Bases**: `IsoCategoryConstruction`
 
 The isometries of lattices.
@@ -3277,7 +3315,7 @@ The isometries of lattices.
 
 #### `LatticeMonoCategoryConstruction` `[CATEGORY]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/lattices.py#L61`](file:///home/dzack/research/src/dzack_research/preamble/categories/lattices.py#L61)
+- **Source**: [`src/dzack_research/preamble/categories/lattices.py#L69`](file:///home/dzack/research/src/dzack_research/preamble/categories/lattices.py#L69)
 - **Bases**: `MonoCategoryConstruction`
 
 The form-preserving monomorphisms of lattices.
@@ -3288,7 +3326,7 @@ The form-preserving monomorphisms of lattices.
 
 #### `Lattices` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/lattices.py#L425`](file:///home/dzack/research/src/dzack_research/preamble/categories/lattices.py#L425)
+- **Source**: [`src/dzack_research/preamble/categories/lattices.py#L434`](file:///home/dzack/research/src/dzack_research/preamble/categories/lattices.py#L434)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[FramedFreeModules(self.base_ring()), SymmetricBilinearFormModules(self.base_ring())]`
 
@@ -3354,11 +3392,11 @@ EXAMPLES::
   > Return the set of form-preserving embeddings into ``codomain``.
 - `HKZ(self)`
   > Return the full-block BKZ (HKZ) reframing.
-- `Hom(self, codomain, category=None)`
 - `Isom(self, codomain)`
   > Return the set of isometries to ``codomain``.
 - `LLL(self)`
   > Return the same formed lattice in an LLL-reduced framing.
+- `Mor(self, codomain, category=None)`
 - `b(self, left, right)`
   > Return the bilinear pairing \(b(v,w)\).
 - `babai(self, target)`
@@ -3377,7 +3415,7 @@ EXAMPLES::
 - `@cached_method` `decomposition(self)`
   > Return the represented direct-sum decomposition, if present.
 - `decomposition_names(self)`
-  > Return registered names of the recursively represented factors.
+  > Return the registered name of each indecomposable summand.
 - `definite_complement_extensions(self, left, right)`
   > Return all isometries ``g`` with ``g(left)=right`` in the definite-complement regime.
 - `delta(self)`
@@ -3441,6 +3479,8 @@ EXAMPLES::
 - `identity_morphism(self)`
   > Return ``id_L`` in the lattice endomorphism homset.
 - `indecomposable_name(self)`
+- `indecomposable_summands(self)`
+  > Return the family of indecomposable summands, in order.
 - `is_decomposable(self)`
 - `is_definite(self) -> bool`
 - `is_even(self) -> bool`
@@ -3465,6 +3505,8 @@ EXAMPLES::
 - `isotropic_flag_orbit_representatives(self, rank=2)`
 - `isotropic_line_orbit_representatives(self)`
 - `isotropic_plane_orbit_representatives(self)`
+- `isotropic_reduction(self)`
+  > Return ``S^perp/S`` when this lattice is represented as a subobject.
 - `kissing_number(self)`
 - `lattice_category(self)`
   > Return the base-ring lattice category owning this object.
@@ -3528,7 +3570,7 @@ EXAMPLES::
 - `twist(self, scalar)`
   > Keep the module and rescale its form by ``scalar``.
 - `two_elementary_invariants(self)`
-  > Return Nikulin's ``(r,a,delta)`` for an even 2-elementary lattice.
+  > Return Nikulin's \((r,a,\delta)\) for an even 2-elementary lattice.
 - `unformed_module(self)`
   > Read this same parent at its weaker module level.
 - `value_module(self)`
@@ -3568,7 +3610,7 @@ EXAMPLES::
 
 #### `NondegenerateLattices` `[SUBCATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/lattices.py#L2436`](file:///home/dzack/research/src/dzack_research/preamble/categories/lattices.py#L2436)
+- **Source**: [`src/dzack_research/preamble/categories/lattices.py#L2476`](file:///home/dzack/research/src/dzack_research/preamble/categories/lattices.py#L2476)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[Lattices(self.base_ring())]`
 
@@ -3597,7 +3639,7 @@ Nondegenerate finite free ``R``-modules with ``Frac(R)``-valued form.
 
 #### `RootLattices` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/lattices.py#L2458`](file:///home/dzack/research/src/dzack_research/preamble/categories/lattices.py#L2458)
+- **Source**: [`src/dzack_research/preamble/categories/lattices.py#L2498`](file:///home/dzack/research/src/dzack_research/preamble/categories/lattices.py#L2498)
 - **Bases**: `Category`
 - **Super Categories**: `[FiniteRankLattices(integers), NondegenerateLattices(integers), EvenLattices(integers)]`
 
@@ -3629,7 +3671,7 @@ Negative-definite ADE root lattices with a chosen simple-root framing.
 
 #### `LatticeEmbedding` `[MORPHISM]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/lattice_morphisms.py#L48`](file:///home/dzack/research/src/dzack_research/preamble/categories/lattice_morphisms.py#L48)
+- **Source**: [`src/dzack_research/preamble/categories/lattice_morphisms.py#L49`](file:///home/dzack/research/src/dzack_research/preamble/categories/lattice_morphisms.py#L49)
 - **Bases**: `LatticeMorphism`
 
 A form-preserving monomorphism of lattices.
@@ -3645,7 +3687,7 @@ A form-preserving monomorphism of lattices.
 
 #### `LatticeEmbeddingHomset` `[HOMSET]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/lattice_morphisms.py#L561`](file:///home/dzack/research/src/dzack_research/preamble/categories/lattice_morphisms.py#L561)
+- **Source**: [`src/dzack_research/preamble/categories/lattice_morphisms.py#L563`](file:///home/dzack/research/src/dzack_research/preamble/categories/lattice_morphisms.py#L563)
 - **Bases**: `CategoricalHomset`
 - **Constructor**: `def __init__(self, hom_family, domain, codomain) -> None`
 - **Constructor**: `def _element_constructor_(self, images)`
@@ -3659,7 +3701,7 @@ A form-preserving monomorphism of lattices.
 
 #### `LatticeHomset` `[HOMSET]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/lattice_morphisms.py#L519`](file:///home/dzack/research/src/dzack_research/preamble/categories/lattice_morphisms.py#L519)
+- **Source**: [`src/dzack_research/preamble/categories/lattice_morphisms.py#L521`](file:///home/dzack/research/src/dzack_research/preamble/categories/lattice_morphisms.py#L521)
 - **Bases**: `CategoricalHomset`
 - **Constructor**: `def __init__(self, hom_family, domain, codomain) -> None`
 - **Constructor**: `def _element_constructor_(self, images)`
@@ -3670,7 +3712,7 @@ A form-preserving monomorphism of lattices.
 
 #### `LatticeIsometry` `[MORPHISM]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/lattice_morphisms.py#L241`](file:///home/dzack/research/src/dzack_research/preamble/categories/lattice_morphisms.py#L241)
+- **Source**: [`src/dzack_research/preamble/categories/lattice_morphisms.py#L242`](file:///home/dzack/research/src/dzack_research/preamble/categories/lattice_morphisms.py#L242)
 - **Bases**: `LatticeEmbedding`
 
 An invertible lattice morphism.
@@ -3702,7 +3744,7 @@ An invertible lattice morphism.
 
 #### `LatticeIsometryHomset` `[MORPHISM]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/lattice_morphisms.py#L722`](file:///home/dzack/research/src/dzack_research/preamble/categories/lattice_morphisms.py#L722)
+- **Source**: [`src/dzack_research/preamble/categories/lattice_morphisms.py#L727`](file:///home/dzack/research/src/dzack_research/preamble/categories/lattice_morphisms.py#L727)
 - **Bases**: `LatticeEmbeddingHomset`
 - **Constructor**: `def __init__(self, hom_family, domain, codomain) -> None`
 - **Constructor**: `def _element_constructor_(self, images)`
@@ -3773,19 +3815,24 @@ A module morphism preserving the lattice form.
 - `is_hyperbolic(self) -> bool`
 - `is_parabolic(self) -> bool`
 - `is_rooted(self) -> bool`
+- `negative_inertia_index(self)`
+  > Return \(n_-\), the negative index of inertia of the Schlaefli form.
 - `parabolic_subdiagrams(self, *, connected=False)`
+- `positive_inertia_index(self)`
+  > Return \(n_+\), the positive index of inertia of the Schlaefli form.
 - `preferred_positions(self)`
   > Return stored presentation coordinates, or a computed graph layout.
 - `root_gram_tensor(self)`
 - `roots(self)`
 - `schlafli_tensor(self)`
   > Return the normalized reflection Gram tensor ``S_ii=1``.
-- `signature_pair(self)`
 - `vertex_names(self)`
+- `zero_inertia_index(self)`
+  > Return \(n_0\), the dimension of the radical of the Schlaefli form.
 
 #### `Genus` `[OBJECT]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/lattices.py#L244`](file:///home/dzack/research/src/dzack_research/preamble/categories/lattices.py#L244)
+- **Source**: [`src/dzack_research/preamble/categories/lattices.py#L252`](file:///home/dzack/research/src/dzack_research/preamble/categories/lattices.py#L252)
 
 The genus determined by signature and discriminant quadratic form.
 
@@ -3829,7 +3876,7 @@ A primitive totally isotropic flag, recorded by its nested lattice subobjects.
 
 #### `Lattice` `[OBJECT]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/_lattice.py#L211`](file:///home/dzack/research/src/dzack_research/preamble/categories/_lattice.py#L211)
+- **Source**: [`src/dzack_research/preamble/categories/_lattice.py#L212`](file:///home/dzack/research/src/dzack_research/preamble/categories/_lattice.py#L212)
 - **Bases**: `Parent`, `IndexedGenerators`
 
 A lattice: a free module with a form, as a parent in :class:`Lattices`.
@@ -3851,11 +3898,11 @@ combination of those generators, never as a coordinate tuple.
 
 #### `LatticeReduction` `[OBJECT]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/definite_lattices.py#L55`](file:///home/dzack/research/src/dzack_research/preamble/categories/definite_lattices.py#L55)
+- **Source**: [`src/dzack_research/preamble/categories/definite_lattices.py#L56`](file:///home/dzack/research/src/dzack_research/preamble/categories/definite_lattices.py#L56)
 
 #### `LocalGenusSymbol` `[OBJECT]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/lattices.py#L172`](file:///home/dzack/research/src/dzack_research/preamble/categories/lattices.py#L172)
+- **Source**: [`src/dzack_research/preamble/categories/lattices.py#L180`](file:///home/dzack/research/src/dzack_research/preamble/categories/lattices.py#L180)
 
 The Conway--Sloane Jordan-block invariants at one finite prime.
 
@@ -3925,14 +3972,14 @@ together with its finite index, the two discriminant inclusions into
 
 #### `register_indecomposable` `[REGISTRY]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/lattices.py#L92`](file:///home/dzack/research/src/dzack_research/preamble/categories/lattices.py#L92)
+- **Source**: [`src/dzack_research/preamble/categories/lattices.py#L100`](file:///home/dzack/research/src/dzack_research/preamble/categories/lattices.py#L100)
 
 Register an indecomposable live lattice by exact Gram equality.
 
 
 #### `register_indecomposable_gram` `[REGISTRY]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/lattices.py#L87`](file:///home/dzack/research/src/dzack_research/preamble/categories/lattices.py#L87)
+- **Source**: [`src/dzack_research/preamble/categories/lattices.py#L95`](file:///home/dzack/research/src/dzack_research/preamble/categories/lattices.py#L95)
 
 Register an exact Gram matrix under its indecomposable display name.
 
@@ -3942,7 +3989,7 @@ Register an exact Gram matrix under its indecomposable display name.
 #### `babai` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def babai(lattice, target)`
-- **Source**: [`src/dzack_research/preamble/categories/definite_lattices.py#L336`](file:///home/dzack/research/src/dzack_research/preamble/categories/definite_lattices.py#L336)
+- **Source**: [`src/dzack_research/preamble/categories/definite_lattices.py#L337`](file:///home/dzack/research/src/dzack_research/preamble/categories/definite_lattices.py#L337)
 
 Return Babai's LLL nearest-plane approximation.
 
@@ -3950,7 +3997,7 @@ Return Babai's LLL nearest-plane approximation.
 #### `bkz_reduction` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def bkz_reduction(lattice, block_size=20)`
-- **Source**: [`src/dzack_research/preamble/categories/definite_lattices.py#L115`](file:///home/dzack/research/src/dzack_research/preamble/categories/definite_lattices.py#L115)
+- **Source**: [`src/dzack_research/preamble/categories/definite_lattices.py#L116`](file:///home/dzack/research/src/dzack_research/preamble/categories/definite_lattices.py#L116)
 
 Return a BKZ-reframed copy with its exact integral isometry witness.
 
@@ -3958,12 +4005,12 @@ Return a BKZ-reframed copy with its exact integral isometry witness.
 #### `center_density` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def center_density(lattice)`
-- **Source**: [`src/dzack_research/preamble/categories/definite_lattices.py#L593`](file:///home/dzack/research/src/dzack_research/preamble/categories/definite_lattices.py#L593)
+- **Source**: [`src/dzack_research/preamble/categories/definite_lattices.py#L601`](file:///home/dzack/research/src/dzack_research/preamble/categories/definite_lattices.py#L601)
 
 #### `closest_vector` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def closest_vector(lattice, target)`
-- **Source**: [`src/dzack_research/preamble/categories/definite_lattices.py#L286`](file:///home/dzack/research/src/dzack_research/preamble/categories/definite_lattices.py#L286)
+- **Source**: [`src/dzack_research/preamble/categories/definite_lattices.py#L287`](file:///home/dzack/research/src/dzack_research/preamble/categories/definite_lattices.py#L287)
 
 Return the exact closest lattice vector to a rational target.
 
@@ -3971,7 +4018,7 @@ Return the exact closest lattice vector to a rational target.
 #### `colimit_lattice` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def colimit_lattice(stage, *, category)`
-- **Source**: [`src/dzack_research/preamble/categories/_lattice.py#L842`](file:///home/dzack/research/src/dzack_research/preamble/categories/_lattice.py#L842)
+- **Source**: [`src/dzack_research/preamble/categories/_lattice.py#L846`](file:///home/dzack/research/src/dzack_research/preamble/categories/_lattice.py#L846)
 
 \(\operatorname{colim}_n \mathrm{stage}(n)\) along \(x\mapsto(x,0)\).
 
@@ -3982,17 +4029,17 @@ module is the free module on \(\mathbb N\).
 #### `contact_polytope` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def contact_polytope(lattice)`
-- **Source**: [`src/dzack_research/preamble/categories/definite_lattices.py#L534`](file:///home/dzack/research/src/dzack_research/preamble/categories/definite_lattices.py#L534)
+- **Source**: [`src/dzack_research/preamble/categories/definite_lattices.py#L542`](file:///home/dzack/research/src/dzack_research/preamble/categories/definite_lattices.py#L542)
 
 #### `covering_radius` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def covering_radius(lattice)`
-- **Source**: [`src/dzack_research/preamble/categories/definite_lattices.py#L563`](file:///home/dzack/research/src/dzack_research/preamble/categories/definite_lattices.py#L563)
+- **Source**: [`src/dzack_research/preamble/categories/definite_lattices.py#L571`](file:///home/dzack/research/src/dzack_research/preamble/categories/definite_lattices.py#L571)
 
 #### `definite_complement_extensions` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def definite_complement_extensions(lattice, left, right)`
-- **Source**: [`src/dzack_research/preamble/categories/vector_orbits.py#L209`](file:///home/dzack/research/src/dzack_research/preamble/categories/vector_orbits.py#L209)
+- **Source**: [`src/dzack_research/preamble/categories/vector_orbits.py#L210`](file:///home/dzack/research/src/dzack_research/preamble/categories/vector_orbits.py#L210)
 
 Return every ``g in O(L)`` carrying ``left`` to ``right`` when complements are definite.
 
@@ -4011,7 +4058,7 @@ torsor in this regime, the returned tuple is exhaustive.
 #### `diagonal_gram` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def diagonal_gram(module, exceptions, default=1)`
-- **Source**: [`src/dzack_research/preamble/categories/_lattice.py#L791`](file:///home/dzack/research/src/dzack_research/preamble/categories/_lattice.py#L791)
+- **Source**: [`src/dzack_research/preamble/categories/_lattice.py#L795`](file:///home/dzack/research/src/dzack_research/preamble/categories/_lattice.py#L795)
 
 The diagonal type-$(0,2)$ tensor on ``module``.
 
@@ -4036,7 +4083,7 @@ EXAMPLES::
 #### `discriminant_of_gram` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def discriminant_of_gram(gram: Tensor)`
-- **Source**: [`src/dzack_research/preamble/categories/_lattice.py#L924`](file:///home/dzack/research/src/dzack_research/preamble/categories/_lattice.py#L924)
+- **Source**: [`src/dzack_research/preamble/categories/_lattice.py#L946`](file:///home/dzack/research/src/dzack_research/preamble/categories/_lattice.py#L946)
 
 Return $d_\pm(b)=(-1)^{n(n-1)/2}\det G$.
 
@@ -4044,7 +4091,7 @@ Return $d_\pm(b)=(-1)^{n(n-1)/2}\det G$.
 #### `generator_pairings` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def generator_pairings(lattice, element)`
-- **Source**: [`src/dzack_research/preamble/categories/_lattice.py#L878`](file:///home/dzack/research/src/dzack_research/preamble/categories/_lattice.py#L878)
+- **Source**: [`src/dzack_research/preamble/categories/_lattice.py#L882`](file:///home/dzack/research/src/dzack_research/preamble/categories/_lattice.py#L882)
 
 The finite family \(i\mapsto b(e_i,v)\) of nonzero pairings against generators.
 
@@ -4052,7 +4099,7 @@ The finite family \(i\mapsto b(e_i,v)\) of nonzero pairings against generators.
 #### `gluing_route_discriminant_classes` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def gluing_route_discriminant_classes(lattice, left, right)`
-- **Source**: [`src/dzack_research/preamble/categories/vector_orbits.py#L351`](file:///home/dzack/research/src/dzack_research/preamble/categories/vector_orbits.py#L351)
+- **Source**: [`src/dzack_research/preamble/categories/vector_orbits.py#L352`](file:///home/dzack/research/src/dzack_research/preamble/categories/vector_orbits.py#L352)
 
 Return the finite discriminant classes compatible with ``left -> right``.
 
@@ -4070,22 +4117,22 @@ the image of the discriminant representation and is not assumed here.
 #### `hadamard_ratio` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def hadamard_ratio(lattice)`
-- **Source**: [`src/dzack_research/preamble/categories/definite_lattices.py#L512`](file:///home/dzack/research/src/dzack_research/preamble/categories/definite_lattices.py#L512)
+- **Source**: [`src/dzack_research/preamble/categories/definite_lattices.py#L520`](file:///home/dzack/research/src/dzack_research/preamble/categories/definite_lattices.py#L520)
 
 #### `hermite_invariant` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def hermite_invariant(lattice)`
-- **Source**: [`src/dzack_research/preamble/categories/definite_lattices.py#L634`](file:///home/dzack/research/src/dzack_research/preamble/categories/definite_lattices.py#L634)
+- **Source**: [`src/dzack_research/preamble/categories/definite_lattices.py#L642`](file:///home/dzack/research/src/dzack_research/preamble/categories/definite_lattices.py#L642)
 
 #### `hkz_reduction` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def hkz_reduction(lattice)`
-- **Source**: [`src/dzack_research/preamble/categories/definite_lattices.py#L154`](file:///home/dzack/research/src/dzack_research/preamble/categories/definite_lattices.py#L154)
+- **Source**: [`src/dzack_research/preamble/categories/definite_lattices.py#L155`](file:///home/dzack/research/src/dzack_research/preamble/categories/definite_lattices.py#L155)
 
 #### `indecomposable_name` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def indecomposable_name(lattice)`
-- **Source**: [`src/dzack_research/preamble/categories/lattices.py#L99`](file:///home/dzack/research/src/dzack_research/preamble/categories/lattices.py#L99)
+- **Source**: [`src/dzack_research/preamble/categories/lattices.py#L107`](file:///home/dzack/research/src/dzack_research/preamble/categories/lattices.py#L107)
 
 Return the registered exact or scalar-twist name, if one exists.
 
@@ -4117,12 +4164,12 @@ Return generators of the full-orthogonal-group stabilizer of an isotropic subobj
 #### `kissing_number` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def kissing_number(lattice)`
-- **Source**: [`src/dzack_research/preamble/categories/definite_lattices.py#L658`](file:///home/dzack/research/src/dzack_research/preamble/categories/definite_lattices.py#L658)
+- **Source**: [`src/dzack_research/preamble/categories/definite_lattices.py#L666`](file:///home/dzack/research/src/dzack_research/preamble/categories/definite_lattices.py#L666)
 
 #### `lattice` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def lattice(data, basis=None, names=None, form=None, module_generators=None, *, category: Category) -> Lattice`
-- **Source**: [`src/dzack_research/preamble/categories/_lattice.py#L1151`](file:///home/dzack/research/src/dzack_research/preamble/categories/_lattice.py#L1151)
+- **Source**: [`src/dzack_research/preamble/categories/_lattice.py#L1174`](file:///home/dzack/research/src/dzack_research/preamble/categories/_lattice.py#L1174)
 
 Return an owned lattice in ``category``.
 
@@ -4141,22 +4188,22 @@ simply-laced Cartan type, a Euclidean rank) are owned Gram tensors.
 #### `lattice_embedding_homset` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `@cached_function` `def lattice_embedding_homset(domain, codomain) -> LatticeEmbeddingHomset`
-- **Source**: [`src/dzack_research/preamble/categories/lattice_morphisms.py#L1328`](file:///home/dzack/research/src/dzack_research/preamble/categories/lattice_morphisms.py#L1328)
+- **Source**: [`src/dzack_research/preamble/categories/lattice_morphisms.py#L1335`](file:///home/dzack/research/src/dzack_research/preamble/categories/lattice_morphisms.py#L1335)
 
 #### `lattice_homset` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `@cached_function` `def lattice_homset(domain, codomain) -> LatticeHomset`
-- **Source**: [`src/dzack_research/preamble/categories/lattice_morphisms.py#L1320`](file:///home/dzack/research/src/dzack_research/preamble/categories/lattice_morphisms.py#L1320)
+- **Source**: [`src/dzack_research/preamble/categories/lattice_morphisms.py#L1327`](file:///home/dzack/research/src/dzack_research/preamble/categories/lattice_morphisms.py#L1327)
 
 #### `lattice_isometry_homset` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `@cached_function` `def lattice_isometry_homset(domain, codomain) -> LatticeIsometryHomset`
-- **Source**: [`src/dzack_research/preamble/categories/lattice_morphisms.py#L1336`](file:///home/dzack/research/src/dzack_research/preamble/categories/lattice_morphisms.py#L1336)
+- **Source**: [`src/dzack_research/preamble/categories/lattice_morphisms.py#L1343`](file:///home/dzack/research/src/dzack_research/preamble/categories/lattice_morphisms.py#L1343)
 
 #### `lattice_latex` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def lattice_latex(lattice: Lattice, ring_tex: str) -> str`
-- **Source**: [`src/dzack_research/preamble/categories/_lattice.py#L958`](file:///home/dzack/research/src/dzack_research/preamble/categories/_lattice.py#L958)
+- **Source**: [`src/dzack_research/preamble/categories/_lattice.py#L981`](file:///home/dzack/research/src/dzack_research/preamble/categories/_lattice.py#L981)
 
 The archived lattice display: $L$ with its invariants, then $G_L$.
 
@@ -4166,17 +4213,25 @@ The Gram tensor is the form of $L$, not $L$; $G_L$ typesets its components.
 #### `lll_reduction` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def lll_reduction(lattice)`
-- **Source**: [`src/dzack_research/preamble/categories/definite_lattices.py#L62`](file:///home/dzack/research/src/dzack_research/preamble/categories/definite_lattices.py#L62)
+- **Source**: [`src/dzack_research/preamble/categories/definite_lattices.py#L63`](file:///home/dzack/research/src/dzack_research/preamble/categories/definite_lattices.py#L63)
 
 #### `minimum` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def minimum(lattice)`
-- **Source**: [`src/dzack_research/preamble/categories/definite_lattices.py#L158`](file:///home/dzack/research/src/dzack_research/preamble/categories/definite_lattices.py#L158)
+- **Source**: [`src/dzack_research/preamble/categories/definite_lattices.py#L159`](file:///home/dzack/research/src/dzack_research/preamble/categories/definite_lattices.py#L159)
+
+#### `nikulin_invariants` `[FUNCTION]` `[Exported Session]`
+
+- **Signature**: `def nikulin_invariants(rank, discriminant_length, delta)`
+- **Source**: [`src/dzack_research/preamble/categories/lattices.py#L33`](file:///home/dzack/research/src/dzack_research/preamble/categories/lattices.py#L33)
+
+Return \((r,a,\delta)\) as a point of \(\mathbb N^3\).
+
 
 #### `orthogonal_sum` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def orthogonal_sum(left, right, *, category)`
-- **Source**: [`src/dzack_research/preamble/categories/_lattice.py#L817`](file:///home/dzack/research/src/dzack_research/preamble/categories/_lattice.py#L817)
+- **Source**: [`src/dzack_research/preamble/categories/_lattice.py#L821`](file:///home/dzack/research/src/dzack_research/preamble/categories/_lattice.py#L821)
 
 The orthogonal direct sum, in the concatenated basis.
 
@@ -4190,7 +4245,7 @@ constructed.
 #### `oscar_centralizer_discriminant_image` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def oscar_centralizer_discriminant_image(gram, isometry)`
-- **Source**: [`src/dzack_research/preamble/categories/lattice_engines.py#L144`](file:///home/dzack/research/src/dzack_research/preamble/categories/lattice_engines.py#L144)
+- **Source**: [`src/dzack_research/preamble/categories/lattice_engines.py#L145`](file:///home/dzack/research/src/dzack_research/preamble/categories/lattice_engines.py#L145)
 
 Return OSCAR's image of ``Z_{O(L)}(f)`` in ``O(A_L)``.
 
@@ -4205,7 +4260,7 @@ this boundary.
 #### `oscar_even_unimodular_primitive_embedding` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def oscar_even_unimodular_primitive_embedding(gram, positive, negative)`
-- **Source**: [`src/dzack_research/preamble/categories/lattice_engines.py#L270`](file:///home/dzack/research/src/dzack_research/preamble/categories/lattice_engines.py#L270)
+- **Source**: [`src/dzack_research/preamble/categories/lattice_engines.py#L271`](file:///home/dzack/research/src/dzack_research/preamble/categories/lattice_engines.py#L271)
 
 Return a typed even-unimodular target Gram and primitive embedding tensor.
 
@@ -4218,7 +4273,7 @@ tensor before returning.
 #### `oscar_rational_spinor_norm_sign` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def oscar_rational_spinor_norm_sign(gram, isometry)`
-- **Source**: [`src/dzack_research/preamble/categories/lattice_engines.py#L65`](file:///home/dzack/research/src/dzack_research/preamble/categories/lattice_engines.py#L65)
+- **Source**: [`src/dzack_research/preamble/categories/lattice_engines.py#L66`](file:///home/dzack/research/src/dzack_research/preamble/categories/lattice_engines.py#L66)
 
 Return the sign of OSCAR's rational spinor norm.
 
@@ -4232,12 +4287,12 @@ determinant correction separately.
 #### `packing_density` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def packing_density(lattice)`
-- **Source**: [`src/dzack_research/preamble/categories/definite_lattices.py#L607`](file:///home/dzack/research/src/dzack_research/preamble/categories/definite_lattices.py#L607)
+- **Source**: [`src/dzack_research/preamble/categories/definite_lattices.py#L615`](file:///home/dzack/research/src/dzack_research/preamble/categories/definite_lattices.py#L615)
 
 #### `packing_radius` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def packing_radius(lattice)`
-- **Source**: [`src/dzack_research/preamble/categories/definite_lattices.py#L649`](file:///home/dzack/research/src/dzack_research/preamble/categories/definite_lattices.py#L649)
+- **Source**: [`src/dzack_research/preamble/categories/definite_lattices.py#L657`](file:///home/dzack/research/src/dzack_research/preamble/categories/definite_lattices.py#L657)
 
 #### `primitive_isotropic_subobject` `[FUNCTION]` `[Internal]`
 
@@ -4250,7 +4305,7 @@ Return the primitive totally isotropic sublattice spanned by ``basis``.
 #### `rational_positive_vector` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def rational_positive_vector(gram)`
-- **Source**: [`src/dzack_research/preamble/categories/lattice_engines.py#L20`](file:///home/dzack/research/src/dzack_research/preamble/categories/lattice_engines.py#L20)
+- **Source**: [`src/dzack_research/preamble/categories/lattice_engines.py#L21`](file:///home/dzack/research/src/dzack_research/preamble/categories/lattice_engines.py#L21)
 
 Return one exact rational positive vector for signature ``(1,n)``.
 
@@ -4262,7 +4317,7 @@ the transformation matrix itself is never public API.
 #### `refine_lattice_properties` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def refine_lattice_properties(lattice)`
-- **Source**: [`src/dzack_research/preamble/categories/lattices.py#L2566`](file:///home/dzack/research/src/dzack_research/preamble/categories/lattices.py#L2566)
+- **Source**: [`src/dzack_research/preamble/categories/lattices.py#L2606`](file:///home/dzack/research/src/dzack_research/preamble/categories/lattices.py#L2606)
 
 Attach the finite lattice properties directly decidable from the form.
 
@@ -4278,7 +4333,7 @@ Adopt a finite free ``Frac(R)``-valued nondegenerate form as a rational lattice.
 #### `refine_root_lattice` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def refine_root_lattice(lattice, cartan_type)`
-- **Source**: [`src/dzack_research/preamble/categories/lattices.py#L2561`](file:///home/dzack/research/src/dzack_research/preamble/categories/lattices.py#L2561)
+- **Source**: [`src/dzack_research/preamble/categories/lattices.py#L2601`](file:///home/dzack/research/src/dzack_research/preamble/categories/lattices.py#L2601)
 
 Record the Cartan type whose negative Cartan form built ``lattice``.
 
@@ -4286,7 +4341,7 @@ Record the Cartan type whose negative Cartan form built ``lattice``.
 #### `root_sublattice` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def root_sublattice(lattice)`
-- **Source**: [`src/dzack_research/preamble/categories/definite_lattices.py#L192`](file:///home/dzack/research/src/dzack_research/preamble/categories/definite_lattices.py#L192)
+- **Source**: [`src/dzack_research/preamble/categories/definite_lattices.py#L193`](file:///home/dzack/research/src/dzack_research/preamble/categories/definite_lattices.py#L193)
 
 Return the formed subobject generated by all square-two roots.
 
@@ -4294,17 +4349,17 @@ Return the formed subobject generated by all square-two roots.
 #### `roots` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def roots(lattice)`
-- **Source**: [`src/dzack_research/preamble/categories/definite_lattices.py#L180`](file:///home/dzack/research/src/dzack_research/preamble/categories/definite_lattices.py#L180)
+- **Source**: [`src/dzack_research/preamble/categories/definite_lattices.py#L181`](file:///home/dzack/research/src/dzack_research/preamble/categories/definite_lattices.py#L181)
 
 #### `roots_of_square` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def roots_of_square(lattice, square)`
-- **Source**: [`src/dzack_research/preamble/categories/definite_lattices.py#L185`](file:///home/dzack/research/src/dzack_research/preamble/categories/definite_lattices.py#L185)
+- **Source**: [`src/dzack_research/preamble/categories/definite_lattices.py#L186`](file:///home/dzack/research/src/dzack_research/preamble/categories/definite_lattices.py#L186)
 
 #### `scale_gram_tensor` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def scale_gram_tensor(gram, scalar)`
-- **Source**: [`src/dzack_research/preamble/categories/_lattice.py#L866`](file:///home/dzack/research/src/dzack_research/preamble/categories/_lattice.py#L866)
+- **Source**: [`src/dzack_research/preamble/categories/_lattice.py#L870`](file:///home/dzack/research/src/dzack_research/preamble/categories/_lattice.py#L870)
 
 Return the type-$(0,2)$ tensor \(\mathrm{scalar}\cdot G\).
 
@@ -4312,20 +4367,40 @@ Return the type-$(0,2)$ tensor \(\mathrm{scalar}\cdot G\).
 #### `shortest_vectors` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def shortest_vectors(lattice)`
-- **Source**: [`src/dzack_research/preamble/categories/definite_lattices.py#L263`](file:///home/dzack/research/src/dzack_research/preamble/categories/definite_lattices.py#L263)
+- **Source**: [`src/dzack_research/preamble/categories/definite_lattices.py#L264`](file:///home/dzack/research/src/dzack_research/preamble/categories/definite_lattices.py#L264)
+
+#### `signature_pair` `[FUNCTION]` `[Exported Session]`
+
+- **Signature**: `def signature_pair(positive, negative)`
+- **Source**: [`src/dzack_research/preamble/categories/_lattice.py#L922`](file:///home/dzack/research/src/dzack_research/preamble/categories/_lattice.py#L922)
+
+Return \((p,q)\) as an object of :func:`signature_pairs`.
+
 
 #### `signature_pair_of_gram` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def signature_pair_of_gram(gram: Tensor)`
-- **Source**: [`src/dzack_research/preamble/categories/_lattice.py#L917`](file:///home/dzack/research/src/dzack_research/preamble/categories/_lattice.py#L917)
+- **Source**: [`src/dzack_research/preamble/categories/_lattice.py#L939`](file:///home/dzack/research/src/dzack_research/preamble/categories/_lattice.py#L939)
 
 Return $(p,q)$ for a Gram tensor, by Sylvester over $\mathbb Q$.
+
+
+#### `signature_pairs` `[FUNCTION]` `[Exported Session]`
+
+- **Signature**: `def signature_pairs()`
+- **Source**: [`src/dzack_research/preamble/categories/_lattice.py#L907`](file:///home/dzack/research/src/dzack_research/preamble/categories/_lattice.py#L907)
+
+Return \(\mathbf{Card}\times\mathbf{Card}\), where a signature pair lives.
+
+An index of inertia can be infinite -- \(\mathbb Z^{(\mathbb N)}\) with
+its standard form has \((p,q)=(\aleph_0,0)\) -- so each entry is a
+cardinal and the pair is an object of the product category.
 
 
 #### `stable_complement_root_reflections` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def stable_complement_root_reflections(lattice, element)`
-- **Source**: [`src/dzack_research/preamble/categories/vector_orbits.py#L462`](file:///home/dzack/research/src/dzack_research/preamble/categories/vector_orbits.py#L462)
+- **Source**: [`src/dzack_research/preamble/categories/vector_orbits.py#L463`](file:///home/dzack/research/src/dzack_research/preamble/categories/vector_orbits.py#L463)
 
 Return root reflections of ``element^perp`` that lie in ``ker(rho_L)``.
 
@@ -4360,15 +4435,15 @@ not a claim to generate that stabilizer.
 #### `successive_minima` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def successive_minima(lattice)`
-- **Source**: [`src/dzack_research/preamble/categories/definite_lattices.py#L449`](file:///home/dzack/research/src/dzack_research/preamble/categories/definite_lattices.py#L449)
+- **Source**: [`src/dzack_research/preamble/categories/definite_lattices.py#L450`](file:///home/dzack/research/src/dzack_research/preamble/categories/definite_lattices.py#L450)
 
-Return the exact successive lengths as owned real numbers.
+Return the family of exact successive lengths, as owned real numbers.
 
 
 #### `theta_series` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def theta_series(lattice, precision=20, variable='q')`
-- **Source**: [`src/dzack_research/preamble/categories/definite_lattices.py#L617`](file:///home/dzack/research/src/dzack_research/preamble/categories/definite_lattices.py#L617)
+- **Source**: [`src/dzack_research/preamble/categories/definite_lattices.py#L625`](file:///home/dzack/research/src/dzack_research/preamble/categories/definite_lattices.py#L625)
 
 #### `transport_isotropic_object` `[FUNCTION]` `[Internal]`
 
@@ -4381,17 +4456,17 @@ Transport a primitive isotropic subobject or flag along a lattice isometry.
 #### `vectors_of_square` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def vectors_of_square(lattice, square)`
-- **Source**: [`src/dzack_research/preamble/categories/definite_lattices.py#L167`](file:///home/dzack/research/src/dzack_research/preamble/categories/definite_lattices.py#L167)
+- **Source**: [`src/dzack_research/preamble/categories/definite_lattices.py#L168`](file:///home/dzack/research/src/dzack_research/preamble/categories/definite_lattices.py#L168)
 
 #### `vectors_of_square_and_divisibility` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def vectors_of_square_and_divisibility(lattice, square, divisibility)`
-- **Source**: [`src/dzack_research/preamble/categories/definite_lattices.py#L258`](file:///home/dzack/research/src/dzack_research/preamble/categories/definite_lattices.py#L258)
+- **Source**: [`src/dzack_research/preamble/categories/definite_lattices.py#L259`](file:///home/dzack/research/src/dzack_research/preamble/categories/definite_lattices.py#L259)
 
 #### `voronoi_cell` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def voronoi_cell(lattice, bound=None)`
-- **Source**: [`src/dzack_research/preamble/categories/definite_lattices.py#L359`](file:///home/dzack/research/src/dzack_research/preamble/categories/definite_lattices.py#L359)
+- **Source**: [`src/dzack_research/preamble/categories/definite_lattices.py#L360`](file:///home/dzack/research/src/dzack_research/preamble/categories/definite_lattices.py#L360)
 
 Return the owned rational Voronoi cell in lattice coordinates.
 
@@ -4399,7 +4474,7 @@ Return the owned rational Voronoi cell in lattice coordinates.
 #### `voronoi_relevant_vectors` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def voronoi_relevant_vectors(lattice)`
-- **Source**: [`src/dzack_research/preamble/categories/definite_lattices.py#L421`](file:///home/dzack/research/src/dzack_research/preamble/categories/definite_lattices.py#L421)
+- **Source**: [`src/dzack_research/preamble/categories/definite_lattices.py#L422`](file:///home/dzack/research/src/dzack_research/preamble/categories/definite_lattices.py#L422)
 
 Return the vectors defining facets of the Voronoi cell.
 
@@ -4416,7 +4491,7 @@ Return the vectors defining facets of the Voronoi cell.
 
 #### `AlternatingPowerModules` `[CATEGORY]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/powers.py#L53`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/powers.py#L53)
+- **Source**: [`src/dzack_research/preamble/categories/modules/powers.py#L55`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/powers.py#L55)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[Modules(self.base_ring())]`
 
@@ -4425,7 +4500,7 @@ Return the vectors defining facets of the Voronoi cell.
 
 #### `BilinearFormModules` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L847`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L847)
+- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L861`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L861)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[FormModules(self.base_ring())]`
 
@@ -4434,7 +4509,7 @@ Return the vectors defining facets of the Voronoi cell.
 
 #### `BiproductModules` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/pure/modules.py#L1551`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/pure/modules.py#L1551)
+- **Source**: [`src/dzack_research/preamble/categories/modules/pure/modules.py#L1553`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/pure/modules.py#L1553)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[Modules(self.base_ring())]`
 
@@ -4469,7 +4544,7 @@ Return the vectors defining facets of the Voronoi cell.
 
 #### `CochainHomCategoryConstruction` `[CATEGORY]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/cochain_complexes.py#L384`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/cochain_complexes.py#L384)
+- **Source**: [`src/dzack_research/preamble/categories/modules/cochain_complexes.py#L386`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/cochain_complexes.py#L386)
 - **Bases**: `HomCategoryConstruction`
 
 **Category Instance Methods:**
@@ -4514,7 +4589,7 @@ Right differential graded modules over one selected DGA ``(A,d)``.
 
 #### `DiscriminantBilinearModules` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/discriminant_modules.py#L98`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/discriminant_modules.py#L98)
+- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/discriminant_modules.py#L113`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/discriminant_modules.py#L113)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[DiscriminantModules(self.base_ring()), TorsionBilinearFormModules(self.base_ring())]`
 
@@ -4574,7 +4649,7 @@ Cokernels ``A_L = coker(L -> L^#)`` of nondegenerate finite lattices.
 - `dual_lattice_lift(self, element)`
   > Return a representative of ``element`` in the selected metric dual ``L^#``.
 - `primary_components(self)`
-  > Return the canonical ``p``-primary subgroups indexed by primes dividing ``|A|``.
+  > Return the family \(p\mapsto A_p\) over the primes dividing \(|A|\).
 - `@cached_method` `projection(self)`
   > Return the quotient map ``L^# -> A_L`` on the selected dual basis.
 - `source_lattice(self)`
@@ -4588,7 +4663,7 @@ Cokernels ``A_L = coker(L -> L^#)`` of nondegenerate finite lattices.
 
 #### `DiscriminantQuadraticModules` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/discriminant_modules.py#L348`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/discriminant_modules.py#L348)
+- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/discriminant_modules.py#L363`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/discriminant_modules.py#L363)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[DiscriminantBilinearModules(self.base_ring()), TorsionQuadraticFormModules(self.base_ring())]`
 
@@ -4638,7 +4713,7 @@ Even-lattice discriminant modules with quadratic form in ``K/2R``.
 
 #### `DiscriminantSubmodules` `[CATEGORY]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/discriminant_modules.py#L667`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/discriminant_modules.py#L667)
+- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/discriminant_modules.py#L682`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/discriminant_modules.py#L682)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[FinitelyPresentedTorsionModules(self.base_ring())]`
 
@@ -4657,7 +4732,7 @@ Finite subgroups of a discriminant module with the restricted form.
 
 #### `DividedPowerModules` `[CATEGORY]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/powers.py#L64`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/powers.py#L64)
+- **Source**: [`src/dzack_research/preamble/categories/modules/powers.py#L66`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/powers.py#L66)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[Modules(self.base_ring())]`
 
@@ -4666,7 +4741,7 @@ Finite subgroups of a discriminant module with the restricted form.
 
 #### `DividedSquareModules` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/powers.py#L286`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/powers.py#L286)
+- **Source**: [`src/dzack_research/preamble/categories/modules/powers.py#L288`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/powers.py#L288)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[DividedPowerModules(self.base_ring())]`
 
@@ -4687,7 +4762,7 @@ Degree-two divided powers, classifying quadratic maps.
 
 #### `FinitelyGeneratedFormModules` `[SUBCATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L982`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L982)
+- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L1003`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L1003)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[FormModules(self.base_ring()), FinitelyGeneratedModules(self.base_ring())]`
 
@@ -4696,7 +4771,7 @@ Degree-two divided powers, classifying quadratic maps.
 
 #### `FinitelyGeneratedFreeFormModules` `[SUBCATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L993`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L993)
+- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L1014`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L1014)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[FreeFormModules(self.base_ring()), FinitelyGeneratedFormModules(self.base_ring()), FinitelyGeneratedFreeModules(self.base_ring())]`
 
@@ -4727,7 +4802,7 @@ Group modules whose underlying module is finite free with a chosen basis.
 
 #### `FinitelyGeneratedFreeModules` `[SUBCATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/pure/modules.py#L726`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/pure/modules.py#L726)
+- **Source**: [`src/dzack_research/preamble/categories/modules/pure/modules.py#L723`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/pure/modules.py#L723)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[FreeModules(self.base_ring()), FramedModules(self.base_ring()), FinitelyGeneratedModules(self.base_ring()), ModulesWithChosenFinitePresentation(self.base_ring()), ProjectiveModules(self.base_ring())]`
 
@@ -4743,7 +4818,7 @@ Finite-rank free modules with a chosen ordered basis.
 
 #### `FinitelyGeneratedModules` `[SUBCATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/pure/modules.py#L463`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/pure/modules.py#L463)
+- **Source**: [`src/dzack_research/preamble/categories/modules/pure/modules.py#L490`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/pure/modules.py#L490)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[Modules(self.base_ring())]`
 
@@ -4771,7 +4846,7 @@ Finite-rank free modules with a chosen ordered basis.
 
 #### `FinitelyPresentedBilinearFormModules` `[SUBCATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L937`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L937)
+- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L955`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L955)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[FinitelyPresentedFormModules(self.base_ring()), BilinearFormModules(self.base_ring())]`
 
@@ -4780,7 +4855,7 @@ Finite-rank free modules with a chosen ordered basis.
 
 #### `FinitelyPresentedFormModules` `[SUBCATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L926`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L926)
+- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L940`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L940)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[FormModules(self.base_ring()), FinitelyPresentedModules(self.base_ring())]`
 
@@ -4801,7 +4876,7 @@ Group modules with a chosen finite presentation of the underlying module.
 
 #### `FinitelyPresentedModules` `[SUBCATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/pure/modules.py#L623`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/pure/modules.py#L623)
+- **Source**: [`src/dzack_research/preamble/categories/modules/pure/modules.py#L625`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/pure/modules.py#L625)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[FinitelyGeneratedModules(self.base_ring())]`
 
@@ -4816,7 +4891,7 @@ Modules admitting a finite presentation.
 
 #### `FinitelyPresentedQuadraticFormModules` `[SUBCATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L949`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L949)
+- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L967`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L967)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[FinitelyPresentedFormModules(self.base_ring()), QuadraticFormModules(self.base_ring())]`
 
@@ -4843,7 +4918,7 @@ Finitely presented torsion modules over a PID.
 
 #### `FormModules` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L626`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L626)
+- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L634`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L634)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[Modules(self.base_ring())]`
 
@@ -4851,6 +4926,7 @@ Modules over ``R`` equipped with a form.
 
 
 **ParentMethods (Methods on Category Objects):**
+- `Mor(self, codomain, category=None)`
 - `b(self, left, right)`
   > Evaluate the (polar) bilinear form on two elements of this module.
 - `base_change(self, ring_map)`
@@ -4884,7 +4960,7 @@ Modules over ``R`` equipped with a form.
 
 #### `FormedModuleHomCategoryConstruction` `[CATEGORY]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L308`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L308)
+- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L309`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L309)
 - **Bases**: `HomCategoryConstruction`
 
 **Category Instance Methods:**
@@ -4892,7 +4968,7 @@ Modules over ``R`` equipped with a form.
 
 #### `FormedModules` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L589`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L589)
+- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L597`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L597)
 - **Bases**: `OwnedParameterizedCategory`
 - **Super Categories**: `[PairedModules(self.base())]`
 
@@ -4976,7 +5052,7 @@ Fractional ideals of an integral domain, as modules in its fraction field.
 
 #### `FramedFreeModules` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py#L268`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py#L268)
+- **Source**: [`src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py#L276`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py#L276)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[FreeModules(self.base_ring()), FramedModules(self.base_ring())]`
 
@@ -4996,6 +5072,7 @@ Free modules equipped with the canonical basis map.
 - `module_generator(self, label)`
 - `@cached_method` `module_generators(self)`
 - `rank(self)`
+  > Return the cardinality of the module generating set.
 - `subobject_on(self, module_generating_set)`
   > Return the submodule spanned by the specified elements.
 
@@ -5004,7 +5081,7 @@ Free modules equipped with the canonical basis map.
 
 #### `FramedModules` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/pure/modules.py#L812`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/pure/modules.py#L812)
+- **Source**: [`src/dzack_research/preamble/categories/modules/pure/modules.py#L809`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/pure/modules.py#L809)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[Modules(self.base_ring())]`
 
@@ -5024,7 +5101,7 @@ Modules carrying a specified generating map from a set.
 
 #### `FreeFormModules` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L961`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L961)
+- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L979`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L979)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[FormModules(self.base_ring()), FramedFreeModules(self.base_ring())]`
 
@@ -5037,7 +5114,7 @@ Modules carrying a specified generating map from a set.
 
 #### `FreeModuleBaseRings` `[CATEGORY]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py#L35`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py#L35)
+- **Source**: [`src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py#L38`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py#L38)
 - **Bases**: `Category`
 - **Super Categories**: `[OwnedRings()]`
 
@@ -5049,7 +5126,7 @@ Rings equipped with the selected free-module exponent construction.
 
 #### `FreeModules` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/pure/modules.py#L448`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/pure/modules.py#L448)
+- **Source**: [`src/dzack_research/preamble/categories/modules/pure/modules.py#L475`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/pure/modules.py#L475)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[Modules(self.base_ring())]`
 
@@ -5217,7 +5294,7 @@ Integral ideals ``I <= R``.
 
 #### `InternalHomModules` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/pure/modules.py#L320`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/pure/modules.py#L320)
+- **Source**: [`src/dzack_research/preamble/categories/modules/pure/modules.py#L356`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/pure/modules.py#L356)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[LinearHomModules(self.base_ring())]`
 
@@ -5250,7 +5327,7 @@ Submodules equipped with their selected isotypic summands.
 
 #### `LinearEndCategoryConstruction` `[CATEGORY]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/pure/modules.py#L78`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/pure/modules.py#L78)
+- **Source**: [`src/dzack_research/preamble/categories/modules/pure/modules.py#L73`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/pure/modules.py#L73)
 - **Bases**: `EndCategoryConstruction`
 
 Endomorphism rings for categories enriched in modules.
@@ -5261,7 +5338,7 @@ Endomorphism rings for categories enriched in modules.
 
 #### `LinearHomModules` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/pure/modules.py#L281`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/pure/modules.py#L281)
+- **Source**: [`src/dzack_research/preamble/categories/modules/pure/modules.py#L317`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/pure/modules.py#L317)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[Modules(self.base_ring())]`
 
@@ -5301,7 +5378,7 @@ Modules represented as ``S^{-1}M`` for a chosen localization ``S^{-1}R``.
 
 #### `MatrixEndomorphismSpaces` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/pure/modules.py#L2076`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/pure/modules.py#L2076)
+- **Source**: [`src/dzack_research/preamble/categories/modules/pure/modules.py#L2077`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/pure/modules.py#L2077)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[MatrixSpaces(self.base_ring()), OwnedRings()]`
 
@@ -5320,7 +5397,7 @@ The matrix realization of ``End_R(F)`` for a finite framed free module ``F``.
 
 #### `MatrixSpaces` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/pure/modules.py#L1720`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/pure/modules.py#L1720)
+- **Source**: [`src/dzack_research/preamble/categories/modules/pure/modules.py#L1717`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/pure/modules.py#L1717)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[InternalHomModules(self.base_ring()), FinitelyGeneratedFreeModules(self.base_ring())]`
 
@@ -5371,7 +5448,7 @@ Hom objects between finitely generated framed free ``R``-modules.
 
 #### `ModuleEndCategoryConstruction` `[CATEGORY]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/pure/modules.py#L95`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/pure/modules.py#L95)
+- **Source**: [`src/dzack_research/preamble/categories/modules/pure/modules.py#L90`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/pure/modules.py#L90)
 - **Bases**: `LinearEndCategoryConstruction`
 
 The ring-valued endomorphism family ``M |-> End_R(M)``.
@@ -5379,7 +5456,7 @@ The ring-valued endomorphism family ``M |-> End_R(M)``.
 
 #### `ModuleHomCategoryConstruction` `[CATEGORY]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/pure/modules.py#L59`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/pure/modules.py#L59)
+- **Source**: [`src/dzack_research/preamble/categories/modules/pure/modules.py#L61`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/pure/modules.py#L61)
 - **Bases**: `HomCategoryConstruction`
 
 **Category Instance Methods:**
@@ -5388,7 +5465,7 @@ The ring-valued endomorphism family ``M |-> End_R(M)``.
 
 #### `ModuleSubobjects` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/pure/modules.py#L341`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/pure/modules.py#L341)
+- **Source**: [`src/dzack_research/preamble/categories/modules/pure/modules.py#L377`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/pure/modules.py#L377)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[Modules(self.base_ring())]`
 
@@ -5406,8 +5483,6 @@ Modules carrying a chosen monomorphism into another module.
 - `intersection(self, other)`
   > Return the meet as the image of the kernel of ``(i,-j)``.
 - `is_primitive(self) -> bool`
-- `isotropic_reduction(self)`
-  > Return the isotropic reduction owned by this chosen inclusion.
 - `orthogonal_complement(self)`
   > Return the orthogonal complement by deferring to the inclusion.
 - `saturation(self)`
@@ -5420,7 +5495,7 @@ Modules carrying a chosen monomorphism into another module.
 
 #### `Modules` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/pure/modules.py#L99`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/pure/modules.py#L99)
+- **Source**: [`src/dzack_research/preamble/categories/modules/pure/modules.py#L94`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/pure/modules.py#L94)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[CommutativeAdditiveGroups()]`
 
@@ -5428,7 +5503,11 @@ Modules over a ring, on the owned additive and scalar spines.
 
 
 **ParentMethods (Methods on Category Objects):**
+- `Mor(self, codomain, category=None)`
+- `base_change(self, ring_map)`
 - `base_ring(self)`
+- `is_finite(self)`
+- `is_finitely_generated(self) -> bool`
 - `is_framed(self) -> bool`
 - `is_free(self) -> bool`
 - `is_module(self) -> bool`
@@ -5446,13 +5525,13 @@ Modules over a ring, on the owned additive and scalar spines.
   > Twist this module's scalar action along a base-ring endomorphism.
 
 **Category Instance Methods:**
-- `homset(self, domain, codomain)`
+- `Mor(self, domain, codomain)`
   > Return the unique Hom-set ``Hom_R(domain,codomain)``.
 - `super_categories(self)`
 
 #### `ModulesWithChosenFinitePresentation` `[SUBCATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/pure/modules.py#L638`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/pure/modules.py#L638)
+- **Source**: [`src/dzack_research/preamble/categories/modules/pure/modules.py#L640`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/pure/modules.py#L640)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[FinitelyPresentedModules(self.base_ring()), FramedModules(self.base_ring())]`
 
@@ -5464,7 +5543,7 @@ Finitely presented modules carrying one selected finite presentation.
 
 #### `ModulesWithConnection` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/connections.py#L29`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/connections.py#L29)
+- **Source**: [`src/dzack_research/preamble/categories/modules/connections.py#L31`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/connections.py#L31)
 - **Bases**: `OwnedParameterizedCategory`
 - **Super Categories**: `[Modules(self.algebra())]`
 
@@ -5480,7 +5559,7 @@ Modules over ``A`` equipped with an ``A/R``-connection.
 
 #### `ModulesWithFlatConnection` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/connections.py#L54`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/connections.py#L54)
+- **Source**: [`src/dzack_research/preamble/categories/modules/connections.py#L56`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/connections.py#L56)
 - **Bases**: `OwnedParameterizedCategory`
 - **Super Categories**: `[ModulesWithConnection(self.algebra())]`
 
@@ -5496,7 +5575,7 @@ Modules whose selected connection has zero curvature.
 
 #### `PairedModules` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L543`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L543)
+- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L551`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L551)
 - **Bases**: `OwnedParameterizedCategory`
 - **Super Categories**: `[OwnedSets()]`
 
@@ -5522,7 +5601,7 @@ An object is classified by an element of
 
 #### `ProjectiveModules` `[SUBCATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/pure/modules.py#L793`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/pure/modules.py#L793)
+- **Source**: [`src/dzack_research/preamble/categories/modules/pure/modules.py#L790`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/pure/modules.py#L790)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[Modules(self.base_ring())]`
 
@@ -5536,7 +5615,7 @@ An object is classified by an element of
 
 #### `QuadraticFormModules` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L908`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L908)
+- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L922`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L922)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[FormModules(self.base_ring())]`
 
@@ -5549,7 +5628,7 @@ An object is classified by an element of
 
 #### `RestrictedScalarsModules` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/pure/modules.py#L875`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/pure/modules.py#L875)
+- **Source**: [`src/dzack_research/preamble/categories/modules/pure/modules.py#L872`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/pure/modules.py#L872)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[Modules(self.base_ring())]`
 
@@ -5569,7 +5648,7 @@ Modules obtained by reading an ``S``-module over ``R`` along ``R -> S``.
 
 #### `SymmetricBilinearFormModules` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L858`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L858)
+- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L872`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L872)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[BilinearFormModules(self.base_ring())]`
 
@@ -5586,7 +5665,7 @@ Modules obtained by reading an ``S``-module over ``R`` along ``R -> S``.
 
 #### `SymmetricPowerModules` `[CATEGORY]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/powers.py#L42`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/powers.py#L42)
+- **Source**: [`src/dzack_research/preamble/categories/modules/powers.py#L44`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/powers.py#L44)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[Modules(self.base_ring())]`
 
@@ -5595,7 +5674,7 @@ Modules obtained by reading an ``S``-module over ``R`` along ``R -> S``.
 
 #### `TensorPowerModules` `[CATEGORY]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/powers.py#L31`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/powers.py#L31)
+- **Source**: [`src/dzack_research/preamble/categories/modules/powers.py#L33`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/powers.py#L33)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[Modules(self.base_ring())]`
 
@@ -5604,7 +5683,7 @@ Modules obtained by reading an ``S``-module over ``R`` along ``R -> S``.
 
 #### `TensorProductModules` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/pure/modules.py#L1348`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/pure/modules.py#L1348)
+- **Source**: [`src/dzack_research/preamble/categories/modules/pure/modules.py#L1349`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/pure/modules.py#L1349)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[Modules(self.base_ring())]`
 
@@ -5617,6 +5696,7 @@ Modules carrying a selected tensor-product universal object.
   > Return the universal pure tensor of two elements.
 - `tensor_factor(self, index)`
 - `tensor_factors(self)`
+  > Return the family of factors, indexed by the product's own index set.
 - `universal_bilinear_map(self)`
 
 **Category Instance Methods:**
@@ -5624,12 +5704,12 @@ Modules carrying a selected tensor-product universal object.
 
 #### `TorsionBilinearFormIsoCategoryConstruction` `[CATEGORY]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/torsion_form_modules.py#L1066`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/torsion_form_modules.py#L1066)
+- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/torsion_form_modules.py#L1105`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/torsion_form_modules.py#L1105)
 - **Bases**: `_TorsionFormIsoCategoryConstruction`
 
 #### `TorsionBilinearFormModules` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/torsion_form_modules.py#L1133`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/torsion_form_modules.py#L1133)
+- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/torsion_form_modules.py#L1172`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/torsion_form_modules.py#L1172)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[FinitelyPresentedTorsionModules(self.base_ring()), FinitelyPresentedBilinearFormModules(self.base_ring())]`
 
@@ -5680,12 +5760,12 @@ Finitely presented torsion modules with a bilinear form.
 
 #### `TorsionQuadraticFormIsoCategoryConstruction` `[CATEGORY]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/torsion_form_modules.py#L1070`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/torsion_form_modules.py#L1070)
+- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/torsion_form_modules.py#L1109`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/torsion_form_modules.py#L1109)
 - **Bases**: `_TorsionFormIsoCategoryConstruction`
 
 #### `TorsionQuadraticFormModules` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/torsion_form_modules.py#L1270`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/torsion_form_modules.py#L1270)
+- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/torsion_form_modules.py#L1309`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/torsion_form_modules.py#L1309)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[FinitelyPresentedTorsionModules(self.base_ring()), FinitelyPresentedQuadraticFormModules(self.base_ring())]`
 
@@ -5724,7 +5804,7 @@ Finitely presented torsion modules with a quadratic form.
 
 #### `VectorSpaces` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/pure/modules.py#L437`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/pure/modules.py#L437)
+- **Source**: [`src/dzack_research/preamble/categories/modules/pure/modules.py#L464`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/pure/modules.py#L464)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[Modules(self.base_ring())]`
 
@@ -5738,7 +5818,7 @@ Vector spaces over a field.
 
 #### `CochainHomset` `[HOMSET]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/cochain_complexes.py#L305`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/cochain_complexes.py#L305)
+- **Source**: [`src/dzack_research/preamble/categories/modules/cochain_complexes.py#L307`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/cochain_complexes.py#L307)
 - **Bases**: `CategoricalHomset`
 - **Constructor**: `def __init__(self, hom_family, domain, codomain) -> None`
 - **Constructor**: `def _element_constructor_(self, components)`
@@ -5751,7 +5831,7 @@ Vector spaces over a field.
 
 #### `CochainMorphism` `[MORPHISM]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/cochain_complexes.py#L235`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/cochain_complexes.py#L235)
+- **Source**: [`src/dzack_research/preamble/categories/modules/cochain_complexes.py#L237`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/cochain_complexes.py#L237)
 - **Bases**: `Morphism`
 
 A degree-zero morphism commuting with the selected differentials.
@@ -5765,7 +5845,7 @@ A degree-zero morphism commuting with the selected differentials.
 
 #### `Connection` `[MORPHISM]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/connections.py#L72`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/connections.py#L72)
+- **Source**: [`src/dzack_research/preamble/categories/modules/connections.py#L74`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/connections.py#L74)
 - **Bases**: `Morphism`
 
 An ``R``-connection ``E -> E tensor_A Omega^1_{A/R}``.
@@ -5790,7 +5870,7 @@ An ``R``-connection ``E -> E tensor_A Omega^1_{A/R}``.
 #### `ConnectionHomset` `[HOMSET]` `[Exported Session]`
 
 - **Source**: [`src/dzack_research/preamble/categories/modules/connections.py#L421`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/connections.py#L421)
-- **Bases**: `OwnedHomset`
+- **Bases**: `CategoricalHomset`
 - **Constructor**: `def __init__(self, domain, codomain) -> None`
 - **Constructor**: `def _element_constructor_(self, images)`
 
@@ -5799,7 +5879,7 @@ An ``R``-connection ``E -> E tensor_A Omega^1_{A/R}``.
 
 #### `ConnectionMorphism` `[MORPHISM]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/connections.py#L376`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/connections.py#L376)
+- **Source**: [`src/dzack_research/preamble/categories/modules/connections.py#L380`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/connections.py#L380)
 - **Bases**: `ModuleMorphism`
 
 An ``A``-linear map horizontal for the selected connections.
@@ -5808,8 +5888,8 @@ An ``A``-linear map horizontal for the selected connections.
 
 #### `ConnectionSpace` `[HOMSET]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/connections.py#L293`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/connections.py#L293)
-- **Bases**: `OwnedHomset`
+- **Source**: [`src/dzack_research/preamble/categories/modules/connections.py#L291`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/connections.py#L291)
+- **Bases**: `CategoricalHomset`
 - **Constructor**: `def __init__(self, module) -> None`
 - **Constructor**: `def _element_constructor_(self, generator_images)`
 
@@ -5825,8 +5905,8 @@ An ``A``-linear map horizontal for the selected connections.
 
 #### `FiberedFormedModuleHomset` `[HOMSET]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L488`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L488)
-- **Bases**: `OwnedHomset`
+- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L489`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L489)
+- **Bases**: `CategoricalHomset`
 - **Constructor**: `def __init__(self, domain, codomain, ring_map) -> None`
 - **Constructor**: `def _element_constructor_(self, datum)`
 
@@ -5837,7 +5917,7 @@ An ``A``-linear map horizontal for the selected connections.
 
 #### `FiberedFormedModuleMorphism` `[MORPHISM]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L344`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L344)
+- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L345`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L345)
 - **Bases**: `Morphism`
 
 A formed-module morphism over a coefficient-ring map ``g:S1 -> S2``.
@@ -5866,46 +5946,38 @@ construction rather than being represented by a semilinear fiction.
 
 #### `FormEmbedding` `[MORPHISM]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L60`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L60)
-- **Bases**: `FormMorphism`
+- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L209`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L209)
+- **Bases**: `FormedModuleMorphism`
 
-A form-preserving morphism declared to be a monomorphism.
+A formed morphism declared to be a monomorphism.
 
-- **Constructor**: `def __init__(self, parent, images, *, quadratic: bool) -> None`
+- **Constructor**: `def __init__(self, parent, module_morphism, value_morphism, *, quadratic: bool) -> None`
 
 **Public Methods:**
 - `is_injective(self) -> bool`
 - `is_quadratic(self) -> bool`
 
-#### `FormMorphism` `[MORPHISM]` `[Internal]`
-
-- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L56`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L56)
-- **Bases**: `ModuleMorphism`
-
-A linear morphism verified to preserve the equipped forms.
-
-
 #### `FormedModuleHomset` `[HOMSET]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L248`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L248)
+- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L249`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L249)
 - **Bases**: `CategoricalHomset`
 - **Constructor**: `def __init__(self, hom_family, domain, codomain) -> None`
 - **Constructor**: `def _element_constructor_(self, datum)`
 
 **Public Methods:**
-- `identity(self)`
+- `@cached_method` `identity(self)`
 
 #### `FormedModuleMorphism` `[MORPHISM]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L159`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L159)
+- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L101`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L101)
 - **Bases**: `Morphism`
 
 A morphism of formed modules in one coefficient-ring fiber.
 
 The datum is a pair ``(f,h)`` with a module map on the underlying modules
 and a module map on the value objects, satisfying the form square.  The
-stricter :class:`FormMorphism` remains the separate notion where ``h`` is
-the identity and the form is preserved exactly.
+form is preserved exactly, and the morphism is an isometry onto its image,
+exactly when ``h`` is the identity; :func:`is_form_morphism` asks that.
 
 - **Constructor**: `def __init__(self, parent, module_morphism, value_morphism) -> None`
 - **Constructor**: `def __call__(self, element)`
@@ -5934,7 +6006,7 @@ The selected monomorphism from an ideal into ``R`` or ``Frac(R)``.
 
 #### `FramingMorphism` `[MORPHISM]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py#L859`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py#L859)
+- **Source**: [`src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py#L851`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py#L851)
 - **Bases**: `ModuleMorphism`
 
 A declared surjective linear map from a free framed module.
@@ -5978,7 +6050,7 @@ An ``R``-linear map commuting with the chosen ``G``-actions.
 
 #### `ModuleEmbedding` `[MORPHISM]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py#L866`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py#L866)
+- **Source**: [`src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py#L858`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py#L858)
 - **Bases**: `ModuleMorphism`
 
 A module morphism declared to be a monomorphism.
@@ -5991,7 +6063,7 @@ A module morphism declared to be a monomorphism.
 
 #### `ModuleHomset` `[HOMSET]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py#L1068`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py#L1068)
+- **Source**: [`src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py#L1043`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py#L1043)
 - **Bases**: `_ModuleHomsetCommonMethods`, `CategoricalHomset`
 - **Constructor**: `def __init__(self, hom_family, domain, codomain) -> None`
 - **Constructor**: `def __call__(self, images)`
@@ -6003,7 +6075,7 @@ A module morphism declared to be a monomorphism.
 
 #### `ModuleMorphism` `[MORPHISM]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py#L201`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py#L201)
+- **Source**: [`src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py#L195`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py#L195)
 - **Bases**: `Morphism`
 
 The linear extension of a function on a chosen module framing.
@@ -6039,10 +6111,8 @@ The linear extension of a function on a chosen module framing.
 - `matrix(self)`
   > Return the underlying free-module morphism under the matrix-Hom identification.
 - `module_generator_morphism(self)`
-- `morphisms_agree(self, other) -> bool`
-  > Decide equality from this source module's selected finite framing.
 - `orthogonal_complement(self)`
-  > Return ``im(self)^perp`` inside the formed codomain.
+  > Return ``im(self)^perp`` when the codomain carries a scalar-valued pairing.
 - `residue_morphism(self)`
   > Return ``f tensor_R k`` for a morphism of finite modules over a local ring.
 - `saturation(self)`
@@ -6054,7 +6124,7 @@ The linear extension of a function on a chosen module framing.
 
 #### `QuadraticModuleHomset` `[HOMSET]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/powers.py#L193`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/powers.py#L193)
+- **Source**: [`src/dzack_research/preamble/categories/modules/powers.py#L195`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/powers.py#L195)
 - **Bases**: `ModuleHomset`
 
 The ordinary Hom ``Hom_R(Gamma^2(M),W)`` with quadratic-map syntax.
@@ -6066,7 +6136,7 @@ The ordinary Hom ``Hom_R(Gamma^2(M),W)`` with quadratic-map syntax.
 
 #### `QuadraticModuleMorphism` `[MORPHISM]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/powers.py#L75`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/powers.py#L75)
+- **Source**: [`src/dzack_research/preamble/categories/modules/powers.py#L77`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/powers.py#L77)
 - **Bases**: `ModuleMorphism`
 
 A classifier ``Gamma^2(M) -> W``, read as the quadratic map ``M -> W``.
@@ -6086,7 +6156,7 @@ A classifier ``Gamma^2(M) -> W``, read as the quadratic map ``M -> W``.
 
 #### `TensorProductModuleHomset` `[HOMSET]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py#L1274`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py#L1274)
+- **Source**: [`src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py#L1249`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py#L1249)
 - **Bases**: `ModuleHomset`
 
 The ordinary module Hom with tensor-domain bilinear constructor syntax.
@@ -6095,7 +6165,7 @@ The ordinary module Hom with tensor-domain bilinear constructor syntax.
 
 #### `TensorProductModuleMorphism` `[MORPHISM]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py#L1202`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py#L1202)
+- **Source**: [`src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py#L1177`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py#L1177)
 - **Bases**: `ModuleMorphism`
 
 A linear map out of a chosen tensor product, hence a bilinear map.
@@ -6113,7 +6183,7 @@ A linear map out of a chosen tensor product, hence a bilinear map.
 
 #### `TorsionFormAutomorphism` `[MORPHISM]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/torsion_form_modules.py#L564`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/torsion_form_modules.py#L564)
+- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/torsion_form_modules.py#L603`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/torsion_form_modules.py#L603)
 - **Bases**: `TorsionFormIsometry`
 
 A live form-preserving automorphism, parented by its orthogonal group.
@@ -6127,7 +6197,7 @@ A live form-preserving automorphism, parented by its orthogonal group.
 
 #### `TorsionFormOrthogonalGroup` `[HOMSET]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/torsion_form_modules.py#L624`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/torsion_form_modules.py#L624)
+- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/torsion_form_modules.py#L663`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/torsion_form_modules.py#L663)
 - **Bases**: `CategoricalHomset`
 
 The finite group of live automorphisms preserving one finite form.
@@ -6157,7 +6227,7 @@ The finite group of live automorphisms preserving one finite form.
 
 #### `BilinearMap` `[OBJECT]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/pure/modules.py#L1212`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/pure/modules.py#L1212)
+- **Source**: [`src/dzack_research/preamble/categories/modules/pure/modules.py#L1213`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/pure/modules.py#L1213)
 - **Bases**: `SageObject`
 
 A bilinear map specified on the selected product framing.
@@ -6174,12 +6244,12 @@ A bilinear map specified on the selected product framing.
 
 #### `CochainComplexElement` `[ELEMENT]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/cochain_complexes.py#L167`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/cochain_complexes.py#L167)
+- **Source**: [`src/dzack_research/preamble/categories/modules/cochain_complexes.py#L169`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/cochain_complexes.py#L169)
 - **Bases**: `GradedDirectSumElement`
 
 #### `CochainComplexObject` `[OBJECT]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/cochain_complexes.py#L171`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/cochain_complexes.py#L171)
+- **Source**: [`src/dzack_research/preamble/categories/modules/cochain_complexes.py#L173`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/cochain_complexes.py#L173)
 - **Bases**: `GradedDirectSumModule`
 
 A nonnegative represented cochain complex with selected finite pieces.
@@ -6192,7 +6262,7 @@ A nonnegative represented cochain complex with selected finite pieces.
 
 #### `CochainDifferential` `[OBJECT]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/cochain_complexes.py#L140`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/cochain_complexes.py#L140)
+- **Source**: [`src/dzack_research/preamble/categories/modules/cochain_complexes.py#L142`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/cochain_complexes.py#L142)
 
 The degree-``+1`` differential of a represented cochain complex.
 
@@ -6206,7 +6276,7 @@ The degree-``+1`` differential of a represented cochain complex.
 
 #### `ConnectionDeRhamDifferential` `[OBJECT]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/connections.py#L491`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/connections.py#L491)
+- **Source**: [`src/dzack_research/preamble/categories/modules/connections.py#L489`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/connections.py#L489)
 
 The covariant differential on ``E tensor_A Omega^*_{A/R}``.
 
@@ -6219,7 +6289,7 @@ The covariant differential on ``E tensor_A Omega^*_{A/R}``.
 
 #### `ConnectionDeRhamModule` `[OBJECT]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/connections.py#L514`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/connections.py#L514)
+- **Source**: [`src/dzack_research/preamble/categories/modules/connections.py#L512`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/connections.py#L512)
 
 Factory namespace for a flat connection's de Rham DG-module.
 
@@ -6246,7 +6316,7 @@ An element of a fractional ideal, distinct from its image in the fraction field.
 
 #### `FreeModuleGeneratorSet` `[OBJECT]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py#L645`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py#L645)
+- **Source**: [`src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py#L650`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py#L650)
 - **Bases**: `Parent`
 
 The image of the canonical basis map of a free module.
@@ -6259,7 +6329,7 @@ The image of the canonical basis map of a free module.
 
 #### `FreeResolution` `[OBJECT]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/pure/modules.py#L653`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/pure/modules.py#L653)
+- **Source**: [`src/dzack_research/preamble/categories/modules/pure/modules.py#L655`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/pure/modules.py#L655)
 
 The exact resolution ``0 -> F_1 -> F_0 -> M -> 0`` over a PID.
 
@@ -6411,13 +6481,14 @@ A coefficient-field irreducible character or a rational Galois orbit.
 
 #### `OwnedFractionFieldQuotient` `[OBJECT]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/framed/fraction_field_quotients.py#L168`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/fraction_field_quotients.py#L168)
+- **Source**: [`src/dzack_research/preamble/categories/modules/framed/fraction_field_quotients.py#L180`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/fraction_field_quotients.py#L180)
 - **Bases**: `Parent`
 
 The preamble module ``QQ / n ZZ`` with a private QmodnZ backend.
 
 - **Constructor**: `def __init__(self, engine: QmodnZ) -> None`
 - **Constructor**: `def _element_constructor_(self, value)`
+- **Constructor**: `def __call__(self, value)`
 
 **Public Methods:**
 - `an_element(self)`
@@ -6425,12 +6496,13 @@ The preamble module ``QQ / n ZZ`` with a private QmodnZ backend.
 
 #### `RestrictedScalarsModuleView` `[OBJECT]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/pure/modules.py#L909`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/pure/modules.py#L909)
+- **Source**: [`src/dzack_research/preamble/categories/modules/pure/modules.py#L906`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/pure/modules.py#L906)
 - **Bases**: `Parent`
 
 A distinct parent for the same additive group with a restricted scalar action.
 
 - **Constructor**: `def __init__(self, module, ring_map) -> None`
+- **Constructor**: `def __call__(self, value)`
 - **Constructor**: `def _element_constructor_(self, value)`
 
 **Public Methods:**
@@ -6445,7 +6517,7 @@ A distinct parent for the same additive group with a restricted scalar action.
 
 #### `TorsionFormIsometry` `[OBJECT]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/torsion_form_modules.py#L112`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/torsion_form_modules.py#L112)
+- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/torsion_form_modules.py#L126`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/torsion_form_modules.py#L126)
 - **Bases**: `CategoricalIsomorphism`
 
 An explicit isomorphism of finite framed torsion modules preserving a form.
@@ -6459,7 +6531,7 @@ An explicit isomorphism of finite framed torsion modules preserving a form.
 
 #### `register_module_scalar_action` `[REGISTRY]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/modules/pure/modules.py#L52`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/pure/modules.py#L52)
+- **Source**: [`src/dzack_research/preamble/categories/modules/pure/modules.py#L54`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/pure/modules.py#L54)
 
 Register ordinary ``r*m``/``m*r`` syntax for an owned module parent.
 
@@ -6477,7 +6549,7 @@ Return ``g^flat : M -> M^vee`` for a scalar-valued bilinear metric.
 #### `AlternatingPower` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def AlternatingPower(module, degree)`
-- **Source**: [`src/dzack_research/preamble/categories/modules/powers.py#L669`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/powers.py#L669)
+- **Source**: [`src/dzack_research/preamble/categories/modules/powers.py#L668`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/powers.py#L668)
 
 Return ``Lambda^degree(module)`` from the selected module presentation.
 
@@ -6485,7 +6557,7 @@ Return ``Lambda^degree(module)`` from the selected module presentation.
 #### `BasedFreeModule` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def BasedFreeModule(base_ring, rank_or_labels)`
-- **Source**: [`src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py#L800`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py#L800)
+- **Source**: [`src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py#L819`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py#L819)
 
 Return the selected based free module on a rank or explicit labels.
 
@@ -6493,7 +6565,7 @@ Return the selected based free module on a rank or explicit labels.
 #### `BilinearForm` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def BilinearForm(module, value_module, datum)`
-- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L1175`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L1175)
+- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L1196`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L1196)
 
 Return ``module`` equipped with the stated bilinear form.
 
@@ -6501,7 +6573,7 @@ Return ``module`` equipped with the stated bilinear form.
 #### `Boundaries` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def Boundaries(complex_, degree)`
-- **Source**: [`src/dzack_research/preamble/categories/modules/cochain_complexes.py#L414`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/cochain_complexes.py#L414)
+- **Source**: [`src/dzack_research/preamble/categories/modules/cochain_complexes.py#L416`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/cochain_complexes.py#L416)
 
 Return ``im(d^(degree-1))`` as a subobject of ``C^degree``.
 
@@ -6509,12 +6581,12 @@ Return ``im(d^(degree-1))`` as a subobject of ``C^degree``.
 #### `CochainComplex` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def CochainComplex(base_ring, pieces, differentials, name=None)`
-- **Source**: [`src/dzack_research/preamble/categories/modules/cochain_complexes.py#L405`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/cochain_complexes.py#L405)
+- **Source**: [`src/dzack_research/preamble/categories/modules/cochain_complexes.py#L407`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/cochain_complexes.py#L407)
 
 #### `Cohomology` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def Cohomology(complex_, degree)`
-- **Source**: [`src/dzack_research/preamble/categories/modules/cochain_complexes.py#L422`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/cochain_complexes.py#L422)
+- **Source**: [`src/dzack_research/preamble/categories/modules/cochain_complexes.py#L424`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/cochain_complexes.py#L424)
 
 Return ``H^degree = ker(d)/im(d)`` from finite presentations.
 
@@ -6534,7 +6606,7 @@ complexes and for restricted-scalar de Rham pieces carrying relations.
 #### `Connections` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `@cached_function(key=lambda module: id(module))` `def Connections(module) -> ConnectionSpace`
-- **Source**: [`src/dzack_research/preamble/categories/modules/connections.py#L371`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/connections.py#L371)
+- **Source**: [`src/dzack_research/preamble/categories/modules/connections.py#L375`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/connections.py#L375)
 
 #### `CorrelationIsomorphism` `[FUNCTION]` `[Exported Session]`
 
@@ -6547,7 +6619,7 @@ Return the perfect correlation ``M ~= M^vee`` for a unimodular form.
 #### `Cycles` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def Cycles(complex_, degree)`
-- **Source**: [`src/dzack_research/preamble/categories/modules/cochain_complexes.py#L409`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/cochain_complexes.py#L409)
+- **Source**: [`src/dzack_research/preamble/categories/modules/cochain_complexes.py#L411`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/cochain_complexes.py#L411)
 
 Return ``ker(d^degree)`` as a subobject of ``C^degree``.
 
@@ -6563,7 +6635,7 @@ Return ``det(module) = Lambda^rank(module) module``.
 #### `DiscriminantModule` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def DiscriminantModule(lattice)`
-- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/discriminant_modules.py#L827`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/discriminant_modules.py#L827)
+- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/discriminant_modules.py#L842`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/discriminant_modules.py#L842)
 
 Return the literal cokernel of ``L -> L^#`` with descended forms when supported.
 
@@ -6571,7 +6643,7 @@ Return the literal cokernel of ``L -> L^#`` with descended forms when supported.
 #### `DividedPower` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def DividedPower(module, degree)`
-- **Source**: [`src/dzack_research/preamble/categories/modules/powers.py#L683`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/powers.py#L683)
+- **Source**: [`src/dzack_research/preamble/categories/modules/powers.py#L682`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/powers.py#L682)
 
 Return the divided power ``Gamma^degree(module)``.
 
@@ -6582,7 +6654,7 @@ the same divided-power-ideal presentation.
 #### `DividedSquare` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `@cached_function(key=lambda module: id(module))` `def DividedSquare(module)`
-- **Source**: [`src/dzack_research/preamble/categories/modules/powers.py#L601`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/powers.py#L601)
+- **Source**: [`src/dzack_research/preamble/categories/modules/powers.py#L600`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/powers.py#L600)
 
 Return ``Gamma^2_R(M)``, the universal target for quadratic maps.
 
@@ -6598,7 +6670,7 @@ Return ``Lambda^degree(module^vee)``.
 #### `FinitelyPresentedModule` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def FinitelyPresentedModule(presentation)`
-- **Source**: [`src/dzack_research/preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.py#L1585`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.py#L1585)
+- **Source**: [`src/dzack_research/preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.py#L1630`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.py#L1630)
 
 Return ``coker(presentation)`` in ``R-Mod`` with its selected module presentation.
 
@@ -6606,7 +6678,7 @@ Return ``coker(presentation)`` in ``R-Mod`` with its selected module presentatio
 #### `FormModule` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def FormModule(form)`
-- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L1063`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L1063)
+- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L1087`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L1087)
 
 Return the same represented module construction equipped with ``form``.
 
@@ -6619,7 +6691,7 @@ objects.
 #### `FractionFieldQuotient` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def FractionFieldQuotient(base_ring, modulus=1)`
-- **Source**: [`src/dzack_research/preamble/categories/modules/framed/fraction_field_quotients.py#L263`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/fraction_field_quotients.py#L263)
+- **Source**: [`src/dzack_research/preamble/categories/modules/framed/fraction_field_quotients.py#L284`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/fraction_field_quotients.py#L284)
 
 Return ``Frac(base_ring) / modulus*base_ring`` when natively supported.
 
@@ -6647,7 +6719,7 @@ must be a unit of the coefficient ring.
 #### `FreeModule` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def FreeModule(base_ring, rank_or_index_set)`
-- **Source**: [`src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py#L718`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py#L718)
+- **Source**: [`src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py#L737`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py#L737)
 
 Return the free module on a finite rank or an arbitrary index set.
 
@@ -6655,7 +6727,7 @@ Return the free module on a finite rank or an arbitrary index set.
 #### `FreeModuleOn` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def FreeModuleOn(base_ring, module_generating_set)`
-- **Source**: [`src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py#L772`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py#L772)
+- **Source**: [`src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py#L791`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py#L791)
 
 Return \(F_R(S)\), retaining the actual labels in ``S``.
 
@@ -6663,7 +6735,7 @@ Return \(F_R(S)\), retaining the actual labels in ``S``.
 #### `FreshFreeModuleOn` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def FreshFreeModuleOn(base_ring, module_generating_set)`
-- **Source**: [`src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py#L784`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py#L784)
+- **Source**: [`src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py#L803`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py#L803)
 
 Return a new free-module parent on the specified basis labels.
 
@@ -6745,7 +6817,7 @@ Return the integral ideal of ``R`` generated by the stated elements.
 #### `InternalHom` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def InternalHom(source, target)`
-- **Source**: [`src/dzack_research/preamble/categories/modules/internal_hom.py#L100`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/internal_hom.py#L100)
+- **Source**: [`src/dzack_research/preamble/categories/modules/internal_hom.py#L102`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/internal_hom.py#L102)
 
 Return the enriched Hom object ``source.Hom(target)``.
 
@@ -6760,7 +6832,7 @@ model for the presentation and never escapes as a second Hom object.
 #### `MatrixSpace` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def MatrixSpace(base_ring, nrows, ncols=None)`
-- **Source**: [`src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py#L732`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py#L732)
+- **Source**: [`src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py#L751`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py#L751)
 
 Return ``Hom_R(F_R([n]), F_R([m]))`` for ``m=nrows``, ``n=ncols``.
 
@@ -6768,7 +6840,7 @@ Return ``Hom_R(F_R([n]), F_R([m]))`` for ``m=nrows``, ``n=ncols``.
 #### `ModuleWithConnection` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def ModuleWithConnection(connection)`
-- **Source**: [`src/dzack_research/preamble/categories/modules/connections.py#L453`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/connections.py#L453)
+- **Source**: [`src/dzack_research/preamble/categories/modules/connections.py#L451`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/connections.py#L451)
 
 Return a fresh finite-free module carrying the selected connection.
 
@@ -6796,7 +6868,7 @@ Return ``Lambda^k M ~= Lambda^(n-k) M^vee`` from ``volume``.
 #### `QuadraticForm` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def QuadraticForm(module, value_module, datum)`
-- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L1182`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L1182)
+- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L1203`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L1203)
 
 Return ``module`` equipped with the stated quadratic form.
 
@@ -6804,7 +6876,7 @@ Return ``module`` equipped with the stated quadratic form.
 #### `SymmetricPower` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def SymmetricPower(module, degree)`
-- **Source**: [`src/dzack_research/preamble/categories/modules/powers.py#L655`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/powers.py#L655)
+- **Source**: [`src/dzack_research/preamble/categories/modules/powers.py#L654`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/powers.py#L654)
 
 Return ``Sym^degree(module)`` from the selected module presentation.
 
@@ -6812,7 +6884,7 @@ Return ``Sym^degree(module)`` from the selected module presentation.
 #### `TensorPower` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def TensorPower(module, degree)`
-- **Source**: [`src/dzack_research/preamble/categories/modules/powers.py#L633`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/powers.py#L633)
+- **Source**: [`src/dzack_research/preamble/categories/modules/powers.py#L632`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/powers.py#L632)
 
 Return the selected iterated tensor power ``M^{\otimes degree}``.
 
@@ -6836,12 +6908,12 @@ merely verifies two already represented mutually inverse module maps.
 #### `alternating_power_morphism` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def alternating_power_morphism(morphism, degree)`
-- **Source**: [`src/dzack_research/preamble/categories/modules/powers.py#L886`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/powers.py#L886)
+- **Source**: [`src/dzack_research/preamble/categories/modules/powers.py#L885`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/powers.py#L885)
 
 #### `alternating_power_product` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def alternating_power_product(module, left_degree, left, right_degree, right)`
-- **Source**: [`src/dzack_research/preamble/categories/modules/powers.py#L949`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/powers.py#L949)
+- **Source**: [`src/dzack_research/preamble/categories/modules/powers.py#L948`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/powers.py#L948)
 
 Multiply homogeneous exterior-power elements by the wedge product.
 
@@ -6865,22 +6937,22 @@ Apply ``R -> S`` and return the resulting element of the owned ring ``S``.
 #### `biproduct_morphism` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def biproduct_morphism(left_morphism, right_morphism, source=None, target=None)`
-- **Source**: [`src/dzack_research/preamble/categories/modules/pure/modules.py#L1687`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/pure/modules.py#L1687)
+- **Source**: [`src/dzack_research/preamble/categories/modules/pure/modules.py#L1684`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/pure/modules.py#L1684)
 
 #### `cochain_homset` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def cochain_homset(domain, codomain)`
-- **Source**: [`src/dzack_research/preamble/categories/modules/cochain_complexes.py#L395`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/cochain_complexes.py#L395)
+- **Source**: [`src/dzack_research/preamble/categories/modules/cochain_complexes.py#L397`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/cochain_complexes.py#L397)
 
 #### `connection_homset` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def connection_homset(domain, codomain)`
-- **Source**: [`src/dzack_research/preamble/categories/modules/connections.py#L449`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/connections.py#L449)
+- **Source**: [`src/dzack_research/preamble/categories/modules/connections.py#L447`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/connections.py#L447)
 
 #### `divided_power_element` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def divided_power_element(module, degree, element)`
-- **Source**: [`src/dzack_research/preamble/categories/modules/powers.py#L1026`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/powers.py#L1026)
+- **Source**: [`src/dzack_research/preamble/categories/modules/powers.py#L1025`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/powers.py#L1025)
 
 Return ``gamma_degree(element)`` in ``Gamma^degree(module)``.
 
@@ -6888,7 +6960,7 @@ Return ``gamma_degree(element)`` in ``Gamma^degree(module)``.
 #### `divided_power_invariant_inclusion` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def divided_power_invariant_inclusion(module, degree)`
-- **Source**: [`src/dzack_research/preamble/categories/modules/powers.py#L1064`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/powers.py#L1064)
+- **Source**: [`src/dzack_research/preamble/categories/modules/powers.py#L1063`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/powers.py#L1063)
 
 Return ``Gamma^n M -> M^{tensor n}`` as the symmetric orbit sum.
 
@@ -6896,12 +6968,12 @@ Return ``Gamma^n M -> M^{tensor n}`` as the symmetric orbit sum.
 #### `divided_power_morphism` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def divided_power_morphism(morphism, degree)`
-- **Source**: [`src/dzack_research/preamble/categories/modules/powers.py#L890`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/powers.py#L890)
+- **Source**: [`src/dzack_research/preamble/categories/modules/powers.py#L889`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/powers.py#L889)
 
 #### `divided_power_product` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def divided_power_product(module, left_degree, left, right_degree, right)`
-- **Source**: [`src/dzack_research/preamble/categories/modules/powers.py#L897`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/powers.py#L897)
+- **Source**: [`src/dzack_research/preamble/categories/modules/powers.py#L896`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/powers.py#L896)
 
 Multiply homogeneous divided-power elements into ``Gamma^{a+b} M``.
 
@@ -6909,12 +6981,12 @@ Multiply homogeneous divided-power elements into ``Gamma^{a+b} M``.
 #### `divided_square_invariant_inclusion` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def divided_square_invariant_inclusion(module)`
-- **Source**: [`src/dzack_research/preamble/categories/modules/powers.py#L1162`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/powers.py#L1162)
+- **Source**: [`src/dzack_research/preamble/categories/modules/powers.py#L1161`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/powers.py#L1161)
 
 #### `divided_square_morphism` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def divided_square_morphism(morphism, source=None, target=None)`
-- **Source**: [`src/dzack_research/preamble/categories/modules/powers.py#L617`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/powers.py#L617)
+- **Source**: [`src/dzack_research/preamble/categories/modules/powers.py#L616`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/powers.py#L616)
 
 Return ``Gamma^2(f)`` for a module morphism ``f``.
 
@@ -6922,7 +6994,7 @@ Return ``Gamma^2(f)`` for a module morphism ``f``.
 #### `fibered_formed_module_homset` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def fibered_formed_module_homset(domain, codomain, ring_map) -> FiberedFormedModuleHomset`
-- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L538`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L538)
+- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L546`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L546)
 
 Return formed morphisms ``domain -> codomain`` lying over ``ring_map``.
 
@@ -6930,31 +7002,32 @@ Return formed morphisms ``domain -> codomain`` lying over ``ring_map``.
 #### `form_embedding` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def form_embedding(domain, codomain, images, *, quadratic: bool | None=None) -> FormEmbedding`
-- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L91`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L91)
+- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L223`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L223)
 
 Construct a form-preserving monomorphism on a chosen framing.
 
 The underlying module homset checks linearity and the selected relations.
-The embedding specialization checks preservation of ``b`` or ``q`` on the
-finite framing.  This works for both represented :class:`FormModule`
-objects and discriminant-form objects, which intentionally have their own
-structured-category realization rather than being wrappers around one.
+The form square is checked by :class:`FormedModuleMorphism`, whose value
+map is the identity here.  This works for both represented
+:class:`FormModule` objects and discriminant-form objects, which
+intentionally have their own structured-category realization rather than
+being wrappers around one.
 
 
 #### `formed_module_homset` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def formed_module_homset(domain, codomain) -> FormedModuleHomset`
-- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L313`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L313)
+- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L314`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L314)
 
 #### `framing_morphism` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def framing_morphism(domain, codomain, images) -> FramingMorphism`
-- **Source**: [`src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py#L1180`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py#L1180)
+- **Source**: [`src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py#L1155`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py#L1155)
 
 #### `free_resolution` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def free_resolution(module)`
-- **Source**: [`src/dzack_research/preamble/categories/modules/pure/modules.py#L717`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/pure/modules.py#L717)
+- **Source**: [`src/dzack_research/preamble/categories/modules/pure/modules.py#L719`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/pure/modules.py#L719)
 
 #### `graded_module_homset` `[FUNCTION]` `[Internal]`
 
@@ -6981,7 +7054,14 @@ Return the map on internal Homs induced by pre- and postcomposition.
 #### `is_form_morphism` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def is_form_morphism(morphism) -> bool`
-- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L1253`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L1253)
+- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L1274`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py#L1274)
+
+Return whether a formed morphism preserves the form exactly.
+
+A morphism of formed modules is a pair ``(f,h)``.  It preserves the form
+exactly -- it is an isometry onto its image -- when ``h`` is the identity
+of the value module.
+
 
 #### `isotypic_component` `[FUNCTION]` `[Internal]`
 
@@ -7002,7 +7082,7 @@ Return ``⊕ M_chi -> M`` with its selected summand structure.
 #### `matrix_change_ring` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def matrix_change_ring(matrix, ring)`
-- **Source**: [`src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py#L760`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py#L760)
+- **Source**: [`src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py#L779`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py#L779)
 
 Return the same finite coordinate matrix over ``ring``.
 
@@ -7010,7 +7090,7 @@ Return the same finite coordinate matrix over ``ring``.
 #### `module_coefficients` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def module_coefficients(element, module=None) -> dict`
-- **Source**: [`src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py#L125`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py#L125)
+- **Source**: [`src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py#L119`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py#L119)
 
 Return coefficients in the selected framing of the stated module.
 
@@ -7023,7 +7103,7 @@ the order.
 #### `module_embedding` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def module_embedding(domain, codomain, images, *, verify_linearity=True) -> ModuleEmbedding`
-- **Source**: [`src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py#L1186`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py#L1186)
+- **Source**: [`src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py#L1161`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py#L1161)
 
 Construct a declared module monomorphism on a chosen framing.
 
@@ -7031,12 +7111,12 @@ Construct a declared module monomorphism on a chosen framing.
 #### `module_homset` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def module_homset(domain, codomain) -> ModuleHomset`
-- **Source**: [`src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py#L1171`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py#L1171)
+- **Source**: [`src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py#L1146`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py#L1146)
 
 #### `module_subobject_on` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def module_subobject_on(module, module_generating_set)`
-- **Source**: [`src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py#L508`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py#L508)
+- **Source**: [`src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py#L513`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py#L513)
 
 Return the submodule spanned by one explicitly finite family.
 
@@ -7056,7 +7136,7 @@ Return the owned grading monoid, defaulting to \(\mathbb{Z},+\).
 #### `p_adic_jordan_module_generators` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def p_adic_jordan_module_generators(form, *, quadratic: bool)`
-- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/torsion_form_modules.py#L504`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/torsion_form_modules.py#L504)
+- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/torsion_form_modules.py#L543`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/torsion_form_modules.py#L543)
 
 Return the selected Jordan generators, prime by prime, inside ``form``.
 
@@ -7085,7 +7165,7 @@ Read a DGA as its canonical right DG-module over itself.
 #### `restrict_scalars` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def restrict_scalars(module, ring_map)`
-- **Source**: [`src/dzack_research/preamble/categories/modules/pure/modules.py#L1162`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/pure/modules.py#L1162)
+- **Source**: [`src/dzack_research/preamble/categories/modules/pure/modules.py#L1163`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/pure/modules.py#L1163)
 
 Return ``Res_R^S(module)`` along the specified morphism ``R -> S``.
 
@@ -7093,7 +7173,7 @@ Return ``Res_R^S(module)`` along the specified morphism ``R -> S``.
 #### `ring_as_module` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `@cached_function` `def ring_as_module(ring)`
-- **Source**: [`src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py#L808`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py#L808)
+- **Source**: [`src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py#L827`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py#L827)
 
 Return the canonical free rank-one module of a ring over itself.
 
@@ -7101,12 +7181,12 @@ Return the canonical free rank-one module of a ring over itself.
 #### `symmetric_power_morphism` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def symmetric_power_morphism(morphism, degree)`
-- **Source**: [`src/dzack_research/preamble/categories/modules/powers.py#L882`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/powers.py#L882)
+- **Source**: [`src/dzack_research/preamble/categories/modules/powers.py#L881`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/powers.py#L881)
 
 #### `tensor_power_permutation` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def tensor_power_permutation(module, degree, positions)`
-- **Source**: [`src/dzack_research/preamble/categories/modules/powers.py#L709`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/powers.py#L709)
+- **Source**: [`src/dzack_research/preamble/categories/modules/powers.py#L708`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/powers.py#L708)
 
 Return the permutation of tensor factors specified by ``positions``.
 
@@ -7114,7 +7194,7 @@ Return the permutation of tensor factors specified by ``positions``.
 #### `tensor_power_polarization` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def tensor_power_polarization(module, degree)`
-- **Source**: [`src/dzack_research/preamble/categories/modules/powers.py#L1124`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/powers.py#L1124)
+- **Source**: [`src/dzack_research/preamble/categories/modules/powers.py#L1123`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/powers.py#L1123)
 
 Return ``M^{tensor n} -> Gamma^n M`` by divided-power multiplication.
 
@@ -7130,12 +7210,12 @@ Return ``f tensor g`` on the chosen tensor products.
 #### `tensor_square_polarization` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def tensor_square_polarization(module)`
-- **Source**: [`src/dzack_research/preamble/categories/modules/powers.py#L1166`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/powers.py#L1166)
+- **Source**: [`src/dzack_research/preamble/categories/modules/powers.py#L1165`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/powers.py#L1165)
 
 #### `torsion_form_isometry` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def torsion_form_isometry(forward, inverse, *, quadratic: bool)`
-- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/torsion_form_modules.py#L141`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/torsion_form_modules.py#L141)
+- **Source**: [`src/dzack_research/preamble/categories/modules/framed/formed/torsion_form_modules.py#L155`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/framed/formed/torsion_form_modules.py#L155)
 
 Return the form isometry represented by mutually inverse module maps.
 
@@ -7151,7 +7231,7 @@ Equip ``module`` with the trivial action of ``group``.
 #### `twist_scalar_action` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def twist_scalar_action(module, ring_endomorphism)`
-- **Source**: [`src/dzack_research/preamble/categories/modules/pure/modules.py#L1172`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/pure/modules.py#L1172)
+- **Source**: [`src/dzack_research/preamble/categories/modules/pure/modules.py#L1173`](file:///home/dzack/research/src/dzack_research/preamble/categories/modules/pure/modules.py#L1173)
 
 Twist the scalar action of an ``R``-module along ``R -> R``.
 
@@ -7200,7 +7280,7 @@ Multiplication is the \(R\)-module morphism
 - `Algebras(...)(self, multiplication)`
 
 **ParentMethods (Methods on Category Objects):**
-- `Hom(self, codomain, category=None)`
+- `Mor(self, codomain, category=None)`
 - `algebra_base_ring(self)`
 - `@cached_method` `algebra_structure_morphism(self)`
   > The structure morphism \(\eta\colon R\to Z(A)\) of this \(R\)-algebra.
@@ -7210,13 +7290,13 @@ Multiplication is the \(R\)-module morphism
   > The multiplication \(m\colon A\otimes_R A\to A\) as an \(R\)-module morphism.
 
 **Category Instance Methods:**
-- `homset(self, domain, codomain)`
+- `Mor(self, domain, codomain)`
   > Return the unique Hom-set ``Hom_{R-Alg}(domain,codomain)``.
 - `super_categories(self)`
 
 #### `AlgebrasWithChosenFinitePresentation` `[SUBCATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/algebras/algebras.py#L429`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/algebras.py#L429)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/algebras.py#L439`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/algebras.py#L439)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[FinitelyPresentedAlgebras(self.base_ring()), FramedAlgebras(self.base_ring())]`
 
@@ -7237,7 +7317,7 @@ Finitely presented algebras carrying one selected finite presentation.
 
 #### `AlgebrasWithChosenMultiplication` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/algebras/algebras.py#L230`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/algebras.py#L230)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/algebras.py#L228`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/algebras.py#L228)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[AssociativeAlgebrasWithChosenMultiplication(self.base_ring()), Algebras(self.base_ring())]`
 
@@ -7253,7 +7333,7 @@ Unital algebras interned on a chosen morphism \(A\otimes_R A\to A\).
 
 #### `AlternatingAlgebras` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/algebras/free_algebras.py#L531`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/free_algebras.py#L531)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/free_algebras.py#L544`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/free_algebras.py#L544)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[StrictlyGradedCommutativeAlgebras(self.base_ring())]`
 
@@ -7261,6 +7341,7 @@ Exterior/alternating algebras.
 
 
 **ParentMethods (Methods on Category Objects):**
+- `Mor(self, codomain, category=None)`
 - `free_source_module(self)`
 - `graded_piece(self, degree)`
 
@@ -7331,9 +7412,17 @@ algebra (Cartan–Eilenberg: a supplemented algebra).
 **Category Instance Methods:**
 - `super_categories(self)`
 
+#### `CohomologyAlgebraHomCategoryConstruction` `[CATEGORY]` `[Internal]`
+
+- **Source**: [`src/dzack_research/preamble/categories/algebras/cohomology_algebras.py#L21`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/cohomology_algebras.py#L21)
+- **Bases**: `HomCategoryConstruction`
+
+**Category Instance Methods:**
+- `fixed_category_class(self)`
+
 #### `CohomologyAlgebras` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/algebras/cohomology_algebras.py#L19`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/cohomology_algebras.py#L19)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/cohomology_algebras.py#L26`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/cohomology_algebras.py#L26)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[StrictlyGradedCommutativeAlgebras(self.base_ring())]`
 
@@ -7348,7 +7437,7 @@ Graded algebras ``H^*(B)`` represented from a DGA ``B``.
 
 #### `CommutativeAlgebraCoproducts` `[SUBCATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/algebras/algebras.py#L528`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/algebras.py#L528)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/algebras.py#L538`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/algebras.py#L538)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[CommutativeAlgebras(self.base_ring())]`
 
@@ -7357,6 +7446,7 @@ Commutative ``R``-algebras equipped as selected binary coproducts.
 
 **ParentMethods (Methods on Category Objects):**
 - `coproduct_factors(self)`
+  > Return the family of factors, indexed by the product's own index set.
 - `coproduct_injection(self, index)`
 - `coproduct_injections(self)`
 - `from_cocone(self, left_map, right_map)`
@@ -7368,7 +7458,7 @@ Commutative ``R``-algebras equipped as selected binary coproducts.
 
 #### `CommutativeAlgebraPushouts` `[SUBCATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/algebras/algebras.py#L574`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/algebras.py#L574)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/algebras.py#L589`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/algebras.py#L589)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[CommutativeAlgebras(self.base_ring())]`
 
@@ -7387,7 +7477,7 @@ Commutative ``R``-algebras equipped as selected pushouts of one span.
 
 #### `CommutativeAlgebras` `[SUBCATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/algebras/algebras.py#L269`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/algebras.py#L269)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/algebras.py#L267`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/algebras.py#L267)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[Algebras(self.base_ring()), OwnedCommutativeRings()]`
 
@@ -7457,12 +7547,12 @@ Associative algebras with bracket ``[x,y]=xy-yx``.
 - `differential_component(self, degree)`
 
 **Category Instance Methods:**
-- `homset(self, domain, codomain)`
+- `Mor(self, domain, codomain)`
 - `super_categories(self)`
 
 #### `DividedPowerAlgebras` `[CATEGORY]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/algebras/free_algebras.py#L700`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/free_algebras.py#L700)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/free_algebras.py#L714`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/free_algebras.py#L714)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[GradedAlgebras(self.base_ring()), CommutativeAlgebras(self.base_ring())]`
 
@@ -7470,6 +7560,7 @@ Divided-power algebras ``Gamma(M)`` with their canonical grading.
 
 
 **ParentMethods (Methods on Category Objects):**
+- `Mor(self, codomain, category=None)`
 - `free_source_module(self)`
 - `graded_piece(self, degree)`
 
@@ -7478,7 +7569,7 @@ Divided-power algebras ``Gamma(M)`` with their canonical grading.
 
 #### `FinitelyPresentedAlgebras` `[SUBCATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/algebras/algebras.py#L414`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/algebras.py#L414)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/algebras.py#L424`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/algebras.py#L424)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[Algebras(self.base_ring())]`
 
@@ -7504,6 +7595,8 @@ Algebras carrying a chosen algebra generating set.
 - `algebra_generating_set(self)`
 - `algebra_generator(self, label)`
 - `@cached_method` `algebra_generators(self)`
+- `is_central(self, element)`
+  > Decide centrality from the selected algebra generating family.
 - `number_of_algebra_generators(self)`
 - `product_on_algebra_generators(self, left, right)`
 
@@ -7512,7 +7605,7 @@ Algebras carrying a chosen algebra generating set.
 
 #### `FreeAlgebras` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/algebras/free_algebras.py#L380`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/free_algebras.py#L380)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/free_algebras.py#L387`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/free_algebras.py#L387)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[Algebras(self.base_ring())]`
 
@@ -7563,8 +7656,8 @@ tag 00JL is the special case \(M = \mathbb{N}\).
 - `is_homogeneous(self)`
 
 **Category Instance Methods:**
+- `Mor(self, domain, codomain)`
 - `grading_monoid(self) -> Parent`
-- `homset(self, domain, codomain)`
 - `super_categories(self)`
 
 #### `GradedAugmentedAlgebras` `[CATEGORY]` `[Exported Session]`
@@ -7610,7 +7703,7 @@ identity. This is the nLab graded-plus-augmented situation
 
 #### `GradedFreeAlgebras` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/algebras/free_algebras.py#L398`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/free_algebras.py#L398)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/free_algebras.py#L405`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/free_algebras.py#L405)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[FreeAlgebras(self.base_ring()), GradedAlgebras(self.base_ring())]`
 
@@ -7658,7 +7751,7 @@ Lie algebras over a commutative owned base ring.
 
 #### `MatrixAlgebras` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/algebras/algebras.py#L357`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/algebras.py#L357)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/algebras.py#L367`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/algebras.py#L367)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[MatrixEndomorphismSpaces(self.base_ring()), Algebras(self.base_ring()), FramedAlgebras(self.base_ring())]`
 
@@ -7675,7 +7768,7 @@ Finite matrix endomorphism Hom objects with their canonical algebra structure.
 
 #### `OwnedAlgebras` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/algebras/algebras.py#L999`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/algebras.py#L999)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/algebras.py#L1012`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/algebras.py#L1012)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[Algebras(self.base_ring())]`
 
@@ -7685,9 +7778,17 @@ Algebras carrying their chosen structure map ``R -> Z(A)``.
 **Category Instance Methods:**
 - `super_categories(self)`
 
+#### `PowerAlgebraHomCategoryConstruction` `[CATEGORY]` `[Internal]`
+
+- **Source**: [`src/dzack_research/preamble/categories/algebras/free_algebras.py#L483`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/free_algebras.py#L483)
+- **Bases**: `HomCategoryConstruction`
+
+**Category Instance Methods:**
+- `fixed_category_class_for(self, domain, codomain)`
+
 #### `RestrictedScalarsAlgebras` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/algebras/restricted_scalars.py#L40`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/restricted_scalars.py#L40)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/restricted_scalars.py#L41`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/restricted_scalars.py#L41)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[Algebras(self.base_ring())]`
 
@@ -7729,7 +7830,7 @@ Algebras carrying their chosen structure map ``R -> Z(A)``.
 
 #### `SymmetricAlgebras` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/algebras/free_algebras.py#L496`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/free_algebras.py#L496)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/free_algebras.py#L509`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/free_algebras.py#L509)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[GradedAlgebras(self.base_ring()), CommutativeAlgebras(self.base_ring())]`
 
@@ -7745,7 +7846,7 @@ Symmetric algebras of represented modules.
 
 #### `TensorAlgebras` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/algebras/free_algebras.py#L476`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/free_algebras.py#L476)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/free_algebras.py#L489`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/free_algebras.py#L489)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[GradedAlgebras(self.base_ring())]`
 
@@ -7763,7 +7864,7 @@ Tensor algebras of represented modules.
 
 #### `RingAdjunctionConstructions` `[ADJUNCTION]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/algebras/free_algebras.py#L62`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/free_algebras.py#L62)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/free_algebras.py#L63`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/free_algebras.py#L63)
 - **Bases**: `Category`
 
 Rings equipped with selected polynomial/algebraic adjunction syntax.
@@ -7776,17 +7877,14 @@ Rings equipped with selected polynomial/algebraic adjunction syntax.
 
 #### `AlgebraHomset` `[HOMSET]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/algebras/algebras.py#L949`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/algebras.py#L949)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/algebras.py#L966`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/algebras.py#L966)
 - **Bases**: `_AlgebraHomsetCommonMethods`, `CategoricalHomset`
 - **Constructor**: `def __init__(self, hom_family, domain, codomain) -> None`
 - **Constructor**: `def _element_constructor_(self, images)`
 
-**Public Methods:**
-- `identity(self)`
-
 #### `AlgebraMorphism` `[MORPHISM]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/algebras/algebras.py#L642`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/algebras.py#L642)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/algebras.py#L636`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/algebras.py#L636)
 - **Bases**: `Morphism`
 
 An ``R``-algebra morphism specified by the images of algebra generators.
@@ -7797,12 +7895,12 @@ An ``R``-algebra morphism specified by the images of algebra generators.
 
 **Public Methods:**
 - `algebra_generator_morphism(self)`
-- `morphisms_agree(self, other) -> bool`
 
 #### `CohomologyAlgebraHomset` `[HOMSET]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/algebras/cohomology_algebras.py#L153`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/cohomology_algebras.py#L153)
-- **Bases**: `OwnedHomset`
+- **Source**: [`src/dzack_research/preamble/categories/algebras/cohomology_algebras.py#L162`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/cohomology_algebras.py#L162)
+- **Bases**: `CategoricalHomset`
+- **Constructor**: `def __init__(self, hom_family, domain, codomain) -> None`
 - **Constructor**: `def _element_constructor_(self, dga_morphism)`
 
 **Public Methods:**
@@ -7810,7 +7908,7 @@ An ``R``-algebra morphism specified by the images of algebra generators.
 
 #### `CohomologyAlgebraMorphism` `[MORPHISM]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/algebras/cohomology_algebras.py#L111`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/cohomology_algebras.py#L111)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/cohomology_algebras.py#L120`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/cohomology_algebras.py#L120)
 - **Bases**: `Morphism`
 
 The graded algebra morphism induced on cohomology by a DGA morphism.
@@ -7824,14 +7922,14 @@ The graded algebra morphism induced on cohomology by a DGA morphism.
 
 #### `ConstructionAlgebraHomset` `[HOMSET]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/algebras/comparison_maps.py#L48`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/comparison_maps.py#L48)
-- **Bases**: `OwnedHomset`
+- **Source**: [`src/dzack_research/preamble/categories/algebras/comparison_maps.py#L50`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/comparison_maps.py#L50)
+- **Bases**: `CategoricalHomset`
 - **Constructor**: `def __init__(self, domain, codomain) -> None`
 - **Constructor**: `def _element_constructor_(self, evaluator)`
 
 #### `ConstructionAlgebraMorphism` `[MORPHISM]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/algebras/comparison_maps.py#L27`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/comparison_maps.py#L27)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/comparison_maps.py#L29`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/comparison_maps.py#L29)
 - **Bases**: `Morphism`
 
 An algebra morphism whose action is determined by a construction map.
@@ -7909,7 +8007,7 @@ the canonical ``Hom_R(A, Res_R(M))`` containing this derivation subobject.
 #### `DerivationSpace` `[HOMSET]` `[Exported Session]`
 
 - **Source**: [`src/dzack_research/preamble/categories/algebras/derivations.py#L237`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/derivations.py#L237)
-- **Bases**: `OwnedHomset`
+- **Bases**: `CategoricalHomset`
 
 The ``A``-module ``Der_R(A,M)`` with its restricted Hom inclusion.
 
@@ -7945,7 +8043,7 @@ A degreewise component of a represented DGA differential.
 
 #### `FramedFreeAlgebraHomset` `[HOMSET]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/algebras/free_algebras.py#L857`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/free_algebras.py#L857)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/free_algebras.py#L872`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/free_algebras.py#L872)
 - **Bases**: `_AlgebraHomsetCommonMethods`, `CategoricalHomset`
 - **Constructor**: `def __init__(self, hom_family, domain, codomain) -> None`
 - **Constructor**: `def _element_constructor_(self, images)`
@@ -7955,7 +8053,7 @@ A degreewise component of a represented DGA differential.
 
 #### `FramedFreeAlgebraMorphism` `[MORPHISM]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/algebras/free_algebras.py#L744`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/free_algebras.py#L744)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/free_algebras.py#L759`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/free_algebras.py#L759)
 - **Bases**: `AlgebraMorphism`
 
 A generator-defined map from a framed free algebra to any algebra.
@@ -7991,7 +8089,7 @@ An algebra morphism preserving the selected grading.
 
 #### `GradedDerivation` `[MORPHISM]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/algebras/derivations.py#L371`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/derivations.py#L371)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/derivations.py#L378`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/derivations.py#L378)
 - **Bases**: `ModuleMorphism`
 
 A homogeneous graded derivation of a represented graded algebra.
@@ -8013,8 +8111,8 @@ actual ``R``-linear morphism, lying in a represented submodule of
 
 #### `GradedDerivationSpace` `[HOMSET]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/algebras/derivations.py#L446`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/derivations.py#L446)
-- **Bases**: `OwnedHomset`
+- **Source**: [`src/dzack_research/preamble/categories/algebras/derivations.py#L453`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/derivations.py#L453)
+- **Bases**: `CategoricalHomset`
 
 The ``R``-submodule of degree-``r`` graded derivations in ``Hom_R``.
 
@@ -8034,9 +8132,9 @@ The ``R``-submodule of degree-``r`` graded derivations in ``Hom_R``.
 
 #### `PowerAlgebraHomset` `[HOMSET]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/algebras/power_algebras.py#L298`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/power_algebras.py#L298)
-- **Bases**: `OwnedHomset`
-- **Constructor**: `def __init__(self, domain, codomain) -> None`
+- **Source**: [`src/dzack_research/preamble/categories/algebras/power_algebras.py#L307`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/power_algebras.py#L307)
+- **Bases**: `CategoricalHomset`
+- **Constructor**: `def __init__(self, hom_family, domain, codomain) -> None`
 - **Constructor**: `def _element_constructor_(self, degree_one_map)`
 
 **Public Methods:**
@@ -8044,7 +8142,7 @@ The ``R``-submodule of degree-``r`` graded derivations in ``Hom_R``.
 
 #### `PowerAlgebraMorphism` `[MORPHISM]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/algebras/power_algebras.py#L225`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/power_algebras.py#L225)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/power_algebras.py#L234`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/power_algebras.py#L234)
 - **Bases**: `Morphism`
 
 A morphism induced by a linear map on the degree-one generators.
@@ -8058,17 +8156,18 @@ A morphism induced by a linear map on the degree-one generators.
 
 #### `PresentedAlgebraHomset` `[HOMSET]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/algebras/algebras.py#L929`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/algebras.py#L929)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/algebras.py#L934`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/algebras.py#L934)
 - **Bases**: `_AlgebraHomsetCommonMethods`, `CategoricalHomset`
 - **Constructor**: `def __init__(self, hom_family, domain, codomain) -> None`
 - **Constructor**: `def _element_constructor_(self, images)`
 
 **Public Methods:**
-- `identity(self)`
+- `@cached_method` `identity(self)`
+  > Return the identity of this endomorphism Hom.
 
 #### `PresentedAlgebraMorphism` `[MORPHISM]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/algebras/algebras.py#L851`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/algebras.py#L851)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/algebras.py#L858`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/algebras.py#L858)
 - **Bases**: `Morphism`
 
 A map from an algebra with a chosen finite presentation.
@@ -8083,11 +8182,10 @@ No Sage target-ring protocol is involved.
 
 **Public Methods:**
 - `algebra_generator_morphism(self)`
-- `morphisms_agree(self, other) -> bool`
 
 #### `SparseFreeAlgebraHomset` `[HOMSET]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/algebras/sparse_free_algebras.py#L839`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/sparse_free_algebras.py#L839)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/sparse_free_algebras.py#L838`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/sparse_free_algebras.py#L838)
 - **Bases**: `_AlgebraHomsetCommonMethods`, `CategoricalHomset`
 - **Constructor**: `def __init__(self, hom_family, domain, codomain) -> None`
 - **Constructor**: `def _element_constructor_(self, images)`
@@ -8097,20 +8195,17 @@ No Sage target-ring protocol is involved.
 
 #### `SparseFreeAlgebraMorphism` `[MORPHISM]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/algebras/sparse_free_algebras.py#L747`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/sparse_free_algebras.py#L747)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/sparse_free_algebras.py#L753`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/sparse_free_algebras.py#L753)
 - **Bases**: `Morphism`
 - **Constructor**: `def __init__(self, parent, images) -> None`
 - **Constructor**: `def _call_(self, element)`
 - **Constructor**: `def __call__(self, element)`
 
-**Public Methods:**
-- `morphisms_agree(self, other) -> bool`
-
 ### 📦 Mathematical Objects & Parents
 
 #### `CohomologyAlgebraElement` `[ELEMENT]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/algebras/cohomology_algebras.py#L36`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/cohomology_algebras.py#L36)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/cohomology_algebras.py#L45`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/cohomology_algebras.py#L45)
 - **Bases**: `GradedDirectSumElement`
 
 #### `Differential` `[OBJECT]` `[Exported Session]`
@@ -8124,12 +8219,13 @@ A represented degree-one square-zero graded derivation.
 
 #### `PowerAlgebra` `[OBJECT]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/algebras/power_algebras.py#L53`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/power_algebras.py#L53)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/power_algebras.py#L55`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/power_algebras.py#L55)
 - **Bases**: `GradedDirectSumModule`
 
 The graded algebra ``Lambda(M)`` or ``Gamma(M)``.
 
 - **Constructor**: `def __init__(self, module, flavor) -> None`
+- **Constructor**: `def __call__(self, value)`
 - **Constructor**: `def _element_constructor_(self, value)`
 
 **Public Methods:**
@@ -8147,7 +8243,7 @@ The graded algebra ``Lambda(M)`` or ``Gamma(M)``.
 
 #### `PowerAlgebraElement` `[ELEMENT]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/algebras/power_algebras.py#L46`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/power_algebras.py#L46)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/power_algebras.py#L48`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/power_algebras.py#L48)
 - **Bases**: `GradedDirectSumElement`
 
 An element of a power algebra, using graded-direct-sum storage.
@@ -8190,6 +8286,7 @@ The same graded ring read over the constants of its degree-zero algebra.
 A free algebra whose elements are finite sums of sparse monomials.
 
 - **Constructor**: `def __init__(self, module, flavor) -> None`
+- **Constructor**: `def __call__(self, value)`
 - **Constructor**: `def _element_constructor_(self, value)`
 
 **Public Methods:**
@@ -8263,12 +8360,12 @@ One exact homogeneous module of a sparse free algebra.
 #### `AlternatingAlgebraOf` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def AlternatingAlgebraOf(module)`
-- **Source**: [`src/dzack_research/preamble/categories/algebras/framed_free_algebras.py#L181`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/framed_free_algebras.py#L181)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/framed_free_algebras.py#L189`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/framed_free_algebras.py#L189)
 
 #### `AlternatingAlgebraOf` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def AlternatingAlgebraOf(module)`
-- **Source**: [`src/dzack_research/preamble/categories/algebras/power_algebras.py#L339`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/power_algebras.py#L339)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/power_algebras.py#L348`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/power_algebras.py#L348)
 
 #### `AlternatingAlgebraOn` `[FUNCTION]` `[Exported Session]`
 
@@ -8278,12 +8375,12 @@ One exact homogeneous module of a sparse free algebra.
 #### `AlternatingAlgebraOn` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def AlternatingAlgebraOn(base_ring, algebra_generating_set)`
-- **Source**: [`src/dzack_research/preamble/categories/algebras/power_algebras.py#L347`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/power_algebras.py#L347)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/power_algebras.py#L356`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/power_algebras.py#L356)
 
 #### `CohomologyAlgebra` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def CohomologyAlgebra(dga)`
-- **Source**: [`src/dzack_research/preamble/categories/algebras/cohomology_algebras.py#L175`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/cohomology_algebras.py#L175)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/cohomology_algebras.py#L187`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/cohomology_algebras.py#L187)
 
 Return the graded algebra ``H^*(dga)`` with descended multiplication.
 
@@ -8304,17 +8401,17 @@ constants ``R`` along the selected algebra structure morphism.
 #### `Derivations` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `@cached_function(key=lambda algebra, target_module: (id(algebra), id(target_module)))` `def Derivations(algebra, target_module) -> DerivationSpace`
-- **Source**: [`src/dzack_research/preamble/categories/algebras/derivations.py#L366`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/derivations.py#L366)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/derivations.py#L373`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/derivations.py#L373)
 
 #### `DividedPowerAlgebraOf` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def DividedPowerAlgebraOf(module)`
-- **Source**: [`src/dzack_research/preamble/categories/algebras/framed_free_algebras.py#L189`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/framed_free_algebras.py#L189)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/framed_free_algebras.py#L197`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/framed_free_algebras.py#L197)
 
 #### `DividedPowerAlgebraOf` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def DividedPowerAlgebraOf(module)`
-- **Source**: [`src/dzack_research/preamble/categories/algebras/power_algebras.py#L343`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/power_algebras.py#L343)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/power_algebras.py#L352`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/power_algebras.py#L352)
 
 #### `DividedPowerAlgebraOn` `[FUNCTION]` `[Internal]`
 
@@ -8324,12 +8421,12 @@ constants ``R`` along the selected algebra structure morphism.
 #### `DividedPowerAlgebraOn` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def DividedPowerAlgebraOn(base_ring, algebra_generating_set)`
-- **Source**: [`src/dzack_research/preamble/categories/algebras/power_algebras.py#L355`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/power_algebras.py#L355)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/power_algebras.py#L364`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/power_algebras.py#L364)
 
 #### `FinitelyPresentedAlgebra` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def FinitelyPresentedAlgebra(presentation_ring, relations)`
-- **Source**: [`src/dzack_research/preamble/categories/algebras/free_algebras.py#L285`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/free_algebras.py#L285)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/free_algebras.py#L292`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/free_algebras.py#L292)
 
 Return the selected quotient ``R[S] / (relations)``.
 
@@ -8345,7 +8442,7 @@ Construct ``R[S] / (relations)`` with the displayed finite presentation.
 #### `FreeAlgebraOn` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def FreeAlgebraOn(base_ring, algebra_generating_set)`
-- **Source**: [`src/dzack_research/preamble/categories/algebras/free_algebras.py#L122`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/free_algebras.py#L122)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/free_algebras.py#L123`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/free_algebras.py#L123)
 
 Return the free commutative algebra ``R[S] = Sym(F_R(S))``.
 
@@ -8364,7 +8461,7 @@ For homogeneous derivations of shifts ``p`` and ``q`` this is
 #### `GradedDerivations` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `@cached_function(key=lambda algebra, target, shift=0: (id(algebra), id(target) if target is not None else None, int(shift)))` `def GradedDerivations(algebra, target=None, shift=0) -> GradedDerivationSpace`
-- **Source**: [`src/dzack_research/preamble/categories/algebras/derivations.py#L534`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/derivations.py#L534)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/derivations.py#L546`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/derivations.py#L546)
 
 #### `InteriorProduct` `[FUNCTION]` `[Exported Session]`
 
@@ -8385,7 +8482,7 @@ Return ``Omega^1_{A/R}`` with its universal ``R``-derivation.
 #### `LaurentPolynomialRing` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def LaurentPolynomialRing(base_ring, *args, **kwargs)`
-- **Source**: [`src/dzack_research/preamble/categories/algebras/free_algebras.py#L146`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/free_algebras.py#L146)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/free_algebras.py#L147`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/free_algebras.py#L147)
 
 #### `LieBracket` `[FUNCTION]` `[Exported Session]`
 
@@ -8406,17 +8503,17 @@ Return ``L_X = [d,i_X]`` as a degree-zero derivation of ``DR(A)``.
 #### `PolynomialRing` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def PolynomialRing(base_ring, *args, **kwargs)`
-- **Source**: [`src/dzack_research/preamble/categories/algebras/free_algebras.py#L127`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/free_algebras.py#L127)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/free_algebras.py#L128`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/free_algebras.py#L128)
 
 #### `SparseSymmetricAlgebraOf` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def SparseSymmetricAlgebraOf(module)`
-- **Source**: [`src/dzack_research/preamble/categories/algebras/sparse_free_algebras.py#L877`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/sparse_free_algebras.py#L877)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/sparse_free_algebras.py#L876`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/sparse_free_algebras.py#L876)
 
 #### `SparseTensorAlgebraOf` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def SparseTensorAlgebraOf(module)`
-- **Source**: [`src/dzack_research/preamble/categories/algebras/sparse_free_algebras.py#L873`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/sparse_free_algebras.py#L873)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/sparse_free_algebras.py#L872`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/sparse_free_algebras.py#L872)
 
 #### `SymmetricAlgebraOf` `[FUNCTION]` `[Exported Session]`
 
@@ -8429,7 +8526,7 @@ Return \(\operatorname{Sym}_R(M)\) with ``M``'s linear relations.
 #### `SymmetricAlgebraOn` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def SymmetricAlgebraOn(base_ring, algebra_generating_set)`
-- **Source**: [`src/dzack_research/preamble/categories/algebras/free_algebras.py#L160`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/free_algebras.py#L160)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/free_algebras.py#L161`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/free_algebras.py#L161)
 
 #### `TensorAlgebraOf` `[FUNCTION]` `[Exported Session]`
 
@@ -8442,7 +8539,7 @@ Return \(T_R(M)\), including the linear relations of ``M``.
 #### `TensorAlgebraOn` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def TensorAlgebraOn(base_ring, algebra_generating_set)`
-- **Source**: [`src/dzack_research/preamble/categories/algebras/free_algebras.py#L174`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/free_algebras.py#L174)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/free_algebras.py#L181`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/free_algebras.py#L181)
 
 #### `VectorFields` `[FUNCTION]` `[Exported Session]`
 
@@ -8455,7 +8552,7 @@ Return ``Der_R(A,A)`` as the existing derivation module.
 #### `algebra_from_multiplication` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def algebra_from_multiplication(multiplication, base_ring=None, unital=True)`
-- **Source**: [`src/dzack_research/preamble/categories/algebras/algebras.py#L1257`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/algebras.py#L1257)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/algebras.py#L1270`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/algebras.py#L1270)
 
 Return the algebra presented by an \(R\)-module morphism \(A\otimes_R A\to A\).
 
@@ -8463,15 +8560,7 @@ Return the algebra presented by an \(R\)-module morphism \(A\otimes_R A\to A\).
 #### `algebra_homset` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def algebra_homset(domain, codomain) -> AlgebraHomset`
-- **Source**: [`src/dzack_research/preamble/categories/algebras/algebras.py#L974`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/algebras.py#L974)
-
-#### `algebra_morphisms_agree` `[FUNCTION]` `[Internal]`
-
-- **Signature**: `def algebra_morphisms_agree(left, right) -> bool`
-- **Source**: [`src/dzack_research/preamble/categories/algebras/algebras.py#L620`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/algebras.py#L620)
-
-Decide equality of represented algebra maps on selected generators.
-
+- **Source**: [`src/dzack_research/preamble/categories/algebras/algebras.py#L987`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/algebras.py#L987)
 
 #### `augmented_algebra` `[FUNCTION]` `[Exported Session]`
 
@@ -8489,12 +8578,12 @@ When \(A\) is graded, the unit-degree piece \(A_u\) is a subalgebra, and
 #### `cohomology_algebra_homset` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def cohomology_algebra_homset(domain, codomain)`
-- **Source**: [`src/dzack_research/preamble/categories/algebras/cohomology_algebras.py#L168`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/cohomology_algebras.py#L168)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/cohomology_algebras.py#L180`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/cohomology_algebras.py#L180)
 
 #### `commutative_algebra_coproduct` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `@cached_function` `def commutative_algebra_coproduct(left, right)`
-- **Source**: [`src/dzack_research/preamble/categories/algebras/algebras.py#L982`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/algebras.py#L982)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/algebras.py#L995`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/algebras.py#L995)
 
 Return ``left tensor_R right``, the coproduct in commutative algebras.
 
@@ -8502,7 +8591,7 @@ Return ``left tensor_R right``, the coproduct in commutative algebras.
 #### `commutative_algebra_pushout` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `@cached_function` `def commutative_algebra_pushout(left_map, right_map)`
-- **Source**: [`src/dzack_research/preamble/categories/algebras/algebras.py#L991`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/algebras.py#L991)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/algebras.py#L1004`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/algebras.py#L1004)
 
 Return the pushout of two commutative-algebra maps with common domain.
 
@@ -8510,7 +8599,7 @@ Return the pushout of two commutative-algebra maps with common domain.
 #### `compose_with_free_construction` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def compose_with_free_construction(left, right)`
-- **Source**: [`src/dzack_research/preamble/categories/algebras/sparse_free_algebras.py#L725`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/sparse_free_algebras.py#L725)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/sparse_free_algebras.py#L731`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/sparse_free_algebras.py#L731)
 
 Compose through a sparse/free map without assuming a free source.
 
@@ -8518,7 +8607,7 @@ Compose through a sparse/free map without assuming a free source.
 #### `construction_algebra_homset` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def construction_algebra_homset(domain, codomain)`
-- **Source**: [`src/dzack_research/preamble/categories/algebras/comparison_maps.py#L65`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/comparison_maps.py#L65)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/comparison_maps.py#L67`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/comparison_maps.py#L67)
 
 #### `dga_homset` `[FUNCTION]` `[Exported Session]`
 
@@ -8528,7 +8617,7 @@ Compose through a sparse/free map without assuming a free source.
 #### `divided_to_symmetric` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def divided_to_symmetric(module)`
-- **Source**: [`src/dzack_research/preamble/categories/algebras/comparison_maps.py#L159`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/comparison_maps.py#L159)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/comparison_maps.py#L161`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/comparison_maps.py#L161)
 
 Return ``Gamma(M) -> Sym(M)`` when every relevant factorial is invertible.
 
@@ -8536,7 +8625,7 @@ Return ``Gamma(M) -> Sym(M)`` when every relevant factorial is invertible.
 #### `finite_algebra_generators` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def finite_algebra_generators(algebra)`
-- **Source**: [`src/dzack_research/preamble/categories/algebras/algebras.py#L1426`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/algebras.py#L1426)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/algebras.py#L1439`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/algebras.py#L1439)
 
 Return the chosen finite algebra generating family, when represented.
 
@@ -8544,7 +8633,7 @@ Return the chosen finite algebra generating family, when represented.
 #### `free_construction_homset` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def free_construction_homset(domain, codomain)`
-- **Source**: [`src/dzack_research/preamble/categories/algebras/sparse_free_algebras.py#L867`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/sparse_free_algebras.py#L867)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/sparse_free_algebras.py#L866`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/sparse_free_algebras.py#L866)
 
 #### `graded_algebra_homset` `[FUNCTION]` `[Exported Session]`
 
@@ -8554,7 +8643,7 @@ Return the chosen finite algebra generating family, when represented.
 #### `own_algebra` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `@cached_function` `def own_algebra(structure_map)`
-- **Source**: [`src/dzack_research/preamble/categories/algebras/algebras.py#L1322`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/algebras.py#L1322)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/algebras.py#L1335`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/algebras.py#L1335)
 
 Return the algebra object presented by the supplied ring map.
 
@@ -8570,12 +8659,12 @@ Return the symmetric algebra using standard polynomial-ring syntax.
 #### `power_algebra_homset` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def power_algebra_homset(domain, codomain)`
-- **Source**: [`src/dzack_research/preamble/categories/algebras/power_algebras.py#L329`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/power_algebras.py#L329)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/power_algebras.py#L333`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/power_algebras.py#L333)
 
 #### `refine_algebra` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def refine_algebra(algebra, base_ring, labels=None, *categories)`
-- **Source**: [`src/dzack_research/preamble/categories/algebras/algebras.py#L1129`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/algebras.py#L1129)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/algebras.py#L1142`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/algebras.py#L1142)
 
 Place a native algebra in its owned algebra categories.
 
@@ -8583,7 +8672,7 @@ Place a native algebra in its owned algebra categories.
 #### `refine_matrix_algebra` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def refine_matrix_algebra(homset)`
-- **Source**: [`src/dzack_research/preamble/categories/algebras/algebras.py#L400`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/algebras.py#L400)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/algebras.py#L410`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/algebras.py#L410)
 
 Attach the canonical ``R``-algebra structure to a square matrix Hom object.
 
@@ -8591,7 +8680,7 @@ Attach the canonical ``R``-algebra structure to a square matrix Hom object.
 #### `restrict_algebra_scalars` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def restrict_algebra_scalars(algebra, ring_map)`
-- **Source**: [`src/dzack_research/preamble/categories/algebras/restricted_scalars.py#L212`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/restricted_scalars.py#L212)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/restricted_scalars.py#L213`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/restricted_scalars.py#L213)
 
 Return ``Res_f(B)`` for ``f : R -> S`` and an ``S``-algebra ``B``.
 
@@ -8610,12 +8699,12 @@ when it can be constructed from chosen presentations of both ``S/R`` and
 #### `sparse_free_algebra_homset` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def sparse_free_algebra_homset(domain, codomain)`
-- **Source**: [`src/dzack_research/preamble/categories/algebras/sparse_free_algebras.py#L861`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/sparse_free_algebras.py#L861)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/sparse_free_algebras.py#L860`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/sparse_free_algebras.py#L860)
 
 #### `symmetric_to_divided` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def symmetric_to_divided(module)`
-- **Source**: [`src/dzack_research/preamble/categories/algebras/comparison_maps.py#L150`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/comparison_maps.py#L150)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/comparison_maps.py#L152`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/comparison_maps.py#L152)
 
 Return ``Sym(M) -> Gamma(M)``, ``x^n |-> n! gamma_n(x)``.
 
@@ -8623,7 +8712,7 @@ Return ``Sym(M) -> Gamma(M)``, ``x^n |-> n! gamma_n(x)``.
 #### `tensor_to_alternating` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def tensor_to_alternating(module)`
-- **Source**: [`src/dzack_research/preamble/categories/algebras/comparison_maps.py#L141`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/comparison_maps.py#L141)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/comparison_maps.py#L143`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/comparison_maps.py#L143)
 
 Return the quotient morphism ``T(M) -> Lambda(M)``.
 
@@ -8631,7 +8720,7 @@ Return the quotient morphism ``T(M) -> Lambda(M)``.
 #### `tensor_to_symmetric` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def tensor_to_symmetric(module)`
-- **Source**: [`src/dzack_research/preamble/categories/algebras/comparison_maps.py#L132`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/comparison_maps.py#L132)
+- **Source**: [`src/dzack_research/preamble/categories/algebras/comparison_maps.py#L134`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/comparison_maps.py#L134)
 
 Return the quotient morphism ``T(M) -> Sym(M)``.
 
@@ -8648,7 +8737,7 @@ Return the quotient morphism ``T(M) -> Sym(M)``.
 
 #### `AbelianGroupEndomorphismRings` `[CATEGORY]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/group/groups.py#L1690`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/groups.py#L1690)
+- **Source**: [`src/dzack_research/preamble/categories/group/groups.py#L1713`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/groups.py#L1713)
 - **Bases**: `OwnedCategory`
 - **Super Categories**: `[OwnedRings()]`
 
@@ -8702,7 +8791,7 @@ The procyclic absolute Galois groups of finite fields.
 
 #### `AdditiveGroups` `[CATEGORY]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/group/magmas.py#L59`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/magmas.py#L59)
+- **Source**: [`src/dzack_research/preamble/categories/group/magmas.py#L58`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/magmas.py#L58)
 - **Bases**: `OwnedCategory`
 - **Super Categories**: `[AdditiveMonoids()]`
 
@@ -8711,7 +8800,7 @@ The procyclic absolute Galois groups of finite fields.
 
 #### `AdditiveMonoids` `[CATEGORY]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/group/magmas.py#L50`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/magmas.py#L50)
+- **Source**: [`src/dzack_research/preamble/categories/group/magmas.py#L49`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/magmas.py#L49)
 - **Bases**: `OwnedCategory`
 - **Super Categories**: `[AdditiveSemigroups()]`
 
@@ -8723,7 +8812,7 @@ The procyclic absolute Galois groups of finite fields.
 
 #### `CommutativeAdditiveGroups` `[CATEGORY]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/group/magmas.py#L64`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/magmas.py#L64)
+- **Source**: [`src/dzack_research/preamble/categories/group/magmas.py#L63`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/magmas.py#L63)
 - **Bases**: `OwnedCategory`
 - **Super Categories**: `[AdditiveGroups()]`
 
@@ -8735,9 +8824,9 @@ Additive groups whose addition is commutative.
 
 #### `FiniteGSets` `[SUBCATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/group/g_sets.py#L82`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/g_sets.py#L82)
-- **Bases**: `Category`
-- **Super Categories**: `[GSets(self._group), FiniteSets()]`
+- **Source**: [`src/dzack_research/preamble/categories/group/g_sets.py#L89`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/g_sets.py#L89)
+- **Bases**: `CategoryPacketMethods`, `OwnedParameterizedCategory`
+- **Super Categories**: `[GSets(self.group()), FiniteSets()]`
 
 The represented finite objects of ``GSets(G)``.
 
@@ -8752,10 +8841,18 @@ The represented finite objects of ``GSets(G)``.
 - `group(self)`
 - `super_categories(self)`
 
+#### `GSetHomCategoryConstruction` `[CATEGORY]` `[Internal]`
+
+- **Source**: [`src/dzack_research/preamble/categories/group/g_sets.py#L38`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/g_sets.py#L38)
+- **Bases**: `HomCategoryConstruction`
+
+**Category Instance Methods:**
+- `fixed_category_class(self)`
+
 #### `GSets` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/group/g_sets.py#L32`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/g_sets.py#L32)
-- **Bases**: `Category`
+- **Source**: [`src/dzack_research/preamble/categories/group/g_sets.py#L43`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/g_sets.py#L43)
+- **Bases**: `CategoryPacketMethods`, `OwnedParameterizedCategory`
 - **Super Categories**: `[Sets()]`
 **Category Constructor:**
 - `GSets(self, group)`
@@ -8772,7 +8869,7 @@ The represented finite objects of ``GSets(G)``.
 
 #### `GroupAutomorphismGroups` `[CATEGORY]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/group/groups.py#L1194`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/groups.py#L1194)
+- **Source**: [`src/dzack_research/preamble/categories/group/groups.py#L1211`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/groups.py#L1211)
 - **Bases**: `OwnedCategory`
 - **Super Categories**: `[OwnedGroups()]`
 
@@ -8790,7 +8887,7 @@ The represented finite objects of ``GSets(G)``.
 
 #### `GroupEndCategoryConstruction` `[CATEGORY]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/group/groups.py#L1333`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/groups.py#L1333)
+- **Source**: [`src/dzack_research/preamble/categories/group/groups.py#L1356`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/groups.py#L1356)
 - **Bases**: `EndCategoryConstruction`
 
 Endomorphism monoids of groups, on the same underlying set as ``Hom(G,G)``.
@@ -8801,7 +8898,7 @@ Endomorphism monoids of groups, on the same underlying set as ``Hom(G,G)``.
 
 #### `GroupHomCategoryConstruction` `[CATEGORY]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/group/groups.py#L1314`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/groups.py#L1314)
+- **Source**: [`src/dzack_research/preamble/categories/group/groups.py#L1337`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/groups.py#L1337)
 - **Bases**: `HomCategoryConstruction`
 
 The represented Hom categories of owned groups.
@@ -8812,7 +8909,7 @@ The represented Hom categories of owned groups.
 
 #### `GroupIsoCategoryConstruction` `[CATEGORY]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/group/groups.py#L1350`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/groups.py#L1350)
+- **Source**: [`src/dzack_research/preamble/categories/group/groups.py#L1373`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/groups.py#L1373)
 - **Bases**: `IsoCategoryConstruction`
 
 Group isomorphisms, using the maintained automorphism group on the diagonal.
@@ -8823,7 +8920,7 @@ Group isomorphisms, using the maintained automorphism group on the diagonal.
 
 #### `GroupsWithChosenFiniteGeneratingSet` `[SUBCATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/group/groups.py#L1598`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/groups.py#L1598)
+- **Source**: [`src/dzack_research/preamble/categories/group/groups.py#L1621`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/groups.py#L1621)
 - **Bases**: `OwnedCategory`
 - **Super Categories**: `[OwnedFinitelyGeneratedGroups()]`
 
@@ -8840,7 +8937,7 @@ Finitely generated groups carrying a chosen finite generating set.
 
 #### `GroupsWithChosenFinitePresentation` `[SUBCATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/group/groups.py#L1661`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/groups.py#L1661)
+- **Source**: [`src/dzack_research/preamble/categories/group/groups.py#L1684`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/groups.py#L1684)
 - **Bases**: `OwnedCategory`
 - **Super Categories**: `[OwnedFinitelyPresentedGroups(), GroupsWithChosenFiniteGeneratingSet()]`
 
@@ -8858,7 +8955,7 @@ Groups carrying a chosen finite presentation.
 
 #### `GroupsWithChosenFreeBasis` `[CATEGORY]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/group/groups.py#L1626`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/groups.py#L1626)
+- **Source**: [`src/dzack_research/preamble/categories/group/groups.py#L1649`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/groups.py#L1649)
 - **Bases**: `OwnedCategory`
 - **Super Categories**: `[OwnedGroups()]`
 
@@ -8883,7 +8980,7 @@ Free groups carrying the chosen set they are free on.
 - **Super Categories**: `[Semigroups()]`
 
 **Category Instance Methods:**
-- `homset(self, domain, codomain)`
+- `Mor(self, domain, codomain)`
 - `super_categories(self)`
 
 #### `OpenAbsoluteGaloisSubgroups` `[CATEGORY]` `[Exported Session]`
@@ -8909,7 +9006,7 @@ Open subgroups (G_E\subseteq G_K) carrying the embedding (E\to\bar K).
 
 #### `OwnedAbelianGroups` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/group/groups.py#L1756`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/groups.py#L1756)
+- **Source**: [`src/dzack_research/preamble/categories/group/groups.py#L1783`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/groups.py#L1783)
 - **Bases**: `OwnedCategory`
 - **Super Categories**: `[OwnedGroups()]`
 
@@ -8924,7 +9021,7 @@ Open subgroups (G_E\subseteq G_K) carrying the embedding (E\to\bar K).
 
 #### `OwnedFiniteAbelianGroups` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/group/groups.py#L1852`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/groups.py#L1852)
+- **Source**: [`src/dzack_research/preamble/categories/group/groups.py#L1884`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/groups.py#L1884)
 - **Bases**: `OwnedCategory`
 - **Super Categories**: `[OwnedFiniteGroups(), OwnedAbelianGroups()]`
 
@@ -8933,7 +9030,7 @@ Open subgroups (G_E\subseteq G_K) carrying the embedding (E\to\bar K).
 
 #### `OwnedFiniteGroups` `[SUBCATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/group/groups.py#L1820`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/groups.py#L1820)
+- **Source**: [`src/dzack_research/preamble/categories/group/groups.py#L1852`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/groups.py#L1852)
 - **Bases**: `OwnedCategory`
 - **Super Categories**: `[OwnedFinitelyPresentedGroups()]`
 
@@ -8950,7 +9047,7 @@ Open subgroups (G_E\subseteq G_K) carrying the embedding (E\to\bar K).
 
 #### `OwnedFinitelyGeneratedGroups` `[SUBCATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/group/groups.py#L1583`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/groups.py#L1583)
+- **Source**: [`src/dzack_research/preamble/categories/group/groups.py#L1606`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/groups.py#L1606)
 - **Bases**: `OwnedCategory`
 - **Super Categories**: `[OwnedGroups()]`
 
@@ -8965,7 +9062,7 @@ Groups admitting some finite generating set.
 
 #### `OwnedFinitelyPresentedGroups` `[SUBCATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/group/groups.py#L1646`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/groups.py#L1646)
+- **Source**: [`src/dzack_research/preamble/categories/group/groups.py#L1669`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/groups.py#L1669)
 - **Bases**: `OwnedCategory`
 - **Super Categories**: `[OwnedFinitelyGeneratedGroups()]`
 
@@ -8980,7 +9077,7 @@ Finitely presented groups, as a property of the group.
 
 #### `OwnedGroups` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/group/groups.py#L1377`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/groups.py#L1377)
+- **Source**: [`src/dzack_research/preamble/categories/group/groups.py#L1400`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/groups.py#L1400)
 - **Bases**: `CategoryPacketMethods`, `OwnedCategory`
 - **Super Categories**: `[Monoids()]`
 
@@ -8990,7 +9087,7 @@ Groups whose notebook-facing group interface is owned by the preamble.
 **ParentMethods (Methods on Category Objects):**
 - `@cached_method` `Aut(self)`
 - `End(self)`
-- `Hom(self, codomain, category=None)`
+- `Mor(self, codomain, category=None)`
 - `cardinality(self)`
 - `inclusion(self)`
 - `is_abelian(self)`
@@ -9005,12 +9102,12 @@ Groups whose notebook-facing group interface is owned by the preamble.
 - `supergroup(self)`
 
 **Category Instance Methods:**
-- `homset(self, domain, codomain)`
+- `Mor(self, domain, codomain)`
 - `super_categories(self)`
 
 #### `OwnedInfiniteGroups` `[SUBCATEGORY]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/group/groups.py#L1568`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/groups.py#L1568)
+- **Source**: [`src/dzack_research/preamble/categories/group/groups.py#L1591`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/groups.py#L1591)
 - **Bases**: `OwnedCategory`
 - **Super Categories**: `[OwnedGroups()]`
 
@@ -9061,7 +9158,7 @@ Groups whose underlying set is known infinite.
 
 #### `Subgroups` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/group/groups.py#L1795`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/groups.py#L1795)
+- **Source**: [`src/dzack_research/preamble/categories/group/groups.py#L1827`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/groups.py#L1827)
 - **Bases**: `OwnedParameterizedCategory`
 - **Super Categories**: `[OwnedGroups()]`
 
@@ -9078,7 +9175,7 @@ Groups represented as a specified subgroup of one ambient owned group.
 
 #### `TopologicalGroups` `[CATEGORY]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/group/groups.py#L1557`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/groups.py#L1557)
+- **Source**: [`src/dzack_research/preamble/categories/group/groups.py#L1580`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/groups.py#L1580)
 - **Bases**: `OwnedCategory`
 - **Super Categories**: `[OwnedGroups()]`
 
@@ -9093,7 +9190,7 @@ Owned groups equipped with a represented compatible topology.
 
 #### `Torsors` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/group/g_sets.py#L441`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/g_sets.py#L441)
+- **Source**: [`src/dzack_research/preamble/categories/group/g_sets.py#L442`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/g_sets.py#L442)
 - **Bases**: `Category`
 - **Super Categories**: `[GSets(self._group)]`
 **Category Constructor:**
@@ -9113,8 +9210,8 @@ Owned groups equipped with a represented compatible topology.
 
 #### `AbsoluteGaloisGroup` `[HOMSET]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py#L327`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py#L327)
-- **Bases**: `OwnedHomset`
+- **Source**: [`src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py#L329`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py#L329)
+- **Bases**: `CategoricalHomset`
 
 The automorphism group of one exact extension object (K\to\bar K).
 
@@ -9164,7 +9261,7 @@ commuting with that structure map.
 
 #### `AbsoluteGaloisGroupElement` `[MORPHISM]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py#L46`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py#L46)
+- **Source**: [`src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py#L48`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py#L48)
 - **Bases**: `Morphism`
 
 A coherent, progressively realized automorphism of the chosen closure.
@@ -9193,7 +9290,7 @@ coordinates can be installed only after their compatibility is checked.
 
 #### `AbsoluteGaloisSliceAutomorphism` `[MORPHISM]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py#L275`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py#L275)
+- **Source**: [`src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py#L277`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py#L277)
 - **Bases**: `Morphism`
 
 The commuting square in (K/\mathbf{Fields}) defined by an element of (G_K).
@@ -9208,14 +9305,14 @@ The commuting square in (K/\mathbf{Fields}) defined by an element of (G_K).
 
 #### `ContinuousGroupHomset` `[HOMSET]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/group/profinite/galois_quotient.py#L349`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/profinite/galois_quotient.py#L349)
+- **Source**: [`src/dzack_research/preamble/categories/group/profinite/galois_quotient.py#L352`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/profinite/galois_quotient.py#L352)
 - **Bases**: `Homset`
 - **Constructor**: `def __init__(self, domain, codomain) -> None`
 
 #### `ExactFieldHomset` `[HOMSET]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/group/profinite/field_morphisms.py#L147`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/profinite/field_morphisms.py#L147)
-- **Bases**: `OwnedHomset`
+- **Source**: [`src/dzack_research/preamble/categories/group/profinite/field_morphisms.py#L149`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/profinite/field_morphisms.py#L149)
+- **Bases**: `CategoricalHomset`
 - **Constructor**: `def __init__(self, domain, codomain) -> None`
 - **Constructor**: `def _element_constructor_(self, datum)`
 
@@ -9224,7 +9321,7 @@ The commuting square in (K/\mathbf{Fields}) defined by an element of (G_K).
 
 #### `ExactFieldMorphism` `[MORPHISM]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/group/profinite/field_morphisms.py#L48`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/profinite/field_morphisms.py#L48)
+- **Source**: [`src/dzack_research/preamble/categories/group/profinite/field_morphisms.py#L50`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/profinite/field_morphisms.py#L50)
 - **Bases**: `Morphism`
 
 A field morphism with owned endpoints and an exact Sage map backend.
@@ -9252,12 +9349,12 @@ A class function ``G -> A`` stored on chosen conjugacy representatives.
 
 #### `GSetHomset` `[HOMSET]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/group/g_sets.py#L192`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/g_sets.py#L192)
-- **Bases**: `OwnedHomset`
+- **Source**: [`src/dzack_research/preamble/categories/group/g_sets.py#L193`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/g_sets.py#L193)
+- **Bases**: `CategoricalHomset`
 
-The actual equivariant Hom-set between represented finite ``G``-sets.
+The actual equivariant Mor category between represented finite ``G``-sets.
 
-- **Constructor**: `def __init__(self, domain, codomain) -> None`
+- **Constructor**: `def __init__(self, hom_family, domain, codomain) -> None`
 - **Constructor**: `def _element_constructor_(self, function)`
 
 **Public Methods:**
@@ -9265,7 +9362,7 @@ The actual equivariant Hom-set between represented finite ``G``-sets.
 
 #### `GSetMorphism` `[MORPHISM]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/group/g_sets.py#L167`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/g_sets.py#L167)
+- **Source**: [`src/dzack_research/preamble/categories/group/g_sets.py#L168`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/g_sets.py#L168)
 - **Bases**: `SetMorphism`
 
 A set map checked to commute with the represented group actions.
@@ -9274,7 +9371,7 @@ A set map checked to commute with the represented group actions.
 
 #### `GaloisRestrictionMap` `[MORPHISM]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/group/profinite/galois_quotient.py#L358`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/profinite/galois_quotient.py#L358)
+- **Source**: [`src/dzack_research/preamble/categories/group/profinite/galois_quotient.py#L361`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/profinite/galois_quotient.py#L361)
 - **Bases**: `Morphism`
 
 The continuous quotient map (G_K\to\operatorname{Gal}(L/K)).
@@ -9290,12 +9387,12 @@ The continuous quotient map (G_K\to\operatorname{Gal}(L/K)).
 
 #### `GroupAutomorphism` `[MORPHISM]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/group/groups.py#L1190`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/groups.py#L1190)
+- **Source**: [`src/dzack_research/preamble/categories/group/groups.py#L1207`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/groups.py#L1207)
 - **Bases**: `GroupHomomorphism`
 
 #### `GroupAutomorphismGroup` `[HOMSET]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/group/groups.py#L1240`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/groups.py#L1240)
+- **Source**: [`src/dzack_research/preamble/categories/group/groups.py#L1263`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/groups.py#L1263)
 - **Bases**: `GroupHomset`
 - **Constructor**: `def __init__(self, hom_family, group, engine_subgroup=None)`
 - **Constructor**: `def _element_constructor_(self, images, check=True, **options)`
@@ -9307,7 +9404,7 @@ The continuous quotient map (G_K\to\operatorname{Gal}(L/K)).
 
 #### `GroupHomomorphism` `[MORPHISM]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/group/groups.py#L1042`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/groups.py#L1042)
+- **Source**: [`src/dzack_research/preamble/categories/group/groups.py#L1047`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/groups.py#L1047)
 - **Bases**: `GroupMorphism_libgap`
 
 A group homomorphism represented by Sage's maintained GAP morphism.
@@ -9324,7 +9421,7 @@ A group homomorphism represented by Sage's maintained GAP morphism.
 
 #### `GroupHomset` `[HOMSET]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/group/groups.py#L1080`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/groups.py#L1080)
+- **Source**: [`src/dzack_research/preamble/categories/group/groups.py#L1112`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/groups.py#L1112)
 - **Bases**: `GroupHomset_libgap`, `CategoricalHomset`
 
 The canonical owned homset Hom(G,H).
@@ -9332,13 +9429,9 @@ The canonical owned homset Hom(G,H).
 - **Constructor**: `def __init__(self, hom_family, domain, codomain)`
 - **Constructor**: `def _element_constructor_(self, images, check=True, **_options)`
 
-**Public Methods:**
-- `morphisms_agree(self, left, right) -> bool`
-  > Decide equality from a finite GAP generating family of the source.
-
 #### `IndexedFreeGroupHomomorphism` `[MORPHISM]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/group/groups.py#L953`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/groups.py#L953)
+- **Source**: [`src/dzack_research/preamble/categories/group/groups.py#L958`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/groups.py#L958)
 - **Bases**: `Morphism`
 
 A morphism out of the free group on a chosen set.
@@ -9356,7 +9449,7 @@ instead of forcing this object through the unrelated libGAP path.
 
 #### `IndexedFreeGroupHomset` `[HOMSET]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/group/groups.py#L1020`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/groups.py#L1020)
+- **Source**: [`src/dzack_research/preamble/categories/group/groups.py#L1025`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/groups.py#L1025)
 - **Bases**: `CategoricalHomset`
 
 The canonical Hom-set out of the free group on a chosen set.
@@ -9366,7 +9459,7 @@ The canonical Hom-set out of the free group on a chosen set.
 
 #### `MonoidHomset` `[HOMSET]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/group/magmas.py#L103`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/magmas.py#L103)
+- **Source**: [`src/dzack_research/preamble/categories/group/magmas.py#L102`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/magmas.py#L102)
 - **Bases**: `Homset`
 
 The owned set ``Hom_Mon(A,B)``.
@@ -9379,7 +9472,7 @@ The owned set ``Hom_Mon(A,B)``.
 
 #### `MonoidMorphism` `[MORPHISM]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/group/magmas.py#L80`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/magmas.py#L80)
+- **Source**: [`src/dzack_research/preamble/categories/group/magmas.py#L79`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/magmas.py#L79)
 - **Bases**: `Morphism`
 
 A morphism in the owned category of monoids.
@@ -9390,7 +9483,7 @@ A morphism in the owned category of monoids.
 
 #### `OpenSubgroupInclusion` `[MORPHISM]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py#L725`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py#L725)
+- **Source**: [`src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py#L728`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py#L728)
 - **Bases**: `Morphism`
 
 The literal inclusion of a realized open subgroup into its ambient group.
@@ -9430,7 +9523,7 @@ A character factoring through one represented finite Galois quotient.
 
 #### `SubgroupInclusion` `[MORPHISM]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/group/groups.py#L897`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/groups.py#L897)
+- **Source**: [`src/dzack_research/preamble/categories/group/groups.py#L902`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/groups.py#L902)
 - **Bases**: `SetMorphism`
 
 **Public Methods:**
@@ -9478,7 +9571,7 @@ The chosen monomorphism ``S -> M`` representing a submonoid.
 
 #### `AdditiveMagmas` `[OBJECT]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/group/magmas.py#L40`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/magmas.py#L40)
+- **Source**: [`src/dzack_research/preamble/categories/group/magmas.py#L39`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/magmas.py#L39)
 - **Bases**: `OwnedCategory`
 
 **Public Methods:**
@@ -9486,7 +9579,7 @@ The chosen monomorphism ``S -> M`` representing a submonoid.
 
 #### `AdditiveSemigroups` `[OBJECT]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/group/magmas.py#L45`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/magmas.py#L45)
+- **Source**: [`src/dzack_research/preamble/categories/group/magmas.py#L44`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/magmas.py#L44)
 - **Bases**: `OwnedCategory`
 
 **Public Methods:**
@@ -9547,7 +9640,7 @@ The continuous character (\chi_n:G_K\to(\mathbb Z/n)^{\times}).
 
 #### `ElementConjugacyClass` `[OBJECT]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py#L218`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py#L218)
+- **Source**: [`src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py#L220`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py#L220)
 - **Bases**: `SageObject`
 
 The conjugacy class of a represented global automorphism.
@@ -9574,7 +9667,7 @@ The actual conjugacy orbit of an element in a finite quotient.
 
 #### `FiniteGSet` `[OBJECT]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/group/g_sets.py#L115`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/g_sets.py#L115)
+- **Source**: [`src/dzack_research/preamble/categories/group/g_sets.py#L121`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/g_sets.py#L121)
 - **Bases**: `Parent`
 
 A finite set equipped with a group morphism into its permutation group.
@@ -9629,6 +9722,7 @@ A finite Galois field (L/K\subset\bar K) with both exact embeddings.
 The finite quotient (\operatorname{Gal}(L/K)) as exact field maps.
 
 - **Constructor**: `def __init__(self, extension: FiniteGaloisExtension) -> None`
+- **Constructor**: `def __call__(self, datum)`
 - **Constructor**: `def _element_constructor_(self, datum)`
 
 **Public Methods:**
@@ -9676,7 +9770,7 @@ The canonical global Frobenius class at an unramified base prime.
 
 #### `FrobeniusElement` `[ELEMENT]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py#L211`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py#L211)
+- **Source**: [`src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py#L213`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py#L213)
 - **Bases**: `AbsoluteGaloisGroupElement`
 
 An integral power of the canonical (q)-Frobenius.
@@ -9696,7 +9790,7 @@ An integral power of the canonical (q)-Frobenius.
 
 #### `LiftCoset` `[OBJECT]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/group/profinite/galois_quotient.py#L401`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/profinite/galois_quotient.py#L401)
+- **Source**: [`src/dzack_research/preamble/categories/group/profinite/galois_quotient.py#L404`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/profinite/galois_quotient.py#L404)
 - **Bases**: `SageObject`
 
 The coset of all global extensions of one finite-level automorphism.
@@ -9721,7 +9815,7 @@ The coset of all global extensions of one finite-level automorphism.
 
 #### `OpenAbsoluteGaloisSubgroup` `[OBJECT]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py#L753`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py#L753)
+- **Source**: [`src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py#L756`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py#L756)
 - **Bases**: `AbsoluteGaloisGroup`
 
 The actual subgroup fixing one embedded finite extension (E/K).
@@ -9743,7 +9837,7 @@ The actual subgroup fixing one embedded finite extension (E/K).
 
 #### `OpenGaloisSubgroupConjugacyClass` `[OBJECT]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py#L915`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py#L915)
+- **Source**: [`src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py#L918`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py#L918)
 - **Bases**: `SageObject`
 
 The conjugacy class obtained by forgetting (E\hookrightarrow\bar K).
@@ -9759,7 +9853,7 @@ The conjugacy class obtained by forgetting (E\hookrightarrow\bar K).
 
 #### `OrbitClass` `[ELEMENT]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/group/g_sets.py#L287`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/g_sets.py#L287)
+- **Source**: [`src/dzack_research/preamble/categories/group/g_sets.py#L288`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/g_sets.py#L288)
 - **Bases**: `Element`
 
 One orbit in the quotient set ``X/G``.
@@ -9772,7 +9866,7 @@ One orbit in the quotient set ``X/G``.
 
 #### `OrbitSet` `[OBJECT]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/group/g_sets.py#L317`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/g_sets.py#L317)
+- **Source**: [`src/dzack_research/preamble/categories/group/g_sets.py#L318`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/g_sets.py#L318)
 - **Bases**: `Parent`
 
 The finite orbit quotient ``X/G`` of a represented finite ``G``-set.
@@ -9859,12 +9953,12 @@ Return the generic subobject category of submonoids of ``ambient_monoid``.
 #### `continuous_group_homset` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def continuous_group_homset(domain, codomain)`
-- **Source**: [`src/dzack_research/preamble/categories/group/profinite/galois_quotient.py#L354`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/profinite/galois_quotient.py#L354)
+- **Source**: [`src/dzack_research/preamble/categories/group/profinite/galois_quotient.py#L357`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/profinite/galois_quotient.py#L357)
 
 #### `coxeter_presentation` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def coxeter_presentation(coxeter_matrix, names=None)`
-- **Source**: [`src/dzack_research/preamble/categories/group/groups.py#L1861`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/groups.py#L1861)
+- **Source**: [`src/dzack_research/preamble/categories/group/groups.py#L1893`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/groups.py#L1893)
 
 #### `cyclic_subgroup` `[FUNCTION]` `[Exported Session]`
 
@@ -9877,7 +9971,7 @@ Return the literal cyclic subgroup generated by ``generator``.
 #### `exact_embeddings` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def exact_embeddings(domain, codomain) -> tuple[ExactFieldMorphism, ...]`
-- **Source**: [`src/dzack_research/preamble/categories/group/profinite/field_morphisms.py#L182`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/profinite/field_morphisms.py#L182)
+- **Source**: [`src/dzack_research/preamble/categories/group/profinite/field_morphisms.py#L186`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/profinite/field_morphisms.py#L186)
 
 Return all exact embeddings of ``domain`` into ``codomain``.
 
@@ -9885,12 +9979,12 @@ Return all exact embeddings of ``domain`` into ``codomain``.
 #### `exact_field_homset` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `@cached_function` `def exact_field_homset(domain, codomain) -> ExactFieldHomset`
-- **Source**: [`src/dzack_research/preamble/categories/group/profinite/field_morphisms.py#L171`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/profinite/field_morphisms.py#L171)
+- **Source**: [`src/dzack_research/preamble/categories/group/profinite/field_morphisms.py#L175`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/profinite/field_morphisms.py#L175)
 
 #### `extensions_along` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def extensions_along(automorphism, embedding, candidates)`
-- **Source**: [`src/dzack_research/preamble/categories/group/profinite/galois_quotient.py#L468`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/profinite/galois_quotient.py#L468)
+- **Source**: [`src/dzack_research/preamble/categories/group/profinite/galois_quotient.py#L471`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/profinite/galois_quotient.py#L471)
 
 Return exactly the candidate automorphisms satisfying (\sigma j=j\tau).
 
@@ -9898,7 +9992,7 @@ Return exactly the candidate automorphisms satisfying (\sigma j=j\tau).
 #### `field_generators` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def field_generators(field) -> tuple`
-- **Source**: [`src/dzack_research/preamble/categories/group/profinite/field_morphisms.py#L24`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/profinite/field_morphisms.py#L24)
+- **Source**: [`src/dzack_research/preamble/categories/group/profinite/field_morphisms.py#L26`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/profinite/field_morphisms.py#L26)
 
 Return exact elements which determine a unital map out of ``field``.
 
@@ -9916,7 +10010,7 @@ Return exact elements which determine a unital map out of ``field``.
 #### `finite_g_set` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def finite_g_set(point_set, group, action)`
-- **Source**: [`src/dzack_research/preamble/categories/group/g_sets.py#L277`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/g_sets.py#L277)
+- **Source**: [`src/dzack_research/preamble/categories/group/g_sets.py#L278`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/g_sets.py#L278)
 
 Return the finite owned ``G``-set defined by ``action(g,x)``.
 
@@ -9934,7 +10028,7 @@ Return the finite owned ``G``-set defined by ``action(g,x)``.
 #### `first_exact_embedding` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def first_exact_embedding(domain, codomain) -> ExactFieldMorphism`
-- **Source**: [`src/dzack_research/preamble/categories/group/profinite/field_morphisms.py#L199`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/profinite/field_morphisms.py#L199)
+- **Source**: [`src/dzack_research/preamble/categories/group/profinite/field_morphisms.py#L203`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/profinite/field_morphisms.py#L203)
 
 Choose the first exact Sage embedding in its deterministic ordering.
 
@@ -9942,7 +10036,7 @@ Choose the first exact Sage embedding in its deterministic ordering.
 #### `fixed_point_set` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def fixed_point_set(g_set)`
-- **Source**: [`src/dzack_research/preamble/categories/group/g_sets.py#L423`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/g_sets.py#L423)
+- **Source**: [`src/dzack_research/preamble/categories/group/g_sets.py#L424`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/g_sets.py#L424)
 
 Return the finite fixed-point set ``X^G``.
 
@@ -9950,7 +10044,7 @@ Return the finite fixed-point set ``X^G``.
 #### `g_set_homset` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def g_set_homset(domain, codomain) -> GSetHomset`
-- **Source**: [`src/dzack_research/preamble/categories/group/g_sets.py#L214`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/g_sets.py#L214)
+- **Source**: [`src/dzack_research/preamble/categories/group/g_sets.py#L215`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/g_sets.py#L215)
 
 #### `generated_submonoid` `[FUNCTION]` `[Exported Session]`
 
@@ -9960,7 +10054,7 @@ Return the finite fixed-point set ``X^G``.
 #### `group_homset` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `@cached_function` `def group_homset(domain, codomain)`
-- **Source**: [`src/dzack_research/preamble/categories/group/groups.py#L1186`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/groups.py#L1186)
+- **Source**: [`src/dzack_research/preamble/categories/group/groups.py#L1203`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/groups.py#L1203)
 
 #### `is_predicate_subgroup` `[FUNCTION]` `[Internal]`
 
@@ -9970,7 +10064,7 @@ Return the finite fixed-point set ``X^G``.
 #### `open_absolute_galois_subgroup` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def open_absolute_galois_subgroup(ambient, extension, embedding=None)`
-- **Source**: [`src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py#L1004`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py#L1004)
+- **Source**: [`src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py#L1007`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py#L1007)
 
 #### `predicate_subgroup` `[FUNCTION]` `[Exported Session]`
 
@@ -9990,7 +10084,7 @@ Return the finite fixed-point set ``X^G``.
 #### `restrict_along` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def restrict_along(automorphism: ExactFieldMorphism, embedding: ExactFieldMorphism) -> ExactFieldMorphism`
-- **Source**: [`src/dzack_research/preamble/categories/group/profinite/galois_quotient.py#L447`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/profinite/galois_quotient.py#L447)
+- **Source**: [`src/dzack_research/preamble/categories/group/profinite/galois_quotient.py#L450`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/profinite/galois_quotient.py#L450)
 
 Solve (j\tau=\sigma j) for the exact restriction ``tau``.
 
@@ -9998,7 +10092,7 @@ Solve (j\tau=\sigma j) for the exact restriction ``tau``.
 #### `trivial_g_set` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def trivial_g_set(point_set, group)`
-- **Source**: [`src/dzack_research/preamble/categories/group/g_sets.py#L282`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/g_sets.py#L282)
+- **Source**: [`src/dzack_research/preamble/categories/group/g_sets.py#L283`](file:///home/dzack/research/src/dzack_research/preamble/categories/group/g_sets.py#L283)
 
 Equip a finite set with the trivial ``group``-action.
 
@@ -10015,7 +10109,7 @@ Equip a finite set with the trivial ``group``-action.
 
 #### `AdicCompletions` `[CATEGORY]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/rings/commutative_algebra.py#L972`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/commutative_algebra.py#L972)
+- **Source**: [`src/dzack_research/preamble/categories/rings/commutative_algebra.py#L979`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/commutative_algebra.py#L979)
 - **Bases**: `Category`
 - **Super Categories**: `[OwnedAdicallyCompleteRings()]`
 
@@ -10024,6 +10118,7 @@ Adic completions equipped with source and ideal of definition.
 
 **ParentMethods (Methods on Category Objects):**
 - `completion_map(self)`
+- `completion_source(self)`
 - `computation_precision(self)`
 
 **Category Instance Methods:**
@@ -10031,7 +10126,7 @@ Adic completions equipped with source and ideal of definition.
 
 #### `CommutativeIdeals` `[SUBCATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/rings/commutative_ideals.py#L15`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/commutative_ideals.py#L15)
+- **Source**: [`src/dzack_research/preamble/categories/rings/commutative_ideals.py#L17`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/commutative_ideals.py#L17)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[Modules(self.base_ring())]`
 
@@ -10070,7 +10165,7 @@ Ideals of ``R``: subobjects of the rank-one ``R``-module ``R``.
 
 #### `CommutativeRingConstructions` `[SUBCATEGORY]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/rings/commutative_algebra.py#L46`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/commutative_algebra.py#L46)
+- **Source**: [`src/dzack_research/preamble/categories/rings/commutative_algebra.py#L51`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/commutative_algebra.py#L51)
 - **Bases**: `Category`
 - **Super Categories**: `[OwnedCommutativeRings()]`
 
@@ -10092,7 +10187,7 @@ Commutative rings equipped with the represented standard constructions.
 
 #### `FormalPowerSeriesRings` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/rings/commutative_algebra.py#L1410`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/commutative_algebra.py#L1410)
+- **Source**: [`src/dzack_research/preamble/categories/rings/commutative_algebra.py#L1434`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/commutative_algebra.py#L1434)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[CommutativeAlgebras(self.base_ring()), OwnedAdicallyCompleteRings()]`
 
@@ -10110,11 +10205,11 @@ Formal power-series rings ``R[[t]]`` over the owned ring ``R``.
 
 #### `LocalizationRings` `[CATEGORY]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/rings/commutative_algebra.py#L653`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/commutative_algebra.py#L653)
-- **Bases**: `Category`
+- **Source**: [`src/dzack_research/preamble/categories/rings/ring_foundation.py#L238`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/ring_foundation.py#L238)
+- **Bases**: `OwnedCategory`
 - **Super Categories**: `[OwnedCommutativeRings()]`
 
-Localizations ``S^{-1}R`` equipped with ``S -> (R,*)`` and ``R -> S^{-1}R``.
+Commutative localizations carrying their selected source and submonoid.
 
 
 **ParentMethods (Methods on Category Objects):**
@@ -10124,15 +10219,21 @@ Localizations ``S^{-1}R`` equipped with ``S -> (R,*)`` and ``R -> S^{-1}R``.
 - `localization_map(self)`
 - `localization_source(self)`
 - `localization_submonoid(self)`
-- `localize_module(self, module)`
-  > Return ``S^{-1}M`` for this represented localization ``S^{-1}R``.
 
 **Category Instance Methods:**
 - `super_categories(self)`
 
+#### `NumberFieldHomCategoryConstruction` `[CATEGORY]` `[Internal]`
+
+- **Source**: [`src/dzack_research/preamble/categories/rings/number_fields.py#L72`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/number_fields.py#L72)
+- **Bases**: `HomCategoryConstruction`
+
+**Category Instance Methods:**
+- `fixed_category_class(self)`
+
 #### `NumberFieldsWithChosenPrimitiveElement` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/rings/number_fields.py#L232`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/number_fields.py#L232)
+- **Source**: [`src/dzack_research/preamble/categories/rings/number_fields.py#L267`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/number_fields.py#L267)
 - **Bases**: `Category`
 - **Super Categories**: `[OwnedNumberFields()]`
 
@@ -10154,7 +10255,7 @@ Number fields carrying the primitive element selected by their presentation.
 
 #### `OrdersWithChosenIntegralBasis` `[SUBCATEGORY]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/rings/number_fields.py#L276`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/number_fields.py#L276)
+- **Source**: [`src/dzack_research/preamble/categories/rings/number_fields.py#L311`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/number_fields.py#L311)
 - **Bases**: `Category`
 - **Super Categories**: `[OwnedOrders(), FreeModuleBaseRings(), Algebras(integers), FinitelyGeneratedFreeModules(integers)]`
 
@@ -10178,7 +10279,7 @@ Number-field orders carrying their selected integral basis.
 
 #### `OwnedAdicallyCompleteRings` `[CATEGORY]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/rings/ring_foundation.py#L540`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/ring_foundation.py#L540)
+- **Source**: [`src/dzack_research/preamble/categories/rings/ring_foundation.py#L590`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/ring_foundation.py#L590)
 - **Bases**: `OwnedCategory`
 - **Super Categories**: `[OwnedCommutativeRings()]`
 
@@ -10186,7 +10287,6 @@ Commutative rings represented as complete for a chosen adic topology.
 
 
 **ParentMethods (Methods on Category Objects):**
-- `completion_source(self)`
 - `ideal_of_definition(self)`
 - `is_adically_complete(self)`
 
@@ -10195,7 +10295,7 @@ Commutative rings represented as complete for a chosen adic topology.
 
 #### `OwnedArtinianRings` `[CATEGORY]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/rings/ring_foundation.py#L491`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/ring_foundation.py#L491)
+- **Source**: [`src/dzack_research/preamble/categories/rings/ring_foundation.py#L547`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/ring_foundation.py#L547)
 - **Bases**: `OwnedCategory`
 - **Super Categories**: `[OwnedNoetherianRings()]`
 
@@ -10210,7 +10310,7 @@ Artinian commutative rings.
 
 #### `OwnedCategoryOverBaseRing` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/rings/ring_foundation.py#L626`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/ring_foundation.py#L626)
+- **Source**: [`src/dzack_research/preamble/categories/rings/ring_foundation.py#L667`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/ring_foundation.py#L667)
 - **Bases**: `CategoryPacketMethods`, `OwnedParameterizedCategory`
 
 A category over a ring, normalized to the session's owned ring.
@@ -10221,7 +10321,7 @@ A category over a ring, normalized to the session's owned ring.
 
 #### `OwnedCommutativeRings` `[SUBCATEGORY]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/rings/ring_foundation.py#L432`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/ring_foundation.py#L432)
+- **Source**: [`src/dzack_research/preamble/categories/rings/ring_foundation.py#L484`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/ring_foundation.py#L484)
 - **Bases**: `OwnedCategory`
 - **Super Categories**: `[OwnedRings()]`
 
@@ -10236,7 +10336,7 @@ Commutative unital rings in the owned mathematical graph.
 
 #### `OwnedCompleteLocalRings` `[CATEGORY]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/rings/ring_foundation.py#L563`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/ring_foundation.py#L563)
+- **Source**: [`src/dzack_research/preamble/categories/rings/ring_foundation.py#L604`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/ring_foundation.py#L604)
 - **Bases**: `OwnedCategory`
 - **Super Categories**: `[OwnedLocalRings(), OwnedAdicallyCompleteRings()]`
 
@@ -10248,7 +10348,7 @@ Local rings complete for the represented maximal-ideal/adic topology.
 
 #### `OwnedDivisionRings` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/rings/ring_foundation.py#L569`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/ring_foundation.py#L569)
+- **Source**: [`src/dzack_research/preamble/categories/rings/ring_foundation.py#L610`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/ring_foundation.py#L610)
 - **Bases**: `OwnedCategory`
 - **Super Categories**: `[OwnedRings()]`
 
@@ -10257,7 +10357,7 @@ Local rings complete for the represented maximal-ideal/adic topology.
 
 #### `OwnedFields` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/rings/ring_foundation.py#L574`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/ring_foundation.py#L574)
+- **Source**: [`src/dzack_research/preamble/categories/rings/ring_foundation.py#L615`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/ring_foundation.py#L615)
 - **Bases**: `OwnedCategory`
 - **Super Categories**: `[OwnedDivisionRings(), OwnedIntegralDomains(), OwnedPrincipalIdealDomains(), OwnedNoetherianRings(), OwnedArtinianRings(), OwnedLocalRings()]`
 
@@ -10271,7 +10371,7 @@ Local rings complete for the represented maximal-ideal/adic topology.
 
 #### `OwnedIntegralDomains` `[SUBCATEGORY]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/rings/ring_foundation.py#L455`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/ring_foundation.py#L455)
+- **Source**: [`src/dzack_research/preamble/categories/rings/ring_foundation.py#L507`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/ring_foundation.py#L507)
 - **Bases**: `OwnedCategory`
 - **Super Categories**: `[OwnedCommutativeRings()]`
 
@@ -10286,7 +10386,7 @@ Commutative rings without zero divisors.
 
 #### `OwnedLocalRings` `[CATEGORY]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/rings/ring_foundation.py#L502`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/ring_foundation.py#L502)
+- **Source**: [`src/dzack_research/preamble/categories/rings/ring_foundation.py#L558`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/ring_foundation.py#L558)
 - **Bases**: `OwnedCategory`
 - **Super Categories**: `[OwnedCommutativeRings()]`
 
@@ -10306,7 +10406,7 @@ Commutative rings equipped with their unique maximal ideal.
 
 #### `OwnedNoetherianRings` `[CATEGORY]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/rings/ring_foundation.py#L473`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/ring_foundation.py#L473)
+- **Source**: [`src/dzack_research/preamble/categories/rings/ring_foundation.py#L533`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/ring_foundation.py#L533)
 - **Bases**: `OwnedCategory`
 - **Super Categories**: `[OwnedCommutativeRings()]`
 
@@ -10322,14 +10422,15 @@ Noetherian commutative rings.
 
 #### `OwnedNumberFields` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/rings/number_fields.py#L45`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/number_fields.py#L45)
-- **Bases**: `Category`
+- **Source**: [`src/dzack_research/preamble/categories/rings/number_fields.py#L77`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/number_fields.py#L77)
+- **Bases**: `CategoryPacketMethods`, `Category`
 - **Super Categories**: `[OwnedFields()]`
 
 Finite extensions of ``QQ``.
 
 
 **ParentMethods (Methods on Category Objects):**
+- `Mor(self, codomain, category=None)`
 - `as_algebra(self)`
   > Return this field as the corresponding ``QQ``-algebra object.
 - `class_number(self)`
@@ -10362,11 +10463,12 @@ Finite extensions of ``QQ``.
   > Return ``(r_1,r_2)`` with ``r_1+2r_2=[K:QQ]``.
 
 **Category Instance Methods:**
+- `Mor(self, domain, codomain)`
 - `super_categories(self)`
 
 #### `OwnedOrderedRings` `[CATEGORY]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/rings/ring_foundation.py#L443`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/ring_foundation.py#L443)
+- **Source**: [`src/dzack_research/preamble/categories/rings/ring_foundation.py#L495`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/ring_foundation.py#L495)
 - **Bases**: `OwnedCategory`
 - **Super Categories**: `[OwnedRings()]`
 
@@ -10378,7 +10480,7 @@ Totally ordered rings in the owned scalar hierarchy.
 
 #### `OwnedOrders` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/rings/ring_foundation.py#L596`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/ring_foundation.py#L596)
+- **Source**: [`src/dzack_research/preamble/categories/rings/ring_foundation.py#L637`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/ring_foundation.py#L637)
 - **Bases**: `OwnedCategory`
 - **Super Categories**: `[OwnedIntegralDomains(), OwnedNoetherianRings()]`
 
@@ -10395,7 +10497,7 @@ Orders in number fields as a ring-theoretic property category.
 
 #### `OwnedRings` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/rings/ring_foundation.py#L290`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/ring_foundation.py#L290)
+- **Source**: [`src/dzack_research/preamble/categories/rings/ring_foundation.py#L344`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/ring_foundation.py#L344)
 - **Bases**: `CategoryPacketMethods`, `OwnedCategory`
 - **Super Categories**: `[OwnedSemirings(), OwnedRngs()]`
 
@@ -10403,7 +10505,7 @@ Unital rings whose notebook-facing ring interface is owned here.
 
 
 **ParentMethods (Methods on Category Objects):**
-- `Hom(self, codomain, category=None)`
+- `Mor(self, codomain, category=None)`
 - `algebra_structure_morphism(self)`
   > The structure morphism of this ring as an algebra over itself.
 - `cardinality(self)`
@@ -10411,17 +10513,17 @@ Unital rings whose notebook-facing ring interface is owned here.
 - `fraction_field(self)`
   > Return the fraction field through the computation ring.
 - `is_central(self, element)`
-  > Return whether ``element`` is central when this is decidable here.
+  > Return whether ``element`` is central in the foundational ring regimes.
 - `@cached_method` `ring_center(self)`
   > Return the centre ``Z(R)`` as a predicate-defined subring.
 
 **Category Instance Methods:**
-- `homset(self, domain, codomain)`
+- `Mor(self, domain, codomain)`
 - `super_categories(self)`
 
 #### `PredicateSubrings` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/rings/ring_foundation.py#L178`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/ring_foundation.py#L178)
+- **Source**: [`src/dzack_research/preamble/categories/rings/ring_foundation.py#L189`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/ring_foundation.py#L189)
 - **Bases**: `OwnedCategory`
 - **Super Categories**: `[OwnedRings()]`
 
@@ -10437,7 +10539,7 @@ Unital rings whose notebook-facing ring interface is owned here.
 
 #### `PrimeLocalizations` `[CATEGORY]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/rings/commutative_algebra.py#L949`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/commutative_algebra.py#L949)
+- **Source**: [`src/dzack_research/preamble/categories/rings/commutative_algebra.py#L946`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/commutative_algebra.py#L946)
 - **Bases**: `Category`
 - **Super Categories**: `[OwnedLocalRings(), OwnedIntegralDomains()]`
 
@@ -10449,6 +10551,8 @@ Prime local rings ``R_p`` represented inside ``Frac(R)``.
   > A domain localization ``R_p`` is a field exactly for ``p=(0)``.
 - `localization_map(self)`
 - `localization_source(self)`
+- `localize_module(self, module)`
+  > Return ``R_p tensor_R M`` through the module-localization theory.
 - `localized_prime(self)`
 
 **Category Instance Methods:**
@@ -10456,7 +10560,7 @@ Prime local rings ``R_p`` represented inside ``Frac(R)``.
 
 #### `QuotientRings` `[CATEGORY]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/rings/commutative_algebra.py#L369`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/commutative_algebra.py#L369)
+- **Source**: [`src/dzack_research/preamble/categories/rings/commutative_algebra.py#L395`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/commutative_algebra.py#L395)
 - **Bases**: `Category`
 - **Super Categories**: `[OwnedCommutativeRings()]`
 
@@ -10489,7 +10593,7 @@ The owned family ``(A,B) |-> Hom_Ring(A,B)``.
 
 #### `DistinguishedOpenSubobject` `[MORPHISM]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/rings/commutative_algebra.py#L277`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/commutative_algebra.py#L277)
+- **Source**: [`src/dzack_research/preamble/categories/rings/commutative_algebra.py#L303`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/commutative_algebra.py#L303)
 - **Bases**: `SetInclusion`
 
 The distinguished open subobject ``D(f) -> Spec(R)``.
@@ -10502,7 +10606,7 @@ The distinguished open subobject ``D(f) -> Spec(R)``.
 
 #### `NumberFieldEmbedding` `[MORPHISM]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/rings/embeddings.py#L16`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/embeddings.py#L16)
+- **Source**: [`src/dzack_research/preamble/categories/rings/embeddings.py#L24`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/embeddings.py#L24)
 - **Bases**: `Morphism`
 
 An exact field embedding between owned number fields.
@@ -10516,9 +10620,9 @@ An exact field embedding between owned number fields.
 
 #### `NumberFieldHomset` `[HOMSET]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/rings/embeddings.py#L94`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/embeddings.py#L94)
-- **Bases**: `OwnedHomset`
-- **Constructor**: `def __init__(self, domain, codomain) -> None`
+- **Source**: [`src/dzack_research/preamble/categories/rings/embeddings.py#L102`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/embeddings.py#L102)
+- **Bases**: `CategoricalHomset`
+- **Constructor**: `def __init__(self, hom_family, domain, codomain) -> None`
 - **Constructor**: `def _element_constructor_(self, datum)`
 
 **Public Methods:**
@@ -10527,7 +10631,7 @@ An exact field embedding between owned number fields.
 
 #### `OrderEmbedding` `[MORPHISM]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/rings/embeddings.py#L145`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/embeddings.py#L145)
+- **Source**: [`src/dzack_research/preamble/categories/rings/embeddings.py#L157`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/embeddings.py#L157)
 - **Bases**: `Morphism`
 
 A unital embedding of orders, represented by its fraction-field extension.
@@ -10542,8 +10646,8 @@ A unital embedding of orders, represented by its fraction-field extension.
 
 #### `OrderHomset` `[HOMSET]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/rings/embeddings.py#L198`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/embeddings.py#L198)
-- **Bases**: `OwnedHomset`
+- **Source**: [`src/dzack_research/preamble/categories/rings/embeddings.py#L210`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/embeddings.py#L210)
+- **Bases**: `CategoricalHomset`
 - **Constructor**: `def __init__(self, domain, codomain) -> None`
 - **Constructor**: `def _element_constructor_(self, field_embedding)`
 
@@ -10583,7 +10687,7 @@ A unital ring morphism in the owned ring category.
 
 #### `ZariskiClosedSubobject` `[MORPHISM]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/rings/commutative_algebra.py#L243`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/commutative_algebra.py#L243)
+- **Source**: [`src/dzack_research/preamble/categories/rings/commutative_algebra.py#L269`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/commutative_algebra.py#L269)
 - **Bases**: `SetInclusion`
 
 The closed subobject ``V(I) -> Spec(R)``.
@@ -10646,7 +10750,7 @@ An exact, explicitly real number.
 
 #### `GeneralLocalizationRingElement` `[ELEMENT]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/rings/commutative_algebra.py#L706`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/commutative_algebra.py#L706)
+- **Source**: [`src/dzack_research/preamble/categories/rings/commutative_algebra.py#L679`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/commutative_algebra.py#L679)
 - **Bases**: `CommutativeRingElement`
 
 A literal fraction ``r/s`` in a represented commutative localization.
@@ -10662,7 +10766,7 @@ A literal fraction ``r/s`` in a represented commutative localization.
 
 #### `GeneralLocalizationRingParent` `[OBJECT]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/rings/commutative_algebra.py#L816`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/commutative_algebra.py#L816)
+- **Source**: [`src/dzack_research/preamble/categories/rings/commutative_algebra.py#L789`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/commutative_algebra.py#L789)
 - **Bases**: `Parent`
 
 The universal fraction model ``S^{-1}R`` for a represented submonoid ``S``.
@@ -10673,12 +10777,14 @@ The universal fraction model ``S^{-1}R`` for a represented submonoid ``S``.
 
 **Public Methods:**
 - `fraction(self, numerator, denominator=None, *, _trusted_denominator=False)`
+- `localize_module(self, module)`
+  > Return ``S^{-1}M`` through the module-localization theory.
 - `one(self)`
 - `zero(self)`
 
 #### `GeneralQuotientRingElement` `[ELEMENT]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/rings/commutative_algebra.py#L414`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/commutative_algebra.py#L414)
+- **Source**: [`src/dzack_research/preamble/categories/rings/commutative_algebra.py#L440`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/commutative_algebra.py#L440)
 - **Bases**: `CommutativeRingElement`
 
 A coset in a represented quotient ``R/I`` without a native CAS parent.
@@ -10692,7 +10798,7 @@ A coset in a represented quotient ``R/I`` without a native CAS parent.
 
 #### `GeneralQuotientRingParent` `[OBJECT]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/rings/commutative_algebra.py#L471`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/commutative_algebra.py#L471)
+- **Source**: [`src/dzack_research/preamble/categories/rings/commutative_algebra.py#L497`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/commutative_algebra.py#L497)
 - **Bases**: `Parent`
 
 The literal quotient ring ``R/I`` using the ideal congruence.
@@ -10713,7 +10819,7 @@ The literal quotient ring ``R/I`` using the ideal congruence.
 
 #### `GeneratedIdealView` `[OBJECT]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/rings/commutative_algebra.py#L986`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/commutative_algebra.py#L986)
+- **Source**: [`src/dzack_research/preamble/categories/rings/commutative_algebra.py#L996`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/commutative_algebra.py#L996)
 - **Bases**: `SageObject`
 
 An ideal remembered by its ambient ring and chosen generators.
@@ -10727,7 +10833,7 @@ An ideal remembered by its ambient ring and chosen generators.
 
 #### `LocalizedMaximalIdeal` `[OBJECT]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/rings/commutative_algebra.py#L1007`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/commutative_algebra.py#L1007)
+- **Source**: [`src/dzack_research/preamble/categories/rings/commutative_algebra.py#L1035`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/commutative_algebra.py#L1035)
 - **Bases**: `GeneratedIdealView`
 
 #### `NonNegativeReal` `[ELEMENT]` `[Internal]`
@@ -10759,7 +10865,7 @@ The additive monoid \(([0,\infty],+)\).
 
 #### `OwnedPrincipalIdealDomains` `[OBJECT]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/rings/ring_foundation.py#L466`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/ring_foundation.py#L466)
+- **Source**: [`src/dzack_research/preamble/categories/rings/ring_foundation.py#L518`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/ring_foundation.py#L518)
 - **Bases**: `OwnedCategory`
 
 Principal ideal domains in the owned ring hierarchy.
@@ -10770,7 +10876,7 @@ Principal ideal domains in the owned ring hierarchy.
 
 #### `OwnedRngs` `[OBJECT]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/rings/ring_foundation.py#L283`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/ring_foundation.py#L283)
+- **Source**: [`src/dzack_research/preamble/categories/rings/ring_foundation.py#L337`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/ring_foundation.py#L337)
 - **Bases**: `OwnedCategory`
 
 Rngs on the owned operation spine.
@@ -10781,7 +10887,7 @@ Rngs on the owned operation spine.
 
 #### `OwnedSemirings` `[OBJECT]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/rings/ring_foundation.py#L276`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/ring_foundation.py#L276)
+- **Source**: [`src/dzack_research/preamble/categories/rings/ring_foundation.py#L330`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/ring_foundation.py#L330)
 - **Bases**: `OwnedCategory`
 
 Semirings on the owned operation spine.
@@ -10792,7 +10898,7 @@ Semirings on the owned operation spine.
 
 #### `PrimeFields` `[OBJECT]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/rings/ring_foundation.py#L619`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/ring_foundation.py#L619)
+- **Source**: [`src/dzack_research/preamble/categories/rings/ring_foundation.py#L660`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/ring_foundation.py#L660)
 - **Bases**: `OwnedCategory`
 
 Prime fields \(\mathbf F_p\).
@@ -10803,7 +10909,7 @@ Prime fields \(\mathbf F_p\).
 
 #### `PrimeIdealPoint` `[ELEMENT]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/rings/commutative_algebra.py#L180`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/commutative_algebra.py#L180)
+- **Source**: [`src/dzack_research/preamble/categories/rings/commutative_algebra.py#L206`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/commutative_algebra.py#L206)
 - **Bases**: `Element`
 
 A point ``p in Spec(R)``, represented by its prime ideal ``p <= R``.
@@ -10820,7 +10926,7 @@ A point ``p in Spec(R)``, represented by its prime ideal ``p <= R``.
 
 #### `PrimeSpectrum` `[OBJECT]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/rings/commutative_algebra.py#L309`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/commutative_algebra.py#L309)
+- **Source**: [`src/dzack_research/preamble/categories/rings/commutative_algebra.py#L335`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/commutative_algebra.py#L335)
 - **Bases**: `Parent`
 - **Constructor**: `def __init__(self, ring) -> None`
 - **Constructor**: `def __call__(self, ideal)`
@@ -10835,7 +10941,7 @@ A point ``p in Spec(R)``, represented by its prime ideal ``p <= R``.
 
 #### `QuotientLocalizationComparison` `[OBJECT]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/rings/commutative_algebra.py#L600`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/commutative_algebra.py#L600)
+- **Source**: [`src/dzack_research/preamble/categories/rings/commutative_algebra.py#L626`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/commutative_algebra.py#L626)
 - **Bases**: `SageObject`
 
 The canonical compatibility of quotient and localization.
@@ -10901,7 +11007,7 @@ An element of \(([0,1],\oplus)\).
 #### `AdicCompletion` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def AdicCompletion(ring, ideal, *, precision=20)`
-- **Source**: [`src/dzack_research/preamble/categories/rings/commutative_algebra.py#L1358`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/commutative_algebra.py#L1358)
+- **Source**: [`src/dzack_research/preamble/categories/rings/commutative_algebra.py#L1384`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/commutative_algebra.py#L1384)
 
 Return a computational realization of the adic completion ``R^``.
 
@@ -10912,7 +11018,7 @@ The mathematical parent records ``R`` and the ideal of definition;
 #### `CommutativeIdeal` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def CommutativeIdeal(ring, *generators)`
-- **Source**: [`src/dzack_research/preamble/categories/rings/commutative_ideals.py#L323`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/commutative_ideals.py#L323)
+- **Source**: [`src/dzack_research/preamble/categories/rings/commutative_ideals.py#L358`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/commutative_ideals.py#L358)
 
 Return ``(generators) <= R`` with its selected module inclusion.
 
@@ -10920,7 +11026,7 @@ Return ``(generators) <= R`` with its selected module inclusion.
 #### `ComplexField` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def ComplexField(*args, **kwargs)`
-- **Source**: [`src/dzack_research/preamble/categories/rings/ring_foundation.py#L1171`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/ring_foundation.py#L1171)
+- **Source**: [`src/dzack_research/preamble/categories/rings/ring_foundation.py#L1227`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/ring_foundation.py#L1227)
 
 #### `ComplexField` `[FUNCTION]` `[Internal]`
 
@@ -10929,8 +11035,8 @@ Return ``(generators) <= R`` with its selected module inclusion.
 
 #### `CyclotomicField` `[FUNCTION]` `[Internal]`
 
-- **Signature**: `def CyclotomicField(*args, **kwargs)`
-- **Source**: [`src/dzack_research/preamble/categories/rings/number_fields.py#L29`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/number_fields.py#L29)
+- **Signature**: `def CyclotomicField(order, *args, **kwargs)`
+- **Source**: [`src/dzack_research/preamble/categories/rings/number_fields.py#L52`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/number_fields.py#L52)
 
 #### `CyclotomicField` `[FUNCTION]` `[Internal]`
 
@@ -10940,7 +11046,7 @@ Return ``(generators) <= R`` with its selected module inclusion.
 #### `DualNumbers` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def DualNumbers(base_ring, name='epsilon')`
-- **Source**: [`src/dzack_research/preamble/categories/rings/commutative_algebra.py#L1515`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/commutative_algebra.py#L1515)
+- **Source**: [`src/dzack_research/preamble/categories/rings/commutative_algebra.py#L1538`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/commutative_algebra.py#L1538)
 
 Return the dual-number algebra ``R[epsilon]/(epsilon^2)``.
 
@@ -10956,7 +11062,7 @@ Return the owned fraction field of ``ring``.
 #### `GF` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def GF(*args, **kwargs)`
-- **Source**: [`src/dzack_research/preamble/categories/rings/ring_foundation.py#L1140`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/ring_foundation.py#L1140)
+- **Source**: [`src/dzack_research/preamble/categories/rings/ring_foundation.py#L1196`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/ring_foundation.py#L1196)
 
 #### `GF` `[FUNCTION]` `[Internal]`
 
@@ -10971,7 +11077,7 @@ Return the owned fraction field of ``ring``.
 #### `Localization` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def Localization(ring, *datum)`
-- **Source**: [`src/dzack_research/preamble/categories/rings/commutative_algebra.py#L1099`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/commutative_algebra.py#L1099)
+- **Source**: [`src/dzack_research/preamble/categories/rings/commutative_algebra.py#L1125`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/commutative_algebra.py#L1125)
 
 Return ``S^{-1}R`` from a submonoid ``S -> (R,*)``.
 
@@ -10991,7 +11097,7 @@ Return the public finite matrix Hom, with algebra structure when square.
 #### `NumberField` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def NumberField(polynomial, *args, **kwargs)`
-- **Source**: [`src/dzack_research/preamble/categories/rings/number_fields.py#L37`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/number_fields.py#L37)
+- **Source**: [`src/dzack_research/preamble/categories/rings/number_fields.py#L64`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/number_fields.py#L64)
 
 #### `NumberField` `[FUNCTION]` `[Internal]`
 
@@ -11006,12 +11112,12 @@ Return the public finite matrix Hom, with algebra structure when square.
 #### `PowerSeriesRing` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def PowerSeriesRing(base_ring, *args, **kwargs)`
-- **Source**: [`src/dzack_research/preamble/categories/rings/commutative_algebra.py#L1502`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/commutative_algebra.py#L1502)
+- **Source**: [`src/dzack_research/preamble/categories/rings/commutative_algebra.py#L1527`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/commutative_algebra.py#L1527)
 
 #### `PrimeField` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def PrimeField(characteristic)`
-- **Source**: [`src/dzack_research/preamble/categories/rings/ring_foundation.py#L1151`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/ring_foundation.py#L1151)
+- **Source**: [`src/dzack_research/preamble/categories/rings/ring_foundation.py#L1207`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/ring_foundation.py#L1207)
 
 #### `PrimeField` `[FUNCTION]` `[Exported Session]`
 
@@ -11021,7 +11127,7 @@ Return the public finite matrix Hom, with algebra structure when square.
 #### `PrimeLocalization` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def PrimeLocalization(ring, prime)`
-- **Source**: [`src/dzack_research/preamble/categories/rings/commutative_algebra.py#L1341`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/commutative_algebra.py#L1341)
+- **Source**: [`src/dzack_research/preamble/categories/rings/commutative_algebra.py#L1367`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/commutative_algebra.py#L1367)
 
 Return ``R_p`` using the submonoid ``R \ p -> (R,*)``.
 
@@ -11029,7 +11135,7 @@ Return ``R_p`` using the submonoid ``R \ p -> (R,*)``.
 #### `Qp` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def Qp(*args, **kwargs)`
-- **Source**: [`src/dzack_research/preamble/categories/rings/ring_foundation.py#L1163`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/ring_foundation.py#L1163)
+- **Source**: [`src/dzack_research/preamble/categories/rings/ring_foundation.py#L1219`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/ring_foundation.py#L1219)
 
 #### `Qp` `[FUNCTION]` `[Internal]`
 
@@ -11038,8 +11144,8 @@ Return ``R_p`` using the submonoid ``R \ p -> (R,*)``.
 
 #### `QuadraticField` `[FUNCTION]` `[Internal]`
 
-- **Signature**: `def QuadraticField(*args, **kwargs)`
-- **Source**: [`src/dzack_research/preamble/categories/rings/number_fields.py#L33`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/number_fields.py#L33)
+- **Signature**: `def QuadraticField(discriminant, *args, **kwargs)`
+- **Source**: [`src/dzack_research/preamble/categories/rings/number_fields.py#L58`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/number_fields.py#L58)
 
 #### `QuadraticField` `[FUNCTION]` `[Internal]`
 
@@ -11049,7 +11155,7 @@ Return ``R_p`` using the submonoid ``R \ p -> (R,*)``.
 #### `QuotientRing` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def QuotientRing(ring, ideal)`
-- **Source**: [`src/dzack_research/preamble/categories/rings/commutative_algebra.py#L1023`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/commutative_algebra.py#L1023)
+- **Source**: [`src/dzack_research/preamble/categories/rings/commutative_algebra.py#L1051`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/commutative_algebra.py#L1051)
 
 Return the commutative quotient ring ``R/I`` with its quotient map.
 
@@ -11065,7 +11171,7 @@ Return the owned finite-precision real represented by ``value``.
 #### `RealField` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def RealField(*args, **kwargs)`
-- **Source**: [`src/dzack_research/preamble/categories/rings/ring_foundation.py#L1167`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/ring_foundation.py#L1167)
+- **Source**: [`src/dzack_research/preamble/categories/rings/ring_foundation.py#L1223`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/ring_foundation.py#L1223)
 
 #### `RealField` `[FUNCTION]` `[Internal]`
 
@@ -11075,7 +11181,7 @@ Return the owned finite-precision real represented by ``value``.
 #### `ResidueField` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def ResidueField(ring, ideal=None)`
-- **Source**: [`src/dzack_research/preamble/categories/rings/commutative_algebra.py#L1226`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/commutative_algebra.py#L1226)
+- **Source**: [`src/dzack_research/preamble/categories/rings/commutative_algebra.py#L1252`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/commutative_algebra.py#L1252)
 
 Return ``R/m`` for a maximal ideal, or the represented local residue field.
 
@@ -11083,7 +11189,7 @@ Return ``R/m`` for a maximal ideal, or the represented local residue field.
 #### `Zmod` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def Zmod(*args, **kwargs)`
-- **Source**: [`src/dzack_research/preamble/categories/rings/ring_foundation.py#L1155`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/ring_foundation.py#L1155)
+- **Source**: [`src/dzack_research/preamble/categories/rings/ring_foundation.py#L1211`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/ring_foundation.py#L1211)
 
 #### `Zmod` `[FUNCTION]` `[Internal]`
 
@@ -11093,7 +11199,7 @@ Return ``R/m`` for a maximal ideal, or the represented local residue field.
 #### `Zp` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def Zp(*args, **kwargs)`
-- **Source**: [`src/dzack_research/preamble/categories/rings/commutative_algebra.py#L1480`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/commutative_algebra.py#L1480)
+- **Source**: [`src/dzack_research/preamble/categories/rings/commutative_algebra.py#L1500`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/commutative_algebra.py#L1500)
 
 #### `install_session_rings` `[FUNCTION]` `[Exported Session]`
 
@@ -11106,22 +11212,22 @@ Restore owned scalar objects and public ring constructors in ``scope``.
 #### `number_field_homset` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `@cached_function` `def number_field_homset(domain, codomain) -> NumberFieldHomset`
-- **Source**: [`src/dzack_research/preamble/categories/rings/embeddings.py#L141`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/embeddings.py#L141)
+- **Source**: [`src/dzack_research/preamble/categories/rings/embeddings.py#L153`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/embeddings.py#L153)
 
 #### `order_homset` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `@cached_function` `def order_homset(domain, codomain) -> OrderHomset`
-- **Source**: [`src/dzack_research/preamble/categories/rings/embeddings.py#L229`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/embeddings.py#L229)
+- **Source**: [`src/dzack_research/preamble/categories/rings/embeddings.py#L243`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/embeddings.py#L243)
 
 #### `predicate_subring` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def predicate_subring(ambient_ring, predicate, description, category=None)`
-- **Source**: [`src/dzack_research/preamble/categories/rings/ring_foundation.py#L265`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/ring_foundation.py#L265)
+- **Source**: [`src/dzack_research/preamble/categories/rings/ring_foundation.py#L319`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/ring_foundation.py#L319)
 
 #### `quotient_localization_comparison` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def quotient_localization_comparison(source_quotient, localization_ring)`
-- **Source**: [`src/dzack_research/preamble/categories/rings/commutative_algebra.py#L1143`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/commutative_algebra.py#L1143)
+- **Source**: [`src/dzack_research/preamble/categories/rings/commutative_algebra.py#L1169`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/commutative_algebra.py#L1169)
 
 Return the canonical isomorphism
 
@@ -11132,10 +11238,18 @@ set of ``S`` so that its image in ``R/I`` is an actual represented
 submonoid.
 
 
+#### `refine_commutative_algebra` `[FUNCTION]` `[Internal]`
+
+- **Signature**: `def refine_commutative_algebra(algebra, base_ring, labels=None, *categories)`
+- **Source**: [`src/dzack_research/preamble/categories/rings/commutative_algebra.py#L117`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/commutative_algebra.py#L117)
+
+Place a commutative algebra with its standard ring constructions.
+
+
 #### `refine_commutative_ring_constructions` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def refine_commutative_ring_constructions(ring)`
-- **Source**: [`src/dzack_research/preamble/categories/rings/commutative_algebra.py#L91`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/commutative_algebra.py#L91)
+- **Source**: [`src/dzack_research/preamble/categories/rings/commutative_algebra.py#L110`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/commutative_algebra.py#L110)
 
 Attach the represented standard construction surface to ``ring``.
 
@@ -11143,7 +11257,7 @@ Attach the represented standard construction surface to ``ring``.
 #### `refine_power_series_ring` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def refine_power_series_ring(power_series_ring, base_ring, variable=None)`
-- **Source**: [`src/dzack_research/preamble/categories/rings/commutative_algebra.py#L1450`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/commutative_algebra.py#L1450)
+- **Source**: [`src/dzack_research/preamble/categories/rings/commutative_algebra.py#L1470`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/commutative_algebra.py#L1470)
 
 Record ``R[[t]]`` as a ``(t)``-adically complete ``R``-algebra.
 
@@ -11169,13 +11283,13 @@ Return the constructors exported into a preamble session.
 - **Signature**: `def ring_homset(domain, codomain) -> RingHomset`
 - **Source**: [`src/dzack_research/preamble/categories/rings/ring_foundation.py#L165`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/ring_foundation.py#L165)
 
-Return the canonical owned ``Hom_Ring(domain,codomain)`` object.
+Return the canonical owned ``Mor_Ring(domain, codomain)`` object.
 
 
 #### `ring_morphism` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def ring_morphism(domain, codomain, function, *, engine_morphism=None) -> RingMorphism`
-- **Source**: [`src/dzack_research/preamble/categories/rings/ring_foundation.py#L170`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/ring_foundation.py#L170)
+- **Source**: [`src/dzack_research/preamble/categories/rings/ring_foundation.py#L181`](file:///home/dzack/research/src/dzack_research/preamble/categories/rings/ring_foundation.py#L181)
 
 Construct one owned ring morphism with an optional engine realization.
 
@@ -11200,7 +11314,7 @@ Return the standard session scalar names under their owned parents.
 
 #### `AffineSchemes` `[SUBCATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/schemes/schemes.py#L481`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/schemes.py#L481)
+- **Source**: [`src/dzack_research/preamble/categories/schemes/schemes.py#L583`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/schemes.py#L583)
 - **Bases**: `_SchemePropertyCategory`
 - **Super Categories**: `[Schemes(self.base_ring()), SeparatedSchemes(self.base_ring())]`
 
@@ -11216,7 +11330,7 @@ Return the standard session scalar names under their owned parents.
 
 #### `AffineSpaces` `[SUBCATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/schemes/schemes.py#L594`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/schemes.py#L594)
+- **Source**: [`src/dzack_research/preamble/categories/schemes/schemes.py#L694`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/schemes.py#L694)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[AffineSchemes(self.base_ring()), FiniteTypeSchemes(self.base_ring()), SmoothSchemes(self.base_ring())]`
 
@@ -11229,7 +11343,7 @@ Return the standard session scalar names under their owned parents.
 
 #### `ClosedSubschemes` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/schemes/schemes.py#L1056`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/schemes.py#L1056)
+- **Source**: [`src/dzack_research/preamble/categories/schemes/schemes.py#L1180`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/schemes.py#L1180)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[Schemes(self.base_ring())]`
 
@@ -11240,6 +11354,7 @@ Closed subschemes equipped with their ambient closed immersion.
 - `ambient_scheme(self)`
 - `codimension(self)`
 - `defining_equations(self)`
+  > Return the family of equations that cut this subscheme out.
 - `defining_ideal_owned(self)`
 - `inclusion(self)`
 
@@ -11278,7 +11393,7 @@ Closed subschemes equipped with their ambient closed immersion.
 
 #### `EquationDefinedClosedSubschemes` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/schemes/schemes.py#L1113`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/schemes.py#L1113)
+- **Source**: [`src/dzack_research/preamble/categories/schemes/schemes.py#L1244`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/schemes.py#L1244)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[ClosedSubschemes(self.base_ring())]`
 
@@ -11287,7 +11402,7 @@ Closed subschemes equipped with their ambient closed immersion.
 
 #### `FiberProductSchemes` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/schemes/schemes.py#L981`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/schemes.py#L981)
+- **Source**: [`src/dzack_research/preamble/categories/schemes/schemes.py#L1105`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/schemes.py#L1105)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[AffineSchemes(self.base_ring())]`
 
@@ -11308,7 +11423,7 @@ Affine schemes equipped as selected pullbacks of one cospan.
 
 #### `FiniteTypeSchemes` `[SUBCATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/schemes/schemes.py#L449`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/schemes.py#L449)
+- **Source**: [`src/dzack_research/preamble/categories/schemes/schemes.py#L551`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/schemes.py#L551)
 - **Bases**: `_SchemePropertyCategory`
 
 **ParentMethods (Methods on Category Objects):**
@@ -11316,7 +11431,7 @@ Affine schemes equipped as selected pullbacks of one cospan.
 
 #### `IntegralSchemes` `[SUBCATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/schemes/schemes.py#L457`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/schemes.py#L457)
+- **Source**: [`src/dzack_research/preamble/categories/schemes/schemes.py#L559`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/schemes.py#L559)
 - **Bases**: `_SchemePropertyCategory`
 
 **ParentMethods (Methods on Category Objects):**
@@ -11357,7 +11472,7 @@ Ringed spaces whose stalks are local rings.
 
 #### `NormalSchemes` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/schemes/schemes.py#L465`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/schemes.py#L465)
+- **Source**: [`src/dzack_research/preamble/categories/schemes/schemes.py#L567`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/schemes.py#L567)
 - **Bases**: `_SchemePropertyCategory`
 
 **ParentMethods (Methods on Category Objects):**
@@ -11365,7 +11480,7 @@ Ringed spaces whose stalks are local rings.
 
 #### `OpenSubschemes` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/schemes/schemes.py#L1127`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/schemes.py#L1127)
+- **Source**: [`src/dzack_research/preamble/categories/schemes/schemes.py#L1258`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/schemes.py#L1258)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[Schemes(self.base_ring())]`
 
@@ -11377,7 +11492,7 @@ Open subschemes equipped with their open immersion.
 
 #### `ProductProjectiveSpaces` `[SUBCATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/schemes/schemes.py#L691`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/schemes.py#L691)
+- **Source**: [`src/dzack_research/preamble/categories/schemes/schemes.py#L802`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/schemes.py#L802)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[ProductSchemes(self.base_ring()), ProjectiveSchemes(self.base_ring()), SmoothSchemes(self.base_ring())]`
 
@@ -11389,7 +11504,7 @@ Finite products of projective spaces over one base ring.
 
 #### `ProductSchemes` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/schemes/schemes.py#L660`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/schemes.py#L660)
+- **Source**: [`src/dzack_research/preamble/categories/schemes/schemes.py#L766`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/schemes.py#L766)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[Schemes(self.base_ring())]`
 
@@ -11398,6 +11513,7 @@ Scheme products equipped with their stated factors and projections.
 
 **ParentMethods (Methods on Category Objects):**
 - `factors(self)`
+  > Return the family of factors, indexed by the product's own index set.
 - `number_of_factors(self)`
 - `projection(self, index)`
 - `projections(self)`
@@ -11407,7 +11523,7 @@ Scheme products equipped with their stated factors and projections.
 
 #### `ProjectiveSchemes` `[SUBCATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/schemes/schemes.py#L570`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/schemes.py#L570)
+- **Source**: [`src/dzack_research/preamble/categories/schemes/schemes.py#L670`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/schemes.py#L670)
 - **Bases**: `_SchemePropertyCategory`
 - **Super Categories**: `[Schemes(self.base_ring()), QuasiProjectiveSchemes(self.base_ring()), FiniteTypeSchemes(self.base_ring()), SeparatedSchemes(self.base_ring())]`
 
@@ -11420,7 +11536,7 @@ Scheme products equipped with their stated factors and projections.
 
 #### `ProjectiveSpaces` `[SUBCATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/schemes/schemes.py#L627`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/schemes.py#L627)
+- **Source**: [`src/dzack_research/preamble/categories/schemes/schemes.py#L730`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/schemes.py#L730)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[ProjectiveSchemes(self.base_ring()), SmoothSchemes(self.base_ring())]`
 
@@ -11433,7 +11549,7 @@ Scheme products equipped with their stated factors and projections.
 
 #### `QuasiAffineSchemes` `[SUBCATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/schemes/schemes.py#L548`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/schemes.py#L548)
+- **Source**: [`src/dzack_research/preamble/categories/schemes/schemes.py#L648`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/schemes.py#L648)
 - **Bases**: `_SchemePropertyCategory`
 - **Super Categories**: `[Schemes(self.base_ring()), SeparatedSchemes(self.base_ring())]`
 
@@ -11445,7 +11561,7 @@ Scheme products equipped with their stated factors and projections.
 
 #### `QuasiProjectiveSchemes` `[SUBCATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/schemes/schemes.py#L559`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/schemes.py#L559)
+- **Source**: [`src/dzack_research/preamble/categories/schemes/schemes.py#L659`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/schemes.py#L659)
 - **Bases**: `_SchemePropertyCategory`
 - **Super Categories**: `[Schemes(self.base_ring()), SeparatedSchemes(self.base_ring())]`
 
@@ -11474,7 +11590,7 @@ Ringed spaces ``(X,O_X)``.
 
 #### `Schemes` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/schemes/schemes.py#L201`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/schemes.py#L201)
+- **Source**: [`src/dzack_research/preamble/categories/schemes/schemes.py#L290`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/schemes.py#L290)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[LocallyRingedSpaces()]`
 
@@ -11482,6 +11598,7 @@ Schemes over ``Spec(R)`` for the represented base ring ``R``.
 
 
 **ParentMethods (Methods on Category Objects):**
+- `Mor(self, codomain, category=None)`
 - `as_slice_object(self)`
 - `base_scheme(self)`
 - `categorical_identity_morphism(self)`
@@ -11500,6 +11617,7 @@ Schemes over ``Spec(R)`` for the represented base ring ``R``.
 - `Affine(self)`
 - `FiniteType(self)`
 - `Integral(self)`
+- `@cached_method` `Mor(self, domain, codomain)`
 - `Normal(self)`
 - `Projective(self)`
 - `QuasiAffine(self)`
@@ -11508,14 +11626,13 @@ Schemes over ``Spec(R)`` for the represented base ring ``R``.
 - `Smooth(self)`
 - `as_slice_object(self, scheme)`
 - `@cached_method` `base_scheme(self)`
-- `homset(self, domain, codomain)`
 - `product(self, *schemes)`
 - `@cached_method` `slice_category(self)`
 - `super_categories(self)`
 
 #### `SeparatedSchemes` `[SUBCATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/schemes/schemes.py#L441`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/schemes.py#L441)
+- **Source**: [`src/dzack_research/preamble/categories/schemes/schemes.py#L543`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/schemes.py#L543)
 - **Bases**: `_SchemePropertyCategory`
 
 **ParentMethods (Methods on Category Objects):**
@@ -11523,7 +11640,7 @@ Schemes over ``Spec(R)`` for the represented base ring ``R``.
 
 #### `SmoothSchemes` `[SUBCATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/schemes/schemes.py#L473`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/schemes.py#L473)
+- **Source**: [`src/dzack_research/preamble/categories/schemes/schemes.py#L575`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/schemes.py#L575)
 - **Bases**: `_SchemePropertyCategory`
 
 **ParentMethods (Methods on Category Objects):**
@@ -11578,7 +11695,7 @@ The contravariant functor ``Spec_R: CAlg_R -> AffSch_R``.
 
 #### `scheme_product` `[CONSTRUCTION]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/schemes/schemes.py#L896`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/schemes.py#L896)
+- **Source**: [`src/dzack_research/preamble/categories/schemes/schemes.py#L1020`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/schemes.py#L1020)
 
 Return the categorical product in the currently supported scheme regimes.
 
@@ -11593,14 +11710,31 @@ layer and are not silently represented as products of underlying sets.
 
 ### ↗ Morphisms & Hom-Sets
 
+#### `SchemeMorCategory` `[HOMSET]` `[Internal]`
+
+- **Source**: [`src/dzack_research/preamble/categories/schemes/schemes.py#L205`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/schemes.py#L205)
+- **Bases**: `CategoricalHomset`
+
+The owned category \(\mathrm{Mor}_{\mathbf{Sch}}(X, Y)\).
+
+Its objects are the scheme morphisms \(X\to Y\).  Sage's own scheme
+Homset stays underneath as the computation engine: it is what the native
+morphisms are built by, and it never reaches a session.
+
+- **Constructor**: `def __init__(self, schemes, domain, codomain) -> None`
+- **Constructor**: `def _element_constructor_(self, datum)`
+
+**Public Methods:**
+- `@cached_method` `identity(self)`
+
 #### `SchemeMorphism` `[MORPHISM]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/schemes/schemes.py#L33`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/schemes.py#L33)
+- **Source**: [`src/dzack_research/preamble/categories/schemes/schemes.py#L42`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/schemes.py#L42)
 - **Bases**: `Morphism`
 
 Categorical wrapper around one native Sage scheme morphism.
 
-- **Constructor**: `def __init__(self, native_morphism, *, domain=None, codomain=None) -> None`
+- **Constructor**: `def __init__(self, native_morphism, *, domain=None, codomain=None, homset=None, pullback=None) -> None`
 - **Constructor**: `def _call_(self, value)`
 
 **Public Methods:**
@@ -11609,8 +11743,6 @@ Categorical wrapper around one native Sage scheme morphism.
 - `coordinate_algebra_morphism(self)`
 - `domain(self)`
 - `evaluate_at(self, point)`
-- `morphisms_agree(self, other) -> bool`
-  > Decide equality from represented pullbacks or the native carrier.
 - `native_morphism(self)`
 - `then(self, after)`
 
@@ -11699,7 +11831,7 @@ The represented structure sheaf ``O_X`` of a ringed space ``X``.
 #### `AffineSpace` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def AffineSpace(dimension, base_ring, names=None)`
-- **Source**: [`src/dzack_research/preamble/categories/schemes/schemes.py#L802`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/schemes.py#L802)
+- **Source**: [`src/dzack_research/preamble/categories/schemes/schemes.py#L927`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/schemes.py#L927)
 
 Return the owned affine space ``A^n_R``.
 
@@ -11707,27 +11839,27 @@ Return the owned affine space ``A^n_R``.
 #### `ConvexPolygon` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def ConvexPolygon(vertices, lattice=None)`
-- **Source**: [`src/dzack_research/preamble/categories/schemes/polytopes.py#L382`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/polytopes.py#L382)
+- **Source**: [`src/dzack_research/preamble/categories/schemes/polytopes.py#L386`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/polytopes.py#L386)
 
 #### `ConvexPolytope` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def ConvexPolytope(vertices, lattice=None)`
-- **Source**: [`src/dzack_research/preamble/categories/schemes/polytopes.py#L378`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/polytopes.py#L378)
+- **Source**: [`src/dzack_research/preamble/categories/schemes/polytopes.py#L382`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/polytopes.py#L382)
 
 #### `LatticePolygon` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def LatticePolygon(vertices, lattice=None)`
-- **Source**: [`src/dzack_research/preamble/categories/schemes/polytopes.py#L393`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/polytopes.py#L393)
+- **Source**: [`src/dzack_research/preamble/categories/schemes/polytopes.py#L397`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/polytopes.py#L397)
 
 #### `LatticePolytope` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def LatticePolytope(vertices, lattice=None)`
-- **Source**: [`src/dzack_research/preamble/categories/schemes/polytopes.py#L389`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/polytopes.py#L389)
+- **Source**: [`src/dzack_research/preamble/categories/schemes/polytopes.py#L393`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/polytopes.py#L393)
 
 #### `ProjectiveSpace` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def ProjectiveSpace(dimension, base_ring, names=None)`
-- **Source**: [`src/dzack_research/preamble/categories/schemes/schemes.py#L856`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/schemes.py#L856)
+- **Source**: [`src/dzack_research/preamble/categories/schemes/schemes.py#L980`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/schemes.py#L980)
 
 Return the owned projective space ``P^n_R``.
 
@@ -11735,7 +11867,7 @@ Return the owned projective space ``P^n_R``.
 #### `Spec` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `@cached_function` `def Spec(ring_or_algebra)`
-- **Source**: [`src/dzack_research/preamble/categories/schemes/schemes.py#L719`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/schemes.py#L719)
+- **Source**: [`src/dzack_research/preamble/categories/schemes/schemes.py#L830`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/schemes.py#L830)
 
 Return the affine scheme ``Spec(A)`` over the represented scalar base.
 
@@ -11748,7 +11880,7 @@ itself, so ``Spec(R)`` remains the terminal affine ``R``-scheme.
 #### `affine_spec_morphism` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def affine_spec_morphism(algebra_morphism)`
-- **Source**: [`src/dzack_research/preamble/categories/schemes/schemes.py#L778`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/schemes.py#L778)
+- **Source**: [`src/dzack_research/preamble/categories/schemes/schemes.py#L889`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/schemes.py#L889)
 
 Return the affine scheme morphism contravariantly induced by an algebra map.
 
@@ -11756,17 +11888,17 @@ Return the affine scheme morphism contravariantly induced by an algebra map.
 #### `categorical_scheme_morphism` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def categorical_scheme_morphism(native_morphism, *, domain=None, codomain=None)`
-- **Source**: [`src/dzack_research/preamble/categories/schemes/schemes.py#L148`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/schemes.py#L148)
+- **Source**: [`src/dzack_research/preamble/categories/schemes/schemes.py#L189`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/schemes.py#L189)
 
 #### `refine_closed_subscheme` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def refine_closed_subscheme(subscheme, ambient=None, *, defining_equations=None)`
-- **Source**: [`src/dzack_research/preamble/categories/schemes/schemes.py#L1143`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/schemes.py#L1143)
+- **Source**: [`src/dzack_research/preamble/categories/schemes/schemes.py#L1274`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/schemes.py#L1274)
 
 #### `refine_scheme` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def refine_scheme(scheme, base_ring=None, categories=())`
-- **Source**: [`src/dzack_research/preamble/categories/schemes/schemes.py#L188`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/schemes.py#L188)
+- **Source**: [`src/dzack_research/preamble/categories/schemes/schemes.py#L277`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/schemes.py#L277)
 
 Adopt a native Sage scheme into the owned scheme hierarchy.
 
@@ -11774,7 +11906,7 @@ Adopt a native Sage scheme into the owned scheme hierarchy.
 #### `refine_scheme_morphism` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def refine_scheme_morphism(morphism, base_ring)`
-- **Source**: [`src/dzack_research/preamble/categories/schemes/schemes.py#L182`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/schemes.py#L182)
+- **Source**: [`src/dzack_research/preamble/categories/schemes/schemes.py#L271`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/schemes.py#L271)
 
 Return a categorical wrapper of the native computational morphism.
 
@@ -11782,7 +11914,7 @@ Return a categorical wrapper of the native computational morphism.
 #### `scheme_fiber_product` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def scheme_fiber_product(left_map, right_map)`
-- **Source**: [`src/dzack_research/preamble/categories/schemes/schemes.py#L1020`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/schemes.py#L1020)
+- **Source**: [`src/dzack_research/preamble/categories/schemes/schemes.py#L1144`](file:///home/dzack/research/src/dzack_research/preamble/categories/schemes/schemes.py#L1144)
 
 Return ``X x_S Y`` for two represented affine scheme maps to ``S``.
 
@@ -11941,7 +12073,7 @@ Diagonal pairing Hom objects carrying the bilinear-form operations.
 #### `BilinearForms` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def BilinearForms(module, value_module)`
-- **Source**: [`src/dzack_research/preamble/categories/forms/forms.py#L388`](file:///home/dzack/research/src/dzack_research/preamble/categories/forms/forms.py#L388)
+- **Source**: [`src/dzack_research/preamble/categories/forms/forms.py#L396`](file:///home/dzack/research/src/dzack_research/preamble/categories/forms/forms.py#L396)
 
 Return ``Hom_R(M tensor_R M,W)`` whenever that universal object exists.
 
@@ -11949,7 +12081,7 @@ Return ``Hom_R(M tensor_R M,W)`` whenever that universal object exists.
 #### `Pairings` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def Pairings(left_module, right_module, value_module)`
-- **Source**: [`src/dzack_research/preamble/categories/forms/forms.py#L371`](file:///home/dzack/research/src/dzack_research/preamble/categories/forms/forms.py#L371)
+- **Source**: [`src/dzack_research/preamble/categories/forms/forms.py#L379`](file:///home/dzack/research/src/dzack_research/preamble/categories/forms/forms.py#L379)
 
 Return ``Hom_R(X tensor_R Y,W)`` whenever that universal object exists.
 
@@ -11957,7 +12089,7 @@ Return ``Hom_R(X tensor_R Y,W)`` whenever that universal object exists.
 #### `QuadraticForms` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def QuadraticForms(module, value_module)`
-- **Source**: [`src/dzack_research/preamble/categories/forms/forms.py#L406`](file:///home/dzack/research/src/dzack_research/preamble/categories/forms/forms.py#L406)
+- **Source**: [`src/dzack_research/preamble/categories/forms/forms.py#L414`](file:///home/dzack/research/src/dzack_research/preamble/categories/forms/forms.py#L414)
 
 Return ``Hom_R(Gamma^2(M),W)`` whenever the divided square is represented.
 
@@ -11965,7 +12097,7 @@ Return ``Hom_R(Gamma^2(M),W)`` whenever the divided square is represented.
 #### `QuadraticMap` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def QuadraticMap(module, value_module, function)`
-- **Source**: [`src/dzack_research/preamble/categories/forms/forms.py#L434`](file:///home/dzack/research/src/dzack_research/preamble/categories/forms/forms.py#L434)
+- **Source**: [`src/dzack_research/preamble/categories/forms/forms.py#L442`](file:///home/dzack/research/src/dzack_research/preamble/categories/forms/forms.py#L442)
 
 Return the quadratic map ``module -> value_module`` via its classifier.
 
@@ -11973,7 +12105,7 @@ Return the quadratic map ``module -> value_module`` via its classifier.
 #### `classifying_morphism` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def classifying_morphism(quadratic)`
-- **Source**: [`src/dzack_research/preamble/categories/forms/forms.py#L441`](file:///home/dzack/research/src/dzack_research/preamble/categories/forms/forms.py#L441)
+- **Source**: [`src/dzack_research/preamble/categories/forms/forms.py#L448`](file:///home/dzack/research/src/dzack_research/preamble/categories/forms/forms.py#L448)
 
 Return the unique linear map ``Gamma^2(M) -> W`` classifying ``quadratic``.
 
@@ -11981,7 +12113,7 @@ Return the unique linear map ``Gamma^2(M) -> W`` classifying ``quadratic``.
 #### `gram_tensor_from_graph` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def gram_tensor_from_graph(graph, base_ring)`
-- **Source**: [`src/dzack_research/preamble/categories/forms/gram_matrices.py#L26`](file:///home/dzack/research/src/dzack_research/preamble/categories/forms/gram_matrices.py#L26)
+- **Source**: [`src/dzack_research/preamble/categories/forms/gram_matrices.py#L28`](file:///home/dzack/research/src/dzack_research/preamble/categories/forms/gram_matrices.py#L28)
 
 Recover the type-``(0,2)`` Gram tensor presented by a weighted graph.
 
@@ -11989,7 +12121,7 @@ Recover the type-``(0,2)`` Gram tensor presented by a weighted graph.
 #### `gram_tensor_graph` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def gram_tensor_graph(gram)`
-- **Source**: [`src/dzack_research/preamble/categories/forms/gram_matrices.py#L8`](file:///home/dzack/research/src/dzack_research/preamble/categories/forms/gram_matrices.py#L8)
+- **Source**: [`src/dzack_research/preamble/categories/forms/gram_matrices.py#L10`](file:///home/dzack/research/src/dzack_research/preamble/categories/forms/gram_matrices.py#L10)
 
 Return the weighted undirected graph presented by a symmetric Gram tensor.
 
@@ -11997,17 +12129,17 @@ Return the weighted undirected graph presented by a symmetric Gram tensor.
 #### `is_bilinear_form` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def is_bilinear_form(form) -> bool`
-- **Source**: [`src/dzack_research/preamble/categories/forms/forms.py#L348`](file:///home/dzack/research/src/dzack_research/preamble/categories/forms/forms.py#L348)
+- **Source**: [`src/dzack_research/preamble/categories/forms/forms.py#L356`](file:///home/dzack/research/src/dzack_research/preamble/categories/forms/forms.py#L356)
 
 #### `is_quadratic_form` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def is_quadratic_form(form) -> bool`
-- **Source**: [`src/dzack_research/preamble/categories/forms/forms.py#L361`](file:///home/dzack/research/src/dzack_research/preamble/categories/forms/forms.py#L361)
+- **Source**: [`src/dzack_research/preamble/categories/forms/forms.py#L369`](file:///home/dzack/research/src/dzack_research/preamble/categories/forms/forms.py#L369)
 
 #### `quadratic_map_from_morphism` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def quadratic_map_from_morphism(module, morphism)`
-- **Source**: [`src/dzack_research/preamble/categories/forms/forms.py#L454`](file:///home/dzack/research/src/dzack_research/preamble/categories/forms/forms.py#L454)
+- **Source**: [`src/dzack_research/preamble/categories/forms/forms.py#L461`](file:///home/dzack/research/src/dzack_research/preamble/categories/forms/forms.py#L461)
 
 Recover the quadratic map classified by ``morphism: Gamma^2(M) -> W``.
 
@@ -12015,7 +12147,7 @@ Recover the quadratic map classified by ``morphism: Gamma^2(M) -> W``.
 #### `tensor_connected_component_cuts` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def tensor_connected_component_cuts(gram) -> list[int]`
-- **Source**: [`src/dzack_research/preamble/categories/forms/gram_matrices.py#L43`](file:///home/dzack/research/src/dzack_research/preamble/categories/forms/gram_matrices.py#L43)
+- **Source**: [`src/dzack_research/preamble/categories/forms/gram_matrices.py#L45`](file:///home/dzack/research/src/dzack_research/preamble/categories/forms/gram_matrices.py#L45)
 
 Return cuts between consecutive connected diagonal blocks.
 
@@ -12032,7 +12164,7 @@ Return cuts between consecutive connected diagonal blocks.
 
 #### `GradedTensorProductModules` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functions/lebesgue_graded.py#L197`](file:///home/dzack/research/src/dzack_research/preamble/categories/functions/lebesgue_graded.py#L197)
+- **Source**: [`src/dzack_research/preamble/categories/functions/lebesgue_graded.py#L199`](file:///home/dzack/research/src/dzack_research/preamble/categories/functions/lebesgue_graded.py#L199)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[Modules(self.base_ring())]`
 
@@ -12048,13 +12180,14 @@ finitely presented \(\mathbb R\)-modules.
   > Return the image of \((left, right)\) under \(\otimes\).
 - `tensor_factor(self, index)`
 - `tensor_factors(self)`
+  > Return the family of factors, indexed by the product's own index set.
 
 **Category Instance Methods:**
 - `super_categories(self)`
 
 #### `LebesgueGradedModules` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functions/lebesgue_graded.py#L108`](file:///home/dzack/research/src/dzack_research/preamble/categories/functions/lebesgue_graded.py#L108)
+- **Source**: [`src/dzack_research/preamble/categories/functions/lebesgue_graded.py#L110`](file:///home/dzack/research/src/dzack_research/preamble/categories/functions/lebesgue_graded.py#L110)
 - **Bases**: `OwnedCategoryOverBaseRing`
 - **Super Categories**: `[Modules(self.base_ring())]`
 
@@ -12084,14 +12217,14 @@ Graded modules whose homogeneous pieces are Lebesgue spaces \(L^{1/s}\).
 
 #### `LebesgueModuleHomset` `[HOMSET]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functions/lebesgue_graded.py#L262`](file:///home/dzack/research/src/dzack_research/preamble/categories/functions/lebesgue_graded.py#L262)
-- **Bases**: `OwnedHomset`
+- **Source**: [`src/dzack_research/preamble/categories/functions/lebesgue_graded.py#L269`](file:///home/dzack/research/src/dzack_research/preamble/categories/functions/lebesgue_graded.py#L269)
+- **Bases**: `CategoricalHomset`
 - **Constructor**: `def __init__(self, domain, codomain) -> None`
 - **Constructor**: `def _element_constructor_(self, evaluate)`
 
 #### `LebesgueModuleMorphism` `[MORPHISM]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functions/lebesgue_graded.py#L237`](file:///home/dzack/research/src/dzack_research/preamble/categories/functions/lebesgue_graded.py#L237)
+- **Source**: [`src/dzack_research/preamble/categories/functions/lebesgue_graded.py#L244`](file:///home/dzack/research/src/dzack_research/preamble/categories/functions/lebesgue_graded.py#L244)
 - **Bases**: `Morphism`
 
 An \(R\)-linear map specified by its action on elements.
@@ -12107,7 +12240,7 @@ An \(R\)-linear map specified by its action on elements.
 
 #### `GradedLebesgueModule` `[OBJECT]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functions/lebesgue_graded.py#L519`](file:///home/dzack/research/src/dzack_research/preamble/categories/functions/lebesgue_graded.py#L519)
+- **Source**: [`src/dzack_research/preamble/categories/functions/lebesgue_graded.py#L526`](file:///home/dzack/research/src/dzack_research/preamble/categories/functions/lebesgue_graded.py#L526)
 - **Bases**: `UniqueRepresentation`, `Parent`
 
 The \(M\)-graded module \(\bigoplus_{s\in M} L^{1/s}\).
@@ -12125,7 +12258,7 @@ family uses \(([0,\infty],+)\); convolution uses \(([0,1],\oplus)\).
 
 #### `GradedTensorSquare` `[OBJECT]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/functions/lebesgue_graded.py#L397`](file:///home/dzack/research/src/dzack_research/preamble/categories/functions/lebesgue_graded.py#L397)
+- **Source**: [`src/dzack_research/preamble/categories/functions/lebesgue_graded.py#L404`](file:///home/dzack/research/src/dzack_research/preamble/categories/functions/lebesgue_graded.py#L404)
 - **Bases**: `UniqueRepresentation`, `Parent`
 
 The tensor square \(N\otimes_{\mathbb R} N\) of a Lebesgue graded module.
@@ -12196,7 +12329,7 @@ EXAMPLES::
 #### `graded_lebesgue_algebra` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `@cached_function` `def graded_lebesgue_algebra()`
-- **Source**: [`src/dzack_research/preamble/categories/functions/lebesgue_graded.py#L609`](file:///home/dzack/research/src/dzack_research/preamble/categories/functions/lebesgue_graded.py#L609)
+- **Source**: [`src/dzack_research/preamble/categories/functions/lebesgue_graded.py#L616`](file:///home/dzack/research/src/dzack_research/preamble/categories/functions/lebesgue_graded.py#L616)
 
 The pointwise algebra \(\bigoplus_s L^{1/s}\), interned from its product.
 
@@ -12204,7 +12337,7 @@ The pointwise algebra \(\bigoplus_s L^{1/s}\), interned from its product.
 #### `integration_morphism` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def integration_morphism(space)`
-- **Source**: [`src/dzack_research/preamble/categories/functions/lebesgue_graded.py#L284`](file:///home/dzack/research/src/dzack_research/preamble/categories/functions/lebesgue_graded.py#L284)
+- **Source**: [`src/dzack_research/preamble/categories/functions/lebesgue_graded.py#L291`](file:///home/dzack/research/src/dzack_research/preamble/categories/functions/lebesgue_graded.py#L291)
 
 Integration \(\iota\colon L^1(\mathbb R)\to\mathbb R\), \(\iota(f)=\int f\).
 
@@ -12212,7 +12345,7 @@ Integration \(\iota\colon L^1(\mathbb R)\to\mathbb R\), \(\iota(f)=\int f\).
 #### `intern_graded_lebesgue_algebra` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def intern_graded_lebesgue_algebra(multiplication, ring, unital)`
-- **Source**: [`src/dzack_research/preamble/categories/functions/lebesgue_graded.py#L566`](file:///home/dzack/research/src/dzack_research/preamble/categories/functions/lebesgue_graded.py#L566)
+- **Source**: [`src/dzack_research/preamble/categories/functions/lebesgue_graded.py#L573`](file:///home/dzack/research/src/dzack_research/preamble/categories/functions/lebesgue_graded.py#L573)
 
 Intern a Lebesgue graded module on a morphism of its tensor square.
 
@@ -12220,7 +12353,7 @@ Intern a Lebesgue graded module on a morphism of its tensor square.
 #### `lebesgue_convolution_algebra` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `@cached_function` `def lebesgue_convolution_algebra()`
-- **Source**: [`src/dzack_research/preamble/categories/functions/lebesgue_graded.py#L619`](file:///home/dzack/research/src/dzack_research/preamble/categories/functions/lebesgue_graded.py#L619)
+- **Source**: [`src/dzack_research/preamble/categories/functions/lebesgue_graded.py#L626`](file:///home/dzack/research/src/dzack_research/preamble/categories/functions/lebesgue_graded.py#L626)
 
 The convolution algebra \(\bigoplus_{s\in[0,1]} L^{1/s}\), interned from its product.
 
@@ -12228,7 +12361,7 @@ The convolution algebra \(\bigoplus_{s\in[0,1]} L^{1/s}\), interned from its pro
 #### `lebesgue_module_homset` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def lebesgue_module_homset(domain, codomain) -> LebesgueModuleHomset`
-- **Source**: [`src/dzack_research/preamble/categories/functions/lebesgue_graded.py#L280`](file:///home/dzack/research/src/dzack_research/preamble/categories/functions/lebesgue_graded.py#L280)
+- **Source**: [`src/dzack_research/preamble/categories/functions/lebesgue_graded.py#L287`](file:///home/dzack/research/src/dzack_research/preamble/categories/functions/lebesgue_graded.py#L287)
 
 
 ---
@@ -12242,7 +12375,7 @@ The convolution algebra \(\bigoplus_{s\in[0,1]} L^{1/s}\), interned from its pro
 
 #### `Cardinalities` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/sets/cardinals.py#L103`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/cardinals.py#L103)
+- **Source**: [`src/dzack_research/preamble/categories/sets/cardinals.py#L106`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/cardinals.py#L106)
 - **Bases**: `Category`
 - **Super Categories**: `[Objects()]`
 
@@ -12250,11 +12383,11 @@ The thin category associated to the represented cardinal order.
 
 
 **Category Instance Methods:**
+- `Mor(self, domain, codomain) -> CardinalityHomset`
 - `are_incomparable(self, source, target) -> bool`
 - `compare(self, source, target) -> CardinalComparison`
 - `ge(self, source, target) -> bool`
 - `gt(self, source, target) -> bool`
-- `hom(self, domain, codomain) -> CardinalityHomset`
 - `indexed_product(self, index_set: Parent, factors: Callable)`
 - `indexed_sum(self, index_set: Parent, summands: Callable)`
 - `le(self, source, target) -> bool`
@@ -12269,7 +12402,7 @@ The thin category associated to the represented cardinal order.
 
 #### `CartesianProductsOfSets` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L757`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L757)
+- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L873`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L873)
 - **Bases**: `OwnedCategory`
 - **Super Categories**: `[Sets()]`
 
@@ -12281,7 +12414,7 @@ Dependent products of families of sets.
 
 #### `CoproductsOfSets` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L764`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L764)
+- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L880`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L880)
 - **Bases**: `OwnedCategory`
 - **Super Categories**: `[Sets()]`
 
@@ -12293,7 +12426,7 @@ Dependent coproducts (disjoint unions) of families of sets.
 
 #### `CountableSets` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L1376`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L1376)
+- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L1462`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L1462)
 - **Bases**: `OwnedCategory`
 - **Super Categories**: `[Sets()]`
 
@@ -12305,7 +12438,7 @@ Sets equipped with a countable enumeration.
 
 #### `CountablyInfiniteSets` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L1393`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L1393)
+- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L1477`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L1477)
 - **Bases**: `OwnedCategory`
 - **Super Categories**: `[CountableSets(), InfiniteSets()]`
 
@@ -12317,7 +12450,7 @@ Countably infinite sets.
 
 #### `EnumeratedByIntegers` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/sets/enumerated/function_sets.py#L89`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/enumerated/function_sets.py#L89)
+- **Source**: [`src/dzack_research/preamble/categories/sets/enumerated/function_sets.py#L110`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/enumerated/function_sets.py#L110)
 - **Bases**: `Category`
 - **Super Categories**: `[InfiniteEnumeratedSets()]`
 
@@ -12336,7 +12469,7 @@ integer index, and :meth:`unrank` takes the corresponding natural number.
 
 #### `EnumeratedByNaturals` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/sets/enumerated/function_sets.py#L75`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/enumerated/function_sets.py#L75)
+- **Source**: [`src/dzack_research/preamble/categories/sets/enumerated/function_sets.py#L90`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/enumerated/function_sets.py#L90)
 - **Bases**: `Category`
 - **Super Categories**: `[InfiniteEnumeratedSets()]`
 
@@ -12352,19 +12485,23 @@ Infinite enumerated sets ranked by \(\mathbb N\).
 
 #### `EnumeratedSets` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L28`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L28)
+- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L37`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L37)
 - **Bases**: `OwnedCategory`
 - **Super Categories**: `[Sets()]`
 
 Sets equipped with a represented ranking/enumeration.
 
 
+**ParentMethods (Methods on Category Objects):**
+- `rank(self, element)`
+- `unrank(self, position)`
+
 **Category Instance Methods:**
 - `super_categories(self)`
 
 #### `FiniteSets` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L1344`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L1344)
+- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L1432`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L1432)
 - **Bases**: `OwnedCategory`
 - **Super Categories**: `[Sets()]`
 
@@ -12376,7 +12513,7 @@ Sets whose cardinality is finite.
 
 #### `FinitelySupportedFunctionSets` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L1543`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L1543)
+- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L1632`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L1632)
 - **Bases**: `OwnedCategory`
 - **Super Categories**: `[Sets()]`
 
@@ -12388,7 +12525,7 @@ Function sets whose elements have finite support.
 
 #### `FunctionEnumeratedSets` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/sets/enumerated/function_sets.py#L68`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/enumerated/function_sets.py#L68)
+- **Source**: [`src/dzack_research/preamble/categories/sets/enumerated/function_sets.py#L83`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/enumerated/function_sets.py#L83)
 - **Bases**: `Category`
 - **Super Categories**: `[EnumeratedSets()]`
 
@@ -12400,7 +12537,7 @@ Enumerated sets whose elements stand for functions.
 
 #### `Homsets` `[CATEGORY]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L1333`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L1333)
+- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L1421`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L1421)
 - **Bases**: `OwnedCategory`
 - **Super Categories**: `[Sets()]`
 
@@ -12415,7 +12552,7 @@ Hom objects \(\operatorname{Hom}(X,Y)\), which are sets.
 
 #### `InfiniteEnumeratedSets` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L35`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L35)
+- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L53`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L53)
 - **Bases**: `OwnedCategory`
 - **Super Categories**: `[EnumeratedSets()]`
 
@@ -12427,7 +12564,7 @@ Countably infinite enumerated sets.
 
 #### `InfiniteSets` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L1361`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L1361)
+- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L1447`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L1447)
 - **Bases**: `OwnedCategory`
 - **Super Categories**: `[Sets()]`
 
@@ -12439,7 +12576,7 @@ Sets whose cardinality is infinite.
 
 #### `OrdinalSemirings` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/sets/cardinals.py#L518`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/cardinals.py#L518)
+- **Source**: [`src/dzack_research/preamble/categories/sets/cardinals.py#L520`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/cardinals.py#L520)
 - **Bases**: `Category`
 - **Super Categories**: `[Objects()]`
 
@@ -12453,7 +12590,7 @@ The category containing the ordinal semiring under natural operations.
 
 #### `PartiallyOrderedSets` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L1427`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L1427)
+- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L1507`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L1507)
 - **Bases**: `OwnedCategory`
 - **Super Categories**: `[Sets()]`
 
@@ -12463,9 +12600,20 @@ Sets equipped with a partial order.
 **Category Instance Methods:**
 - `super_categories(self)`
 
+#### `SetMorCategoryConstruction` `[CATEGORY]` `[Internal]`
+
+- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L233`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L233)
+- **Bases**: `HomCategoryConstruction`
+
+The owned family $(X, Y) \mapsto \mathrm{Mor}_{\mathbf{Set}}(X, Y)$.
+
+
+**Category Instance Methods:**
+- `fixed_category_class(self)`
+
 #### `Sets` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L188`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L188)
+- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L250`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L250)
 - **Bases**: `OwnedCategory`
 - **Super Categories**: `[Objects()]`
 
@@ -12480,9 +12628,12 @@ behavior, but the mathematical supercategory edge is entirely owned.
 
 
 **ParentMethods (Methods on Category Objects):**
+- `Mor(self, codomain, category=None)`
 - `exponential(self, exponent)`
 - `finite_subsets(self)`
 - `power_set(self)`
+- `product_with(self, other)`
+  > Return $X \times Y$, the product asked of the objects.
 - `subsets_of_size(self, size)`
 
 **SubcategoryMethods (Subcategory Refinements):**
@@ -12492,16 +12643,18 @@ behavior, but the mathematical supercategory edge is entirely owned.
 **Category Instance Methods:**
 - `Countable(self)`
 - `CountablyInfinite(self)`
+- `Mor(self, domain, codomain)`
 - `PartiallyOrdered(self)`
 - `TotallyOrdered(self)`
 - `Uncountable(self)`
-- `hom(self, domain, codomain)`
 - `identity(self, set_object)`
+- `product(self, family)`
+  > Return $\prod_{i \in I} X_i$ for an indexed family of objects.
 - `super_categories(self)`
 
 #### `TotallyOrderedSets` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L1434`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L1434)
+- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L1514`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L1514)
 - **Bases**: `OwnedCategory`
 - **Super Categories**: `[PartiallyOrderedSets()]`
 
@@ -12513,7 +12666,7 @@ Sets equipped with a total order.
 
 #### `UncountableSets` `[CATEGORY]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L1410`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L1410)
+- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L1492`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L1492)
 - **Bases**: `OwnedCategory`
 - **Super Categories**: `[InfiniteSets()]`
 
@@ -12527,16 +12680,16 @@ Sets whose represented cardinal is provably uncountable.
 
 #### `cartesian_product_of` `[CONSTRUCTION]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L1042`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L1042)
+- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L1138`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L1138)
 - **Signature**: `def cartesian_product_of(factors)`
 
 ### ↗ Morphisms & Hom-Sets
 
 #### `CardinalityHomset` `[HOMSET]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/sets/cardinals.py#L78`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/cardinals.py#L78)
-- **Bases**: `OwnedHomset`
-- **Constructor**: `def __init__(self, domain, codomain) -> None`
+- **Source**: [`src/dzack_research/preamble/categories/sets/cardinals.py#L79`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/cardinals.py#L79)
+- **Bases**: `CategoricalHomset`
+- **Constructor**: `def __init__(self, cardinalities, domain, codomain) -> None`
 - **Constructor**: `def _element_constructor_(self, morphism=None)`
 
 **Public Methods:**
@@ -12546,30 +12699,22 @@ Sets whose represented cardinal is provably uncountable.
 
 #### `CardinalityMorphism` `[MORPHISM]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/sets/cardinals.py#L70`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/cardinals.py#L70)
+- **Source**: [`src/dzack_research/preamble/categories/sets/cardinals.py#L71`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/cardinals.py#L71)
 - **Bases**: `Morphism`
 - **Constructor**: `def __init__(self, parent) -> None`
 
-#### `SetHomset` `[HOMSET]` `[Internal]`
+#### `OwnedSetMorphism` `[MORPHISM]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L146`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L146)
-- **Bases**: `OwnedHomset`
+- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L161`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L161)
+- **Bases**: `SetMorphism`
 
-The owned set of functions ``X -> Y`` between represented sets.
+A set map whose composition remains in the canonical owned Set Hom.
 
-Sage's ``Homset`` is used only as the runtime parent required by
-``SetMorphism``; mathematical ownership stays in this class.
-
-- **Constructor**: `def __init__(self, domain, codomain) -> None`
-- **Constructor**: `def __call__(self, datum)`
-
-**Public Methods:**
-- `identity(self)`
 
 #### `SetInclusion` `[MORPHISM]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L323`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L323)
-- **Bases**: `SetMorphism`
+- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L440`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L440)
+- **Bases**: `OwnedSetMorphism`
 
 A represented subobject inclusion \(A\hookrightarrow X\).
 
@@ -12591,8 +12736,8 @@ A represented subobject inclusion \(A\hookrightarrow X\).
 
 #### `SetInjection` `[MORPHISM]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L301`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L301)
-- **Bases**: `SetMorphism`
+- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L418`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L418)
+- **Bases**: `OwnedSetMorphism`
 
 A set morphism supplied with the assertion that it is injective.
 
@@ -12600,10 +12745,30 @@ A set morphism supplied with the assertion that it is injective.
 **Public Methods:**
 - `is_injective(self) -> bool`
 
+#### `SetMorCategory` `[HOMSET]` `[Internal]`
+
+- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L197`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L197)
+- **Bases**: `CategoricalHomset`
+
+The owned category $\mathrm{Mor}_{\mathbf{Set}}(X, Y)$.
+
+Its objects are the functions $X \to Y$.  A set is a category -- the
+discrete one -- so this is a category like every other `Mor`, and not a
+special set-valued case: `ARC-07` has `Mor` return a category at every
+level.  Sage's ``Homset``, reached through ``CategoricalHomset``, remains
+the runtime parent its ``SetMorphism`` elements require.
+
+- **Constructor**: `def __init__(self, mor_family, domain, codomain) -> None`
+- **Constructor**: `def __call__(self, datum)`
+
+**Public Methods:**
+- `identity(self)`
+- `identity_at(self, obj)`
+
 #### `SetSurjection` `[MORPHISM]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L308`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L308)
-- **Bases**: `SetMorphism`
+- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L425`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L425)
+- **Bases**: `OwnedSetMorphism`
 
 A set morphism supplied with the assertion that it is surjective.
 
@@ -12615,7 +12780,7 @@ A set morphism supplied with the assertion that it is surjective.
 
 #### `Cardinal` `[OBJECT]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/sets/cardinals.py#L308`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/cardinals.py#L308)
+- **Source**: [`src/dzack_research/preamble/categories/sets/cardinals.py#L310`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/cardinals.py#L310)
 - **Bases**: `Parent`
 
 A cardinal number as an object of the thin cardinal-order category.
@@ -12641,12 +12806,12 @@ A cardinal number as an object of the thin cardinal-order category.
 
 #### `CardinalComparison` `[OBJECT]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/sets/cardinals.py#L61`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/cardinals.py#L61)
+- **Source**: [`src/dzack_research/preamble/categories/sets/cardinals.py#L62`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/cardinals.py#L62)
 - **Bases**: `Enum`
 
 #### `CartesianProductElement` `[ELEMENT]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L774`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L774)
+- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L890`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L890)
 - **Bases**: `Element`
 
 A section ``i |-> x_i`` of a family of sets.
@@ -12658,7 +12823,7 @@ A section ``i |-> x_i`` of a family of sets.
 
 #### `CartesianProductOfFamilyParent` `[OBJECT]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L826`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L826)
+- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L942`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L942)
 - **Bases**: `Parent`
 - **Constructor**: `def __init__(self, index_set, family) -> None`
 - **Constructor**: `def __call__(self, *args, **kwargs)`
@@ -12680,7 +12845,7 @@ A section ``i |-> x_i`` of a family of sets.
 
 #### `CoproductElement` `[ELEMENT]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L1058`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L1058)
+- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L1154`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L1154)
 - **Bases**: `Element`
 
 An element of a dependent sum, carrying its summand index.
@@ -12693,7 +12858,7 @@ An element of a dependent sum, carrying its summand index.
 
 #### `CoproductOfFamilyParent` `[OBJECT]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L1091`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L1091)
+- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L1187`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L1187)
 - **Bases**: `Parent`
 - **Constructor**: `def __init__(self, index_set, family) -> None`
 - **Constructor**: `def __call__(self, *args, **kwargs)`
@@ -12714,7 +12879,7 @@ An element of a dependent sum, carrying its summand index.
 
 #### `FiniteFilteredOrderedSet` `[OBJECT]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/sets/finite_ordered_sets.py#L253`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/finite_ordered_sets.py#L253)
+- **Source**: [`src/dzack_research/preamble/categories/sets/finite_ordered_sets.py#L259`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/finite_ordered_sets.py#L259)
 - **Bases**: `OrderedEnumeratedSet`
 
 A finite ordered subset selected lazily by a predicate.
@@ -12744,7 +12909,7 @@ A finite ordered set without sequence-valued mathematical storage.
 
 #### `FiniteOrdinalSet` `[OBJECT]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L42`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L42)
+- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L60`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L60)
 - **Bases**: `Parent`
 
 The canonical finite ordinal ``{0,...,size-1}`` as a lazy owned set.
@@ -12760,7 +12925,7 @@ The canonical finite ordinal ``{0,...,size-1}`` as a lazy owned set.
 
 #### `FiniteSubsetsParent` `[OBJECT]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L707`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L707)
+- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L823`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L823)
 - **Bases**: `Parent`
 
 The set \(P_{fin}(X)\) of finite subsets of ``X``.
@@ -12776,7 +12941,7 @@ The set \(P_{fin}(X)\) of finite subsets of ``X``.
 
 #### `FixedCardinalitySubsets` `[OBJECT]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L640`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L640)
+- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L756`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L756)
 - **Bases**: `Parent`
 
 The set \([X]^k\) of subsets of a fixed finite cardinality.
@@ -12833,24 +12998,18 @@ One fixed-size subset/multiset, encoded by its combinatorial rank.
 
 #### `FourierCharacters` `[OBJECT]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/sets/enumerated/fourier_characters.py#L18`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/enumerated/fourier_characters.py#L18)
-- **Bases**: `UniqueRepresentation`, `Parent`
+- **Source**: [`src/dzack_research/preamble/categories/sets/enumerated/fourier_characters.py#L9`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/enumerated/fourier_characters.py#L9)
+- **Bases**: `IndexedSymbolicFunctionSet`
 
 The enumerated set \(\{e^{i n x} : n\in\mathbb Z\}\) as symbols \(F_n\in\mathrm{SR}\).
 
 Each character is the formal symbol \(F_n\), not an evaluated
 exponential, so \(F_0\) does not collapse to \(1\).
 
-- **Constructor**: `def __init__(self) -> None`
-
-**Public Methods:**
-- `cardinality(self)`
-- `rank(self, elt)`
-- `unrank(self, n)`
 
 #### `FunctionSet` `[OBJECT]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L597`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L597)
+- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L712`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L712)
 - **Bases**: `Parent`
 
 The exponential \(Y^X=\operatorname{Hom}_{Set}(X,Y)\).
@@ -12867,17 +13026,11 @@ The exponential \(Y^X=\operatorname{Hom}_{Set}(X,Y)\).
 
 #### `HermitePolynomials` `[OBJECT]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/sets/enumerated/hermite_polynomials.py#L21`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/enumerated/hermite_polynomials.py#L21)
-- **Bases**: `UniqueRepresentation`, `Parent`
+- **Source**: [`src/dzack_research/preamble/categories/sets/enumerated/hermite_polynomials.py#L13`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/enumerated/hermite_polynomials.py#L13)
+- **Bases**: `IndexedSymbolicFunctionSet`
 
 The enumerated set \(\{H_n : n\in\mathbb N\}\subset\mathrm{SR}\).
 
-- **Constructor**: `def __init__(self) -> None`
-
-**Public Methods:**
-- `cardinality(self)`
-- `rank(self, elt)`
-- `unrank(self, n)`
 
 #### `IndexedFamily` `[OBJECT]` `[Internal]`
 
@@ -12900,23 +13053,31 @@ Consumers iterate values lazily or address them through ``value(index)``.
 - `unrank(self, position)`
 - `value(self, index)`
 
-#### `LaurentMonomials` `[OBJECT]` `[Exported Session]`
+#### `IndexedSymbolicFunctionSet` `[OBJECT]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/sets/enumerated/laurent_monomials.py#L22`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/enumerated/laurent_monomials.py#L22)
+- **Source**: [`src/dzack_research/preamble/categories/sets/enumerated/function_sets.py#L134`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/enumerated/function_sets.py#L134)
 - **Bases**: `UniqueRepresentation`, `Parent`
 
-The enumerated set \(\{z^n : n\in\mathbb Z\}\subset\mathrm{SR}\).
+An infinite function set represented by one formal symbol per index.
 
 - **Constructor**: `def __init__(self) -> None`
 
 **Public Methods:**
 - `cardinality(self)`
-- `rank(self, elt)`
-- `unrank(self, n)`
+- `rank(self, element)`
+- `unrank(self, position)`
+
+#### `LaurentMonomials` `[OBJECT]` `[Exported Session]`
+
+- **Source**: [`src/dzack_research/preamble/categories/sets/enumerated/laurent_monomials.py#L13`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/enumerated/laurent_monomials.py#L13)
+- **Bases**: `IndexedSymbolicFunctionSet`
+
+The enumerated set \(\{z^n : n\in\mathbb Z\}\subset\mathrm{SR}\).
+
 
 #### `NaturalNumber` `[ELEMENT]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L1441`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L1441)
+- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L1521`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L1521)
 - **Bases**: `Element`
 
 An element of the owned natural-number set.
@@ -12925,7 +13086,7 @@ An element of the owned natural-number set.
 
 #### `NaturalNumbers` `[OBJECT]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L1493`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L1493)
+- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L1584`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L1584)
 - **Bases**: `Parent`
 
 The owned set ``N={0,1,2,...}``.
@@ -12963,7 +13124,7 @@ lazily from the index set; no Python sequence of all members is stored.
 
 #### `Ordinal` `[ELEMENT]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/sets/cardinals.py#L531`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/cardinals.py#L531)
+- **Source**: [`src/dzack_research/preamble/categories/sets/cardinals.py#L533`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/cardinals.py#L533)
 - **Bases**: `Element`
 
 An ordinal represented by a symbolic arithmetic expression.
@@ -12981,7 +13142,7 @@ An ordinal represented by a symbolic arithmetic expression.
 
 #### `OrdinalSemiring` `[OBJECT]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/sets/cardinals.py#L676`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/cardinals.py#L676)
+- **Source**: [`src/dzack_research/preamble/categories/sets/cardinals.py#L678`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/cardinals.py#L678)
 - **Bases**: `UniqueRepresentation`, `Parent`
 - **Constructor**: `def __init__(self) -> None`
 - **Constructor**: `def _element_constructor_(self, value)`
@@ -12997,7 +13158,7 @@ An ordinal represented by a symbolic arithmetic expression.
 
 #### `PowerSetParent` `[OBJECT]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L456`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L456)
+- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L573`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L573)
 - **Bases**: `Parent`
 
 The power object \(P(X)\), represented by subobjects of ``X``.
@@ -13021,33 +13182,27 @@ The power object \(P(X)\), represented by subobjects of ``X``.
 
 #### `SetSubcategoryMethods` `[OBJECT]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L1571`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L1571)
+- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L1660`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L1660)
 
 Compatibility name for the owned Set category-navigation surface.
 
 
 #### `SincTranslates` `[OBJECT]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/categories/sets/enumerated/sinc_translates.py#L22`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/enumerated/sinc_translates.py#L22)
-- **Bases**: `UniqueRepresentation`, `Parent`
+- **Source**: [`src/dzack_research/preamble/categories/sets/enumerated/sinc_translates.py#L13`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/enumerated/sinc_translates.py#L13)
+- **Bases**: `IndexedSymbolicFunctionSet`
 
 The enumerated set \(\{\operatorname{sinc}(\,\cdot\,-n):n\in\mathbb Z\}\subset\mathrm{SR}\).
 
 Each translate is the formal symbol \(\mathrm{sinc}_n\), not Sage's
 evaluated \(\operatorname{sinc}\).
 
-- **Constructor**: `def __init__(self) -> None`
-
-**Public Methods:**
-- `cardinality(self)`
-- `rank(self, elt)`
-- `unrank(self, n)`
 
 ### 📚 Catalogues & Named Tables
 
 #### `register_set_axioms` `[REGISTRY]` `[Internal]`
 
-- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L1566`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L1566)
+- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L1655`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L1655)
 
 Compatibility entry point: the live owned categories need no Sage-global mutation.
 
@@ -13057,7 +13212,7 @@ Compatibility entry point: the live owned categories need no Sage-global mutatio
 #### `CartesianProductMorphism` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def CartesianProductMorphism(source, target, component_morphisms)`
-- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L1046`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L1046)
+- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L1142`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L1142)
 
 Return the componentwise map between two dependent products.
 
@@ -13065,17 +13220,17 @@ Return the componentwise map between two dependent products.
 #### `CartesianProductOfFamily` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `@cached_function` `def CartesianProductOfFamily(index_set, family)`
-- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L1026`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L1026)
+- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L1122`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L1122)
 
 #### `CartesianProductOfSets` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def CartesianProductOfSets(*factors)`
-- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L1038`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L1038)
+- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L1134`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L1134)
 
 #### `ConditionSet` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def ConditionSet(universe, predicate)`
-- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L285`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L285)
+- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L402`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L402)
 
 Return the subset of ``universe`` cut out by ``predicate``.
 
@@ -13083,7 +13238,7 @@ Return the subset of ``universe`` cut out by ``predicate``.
 #### `CoproductMorphism` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def CoproductMorphism(source, target, component_morphisms)`
-- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L1314`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L1314)
+- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L1402`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L1402)
 
 Return the componentwise map between two dependent coproducts.
 
@@ -13091,27 +13246,27 @@ Return the componentwise map between two dependent coproducts.
 #### `CoproductOfFamily` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `@cached_function` `def CoproductOfFamily(index_set, family)`
-- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L1298`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L1298)
+- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L1386`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L1386)
 
 #### `CoproductOfSets` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def CoproductOfSets(*cofactors)`
-- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L1310`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L1310)
+- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L1398`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L1398)
 
 #### `ExponentialOfSets` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `@cached_function` `def ExponentialOfSets(codomain, exponent)`
-- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L636`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L636)
+- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L752`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L752)
 
 #### `FiniteSubsets` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `@cached_function` `def FiniteSubsets(source)`
-- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L753`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L753)
+- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L869`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L869)
 
 #### `ImageSet` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def ImageSet(map_, domain_subset, *, category=None, is_injective=None, inverse=None)`
-- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L290`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L290)
+- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L407`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L407)
 
 Return the image of ``domain_subset`` under ``map_``.
 
@@ -13119,17 +13274,17 @@ Return the image of ``domain_subset`` under ``map_``.
 #### `Ordinals` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `@cached_function` `def Ordinals() -> OrdinalSemiring`
-- **Source**: [`src/dzack_research/preamble/categories/sets/cardinals.py#L780`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/cardinals.py#L780)
+- **Source**: [`src/dzack_research/preamble/categories/sets/cardinals.py#L782`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/cardinals.py#L782)
 
 #### `PowerSet` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `@cached_function` `def PowerSet(base_set)`
-- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L593`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L593)
+- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L708`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L708)
 
 #### `Set` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def Set(source)`
-- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L280`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L280)
+- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L397`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L397)
 
 Return ``source`` as a Sage set object.
 
@@ -13137,27 +13292,27 @@ Return ``source`` as a Sage set object.
 #### `SubsetsOfSize` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `@cached_function` `def SubsetsOfSize(source, subset_cardinality)`
-- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L703`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L703)
+- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L819`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L819)
 
 #### `aleph` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def aleph(index) -> Cardinal`
-- **Source**: [`src/dzack_research/preamble/categories/sets/cardinals.py#L819`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/cardinals.py#L819)
+- **Source**: [`src/dzack_research/preamble/categories/sets/cardinals.py#L821`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/cardinals.py#L821)
 
 #### `cardinal` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def cardinal(value) -> Cardinal`
-- **Source**: [`src/dzack_research/preamble/categories/sets/cardinals.py#L800`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/cardinals.py#L800)
+- **Source**: [`src/dzack_research/preamble/categories/sets/cardinals.py#L802`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/cardinals.py#L802)
 
 #### `coerce_family_value` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def coerce_family_value(value_module, value)`
-- **Source**: [`src/dzack_research/preamble/categories/sets/indexed_families.py#L113`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/indexed_families.py#L113)
+- **Source**: [`src/dzack_research/preamble/categories/sets/coordinate_families.py#L32`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/coordinate_families.py#L32)
 
 #### `coordinate_family` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def coordinate_family(left_labels, right_labels, value_module, datum, *, name)`
-- **Source**: [`src/dzack_research/preamble/categories/sets/indexed_families.py#L121`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/indexed_families.py#L121)
+- **Source**: [`src/dzack_research/preamble/categories/sets/coordinate_families.py#L40`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/coordinate_families.py#L40)
 
 Parse finite rectangular data as a family indexed by ``left × right``.
 
@@ -13165,12 +13320,12 @@ Parse finite rectangular data as a family indexed by ``left × right``.
 #### `coordinate_family_from_function` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def coordinate_family_from_function(left_labels, right_labels, value_module, function, *, name)`
-- **Source**: [`src/dzack_research/preamble/categories/sets/indexed_families.py#L188`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/indexed_families.py#L188)
+- **Source**: [`src/dzack_research/preamble/categories/sets/coordinate_families.py#L107`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/coordinate_families.py#L107)
 
 #### `coordinate_index_set` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def coordinate_index_set(left_labels, right_labels)`
-- **Source**: [`src/dzack_research/preamble/categories/sets/indexed_families.py#L100`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/indexed_families.py#L100)
+- **Source**: [`src/dzack_research/preamble/categories/sets/coordinate_families.py#L19`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/coordinate_families.py#L19)
 
 Return the dependent two-factor index set for a rectangular family.
 
@@ -13178,12 +13333,23 @@ Return the dependent two-factor index set for a rectangular family.
 #### `coordinate_pair` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def coordinate_pair(values, left_label, right_label)`
-- **Source**: [`src/dzack_research/preamble/categories/sets/indexed_families.py#L181`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/indexed_families.py#L181)
+- **Source**: [`src/dzack_research/preamble/categories/sets/coordinate_families.py#L100`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/coordinate_families.py#L100)
+
+#### `finite_family` `[FUNCTION]` `[Internal]`
+
+- **Signature**: `def finite_family(values, *, name=None)`
+- **Source**: [`src/dzack_research/preamble/categories/sets/finite_families.py#L10`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/finite_families.py#L10)
+
+Return the family over \(\Delta[k-1]\) taking the stated values in order.
+
+A finite sequence of owned values is a family, not a set: two of them may be
+equal, which a set would collapse, and each is addressed by its position.
+
 
 #### `finite_framing` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def finite_framing(module)`
-- **Source**: [`src/dzack_research/preamble/categories/sets/indexed_families.py#L90`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/indexed_families.py#L90)
+- **Source**: [`src/dzack_research/preamble/categories/sets/coordinate_families.py#L9`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/coordinate_families.py#L9)
 
 Return a selected module framing after asserting that it is finite.
 
@@ -13191,7 +13357,7 @@ Return a selected module framing after asserting that it is finite.
 #### `finite_ordered_filter` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def finite_ordered_filter(source, predicate, *, name=None)`
-- **Source**: [`src/dzack_research/preamble/categories/sets/finite_ordered_sets.py#L356`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/finite_ordered_sets.py#L356)
+- **Source**: [`src/dzack_research/preamble/categories/sets/finite_ordered_sets.py#L362`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/finite_ordered_sets.py#L362)
 
 Return the finite ordered subset cut out by ``predicate`` lazily.
 
@@ -13199,7 +13365,7 @@ Return the finite ordered subset cut out by ``predicate`` lazily.
 #### `finite_ordered_image` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def finite_ordered_image(index_set, unrank, *, rank=None, contains=None, name=None)`
-- **Source**: [`src/dzack_research/preamble/categories/sets/finite_ordered_sets.py#L345`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/finite_ordered_sets.py#L345)
+- **Source**: [`src/dzack_research/preamble/categories/sets/finite_ordered_sets.py#L351`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/finite_ordered_sets.py#L351)
 
 Return a finite ordered image without materializing its members.
 
@@ -13207,7 +13373,7 @@ Return a finite ordered image without materializing its members.
 #### `finite_ordered_set` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def finite_ordered_set(elements) -> FiniteOrderedSet`
-- **Source**: [`src/dzack_research/preamble/categories/sets/finite_ordered_sets.py#L361`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/finite_ordered_sets.py#L361)
+- **Source**: [`src/dzack_research/preamble/categories/sets/finite_ordered_sets.py#L367`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/finite_ordered_sets.py#L367)
 
 Transport one known finite ordered enumeration to an owned set.
 
@@ -13215,7 +13381,7 @@ Transport one known finite ordered enumeration to an owned set.
 #### `finite_ordinal_set` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def finite_ordinal_set(size)`
-- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L108`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L108)
+- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L126`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L126)
 
 #### `fixed_size_selections` `[FUNCTION]` `[Internal]`
 
@@ -13225,7 +13391,7 @@ Transport one known finite ordered enumeration to an owned set.
 #### `index_of_symbol` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def index_of_symbol(elt, prefix: str, latex_prefix: str | None=None)`
-- **Source**: [`src/dzack_research/preamble/categories/sets/enumerated/function_sets.py#L44`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/enumerated/function_sets.py#L44)
+- **Source**: [`src/dzack_research/preamble/categories/sets/enumerated/function_sets.py#L59`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/enumerated/function_sets.py#L59)
 
 Return \(n\) when ``elt`` is the indexed symbol of this prefix.
 
@@ -13241,7 +13407,7 @@ Return the family ``index |-> value(index)`` over ``index_set``.
 #### `indexed_symbol` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def indexed_symbol(prefix: str, index, latex_prefix: str)`
-- **Source**: [`src/dzack_research/preamble/categories/sets/enumerated/function_sets.py#L34`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/enumerated/function_sets.py#L34)
+- **Source**: [`src/dzack_research/preamble/categories/sets/enumerated/function_sets.py#L49`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/enumerated/function_sets.py#L49)
 
 The symbol in \(\mathrm{SR}\) for this prefix and integer index.
 
@@ -13249,7 +13415,7 @@ The symbol in \(\mathrm{SR}\) for this prefix and integer index.
 #### `integer_from_natural` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def integer_from_natural(n)`
-- **Source**: [`src/dzack_research/preamble/categories/sets/enumerated/function_sets.py#L14`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/enumerated/function_sets.py#L14)
+- **Source**: [`src/dzack_research/preamble/categories/sets/enumerated/function_sets.py#L29`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/enumerated/function_sets.py#L29)
 
 The bijection \(\mathbb N\to\mathbb Z\) sending \(0,1,2,3,4,\ldots\) to \(0,1,-1,2,-2,\ldots\).
 
@@ -13262,7 +13428,7 @@ The bijection \(\mathbb N\to\mathbb Z\) sending \(0,1,2,3,4,\ldots\) to \(0,1,-1
 #### `natural_from_integer` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def natural_from_integer(k)`
-- **Source**: [`src/dzack_research/preamble/categories/sets/enumerated/function_sets.py#L24`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/enumerated/function_sets.py#L24)
+- **Source**: [`src/dzack_research/preamble/categories/sets/enumerated/function_sets.py#L39`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/enumerated/function_sets.py#L39)
 
 The inverse of :func:`integer_from_natural`.
 
@@ -13270,12 +13436,12 @@ The inverse of :func:`integer_from_natural`.
 #### `omega` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def omega(index) -> Ordinal`
-- **Source**: [`src/dzack_research/preamble/categories/sets/cardinals.py#L788`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/cardinals.py#L788)
+- **Source**: [`src/dzack_research/preamble/categories/sets/cardinals.py#L790`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/cardinals.py#L790)
 
 #### `ordered_enumerated_set` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def ordered_enumerated_set(index_set, unrank, *, rank=None, contains=None, name=None)`
-- **Source**: [`src/dzack_research/preamble/categories/sets/finite_ordered_sets.py#L334`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/finite_ordered_sets.py#L334)
+- **Source**: [`src/dzack_research/preamble/categories/sets/finite_ordered_sets.py#L340`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/finite_ordered_sets.py#L340)
 
 Return the ordered image of ``index_set`` under the stated enumeration.
 
@@ -13288,12 +13454,12 @@ Return the ordered image of ``index_set`` under the stated enumeration.
 #### `ordinal` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def ordinal(value) -> Ordinal`
-- **Source**: [`src/dzack_research/preamble/categories/sets/cardinals.py#L784`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/cardinals.py#L784)
+- **Source**: [`src/dzack_research/preamble/categories/sets/cardinals.py#L786`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/cardinals.py#L786)
 
 #### `placement_of` `[FUNCTION]` `[Internal]`
 
 - **Signature**: `def placement_of(parent)`
-- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L1551`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L1551)
+- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L1640`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L1640)
 
 Return the strongest represented owned Set cardinality category for ``parent``.
 
@@ -13301,12 +13467,12 @@ Return the strongest represented owned Set cardinality category for ``parent``.
 #### `set_injection` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def set_injection(domain, codomain, function)`
-- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L315`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L315)
+- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L432`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L432)
 
 #### `set_surjection` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def set_surjection(domain, codomain, function)`
-- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L319`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L319)
+- **Source**: [`src/dzack_research/preamble/categories/sets/set_categories.py#L436`](file:///home/dzack/research/src/dzack_research/preamble/categories/sets/set_categories.py#L436)
 
 
 ---
@@ -13320,7 +13486,7 @@ Return the strongest represented owned Set cardinality category for ``parent``.
 
 #### `Embeddings` `[CATALOGUE]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/catalogue.py#L901`](file:///home/dzack/research/src/dzack_research/preamble/catalogue.py#L901)
+- **Source**: [`src/dzack_research/preamble/catalogue.py#L918`](file:///home/dzack/research/src/dzack_research/preamble/catalogue.py#L918)
 **Catalogue Entries / Constants:**
 - `E8_2_into_TdP`: `NamedLattices.E8_2.Emb(NamedLattices.TdP)(tuple((_TDP_GENS[4 + index] + _TDP_...`
 - `TCo_into_TEn`: `NamedLattices.Tco.Emb(NamedLattices.TEn)((_TEN_GENS[0] + _TEN_GENS[1], _TEN_G...`
@@ -13331,7 +13497,7 @@ Return the strongest represented owned Set cardinality category for ``parent``.
 
 #### `Involutions` `[CATALOGUE]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/catalogue.py#L872`](file:///home/dzack/research/src/dzack_research/preamble/catalogue.py#L872)
+- **Source**: [`src/dzack_research/preamble/catalogue.py#L889`](file:///home/dzack/research/src/dzack_research/preamble/catalogue.py#L889)
 
 Named involutions of the K3 lattice in its displayed block framing.
 
@@ -13342,7 +13508,7 @@ Named involutions of the K3 lattice in its displayed block framing.
 
 #### `NamedLattices` `[CATALOGUE]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/catalogue.py#L66`](file:///home/dzack/research/src/dzack_research/preamble/catalogue.py#L66)
+- **Source**: [`src/dzack_research/preamble/catalogue.py#L74`](file:///home/dzack/research/src/dzack_research/preamble/catalogue.py#L74)
 **Catalogue Entries / Constants:**
 - `Zero`: `_C(0)`
 - `Z`: `_C(1)`
@@ -13379,16 +13545,16 @@ Named involutions of the K3 lattice in its displayed block framing.
 
 #### `signature_orthogonal_sums` `[FUNCTION]` `[Exported Session]`
 
-- **Signature**: `def signature_orthogonal_sums(signature_pair, blocks)`
-- **Source**: [`src/dzack_research/preamble/catalogue.py#L830`](file:///home/dzack/research/src/dzack_research/preamble/catalogue.py#L830)
+- **Signature**: `def signature_orthogonal_sums(target_signature, blocks)`
+- **Source**: [`src/dzack_research/preamble/catalogue.py#L843`](file:///home/dzack/research/src/dzack_research/preamble/catalogue.py#L843)
 
 Enumerate multisets of the supplied blocks with the target signature.
 
 
 #### `two_elementary_orthogonal_sums` `[FUNCTION]` `[Exported Session]`
 
-- **Signature**: `def two_elementary_orthogonal_sums(signature_pair, a, delta)`
-- **Source**: [`src/dzack_research/preamble/catalogue.py#L776`](file:///home/dzack/research/src/dzack_research/preamble/catalogue.py#L776)
+- **Signature**: `def two_elementary_orthogonal_sums(target_signature, a, delta)`
+- **Source**: [`src/dzack_research/preamble/catalogue.py#L788`](file:///home/dzack/research/src/dzack_research/preamble/catalogue.py#L788)
 
 Return block-orthogonal realizations of the stated 2-elementary invariants.
 
@@ -13396,7 +13562,7 @@ Return block-orthogonal realizations of the stated 2-elementary invariants.
 #### `validate_negative_def_two_elementary_table` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def validate_negative_def_two_elementary_table()`
-- **Source**: [`src/dzack_research/preamble/catalogue.py#L709`](file:///home/dzack/research/src/dzack_research/preamble/catalogue.py#L709)
+- **Source**: [`src/dzack_research/preamble/catalogue.py#L717`](file:///home/dzack/research/src/dzack_research/preamble/catalogue.py#L717)
 
 Validate the signature and discriminant invariants of every listed class.
 
@@ -13404,7 +13570,7 @@ Validate the signature and discriminant invariants of every listed class.
 #### `validate_two_elementary_table` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def validate_two_elementary_table()`
-- **Source**: [`src/dzack_research/preamble/catalogue.py#L736`](file:///home/dzack/research/src/dzack_research/preamble/catalogue.py#L736)
+- **Source**: [`src/dzack_research/preamble/catalogue.py#L744`](file:///home/dzack/research/src/dzack_research/preamble/catalogue.py#L744)
 
 Validate every row against its signature and Nikulin invariants.
 
@@ -13421,7 +13587,7 @@ Validate every row against its signature and Nikulin invariants.
 
 #### `Tensor` `[OBJECT]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/tensors/tensor.py#L251`](file:///home/dzack/research/src/dzack_research/preamble/tensors/tensor.py#L251)
+- **Source**: [`src/dzack_research/preamble/tensors/tensor.py#L283`](file:///home/dzack/research/src/dzack_research/preamble/tensors/tensor.py#L283)
 
 A tensor of type $(p,q)$.
 
@@ -13452,30 +13618,28 @@ element of a :class:`TensorModule` over the owned base ring.
   > Return whether a square two-index tensor is symmetric in its slots.
 - `list(self)`
   > Return flattened finite components in tensor-index order.
-- `lower_ranks(self) -> tuple[int, ...]`
+- `lower_ranks(self) -> tuple`
   > Return the dimensions of the covariant indices.
 - `pullback(self, morphism)`
   > Pull this covariant tensor back along an owned linear morphism.
-- `rows(self)`
-  > Return component rows for a finite two-index tensor.
 - `tensor_indices(self)`
   > Return the generating set of each index module.
 - `tensor_order(self) -> int`
   > Return the number of indices.
-- `tensor_shape(self) -> tuple[int, ...]`
-  > Return the rank of each tensor index.
+- `tensor_shape(self)`
+  > Return the family assigning each index slot the rank of its module.
 - `tensor_space(self)`
   > Return the module of which this tensor is an element.
-- `tensor_type(self) -> tuple[int, int]`
+- `tensor_type(self) -> ProductOfNaturalNumbers`
   > Return $(p,q)$: $p$ contravariant indices and $q$ covariant indices.
-- `tensor_valence(self) -> tuple[int, int]`
+- `tensor_valence(self) -> ProductOfNaturalNumbers`
   > Return the type $(p,q)$; synonym of :meth:`tensor_type`.
-- `upper_ranks(self) -> tuple[int, ...]`
+- `upper_ranks(self) -> tuple`
   > Return the dimensions of the contravariant indices.
 
 #### `TensorModule` `[OBJECT]` `[Exported Session]`
 
-- **Source**: [`src/dzack_research/preamble/tensors/tensor.py#L1101`](file:///home/dzack/research/src/dzack_research/preamble/tensors/tensor.py#L1101)
+- **Source**: [`src/dzack_research/preamble/tensors/tensor.py#L1154`](file:///home/dzack/research/src/dzack_research/preamble/tensors/tensor.py#L1154)
 - **Bases**: `UniqueRepresentation`, `Parent`
 
 The module of type-$(p,q)$ tensors with the given index ranks.
@@ -13508,11 +13672,23 @@ EXAMPLES::
 - `lower_ranks(self) -> tuple`
 - `tensor_indices(self)`
   > Return the standard generating set of each finite index module.
-- `tensor_shape(self) -> tuple`
-- `tensor_type(self) -> tuple[int, int]`
-- `tensor_valence(self) -> tuple[int, int]`
+- `tensor_shape(self)`
+  > Return the family assigning each index slot the rank of its module.
+- `tensor_type(self) -> ProductOfNaturalNumbers`
+  > Return the type $(p, q)$ as a point of $\mathbb N^2$ (`CON-15`).
+- `tensor_valence(self) -> ProductOfNaturalNumbers`
 - `upper_ranks(self) -> tuple`
 - `zero(self) -> _CoordinateTensor`
+
+### 🛠 Helper Functions & Constructors
+
+#### `index_rank_family` `[FUNCTION]` `[Internal]`
+
+- **Signature**: `def index_rank_family(ranks)`
+- **Source**: [`src/dzack_research/preamble/tensors/tensor.py#L44`](file:///home/dzack/research/src/dzack_research/preamble/tensors/tensor.py#L44)
+
+Return the family \(i\mapsto\) rank of slot \(i\), for \(i\in\Delta[k-1]\).
+
 
 
 ---
@@ -13603,7 +13779,7 @@ compose this with existing Sage three-valued predicates.
 #### `load` `[FUNCTION]` `[Exported Session]`
 
 - **Signature**: `def load(filename: str, globals: dict | None=None, attach: bool=False) -> None`
-- **Source**: [`src/dzack_research/preamble/all.py#L841`](file:///home/dzack/research/src/dzack_research/preamble/all.py#L841)
+- **Source**: [`src/dzack_research/preamble/all.py#L844`](file:///home/dzack/research/src/dzack_research/preamble/all.py#L844)
 
 Load a Sage file and restore this session's owned scalar vocabulary.
 

@@ -4,11 +4,15 @@ from dzack_research.preamble.categories.sets.indexed_families import (
     IndexedFamily,
     indexed_family,
 )
+from dzack_research.preamble.categories.sets.cardinals import cardinal
+from dzack_research.preamble.categories.sets.set_categories import (
+    CartesianProductOfFamily,
+    Sets,
+)
 
 
 def finite_framing(module):
     r"""Return a selected module framing after asserting that it is finite."""
-    from dzack_research.preamble.categories.sets.cardinals import cardinal
 
     labels = module.module_generating_set()
     if not cardinal(labels.cardinality()).is_finite():
@@ -18,10 +22,6 @@ def finite_framing(module):
 
 def coordinate_index_set(left_labels, right_labels):
     r"""Return the dependent two-factor index set for a rectangular family."""
-    from dzack_research.preamble.categories.sets.set_categories import (
-        CartesianProductOfFamily,
-        Sets,
-    )
 
     return CartesianProductOfFamily(
         Sets.Δ[1],

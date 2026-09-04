@@ -27,6 +27,31 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     ModuleEmbedding,
 )
 from dzack_research.preamble.refine import refine
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+    FreeModuleOn,
+    MatrixSpace,
+    ring_as_module,
+)
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    framing_morphism,
+    module_coefficients,
+    module_homset,
+)
+from dzack_research.preamble.categories.modules.pure.modules import (
+    FinitelyGeneratedModules,
+    FramedModules,
+    ModuleSubobjects,
+    Modules,
+    ProjectiveModules,
+    RestrictedScalarsModules,
+    restrict_scalars,
+)
+from dzack_research.preamble.categories.rings.commutative_ideals import CommutativeIdeals
+from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+from dzack_research.preamble.tensors.tensor import (
+    _engine_component_vector,
+    tensor,
+)
 
 
 class FractionalIdeals(OwnedCategoryOverBaseRing):
@@ -37,8 +62,6 @@ class FractionalIdeals(OwnedCategoryOverBaseRing):
         return "fractional ideals"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.modules.pure.modules import Modules
-        from dzack_research.preamble.categories.modules.pure.modules import ModuleSubobjects
 
         return [Modules(self.base_ring()), ModuleSubobjects(self.base_ring())]
 
@@ -60,7 +83,6 @@ class FractionalIdeals(OwnedCategoryOverBaseRing):
 
         @cached_method
         def module_generators(self):
-            from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 
             return indexed_family(
                 self.module_generating_set(),
@@ -69,10 +91,6 @@ class FractionalIdeals(OwnedCategoryOverBaseRing):
             )
 
         def framing_morphism(self):
-            from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreeModuleOn
-            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-                framing_morphism,
-            )
 
             source = FreeModuleOn(self.base_ring(), self.module_generating_set())
             return framing_morphism(source, self, self.module_generator)
@@ -234,9 +252,6 @@ class Ideals(OwnedCategoryOverBaseRing):
         return "ideals"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.rings.commutative_ideals import (
-            CommutativeIdeals,
-        )
 
         return [
             FractionalIdeals(self.base_ring()),
@@ -340,12 +355,6 @@ class FractionalIdealModule(Parent):
         categories = [FractionalIdeals(ring)]
         if integral:
             categories.append(Ideals(ring))
-        from dzack_research.preamble.categories.modules.pure.modules import (
-            FramedModules,
-        )
-        from dzack_research.preamble.categories.modules.pure.modules import (
-            FinitelyGeneratedModules,
-        )
 
         categories.extend([FramedModules(ring), FinitelyGeneratedModules(ring)])
         Parent.__init__(self, base=ring, category=Category.join(tuple(categories)))
@@ -366,7 +375,6 @@ class FractionalIdealModule(Parent):
     def __contains__(self, value) -> bool:
         if isinstance(value, self.element_class) and value.parent() is self:
             return True
-        from dzack_research.preamble.tensors.tensor import _engine_component_vector
 
         try:
             parent = getattr(value, "parent", lambda: None)()
@@ -404,9 +412,6 @@ class FractionalIdealInclusion(ModuleEmbedding):
             element = self.domain()(element)
         value = element._inclusion_value()
         target = self.codomain()
-        from dzack_research.preamble.categories.modules.pure.modules import (
-            RestrictedScalarsModules,
-        )
 
         if target in RestrictedScalarsModules(self.domain().base_ring()):
             extension_module = target.module_over_extension()
@@ -432,9 +437,6 @@ class FractionalIdealInclusion(ModuleEmbedding):
     def lift(self, element):
         r"""Return the ideal element mapping to ``element`` when it belongs to the ideal."""
         target = self.codomain()
-        from dzack_research.preamble.categories.modules.pure.modules import (
-            RestrictedScalarsModules,
-        )
 
         if target in RestrictedScalarsModules(self.domain().base_ring()):
             if element.parent() is not target:
@@ -443,9 +445,6 @@ class FractionalIdealInclusion(ModuleEmbedding):
             labels = tuple(extension_module.module_generating_set())
             if len(labels) != 1:
                 raise ArithmeticError("the fraction field is not represented as a rank-one module over itself")
-            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-                module_coefficients,
-            )
 
             coefficients = module_coefficients(
                 element.underlying_element(),
@@ -466,9 +465,6 @@ class FractionalIdealInclusion(ModuleEmbedding):
         return True
 
     def is_primitive(self) -> bool:
-        from dzack_research.preamble.categories.modules.pure.modules import (
-            FramedModules,
-        )
 
         if self.codomain() not in FramedModules(self.domain().base_ring()):
             raise NotImplementedError(
@@ -477,9 +473,6 @@ class FractionalIdealInclusion(ModuleEmbedding):
         return super().is_primitive()
 
     def index(self):
-        from dzack_research.preamble.categories.modules.pure.modules import (
-            FramedModules,
-        )
 
         if self.codomain() not in FramedModules(self.domain().base_ring()):
             raise NotImplementedError(
@@ -491,8 +484,6 @@ class FractionalIdealInclusion(ModuleEmbedding):
 @cached_function
 def _fraction_field_as_module(base_ring):
     r"""Return ``Frac(R)`` restricted to an ``R``-module along ``R -> Frac(R)``."""
-    from dzack_research.preamble.categories.modules.pure.modules import restrict_scalars
-    from dzack_research.preamble.categories.modules.framed.framed_free_modules import ring_as_module
 
     ring = _owned_ring(base_ring)
     field = ring.fraction_field()
@@ -504,10 +495,6 @@ def _fraction_field_as_module(base_ring):
 
 
 def _fractional_ideal_inclusion(ideal, integral):
-    from dzack_research.preamble.categories.modules.framed.framed_free_modules import ring_as_module
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-        module_homset,
-    )
 
     target = ring_as_module(ideal.base_ring()) if integral else _fraction_field_as_module(ideal.base_ring())
     images = {}
@@ -562,7 +549,6 @@ def _zz_fractional_generator(module_generator_values):
 
 
 def _order_coordinate_vector(base_ring, value):
-    from dzack_research.preamble.tensors.tensor import tensor
 
     ring = _owned_ring(base_ring)
     rationals = _own_ring(SageQQ)
@@ -594,8 +580,6 @@ def _underlying_integer_module(ideal):
 def _integer_coordinate_submodule(ideal):
     r"""Materialize ``Res_ZZ^O(I)`` inside ``K``'s rational coordinate space."""
     from sage.modules.free_module import span
-    from dzack_research.preamble.tensors.tensor import tensor
-    from dzack_research.preamble.tensors.tensor import _engine_component_vector
 
     ring = ideal.base_ring()
     order = _engine_ring(ring)
@@ -642,9 +626,6 @@ def _fractional_ideal_from_order_values(
     )
     ideal._preamble_inclusion = _fractional_ideal_inclusion(ideal, integral)
     if bool(order.is_maximal()) or ideal.is_principal():
-        from dzack_research.preamble.categories.modules.pure.modules import (
-            ProjectiveModules,
-        )
 
         refine(ideal, ProjectiveModules(ring))
     return ideal
@@ -652,10 +633,6 @@ def _fractional_ideal_from_order_values(
 
 def _principal_generator_from_integer_module(ideal):
     r"""Return a generator of an order fractional ideal, or ``None`` if nonprincipal."""
-    from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-        module_coefficients,
-    )
 
     ring = ideal.base_ring()
     order = _engine_ring(ring)
@@ -746,9 +723,6 @@ def _fractional_ideal_from_backend(base_ring, backend, *, integral=False):
         integral=integral,
     )
     ideal._preamble_inclusion = _fractional_ideal_inclusion(ideal, integral)
-    from dzack_research.preamble.categories.modules.pure.modules import (
-        ProjectiveModules,
-    )
 
     refine(ideal, ProjectiveModules(ring))
     return ideal
@@ -795,9 +769,6 @@ def Ideal(base_ring, module_generating_set):
             integral=True,
         )
         ideal._preamble_inclusion = _fractional_ideal_inclusion(ideal, True)
-        from dzack_research.preamble.categories.modules.pure.modules import (
-            ProjectiveModules,
-        )
 
         refine(ideal, ProjectiveModules(ring))
         return ideal

@@ -65,6 +65,14 @@ def test_integer_indexed_function_sets() -> None:
     assert sinc in FunctionEnumeratedSets()
     assert fourier in InfiniteEnumeratedSets()
     assert repr(laurent.index_set()) == "Integer Ring"
+    assert [str(laurent.unrank(rank)) for rank in range(5)] == [
+        "z_0",
+        "z_1",
+        "z_m1",
+        "z_2",
+        "z_m2",
+    ]
+    assert laurent.rank(laurent.function(-2)) == 4
     assert z_m1 in laurent
     assert laurent.function(-1) == laurent.unrank(laurent.rank(z_m1))
     assert str(z_m1) == "z_m1"

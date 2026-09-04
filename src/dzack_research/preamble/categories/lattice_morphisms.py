@@ -14,10 +14,40 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     category_packet,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
+from dzack_research.preamble.categories.group.cyclic_subgroups import cyclic_subgroup
+from dzack_research.preamble.categories.group.groups import (
+    OwnedFiniteGroups,
+    OwnedGroups,
+)
+from dzack_research.preamble.categories.group.predicate_subgroups import predicate_subgroup
+from dzack_research.preamble.categories.isotropic_orbits import (
+    isotropic_equivalence_witness,
+    isotropic_orbit_representatives,
+    isotropic_stabilizer_generators,
+)
+from dzack_research.preamble.categories.lattice_engines import (
+    oscar_centralizer_discriminant_image,
+    oscar_rational_spinor_norm_sign,
+    rational_positive_vector,
+)
+from dzack_research.preamble.categories.modules.framed.formed.form_modules import form_embedding
+from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import torsion_form_isometry
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    module_coefficients,
+    module_homset,
+)
+from dzack_research.preamble.categories.modules.pure.modules import _engine_matrix
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_image
+from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
+from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.refine import refine
+from dzack_research.preamble.tensors.tensor import (
+    _engine_component_matrix,
+    tensor,
+)
 
 
 def _tensor_view(morphism):
-    from dzack_research.preamble.tensors.tensor import tensor
 
     return tensor.from_morphism(morphism)
 
@@ -86,10 +116,6 @@ class LatticeEmbedding(LatticeMorphism):
 
         perpendicular = self.orthogonal_complement()
         perpendicular_inclusion = perpendicular.inclusion()
-        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-            module_coefficients,
-            module_homset,
-        )
 
         quotient = module_homset(source, perpendicular)(
             lambda label: perpendicular_inclusion.lift(
@@ -106,11 +132,6 @@ class LatticeEmbedding(LatticeMorphism):
         if rank == 0:
             return lattice_category(0)
 
-        from dzack_research.preamble.categories.sets.indexed_families import (
-            finite_indexed_family,
-        )
-        from dzack_research.preamble.categories.sets.set_categories import Sets
-        from dzack_research.preamble.tensors.tensor import tensor
 
         labels = Sets.Δ[rank - 1]
         lifts = finite_indexed_family(
@@ -170,10 +191,6 @@ class LatticeEmbedding(LatticeMorphism):
                 "a discriminant inclusion requires finite nondegenerate lattices"
             )
 
-        from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
-            form_embedding,
-        )
-        from dzack_research.preamble.tensors.tensor import tensor
 
         target_discriminant = target.discriminant_module()
         target_dual = target_discriminant.projection().domain()
@@ -303,9 +320,6 @@ class LatticeIsometry(LatticeEmbedding):
         if self.domain() is not self.codomain():
             raise ValueError("invariants are defined here for a lattice automorphism")
         lattice = self.domain()
-        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-            module_homset,
-        )
 
         difference = module_homset(lattice, lattice)(tuple(self(generator) - generator for generator in lattice.module_generators()))
         return difference.kernel()
@@ -341,9 +355,6 @@ class LatticeIsometry(LatticeEmbedding):
                 target_dual.zero(),
             )
             images[label] = target.projection()(dual_image)
-        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-            module_homset,
-        )
 
         return module_homset(source, target)(images)
 
@@ -355,9 +366,6 @@ class LatticeIsometry(LatticeEmbedding):
         Passing to the cokernels of the correlation maps gives the finite-form
         isometry on discriminant modules.
         """
-        from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import (
-            torsion_form_isometry,
-        )
 
         forward = self._discriminant_forward_morphism()
         inverse = (~self)._discriminant_forward_morphism()
@@ -381,7 +389,6 @@ class LatticeIsometry(LatticeEmbedding):
         r"""Return the literal subgroup ``<self> <= O(L)``."""
         if self.domain() is not self.codomain():
             raise ValueError("a cyclic isometry subgroup requires a lattice automorphism")
-        from dzack_research.preamble.categories.group.cyclic_subgroups import cyclic_subgroup
 
         return cyclic_subgroup(self)
 
@@ -402,9 +409,6 @@ class LatticeIsometry(LatticeEmbedding):
             raise NotImplementedError("the current exact spinor-norm seam is for integral ZZ-lattices")
         if not lattice.is_finite_rank() or not lattice.is_nondegenerate():
             raise ValueError("the real spinor norm requires a finite nondegenerate lattice")
-        from dzack_research.preamble.categories.lattice_engines import (
-            oscar_rational_spinor_norm_sign,
-        )
 
         ring = lattice.base_ring()
         backend_sign = SageZZ(
@@ -432,9 +436,6 @@ class LatticeIsometry(LatticeEmbedding):
             raise ValueError(
                 f"the positive cone has two components only in signature (1,n); got {(positive, negative)}"
             )
-        from dzack_research.preamble.categories.lattice_engines import (
-            rational_positive_vector,
-        )
 
         rationals = lattice.base_ring().fraction_field()
         gram = lattice.gram_tensor().change_ring(rationals)
@@ -473,10 +474,6 @@ class LatticeIsometry(LatticeEmbedding):
                 "the centralizer discriminant image requires a finite nondegenerate lattice"
             )
 
-        from dzack_research.preamble.categories.lattice_engines import (
-            oscar_centralizer_discriminant_image,
-        )
-        from dzack_research.preamble.tensors.tensor import _engine_component_matrix
 
         engine_generators, expected_order, invariant_rank, coinvariant_rank = (
             oscar_centralizer_discriminant_image(
@@ -730,11 +727,6 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
     def __init__(self, hom_family, domain, codomain) -> None:
         LatticeEmbeddingHomset.__init__(self, hom_family, domain, codomain)
         if domain is codomain:
-            from dzack_research.preamble.categories.group.groups import (
-                OwnedFiniteGroups,
-                OwnedGroups,
-            )
-            from dzack_research.preamble.refine import refine
 
             categories = [OwnedGroups()]
             if (
@@ -853,14 +845,8 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
             != target.is_quadratic()
         ):
             raise ValueError("the subgroup must lie in O(A_L)")
-        from dzack_research.preamble.categories.group.predicate_subgroups import (
-            predicate_subgroup,
-        )
 
         if int(subgroup.cardinality()) == 1:
-            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-                module_homset,
-            )
 
             form = target.domain()
             identity = module_homset(form, form).identity()
@@ -898,7 +884,6 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
                 "the available Sage engine computes full generators only for finite definite lattices"
             )
         from sage.modules.free_quadratic_module_integer_symmetric import IntegralLattice
-        from dzack_research.preamble.tensors.tensor import _engine_component_matrix
 
         return IntegralLattice(
             _engine_component_matrix(lattice.gram_tensor()).change_ring(SageZZ)
@@ -943,7 +928,6 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
             or automorphism.codomain() is not self.codomain()
         ):
             raise ValueError("the engine crossing takes an automorphism in this orthogonal group")
-        from dzack_research.preamble.categories.modules.pure.modules import _engine_matrix
 
         # Publicly the linear map acts on columns. Sage's GroupOfIsometries
         # acts on coordinate rows on the right, hence one transpose here.
@@ -953,8 +937,6 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
     @cached_method
     def group_generators(self):
         r"""Return exact generators of ``O(L)`` when the backend computes them."""
-        from dzack_research.preamble.categories.sets.set_categories import Sets
-        from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_image
 
         lattice = self.domain()
         if not lattice.is_definite():
@@ -1126,23 +1108,14 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
         return tuple(representatives)
 
     def isotropic_orbit_representatives(self, rank, *, flag=False):
-        from dzack_research.preamble.categories.isotropic_orbits import (
-            isotropic_orbit_representatives,
-        )
 
         return isotropic_orbit_representatives(self, rank, flag=flag)
 
     def isotropic_equivalence_witness(self, left, right, *, flag=False):
-        from dzack_research.preamble.categories.isotropic_orbits import (
-            isotropic_equivalence_witness,
-        )
 
         return isotropic_equivalence_witness(self, left, right, flag=flag)
 
     def isotropic_stabilizer_generators(self, obj, *, flag=False):
-        from dzack_research.preamble.categories.isotropic_orbits import (
-            isotropic_stabilizer_generators,
-        )
 
         return isotropic_stabilizer_generators(self, obj, flag=flag)
 
@@ -1174,7 +1147,6 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
             return True
         if _engine_ring(domain.base_ring()) is not SageZZ or _engine_ring(codomain.base_ring()) is not SageZZ:
             return Unknown
-        from dzack_research.preamble.tensors.tensor import _engine_component_matrix
 
         domain_gram = _engine_component_matrix(domain.gram_tensor()).change_ring(SageZZ)
         codomain_gram = _engine_component_matrix(codomain.gram_tensor()).change_ring(SageZZ)

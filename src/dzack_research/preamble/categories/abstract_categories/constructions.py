@@ -5,6 +5,7 @@ mathematical categories own their represented constructions.
 """
 
 from sage.categories.category import Category
+from dzack_research.preamble.categories.abstract_categories.arrow_categories import SubobjectCategory
 
 
 def _common_category(*objects):
@@ -93,7 +94,6 @@ def Cokernel(morphism):
 
 
 def Subobjects(base_object, category=None):
-    from dzack_research.preamble.categories.abstract_categories.arrow_categories import SubobjectCategory
     base_category = base_object.category() if category is None else category
     if base_object not in base_category:
         raise TypeError("the subobject base must lie in the stated category")

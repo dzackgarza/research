@@ -9,11 +9,11 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
 )
 from dzack_research.preamble.refine import refine
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace
 
 
 def _rational_lattice_determinant(lattice):
     r"""Return the Gram determinant in the selected fraction-field value module."""
-    from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace
 
     rank = int(lattice.module_generating_set().cardinality())
     gram = lattice.gram_tensor()

@@ -18,17 +18,40 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     CategoricalHomset,
     HomCategoryConstruction,
 )
+from dzack_research.preamble.categories.algebras.free_algebras import PolynomialRing
+from dzack_research.preamble.categories.rings.commutative_algebra import (
+    refine_commutative_algebra,
+)
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     _engine_element,
     _engine_ring,
     _own_ring,
 )
+from dzack_research.preamble.categories.rings.rings import refine_ring_constructions
 from dzack_research.preamble.categories.schemes.ringed_spaces import (
     LocallyRingedSpaces,
     SchemeUnderlyingSpace,
 )
 from dzack_research.preamble.refine import refine
+from dzack_research.preamble.categories.abstract_categories.constructions import (
+    Coproduct,
+    Pushout,
+)
+from dzack_research.preamble.categories.abstract_categories.products import _finite_factor_family
+from dzack_research.preamble.categories.algebras.algebras import (
+    Algebras,
+    FramedAlgebras,
+    _engine_algebra_morphism,
+)
+from dzack_research.preamble.categories.algebras.free_algebras import (
+    FinitelyPresentedAlgebra,
+    FreeAlgebras,
+    GradedFreeAlgebras,
+    SymmetricAlgebras,
+)
+from dzack_research.preamble.categories.rings.ring_foundation import ring_homset
+from dzack_research.preamble.categories.sets.finite_families import finite_family
 
 
 _SCHEME_MORPHISM_WRAPPERS = {}
@@ -506,11 +529,15 @@ class Schemes(OwnedCategoryOverBaseRing):
             base = _engine_ring(self.scheme_base_ring())
             if not bool(base.is_finite()) or not bool(base.is_field()):
                 raise TypeError("finite-field point counts require a finite base field")
-            return tuple(super().count_points(degree))
+
+            return finite_family(
+                super().count_points(degree), name="Point counts"
+            )
 
         def point_count(self, extension_degree=1):
             r"""Return ``#X(F_{q^n})`` for the stated extension degree ``n``."""
-            return self.point_counts(extension_degree)[-1]
+            degree = int(extension_degree)
+            return self.point_counts(degree)[degree - 1]
 
 class _SchemePropertyCategory(OwnedCategoryOverBaseRing):
     property_name = "scheme property"
@@ -590,11 +617,9 @@ class AffineSchemes(_SchemePropertyCategory):
                 # overridden ``coordinate_ring`` method.
                 engine = _SageAffineScheme.coordinate_ring(self)
                 self._preamble_engine_coordinate_ring = engine
-            from dzack_research.preamble.categories.algebras.algebras import refine_algebra
-
             base = self.scheme_base_ring()
             labels = tuple(getattr(engine, "variable_names", lambda: ())()) or None
-            selected = refine_algebra(_own_ring(engine), base, labels)
+            selected = refine_commutative_algebra(_own_ring(engine), base, labels)
             self._preamble_coordinate_algebra = selected
             return selected
 
@@ -603,9 +628,6 @@ class AffineSchemes(_SchemePropertyCategory):
             return self.coordinate_algebra()
 
         def closed_subscheme(self, *equations):
-            from dzack_research.preamble.categories.algebras.free_algebras import (
-                FinitelyPresentedAlgebra,
-            )
 
             equations = (
                 tuple(equations[0])
@@ -704,14 +726,11 @@ class AffineSpaces(OwnedCategoryOverBaseRing):
             base = _engine_ring(self.scheme_base_ring())
             if not bool(base.is_finite()) or not bool(base.is_field()):
                 raise TypeError("the arithmetic zeta function here requires a finite field")
-            from dzack_research.preamble.rings import PolynomialRing
-            from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
             from sage.rings.rational_field import QQ as SageQQ
 
             rationals = _own_ring(SageQQ)
-            polynomial = PolynomialRing(rationals, "T")
-            from dzack_research.preamble.categories.algebras.algebras import refine_algebra
-            rational_functions = refine_algebra(
+            polynomial = refine_ring_constructions(PolynomialRing(rationals, "T"))
+            rational_functions = refine_commutative_algebra(
                 polynomial.fraction_field(), rationals, ("T",)
             )
             T = rational_functions.algebra_generator("T")
@@ -743,14 +762,11 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
             if not bool(base.is_finite()) or not bool(base.is_field()):
                 raise TypeError("the arithmetic zeta function here requires a finite field")
             from sage.misc.misc_c import prod
-            from dzack_research.preamble.rings import PolynomialRing
-            from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
             from sage.rings.rational_field import QQ as SageQQ
 
             rationals = _own_ring(SageQQ)
-            polynomial = PolynomialRing(rationals, "T")
-            from dzack_research.preamble.categories.algebras.algebras import refine_algebra
-            rational_functions = refine_algebra(
+            polynomial = refine_ring_constructions(PolynomialRing(rationals, "T"))
+            rational_functions = refine_commutative_algebra(
                 polynomial.fraction_field(), rationals, ("T",)
             )
             T = rational_functions.algebra_generator("T")
@@ -777,9 +793,6 @@ class ProductSchemes(OwnedCategoryOverBaseRing):
     class ParentMethods:
         def factors(self):
             r"""Return the family of factors, indexed by the product's own index set."""
-            from dzack_research.preamble.categories.abstract_categories.products import (
-                _finite_factor_family,
-            )
 
             return _finite_factor_family(self._preamble_product_factors, name="Product factors")
 
@@ -840,7 +853,6 @@ def Spec(ring_or_algebra):
 
     scheme = _SageSpec(_engine_ring(algebra))
     categories = [AffineSchemes(base)]
-    from dzack_research.preamble.categories.algebras.algebras import FramedAlgebras
 
     if algebra is base or algebra in FramedAlgebras(base):
         categories.append(FiniteTypeSchemes(base))
@@ -856,7 +868,6 @@ def Spec(ring_or_algebra):
         _native_scheme_homset(scheme, scheme)(engine_identity, check=False), base
     )
     if algebra is base:
-        from dzack_research.preamble.categories.rings.ring_foundation import ring_homset
 
         coordinate_identity = ring_homset(base, base).identity()
     else:
@@ -884,10 +895,6 @@ def Spec(ring_or_algebra):
 
 def affine_spec_morphism(algebra_morphism):
     r"""Return the affine scheme morphism contravariantly induced by an algebra map."""
-    from dzack_research.preamble.categories.algebras.algebras import Algebras
-    from dzack_research.preamble.categories.algebras.algebras import (
-        _engine_algebra_morphism,
-    )
 
     source_algebra = algebra_morphism.domain()
     target_algebra = algebra_morphism.codomain()
@@ -936,16 +943,10 @@ def AffineSpace(dimension, base_ring, names=None):
     if _integral_placement(base):
         categories.append(IntegralSchemes(base))
     refine_scheme(scheme, base, categories)
-    from dzack_research.preamble.categories.algebras.algebras import refine_algebra
-    from dzack_research.preamble.categories.algebras.free_algebras import (
-        FreeAlgebras,
-        GradedFreeAlgebras,
-        SymmetricAlgebras,
-    )
 
     labels = tuple(engine_coordinate_ring.variable_names())
     scheme._preamble_engine_coordinate_ring = engine_coordinate_ring
-    scheme._preamble_coordinate_algebra = refine_algebra(
+    scheme._preamble_coordinate_algebra = refine_commutative_algebra(
         _own_ring(engine_coordinate_ring),
         base,
         labels,
@@ -1075,7 +1076,6 @@ def scheme_product(*schemes):
             )
             offset += width
     elif all(scheme in AffineSchemes(base) for scheme in schemes):
-        from dzack_research.preamble.categories.abstract_categories.constructions import Coproduct
         algebras = tuple(scheme.coordinate_algebra() for scheme in schemes)
         algebra = Coproduct(algebras[0], algebras[1])
         factor_maps = list(algebra.coproduct_injections())
@@ -1157,7 +1157,6 @@ def scheme_fiber_product(left_map, right_map):
             "the active scheme fiber-product backend currently requires affine schemes"
         )
 
-    from dzack_research.preamble.categories.abstract_categories.constructions import Pushout
 
     algebra_pushout = Pushout(
         left_map.coordinate_algebra_morphism(),
@@ -1205,7 +1204,6 @@ class ClosedSubschemes(OwnedCategoryOverBaseRing):
             defining = getattr(self, "_preamble_defining_ideal", None)
             ambient = self.ambient_scheme()
             if defining is not None and hasattr(ambient, "coordinate_algebra"):
-                from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
 
                 ambient_engine = _engine_ring(ambient.coordinate_algebra())
                 ideal_engine = defining._engine_ideal()
@@ -1219,10 +1217,14 @@ class ClosedSubschemes(OwnedCategoryOverBaseRing):
             return self.ambient_scheme().dimension() - self.dimension()
 
         def defining_equations(self):
+            r"""Return the family of equations that cut this subscheme out."""
+
             selected = getattr(self, "_preamble_defining_equations", None)
             if selected is not None:
-                return selected
-            return tuple(self.defining_polynomials())
+                return finite_family(selected, name="Defining equations")
+            return finite_family(
+                self.defining_polynomials(), name="Defining equations"
+            )
 
         def defining_ideal_owned(self):
             selected = getattr(self, "_preamble_defining_ideal", None)

@@ -29,7 +29,36 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedFreeModules,
 )
+from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+    FinitelyPresentedModule,
+)
 from dzack_research.preamble.refine import refine
+from dzack_research.preamble.categories.modules.base_change import base_change_codomain
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    _solve_left_integrally,
+    framing_morphism,
+    module_coefficients,
+    module_embedding,
+    module_homset,
+)
+from dzack_research.preamble.categories.modules.pure.modules import (
+    FramedModules,
+    FreeModules,
+    ModuleSubobjects,
+    Modules,
+    _refine_matrix_hom,
+    register_module_scalar_action,
+)
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    PrincipalIdealDomains,
+    _own_ring,
+    ring_morphism,
+)
+from dzack_research.preamble.categories.sets.cardinals import (
+    Cardinalities,
+    cardinal,
+)
+from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 
 
 class FreeModuleBaseRings(Category):
@@ -48,8 +77,6 @@ class FreeModuleBaseRings(Category):
 
 def _scalar_action_morphism(module, scalar_multiple):
     r"""Return ``rho_M : R -> End_R(M)`` from the parent's private scalar crossing."""
-    from dzack_research.preamble.categories.modules.pure.modules import Modules
-    from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
 
     ring = module.base_ring()
     endomorphisms = Modules(ring).End(module)
@@ -65,7 +92,6 @@ def _scalar_action_morphism(module, scalar_multiple):
 
 def _finitely_generated_free_placement(ring, module_generating_set):
     r"""Return the owned categories of ``R^(S)``: finitely generated exactly when ``S`` is finite."""
-    from dzack_research.preamble.categories.sets.cardinals import cardinal
 
     categories = [FramedFreeModules(ring)]
     if cardinal(module_generating_set.cardinality()).is_finite():
@@ -169,9 +195,6 @@ class _SparseFreeModuleParent(Parent):
             self,
             self._raw_scalar_multiple,
         )
-        from dzack_research.preamble.categories.modules.pure.modules import (
-            register_module_scalar_action,
-        )
 
         register_module_scalar_action(self)
 
@@ -202,7 +225,6 @@ class _SparseFreeModuleParent(Parent):
                 )
             return self.element_class(self, coefficients)
         labels = self.module_generating_set()
-        from dzack_research.preamble.categories.sets.cardinals import cardinal
 
         if isinstance(value, (tuple, list)):
             if not hasattr(labels, "unrank"):
@@ -278,10 +300,6 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
         return "framed free modules"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.modules.pure.modules import (
-            FramedModules,
-            FreeModules,
-        )
 
         return [FreeModules(self.base_ring()), FramedModules(self.base_ring())]
 
@@ -297,30 +315,19 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
         def _represented_cokernel_of_morphism(self, morphism):
             if morphism.codomain() is not self:
                 return NotImplemented
-            from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-                FinitelyPresentedModule,
-            )
-
             return FinitelyPresentedModule(morphism)
 
         def _Hom_(self, codomain, category=None):
-            from dzack_research.preamble.categories.modules.pure.modules import Modules
 
             if category is not None and not category.is_subcategory(Modules(self.base_ring())):
                 raise TypeError("this is not a module homset category")
             if not hasattr(codomain, "module_generating_set"):
                 raise TypeError("the parent-level module Hom constructor requires a framed target")
-            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-                module_homset,
-            )
 
             return module_homset(self, codomain)
 
         def subobject_on(self, module_generating_set):
             r"""Return the submodule spanned by the specified elements."""
-            from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-                module_subobject_on,
-            )
 
             return module_subobject_on(self, module_generating_set)
 
@@ -345,7 +352,6 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
 
         @cached_method
         def module_generators(self):
-            from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 
             return indexed_family(
                 self.module_generating_set(),
@@ -354,9 +360,6 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
             )
 
         def framing_morphism(self):
-            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-                framing_morphism,
-            )
 
             return framing_morphism(self, self, self.module_generator)
 
@@ -374,7 +377,6 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
             number.  The cardinality is the generating set's own, which is
             where the doctrine puts it.
             """
-            from dzack_research.preamble.categories.sets.cardinals import cardinal
 
             return cardinal(self.module_generating_set().cardinality())
 
@@ -386,7 +388,6 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
 
         def cardinality(self):
             r"""Return ``|R^(S)|``: ``|R|^|S|`` for finite ``S``, else ``max(|R|, |S|)`` by finite support."""
-            from dzack_research.preamble.categories.sets.cardinals import Cardinalities, cardinal
 
             scalars = cardinal(self.base_ring().cardinality())
             labels = cardinal(self.module_generating_set().cardinality())
@@ -398,9 +399,6 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
 
         def base_change(self, ring_map):
             r"""Return ``S tensor_R M`` along the specified ring map ``R -> S``."""
-            from dzack_research.preamble.categories.modules.base_change import (
-                base_change_codomain,
-            )
 
             target_ring = base_change_codomain(self, ring_map)
             return FreshFreeModuleOn(target_ring, self.module_generating_set())
@@ -421,7 +419,6 @@ def _element_from_row(module, row):
 
 def _known_finite_generator_family(module_generating_set):
     r"""Normalize one explicitly finite spanning family without guessing finiteness."""
-    from dzack_research.preamble.categories.sets.cardinals import cardinal
 
     if isinstance(module_generating_set, (tuple, list, range)):
         return finite_ordered_set(module_generating_set)
@@ -439,13 +436,6 @@ def _known_finite_generator_family(module_generating_set):
 
 def _span_basis_elements(module, module_generating_set):
     r"""Return the canonical span basis using only the finite union of supports."""
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-        module_coefficients,
-    )
-    from dzack_research.preamble.categories.rings.ring_foundation import (
-        PrincipalIdealDomains,
-        _engine_element,
-    )
 
     ring = module.base_ring()
     if ring not in PrincipalIdealDomains():
@@ -549,9 +539,6 @@ def _finalize_module_subobject(module, basis, source, *, inclusion=None):
     modules and lattices choose sources carrying the pulled-back structure in
     their own defining modules.
     """
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-        module_embedding,
-    )
 
     ring = module.base_ring()
     labels = source.module_generating_set()
@@ -568,10 +555,6 @@ def _finalize_module_subobject(module, basis, source, *, inclusion=None):
     # finite-support membership problem.  Install that exact lift rather than
     # routing through the generic finite-ambient coordinate solver.
 
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-        _solve_left_integrally,
-        module_coefficients,
-    )
 
     ambient_labels = module.module_generating_set()
     support_by_rank = {}
@@ -641,7 +624,6 @@ def _finalize_module_subobject(module, basis, source, *, inclusion=None):
 
     inclusion._preamble_lift = lift_from_finite_support
     source._preamble_inclusion = inclusion
-    from dzack_research.preamble.categories.modules.pure.modules import ModuleSubobjects
 
     source = refine(source, ModuleSubobjects(ring))
     return source
@@ -663,9 +645,6 @@ class FreeModuleGeneratorSet(Parent):
 
     def _generator_label(self, element):
         r"""Return the label of ``element`` when it is a canonical generator, else ``None``."""
-        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-            module_coefficients,
-        )
 
         if element not in self._module:
             return None
@@ -707,7 +686,6 @@ def _states_a_rank(labels) -> bool:
     the rank \(n\), from which the construction builds the index set
     \(\Delta[n-1]\).
     """
-    from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
     return isinstance(labels, (int, Integer)) or labels in _own_ring(SageZZ)
 
@@ -737,7 +715,6 @@ def _owned_free_module_on(ring, module_generating_set):
 
 def FreeModule(base_ring, rank_or_index_set):
     r"""Return the free module on a finite rank or an arbitrary index set."""
-    from dzack_research.preamble.categories.rings.ring_foundation import OwnedRings
 
     ring = base_ring
     if ring not in OwnedRings():
@@ -753,9 +730,6 @@ def MatrixSpace(base_ring, nrows, ncols=None):
     r"""Return ``Hom_R(F_R([n]), F_R([m]))`` for ``m=nrows``, ``n=ncols``."""
     ring = _owned_ring(base_ring)
     from sage.rings.integer_ring import ZZ as SageZZ
-    from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
-    from dzack_research.preamble.categories.modules.pure.modules import _refine_matrix_hom
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 
     integers = _own_ring(SageZZ)
 
@@ -791,7 +765,6 @@ def matrix_change_ring(matrix, ring):
 
 def FreeModuleOn(base_ring, module_generating_set):
     r"""Return \(F_R(S)\), retaining the actual labels in ``S``."""
-    from dzack_research.preamble.categories.rings.ring_foundation import OwnedRings
 
     if base_ring not in OwnedRings():
         raise TypeError("FreeModuleOn expects a preamble ring")
@@ -808,7 +781,6 @@ def FreshFreeModuleOn(base_ring, module_generating_set):
     different structured objects, so the owned parent is not interned; the
     engine underneath may be shared, since it holds no owned data.
     """
-    from dzack_research.preamble.categories.rings.ring_foundation import OwnedRings
 
     ring = base_ring
     if ring not in OwnedRings():

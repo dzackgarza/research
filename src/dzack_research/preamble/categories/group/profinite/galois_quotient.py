@@ -17,6 +17,7 @@ from dzack_research.preamble.categories.group.profinite.field_morphisms import (
     field_generators,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring, _own_ring
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
 
 def _relative_degree(base_field, extension_field):
@@ -321,7 +322,6 @@ class FiniteGaloisQuotient(Parent):
         raise ArithmeticError("the represented finite automorphism has no inverse")
 
     def group_generators(self):
-        from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
         nonidentity = tuple(element for element in self if element != self.one())
         if self._is_relative_finite_field():
@@ -479,7 +479,6 @@ def extensions_along(automorphism, embedding, candidates):
             for generator in generators
         )
     ]
-    from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
     return finite_ordered_set(matches)
 
 

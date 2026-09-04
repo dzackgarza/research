@@ -17,6 +17,14 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
     _own_ring,
 )
+from dzack_research.preamble.categories.algebras.algebras import (
+    Algebras,
+    algebra_from_multiplication,
+    algebra_homset,
+)
+from dzack_research.preamble.categories.modules.graded_modules import GradedModules
+from dzack_research.preamble.categories.sets.cardinals import cardinal
+from dzack_research.preamble.refine import refine
 
 
 def _homogeneous_degree(element):
@@ -35,7 +43,6 @@ class GradedAlgebraMorphism(Morphism):
 
     def __init__(self, parent, images, *, check_degrees=True) -> None:
         Morphism.__init__(self, parent)
-        from dzack_research.preamble.categories.algebras.algebras import algebra_homset
 
         self._underlying = algebra_homset(self.domain(), self.codomain())(images)
         if check_degrees:
@@ -53,7 +60,6 @@ class GradedAlgebraMorphism(Morphism):
             raise NotImplementedError(
                 "a represented graded morphism currently requires a selected algebra framing"
             ) from error
-        from dzack_research.preamble.categories.sets.cardinals import cardinal
         try:
             finite = cardinal(labels.cardinality()).is_finite()
         except (AttributeError, NotImplementedError, TypeError, ValueError):
@@ -184,10 +190,6 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
         return (super()._make_named_class_key(name), self.grading_monoid())
 
     def super_categories(self):
-        from dzack_research.preamble.categories.algebras.algebras import Algebras
-        from dzack_research.preamble.categories.modules.graded_modules import (
-            GradedModules,
-        )
 
         graded_modules = GradedModules(self.base_ring(), self.grading_monoid())
         algebra = Algebras(self.base_ring())
@@ -271,13 +273,6 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
     _HomCategory = GradedAlgebraHomCategoryConstruction
 
     def _call_(self, multiplication):
-        from dzack_research.preamble.categories.algebras.algebras import (
-            algebra_from_multiplication,
-        )
-        from dzack_research.preamble.categories.modules.graded_modules import (
-            GradedModules,
-        )
-        from dzack_research.preamble.refine import refine
 
         algebra = algebra_from_multiplication(
             multiplication, self.base_ring(), unital=True

@@ -12,6 +12,44 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
 )
 from dzack_research.preamble.refine import refine
+from dzack_research.preamble.categories.forms.forms import (
+    BilinearForms,
+    QuadraticForms,
+)
+from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModule
+from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import (
+    TorsionBilinearFormModules,
+    TorsionQuadraticFormModules,
+    _forms_are_isomorphic,
+    _p_adic_jordan_decomposition,
+    _p_adic_jordan_form,
+    _torsion_form_automorphism_group,
+    _twisted_torsion_form,
+    p_adic_jordan_module_generators,
+    torsion_form_isometry,
+)
+from dzack_research.preamble.categories.modules.framed.fraction_field_quotients import FractionFieldQuotient
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import BasedFreeModule
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    module_coefficients,
+    module_embedding,
+    module_homset,
+)
+from dzack_research.preamble.categories.modules.pure.modules import ModuleSubobjects
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    Zmod,
+    _engine_element,
+)
+from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+    finite_ordered_filter,
+    finite_ordered_image,
+    finite_ordered_set,
+)
+from dzack_research.preamble.categories.sets.indexed_families import (
+    finite_indexed_family,
+    indexed_family,
+)
+from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
 class DiscriminantModules(OwnedCategoryOverBaseRing):
@@ -35,9 +73,6 @@ class DiscriminantModules(OwnedCategoryOverBaseRing):
         @cached_method
         def projection(self):
             r"""Return the quotient map ``L^# -> A_L`` on the selected dual basis."""
-            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-                module_homset,
-            )
 
             dual_lattice = self.dual_lattice()
             return module_homset(dual_lattice, self)({label: self.module_generator(label) for label in self.module_generating_set()})
@@ -59,12 +94,6 @@ class DiscriminantModules(OwnedCategoryOverBaseRing):
 
         def primary_components(self):
             r"""Return the family \(p\mapsto A_p\) over the primes dividing \(|A|\)."""
-            from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-                finite_ordered_set,
-            )
-            from dzack_research.preamble.categories.sets.indexed_families import (
-                indexed_family,
-            )
 
             components = {}
             smith_generators = tuple(self.smith_form_module_generators())
@@ -101,9 +130,6 @@ class DiscriminantModules(OwnedCategoryOverBaseRing):
             Elements are engine elements, so the lift is a parent operation:
             a set-theoretic section of :meth:`projection` on the chosen framing.
             """
-            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-                module_coefficients,
-            )
 
             return self.dual_lattice().linear_combination(
                 module_coefficients(self(element), self)
@@ -118,9 +144,6 @@ class DiscriminantBilinearModules(OwnedCategoryOverBaseRing):
         return "discriminant bilinear modules"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import (
-            TorsionBilinearFormModules,
-        )
 
         return [
             DiscriminantModules(self.base_ring()),
@@ -136,7 +159,6 @@ class DiscriminantBilinearModules(OwnedCategoryOverBaseRing):
 
         @cached_method
         def form(self):
-            from dzack_research.preamble.categories.forms.forms import BilinearForms
 
             generators = tuple(self.module_generators())
             values = tuple(
@@ -150,7 +172,6 @@ class DiscriminantBilinearModules(OwnedCategoryOverBaseRing):
 
         @cached_method
         def forget_form_morphism(self):
-            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 
             return module_homset(self, self).identity()
 
@@ -168,7 +189,6 @@ class DiscriminantBilinearModules(OwnedCategoryOverBaseRing):
             r"""Return ``H^perp`` for a subgroup ``H <= A``."""
             if subgroup.ambient_discriminant_module() is not self:
                 raise ValueError("orthogonality requires a subgroup of this discriminant module")
-            from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_filter
 
             generators = subgroup.embedded_module_generators()
             zero = self.bilinear_value_module().zero()
@@ -206,9 +226,6 @@ class DiscriminantBilinearModules(OwnedCategoryOverBaseRing):
             quotient = _subquotient_module(subgroup, perpendicular)
             generators = tuple(perpendicular.module_generators())
             gram = tuple(tuple(perpendicular.b(left, right) for right in generators) for left in generators)
-            from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import (
-                TorsionBilinearFormModules,
-            )
 
             return TorsionBilinearFormModules(self.base_ring()).from_module(quotient, gram, self.bilinear_value_module())
 
@@ -233,11 +250,7 @@ class DiscriminantBilinearModules(OwnedCategoryOverBaseRing):
             than merely a homomorphism into the character group.
             """
             from sage.categories.morphism import SetMorphism
-            from dzack_research.preamble.categories.sets.set_categories import Sets
 
-            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-                module_homset,
-            )
 
             characters = module_homset(self, self.bilinear_value_module())
 
@@ -260,10 +273,6 @@ class DiscriminantBilinearModules(OwnedCategoryOverBaseRing):
             ``L^# / L`` on the selected dual-basis classes.  The codomain is a
             different formed module on the non-unit Smith generators.
             """
-            from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import (
-                TorsionBilinearFormModules,
-                torsion_form_isometry,
-            )
 
             generators = tuple(self.module_generators())
             gram = tuple(
@@ -291,43 +300,25 @@ class DiscriminantBilinearModules(OwnedCategoryOverBaseRing):
             )
 
         def p_adic_jordan_decomposition(self):
-            from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import (
-                _p_adic_jordan_decomposition,
-            )
 
             return _p_adic_jordan_decomposition(self, quadratic=False)
 
         def p_adic_jordan_module_generators(self):
-            from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import (
-                p_adic_jordan_module_generators,
-            )
 
             return p_adic_jordan_module_generators(self, quadratic=False)
 
         def p_adic_jordan_form(self):
-            from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import (
-                _p_adic_jordan_form,
-            )
 
             return _p_adic_jordan_form(self, quadratic=False)
 
         normal_form = p_adic_jordan_form
 
         def twist(self, scalar):
-            from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import (
-                _twisted_torsion_form,
-            )
 
             return _twisted_torsion_form(self, scalar, quadratic=False)
 
         def is_isomorphic(self, other) -> bool:
-            from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import (
-                _forms_are_isomorphic,
-            )
 
-            from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import (
-                TorsionBilinearFormModules,
-            )
 
             if other not in TorsionBilinearFormModules(self.base_ring()):
                 return False
@@ -336,9 +327,6 @@ class DiscriminantBilinearModules(OwnedCategoryOverBaseRing):
         is_isometric_to = is_isomorphic
 
         def is_anti_isometric(self, other) -> bool:
-            from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import (
-                TorsionBilinearFormModules,
-            )
 
             if other not in TorsionBilinearFormModules(self.base_ring()):
                 return False
@@ -347,9 +335,6 @@ class DiscriminantBilinearModules(OwnedCategoryOverBaseRing):
         @cached_method
         def automorphism_group(self):
             r"""Return ``O(A,b)`` as live form automorphisms."""
-            from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import (
-                _torsion_form_automorphism_group,
-            )
 
             return _torsion_form_automorphism_group(self, quadratic=False)
 
@@ -368,9 +353,6 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
         return "discriminant quadratic modules"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import (
-            TorsionQuadraticFormModules,
-        )
 
         return [
             DiscriminantBilinearModules(self.base_ring()),
@@ -386,7 +368,6 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
 
         @cached_method
         def form(self):
-            from dzack_research.preamble.categories.forms.forms import QuadraticForms
 
             generators = tuple(self.module_generators())
             quadratic_values = self.quadratic_value_module()
@@ -414,10 +395,6 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
         @cached_method
         def isotropic_elements(self):
             r"""Return the classes on which the quadratic form vanishes."""
-            from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-                finite_ordered_filter,
-                finite_ordered_set,
-            )
 
             zero = self.quadratic_value_module().zero()
             return finite_ordered_filter(
@@ -431,7 +408,6 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
         @cached_method
         def isotropic_subgroups(self):
             r"""Return all subgroups on which ``q`` vanishes identically."""
-            from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_filter
 
             zero = self.quadratic_value_module().zero()
             return finite_ordered_filter(
@@ -445,7 +421,6 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
         @cached_method
         def lagrangian_subgroups(self):
             r"""Return isotropic ``H`` with ``|H|^2=|A|``."""
-            from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_filter
 
             order = int(self.cardinality())
             return finite_ordered_filter(
@@ -470,9 +445,6 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
             distinction is what allows ``O(A,q)`` to be strictly smaller than
             ``O(A,b)``.
             """
-            from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import (
-                TorsionBilinearFormModules,
-            )
 
             generators = tuple(self.module_generators())
             gram = tuple(
@@ -506,9 +478,6 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
                         bilinear_value = perpendicular.b(left, right)
                         row.append(quadratic_values(self.bilinear_value_module().lift(bilinear_value)))
                 gram.append(tuple(row))
-            from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import (
-                TorsionQuadraticFormModules,
-            )
 
             return TorsionQuadraticFormModules(self.base_ring()).from_module(quotient, tuple(gram), quadratic_values)
 
@@ -533,10 +502,6 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
             a distinct finite quadratic module whose framing consists only of
             the non-unit Smith factors.
             """
-            from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import (
-                TorsionQuadraticFormModules,
-                torsion_form_isometry,
-            )
 
             generators = tuple(self.module_generators())
             quadratic_values = self.quadratic_value_module()
@@ -576,43 +541,25 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
             )
 
         def p_adic_jordan_decomposition(self):
-            from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import (
-                _p_adic_jordan_decomposition,
-            )
 
             return _p_adic_jordan_decomposition(self, quadratic=True)
 
         def p_adic_jordan_module_generators(self):
-            from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import (
-                p_adic_jordan_module_generators,
-            )
 
             return p_adic_jordan_module_generators(self, quadratic=True)
 
         def p_adic_jordan_form(self):
-            from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import (
-                _p_adic_jordan_form,
-            )
 
             return _p_adic_jordan_form(self, quadratic=True)
 
         normal_form = p_adic_jordan_form
 
         def twist(self, scalar):
-            from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import (
-                _twisted_torsion_form,
-            )
 
             return _twisted_torsion_form(self, scalar, quadratic=True)
 
         def is_isomorphic(self, other) -> bool:
-            from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import (
-                _forms_are_isomorphic,
-            )
 
-            from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import (
-                TorsionQuadraticFormModules,
-            )
 
             if other not in TorsionQuadraticFormModules(self.base_ring()):
                 return False
@@ -621,9 +568,6 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
         is_isometric_to = is_isomorphic
 
         def is_anti_isometric(self, other) -> bool:
-            from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import (
-                TorsionQuadraticFormModules,
-            )
 
             if other not in TorsionQuadraticFormModules(self.base_ring()):
                 return False
@@ -632,9 +576,6 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
         @cached_method
         def automorphism_group(self):
             r"""Return ``O(A,q)`` as live quadratic-form automorphisms."""
-            from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import (
-                _torsion_form_automorphism_group,
-            )
 
             return _torsion_form_automorphism_group(self, quadratic=True)
 
@@ -659,7 +600,6 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
             phase comparison.
             """
             from sage.rings.qqbar import QQbar
-            from dzack_research.preamble.categories.rings.ring_foundation import Zmod, _engine_element
 
             total = QQbar.zero()
             for element in self.elements():
@@ -695,7 +635,6 @@ class DiscriminantSubmodules(OwnedCategoryOverBaseRing):
 
         @cached_method
         def embedded_elements(self):
-            from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_filter
 
             ambient = self.ambient_discriminant_module()
             engine_subgroup = self._preamble_discriminant_engine_subgroup
@@ -733,9 +672,6 @@ def _subquotient_module(subgroup, larger):
     r"""Return the literal cokernel of ``subgroup -> larger`` inside one ambient module."""
     if subgroup.ambient_discriminant_module() is not larger.ambient_discriminant_module():
         raise ValueError("a discriminant subquotient requires one ambient module")
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-        module_homset,
-    )
 
     larger_inclusion = larger.inclusion()
     subgroup_inclusion = subgroup.inclusion()
@@ -751,11 +687,6 @@ def _subquotient_module(subgroup, larger):
 
 
 def _discriminant_subgroup(ambient, generators):
-    from dzack_research.preamble.categories.modules.pure.torsion_modules import (
-        FinitelyPresentedTorsionModules,
-    )
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_embedding
-    from dzack_research.preamble.categories.modules.pure.modules import ModuleSubobjects
 
     # The subgroup is decomposed into cyclic summands on the Smith engine;
     # every generator is returned as an element of the owned ambient module.
@@ -778,10 +709,6 @@ def _discriminant_subgroup(ambient, generators):
         images = {label: image for label, image in zip(source.module_generating_set(), ambient_generators, strict=True)}
     else:
         # The zero finite module is presented by the identity on one generator.
-        from dzack_research.preamble.categories.modules.framed.framed_free_modules import BasedFreeModule
-        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModule
-        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
-        from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
         free = BasedFreeModule(ambient.base_ring(), finite_ordered_set((0,)))
         source = FinitelyPresentedModule(module_homset(free, free).identity())
@@ -797,9 +724,6 @@ def _discriminant_subgroup(ambient, generators):
 
 
 def _all_discriminant_subgroups(ambient):
-    from dzack_research.preamble.categories.sets.set_categories import Sets
-    from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
-    from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_image
 
     elements = ambient.elements()
     zero_key = frozenset((_element_key(ambient, ambient.zero()),))
@@ -852,9 +776,6 @@ def DiscriminantModule(lattice):
     # K/R engine currently specializes to QQ/nZZ.  Do not advertise a form over
     # another PID until its fraction-field quotient engine exists.
     if _engine_ring(lattice.base_ring()) is SageZZ:
-        from dzack_research.preamble.categories.modules.framed.fraction_field_quotients import (
-            FractionFieldQuotient,
-        )
 
         module._preamble_bilinear_value_module = FractionFieldQuotient(lattice.base_ring(), 1)
         refine(module, DiscriminantBilinearModules(lattice.base_ring()))

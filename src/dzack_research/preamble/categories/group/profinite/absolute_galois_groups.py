@@ -7,6 +7,7 @@ from dzack_research.preamble.categories.group.groups import OwnedAbelianGroups
 from dzack_research.preamble.categories.group.profinite.profinite_groups import (
     ProfiniteGroups,
 )
+from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
 
 
 class AbsoluteGaloisGroups(Category_singleton):
@@ -96,7 +97,6 @@ class OpenAbsoluteGaloisSubgroups(Category_singleton):
 
 def absolute_galois_group_category(field):
     from sage.categories.finite_fields import FiniteFields
-    from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
 
     return (
         AbsoluteGaloisGroupsOfFiniteFields()

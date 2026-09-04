@@ -25,6 +25,11 @@ from dzack_research.preamble.categories.abstract_categories.constructions import
 from dzack_research.preamble.categories.modules.pure.modules import BilinearMap
 from dzack_research.preamble.categories.modules.tensor_products import tensor_product_morphism
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
+from dzack_research.preamble.categories.forms.forms import (
+    BilinearForms,
+    QuadraticMap,
+)
+from dzack_research.preamble.categories.modules.pure.modules import Modules
 
 
 class _UnderlyingFormModuleFunctor(Functor):
@@ -48,7 +53,6 @@ class ForgetTheFormFunctor(_UnderlyingFormModuleFunctor):
 
     def __init__(self, base_ring, formed_category) -> None:
         ring = _owned_ring(base_ring)
-        from dzack_research.preamble.categories.modules.pure.modules import Modules
 
         super().__init__(formed_category, Modules(ring))
 
@@ -82,7 +86,6 @@ class FreeBilinearFormFunctor(Functor):
         )
 
     def _apply_object(self, module):
-        from dzack_research.preamble.categories.forms.forms import BilinearForms
 
         classifier = TensorSquare(module)
         formed = FormModule(
@@ -121,7 +124,6 @@ class FreeQuadraticFormFunctor(Functor):
         )
 
     def _apply_object(self, module):
-        from dzack_research.preamble.categories.forms.forms import QuadraticMap
 
         classifier = DividedSquare(module)
         formed = FormModule(

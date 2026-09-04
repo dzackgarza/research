@@ -3,6 +3,8 @@ r"""Graded modules and differential graded modules over a represented DGA."""
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedParameterizedCategory
 
 from dzack_research.preamble.refine import refine
+from dzack_research.preamble.categories.modules.cochain_complexes import CochainComplexes
+from dzack_research.preamble.categories.modules.graded_modules import GradedModules
 
 
 class GradedAlgebraModules(OwnedParameterizedCategory):
@@ -16,7 +18,6 @@ class GradedAlgebraModules(OwnedParameterizedCategory):
         return self.base()
 
     def super_categories(self):
-        from dzack_research.preamble.categories.modules.graded_modules import GradedModules
 
         algebra = self.graded_algebra()
         return [GradedModules(algebra.base_ring(), algebra.grading_monoid())]
@@ -43,7 +44,6 @@ class DifferentialGradedModules(OwnedParameterizedCategory):
         return self.base()
 
     def super_categories(self):
-        from dzack_research.preamble.categories.modules.cochain_complexes import CochainComplexes
 
         dga = self.dga()
         return [

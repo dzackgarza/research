@@ -38,6 +38,7 @@ from dzack_research.preamble.categories.modules.tensor_products import (
     _flatten_tensor_label,
     _nested_tensor_label,
 )
+from dzack_research.preamble.categories.algebras.sparse_free_algebras import SparseFreeAlgebra
 
 
 def _presentation_element(algebra, element):
@@ -98,9 +99,6 @@ def _free_algebra_underlying_module(algebra, source, flavor):
         coefficients_by_degree = {}
         source_labels = source.module_generating_set()
 
-        from dzack_research.preamble.categories.algebras.sparse_free_algebras import (
-            SparseFreeAlgebra,
-        )
 
         if isinstance(algebra, SparseFreeAlgebra):
             sparse = algebra(element)
@@ -265,9 +263,6 @@ class AlgebraUnderlyingModuleFunctor(Functor):
         return self._base_ring
 
     def _apply_object(self, algebra):
-        from dzack_research.preamble.categories.algebras.sparse_free_algebras import (
-            SparseFreeAlgebra,
-        )
 
         if isinstance(algebra, SparseFreeAlgebra):
             return algebra

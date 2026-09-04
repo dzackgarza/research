@@ -14,6 +14,7 @@ from dzack_research.preamble.categories.sets.set_categories import (
     TotallyOrderedSets,
     finite_ordinal_set,
 )
+from dzack_research.preamble.categories.sets.cardinals import cardinal
 
 
 class OrderedEnumeratedSet(Parent):
@@ -124,7 +125,6 @@ class FiniteOrderedSet(OrderedEnumeratedSet):
 
     @classmethod
     def from_indexed(cls, index_set, unrank, *, rank=None, contains=None, name=None):
-        from dzack_research.preamble.categories.sets.cardinals import cardinal
 
         size = cardinal(index_set.cardinality())
         if not size.is_finite():
@@ -186,8 +186,6 @@ class FiniteOrderedSet(OrderedEnumeratedSet):
 
 def _finite_ordered_presentation(elements):
     r"""Return lazy rank/unrank data for one known-finite ordered source."""
-    from dzack_research.preamble.categories.sets.cardinals import cardinal
-    from dzack_research.preamble.categories.sets.set_categories import Sets
 
     if isinstance(elements, FiniteOrderedSet):
         return (
@@ -260,7 +258,6 @@ class FiniteFilteredOrderedSet(OrderedEnumeratedSet):
     r"""A finite ordered subset selected lazily by a predicate."""
 
     def __init__(self, source, predicate, *, name=None) -> None:
-        from dzack_research.preamble.categories.sets.cardinals import cardinal
 
         size = cardinal(source.cardinality())
         if not size.is_finite():

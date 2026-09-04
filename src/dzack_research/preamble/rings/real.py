@@ -37,12 +37,20 @@ from sage.symbolic.expression import Expression
 from sage.symbolic.ring import SR
 
 from dzack_research.preamble.logic import Predicate
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    OwnedRings,
+    _engine_element,
+    _engine_ring,
+    _own_ring,
+)
+from dzack_research.preamble.categories.sets.cardinals import continuum
+from dzack_research.preamble.categories.sets.set_categories import UncountableSets
+from dzack_research.preamble.logic import ask
 
 
 def RealApproximation(value):
     r"""Return the owned finite-precision real represented by ``value``."""
     backend = _create_real_approximation(value)
-    from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
     parent = _own_ring(backend.parent())
     return parent._from_engine_element(backend)
@@ -87,10 +95,6 @@ def _closed_exact_real_expression(value) -> Expression:
         return value.expression()
 
     try:
-        from dzack_research.preamble.categories.rings.ring_foundation import (
-            OwnedRings,
-            _engine_element,
-        )
 
         value_parent = parent(value)
         if value_parent in OwnedRings():
@@ -319,7 +323,6 @@ class ExactRealNumber(FieldElement):
 
     def _div_(self, other):
         nonzero = self.parent().relation(other, self.parent().zero(), operator.ne)
-        from dzack_research.preamble.logic import ask
 
         decision = ask(nonzero) if isinstance(nonzero, Predicate) else nonzero
         if decision is False:
@@ -440,7 +443,6 @@ class ExactRealField(UniqueRepresentation, Field):
 
     def __init__(self) -> None:
         from sage.categories.category import Category
-        from dzack_research.preamble.categories.sets.set_categories import UncountableSets
 
         Field.__init__(
             self,
@@ -472,7 +474,6 @@ class ExactRealField(UniqueRepresentation, Field):
         return True
 
     def _coerce_map_from_(self, source):
-        from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
 
         computation_source = _engine_ring(source)
         if computation_source in (ZZ, QQ, AA):
@@ -514,7 +515,6 @@ class ExactRealField(UniqueRepresentation, Field):
         return False
 
     def cardinality(self):
-        from dzack_research.preamble.categories.sets.cardinals import continuum
 
         return continuum
 

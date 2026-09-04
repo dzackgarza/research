@@ -15,6 +15,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.refine import refine
+from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
 
 class DivisorGroups(Category):
@@ -25,14 +26,12 @@ class DivisorGroups(Category):
         return "divisor groups"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
         from sage.rings.integer_ring import ZZ as SageZZ
 
         return [FramedFreeModules(_own_ring(SageZZ))]
 
 
 def DivisorGroup(module):
-    from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
     from sage.rings.integer_ring import ZZ as SageZZ
 
     if module not in FramedFreeModules(_own_ring(SageZZ)):

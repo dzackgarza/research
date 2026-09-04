@@ -4,6 +4,8 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     OwnedCommutativeRings,
 )
+from dzack_research.preamble.categories.algebras.algebras import AssociativeAlgebras
+from dzack_research.preamble.categories.modules.pure.modules import Modules
 
 
 class LieAlgebras(OwnedCategoryOverBaseRing):
@@ -16,7 +18,6 @@ class LieAlgebras(OwnedCategoryOverBaseRing):
     def super_categories(self):
         if self.base_ring() not in OwnedCommutativeRings():
             raise TypeError("a Lie algebra here is over a commutative base ring")
-        from dzack_research.preamble.categories.modules.pure.modules import Modules
 
         return [Modules(self.base_ring())]
 
@@ -33,9 +34,6 @@ class CommutatorLieAlgebras(LieAlgebras):
         return "commutator Lie algebras"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.algebras.algebras import (
-            AssociativeAlgebras,
-        )
 
         return [
             LieAlgebras(self.base_ring()),

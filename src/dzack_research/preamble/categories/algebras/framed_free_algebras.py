@@ -28,20 +28,32 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
 )
 from dzack_research.preamble.refine import refine
+from dzack_research.preamble.categories.algebras.finitely_presented_algebras import _tensor_algebra_from_module_presentation
+from dzack_research.preamble.categories.algebras.free_algebras import FinitelyPresentedAlgebra
+from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
+from dzack_research.preamble.categories.algebras.power_algebras import (
+    AlternatingAlgebraOf as _alternating_algebra_of,
+    AlternatingAlgebraOn as _alternating_algebra_on,
+    DividedPowerAlgebraOf as _divided_power_algebra_of,
+    DividedPowerAlgebraOn as _divided_power_algebra_on,
+)
+from dzack_research.preamble.categories.algebras.sparse_free_algebras import (
+    SparseSymmetricAlgebraOf,
+    SparseTensorAlgebraOf,
+)
+from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import _presentation_matrix
+from dzack_research.preamble.categories.modules.pure.modules import ModulesWithChosenFinitePresentation
+from dzack_research.preamble.categories.rings.commutative_algebra import refine_commutative_ring_constructions
+from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
 def AlternatingAlgebraOn(base_ring, algebra_generating_set):
-    from dzack_research.preamble.categories.algebras.power_algebras import (
-        AlternatingAlgebraOn as _alternating_algebra_on,
-    )
 
     return _alternating_algebra_on(base_ring, algebra_generating_set)
 
 
 def DividedPowerAlgebraOn(base_ring, algebra_generating_set):
-    from dzack_research.preamble.categories.algebras.power_algebras import (
-        DividedPowerAlgebraOn as _divided_power_algebra_on,
-    )
 
     return _divided_power_algebra_on(base_ring, algebra_generating_set)
 
@@ -61,24 +73,14 @@ def polynomial_ring(base_ring, names):
 def _has_represented_finite_framing(module) -> bool:
     r"""Return whether the selected framing is finite construction data."""
     ring = module.base_ring()
-    from dzack_research.preamble.categories.modules.pure.modules import ModulesWithChosenFinitePresentation
 
     return module in ModulesWithChosenFinitePresentation(ring)
 
 def TensorAlgebraOf(module):
     r"""Return \(T_R(M)\), including the linear relations of ``M``."""
     if not _has_represented_finite_framing(module):
-        from dzack_research.preamble.categories.algebras.sparse_free_algebras import (
-            SparseTensorAlgebraOf,
-        )
 
         return SparseTensorAlgebraOf(module)
-    from dzack_research.preamble.categories.algebras.finitely_presented_algebras import (
-        _tensor_algebra_from_module_presentation,
-    )
-    from dzack_research.preamble.categories.algebras.graded_algebras import (
-        GradedAlgebras,
-    )
 
     base = module.base_ring()
     presentation_ring = TensorAlgebraOn(base, module.module_generating_set())
@@ -99,20 +101,8 @@ def TensorAlgebraOf(module):
 def SymmetricAlgebraOf(module):
     r"""Return \(\operatorname{Sym}_R(M)\) with ``M``'s linear relations."""
     if not _has_represented_finite_framing(module):
-        from dzack_research.preamble.categories.algebras.sparse_free_algebras import (
-            SparseSymmetricAlgebraOf,
-        )
 
         return SparseSymmetricAlgebraOf(module)
-    from dzack_research.preamble.categories.algebras.free_algebras import (
-        FinitelyPresentedAlgebra,
-    )
-    from dzack_research.preamble.categories.algebras.graded_algebras import (
-        GradedAlgebras,
-    )
-    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-        _presentation_matrix,
-    )
 
     base = module.base_ring()
     labels = _finite_labels(module.module_generating_set())
@@ -136,19 +126,20 @@ def SymmetricAlgebraOf(module):
             1,
             names=_variable_names(labels),
         )
-        presentation_ring = refine_algebra(
-            presentation_engine,
-            base,
-            labels,
-            FreeAlgebras(base),
-            GradedFreeAlgebras(base),
-            SymmetricAlgebras(base),
+
+        presentation_ring = refine_commutative_ring_constructions(
+            refine_algebra(
+                presentation_engine,
+                base,
+                labels,
+                FreeAlgebras(base),
+                GradedFreeAlgebras(base),
+                SymmetricAlgebras(base),
+            )
         )
     else:
         presentation_ring = SymmetricAlgebraOn(base, labels)
 
-    from dzack_research.preamble.categories.sets.set_categories import Sets
-    from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 
     engine = _engine_ring(presentation_ring)
     relation_indices = Sets.Δ[relation_matrix.nrows() - 1]
@@ -181,16 +172,10 @@ def SymmetricAlgebraOf(module):
 
 
 def AlternatingAlgebraOf(module):
-    from dzack_research.preamble.categories.algebras.power_algebras import (
-        AlternatingAlgebraOf as _alternating_algebra_of,
-    )
 
     return _alternating_algebra_of(module)
 
 
 def DividedPowerAlgebraOf(module):
-    from dzack_research.preamble.categories.algebras.power_algebras import (
-        DividedPowerAlgebraOf as _divided_power_algebra_of,
-    )
 
     return _divided_power_algebra_of(module)

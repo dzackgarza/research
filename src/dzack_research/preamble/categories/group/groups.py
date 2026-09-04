@@ -70,6 +70,18 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
 )
 from dzack_research.preamble.categories.sets.cardinals import aleph, cardinal
 from dzack_research.preamble.refine import refine
+from dzack_research.preamble.categories.modules.pure.modules import (
+    MatrixSpaces,
+    _engine_matrix,
+)
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    OwnedRings,
+    _engine_element,
+    _engine_ring,
+    _own_ring,
+    _owned_ring,
+    ring_morphism,
+)
 
 
 # --------------------------------------------------------------------------
@@ -177,7 +189,6 @@ def _subgroup_from_gap(group, gap_subgroup):
 def _finite_order(group):
     r"""Return the finite group order as an owned integer."""
     from sage.rings.integer_ring import ZZ as SageZZ
-    from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
     integers = _own_ring(SageZZ)
     try:
@@ -287,7 +298,6 @@ def _free_generator(group, index):
         if normalized is not None and normalized in basis:
             index = normalized
         else:
-            from dzack_research.preamble.categories.sets.cardinals import cardinal
 
             try:
                 size = cardinal(basis.cardinality())
@@ -496,7 +506,6 @@ class _OwnedGroupElement(MultiplicativeGroupElement):
         return bool(self._backend() == self.parent()._engine.one())
 
     def order(self):
-        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
         from sage.rings.integer_ring import ZZ as SageZZ
 
         return _own_ring(SageZZ)._from_engine_element(SageZZ(self._backend().order()))
@@ -504,7 +513,6 @@ class _OwnedGroupElement(MultiplicativeGroupElement):
     multiplicative_order = order
 
     def sign(self):
-        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
         from sage.rings.integer_ring import ZZ as SageZZ
 
         return _own_ring(SageZZ)._from_engine_element(SageZZ(self._backend().sign()))
@@ -668,11 +676,6 @@ def _own_group(group):
 
 def _group_constructor_argument(value):
     r"""Cross preamble constructor data into a Sage group-constructor input."""
-    from dzack_research.preamble.categories.rings.ring_foundation import (
-        OwnedRings,
-        _engine_element,
-        _engine_ring,
-    )
 
     try:
         if value in OwnedRings():
@@ -693,10 +696,6 @@ def _group_constructor_argument(value):
         except (AttributeError, TypeError, ValueError):
             pass
         try:
-            from dzack_research.preamble.categories.modules.pure.modules import (
-                MatrixSpaces,
-                _engine_matrix,
-            )
 
             base_ring = parent.base_ring()
             if parent in MatrixSpaces(base_ring):
@@ -738,8 +737,6 @@ def _free_group_constructor(n=None, names="x", index_set=None, abelian=False, **
     if index_set is None:
         backend_index_set = None
     else:
-        from dzack_research.preamble.categories.sets.set_categories import Sets
-        from dzack_research.preamble.categories.sets.cardinals import cardinal
 
         if index_set not in Sets():
             raise TypeError("a free-group index set must be an owned set")
@@ -762,7 +759,6 @@ def _free_group_constructor(n=None, names="x", index_set=None, abelian=False, **
                 engine_label = lambda label: label
                 owned_label = lambda label: label
             else:
-                from dzack_research.preamble.categories.rings.ring_foundation import OwnedRings
 
                 if index_set in OwnedRings():
                     owned_label = index_set._from_engine_element
@@ -785,10 +781,6 @@ def _free_group_constructor(n=None, names="x", index_set=None, abelian=False, **
 
 
 def _group_over_ring(constructor, degree, ring, *args, **kwargs):
-    from dzack_research.preamble.categories.rings.ring_foundation import (
-        _engine_ring,
-        _owned_ring,
-    )
 
     owned_ring = _owned_ring(ring)
     return _own_group(
@@ -851,7 +843,6 @@ def _Euclidean(degree, ring):
 
 def _Heisenberg(degree=1, ring=0):
     from sage.groups.matrix_gps.catalog import Heisenberg
-    from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
 
     scalar_ring = ring if ring == 0 else _engine_ring(ring)
     return _own_group(
@@ -861,7 +852,6 @@ def _Heisenberg(degree=1, ring=0):
 
 def _SemimonomialTransformation(ring, degree):
     from sage.groups.misc_gps.misc_groups_catalog import SemimonomialTransformation
-    from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
 
     return _own_group(
         SemimonomialTransformation(
@@ -881,7 +871,6 @@ def _SmallGroup(order, index):
 
 def _Coxeter(data, implementation="reflection", base_ring=None, index_set=None):
     from sage.groups.misc_gps.misc_groups_catalog import CoxeterGroup
-    from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
 
     scalar_ring = None if base_ring is None else _engine_ring(base_ring)
     return _own_group(
@@ -925,7 +914,6 @@ def _canonical_subgroup_inclusion(subgroup):
 
 
 def _element_to_engine(group, element):
-    from dzack_research.preamble.categories.group.groups import _elements_have_gap_models
 
     match group:
         case GroupAutomorphismGroup():
@@ -939,10 +927,6 @@ def _element_to_engine(group, element):
 
 
 def _element_from_engine(group, _engine_element):
-    from dzack_research.preamble.categories.group.groups import (
-        _elements_have_gap_models,
-        _engine_group,
-    )
 
     match group:
         case GroupAutomorphismGroup():
@@ -1007,7 +991,6 @@ class IndexedFreeGroupHomomorphism(Morphism):
         )
 
     def __mul__(self, other):
-        from dzack_research.preamble.categories.group.groups import GroupsWithChosenFreeBasis
 
         if other.codomain() is not self.domain():
             return NotImplemented
@@ -1028,7 +1011,6 @@ class IndexedFreeGroupHomset(CategoricalHomset):
     Element = IndexedFreeGroupHomomorphism
 
     def __init__(self, hom_family, domain, codomain) -> None:
-        from dzack_research.preamble.categories.group.groups import OwnedGroups
 
         CategoricalHomset.__init__(
             self,
@@ -1053,7 +1035,6 @@ class GroupHomomorphism(GroupMorphism_libgap):
             return False
         if self is other:
             return True
-        from dzack_research.preamble.categories.group.groups import _gap_model
 
         source = _gap_model(self.domain())
         return all(
@@ -1093,12 +1074,10 @@ class GroupHomomorphism(GroupMorphism_libgap):
         )
 
     def kernel(self):
-        from dzack_research.preamble.categories.group.groups import _subgroup_from_gap
 
         return _subgroup_from_gap(self.domain(), self.gap().Kernel())
 
     def image(self):
-        from dzack_research.preamble.categories.group.groups import _subgroup_from_gap
 
         return _subgroup_from_gap(self.codomain(), self.gap().Image())
 
@@ -1119,7 +1098,6 @@ class GroupHomset(GroupHomset_libgap, CategoricalHomset):
         return typecall(cls, family, domain, codomain)
 
     def __init__(self, hom_family, domain, codomain):
-        from dzack_research.preamble.categories.group.groups import OwnedGroups
         self._family = hom_family
         self._end_family = None
         self._aut_family = None
@@ -1144,7 +1122,6 @@ class GroupHomset(GroupHomset_libgap, CategoricalHomset):
         raise TypeError(f"unable to convert {images!r} to an element of {self}")
 
     def _from_gap_homomorphism(self, gap_homomorphism, check=True):
-        from dzack_research.preamble.categories.group.groups import _gap_model
 
         if check:
             if gap_homomorphism.Source() != _gap_model(self.domain()):
@@ -1154,7 +1131,6 @@ class GroupHomset(GroupHomset_libgap, CategoricalHomset):
         return self.element_class(self, gap_homomorphism, check=False)
 
     def _from_engine_generator_images(self, generator_models, image_models, check=True):
-        from dzack_research.preamble.categories.group.groups import _gap_model
 
         source = _gap_model(self.domain())
         target = _gap_model(self.codomain())
@@ -1186,7 +1162,6 @@ class GroupHomset(GroupHomset_libgap, CategoricalHomset):
 
     def _from_gap_generator_images(self, images, check=True):
         r"""Images listed in the order of the GAP model's own generators."""
-        from dzack_research.preamble.categories.group.groups import _gap_model
 
         codomain = self.codomain()
         return self._from_engine_generator_images(
@@ -1210,20 +1185,17 @@ class GroupAutomorphism(GroupHomomorphism):
 
 class GroupAutomorphismGroups(OwnedCategory):
     def super_categories(self):
-        from dzack_research.preamble.categories.group.groups import OwnedGroups
         return [OwnedGroups()]
 
     class ParentMethods:
         @cached_method
         def _libgap_(self):
-            from dzack_research.preamble.categories.group.groups import _automorphism_gap_model
 
             if self._engine_subgroup is not None:
                 return self._engine_subgroup
             return _automorphism_gap_model(self.domain())
 
         def one(self):
-            from dzack_research.preamble.categories.group.groups import _gap_model
             return self(libgap.IdentityMapping(_gap_model(self.domain())), check=False)
 
         def supergroup(self):
@@ -1271,10 +1243,6 @@ class GroupAutomorphismGroup(GroupHomset):
         GroupHomset.__init__(self, hom_family, group, group)
         self._engine_subgroup = engine_subgroup
         self._supergroup = self
-        from dzack_research.preamble.categories.group.groups import (
-            OwnedFiniteGroups,
-            OwnedGroups,
-        )
 
         categories = [GroupAutomorphismGroups(), OwnedGroups()]
         if group.is_finite() is True:
@@ -1304,7 +1272,6 @@ class GroupAutomorphismGroup(GroupHomset):
         return supers
 
     def identity(self):
-        from dzack_research.preamble.categories.group.groups import _gap_model
 
         return self(libgap.IdentityMapping(_gap_model(self.domain())), check=False)
 
@@ -1714,7 +1681,6 @@ class AbelianGroupEndomorphismRings(OwnedCategory):
     """Endomorphism rings of abelian groups."""
 
     def super_categories(self):
-        from dzack_research.preamble.categories.rings.ring_foundation import OwnedRings
 
         return [OwnedRings()]
 
@@ -1798,10 +1764,6 @@ class OwnedAbelianGroups(OwnedCategory):
 
         @cached_method
         def scalar_action(self):
-            from dzack_research.preamble.categories.rings.ring_foundation import (
-                _own_ring,
-                ring_morphism,
-            )
 
             integers = _own_ring(ZZ)
             endomorphisms = self.endomorphism_ring()
@@ -1819,7 +1781,6 @@ class OwnedAbelianGroups(OwnedCategory):
             )
 
         def scalar_multiple(self, exponent, element):
-            from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
             return self.scalar_action()(_own_ring(ZZ)(exponent))(element)
 

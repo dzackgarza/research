@@ -4,6 +4,7 @@ from sage.categories.category import Category
 
 from dzack_research.preamble.categories.modules.pure.modules import FramedModules
 from dzack_research.preamble.refine import refine
+from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
 
 class ClassGroups(Category):
@@ -12,7 +13,6 @@ class ClassGroups(Category):
         return "class groups"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
         from sage.rings.integer_ring import ZZ as SageZZ
 
         return [FramedModules(_own_ring(SageZZ))]

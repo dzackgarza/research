@@ -16,6 +16,7 @@ from dzack_research.preamble.tensors.tensor import (
 )
 from dzack_research.preamble.tensors.tensor import _engine_component_matrix
 from dzack_research.preamble.categories.sets.set_categories import NN
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace
 
 
 def rational_positive_vector(gram):
@@ -367,7 +368,6 @@ def oscar_even_unimodular_primitive_embedding(gram, positive, negative):
             for row in target_rows
         ),
     )
-    from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace
 
     # OSCAR emits source basis images as rows.  The live Hom matrix acts on
     # coordinate columns, so transpose those rows into target-by-source shape.

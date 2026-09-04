@@ -16,6 +16,8 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     ring_morphism,
 )
 from dzack_research.preamble.refine import refine
+from dzack_research.preamble.categories.algebras.differential_graded_algebras import dga_homset
+from dzack_research.preamble.categories.algebras.graded_commutative_algebras import StrictlyGradedCommutativeAlgebras
 
 
 class CohomologyAlgebraHomCategoryConstruction(HomCategoryConstruction):
@@ -31,7 +33,6 @@ class CohomologyAlgebras(OwnedCategoryOverBaseRing):
         return "cohomology algebras"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.algebras.graded_commutative_algebras import StrictlyGradedCommutativeAlgebras
 
         return [StrictlyGradedCommutativeAlgebras(self.base_ring())]
 
@@ -171,7 +172,6 @@ class CohomologyAlgebraHomset(CategoricalHomset):
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError("identity belongs to a cohomology-algebra endomorphism homset")
-        from dzack_research.preamble.categories.algebras.differential_graded_algebras import dga_homset
 
         source_dga = self.domain().source_dga()
         return self(dga_homset(source_dga, source_dga).identity())

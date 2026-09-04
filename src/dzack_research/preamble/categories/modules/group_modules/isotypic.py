@@ -13,6 +13,12 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
 )
 from dzack_research.preamble.refine import refine
+from dzack_research.preamble.categories.abstract_categories.direct_sum_objects import DirectSumObjects
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
+from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
 @dataclass(frozen=True)
@@ -47,7 +53,6 @@ class IsotypicDecompositions(Category):
     r"""Submodules equipped with their selected isotypic summands."""
 
     def super_categories(self):
-        from dzack_research.preamble.categories.sets.set_categories import Sets
 
         return [Sets()]
 
@@ -144,8 +149,6 @@ def _central_projector(module, character: IsotypicCharacter):
     group = module.group()
     base_ring = module.base_ring()
     engine_ring = _engine_ring(base_ring)
-    from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
-    from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace
 
     computation_ring = _own_ring(SageQQ) if engine_ring is SageZZ else base_ring
     rank = int(module.rank())
@@ -181,9 +184,6 @@ def _central_projector(module, character: IsotypicCharacter):
 
 
 def _kernel_subobject_of_matrix(module, matrix):
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-        module_homset,
-    )
 
     labels = tuple(module.module_generating_set())
     images = {
@@ -221,7 +221,6 @@ def isotypic_component(module, character):
         for entry in relation.list():
             denominator = denominator.lcm(entry.denominator())
         cleared = denominator * relation
-        from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace
 
         relation = MatrixSpace(integers, int(module.rank())).from_rows(
             [
@@ -246,12 +245,8 @@ def isotypic_decomposition(module):
         summed = summed.sum(component)
     summed._preamble_isotypic_characters = characters
     summed._preamble_isotypic_components = components
-    from dzack_research.preamble.categories.abstract_categories.direct_sum_objects import (
-        DirectSumObjects,
-    )
 
     summed._preamble_direct_sum_summands = components
-    from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
     summed._preamble_direct_sum_index_set = finite_ordered_set(characters)
     return refine(

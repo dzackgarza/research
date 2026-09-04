@@ -15,6 +15,20 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
 )
 from dzack_research.preamble.refine import refine
+from dzack_research.preamble.categories.abstract_categories.arrow_categories import Isomorphism
+from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModule
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import BasedFreeModule
+from dzack_research.preamble.categories.modules.internal_hom import InternalHom
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    module_coefficients,
+    module_homset,
+)
+from dzack_research.preamble.categories.modules.pure.modules import (
+    FinitelyPresentedModules,
+    FramedModules,
+    Modules,
+    ModulesWithChosenFinitePresentation,
+)
 
 
 class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
@@ -25,10 +39,6 @@ class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
         return "Kähler differential modules"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.modules.pure.modules import FinitelyPresentedModules
-        from dzack_research.preamble.categories.modules.pure.modules import (
-            FramedModules,
-        )
 
         return [
             FinitelyPresentedModules(self.base_ring()),
@@ -52,9 +62,6 @@ class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
                 raise TypeError("the universal factorization starts from a derivation")
             if derivation.domain() is not self.source_algebra():
                 raise ValueError("the derivation has the wrong source algebra")
-            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-                module_homset,
-            )
 
             return module_homset(self, derivation.codomain())(
                 {
@@ -65,17 +72,6 @@ class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
 
         def derivation_classifier_isomorphism(self, target_module):
             r"""Return ``Hom_A(Omega^1_{A/R},M) ~= Der_R(A,M)`` as an ``A``-module isomorphism."""
-            from dzack_research.preamble.categories.abstract_categories.arrow_categories import Isomorphism
-            from dzack_research.preamble.categories.algebras.derivations import Derivations
-            from dzack_research.preamble.categories.modules.internal_hom import InternalHom
-            from dzack_research.preamble.categories.modules.pure.modules import Modules
-            from dzack_research.preamble.categories.modules.pure.modules import ModulesWithChosenFinitePresentation
-            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-                module_homset,
-            )
-            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-                module_coefficients,
-            )
 
             algebra = self.source_algebra()
             if target_module.base_ring() is not algebra:
@@ -149,9 +145,6 @@ def KahlerDifferentials(algebra):
         lambda label: ("d", label),
     )
 
-    from dzack_research.preamble.categories.modules.framed.framed_free_modules import BasedFreeModule
-    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModule
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 
     free_differentials = BasedFreeModule(algebra, differential_labels)
     if relations.cardinality():

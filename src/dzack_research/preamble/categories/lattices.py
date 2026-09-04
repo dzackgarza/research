@@ -28,11 +28,120 @@ from typing import overload
 
 from dzack_research.preamble.categories._lattice import diagonal_gram as diagonal_gram
 from dzack_research.preamble.categories._lattice import signature_pair, signature_pairs
+from dzack_research.preamble.categories._lattice import (
+    _BiproductGram,
+    _ColimitGram,
+    _DiagonalGram,
+    _IdentityGram,
+    _PairingGram,
+    _ScaledGram,
+    colimit_lattice,
+    discriminant_of_gram,
+    generator_pairings,
+    lattice,
+    lattice_latex,
+    orthogonal_sum,
+    scale_gram_tensor,
+    signature_pair_of_gram,
+)
+from dzack_research.preamble.categories.abstract_categories.direct_sum_objects import DirectSumDecomposition
+from dzack_research.preamble.categories.definite_lattices import (
+    babai,
+    bkz_reduction,
+    center_density,
+    closest_vector,
+    contact_polytope,
+    covering_radius,
+    gaussian_heuristic,
+    hadamard_ratio,
+    hermite_invariant,
+    hkz_reduction,
+    kissing_number,
+    lll_reduction,
+    minimum,
+    packing_density,
+    packing_radius,
+    root_sublattice,
+    roots,
+    roots_of_square,
+    shortest_vectors,
+    successive_minima,
+    theta_series,
+    vectors_of_square,
+    vectors_of_square_and_divisibility,
+    voronoi_cell,
+    voronoi_relevant_vectors,
+)
+from dzack_research.preamble.categories.forms.forms import BilinearForms
+from dzack_research.preamble.categories.group.predicate_subgroups import predicate_subgroup
+from dzack_research.preamble.categories.isotropic_orbits import (
+    IsotropicFlag,
+    primitive_isotropic_subobject,
+)
+from dzack_research.preamble.categories.lattice_engines import oscar_even_unimodular_primitive_embedding
+from dzack_research.preamble.categories.lattice_morphisms import (
+    LatticeEmbeddingHomset,
+    LatticeHomset,
+    LatticeIsometryHomset,
+    lattice_embedding_homset,
+    lattice_homset,
+    lattice_isometry_homset,
+)
+from dzack_research.preamble.categories.modules.framed.formed.discriminant_modules import (
+    DiscriminantBilinearModules,
+    DiscriminantModule,
+    DiscriminantQuadraticModules,
+)
+from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
+    BilinearForm,
+    SymmetricBilinearFormModules,
+    form_embedding,
+)
+from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import (
+    TorsionQuadraticFormModules,
+    _quadratic_gram_on,
+    _relations_among_generators,
+    torsion_form_isometry,
+)
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+    BasedFreeModule,
+    MatrixSpace,
+    _finalize_module_subobject,
+    _span_basis_elements,
+)
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    _solve_left_integrally,
+    module_coefficients,
+    module_embedding,
+    module_homset,
+)
+from dzack_research.preamble.categories.modules.pure.modules import (
+    FinitelyGeneratedFreeModules,
+    ModuleSubobjects,
+)
+from dzack_research.preamble.categories.modules.pure.torsion_modules import _torsion_module_presented_by_matrix
+from dzack_research.preamble.categories.rational_lattices import refine_rational_lattice
+from dzack_research.preamble.categories.sets.finite_families import finite_family
+from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+    finite_ordered_image,
+    finite_ordered_set,
+)
+from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+from dzack_research.preamble.categories.sets.set_categories import (
+    NN,
+    Sets,
+)
+from dzack_research.preamble.categories.vector_orbits import (
+    VectorPrimitiveExtension,
+    definite_complement_extensions,
+    gluing_route_discriminant_classes,
+    stable_complement_root_reflections,
+)
+from dzack_research.preamble.tensors.tensor import _engine_component_matrix
 
 
 def nikulin_invariants(rank, discriminant_length, delta):
     r"""Return \((r,a,\delta)\) as a point of \(\mathbb N^3\)."""
-    from dzack_research.preamble.categories.sets.set_categories import NN
 
     return (NN**3)((int(rank), int(discriminant_length), int(delta)))
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
@@ -61,7 +170,6 @@ class LatticeHomCategoryConstruction(HomCategoryConstruction):
     r"""The strict form-preserving Hom categories of lattices."""
 
     def fixed_category_class(self):
-        from dzack_research.preamble.categories.lattice_morphisms import LatticeHomset
 
         return LatticeHomset
 
@@ -70,9 +178,6 @@ class LatticeMonoCategoryConstruction(MonoCategoryConstruction):
     r"""The form-preserving monomorphisms of lattices."""
 
     def fixed_category_class(self):
-        from dzack_research.preamble.categories.lattice_morphisms import (
-            LatticeEmbeddingHomset,
-        )
 
         return LatticeEmbeddingHomset
 
@@ -81,9 +186,6 @@ class LatticeIsoCategoryConstruction(IsoCategoryConstruction):
     r"""The isometries of lattices."""
 
     def fixed_category_class(self):
-        from dzack_research.preamble.categories.lattice_morphisms import (
-            LatticeIsometryHomset,
-        )
 
         return LatticeIsometryHomset
 
@@ -114,7 +216,6 @@ def indecomposable_name(lattice):
     for scale in (content, -content):
         if scale in (0, 1, -1):
             continue
-        from dzack_research.preamble.tensors.tensor import tensor
 
         rank = gram.tensor_shape()[0]
         integers = gram.base_ring()
@@ -137,14 +238,6 @@ def indecomposable_name(lattice):
 @cached_function(key=lambda module, basis: (id(module), basis))
 def _lattice_subobject_spanning(module, basis):
     r"""Return the canonical lattice subobject on a finite span basis."""
-    from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-        _finalize_module_subobject,
-    )
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-        module_embedding,
-    )
-    from dzack_research.preamble.categories.sets.set_categories import Sets
-    from dzack_research.preamble.tensors.tensor import tensor
 
     ring = module.base_ring()
     rank = int(basis.cardinality())
@@ -187,7 +280,6 @@ class LocalGenusSymbol:
     """
 
     def __init__(self, prime, jordan_blocks) -> None:
-        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
         integers = _own_ring(SageZZ)
         self._prime = integers(prime)
@@ -209,7 +301,6 @@ class LocalGenusSymbol:
     @cached_method
     def _engine(self):
         from sage.quadratic_forms.genera.genus import Genus_Symbol_p_adic_ring
-        from dzack_research.preamble.categories.rings.ring_foundation import _engine_element
 
         integers = self.prime().parent()
         return Genus_Symbol_p_adic_ring(
@@ -269,9 +360,6 @@ class Genus:
         r"""Privately rebuild Sage's finite quadratic form from owned data."""
         from sage.modules.torsion_quadratic_module import TorsionQuadraticForm
         from sage.rings.rational_field import QQ as SageQQ
-        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
-        from dzack_research.preamble.tensors.tensor import tensor
-        from dzack_research.preamble.tensors.tensor import _engine_component_matrix
 
         form = self.discriminant_form()
         generators = tuple(form.module_generators())
@@ -298,10 +386,6 @@ class Genus:
         return engine_form
 
     def _engine_signature_pair(self):
-        from dzack_research.preamble.categories.rings.ring_foundation import (
-            _engine_element,
-            _own_ring,
-        )
 
         integers = _own_ring(SageZZ)
         pair = self.signature_pair()
@@ -332,7 +416,6 @@ class Genus:
         r"""Return the owned exact ``ZZ_p`` genus symbol at ``prime``."""
         integers = _own_ring(SageZZ)
         prime = integers(prime)
-        from dzack_research.preamble.categories.rings.ring_foundation import _engine_element
 
         backend = self._engine().local_symbol(_engine_element(integers, prime))
         return LocalGenusSymbol(prime, backend.symbol_tuple_list())
@@ -373,7 +456,6 @@ class Genus:
     def mass(self):
         r"""Return the Smith--Minkowski--Siegel mass for a definite genus."""
         from sage.rings.rational_field import QQ as SageQQ
-        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
         _signature = self.signature_pair()
 
@@ -564,7 +646,6 @@ class Lattices(OwnedCategoryOverBaseRing):
             sage: Lattices(ZZ)(diagonal_gram(ZZ^NN, {0: -1}))
             Integral lattice of rank +Infinity and signature (+Infinity, 1)
         """
-        from dzack_research.preamble.categories._lattice import lattice
 
         return lattice(
             data,
@@ -609,7 +690,6 @@ class Lattices(OwnedCategoryOverBaseRing):
             sage: C.colimit(lambda n: C(ZZ^n))
             Integral lattice of rank +Infinity and signature (+Infinity, 0)
         """
-        from dzack_research.preamble.categories._lattice import colimit_lattice
 
         return colimit_lattice(stage, category=self)
 
@@ -627,9 +707,6 @@ class Lattices(OwnedCategoryOverBaseRing):
             sage: Lattices(ZZ).super_categories()
             [Category of framed free modules]
         """
-        from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
-            SymmetricBilinearFormModules,
-        )
 
         return [
             FramedFreeModules(self.base_ring()),
@@ -681,9 +758,6 @@ class Lattices(OwnedCategoryOverBaseRing):
 
         def subobject_on(self, module_generating_set):
             r"""Return the span with the restricted lattice form."""
-            from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-                _span_basis_elements,
-            )
 
             basis = _span_basis_elements(self, module_generating_set)
             return _lattice_subobject_spanning(self, basis)
@@ -691,7 +765,6 @@ class Lattices(OwnedCategoryOverBaseRing):
         @cached_method
         def form(self):
             r"""Return the existing lattice pairing as a bilinear-form morphism."""
-            from dzack_research.preamble.categories.forms.forms import BilinearForms
 
             return BilinearForms(self, self.base_ring())(
                 lambda left, right: self.b(left, right)
@@ -706,7 +779,6 @@ class Lattices(OwnedCategoryOverBaseRing):
 
         @cached_method
         def forget_form_morphism(self):
-            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 
             return module_homset(self, self).identity()
 
@@ -717,15 +789,11 @@ class Lattices(OwnedCategoryOverBaseRing):
         def Mor(self, codomain, category=None):
             lattices = Lattices(self.base_ring())
             if category is None or category.is_subcategory(lattices):
-                from dzack_research.preamble.categories.lattice_morphisms import lattice_homset
                 return lattice_homset(self, codomain)
             from sage.categories.homset import Hom as SageHom
             return SageHom(self, codomain, category)
 
         def _Hom_(self, codomain, category=None):
-            from dzack_research.preamble.categories.lattice_morphisms import (
-                lattice_homset,
-            )
 
             lattices = Lattices(self.base_ring())
             if codomain in lattices and (
@@ -736,17 +804,11 @@ class Lattices(OwnedCategoryOverBaseRing):
 
         def Emb(self, codomain):
             r"""Return the set of form-preserving embeddings into ``codomain``."""
-            from dzack_research.preamble.categories.lattice_morphisms import (
-                lattice_embedding_homset,
-            )
 
             return lattice_embedding_homset(self, codomain)
 
         def Isom(self, codomain):
             r"""Return the set of isometries to ``codomain``."""
-            from dzack_research.preamble.categories.lattice_morphisms import (
-                lattice_isometry_homset,
-            )
 
             return lattice_isometry_homset(self, codomain)
 
@@ -806,9 +868,6 @@ class Lattices(OwnedCategoryOverBaseRing):
         @cached_method
         def special_orthogonal_group(self):
             r"""Return ``SO(L)=ker(det:O(L)->{+-1})`` as a predicate subgroup."""
-            from dzack_research.preamble.categories.group.predicate_subgroups import (
-                predicate_subgroup,
-            )
 
             return predicate_subgroup(
                 self.Aut(),
@@ -821,9 +880,6 @@ class Lattices(OwnedCategoryOverBaseRing):
 
         def spinor_kernel_subgroup(self):
             r"""Return the kernel of the real spinor-norm sign on ``O(L)``."""
-            from dzack_research.preamble.categories.group.predicate_subgroups import (
-                predicate_subgroup,
-            )
 
             return predicate_subgroup(
                 self.Aut(),
@@ -841,9 +897,6 @@ class Lattices(OwnedCategoryOverBaseRing):
                 raise ValueError(
                     f"positive_cone_subgroup requires signature (1,n); got {(positive, negative)}"
                 )
-            from dzack_research.preamble.categories.group.predicate_subgroups import (
-                predicate_subgroup,
-            )
 
             return predicate_subgroup(
                 self.Aut(),
@@ -854,13 +907,10 @@ class Lattices(OwnedCategoryOverBaseRing):
         @cached_method
         def biproduct_factors(self):
             r"""Return the indexed family of factors when this lattice was built by ``+``."""
-            from dzack_research.preamble.categories._lattice import _BiproductGram
 
             gram = self.gram_tensor()
             if not isinstance(gram, _BiproductGram):
                 raise ValueError("this lattice has no represented biproduct factors")
-            from dzack_research.preamble.categories.sets.indexed_families import indexed_family
-            from dzack_research.preamble.categories.sets.set_categories import Sets
 
             return indexed_family(
                 Sets.Δ[1],
@@ -875,9 +925,6 @@ class Lattices(OwnedCategoryOverBaseRing):
                 factors = self.biproduct_factors()
             except ValueError:
                 return None
-            from dzack_research.preamble.categories.abstract_categories.direct_sum_objects import (
-                DirectSumDecomposition,
-            )
 
             return DirectSumDecomposition(self, factors)
 
@@ -893,15 +940,27 @@ class Lattices(OwnedCategoryOverBaseRing):
         def indecomposable_name(self):
             return indecomposable_name(self)
 
-        def decomposition_names(self):
-            r"""Return registered names of the recursively represented factors."""
-            decomposition = self.decomposition()
-            if decomposition is None:
-                return (self.indecomposable_name(),)
-            names = []
+        def indecomposable_summands(self):
+            r"""Return the family of indecomposable summands, in order.
+
+            The biproduct of three lattices associates, so its immediate
+            factors are two, not three.  This descends through the represented
+            decompositions until every summand is indecomposable.
+            """
+
+            if self.decomposition() is None:
+                return finite_family((self,), name="Indecomposable summands")
+            summands = []
             for factor in self.biproduct_factors():
-                names.extend(factor.decomposition_names())
-            return tuple(names)
+                summands.extend(factor.indecomposable_summands())
+            return finite_family(summands, name="Indecomposable summands")
+
+        def decomposition_names(self):
+            r"""Return the registered name of each indecomposable summand."""
+            return self.indecomposable_summands().map(
+                lambda summand: summand.indecomposable_name(),
+                name="Decomposition names",
+            )
 
         def is_isometric(self, other):
             r"""Return whether ``self`` and ``other`` are isometric when decidable.
@@ -995,7 +1054,6 @@ class Lattices(OwnedCategoryOverBaseRing):
 
         @cached_method
         def module_generators(self):
-            from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 
             return indexed_family(
                 self.module_generating_set(),
@@ -1085,9 +1143,6 @@ class Lattices(OwnedCategoryOverBaseRing):
                 sage: Lattices(ZZ)(ZZ^NN).signature_pair()
                 (+Infinity, 0)
             """
-            from dzack_research.preamble.categories._lattice import (
-                signature_pair_of_gram,
-            )
 
             return signature_pair_of_gram(self.gram_tensor())
 
@@ -1106,9 +1161,6 @@ class Lattices(OwnedCategoryOverBaseRing):
                 sage: Lattices(ZZ)(ZZ^2).discriminant()
                 -1
             """
-            from dzack_research.preamble.categories._lattice import (
-                discriminant_of_gram,
-            )
 
             return discriminant_of_gram(self.gram_tensor())
 
@@ -1129,7 +1181,6 @@ class Lattices(OwnedCategoryOverBaseRing):
             r"""Return the determinant of a finite-rank lattice form."""
             if not self.is_finite_rank():
                 raise TypeError("the determinant requires a finite-rank lattice")
-            from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace
 
             rank = int(self.rank())
             gram = self.gram_tensor()
@@ -1141,13 +1192,6 @@ class Lattices(OwnedCategoryOverBaseRing):
 
         def is_nondegenerate(self) -> bool:
             r"""Return whether the correlation map has zero radical."""
-            from dzack_research.preamble.categories._lattice import (
-                _BiproductGram,
-                _ColimitGram,
-                _DiagonalGram,
-                _IdentityGram,
-                _ScaledGram,
-            )
 
             gram = self.gram_tensor()
             match gram:
@@ -1186,7 +1230,6 @@ class Lattices(OwnedCategoryOverBaseRing):
             if self.is_finite_rank():
                 gram = self.gram_tensor()
                 return all(is_twice(gram[i, i]) for i in range(int(self.rank())))
-            from dzack_research.preamble.categories._lattice import _DiagonalGram, _IdentityGram, _ScaledGram
 
             gram = self.gram_tensor()
             match gram:
@@ -1260,7 +1303,6 @@ class Lattices(OwnedCategoryOverBaseRing):
                 return False
             if self.is_finite_rank():
                 return bool(self.determinant().is_unit())
-            from dzack_research.preamble.categories._lattice import _DiagonalGram, _IdentityGram, _ScaledGram
 
             gram = self.gram_tensor()
             match gram:
@@ -1281,7 +1323,6 @@ class Lattices(OwnedCategoryOverBaseRing):
             r"""Return the divisibility ``gcd{b(element,x): x in L}`` over ``ZZ``."""
             if element.parent() is not self:
                 raise TypeError("divisibility is defined for an element of this lattice")
-            from dzack_research.preamble.categories._lattice import generator_pairings
 
             ring = self.base_ring()
             if _engine_ring(ring) is not SageZZ:
@@ -1300,7 +1341,6 @@ class Lattices(OwnedCategoryOverBaseRing):
         @cached_method
         def dual_module(self):
             r"""Return the algebraic dual module ``Hom_R(L,R)`` in the dual framing."""
-            from dzack_research.preamble.categories.modules.framed.framed_free_modules import BasedFreeModule
 
             return BasedFreeModule(self.base_ring(), self.module_generating_set())
 
@@ -1313,17 +1353,12 @@ class Lattices(OwnedCategoryOverBaseRing):
             ``Frac(R)``; it is not turned into a vector space over ``Frac(R)``.
             """
             assert self.is_nondegenerate()
-            from dzack_research.preamble.categories._lattice import _IdentityGram
 
             if isinstance(self.gram_tensor(), _IdentityGram):
                 return Lattices(self.base_ring())(self.dual_module())
             if not self.is_finite_rank():
                 raise NotImplementedError("the metric dual of this infinite non-identity Gram presentation is not materialized")
 
-            from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
-                BilinearForm,
-            )
-            from dzack_research.preamble.categories.rational_lattices import refine_rational_lattice
 
             fraction_field = self.base_ring().fraction_field()
             dual_tensor = self.gram_tensor().change_ring(fraction_field).dual_tensor()
@@ -1336,7 +1371,6 @@ class Lattices(OwnedCategoryOverBaseRing):
             except (TypeError, ValueError):
                 integral_components = None
             if integral_components is not None:
-                from dzack_research.preamble.tensors.tensor import tensor
 
                 integral_dual_form = tensor(
                     self.base_ring(),
@@ -1367,8 +1401,6 @@ class Lattices(OwnedCategoryOverBaseRing):
         @cached_method
         def correlation_morphism(self):
             r"""Return ``L -> L^#``, ``v |-> b(v,-)``, whose selected-basis matrix is ``G``."""
-            from dzack_research.preamble.categories._lattice import generator_pairings
-            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 
             assert self.is_nondegenerate()
             dual_lattice = self.dual_lattice()
@@ -1380,9 +1412,6 @@ class Lattices(OwnedCategoryOverBaseRing):
         @cached_method
         def discriminant_module(self):
             r"""Return ``A_L = coker(L -> L^#)`` with the selected dual-basis presentation."""
-            from dzack_research.preamble.categories.modules.framed.formed.discriminant_modules import (
-                DiscriminantModule,
-            )
 
             return DiscriminantModule(self)
 
@@ -1405,9 +1434,6 @@ class Lattices(OwnedCategoryOverBaseRing):
                 raise ValueError("the zero vector has no divided discriminant class")
             dual_lattice = self.dual_lattice()
             correlation_image = self.correlation_morphism()(element)
-            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-                module_coefficients,
-            )
 
             divided = dual_lattice.linear_combination(
                 {label: coefficient // divisibility for label, coefficient in module_coefficients(correlation_image, dual_lattice).items() if coefficient}
@@ -1420,7 +1446,6 @@ class Lattices(OwnedCategoryOverBaseRing):
 
         def isotropic_reduction(self):
             r"""Return ``S^perp/S`` when this lattice is represented as a subobject."""
-            from dzack_research.preamble.categories.modules.pure.modules import ModuleSubobjects
 
             if self not in ModuleSubobjects(self.base_ring()):
                 raise TypeError("isotropic reduction requires a chosen lattice inclusion")
@@ -1445,12 +1470,6 @@ class Lattices(OwnedCategoryOverBaseRing):
             from sage.modules.free_module import FreeModule as SageFreeModule
             from sage.rings.rational_field import QQ as SageQQ
 
-            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-                _solve_left_integrally,
-                module_coefficients,
-            )
-            from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-            from dzack_research.preamble.tensors.tensor import tensor
 
             discriminant_module = self.discriminant_module()
             ring = self.base_ring()
@@ -1520,7 +1539,6 @@ class Lattices(OwnedCategoryOverBaseRing):
                     for row in integral_basis_rows
                 ),
             )
-            from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace
 
             basis_map = MatrixSpace(rationals, rank, rank).from_rows(
                 tuple(
@@ -1660,9 +1678,6 @@ class Lattices(OwnedCategoryOverBaseRing):
                 raise ValueError(
                     f"no primitive embedding into II_{{{positive},{negative}}} exists"
                 )
-            from dzack_research.preamble.categories.lattice_engines import (
-                oscar_even_unimodular_primitive_embedding,
-            )
 
             target_gram, embedding_matrix = oscar_even_unimodular_primitive_embedding(
                 self.gram_tensor(), positive, negative
@@ -1724,22 +1739,6 @@ class Lattices(OwnedCategoryOverBaseRing):
             ):
                 raise ValueError("glue_map requires mutually orthogonal sublattices")
 
-            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
-            from dzack_research.preamble.categories.modules.pure.torsion_modules import (
-                _torsion_module_presented_by_matrix,
-            )
-            from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
-                form_embedding,
-            )
-            from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import (
-                TorsionQuadraticFormModules,
-                _quadratic_gram_on,
-                _relations_among_generators,
-                torsion_form_isometry,
-            )
-            from dzack_research.preamble.categories.modules.pure.modules import ModuleSubobjects
-            from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-            from dzack_research.preamble.refine import refine
 
             first_discriminant = first.discriminant_quadratic_form()
             second_discriminant = second.discriminant_quadratic_form()
@@ -1862,10 +1861,6 @@ class Lattices(OwnedCategoryOverBaseRing):
         @cached_method
         def discriminant_bilinear_form(self):
             r"""Return ``A_L`` with its descended ``K/R``-valued bilinear form."""
-            from dzack_research.preamble.categories.modules.framed.formed.discriminant_modules import (
-                DiscriminantBilinearModules,
-                DiscriminantQuadraticModules,
-            )
 
             module = self.discriminant_module()
             assert module in DiscriminantBilinearModules(self.base_ring())
@@ -1875,9 +1870,6 @@ class Lattices(OwnedCategoryOverBaseRing):
 
         def discriminant_quadratic_form(self):
             r"""Return ``A_L`` with its ``K/2R``-valued quadratic form when ``L`` is even."""
-            from dzack_research.preamble.categories.modules.framed.formed.discriminant_modules import (
-                DiscriminantQuadraticModules,
-            )
 
             if not self.is_even():
                 raise ValueError("a discriminant quadratic form requires an even lattice")
@@ -2015,7 +2007,6 @@ class Lattices(OwnedCategoryOverBaseRing):
             return self.is_positive_definite() or self.is_negative_definite()
 
         def lll_reduction(self):
-            from dzack_research.preamble.categories.definite_lattices import lll_reduction
 
             return lll_reduction(self)
 
@@ -2024,7 +2015,6 @@ class Lattices(OwnedCategoryOverBaseRing):
             return self.lll_reduction().reduced
 
         def bkz_reduction(self, block_size=20):
-            from dzack_research.preamble.categories.definite_lattices import bkz_reduction
 
             return bkz_reduction(self, block_size=block_size)
 
@@ -2033,7 +2023,6 @@ class Lattices(OwnedCategoryOverBaseRing):
             return self.bkz_reduction(block_size=block_size).reduced
 
         def hkz_reduction(self):
-            from dzack_research.preamble.categories.definite_lattices import hkz_reduction
 
             return hkz_reduction(self)
 
@@ -2042,78 +2031,54 @@ class Lattices(OwnedCategoryOverBaseRing):
             return self.hkz_reduction().reduced
 
         def minimum(self):
-            from dzack_research.preamble.categories.definite_lattices import minimum
 
             return minimum(self)
 
         def vectors_of_square(self, square):
-            from dzack_research.preamble.categories.definite_lattices import vectors_of_square
 
             return vectors_of_square(self, square)
 
         def vectors_of_square_and_divisibility(self, square, divisibility):
-            from dzack_research.preamble.categories.definite_lattices import (
-                vectors_of_square_and_divisibility,
-            )
 
             return vectors_of_square_and_divisibility(self, square, divisibility)
 
         def roots(self):
-            from dzack_research.preamble.categories.definite_lattices import roots
 
             return roots(self)
 
         def roots_of_square(self, square):
-            from dzack_research.preamble.categories.definite_lattices import roots_of_square
 
             return roots_of_square(self, square)
 
         def root_sublattice(self):
-            from dzack_research.preamble.categories.definite_lattices import root_sublattice
 
             return root_sublattice(self)
 
         def vector_primitive_extension(self, element):
             r"""Return the primitive-extension/gluing datum cut out by ``element``."""
-            from dzack_research.preamble.categories.vector_orbits import (
-                VectorPrimitiveExtension,
-            )
 
             return VectorPrimitiveExtension(self, element)
 
         def definite_complement_extensions(self, left, right):
             r"""Return all isometries ``g`` with ``g(left)=right`` in the definite-complement regime."""
-            from dzack_research.preamble.categories.vector_orbits import (
-                definite_complement_extensions,
-            )
 
             return definite_complement_extensions(self, left, right)
 
         def gluing_route_discriminant_classes(self, left, right):
             r"""Return admissible ``O(A_L)`` classes from the primitive-extension gluing route."""
-            from dzack_research.preamble.categories.vector_orbits import (
-                gluing_route_discriminant_classes,
-            )
 
             return gluing_route_discriminant_classes(self, left, right)
 
         def stable_complement_root_reflections(self, element):
             r"""Return stable reflections in root-orbit representatives of ``element^perp``."""
-            from dzack_research.preamble.categories.vector_orbits import (
-                stable_complement_root_reflections,
-            )
 
             return stable_complement_root_reflections(self, element)
 
         def primitive_isotropic_subobject(self, *basis):
-            from dzack_research.preamble.categories.isotropic_orbits import (
-                primitive_isotropic_subobject,
-            )
 
             return primitive_isotropic_subobject(self, basis)
 
         def isotropic_flag(self, *basis):
-            from dzack_research.preamble.categories.isotropic_orbits import IsotropicFlag
 
             return IsotropicFlag(self, basis)
 
@@ -2127,86 +2092,68 @@ class Lattices(OwnedCategoryOverBaseRing):
             return self.O().isotropic_orbit_representatives(rank, flag=True)
 
         def shortest_vectors(self):
-            from dzack_research.preamble.categories.definite_lattices import shortest_vectors
 
             return shortest_vectors(self)
 
         def theta_series(self, precision=20, variable="q"):
-            from dzack_research.preamble.categories.definite_lattices import theta_series
 
             return theta_series(self, precision=precision, variable=variable)
 
         def hermite_invariant(self):
-            from dzack_research.preamble.categories.definite_lattices import hermite_invariant
 
             return hermite_invariant(self)
 
         def successive_minima(self):
-            from dzack_research.preamble.categories.definite_lattices import successive_minima
 
             return successive_minima(self)
 
         def gaussian_heuristic(self, *, exact_form=False):
-            from dzack_research.preamble.categories.definite_lattices import gaussian_heuristic
 
             return gaussian_heuristic(self, exact_form=exact_form)
 
         def hadamard_ratio(self):
-            from dzack_research.preamble.categories.definite_lattices import hadamard_ratio
 
             return hadamard_ratio(self)
 
         def closest_vector(self, target):
-            from dzack_research.preamble.categories.definite_lattices import closest_vector
 
             return closest_vector(self, target)
 
         def babai(self, target):
-            from dzack_research.preamble.categories.definite_lattices import babai
 
             return babai(self, target)
 
         approximate_closest_vector = babai
 
         def voronoi_cell(self, bound=None):
-            from dzack_research.preamble.categories.definite_lattices import voronoi_cell
 
             return voronoi_cell(self, bound=bound)
 
         def voronoi_relevant_vectors(self):
-            from dzack_research.preamble.categories.definite_lattices import (
-                voronoi_relevant_vectors,
-            )
 
             return voronoi_relevant_vectors(self)
 
         def contact_polytope(self):
-            from dzack_research.preamble.categories.definite_lattices import contact_polytope
 
             return contact_polytope(self)
 
         def packing_radius(self):
-            from dzack_research.preamble.categories.definite_lattices import packing_radius
 
             return packing_radius(self)
 
         def covering_radius(self):
-            from dzack_research.preamble.categories.definite_lattices import covering_radius
 
             return covering_radius(self)
 
         def center_density(self):
-            from dzack_research.preamble.categories.definite_lattices import center_density
 
             return center_density(self)
 
         def packing_density(self):
-            from dzack_research.preamble.categories.definite_lattices import packing_density
 
             return packing_density(self)
 
         def kissing_number(self):
-            from dzack_research.preamble.categories.definite_lattices import kissing_number
 
             return kissing_number(self)
 
@@ -2231,10 +2178,6 @@ class Lattices(OwnedCategoryOverBaseRing):
                 sage: Iinf.twist(2).gram_tensor()
                 2 I_∞ ∈ (ZZ^NN ⊗ ZZ^NN)*
             """
-            from dzack_research.preamble.categories._lattice import (
-                _PairingGram,
-                scale_gram_tensor,
-            )
 
             scaled = scale_gram_tensor(self.gram_tensor(), self.base_ring()(scalar))
             match scaled:
@@ -2261,7 +2204,6 @@ class Lattices(OwnedCategoryOverBaseRing):
             """
             if other == 0:
                 return self
-            from dzack_research.preamble.categories._lattice import orthogonal_sum
 
             ring = self.base_ring()
             category = Lattices(ring)
@@ -2285,7 +2227,6 @@ class Lattices(OwnedCategoryOverBaseRing):
             from sage.rings.integer_ring import ZZ
             from sage.rings.rational_field import QQ
 
-            from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
 
             kind = "Integral lattice" if _engine_ring(self.base_ring()) is ZZ else "Lattice"
             rank = self.rank()
@@ -2311,7 +2252,6 @@ class Lattices(OwnedCategoryOverBaseRing):
                 \end{array}\right) \\
                 \end{gathered}
             """
-            from dzack_research.preamble.categories._lattice import lattice_latex
 
             _name, tex = _ring_notation(self.base_ring())
             return lattice_latex(self, tex)
@@ -2379,7 +2319,6 @@ class Lattices(OwnedCategoryOverBaseRing):
                 sage: Iinf((2, 1)).is_root()
                 False
             """
-            from dzack_research.preamble.categories._lattice import generator_pairings
 
             parent = self.parent()
             ring = parent.base_ring()
@@ -2433,7 +2372,6 @@ class Lattices(OwnedCategoryOverBaseRing):
                 sage: Lattices(ZZ)(ZZ^2).module_generator(0).to_vector()
                 (1, 0)
             """
-            from dzack_research.preamble.tensors.tensor import tensor
 
             return tensor.vector(self.parent().base_ring(), self.to_list())
 
@@ -2446,7 +2384,6 @@ class FiniteRankLattices(OwnedCategoryOverBaseRing):
         return "finite-rank lattices"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.modules.pure.modules import FinitelyGeneratedFreeModules
 
         return [
             Lattices(self.base_ring()),
@@ -2536,9 +2473,6 @@ class RootLattices(Category):
 
         def fundamental_weights(self):
             r"""Return the weights dual to the simple coroots."""
-            from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-                finite_ordered_image,
-            )
 
             norm = self.simple_roots()[0].norm()
             if norm not in (2, -2):

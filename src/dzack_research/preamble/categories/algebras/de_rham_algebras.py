@@ -17,6 +17,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 from dzack_research.preamble.categories.modules.powers import alternating_power_product
 from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
 from dzack_research.preamble.refine import refine
+from dzack_research.preamble.categories.algebras.framed_free_algebras import AlternatingAlgebraOf
 
 
 class DeRhamAlgebras(OwnedCategoryOverBaseRing):
@@ -72,7 +73,6 @@ def DeRhamAlgebra(algebra):
     from the degree-zero coefficient algebra ``A`` to the differential
     constants ``R`` along the selected algebra structure morphism.
     """
-    from dzack_research.preamble.categories.algebras.framed_free_algebras import AlternatingAlgebraOf
 
     omega = KahlerDifferentials(algebra)
     exterior = AlternatingAlgebraOf(omega)

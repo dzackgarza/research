@@ -25,6 +25,12 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
 )
 from dzack_research.preamble.refine import refine
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreeModuleOn
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import framing_morphism
+from dzack_research.preamble.categories.modules.pure.modules import FramedModules
+from dzack_research.preamble.categories.modules.pure.torsion_modules import TorsionModules
+from dzack_research.preamble.categories.sets.cardinals import aleph0
+from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
 class FractionFieldQuotients(OwnedCategoryOverBaseRing):
@@ -39,9 +45,6 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
         return "fraction-field quotients"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.modules.pure.modules import (
-            FramedModules,
-        )
 
         return [FramedModules(self.base_ring())]
 
@@ -72,8 +75,6 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
 
         @cached_method
         def module_generating_set(self):
-            from dzack_research.preamble.categories.sets.set_categories import Sets
-            from dzack_research.preamble.categories.sets.cardinals import aleph0
 
             return Sets.Δ[aleph0]
 
@@ -86,12 +87,6 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
             return self(field.one() / field(denominator))
 
         def framing_morphism(self):
-            from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-                FreeModuleOn,
-            )
-            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-                framing_morphism,
-            )
 
             source = FreeModuleOn(self.base_ring(), self.module_generating_set())
             return framing_morphism(source, self, self.module_generator)
@@ -105,7 +100,6 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
             map.  Module-valued consumers should use the scalar-restricted
             fraction-field module construction.
             """
-            from dzack_research.preamble.categories.sets.set_categories import Sets
 
             return SetMorphism(
                 Sets().Mor(self.fraction_field(), self),
@@ -189,9 +183,6 @@ class OwnedFractionFieldQuotient(Parent):
         self._fraction_field_modulus = field._from_engine_element(SageQQ(engine.n))
         categories = [FractionFieldQuotients(base_ring)]
         if not engine.n.is_zero():
-            from dzack_research.preamble.categories.modules.pure.torsion_modules import (
-                TorsionModules,
-            )
             categories.append(TorsionModules(base_ring))
         Parent.__init__(
             self,

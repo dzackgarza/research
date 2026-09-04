@@ -10,6 +10,14 @@ from sage.all import (
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 
+from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    CategoryPacketMethods,
+    HomCategoryConstruction,
+)
+from dzack_research.preamble.categories.rings.embeddings import (
+    NumberFieldHomset,
+    order_homset,
+)
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedFields,
     OwnedOrders,
@@ -18,10 +26,32 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
 )
 from dzack_research.preamble.refine import refine
+from dzack_research.preamble.categories.algebras.algebras import (
+    Algebras,
+    FinitelyPresentedAlgebras,
+    refine_algebra,
+)
+from dzack_research.preamble.categories.group.groups import _own_group
+from dzack_research.preamble.categories.modules.fractional_ideals import (
+    FractionalIdeal,
+    Ideal,
+)
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+    FreeModuleBaseRings,
+    FreeModuleOn,
+)
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import framing_morphism
+from dzack_research.preamble.categories.modules.pure.modules import FinitelyGeneratedFreeModules
+from dzack_research.preamble.categories.rings.commutative_algebra import refine_commutative_ring_constructions
+from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+    finite_ordered_image,
+    finite_ordered_set,
+)
+from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 
 
 def _own_number_field(engine):
-    from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
     return _refine_number_field_view(_own_ring(engine))
 
@@ -35,7 +65,6 @@ def _engine_scalar(engine_ring, value):
     coercion discovery, which is the same boundary ``NumberField`` observes
     for its defining polynomial.
     """
-    from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
     owned = _own_ring(engine_ring)
     return _engine_element(owned, owned(value))
@@ -61,8 +90,15 @@ def NumberField(polynomial, *args, **kwargs):
     return _own_number_field(_SageNumberField(backend_polynomial, *args, **kwargs))
 
 
-class OwnedNumberFields(Category):
+class NumberFieldHomCategoryConstruction(HomCategoryConstruction):
+    def fixed_category_class(self):
+        return NumberFieldHomset
+
+
+class OwnedNumberFields(CategoryPacketMethods, Category):
     r"""Finite extensions of ``QQ``."""
+
+    _HomCategory = NumberFieldHomCategoryConstruction
 
     @classmethod
     def _repr_object_names(cls):
@@ -71,21 +107,20 @@ class OwnedNumberFields(Category):
     def super_categories(self):
         return [OwnedFields()]
 
-    class ParentMethods:
-        def _Hom_(self, codomain, category=None):
-            if codomain not in OwnedNumberFields():
-                raise TypeError("a number-field embedding must land in a number field")
-            if category is not None and not category.is_subcategory(OwnedNumberFields()):
-                raise TypeError("this is not a number-field embedding category")
-            from dzack_research.preamble.categories.rings.embeddings import (
-                number_field_homset,
-            )
+    def Mor(self, domain, codomain):
+        if domain not in self or codomain not in self:
+            raise TypeError("a number-field embedding requires two number fields")
+        return self.HomCategory().Of(domain, codomain)
 
-            return number_field_homset(self, codomain)
+    class ParentMethods:
+        def Mor(self, codomain, category=None):
+            number_fields = OwnedNumberFields()
+            if category is None or category.is_subcategory(number_fields):
+                return number_fields.Mor(self, codomain)
+            return super().Mor(codomain, category=category)
 
         def degree(self):
             r"""Return ``[K:QQ]`` as an owned integer."""
-            from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
             integers = _own_ring(SageZZ)
             engine = _engine_ring(self)
@@ -94,7 +129,6 @@ class OwnedNumberFields(Category):
 
         def discriminant(self):
             r"""Return the discriminant of the ring of integers of ``K``."""
-            from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
             integers = _own_ring(SageZZ)
             engine = _engine_ring(self)
@@ -103,7 +137,6 @@ class OwnedNumberFields(Category):
 
         def signature(self):
             r"""Return ``(r_1,r_2)`` with ``r_1+2r_2=[K:QQ]``."""
-            from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
             integers = _own_ring(SageZZ)
             engine = _engine_ring(self)
@@ -117,7 +150,6 @@ class OwnedNumberFields(Category):
 
         def class_number(self):
             r"""Return the class number of the ring of integers."""
-            from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
             integers = _own_ring(SageZZ)
             engine = _engine_ring(self)
@@ -131,14 +163,12 @@ class OwnedNumberFields(Category):
                 raise TypeError(
                     "a relative number-field extension requires a polynomial over this field"
                 )
-            from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
             backend_polynomial = _engine_element(polynomial_ring, polynomial)
             return _own_ring(_engine_ring(self).extension(backend_polynomial, name))
 
         def primes_above(self, prime):
             r"""Return the prime ideals of ``O_K`` above a rational prime."""
-            from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
             order = self.ring_of_integers()
             integers = order.base_ring()
@@ -156,7 +186,6 @@ class OwnedNumberFields(Category):
 
         def ring_of_integers(self):
             r"""Return the maximal order ``O_K`` as an owned ring."""
-            from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
             engine = _engine_ring(self)
             if engine is SageQQ:
@@ -169,7 +198,6 @@ class OwnedNumberFields(Category):
             r"""Return the order ``ZZ[generators]`` inside this number field."""
             if not generators:
                 raise ValueError("an order construction needs at least one field generator")
-            from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
             engine = _engine_ring(self)
             backend_generators = tuple(
@@ -184,20 +212,15 @@ class OwnedNumberFields(Category):
 
         def ramified_primes(self):
             r"""Return the rational primes ramified in ``K``."""
-            from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
             return finite_ordered_set(abs(self.discriminant()).prime_divisors())
 
         def embeddings(self, target):
             r"""Return the exact owned field embeddings ``K -> target``."""
-            from dzack_research.preamble.categories.rings.ring_foundation import OwnedFields
-            from dzack_research.preamble.categories.rings.embeddings import (
-                number_field_homset,
-            )
 
             if target not in OwnedFields():
                 raise TypeError("number-field embeddings require an owned target field")
-            return number_field_homset(self, target).embeddings()
+            return self.Mor(target).embeddings()
 
         def is_galois(self) -> bool:
             r"""Return whether ``K/QQ`` is Galois."""
@@ -211,7 +234,6 @@ class OwnedNumberFields(Category):
                     "K/QQ is not Galois; use normal_closure_galois_group() for the Galois group of its normal closure"
                 )
             engine = _engine_ring(self)
-            from dzack_research.preamble.categories.group.groups import _own_group
 
             if engine is SageQQ:
                 from sage.groups.perm_gps.permgroup_named import SymmetricGroup
@@ -221,7 +243,6 @@ class OwnedNumberFields(Category):
 
         def normal_closure(self):
             r"""Return a chosen normal closure of ``K/QQ``."""
-            from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
             engine = _engine_ring(self)
             return self if engine is SageQQ else _own_ring(engine.galois_closure())
@@ -232,18 +253,15 @@ class OwnedNumberFields(Category):
 
         def as_algebra(self):
             r"""Return this field as the corresponding ``QQ``-algebra object."""
-            from dzack_research.preamble.categories.algebras.algebras import (
-                FinitelyPresentedAlgebras,
-                refine_algebra,
-            )
 
             labels = (
                 self.algebra_generating_set()
                 if self in NumberFieldsWithChosenPrimitiveElement()
                 else None
             )
-            from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
-            algebra = refine_algebra(self, _own_ring(SageQQ), labels)
+            algebra = refine_commutative_ring_constructions(
+                refine_algebra(self, _own_ring(SageQQ), labels)
+            )
             return refine(algebra, FinitelyPresentedAlgebras(algebra.base_ring()))
 
 
@@ -272,7 +290,6 @@ class NumberFieldsWithChosenPrimitiveElement(Category):
 
         def defining_polynomial(self):
             r"""Return the owned defining polynomial of the selected primitive element."""
-            from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
             polynomial = _engine_ring(self).defining_polynomial()
             parent = _own_ring(polynomial.parent())
@@ -280,7 +297,6 @@ class NumberFieldsWithChosenPrimitiveElement(Category):
 
         def embedding_images(self, target):
             r"""Return the images of the selected primitive element under ``K -> target``."""
-            from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_image
 
             primitive = self.primitive_element()
             embeddings = self.embeddings(target)
@@ -299,12 +315,6 @@ class OrdersWithChosenIntegralBasis(Category):
         return "orders with a chosen integral basis"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.algebras.algebras import Algebras
-        from dzack_research.preamble.categories.modules.pure.modules import FinitelyGeneratedFreeModules
-        from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-            FreeModuleBaseRings,
-        )
-        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
         integers = _own_ring(SageZZ)
         return [
@@ -316,7 +326,6 @@ class OrdersWithChosenIntegralBasis(Category):
 
     class ParentMethods:
         def base_ring(self):
-            from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
             return _own_ring(SageZZ)
 
@@ -327,19 +336,13 @@ class OrdersWithChosenIntegralBasis(Category):
                 raise TypeError("an order embedding must land in an order")
             if category is not None and not category.is_subcategory(OwnedOrders()):
                 raise TypeError("this is not an order-embedding category")
-            from dzack_research.preamble.categories.rings.embeddings import order_homset
-
             return order_homset(self, codomain)
 
         def ideal(self, *module_generators):
-            from dzack_research.preamble.categories.modules.fractional_ideals import Ideal
 
             return Ideal(self, module_generators)
 
         def fractional_ideal(self, *module_generators):
-            from dzack_research.preamble.categories.modules.fractional_ideals import (
-                FractionalIdeal,
-            )
 
             return FractionalIdeal(self, module_generators)
 
@@ -350,7 +353,6 @@ class OrdersWithChosenIntegralBasis(Category):
             if target is SageZZ:
                 return self
             if target is SageQQ:
-                from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
                 field = _own_number_field(_engine_ring(self).fraction_field())
                 return field.as_algebra()
@@ -363,7 +365,6 @@ class OrdersWithChosenIntegralBasis(Category):
 
         @cached_method
         def module_generating_set(self):
-            from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
             engine = _engine_ring(self)
             if engine is SageZZ:
@@ -381,7 +382,6 @@ class OrdersWithChosenIntegralBasis(Category):
 
         @cached_method
         def module_generators(self):
-            from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 
             return indexed_family(
                 self.module_generating_set(),
@@ -390,8 +390,6 @@ class OrdersWithChosenIntegralBasis(Category):
             )
 
         def framing_morphism(self):
-            from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreeModuleOn
-            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import framing_morphism
 
             source = FreeModuleOn(self.base_ring(), self.module_generating_set())
             return framing_morphism(source, self, self.module_generator)
@@ -413,9 +411,6 @@ def _refine_order_view(order):
     if order not in OwnedOrders():
         raise TypeError("order refinement expects an owned number-field order")
     order = refine(order, OrdersWithChosenIntegralBasis())
-    from dzack_research.preamble.categories.rings.commutative_algebra import (
-        refine_commutative_ring_constructions,
-    )
 
     return refine_commutative_ring_constructions(order)
 
@@ -427,16 +422,12 @@ def _refine_number_field_view(field):
     engine = _engine_ring(field)
     categories = [OwnedNumberFields()]
     if engine is not SageQQ:
-        from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
         field._preamble_number_field_generating_set = finite_ordered_set(
             engine.variable_names()
         )
         categories.append(NumberFieldsWithChosenPrimitiveElement())
     field = refine(field, categories)
-    from dzack_research.preamble.categories.rings.commutative_algebra import (
-        refine_commutative_ring_constructions,
-    )
 
     return refine_commutative_ring_constructions(field)
 

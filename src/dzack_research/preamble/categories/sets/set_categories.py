@@ -24,7 +24,13 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     CategoricalHomset,
     HomCategoryConstruction,
 )
-from dzack_research.preamble.categories.sets.cardinals import cardinal
+from dzack_research.preamble.categories.sets.cardinals import (
+    Cardinalities,
+    aleph,
+    aleph0,
+    cardinal,
+)
+from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 
 
 
@@ -131,7 +137,6 @@ class _Delta:
     r"""The standard finite ordinals \(\Delta[n]=\{0,\ldots,n\}\), and \(\Delta[\aleph_0]=\mathbb N\)."""
 
     def __getitem__(self, dimension):
-        from dzack_research.preamble.categories.sets.cardinals import aleph0, cardinal
         if isinstance(dimension, (int, SageInteger)):
             return _finite_delta(int(dimension))
         size = cardinal(dimension)
@@ -147,8 +152,6 @@ class _Delta:
 
 class _Aleph:
     def __getitem__(self, index):
-        from dzack_research.preamble.categories.sets.cardinals import aleph
-
         return aleph(index)
 
     def __repr__(self) -> str:
@@ -371,8 +374,6 @@ class Sets(OwnedCategory):
             the index set is part of the mathematics, name it and use
             `Sets().product(family)` (`CON-14`).
             """
-            from dzack_research.preamble.categories.sets.indexed_families import indexed_family
-
             assert other in Sets(), "a product is taken between two owned sets"
             factors = (self, other)
             return Sets().product(
@@ -381,8 +382,6 @@ class Sets(OwnedCategory):
 
         def __pow__(self, exponent):
             r"""Return $X^n$, the product of the constant family over `Sets.Δ[n-1]`."""
-            from dzack_research.preamble.categories.sets.indexed_families import indexed_family
-
             count = int(exponent)
             if count < 1:
                 raise ValueError("a set power is indexed by a nonempty finite set")
@@ -698,8 +697,6 @@ class PowerSetParent(Parent):
         return cardinal(2) ** cardinal(self.base_set().cardinality())
 
     def cardinality_comparison(self):
-        from dzack_research.preamble.categories.sets.cardinals import Cardinalities
-
         size = self.cardinality()
         return Cardinalities().Mor(size, size).identity()
 
@@ -970,8 +967,6 @@ class CartesianProductOfFamilyParent(Parent):
         return self._family
 
     def has_finite_index_set(self) -> bool:
-        from dzack_research.preamble.categories.sets.cardinals import cardinal
-
         try:
             return cardinal(self.index_set().cardinality()).is_finite()
         except (AttributeError, NotImplementedError, TypeError, ValueError):
@@ -1017,8 +1012,6 @@ class CartesianProductOfFamilyParent(Parent):
 
     def unrank(self, position):
         r"""Return the finite product section in mixed-radix order."""
-        from dzack_research.preamble.categories.sets.cardinals import cardinal
-
         if not self.has_finite_index_set():
             raise TypeError("an infinite-index product has no finite unranking here")
         index_count = int(cardinal(self.index_set().cardinality()).finite_value())
@@ -1051,8 +1044,6 @@ class CartesianProductOfFamilyParent(Parent):
 
     def rank(self, section):
         r"""Return the mixed-radix position of a finite product section."""
-        from dzack_research.preamble.categories.sets.cardinals import cardinal
-
         section = self(section)
         if not self.has_finite_index_set():
             raise TypeError("an infinite-index product has no finite ranking here")
@@ -1084,15 +1075,11 @@ class CartesianProductOfFamilyParent(Parent):
         )
 
     def cardinality(self):
-        from dzack_research.preamble.categories.sets.cardinals import Cardinalities, cardinal
-
         return Cardinalities().indexed_product(
             self.index_set(), lambda index: cardinal(self.factor(index).cardinality())
         )
 
     def __iter__(self):
-        from dzack_research.preamble.categories.sets.cardinals import cardinal
-
         if not self.has_finite_index_set():
             raise TypeError("only a product over a finite index set is enumerated here")
         for index in self.index_set():
@@ -1250,15 +1237,11 @@ class CoproductOfFamilyParent(Parent):
         )
 
     def cardinality(self):
-        from dzack_research.preamble.categories.sets.cardinals import Cardinalities, cardinal
-
         return Cardinalities().indexed_sum(
             self.index_set(), lambda index: cardinal(self.cofactor(index).cardinality())
         )
 
     def _finite_index_count(self):
-        from dzack_research.preamble.categories.sets.cardinals import cardinal
-
         try:
             size = cardinal(self.index_set().cardinality())
             if size.is_finite():
@@ -1291,8 +1274,6 @@ class CoproductOfFamilyParent(Parent):
 
     @staticmethod
     def _factor_has_position(factor, position) -> bool:
-        from dzack_research.preamble.categories.sets.cardinals import cardinal
-
         try:
             size = cardinal(factor.cardinality())
             if size.is_finite():
@@ -1306,8 +1287,6 @@ class CoproductOfFamilyParent(Parent):
         return True
 
     def _known_finite_size(self):
-        from dzack_research.preamble.categories.sets.cardinals import cardinal
-
         try:
             size = cardinal(self.cardinality())
             if size.is_finite():
@@ -1459,8 +1438,6 @@ class FiniteSets(OwnedCategory):
     def __contains__(self, candidate) -> bool:
         if candidate not in Sets():
             return False
-        from dzack_research.preamble.categories.sets.cardinals import cardinal
-
         try:
             return cardinal(candidate.cardinality()).is_finite()
         except (AttributeError, NotImplementedError, TypeError, ValueError):
@@ -1491,8 +1468,6 @@ class CountableSets(OwnedCategory):
     def __contains__(self, candidate) -> bool:
         if candidate not in Sets():
             return False
-        from dzack_research.preamble.categories.sets.cardinals import cardinal
-
         try:
             return cardinal(candidate.cardinality()).is_countable()
         except (AttributeError, NotImplementedError, TypeError, ValueError):
@@ -1508,8 +1483,6 @@ class CountablyInfiniteSets(OwnedCategory):
     def __contains__(self, candidate) -> bool:
         if candidate not in Sets():
             return False
-        from dzack_research.preamble.categories.sets.cardinals import cardinal
-
         try:
             return cardinal(candidate.cardinality()).is_countably_infinite()
         except (AttributeError, NotImplementedError, TypeError, ValueError):
@@ -1525,8 +1498,6 @@ class UncountableSets(OwnedCategory):
     def __contains__(self, candidate) -> bool:
         if candidate not in Sets():
             return False
-        from dzack_research.preamble.categories.sets.cardinals import cardinal
-
         try:
             return cardinal(candidate.cardinality()).is_uncountable()
         except (AttributeError, NotImplementedError, TypeError, ValueError):
@@ -1646,8 +1617,6 @@ class NaturalNumbers(Parent):
         return int(self(value))
 
     def cardinality(self):
-        from dzack_research.preamble.categories.sets.cardinals import aleph0
-
         return aleph0
 
     def zero(self):

@@ -8,6 +8,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_o
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.refine import refine
+from dzack_research.preamble.categories.abstract_categories.constructions import Biproduct
 
 
 class DirectSumObjects(Category):
@@ -55,7 +56,6 @@ def _binary_decomposition_is_valid(underlying_object, summands) -> bool:
     ):
         return False
 
-    from dzack_research.preamble.categories.abstract_categories.constructions import Biproduct
 
     biproduct = Biproduct(left, right)
     map_to_object = biproduct.from_summands(left_inclusion, right_inclusion)

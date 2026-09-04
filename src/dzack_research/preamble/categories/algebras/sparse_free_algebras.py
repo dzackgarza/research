@@ -50,6 +50,16 @@ from dzack_research.preamble.categories.sets.set_categories import (
 )
 from dzack_research.preamble.categories.sets.cardinals import aleph0
 from dzack_research.preamble.categories.sets.fixed_size_selections import multisets_of_size
+from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
+from dzack_research.preamble.categories.algebras.algebras import algebra_homset
+from dzack_research.preamble.categories.algebras.finitely_presented_algebras import _canonical_smith_representative
+from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import _SelectedFinitePresentationModules
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+    FramedFreeModules,
+    ring_as_module,
+)
+from dzack_research.preamble.categories.modules.powers import SymmetricPower
+from dzack_research.preamble.categories.sets.cardinals import cardinal
 
 
 def _nested_label(labels):
@@ -377,9 +387,6 @@ class SparseFreeAlgebra(Parent):
         if degree < 0:
             raise ValueError("a graded degree is nonnegative")
         if degree == 0:
-            from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-                ring_as_module,
-            )
 
             return ring_as_module(self.base_ring())
         if degree == 1:
@@ -427,7 +434,6 @@ class SparseFreeAlgebra(Parent):
         if self.flavor() == "tensor":
             factors = tuple(source.module_component(source_key) for source_key in key)
         else:
-            from dzack_research.preamble.categories.modules.powers import SymmetricPower
 
             factors = tuple(
                 SymmetricPower(source.module_component(source_key), multiplicity)
@@ -435,15 +441,11 @@ class SparseFreeAlgebra(Parent):
             )
 
         if not factors:
-            from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-                ring_as_module,
-            )
 
             component = ring_as_module(self.base_ring())
         else:
             component = factors[0]
             if len(factors) > 1:
-                from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
 
                 for factor in factors[1:]:
                     component = TensorProduct(component, factor)
@@ -477,7 +479,6 @@ class SparseFreeAlgebra(Parent):
             if multiplicity == 1:
                 factor_labels.append(next(iter(counts)))
             else:
-                from dzack_research.preamble.categories.modules.powers import SymmetricPower
 
                 factor = SymmetricPower(source_component, multiplicity)
                 factor_labels.append(
@@ -551,14 +552,8 @@ class SparseFreeAlgebra(Parent):
         for key, component_coefficients in grouped.items():
             component = self._component_module(key)
             element = component.linear_combination(component_coefficients)
-            from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-                _SelectedFinitePresentationModules,
-            )
 
             if component in _SelectedFinitePresentationModules(self.base_ring()):
-                from dzack_research.preamble.categories.algebras.finitely_presented_algebras import (
-                    _canonical_smith_representative,
-                )
 
                 element = _canonical_smith_representative(component, element)
             for component_label, coefficient in module_coefficients(
@@ -585,9 +580,6 @@ class SparseFreeAlgebra(Parent):
     def module_component(self, key):
         if self._source_has_component_protocol():
             return self._component_module(key)
-        from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-            ring_as_module,
-        )
 
         return ring_as_module(self.base_ring())
 
@@ -739,7 +731,6 @@ def compose_with_free_construction(left, right):
             lambda label: left(right(source.algebra_generator(label)))
         )
 
-    from dzack_research.preamble.categories.algebras.algebras import algebra_homset
 
     engine_source = _engine_ring(source)
     engine_target = _engine_ring(target)
@@ -756,7 +747,6 @@ class SparseFreeAlgebraMorphism(Morphism):
         domain = cast(SparseFreeAlgebra, self.domain())
         labels = domain.algebra_generating_set()
         if isinstance(images, dict):
-            from dzack_research.preamble.categories.sets.cardinals import cardinal
             if not cardinal(labels.cardinality()).is_finite():
                 raise TypeError(
                     "an infinite generator assignment is specified by a callable"
@@ -858,13 +848,11 @@ class SparseFreeAlgebraHomset(_AlgebraHomsetCommonMethods, CategoricalHomset):
 
 
 def sparse_free_algebra_homset(domain, codomain):
-    from dzack_research.preamble.categories.algebras.algebras import algebra_homset
 
     return algebra_homset(domain, codomain)
 
 
 def free_construction_homset(domain, codomain):
-    from dzack_research.preamble.categories.algebras.algebras import algebra_homset
 
     return algebra_homset(domain, codomain)
 
@@ -889,9 +877,6 @@ def _sparse_free_algebra_of(module, flavor):
         )
     )
     if not component_protocol:
-        from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-            FramedFreeModules,
-        )
 
         if module not in FramedFreeModules(module.base_ring()):
             raise NotImplementedError(

@@ -26,6 +26,20 @@ from dzack_research.preamble.categories.modules.powers import (
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
 from dzack_research.preamble.refine import refine
+from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
+from dzack_research.preamble.categories.algebras.de_rham_algebras import DeRhamAlgebra
+from dzack_research.preamble.categories.algebras.differential_graded_algebras import DifferentialComponentMorphism
+from dzack_research.preamble.categories.modules.dg_modules import DifferentialGradedModules
+from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import _presentation_rows
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreshFreeModuleOn
+from dzack_research.preamble.categories.modules.graded_direct_sums import GradedDirectSumModule
+from dzack_research.preamble.categories.modules.pure.modules import (
+    FinitelyGeneratedFreeModules,
+    Modules,
+    ModulesWithChosenFinitePresentation,
+    restrict_scalars,
+)
+from dzack_research.preamble.categories.modules.tensor_products import tensor_product_morphism
 
 
 class ModulesWithConnection(OwnedParameterizedCategory):
@@ -39,7 +53,6 @@ class ModulesWithConnection(OwnedParameterizedCategory):
         return self.base()
 
     def super_categories(self):
-        from dzack_research.preamble.categories.modules.pure.modules import Modules
 
         return [Modules(self.algebra())]
 
@@ -165,8 +178,6 @@ class Connection(Morphism):
         return result
 
     def _check_relations(self) -> None:
-        from dzack_research.preamble.categories.modules.pure.modules import ModulesWithChosenFinitePresentation
-        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import _presentation_rows
 
         module = self.module()
         if module not in ModulesWithChosenFinitePresentation(self.algebra()):
@@ -204,7 +215,6 @@ class Connection(Morphism):
         return morphism
 
     def curvature_target(self):
-        from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
 
         return TensorProduct(self.module(), AlternatingPower(self.one_forms(), 2))
 
@@ -269,7 +279,6 @@ class Connection(Morphism):
         return result
 
     def is_flat(self) -> bool:
-        from dzack_research.preamble.categories.modules.pure.modules import ModulesWithChosenFinitePresentation
 
         module = self.module()
         ring = module.base_ring()
@@ -300,9 +309,6 @@ class ConnectionSpace(CategoricalHomset):
         self._module = module
         self._algebra = algebra
         self._one_forms = KahlerDifferentials(algebra)
-        from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
-        from dzack_research.preamble.categories.modules.pure.modules import Modules
-        from dzack_research.preamble.categories.modules.pure.modules import restrict_scalars
 
         self._target_module = TensorProduct(module, self._one_forms)
         ring_map = algebra.algebra_structure_morphism()
@@ -392,9 +398,6 @@ class ConnectionMorphism(ModuleMorphism):
             raise ValueError("horizontal morphisms require one coefficient algebra")
         omega = domain_connection.one_forms()
         identity_omega = module_homset(omega, omega).identity()
-        from dzack_research.preamble.categories.modules.tensor_products import (
-            tensor_product_morphism,
-        )
 
         induced = tensor_product_morphism(
             self,
@@ -402,7 +405,6 @@ class ConnectionMorphism(ModuleMorphism):
             source=domain_connection.target_module(),
             target=codomain_connection.target_module(),
         )
-        from dzack_research.preamble.categories.modules.pure.modules import ModulesWithChosenFinitePresentation
 
         domain = self.domain()
         ring = domain.base_ring()
@@ -450,10 +452,6 @@ def connection_homset(domain, codomain):
 
 def ModuleWithConnection(connection):
     r"""Return a fresh finite-free module carrying the selected connection."""
-    from dzack_research.preamble.categories.modules.pure.modules import FinitelyGeneratedFreeModules
-    from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-        FreshFreeModuleOn,
-    )
 
     source = connection.module()
     algebra = connection.algebra()
@@ -516,22 +514,6 @@ class ConnectionDeRhamModule:
         if not connection.is_flat():
             raise ValueError("a DG-module de Rham differential requires a flat connection")
 
-        from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
-        from dzack_research.preamble.categories.algebras.de_rham_algebras import (
-            DeRhamAlgebra,
-        )
-        from dzack_research.preamble.categories.algebras.differential_graded_algebras import (
-            DifferentialComponentMorphism,
-        )
-        from dzack_research.preamble.categories.modules.dg_modules import (
-            DifferentialGradedModules,
-        )
-        from dzack_research.preamble.categories.modules.pure.modules import (
-            restrict_scalars,
-        )
-        from dzack_research.preamble.categories.modules.graded_direct_sums import (
-            GradedDirectSumModule,
-        )
 
         coefficient_module = connection.module()
         algebra = connection.algebra()

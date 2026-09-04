@@ -12,6 +12,13 @@ from dzack_research.preamble.categories.rings.ring_foundation import _engine_ele
 from dzack_research.preamble.tensors.tensor import tensor
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.algebras.free_algebras import PolynomialRing
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import BasedFreeModule
+from dzack_research.preamble.categories.sets.finite_families import finite_family
+from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+    finite_ordered_filter,
+    finite_ordered_image,
+)
 
 
 class ConvexPolytopes(Category):
@@ -99,7 +106,6 @@ class ConvexPolytopeParent(Parent):
 
         ambient_dimension = int(polyhedron.ambient_dim())
         if lattice is None:
-            from dzack_research.preamble.categories.modules.framed.framed_free_modules import BasedFreeModule
 
             lattice = BasedFreeModule(integers, ambient_dimension)
         if lattice.base_ring() is not integers:
@@ -149,7 +155,6 @@ class ConvexPolytopeParent(Parent):
 
     def ambient_space(self):
         r"""Return the owned rational coordinate module ``QQ^n``."""
-        from dzack_research.preamble.categories.modules.framed.framed_free_modules import BasedFreeModule
 
         rationals = _own_ring(SageQQ)
         return BasedFreeModule(
@@ -232,7 +237,6 @@ class ConvexPolytopeParent(Parent):
 
     def integral_points(self):
         integers = _own_ring(SageZZ)
-        from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_image
 
         engine_points = finite_ordered_set(self._engine_polyhedron().integral_points())
         return finite_ordered_image(
@@ -245,7 +249,6 @@ class ConvexPolytopeParent(Parent):
         )
 
     def interior_integral_points(self):
-        from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_filter
 
         return finite_ordered_filter(
             self.integral_points(),
@@ -256,7 +259,6 @@ class ConvexPolytopeParent(Parent):
         )
 
     def boundary_integral_points(self):
-        from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_filter
 
         interior = self.interior_integral_points()
         return finite_ordered_filter(
@@ -288,7 +290,6 @@ class ConvexPolytopeParent(Parent):
         r"""Return the exact owned Ehrhart polynomial by interpolation."""
         if not self.is_lattice_polytope():
             raise TypeError("the Ehrhart polynomial is defined here for lattice polytopes")
-        from dzack_research.preamble.categories.algebras.free_algebras import PolynomialRing
 
         rationals = _own_ring(SageQQ)
         integers = _own_ring(SageZZ)
@@ -330,7 +331,8 @@ class ConvexPolytopeParent(Parent):
                 coefficient = integers(((-1) ** (j - i)) * comb(d + 1, j - i))
                 value += coefficient * counts[i]
             result.append(value)
-        return tuple(result)
+
+        return finite_family(result, name="h* vector")
 
     def is_reflexive(self) -> bool:
         if not self.is_lattice_polytope():

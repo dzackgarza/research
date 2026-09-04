@@ -12,19 +12,32 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.refine import refine
+from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModule
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+    BasedFreeModule,
+    FreshFreeModuleOn,
+    ring_as_module,
+)
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    ModuleEmbedding,
+    module_embedding,
+    module_homset,
+)
+from dzack_research.preamble.categories.modules.pure.modules import (
+    FramedModules,
+    Modules,
+)
+from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
 class CommutativeIdeals(OwnedCategoryOverBaseRing):
     r"""Ideals of ``R``: subobjects of the rank-one ``R``-module ``R``."""
 
     def super_categories(self):
-        from dzack_research.preamble.categories.modules.pure.modules import Modules
 
         return [Modules(self.base_ring())]
 
     def subobject_category(self):
-        from dzack_research.preamble.categories.modules.pure.modules import Modules
-        from dzack_research.preamble.categories.modules.framed.framed_free_modules import ring_as_module
 
         ring = self.base_ring()
         return SubobjectsOf(Modules(ring), ring_as_module(ring))
@@ -108,9 +121,6 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             if localization_ring.localization_source() is not self.ring():
                 raise ValueError("the localization has the wrong source ring")
 
-            from dzack_research.preamble.categories.modules.pure.modules import FramedModules
-            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
-            from dzack_research.preamble.categories.modules.framed.framed_free_modules import ring_as_module
 
             localized = self.localize(localization_ring)
             localized_inclusion = localized.localization_functor()(self.inclusion())
@@ -133,9 +143,6 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                             target_labels[0]
                         )
                     }
-                )
-                from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-                    ModuleEmbedding,
                 )
 
                 inclusion = ModuleEmbedding(
@@ -371,16 +378,6 @@ def CommutativeIdeal(ring, *generators):
             raise NotImplementedError(
                 "this ideal has no selected exact module-presentation backend"
             )
-        from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-            FreshFreeModuleOn,
-        )
-        from dzack_research.preamble.categories.sets.set_categories import Sets
-        from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-            ring_as_module,
-        )
-        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-            module_embedding,
-        )
 
         generator = selected[0]
         ambient_module = ring_as_module(source)
@@ -401,19 +398,6 @@ def CommutativeIdeal(ring, *generators):
         return ideal
     syzygies = backend.syzygy_module()
 
-    from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-        BasedFreeModule,
-    )
-    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-        FinitelyPresentedModule,
-    )
-    from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-        ring_as_module,
-    )
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-        module_embedding,
-        module_homset,
-    )
     labels = finite_ordered_set(range(len(selected)))
     relation_labels = finite_ordered_set(range(int(syzygies.nrows())))
     free_generators = BasedFreeModule(source, labels)

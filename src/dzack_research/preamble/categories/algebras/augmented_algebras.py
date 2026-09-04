@@ -18,6 +18,13 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _owned_ring,
 )
 from dzack_research.preamble.refine import refine
+from dzack_research.preamble.categories.algebras.free_algebras import (
+    AlternatingAlgebras,
+    FreeAlgebras,
+    GradedFreeAlgebras,
+    SymmetricAlgebras,
+    TensorAlgebras,
+)
 
 
 class AugmentedAlgebras(OwnedCategoryOverBaseRing):
@@ -128,13 +135,6 @@ def _augmentation_codomain_is_allowed(domain, base, codomain) -> bool:
 
 
 def _graded_algebra_placement(domain, base):
-    from dzack_research.preamble.categories.algebras.free_algebras import (
-        AlternatingAlgebras,
-        FreeAlgebras,
-        GradedFreeAlgebras,
-        SymmetricAlgebras,
-        TensorAlgebras,
-    )
 
     placement = []
     try:

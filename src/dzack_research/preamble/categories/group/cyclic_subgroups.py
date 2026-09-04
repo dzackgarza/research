@@ -8,6 +8,15 @@ from sage.structure.parent import Parent
 
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.cardinals import cardinal
+from dzack_research.preamble.categories.group.groups import (
+    GroupsWithChosenFiniteGeneratingSet,
+    OwnedAbelianGroups,
+    OwnedFiniteAbelianGroups,
+    OwnedFiniteGroups,
+    _canonical_subgroup_inclusion,
+    _owned_group,
+)
+from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
 
 class CyclicSubgroup(Parent):
@@ -21,13 +30,6 @@ class CyclicSubgroup(Parent):
     """
 
     def __init__(self, supergroup, generator) -> None:
-        from dzack_research.preamble.categories.group.groups import (
-            GroupsWithChosenFiniteGeneratingSet,
-            OwnedAbelianGroups,
-            OwnedFiniteAbelianGroups,
-            OwnedFiniteGroups,
-            _owned_group,
-        )
 
         supergroup = _owned_group(supergroup)
         generator = supergroup(generator)
@@ -55,7 +57,6 @@ class CyclicSubgroup(Parent):
         return finite_ordered_set((self.generator(),))
 
     def number_of_group_generators(self):
-        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
         return _own_ring(SageZZ)(int(self.group_generators().cardinality()))
 
@@ -63,14 +64,10 @@ class CyclicSubgroup(Parent):
         return self.supergroup().one()
 
     def inclusion(self):
-        from dzack_research.preamble.categories.group.groups import (
-            _canonical_subgroup_inclusion,
-        )
 
         return _canonical_subgroup_inclusion(self)
 
     def is_finite(self):
-        from dzack_research.preamble.categories.group.groups import OwnedFiniteGroups
 
         if self.supergroup() in OwnedFiniteGroups():
             return True

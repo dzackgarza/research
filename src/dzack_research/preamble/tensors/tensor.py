@@ -36,6 +36,16 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
 )
 from dzack_research.preamble.categories.sets.set_categories import NN
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreeModule
+from dzack_research.preamble.categories.modules.pure.modules import (
+    MatrixSpaces,
+    Modules,
+    _engine_matrix as _engine_module_matrix,
+)
+from dzack_research.preamble.categories.sets.cardinals import cardinal
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
+from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
 _Rings = OwnedRings()
@@ -43,9 +53,6 @@ _Rings = OwnedRings()
 
 def index_rank_family(ranks):
     r"""Return the family \(i\mapsto\) rank of slot \(i\), for \(i\in\Delta[k-1]\)."""
-    from dzack_research.preamble.categories.sets.cardinals import cardinal
-    from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
-    from dzack_research.preamble.categories.sets.set_categories import Sets
 
     entries = tuple(cardinal(rank) for rank in ranks)
     return IndexedFamily(
@@ -512,7 +519,6 @@ class Tensor:
             raise TypeError(
                 "tensor pullback requires an owned linear morphism with finite framed-free endpoints"
             ) from error
-        from dzack_research.preamble.categories.modules.pure.modules import MatrixSpaces
 
         if matrix.parent() not in MatrixSpaces(self.base_ring()):
             raise TypeError("tensor pullback requires one coefficient ring")
@@ -529,9 +535,8 @@ class Tensor:
         # exact matrix backend only inside this boundary and cross every entry
         # back before constructing the owned tensor.
         if q == 2:
-            from dzack_research.preamble.categories.modules.pure.modules import _engine_matrix
 
-            backend_map = _engine_matrix(matrix)
+            backend_map = _engine_module_matrix(matrix)
             backend_form = _engine_component_matrix(self)
             backend_pullback = backend_map.transpose() * backend_form * backend_map
             ring = self.base_ring()
@@ -1196,7 +1201,6 @@ class TensorModule(UniqueRepresentation, Parent):
     ) -> None:
         self._upper_ranks = tuple(upper_ranks)
         self._lower_ranks = tuple(lower_ranks)
-        from dzack_research.preamble.categories.modules.pure.modules import Modules
 
         Parent.__init__(self, base=base_ring, category=Modules(base_ring))
 
@@ -1218,7 +1222,6 @@ class TensorModule(UniqueRepresentation, Parent):
 
     def tensor_type(self) -> ProductOfNaturalNumbers:
         r"""Return the type $(p, q)$ as a point of $\mathbb N^2$ (`CON-15`)."""
-        from dzack_research.preamble.categories.sets.set_categories import NN
 
         return (NN**2)((len(self._upper_ranks), len(self._lower_ranks)))
 
@@ -1233,9 +1236,6 @@ class TensorModule(UniqueRepresentation, Parent):
 
     def index_modules(self):
         r"""Return the contravariant and covariant index modules \(R^{n_i}\)."""
-        from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-            FreeModule,
-        )
         from sage.rings.semirings.non_negative_integer_semiring import NN
 
         def free_of_rank(rank):
@@ -1250,7 +1250,6 @@ class TensorModule(UniqueRepresentation, Parent):
 
     def tensor_indices(self):
         r"""Return the standard generating set of each finite index module."""
-        from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
         def keys(rank):
             assert rank != Infinity, (
@@ -1383,9 +1382,6 @@ class _TensorConstructor:
 
     def from_matrix(self, matrix):
         r"""Interpret a finite matrix Hom element as a type-``(1,1)`` tensor."""
-        from dzack_research.preamble.categories.modules.pure.modules import (
-            MatrixSpaces,
-        )
 
         parent = matrix.parent()
         ring = parent.base_ring()

@@ -24,6 +24,10 @@ from dzack_research.preamble.categories.modules.group_modules.group_modules impo
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
 from dzack_research.preamble.refine import refine
+from dzack_research.preamble.categories.functors.scalar_change import (
+    ScalarExtensionFunctor,
+    base_change_adjunction,
+)
 
 
 def _unacted_module(group_module):
@@ -75,9 +79,6 @@ class GroupModuleScalarExtensionFunctor(Functor):
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())
         target = self(morphism.codomain())
-        from dzack_research.preamble.categories.functors.scalar_change import (
-            ScalarExtensionFunctor,
-        )
 
         underlying = (
             morphism.codomain().forget_action_morphism()
@@ -198,9 +199,6 @@ class GroupModuleBaseChangeAdjunction(Adjunction):
         )
 
     def _underlying_adjunction(self):
-        from dzack_research.preamble.categories.functors.scalar_change import (
-            base_change_adjunction,
-        )
 
         return base_change_adjunction(self._ring_map)
 

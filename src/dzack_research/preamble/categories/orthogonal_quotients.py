@@ -1,4 +1,5 @@
 r"""Finite character quotients controlling arithmetic-subgroup orbit splitting."""
+from dzack_research.preamble.categories.isotropic_orbits import transport_isotropic_object
 
 
 class OrthogonalCharacterQuotient:
@@ -213,9 +214,6 @@ def subgroup_vectors_are_equivalent(subgroup, left, right) -> bool:
 
 
 def subgroup_isotropic_orbit_representatives(subgroup, rank, *, flag=False):
-    from dzack_research.preamble.categories.isotropic_orbits import (
-        transport_isotropic_object,
-    )
 
     quotient = OrthogonalCharacterQuotient(subgroup)
     orthogonal_group = subgroup.supergroup()

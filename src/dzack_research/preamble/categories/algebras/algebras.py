@@ -25,6 +25,24 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.refine import refine
+from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
+from dzack_research.preamble.categories.abstract_categories.products import _finite_factor_family
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    ModuleMorphism,
+    module_coefficients,
+    module_homset,
+)
+from dzack_research.preamble.categories.modules.pure.modules import (
+    BilinearMap,
+    FramedModules,
+    MatrixEndomorphismSpaces,
+    Modules,
+    TensorProductModules,
+)
+from dzack_research.preamble.categories.modules.tensor_products import tensor_product_morphism
+from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
+from dzack_research.preamble.categories.sets.cardinals import cardinal
+from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 
 
 class AssociativeAlgebras(OwnedCategoryOverBaseRing):
@@ -41,7 +59,6 @@ class AssociativeAlgebras(OwnedCategoryOverBaseRing):
         return "associative algebras"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.modules.pure.modules import Modules
 
         return [Modules(self.base_ring())]
 
@@ -105,7 +122,6 @@ class Algebras(OwnedCategoryOverBaseRing):
         return "algebras"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.modules.pure.modules import Modules
 
         return [
             OwnedRings(),
@@ -138,7 +154,6 @@ class Algebras(OwnedCategoryOverBaseRing):
         def _ring_morphism_defining_algebra_structure(self):
             base = self.algebra_base_ring()
             center = self.ring_center()
-            from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
 
             return ring_morphism(
                 base,
@@ -160,7 +175,6 @@ class Algebras(OwnedCategoryOverBaseRing):
             center = self.ring_center()
             if eta.codomain() is center:
                 return eta
-            from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
 
             return ring_morphism(eta.domain(), center, eta)
 
@@ -175,10 +189,6 @@ class Algebras(OwnedCategoryOverBaseRing):
             selected = self.__dict__.get("_preamble_multiplication_morphism")
             if selected is not None:
                 return selected
-            from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
-            from dzack_research.preamble.categories.modules.pure.modules import (
-                BilinearMap,
-            )
 
             ring = self.algebra_base_ring()
             module = self
@@ -255,7 +265,6 @@ class AlgebrasWithChosenMultiplication(OwnedCategoryOverBaseRing):
             base = self.algebra_base_ring()
             center = self.ring_center()
             unit = self.one()
-            from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
 
             return ring_morphism(
                 base,
@@ -274,7 +283,6 @@ class CommutativeAlgebras(OwnedCategoryOverBaseRing):
         return "commutative algebras"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.rings.ring_foundation import OwnedCommutativeRings
 
         return [Algebras(self.base_ring()), OwnedCommutativeRings()]
 
@@ -332,7 +340,6 @@ class FramedAlgebras(OwnedCategoryOverBaseRing):
 
         @cached_method
         def algebra_generators(self):
-            from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 
             return indexed_family(
                 self.algebra_generating_set(),
@@ -372,7 +379,6 @@ class MatrixAlgebras(OwnedCategoryOverBaseRing):
         return "matrix algebras"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.modules.pure.modules import MatrixEndomorphismSpaces
 
         if self.base_ring() not in OwnedCommutativeRings():
             raise TypeError("the canonical R-algebra structure on End_R(F) needs commutative R")
@@ -388,7 +394,6 @@ class MatrixAlgebras(OwnedCategoryOverBaseRing):
 
         @cached_method
         def _ring_morphism_defining_algebra_structure(self):
-            from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
 
             ring = self.base_ring()
             center = self.ring_center()
@@ -409,7 +414,6 @@ class MatrixAlgebras(OwnedCategoryOverBaseRing):
 
 def refine_matrix_algebra(homset):
     r"""Attach the canonical ``R``-algebra structure to a square matrix Hom object."""
-    from dzack_research.preamble.categories.modules.pure.modules import MatrixEndomorphismSpaces
 
     ring = homset.base_ring()
     if homset not in MatrixEndomorphismSpaces(ring):
@@ -544,9 +548,6 @@ class CommutativeAlgebraCoproducts(OwnedCategoryOverBaseRing):
     class ParentMethods:
         def coproduct_factors(self):
             r"""Return the family of factors, indexed by the product's own index set."""
-            from dzack_research.preamble.categories.abstract_categories.products import (
-                _finite_factor_family,
-            )
 
             return _finite_factor_family(self._preamble_coproduct_factors, name="Coproduct factors")
 
@@ -645,9 +646,6 @@ class AlgebraMorphism(Morphism):
         framed_domain = domain in FramedAlgebras(domain.base_ring())
         self._engine_morphism = None
         self._element_function = None
-        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-            ModuleMorphism,
-        )
 
         if isinstance(images, ModuleMorphism):
             if images.domain() is not domain or images.codomain() is not codomain:
@@ -655,7 +653,6 @@ class AlgebraMorphism(Morphism):
                     "an adopted module morphism must have the owned algebra homset's "
                     "exact domain and codomain"
                 )
-            from dzack_research.preamble.categories.sets.cardinals import cardinal
 
             labels = domain.module_generating_set()
             size = cardinal(labels.cardinality())
@@ -832,12 +829,6 @@ class AlgebraMorphism(Morphism):
                     for label in other.domain().algebra_generating_set()
                 }
             )
-        from dzack_research.preamble.categories.modules.pure.modules import (
-            FramedModules,
-        )
-        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-            module_homset,
-        )
 
         if other.domain() in FramedModules(other.domain().base_ring()):
             module_map = module_homset(other.domain(), self.codomain())(
@@ -1061,8 +1052,6 @@ class _OwnedAlgebraParent(_OwnedRingParent):
             self._preamble_algebra_generator_values = None
             return
 
-        from dzack_research.preamble.categories.sets.indexed_families import indexed_family
-        from dzack_research.preamble.categories.sets.cardinals import cardinal
 
         selected_labels = self._preamble_algebra_generating_set
         label_size = cardinal(selected_labels.cardinality())
@@ -1119,7 +1108,6 @@ class _OwnedAlgebraParent(_OwnedRingParent):
 
 def _default_structure_map(base, algebra):
     center = algebra.ring_center()
-    from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
 
     return ring_morphism(
         base,
@@ -1146,10 +1134,6 @@ def refine_algebra(algebra, base_ring, labels=None, *categories):
     placement = [Algebras(base), OwnedAlgebras(base)]
     if _engine_ring(algebra) in SageCommutativeAlgebras(_engine_ring(base)):
         placement.append(CommutativeAlgebras(base))
-        from dzack_research.preamble.categories.rings.commutative_algebra import (
-            CommutativeRingConstructions,
-        )
-        placement.append(CommutativeRingConstructions())
     if labels is not None:
         placement.append(FramedAlgebras(base))
     placement.extend(categories)
@@ -1198,10 +1182,6 @@ def _module_presented_by_multiplication(module):
 def _unit_from_multiplication(multiplication):
     from sage.matrix.constructor import matrix as sage_matrix
     from sage.modules.free_module_element import vector as sage_vector
-    from dzack_research.preamble.categories.sets.cardinals import cardinal
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-        module_coefficients,
-    )
 
     module = multiplication.codomain()
     tensor_square = multiplication.domain()
@@ -1285,12 +1265,6 @@ def algebra_from_multiplication(multiplication, base_ring=None, unital=True):
             )
         return specialized(multiplication, unital=unital)
 
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-        module_homset,
-    )
-    from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
-    from dzack_research.preamble.categories.modules.pure.modules import TensorProductModules
-    from dzack_research.preamble.categories.modules.tensor_products import tensor_product_morphism
 
     module = _require_endomorphism_multiplication(multiplication, ring)
     if multiplication.domain() not in TensorProductModules(ring):

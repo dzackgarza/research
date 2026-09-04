@@ -17,6 +17,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _owned_ring,
 )
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreshFreeModuleOn
 
 
 class ScalarExtensionFunctor(Functor):
@@ -37,9 +38,6 @@ class ScalarExtensionFunctor(Functor):
         return self._ring_map
 
     def _apply_object(self, module):
-        from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-            FreshFreeModuleOn,
-        )
 
         if isinstance(module, RestrictedScalarsModuleView):
             if (

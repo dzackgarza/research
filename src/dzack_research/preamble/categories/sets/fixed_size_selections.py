@@ -11,6 +11,10 @@ from sage.structure.parent import Parent
 
 from dzack_research.preamble.categories.sets.enumerated.enumerated_sets import EnumeratedSets
 from dzack_research.preamble.categories.sets.set_categories import TotallyOrderedSets
+from dzack_research.preamble.categories.sets.cardinals import cardinal
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_image
+from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
 def _largest_combinadic_entry(rank: int, size: int) -> int:
@@ -79,8 +83,6 @@ class FixedSizeSelectionElement(Element):
         )
 
     def word(self):
-        from dzack_research.preamble.categories.sets.set_categories import Sets
-        from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 
         indices = Sets.Δ[self.degree() - 1]
 
@@ -103,8 +105,6 @@ class FixedSizeSelectionElement(Element):
         )
 
     def support(self):
-        from dzack_research.preamble.categories.sets.set_categories import Sets
-        from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_image
 
         def distinct_positions():
             previous = None
@@ -203,7 +203,6 @@ class FixedSizeSelections(Parent):
     Element = FixedSizeSelectionElement
 
     def __init__(self, source, selection_size, *, repetition) -> None:
-        from dzack_research.preamble.categories.sets.cardinals import cardinal
 
         self._source = source
         self._selection_size = int(selection_size)
@@ -241,7 +240,6 @@ class FixedSizeSelections(Parent):
         )
 
     def cardinality(self):
-        from dzack_research.preamble.categories.sets.cardinals import cardinal
 
         source_size = cardinal(self.source().cardinality())
         degree = self.selection_size()
@@ -269,7 +267,6 @@ class FixedSizeSelections(Parent):
         return source_size
 
     def unrank(self, position):
-        from dzack_research.preamble.categories.sets.cardinals import cardinal
 
         position = int(position)
         if position < 0:
@@ -294,7 +291,6 @@ class FixedSizeSelections(Parent):
     index = rank
 
     def __iter__(self):
-        from dzack_research.preamble.categories.sets.cardinals import cardinal
 
         size = cardinal(self.cardinality())
         try:

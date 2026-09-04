@@ -16,6 +16,10 @@ from sage.structure.richcmp import op_EQ, op_NE
 from sage.structure.sage_object import SageObject
 from sage.rings.integer_ring import ZZ as SageZZ
 
+from dzack_research.preamble.categories.algebras.algebras import (
+    CommutativeAlgebras,
+    refine_algebra,
+)
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedAdicallyCompleteRings,
     OwnedCategoryOverBaseRing,
@@ -42,6 +46,13 @@ from dzack_research.preamble.categories.sets.set_categories import (
     SetInclusion,
 )
 from dzack_research.preamble.refine import refine
+from dzack_research.preamble.categories.functors.module_localization import module_localization_functor
+from dzack_research.preamble.categories.rings.commutative_ideals import CommutativeIdeal
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    predicate_subring,
+    ring_morphism,
+)
+from dzack_research.preamble.categories.sets.set_categories import FiniteSets
 
 
 class CommutativeRingConstructions(Category):
@@ -52,8 +63,6 @@ class CommutativeRingConstructions(Category):
 
     class ParentMethods:
         def as_algebra_over(self, base_ring):
-            from dzack_research.preamble.categories.algebras.algebras import refine_algebra
-
             base = _own_ring(base_ring)
             engine = _engine_ring(self)
             if not engine.has_coerce_map_from(_engine_ring(base)):
@@ -82,9 +91,6 @@ class CommutativeRingConstructions(Category):
                 return LocalizedMaximalIdeal(
                     self, normalized, source_ideal=source_ideal
                 )
-            from dzack_research.preamble.categories.rings.commutative_ideals import (
-                CommutativeIdeal,
-            )
 
             return CommutativeIdeal(self, *generators)
 
@@ -110,6 +116,13 @@ def refine_commutative_ring_constructions(ring):
     if ring not in OwnedCommutativeRings():
         raise TypeError("commutative-ring constructions require a commutative ring")
     return refine(ring, CommutativeRingConstructions())
+
+
+def refine_commutative_algebra(algebra, base_ring, labels=None, *categories):
+    r"""Place a commutative algebra with its standard ring constructions."""
+    return refine_commutative_ring_constructions(
+        refine_algebra(algebra, base_ring, labels, *categories)
+    )
 
 
 def _engine_ring_value(ring, value):
@@ -184,7 +197,6 @@ def _canonical_map(domain, codomain, engine_map=None):
             return codomain(represented)
         return codomain(value)
 
-    from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
 
     return ring_morphism(
         domain,
@@ -500,7 +512,6 @@ class GeneralQuotientRingParent(Parent):
                 (QuotientRings(), CommutativeRingConstructions())
             ),
         )
-        from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
 
         self._preamble_quotient_map = ring_morphism(
             source,
@@ -792,7 +803,6 @@ class GeneralLocalizationRingParent(Parent):
                 (LocalizationRings(), CommutativeRingConstructions())
             ),
         )
-        from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
 
         self._preamble_localization_map = ring_morphism(
             source,
@@ -802,9 +812,6 @@ class GeneralLocalizationRingParent(Parent):
 
     def localize_module(self, module):
         r"""Return ``S^{-1}M`` through the module-localization theory."""
-        from dzack_research.preamble.categories.functors.module_localization import (
-            module_localization_functor,
-        )
 
         if module.base_ring() is not self.localization_source():
             raise ValueError("the module has the wrong source ring for this localization")
@@ -943,9 +950,6 @@ class PrimeLocalizations(Category):
     class ParentMethods:
         def localize_module(self, module):
             r"""Return ``R_p tensor_R M`` through the module-localization theory."""
-            from dzack_research.preamble.categories.functors.module_localization import (
-                module_localization_functor,
-            )
 
             if module.base_ring() is not self.localization_source():
                 raise ValueError("the module has the wrong source ring for this localization")
@@ -1067,7 +1071,6 @@ def QuotientRing(ring, ideal):
             pass
         try:
             if bool(quotient_engine.is_finite()):
-                from dzack_research.preamble.categories.sets.set_categories import FiniteSets
 
                 placements.append(FiniteSets())
         except (AttributeError, NotImplementedError, TypeError, ValueError):
@@ -1080,8 +1083,6 @@ def QuotientRing(ring, ideal):
     quotient._preamble_algebra_base_ring = source
     quotient._preamble_base_ring = source
     refine(quotient, placements)
-    from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
-
     refine(quotient, CommutativeAlgebras(source))
     return quotient
 
@@ -1210,7 +1211,6 @@ def quotient_localization_comparison(source_quotient, localization_ring):
         )
         return right_quotient_map(localized)
 
-    from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
 
     forward = ring_morphism(
         localized_quotient,
@@ -1288,7 +1288,6 @@ def _PrimeLocalizationFromSubmonoid(source, submonoid):
         fraction = fraction_engine(_engine_element(fraction_field, fraction_field(element)))
         return fraction.denominator() not in prime_ideal
 
-    from dzack_research.preamble.categories.rings.ring_foundation import predicate_subring
 
     placements = [
         PrimeLocalizations(),
@@ -1346,7 +1345,6 @@ def _PrimeLocalizationFromSubmonoid(source, submonoid):
         )
         return residue(numerator / denominator)
 
-    from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
 
     local._preamble_residue_map = ring_morphism(
         local,
@@ -1396,8 +1394,6 @@ def AdicCompletion(ring, ideal, *, precision=20):
         completion_engine = engine.completion(prime, int(precision))
     else:
         completion_engine = engine.completion(generator, prec=precision)
-    from dzack_research.preamble.categories.algebras.algebras import refine_algebra
-
     completion = refine_algebra(_own_ring(completion_engine), source)
     placements = [
         OwnedCommutativeRings(),
@@ -1434,10 +1430,6 @@ class FormalPowerSeriesRings(OwnedCategoryOverBaseRing):
         return "formal power-series rings"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.algebras.algebras import (
-            CommutativeAlgebras,
-        )
-
         return [
             CommutativeAlgebras(self.base_ring()),
             OwnedAdicallyCompleteRings(),
@@ -1525,8 +1517,6 @@ def Zp(*args, **kwargs):
 
 def PowerSeriesRing(base_ring, *args, **kwargs):
     base = _own_ring(base_ring)
-    from dzack_research.preamble.categories.algebras.algebras import refine_algebra
-
     result = _own_ring(_SagePowerSeriesRing(_engine_ring(base), *args, **kwargs))
     labels = tuple(_engine_ring(result).variable_names())
     algebra = refine_algebra(result, base, labels)
@@ -1539,8 +1529,6 @@ def PowerSeriesRing(base_ring, *args, **kwargs):
 def DualNumbers(base_ring, name="epsilon"):
     r"""Return the dual-number algebra ``R[epsilon]/(epsilon^2)``."""
     base = _own_ring(base_ring)
-    from dzack_research.preamble.categories.algebras.algebras import refine_algebra
-
     polynomial = refine_commutative_ring_constructions(
         refine_algebra(
             _own_ring(_SagePolynomialRing(_engine_ring(base), name)),

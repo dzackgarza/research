@@ -12,6 +12,10 @@ from sage.structure.parent import Parent
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.tensors.tensor import tensor
+from dzack_research.preamble.categories.lattices import Lattices
+from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+from dzack_research.preamble.categories.sets.cardinals import cardinal
+from dzack_research.preamble.tensors.tensor import _engine_component_matrix
 
 
 def _coxeter_entry(q1, q2, pairing):
@@ -55,8 +59,6 @@ class CoxeterDiagrams(Category):
         cartan_type = CartanType(cartan_type)
         if not rooted:
             return CoxeterDiagram(CoxeterMatrix(cartan_type), names=names, positions=positions)
-        from dzack_research.preamble.categories.lattices import Lattices
-        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
         lattice = Lattices(_own_ring(SageZZ))(cartan_type)
         return self.from_roots(tuple(lattice.module_generators()), names=names, positions=positions)
@@ -236,8 +238,6 @@ class CoxeterDiagram(Parent):
         form, and that form is allowed to be degenerate, so the zero index
         \(n_0\) is part of the answer.  This is not a signature *pair*.
         """
-        from dzack_research.preamble.categories.sets.cardinals import cardinal
-        from dzack_research.preamble.tensors.tensor import _engine_component_matrix
 
         eigenvalues = _engine_component_matrix(self.schlafli_tensor()).eigenvalues()
         positive = sum(1 for value in eigenvalues if value > 0)

@@ -11,6 +11,7 @@ from sage.categories.sets_cat import Sets as SageSets
 from sage.structure.parent import Parent
 
 from dzack_research.preamble.categories.abstract_categories.objects import Objects
+from dzack_research.preamble.categories.abstract_categories.functors import ImageInclusionFunctor
 
 
 class FunctorImageObject(Parent):
@@ -144,9 +145,6 @@ class ImageOfFunctor(Category):
         return self.Mor(obj, obj).identity()
 
     def inclusion(self):
-        from dzack_research.preamble.categories.abstract_categories.functors import (
-            ImageInclusionFunctor,
-        )
 
         return ImageInclusionFunctor(self)
 

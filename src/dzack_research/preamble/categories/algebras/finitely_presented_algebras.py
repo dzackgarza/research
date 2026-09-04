@@ -29,6 +29,11 @@ from dzack_research.preamble.categories.modules.tensor_products import (
     _flatten_tensor_label,
     _nested_tensor_label,
 )
+from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
+from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import _presentation_matrix
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_coefficients
+from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
 def _canonical_smith_representative(module, element):
@@ -91,7 +96,6 @@ class _LinearPresentationTensorIdeal(Ideal_nc):
         power = self._tensor_powers.get(degree)
         if power is not None:
             return power
-        from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
 
         power = TensorProduct(self._tensor_power(degree - 1), self._module)
         self._tensor_powers[degree] = power
@@ -112,9 +116,6 @@ class _LinearPresentationTensorIdeal(Ideal_nc):
         return result
 
     def reduce(self, element):
-        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-            module_coefficients,
-        )
 
         engine = self.ring()
         homogeneous_terms = {}
@@ -166,11 +167,6 @@ class _LinearPresentationTensorIdeal(Ideal_nc):
 
 def _tensor_algebra_from_module_presentation(presentation_ring, module):
     r"""Quotient a free associative algebra by ``module``'s linear relations."""
-    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-        _presentation_matrix,
-    )
-    from dzack_research.preamble.categories.sets.set_categories import Sets
-    from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 
     engine = _engine_ring(presentation_ring)
     relation_matrix = _presentation_matrix(module)

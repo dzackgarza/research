@@ -12,6 +12,15 @@ from dzack_research.preamble.categories.algebras.derivations import (
     GradedDerivations,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
+from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
+from dzack_research.preamble.categories.algebras.graded_commutative_algebras import (
+    GradedCommutativeAlgebras,
+    StrictlyGradedCommutativeAlgebras,
+)
+from dzack_research.preamble.categories.modules.cochain_complexes import CochainComplexes
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
+from dzack_research.preamble.categories.modules.pure.modules import FramedModules
+from dzack_research.preamble.categories.sets.cardinals import cardinal
 
 
 class DegreewiseLinearMorphism(Morphism):
@@ -44,8 +53,6 @@ class DegreewiseLinearMorphism(Morphism):
 
     def represented_module_morphism(self):
         from sage.rings.integer_ring import ZZ as SageZZ
-        from dzack_research.preamble.categories.modules.pure.modules import FramedModules
-        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 
         source = self.domain()
         target = self.codomain()
@@ -55,7 +62,6 @@ class DegreewiseLinearMorphism(Morphism):
                 "this differential component has no selected framed-module backend"
             )
         labels = source.module_generating_set()
-        from dzack_research.preamble.categories.sets.cardinals import cardinal
         if not cardinal(labels.cardinality()).is_finite():
             raise NotImplementedError(
                 "this differential component has no finite framed-module backend"
@@ -81,10 +87,6 @@ class DifferentialGradedAlgebras(OwnedCategoryOverBaseRing):
         return "differential graded algebras"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
-        from dzack_research.preamble.categories.modules.cochain_complexes import (
-            CochainComplexes,
-        )
 
         return [GradedAlgebras(self.base_ring()), CochainComplexes(self.base_ring())]
 
@@ -131,7 +133,6 @@ class CommutativeDifferentialGradedAlgebras(OwnedCategoryOverBaseRing):
         return "commutative differential graded algebras"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.algebras.graded_commutative_algebras import GradedCommutativeAlgebras
 
         return [
             DifferentialGradedAlgebras(self.base_ring()),
@@ -145,7 +146,6 @@ class StrictlyCommutativeDifferentialGradedAlgebras(OwnedCategoryOverBaseRing):
         return "strictly commutative differential graded algebras"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.algebras.graded_commutative_algebras import StrictlyGradedCommutativeAlgebras
 
         return [
             CommutativeDifferentialGradedAlgebras(self.base_ring()),

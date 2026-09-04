@@ -2,13 +2,13 @@ r"""Direct and inverse image on fixed-ambient module subobject categories."""
 
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 from dzack_research.preamble.categories.abstract_categories.constructions import Subobjects
+from dzack_research.preamble.categories.abstract_categories.constructions import Biproduct
 
 
 def _inverse_image_subobject(morphism, subobject):
     r"""Construct the pullback/preimage as the source image of ``ker(f,-i)``."""
     if subobject.inclusion().codomain() is not morphism.codomain():
         raise ValueError("the subobject is not in the morphism codomain")
-    from dzack_research.preamble.categories.abstract_categories.constructions import Biproduct
 
     direct_sum = Biproduct(morphism.domain(), subobject)
     difference = direct_sum.from_summands(morphism, -subobject.inclusion())

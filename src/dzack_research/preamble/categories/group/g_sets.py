@@ -33,6 +33,13 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_image,
     finite_ordered_set,
 )
+from dzack_research.preamble.categories.group.groups import (
+    _own_group,
+    _owned_group,
+    group_homset,
+)
+from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_filter
 
 
 class GSetHomCategoryConstruction(HomCategoryConstruction):
@@ -43,7 +50,6 @@ class GSetHomCategoryConstruction(HomCategoryConstruction):
 class GSets(CategoryPacketMethods, OwnedParameterizedCategory):
     @staticmethod
     def __classcall__(cls, group):
-        from dzack_research.preamble.categories.group.groups import _owned_group
 
         return OwnedParameterizedCategory.__classcall__(cls, _owned_group(group))
 
@@ -91,7 +97,6 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
 
     @staticmethod
     def __classcall__(cls, group):
-        from dzack_research.preamble.categories.group.groups import _owned_group
 
         return OwnedParameterizedCategory.__classcall__(cls, _owned_group(group))
 
@@ -245,8 +250,6 @@ def _finite_g_set_from_action(group, point_set, action):
     ``G -> Sym(X)``; the returned object stores that morphism rather than the
     temporary binary callback.
     """
-    from dzack_research.preamble.categories.group.groups import group_homset
-    from dzack_research.preamble.categories.group.groups import _own_group, _owned_group
 
     if isinstance(point_set, (tuple, list)):
         point_set = finite_ordered_set(point_set)
@@ -389,7 +392,6 @@ class OrbitSet(Parent):
         return isinstance(orbit, OrbitClass) and orbit.parent() is self
 
     def cardinality(self):
-        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
         return _own_ring(SageZZ)(self._orbit_classes.cardinality())
 
@@ -428,7 +430,6 @@ def fixed_point_set(g_set):
         raise NotImplementedError(
             "constructing fixed points requires a chosen finite group generating set"
         )
-    from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_filter
 
     return finite_ordered_filter(
         finite_ordered_set(g_set),

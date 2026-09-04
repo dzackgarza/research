@@ -16,6 +16,8 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     module_homset,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
+from dzack_research.preamble.categories.lattice_morphisms import lattice_homset
+from dzack_research.preamble.categories.lattices import Lattices
 
 
 class DualizationFunctor(ContravariantFunctor):
@@ -141,7 +143,6 @@ class OrthogonalDirectSumBifunctor(Bifunctor):
     r"""The orthogonal-direct-sum bifunctor on finite-rank lattices."""
 
     def __init__(self, base_ring) -> None:
-        from dzack_research.preamble.categories.lattices import Lattices
 
         category = Lattices(_owned_ring(base_ring))
         super().__init__(category, category, category)
@@ -164,7 +165,6 @@ class OrthogonalDirectSumBifunctor(Bifunctor):
         )
 
     def _apply_pair_morphism(self, left_morphism, right_morphism):
-        from dzack_research.preamble.categories.lattice_morphisms import lattice_homset
 
         source = self(left_morphism.domain(), right_morphism.domain())
         target = self(left_morphism.codomain(), right_morphism.codomain())

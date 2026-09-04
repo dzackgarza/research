@@ -106,6 +106,7 @@ from dzack_research.preamble.categories.algebras.free_algebras import (
 )
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace as _MatrixSpace
 from dzack_research.preamble.categories.algebras.algebras import refine_matrix_algebra
+from dzack_research.preamble.refine import refine
 
 
 def _public_commutative_ring(ring):
@@ -189,8 +190,6 @@ def session_ring_objects() -> dict[str, object]:
     from sage.all import QQbar as SageQQbar
     from sage.all import RDF as SageRDF
     from sage.all import ZZ as SageZZ
-
-    from dzack_research.preamble.refine import refine
 
     refine(RR, OwnedFields())
     _public_commutative_ring(RR)

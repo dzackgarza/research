@@ -52,6 +52,18 @@ from dzack_research.preamble.categories.group.magmas import (
     Semigroups,
 )
 from dzack_research.preamble.refine import refine
+from dzack_research.preamble.categories.sets.cardinals import (
+    aleph0,
+    cardinal,
+    continuum,
+)
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.set_categories import (
+    CountablyInfiniteSets,
+    FiniteSets,
+    Sets,
+    UncountableSets,
+)
 
 
 class RingMorphism(Morphism):
@@ -381,16 +393,6 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
 
         def cardinality(self):
             r"""Return the exact represented cardinal of the underlying set."""
-            from dzack_research.preamble.categories.sets.set_categories import (
-                CountablyInfiniteSets,
-                FiniteSets,
-                UncountableSets,
-            )
-            from dzack_research.preamble.categories.sets.cardinals import (
-                aleph0,
-                cardinal,
-                continuum,
-            )
 
             category = self.category()
             if category.is_subcategory(FiniteSets()):
@@ -423,9 +425,6 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
 
         def _exact_coefficient_presentation_relations(self):
             r"""Return the selected coefficient relations in the computation ring."""
-            from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-                finite_ordered_set,
-            )
 
             return finite_ordered_set(())
 
@@ -645,7 +644,6 @@ class OwnedOrders(OwnedCategory):
 
     class ParentMethods:
         def cardinality(self):
-            from dzack_research.preamble.categories.sets.cardinals import aleph0
 
             return aleph0
 
@@ -1087,12 +1085,6 @@ def _owned_ring_size(engine):
     from sage.categories.number_fields import NumberFields
     from sage.categories.sets_cat import Sets as SageSets
     from sage.rings.qqbar import QQbar as SageQQbar
-    from dzack_research.preamble.categories.sets.set_categories import (
-        CountablyInfiniteSets,
-        FiniteSets,
-        Sets,
-        UncountableSets,
-    )
 
     if engine.category().is_subcategory(SageSets().Finite()):
         return FiniteSets()

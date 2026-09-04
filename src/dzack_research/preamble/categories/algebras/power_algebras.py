@@ -43,6 +43,9 @@ from dzack_research.preamble.categories.modules.powers import (
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
 from dzack_research.preamble.refine import refine
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreeModuleOn
+from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
 class PowerAlgebraElement(GradedDirectSumElement):
@@ -68,7 +71,6 @@ class PowerAlgebra(GradedDirectSumModule):
         constructor = AlternatingPower if flavor == "alternating" else DividedPower
         degree_index_set = None
         if flavor == "alternating" and module in FinitelyGeneratedFreeModules(base):
-            from dzack_research.preamble.categories.sets.set_categories import Sets
 
             degree_index_set = Sets.Δ[int(module.rank())]
 
@@ -89,7 +91,6 @@ class PowerAlgebra(GradedDirectSumModule):
         if module in FinitelyGeneratedFreeModules(base):
             categories.extend([FreeAlgebras(base), GradedFreeAlgebras(base)])
         self._preamble_algebra_generating_set = module.module_generating_set()
-        from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 
         self._preamble_algebra_generator_values = indexed_family(
             self._preamble_algebra_generating_set,
@@ -112,6 +113,9 @@ class PowerAlgebra(GradedDirectSumModule):
         if not isinstance(codomain, PowerAlgebra) or codomain.flavor() != self.flavor():
             raise TypeError("power-algebra Hom requires two algebras of one flavor")
         return power_algebra_homset(self, codomain)
+
+    def _power_algebra_homset_class(self):
+        return PowerAlgebraHomset
 
     def algebra_generating_set(self):
         return self.free_source_module().module_generating_set()
@@ -351,17 +355,11 @@ def DividedPowerAlgebraOf(module):
 
 
 def AlternatingAlgebraOn(base_ring, algebra_generating_set):
-    from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-        FreeModuleOn,
-    )
 
     return AlternatingAlgebraOf(FreeModuleOn(base_ring, algebra_generating_set))
 
 
 def DividedPowerAlgebraOn(base_ring, algebra_generating_set):
-    from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-        FreeModuleOn,
-    )
 
     return DividedPowerAlgebraOf(FreeModuleOn(base_ring, algebra_generating_set))
 

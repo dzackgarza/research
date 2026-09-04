@@ -17,6 +17,7 @@ from sage.structure.unique_representation import UniqueRepresentation
 from dzack_research.preamble.categories.group.magmas import Monoids
 from dzack_research.preamble.refine import refine
 from dzack_research.preamble.rings.real import RR
+from dzack_research.preamble.categories.sets.cardinals import continuum
 
 
 class UnitIntervalElement(Element):
@@ -108,7 +109,6 @@ class UnitInterval(UniqueRepresentation, Parent):
         return self.one()
 
     def cardinality(self):
-        from dzack_research.preamble.categories.sets.cardinals import continuum
 
         return continuum
 

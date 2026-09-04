@@ -27,13 +27,20 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_image,
     finite_ordered_set,
 )
+from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
+from dzack_research.preamble.categories.algebras.finitely_presented_algebras import AlgebrasWithChosenFinitePresentation
+from dzack_research.preamble.categories.algebras.free_algebras import SymmetricAlgebras
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_embedding
+from dzack_research.preamble.categories.modules.pure.modules import (
+    ModuleSubobjects,
+    Modules,
+    restrict_scalars,
+)
+from dzack_research.preamble.refine import refine
 
 
 def _commutative_presentation_data(algebra):
     r"""Return ``(P, labels, variables, relations, lift)`` for ``A = P/I``."""
-    from dzack_research.preamble.categories.algebras.finitely_presented_algebras import AlgebrasWithChosenFinitePresentation
-    from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
-    from dzack_research.preamble.categories.algebras.free_algebras import SymmetricAlgebras
 
     base = algebra.base_ring()
     if algebra not in CommutativeAlgebras(base):
@@ -254,11 +261,6 @@ class DerivationSpace(CategoricalHomset):
             algebra
         )
         self._generator_labels = labels
-        from dzack_research.preamble.categories.modules.pure.modules import ModuleSubobjects
-        from dzack_research.preamble.categories.modules.pure.modules import Modules
-        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_embedding
-        from dzack_research.preamble.categories.modules.pure.modules import restrict_scalars
-        from dzack_research.preamble.refine import refine
 
         base = algebra.base_ring()
         structure_map = algebra.algebra_structure_morphism()
@@ -353,7 +355,6 @@ class DerivationSpace(CategoricalHomset):
         return self.algebra_multiple(scalar, derivation)
 
     def algebra_action(self):
-        from dzack_research.preamble.categories.modules.pure.modules import Modules
 
         endomorphisms = Modules(self.algebra()).End(self)
         return SetMorphism(
@@ -461,10 +462,6 @@ class GradedDerivationSpace(CategoricalHomset):
         self._algebra = algebra
         self._target = target
         self._shift = int(shift)
-        from dzack_research.preamble.categories.modules.pure.modules import ModuleSubobjects
-        from dzack_research.preamble.categories.modules.pure.modules import Modules
-        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_embedding
-        from dzack_research.preamble.refine import refine
 
         ring = algebra.base_ring()
         self._ambient_hom = Modules(ring).Mor(algebra, target)

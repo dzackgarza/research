@@ -4,13 +4,21 @@ from dzack_research.preamble.categories.abstract_categories.arrow_categories imp
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
 )
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import ring_as_module
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
+from dzack_research.preamble.categories.modules.powers import (
+    AlternatingPower,
+    alternating_power_morphism,
+)
+from dzack_research.preamble.categories.modules.pure.modules import (
+    FinitelyGeneratedFreeModules,
+    Modules,
+)
+from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
 
 
 def _require_finite_free(module) -> int:
     from sage.rings.infinity import Infinity
-    from dzack_research.preamble.categories.modules.pure.modules import (
-        FinitelyGeneratedFreeModules,
-    )
 
     ring = module.base_ring()
     if module not in FinitelyGeneratedFreeModules(ring):
@@ -46,7 +54,6 @@ def _unique_generator(module):
 
 def DeterminantLine(module):
     r"""Return ``det(module) = Lambda^rank(module) module``."""
-    from dzack_research.preamble.categories.modules.powers import AlternatingPower
 
     rank = _require_finite_free(module)
     return AlternatingPower(module, rank)
@@ -54,7 +61,6 @@ def DeterminantLine(module):
 
 def ExteriorForms(module, degree):
     r"""Return ``Lambda^degree(module^vee)``."""
-    from dzack_research.preamble.categories.modules.powers import AlternatingPower
 
     rank = _require_finite_free(module)
     degree = int(degree)
@@ -69,10 +75,6 @@ def VolumeTrivialization(module, forward, inverse):
     No orientation or volume is inferred from a framing.  This constructor
     merely verifies two already represented mutually inverse module maps.
     """
-    from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-        ring_as_module,
-    )
-    from dzack_research.preamble.categories.modules.pure.modules import Modules
 
     determinant = DeterminantLine(module)
     scalars = ring_as_module(module.base_ring())
@@ -93,12 +95,6 @@ def FramingVolumeTrivialization(module, unit=None):
     treated as orientation data.  ``unit`` rescales the selected top wedge and
     must be a unit of the coefficient ring.
     """
-    from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-        ring_as_module,
-    )
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-        module_homset,
-    )
     determinant = DeterminantLine(module)
     ring = module.base_ring()
     scalars = ring_as_module(ring)
@@ -118,10 +114,6 @@ def FramingVolumeTrivialization(module, unit=None):
 
 
 def _volume_scalars(module, volume):
-    from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-        ring_as_module,
-    )
-    from dzack_research.preamble.categories.modules.pure.modules import Modules
 
     determinant = DeterminantLine(module)
     scalars = ring_as_module(module.base_ring())
@@ -141,11 +133,6 @@ def _volume_scalars(module, volume):
 
 def PoincareDuality(module, volume, degree):
     r"""Return ``Lambda^k M ~= Lambda^(n-k) M^vee`` from ``volume``."""
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-        module_homset,
-    )
-    from dzack_research.preamble.categories.modules.powers import AlternatingPower
-    from dzack_research.preamble.categories.modules.pure.modules import Modules
 
     rank = _require_finite_free(module)
     degree = int(degree)
@@ -213,9 +200,6 @@ def PoincareDuality(module, volume, degree):
 
 def AlgebraicCorrelationMorphism(metric):
     r"""Return ``g^flat : M -> M^vee`` for a scalar-valued bilinear metric."""
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-        module_homset,
-    )
 
     _require_finite_free(metric)
     if metric.value_module() is not metric.base_ring():
@@ -245,10 +229,6 @@ def AlgebraicCorrelationMorphism(metric):
 
 def CorrelationIsomorphism(metric):
     r"""Return the perfect correlation ``M ~= M^vee`` for a unimodular form."""
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-        module_homset,
-    )
-    from dzack_research.preamble.categories.modules.pure.modules import Modules
 
     if not metric.is_unimodular():
         raise ValueError(
@@ -282,8 +262,6 @@ def HodgeStar(metric, volume, degree):
 
     ``Lambda^k M^vee --Lambda^k(g^sharp)--> Lambda^k M --PD--> Lambda^(n-k) M^vee``.
     """
-    from dzack_research.preamble.categories.modules.powers import alternating_power_morphism
-    from dzack_research.preamble.categories.modules.pure.modules import Modules
 
     rank = _require_finite_free(metric)
     degree = int(degree)
@@ -310,10 +288,6 @@ def MultivectorHodgeStar(metric, volume, degree):
     therefore does not require the metric to be perfect over the coefficient
     ring.  It need not be an isomorphism for a non-unimodular metric.
     """
-    from dzack_research.preamble.categories.modules.powers import (
-        AlternatingPower,
-        alternating_power_morphism,
-    )
 
     rank = _require_finite_free(metric)
     degree = int(degree)
@@ -337,7 +311,6 @@ def HodgeStarOverFractionField(metric, volume, degree):
     non-unimodular metric.  The returned isomorphism lives over the fraction
     field; it is never reported as an integral Hodge star on ``metric``.
     """
-    from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
 
     _require_finite_free(metric)
     if not metric.is_nondegenerate():

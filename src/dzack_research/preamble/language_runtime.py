@@ -6,30 +6,39 @@ the functions below and every backend value is crossed back before return.
 """
 
 from __future__ import annotations
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    OwnedRings,
+    _own_ring,
+)
+from dzack_research.preamble.categories.sets.set_categories import (
+    ConditionSet as owned_condition_set,
+    ImageSet as owned_image_set,
+    Set as owned_set,
+)
+from dzack_research.preamble.rings.real import (
+    RR,
+    RealApproximation as owned,
+)
 
 
 def Integer(value=0):
     from sage.rings.integer_ring import ZZ as SageZZ
-    from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
     return _own_ring(SageZZ)(value)
 
 
 def RealNumber(value):
-    from dzack_research.preamble.rings.real import RR
 
     return RR(value)
 
 
 def RealApproximation(value):
-    from dzack_research.preamble.rings.real import RealApproximation as owned
 
     return owned(value)
 
 
 def ComplexNumber(real, imag=None):
     from sage.rings.complex_mpfr import create_ComplexNumber
-    from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
     backend = (
         create_ComplexNumber(real)
@@ -50,8 +59,6 @@ def matrix(rows):
     else:
         width = 0
 
-    from dzack_research.preamble.categories.rings.ring_foundation import OwnedRings
-    from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
     from sage.rings.integer_ring import ZZ as SageZZ
 
     ring = None
@@ -73,19 +80,16 @@ def matrix(rows):
 
 
 def Set(iterable):
-    from dzack_research.preamble.categories.sets.set_categories import Set as owned_set
 
     return owned_set(iterable)
 
 
 def ImageSet(function, domain):
-    from dzack_research.preamble.categories.sets.set_categories import ImageSet as owned_image_set
 
     return owned_image_set(function, domain)
 
 
 def ConditionSet(domain, predicate):
-    from dzack_research.preamble.categories.sets.set_categories import ConditionSet as owned_condition_set
 
     return owned_condition_set(domain, predicate)
 

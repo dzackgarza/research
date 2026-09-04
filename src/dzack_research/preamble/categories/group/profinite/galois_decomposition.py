@@ -5,6 +5,10 @@ from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.group.groups import OwnedFiniteGroups
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_element, _engine_ring
+from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+    finite_ordered_filter,
+    finite_ordered_set,
+)
 
 
 class PrimeProlongation(SageObject):
@@ -139,10 +143,6 @@ class FiniteGaloisSubgroup(Parent):
     cardinality = order
 
     def group_generators(self):
-        from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-            finite_ordered_filter,
-            finite_ordered_set,
-        )
 
         return finite_ordered_filter(
             finite_ordered_set(self),

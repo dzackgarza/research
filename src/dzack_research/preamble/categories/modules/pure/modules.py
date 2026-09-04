@@ -38,6 +38,25 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     module_homset,
 )
 from dzack_research.preamble.refine import refine
+from dzack_research.preamble.categories.abstract_categories.constructions import Biproduct
+from dzack_research.preamble.categories.abstract_categories.products import _finite_factor_family
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    ModuleHomset,
+    TensorProductModuleHomset,
+    framing_morphism,
+    module_embedding,
+)
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    IntegralDomains,
+    LocalRings,
+    PrincipalIdealDomains,
+    _engine_element,
+    _own_ring,
+    ring_morphism,
+)
+from dzack_research.preamble.categories.sets.cardinals import cardinal
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 
 
 class _ModuleScalarAction(Action):
@@ -60,9 +79,6 @@ def register_module_scalar_action(module) -> None:
 
 class ModuleHomCategoryConstruction(HomCategoryConstruction):
     def fixed_category_class(self):
-        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-            ModuleHomset,
-        )
 
         return ModuleHomset
 
@@ -151,7 +167,6 @@ class Modules(OwnedCategoryOverBaseRing):
             """
             scalar_parent = getattr(scalar, "parent", lambda: None)()
             if scalar_parent is self.parent():
-                from dzack_research.preamble.categories.rings.ring_foundation import OwnedRings
 
                 if self.parent() in OwnedRings():
                     return scalar._mul_(self)
@@ -171,9 +186,6 @@ class Modules(OwnedCategoryOverBaseRing):
 
         def _module_homset_class(self):
             r"""Return the canonical fixed-Hom carrier for maps out of this module type."""
-            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-                ModuleHomset,
-            )
 
             return ModuleHomset
 
@@ -187,6 +199,9 @@ class Modules(OwnedCategoryOverBaseRing):
             return True
 
         def is_free(self) -> bool:
+            return False
+
+        def is_finitely_generated(self) -> bool:
             return False
 
         def is_framed(self) -> bool:
@@ -253,7 +268,6 @@ class Modules(OwnedCategoryOverBaseRing):
                 return selected
             ring = self.base_ring()
             endomorphisms = Modules(ring).End(self)
-            from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
 
             return ring_morphism(
                 ring,
@@ -441,7 +455,6 @@ class ModuleSubobjects(OwnedCategoryOverBaseRing):
             r"""Return the meet as the image of the kernel of ``(i,-j)``."""
             if self.inclusion().codomain() is not other.inclusion().codomain():
                 raise ValueError("a subobject intersection requires one common codomain")
-            from dzack_research.preamble.categories.abstract_categories.constructions import Biproduct
 
             direct_sum = Biproduct(self, other)
             difference = direct_sum.from_summands(
@@ -523,10 +536,6 @@ class FinitelyGeneratedModules(OwnedCategoryOverBaseRing):
 
             from sage.matrix.constructor import matrix
             from sage.rings.integer_ring import ZZ as SageZZ
-            from dzack_research.preamble.categories.rings.ring_foundation import (
-                _engine_element,
-                _engine_ring,
-            )
 
             localized = self.localize_at_prime(point)
             relation_rows = localized._selected_presentation_rows()
@@ -563,7 +572,6 @@ class FinitelyGeneratedModules(OwnedCategoryOverBaseRing):
 
         def residue_module(self):
             r"""Return ``M/mM = M tensor_R k`` for a represented local base ring."""
-            from dzack_research.preamble.categories.rings.ring_foundation import LocalRings
 
             ring = self.base_ring()
             if ring not in LocalRings():
@@ -572,11 +580,6 @@ class FinitelyGeneratedModules(OwnedCategoryOverBaseRing):
 
         def minimal_number_of_generators(self):
             r"""Return ``dim_k(M/mM)`` for a finite module over a local ring."""
-            from dzack_research.preamble.categories.rings.ring_foundation import (
-                LocalRings,
-                _engine_element,
-                _engine_ring,
-            )
 
             ring = self.base_ring()
             if ring not in LocalRings():
@@ -611,7 +614,6 @@ class FinitelyGeneratedModules(OwnedCategoryOverBaseRing):
 
         def generic_rank(self):
             r"""Return ``dim_K(M tensor_R K)`` for an integral-domain base ``R``."""
-            from dzack_research.preamble.categories.rings.ring_foundation import IntegralDomains
 
             ring = self.base_ring()
             if ring not in IntegralDomains():
@@ -674,9 +676,6 @@ class FreeResolution:
         return self._zero_term
 
     def differential(self, degree):
-        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-            module_homset,
-        )
 
         degree = int(degree)
         if degree <= 0:
@@ -762,11 +761,6 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
             return self._fresh_free_module_on(labels)
 
         def free_resolution(self):
-            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-                module_embedding,
-                module_homset,
-            )
-            from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
             zero = self._fresh_free_module_on(finite_ordered_set(()))
             return FreeResolution(
@@ -819,7 +813,6 @@ class FramedModules(OwnedCategoryOverBaseRing):
 
         @cached_method
         def module_generators(self):
-            from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 
             return indexed_family(
                 self.module_generating_set(),
@@ -954,7 +947,6 @@ class RestrictedScalarsModuleView(Parent):
         ):
             scalar_labels = extension_ring.module_generating_set()
             module_labels = module.module_generating_set()
-            from dzack_research.preamble.categories.sets.cardinals import cardinal
             if (
                 cardinal(scalar_labels.cardinality()).is_finite()
                 and cardinal(module_labels.cardinality()).is_finite()
@@ -1045,9 +1037,6 @@ class RestrictedScalarsModuleView(Parent):
         return self.element_class(self, underlying)
 
     def _selected_module_coefficients(self, element):
-        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-            module_coefficients,
-        )
 
         element = self(element)
         extension_module = self.module_over_extension()
@@ -1070,7 +1059,6 @@ class RestrictedScalarsModuleView(Parent):
 
     @cached_method
     def module_generators(self):
-        from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 
         return indexed_family(
             self.module_generating_set(),
@@ -1079,9 +1067,6 @@ class RestrictedScalarsModuleView(Parent):
         )
 
     def framing_morphism(self):
-        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-            framing_morphism,
-        )
 
         source = self.extension_ring()._fresh_free_module_on(
             self.module_generating_set()
@@ -1102,9 +1087,6 @@ class RestrictedScalarsModuleView(Parent):
             raise NotImplementedError(
                 "this scalar restriction has no selected finite presentation"
             )
-        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-            module_coefficients,
-        )
 
         extension_ring = self.extension_ring()
         extension_module = self.module_over_extension()
@@ -1188,8 +1170,6 @@ def twist_scalar_action(module, ring_endomorphism):
 
 
 def _tensor_label_set(left, right):
-    from dzack_research.preamble.categories.sets.set_categories import CartesianProductOfFamily
-    from dzack_research.preamble.categories.sets.set_categories import Sets
 
     indices = Sets.Δ[1]
     left_labels = left.module_generating_set()
@@ -1218,8 +1198,6 @@ class BilinearMap(SageObject):
         self._codomain = codomain
         self._generator_indices = _tensor_label_set(left, right)
 
-        from dzack_research.preamble.categories.sets.indexed_families import indexed_family
-        from dzack_research.preamble.categories.sets.cardinals import cardinal
 
         if isinstance(generator_images, dict):
             size = cardinal(self._generator_indices.cardinality())
@@ -1323,9 +1301,6 @@ class BilinearMap(SageObject):
                         )
 
     def __call__(self, left_element, right_element):
-        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-            module_coefficients,
-        )
 
         left_coefficients = module_coefficients(left_element, self.left_factor())
         right_coefficients = module_coefficients(right_element, self.right_factor())
@@ -1355,17 +1330,11 @@ class TensorProductModules(OwnedCategoryOverBaseRing):
 
     class ParentMethods:
         def _module_homset_class(self):
-            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-                TensorProductModuleHomset,
-            )
 
             return TensorProductModuleHomset
 
         def tensor_factors(self):
             r"""Return the family of factors, indexed by the product's own index set."""
-            from dzack_research.preamble.categories.abstract_categories.products import (
-                _finite_factor_family,
-            )
 
             return _finite_factor_family(self._preamble_tensor_factors, name="Tensor factors")
 
@@ -1376,9 +1345,6 @@ class TensorProductModules(OwnedCategoryOverBaseRing):
             r"""Return the universal pure tensor of two elements."""
             left = self.tensor_factor(0)
             right = self.tensor_factor(1)
-            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-                module_coefficients,
-            )
 
             left_coefficients = module_coefficients(left_element, left)
             right_coefficients = module_coefficients(right_element, right)
@@ -1411,9 +1377,6 @@ class TensorProductModules(OwnedCategoryOverBaseRing):
             right = self.tensor_factor(1)
             if bilinear.left_factor() is not left or bilinear.right_factor() is not right:
                 raise ValueError("the bilinear map has different tensor factors")
-            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-                module_homset,
-            )
 
             return module_homset(self, bilinear.codomain())(
                 lambda pair: bilinear.generator_image(
@@ -1434,8 +1397,6 @@ def _module_tensor_product(left, right):
     if _owned_ring(right.base_ring()) != ring:
         raise ValueError("a tensor product requires one common base ring")
 
-    from dzack_research.preamble.categories.sets.set_categories import Sets
-    from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 
     represented_free = (
         bool(left.is_framed())
@@ -1465,7 +1426,6 @@ def _module_tensor_product(left, right):
         result = refine(result, TensorProductModules(ring))
         return result
 
-    from dzack_research.preamble.categories.sets.cardinals import cardinal
 
     left_labels = left.module_generating_set()
     right_labels = right.module_generating_set()
@@ -1520,8 +1480,6 @@ def _module_tensor_product(left, right):
 
 
 def _biproduct_label_set(left, right):
-    from dzack_research.preamble.categories.sets.set_categories import CoproductOfFamily
-    from dzack_research.preamble.categories.sets.set_categories import Sets
 
     indices = Sets.Δ[1]
     left_labels = left.module_generating_set()
@@ -1537,8 +1495,6 @@ def _biproduct_label(label_set, side, label):
 
 
 def _biproduct_factor_family(left, right):
-    from dzack_research.preamble.categories.sets.set_categories import Sets
-    from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 
     return indexed_family(
         Sets.Δ[1],
@@ -1553,7 +1509,6 @@ class BiproductModules(OwnedCategoryOverBaseRing):
         return "chosen module biproducts"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.modules.pure.modules import Modules
 
         return [Modules(self.base_ring())]
 
@@ -1567,7 +1522,6 @@ class BiproductModules(OwnedCategoryOverBaseRing):
         def left_inclusion(self):
             left = self.biproduct_factor(0)
             labels = self.module_generating_set()
-            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 
             return module_homset(left, self)(
                 lambda label: self.module_generator(
@@ -1578,7 +1532,6 @@ class BiproductModules(OwnedCategoryOverBaseRing):
         def right_inclusion(self):
             right = self.biproduct_factor(1)
             labels = self.module_generating_set()
-            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 
             return module_homset(right, self)(
                 lambda label: self.module_generator(
@@ -1588,7 +1541,6 @@ class BiproductModules(OwnedCategoryOverBaseRing):
 
         def left_projection(self):
             left = self.biproduct_factor(0)
-            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 
             def image(label):
                 if int(label.summand_index()) == 0:
@@ -1599,7 +1551,6 @@ class BiproductModules(OwnedCategoryOverBaseRing):
 
         def right_projection(self):
             right = self.biproduct_factor(1)
-            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 
             def image(label):
                 if int(label.summand_index()) == 1:
@@ -1616,7 +1567,6 @@ class BiproductModules(OwnedCategoryOverBaseRing):
                 raise ValueError("the right map has the wrong source")
             if left_map.codomain() is not right_map.codomain():
                 raise ValueError("the summand maps require one common target")
-            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 
             return module_homset(self, left_map.codomain())(
                 lambda label: (
@@ -1634,10 +1584,6 @@ class BiproductModules(OwnedCategoryOverBaseRing):
                 raise ValueError("the left map has the wrong target")
             if right_map.codomain() is not self.biproduct_factor(1):
                 raise ValueError("the right map has the wrong target")
-            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
-            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-                module_coefficients,
-            )
 
             source = left_map.domain()
             labels = self.module_generating_set()
@@ -1680,11 +1626,9 @@ def _module_biproduct(left, right):
 
 def biproduct_morphism(left_morphism, right_morphism, source=None, target=None):
     if source is None:
-        from dzack_research.preamble.categories.abstract_categories.constructions import Biproduct
 
         source = Biproduct(left_morphism.domain(), right_morphism.domain())
     if target is None:
-        from dzack_research.preamble.categories.abstract_categories.constructions import Biproduct
 
         target = Biproduct(left_morphism.codomain(), right_morphism.codomain())
 
@@ -1693,7 +1637,6 @@ def biproduct_morphism(left_morphism, right_morphism, source=None, target=None):
     if target.biproduct_factor(0) is not left_morphism.codomain() or target.biproduct_factor(1) is not right_morphism.codomain():
         raise ValueError("the target biproduct has different factors")
 
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 
     return module_homset(source, target)(
         lambda label: (
@@ -1736,7 +1679,6 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
 
         @cached_method
         def module_generators(self):
-            from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 
             return indexed_family(
                 self.module_generating_set(),
@@ -1926,7 +1868,6 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
 
         def rank(self):
             from sage.rings.integer_ring import ZZ as SageZZ
-            from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
             integers = _own_ring(SageZZ)
             return integers._from_engine_element(SageZZ(_engine_matrix(self).rank()))
@@ -1934,10 +1875,6 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
         def solve_right(self, target):
             r"""Return ``x`` in the domain with ``self(x)=target``."""
             from sage.modules.free_module_element import vector as sage_vector
-            from dzack_research.preamble.categories.rings.ring_foundation import (
-                _engine_element,
-                _engine_ring,
-            )
 
             target = target if target.parent() is self.codomain() else self.codomain()(target)
             ring = self.parent().base_ring()
@@ -1960,8 +1897,6 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
 
         def _kernel_spanning_family(self):
             r"""Return a private owned finite family spanning ``ker(self)``."""
-            from dzack_research.preamble.categories.sets.set_categories import Sets
-            from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
 
             basis = _engine_matrix(self).right_kernel().basis_matrix()
             ring = self.parent().base_ring()
@@ -2038,7 +1973,6 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
 
         def smith_form(self):
             r"""Return ``(D,U,V)`` from invariant-factor presentation normalization."""
-            from dzack_research.preamble.categories.rings.ring_foundation import PrincipalIdealDomains
 
             ring = self.parent().base_ring()
             if ring not in PrincipalIdealDomains():
@@ -2116,10 +2050,6 @@ class MatrixEndomorphismSpaces(OwnedCategoryOverBaseRing):
 def _engine_matrix(morphism):
     r"""Privately materialize one matrix-Hom element in Sage."""
     from sage.matrix.constructor import matrix as sage_matrix
-    from dzack_research.preamble.categories.rings.ring_foundation import (
-        _engine_element,
-        _engine_ring,
-    )
 
     parent = _refine_matrix_hom(morphism.parent())
     if parent not in MatrixSpaces(parent.base_ring()):

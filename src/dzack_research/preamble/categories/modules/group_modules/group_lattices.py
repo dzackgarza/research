@@ -6,6 +6,12 @@ from dzack_research.preamble.categories.modules.group_modules.group_modules impo
     _CategoryOverRingAndActingGroup,
 )
 from dzack_research.preamble.refine import refine
+from dzack_research.preamble.categories.lattices import (
+    FiniteRankLattices,
+    Lattices,
+    RootLattices,
+)
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_coefficients
 
 
 class GroupLattices(_CategoryOverRingAndActingGroup):
@@ -15,7 +21,6 @@ class GroupLattices(_CategoryOverRingAndActingGroup):
         return f"{self.acting_group()}-lattices over {self.base_ring()}"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.lattices import Lattices
 
         return [
             Lattices(self.base_ring()),
@@ -30,9 +35,6 @@ class GroupLattices(_CategoryOverRingAndActingGroup):
             return self._preamble_group_module.action()
 
         def act(self, group_element, vector):
-            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-                module_coefficients,
-            )
 
             if vector.parent() is not self:
                 raise TypeError(f"the action is on elements of {self}")
@@ -89,11 +91,6 @@ class GroupLattices(_CategoryOverRingAndActingGroup):
 
 def GroupLattice(lattice, group_or_action, action=None):
     r"""Equip ``lattice`` with a selected action preserving its form."""
-    from dzack_research.preamble.categories.lattices import FiniteRankLattices
-    from dzack_research.preamble.categories.lattices import Lattices
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-        module_coefficients,
-    )
 
     base_ring = lattice.base_ring()
     assert lattice in FiniteRankLattices(base_ring)
@@ -125,7 +122,6 @@ def GroupLattice(lattice, group_or_action, action=None):
 
     result = refine(result, GroupLattices(base_ring, group))
 
-    from dzack_research.preamble.categories.lattices import RootLattices
 
     if lattice in RootLattices():
         result = result.lattice_category()._refine_root_lattice(

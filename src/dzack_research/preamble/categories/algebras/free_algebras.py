@@ -58,6 +58,21 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.refine import refine
+from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
+from dzack_research.preamble.categories.algebras.graded_commutative_algebras import StrictlyGradedCommutativeAlgebras
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreeModuleOn
+from dzack_research.preamble.categories.modules.powers import (
+    AlternatingPower,
+    DividedPower,
+    SymmetricPower,
+    TensorPower,
+)
+from dzack_research.preamble.categories.modules.pure.modules import FinitelyGeneratedFreeModules
+from dzack_research.preamble.categories.rings.commutative_algebra import refine_commutative_ring_constructions
+from dzack_research.preamble.categories.rings.number_fields import (
+    _refine_number_field_view,
+    _refine_order_view,
+)
 
 
 class RingAdjunctionConstructions(Category):
@@ -84,15 +99,9 @@ class RingAdjunctionConstructions(Category):
                 return result
             engine = _engine_ring(result)
             if isinstance(engine, SageNumberFieldOrder):
-                from dzack_research.preamble.categories.rings.number_fields import (
-                    _refine_order_view,
-                )
 
                 result = _refine_order_view(result)
             elif engine in SageNumberFields():
-                from dzack_research.preamble.categories.rings.number_fields import (
-                    _refine_number_field_view,
-                )
 
                 result = _refine_number_field_view(result)
             return refine(result, RingAdjunctionConstructions())
@@ -137,9 +146,6 @@ def PolynomialRing(base_ring, *args, **kwargs):
         GradedFreeAlgebras(base),
         SymmetricAlgebras(base),
     )
-    from dzack_research.preamble.categories.rings.commutative_algebra import (
-        refine_commutative_ring_constructions,
-    )
 
     return refine_commutative_ring_constructions(algebra)
 
@@ -151,9 +157,6 @@ def LaurentPolynomialRing(base_ring, *args, **kwargs):
     )
     labels = tuple(_engine_ring(result).variable_names())
     algebra = refine_algebra(result, base, labels)
-    from dzack_research.preamble.categories.rings.commutative_algebra import (
-        refine_commutative_ring_constructions,
-    )
 
     return refine_commutative_ring_constructions(algebra)
 
@@ -162,13 +165,16 @@ def SymmetricAlgebraOn(base_ring, algebra_generating_set):
     labels = _finite_labels(algebra_generating_set)
     base = _owned_ring(base_ring)
     algebra = PolynomialRing(base, _variable_names(labels))
-    return refine_algebra(
-        algebra,
-        base,
-        labels,
-        FreeAlgebras(base),
-        GradedFreeAlgebras(base),
-        SymmetricAlgebras(base),
+
+    return refine_commutative_ring_constructions(
+        refine_algebra(
+            algebra,
+            base,
+            labels,
+            FreeAlgebras(base),
+            GradedFreeAlgebras(base),
+            SymmetricAlgebras(base),
+        )
     )
 
 
@@ -332,9 +338,6 @@ def FinitelyPresentedAlgebra(presentation_ring, relations):
         modulus = quotient_engine.modulus()
         degree = int(modulus.degree())
         if degree > 0:
-            from dzack_research.preamble.categories.modules.pure.modules import (
-                FinitelyGeneratedFreeModules,
-            )
 
             module_labels = Sets.Δ[degree - 1]
             quotient_generator = presented._from_engine_element(quotient_engine.gen())
@@ -371,9 +374,6 @@ def FinitelyPresentedAlgebra(presentation_ring, relations):
     )(
         lambda label: presented.algebra_generator(label)
     )
-    from dzack_research.preamble.categories.rings.commutative_algebra import (
-        refine_commutative_ring_constructions,
-    )
 
     return refine_commutative_ring_constructions(presented)
 
@@ -384,7 +384,6 @@ class FreeAlgebras(OwnedCategoryOverBaseRing):
         return "free algebras"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.algebras.algebras import Algebras
 
         return [Algebras(self.base_ring())]
 
@@ -402,9 +401,6 @@ class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
         return "graded free algebras"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.algebras.graded_algebras import (
-            GradedAlgebras,
-        )
 
         return [FreeAlgebras(self.base_ring()), GradedAlgebras(self.base_ring())]
 
@@ -424,9 +420,6 @@ class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
             try:
                 source = self.free_source_module()
             except (AttributeError, ValueError):
-                from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-                    FreeModuleOn,
-                )
 
                 source = FreeModuleOn(
                     self.algebra_base_ring(),
@@ -442,24 +435,12 @@ class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
                 # degree-zero piece is therefore the existing degree-zero power
                 # module; do not let this generic free-algebra method replace it.
                 if self in AlternatingAlgebras(ring):
-                    from dzack_research.preamble.categories.modules.powers import (
-                        AlternatingPower,
-                    )
 
                     return AlternatingPower(source, 0)
                 if self in DividedPowerAlgebras(ring):
-                    from dzack_research.preamble.categories.modules.powers import (
-                        DividedPower,
-                    )
 
                     return DividedPower(source, 0)
                 return ring
-            from dzack_research.preamble.categories.modules.powers import (
-                AlternatingPower,
-                DividedPower,
-                SymmetricPower,
-                TensorPower,
-            )
 
             if self in TensorAlgebras(ring):
                 return TensorPower(source, degree)
@@ -475,12 +456,9 @@ class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
 
 
 class PowerAlgebraHomCategoryConstruction(HomCategoryConstruction):
-    def fixed_category_class(self):
-        from dzack_research.preamble.categories.algebras.power_algebras import (
-            PowerAlgebraHomset,
-        )
-
-        return PowerAlgebraHomset
+    def fixed_category_class_for(self, domain, codomain):
+        _ = codomain
+        return domain._power_algebra_homset_class()
 
 
 class TensorAlgebras(OwnedCategoryOverBaseRing):
@@ -491,9 +469,6 @@ class TensorAlgebras(OwnedCategoryOverBaseRing):
         return "tensor algebras"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.algebras.graded_algebras import (
-            GradedAlgebras,
-        )
 
         return [GradedAlgebras(self.base_ring())]
 
@@ -511,19 +486,11 @@ class SymmetricAlgebras(OwnedCategoryOverBaseRing):
         return "symmetric algebras"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.algebras.algebras import (
-            CommutativeAlgebras,
-        )
-        from dzack_research.preamble.categories.algebras.graded_algebras import (
-            GradedAlgebras,
-        )
 
         return [
             GradedAlgebras(self.base_ring()),
             CommutativeAlgebras(self.base_ring()),
         ]
-
-    _HomCategory = PowerAlgebraHomCategoryConstruction
 
     class ParentMethods:
         def free_source_module(self):
@@ -548,9 +515,6 @@ class AlternatingAlgebras(OwnedCategoryOverBaseRing):
         return "alternating algebras"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.algebras.graded_commutative_algebras import (
-            StrictlyGradedCommutativeAlgebras,
-        )
 
         return [StrictlyGradedCommutativeAlgebras(self.base_ring())]
 
@@ -560,10 +524,13 @@ class AlternatingAlgebras(OwnedCategoryOverBaseRing):
         def free_source_module(self):
             return self._preamble_free_algebra_source_module
 
+        def Mor(self, codomain, category=None):
+            alternating = AlternatingAlgebras(self.base_ring())
+            if category is None and codomain in alternating:
+                return alternating.Mor(self, codomain)
+            return super().Mor(codomain, category=category)
+
         def graded_piece(self, degree):
-            from dzack_research.preamble.categories.modules.powers import (
-                AlternatingPower,
-            )
 
             return AlternatingPower(self.free_source_module(), degree)
 
@@ -712,24 +679,25 @@ class DividedPowerAlgebras(OwnedCategoryOverBaseRing):
         return "divided power algebras"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.algebras.algebras import (
-            CommutativeAlgebras,
-        )
-        from dzack_research.preamble.categories.algebras.graded_algebras import (
-            GradedAlgebras,
-        )
 
         return [
             GradedAlgebras(self.base_ring()),
             CommutativeAlgebras(self.base_ring()),
         ]
 
+    _HomCategory = PowerAlgebraHomCategoryConstruction
+
     class ParentMethods:
         def free_source_module(self):
             return self._preamble_free_algebra_source_module
 
+        def Mor(self, codomain, category=None):
+            divided = DividedPowerAlgebras(self.base_ring())
+            if category is None and codomain in divided:
+                return divided.Mor(self, codomain)
+            return super().Mor(codomain, category=category)
+
         def graded_piece(self, degree):
-            from dzack_research.preamble.categories.modules.powers import DividedPower
 
             return DividedPower(self.free_source_module(), degree)
 

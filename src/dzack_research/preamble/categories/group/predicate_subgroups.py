@@ -4,6 +4,18 @@ from dzack_research.preamble.categories.abstract_categories.objects import Owned
 from sage.structure.parent import Parent
 
 from dzack_research.preamble.refine import refine
+from dzack_research.preamble.categories.group.groups import (
+    OwnedGroups,
+    _canonical_subgroup_inclusion,
+    _owned_group,
+)
+from dzack_research.preamble.categories.orthogonal_quotients import (
+    OrthogonalCharacterQuotient,
+    subgroup_isotropic_are_equivalent,
+    subgroup_isotropic_orbit_representatives,
+    subgroup_vector_orbit_representatives,
+    subgroup_vectors_are_equivalent,
+)
 
 
 class _PredicateSubgroupParent(Parent):
@@ -75,7 +87,6 @@ class PredicateSubgroups(OwnedParameterizedCategory):
             return identity
 
         def inclusion(self):
-            from dzack_research.preamble.categories.group.groups import _canonical_subgroup_inclusion
             return _canonical_subgroup_inclusion(self)
 
         def intersection(self, other):
@@ -99,39 +110,24 @@ class PredicateSubgroups(OwnedParameterizedCategory):
             )
 
         def finite_character_quotient(self):
-            from dzack_research.preamble.categories.orthogonal_quotients import (
-                OrthogonalCharacterQuotient,
-            )
 
             return OrthogonalCharacterQuotient(self)
 
         def vector_orbit_representatives(self, square):
-            from dzack_research.preamble.categories.orthogonal_quotients import (
-                subgroup_vector_orbit_representatives,
-            )
 
             return subgroup_vector_orbit_representatives(self, square)
 
         def vectors_are_equivalent(self, left, right) -> bool:
-            from dzack_research.preamble.categories.orthogonal_quotients import (
-                subgroup_vectors_are_equivalent,
-            )
 
             return subgroup_vectors_are_equivalent(self, left, right)
 
         def isotropic_orbit_representatives(self, rank, *, flag=False):
-            from dzack_research.preamble.categories.orthogonal_quotients import (
-                subgroup_isotropic_orbit_representatives,
-            )
 
             return subgroup_isotropic_orbit_representatives(
                 self, rank, flag=flag
             )
 
         def isotropic_are_equivalent(self, left, right, *, flag=False) -> bool:
-            from dzack_research.preamble.categories.orthogonal_quotients import (
-                subgroup_isotropic_are_equivalent,
-            )
 
             return subgroup_isotropic_are_equivalent(
                 self, left, right, flag=flag
@@ -142,7 +138,6 @@ class PredicateSubgroups(OwnedParameterizedCategory):
 
 
 def predicate_subgroup_category():
-    from dzack_research.preamble.categories.group.groups import OwnedGroups
     return PredicateSubgroups(OwnedGroups())
 
 
@@ -153,7 +148,6 @@ def predicate_subgroup(
     *,
     character_data=None,
 ):
-    from dzack_research.preamble.categories.group.groups import OwnedGroups, _owned_group
     containing_group = _owned_group(containing_group)
     if containing_group not in OwnedGroups():
         raise TypeError(f"{containing_group} is not a group")

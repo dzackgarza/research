@@ -9,6 +9,7 @@ from sage.categories.category import Category
 from sage.categories.morphism import Morphism
 from sage.categories.sets_cat import Sets as SageSets
 from sage.structure.parent import Parent
+from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
 def _identity_morphism_in_theory(arrow, obj):
@@ -148,7 +149,6 @@ class ArrowCategory(Category):
         return self._base_category
 
     def super_categories(self):
-        from dzack_research.preamble.categories.sets.set_categories import Sets
 
         return [Sets()]
 
@@ -449,7 +449,6 @@ class SubobjectCategory(Category):
         return self._base_object
 
     def super_categories(self):
-        from dzack_research.preamble.categories.sets.set_categories import Sets
 
         return [Sets()]
 

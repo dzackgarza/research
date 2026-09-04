@@ -7,13 +7,34 @@ from sage.structure.richcmp import op_EQ, op_NE
 
 from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
 from dzack_research.preamble.refine import refine
+from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+    _SelectedFinitePresentationModules,
+    _presentation_rows,
+)
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+    BasedFreeModule,
+    MatrixSpace,
+)
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    module_coefficients,
+    module_homset,
+)
+from dzack_research.preamble.categories.modules.pure.modules import (
+    FinitelyGeneratedModules,
+    FinitelyPresentedModules,
+    FramedModules,
+    Modules,
+    ModulesWithChosenFinitePresentation,
+    register_module_scalar_action,
+)
+from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
+from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
 class LocalizedModules(OwnedCategoryOverBaseRing):
     r"""Modules represented as ``S^{-1}M`` for a chosen localization ``S^{-1}R``."""
 
     def super_categories(self):
-        from dzack_research.preamble.categories.modules.pure.modules import Modules
 
         return [Modules(self.base_ring())]
 
@@ -124,14 +145,6 @@ class GeneralLocalizedModuleParent(Parent):
         self._preamble_localization_submonoid = localization_ring.localization_submonoid()
         self._preamble_localization_functor = localization_functor
         categories = [LocalizedModules(localization_ring)]
-        from dzack_research.preamble.categories.modules.pure.modules import (
-            FramedModules,
-        )
-        from dzack_research.preamble.categories.modules.pure.modules import (
-            FinitelyGeneratedModules,
-        )
-        from dzack_research.preamble.categories.modules.pure.modules import FinitelyPresentedModules
-        from dzack_research.preamble.categories.modules.pure.modules import ModulesWithChosenFinitePresentation
 
         source_ring = localization_ring.localization_source()
         if source_module in FramedModules(source_ring):
@@ -144,16 +157,6 @@ class GeneralLocalizedModuleParent(Parent):
             if source_module in FinitelyGeneratedModules(source_ring):
                 categories.append(FinitelyGeneratedModules(localization_ring))
             if source_module in ModulesWithChosenFinitePresentation(source_ring):
-                from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-                    BasedFreeModule,
-                )
-                from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
-                from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace
-                from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-                    _SelectedFinitePresentationModules,
-                    _presentation_rows,
-                )
-                from dzack_research.preamble.categories.sets.set_categories import Sets
 
                 relation_rows = _presentation_rows(source_module)
                 if source_module in _SelectedFinitePresentationModules(source_ring):
@@ -210,17 +213,11 @@ class GeneralLocalizedModuleParent(Parent):
         Parent.__init__(self, category=Category.join(tuple(categories)))
         refine(self, categories)
         self._preamble_scalar_action_morphism = self._build_scalar_action_morphism()
-        from dzack_research.preamble.categories.modules.pure.modules import (
-            register_module_scalar_action,
-        )
 
         register_module_scalar_action(self)
 
     def _framing_coefficients(self, element):
         r"""Return coefficients of a localization fraction in the source framing."""
-        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-            module_coefficients,
-        )
 
         element = self(element)
         source_coefficients = module_coefficients(
@@ -342,8 +339,6 @@ class GeneralLocalizedModuleParent(Parent):
         )
 
     def _build_scalar_action_morphism(self):
-        from dzack_research.preamble.categories.modules.pure.modules import Modules
-        from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
 
         endomorphisms = Modules(self.base_ring()).End(self)
         return ring_morphism(

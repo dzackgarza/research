@@ -14,6 +14,11 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _owned_ring,
 )
 from dzack_research.preamble.categories.sets.set_categories import Set
+from dzack_research.preamble.categories.modules.pure.modules import (
+    Modules,
+    register_module_scalar_action,
+)
+from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -117,13 +122,9 @@ class GeneralModuleParent(Parent):
         else:
             self._preamble_raw_scalar_action = scalar_action
 
-        from dzack_research.preamble.categories.modules.pure.modules import Modules
 
         Parent.__init__(self, category=Modules(self._preamble_base_ring))
         self._preamble_scalar_action_morphism = self._build_scalar_action_morphism()
-        from dzack_research.preamble.categories.modules.pure.modules import (
-            register_module_scalar_action,
-        )
 
         register_module_scalar_action(self)
         if verify:
@@ -227,8 +228,6 @@ class GeneralModuleParent(Parent):
         return self(value)
 
     def _build_scalar_action_morphism(self):
-        from dzack_research.preamble.categories.modules.pure.modules import Modules
-        from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
 
         endomorphisms = Modules(self.base_ring()).End(self)
         return ring_morphism(

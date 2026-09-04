@@ -17,6 +17,7 @@ from dzack_research.preamble.categories.abstract_categories.hom_foundation impor
     OwnedHomset,
     underlying_set_homset,
 )
+from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 from sage.categories.category import Category
 from sage.categories.homset import Hom, Homset
 from sage.categories.morphism import Morphism
@@ -421,8 +422,6 @@ class FixedHomCategory(Category):
 
     def objects(self):
         arrows = self.arrow_set()
-        from dzack_research.preamble.categories.sets.indexed_families import indexed_family
-
         return indexed_family(
             arrows,
             self,
