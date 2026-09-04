@@ -1,6 +1,8 @@
 """Dependency-light runtime foundation for owned Hom-set parents."""
 
 from sage.categories.homset import Homset
+from sage.categories.morphism import SetMorphism
+from sage.categories.sets_cat import Sets as SageSets
 
 
 class OwnedHomset(Homset):

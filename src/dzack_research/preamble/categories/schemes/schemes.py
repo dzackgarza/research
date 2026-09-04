@@ -37,6 +37,8 @@ _SCHEME_MORPHISM_WRAPPERS = {}
 class SchemeMorphism(Morphism):
     r"""Categorical wrapper around one native Sage scheme morphism."""
 
+    _preamble_coordinate_algebra_morphism = None
+
     def __init__(self, native_morphism, *, domain=None, codomain=None, homset=None) -> None:
         self._native_morphism = native_morphism
         self._preamble_domain_override = domain
@@ -74,17 +76,30 @@ class SchemeMorphism(Morphism):
     def __mul__(self, other):
         if other.codomain() is not self.domain():
             return NotImplemented
-        if isinstance(other, SchemeMorphism):
-            left_pullback = getattr(self, "_preamble_coordinate_algebra_morphism", None)
-            right_pullback = getattr(other, "_preamble_coordinate_algebra_morphism", None)
-            if left_pullback is not None and right_pullback is not None:
-                return affine_spec_morphism(right_pullback * left_pullback)
-        other_native = (
-            other.native_morphism()
-            if isinstance(other, SchemeMorphism)
-            else other
-        )
-        return categorical_scheme_morphism(self.native_morphism() * other_native)
+        if not isinstance(other, SchemeMorphism):
+            return NotImplemented
+        # The identity is a two-sided unit.  That is a theorem, so the
+        # composite is the other factor itself.
+        if self._is_the_identity():
+            return other
+        if other._is_the_identity():
+            return self
+        # The composite is a morphism between the stated endpoints, whichever
+        # engine route computes it.  Reading the endpoints off the engine's
+        # answer lands it on Spec of a coordinate ring instead.
+        homset = _scheme_mor_category(other.domain(), self.codomain())
+        left_pullback = self._preamble_coordinate_algebra_morphism
+        right_pullback = other._preamble_coordinate_algebra_morphism
+        if left_pullback is not None and right_pullback is not None:
+            composite = affine_spec_morphism(right_pullback * left_pullback)
+            return homset(composite.native_morphism())
+        return homset(self.native_morphism() * other.native_morphism())
+
+    def _is_the_identity(self) -> bool:
+        r"""Return whether this morphism is its Hom object's identity."""
+        if self.domain() is not self.codomain():
+            return False
+        return self is self.parent().identity()
 
     def compose(self, before):
         result = self * before
@@ -109,7 +124,7 @@ class SchemeMorphism(Morphism):
         return self.compose(point)
 
     def coordinate_algebra_morphism(self):
-        morphism = getattr(self, "_preamble_coordinate_algebra_morphism", None)
+        morphism = self._preamble_coordinate_algebra_morphism
         if morphism is None:
             raise NotImplementedError(
                 "this scheme morphism has no represented pullback on affine coordinate algebras"
@@ -126,8 +141,8 @@ class SchemeMorphism(Morphism):
             return False
         if self is other:
             return True
-        left_pullback = getattr(self, "_preamble_coordinate_algebra_morphism", None)
-        right_pullback = getattr(other, "_preamble_coordinate_algebra_morphism", None)
+        left_pullback = self._preamble_coordinate_algebra_morphism
+        right_pullback = other._preamble_coordinate_algebra_morphism
         if left_pullback is not None and right_pullback is not None:
             return bool(left_pullback == right_pullback)
         from sage.schemes.generic.morphism import SchemeMorphism_id
@@ -139,6 +154,12 @@ class SchemeMorphism(Morphism):
         ):
             return True
         return bool(left_native == right_native)
+
+    def __ne__(self, other) -> bool:
+        return not self == other
+
+    def __hash__(self) -> int:
+        return hash((id(self.domain()), id(self.codomain()), id(self.native_morphism())))
 
     def _repr_(self) -> str:
         return f"Scheme morphism: {self.domain()} -> {self.codomain()}"
@@ -187,6 +208,7 @@ class SchemeMorCategory(CategoricalHomset):
             datum = datum.native_morphism()
         return SchemeMorphism(datum, homset=self)
 
+    @cached_method
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError("identity is defined only on an endomorphism Hom")

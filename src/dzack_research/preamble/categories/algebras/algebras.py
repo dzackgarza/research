@@ -353,6 +353,16 @@ class FramedAlgebras(OwnedCategoryOverBaseRing):
         def product_on_algebra_generators(self, left, right):
             return self.algebra_generator(left) * self.algebra_generator(right)
 
+        def is_central(self, element):
+            r"""Decide centrality from the selected algebra generating family."""
+            if element not in self:
+                return False
+            return all(
+                element * self.algebra_generator(label)
+                == self.algebra_generator(label) * element
+                for label in self.algebra_generating_set()
+            )
+
 
 class MatrixAlgebras(OwnedCategoryOverBaseRing):
     r"""Finite matrix endomorphism Hom objects with their canonical algebra structure."""
@@ -930,10 +940,22 @@ class PresentedAlgebraHomset(_AlgebraHomsetCommonMethods, CategoricalHomset):
     def _element_constructor_(self, images):
         return self.element_class(self, images)
 
+    @cached_method
     def identity(self):
+        r"""Return the identity of this endomorphism Hom.
+
+        The identity of an object needs no framing: an unframed algebra such as
+        the integers regarded over themselves has no algebra generating set,
+        and its identity is still the identity.  A Hom object has one identity,
+        so this is cached.
+        """
         if self.domain() is not self.codomain():
             raise ValueError("identity is defined on an endomorphism homset")
-        return self(lambda label: self.domain().algebra_generator(label))
+        domain = self.domain()
+        if domain in FramedAlgebras(domain.base_ring()):
+            return self(lambda label: domain.algebra_generator(label))
+        engine = _engine_ring(domain)
+        return self(engine.hom(engine))
 
 
 class AlgebraHomset(_AlgebraHomsetCommonMethods, CategoricalHomset):
@@ -952,10 +974,6 @@ class AlgebraHomset(_AlgebraHomsetCommonMethods, CategoricalHomset):
     def _element_constructor_(self, images):
         return self.element_class(self, images)
 
-    def identity(self):
-        if self.domain() is not self.codomain():
-            raise ValueError("identity is defined on an endomorphism homset")
-        return self(lambda label: self.domain().algebra_generator(label))
 
     def _repr_(self):
         return f"Mor_Alg({self.domain()}, {self.codomain()})"
