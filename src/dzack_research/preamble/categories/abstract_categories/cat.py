@@ -1,6 +1,10 @@
 r"""A represented category ``Cat`` of categories, functors, and natural transformations."""
 
 from dzack_research.preamble.categories.abstract_categories.hom_foundation import OwnedHomset
+from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    CategoricalHomset,
+    HomCategoryConstruction,
+)
 from sage.misc.cachefunc import cached_method
 from sage.categories.category import Category
 from sage.categories.homset import Homset
@@ -66,12 +70,14 @@ class CategoryFunctorMorphism(Morphism):
         return repr(self.functor())
 
 
-class CategoryFunctorHomset(OwnedHomset):
+class CategoryFunctorHomset(CategoricalHomset):
     Element = CategoryFunctorMorphism
 
     def __init__(self, category_of_categories, domain, codomain) -> None:
         self._category_of_categories = category_of_categories
-        Homset.__init__(self, domain, codomain, category=SageSets())
+        CategoricalHomset.__init__(
+            self, HomCategoryConstruction(category_of_categories), domain, codomain
+        )
 
     def category_of_categories(self):
         return self._category_of_categories
@@ -178,12 +184,14 @@ class NaturalTransformationMorphism(Morphism):
         )
 
 
-class NaturalTransformationHomset(OwnedHomset):
+class NaturalTransformationHomset(CategoricalHomset):
     Element = NaturalTransformationMorphism
 
     def __init__(self, functor_category, domain, codomain) -> None:
         self._functor_category = functor_category
-        Homset.__init__(self, domain, codomain, category=SageSets())
+        CategoricalHomset.__init__(
+            self, HomCategoryConstruction(functor_category), domain, codomain
+        )
 
     def functor_category(self):
         return self._functor_category

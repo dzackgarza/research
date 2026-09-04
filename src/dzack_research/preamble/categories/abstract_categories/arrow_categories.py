@@ -1,6 +1,10 @@
 r"""Arrow categories, commuting squares, cores, and slice-style categories."""
 
 from dzack_research.preamble.categories.abstract_categories.hom_foundation import OwnedHomset
+from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    CategoricalHomset,
+    HomCategoryConstruction,
+)
 from sage.categories.category import Category
 from sage.categories.homset import Hom, Homset
 from sage.categories.morphism import Morphism
@@ -93,12 +97,14 @@ class CommutativeSquare(Morphism):
         return f"Commutative square from {self.domain()} to {self.codomain()}"
 
 
-class ArrowHomset(OwnedHomset):
+class ArrowHomset(CategoricalHomset):
     Element = CommutativeSquare
 
     def __init__(self, arrow_category, source, target) -> None:
         self._arrow_category = arrow_category
-        Homset.__init__(self, source, target, category=SageSets())
+        CategoricalHomset.__init__(
+            self, HomCategoryConstruction(arrow_category), source, target
+        )
 
     def arrow_category(self):
         return self._arrow_category
@@ -386,12 +392,14 @@ class SubobjectMorphism(Morphism):
         )(self.factor_morphism() * other.factor_morphism())
 
 
-class SubobjectHomset(OwnedHomset):
+class SubobjectHomset(CategoricalHomset):
     Element = SubobjectMorphism
 
     def __init__(self, subobject_category, domain, codomain) -> None:
         self._subobject_category = subobject_category
-        Homset.__init__(self, domain, codomain, category=SageSets())
+        CategoricalHomset.__init__(
+            self, HomCategoryConstruction(subobject_category), domain, codomain
+        )
 
     def subobject_category(self):
         return self._subobject_category

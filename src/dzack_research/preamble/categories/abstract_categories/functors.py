@@ -1,6 +1,10 @@
 r"""Basic categorical functors used by the abstract construction layer."""
 
 from dzack_research.preamble.categories.abstract_categories.hom_foundation import OwnedHomset
+from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    CategoricalHomset,
+    HomCategoryConstruction,
+)
 from sage.categories.category import Category
 from sage.misc.cachefunc import cached_method
 from sage.categories.homset import Hom, Homset
@@ -208,12 +212,14 @@ class DiscreteMorphism(Morphism):
         return self.parent().discrete_category().Mor(other.domain(), self.codomain()).identity()
 
 
-class DiscreteHomset(OwnedHomset):
+class DiscreteHomset(CategoricalHomset):
     Element = DiscreteMorphism
 
     def __init__(self, discrete_category, domain, codomain) -> None:
         self._discrete_category = discrete_category
-        Homset.__init__(self, domain, codomain, category=SageSets())
+        CategoricalHomset.__init__(
+            self, HomCategoryConstruction(discrete_category), domain, codomain
+        )
 
     def discrete_category(self):
         return self._discrete_category

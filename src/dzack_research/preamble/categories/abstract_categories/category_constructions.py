@@ -1,6 +1,10 @@
 r"""Opposite categories and binary products of categories."""
 
 from dzack_research.preamble.categories.abstract_categories.hom_foundation import OwnedHomset
+from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    CategoricalHomset,
+    HomCategoryConstruction,
+)
 from sage.misc.cachefunc import cached_method
 from sage.categories.category import Category
 from sage.categories.homset import Hom, Homset
@@ -58,12 +62,14 @@ class OppositeMorphism(Morphism):
         )(other.underlying_arrow() * self.underlying_arrow())
 
 
-class OppositeHomset(OwnedHomset):
+class OppositeHomset(CategoricalHomset):
     Element = OppositeMorphism
 
     def __init__(self, opposite_category, domain, codomain) -> None:
         self._opposite_category = opposite_category
-        Homset.__init__(self, domain, codomain, category=SageSets())
+        CategoricalHomset.__init__(
+            self, HomCategoryConstruction(opposite_category), domain, codomain
+        )
 
     def opposite_category(self):
         return self._opposite_category
@@ -171,12 +177,14 @@ class ProductMorphism(Morphism):
         )(self.first() * other.first(), self.second() * other.second())
 
 
-class ProductHomset(OwnedHomset):
+class ProductHomset(CategoricalHomset):
     Element = ProductMorphism
 
     def __init__(self, product_category, domain, codomain) -> None:
         self._product_category = product_category
-        Homset.__init__(self, domain, codomain, category=SageSets())
+        CategoricalHomset.__init__(
+            self, HomCategoryConstruction(product_category), domain, codomain
+        )
 
     def product_category(self):
         return self._product_category

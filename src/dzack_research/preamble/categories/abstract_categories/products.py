@@ -1,6 +1,10 @@
 r"""Diagrams, cones, cocones, and selected finite product constructions."""
 
 from dzack_research.preamble.categories.abstract_categories.hom_foundation import OwnedHomset
+from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    CategoricalHomset,
+    HomCategoryConstruction,
+)
 from sage.categories.category import Category
 from sage.categories.homset import Homset
 from sage.categories.morphism import Morphism
@@ -175,12 +179,14 @@ class CoconeMorphism(Morphism):
         )
 
 
-class ConeHomset(OwnedHomset):
+class ConeHomset(CategoricalHomset):
     Element = ConeMorphism
 
     def __init__(self, cone_category, domain, codomain) -> None:
         self._cone_category = cone_category
-        Homset.__init__(self, domain, codomain, category=SageSets())
+        CategoricalHomset.__init__(
+            self, HomCategoryConstruction(cone_category), domain, codomain
+        )
 
     def cone_category(self):
         return self._cone_category
@@ -189,12 +195,14 @@ class ConeHomset(OwnedHomset):
         return ConeMorphism(self, apex_map)
 
 
-class CoconeHomset(OwnedHomset):
+class CoconeHomset(CategoricalHomset):
     Element = CoconeMorphism
 
     def __init__(self, cocone_category, domain, codomain) -> None:
         self._cocone_category = cocone_category
-        Homset.__init__(self, domain, codomain, category=SageSets())
+        CategoricalHomset.__init__(
+            self, HomCategoryConstruction(cocone_category), domain, codomain
+        )
 
     def cocone_category(self):
         return self._cocone_category
