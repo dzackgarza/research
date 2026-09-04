@@ -4927,6 +4927,18 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Correct Example**: naming what actually governs the work -- here, whether a name denotes one operation, and how many definitions and call-site shapes exist -- then choosing a tool that answers *that*.  A name-based structural rewrite was the right instrument all along, and the type-inference failure was irrelevant to it.
 
+#### `DEV-46`: A Banned Shape Is a Pattern; Tooling Must Close a Class
+
+- **Rule**: A one-off shape that should not appear goes in the declarative pattern catalogue -- the `ast-grep` patterns behind `just test-universe` -- where it costs a line and states its own scope.  Tooling beyond roughly twenty lines must justify that size by preventing an entire **class** of semantic behaviour.  Before writing it, name the faulty mental model that produces the shape, and name the variations that model will produce which you have *not* seen.  If the tool would not report an instance nobody has written yet, it is a pattern, not a tool.
+
+- **Rationale**: The instances in front of you are a sample of what a mental model generates, never the population.  A detector built by generalising from the sample catches the sample, and its clean run afterwards is uninformative: the model that produced those instances is still there and still generating.  Measured here: a 200-line AST checker for assertions that recover their own input, whose logic was a hand-typed list of eight accessor names, reported ten findings -- every one of them written the same afternoon by the author of the checker -- and never reported `X = [X0, X1]; assert X[0] == X0`, the canonical form of the very defect it was built for, because that shape touches no accessor.  A declarative pattern would have cost one line and been honest about covering one shape.
+
+  The size threshold is about what the tool *decides*.  A pattern matches syntax and says so.  Code that earns two hundred lines decides something syntax cannot enumerate -- it evaluates, it folds, it resolves, it follows a definition -- and therefore reports instances in forms its author never wrote down.  A checker whose finding count equals the number of instances that prompted it has not crossed that line, whatever its length.
+
+- **Violation Example**: a checker whose logic is a list of names harvested from the current tree; a tool whose findings are exactly the instances that motivated it; two hundred lines to catch what one `ast-grep` pattern states; concluding from such a tool's clean run that the class is closed.
+
+- **Correct Example**: adding a row to the `ast-grep` catalogue for a shape just seen, and leaving it at that; for anything larger, first writing down the mental model and the unseen variations, then choosing an algorithm that evaluates rather than enumerates -- and confirming it reports a variation nobody has written.
+
 #### `DEV-47`: An Oracle and Its Subject May Not Share a Source
 
 - **Rule**: The expected value in an assertion must come from somewhere the code under test did not.  A test may not construct an object from ingredients and then assert that the object yields those ingredients back, and it may not compare two accessors that read the same stored datum.  State, for each assertion, where the expectation came from and where the actual value came from; if the answer is the same place, the assertion cannot fail.
