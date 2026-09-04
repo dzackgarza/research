@@ -176,8 +176,14 @@ sage-rebuild:
 _lock:
     uv lock
 
-# Run commit-tier SageMath QC through the central implementation
-test-commit:
+# Run commit-tier SageMath QC through the central implementation.
+# The shared ai-review-ci pre-commit hook calls this recipe, so refreshing and
+# staging `tags` here is what rides the index into the commit being gated.
+# ponytail: the machine-wide hook is the wrong place for a per-repo step, and
+# this recipe is the only repo-local seam it offers; the cost is that a manual
+# `just test-commit` also stages tags.
+test-commit: tags
+    @git add tags
     @just -f ~/ai-review-ci/justfiles/sage.just -d . test-commit
 
 # Run push-tier SageMath QC through the central implementation

@@ -26,4 +26,3 @@ tests/.report/
 .jupyter/
 .virtual_documents/
 .sage-tmp/
-tags
