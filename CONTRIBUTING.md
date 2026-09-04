@@ -4927,6 +4927,55 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Correct Example**: naming what actually governs the work -- here, whether a name denotes one operation, and how many definitions and call-site shapes exist -- then choosing a tool that answers *that*.  A name-based structural rewrite was the right instrument all along, and the type-inference failure was irrelevant to it.
 
+#### `DEV-46`: A Test's Subject Is an Owned Operation; A Catalogue Is Its Input
+
+- **Rule**: The subject of a test is an **operation this repository computes**.  Transcribed data -- a catalogue Gram matrix, a table row, a named specimen, a fixture -- is **input** to such a test and is never itself the thing asserted.  Before writing an assertion about a named object, name the operation whose defect the assertion would expose.  If the answer is "none, it would expose a typo in the transcription", the test does not belong in the suite.
+
+- **Rationale**: A catalogue entry is a transcription from the literature, and an assertion about its invariants compares one thing that was typed in against another thing that was typed in.  `NamedLattices.Tco.signature_pair() == (2, 9)` reads a Gram matrix transcribed from a paper and a signature transcribed from the same paper; a failure reports that the transcription is internally inconsistent, which is proofreading, not mathematics.  This is the trivial shape `test-guidelines` names -- fields round-tripping through the framework -- arriving with mathematical clothing on, which is why it survives review that would reject `assert L.rank() == L.rank()`.
+
+  What is genuinely owned, and therefore genuinely testable, is the operation the catalogue is fed to: Sylvester inertia computing the signature, the decomposition recovering indecomposables, primitivity through a cokernel, the discriminant form, an embedding preserving `b`.  `test-guidelines`' Representative-Input Rule is exactly this division: the catalogue is the representative input at the boundary, and the claim is about the code the input flows through.  Where a catalogue entry does earn an assertion, the shape is cross-verification (`DEV-39`): construct the same object a second, independent way and assert the two agree, so that the transcription is checked against a construction rather than against itself.
+
+- **Violation Example**: `assert NamedLattices.Tco.signature_pair() == signature_pair(2, 9)`; `assert NamedLattices.U_2.two_elementary_invariants() == nikulin_invariants(2, 2, 0)`; a test file whose every assertion reads a named specimen and compares it to a literal from the same source.
+
+- **Correct Example**: building `U + E8(-1)` from blocks and asserting it is isometric to the transcribed `LK3` summand; feeding a catalogue lattice to `decomposition()` and asserting the summands reconstruct it; asserting that an embedding preserves `b` on generators, where the embedding is what the repository computed.
+
+#### `DEV-47`: An Oracle and Its Subject May Not Share a Source
+
+- **Rule**: The expected value in an assertion must come from somewhere the code under test did not.  A test may not construct an object from ingredients and then assert that the object yields those ingredients back, and it may not compare two accessors that read the same stored datum.  State, for each assertion, where the expectation came from and where the actual value came from; if the answer is the same place, the assertion cannot fail.
+
+- **Rationale**: This is the general form of both the catalogue error and the tautology it decays into under correction.  `lattice = A1 + A2 + U_2` followed by `assert lattice.indecomposable_summands()[0] is A1` asserts that `+` remembers its arguments; a transcribed Gram matrix compared to its transcribed signature asserts that one file agrees with itself.  Both pass by construction, and `DEV-41` names why that disqualifies them: an expectation taken from the implementation's own output is not an oracle and cannot detect the error it was copied from.
+
+  The failure is attractive under correction specifically.  Told that a string assertion is wrong, the nearest repair is to assert the objects the names stood for -- which, when the test built the object from those very objects, is strictly weaker than the string version it replaced.  Each round of repair stays inside the frame of the assertion and produces something that cannot fail, while feeling like a response to the criticism.
+
+- **Violation Example**: `m = A + B; assert m.factors()[0] is A`; `assert L.rank() == L.module_generating_set().cardinality()` where the rank is defined as that cardinality; asserting a fixture value against the constructor the fixture was written from.
+
+- **Correct Example**: a value from a cited source against a value the repository computed; two independent constructions of one object asserted equal; a theorem's prediction against an enumeration.
+
+#### `DEV-48`: Respelling an Assertion Is Not Repairing It
+
+- **Rule**: Satisfying one policy's letter does not discharge another's.  When a detector, a review comment or a policy prompts an edit to an assertion, re-derive what the assertion is for before changing how it is written.  An edit that leaves the assertion unable to fail for any new reason has repaired nothing, whatever count it moved.
+
+- **Rationale**: `DEV-37` requires an assertion to stay inside the mathematical universe, and `just test-universe` counts departures from it.  Rewriting `== (2, 9)` as `== signature_pair(2, 9)` satisfies that rule exactly and changes nothing about the proof surface: the comparison is now between owned objects, and it still cannot fail, because both sides came from the same transcription (`DEV-47`) and the subject is data rather than an operation (`DEV-46`).  Observed: a dozen such rewrites moved the finding count from 118 to 58 while every affected assertion remained as vacuous as before.
+
+  The mechanism is `DEV-34` reaching the test surface: the detector names a shape, the shape is easy to edit, the count is easy to watch, and none of that is the question the test exists to answer.  A finding on an assertion is a reason to ask what the test proves; the spelling is downstream of that answer.
+
+- **Violation Example**: converting every flagged comparison to an owned constructor and reporting the reduced count as progress; changing `len` to `cardinality()` in an assertion that would pass on a broken implementation either way.
+
+- **Correct Example**: on a flagged assertion, first asking which operation's defect it would expose; deleting it when the answer is none; when the answer is an operation, then also spelling the comparison in the universe.
+
+#### `DEV-49`: A Correction Is a Prompt to Re-Ask What the Work Is For
+
+- **Rule**: When work is corrected, do not repair the corrected artefact in place by default.  Restate what the artefact is for, and check that the thing being repaired should exist at all.  A second correction on the same artefact is decisive evidence that the frame is wrong rather than the details, and the response is to stop editing and say what the artefact was supposed to establish.
+
+- **Rationale**: Repairs stay inside the frame they are handed, and each one feels responsive while the object drifts further from usefulness.  Observed in sequence on one test: a string comparison was corrected, and became an object comparison that could not fail; that was corrected, and became a cardinality assertion with the content removed; only on being asked a third time did the actual answer surface, which was that the test should not have existed, because its subject was transcribed data rather than a computed operation.  Three edits, each a faithful response to the letter of the criticism, and none of them the answer.
+
+  This is the doctrine's own reset condition arriving through the review surface: two corrections that remove machinery invalidate the frame.  The cost of not applying it is not a wasted edit but a wasted correction -- the reviewer has now spent three turns on one line, and the answer was available at the first.
+
+- **Violation Example**: answering "why are you asserting on strings" by asserting on objects instead; answering "this is a tautology" by weakening the tautology; producing a third variant of an artefact whose purpose has not been restated.
+
+- **Correct Example**: on the first correction, stating what the test was meant to establish and checking that a failure of it would report a defect; concluding that the artefact should be deleted, and saying so, rather than producing a better-spelled version of it.
+
+
 * * *
 
 ### 13. Notebook, REPL & Mathematical Example Style (`NB-*`)
