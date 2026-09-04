@@ -1,8 +1,7 @@
-from sage.all import NN, SR, ZZ
-from sage.combinat.free_module import CombinatorialFreeModule
-from sage.sets.finite_enumerated_set import FiniteEnumeratedSet
+from sage.all import SR
 
-from dzack_research.preamble.all import Lattices, diagonal_gram
+from dzack_research.preamble.all import Lattices, QuadraticField, ZZ, diagonal_gram
+from dzack_research.preamble.categories.sets import NN, finite_ordered_set
 from dzack_research.preamble.tensors import Tensor, tensor
 
 
@@ -46,7 +45,6 @@ def test_a_lattice_is_free_on_formal_symbols_in_sr_by_default() -> None:
     e0 = SR.var("e_0")
     e1 = SR.var("e_1")
 
-    assert isinstance(lattice._module, CombinatorialFreeModule)
     assert generating_set.cardinality() == 2
     assert e0 in generating_set
     assert e1 in generating_set
@@ -58,7 +56,7 @@ def test_a_lattice_is_free_on_formal_symbols_in_sr_by_default() -> None:
 
 
 def test_a_lattice_may_be_free_on_a_chosen_generating_set() -> None:
-    hermite = FiniteEnumeratedSet([SR.var("H0"), SR.var("H1"), SR.var("H2")])
+    hermite = finite_ordered_set((SR.var("H0"), SR.var("H1"), SR.var("H2")))
     lattice = Lattices(ZZ)(ZZ**3, module_generators=hermite)
     h0 = SR.var("H0")
     h2 = SR.var("H2")
@@ -71,7 +69,7 @@ def test_a_lattice_may_be_free_on_a_chosen_generating_set() -> None:
 
 
 def test_the_free_module_on_a_named_index_set_keeps_those_generators() -> None:
-    names = FiniteEnumeratedSet([SR.var("phi"), SR.var("psi")])
+    names = finite_ordered_set((SR.var("phi"), SR.var("psi")))
     lattice = Lattices(ZZ)(ZZ**names)
 
     assert lattice.module_generating_set() == names
@@ -129,9 +127,8 @@ def test_named_catalogue_uses_owned_gram_tensors() -> None:
 
 
 def test_lattices_over_an_order_do_not_sniff_cartan_type() -> None:
-    from dzack_research.preamble.all import ZZ, sqrt
-
-    order = ZZ[sqrt(2)]
+    field = QuadraticField(2, "a")
+    order = field.order_generated_by(field.primitive_element())
     lattice = Lattices(order)(order**2)
     even_lattice = lattice.twist(2)
     e, f = lattice.module_generator(0), lattice.module_generator(1)
@@ -144,14 +141,14 @@ def test_lattices_over_an_order_do_not_sniff_cartan_type() -> None:
 
 
 def test_signature_pair_uses_the_fraction_field() -> None:
-    from dzack_research.preamble.all import ZZ as integers
-    from dzack_research.preamble.all import engine_ring, sqrt, tensor
+    from dzack_research.preamble.all import tensor
 
-    plane = Lattices(integers)("U")
+    plane = Lattices(ZZ)("U")
     assert plane.signature_pair() == (1, 1)
 
-    order = integers[sqrt(2)]
-    a = engine_ring(order).gen(0)
+    field = QuadraticField(2, "a")
+    a = field.primitive_element()
+    order = field.order_generated_by(a)
     gram = tensor(order, (), (2, 2), [[2, a], [a, 2]])
     lattice = Lattices(order)(gram)
     try:

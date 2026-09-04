@@ -1,6 +1,4 @@
-from sage.categories.homset import Hom
 from sage.categories.morphism import SetMorphism
-from sage.categories.sets_cat import Sets as SageSets
 
 from dzack_research.preamble.all import (
     FiniteSubsets,
@@ -50,8 +48,8 @@ def test_inverse_and_direct_image_form_the_set_subobject_galois_connection() -> 
     source = Sets.Δ[5]
     target = Sets.Δ[2]
     residue = SetMorphism(
-        Hom(source, target, SageSets()),
-        lambda n: target(n % 3),
+        Sets().hom(source, target),
+        lambda n: target(int(n) % 3),
     )
     source_subsets = PowerSet(source)
     target_subsets = PowerSet(target)

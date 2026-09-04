@@ -13,12 +13,10 @@ from dzack_research.preamble.categories.modules.internal_hom import (
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_homset,
 )
-from dzack_research.preamble.categories.abstract_categories import TensorProduct
-from dzack_research.preamble.categories.modules.tensor_products import (
-    BilinearMap,
-    tensor_product_morphism,
-)
-from dzack_research.preamble.categories.rings import owned_ring_view
+from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
+from dzack_research.preamble.categories.modules.pure.modules import BilinearMap
+from dzack_research.preamble.categories.modules.tensor_products import tensor_product_morphism
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
 
 
 class TensorByFunctor(Functor):
@@ -26,7 +24,7 @@ class TensorByFunctor(Functor):
 
     def __init__(self, fixed_module) -> None:
         self._fixed_module = fixed_module
-        ring = owned_ring_view(fixed_module.base_ring())
+        ring = _owned_ring(fixed_module.base_ring())
         category = FinitelyPresentedModules(ring)
         if fixed_module not in category:
             raise TypeError("the fixed tensor factor must be finitely presented")
@@ -58,7 +56,7 @@ class InternalHomFromFunctor(Functor):
 
     def __init__(self, fixed_source) -> None:
         self._fixed_source = fixed_source
-        ring = owned_ring_view(fixed_source.base_ring())
+        ring = _owned_ring(fixed_source.base_ring())
         category = FinitelyPresentedModules(ring)
         if fixed_source not in category:
             raise TypeError("the fixed internal-Hom source must be finitely presented")
@@ -98,57 +96,6 @@ class TensorHomAdjunction(Adjunction):
     def fixed_module(self):
         return self._fixed_module
 
-    def hom_set_isomorphism_forward(self, tensor_morphism):
-        r"""Curry ``A tensor M -> N`` to ``A -> Hom(M,N)``."""
-        tensor_source = tensor_morphism.domain()
-        left, fixed = tensor_source.tensor_factors()
-        if fixed is not self.fixed_module():
-            raise ValueError("the morphism domain has the wrong fixed tensor factor")
-        internal_hom = self.right_adjoint()(tensor_morphism.codomain())
-        return module_homset(left, internal_hom)(
-            {
-                left_label: module_homset(
-                    self.fixed_module(), tensor_morphism.codomain()
-                )(
-                    {
-                        fixed_label: tensor_morphism(
-                            tensor_source.pure_tensor(
-                                left.module_generator(left_label),
-                                self.fixed_module().module_generator(fixed_label),
-                            )
-                        )
-                        for fixed_label in self.fixed_module().module_generating_set()
-                    }
-                )
-                for left_label in left.module_generating_set()
-            }
-        )
-
-    def hom_set_isomorphism_inverse(self, internal_hom_morphism, codomain=None):
-        r"""Uncurry ``A -> Hom(M,N)`` to ``A tensor M -> N``."""
-        internal_hom = internal_hom_morphism.codomain()
-        if internal_hom.source_module() is not self.fixed_module():
-            raise ValueError("the internal Hom has the wrong fixed source")
-        target = internal_hom.target_module()
-        if codomain is not None and codomain is not target:
-            raise ValueError("the stated codomain is not the internal-Hom target")
-        left = internal_hom_morphism.domain()
-        tensor = self.left_adjoint()(left)
-        bilinear = BilinearMap(
-            left,
-            self.fixed_module(),
-            target,
-            {
-                (left_label, fixed_label): internal_hom_morphism(
-                    left.module_generator(left_label)
-                )(
-                    self.fixed_module().module_generator(fixed_label)
-                )
-                for left_label in left.module_generating_set()
-                for fixed_label in self.fixed_module().module_generating_set()
-            },
-        )
-        return tensor.from_bilinear(bilinear)
 
     def unit(self, module):
         tensor = self.left_adjoint()(module)

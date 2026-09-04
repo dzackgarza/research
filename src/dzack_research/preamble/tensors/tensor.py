@@ -1,4 +1,4 @@
-r"""A tensor constructor extending Sage's ``vector`` and ``matrix`` constructors.
+r"""Owned tensor modules and finite coordinate tensor constructors.
 
 The general constructor is ``tensor(R, ps, qs, data)``.  ``ps`` is the tuple
 of dimensions of the contravariant indices and ``qs`` the tuple of dimensions
@@ -12,33 +12,27 @@ data)`` are different objects with different parents, and a linear map
 all-upper or all-lower two-index tensor.
 
 ``tensor.vector(...)``, ``tensor.covector(...)`` and ``tensor.matrix(...)``
-read Sage's complete constructor argument families, including the named
-matrix-constructor namespace (``identity``, ``diagonal``, ``block``,
-``random``, and the rest).  Sage's ``vector`` and ``matrix`` are the engine
-that parses those arguments and infers the ring; what they return crosses
-back to an owned tensor before any session sees it.
+accept owned rings and explicit component data.  They do not reproduce Sage's
+matrix namespace: matrices as linear maps belong to the owned Hom objects.
 """
 
-from dzack_research.preamble.categories.rings import engine_ring as _engine_ring
 from functools import singledispatch
 from math import prod
 
 from sage.matrix.constructor import matrix as _sage_matrix
-from sage.misc.cachefunc import cached_function
 from sage.misc.latex import latex
 from sage.modules.free_module_element import vector as _sage_vector
 from sage.rings.infinity import Infinity
-from sage.rings.integer_ring import ZZ
-from sage.structure.dynamic_class import dynamic_class
 from sage.structure.element import ModuleElement
 from sage.structure.parent import Parent
 from sage.structure.richcmp import op_EQ, op_NE, richcmp
 from sage.structure.unique_representation import UniqueRepresentation
 
-from dzack_research.preamble.categories.rings.rings import (
+from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedRings,
-    engine_ring,
-    own_ring,
+    _engine_element,
+    _engine_ring,
+    _own_ring,
 )
 
 
@@ -209,7 +203,7 @@ def _tensor_space_session_and_latex(
 def _engine_if_ring(value):
     r"""Cross an owned ring to Sage's computation parent; leave other values."""
     try:
-        return engine_ring(own_ring(value))
+        return _engine_ring(_own_ring(value))
     except TypeError:
         return value
 
@@ -222,13 +216,23 @@ def _engine_argument(value):
     """
     if isinstance(value, Tensor):
         if value.tensor_order() == 1:
-            return _engine_vector(value.base_ring(), value.list())
+            return _engine_vector(
+                value.base_ring(),
+                [_engine_element(value.base_ring(), entry) for entry in value.list()],
+            )
         if value.tensor_order() == 2:
             return _engine_component_matrix(value)
         raise TypeError(
             f"a tensor of shape {value.tensor_shape()} is not component data for "
             "a vector or a matrix"
         )
+    parent = getattr(value, "parent", lambda: None)()
+    if parent is not None:
+        try:
+            if parent in OwnedRings():
+                return _engine_element(parent, value)
+        except (TypeError, ValueError, AttributeError):
+            pass
     return _engine_if_ring(value)
 
 
@@ -242,14 +246,6 @@ def _engine_matrix(*args, **kwds):
         kwds = dict(kwds)
         kwds["base_ring"] = _engine_if_ring(kwds["base_ring"])
     return _sage_matrix(*args, **kwds)
-
-
-def _named_engine_matrix(constructor, *args, **kwds):
-    args = tuple(_engine_argument(arg) for arg in args)
-    if "base_ring" in kwds:
-        kwds = dict(kwds)
-        kwds["base_ring"] = _engine_if_ring(kwds["base_ring"])
-    return constructor(*args, **kwds)
 
 
 class Tensor:
@@ -379,7 +375,7 @@ class Tensor:
             return False
         if self.tensor_shape() != other.tensor_shape():
             return False
-        if engine_ring(self.base_ring()) != engine_ring(other.base_ring()):
+        if _engine_ring(self.base_ring()) != _engine_ring(other.base_ring()):
             return False
         if Infinity in self.tensor_shape():
             return self is other
@@ -399,14 +395,6 @@ class Tensor:
             self.lower_ranks(),
             self.components(),
         )
-
-    def determinant(self):
-        r"""Return the determinant of a square finite two-index tensor."""
-        if self.tensor_order() != 2 or self.tensor_shape()[0] != self.tensor_shape()[1]:
-            raise TypeError("determinant requires a square two-index tensor")
-        return _engine_component_matrix(self).det()
-
-    det = determinant
 
     def is_symmetric(self) -> bool:
         r"""Return whether a square two-index tensor is symmetric in its slots."""
@@ -433,7 +421,7 @@ class Tensor:
                 raise ValueError(
                     f"cannot contract covariant rank {rank} with vector ranks {vector.upper_ranks()}"
                 )
-            if engine_ring(vector.base_ring()) != engine_ring(self.base_ring()):
+            if _engine_ring(vector.base_ring()) != _engine_ring(self.base_ring()):
                 raise TypeError("tensor contraction requires one base ring")
         from itertools import product as cartesian_product
 
@@ -447,11 +435,7 @@ class Tensor:
         )
 
     def dual_tensor(self):
-        r"""Return the tensor naturally induced on the dual object.
-
-        For a linear map ``T:V->W`` of type ``(1,1)``, this is the dual map
-        ``T^vee:W^vee->V^vee`` and therefore has transposed components in the
-        selected dual framings.
+        r"""Dualize a nondegenerate pairing or copairing.
 
         For a nondegenerate pairing ``g`` of type ``(0,2)``, duality through
         its correlation isomorphism produces the contravariant tensor
@@ -460,191 +444,40 @@ class Tensor:
         """
         p, q = self.tensor_valence()
         rows, columns = self.tensor_shape()
-        if (p, q) == (1, 1):
-            return tensor(
-                self.base_ring(),
-                (columns,),
-                (rows,),
-                [[self[i, j] for i in range(rows)] for j in range(columns)],
-            )
         if (p, q) in {(0, 2), (2, 0)}:
             if rows != columns:
                 raise ValueError("dualizing a pairing requires equal index ranks")
             inverse = _engine_component_matrix(self).inverse()
-            components = [tuple(row) for row in inverse.rows()]
+            ring = self.base_ring()
+            components = [
+                tuple(ring._from_engine_element(entry) for entry in row)
+                for row in inverse.rows()
+            ]
             if (p, q) == (0, 2):
-                return tensor(self.base_ring(), (rows, columns), (), components)
-            return tensor(self.base_ring(), (), (rows, columns), components)
-        raise TypeError(
-            "dual_tensor is implemented for linear maps and nondegenerate pairings/copairings"
-        )
+                return tensor(ring, (rows, columns), (), components)
+            return tensor(ring, (), (rows, columns), components)
+        raise TypeError("dual_tensor is defined for nondegenerate pairings/copairings")
 
-    def rank(self):
-        r"""Return the rank of a two-index tensor.
+    def pullback(self, morphism):
+        r"""Pull this covariant tensor back along an owned linear morphism.
 
-        For a type-``(1,1)`` tensor this is the rank of the linear map; for a
-        pairing it is the rank of the form.
-        """
-        if self.tensor_order() != 2:
-            raise TypeError("rank here is defined for a two-index tensor")
-        return ZZ(_engine_component_matrix(self).rank())
-
-    def solve_right(self, target):
-        r"""Return the ``x`` with ``self * x == target``.
-
-        ``self`` is a type-``(1,1)`` tensor and ``target`` a type-``(1,0)``
-        tensor on its codomain index; the solution is a type-``(1,0)`` tensor
-        on its domain index.
-        """
-        if self.tensor_valence() != (1, 1):
-            raise TypeError("solving a linear system requires a type-(1,1) tensor")
-        if target.tensor_valence() != (1, 0):
-            raise TypeError("the right-hand side of a linear system is a vector")
-        if self.upper_ranks() != target.upper_ranks():
-            raise ValueError(
-                f"cannot solve ranks {self.upper_ranks()} against {target.upper_ranks()}"
-            )
-        solution = _engine_component_matrix(self).solve_right(
-            _engine_component_vector(target)
-        )
-        return tensor(self.base_ring(), self.lower_ranks(), (), solution.list())
-
-    def stack(self, other):
-        r"""Return the induced map into the direct sum of the two codomains.
-
-        For ``f: R^n -> R^p`` and ``g: R^n -> R^q`` this is
-        ``(f, g): R^n -> R^p (+) R^q``, whose component array is the two
-        component arrays one above the other.
-        """
-        if self.tensor_valence() != (1, 1) or other.tensor_valence() != (1, 1):
-            raise TypeError("this universal map is induced by two type-(1,1) tensors")
-        if self.lower_ranks() != other.lower_ranks():
-            raise ValueError(
-                f"the two maps need one domain; got {self.lower_ranks()} "
-                f"and {other.lower_ranks()}"
-            )
-        if engine_ring(other.base_ring()) != engine_ring(self.base_ring()):
-            raise TypeError("a universal map requires one base ring")
-        rows = self.upper_ranks()[0] + other.upper_ranks()[0]
-        return tensor(
-            self.base_ring(),
-            (rows,),
-            self.lower_ranks(),
-            list(self.components()) + list(other.components()),
-        )
-
-    def trace(self):
-        r"""Return the trace of a type-``(1,1)`` tensor.
-
-        This is the contraction of the contravariant slot against the
-        covariant one, so it needs equal index ranks.
-        """
-        if self.tensor_valence() != (1, 1):
-            raise TypeError("the trace contracts a type-(1,1) tensor")
-        rows, columns = self.tensor_shape()
-        if rows != columns:
-            raise ValueError("a trace requires equal source and target ranks")
-        return sum((self[i, i] for i in range(rows)), self.base_ring().zero())
-
-    def kernel_tensor(self):
-        r"""Return the tensor whose rows are a basis of ``ker(self)``.
-
-        For ``f: R^q -> R^p`` the kernel lies in the domain, so the basis
-        vectors index the contravariant slot and the domain index the
-        covariant one.
-        """
-        if self.tensor_order() != 2:
-            raise TypeError("a kernel here is defined for a two-index tensor")
-        basis = _engine_component_matrix(self).right_kernel().basis_matrix()
-        return tensor(
-            self.base_ring(),
-            (int(basis.nrows()),),
-            (int(basis.ncols()),),
-            basis.list(),
-        )
-
-    def row(self, index):
-        r"""Return one contravariant slice of a two-index tensor as a vector."""
-        if self.tensor_order() != 2:
-            raise TypeError("a row here is defined for a two-index tensor")
-        columns = self.tensor_shape()[1]
-        return tensor(
-            self.base_ring(),
-            (columns,),
-            (),
-            [self[int(index), j] for j in range(columns)],
-        )
-
-    def left_kernel_tensor(self):
-        r"""Return the tensor whose rows are a basis of the left kernel.
-
-        The left kernel of ``f`` is ``ker(f^vee)``; its basis vectors index
-        the contravariant slot of the returned type-``(1,1)`` tensor.
-        """
-        if self.tensor_order() != 2:
-            raise TypeError("a left kernel here is defined for a two-index tensor")
-        basis = _engine_component_matrix(self).left_kernel().basis_matrix()
-        return tensor(
-            self.base_ring(),
-            (int(basis.nrows()),),
-            (int(basis.ncols()),),
-            basis.list(),
-        )
-
-    def restricted_to_lower_indices(self, positions):
-        r"""Return the composite with the inclusion of the named domain indices."""
-        if self.tensor_valence() != (1, 1):
-            raise TypeError("restricting a domain index requires a type-(1,1) tensor")
-        chosen = tuple(int(position) for position in positions)
-        rows = self.upper_ranks()[0]
-        return tensor(
-            self.base_ring(),
-            (rows,),
-            (len(chosen),),
-            [[self[i, j] for j in chosen] for i in range(rows)],
-        )
-
-    def transpose(self):
-        r"""Return the transposed type-``(1,1)`` tensor.
-
-        Source and target index ranks exchange, so the transpose is the dual
-        map and remains a tensor rather than a bare matrix.
-        """
-        return self.dual_tensor()
-
-    def inverse(self):
-        r"""Return the inverse linear-map tensor."""
-        return self.inverse_tensor()
-
-    __invert__ = inverse
-
-    def inverse_tensor(self):
-        r"""Return the inverse of an invertible type-``(1,1)`` tensor."""
-        p, q = self.tensor_valence()
-        if (p, q) != (1, 1):
-            raise TypeError("inverse_tensor is defined for an invertible linear-map tensor")
-        rows, columns = self.tensor_shape()
-        if rows != columns:
-            raise ValueError("an inverse tensor requires equal source and target ranks")
-        inverse = _engine_component_matrix(self).inverse()
-        components = [tuple(row) for row in inverse.rows()]
-        return tensor(self.base_ring(), (rows,), (columns,), components)
-
-    def pullback(self, linear_map):
-        r"""Pull a covariant tensor back along a linear-map tensor.
-
-        If ``T`` has type ``(0,q)`` on ``W`` and ``f:V->W`` has type
-        ``(1,1)``, return ``f^*T`` on ``V``.  This is the tensor operation
-        underlying form preservation; no row/column-vector convention is
-        involved.
+        For ``f: V -> W`` and ``T`` of type ``(0,q)`` on ``W``, return
+        ``f^*T`` on ``V``.  The public datum is the morphism.  Finite coordinate
+        matrices are only an implementation of this transport.
         """
         if self.upper_ranks():
             raise TypeError("pullback is defined here for a covariant tensor")
-        if linear_map.tensor_valence() != (1, 1):
-            raise TypeError("a tensor pullback requires a type-(1,1) linear map")
-        if engine_ring(linear_map.base_ring()) != engine_ring(self.base_ring()):
-            raise TypeError("tensor pullback requires one base ring")
-        target_rank, source_rank = linear_map.tensor_shape()
+        try:
+            matrix = morphism.matrix()
+        except (AttributeError, NotImplementedError) as error:
+            raise TypeError(
+                "tensor pullback requires an owned linear morphism with finite framed-free endpoints"
+            ) from error
+        from dzack_research.preamble.categories.modules.pure.modules import MatrixSpaces
+
+        if matrix.parent() not in MatrixSpaces(self.base_ring()):
+            raise TypeError("tensor pullback requires one coefficient ring")
+        target_rank, source_rank = matrix.parent().matrix_shape()
         if any(rank != target_rank for rank in self.lower_ranks()):
             raise ValueError(
                 "the linear-map codomain rank must match every covariant tensor index"
@@ -652,6 +485,26 @@ class Tensor:
         q = len(self.lower_ranks())
         if q == 0:
             return self
+
+        # The ubiquitous bilinear case is exactly A^t G A.  Use the selected
+        # exact matrix backend only inside this boundary and cross every entry
+        # back before constructing the owned tensor.
+        if q == 2:
+            from dzack_research.preamble.categories.modules.pure.modules import _engine_matrix
+
+            backend_map = _engine_matrix(matrix)
+            backend_form = _engine_component_matrix(self)
+            backend_pullback = backend_map.transpose() * backend_form * backend_map
+            ring = self.base_ring()
+            entries = tuple(
+                ring._from_engine_element(entry) for entry in backend_pullback.list()
+            )
+            return tensor(
+                ring,
+                (),
+                (source_rank, source_rank),
+                _nested(entries, (source_rank, source_rank)),
+            )
 
         from itertools import product as cartesian_product
 
@@ -665,7 +518,7 @@ class Tensor:
                 for target_index, source_index in zip(
                     target_indices, source_indices, strict=True
                 ):
-                    coefficient *= linear_map[target_index, source_index]
+                    coefficient *= matrix[target_index, source_index]
                 value += coefficient
             entries.append(value)
         return tensor(
@@ -694,7 +547,11 @@ def _engine_component_matrix(value):
         value.base_ring(),
         rows,
         columns,
-        [value[i, j] for i in range(rows) for j in range(columns)],
+        [
+            _engine_element(value.base_ring(), value[i, j])
+            for i in range(rows)
+            for j in range(columns)
+        ],
     )
 
 
@@ -704,60 +561,48 @@ def _engine_component_vector(value):
         raise TypeError("engine vector materialization requires a type-(1,0) tensor")
     if value.tensor_shape()[0] == Infinity:
         raise ValueError("an infinite vector tensor has no finite engine vector")
-    return _engine_vector(value.base_ring(), value.list())
-
-
-def _tensor_vector_from_native(native) -> Tensor:
-    r"""Own one Sage vector as a type-``(1,0)`` tensor.
-
-    Sage's constructor is the engine that reads the argument family and
-    infers the ring; the tensor returned is an element of the owned tensor
-    module over the owned ring.
-    """
-    return tensor(native.base_ring(), (int(native.degree()),), (), native.list())
-
-
-def _tensor_matrix_from_native(native) -> Tensor:
-    r"""Own one result of Sage's matrix-constructor family as a type-``(1,1)`` tensor.
-
-    ``matrix(row_keys=..., column_keys=...)`` returns a module morphism rather
-    than a matrix; its ``matrix()`` is Sage's documented way to read the
-    coordinate array, and this crossing is the only place the tensor layer
-    uses it.
-    """
-    from sage.structure.element import Matrix as SageMatrix
-
-    # Engine boundary: Sage's own class test, not a mathematical predicate.
-    coordinates = native if isinstance(native, SageMatrix) else native.matrix()
-    return tensor(
-        coordinates.base_ring(),
-        (int(coordinates.nrows()),),
-        (int(coordinates.ncols()),),
-        coordinates.list(),
+    return _engine_vector(
+        value.base_ring(),
+        [_engine_element(value.base_ring(), entry) for entry in value.list()],
     )
 
 
+def _tensor_vector_from_native(native) -> Tensor:
+    r"""Cross one private Sage vector back into the owned tensor universe."""
+    base = _own_ring(native.base_ring())
+    entries = tuple(base._from_engine_element(entry) for entry in native.list())
+    return tensor(base, (int(native.degree()),), (), entries)
+
+
 class _TensorVectorConstructor:
-    r"""Sage's complete ``vector(...)`` argument family, read as a vector.
+    r"""Construct a type-``(1,0)`` tensor from an owned ring and components."""
 
-    A vector is a type-``(1,0)`` tensor, an element of the owned tensor
-    module.  ``sparse`` selects Sage's parsing of the components; a tensor
-    has one storage.
-    """
-
-    def __call__(self, arg0, arg1=None, arg2=None, sparse=None):
-        return _tensor_vector_from_native(
-            _engine_vector(arg0, arg1, arg2, sparse=sparse)
-        )
+    def __call__(self, base_ring, components=None, *args, **kwds):
+        if args or kwds:
+            raise TypeError(
+                "tensor.vector accepts a preamble ring and one component family"
+            )
+        if base_ring not in _Rings:
+            raise TypeError("tensor.vector expects a preamble ring")
+        if components is None:
+            raise TypeError("tensor.vector requires its component family")
+        if isinstance(components, int):
+            entries = tuple(base_ring.zero() for _ in range(components))
+        elif isinstance(components, dict):
+            size = 0 if not components else max(int(index) for index in components) + 1
+            entries = tuple(
+                components.get(index, base_ring.zero()) for index in range(size)
+            )
+        else:
+            entries = tuple(components)
+        return tensor(base_ring, (len(entries),), (), entries)
 
 
 class _TensorCovectorConstructor:
-    r"""The Sage ``vector(...)`` argument family, read as a covector.
+    r"""Construct a type-``(0,1)`` tensor from an owned ring and components.
 
-    A covector is a type-``(0,1)`` tensor, an element of the dual tensor
-    module, so it never shares a parent with a type-``(1,0)`` vector.  The
-    arguments are the ones Sage's ``vector`` already parses; ``sparse``
-    selects that parsing, and a tensor has one storage.
+    A covector is an element of the dual tensor module, so it never shares a
+    parent with a type-``(1,0)`` vector even when the component families agree.
 
     EXAMPLES::
 
@@ -771,8 +616,10 @@ class _TensorCovectorConstructor:
         32
     """
 
-    def __call__(self, arg0, arg1=None, arg2=None, sparse=None):
-        contravariant = _TensorVectorConstructor()(arg0, arg1, arg2, sparse=sparse)
+    def __call__(self, base_ring, components=None, *args, **kwds):
+        contravariant = _TensorVectorConstructor()(
+            base_ring, components, *args, **kwds
+        )
         return tensor(
             contravariant.base_ring(),
             (),
@@ -781,245 +628,51 @@ class _TensorCovectorConstructor:
         )
 
 
-class _TensorMorphismConstructor:
-    r"""A type-``(1,1)`` tensor read as representing a morphism.
-
-    A tensor represents a morphism through the evaluation map
-
-    .. math:: N\otimes_R M^* \longrightarrow \operatorname{Hom}_R(M,N),
-              \qquad n\otimes\varphi \mapsto (m\mapsto \varphi(m)\,n),
-
-    and the morphism a tensor represents is its image there.  Only this map
-    is needed.  It is neither injective nor surjective in general: distinct
-    tensors can represent one morphism, and not every morphism is
-    represented.  It is an isomorphism when \(M\) is finitely generated
-    projective, which is the regime the coordinate constructors work in.
-
-    So this constructor says that the component array is *meant to*
-    represent a morphism.  The contravariant index is the codomain and the
-    covariant index the domain, which is what removes the row-versus-column
-    reading a bare matrix leaves open.
-
-    **The type-``(1,1)`` reading is a specialization, not the general
-    case.**  A morphism always pairs with \(M\otimes N^*\) by
-    \(\langle f,\,m\otimes\psi\rangle = \psi(f(m))\), so what one has in
-    general is an element of \((M\otimes N^*)^*\), which is of a different
-    valence.  It refines to a type-``(1,1)`` tensor only when the modules
-    are known to lie in a subcategory where the two agree, and the
-    dividing line is finite generation: at infinite rank
-    \((M\otimes N^*)^*\) is not \(N\otimes M^*\).
-    :class:`TensorModule` already records that boundary, naming an
-    infinite-rank mixed space ``Hom(...)`` and an infinite-rank type-
-    ``(0,q)`` space \((M^{\otimes q})^*\) rather than \((M^*)^{\otimes q}\).
-    Taking integer ranks and a finite component array is exactly what
-    places this constructor on the finitely generated side of it.
-
-    EXAMPLES::
-
-        sage: from dzack_research.preamble.tensors import tensor
-        sage: f = tensor.morphism(ZZ, 2, 3, [[1, 0, 2], [0, 1, 3]])
-        sage: f.tensor_valence()
-        (1, 1)
-        sage: f.parent()
-        ZZ^2 ⊗ (ZZ^3)*
-        sage: f * tensor.vector(ZZ, [1, 1, 1])
-        Type (1, 0) tensor in ZZ^2
-        (3, 4)
-    """
-
-    def __call__(self, base_ring, codomain_rank, domain_rank, components=None):
-        for rank in (codomain_rank, domain_rank):
-            if rank == Infinity:
-                raise ValueError(
-                    "the type-(1,1) reading of a morphism needs finitely "
-                    "generated modules; at infinite rank a morphism is an "
-                    "element of (M ⊗ N*)*, whose space TensorModule names "
-                    "Hom(...)"
-                )
-        return tensor(base_ring, (codomain_rank,), (domain_rank,), components)
-
-
-class _TensorEndomorphismConstructor:
-    r"""The square case of :class:`_TensorMorphismConstructor`, where ``M`` is ``N``.
-
-    One rank suffices, and the represented morphism is an endomorphism.
-    The same specialization applies: in general an endomorphism gives an
-    element of \((M\otimes_R M^*)^*\) through the trace pairing, and only
-    finite generation refines that to a type-``(1,1)`` tensor.
-
-    EXAMPLES::
-
-        sage: from dzack_research.preamble.tensors import tensor
-        sage: t = tensor.endomorphism(ZZ, 2, [[0, 1], [1, 0]])
-        sage: t.tensor_valence()
-        (1, 1)
-        sage: t.trace()
-        0
-        sage: t * t == tensor.endomorphism(ZZ, 2, [[1, 0], [0, 1]])
-        True
-    """
-
-    def __call__(self, base_ring, rank, components=None):
-        return _TensorMorphismConstructor()(base_ring, rank, rank, components)
-
-
 class _TensorMatrixConstructor:
-    r"""The complete Sage ``matrix`` constructor namespace, tensor-refined."""
+    r"""Construct finite type-``(1,1)`` coordinate tensors.
 
-    options = _sage_matrix.options
+    This is component data, not a module morphism.  Actual linear maps are
+    elements of ``MatrixSpace(R,m,n) = Hom_R(R^n,R^m)``.  Sage matrix storage
+    options and named constructor namespaces are deliberately not reproduced.
+    """
 
     def __call__(self, *args, **kwds):
-        try:
-            return _tensor_matrix_from_native(_engine_matrix(*args, **kwds))
-        except TypeError as engine_error:
-            if kwds or len(args) not in (3, 4):
-                raise engine_error
-            try:
-                base = own_ring(args[0])
-                rows = int(args[1])
-                columns = int(args[2])
-            except (TypeError, ValueError):
-                raise engine_error
+        if kwds:
+            raise TypeError(
+                "tensor.matrix accepts preamble tensor data, not Sage matrix storage options"
+            )
+        if not args or args[0] not in _Rings:
+            raise TypeError("tensor.matrix expects a preamble base ring")
+        base = args[0]
+        if len(args) == 2:
+            components = args[1]
+            if isinstance(components, Tensor):
+                if components.tensor_order() != 2:
+                    raise TypeError("a matrix tensor has two indices")
+                return tensor(
+                    base,
+                    components.upper_ranks(),
+                    components.lower_ranks(),
+                    components.components(),
+                )
+            shape = _component_shape(components)
+            if len(shape) != 2:
+                raise TypeError(
+                    "tensor.matrix(R, components) requires a rectangular two-index array"
+                )
+            rows, columns = shape
+            return _coordinate_tensor(base, (rows,), (columns,), components)
+        if len(args) in (3, 4):
+            rows = int(args[1])
+            columns = int(args[2])
             components = (
                 tuple(base.zero() for _ in range(rows * columns))
                 if len(args) == 3
                 else args[3]
             )
-            return _coordinate_tensor(
-                base,
-                (rows,),
-                (columns,),
-                components,
-            )
-
-    def block(self, *args, **kwds):
-        return _tensor_matrix_from_native(
-            _named_engine_matrix(_sage_matrix.block, *args, **kwds)
-        )
-
-    def block_diagonal(self, *args, **kwds):
-        return _tensor_matrix_from_native(
-            _named_engine_matrix(_sage_matrix.block_diagonal, *args, **kwds)
-        )
-
-    def circulant(self, *args, **kwds):
-        return _tensor_matrix_from_native(
-            _named_engine_matrix(_sage_matrix.circulant, *args, **kwds)
-        )
-
-    def column(self, *args, **kwds):
-        return _tensor_matrix_from_native(
-            _named_engine_matrix(_sage_matrix.column, *args, **kwds)
-        )
-
-    def companion(self, *args, **kwds):
-        return _tensor_matrix_from_native(
-            _named_engine_matrix(_sage_matrix.companion, *args, **kwds)
-        )
-
-    def diagonal(self, *args, **kwds):
-        return _tensor_matrix_from_native(
-            _named_engine_matrix(_sage_matrix.diagonal, *args, **kwds)
-        )
-
-    def elementary(self, *args, **kwds):
-        return _tensor_matrix_from_native(
-            _named_engine_matrix(_sage_matrix.elementary, *args, **kwds)
-        )
-
-    def hankel(self, *args, **kwds):
-        return _tensor_matrix_from_native(
-            _named_engine_matrix(_sage_matrix.hankel, *args, **kwds)
-        )
-
-    def hilbert(self, *args, **kwds):
-        return _tensor_matrix_from_native(
-            _named_engine_matrix(_sage_matrix.hilbert, *args, **kwds)
-        )
-
-    def identity(self, *args, **kwds):
-        return _tensor_matrix_from_native(
-            _named_engine_matrix(_sage_matrix.identity, *args, **kwds)
-        )
-
-    def ith_to_zero_rotation(self, *args, **kwds):
-        return _tensor_matrix_from_native(
-            _named_engine_matrix(_sage_matrix.ith_to_zero_rotation, *args, **kwds)
-        )
-
-    def jordan_block(self, *args, **kwds):
-        return _tensor_matrix_from_native(
-            _named_engine_matrix(_sage_matrix.jordan_block, *args, **kwds)
-        )
-
-    def lehmer(self, *args, **kwds):
-        return _tensor_matrix_from_native(
-            _named_engine_matrix(_sage_matrix.lehmer, *args, **kwds)
-        )
-
-    def ones(self, *args, **kwds):
-        return _tensor_matrix_from_native(
-            _named_engine_matrix(_sage_matrix.ones, *args, **kwds)
-        )
-
-    def random(self, *args, **kwds):
-        return _tensor_matrix_from_native(
-            _named_engine_matrix(_sage_matrix.random, *args, **kwds)
-        )
-
-    def random_bistochastic(self, *args, **kwds):
-        return _tensor_matrix_from_native(
-            _named_engine_matrix(_sage_matrix.random_bistochastic, *args, **kwds)
-        )
-
-    def random_diagonalizable(self, *args, **kwds):
-        return _tensor_matrix_from_native(
-            _named_engine_matrix(_sage_matrix.random_diagonalizable, *args, **kwds)
-        )
-
-    def random_echelonizable(self, *args, **kwds):
-        return _tensor_matrix_from_native(
-            _named_engine_matrix(_sage_matrix.random_echelonizable, *args, **kwds)
-        )
-
-    def random_rref(self, *args, **kwds):
-        return _tensor_matrix_from_native(
-            _named_engine_matrix(_sage_matrix.random_rref, *args, **kwds)
-        )
-
-    def random_subspaces(self, *args, **kwds):
-        return _tensor_matrix_from_native(
-            _named_engine_matrix(_sage_matrix.random_subspaces, *args, **kwds)
-        )
-
-    def random_unimodular(self, *args, **kwds):
-        return _tensor_matrix_from_native(
-            _named_engine_matrix(_sage_matrix.random_unimodular, *args, **kwds)
-        )
-
-    def random_unitary(self, *args, **kwds):
-        return _tensor_matrix_from_native(
-            _named_engine_matrix(_sage_matrix.random_unitary, *args, **kwds)
-        )
-
-    def toeplitz(self, *args, **kwds):
-        return _tensor_matrix_from_native(
-            _named_engine_matrix(_sage_matrix.toeplitz, *args, **kwds)
-        )
-
-    def vandermonde(self, *args, **kwds):
-        return _tensor_matrix_from_native(
-            _named_engine_matrix(_sage_matrix.vandermonde, *args, **kwds)
-        )
-
-    def vector_on_axis_rotation(self, *args, **kwds):
-        return _tensor_matrix_from_native(
-            _named_engine_matrix(_sage_matrix.vector_on_axis_rotation, *args, **kwds)
-        )
-
-    def zero(self, *args, **kwds):
-        return _tensor_matrix_from_native(
-            _named_engine_matrix(_sage_matrix.zero, *args, **kwds)
+            return _coordinate_tensor(base, (rows,), (columns,), components)
+        raise TypeError(
+            "tensor.matrix expects (R, components) or (R, rows, columns[, components])"
         )
 
 
@@ -1134,7 +787,7 @@ class _CoordinateTensor(ModuleElement, Tensor):
                         rows,
                         columns,
                         [
-                            self[i, j]
+                            _engine_element(self.base_ring(), self[i, j])
                             for i in range(rows)
                             for j in range(columns)
                         ],
@@ -1198,14 +851,6 @@ class _CoordinateTensor(ModuleElement, Tensor):
             ),
         )
 
-    def determinant(self):
-        r"""Return the determinant of a square two-index coordinate tensor."""
-        if self.tensor_order() != 2 or self.tensor_shape()[0] != self.tensor_shape()[1]:
-            raise TypeError("determinant requires a square two-index tensor")
-        return _engine_component_matrix(self).det()
-
-    det = determinant
-
     def __getitem__(self, index: tuple[int, ...]):
         try:
             len(index)
@@ -1262,7 +907,7 @@ class _CoordinateTensor(ModuleElement, Tensor):
             and isinstance(other, Tensor)
             and other.tensor_valence() == (0, 1)
         ):
-            if engine_ring(other.base_ring()) != engine_ring(self.base_ring()):
+            if _engine_ring(other.base_ring()) != _engine_ring(self.base_ring()):
                 raise TypeError("tensor contraction requires one base ring")
             if self.upper_ranks()[-1] != other.lower_ranks()[0]:
                 raise ValueError(
@@ -1299,7 +944,7 @@ class _CoordinateTensor(ModuleElement, Tensor):
                 _nested(entries, output_shape),
             )
         if isinstance(other, Tensor) and other.tensor_valence() == (1, 0):
-            if engine_ring(other.base_ring()) != engine_ring(self.base_ring()):
+            if _engine_ring(other.base_ring()) != _engine_ring(self.base_ring()):
                 raise TypeError("tensor contraction requires one base ring")
             if not self.lower_ranks():
                 raise TypeError("a tensor with no covariant index cannot act on a vector")
@@ -1346,13 +991,16 @@ class _CoordinateTensor(ModuleElement, Tensor):
             and isinstance(other, Tensor)
             and other.tensor_valence() == (1, 1)
         ):
-            if engine_ring(other.base_ring()) != engine_ring(self.base_ring()):
-                raise TypeError("tensor composition requires one base ring")
+            if _engine_ring(other.base_ring()) != _engine_ring(self.base_ring()):
+                raise TypeError("tensor contraction requires one base ring")
             if self.lower_ranks() != other.upper_ranks():
                 raise ValueError(
-                    f"cannot compose ranks {self.lower_ranks()} and "
+                    f"cannot contract ranks {self.lower_ranks()} and "
                     f"{other.upper_ranks()}"
                 )
+            # In U tensor V* tensor V tensor W*, contract the adjacent V*, V
+            # factors.  Under Hom(V,U) = U tensor V* this agrees with map
+            # composition, but its owner here is tensor evaluation.
             rows = self.upper_ranks()[0]
             inner = other.upper_ranks()[0]
             columns = other.lower_ranks()[0]
@@ -1372,11 +1020,12 @@ class _CoordinateTensor(ModuleElement, Tensor):
             )
 
         if self.tensor_valence() == (0, 1):
-            if engine_ring(other.base_ring()) != engine_ring(self.base_ring()):
+            if _engine_ring(other.base_ring()) != _engine_ring(self.base_ring()):
                 raise TypeError("tensor contraction requires one base ring")
             if other.tensor_valence() == (1, 0):
                 return self(other)
             if other.tensor_valence() == (1, 1):
+                # In V* tensor V tensor W*, evaluate the adjacent V*, V pair.
                 if self.lower_ranks() != other.upper_ranks():
                     raise ValueError(
                         f"cannot contract ranks {self.lower_ranks()} and "
@@ -1401,13 +1050,17 @@ class _CoordinateTensor(ModuleElement, Tensor):
             )
         raise TypeError(
             "there is no generic tensor multiplication; use a stated contraction, "
-            "composition, or tensor product"
+            "or tensor product"
         )
 
     def __rmul__(self, other):
-        if other in self.base_ring():
-            return self._rmul_(self.base_ring()(other))
-        raise TypeError("a tensor can only be multiplied by a scalar on the left")
+        try:
+            scalar = self.base_ring()(other)
+        except (TypeError, ValueError):
+            raise TypeError(
+                "a tensor can only be multiplied by a scalar on the left"
+            ) from None
+        return self._rmul_(scalar)
 
     def _richcmp_(self, other, op):
         return _tensor_richcmp(self, other, op)
@@ -1473,9 +1126,11 @@ class TensorModule(UniqueRepresentation, Parent):
         def normalize(rank):
             return Infinity if rank == Infinity else int(rank)
 
+        if base_ring not in _Rings:
+            raise TypeError(f"the tensor base must be a preamble ring, got {base_ring}")
         return UniqueRepresentation.__classcall__(
             cls,
-            own_ring(base_ring),
+            base_ring,
             tuple(normalize(rank) for rank in upper_ranks),
             tuple(normalize(rank) for rank in lower_ranks),
         )
@@ -1490,7 +1145,7 @@ class TensorModule(UniqueRepresentation, Parent):
         self._lower_ranks = tuple(lower_ranks)
         from dzack_research.preamble.categories.modules.pure.modules import Modules
 
-        Parent.__init__(self, base=_engine_ring(base_ring), category=Modules(base_ring))
+        Parent.__init__(self, base=base_ring, category=Modules(base_ring))
 
     def construction(self):
         r"""Return no functorial construction.
@@ -1535,7 +1190,7 @@ class TensorModule(UniqueRepresentation, Parent):
 
     def tensor_indices(self):
         r"""Return the standard generating set of each finite index module."""
-        from dzack_research.preamble.categories.sets import finite_ordered_set
+        from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
         def keys(rank):
             assert rank != Infinity, (
@@ -1558,8 +1213,8 @@ class TensorModule(UniqueRepresentation, Parent):
                 f"shape {shape} requires {prod(shape)} "
                 f"components, got {len(entries)}"
             )
-        engine = engine_ring(self.base_ring())
-        return self.element_class(self, tuple(engine(entry) for entry in entries))
+        ring = self.base_ring()
+        return self.element_class(self, tuple(ring(entry) for entry in entries))
 
     def zero(self) -> _CoordinateTensor:
         assert Infinity not in self.tensor_shape(), (
@@ -1593,7 +1248,16 @@ def _tensor_module(
 
 
 def _is_dimension(value) -> bool:
-    return value in ZZ and ZZ(value) >= 0
+    try:
+        dimension = int(value)
+    except (TypeError, ValueError, OverflowError):
+        return False
+    if dimension < 0:
+        return False
+    try:
+        return value == dimension
+    except (TypeError, ValueError):
+        return False
 
 
 def _rank_tuple(ranks) -> tuple[int, ...]:
@@ -1642,10 +1306,11 @@ def _coordinate_tensor(
 class _TensorConstructor:
     r"""General tensor constructor with variance encoded in the rank vectors.
 
-    ``tensor.vector`` accepts every call accepted by Sage's ``vector``, and
-    ``tensor.covector`` reads that same argument family as a covector.
-    ``tensor.matrix`` accepts every call accepted by Sage's ``matrix`` and
-    exposes the same named matrix constructors.
+    ``tensor.vector(R, data)``, ``tensor.covector(R, data)``, and
+    ``tensor.matrix(R, data)`` are small typed conveniences over the main
+    ``tensor(R, ps, qs, data)`` call.  They accept owned rings and mathematical
+    component data only; Sage constructor/storage compatibility is not public
+    API.
 
     The main call is ``tensor(R, ps, qs, data)``.  ``ps`` lists upper-index
     dimensions and ``qs`` lower-index dimensions.  Hence vectors and covectors
@@ -1655,8 +1320,33 @@ class _TensorConstructor:
     vector = _TensorVectorConstructor()
     covector = _TensorCovectorConstructor()
     matrix = _TensorMatrixConstructor()
-    morphism = _TensorMorphismConstructor()
-    endomorphism = _TensorEndomorphismConstructor()
+
+    def from_matrix(self, matrix):
+        r"""Interpret a finite matrix Hom element as a type-``(1,1)`` tensor."""
+        from dzack_research.preamble.categories.modules.pure.modules import (
+            MatrixSpaces,
+        )
+
+        parent = matrix.parent()
+        ring = parent.base_ring()
+        if parent not in MatrixSpaces(ring):
+            raise TypeError("tensor.from_matrix expects a finite matrix Hom element")
+        return self(
+            ring,
+            (parent.nrows(),),
+            (parent.ncols(),),
+            matrix.list(),
+        )
+
+    def from_morphism(self, morphism):
+        r"""Interpret a finite framed-free module morphism as a type-``(1,1)`` tensor."""
+        try:
+            matrix = morphism.matrix()
+        except (AttributeError, NotImplementedError) as error:
+            raise TypeError(
+                "tensor.from_morphism requires finite framed-free endpoints"
+            ) from error
+        return self.from_matrix(matrix)
 
     def __call__(
         self,
@@ -1681,12 +1371,8 @@ class _TensorConstructor:
             sage: tensor(ZZ, (2, 3), (), range(6)).parent()
             ZZ^2 ⊗ ZZ^3
         """
-        try:
-            base_ring = own_ring(base_ring)
-        except TypeError as error:
-            raise TypeError(f"the tensor base must be a ring, got {base_ring}") from error
         if base_ring not in _Rings:
-            raise TypeError(f"the tensor base must be a ring, got {base_ring}")
+            raise TypeError(f"the tensor base must be a preamble ring, got {base_ring}")
         ps = _rank_tuple(upper_ranks)
         qs = _rank_tuple(lower_ranks)
 

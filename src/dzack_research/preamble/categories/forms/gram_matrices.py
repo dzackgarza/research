@@ -25,7 +25,7 @@ def gram_tensor_graph(gram):
 
 def gram_tensor_from_graph(graph, base_ring):
     r"""Recover the type-``(0,2)`` Gram tensor presented by a weighted graph."""
-    from dzack_research.preamble.tensors import tensor
+    from dzack_research.preamble.tensors.tensor import tensor
 
     vertices = sorted(graph.nodes)
     if vertices != list(range(len(vertices))):

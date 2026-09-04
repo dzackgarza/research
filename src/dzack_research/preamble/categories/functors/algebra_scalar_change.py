@@ -12,47 +12,64 @@ on algebra morphisms, and the represented adjunction supplies the actual Hom
 bijection, unit, and counit on that executable subdomain.
 """
 
-from sage.categories.homset import Hom
 from sage.categories.morphism import SetMorphism
 from sage.categories.rings import Rings as SageRings
 from sage.misc.cachefunc import cached_function
 
-from dzack_research.preamble.categories.rings import OwnedRings as _OwnedRings
-from dzack_research.preamble.categories.algebras import (
+from dzack_research.preamble.categories.rings.ring_foundation import OwnedRings as _OwnedRings
+from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
-    AlgebrasWithChosenFinitePresentation,
-    RestrictedScalarsAlgebras,
     algebra_homset,
+)
+from dzack_research.preamble.categories.algebras.finitely_presented_algebras import AlgebrasWithChosenFinitePresentation
+from dzack_research.preamble.categories.algebras.restricted_scalars import (
+    RestrictedScalarsAlgebras,
     restrict_algebra_scalars,
 )
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
-from dzack_research.preamble.categories.rings import engine_ring, owned_ring_view
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _engine_element,
+    _engine_ring,
+    _owned_ring,
+)
+from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
 def _engine_ring_map(ring_map):
     r"""Return the same ring morphism with computation-ring endpoints."""
-    source = engine_ring(ring_map.domain())
-    target = engine_ring(ring_map.codomain())
-    return SetMorphism(
-        source.Hom(target),
-        lambda scalar: target(ring_map(source(scalar))),
-    )
+    owned_source = ring_map.domain()
+    owned_target = ring_map.codomain()
+    source = _engine_ring(owned_source)
+    target = _engine_ring(owned_target)
+
+    def image(scalar):
+        owned_scalar = owned_source._from_engine_element(source(scalar))
+        return _engine_element(owned_target, ring_map(owned_scalar))
+
+    return SetMorphism(source.Hom(target), image)
 
 
 def _base_change_presented_element(algebra, element, target, ring_map):
     r"""Carry one element through the selected finite presentation."""
-    presentation = engine_ring(algebra.presentation_ring())
-    target_engine = engine_ring(target)
+    presentation_ring = algebra.presentation_ring()
+    presentation = _engine_ring(presentation_ring)
+    target_engine = _engine_ring(target)
     presentation_map = presentation.hom(
         [
-            target_engine(target.algebra_generator(label))
+            _engine_element(target, target.algebra_generator(label))
             for label in algebra.algebra_generating_set()
         ],
         target_engine,
         base_map=_engine_ring_map(ring_map),
     )
-    representative = presentation(algebra.lift_to_presentation(element))
-    return target(presentation_map(representative))
+    lifted = algebra.lift_to_presentation(element)
+    if getattr(lifted, "parent", lambda: None)() is presentation:
+        representative = presentation(lifted)
+    else:
+        representative = _engine_element(presentation_ring, lifted)
+    return target._from_engine_element(
+        target_engine(presentation_map(representative))
+    )
 
 
 class AlgebraScalarExtensionFunctor(Functor):
@@ -66,8 +83,8 @@ class AlgebraScalarExtensionFunctor(Functor):
 
     def __init__(self, ring_map) -> None:
         self._ring_map = ring_map
-        self._source_ring = owned_ring_view(ring_map.domain())
-        self._target_ring = owned_ring_view(ring_map.codomain())
+        self._source_ring = _owned_ring(ring_map.domain())
+        self._target_ring = _owned_ring(ring_map.codomain())
         super().__init__(Algebras(self._source_ring), Algebras(self._target_ring))
 
     def ring_map(self):
@@ -103,6 +120,8 @@ class AlgebraScalarExtensionFunctor(Functor):
             )
         return source
 
+    chosen_preimage = source_algebra
+
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())
         target = self(morphism.codomain())
@@ -124,8 +143,8 @@ class AlgebraRestrictionOfScalarsFunctor(Functor):
 
     def __init__(self, ring_map) -> None:
         self._ring_map = ring_map
-        self._source_ring = owned_ring_view(ring_map.domain())
-        self._target_ring = owned_ring_view(ring_map.codomain())
+        self._source_ring = _owned_ring(ring_map.domain())
+        self._target_ring = _owned_ring(ring_map.codomain())
         super().__init__(Algebras(self._target_ring), Algebras(self._source_ring))
 
     def ring_map(self):
@@ -134,10 +153,38 @@ class AlgebraRestrictionOfScalarsFunctor(Functor):
     def _apply_object(self, algebra):
         return restrict_algebra_scalars(algebra, self.ring_map())
 
+    def chosen_preimage(self, image):
+        if image in RestrictedScalarsAlgebras(self._source_ring):
+            if image.ring_map() is self.ring_map():
+                return image.algebra_over_extension()
+        return super().chosen_preimage(image)
+
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())
         target = self(morphism.codomain())
-        return algebra_homset(source, target)(morphism.engine_morphism())
+        # Restriction changes only the scalar structure; the underlying map is
+        # the original algebra morphism.  When the restricted source retains a
+        # framing, state the map on that framing so its Hom constructor can
+        # check the selected relations.
+        from dzack_research.preamble.categories.algebras.algebras import FramedAlgebras
+
+        if source in FramedAlgebras(source.base_ring()):
+            return algebra_homset(source, target)(
+                {
+                    label: target(
+                        morphism(
+                            morphism.domain()(source.algebra_generator(label))
+                        )
+                    )
+                    for label in source.algebra_generating_set()
+                }
+            )
+        return algebra_homset(source, target)(
+            SetMorphism(
+                Sets().hom(source, target),
+                lambda element: target(morphism(morphism.domain()(element))),
+            )
+        )
 
     def _repr_(self):
         return f"Algebra restriction of scalars along {self.ring_map()}"
@@ -167,36 +214,6 @@ class AlgebraBaseChangeAdjunction(Adjunction):
             lambda label: algebra(restricted.algebra_generator(label))
         )
 
-    def hom_set_isomorphism_forward(self, extended_morphism):
-        original = self.left_adjoint().source_algebra(extended_morphism.domain())
-        restricted_target = self.right_adjoint()(extended_morphism.codomain())
-        return algebra_homset(original, restricted_target)(
-            lambda label: restricted_target(
-                extended_morphism(extended_morphism.domain().algebra_generator(label))
-            )
-        )
-
-    def hom_set_isomorphism_inverse(self, restricted_morphism, codomain=None):
-        restricted_target = restricted_morphism.codomain()
-        if restricted_target not in RestrictedScalarsAlgebras(
-            self.left_adjoint().domain().base_ring()
-        ):
-            raise TypeError(
-                "the inverse algebra transpose must land in a restriction of scalars"
-            )
-        if restricted_target.ring_map() is not self._ring_map:
-            raise ValueError("the restricted target belongs to a different scalar map")
-        target = restricted_target.algebra_over_extension()
-        if codomain is not None and codomain is not target:
-            raise ValueError("the stated codomain is not the algebra being restricted")
-        source = self.left_adjoint()(restricted_morphism.domain())
-        return algebra_homset(source, target)(
-            lambda label: target(
-                restricted_morphism(
-                    restricted_morphism.domain().algebra_generator(label)
-                )
-            )
-        )
 
     def _repr_(self):
         return f"Algebra scalar-extension/restriction adjunction along {self._ring_map}"

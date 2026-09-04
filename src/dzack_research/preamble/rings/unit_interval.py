@@ -108,7 +108,7 @@ class UnitInterval(UniqueRepresentation, Parent):
         return self.one()
 
     def cardinality(self):
-        from dzack_research.preamble.categories.sets import continuum
+        from dzack_research.preamble.categories.sets.cardinals import continuum
 
         return continuum
 

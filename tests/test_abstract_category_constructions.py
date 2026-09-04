@@ -1,6 +1,4 @@
-from sage.categories.homset import Hom
 from sage.categories.morphism import SetMorphism
-from sage.categories.sets_cat import Sets as SageSets
 
 from dzack_research.preamble.all import OppositeCategory, ProductCategory, Sets
 
@@ -9,8 +7,8 @@ def test_opposite_category_reverses_arrows_and_composition() -> None:
     a = Sets.Δ[2]
     b = Sets.Δ[1]
     c = Sets.Δ[0]
-    f = SetMorphism(Hom(a, b, SageSets()), lambda x: b(min(x, 1)))
-    g = SetMorphism(Hom(b, c, SageSets()), lambda _x: c(0))
+    f = SetMorphism(Sets().hom(a, b), lambda x: b(min(int(x), 1)))
+    g = SetMorphism(Sets().hom(b, c), lambda _x: c(0))
 
     opposite = OppositeCategory(Sets())
     op_a = opposite(a)
@@ -34,10 +32,10 @@ def test_product_category_has_componentwise_homs_identities_and_composition() ->
     middle = category(Sets.Δ[1], Sets.Δ[2])
     right = category(Sets.Δ[0], Sets.Δ[0])
 
-    f1 = SetMorphism(Hom(left.first(), middle.first(), SageSets()), lambda x: middle.first()(min(x, 1)))
-    f2 = SetMorphism(Hom(left.second(), middle.second(), SageSets()), lambda x: middle.second()(x + 1))
-    g1 = SetMorphism(Hom(middle.first(), right.first(), SageSets()), lambda _x: right.first()(0))
-    g2 = SetMorphism(Hom(middle.second(), right.second(), SageSets()), lambda _x: right.second()(0))
+    f1 = SetMorphism(Sets().hom(left.first(), middle.first()), lambda x: middle.first()(min(int(x), 1)))
+    f2 = SetMorphism(Sets().hom(left.second(), middle.second()), lambda x: middle.second()(int(x) + 1))
+    g1 = SetMorphism(Sets().hom(middle.first(), right.first()), lambda _x: right.first()(0))
+    g2 = SetMorphism(Sets().hom(middle.second(), right.second()), lambda _x: right.second()(0))
 
     f = category.hom(left, middle)(f1, f2)
     g = category.hom(middle, right)(g1, g2)
@@ -67,13 +65,13 @@ def test_arrow_subcategories_and_isomorphism_constructor_have_the_expected_objec
 
     x = Sets.Δ[2]
     y = Sets.Δ[4]
-    inclusion = set_injection(x, y, lambda value: y(value + 1))
+    inclusion = set_injection(x, y, lambda value: y(int(value) + 1))
     arrows = ArrowCategory(Sets())
     inclusion_object = arrows(inclusion)
     assert inclusion_object in arrows
-    assert common_category(x, y).is_subcategory(SageSets())
+    assert common_category(x, y).is_subcategory(Sets())
 
-    end = SetMorphism(Hom(x, x, SageSets()), lambda value: x(2 - value))
+    end = SetMorphism(Sets().hom(x, x), lambda value: x(2 - int(value)))
     end_object = EndArrowCategory(Sets())(end)
     assert end_object in EndArrowCategory(Sets())
 

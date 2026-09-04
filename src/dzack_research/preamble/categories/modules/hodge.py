@@ -1,6 +1,6 @@
 r"""Determinant, Poincaré-duality, and Hodge constructions on finite free modules."""
 
-from dzack_research.preamble.categories.abstract_categories import Isomorphism
+from dzack_research.preamble.categories.abstract_categories.arrow_categories import Isomorphism
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
 )
@@ -8,7 +8,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 
 def _require_finite_free(module) -> int:
     from sage.rings.infinity import Infinity
-    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import (
+    from dzack_research.preamble.categories.modules.pure.modules import (
         FinitelyGeneratedFreeModules,
     )
 
@@ -69,7 +69,7 @@ def VolumeTrivialization(module, forward, inverse):
     No orientation or volume is inferred from a framing.  This constructor
     merely verifies two already represented mutually inverse module maps.
     """
-    from dzack_research.preamble.categories.modules.framed.finitely_generated.ring_as_module import (
+    from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
         ring_as_module,
     )
     from dzack_research.preamble.categories.modules.pure.modules import Modules
@@ -93,20 +93,18 @@ def FramingVolumeTrivialization(module, unit=None):
     treated as orientation data.  ``unit`` rescales the selected top wedge and
     must be a unit of the coefficient ring.
     """
-    from dzack_research.preamble.categories.modules.framed.finitely_generated.ring_as_module import (
+    from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
         ring_as_module,
     )
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
         module_homset,
     )
-    from dzack_research.preamble.categories.rings import engine_ring
-
     determinant = DeterminantLine(module)
-    scalars = ring_as_module(module.base_ring())
+    ring = module.base_ring()
+    scalars = ring_as_module(ring)
     top = _unique_generator(determinant)
     one = _unique_generator(scalars)
-    engine = engine_ring(module.base_ring())
-    unit = engine.one() if unit is None else engine(unit)
+    unit = ring.one() if unit is None else ring(unit)
     if not unit.is_unit():
         raise ValueError("a volume trivialization must send a determinant basis to a unit")
     inverse_unit = unit.inverse_of_unit()
@@ -120,7 +118,7 @@ def FramingVolumeTrivialization(module, unit=None):
 
 
 def _volume_scalars(module, volume):
-    from dzack_research.preamble.categories.modules.framed.finitely_generated.ring_as_module import (
+    from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
         ring_as_module,
     )
     from dzack_research.preamble.categories.modules.pure.modules import Modules
@@ -274,7 +272,7 @@ def HodgeDiscriminant(metric, volume):
     r"""Return ``Delta_(g,eps) = det(g) / eps(e_1 wedge ... wedge e_n)^2``."""
     _require_finite_free(metric)
     _volume_scalar, inverse_volume_scalar = _volume_scalars(metric, volume)
-    return metric.gram_tensor().det() * inverse_volume_scalar**2
+    return metric.determinant() * inverse_volume_scalar**2
 
 
 def HodgeStar(metric, volume, degree):
@@ -339,7 +337,7 @@ def HodgeStarOverFractionField(metric, volume, degree):
     non-unimodular metric.  The returned isomorphism lives over the fraction
     field; it is never reported as an integral Hodge star on ``metric``.
     """
-    from dzack_research.preamble.categories.rings import engine_ring
+    from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
 
     _require_finite_free(metric)
     if not metric.is_nondegenerate():
@@ -351,14 +349,14 @@ def HodgeStarOverFractionField(metric, volume, degree):
         raise TypeError("the coefficient ring has no represented fraction field") from error
     if fraction_field is ring:
         return HodgeStar(metric, volume, degree)
-    ring_map = engine_ring(fraction_field).coerce_map_from(engine_ring(ring))
+    ring_map = _engine_ring(fraction_field).coerce_map_from(_engine_ring(ring))
     if ring_map is None:
         raise ValueError("the fraction field does not expose the canonical scalar extension")
     changed_metric = metric.base_change(ring_map)
     volume_scalar, _inverse_volume_scalar = _volume_scalars(metric, volume)
     changed_volume = FramingVolumeTrivialization(
         changed_metric,
-        unit=engine_ring(fraction_field)(volume_scalar),
+        unit=_engine_ring(fraction_field)(volume_scalar),
     )
     return HodgeStar(changed_metric, changed_volume, degree)
 

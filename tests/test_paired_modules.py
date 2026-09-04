@@ -1,8 +1,10 @@
-from sage.all import QQ, ZZ, exp, pi, sqrt
+from sage.all import exp, pi, sqrt
 from sage.rings.infinity import Infinity
 
 from dzack_research.preamble.all import (
     C,
+    QQ,
+    ZZ,
     FormModules,
     FormedModules,
     FreeModuleOn,

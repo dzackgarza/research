@@ -16,12 +16,12 @@ from dzack_research.preamble.categories.group.profinite.field_morphisms import (
     exact_embeddings,
     field_generators,
 )
-from dzack_research.preamble.categories.rings.rings import engine_ring, own_ring
+from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring, _own_ring
 
 
 def _relative_degree(base_field, extension_field):
-    base = engine_ring(base_field)
-    extension = engine_ring(extension_field)
+    base = _engine_ring(base_field)
+    extension = _engine_ring(extension_field)
     if base.characteristic() != extension.characteristic():
         raise ValueError(
             "a finite extension must have the same characteristic as its base"
@@ -70,9 +70,9 @@ class FiniteGaloisExtension(SageObject):
         closure,
         closure_embedding: ExactFieldMorphism,
     ) -> None:
-        self._base_field = own_ring(base_field)
-        self._field = own_ring(field)
-        self._closure = own_ring(closure)
+        self._base_field = _own_ring(base_field)
+        self._field = _own_ring(field)
+        self._closure = _own_ring(closure)
         if not isinstance(base_embedding, ExactFieldMorphism):
             raise TypeError("the base inclusion K -> L must be an exact field morphism")
         if not isinstance(closure_embedding, ExactFieldMorphism):
@@ -318,7 +318,7 @@ class FiniteGaloisQuotient(Parent):
         raise ArithmeticError("the represented finite automorphism has no inverse")
 
     def group_generators(self):
-        from dzack_research.preamble.categories.sets import finite_ordered_set
+        from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
         nonidentity = tuple(element for element in self if element != self.one())
         if self._is_relative_finite_field():
@@ -334,12 +334,10 @@ class FiniteGaloisQuotient(Parent):
             return finite_ordered_set(generators[:1])
         return finite_ordered_set(nonidentity)
 
-    gens = group_generators
-
     def _is_relative_finite_field(self) -> bool:
         from sage.categories.finite_fields import FiniteFields
 
-        return engine_ring(self.top_field()) in FiniteFields()
+        return _engine_ring(self.top_field()) in FiniteFields()
 
     def is_abelian(self) -> bool:
         return all(left * right == right * left for left in self for right in self)

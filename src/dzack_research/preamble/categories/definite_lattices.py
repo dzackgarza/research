@@ -8,8 +8,8 @@ from sage.modules.free_quadratic_module_integer_symmetric import IntegralLattice
 from sage.quadratic_forms.quadratic_form import QuadraticForm
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.qqbar import AA
-from sage.rings.rational_field import QQ
-from dzack_research.preamble.tensors import tensor
+from sage.rings.rational_field import QQ as SageQQ
+from dzack_research.preamble.tensors.tensor import tensor
 from dzack_research.preamble.tensors.tensor import _engine_component_matrix
 
 
@@ -18,21 +18,37 @@ def _definite_sign(lattice):
         raise TypeError("definiteness algorithms here require finite rank")
     positive, negative = lattice.signature_pair()
     rank = lattice.rank()
+    ring = lattice.base_ring()
     if positive == rank and negative == 0:
-        return SageZZ.one()
+        return ring.one()
     if negative == rank and positive == 0:
-        return -SageZZ.one()
+        return -ring.one()
     raise ValueError("this algorithm requires a positive- or negative-definite lattice")
 
 
 def _positive_gram(lattice):
     r"""Return the sign and positive Gram tensor used by definite engines."""
     sign = _definite_sign(lattice)
-    return sign, sign * lattice.gram_tensor().change_ring(SageZZ)
+    return sign, sign * lattice.gram_tensor()
 
 
 def _element_from_coordinates(lattice, coordinates):
-    return lattice.linear_combination({label: coefficient for label, coefficient in zip(lattice.module_generating_set(), coordinates, strict=True) if coefficient})
+    ring = lattice.base_ring()
+
+    def owned(coefficient):
+        if getattr(coefficient, "parent", lambda: None)() is ring:
+            return coefficient
+        return ring._from_engine_element(coefficient)
+
+    return lattice.linear_combination(
+        {
+            label: owned(coefficient)
+            for label, coefficient in zip(
+                lattice.module_generating_set(), coordinates, strict=True
+            )
+            if coefficient
+        }
+    )
 
 
 @dataclass(frozen=True)
@@ -40,29 +56,49 @@ class LatticeReduction:
     original: object
     reduced: object
     isometry: object
-    change_of_basis_tensor: object
+    change_of_basis_matrix: object
 
 
 def lll_reduction(lattice):
     _sign, positive_gram = _positive_gram(lattice)
     engine_gram = _engine_component_matrix(positive_gram)
     backend_rows = engine_gram.LLL_gram()
-    basis_map = tensor.matrix(SageZZ, backend_rows).dual_tensor()
+    return _reduction_from_backend_rows(lattice, backend_rows)
+
+
+def _reduction_from_backend_rows(lattice, backend_rows):
+    from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace
+
+    ring = lattice.base_ring()
+    rank = int(lattice.rank())
+    # Definite-lattice engines return basis vectors as rows.  The live linear
+    # map acts on coordinate columns, hence the transpose here.
+    basis_map = MatrixSpace(ring, rank, rank).from_rows(
+        tuple(
+            tuple(
+                ring._from_engine_element(backend_rows[column, row])
+                for column in range(rank)
+            )
+            for row in range(rank)
+        )
+    )
     return _reduction_from_transformation(lattice, basis_map)
 
 
 def _reduction_from_transformation(lattice, basis_map):
-    if basis_map.tensor_valence() != (1, 1):
-        raise TypeError("a lattice reframing is a type-(1,1) tensor")
-    reduced_gram = lattice.gram_tensor().pullback(basis_map)
-    from dzack_research.preamble.categories.lattices import Lattices
+    from dzack_research.preamble.categories.modules.pure.modules import MatrixSpaces
 
-    reduced = Lattices(lattice.base_ring())(reduced_gram)
+    if basis_map.parent() not in MatrixSpaces(lattice.base_ring()):
+        raise TypeError("a lattice reframing is an owned matrix-Hom morphism")
+    reduced_gram = lattice.gram_tensor().pullback(basis_map)
+    reduced = lattice.lattice_category()(reduced_gram)
     original_generators = tuple(lattice.module_generators())
     images = tuple(
         sum(
             (
-                basis_map[row, column] * original_generators[row]
+                lattice.scalar_multiple(
+                    basis_map[row, column], original_generators[row]
+                )
                 for row in range(len(original_generators))
                 if basis_map[row, column]
             ),
@@ -83,8 +119,10 @@ def bkz_reduction(lattice, block_size=20):
     _sign, positive_gram = _positive_gram(lattice)
     rank = positive_gram.tensor_shape()[0]
     if rank <= 1:
+        from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace
+
         return _reduction_from_transformation(
-            lattice, tensor.matrix.identity(SageZZ, rank)
+            lattice, MatrixSpace(lattice.base_ring(), rank, rank).identity_matrix()
         )
     block_size = min(max(2, int(block_size)), rank)
     backend_gram = IntegerMatrix.from_matrix(_engine_component_matrix(positive_gram))
@@ -98,11 +136,19 @@ def bkz_reduction(lattice, block_size=20):
     lll = LLL.Reduction(gso)
     lll()
     BKZ.Reduction(gso, lll, BKZ.Param(block_size=block_size))()
-    backend_rows = tensor.matrix(
+    from sage.matrix.constructor import matrix as sage_matrix
+
+    backend_rows = sage_matrix(
         SageZZ,
-        [[backend_transformation[row, column] for column in range(rank)] for row in range(rank)],
+        rank,
+        rank,
+        [
+            backend_transformation[row, column]
+            for row in range(rank)
+            for column in range(rank)
+        ],
     )
-    return _reduction_from_transformation(lattice, backend_rows.dual_tensor())
+    return _reduction_from_backend_rows(lattice, backend_rows)
 
 
 def hkz_reduction(lattice):
@@ -112,12 +158,15 @@ def hkz_reduction(lattice):
 def minimum(lattice):
     sign, positive_gram = _positive_gram(lattice)
     backend = IntegralLattice(_engine_component_matrix(positive_gram))
-    return sign * SageZZ(backend.minimum())
+    minimum_value = lattice.base_ring()._from_engine_element(
+        SageZZ(backend.minimum())
+    )
+    return sign * minimum_value
 
 
 def vectors_of_square(lattice, square):
     sign, positive_gram = _positive_gram(lattice)
-    square = SageZZ(square)
+    square = lattice.base_ring()(square)
     target = sign * square
     if target < 0:
         return tuple()
@@ -134,7 +183,7 @@ def roots(lattice):
 
 
 def roots_of_square(lattice, square):
-    square = SageZZ(square)
+    square = lattice.base_ring()(square)
     if square == 0:
         return tuple()
     return tuple(vector for vector in vectors_of_square(lattice, square) if vector.is_root())
@@ -189,14 +238,12 @@ def root_sublattice(lattice):
         component_types.append(candidate_type)
 
     recognized = component_types[0] if len(component_types) == 1 else CartanType(component_types)
-    from dzack_research.preamble.categories.lattices import Lattices
-    from dzack_research.preamble.categories.modules.subobjects import ModuleSubobjects
-    from dzack_research.preamble.categories.root_lattices import refine_root_lattice
-    from dzack_research.preamble.categories.sets import finite_ordered_set
+    from dzack_research.preamble.categories.modules.pure.modules import ModuleSubobjects
+    from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
     from dzack_research.preamble.refine import refine
 
     labels = finite_ordered_set(range(len(ordered)))
-    source = Lattices(lattice.base_ring())(
+    source = lattice.lattice_category()(
         [[left.b(right) for right in ordered] for left in ordered],
         module_generators=labels,
     )
@@ -204,12 +251,12 @@ def root_sublattice(lattice):
     source._preamble_inclusion = inclusion
     refine(source, ModuleSubobjects(lattice.base_ring()))
     if lattice.is_negative_definite():
-        refine_root_lattice(source, recognized)
+        source = lattice.lattice_category()._refine_root_lattice(source, recognized)
     return source
 
 
 def vectors_of_square_and_divisibility(lattice, square, divisibility):
-    divisibility = SageZZ(divisibility)
+    divisibility = lattice.base_ring()(divisibility)
     return tuple(vector for vector in vectors_of_square(lattice, square) if vector.div() == divisibility)
 
 
@@ -225,9 +272,13 @@ def _target_coordinates(lattice, target):
         )
 
         coefficients = module_coefficients(target, lattice)
-        target = [coefficients.get(label, lattice.base_ring().zero()) for label in lattice.module_generating_set()]
-    point = tensor.vector(QQ, target)
-    if point.tensor_shape()[0] != lattice.rank():
+        target = [
+            coefficients.get(label, lattice.base_ring().zero())
+            for label in lattice.module_generating_set()
+        ]
+    rationals = lattice.base_ring().fraction_field()
+    point = tensor.vector(rationals, target)
+    if point.tensor_shape()[0] != int(lattice.rank()):
         raise ValueError("a closest-vector target has one coordinate per lattice generator")
     return point
 
@@ -235,32 +286,48 @@ def _target_coordinates(lattice, target):
 def closest_vector(lattice, target):
     r"""Return the exact closest lattice vector to a rational target."""
     from itertools import product
-
     from sage.functions.other import ceil, floor, sqrt
+    from dzack_research.preamble.categories.rings.ring_foundation import _engine_element
+
     point = _target_coordinates(lattice, target)
+    rationals = point.base_ring()
     _sign, gram = _positive_gram(lattice)
-    gram = gram.change_ring(QQ)
+    gram = gram.change_ring(rationals)
     rank = gram.tensor_shape()[0]
     if rank == 0:
         return lattice.zero()
 
     def distance_squared(coordinates):
-        delta = tensor.vector(QQ, coordinates) - point
+        delta = tensor.vector(rationals, coordinates) - point
         return gram.contract(delta, delta)
 
-    best_coordinates = tuple(SageZZ(entry.round()) for entry in point)
+    best_coordinates = tuple(
+        lattice.base_ring()(
+            int(_engine_element(rationals, entry).round())
+        )
+        for entry in point
+    )
     best_distance = distance_squared(best_coordinates)
     dual_gram = gram.dual_tensor()
     coordinate_ranges = []
     for index in range(rank):
-        radius = sqrt(best_distance * dual_gram[index, index])
-        lower = SageZZ(floor(point[index] - radius)) - 1
-        upper = SageZZ(ceil(point[index] + radius)) + 1
+        radius = sqrt(
+            _engine_element(
+                rationals, best_distance * dual_gram[index, index]
+            )
+        )
+        center = _engine_element(rationals, point[index])
+        lower = int(floor(center - radius)) - 1
+        upper = int(ceil(center + radius)) + 1
         coordinate_ranges.append(range(lower, upper + 1))
     for raw_coordinates in product(*coordinate_ranges):
-        candidate = tuple(SageZZ(entry) for entry in raw_coordinates)
+        candidate = tuple(lattice.base_ring()(entry) for entry in raw_coordinates)
         distance = distance_squared(candidate)
-        if distance < best_distance or (distance == best_distance and candidate < best_coordinates):
+        if distance < best_distance or (
+            distance == best_distance
+            and tuple(int(x) for x in candidate)
+            < tuple(int(x) for x in best_coordinates)
+        ):
             best_coordinates = candidate
             best_distance = distance
     return _element_from_coordinates(lattice, best_coordinates)
@@ -269,54 +336,86 @@ def closest_vector(lattice, target):
 def babai(lattice, target):
     r"""Return Babai's LLL nearest-plane approximation."""
     point = _target_coordinates(lattice, target)
-    _sign, gram = _positive_gram(lattice)
-    rank = gram.tensor_shape()[0]
+    rank = int(lattice.rank())
     if rank == 0:
         return lattice.zero()
-    engine_gram = _engine_component_matrix(gram)
-    backend_rows = engine_gram.LLL_gram().change_ring(QQ)
-    basis_map = tensor.matrix(QQ, backend_rows).dual_tensor()
-    reduced_coordinates = basis_map.inverse_tensor() * point
-    rounded = tensor.vector(QQ, (SageZZ(entry.round()) for entry in reduced_coordinates))
-    return _element_from_coordinates(lattice, basis_map * rounded)
+    _sign, gram = _positive_gram(lattice)
+    from dzack_research.preamble.categories.rings.ring_foundation import _engine_element
+    from sage.modules.free_module_element import vector as sage_vector
+
+    rationals = point.base_ring()
+    backend_rows = _engine_component_matrix(gram).LLL_gram().change_ring(SageQQ)
+    basis_map = backend_rows.transpose()
+    point_backend = sage_vector(
+        SageQQ,
+        [_engine_element(rationals, entry) for entry in point],
+    )
+    reduced_coordinates = basis_map.inverse() * point_backend
+    rounded = sage_vector(SageQQ, [entry.round() for entry in reduced_coordinates])
+    original = basis_map * rounded
+    return _element_from_coordinates(lattice, tuple(original))
 
 
 def voronoi_cell(lattice, bound=None):
-    r"""Return the rational Voronoi cell in the chosen lattice coordinates."""
+    r"""Return the owned rational Voronoi cell in lattice coordinates."""
     from sage.geometry.polyhedron.constructor import Polyhedron
+    from dzack_research.preamble.categories.rings.ring_foundation import _engine_element
+    from dzack_research.preamble.categories.schemes.polytopes import (
+        ConvexPolytopeParent,
+    )
+
     _sign, gram = _positive_gram(lattice)
     rank = gram.tensor_shape()[0]
+    rationals = lattice.base_ring().fraction_field()
     if rank == 0:
-        return Polyhedron(vertices=[[]], base_ring=QQ)
-    gram_q = gram.change_ring(QQ)
+        return ConvexPolytopeParent(
+            Polyhedron(vertices=[[]], base_ring=SageQQ)
+        )
+    gram_q = gram.change_ring(rationals)
     engine_gram = _engine_component_matrix(gram)
 
     def cell_from_bound(radius):
-        _count, _largest, raw_coordinates = engine_gram.__pari__().qfminim(SageZZ(radius), None)
-        coordinates = tensor.matrix(SageZZ, raw_coordinates)
+        backend_radius = SageZZ(int(radius))
+        _count, _largest, raw_coordinates = engine_gram.__pari__().qfminim(
+            backend_radius, None
+        )
+        coordinates = raw_coordinates
         inequalities = []
-        for column_index in range(coordinates.tensor_shape()[1]):
+        for column_index in range(coordinates.ncols()):
             column = tensor.vector(
-                QQ,
-                [coordinates[row_index, column_index] for row_index in range(rank)],
+                rationals,
+                [
+                    rationals._from_engine_element(
+                        SageQQ(coordinates[row_index, column_index])
+                    )
+                    for row_index in range(rank)
+                ],
             )
             for signed in (column, -column):
                 covector = gram_q * signed
                 square = covector * signed
+                owned_entries = [
+                    square / rationals(2),
+                    *(-entry for entry in covector.components()),
+                ]
                 inequalities.append(
-                    [square / 2, *(-entry for entry in covector.components())]
+                    [_engine_element(rationals, entry) for entry in owned_entries]
                 )
-        return Polyhedron(ieqs=inequalities, base_ring=QQ)
+        return ConvexPolytopeParent(
+            Polyhedron(ieqs=inequalities, base_ring=SageQQ)
+        )
 
     if bound is not None:
         return cell_from_bound(bound)
-    radius = SageZZ(max(gram[index, index] for index in range(rank)) + 1)
+    radius = max(int(gram[index, index]) for index in range(rank)) + 1
     for _attempt in range(16):
         cell = cell_from_bound(radius)
-        if cell.is_compact():
+        if cell._engine_polyhedron().is_compact():
             return cell
         radius *= 2
-    raise RuntimeError(f"failed to close the Voronoi cell within square bound {radius}")
+    raise RuntimeError(
+        f"failed to close the Voronoi cell within square bound {radius}"
+    )
 
 
 def voronoi_relevant_vectors(lattice):
@@ -324,22 +423,34 @@ def voronoi_relevant_vectors(lattice):
     cell = voronoi_cell(lattice)
     _sign, gram = _positive_gram(lattice)
     rank = gram.tensor_shape()[0]
-    dual_gram = gram.change_ring(QQ).dual_tensor()
+    rationals = lattice.base_ring().fraction_field()
+    dual_gram = gram.change_ring(rationals).dual_tensor()
     relevant = []
-    for inequality in cell.inequalities():
-        coefficients = tuple(inequality.A())
-        covector = tensor(QQ, (), (rank,), coefficients)
+    for inequality in cell._engine_polyhedron().inequalities():
+        coefficients = tuple(
+            rationals._from_engine_element(SageQQ(entry))
+            for entry in inequality.A()
+        )
+        covector = tensor(rationals, (), (rank,), coefficients)
         vector_coordinates = -(dual_gram * covector)
-        if all(coordinate in SageZZ for coordinate in vector_coordinates):
-            candidate = _element_from_coordinates(lattice, (SageZZ(coordinate) for coordinate in vector_coordinates))
-            if candidate != lattice.zero() and candidate not in relevant:
-                relevant.append(candidate)
+        try:
+            integral = tuple(
+                lattice.base_ring()(coordinate)
+                for coordinate in vector_coordinates
+            )
+        except (TypeError, ValueError):
+            continue
+        candidate = _element_from_coordinates(lattice, integral)
+        if candidate != lattice.zero() and candidate not in relevant:
+            relevant.append(candidate)
     return tuple(relevant)
 
 
 def successive_minima(lattice):
-    r"""Return the exact symbolic successive lengths."""
-    from sage.symbolic.ring import SR
+    r"""Return the exact successive lengths as owned real numbers."""
+    from dzack_research.preamble.categories.rings.ring_foundation import _engine_element
+    from dzack_research.preamble.rings.real import RR
+    from sage.matrix.constructor import matrix as sage_matrix
 
     _sign, gram = _positive_gram(lattice)
     rank = gram.tensor_shape()[0]
@@ -350,67 +461,93 @@ def successive_minima(lattice):
     reduced = transformation * engine_gram * transformation.transpose()
     bound = max(reduced.diagonal())
     _count, _largest, raw_coordinates = engine_gram.__pari__().qfminim(bound, None)
-    coordinate_array = tensor.matrix(SageZZ, raw_coordinates)
+    coordinate_array = raw_coordinates
+    if coordinate_array.nrows() != rank:
+        coordinate_array = coordinate_array.transpose()
+    ring = lattice.base_ring()
     coordinates = tuple(
         tensor.vector(
-            SageZZ,
-            [coordinate_array[row, column] for row in range(rank)],
+            ring,
+            [
+                ring._from_engine_element(
+                    SageZZ(coordinate_array[row, column])
+                )
+                for row in range(rank)
+            ],
         )
-        for column in range(coordinate_array.tensor_shape()[1])
+        for column in range(coordinate_array.ncols())
     )
     candidates = sorted(
         tuple(coordinates) + tuple(-column for column in coordinates),
-        key=lambda column: (gram.contract(column, column), tuple(column)),
+        key=lambda column: (
+            int(gram.contract(column, column)),
+            tuple(int(entry) for entry in column),
+        ),
     )
     independent = []
     for column in candidates:
-        row_array = tensor.matrix(
+        trial = independent + [column]
+        backend_rows = sage_matrix(
             SageZZ,
-            [tuple(vector) for vector in independent + [column]],
+            len(trial),
+            rank,
+            [
+                _engine_element(ring, coefficient)
+                for row in trial
+                for coefficient in row
+            ],
         )
-        if row_array.rank() > len(independent):
+        if backend_rows.rank() > len(independent):
             independent.append(column)
             if len(independent) == rank:
                 break
     if len(independent) != rank:
         raise RuntimeError("short-vector enumeration did not span the lattice space")
-    return tuple(SR(gram.contract(column, column)).sqrt() for column in independent)
-
-
-def gaussian_heuristic(lattice, *, exact_form=False):
-    from sage.functions.gamma import gamma
-    from sage.symbolic.constants import e, pi
-    from sage.symbolic.ring import SR
-
-    _sign, gram = _positive_gram(lattice)
-    rank = gram.tensor_shape()[0]
-    if rank == 0:
-        raise ValueError("the zero lattice has no expected shortest length")
-    exponent = QQ.one() / rank
-    determinant_sqrt = SR(gram.det()).sqrt()
-    if exact_form:
-        return (determinant_sqrt * gamma(1 + QQ(rank) / 2)) ** exponent / pi.sqrt()
-    return determinant_sqrt**exponent * (rank / (2 * pi * e)).sqrt()
+    return tuple(
+        RR(_engine_element(ring, gram.contract(column, column))).sqrt()
+        for column in independent
+    )
 
 
 def hadamard_ratio(lattice):
     from sage.misc.misc_c import prod
     from sage.symbolic.ring import SR
+    from dzack_research.preamble.categories.rings.ring_foundation import _engine_element
+    from dzack_research.preamble.rings.real import RR
 
     _sign, gram = _positive_gram(lattice)
-    rank = gram.tensor_shape()[0]
+    rank = int(gram.tensor_shape()[0])
     if rank == 0:
         raise ValueError("the zero lattice has no framing ratio")
-    product_of_norms = prod(SR(gram[index, index]).sqrt() for index in range(rank))
-    return (SR(gram.det()).sqrt() / product_of_norms) ** (QQ.one() / rank)
+    ring = lattice.base_ring()
+    product_of_norms = prod(
+        SR(_engine_element(ring, gram[index, index])).sqrt()
+        for index in range(rank)
+    )
+    determinant = abs(lattice.determinant())
+    expression = (
+        SR(_engine_element(ring, determinant)).sqrt() / product_of_norms
+    ) ** (SageQQ.one() / rank)
+    return RR(expression)
 
 
 def contact_polytope(lattice):
     from sage.geometry.polyhedron.constructor import Polyhedron
+    from dzack_research.preamble.categories.rings.ring_foundation import _engine_element
+    from dzack_research.preamble.categories.schemes.polytopes import (
+        ConvexPolytopeParent,
+    )
 
-    return Polyhedron(
-        vertices=[_coordinate_tuple(lattice, vector) for vector in shortest_vectors(lattice)],
-        base_ring=QQ,
+    rationals = lattice.base_ring().fraction_field()
+    vertices = [
+        [
+            _engine_element(rationals, rationals(coordinate))
+            for coordinate in _coordinate_tuple(lattice, vector)
+        ]
+        for vector in shortest_vectors(lattice)
+    ]
+    return ConvexPolytopeParent(
+        Polyhedron(vertices=vertices, base_ring=SageQQ)
     )
 
 
@@ -424,63 +561,102 @@ def _coordinate_tuple(lattice, element):
 
 
 def covering_radius(lattice):
-    from sage.symbolic.ring import SR
+    from dzack_research.preamble.categories.rings.ring_foundation import _engine_element
+    from dzack_research.preamble.rings.real import RR
 
     _sign, gram = _positive_gram(lattice)
-    gram_q = gram.change_ring(QQ)
+    rationals = lattice.base_ring().fraction_field()
+    gram_q = gram.change_ring(rationals)
+    cell = voronoi_cell(lattice)
     squared = max(
         gram_q.contract(
-            tensor.vector(QQ, vertex),
-            tensor.vector(QQ, vertex),
+            tensor.vector(
+                rationals,
+                [
+                    rationals._from_engine_element(SageQQ(coordinate))
+                    for coordinate in vertex
+                ],
+            ),
+            tensor.vector(
+                rationals,
+                [
+                    rationals._from_engine_element(SageQQ(coordinate))
+                    for coordinate in vertex
+                ],
+            ),
         )
-        for vertex in voronoi_cell(lattice).vertices_list()
+        for vertex in cell._engine_polyhedron().vertices_list()
     )
-    return SR(squared).sqrt()
+    return RR(_engine_element(rationals, squared)).sqrt()
 
 
 def center_density(lattice):
-    from sage.symbolic.ring import SR
+    from dzack_research.preamble.categories.rings.ring_foundation import _engine_element
+    from dzack_research.preamble.rings.real import RR
 
     _sign, gram = _positive_gram(lattice)
-    rank = gram.tensor_shape()[0]
+    rank = int(gram.tensor_shape()[0])
     if rank == 0:
         raise ValueError("the zero lattice has no sphere packing")
-    return packing_radius(lattice) ** rank / SR(gram.det()).sqrt()
+    determinant_length = RR(
+        _engine_element(lattice.base_ring(), abs(lattice.determinant()))
+    ).sqrt()
+    return packing_radius(lattice) ** rank / determinant_length
 
 
 def packing_density(lattice):
     from sage.functions.gamma import gamma
     from sage.symbolic.constants import pi
+    from dzack_research.preamble.rings.real import RR
 
     rank = int(lattice.rank())
-    return pi ** (QQ(rank) / 2) / gamma(1 + QQ(rank) / 2) * center_density(lattice)
+    factor = pi ** (SageQQ(rank) / 2) / gamma(1 + SageQQ(rank) / 2)
+    return RR._from_engine_expression(factor) * center_density(lattice)
 
 
 def theta_series(lattice, precision=20, variable="q"):
+    from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
+    from dzack_research.preamble.categories.rings.commutative_algebra import PowerSeriesRing
+
     _sign, positive_gram = _positive_gram(lattice)
     quadratic_form = QuadraticForm(
         SageZZ,
         2 * _engine_component_matrix(positive_gram),
     )
-    return quadratic_form.theta_series(int(precision), var_str=variable)
+    backend_series = quadratic_form.theta_series(
+        int(precision), var_str=variable
+    )
+    series_ring = PowerSeriesRing(lattice.base_ring(), variable)
+    engine = _engine_ring(series_ring)
+    return series_ring._from_engine_element(engine(backend_series))
 
 
 def hermite_invariant(lattice):
-    sign, positive_gram = _positive_gram(lattice)
+    from dzack_research.preamble.categories.rings.ring_foundation import _engine_element
+    from dzack_research.preamble.rings.real import RR
+
+    sign, _positive_gram_tensor = _positive_gram(lattice)
     rank = int(lattice.rank())
-    metric_minimum = SageZZ(sign * minimum(lattice))
-    determinant = abs(SageZZ(positive_gram.det()))
-    return AA(metric_minimum) / AA(determinant) ** (AA.one() / rank)
+    ring = lattice.base_ring()
+    metric_minimum = _engine_element(ring, sign * minimum(lattice))
+    determinant = _engine_element(ring, abs(lattice.determinant()))
+    from sage.symbolic.ring import SR
+
+    value = SR(metric_minimum) / SR(determinant) ** (SageQQ.one() / rank)
+    return RR._from_engine_expression(value)
 
 
 def packing_radius(lattice):
+    from dzack_research.preamble.categories.rings.ring_foundation import _engine_element
+    from dzack_research.preamble.rings.real import RR
+
     sign = _definite_sign(lattice)
-    metric_minimum = AA(sign * minimum(lattice))
-    return metric_minimum.sqrt() / 2
+    metric_minimum = sign * minimum(lattice)
+    return RR(_engine_element(lattice.base_ring(), metric_minimum)).sqrt() / 2
 
 
 def kissing_number(lattice):
-    return SageZZ(len(shortest_vectors(lattice)))
+    return lattice.base_ring()(len(shortest_vectors(lattice)))
 
 
 __all__ = [

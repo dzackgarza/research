@@ -1,14 +1,14 @@
 """Finitely generated commutative ideals as module subobjects of the ring."""
 
-from dzack_research.preamble.categories.abstract_categories import SubobjectsOf
-from dzack_research.preamble.categories.rings.rings import (
+from dzack_research.preamble.categories.abstract_categories.arrow_categories import SubobjectsOf
+from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedIntegralDomains,
     OwnedCategoryOverBaseRing,
-    engine_element,
-    engine_ring,
-    own_ring,
+    _engine_element,
+    _engine_ring,
+    _own_ring,
 )
-from dzack_research.preamble.categories.sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.refine import refine
 
 
@@ -16,12 +16,13 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
     r"""Ideals of ``R``: subobjects of the rank-one ``R``-module ``R``."""
 
     def super_categories(self):
-        from dzack_research.preamble.categories.modules import Modules
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
 
         return [Modules(self.base_ring())]
 
     def subobject_category(self):
-        from dzack_research.preamble.categories.modules import Modules, ring_as_module
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
+        from dzack_research.preamble.categories.modules.framed.framed_free_modules import ring_as_module
 
         ring = self.base_ring()
         return SubobjectsOf(Modules(ring), ring_as_module(ring))
@@ -50,7 +51,7 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             represented = getattr(self, "_preamble_engine_ideal", None)
             if represented is not None:
                 return represented
-            engine = engine_ring(self.ring())
+            engine = _engine_ring(self.ring())
             if engine is self.ring():
                 raise NotImplementedError(
                     "this ideal has no active engine-ideal realization"
@@ -58,7 +59,7 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             try:
                 return engine.ideal(
                     tuple(
-                        engine_element(self.ring(), generator)
+                        _engine_element(self.ring(), generator)
                         for generator in self.ideal_generators()
                     )
                 )
@@ -69,18 +70,17 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
 
         def extension_to_localization(self, localization_ring):
             r"""Return ``S^{-1}I <= S^{-1}R`` by localizing the inclusion."""
-            from dzack_research.preamble.categories.rings import LocalizationRings
-
-            if localization_ring not in LocalizationRings():
+            if not (
+                hasattr(localization_ring, "localization_source")
+                and hasattr(localization_ring, "localization_map")
+            ):
                 raise TypeError("ideal localization requires a represented ring localization")
             if localization_ring.localization_source() is not self.ring():
                 raise ValueError("the localization has the wrong source ring")
 
-            from dzack_research.preamble.categories.modules import (
-                FramedModules,
-                module_homset,
-                ring_as_module,
-            )
+            from dzack_research.preamble.categories.modules.pure.modules import FramedModules
+            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
+            from dzack_research.preamble.categories.modules.framed.framed_free_modules import ring_as_module
 
             localized = self.localize(localization_ring)
             localized_inclusion = localized.localization_functor()(self.inclusion())
@@ -174,13 +174,13 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                 return source_ideal
 
             source_ring = localization_ring.localization_source()
-            engine = engine_ring(source_ring)
+            engine = _engine_ring(source_ring)
             source_backend = source_ideal._engine_ideal()
             saturation_method = getattr(source_backend, "saturation", None)
             if saturation_method is not None:
                 product = engine.one()
                 for generator in generators:
-                    product *= engine(generator)
+                    product *= _engine_ring_value(source_ring, generator)
                 result = saturation_method(engine.ideal(product))
                 saturated = result[0] if isinstance(result, tuple) else result
                 return _from_engine_ideal(source_ring, saturated)
@@ -199,11 +199,11 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                 while changed:
                     changed = False
                     for denominator in generators:
-                        gcd = generator.gcd(engine(denominator))
+                        gcd = generator.gcd(_engine_ring_value(source_ring, denominator))
                         if gcd != 0 and not gcd.is_unit():
                             generator = engine(generator / gcd)
                             changed = True
-                return source_ring.ideal(generator)
+                return source_ring.ideal(source_ring._from_engine_element(engine(generator)))
 
             raise NotImplementedError(
                 "this source ideal backend has neither saturation nor a supported PID fallback"
@@ -215,16 +215,14 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             r"""Return whether an ambient ring element lies in this ideal."""
             ring = self.ring()
             value = ring(element)
-            from dzack_research.preamble.categories.rings import LocalizationRings
-
-            if ring in LocalizationRings() and hasattr(
+            if hasattr(ring, "localization_fraction_data") and hasattr(
                 self, "_preamble_localization_source_ideal"
             ):
                 numerator, _denominator = ring.localization_fraction_data(value)
                 contracted = self.contraction_from_localization()
-                return numerator in contracted._engine_ideal()
+                return _engine_ring_value(contracted.ring(), numerator) in contracted._engine_ideal()
             try:
-                return engine_element(ring, value) in self._engine_ideal()
+                return _engine_element(ring, value) in self._engine_ideal()
             except NotImplementedError as error:
                 raise NotImplementedError(
                     "ambient ideal membership has no active backend in this regime"
@@ -303,17 +301,33 @@ def _relation_element(free_module, row):
 
 
 def _from_engine_ideal(ring, engine_ideal):
-    source = own_ring(ring)
+    source = _own_ring(ring)
     return source.ideal(*tuple(engine_ideal.gens()))
+
+
+def _engine_ring_value(ring, value):
+    r"""Cross one ring element to the private engine of ``ring``."""
+    source = _own_ring(ring)
+    engine = _engine_ring(source)
+    parent = getattr(value, "parent", lambda: None)()
+    if parent is engine:
+        return engine(value)
+    return engine(_engine_element(source, source(value)))
+
+
+def _owned_engine_value(ring, value):
+    r"""Cross one private engine value back into the owned ring."""
+    source = _own_ring(ring)
+    return source._from_engine_element(_engine_ring(source)(value))
 
 
 def CommutativeIdeal(ring, *generators):
     r"""Return ``(generators) <= R`` with its selected module inclusion."""
-    source = own_ring(ring)
-    engine = engine_ring(source)
+    source = _own_ring(ring)
+    engine = _engine_ring(source)
     if len(generators) == 1 and isinstance(generators[0], (tuple, list)):
         generators = tuple(generators[0])
-    values = tuple(engine(generator) for generator in generators)
+    values = tuple(_engine_ring_value(source, generator) for generator in generators)
     if not values:
         values = (engine.zero(),)
     backend = engine.ideal(values)
@@ -323,10 +337,10 @@ def CommutativeIdeal(ring, *generators):
             raise NotImplementedError(
                 "this ideal has no selected exact module-presentation backend"
             )
-        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import (
+        from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
             BasedFreeModule,
         )
-        from dzack_research.preamble.categories.modules.framed.finitely_generated.ring_as_module import (
+        from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
             ring_as_module,
         )
         from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
@@ -343,22 +357,22 @@ def CommutativeIdeal(ring, *generators):
             inclusion = module_embedding(
                 ideal,
                 ambient_module,
-                {0: ambient_module((source(generator),))},
+                {0: ambient_module((_owned_engine_value(source, generator),))},
             )
         ideal._preamble_inclusion = inclusion
         ideal._preamble_engine_ideal = backend
-        ideal._preamble_ideal_generators = (source(generator),)
+        ideal._preamble_ideal_generators = (_owned_engine_value(source, generator),)
         refine(ideal, CommutativeIdeals(source))
         return ideal
     syzygies = backend.syzygy_module()
 
-    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import (
+    from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
         BasedFreeModule,
     )
     from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
         FinitelyPresentedModule,
     )
-    from dzack_research.preamble.categories.modules.framed.finitely_generated.ring_as_module import (
+    from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
         ring_as_module,
     )
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
@@ -373,7 +387,10 @@ def CommutativeIdeal(ring, *generators):
         {
             label: _relation_element(
                 free_generators,
-                tuple(syzygies[position, column] for column in range(syzygies.ncols())),
+                tuple(
+                    _owned_engine_value(source, syzygies[position, column])
+                    for column in range(syzygies.ncols())
+                ),
             )
             for position, label in enumerate(relation_labels)
         }
@@ -384,13 +401,13 @@ def CommutativeIdeal(ring, *generators):
         ideal,
         ambient_module,
         {
-            label: ambient_module((selected[position],))
+            label: ambient_module((_owned_engine_value(source, selected[position]),))
             for position, label in enumerate(labels)
         },
     )
     ideal._preamble_inclusion = inclusion
     ideal._preamble_engine_ideal = backend
-    ideal._preamble_ideal_generators = tuple(source(generator) for generator in selected)
+    ideal._preamble_ideal_generators = tuple(_owned_engine_value(source, generator) for generator in selected)
     refine(ideal, CommutativeIdeals(source))
     return ideal
 

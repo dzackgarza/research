@@ -95,5 +95,9 @@ Likewise, recovery of an ordinary or strict special case is a lemma or remark af
 
 Use the established names in their standard meanings: category of elements, Grothendieck construction, core, arrow category, full subcategory, replete, natural isomorphism, automorphism group, torsor, monoidal category, abelian category, preadditive category, kernel, cokernel, discriminant form, genus, isometry, classifying object, classifying space, classifying category, and total category.
 
+A *module bilinear form* is an element of $\operatorname{Hom}_{R\text{-}\mathbf{Mod}}(M\otimes_R M,R)$, with the tensor product of $R$-modules (@def-module-bilinear-form).
+An *algebra bilinear form* is an element of $\operatorname{Hom}_{R\text{-}\mathbf{Alg}}(A\otimes_R A,R)$, with the tensor product of $R$-algebras (@def-algebra-bilinear-form).
+An associative pairing on a unital algebra is a condition on a module bilinear form on $U(A)$, equivalently a trace pairing $\varepsilon\circ\mu$.
+
 Project notation is introduced at the defining occurrence, after the underlying standard construction has been stated.
 Every symbol records the same type and meaning throughout the book.

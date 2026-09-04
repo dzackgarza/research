@@ -6,19 +6,22 @@ Strict graded commutativity additionally imposes ``x^2 = 0`` in odd degree;
 this distinction is essential over rings with 2-torsion.
 """
 
-from sage.rings.integer_ring import ZZ
+from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.modules.graded_modules import (
     require_grading_monoid,
 )
-from dzack_research.preamble.categories.rings import OwnedCategoryOverBaseRing
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    OwnedCategoryOverBaseRing,
+    _own_ring,
+)
 
 
 class GradedCommutativeAlgebras(OwnedCategoryOverBaseRing):
     @staticmethod
     def __classcall__(cls, base_ring, grading_monoid=None):
         monoid = require_grading_monoid(grading_monoid)
-        if monoid is not ZZ:
+        if monoid is not _own_ring(SageZZ):
             raise NotImplementedError(
                 "Koszul graded commutativity is currently represented for the integer grading"
             )
@@ -50,7 +53,7 @@ class StrictlyGradedCommutativeAlgebras(OwnedCategoryOverBaseRing):
     @staticmethod
     def __classcall__(cls, base_ring, grading_monoid=None):
         monoid = require_grading_monoid(grading_monoid)
-        if monoid is not ZZ:
+        if monoid is not _own_ring(SageZZ):
             raise NotImplementedError(
                 "strict graded commutativity is currently represented for the integer grading"
             )

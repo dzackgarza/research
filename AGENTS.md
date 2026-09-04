@@ -39,6 +39,18 @@ agent-memory maintain move <key> --to global/advice
 ```
 <!-- agent-memory:end -->
 
+## Preamble coding prerequisites
+
+Before writing or editing code under `src/dzack_research/preamble/`, first read **all current root-level `*TODO*.md` files** that govern preamble work. These currently include:
+
+- `TODO.md`
+- `TODO-ORGANIZATION.md`
+- `PORT_TODO.md`
+
+Also read the generated preamble megadoc output at `docs/preamble-megadoc.md` before writing code. Reading `src/dzack_research/utilities/megadoc.py`, the generator script, does **not** satisfy this requirement. If the generated megadoc may be stale relative to the live source tree, regenerate it with `just preamble-megadoc` and then read the generated `docs/preamble-megadoc.md`.
+
+These are implementation prerequisites: use them to identify already-planned remediation, existing mathematical constructions, known architectural failures, and outstanding archive-port work before adding or changing code.
+
 ## Notebook workflow note
 
 - For any notebook inspection, execution, or result-checking, use `japi` (from `jupyter-assistant-api`) rather than direct Notebook HTTP API calls.
@@ -398,7 +410,7 @@ Top-level directories (this is a navigational map; each tree owns its own README
 - **`computations/`** — the working computational corpus.
   Its `experiments/` subtree holds the **spikes** (see the lineage note below and *QC integration for spikes*). Other subdirs are task-specific: `vendor/` (third-party code — see below), `coxiter/` (CoxIter tool integration), `lattice-orbits/`, `enriques-moduli/` + `enriques-paper-artifacts/` (Enriques-surface moduli work), `notebooks/` (**the user's plane — see below**), `scripts/` (one-off and exploratory scripts — **the only `scripts/` dir; it is QC-exempt**, and is where exploratory code is relocated to de-scope it from the strict gates; holds `components/`, the reusable computation pieces such as the `coxeter-vinberg/` prototypes, relocated here in `746595e`), `reports/` (generated output).
 
-- **`src/`** — the installable package (`dzack_research`). Deliberately thin: right now it is the public Sage import surface re-exporting the maintained spikes (`lattice`, `feature`), covered by `tests/`. **Migration criterion:** code lives in a spike until it has matured past spike status and is usable for real research — demonstrated by *shipped, tested, high-level notebooks* that do actual work with it.
+- **`src/`** — the installable package (`dzack_research`). The live mathematical preamble is `src/dzack_research/preamble/`; `from dzack_research.preamble.all import *` is the session import. Non-mathematical repository tooling that analyzes or generates source artifacts lives under `src/dzack_research/utilities/` and is not part of the preamble session surface. **Migration criterion:** code lives in a spike until it has matured past spike status and is usable for real research — demonstrated by *shipped, tested, high-level notebooks* that do actual work with it.
   Only then does it migrate here, and the move is the semantic statement that it is meant to be shared and reused.
   Do not promote code into `src/` because it looks finished; promote it when a notebook proves a researcher can use it.
 
@@ -415,7 +427,7 @@ Top-level directories (this is a navigational map; each tree owns its own README
   **Implicit typesetting:** a bare `X` at the end of a cell renders as LaTeX when Sage can genuinely typeset `X`, so `show()` is not needed for ordinary inspection.
   Explicit `show()` still works and is still worth writing where the intent is presentation rather than inspection.
 
-  The source of that behaviour is **`sage-init.sage` at the repo root** — tracked here, because it is part of how this repo's notebooks are meant to read.
+  The source of that behaviour is **`sage-init.sage` at the repo root** — tracked here, because it is part of how this repo's notebooks are meant to read. It loads `dzack_research.preamble.all`.
   It becomes active only by being linked to Sage's startup file:
 
   ```
@@ -437,13 +449,14 @@ Top-level directories (this is a navigational map; each tree owns its own README
 | Kind | Home | Made importable by |
 | --- | --- | --- |
 | External, published | — | `sage -pip install <pkg>` (or `sage -pip install "<name> @ git+<url>"` when it has no PyPI wheel, as `ore_algebra` does) |
-| External, unpackaged | `computations/vendor/` | drop it there; `dzack_research.preamble.vendor` puts it on the path, called from `sage-init.sage` (interactive sessions; non-interactive callers call `vendor.activate()`) |
+| External, unpackaged | `computations/vendor/` | drop it there; `sage-init.sage` puts it on `sys.path` for interactive sessions |
 | Ours, spike | `computations/experiments/<name>_spike/` | `sage -pip install --no-deps -e <spike-dir>` (already done for both spikes; edits are live) |
 | Ours, graduated | `src/dzack_research/` | `sage -pip install --no-deps -e .` (already done; edits are live) |
 
 Editable installs point at the working tree, so a rebuilt or reinstalled Sage is the only thing that breaks them — re-run the two `-e` installs and check the vendor path with `sage -c 'import _vendor_selfcheck'`.
 
-- **`tests/`** — tests for the `src/` package surface only.
+- **`tests/`** — tests for the live `src/` package surface only.
+  The archived preamble's tests travelled with it to `archives/preamble/tests/`.
   Spike tests live in each spike's own `tests/` tree.
   `projects/lattice-research/` is a **git submodule** (`dzackgarza/lattice-research`) and contains `category_specs/` (see lineage note), plus `src/`, `theory/`, `lean/`, `paper/`, `tests/`, `reports/`. Because it is a submodule, edits there are commits to a *separate* repo.
 
@@ -458,15 +471,18 @@ Editable installs point at the working tree, so a rebuilt or reinstalled Sage is
 
 - **`references/`** — external inputs: `pdfs/`, `generated-indexes/`, `local-system-dependencies/`.
 
-- **`archives/`** — retired material (`provenance/`).
+- **`archives/`** — retired material (`provenance/`, `preamble/`, `lattice-research/`, `notebooks/`).
 
 ## category_specs and the absorbed spikes (prior attempts at the same substrate)
 
-The goal — a mathematically-semantic, Sage-compatible substrate for exact lattice/surface computation — had two earlier attempts. Both are finished as separate surfaces; **the preamble (`src/dzack_research/preamble/`) is the single active surface**, and "the repo owns X" or "X is a gap" resolves against it:
+The goal — a mathematically-semantic, Sage-compatible substrate for exact lattice/surface computation — had three earlier attempts, all finished as separate surfaces:
 
 - **`projects/lattice-research/category_specs/`** — the older, more ambitious attempt, **frozen prior art**: read it for design intent only. Parity-audit issues (#26/#84/#85 …) citing `category_specs/…` paths point at this frozen surface.
 
-- **The spikes** (`sage_lattice_category_spike`, `sage_lattice_feature_spike`) — the second attempt — were **fully absorbed into the preamble and deleted on 2026-08-19** (PLAN-spike-absorption-workstreams; the migration commits' bodies record each notion's origin and synthesis). Git history is their archive; do not expect their directories to exist.
+- **The spikes** (`sage_lattice_category_spike`, `sage_lattice_feature_spike`) — the second attempt — were absorbed into the preamble and deleted on 2026-08-19 (PLAN-spike-absorption-workstreams; the migration commits' bodies record each notion's origin and synthesis). Git history is their archive; do not expect their directories to exist.
+
+- **The archived preamble** — the third attempt — was archived on 2026-08-30 at `archives/preamble/`.
+- **The live preamble** is `src/dzack_research/preamble/`. `from dzack_research.preamble.all import *` is the session import.
 
 # Issue-tree and milestone policy (research repo)
 
@@ -646,6 +662,8 @@ The review should make it easy to finish the work, not easy to feel satisfied wi
 
 # The preamble is a universe over Sage (always-on)
 
+The live package is `src/dzack_research/preamble/`. The implementation this section describes is the archived third attempt at `archives/preamble/`.
+
 The preamble is a layer over Sage, not a collection of helpers.
 Once a session loads it, the mathematician stops receiving raw Sage objects: everything reached from the preamble is an owned object, which may or may not use a Sage object underneath.
 The stated purpose is *owned uniformization*.
@@ -709,22 +727,24 @@ an object. So there is no forwarding to write, to generate, or to delete.
 *The tell:* any method whose body is `return self.forget_<something>().<the same name>()`;
 any stored `_module`, `_underlying` or `_module_morphism` holding the level below.
 
-**All of this holds three times over, and the requirement is symmetric.** Defining a
-category requires the **trifecta** — its objects, its elements and its morphisms — tied to
-`ParentMethods`, `ElementMethods` and `MorphismMethods`. More properly: a morphism of
-$\mathbf{C}$ is an *element of* $\mathrm{Hom}_\mathbf{C}(A,B)$, and the homsets are the
-*objects* of the arrow category $\mathrm{Ar}(\mathbf{C})$. So the morphism surface is not a
-third parallel mechanism: it is the object-and-element pair applied to a different category,
-and it is built as an ordinary owned chain over $\mathrm{Ar}(\mathbf{C})$ with one `_Hom_`
-per level.
+**All of this holds uniformly across objects, elements and arrows.** The public owned
+protocol is `ObjectType`, `ElementType`, `HomCatType`, `EndCatType`, `AutCatType`, with
+`ArrowType`/`EndArrowType`/`AutArrowType` the corresponding Hom-category element types.
+A morphism of $\mathbf{C}$ is an *element of* $\mathrm{Hom}_\mathbf{C}(A,B)$, and Hom/arrow
+categories are ordinary objects of `Cat`; there is no third public "morphism methods"
+mechanism. Sage's `ParentMethods`, `ElementMethods`, `MorphismMethods`, dynamic classes,
+and related names are private runtime machinery while the owned type-protocol migration is
+completed. Never use those Sage container names to decide mathematical ownership or to
+specify a new public preamble API.
 
-**`MorphismMethods` is not the vehicle, and this was measured.** Sage never instantiates
-`morphism_class`, and `MorphismMethods` reaches a morphism only through
+**`MorphismMethods` is not the owned vehicle, and this was measured.** Sage never
+instantiates `morphism_class`, and its `MorphismMethods` reaches a morphism only through
 `Element.__getattr__` → `parent()._abstract_element_class`, never through the MRO — so
-morphism *data* can never propagate along it, which is the half the mechanism exists for.
-Taking $\mathrm{Ar}(\mathbf{C})$ literally instead threads data and makes claims falsifiable
-on real morphisms. A design that threads only parents has not started.
-`PLAN-threading-set-behaviour` records the evidence and the decisions.
+morphism *data* cannot be the basis of the owned architecture there. Taking
+$\mathrm{Ar}(\mathbf{C})$ literally instead threads data and makes claims falsifiable on
+real morphisms. A design that threads only object parents has not started.
+`PLAN-threading-set-behaviour` records the runtime evidence; the later public type-protocol
+decision supersedes its Sage method-container vocabulary.
 
 **Added structure enriches an object; it never wraps one.** A formed module *is* a
 module that additionally has a form. An abelian group *is* a $\mathbb{Z}$-module.
@@ -746,43 +766,36 @@ $S$, it is $1$. If a construction reaches a lattice without passing through an
 owned set that answers these, the construction is wrong, and stamping a placement
 onto the lattice hides it.
 
-**The category IS the class.** This is the mechanism, and it replaces the hand-written
-chain rather than merely forbidding it. Sage already builds `parent_class`,
-`element_class` and `morphism_class` as dynamic classes whose **bases come from
-`super_categories()`** — and then passes `prepend_cls_bases=False`, discarding the methods
-class's own bases. That single choice is the only reason a `ParentMethods` cannot carry
-`Parent`, cannot hold fields, and cannot have a constructor, and it is why the
-class/`XMethods` split existed at all. An owned `Category` base flips it, and then
-`ParentMethods` **is** the implementation class.
+**The category graph generates the implementation types.** The owned mathematical
+architecture names `ObjectType`, `ElementType`, and the Hom-category types; it does not ask
+contributors to maintain a parallel handwritten class hierarchy. Sage currently supplies
+the dynamic-class/runtime mechanism underneath this: `parent_class`, `element_class`, and
+related generated classes obtain bases from the category graph. The migration may map the
+owned type protocol onto Sage method-container classes internally, but those containers are
+not the mathematical vocabulary and must not leak into public design.
 
-So no class is bound to a category and no base is written: above the root, a level declares
-`super_categories()` and its own methods classes, nothing more. Only the root names bases
-(`Parent`, plus one plain-Python base so the dynamic class keeps an instance `__dict__`), and
-only the root calls Sage's non-cooperative `Parent.__init__`. Construction threads by
-cooperative `super().__init__` — the set level builds the underlying set and establishes the
-set-theoretic facts, the module level adds the ring action, the form level adds the form.
-A level that calls `Parent.__init__` directly silently breaks the chain.
-*The tell:* any **non-root** `ParentMethods`, `ElementMethods` or `MorphismMethods` that
-names a base. That is the class graph being patched by hand instead of stated as the
-category graph, and it means the design went wrong.
+Above the root, a level declares its immediate category relations and only the data/behavior
+introduced at that level. Only the root owns the host `Parent`/`Element` runtime bases and
+non-cooperative Sage initialization. Construction threads cooperatively through the owned
+graph: the set level establishes the underlying set, the module level adds the ring action,
+the form level adds the form, and so on. A non-root level that imports/names an implementation
+base from below, calls `Parent.__init__` directly, or restates lower-level state is patching a
+second class graph by hand and has broken the construction chain.
 
 **The leaf contract, which is what the mechanism exists to buy.** Defining a new leaf must
-feel like easy magic: you do not go looking for an implementation class, you do not need to
-know how it works or where it lives, because it is the category. You only need to know how
-to construct an object **in your immediate super-category**. Adding a leaf therefore costs
-exactly four things: declare `super_categories()`; declare the trifecta of methods classes
-for what your own level adds; introduce your own datum and no more; and one construction
-step ending in `super().__init__(**rest)`. Nothing else is permitted, and no base is
-written. A leaf knows its own level and the one above: it never names a category two levels
-up, never restates anything from below, and never writes a forwarding method. Obligations
-compose by induction — if every level fulfils the one above it, every object's obligations
-are met and no leaf carries the transitive burden. **The author of a lattice category never
-writes the word cardinality**; they construct the underlying module and stop. The decay
-signal is a leaf *reaching down*: importing a lower class to call it, restating a lower
-level's computation because the chain did not deliver it, or calling `Parent.__init__`. The
-decision record, with the options weighed, the approaches already falsified, and the
-falsifiable acceptance for this contract, is the plan card
-`PLAN-threading-set-behaviour`.
+feel routine: the author should not search for an implementation class or know the transitive
+construction chain. They declare the immediate mathematical supercategories/structure
+functors; extend only the appropriate owned `ObjectType`/`ElementType`/Hom-category types for
+what this level adds; introduce only this level's datum; and construct through the immediate
+supercategory. No implementation base is written. A leaf knows its own level and the one
+above: it never names a category two levels up, never restates anything from below, and never
+writes a forwarding method. Obligations compose by induction — if every level fulfils the one
+above it, every object's obligations are met and no leaf carries the transitive burden.
+**The author of a lattice category never writes the word cardinality**; they construct the
+underlying module and stop. The decay signal is a leaf *reaching down*: importing a lower
+implementation class to call it, restating a lower level's computation because the chain did
+not deliver it, or calling `Parent.__init__`. The decision record, with the runtime evidence
+and superseded method-container spelling, is `PLAN-threading-set-behaviour`.
 *The tell:* a placement, cardinality, or enumeration installed on a module, lattice
 or group directly; a set class imported into a module or lattice file, or hand-written in
 its bases; a constructor that calls `Parent.__init__` instead of `super().__init__`;
@@ -922,19 +935,27 @@ A design that violates them is wrong even when it “works.”
 
 **In one line:** write Sage as if the category and the catalogue *are* the theory — idiomatic constructions, one ontological home, no second layer between the mathematician and the object — and delete anything whose only job is to mediate, rename, wrap, or reassure.
 
-## 1. The category is the only extension point
+## 1. The owned category is the only mathematical extension point
 
-Methods belong on refined categories (`ParentMethods` / `ElementMethods` / `MorphismMethods`).
-This repo’s override-refine puts the new subcategory’s methods first in the MRO so owned methods win over concrete class methods; that is what makes monkey-patches, module `__getattr__`, and “hack around Cython/Hom” unnecessary.
+Public method placement is stated through the owned category protocol: `ObjectType`,
+`ElementType`, and the object/element types of Hom/End/Aut category constructions. Sage's
+`ParentMethods`, `ElementMethods`, `MorphismMethods`, dynamic MRO, and refinement hooks are
+private runtime mechanisms used to realize that owned declaration on Sage objects while the
+migration is incomplete; they never decide where mathematics belongs.
 
-If Sage’s interface is wrong or incomplete, **own it in the category and replace it**.
-Workarounds (`without_element_wrap`, ad-hoc `L.isometry(matrix)`, freestanding patch modules) mean ownership was refused.
+If Sage's interface is wrong or incomplete, **own the mathematics in the preamble category
+and map it onto Sage privately**. Workarounds (`without_element_wrap`, ad-hoc
+`L.isometry(matrix)`, freestanding patch modules) mean ownership was refused.
 
-The mechanism is boring and total: one general refine helper, plus post-init hooks on **classes** (not constructor wrappers) so new categories install themselves.
-New capability = new category content, not a new installation strategy.
-Element Cython types get a thin façade so `ElementMethods` (including dunders) can override; do not escalate that into a parallel object model.
+The private runtime mechanism should remain one general refinement/dynamic-class path, not a
+new installation strategy per capability. Native Cython element types are subclassed through
+Sage's own dynamic element-class mechanism; do **not** introduce an `ElementFacade`,
+`MorphismFacade`, wrap/unwrap layer, or a second element ontology merely to override dunders.
+The 2026-07-29 verification showed native Sage arithmetic/coercion remains intact through the
+dynamic subclass and made the façade cascade unnecessary.
 
-See the addendum below for the refine pattern; prefer override-refine from `dzack_research.preamble.refine` over raw `_refine_category_` when owned methods must precede concrete class methods.
+See the addendum below only for the private Sage-adoption/refinement mechanism. It is not the
+public category vocabulary.
 
 ## 2. API shape is dictated by the mathematics
 
@@ -1075,71 +1096,35 @@ contract or the same derived method, the axiom was attached too low. Never
 re-declare in a subcategory what a supercategory already provides, and never
 restate category methods on a concrete class.
 
-## Contracts are abstract_methods — of one kind, not two
+## Abstract contracts are distinct from partial algorithms
 
-A data subcategory states its contractual requirement as `abstract_method`s
-on its `ParentMethods` (the pattern of
-`categories/modules/pure/modules.sage`, where being a module *is* the ring
-morphism $\rho: R \to \operatorname{End}(M)$ and the category requires it).
+A **genuine category implementation contract** uses Sage's `abstract_method` decorator on
+the appropriate owned `ObjectType`, `ElementType`, or Hom-category type. It says that any
+implementation participating at that category level must supply the operation. Never encode
+such a slot as `assert False`, `raise NotImplementedError`, `pass`, or an empty ordinary
+method body.
 
-**Two things used to be spelled the same way, and only one of them is a
-contract.**
+Do not confuse a genuine contract with either of these different situations:
 
-- A **data-accessor** declaration exists only to say "hand me the field the
-  concrete class holds" — the `_form_morphism()` shape. The category/class
-  mechanism *obviates* these: the level that declares the datum supplies the
-  constructor that establishes it, so the obligation cannot be missed and
-  there is nothing left to declare. Do not write new ones, and delete the ones
-  the chain makes redundant.
-- An **undischargeable operation** is one a category can legitimately *state*
-  in full generality but cannot *implement* in full generality. These are real
-  contracts and they stay. Cardinality is total on sets, so the set level may
-  declare it for every set while only a sufficiently narrow subcategory can
-  supply a determinate answer rather than an *unknown*. The abstract
-  declaration at the general level is correct mathematics, not a gap.
+- **Construction-supplied data.** If the category level's constructor itself introduces the
+  datum, the constructed object should simply store/supply it. Do not create a redundant
+  abstract accessor merely to ask later for data the construction necessarily established.
+- **A mathematically general operation with incomplete current algorithms.** `cardinality()`
+  on sets and `is_nondegenerate()` on formed modules are not abstract merely because some
+  represented cases are not presently computable. Keep the method at its mathematical
+  owner, route the cases currently implemented, and assertion-gate the unhandled
+  computational remainder with an informative message. A specialized category may supply a
+  stronger implementation without moving the mathematical notion.
 
-The second kind is **enforced at construction**, so an object whose obligations
-are unmet raises at instantiation instead of existing in a defective state.
-That closes the hole this section used to record — that `_refine_category_`
-admits anything and runs no hook, leaving an obligation merely *visible*.
+An abstract predicate on an axiomatic/data-bearing subcategory is a requirement on
+participants, not an inherited `return True`. If a refinement says that its objects must
+supply a named operation/predicate, the participant supplies it (possibly by a theorem-backed
+implementation returning `True`); the category declaration itself does not manufacture the
+answer. Runtime proof/certificate/evidence objects are not introduced for this purpose.
 
-Enforcement has an authoring cost, and it is two things, both measured:
-
-- **Write `abc.abstractmethod`, not Sage's `abstract_method`.** Sage's sets no
-  `__isabstractmethod__` at all, so nothing — not `ABCMeta`, not any bridge —
-  can see it. It is also untyped, which is why type-checking already used the
-  stdlib one; this makes the two agree instead of split.
-- **A provider that declares obligations carries `metaclass=ABCMeta`.** With a
-  plain provider the dynamic class collects no abstracts, because the provider
-  is in the bases rather than copied and a plain class never has
-  `__abstractmethods__`. The metaclass is therefore *meaningful*: a provider
-  carrying it is declaring that this level has obligations, and a level with
-  none writes a plain provider. (It also requires the combined
-  `DynamicMetaclass` × `ABCMeta`; a bare `ABCMeta` provider makes
-  `dynamic_class` raise a metaclass conflict.)
-
-Never synthesize `__abstractmethods__` by scanning provider dictionaries. That
-is generation, and a generated obligation has no source to audit.
-
-**An abstract predicate on a subcategory is a requirement on participants, not
-an answer the category gives.** `EvenLattices.ParentMethods.is_even`,
-`NondegenerateLattices.is_nondegenerate` and `IntegralValuedLattices.is_integral`
-are abstract *on purpose*: the contract reads "if you refine an object into this
-subcategory, that object must **provide** a way to determine or compute the
-predicate". The object supplies it — a finitely generated formed module computes
-`is_even` from its Gram diagonal; a participant whose evenness is a theorem
-supplies a method returning `True`, and that is the *participant's* auditable
-claim, made by name on the object. Never replace such a declaration with a
-`return True` on the category: membership would then assert the property that
-the declaration exists to demand evidence for, and every participant would
-inherit an unearned claim. This is the correction of 2026-08-20 — the inversion
-was written and reverted the same day; when the abstract declaration appears to
-shadow a computing implementation, the defect is in how the class is built (see
-`refine.sage`: the parent class is rebuilt from the object's *joined* category,
-so a provider already in the join precedes the requirement), never in the
-declaration. This predicate case is the **undischargeable-operation** kind
-above: the general category states the predicate, the participant supplies
-it, and `ABCMeta` is what makes "supplies it" mandatory rather than hoped for.
+Sage's `abstract_method` is the repository's explicit marker for the rare case where a
+method is intentionally a category implementation contract. It is not a TODO mechanism and
+not the default response to an algorithmic frontier.
 
 ## Every constructor registers in the obligations sweep (for now)
 
@@ -1151,28 +1136,28 @@ constructor or construction path must add a specimen row to its
 category's defining datum is exactly the failure class this catches (modules
 with no ring action, form modules with no form).
 
-"For now" is now load-bearing: the sweep was the enforcement of last resort
-while an obligation could only be made *visible*. `ABCMeta` at construction is
-the stronger mechanism it was waiting for, and the data-accessor obligations
-disappear entirely once construction threads. Expect the sweep to shrink or be
-retired as those land — but it is retired by a decision that says so, never by
-attrition, and until then absence from it is never acceptable.
+"For now" is load-bearing: the sweep remains an executable audit of construction paths
+while the owned type-protocol migration is incomplete. It is **not** replaced by an
+`ABCMeta` proof/enforcement layer. Genuine abstract category contracts are marked with Sage's
+`abstract_method`; construction-supplied data should disappear from the abstract-obligation
+surface as construction threading makes it unavoidable. Retire or shrink the sweep only by
+an explicit architectural decision after the corresponding owned construction/type path is
+actually in place, never by attrition.
 
-## Classes only tie constructions into the tree
+## Runtime classes only realize owned constructions
 
-Almost everything lives at the categorical level. The mechanism above makes the
-category's methods classes *be* the implementation, so a separate concrete
-`Parent` class is the exception, not the rule — it enters only where a
-construction cannot be expressed categorically, or where the preamble consumes
-a Sage class it did not define. Historically this read the other way, and the
-named examples below are the ones being migrated, not the pattern to copy:
-`BasedFreeModule`, framed groups intake, the framed free
-algebras — and constructions are uniformized as high up as possible: one
-free functor per concrete category in
-`categories/functors/free_forgetful_adjunction.sage`, one framing contract,
-per-category classes only where the construction itself is specific. A new
-capability is new category content plus, at most, one construction class;
-it is never a parallel class hierarchy.
+Almost everything mathematical lives at the categorical level. The owned `ObjectType`,
+`ElementType`, and Hom-category types are the implementation protocol generated by that
+mathematical graph; a separate handwritten concrete hierarchy is the exception, not the
+rule. Host/runtime classes remain where Sage requires a concrete representation or where an
+owned construction is realized by an adopted Sage type. Historically this read the other
+way, and named classes such as `BasedFreeModule` or old framed-algebra/group intake classes
+are migration specimens, not patterns to copy.
+
+Constructions are uniformized as high as their mathematics allows: one free functor for the
+relevant category, one framing contract, one universal construction. A new capability is new
+owned category/type content plus only the representation machinery genuinely required by the
+host; it is never a parallel class hierarchy.
 
 # Python and Sage research code style (always-on)
 
@@ -1561,24 +1546,28 @@ such a case is a criterion smuggled in without its theorem.
 - After ownership is known, commit required files and use recoverable deletion for disposable files.
 - Keep important work in version control, not only in a working tree or notebook session.
 
-# Addendum: installing methods on Sage objects via category refinement
+# Addendum: private Sage-runtime realization of owned category types
 
-This addendum is the **mechanism** for §1 above (category as extension point).
-For preamble and owned APIs, use override-refine (`dzack_research.preamble.refine.refine`) and post-init hooks on classes; do not introduce monkey-patches or constructor-only installation paths for new work.
+This addendum documents the **current private host-runtime mechanism**, not the mathematical
+API or category vocabulary. The owned graph and its `ObjectType` / `ElementType` /
+Hom-category types are authoritative. When an already-existing Sage parent/element must
+participate in that graph, the bridge may use Sage's dynamic category/refinement machinery to
+realize the owned methods without wrapping the Sage object.
 
-Sage objects (parents, elements, morphisms) carry methods through their **category's dynamic MRO**.
-A category defines `ParentMethods`, `ElementMethods`, and `SubcategoryMethods` inner classes;
-any parent whose category (or join of categories) includes that category gains those methods automatically.
+Sage internally carries methods through dynamic classes built from category method containers
+such as `ParentMethods`, `ElementMethods`, and `SubcategoryMethods`. Those names are allowed
+in this addendum because they are literal Sage runtime API. New mathematical design must not
+use them as the public ownership model.
 
-**The correct way to install new methods on existing Sage objects** — in exploratory notebooks,
-preamble files, or a spike's initialization — is:
+For an adopted Sage runtime object, the bridge normally:
 
-1. **Define a category** that declares `ParentMethods`, `ElementMethods`, or both.
-2. **Route objects into that category** by post-init hooks on the relevant **classes** (preferred), calling override-refine so owned methods precede concrete class methods.
+1. maps the owned category/type declaration to the required private Sage dynamic-method
+   realization; and
+2. routes the Sage instance through the one refinement/dynamic-class mechanism so the owned
+   methods precede conflicting native methods where required.
 
-This is **not monkey-patching**. You are not replacing methods on a class;
-you are telling Sage that certain instances belong to a more refined category,
-and Sage's own dynamic dispatch makes the methods available.
+This is **not a second mathematical category graph**. The Sage category/refinement is an
+implementation capability chosen after owned mathematical placement has already been fixed.
 
 ## Canonical pattern
 
@@ -1657,8 +1646,10 @@ creates the object, so no interception is needed — just add `_refine_category_
 
 ## Rules of thumb
 
-- **Category owns the methods.** The method implementation lives in `ParentMethods` or
-  `ElementMethods`, not inline in the post-init code. The post-init only routes the object in.
+- **Owned category type owns the mathematics.** Public ownership is on `ObjectType`,
+  `ElementType`, or the relevant Hom-category type. A private Sage `ParentMethods` /
+  `ElementMethods` container may realize that declaration for adopted Sage instances; the
+  post-init/refinement code only routes the runtime object.
 
 - **Override-refine when owning an interface.** Use `refine` from the preamble so the new
   subcategory precedes the concrete class in the MRO; bare `_refine_category_` alone leaves
@@ -1667,44 +1658,36 @@ creates the object, so no interception is needed — just add `_refine_category_
 - **Hook classes, not constructors**, for new installations. Post-init on the Sage class is
   the default; constructor interception is archive/last-resort (Variant B).
 
-- **Use existing Sage categories when possible.** If you just need an object to be recognized
-  as an `R`-module, refine into `Modules(R)` rather than defining a new category.
-  Define a new category only when you have method implementations that no existing category provides.
+- **Do not use Sage categories as the mathematical taxonomy.** Determine the owned category
+  first. The backend bridge may refine an adopted Sage object into whatever Sage category or
+  dynamic class provides the necessary runtime capability, but that choice neither creates nor
+  changes its owned mathematical placement.
 
 - **Do not monkey-patch class methods.** If you find yourself writing
   `SomeSageClass.my_method = lambda ...`, stop and write a category instead.
   Monkey-patching breaks for subclasses, is non-composable, and bypasses Sage's MRO.
 
-- **Do not store method implementations on the parent class itself.**
-  The parent class (`IntegerRing_class`, `MatrixSpace`, etc.) is Sage's compiled code;
-  the category's `ParentMethods` is where new methods belong.
+- **Do not store owned mathematical methods directly on an adopted Sage implementation
+  class.** The parent class (`IntegerRing_class`, `MatrixSpace`, etc.) is host runtime code;
+  the owned category type is the mathematical owner. The private bridge may install/map those
+  methods through Sage's dynamic category containers, but callers and design documents speak
+  only the owned category protocol.
 
-  **For the preamble's own categories this goes further: there is no separate class
-  at all.** The category's methods classes *are* the implementation — they carry the
-  bases, the fields and the constructor, and construction threads by
-  `super().__init__` up the category graph (see *The category IS the class* above).
-  A distinct concrete class survives only where a construction cannot be expressed
-  categorically, or where the preamble consumes a Sage class it did not define; the
-  rule below is stated for those, and for the adopted Sage objects this addendum is
-  about. Every mathematical operation — predicate, invariant, construction,
-  orbit, presentation — is a mixin on the refined category (`ParentMethods`,
-  `ElementMethods`, `MorphismMethods`), because that is what makes it available to
-  every object the mathematics says it applies to, in the right resolution order, and
-  what lets a subcategory sharpen it. Writing the same method on the class instead
-  binds it to one construction path, hides it from siblings, and puts it behind the
-  category methods in the MRO. Ask of every new method: *which category's members can
-  answer this?* — and put it there. The exceptions are narrow and nameable: catalogue
-  namespaces holding named specimens (`Lattices`, `Coble`, `Sterk` and their
-  staticmethods), Sage's own element-construction hooks on a `Parent`
-  (`_element_constructor_`), and private record types that carry no mathematics.
+  For preamble-owned mathematics, ask of every operation: *which owned category/type can
+  answer this?* and put it there. Distinct concrete/runtime classes survive only where the
+  host runtime requires a representation type or for private engineering records that carry
+  no mathematics. Catalogue namespaces for named specimens and Sage's required
+  `_element_constructor_` hooks remain narrow implementation exceptions, not alternative
+  mathematical ownership mechanisms.
 
 - **`_refine_category_` joins.** It calls `self._init_category_(self.category().join(Cat))`, so
   the object keeps all its existing category memberships and gains the new one.
   Calling it multiple times is safe. Override-refine still performs that join, then rebuilds
   `__class__` so owned methods win.
 
-- **`@final` guards override.** If a method in `ParentMethods` should not be overridden by
-  a more specific category in the join, mark it `@final`.
+- **Runtime override constraints remain private implementation details.** If the Sage bridge
+  needs `@final` or MRO ordering to realize an owned method safely, document that at the bridge;
+  do not promote it into a mathematical ownership rule.
 
 ## What this is not
 
@@ -1852,18 +1835,17 @@ short synthesis did not capture.
 - Sage already derives parent, element, and morphism method hierarchies from that graph.
 - The owned mechanism must propagate constructors and fields through the same graph.
 - The category and its implementation class should become one readable source unit.
-- `ParentMethods` can be the implementation class when its bases and fields propagate.
-- The implementation class stores only the minimal data introduced at that level.
-- Its constructor consumes that data and delegates the remaining construction upward.
+- The owned `ObjectType`/`ElementType`/Hom-category types are the public implementation protocol.
+- Sage method-container/dynamic classes may realize those types privately during migration.
+- Each generated implementation type stores only the minimal data introduced at that level.
+- Its construction consumes that data and delegates the remaining construction upward.
 - A category level supplies the structure it introduces.
 - It must not merely declare an obligation that its own construction could discharge.
 - Abstract obligations remain valid for genuinely axiomatic categories.
 - An axiomatic subcategory need not have a separate concrete implementation class.
-- Generic mathematical operations belong in category method classes.
-- Parent operations belong in `ParentMethods`.
-- Element operations belong in `ElementMethods`.
-- Morphism operations belong in `MorphismMethods`.
-- Concrete classes remain minimal data containers when Sage ownership requires them.
+- Generic mathematical operations belong on the owned category types that mathematically own them.
+- Object operations belong on `ObjectType`; element operations on `ElementType`; arrow operations on the corresponding Hom-category element type.
+- Concrete/runtime classes remain minimal data containers when Sage ownership requires them.
 - Category methods precede concrete class methods in the owned MRO.
 - A concrete class can then provide a more efficient implementation when required.
 - Generated forwarding methods are forbidden.
@@ -2154,9 +2136,10 @@ independent behavior-composition layer.
 - State the relation in the category graph.
 - Class inheritance can implement the graph after category placement.
 - Class inheritance must never replace categorical placement.
-- `ParentMethods`, `ElementMethods`, and `MorphismMethods` expose operations owned
-  by a category.
-- They are not an invitation to build a second class graph.
+- `ObjectType`, `ElementType`, and Hom-category element types expose operations owned
+  by a category in the public preamble architecture.
+- Sage `ParentMethods`, `ElementMethods`, and `MorphismMethods` are private runtime
+  implementation vocabulary during migration, not a second public class graph.
 
 The set of core categorical constructions is small. Inspect all existing owners
 before creating another construction.

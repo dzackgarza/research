@@ -1,8 +1,8 @@
 <!-- Migrated 2026-08-20 from lattice-research src.bak/backends/external/README.md.
-     Consumed by the preamble engine seam
-     (src/dzack_research/preamble/.../integrallattice/engines.sage): drop the
-     py_polyhedral clone into computations/vendor/ and build the INDEF_FORM_*
-     binaries per this recipe.  INDEF_FORM_TestEquivalenceIsotropicKplane.cpp
+     The py_polyhedral wrapper now lives in src/py_polyhedral. Build the
+     INDEF_FORM_* binaries per this recipe and expose them on PATH; the wrapper
+     resolves each executable lazily when its backend function is called.
+     INDEF_FORM_TestEquivalenceIsotropicKplane.cpp
      beside this file is the locally authored adapter exposing
      polyhedral_common's isotropic k-plane and k-flag equivalence, which
      upstream ships only as a library API; compile it in src_indefinite
@@ -24,12 +24,12 @@ work, not as a general indefinite lattice backend.
 
 ## py_polyhedral/ — Python wrapper
 
-`py_polyhedral/` is vendored from
+`src/py_polyhedral/` is vendored from
 [MathieuDutSik/py_polyhedral](https://github.com/MathieuDutSik/py_polyhedral),
-modified so `get_binary_path` resolves against `src/backends/external/bin/`.
-All Python code in the research codebase accesses polyhedral_common binaries
-through this wrapper.
-Missing binaries raise `FileNotFoundError` at call time with a pointer to this file.
+with `get_binary_path(name)` modified to resolve `name` from `PATH` at call
+time. All Python code in the research codebase accesses polyhedral_common
+binaries through this wrapper. The package imports without compiled backends;
+calling a backend whose executable is absent raises an assertion naming it.
 
 ## bin/ — polyhedral_common binaries
 
@@ -37,6 +37,8 @@ Compiled C++ binaries from
 [MathieuDutSik/polyhedral_common](https://github.com/MathieuDutSik/polyhedral_common).
 Each is built from the corresponding `src_*/` subdirectory using `make` directly
 (**not** the top-level `CMakeLists.txt`, which requires MPI for parallel variants).
+They may live anywhere appropriate for the machine; put the containing directory
+on `PATH`. The Python wrapper does not require a repository-local binary directory.
 
 | Binary | Source dir | Purpose |
 |---|---|---|

@@ -1,6 +1,6 @@
 """Owned varieties, curves, and surfaces."""
 
-from dzack_research.preamble.categories.rings import OwnedCategoryOverBaseRing
+from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
 from dzack_research.preamble.categories.schemes.schemes import (
     FiniteTypeSchemes,
     IntegralSchemes,

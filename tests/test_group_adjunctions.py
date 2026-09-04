@@ -1,10 +1,9 @@
-from sage.categories.homset import Hom
 from sage.categories.morphism import SetMorphism
-from sage.categories.sets_cat import Sets
 
 from dzack_research.preamble.all import (
     BasedFreeModule,
     FiniteGSet,
+    finite_g_set,
     FinitelyPresentedTorsionModules,
     GroupModule,
     Groups,
@@ -20,7 +19,7 @@ from dzack_research.preamble.all import (
     restriction_coinduction_adjunction,
     underlying_cofree_g_set_adjunction,
 )
-from dzack_research.preamble.categories.sets import finite_ordered_set
+from dzack_research.preamble.categories.sets import Sets, finite_ordered_set
 
 
 def _assert_maps_agree(left, right, elements) -> None:
@@ -33,14 +32,18 @@ def _assert_maps_agree(left, right, elements) -> None:
 def _nontrivial_c2_set():
     group = Groups.C(2)
     points = finite_ordered_set((ZZ(0), ZZ(1), ZZ(2)))
-    from sage.groups.perm_gps.permgroup_named import SymmetricGroup
+    generator = group.group_generators().unrank(0)
 
-    permutations = SymmetricGroup(points)
-    generator = tuple(group.group_generators())[0]
-    action = group_homset(group, permutations)(
-        {generator: permutations([(ZZ(0), ZZ(1))])}
-    )
-    return group, FiniteGSet(points, action)
+    def action(group_element, point):
+        if group_element == group.one():
+            return point
+        if point == ZZ(0):
+            return ZZ(1)
+        if point == ZZ(1):
+            return ZZ(0)
+        return point
+
+    return group, finite_g_set(points, group, action)
 
 
 def _s3_c2_sign_module():
@@ -84,7 +87,7 @@ def test_orbits_trivial_fixed_gset_adjoints_have_hom_bijections_naturality_and_t
     orbit_adjunction = g_set_orbits_trivial_adjunction(group)
     orbits = orbit_adjunction.left_adjoint()(acted)
     orbit_map = SetMorphism(
-        Hom(orbits, target, Sets()),
+        Sets().hom(orbits, target),
         lambda orbit: ZZ(10) if orbit.representative() in (0, 1) else ZZ(20),
     )
     equivariant = orbit_adjunction.hom_set_isomorphism_forward(orbit_map)
@@ -100,7 +103,7 @@ def test_orbits_trivial_fixed_gset_adjoints_have_hom_bijections_naturality_and_t
     _assert_maps_agree(left, right, tuple(acted))
 
     target_map = SetMorphism(
-        Hom(target, second_target, Sets()),
+        Sets().hom(target, second_target),
         lambda point: ZZ(30) if point == 10 else ZZ(40),
     )
     left, right = orbit_adjunction.counit_transformation().naturality_square(
@@ -133,7 +136,7 @@ def test_orbits_trivial_fixed_gset_adjoints_have_hom_bijections_naturality_and_t
     assert tuple(fixed_adjunction.right_adjoint()(acted)) == (ZZ(2),)
 
     source_endomorphism = SetMorphism(
-        Hom(source, source, Sets()),
+        Sets().hom(source, source),
         lambda point: ZZ(60) if point == 50 else ZZ(50),
     )
     left, right = fixed_adjunction.unit_transformation().naturality_square(
@@ -176,7 +179,7 @@ def test_free_underlying_cofree_gset_adjoints_have_hom_bijections_naturality_and
     _assert_maps_agree(equivariant, recovered, tuple(free))
 
     set_map = SetMorphism(
-        Hom(source, second_source, Sets()),
+        Sets().hom(source, second_source),
         lambda point: ZZ(30) if point == 10 else ZZ(40),
     )
     left, right = free_adjunction.unit_transformation().naturality_square(set_map)
@@ -204,7 +207,7 @@ def test_free_underlying_cofree_gset_adjoints_have_hom_bijections_naturality_and
 
     cofree_adjunction = underlying_cofree_g_set_adjunction(group)
     arbitrary_set_map = SetMorphism(
-        Hom(acted, source, Sets()),
+        Sets().hom(acted, source),
         lambda point: ZZ(10) if point in (0, 2) else ZZ(20),
     )
     cofree_transpose = cofree_adjunction.hom_set_isomorphism_forward(
@@ -242,20 +245,20 @@ def test_free_group_underlying_set_adjunction_uses_indexed_free_group_universal_
     source = finite_ordered_set((ZZ(2), ZZ(3)))
     second_source = finite_ordered_set((ZZ(5), ZZ(7)))
     target = Groups.C(3)
-    target_generator = tuple(target.group_generators())[0]
+    target_generator = target.group_generators().unrank(0)
     free = adjunction.left_adjoint()(source)
 
     set_morphism = SetMorphism(
-        Hom(source, target, Sets()),
+        Sets().hom(source, target),
         lambda point: target_generator if point == 2 else target_generator**2,
     )
     group_morphism = adjunction.hom_set_isomorphism_inverse(set_morphism)
     recovered = adjunction.hom_set_isomorphism_forward(group_morphism)
     _assert_maps_agree(set_morphism, recovered, tuple(source))
-    assert group_morphism(free.gen(2) * free.gen(3) ** -1) == target_generator**-1
+    assert group_morphism(free.free_generator(2) * free.free_generator(3) ** -1) == target_generator**-1
 
     source_map = SetMorphism(
-        Hom(source, second_source, Sets()),
+        Sets().hom(source, second_source),
         lambda point: ZZ(5) if point == 2 else ZZ(7),
     )
     left, right = adjunction.unit_transformation().naturality_square(source_map)
@@ -267,8 +270,8 @@ def test_free_group_underlying_set_adjunction_uses_indexed_free_group_universal_
     left, right = adjunction.counit_transformation().naturality_square(
         target_endomorphism
     )
-    for group_element in left.domain().indices():
-        free_generator = left.domain().gen(group_element)
+    for group_element in left.domain().free_basis():
+        free_generator = left.domain().free_generator(group_element)
         assert left(free_generator) == right(free_generator)
 
     first_triangle = adjunction.right_adjoint()(
@@ -281,11 +284,11 @@ def test_free_group_underlying_set_adjunction_uses_indexed_free_group_universal_
         adjunction.unit(source)
     )
     for point in source:
-        assert second_triangle(free.gen(point)) == free.gen(point)
+        assert second_triangle(free.free_generator(point)) == free.free_generator(point)
 
     infinite_free = adjunction.left_adjoint()(ZZ)
     infinite_set_morphism = SetMorphism(
-        Hom(ZZ, target, Sets()),
+        Sets().hom(ZZ, target),
         lambda integer: target_generator ** (integer % 3),
     )
     infinite_group_morphism = adjunction.hom_set_isomorphism_inverse(
@@ -296,7 +299,7 @@ def test_free_group_underlying_set_adjunction_uses_indexed_free_group_universal_
     )
     for integer in (ZZ(-5), ZZ(-1), ZZ(0), ZZ(2), ZZ(7)):
         assert infinite_recovered(integer) == infinite_set_morphism(integer)
-    word = infinite_free.gen(2) * infinite_free.gen(-1) ** -2 * infinite_free.gen(7)
+    word = infinite_free.free_generator(2) * infinite_free.free_generator(-1) ** -2 * infinite_free.free_generator(7)
     assert infinite_group_morphism(word) == (
         infinite_set_morphism(2)
         * infinite_set_morphism(-1) ** -2
@@ -306,7 +309,7 @@ def test_free_group_underlying_set_adjunction_uses_indexed_free_group_universal_
         adjunction.unit(ZZ)
     )
     for integer in (ZZ(-3), ZZ(0), ZZ(4)):
-        assert infinite_triangle(infinite_free.gen(integer)) == infinite_free.gen(integer)
+        assert infinite_triangle(infinite_free.free_generator(integer)) == infinite_free.free_generator(integer)
 
 
 def test_induction_restriction_adjunction_has_equivariant_hom_bijection_naturality_and_triangles() -> None:
@@ -423,7 +426,9 @@ def test_induction_and_coinduction_preserve_torsion_presentations_and_adjunction
 
     induction = induction_restriction_adjunction(ZZ, subgroup, supergroup)
     induced = induction.left_adjoint()(module)
-    assert induced.invariants() == (4, 4, 4)
+    induced_invariants = induced.invariant_factors()
+    assert induced_invariants.cardinality() == 3
+    assert all(induced_invariants.unrank(position) == ZZ(4) for position in range(3))
     assert all(generator.additive_order() == 4 for generator in induced.module_generators())
 
     induced_doubling = group_module_homset(induced, induced)(
@@ -450,7 +455,12 @@ def test_induction_and_coinduction_preserve_torsion_presentations_and_adjunction
 
     coinduction = restriction_coinduction_adjunction(ZZ, subgroup, supergroup)
     coinduced = coinduction.right_adjoint()(module)
-    assert coinduced.invariants() == (4, 4, 4)
+    coinduced_invariants = coinduced.invariant_factors()
+    assert coinduced_invariants.cardinality() == 3
+    assert all(
+        coinduced_invariants.unrank(position) == ZZ(4)
+        for position in range(3)
+    )
     assert all(generator.additive_order() == 4 for generator in coinduced.module_generators())
 
     coinduced_doubling = group_module_homset(coinduced, coinduced)(

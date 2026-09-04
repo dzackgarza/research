@@ -1,6 +1,3 @@
-from sage.rings.integer_ring import ZZ as SageZZ
-from sage.rings.semirings.non_negative_integer_semiring import NN
-
 
 def _session():
     scope = {}
@@ -12,6 +9,7 @@ def test_graded_algebras_are_parameterized_by_a_monoid() -> None:
     session = _session()
     QQ = session["QQ"]
     ZZ = session["ZZ"]
+    NN = session["NN"]
     Algebras = session["Algebras"]
     GradedAlgebras = session["GradedAlgebras"]
     GradedFreeAlgebras = session["GradedFreeAlgebras"]
@@ -20,9 +18,8 @@ def test_graded_algebras_are_parameterized_by_a_monoid() -> None:
     naturals = GradedAlgebras(QQ, NN)
 
     assert integers is GradedAlgebras(QQ, ZZ)
-    assert integers is GradedAlgebras(QQ, SageZZ)
     assert integers is not naturals
-    assert integers.grading_monoid() is SageZZ
+    assert integers.grading_monoid() is ZZ
     assert naturals.grading_monoid() is NN
     assert integers.is_subcategory(Algebras(QQ))
     assert naturals.is_subcategory(Algebras(QQ))
@@ -49,7 +46,7 @@ def test_a_graded_free_algebra_is_an_algebra_over_its_unit_graded_piece() -> Non
     unit_piece = algebra.graded_piece(monoid.monoidal_unit())
     label = next(iter(algebra.algebra_generating_set()))
     inclusion = algebra.algebra_structure_morphism()
-    augmentation = algebra.hom({label: unit_piece.zero()}, unit_piece)
+    augmentation = algebra.Hom(unit_piece)({label: unit_piece.zero()})
 
     assert unit_piece is QQ
     assert monoid.monoidal_unit() == monoid.zero()
@@ -95,7 +92,6 @@ def test_graded_algebra_homs_preserve_degree_but_augmentation_remains_ungraded()
     GradedAlgebras = session["GradedAlgebras"]
     GradedAlgebraMorphism = session["GradedAlgebraMorphism"]
     GradedModules = session["GradedModules"]
-    Hom = session["Hom"]
     SymmetricAlgebraOn = session["SymmetricAlgebraOn"]
     graded_algebra_homset = session["graded_algebra_homset"]
 
@@ -104,13 +100,14 @@ def test_graded_algebra_homs_preserve_degree_but_augmentation_remains_ungraded()
     x = source.algebra_generator("x")
     t = target.algebra_generator("t")
 
-    homset = Hom(source, target, GradedAlgebras(QQ))
+    ordinary_homset = source.Hom(target)
+    assert ordinary_homset is Algebras(QQ).Hom(source, target)
+    homset = GradedAlgebras(QQ).Hom(source, target)
     assert homset is graded_algebra_homset(source, target)
-    assert homset is GradedAlgebras(QQ).Hom(source, target)
     assert Algebras(QQ).Hom(source, target) in homset.super_categories()
     assert GradedModules(QQ).Hom(source, target) in homset.super_categories()
     assert isinstance(homset({"x": t}), GradedAlgebraMorphism)
-    graded = graded_algebra_homset(source, target)({"x": t})
+    graded = homset({"x": t})
     assert isinstance(graded, GradedAlgebraMorphism)
     assert graded(x) == t
 
@@ -121,6 +118,6 @@ def test_graded_algebra_homs_preserve_degree_but_augmentation_remains_ungraded()
     else:
         raise AssertionError("expected a degree-preservation error")
 
-    augmentation = source.hom({"x": QQ.zero()}, QQ)
+    augmentation = source.Hom(QQ)({"x": QQ.zero()})
     assert not isinstance(augmentation, GradedAlgebraMorphism)
     assert augmentation(x) == QQ.zero()

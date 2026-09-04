@@ -26,8 +26,8 @@ def test_a1_four_has_diagonal_lagrangian_and_primary_component() -> None:
     assert subgroup.is_isotropic()
     assert discriminant.orthogonal_subgroup(subgroup).cardinality() == 8
     components = discriminant.primary_components()
-    assert tuple(components) == (2,)
-    assert components[2].cardinality() == 16
+    assert tuple(components) == (ZZ(2),)
+    assert components[ZZ(2)].cardinality() == 16
 
 
 def test_hyperbolic_discriminant_pair_has_lagrangian() -> None:
@@ -55,7 +55,7 @@ def test_orthogonal_quotient_and_overlattice_are_the_nikulin_pair() -> None:
     assert subgroup.is_isotropic()
     assert quotient_form.cardinality() == 4
     assert inclusion.index() == 2
-    assert abs(enlarged.gram_tensor().det()) == 4
+    assert abs(enlarged.determinant()) == 4
     assert enlarged.is_even()
     assert enlarged.discriminant_module().cardinality() == quotient_form.cardinality()
 
@@ -139,11 +139,11 @@ def test_elementary_two_adic_u_k_and_v_one_examples() -> None:
     for exponent in (1, 2, 3):
         scale = 2**exponent
         u_k = Lattices(ZZ)([[0, scale], [scale, 0]]).discriminant_quadratic_form()
-        assert tuple(u_k.invariants()) == (scale, scale)
+        assert tuple(u_k.invariant_factors()) == (scale, scale)
         assert u_k.brown_invariant() == 0
         assert not u_k.is_anisotropic()
 
     v_one = Lattices(ZZ)("D4").discriminant_quadratic_form()
-    assert tuple(v_one.invariants()) == (2, 2)
+    assert tuple(v_one.invariant_factors()) == (2, 2)
     assert v_one.brown_invariant() == 4
     assert v_one.is_anisotropic()

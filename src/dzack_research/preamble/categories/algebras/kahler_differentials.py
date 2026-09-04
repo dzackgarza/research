@@ -1,12 +1,19 @@
 r"""Kähler differentials of represented commutative algebras."""
 
+from sage.misc.cachefunc import cached_function
 from dzack_research.preamble.categories.algebras.derivations import (
     Derivation,
     Derivations,
     _commutative_presentation_data,
 )
-from dzack_research.preamble.categories.rings import OwnedCategoryOverBaseRing, engine_ring
-from dzack_research.preamble.categories.sets import finite_ordered_set
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    OwnedCategoryOverBaseRing,
+    _engine_ring,
+)
+from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+    finite_ordered_image,
+    finite_ordered_set,
+)
 from dzack_research.preamble.refine import refine
 
 
@@ -18,8 +25,10 @@ class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
         return "Kähler differential modules"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.modules import (
+        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
             FinitelyPresentedModules,
+        )
+        from dzack_research.preamble.categories.modules.pure.modules import (
             FramedModules,
         )
 
@@ -45,7 +54,9 @@ class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
                 raise TypeError("the universal factorization starts from a derivation")
             if derivation.domain() is not self.source_algebra():
                 raise ValueError("the derivation has the wrong source algebra")
-            from dzack_research.preamble.categories.modules import module_homset
+            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+                module_homset,
+            )
 
             return module_homset(self, derivation.codomain())(
                 {
@@ -56,12 +67,14 @@ class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
 
         def derivation_classifier_isomorphism(self, target_module):
             r"""Return ``Hom_A(Omega^1_{A/R},M) ~= Der_R(A,M)`` as an ``A``-module isomorphism."""
-            from dzack_research.preamble.categories.abstract_categories import Isomorphism
+            from dzack_research.preamble.categories.abstract_categories.arrow_categories import Isomorphism
             from dzack_research.preamble.categories.algebras.derivations import Derivations
-            from dzack_research.preamble.categories.modules import (
-                InternalHom,
-                Modules,
+            from dzack_research.preamble.categories.modules.internal_hom import InternalHom
+            from dzack_research.preamble.categories.modules.pure.modules import Modules
+            from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
                 ModulesWithChosenFinitePresentation,
+            )
+            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
                 module_homset,
             )
             from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
@@ -77,7 +90,6 @@ class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
                     "the represented Kähler Hom isomorphism currently requires a finite presentation of Hom_A(Omega^1,M)"
                 )
             derivations = Derivations(algebra, target_module)
-            labels = tuple(classifiers.module_generating_set())
 
             def to_derivation(classifier):
                 return derivations(
@@ -102,13 +114,10 @@ class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
                 derivations._preamble_module_generator_function = (
                     lambda label: to_derivation(classifiers.module_generator(label))
                 )
-                derivations._preamble_module_coordinate_function = (
-                    lambda derivation: tuple(
-                        module_coefficients(
-                            to_classifier(derivation),
-                            classifiers,
-                        ).get(label, algebra.zero())
-                        for label in labels
+                derivations._preamble_module_coefficient_function = (
+                    lambda derivation: module_coefficients(
+                        to_classifier(derivation),
+                        classifiers,
                     )
                 )
                 derivations._preamble_kahler_classifier_module = classifiers
@@ -118,16 +127,10 @@ class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
                 )
 
             forward = module_homset(classifiers, derivations)(
-                {
-                    label: derivations.module_generator(label)
-                    for label in labels
-                }
+                derivations.module_generator
             )
             inverse = module_homset(derivations, classifiers)(
-                {
-                    label: classifiers.module_generator(label)
-                    for label in labels
-                }
+                classifiers.module_generator
             )
             result = Isomorphism(forward, inverse)
             if result not in Modules(algebra).Iso(classifiers, derivations):
@@ -139,59 +142,48 @@ class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
         representing_isomorphism = derivation_classifier_isomorphism
 
 
-_KAHLER_CACHE = {}
-
-
+@cached_function(key=lambda algebra: id(algebra))
 def KahlerDifferentials(algebra):
     r"""Return ``Omega^1_{A/R}`` with its universal ``R``-derivation."""
-    cached = _KAHLER_CACHE.get(id(algebra))
-    if cached is not None and cached.source_algebra() is algebra:
-        return cached
-
     presentation, labels, variables, relations, _lift = _commutative_presentation_data(
         algebra
     )
-    differential_labels = finite_ordered_set(("d", label) for label in labels)
-
-    from dzack_research.preamble.categories.modules import (
-        BasedFreeModule,
-        FinitelyPresentedModule,
-        module_homset,
+    differential_labels = finite_ordered_image(
+        labels,
+        lambda label: ("d", label),
     )
 
+    from dzack_research.preamble.categories.modules.framed.framed_free_modules import BasedFreeModule
+    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModule
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
+
     free_differentials = BasedFreeModule(algebra, differential_labels)
-    if relations:
-        relation_labels = finite_ordered_set(range(len(relations)))
-        relation_module = BasedFreeModule(algebra, relation_labels)
-        presentation_engine = engine_ring(presentation)
-        algebra_engine = engine_ring(algebra)
-        rows = tuple(
-            tuple(
-                algebra_engine(presentation_engine(relation).derivative(variable))
-                for variable in variables
-            )
-            for relation in relations
-        )
-        relation_map = module_homset(relation_module, free_differentials)(
-            {
-                relation_label: free_differentials.linear_combination(
-                    {
-                        differential_label: coefficient
-                        for differential_label, coefficient in zip(
-                            differential_labels,
-                            row,
-                            strict=True,
-                        )
-                        if coefficient
-                    }
+    if relations.cardinality():
+        relation_indices = relations.index_set()
+        relation_module = BasedFreeModule(algebra, relation_indices)
+        presentation_engine = _engine_ring(presentation)
+        algebra_engine = _engine_ring(algebra)
+
+        def relation_image(relation_index):
+            relation = relations[relation_index]
+            engine_relation = presentation._engine_element(relation)
+            coefficients = {}
+            for differential_label, variable in zip(
+                differential_labels,
+                variables,
+                strict=True,
+            ):
+                engine_variable = presentation._engine_element(variable)
+                coefficient = algebra._from_engine_element(
+                    algebra_engine(
+                        presentation_engine(engine_relation).derivative(engine_variable)
+                    )
                 )
-                for relation_label, row in zip(
-                    relation_labels,
-                    rows,
-                    strict=True,
-                )
-            }
-        )
+                if coefficient != algebra.zero():
+                    coefficients[differential_label] = coefficient
+            return free_differentials.linear_combination(coefficients)
+
+        relation_map = module_homset(relation_module, free_differentials)(relation_image)
         omega = FinitelyPresentedModule(relation_map)
     else:
         omega = free_differentials
@@ -205,7 +197,6 @@ def KahlerDifferentials(algebra):
         }
     )
     omega._preamble_universal_derivation = universal
-    _KAHLER_CACHE[id(algebra)] = omega
     return omega
 
 

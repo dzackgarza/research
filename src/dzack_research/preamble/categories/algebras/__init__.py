@@ -4,30 +4,34 @@ from dzack_research.preamble.categories.algebras.algebras import (
     AlgebraHomset,
     AlgebraMorphism,
     Algebras,
+    AlgebrasWithChosenFinitePresentation,
     AlgebrasWithChosenMultiplication,
     AssociativeAlgebras,
     AssociativeAlgebrasWithChosenMultiplication,
+    CommutativeAlgebraCoproducts,
+    CommutativeAlgebraPushouts,
     CommutativeAlgebras,
+    FinitelyPresentedAlgebras,
     FramedAlgebras,
-    OwnedAlgebraView,
+    MatrixAlgebras,
     OwnedAlgebras,
     algebra_from_multiplication,
     algebra_homset,
+    commutative_algebra_coproduct,
+    commutative_algebra_pushout,
     finite_algebra_generators,
     own_algebra,
     refine_algebra,
+    refine_matrix_algebra,
 )
-from dzack_research.preamble.categories.algebras.commutative_pushouts import (
-    CommutativeAlgebraPushouts,
-    commutative_algebra_pushout,
-)
-from dzack_research.preamble.categories.algebras.commutative_coproducts import (
-    CommutativeAlgebraCoproducts,
-    commutative_algebra_coproduct,
+from dzack_research.preamble.categories.algebras.lie_algebras import (
+    CommutatorLieAlgebras,
+    LieAlgebras,
 )
 from dzack_research.preamble.categories.algebras.free_algebras import (
     AlternatingAlgebras,
     DividedPowerAlgebras,
+    FinitelyPresentedAlgebra,
     FreeAlgebras,
     GradedFreeAlgebras,
     SymmetricAlgebras,
@@ -58,10 +62,7 @@ from dzack_research.preamble.categories.algebras.comparison_maps import (
     tensor_to_symmetric,
 )
 from dzack_research.preamble.categories.algebras.finitely_presented_algebras import (
-    AlgebrasWithChosenFinitePresentation,
-    FinitelyPresentedAlgebra,
     FinitelyPresentedAlgebraOn,
-    FinitelyPresentedAlgebras,
 )
 from dzack_research.preamble.categories.algebras.augmented_algebras import (
     AugmentedAlgebras,
@@ -143,6 +144,7 @@ __all__ = [
     "CommutativeAlgebraPushouts",
     "commutative_algebra_coproduct",
     "CommutativeAlgebras",
+    "CommutatorLieAlgebras",
     "CommutativeDifferentialGradedAlgebras",
     "CohomologyAlgebra",
     "CohomologyAlgebraElement",
@@ -166,6 +168,7 @@ __all__ = [
     "InteriorProduct",
     "LieBracket",
     "LieDerivative",
+    "LieAlgebras",
     "VectorFields",
     "DeRhamAlgebra",
     "DeRhamAlgebras",
@@ -179,7 +182,6 @@ __all__ = [
     "FinitelyPresentedAlgebra",
     "FinitelyPresentedAlgebraOn",
     "FinitelyPresentedAlgebras",
-    "OwnedAlgebraView",
     "OwnedAlgebras",
     "PowerAlgebra",
     "PowerAlgebraHomset",

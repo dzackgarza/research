@@ -1,4 +1,4 @@
-from sage.all import AbelianGroup, FreeGroup, GF, GL, SymmetricGroup
+from dzack_research.preamble.all import GF, Groups
 from sage.misc.unknown import Unknown
 
 from dzack_research.preamble.all import ZZ
@@ -38,10 +38,10 @@ def test_groups_is_the_owned_flat_catalogue() -> None:
 
 
 def test_native_sage_group_constructors_are_admitted_after_import() -> None:
-    symmetric = SymmetricGroup(3)
-    free = FreeGroup(2)
-    abelian = AbelianGroup([2, 4])
-    matrix_group = GL(2, GF(3))
+    symmetric = Groups.S(3)
+    free = Groups.Free(2)
+    abelian = Groups.Abelian([2, 4])
+    matrix_group = Groups.GL(2, GF(3))
 
     assert symmetric in OwnedFiniteGroups()
     assert free in OwnedFinitelyPresentedGroups()
@@ -51,7 +51,7 @@ def test_native_sage_group_constructors_are_admitted_after_import() -> None:
 
 
 def test_property_categories_are_distinct_from_chosen_data_categories() -> None:
-    free = FreeGroup(2)
+    free = Groups.Free(2)
     assert free in OwnedFinitelyGeneratedGroups()
     assert free in OwnedFinitelyPresentedGroups()
     assert free in GroupsWithChosenFiniteGeneratingSet()
@@ -61,18 +61,18 @@ def test_property_categories_are_distinct_from_chosen_data_categories() -> None:
 
 
 def test_group_generators_are_a_finite_ordered_set_without_hashing_elements() -> None:
-    free = FreeGroup(2)
-    quotient = free / [free.gen(0) ** 2, free.gen(1) ** 3]
+    free = Groups.Free(2)
+    quotient = free.quotient_by_relators([free.group_generators()[0] ** 2, free.group_generators()[1] ** 3])
 
     generators = quotient.group_generators()
     assert generators.cardinality() == 2
-    assert tuple(generators) == tuple(quotient.gens())
+    assert tuple(generators) == tuple(quotient(g) for g in free.group_generators())
     assert generators in generators.category()
 
 
 def test_trivial_quotient_has_empty_generating_set_but_two_presentation_letters() -> None:
-    free = FreeGroup(2)
-    trivial = free / [free.gen(0), free.gen(1)]
+    free = Groups.Free(2)
+    trivial = free.quotient_by_relators([free.group_generators()[0], free.group_generators()[1]])
 
     assert trivial.group_generators().cardinality() == 0
     presenting = trivial.presenting_free_group()
@@ -80,8 +80,8 @@ def test_trivial_quotient_has_empty_generating_set_but_two_presentation_letters(
 
 
 def test_chosen_presentations_are_exposed_on_native_group_objects() -> None:
-    free = FreeGroup(1)
-    c2 = free / [free.gen(0) ** 2]
+    free = Groups.Free(1)
+    c2 = free.quotient_by_relators([free.group_generators()[0] ** 2])
     for group in (c2, Groups.C(2), Groups.S(2), Groups.Abelian([2])):
         assert group in OwnedFinitelyPresentedGroups()
         assert group in GroupsWithChosenFinitePresentation()
@@ -90,27 +90,27 @@ def test_chosen_presentations_are_exposed_on_native_group_objects() -> None:
 
 
 def test_subgroup_inclusion_is_a_real_morphism() -> None:
-    group = SymmetricGroup(4)
-    subgroup = group.subgroup([group.gen(0)])
+    group = Groups.S(4)
+    subgroup = group.subgroup([group.group_generators()[0]])
     inclusion = subgroup.inclusion()
 
     assert subgroup.supergroup() is group
     assert inclusion.domain() is subgroup
     assert inclusion.codomain() is group
     assert inclusion.is_injective()
-    assert inclusion(subgroup.gen(0)) in group
+    assert inclusion(subgroup.group_generators()[0]) in group
 
 
 def test_predicate_centralizer_does_not_require_generators() -> None:
-    group = SymmetricGroup(4)
-    element = group.gen(0)
+    group = Groups.S(4)
+    element = group.group_generators()[0]
     subgroup = centralizer(group, element)
 
     assert subgroup in OwnedGroups()
     assert subgroup.supergroup() is group
     assert subgroup.one() in subgroup
     assert element in subgroup
-    assert group.gen(1) not in subgroup
+    assert group.group_generators()[1] not in subgroup
     assert subgroup.inclusion().domain() is subgroup
     assert subgroup.inclusion().codomain() is group
 
@@ -135,7 +135,7 @@ def test_profinite_groups_sit_over_owned_groups() -> None:
 
 
 def test_endomorphisms_of_an_abelian_group_form_a_ring() -> None:
-    group = AbelianGroup([3])
+    group = Groups.Abelian([3])
     endomorphisms = group.endomorphism_ring()
     one = endomorphisms.one()
     zero = endomorphisms.zero()
@@ -151,7 +151,7 @@ def test_endomorphisms_of_an_abelian_group_form_a_ring() -> None:
 
 
 def test_abelian_group_has_the_canonical_integer_action() -> None:
-    group = AbelianGroup([5])
+    group = Groups.Abelian([5])
     action = group.scalar_action()
 
     assert action.domain() is group.scalar_action().domain()

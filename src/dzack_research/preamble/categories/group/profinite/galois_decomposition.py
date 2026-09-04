@@ -4,7 +4,7 @@ from sage.structure.parent import Parent
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.group.groups import OwnedFiniteGroups
-from dzack_research.preamble.categories.rings.rings import engine_ring
+from dzack_research.preamble.categories.rings.ring_foundation import _engine_element, _engine_ring
 
 
 class PrimeProlongation(SageObject):
@@ -29,28 +29,49 @@ class PrimeProlongation(SageObject):
         return f"Chosen prolongation of {self._base_prime}"
 
 
+def _engine_prime(prime):
+    r"""Return the private number-field prime ideal represented by ``prime``."""
+    crossing = getattr(prime, "_engine_ideal", None)
+    backend = crossing() if crossing is not None else prime
+    ring = getattr(backend, "ring", lambda: None)()
+    number_field = getattr(ring, "number_field", None)
+    if number_field is not None:
+        field = number_field()
+        try:
+            return field.ideal(tuple(backend.gens()))
+        except (AttributeError, TypeError, ValueError):
+            pass
+    return backend
+
+
 def _image_prime(prime, automorphism):
-    backend = automorphism.action().engine_morphism()
+    prime = _engine_prime(prime)
+    backend = automorphism.action()._engine_morphism_crossing()
     try:
         return prime.apply_morphism(backend)
     except AttributeError:
-        field = engine_ring(automorphism.parent().top_field())
+        field = _engine_ring(automorphism.parent().top_field())
         return field.ideal([backend(generator) for generator in prime.gens()])
 
 
 def _fixes_residue_field(prime, automorphism) -> bool:
+    prime = _engine_prime(prime)
     residue = prime.residue_field()
-    field = engine_ring(automorphism.parent().top_field())
+    owned_field = automorphism.parent().top_field()
+    field = _engine_ring(owned_field)
     order = field.maximal_order()
-    return all(
-        residue(automorphism(basis_element)) == residue(basis_element)
-        for basis_element in order.basis()
-    )
+    for basis_element in order.basis():
+        owned_basis = owned_field._from_engine_element(field(basis_element))
+        image = automorphism(owned_basis)
+        if residue(_engine_element(owned_field, image)) != residue(basis_element):
+            return False
+    return True
 
 
 def _residue_field_order(base_prime):
     from sage.rings.integer_ring import ZZ
 
+    base_prime = _engine_prime(base_prime)
     if base_prime in ZZ:
         return abs(ZZ(base_prime))
     try:
@@ -118,11 +139,15 @@ class FiniteGaloisSubgroup(Parent):
     cardinality = order
 
     def group_generators(self):
-        from dzack_research.preamble.categories.sets import finite_ordered_set
+        from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+            finite_ordered_filter,
+            finite_ordered_set,
+        )
 
-        return finite_ordered_set(element for element in self if element != self.one())
-
-    gens = group_generators
+        return finite_ordered_filter(
+            finite_ordered_set(self),
+            lambda element: element != self.one(),
+        )
 
     def _repr_(self) -> str:
         return f"{self._description} in {self._ambient}"
@@ -165,10 +190,11 @@ class FiniteElementConjugacyClass(SageObject):
 
 
 def finite_decomposition_group(quotient, prime_above) -> FiniteGaloisSubgroup:
+    backend_prime = _engine_prime(prime_above)
     elements = tuple(
         automorphism
         for automorphism in quotient
-        if _image_prime(prime_above, automorphism) == prime_above
+        if _image_prime(backend_prime, automorphism) == backend_prime
     )
     return FiniteGaloisSubgroup(
         quotient,
@@ -194,21 +220,25 @@ def finite_inertia_group(quotient, prime_above) -> FiniteGaloisSubgroup:
 def finite_frobenius_class(
     quotient, base_prime, prime_above
 ) -> FiniteElementConjugacyClass:
+    prime_above = _engine_prime(prime_above)
     if prime_above.ramification_index() != 1:
         raise ValueError("Frobenius is defined here only at an unramified prime")
     decomposition = finite_decomposition_group(quotient, prime_above)
     residue = prime_above.residue_field()
     residue_order = _residue_field_order(base_prime)
-    field = engine_ring(quotient.top_field())
-    candidates = [
-        automorphism
-        for automorphism in decomposition
-        if all(
-            residue(automorphism(basis_element))
-            == residue(basis_element) ** residue_order
-            for basis_element in field.maximal_order().basis()
-        )
-    ]
+    field = _engine_ring(quotient.top_field())
+    owned_field = quotient.top_field()
+    candidates = []
+    for automorphism in decomposition:
+        matches = True
+        for basis_element in field.maximal_order().basis():
+            owned_basis = owned_field._from_engine_element(field(basis_element))
+            image = automorphism(owned_basis)
+            if residue(_engine_element(owned_field, image)) != residue(basis_element) ** residue_order:
+                matches = False
+                break
+        if matches:
+            candidates.append(automorphism)
     if len(candidates) != 1:
         raise ValueError(
             "the finite quotient does not determine a unique unramified Frobenius element"

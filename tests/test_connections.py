@@ -108,3 +108,21 @@ def test_flat_connection_builds_the_de_rham_dg_module() -> None:
     viewed_connection = flat_connection_view(connection)
     viewed_coefficient = coefficient_form_view(e)
     assert covariant_d(viewed_connection, viewed_coefficient) == dg_module.d(e)
+
+
+def test_connection_on_countable_free_module_keeps_callable_generator_family_lazy() -> None:
+    from dzack_research.preamble.categories.modules import FreeModuleOn
+    from dzack_research.preamble.categories.sets import NN
+
+    algebra = SymmetricAlgebraOn(QQ, ("t",))
+    module = FreeModuleOn(algebra, NN)
+    connection_space = Connections(module)
+    connection = connection_space(
+        lambda _label: connection_space.target_module().zero()
+    )
+
+    e1000 = module.module_generator(NN(1000))
+    assert connection.generator_image(NN(1000)) == connection_space.target_module().zero()
+    assert connection(e1000) == connection_space.target_module().zero()
+    with pytest.raises(NotImplementedError, match="finite framing"):
+        connection.is_flat()

@@ -157,7 +157,9 @@ def test_kernel_and_cokernel_are_functorial_on_commutative_module_squares() -> N
 
     cokernel = CokernelArrowFunctor(ZZ)
     cokernel_object = cokernel(twice_arrow)
-    assert cokernel_object.invariants() == (2,)
+    invariants = cokernel_object.invariant_factors()
+    assert int(invariants.cardinality()) == 1
+    assert invariants.unrank(0) == ZZ(2)
     induced_cokernel = cokernel(square3)
     _assert_module_maps_agree(
         induced_cokernel * cokernel_object.cokernel_projection(),
@@ -191,7 +193,9 @@ def test_kernel_and_cokernel_are_functorial_on_commutative_module_squares() -> N
         torsion_times_three,
     )
     torsion_cokernel = cokernel(torsion_twice_arrow)
-    assert torsion_cokernel.invariants() == (2,)
+    torsion_invariants = torsion_cokernel.invariant_factors()
+    assert int(torsion_invariants.cardinality()) == 1
+    assert torsion_invariants.unrank(0) == ZZ(2)
     induced_torsion_cokernel = cokernel(torsion_square)
     _assert_module_maps_agree(
         induced_torsion_cokernel * torsion_cokernel.cokernel_projection(),

@@ -1,4 +1,4 @@
-from dzack_research.preamble.categories.modules.pure.finitely_generated.finitely_generated_modules import (
+from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedModules,
 )
 

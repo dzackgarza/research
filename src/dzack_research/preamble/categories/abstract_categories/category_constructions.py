@@ -1,11 +1,13 @@
 r"""Opposite categories and binary products of categories."""
 
+from dzack_research.preamble.categories.abstract_categories.hom_foundation import OwnedHomset
 from sage.misc.cachefunc import cached_method
 from sage.categories.category import Category
 from sage.categories.homset import Hom, Homset
 from sage.categories.morphism import Morphism
 from sage.categories.sets_cat import Sets as SageSets
-from dzack_research.preamble.categories.sets.owned_sets import Sets as _OwnedSets
+from dzack_research.preamble.categories.abstract_categories.objects import Objects
+from dzack_research.preamble.categories.sets.set_categories import Sets as _OwnedSets
 from sage.structure.parent import Parent
 
 
@@ -13,7 +15,7 @@ def _identity(obj):
     try:
         return Hom(obj, obj).identity()
     except (TypeError, ValueError):
-        return Hom(obj, obj, _OwnedSets()).identity()
+        return _OwnedSets().hom(obj, obj).identity()
 
 
 class OppositeObject(Parent):
@@ -56,7 +58,7 @@ class OppositeMorphism(Morphism):
         )(other.underlying_arrow() * self.underlying_arrow())
 
 
-class OppositeHomset(Homset):
+class OppositeHomset(OwnedHomset):
     Element = OppositeMorphism
 
     def __init__(self, opposite_category, domain, codomain) -> None:
@@ -89,7 +91,7 @@ class OppositeCategory(Category):
         return self._base_category
 
     def super_categories(self):
-        return [SageSets()]
+        return [Objects()]
 
     @cached_method
     def object(self, underlying_object):
@@ -170,7 +172,7 @@ class ProductMorphism(Morphism):
         )(self.first() * other.first(), self.second() * other.second())
 
 
-class ProductHomset(Homset):
+class ProductHomset(OwnedHomset):
     Element = ProductMorphism
 
     def __init__(self, product_category, domain, codomain) -> None:
@@ -209,7 +211,7 @@ class ProductCategory(Category):
         return self._second_category
 
     def super_categories(self):
-        return [SageSets()]
+        return [Objects()]
 
     @cached_method
     def pair(self, first, second):

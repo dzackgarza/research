@@ -1,15 +1,18 @@
 r"""Graded cohomology algebras of represented differential graded algebras."""
 
-from sage.categories.homset import Hom, Homset
-from sage.categories.morphism import Morphism, SetMorphism
-from sage.categories.sets_cat import Sets
+from dzack_research.preamble.categories.abstract_categories.hom_foundation import OwnedHomset
+from sage.categories.homset import Homset
+from sage.categories.morphism import Morphism
 
 from dzack_research.preamble.categories.modules.cochain_complexes import Cohomology
 from dzack_research.preamble.categories.modules.graded_direct_sums import (
     GradedDirectSumElement,
     GradedDirectSumModule,
 )
-from dzack_research.preamble.categories.rings import OwnedCategoryOverBaseRing
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    OwnedCategoryOverBaseRing,
+    ring_morphism,
+)
 from dzack_research.preamble.refine import refine
 
 
@@ -21,9 +24,7 @@ class CohomologyAlgebras(OwnedCategoryOverBaseRing):
         return "cohomology algebras"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.algebras import (
-            StrictlyGradedCommutativeAlgebras,
-        )
+        from dzack_research.preamble.categories.algebras.graded_commutative_algebras import StrictlyGradedCommutativeAlgebras
 
         return [StrictlyGradedCommutativeAlgebras(self.base_ring())]
 
@@ -100,8 +101,9 @@ class _CohomologyAlgebra(GradedDirectSumModule):
         return self.scalar_multiple(scalar, self.one())
 
     def algebra_structure_morphism(self):
-        return SetMorphism(
-            Hom(self.base_ring(), self, Sets()),
+        return ring_morphism(
+            self.base_ring(),
+            self,
             lambda scalar: self(scalar),
         )
 
@@ -148,7 +150,7 @@ class CohomologyAlgebraMorphism(Morphism):
         )
 
 
-class CohomologyAlgebraHomset(Homset):
+class CohomologyAlgebraHomset(OwnedHomset):
     Element = CohomologyAlgebraMorphism
 
     def _element_constructor_(self, dga_morphism):
@@ -157,7 +159,7 @@ class CohomologyAlgebraHomset(Homset):
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError("identity belongs to a cohomology-algebra endomorphism homset")
-        from dzack_research.preamble.categories.algebras import dga_homset
+        from dzack_research.preamble.categories.algebras.differential_graded_algebras import dga_homset
 
         source_dga = self.domain().source_dga()
         return self(dga_homset(source_dga, source_dga).identity())

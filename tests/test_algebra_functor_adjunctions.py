@@ -7,7 +7,7 @@ from dzack_research.preamble.all import (
     ZZ,
     algebra_base_change_adjunction,
 )
-from dzack_research.preamble.categories.rings import engine_ring
+from dzack_research.preamble.categories.rings import ring_homset
 
 
 def _quadratic_algebra_tower():
@@ -55,26 +55,26 @@ def test_algebra_scalar_extension_restriction_has_the_hom_bijection() -> None:
     # Restriction changes the scalar structure, not the underlying ring.  Its
     # selected QQ-presentation must nevertheless include both the scalar
     # generator s and the original algebra generator y.
-    assert engine_ring(restricted_target) is engine_ring(target)
-    assert tuple(restricted_target.algebra_generating_set()) == (
-        ("scalar", "s"),
-        ("algebra", "y"),
-    )
-    assert restricted_target.algebra_generator(("scalar", "s")) == target(
+    restricted_labels = restricted_target.algebra_generating_set()
+    assert int(restricted_labels.cardinality()) == 2
+    scalar_label = restricted_labels.unrank(0)
+    algebra_label = restricted_labels.unrank(1)
+    assert int(scalar_label.summand_index()) == 0
+    assert scalar_label.summand_element() == "s"
+    assert int(algebra_label.summand_index()) == 1
+    assert algebra_label.summand_element() == "y"
+    assert restricted_target.algebra_generator(scalar_label) == target(
         extension_ring.algebra_generator("s")
     )
-    assert restricted_target.algebra_generator(
-        ("algebra", "y")
-    ) == target.algebra_generator("y")
+    assert restricted_target.algebra_generator(algebra_label) == target.algebra_generator("y")
     for relation in restricted_target.relations():
         assert restricted_target.algebra_presentation_morphism()(relation) == 0
 
     # y^4 = s^2 = 2, so x |-> y defines an S-algebra morphism
     # S tensor_QQ A -> B.  Its transpose is the corresponding QQ-algebra map
     # A -> Res(B), and transposing back recovers the original map.
-    phi = extended_source.hom(
-        {"x": target.algebra_generator("y")},
-        target,
+    phi = extended_source.Hom(target)(
+        {"x": target.algebra_generator("y")}
     )
     transpose = adjunction.hom_set_isomorphism_forward(phi)
     assert transpose(source.algebra_generator("x")) == restricted_target(
@@ -85,9 +85,8 @@ def test_algebra_scalar_extension_restriction_has_the_hom_bijection() -> None:
 
     # Check the inverse composite in the other direction as well, using the
     # distinct map x |-> -y.
-    psi = source.hom(
-        {"x": -restricted_target.algebra_generator(("algebra", "y"))},
-        restricted_target,
+    psi = source.Hom(restricted_target)(
+        {"x": -restricted_target.algebra_generator(algebra_label)}
     )
     inverse_transpose = adjunction.hom_set_isomorphism_inverse(psi)
     recovered_psi = adjunction.hom_set_isomorphism_forward(inverse_transpose)
@@ -100,16 +99,14 @@ def test_algebra_scalar_extension_restriction_naturality_and_triangles() -> None
     extension = adjunction.left_adjoint()
     restriction = adjunction.right_adjoint()
 
-    source_involution = source.hom(
-        {"x": -source.algebra_generator("x")},
-        source,
+    source_involution = source.Hom(source)(
+        {"x": -source.algebra_generator("x")}
     )
     left, right = adjunction.unit_transformation().naturality_square(source_involution)
     _assert_algebra_maps_agree(left, right)
 
-    target_involution = target.hom(
-        {"y": -target.algebra_generator("y")},
-        target,
+    target_involution = target.Hom(target)(
+        {"y": -target.algebra_generator("y")}
     )
     left, right = adjunction.counit_transformation().naturality_square(
         target_involution
@@ -120,12 +117,11 @@ def test_algebra_scalar_extension_restriction_naturality_and_triangles() -> None
     first_triangle = restriction(adjunction.counit(target)) * adjunction.unit(
         restricted_target
     )
-    identity_restricted_target = restricted_target.hom(
+    identity_restricted_target = restricted_target.Hom(restricted_target)(
         {
             label: restricted_target.algebra_generator(label)
             for label in restricted_target.algebra_generating_set()
-        },
-        restricted_target,
+        }
     )
     _assert_algebra_maps_agree(first_triangle, identity_restricted_target)
 
@@ -133,38 +129,35 @@ def test_algebra_scalar_extension_restriction_naturality_and_triangles() -> None
     second_triangle = adjunction.counit(extended_source) * extension(
         adjunction.unit(source)
     )
-    identity_extended_source = extended_source.hom(
+    identity_extended_source = extended_source.Hom(extended_source)(
         {
             label: extended_source.algebra_generator(label)
             for label in extended_source.algebra_generating_set()
-        },
-        extended_source,
+        }
     )
     _assert_algebra_maps_agree(second_triangle, identity_extended_source)
 
 
 def test_algebra_restriction_remains_functorial_when_finite_framing_is_lost() -> None:
-    ring_map = engine_ring(QQ).coerce_map_from(engine_ring(ZZ))
+    ring_map = ring_homset(ZZ, QQ)(lambda element: QQ(element))
     restriction = AlgebraRestrictionOfScalarsFunctor(ring_map)
 
     source = SymmetricAlgebraOn(QQ, ["x"])
     middle = SymmetricAlgebraOn(QQ, ["y"])
     target = SymmetricAlgebraOn(QQ, ["z"])
-    first = source.hom(
-        {"x": middle.algebra_generator("y") + 1},
-        middle,
+    first = source.Hom(middle)(
+        {"x": middle.algebra_generator("y") + 1}
     )
-    second = middle.hom(
-        {"y": 2 * target.algebra_generator("z")},
-        target,
+    second = middle.Hom(target)(
+        {"y": 2 * target.algebra_generator("z")}
     )
 
     restricted_source = restriction(source)
-    assert engine_ring(restricted_source) is engine_ring(source)
     assert restricted_source not in FramedAlgebras(ZZ)
+    assert restricted_source(source.algebra_generator("x")) == source.algebra_generator("x")
 
     source_generator = source.algebra_generator("x")
-    carried_identity = restriction(source.hom({"x": source_generator}, source))
+    carried_identity = restriction(source.Hom(source)({"x": source_generator}))
     assert carried_identity(source_generator) == source_generator
 
     carried_composite = restriction(second * first)

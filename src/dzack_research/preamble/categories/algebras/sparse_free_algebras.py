@@ -1,12 +1,11 @@
 r"""Sparse tensor and symmetric algebras on infinitely framed free modules."""
 
-from dzack_research.preamble.categories.rings import engine_ring as _engine_ring
-from itertools import count, product
+from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring as _engine_ring
 from typing import Any, cast
 
+from sage.misc.cachefunc import cached_function
 from sage.categories.category import Category
 from sage.categories.enumerated_sets import EnumeratedSets
-from sage.categories.homset import Hom, Homset
 from sage.categories.morphism import Morphism, SetMorphism
 from sage.categories.rings import Rings as SageRings
 from sage.categories.sets_cat import Sets
@@ -15,8 +14,8 @@ from sage.structure.element import ModuleElement
 from sage.structure.parent import Parent
 from sage.structure.richcmp import op_EQ, op_NE
 
-from dzack_research.preamble.categories.rings import OwnedRings as _OwnedRings
 from dzack_research.preamble.categories.algebras.algebras import (
+    _AlgebraHomsetCommonMethods,
     Algebras,
     CommutativeAlgebras,
     FramedAlgebras,
@@ -26,26 +25,31 @@ from dzack_research.preamble.categories.algebras.free_algebras import (
     SymmetricAlgebras,
     TensorAlgebras,
 )
-from dzack_research.preamble.categories.modules.framed.framed_modules import (
+from dzack_research.preamble.categories.modules.pure.modules import (
     FramedModules,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
     module_homset,
 )
-from dzack_research.preamble.categories.rings import owned_ring_view
-from dzack_research.preamble.categories.rings import engine_ring
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _engine_element,
+    _owned_ring,
+)
+from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
 )
-from dzack_research.preamble.categories.sets import aleph0
-
-
-def _symmetric_label(factors):
-    exponents = {}
-    for factor in factors:
-        exponents[factor] = exponents.get(factor, 0) + 1
-    return frozenset(exponents.items())
+from dzack_research.preamble.categories.sets.set_categories import (
+    CartesianProductOfFamily,
+    CoproductOfFamily,
+)
+from dzack_research.preamble.categories.sets.set_categories import (
+    NN,
+    Sets as OwnedSets,
+)
+from dzack_research.preamble.categories.sets.cardinals import aleph0
+from dzack_research.preamble.categories.sets.fixed_size_selections import multisets_of_size
 
 
 def _nested_label(labels):
@@ -65,74 +69,6 @@ def _flatten_nested_label(label, length):
         return (label,)
     left, right = label
     return _flatten_nested_label(left, length - 1) + (right,)
-
-
-class SparseFreeAlgebraBasis(Parent):
-    def __init__(self, algebra, degree=None) -> None:
-        self._algebra = algebra
-        self._degree = degree
-        Parent.__init__(self, category=EnumeratedSets())
-
-    def algebra(self):
-        return self._algebra
-
-    def degree(self):
-        return self._degree
-
-    def __contains__(self, candidate) -> bool:
-        labels = self.algebra().algebra_generating_set()
-        if self.algebra().flavor() == "tensor":
-            valid = isinstance(candidate, tuple) and all(
-                label in labels for label in candidate
-            )
-            degree = len(candidate) if valid else None
-        else:
-            valid = isinstance(candidate, frozenset)
-            if valid:
-                try:
-                    valid = all(
-                        label in labels and int(exponent) > 0
-                        for label, exponent in candidate
-                    )
-                    degree = sum(int(exponent) for _label, exponent in candidate)
-                except (TypeError, ValueError):
-                    valid = False
-                    degree = None
-            else:
-                degree = None
-        return bool(valid and (self.degree() is None or degree == self.degree()))
-
-    def _element_constructor_(self, candidate):
-        if candidate not in self:
-            raise ValueError(f"{candidate!r} is not a sparse free-algebra basis label")
-        return candidate
-
-    def __iter__(self):
-        labels = self.algebra().algebra_generating_set()
-        cardinality = labels.cardinality()
-        if cardinality not in SageZZ:
-            raise NotImplementedError(
-                "the infinite basis is represented extensionally; iterate its source labels instead"
-            )
-        labels = tuple(labels)
-        degrees = count() if self.degree() is None else (self.degree(),)
-        for degree in degrees:
-            if self.algebra().flavor() == "tensor":
-                yield from product(labels, repeat=degree)
-            else:
-                seen = set()
-                for factors in product(labels, repeat=degree):
-                    label = _symmetric_label(factors)
-                    if label not in seen:
-                        seen.add(label)
-                        yield label
-
-    def cardinality(self):
-        return aleph0
-
-    def _repr_(self):
-        flavor = self.algebra().flavor()
-        return f"Sparse {flavor}-monomial indices of {self.algebra()}"
 
 
 class SparseFreeAlgebraElement(ModuleElement):
@@ -170,6 +106,11 @@ class SparseFreeAlgebraElement(ModuleElement):
     def _lmul_(self, scalar):
         return self.parent().scalar_multiple(scalar, self)
 
+    def __rmul__(self, scalar):
+        # Bridge Python's concrete Element numeric slot to the module scalar
+        # action owned by the parent/category.
+        return self.parent().scalar_multiple(scalar, self)
+
     def _mul_(self, other):
         return self.parent().multiply(self, other)
 
@@ -199,7 +140,7 @@ class SparseFreeAlgebraDegreeElement(ModuleElement):
         ModuleElement.__init__(self, parent)
         algebra_element = parent.algebra()(algebra_element)
         if any(
-            label not in parent.module_generating_set()
+            int(label.summand_index()) != parent.degree()
             for label in algebra_element.monomial_coefficients()
         ):
             raise ValueError(
@@ -211,7 +152,10 @@ class SparseFreeAlgebraDegreeElement(ModuleElement):
         return self._algebra_element
 
     def monomial_coefficients(self):
-        return self.algebra_element().monomial_coefficients()
+        return {
+            label.summand_element(): coefficient
+            for label, coefficient in self.algebra_element().monomial_coefficients().items()
+        }
 
     def _add_(self, other):
         return self.parent().from_algebra_element(
@@ -222,6 +166,9 @@ class SparseFreeAlgebraDegreeElement(ModuleElement):
         return self.parent().from_algebra_element(-self.algebra_element())
 
     def _lmul_(self, scalar):
+        return self.parent().scalar_multiple(scalar, self)
+
+    def __rmul__(self, scalar):
         return self.parent().scalar_multiple(scalar, self)
 
     def _richcmp_(self, other, op):
@@ -246,7 +193,7 @@ class SparseFreeAlgebraDegreeModule(Parent):
     def __init__(self, algebra, degree) -> None:
         self._algebra = algebra
         self._degree = int(degree)
-        self._basis = SparseFreeAlgebraBasis(algebra, self._degree)
+        self._basis = algebra.degree_basis(self._degree)
         Parent.__init__(
             self,
             base=algebra.base_ring(),
@@ -266,13 +213,21 @@ class SparseFreeAlgebraDegreeModule(Parent):
         return self._basis
 
     def module_generator(self, label):
-        label = self.module_generating_set()._element_constructor_(label)
+        label = self.module_generating_set()(label)
+        algebra_label = self.algebra().basis_label(self.degree(), label)
         return self.from_algebra_element(
-            self.algebra()._from_dict({label: self.base_ring().one()})
+            self.algebra()._from_dict({algebra_label: self.base_ring().one()})
         )
 
     def linear_combination(self, coefficients):
-        return self.from_algebra_element(self.algebra()._from_dict(coefficients))
+        return self.from_algebra_element(
+            self.algebra()._from_dict(
+                {
+                    self.algebra().basis_label(self.degree(), self.module_generating_set()(label)): coefficient
+                    for label, coefficient in coefficients.items()
+                }
+            )
+        )
 
     def from_algebra_element(self, element):
         return self.element_class(self, element)
@@ -312,8 +267,9 @@ class SparseFreeAlgebra(Parent):
             raise ValueError("the sparse free-algebra flavor is tensor or symmetric")
         self._source_module = module
         self._flavor = flavor
-        self._base_ring = owned_ring_view(module.base_ring())
+        self._base_ring = _owned_ring(module.base_ring())
         self._basis = None
+        self._degree_basis_cache: dict[int, Any] = {}
         self._component_cache: dict[Any, Any] = {}
         self._graded_piece_cache: dict[int, SparseFreeAlgebraDegreeModule] = {}
         flavor_category = (
@@ -344,8 +300,8 @@ class SparseFreeAlgebra(Parent):
 
     algebra_base_ring = base_ring
 
-    def engine(self):
-        return self
+    def _algebra_homset(self, hom_family, codomain):
+        return SparseFreeAlgebraHomset(hom_family, self, codomain)
 
     def free_source_module(self):
         return self._source_module
@@ -365,10 +321,39 @@ class SparseFreeAlgebra(Parent):
     def algebra_generating_set(self):
         return self.free_source_module().module_generating_set()
 
+    def degree_basis(self, degree):
+        degree = int(degree)
+        if degree < 0:
+            raise ValueError("a graded degree is nonnegative")
+        cached = self._degree_basis_cache.get(degree)
+        if cached is not None:
+            return cached
+        if self.flavor() == "tensor":
+            indices = OwnedSets.Δ[degree - 1]
+            basis = CartesianProductOfFamily(
+                indices,
+                lambda _position: self.algebra_generating_set(),
+            )
+        else:
+            basis = multisets_of_size(self.algebra_generating_set(), degree)
+        self._degree_basis_cache[degree] = basis
+        return basis
+
+    def basis_label(self, degree, degree_label):
+        degree = int(degree)
+        return self.module_generating_set()(degree, self.degree_basis(degree)(degree_label))
+
     def _generator_basis_label(self, label):
-        if label not in self.algebra_generating_set():
+        labels = self.algebra_generating_set()
+        if label not in labels:
             raise ValueError(f"{label!r} is not an algebra-generator label")
-        return (label,) if self.flavor() == "tensor" else frozenset(((label, 1),))
+        label = labels(label)
+        degree_basis = self.degree_basis(1)
+        if self.flavor() == "tensor":
+            inner = degree_basis(lambda _position: label)
+        else:
+            inner = degree_basis.from_multiplicities({label: 1})
+        return self.basis_label(1, inner)
 
     def algebra_generator(self, label):
         return self._from_dict(
@@ -377,11 +362,14 @@ class SparseFreeAlgebra(Parent):
 
     def module_generating_set(self):
         if self._basis is None:
-            self._basis = SparseFreeAlgebraBasis(self)
+            self._basis = CoproductOfFamily(
+                NN,
+                lambda degree: self.degree_basis(int(degree)),
+            )
         return self._basis
 
     def module_generator(self, label):
-        label = self.module_generating_set()._element_constructor_(label)
+        label = self.module_generating_set()(label)
         return self._from_dict({label: self.base_ring().one()})
 
     def graded_piece(self, degree):
@@ -389,7 +377,7 @@ class SparseFreeAlgebra(Parent):
         if degree < 0:
             raise ValueError("a graded degree is nonnegative")
         if degree == 0:
-            from dzack_research.preamble.categories.modules.framed.finitely_generated.ring_as_module import (
+            from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
                 ring_as_module,
             )
 
@@ -412,12 +400,19 @@ class SparseFreeAlgebra(Parent):
 
     def _monomial_component_key(self, basis_label):
         source = self.free_source_module()
+        basis_label = self.module_generating_set()(basis_label)
+        inner = basis_label.summand_element()
         if self.flavor() == "tensor":
-            return tuple(source.module_component_key(label) for label in basis_label)
+            return tuple(
+                source.module_component_key(inner.component(position))
+                for position in inner.parent().index_set()
+            )
         multiplicities = {}
-        for label, exponent in basis_label:
+        for label in inner.support():
             key = source.module_component_key(label)
-            multiplicities[key] = multiplicities.get(key, 0) + int(exponent)
+            multiplicities[key] = (
+                multiplicities.get(key, 0) + inner.multiplicity(label)
+            )
         return frozenset(multiplicities.items())
 
     def _component_items(self, key):
@@ -440,7 +435,7 @@ class SparseFreeAlgebra(Parent):
             )
 
         if not factors:
-            from dzack_research.preamble.categories.modules.framed.finitely_generated.ring_as_module import (
+            from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
                 ring_as_module,
             )
 
@@ -448,9 +443,7 @@ class SparseFreeAlgebra(Parent):
         else:
             component = factors[0]
             if len(factors) > 1:
-                from dzack_research.preamble.categories.abstract_categories import (
-                    TensorProduct,
-                )
+                from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
 
                 for factor in factors[1:]:
                     component = TensorProduct(component, factor)
@@ -459,13 +452,17 @@ class SparseFreeAlgebra(Parent):
 
     def _component_generator_label(self, basis_label):
         source = self.free_source_module()
+        basis_label = self.module_generating_set()(basis_label)
+        inner = basis_label.summand_element()
         if self.flavor() == "tensor":
             return _nested_label(
-                source.module_component_generator_label(label) for label in basis_label
+                source.module_component_generator_label(inner.component(position))
+                for position in inner.parent().index_set()
             )
 
         grouped = {}
-        for source_label, exponent in basis_label:
+        for source_label in inner.support():
+            exponent = inner.multiplicity(source_label)
             key = source.module_component_key(source_label)
             component_label = source.module_component_generator_label(source_label)
             counts = grouped.setdefault(key, {})
@@ -480,11 +477,11 @@ class SparseFreeAlgebra(Parent):
             if multiplicity == 1:
                 factor_labels.append(next(iter(counts)))
             else:
+                from dzack_research.preamble.categories.modules.powers import SymmetricPower
+
+                factor = SymmetricPower(source_component, multiplicity)
                 factor_labels.append(
-                    tuple(
-                        counts.get(label, 0)
-                        for label in source_component.module_generating_set()
-                    )
+                    factor.module_generating_set().from_multiplicities(counts)
                 )
         return _nested_label(factor_labels)
 
@@ -492,10 +489,14 @@ class SparseFreeAlgebra(Parent):
         source = self.free_source_module()
         if self.flavor() == "tensor":
             component_labels = _flatten_nested_label(component_label, len(key))
-            return tuple(
-                source.module_label_from_component(source_key, source_label)
-                for source_key, source_label in zip(key, component_labels, strict=True)
+            degree = len(key)
+            inner = self.degree_basis(degree)(
+                lambda position: source.module_label_from_component(
+                    key[int(position)],
+                    component_labels[int(position)],
+                )
             )
+            return self.basis_label(degree, inner)
 
         items = self._component_items(key)
         factor_labels = _flatten_nested_label(component_label, len(items))
@@ -506,6 +507,11 @@ class SparseFreeAlgebra(Parent):
             source_component = source.module_component(source_key)
             if multiplicity == 1:
                 labelled_factors = ((factor_label, 1),)
+            elif hasattr(factor_label, "support"):
+                labelled_factors = (
+                    (label, factor_label.multiplicity(label))
+                    for label in factor_label.support()
+                )
             else:
                 labelled_factors = zip(
                     source_component.module_generating_set(),
@@ -520,7 +526,9 @@ class SparseFreeAlgebra(Parent):
                     source_key, source_component_label
                 )
                 counts[source_label] = counts.get(source_label, 0) + exponent
-        return frozenset(counts.items())
+        degree = sum(counts.values())
+        inner = self.degree_basis(degree).from_multiplicities(counts)
+        return self.basis_label(degree, inner)
 
     def _normalize_component_relations(self, coefficients):
         grouped = {}
@@ -577,7 +585,7 @@ class SparseFreeAlgebra(Parent):
     def module_component(self, key):
         if self._source_has_component_protocol():
             return self._component_module(key)
-        from dzack_research.preamble.categories.modules.framed.finitely_generated.ring_as_module import (
+        from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
             ring_as_module,
         )
 
@@ -619,7 +627,13 @@ class SparseFreeAlgebra(Parent):
         return self._from_dict({self._unit_label(): scalar})
 
     def _unit_label(self):
-        return () if self.flavor() == "tensor" else frozenset()
+        basis = self.degree_basis(0)
+        inner = (
+            basis(lambda _position: None)
+            if self.flavor() == "tensor"
+            else basis.from_multiplicities({})
+        )
+        return self.basis_label(0, inner)
 
     def zero(self):
         return self._from_dict({})
@@ -638,14 +652,31 @@ class SparseFreeAlgebra(Parent):
         )
 
     def _multiply_labels(self, left, right):
+        left = self.module_generating_set()(left)
+        right = self.module_generating_set()(right)
+        left_degree = int(left.summand_index())
+        right_degree = int(right.summand_index())
+        degree = left_degree + right_degree
+        left_inner = left.summand_element()
+        right_inner = right.summand_element()
+        target = self.degree_basis(degree)
         if self.flavor() == "tensor":
-            return left + right
-        # A label may occur in both frozensets; union alone loses that overlap.
-        counts = {}
-        for monomial in (left, right):
-            for label, exponent in monomial:
-                counts[label] = counts.get(label, 0) + int(exponent)
-        return frozenset(counts.items())
+            inner = target(
+                lambda position: (
+                    left_inner.component(int(position))
+                    if int(position) < left_degree
+                    else right_inner.component(int(position) - left_degree)
+                )
+            )
+        else:
+            counts = {}
+            for monomial in (left_inner, right_inner):
+                for label in monomial.support():
+                    counts[label] = (
+                        counts.get(label, 0) + monomial.multiplicity(label)
+                    )
+            inner = target.from_multiplicities(counts)
+        return self.basis_label(degree, inner)
 
     def multiply(self, left, right):
         left = self(left)
@@ -661,8 +692,9 @@ class SparseFreeAlgebra(Parent):
         return self._from_dict(result)
 
     def _ring_morphism_defining_algebra_structure(self):
-        return SetMorphism(
-            Hom(self.base_ring(), self, _OwnedRings()),
+        return ring_morphism(
+            self.base_ring(),
+            self,
             lambda scalar: self(scalar),
         )
 
@@ -672,11 +704,6 @@ class SparseFreeAlgebra(Parent):
         if self.flavor() == "symmetric":
             return self
         raise NotImplementedError("the center of this tensor algebra is not selected")
-
-    def hom(self, images, codomain=None):
-        if codomain is None:
-            raise TypeError("the target algebra is required")
-        return sparse_free_algebra_homset(self, codomain)(images)
 
     def _repr_(self):
         name = "T" if self.flavor() == "tensor" else "Sym"
@@ -710,8 +737,8 @@ def compose_with_free_construction(left, right):
 
     from dzack_research.preamble.categories.algebras.algebras import algebra_homset
 
-    engine_source = engine_ring(source)
-    engine_target = engine_ring(target)
+    engine_source = _engine_ring(source)
+    engine_target = _engine_ring(target)
     composite = SetMorphism(
         engine_source.Hom(engine_target),
         lambda element: engine_target(left(right(engine_source(element)))),
@@ -725,7 +752,8 @@ class SparseFreeAlgebraMorphism(Morphism):
         domain = cast(SparseFreeAlgebra, self.domain())
         labels = domain.algebra_generating_set()
         if isinstance(images, dict):
-            if labels.cardinality() not in SageZZ:
+            from dzack_research.preamble.categories.sets.cardinals import cardinal
+            if not cardinal(labels.cardinality()).is_finite():
                 raise TypeError(
                     "an infinite generator assignment is specified by a callable"
                 )
@@ -767,13 +795,18 @@ class SparseFreeAlgebraMorphism(Morphism):
         return self._component_map(key)(component.module_generator(component_label))
 
     def _basis_image(self, basis_label):
+        basis_label = self.domain().module_generating_set()(basis_label)
+        inner = basis_label.summand_element()
         if self.domain().flavor() == "tensor":
-            factors = (self._image(label) for label in basis_label)
+            factors = (
+                self._image(inner.component(position))
+                for position in inner.parent().index_set()
+            )
         else:
             factors = (
                 self._image(label)
-                for label, exponent in basis_label
-                for _ in range(int(exponent))
+                for label in inner.support()
+                for _ in range(int(inner.multiplicity(label)))
             )
         return _multiply_in_target(self.codomain(), factors)
 
@@ -790,11 +823,22 @@ class SparseFreeAlgebraMorphism(Morphism):
     def __call__(self, element):
         return self._call_(element)
 
+    def morphisms_agree(self, other) -> bool:
+        from dzack_research.preamble.categories.algebras.algebras import (
+            algebra_morphisms_agree,
+        )
+
+        return algebra_morphisms_agree(self, other)
+
     def __mul__(self, other):
         return compose_with_free_construction(self, other)
 
+    def _postcompose_algebra_morphism(self, morphism):
+        r"""Return ``morphism ∘ self`` through the free-construction Hom."""
+        return compose_with_free_construction(morphism, self)
 
-class SparseFreeAlgebraHomset(CategoricalHomset):
+
+class SparseFreeAlgebraHomset(_AlgebraHomsetCommonMethods, CategoricalHomset):
     Element = SparseFreeAlgebraMorphism
 
     def __init__(self, hom_family, domain, codomain) -> None:
@@ -805,7 +849,6 @@ class SparseFreeAlgebraHomset(CategoricalHomset):
             hom_family,
             domain,
             codomain,
-            homset_category=Sets(),
         )
 
     def _element_constructor_(self, images):
@@ -823,131 +866,10 @@ def sparse_free_algebra_homset(domain, codomain):
     return algebra_homset(domain, codomain)
 
 
-class FramedFreeAlgebraMorphism(Morphism):
-    r"""A generator-defined map from an engine-backed free algebra to any algebra."""
-
-    def __init__(self, parent, images) -> None:
-        Morphism.__init__(self, parent)
-        domain = cast(Any, self.domain())
-        labels = tuple(domain.algebra_generating_set())
-        if isinstance(images, dict):
-            missing = [label for label in labels if label not in images]
-            if missing:
-                raise ValueError(f"algebra-generator assignment omits {missing}")
-            self._images = {label: images[label] for label in labels}
-        elif isinstance(images, (tuple, list)):
-            if len(images) != len(labels):
-                raise ValueError(
-                    "the number of algebra-generator images must equal the framing size"
-                )
-            self._images = dict(zip(labels, images, strict=True))
-        elif callable(images):
-            self._images = {label: images(label) for label in labels}
-        else:
-            raise TypeError(
-                "an algebra morphism is specified on its algebra generators"
-            )
-        try:
-            source_module = domain.free_source_module()
-        except (AttributeError, ValueError):
-            source_module = None
-        if source_module is not None:
-            module_homset(source_module, self.codomain())(self._images.__getitem__)
-
-    def _tensor_terms(self, element):
-        domain = self.domain()
-        presented = (
-            domain.lift_to_presentation(element)
-            if hasattr(domain, "lift_to_presentation")
-            else engine_ring(domain)(element)
-        )
-        engine = presented.parent()
-        labels = tuple(domain.algebra_generating_set())
-        generator_labels = dict(zip(engine.monoid().gens(), labels, strict=True))
-        for monomial, coefficient in presented.monomial_coefficients().items():
-            word = tuple(
-                generator_labels[generator]
-                for generator, exponent in monomial
-                for _ in range(int(exponent))
-            )
-            yield word, coefficient
-
-    def _symmetric_terms(self, element):
-        domain = self.domain()
-        presented = (
-            domain.lift_to_presentation(element)
-            if hasattr(domain, "lift_to_presentation")
-            else engine_ring(domain)(element)
-        )
-        labels = tuple(domain.algebra_generating_set())
-        for monomial, coefficient in presented.monomial_coefficients().items():
-            try:
-                exponents = tuple(int(exponent) for exponent in monomial)
-            except TypeError:
-                if hasattr(monomial, "exponents"):
-                    exponents = tuple(monomial.exponents()[0])
-                else:
-                    exponents = (int(monomial),)
-            factors = tuple(
-                label
-                for label, exponent in zip(labels, exponents, strict=True)
-                for _ in range(int(exponent))
-            )
-            yield factors, coefficient
-
-    def _call_(self, element):
-        domain = self.domain()
-        terms = (
-            self._tensor_terms(element)
-            if domain in TensorAlgebras(domain.base_ring())
-            else self._symmetric_terms(element)
-        )
-        return sum(
-            (
-                coefficient
-                * _multiply_in_target(
-                    self.codomain(), (self._images[label] for label in factors)
-                )
-                for factors, coefficient in terms
-            ),
-            self.codomain().zero(),
-        )
-
-    def __call__(self, element):
-        return self._call_(element)
-
-    def __mul__(self, other):
-        return compose_with_free_construction(self, other)
-
-
-class FramedFreeAlgebraHomset(CategoricalHomset):
-    Element = FramedFreeAlgebraMorphism
-
-    def __init__(self, hom_family, domain, codomain) -> None:
-        CategoricalHomset.__init__(
-            self,
-            hom_family,
-            domain,
-            codomain,
-            homset_category=Sets(),
-        )
-
-    def _element_constructor_(self, images):
-        return self.element_class(self, images)
-
-    def identity(self):
-        if self.domain() is not self.codomain():
-            raise ValueError("identity belongs to an endomorphism Hom-set")
-        return self(lambda label: self.domain().algebra_generator(label))
-
-
 def free_construction_homset(domain, codomain):
     from dzack_research.preamble.categories.algebras.algebras import algebra_homset
 
     return algebra_homset(domain, codomain)
-
-
-_SPARSE_FREE_ALGEBRA_CACHE: dict[tuple[int, str], SparseFreeAlgebra] = {}
 
 
 def SparseTensorAlgebraOf(module):
@@ -958,11 +880,8 @@ def SparseSymmetricAlgebraOf(module):
     return _sparse_free_algebra_of(module, "symmetric")
 
 
+@cached_function(key=lambda module, flavor: (id(module), flavor))
 def _sparse_free_algebra_of(module, flavor):
-    key = (id(module), flavor)
-    cached = _SPARSE_FREE_ALGEBRA_CACHE.get(key)
-    if cached is not None and cached.free_source_module() is module:
-        return cached
     component_protocol = all(
         hasattr(module, name)
         for name in (
@@ -982,7 +901,6 @@ def _sparse_free_algebra_of(module, flavor):
                 "an infinite relationful source requires finite presented module components"
             )
     algebra = SparseFreeAlgebra(module, flavor)
-    _SPARSE_FREE_ALGEBRA_CACHE[key] = algebra
     return algebra
 
 

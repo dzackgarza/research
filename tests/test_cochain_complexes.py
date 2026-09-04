@@ -1,9 +1,7 @@
 import pytest
 
 from dzack_research.preamble.all import ZZ
-from dzack_research.preamble.categories.functors import (
-    cochain_underlying_graded_module_functor,
-)
+from dzack_research.preamble.categories.functors.cochain_complexes import cochain_underlying_graded_module_functor
 from dzack_research.preamble.categories.modules import (
     BasedFreeModule,
     CochainComplex,
@@ -46,7 +44,7 @@ def test_generic_cohomology_uses_kernel_image_and_cokernel() -> None:
 
     assert complex_.cohomology(0).is_zero()
     h1 = complex_.cohomology(1)
-    assert h1.invariants() == (2,)
+    assert h1.invariant_factors() == (2,)
     f = C1.module_generator("f")
     one_class = h1.class_of_cycle(f)
     assert h1.cycle_representative(one_class) == f

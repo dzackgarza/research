@@ -28,7 +28,7 @@ from sage.rings.real_lazy import CLF, RLF
 from sage.rings.real_mpfr import (
     RealField,
     RealNumber as _RealApproximationNumber,
-    create_RealNumber as RealApproximation,
+    create_RealNumber as _create_real_approximation,
 )
 from sage.rings.ring import Field
 from sage.structure.element import FieldElement, parent
@@ -37,6 +37,15 @@ from sage.symbolic.expression import Expression
 from sage.symbolic.ring import SR
 
 from dzack_research.preamble.logic import Predicate
+
+
+def RealApproximation(value):
+    r"""Return the owned finite-precision real represented by ``value``."""
+    backend = _create_real_approximation(value)
+    from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+
+    parent = _own_ring(backend.parent())
+    return parent._from_engine_element(backend)
 
 
 _RELATION_SYMBOL = {
@@ -76,6 +85,18 @@ def _closed_exact_real_expression(value) -> Expression:
     r"""Return the exact closed real symbolic expression represented by ``value``."""
     if isinstance(value, ExactRealNumber):
         return value.expression()
+
+    try:
+        from dzack_research.preamble.categories.rings.ring_foundation import (
+            OwnedRings,
+            _engine_element,
+        )
+
+        value_parent = parent(value)
+        if value_parent in OwnedRings():
+            value = _engine_element(value_parent, value)
+    except (AttributeError, TypeError, ValueError):
+        pass
 
     if isinstance(value, float):
         raise TypeError("a floating-point approximation is not an exact real")
@@ -419,7 +440,7 @@ class ExactRealField(UniqueRepresentation, Field):
 
     def __init__(self) -> None:
         from sage.categories.category import Category
-        from dzack_research.preamble.categories.sets import UncountableSets
+        from dzack_research.preamble.categories.sets.set_categories import UncountableSets
 
         Field.__init__(
             self,
@@ -438,6 +459,10 @@ class ExactRealField(UniqueRepresentation, Field):
             return value
         return self.element_class(self, _closed_exact_real_expression(value))
 
+    def _from_engine_expression(self, value) -> ExactRealNumber:
+        r"""Cross a private exact backend expression into the owned real field."""
+        return self.element_class(self, _closed_exact_real_expression(value))
+
     def __contains__(self, value) -> bool:
         r"""Return whether ``value`` canonically names an exact real number."""
         try:
@@ -447,9 +472,9 @@ class ExactRealField(UniqueRepresentation, Field):
         return True
 
     def _coerce_map_from_(self, source):
-        from dzack_research.preamble.categories.rings import engine_ring
+        from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
 
-        computation_source = engine_ring(source)
+        computation_source = _engine_ring(source)
         if computation_source in (ZZ, QQ, AA):
             return True
         try:
@@ -461,6 +486,8 @@ class ExactRealField(UniqueRepresentation, Field):
 
     def relation(self, left: ExactRealNumber, right: ExactRealNumber, relation):
         r"""Return a decided Boolean or an exact real relation predicate."""
+        left = self(left)
+        right = self(right)
         answer = _decide_relation(
             left.expression(),
             right.expression(),
@@ -487,7 +514,7 @@ class ExactRealField(UniqueRepresentation, Field):
         return False
 
     def cardinality(self):
-        from dzack_research.preamble.categories.sets import continuum
+        from dzack_research.preamble.categories.sets.cardinals import continuum
 
         return continuum
 

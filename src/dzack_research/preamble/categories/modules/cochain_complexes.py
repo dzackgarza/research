@@ -16,14 +16,14 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     _initialize_module_hom_parent,
     module_homset,
 )
-from dzack_research.preamble.categories.modules.internal_hom import (
+from dzack_research.preamble.categories.modules.pure.modules import (
     LinearEndCategoryConstruction,
 )
-from dzack_research.preamble.categories.rings import (
+from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
-    engine_ring,
+    _engine_ring,
 )
-from dzack_research.preamble.categories.sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.refine import refine
 
 
@@ -58,7 +58,7 @@ class CohomologyModules(OwnedCategoryOverBaseRing):
         return "cohomology modules"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.modules import FinitelyPresentedModules
+        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModules
 
         return [FinitelyPresentedModules(self.base_ring())]
 
@@ -83,20 +83,18 @@ class CohomologyModules(OwnedCategoryOverBaseRing):
             current = self._preamble_cohomology_current_module
             current_labels = self._preamble_cohomology_current_labels
             closed_basis = self._preamble_cohomology_closed_basis
-            coordinate_values = [current.base_ring().zero()] * len(current_labels)
+            coordinate_values = {}
             for closed_label, coefficient in coefficients.items():
-                row = closed_basis[int(closed_label)]
+                row = closed_basis.row(int(closed_label))
                 for position, entry in enumerate(row):
-                    coordinate_values[position] += current.base_ring()(coefficient * entry)
-            return current.linear_combination(
-                {
-                    label: coefficient
-                    for label, coefficient in zip(
-                        current_labels, coordinate_values, strict=True
+                    if not entry:
+                        continue
+                    label = current_labels.unrank(position)
+                    coordinate_values[label] = (
+                        coordinate_values.get(label, current.base_ring().zero())
+                        + current.base_ring()(coefficient * entry)
                     )
-                    if coefficient
-                }
-            )
+            return current.linear_combination(coordinate_values)
 
         def class_of_cycle(self, cycle):
             r"""Return the cohomology class of a closed element of ``C^p``."""
@@ -115,25 +113,25 @@ class CohomologyModules(OwnedCategoryOverBaseRing):
 
             coefficients = module_coefficients(cycle, current)
             current_labels = self._preamble_cohomology_current_labels
-            engine = engine_ring(self.base_ring())
+            from dzack_research.preamble.categories.rings.ring_foundation import _engine_element
+
             vector = self._preamble_cohomology_free_cover(
-                tuple(
-                    engine(coefficients[label])
-                    if label in coefficients
-                    else engine.zero()
+                [
+                    _engine_element(
+                        self.base_ring(),
+                        coefficients.get(label, self.base_ring().zero()),
+                    )
                     for label in current_labels
-                )
+                ]
             )
             closed_coordinates = self._preamble_cohomology_closed_submodule.coordinate_vector(
                 vector
             )
-            labels = tuple(self.module_generating_set())
+            labels = self.module_generating_set()
             return self.linear_combination(
                 {
-                    label: self.base_ring()(coefficient)
-                    for label, coefficient in zip(
-                        labels, tuple(closed_coordinates), strict=True
-                    )
+                    labels.unrank(position): self.base_ring()._from_engine_element(coefficient)
+                    for position, coefficient in enumerate(closed_coordinates)
                     if coefficient
                 }
             )
@@ -185,7 +183,7 @@ class CochainComplexObject(GradedDirectSumModule):
                 "the live finite-support carrier currently materializes nonnegative cochain complexes"
             )
 
-        from dzack_research.preamble.categories.modules import BasedFreeModule
+        from dzack_research.preamble.categories.modules.framed.framed_free_modules import BasedFreeModule
 
         zero_module = BasedFreeModule(base_ring, finite_ordered_set(()))
 
@@ -449,6 +447,7 @@ def Cohomology(complex_, degree):
         return cached
 
     from sage.categories.principal_ideal_domains import PrincipalIdealDomains
+    from sage.matrix.constructor import matrix as sage_matrix
     from sage.modules.free_module import FreeModule as SageFreeModule
     from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
         FinitelyPresentedModule,
@@ -457,12 +456,18 @@ def Cohomology(complex_, degree):
     )
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
         ModuleMorphism,
+        module_coefficients,
     )
-    from dzack_research.preamble.categories.rings import engine_ring
-    from dzack_research.preamble.tensors import tensor
+    from dzack_research.preamble.categories.rings.ring_foundation import (
+        _engine_element,
+        _engine_ring,
+    )
+    from dzack_research.preamble.categories.sets.set_categories import Sets
+    from dzack_research.preamble.categories.modules.pure.modules import _engine_matrix
+    from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace
 
     ring = complex_.base_ring()
-    engine = engine_ring(ring)
+    engine = _engine_ring(ring)
     if engine not in PrincipalIdealDomains():
         raise NotImplementedError(
             "the active cohomology presentation backend requires a principal ideal domain"
@@ -470,10 +475,12 @@ def Cohomology(complex_, degree):
 
     current = complex_.graded_piece(degree)
     following = complex_.graded_piece(degree + 1)
-    current_labels = tuple(current.module_generating_set())
-    following_labels = tuple(following.module_generating_set())
-    current_relations = _presentation_matrix(current).change_ring(engine)
-    following_relations = _presentation_matrix(following).change_ring(engine)
+    current_labels = current.module_generating_set()
+    following_labels = following.module_generating_set()
+    current_count = int(current_labels.cardinality())
+    following_count = int(following_labels.cardinality())
+    current_relations = _engine_matrix(_presentation_matrix(current))
+    following_relations = _engine_matrix(_presentation_matrix(following))
 
     def represented_differential(index):
         component = complex_.differential_component(index)
@@ -485,39 +492,78 @@ def Cohomology(complex_, degree):
             "this differential component has no selected finite module presentation"
         )
 
+    def private_lift_matrix(morphism):
+        r"""Return one backend lift matrix in the selected finite framings.
+
+        This is not a public coordinate matrix of a presented-module morphism.
+        Each column is merely the chosen representative of one generator image
+        in the codomain cover, used inside this finite-presentation algorithm.
+        """
+        source = morphism.domain()
+        target = morphism.codomain()
+        source_labels = source.module_generating_set()
+        target_labels = target.module_generating_set()
+        source_count = int(source_labels.cardinality())
+        target_count = int(target_labels.cardinality())
+        backend_entries = []
+        for target_position in range(target_count):
+            target_label = target_labels.unrank(target_position)
+            for source_position in range(source_count):
+                source_label = source_labels.unrank(source_position)
+                coefficients = module_coefficients(
+                    morphism(source.module_generator(source_label)),
+                    target,
+                )
+                backend_entries.append(
+                    _engine_element(
+                        ring,
+                        coefficients.get(target_label, ring.zero()),
+                    )
+                )
+        return sage_matrix(engine, target_count, source_count, backend_entries)
+
     differential = represented_differential(degree)
-    matrix = differential.tensor().change_ring(engine)
+    matrix = private_lift_matrix(differential)
     target_relation_count = int(following_relations.nrows())
     block_entries = []
-    for row in range(len(following_labels)):
-        block_entries.extend(matrix[row, column] for column in range(len(current_labels)))
+    for row in range(following_count):
+        block_entries.extend(matrix[row, column] for column in range(current_count))
         block_entries.extend(
             -following_relations[relation, row]
             for relation in range(target_relation_count)
         )
-    block = tensor.matrix(
+    block = sage_matrix(
         engine,
-        len(following_labels),
-        len(current_labels) + target_relation_count,
+        following_count,
+        current_count + target_relation_count,
         block_entries,
     )
-    kernel_rows = tuple(block.kernel_tensor().rows())
-    projected = [tuple(row[: len(current_labels)]) for row in kernel_rows]
-    free_cover = SageFreeModule(engine, len(current_labels))
+    kernel_rows = block.right_kernel().basis_matrix().rows()
+    projected = [row[:current_count] for row in kernel_rows]
+    free_cover = SageFreeModule(engine, current_count)
     closed_submodule = (
         free_cover.submodule(projected)
         if projected
         else free_cover.zero_submodule()
     )
     closed_basis_engine = closed_submodule.basis_matrix()
-    closed_basis = tensor.matrix(engine, closed_basis_engine)
-    closed_rank = int(closed_basis.nrows())
+    closed_rank = int(closed_basis_engine.nrows())
+    closed_basis = MatrixSpace(
+        ring,
+        closed_rank,
+        current_count,
+    ).from_rows(
+        tuple(
+            tuple(ring._from_engine_element(entry) for entry in row)
+            for row in closed_basis_engine.rows()
+        )
+    )
 
-    denominator_rows = [tuple(row) for row in current_relations.rows()]
+    denominator_rows = list(current_relations.rows())
     if degree > 0:
-        previous = represented_differential(degree - 1).tensor().change_ring(engine)
+        previous = private_lift_matrix(represented_differential(degree - 1))
         denominator_rows.extend(
-            tuple(previous[row, column] for row in range(len(current_labels)))
+            previous.column(column)
             for column in range(int(previous.ncols()))
         )
 
@@ -526,15 +572,21 @@ def Cohomology(complex_, degree):
         if not any(row):
             continue
         coordinates = closed_submodule.coordinate_vector(free_cover(row))
-        relation_coordinates.append(tuple(coordinates))
+        relation_coordinates.append(coordinates)
 
-    labels = finite_ordered_set(range(closed_rank))
-    relation_labels = finite_ordered_set(range(len(relation_coordinates)))
-    relations = tensor.matrix(
-        engine,
+    labels = Sets.Δ[closed_rank - 1]
+    relation_labels = Sets.Δ[len(relation_coordinates) - 1]
+    from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace
+
+    relations = MatrixSpace(
+        ring,
         len(relation_coordinates),
         closed_rank,
-        [entry for row in relation_coordinates for entry in row],
+    ).from_rows(
+        tuple(
+            tuple(ring._from_engine_element(entry) for entry in row)
+            for row in relation_coordinates
+        )
     )
     presentation = _presentation_from_relation_rows(
         ring,
@@ -549,7 +601,7 @@ def Cohomology(complex_, degree):
     result._preamble_cohomology_current_labels = current_labels
     result._preamble_cohomology_free_cover = free_cover
     result._preamble_cohomology_closed_submodule = closed_submodule
-    result._preamble_cohomology_closed_basis = tuple(closed_basis_engine.rows())
+    result._preamble_cohomology_closed_basis = closed_basis
     result = refine(result, CohomologyModules(ring))
     _COHOMOLOGY_CACHE[cache_key] = result
     return result

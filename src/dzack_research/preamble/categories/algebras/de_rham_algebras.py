@@ -1,5 +1,6 @@
 r"""Affine algebraic de Rham algebras of represented commutative algebras."""
 
+from sage.misc.cachefunc import cached_function
 from dzack_research.preamble.categories.algebras.differential_graded_algebras import (
     Differential,
     StrictlyCommutativeDifferentialGradedAlgebras,
@@ -14,7 +15,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     module_coefficients,
 )
 from dzack_research.preamble.categories.modules.powers import alternating_power_product
-from dzack_research.preamble.categories.rings import OwnedCategoryOverBaseRing
+from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
 from dzack_research.preamble.refine import refine
 
 
@@ -62,9 +63,7 @@ def _de_rham_differential_on_extension(exterior_algebra, omega, universal_deriva
     return result
 
 
-_DE_RHAM_CACHE = {}
-
-
+@cached_function(key=lambda algebra: id(algebra))
 def DeRhamAlgebra(algebra):
     r"""Return the strictly commutative DGA ``Omega^*_{A/R}``.
 
@@ -73,11 +72,7 @@ def DeRhamAlgebra(algebra):
     from the degree-zero coefficient algebra ``A`` to the differential
     constants ``R`` along the selected algebra structure morphism.
     """
-    cached = _DE_RHAM_CACHE.get(id(algebra))
-    if cached is not None and cached.de_rham_source_algebra() is algebra:
-        return cached
-
-    from dzack_research.preamble.categories.algebras import AlternatingAlgebraOf
+    from dzack_research.preamble.categories.algebras.framed_free_algebras import AlternatingAlgebraOf
 
     omega = KahlerDifferentials(algebra)
     exterior = AlternatingAlgebraOf(omega)
@@ -100,7 +95,6 @@ def DeRhamAlgebra(algebra):
 
     de_rham._preamble_differential = Differential(de_rham, differential)
     de_rham = refine(de_rham, DeRhamAlgebras(algebra.base_ring()))
-    _DE_RHAM_CACHE[id(algebra)] = de_rham
     return de_rham
 
 

@@ -7,6 +7,7 @@ cross precisely that boundary without replacing an embedding by a numerical
 approximation or by descriptive metadata.
 """
 
+from dzack_research.preamble.categories.abstract_categories.hom_foundation import OwnedHomset
 from typing import Any, cast
 
 from sage.categories.fields import Fields as SageFields
@@ -17,12 +18,12 @@ from sage.misc.cachefunc import cached_function
 from sage.rings.infinity import Infinity
 from sage.rings.qqbar import AlgebraicField_common
 
-from dzack_research.preamble.categories.rings.rings import engine_ring, own_ring
+from dzack_research.preamble.categories.rings.ring_foundation import _engine_element, _engine_ring, _own_ring
 
 
 def field_generators(field) -> tuple:
     r"""Return exact elements which determine a unital map out of ``field``."""
-    engine = engine_ring(field)
+    engine = _engine_ring(field)
     if isinstance(engine, AlgebraicField_common):
         raise TypeError(f"{engine} has no finite field-generating family")
     try:
@@ -36,7 +37,12 @@ def field_generators(field) -> tuple:
     except (AttributeError, NotImplementedError):
         pass
     generators = tuple(engine.gens())
-    return generators or (engine.one(),)
+    if not generators:
+        return (field.one(),)
+    return tuple(
+        field._from_engine_element(engine(generator))
+        for generator in generators
+    )
 
 
 class ExactFieldMorphism(Morphism):
@@ -55,25 +61,28 @@ class ExactFieldMorphism(Morphism):
             raise TypeError(
                 "an exact field morphism requires a genuine field-homomorphism backend"
             )
-        if engine_ring(engine_morphism.domain()) is not engine_ring(parent.domain()):
+        if _engine_ring(engine_morphism.domain()) is not _engine_ring(parent.domain()):
             raise ValueError("the exact backend has the wrong domain")
-        if engine_ring(engine_morphism.codomain()) is not engine_ring(
+        if _engine_ring(engine_morphism.codomain()) is not _engine_ring(
             parent.codomain()
         ):
             raise ValueError("the exact backend has the wrong codomain")
         Morphism.__init__(self, parent)
         self._engine_morphism = engine_morphism
 
-    def engine_morphism(self) -> Map:
+    def _engine_morphism_crossing(self) -> Map:
+        r"""Return the private exact Sage field-map realization."""
         return self._engine_morphism
 
     def __call__(self, element):
         return self._call_(element)
 
     def _call_(self, element):
-        source = engine_ring(self.domain())
-        target = engine_ring(self.codomain())
-        return target(self._engine_morphism(source(element)))
+        source = _engine_ring(self.domain())
+        target = _engine_ring(self.codomain())
+        backend_element = _engine_element(self.domain(), self.domain()(element))
+        image = target(self._engine_morphism(source(backend_element)))
+        return self.codomain()._from_engine_element(image)
 
     def is_injective(self) -> bool:
         return True
@@ -84,10 +93,10 @@ class ExactFieldMorphism(Morphism):
             or self.codomain() is not other.codomain()
         ):
             return False
-        if self.engine_morphism() is other.engine_morphism():
+        if self._engine_morphism_crossing() is other._engine_morphism_crossing():
             return True
         try:
-            if self.engine_morphism() == other.engine_morphism():
+            if self._engine_morphism_crossing() == other._engine_morphism_crossing():
                 return True
         except (NotImplementedError, TypeError, ValueError):
             pass
@@ -128,14 +137,14 @@ class ExactFieldMorphism(Morphism):
             or other.codomain() is not self.domain()
         ):
             return NotImplemented
-        backend = self.engine_morphism() * other.engine_morphism()
+        backend = self._engine_morphism_crossing() * other._engine_morphism_crossing()
         return exact_field_homset(other.domain(), self.codomain())(backend)
 
     def _repr_(self) -> str:
-        return repr(self.engine_morphism())
+        return repr(self._engine_morphism_crossing())
 
 
-class ExactFieldHomset(Homset):
+class ExactFieldHomset(OwnedHomset):
     Element = ExactFieldMorphism
 
     def __init__(self, domain, codomain) -> None:
@@ -145,13 +154,13 @@ class ExactFieldHomset(Homset):
         if isinstance(datum, ExactFieldMorphism):
             if datum.parent() is self:
                 return datum
-            datum = datum.engine_morphism()
+            datum = datum._engine_morphism_crossing()
         return self.element_class(self, datum)
 
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError("identity is defined only on an endomorphism Hom-set")
-        engine = engine_ring(self.domain())
+        engine = _engine_ring(self.domain())
         return self(engine.hom(engine))
 
     def _repr_(self) -> str:
@@ -163,19 +172,19 @@ def exact_field_homset(domain, codomain) -> ExactFieldHomset:
     return ExactFieldHomset(domain, codomain)
 
 
-def exact_field_morphism(domain, codomain, backend) -> ExactFieldMorphism:
+def _exact_field_morphism_from_engine(domain, codomain, backend) -> ExactFieldMorphism:
     r"""Wrap an exact Sage field map with the stated owned endpoints."""
-    domain = own_ring(domain)
-    codomain = own_ring(codomain)
+    domain = _own_ring(domain)
+    codomain = _own_ring(codomain)
     return exact_field_homset(domain, codomain)(backend)
 
 
 def exact_embeddings(domain, codomain) -> tuple[ExactFieldMorphism, ...]:
     r"""Return all exact embeddings of ``domain`` into ``codomain``."""
-    domain = own_ring(domain)
-    codomain = own_ring(codomain)
-    source = engine_ring(domain)
-    target = engine_ring(codomain)
+    domain = _own_ring(domain)
+    codomain = _own_ring(codomain)
+    source = _engine_ring(domain)
+    target = _engine_ring(codomain)
     backends = tuple(source.embeddings(target))
     if not backends:
         try:
@@ -183,7 +192,7 @@ def exact_embeddings(domain, codomain) -> tuple[ExactFieldMorphism, ...]:
         except (TypeError, ValueError):
             backends = ()
     return tuple(
-        exact_field_morphism(domain, codomain, backend) for backend in backends
+        _exact_field_morphism_from_engine(domain, codomain, backend) for backend in backends
     )
 
 
@@ -200,7 +209,6 @@ __all__ = [
     "ExactFieldMorphism",
     "exact_embeddings",
     "exact_field_homset",
-    "exact_field_morphism",
     "field_generators",
     "first_exact_embedding",
 ]

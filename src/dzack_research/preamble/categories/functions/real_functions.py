@@ -26,7 +26,6 @@ and \(b(a,c)=\sum_{n\in\mathbb N}a_n c_n\) respectively.
 """
 
 from sage.categories.category import Category
-from sage.categories.homset import Hom
 from sage.categories.morphism import SetMorphism
 from sage.categories.sets_cat import Sets
 from sage.misc.cachefunc import cached_function, cached_method
@@ -52,7 +51,11 @@ from sage.symbolic.expression import Expression
 from sage.symbolic.function import Function as SymbolicMap
 from sage.symbolic.ring import SR
 
-from dzack_research.preamble.categories.algebras import Algebras, CommutativeAlgebras
+from dzack_research.preamble.categories.sets.set_categories import Sets as OwnedSets
+from dzack_research.preamble.categories.algebras.algebras import (
+    Algebras,
+    CommutativeAlgebras,
+)
 from dzack_research.preamble.categories.forms.forms import BilinearForms, Pairings
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
     FormedModules,
@@ -60,14 +63,16 @@ from dzack_research.preamble.categories.modules.framed.formed.form_modules impor
     SymmetricBilinearFormModules,
 )
 from dzack_research.preamble.categories.modules.pure.modules import VectorSpaces
-from dzack_research.preamble.rings import RR, ExactRealNumber
+from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+from dzack_research.preamble.rings.real import RR, ExactRealNumber
 
 
 def _regularity(k):
     if k is Infinity or k == Infinity:
         return Infinity
-    k = ZZ(k)
-    if k < 0:
+    integers = _own_ring(ZZ)
+    k = integers(k)
+    if k < integers.zero():
         raise ValueError("C^k is defined for k >= 0")
     return k
 
@@ -75,12 +80,16 @@ def _regularity(k):
 def _integrability(p):
     if p is Infinity or p == Infinity:
         return Infinity
-    p = QQ(p)
-    if p <= 0:
+    rationals = _own_ring(QQ)
+    integers = _own_ring(ZZ)
+    p = rationals(p)
+    if p <= rationals.zero():
         raise ValueError("L^p and ell^p are defined for p > 0")
-    if p in ZZ:
-        return ZZ(p)
-    return p
+    try:
+        integral = integers(p)
+    except (TypeError, ValueError):
+        return p
+    return integral if rationals(integral) == p else p
 
 
 def _parameter_name(value) -> str:
@@ -149,7 +158,7 @@ def _is_sequence_space(space) -> bool:
 def _conjugate_exponent(p):
     r"""The Hölder conjugate: \(1/p + 1/p' = 1\)."""
     if p is Infinity:
-        return ZZ.one()
+        return _own_ring(ZZ).one()
     if p == 1:
         return Infinity
     return _integrability(p / (p - 1))
@@ -506,7 +515,7 @@ class _FunctionSpace(UniqueRepresentation, Parent):
 
     def set_homset(self):
         r"""\(\operatorname{Hom}_{\mathbf{Set}}(X,Y)\)."""
-        return Hom(self.domain(), self.codomain(), Sets())
+        return OwnedSets().hom(self.domain(), self.codomain())
 
     def zero(self):
         return self._element_constructor_(ZZ.zero())

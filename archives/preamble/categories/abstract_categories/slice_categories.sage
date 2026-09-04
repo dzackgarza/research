@@ -3,9 +3,9 @@ r"""Slice, coslice, subobject, superobject, covering, and covered categories.
 Symmetric parameterized abstract categories over an ambient \(\mathbf{C}\):
 
 - ``SliceOver(X)`` / ``CosliceUnder(X)``: objects \(A\to X\) / \(X\to A\).
-- ``SubObject(X)`` / ``SuperObject(X)``: monomorphisms \(A\hookrightarrow X\)
+- ``Subobjects(X)`` / ``Superobjects(X)``: monomorphisms \(A\hookrightarrow X\)
   (slice) / \(X\hookrightarrow B\) (coslice).
-- ``CoveringObject(X)`` / ``CoveredObject(X)``: epimorphisms
+- ``CoveringObjects(X)`` / ``CoveredObjects(X)``: epimorphisms
   \(A\twoheadrightarrow X\) (slice) / \(X\twoheadrightarrow B\) (coslice).
 An object of each category is the arrow itself.  Its domain and codomain are
 read from that arrow.  No endpoint is mutated or given a second category.
@@ -287,11 +287,11 @@ def Slice(
     if is_mono:
         if structure_morphism not in cat.MonomorphismArrowCategory():
             structure_morphism = cat.Mono(domain, codomain)(structure_morphism)
-        assert structure_morphism in cat.SubObject(codomain)
+        assert structure_morphism in cat.Subobjects(codomain)
     elif is_epi:
         if structure_morphism not in cat.EpimorphismArrowCategory():
             structure_morphism = cat.Epi(domain, codomain)(structure_morphism)
-        assert structure_morphism in cat.CoveringObject(codomain)
+        assert structure_morphism in cat.CoveringObjects(codomain)
     else:
         assert structure_morphism in cat.SliceOver(codomain)
     return structure_morphism
@@ -315,11 +315,11 @@ def Coslice(
     if is_mono:
         if costructure_morphism not in cat.MonomorphismArrowCategory():
             costructure_morphism = cat.Mono(source, codomain)(costructure_morphism)
-        assert costructure_morphism in cat.SuperObject(source)
+        assert costructure_morphism in cat.Superobjects(source)
     elif is_epi:
         if costructure_morphism not in cat.EpimorphismArrowCategory():
             costructure_morphism = cat.Epi(source, codomain)(costructure_morphism)
-        assert costructure_morphism in cat.CoveredObject(source)
+        assert costructure_morphism in cat.CoveredObjects(source)
     else:
         assert costructure_morphism in cat.CosliceUnder(source)
     return costructure_morphism
@@ -330,6 +330,13 @@ def Superobject(
 ) -> "HomCategoryOf.ElementMethods":
     r"""Construct the superobject represented by a monomorphism \(X\hookrightarrow B\)."""
     return Coslice(costructure_morphism, is_mono=True)
+
+
+def Subobject(
+    structure_morphism: "HomCategoryOf.ElementMethods",
+) -> "HomCategoryOf.ElementMethods":
+    r"""Return a subobject represented by its monomorphism into an object."""
+    return Slice(structure_morphism, is_mono=True)
 
 
 def Covering(

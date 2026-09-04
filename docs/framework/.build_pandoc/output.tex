@@ -1,0 +1,196 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\documentclass{amsart}
+\usepackage{dzg-unified}
+% dzg-unified provides: amsmath, amsthm, amssymb, amsfonts, mathtools,
+% mathrsfs, stmaryrd, bm, esint, upgreek, graphicx, xcolor[dvipsnames],
+% tikz, tikz-cd, etoolbox, xparse, pgfornament, marginnote
+
+\newif\ifshort
+\shortfalse
+
+\usepackage{hyperref}
+\hypersetup{colorlinks,citecolor=blue,linktocpage,hyperindex=true,backref=true}
+\newcommand\todoinline[1]{\todo[inline]{#1}}
+
+\title{Research Draft}
+\date{\today}
+
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{fontenc}
+
+\newdimen\figrasterwd
+\figrasterwd\textwidth
+\floatplacement{figure}{H}
+
+\newcolumntype{P}[1]{>{\centering\arraybackslash}p{#1}}
+
+\makeatletter
+\AddToHook{cmd/section/before}{\FloatBarrier}
+\AddToHook{cmd/subsection/before}{\FloatBarrier}
+\makeatother
+
+\usetikzlibrary{arrows.meta, cd, fadings, patterns, calc, matrix, positioning, decorations, decorations.pathreplacing, decorations.markings, shapes, backgrounds, fit, shapes.geometric, intersections, hobby, matrix,arrows,decorations.pathmorphing}
+\tikzfading[name=fade out, inner color=transparent!0, outer color=transparent!100]
+
+% biblatex is provided by dzg-unified
+\addbibresource{global.bib}
+
+\renewcommand{\hat}{\widehat}
+\renewcommand{\tilde}{\widetilde}
+
+% Pandoc compatibility macros
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+% Standard Pandoc macros for figures
+
+\makeatletter
+\providecommand{\pandocbounded}[1]{#1}
+\makeatother
+
+
+
+\begin{document}
+
+
+\maketitle
+\tableofcontents
+
+\newpage
+
+\section{Loops and suspension}\label{sec-loops-suspension}
+
+Let \(\mathcal C\) be a pointed \(\infty\)-category, with zero object
+\(*\), and suppose that it has the finite limits and colimits required
+below.
+
+\subsection{Fibers and cofibers}\label{sec-cobase-changes}
+
+For \(f\colon X\to Y\), its fiber over the canonical basepoint
+\(0\colon *\to Y\) is defined by the cartesian square
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\%| filename: fiber{-}square}
+\CommentTok{\%\%| additionalPackages: \textbackslash{}usepackage\{amsmath,amssymb,tikz{-}cd\}}
+\KeywordTok{\textbackslash{}begin}\NormalTok{\{}\ExtensionTok{tikzcd}\NormalTok{\}}
+\FunctionTok{\textbackslash{}operatorname}\NormalTok{\{Fib\}(f)}
+  \FunctionTok{\textbackslash{}arrow}\NormalTok{[r,"p\_X"]}
+  \FunctionTok{\textbackslash{}arrow}\NormalTok{[d,"p\_*"\textquotesingle{}]}
+  \FunctionTok{\textbackslash{}arrow}\NormalTok{[dr,phantom,very near start,"}\FunctionTok{\textbackslash{}lrcorner}\NormalTok{"] \&}
+\NormalTok{X }\FunctionTok{\textbackslash{}arrow}\NormalTok{[d,"f"]}\FunctionTok{\textbackslash{}\textbackslash{}}
+\NormalTok{* }\FunctionTok{\textbackslash{}arrow}\NormalTok{[r,"0"\textquotesingle{}] \& Y}
+\KeywordTok{\textbackslash{}end}\NormalTok{\{}\ExtensionTok{tikzcd}\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+The fiber-product notation for its apex is \[
+\operatorname{Fib}(f)=X\times_Y *.
+\] The cofiber is defined by the cocartesian square
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\%| filename: cofiber{-}square}
+\CommentTok{\%\%| additionalPackages: \textbackslash{}usepackage\{amsmath,amssymb,tikz{-}cd\}}
+\KeywordTok{\textbackslash{}begin}\NormalTok{\{}\ExtensionTok{tikzcd}\NormalTok{\}}
+\NormalTok{X}
+  \FunctionTok{\textbackslash{}arrow}\NormalTok{[r,"f"]}
+  \FunctionTok{\textbackslash{}arrow}\NormalTok{[d,"0"\textquotesingle{}]}
+  \FunctionTok{\textbackslash{}arrow}\NormalTok{[dr,phantom,very near end,"}\FunctionTok{\textbackslash{}ulcorner}\NormalTok{"] \&}
+\NormalTok{Y }\FunctionTok{\textbackslash{}arrow}\NormalTok{[d,"i\_Y"]}\FunctionTok{\textbackslash{}\textbackslash{}}
+\NormalTok{* }\FunctionTok{\textbackslash{}arrow}\NormalTok{[r,"i\_*"\textquotesingle{}] \& }\FunctionTok{\textbackslash{}operatorname}\NormalTok{\{Cof\}(f)}
+\KeywordTok{\textbackslash{}end}\NormalTok{\{}\ExtensionTok{tikzcd}\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+The pushout notation for its apex is \[
+\operatorname{Cof}(f)=Y\amalg_X *.
+\] These definitions specialize in pointed spaces to the usual homotopy
+fiber and homotopy cofiber.
+
+\subsection{Loops and suspension}\label{loops-and-suspension}
+
+For an object \(X\) of \(\mathcal C\), loops are defined by the pullback
+square
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\%| filename: loop{-}square}
+\CommentTok{\%\%| additionalPackages: \textbackslash{}usepackage\{amsmath,amssymb,tikz{-}cd\}}
+\KeywordTok{\textbackslash{}begin}\NormalTok{\{}\ExtensionTok{tikzcd}\NormalTok{\}}
+\FunctionTok{\textbackslash{}Omega}\NormalTok{ X}
+  \FunctionTok{\textbackslash{}arrow}\NormalTok{[r,"}\FunctionTok{\textbackslash{}operatorname}\NormalTok{\{pr\}\_2"]}
+  \FunctionTok{\textbackslash{}arrow}\NormalTok{[d,"}\FunctionTok{\textbackslash{}operatorname}\NormalTok{\{pr\}\_1"\textquotesingle{}]}
+  \FunctionTok{\textbackslash{}arrow}\NormalTok{[dr,phantom,very near start,"}\FunctionTok{\textbackslash{}lrcorner}\NormalTok{"] \&}
+\NormalTok{* }\FunctionTok{\textbackslash{}arrow}\NormalTok{[d,"0"]}\FunctionTok{\textbackslash{}\textbackslash{}}
+\NormalTok{* }\FunctionTok{\textbackslash{}arrow}\NormalTok{[r,"0"\textquotesingle{}] \& X}
+\KeywordTok{\textbackslash{}end}\NormalTok{\{}\ExtensionTok{tikzcd}\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+Suspension is defined by the pushout square
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\%\%| filename: suspension{-}square}
+\CommentTok{\%\%| additionalPackages: \textbackslash{}usepackage\{amsmath,amssymb,tikz{-}cd\}}
+\KeywordTok{\textbackslash{}begin}\NormalTok{\{}\ExtensionTok{tikzcd}\NormalTok{\}}
+\NormalTok{X}
+  \FunctionTok{\textbackslash{}arrow}\NormalTok{[r,"0"]}
+  \FunctionTok{\textbackslash{}arrow}\NormalTok{[d,"0"\textquotesingle{}]}
+  \FunctionTok{\textbackslash{}arrow}\NormalTok{[dr,phantom,very near end,"}\FunctionTok{\textbackslash{}ulcorner}\NormalTok{"] \&}
+\NormalTok{* }\FunctionTok{\textbackslash{}arrow}\NormalTok{[d,"j\_1"]}\FunctionTok{\textbackslash{}\textbackslash{}}
+\NormalTok{* }\FunctionTok{\textbackslash{}arrow}\NormalTok{[r,"j\_2"\textquotesingle{}] \& }\FunctionTok{\textbackslash{}Sigma}\NormalTok{ X}
+\KeywordTok{\textbackslash{}end}\NormalTok{\{}\ExtensionTok{tikzcd}\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+Thus \[
+\Omega X=*\times_X *,
+\qquad
+\Sigma X=*\amalg_X *.
+\] In pointed spaces these are the usual loop-space and
+reduced-suspension constructions.
+
+\subsection{Arrow categories and path
+spaces}\label{sec-interval-presentations}
+
+For a higher category \(C\), evaluation at the endpoints of the
+constructed walking arrow gives \[
+[[1],C]\longrightarrow C\times C.
+\]
+
+The fiber over \((x,y)\) is the hom-category \([x,y]_C\); applying
+\(\Pi_\infty\) gives \(\operatorname{Map}_C(x,y)\). The fiber over
+\((x,x)\) is the endomorphism category of \(x\), and its full
+subcategory on the invertible objects is the automorphism category of
+\(x\).
+
+\subsection{The suspension-loop adjunction}\label{sec-adjunctions}
+
+When \(\mathcal C\) has finite limits and colimits, suspension is left
+adjoint to loops: \[
+\adj{\mathcal C}{\mathcal C}{\Sigma}{\Omega},
+\qquad \Sigma\dashv\Omega.
+\] For \(\mathcal C=\mathcal S_*\), the \(\infty\)-category of pointed
+spaces, this recovers the classical adjunction \[
+\operatorname{Map}_*(\Sigma X,Y)\simeq
+\operatorname{Map}_*(X,\Omega Y).
+\]
+
+\subsection{Fiber sequences}\label{fiber-sequences}
+
+A composable pair \(F\to E\to B\) is a fiber sequence when \(F\) is
+equivalent to the homotopy fiber over a specified basepoint of \(B\).
+Applying homotopy groups gives the long exact sequence. Its
+component-level portion is the pointed-set sequence recorded in
+\textcite{sec-pi0-fiber}.
+
+\clearpage
+ \printbibliography
+
+\end{document}

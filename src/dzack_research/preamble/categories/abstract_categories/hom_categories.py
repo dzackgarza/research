@@ -13,12 +13,14 @@ latter may carry additional enrichment -- for example ``Hom_R(M,N)`` is an
 chosen category and endpoints.
 """
 
+from dzack_research.preamble.categories.abstract_categories.hom_foundation import OwnedHomset
 from sage.categories.category import Category
 from sage.categories.homset import Hom, Homset
 from sage.categories.morphism import Morphism
-from sage.categories.objects import Objects
+from sage.categories.objects import Objects as SageObjects
 from sage.categories.sets_cat import Sets as SageSets
-from dzack_research.preamble.categories.sets.owned_sets import Sets as _OwnedSets
+from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
+from dzack_research.preamble.categories.sets.set_categories import Sets as _OwnedSets
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.classcall_metaclass import typecall
 from sage.structure.sage_object import SageObject
@@ -40,20 +42,18 @@ def _category_homset(category, domain, codomain):
             return constructor(domain, codomain)
         except (TypeError, ValueError):
             pass
+    if isinstance(category, OwnedCategory):
+        return _OwnedSets().hom(domain, codomain)
     try:
         return Hom(domain, codomain, category)
-    except (TypeError, ValueError):
-        return Hom(domain, codomain, _OwnedSets())
+    except (AttributeError, TypeError, ValueError):
+        return _OwnedSets().hom(domain, codomain)
+
+
 
 
 class CategoryPacketMethods:
-    r"""The coordinated ``C/Hom_C/End_C/Iso_C/Aut_C`` construction surface.
-
-    This is deliberately a small live analogue of the archived ``Cat``
-    construction kernel.  It belongs on owned category base classes, not on
-    arbitrary Sage parents: the category chooses which Hom notion is meant,
-    and its Hom/End/Aut families then mirror ``super_categories()``.
-    """
+    r"""The coordinated ``C/Hom_C/End_C/Iso_C/Aut_C`` construction surface."""
 
     def HomCategory(self):
         return category_packet(self).Homs()
@@ -92,6 +92,7 @@ class CategoryPacketMethods:
         return self.AutCategory().Of(obj)
 
 
+
 def _packet_supercategories(category):
     r"""Return semantic supercategories participating in the owned packet graph.
 
@@ -103,7 +104,7 @@ def _packet_supercategories(category):
     return tuple(
         supercategory
         for supercategory in category.super_categories()
-        if isinstance(supercategory, CategoryPacketMethods)
+        if isinstance(supercategory, OwnedCategory)
     )
 
 
@@ -144,7 +145,7 @@ class HomArrowIdentity(Morphism):
         return value
 
 
-class HomArrowDiscreteHomset(Homset):
+class HomArrowDiscreteHomset(OwnedHomset):
     r"""The discrete 2-Hom between two arrow objects."""
 
     Element = HomArrowIdentity
@@ -165,7 +166,7 @@ class HomArrowDiscreteHomset(Homset):
         return self()
 
 
-class CategoricalHomset(Homset, Category):
+class CategoricalHomset(OwnedHomset, Category):
     r"""A represented Hom object which is both a Sage Homset and a category.
 
     This is the live counterpart of the archived owned Hom-category base.  It
@@ -183,7 +184,7 @@ class CategoricalHomset(Homset, Category):
         # ``(domain,codomain)``, so bypass Category's cache here.
         return typecall(cls, family, domain, codomain, **options)
 
-    def __init__(self, family, domain, codomain, *, homset_category=None) -> None:
+    def __init__(self, family, domain, codomain) -> None:
         self._family = family
         self._end_family = None
         self._aut_family = None
@@ -196,13 +197,13 @@ class CategoricalHomset(Homset, Category):
         # soon as a super-Hom is refined (for example End_R(M) as a ring).
         # Packet/enrichment code transports the mathematical structure
         # explicitly, so the runtime method spine stays at Objects().
-        self._super_categories_for_classes = [Objects()]
+        self._super_categories_for_classes = [SageObjects()]
         Category.__init__(self)
         Homset.__init__(
             self,
             domain,
             codomain,
-            category=SageSets() if homset_category is None else homset_category,
+            category=SageSets(),
         )
 
     def hom_family(self):
@@ -325,7 +326,7 @@ class FixedHomCategory(Category):
         # Sage to synthesize one C3 class from those fixed categories creates
         # artificial MRO cycles.  Keep the runtime method spine discrete while
         # exposing the full mathematical supertree through ``super_categories``.
-        self._super_categories_for_classes = [Objects()]
+        self._super_categories_for_classes = [SageObjects()]
         super().__init__()
 
     def _make_named_class_key(self, name):
@@ -728,6 +729,33 @@ class HomCategoryOf(Category):
     def fixed_category_class(self):
         return self.FixedCategoryClass
 
+    def fixed_category_class_for(self, domain, codomain):
+        r"""Return the represented fixed Hom class for these endpoints."""
+        return self.fixed_category_class()
+
+    def _cached_between(self, domain, codomain):
+        r"""Return the exact cached fixed-endpoint object, if present.
+
+        Endpoint identity is part of the mathematical type.  Hashing/equality of
+        endpoints is deliberately irrelevant here and can itself re-enter Hom
+        construction, so every Hom-family specialization shares this one
+        identity-sensitive lookup.
+        """
+        cached = self._objects.get((id(domain), id(codomain)))
+        if cached is None:
+            return None
+        try:
+            cached_domain = cached.domain_object()
+            cached_codomain = cached.codomain_object()
+        except AttributeError:
+            cached_domain = cached.domain()
+            cached_codomain = cached.codomain()
+        return cached if cached_domain is domain and cached_codomain is codomain else None
+
+    def _remember_between(self, domain, codomain, value):
+        self._objects[id(domain), id(codomain)] = value
+        return value
+
     def super_categories(self):
         supers = [
             self.family_over(category)
@@ -740,15 +768,10 @@ class HomCategoryOf(Category):
             raise TypeError("Hom endpoints must lie in the base category")
         # Endpoint identity, not a hash: hashing a Hom endpoint re-enters Hom
         # construction, so Sage's cached_method recurses here.
-        key = id(domain), id(codomain)
-        cached = self._objects.get(key)
-        if (
-            cached is not None
-            and cached.domain_object() is domain
-            and cached.codomain_object() is codomain
-        ):
+        cached = self._cached_between(domain, codomain)
+        if cached is not None:
             return cached
-        fixed_class = self.fixed_category_class()
+        fixed_class = self.fixed_category_class_for(domain, codomain)
         if self.FixedCategoryClass is FixedHomCategory and fixed_class is FixedHomCategory:
             inherited = []
             for supercategory in _packet_supercategories(self.base_category()):
@@ -776,8 +799,7 @@ class HomCategoryOf(Category):
                     result = fixed_class(self, domain, codomain)
         else:
             result = fixed_class(self, domain, codomain)
-        self._objects[key] = result
-        return result
+        return self._remember_between(domain, codomain, result)
 
     Between = Of
 
@@ -809,16 +831,14 @@ class EndCategoryOf(HomCategoryOf):
             raise ValueError("an endomorphism category has equal endpoints")
         if obj not in self.base_category():
             raise TypeError("the endomorphism object must lie in the base category")
-        key = id(obj), id(obj)
-        cached = self._objects.get(key)
+        cached = self._cached_between(obj, obj)
         if cached is not None:
             return cached
         endomorphisms = category_packet(self.base_category()).Homs().Of(obj, obj)
         attach = getattr(endomorphisms, "attach_end_family", None)
         if attach is not None:
             attach(self)
-        self._objects[key] = endomorphisms
-        return endomorphisms
+        return self._remember_between(obj, obj, endomorphisms)
 
     def Between(self, domain, codomain):
         if domain is not codomain:
@@ -913,8 +933,7 @@ class AutCategoryOf(IsoCategoryOf):
             raise ValueError("an automorphism category has equal endpoints")
         if obj not in self.base_category():
             raise TypeError("the automorphism object must lie in the base category")
-        key = id(obj), id(obj)
-        cached = self._objects.get(key)
+        cached = self._cached_between(obj, obj)
         if cached is not None:
             return cached
         automorphisms = category_packet(self.base_category()).Isos().Of(obj, obj)
@@ -922,8 +941,7 @@ class AutCategoryOf(IsoCategoryOf):
         if attach is None:
             raise TypeError("the represented equal-endpoint Iso object cannot carry an Aut-family role")
         attach(self)
-        self._objects[key] = automorphisms
-        return automorphisms
+        return self._remember_between(obj, obj, automorphisms)
 
     def Between(self, domain, codomain):
         if domain is not codomain:

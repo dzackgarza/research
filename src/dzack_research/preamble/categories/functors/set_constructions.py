@@ -1,25 +1,26 @@
 r"""Functorial Set constructions: exponentials and finite/power subsets."""
 
-from sage.categories.homset import Hom
 from sage.categories.morphism import SetMorphism
 from sage.categories.sets_cat import Sets as SageSets
-from dzack_research.preamble.categories.sets.owned_sets import Sets as _OwnedSets
+from dzack_research.preamble.categories.sets.set_categories import Sets as _OwnedSets
 from sage.misc.cachefunc import cached_function
 
-from dzack_research.preamble.categories.abstract_categories import (
+from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
     MonomorphismArrowCategory,
-    OppositeCategory,
-    ProductCategory,
     WideSubcategory,
 )
+from dzack_research.preamble.categories.abstract_categories.category_constructions import (
+    OppositeCategory,
+    ProductCategory,
+)
 from dzack_research.preamble.categories.functors.core import Functor
-from dzack_research.preamble.categories.sets import (
+from dzack_research.preamble.categories.sets.set_categories import (
     ExponentialOfSets,
     FiniteSubsets,
     PowerSet,
-    Sets,
     SubsetsOfSize,
 )
+from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
 class ExponentialFunctor(Functor):
@@ -45,7 +46,7 @@ class ExponentialFunctor(Functor):
         precompose = pair_morphism.first().underlying_arrow()
         postcompose = pair_morphism.second()
         return SetMorphism(
-            Hom(source, target, _OwnedSets()),
+            _OwnedSets().hom(source, target),
             lambda function: target(
                 lambda element: postcompose(function(precompose(element)))
             ),
@@ -96,7 +97,7 @@ class FinitePowerSetFunctor(Functor):
         source = self(morphism.domain())
         target = self(morphism.codomain())
         return SetMorphism(
-            Hom(source, target, _OwnedSets()),
+            _OwnedSets().hom(source, target),
             lambda subset: target(tuple(morphism(member) for member in subset)),
         )
 
@@ -125,7 +126,7 @@ class FixedCardinalitySubsetFunctor(Functor):
         source = self(morphism.domain())
         target = self(morphism.codomain())
         return SetMorphism(
-            Hom(source, target, _OwnedSets()),
+            _OwnedSets().hom(source, target),
             lambda subset: target(tuple(morphism(member) for member in subset)),
         )
 

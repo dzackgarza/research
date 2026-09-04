@@ -7,6 +7,7 @@ from dzack_research.preamble.categories.modules.framed.formed.discriminant_modul
     DiscriminantQuadraticModules,
 )
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
+    BilinearForm,
     BilinearFormModules,
     FiberedFormedModuleHomset,
     FiberedFormedModuleMorphism,
@@ -24,6 +25,7 @@ from dzack_research.preamble.categories.modules.framed.formed.form_modules impor
     FormMorphism,
     FreeFormModules,
     PairedModules,
+    QuadraticForm,
     QuadraticFormModules,
     SymmetricBilinearFormModules,
     fibered_formed_module_homset,
@@ -38,6 +40,7 @@ from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modul
 )
 
 __all__ = [
+    "BilinearForm",
     "BilinearFormModules",
     "DiscriminantBilinearModules",
     "DiscriminantModule",
@@ -59,6 +62,7 @@ __all__ = [
     "FormedModules",
     "FreeFormModules",
     "PairedModules",
+    "QuadraticForm",
     "QuadraticFormModules",
     "SymmetricBilinearFormModules",
     "TorsionBilinearFormModules",

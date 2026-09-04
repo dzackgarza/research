@@ -1,16 +1,10 @@
 r"""The preamble's ``sage.all``: importing it is what makes a scope a session.
 
-``from dzack_research.preamble.all import *`` is the analogue of
-``from sage.all import *``.  Named for the module it is the analogue of.
-``sage.all`` is the one import that turns a plain Python scope into a Sage
-session, and this is the one import that turns a Sage session into a
-preamble session; a session reaches for it by that shape without being
-told the name.
-
-First, and by the star: a session says ``matrix`` and ``vector`` as readily
-as it says ``ZZ``, so the analogue of ``sage.all`` is a superset of it and
-not a replacement.  Everything the preamble owns is bound below this line,
-so an owned name always wins over the engine's.
+``from dzack_research.preamble.all import *`` enters the closed preamble
+mathematical universe.  The module is not a superset of ``sage.all`` and does
+not publish Sage's constructor namespace.  Sage is an implementation service
+used by private adapters; every public name bound here is owned mathematics or
+an ordinary Python support object deliberately selected by the preamble.
 """
 
 import sys as _sys
@@ -19,20 +13,13 @@ import sys as _sys
 # literals remain explicit MPFR approximations even though ``RealNumber`` now
 # names an exact element of ``RR``.
 import sageparse.preparser.research  # noqa: F401,E402
-from sage.all import *  # noqa: F401, F403
+from dzack_research.preamble import language_runtime as _language_runtime
+
+_language_runtime.install()
 from sage.repl.load import load as _sage_load
 
-from dzack_research.preamble.catalogue import (  # noqa: F401
-    Embeddings,
-    Involutions,
-    NamedLattices,
-    NegativeDefTwoElementary,
-    TwoElementary,
-    signature_orthogonal_sums,
-    two_elementary_orthogonal_sums,
-    validate_negative_def_two_elementary_table,
-    validate_two_elementary_table,
-)
+from dzack_research.preamble.utilities import lmap, lzip, to_var_names, zipsum  # noqa: F401
+
 from dzack_research.preamble.categories.abstract_categories import (  # noqa: F401
     ArrowCategory,
     AutCategoryConstruction,
@@ -115,7 +102,9 @@ from dzack_research.preamble.categories.abstract_categories import (  # noqa: F4
     product_cone_category,
 )
 from dzack_research.preamble.categories.abstract_categories.functors import (  # noqa: F401
+    Bifunctor,
     CodomainFunctor,
+    ContravariantFunctor,
     ComposedFunctor,
     ConstantDiagram,
     DiscreteCategories,
@@ -143,6 +132,7 @@ from dzack_research.preamble.categories.algebras import (  # noqa: F401
     CommutativeAlgebraCoproducts,
     CommutativeAlgebraPushouts,
     CommutativeAlgebras,
+    CommutatorLieAlgebras,
     commutative_algebra_coproduct,
     commutative_algebra_pushout,
     CommutativeDifferentialGradedAlgebras,
@@ -181,10 +171,10 @@ from dzack_research.preamble.categories.algebras import (  # noqa: F401
     InteriorProduct,
     KahlerDifferentialModules,
     KahlerDifferentials,
+    LieAlgebras,
     LieBracket,
     LieDerivative,
     OwnedAlgebras,
-    OwnedAlgebraView,
     RestrictedGradedAlgebra,
     RestrictedGradedAlgebraElement,
     RestrictedScalarsAlgebras,
@@ -206,6 +196,11 @@ from dzack_research.preamble.categories.algebras import (  # noqa: F401
     own_algebra,
     restrict_graded_algebra_scalars,
     restrict_algebra_scalars,
+)
+from dzack_research.preamble.categories.algebras.algebras import MatrixAlgebras  # noqa: F401
+from dzack_research.preamble.categories.modules.pure.modules import (  # noqa: F401
+    MatrixEndomorphismSpaces,
+    MatrixSpaces,
 )
 from dzack_research.preamble.categories.coxeter_diagrams import CoxeterDiagram, CoxeterDiagrams  # noqa: F401
 from dzack_research.preamble.categories.divisors import (  # noqa: F401
@@ -246,141 +241,185 @@ from dzack_research.preamble.categories.functions import (  # noqa: F401
     graded_lebesgue_algebra,
     lebesgue_convolution_algebra,
 )
-from dzack_research.preamble.categories.functors import (  # noqa: F401
+from dzack_research.preamble.categories.functors.abelianization import (
     AbelianGroupInclusionFunctor,
     AbelianizationAdjunction,
     AbelianizationFunctor,
+    abelianization_adjunction,
+)
+from dzack_research.preamble.categories.functors.core import (
     Adjunction,
+    CategoryInclusionFunctor,
+    CompositeAdjunction,
+    CompositeFunctor,
+    Functor,
+    IdentityFunctor,
+    NaturalTransformation,
+    category_inclusion,
+    compose_adjunctions,
+)
+from dzack_research.preamble.categories.functors.algebra_scalar_change import (
     AlgebraBaseChangeAdjunction,
     AlgebraRestrictionOfScalarsFunctor,
     AlgebraScalarExtensionFunctor,
+    algebra_base_change_adjunction,
+)
+from dzack_research.preamble.categories.functors.algebra_modules import (
     AlgebraUnderlyingModuleFunctor,
+    algebra_underlying_module_functor,
+)
+from dzack_research.preamble.categories.functors.free_algebras import (
     AlternatingAlgebraFunctor,
-    BaseChangeAdjunction,
-    Bifunctor,
-    BilinearFreeFormAdjunction,
-    BilinearUnderlyingModuleFunctor,
-    BiproductBifunctor,
-    CardinalityFunctor,
-    CategoryInclusionFunctor,
-    CofreeGSetFunctor,
-    CoinductionFunctor,
-    CoinvariantsFunctor,
-    CoinvariantsTrivialAdjunction,
-    CokernelArrowFunctor,
-    CochainUnderlyingGradedModuleFunctor,
-    CohomologyAlgebraFunctor,
-    CohomologyFunctor,
-    CompositeAdjunction,
-    CompositeFunctor,
-    ContravariantFunctor,
-    DirectImageSubobjectFunctor,
-    DeRhamAdjunction,
-    DeRhamCohomologyAlgebraFunctor,
-    DeRhamCohomologyFunctor,
-    DeRhamFunctor,
-    DegreeZeroDGAFunctor,
-    DualizationFunctor,
-    ExponentialFunctor,
-    FinitePowerSetFunctor,
-    FixedCardinalitySubsetFunctor,
-    FractionFieldFunctor,
-    FreeBilinearFormFunctor,
-    FreeForgetfulAdjunction,
-    FreeGroupFunctor,
-    FreeGroupUnderlyingSetAdjunction,
-    FreeGSetFunctor,
-    FreeGSetUnderlyingAdjunction,
-    FreeModuleFunctor,
-    FreeQuadraticFormFunctor,
-    Functor,
-    GroupModuleBaseChangeAdjunction,
-    GroupModuleRestrictionOfScalarsFunctor,
-    GroupModuleScalarExtensionFunctor,
-    GroupUnderlyingSetFunctor,
-    GSetFixedPointsFunctor,
-    GSetOrbitsFunctor,
-    GSetOrbitsTrivialAdjunction,
-    GSetTrivialFixedAdjunction,
-    IdentityFunctor,
-    InductionFunctor,
-    InductionRestrictionAdjunction,
-    InternalHomFromFunctor,
-    InvariantsFunctor,
-    InducedAutFunctor,
-    InducedEndFunctor,
-    InducedHomFunctor,
-    InverseImagePowerSetFunctor,
-    InverseImageSubobjectFunctor,
-    KernelArrowFunctor,
-    ModuleLocalizationFunctor,
-    NaturalTransformation,
-    OrderNumberFieldAdjunction,
-    OrthogonalDirectSumBifunctor,
-    QuadraticFreeFormAdjunction,
-    QuadraticUnderlyingModuleFunctor,
-    RestrictionCoinductionAdjunction,
-    RestrictionOfActingGroupFunctor,
-    RestrictionOfScalarsFunctor,
-    RingOfIntegersFunctor,
-    ScalarExtensionFunctor,
-    SubobjectImageAdjunction,
     SymmetricAlgebraAdjunction,
     SymmetricAlgebraFunctor,
     TensorAlgebraAdjunction,
     TensorAlgebraFunctor,
-    TensorByFunctor,
-    TensorHomAdjunction,
-    TrivialActionFunctor,
-    TrivialGSetFunctor,
-    TrivialInvariantsAdjunction,
-    UnderlyingCofreeGSetAdjunction,
-    UnderlyingFiniteGSetFunctor,
-    UnderlyingSetFunctor,
-    abelianization_adjunction,
-    algebra_base_change_adjunction,
-    algebra_underlying_module_functor,
     alternating_algebra_functor,
-    base_change_adjunction,
-    bilinear_free_form_adjunction,
-    cardinality_functor,
-    category_inclusion,
-    cochain_underlying_graded_module_functor,
-    cohomology_algebra_functor,
-    cohomology_functor,
-    coinvariants_trivial_adjunction,
-    compose_adjunctions,
-    de_rham_adjunction,
-    de_rham_cohomology_algebra_functor,
-    de_rham_cohomology_functor,
-    de_rham_functor,
-    degree_zero_dga_functor,
-    exponential_functor,
-    finite_power_set_functor,
-    fixed_cardinality_subset_functor,
-    free_forgetful_adjunction,
-    free_g_set_underlying_adjunction,
-    free_group_underlying_set_adjunction,
-    g_set_orbits_trivial_adjunction,
-    g_set_trivial_fixed_adjunction,
-    group_module_base_change_adjunction,
-    induction_restriction_adjunction,
-    induced_aut_functor,
-    induced_end_functor,
-    induced_hom_functor,
-    inverse_image_power_set_functor,
-    order_number_field_adjunction,
-    quadratic_free_form_adjunction,
-    restriction_coinduction_adjunction,
-    module_localization_functor,
-    subobject_image_adjunction,
     symmetric_algebra_adjunction,
     symmetric_algebra_functor,
     tensor_algebra_adjunction,
     tensor_algebra_functor,
-    tensor_hom_adjunction,
-    trivial_invariants_adjunction,
+)
+from dzack_research.preamble.categories.functors.scalar_change import (
+    BaseChangeAdjunction,
+    RestrictionOfScalarsFunctor,
+    ScalarExtensionFunctor,
+    base_change_adjunction,
+)
+from dzack_research.preamble.categories.functors.free_forms import (
+    BilinearFreeFormAdjunction,
+    BilinearUnderlyingModuleFunctor,
+    FreeBilinearFormFunctor,
+    FreeQuadraticFormFunctor,
+    QuadraticFreeFormAdjunction,
+    QuadraticUnderlyingModuleFunctor,
+    bilinear_free_form_adjunction,
+    quadratic_free_form_adjunction,
+)
+from dzack_research.preamble.categories.functors.linear_constructions import (
+    BiproductBifunctor,
+    CokernelArrowFunctor,
+    DualizationFunctor,
+    KernelArrowFunctor,
+    OrthogonalDirectSumBifunctor,
+)
+from dzack_research.preamble.categories.functors.cardinality import (
+    CardinalityFunctor,
+    cardinality_functor,
+)
+from dzack_research.preamble.categories.functors.g_sets import (
+    CofreeGSetFunctor,
+    FreeGSetFunctor,
+    FreeGSetUnderlyingAdjunction,
+    GSetFixedPointsFunctor,
+    GSetOrbitsFunctor,
+    GSetOrbitsTrivialAdjunction,
+    GSetTrivialFixedAdjunction,
+    TrivialGSetFunctor,
+    UnderlyingCofreeGSetAdjunction,
+    UnderlyingFiniteGSetFunctor,
+    free_g_set_underlying_adjunction,
+    g_set_orbits_trivial_adjunction,
+    g_set_trivial_fixed_adjunction,
     underlying_cofree_g_set_adjunction,
+)
+from dzack_research.preamble.categories.functors.group_induction import (
+    CoinductionFunctor,
+    InductionFunctor,
+    InductionRestrictionAdjunction,
+    RestrictionCoinductionAdjunction,
+    RestrictionOfActingGroupFunctor,
+    induction_restriction_adjunction,
+    restriction_coinduction_adjunction,
+)
+from dzack_research.preamble.categories.functors.group_actions import (
+    CoinvariantsFunctor,
+    CoinvariantsTrivialAdjunction,
+    InvariantsFunctor,
+    TrivialActionFunctor,
+    TrivialInvariantsAdjunction,
+    coinvariants_trivial_adjunction,
+    trivial_invariants_adjunction,
+)
+from dzack_research.preamble.categories.functors.cochain_complexes import (
+    CochainUnderlyingGradedModuleFunctor,
+    cochain_underlying_graded_module_functor,
+)
+from dzack_research.preamble.categories.functors.cohomology import (
+    CohomologyAlgebraFunctor,
+    CohomologyFunctor,
+    DeRhamCohomologyAlgebraFunctor,
+    DeRhamCohomologyFunctor,
+    cohomology_algebra_functor,
+    cohomology_functor,
+    de_rham_cohomology_algebra_functor,
+    de_rham_cohomology_functor,
+)
+from dzack_research.preamble.categories.functors.subobject_images import (
+    DirectImageSubobjectFunctor,
+    InverseImageSubobjectFunctor,
+    SubobjectImageAdjunction,
+    subobject_image_adjunction,
+)
+from dzack_research.preamble.categories.functors.de_rham import (
+    DeRhamAdjunction,
+    DeRhamFunctor,
+    DegreeZeroDGAFunctor,
+    de_rham_adjunction,
+    de_rham_functor,
+    degree_zero_dga_functor,
+)
+from dzack_research.preamble.categories.functors.set_constructions import (
+    ExponentialFunctor,
+    FinitePowerSetFunctor,
+    FixedCardinalitySubsetFunctor,
+    InverseImagePowerSetFunctor,
+    exponential_functor,
+    finite_power_set_functor,
+    fixed_cardinality_subset_functor,
+    inverse_image_power_set_functor,
+)
+from dzack_research.preamble.categories.functors.orders_number_fields import (
+    FractionFieldFunctor,
+    OrderNumberFieldAdjunction,
+    RingOfIntegersFunctor,
+    order_number_field_adjunction,
+)
+from dzack_research.preamble.categories.functors.free_forgetful import (
+    FreeForgetfulAdjunction,
+    FreeModuleFunctor,
+    UnderlyingSetFunctor,
+    free_forgetful_adjunction,
+)
+from dzack_research.preamble.categories.functors.free_groups import (
+    FreeGroupFunctor,
+    FreeGroupUnderlyingSetAdjunction,
+    GroupUnderlyingSetFunctor,
+    free_group_underlying_set_adjunction,
+)
+from dzack_research.preamble.categories.functors.group_scalar_change import (
+    GroupModuleBaseChangeAdjunction,
+    GroupModuleRestrictionOfScalarsFunctor,
+    GroupModuleScalarExtensionFunctor,
+    group_module_base_change_adjunction,
+)
+from dzack_research.preamble.categories.functors.tensor_hom import (
+    InternalHomFromFunctor,
+    TensorByFunctor,
+    TensorHomAdjunction,
+    tensor_hom_adjunction,
+)
+from dzack_research.preamble.categories.functors.hom_packets import (
+    InducedAutFunctor,
+    InducedEndFunctor,
+    InducedHomFunctor,
+    induced_aut_functor,
+    induced_end_functor,
+    induced_hom_functor,
+)
+from dzack_research.preamble.categories.functors.module_localization import (
+    ModuleLocalizationFunctor,
+    module_localization_functor,
 )
 from dzack_research.preamble.categories.group import (  # noqa: F401
     AbelianGroups,
@@ -404,6 +443,7 @@ from dzack_research.preamble.categories.group import (  # noqa: F401
     FiniteGaloisExtension,
     FiniteGaloisQuotient,
     FiniteGaloisSubgroup,
+    FiniteGroupClassFunction,
     FiniteGroups,
     FiniteGSet,
     FiniteGSets,
@@ -442,6 +482,7 @@ from dzack_research.preamble.categories.group import (  # noqa: F401
     ProfiniteGroups,
     QuadraticCharacter,
     RestrictedProfiniteCharacter,
+    Subgroups,
     Submonoids,
     Torsors,
     absolute_galois_group,
@@ -451,11 +492,11 @@ from dzack_research.preamble.categories.group import (  # noqa: F401
     cyclic_subgroup,
     exact_embeddings,
     exact_field_homset,
-    exact_field_morphism,
     extensions_along,
     field_generators,
     finite_decomposition_group,
     finite_frobenius_class,
+    finite_g_set,
     finite_inertia_group,
     first_exact_embedding,
     fixed_point_set,
@@ -476,7 +517,7 @@ from dzack_research.preamble.categories.lattice_morphisms import (  # noqa: F401
     LatticeMorphism,
 )
 from dzack_research.preamble.categories.isotropic_orbits import IsotropicFlag  # noqa: F401
-from dzack_research.preamble.categories.lattice_properties import (  # noqa: F401
+from dzack_research.preamble.categories.lattices import (  # noqa: F401
     EvenLattices,
     FiniteRankLattices,
     NondegenerateLattices,
@@ -621,7 +662,7 @@ from dzack_research.preamble.categories.modules import (  # noqa: F401
     twist_scalar_action,
 )
 from dzack_research.preamble.categories.rational_lattices import RationalLattices  # noqa: F401
-from dzack_research.preamble.categories.root_lattices import RootLattices  # noqa: F401
+from dzack_research.preamble.categories.lattices import RootLattices  # noqa: F401
 from dzack_research.preamble.categories.vector_orbits import (  # noqa: F401
     VectorPrimitiveExtension,
     definite_complement_extensions,
@@ -702,6 +743,7 @@ from dzack_research.preamble.categories.sets import (  # noqa: F401
     InfiniteEnumeratedSets,
     InfiniteSets,
     LaurentMonomials,
+    NN,
     ObjectSetsOfDiscreteCategories,
     Ordinal,
     Ordinals,
@@ -730,6 +772,17 @@ from dzack_research.preamble.categories.sets import (  # noqa: F401
     set_injection,
     set_surjection,
 )
+from dzack_research.preamble.catalogue import (  # noqa: F401
+    Embeddings,
+    Involutions,
+    NamedLattices,
+    NegativeDefTwoElementary,
+    TwoElementary,
+    signature_orthogonal_sums,
+    two_elementary_orthogonal_sums,
+    validate_negative_def_two_elementary_table,
+    validate_two_elementary_table,
+)
 from dzack_research.preamble.coble import Coble  # noqa: F401
 from dzack_research.preamble.logic import Predicate, Unknown, ask  # noqa: F401
 from dzack_research.preamble.rings import (  # noqa: F401
@@ -739,6 +792,7 @@ from dzack_research.preamble.rings import (  # noqa: F401
     CommutativeRings,
     CompleteLocalRings,
     DualNumbers,
+    FormalPowerSeriesRings,
     RR,
     CommutativeIdeal,
     CommutativeIdeals,
@@ -751,6 +805,7 @@ from dzack_research.preamble.rings import (  # noqa: F401
     Localization,
     LocalRings,
     NoetherianRings,
+    OrderedRings,
     NonNegativeReals,
     NumberFieldsWithChosenPrimitiveElement,
     OwnedCategoryOverBaseRing,
@@ -765,6 +820,7 @@ from dzack_research.preamble.rings import (  # noqa: F401
     PrimeIdealPoint,
     PrimeField,
     PrimeFields,
+    PrincipalIdealDomains,
     PrimeSpectrum,
     PrimeLocalization,
     RealApproximation,
@@ -774,15 +830,10 @@ from dzack_research.preamble.rings import (  # noqa: F401
     Rings,
     ZariskiClosedSubobject,
     UnitInterval,
-    engine_element,
-    engine_ring,
     install_session_rings,
-    own_ring,
     predicate_subring,
 )
-from dzack_research.preamble.categories.rings.rings import (  # noqa: F401
-    install_session_rings as _install_session_rings,
-)
+from dzack_research.preamble.rings import install_session_rings as _install_session_rings  # noqa: F401
 from dzack_research.preamble.sterk import Sterk  # noqa: F401
 from dzack_research.preamble.tensors import Tensor, TensorModule, tensor  # noqa: F401
 
@@ -797,9 +848,18 @@ def load(filename: str, globals: dict | None = None, attach: bool = False) -> No
     scope["load"] = load
 
 
-# This is deliberately last.  ``sage.all`` and the modules imported above use
-# Sage's engine names while they load; a notebook receives the owned scalar
-# objects and owned constructors only after the active preamble is complete.
+# This is deliberately last.  Internal modules may import backend names while
+# they load; the public session receives only owned scalar objects, owned
+# constructors, and the owned runtime names emitted by the research dialect.
 _install_session_rings(globals())
+Integer = _language_runtime.Integer
+RealNumber = _language_runtime.RealNumber
+ComplexNumber = _language_runtime.ComplexNumber
+matrix = _language_runtime.matrix
+factorial = _language_runtime.factorial
+ellipsis_range = _language_runtime.ellipsis_range
+ellipsis_iter = _language_runtime.ellipsis_iter
+var = _language_runtime.var
+symbolic_expression = _language_runtime.symbolic_expression
 GradedLebesgueAlgebra = graded_lebesgue_algebra()
 LebesgueConvolutionAlgebra = lebesgue_convolution_algebra()

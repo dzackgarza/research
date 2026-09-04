@@ -1,12 +1,16 @@
 r"""Algebraic connections on represented modules over commutative algebras."""
 
-from sage.categories.category_types import Category_over_base
-from sage.categories.homset import Hom, Homset
+from dzack_research.preamble.categories.abstract_categories.hom_foundation import OwnedHomset
+from sage.misc.cachefunc import cached_function
+from dzack_research.preamble.categories.abstract_categories.objects import OwnedParameterizedCategory
+from sage.categories.homset import Homset
 from sage.categories.morphism import Morphism, SetMorphism
-from dzack_research.preamble.categories.sets import Sets
+from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.categories.sets.cardinals import cardinal
+from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 
-from dzack_research.preamble.categories.algebras import (
-    CommutativeAlgebras,
+from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
+from dzack_research.preamble.categories.algebras.kahler_differentials import (
     KahlerDifferentials,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
@@ -18,11 +22,11 @@ from dzack_research.preamble.categories.modules.powers import (
     AlternatingPower,
     alternating_power_product,
 )
-from dzack_research.preamble.categories.rings import engine_ring
+from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
 from dzack_research.preamble.refine import refine
 
 
-class ModulesWithConnection(Category_over_base):
+class ModulesWithConnection(OwnedParameterizedCategory):
     r"""Modules over ``A`` equipped with an ``A/R``-connection."""
 
     @classmethod
@@ -33,7 +37,7 @@ class ModulesWithConnection(Category_over_base):
         return self.base()
 
     def super_categories(self):
-        from dzack_research.preamble.categories.modules import Modules
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
 
         return [Modules(self.algebra())]
 
@@ -46,15 +50,8 @@ class ModulesWithConnection(Category_over_base):
                 return connection_homset(self, codomain)
             return module_homset(self, codomain)
 
-        def hom(self, images, codomain=None):
-            if codomain is None:
-                raise TypeError("the target module with connection is required")
-            if codomain in ModulesWithConnection(self.base_ring()):
-                return connection_homset(self, codomain)(images)
-            return module_homset(self, codomain)(images)
 
-
-class ModulesWithFlatConnection(Category_over_base):
+class ModulesWithFlatConnection(OwnedParameterizedCategory):
     r"""Modules whose selected connection has zero curvature."""
 
     @classmethod
@@ -77,24 +74,58 @@ class Connection(Morphism):
 
     def __init__(self, parent, generator_images) -> None:
         Morphism.__init__(self, parent)
-        labels = tuple(self.module().module_generating_set())
+        labels = self.module().module_generating_set()
+        target = self.target_module()
+
         if isinstance(generator_images, dict):
+            size = cardinal(labels.cardinality())
+            try:
+                finite = size.is_finite()
+            except NotImplementedError:
+                finite = False
+            if not finite:
+                raise TypeError(
+                    "a dictionary connection assignment requires a finite framing; "
+                    "use a callable for an arbitrary indexed framing"
+                )
             missing = [label for label in labels if label not in generator_images]
             if missing:
                 raise ValueError(f"connection assignment omits {missing}")
-            images = generator_images
+            raw_image = generator_images.__getitem__
         elif callable(generator_images):
-            images = {label: generator_images(label) for label in labels}
-        else:
-            values = tuple(generator_images)
-            if len(values) != len(labels):
+            raw_image = generator_images
+        elif isinstance(generator_images, (tuple, list)):
+            size = cardinal(labels.cardinality())
+            try:
+                finite_size = int(size.finite_value()) if size.is_finite() else None
+            except NotImplementedError:
+                finite_size = None
+            if finite_size is None:
+                raise TypeError(
+                    "sequence connection syntax requires a finite framing"
+                )
+            if len(generator_images) != finite_size:
                 raise ValueError("a connection needs one image for each module generator")
-            images = dict(zip(labels, values, strict=True))
-        target = self.target_module()
-        self._generator_images = {
-            label: image if image.parent() is target else target(image)
-            for label, image in images.items()
-        }
+            by_position = {
+                position: generator_images[position]
+                for position in range(len(generator_images))
+            }
+            raw_image = lambda label: by_position[int(labels.rank(label))]
+        else:
+            raise TypeError(
+                "a connection is specified by a generator-indexed function or finite assignment"
+            )
+
+        def image(label):
+            normalized = labels(label)
+            value = raw_image(normalized)
+            return value if value.parent() is target else target(value)
+
+        self._generator_images = indexed_family(
+            labels,
+            image,
+            name=f"Connection generator values of {self.module()}",
+        )
         self._check_relations()
 
     def module(self):
@@ -132,19 +163,20 @@ class Connection(Morphism):
         return result
 
     def _check_relations(self) -> None:
-        from dzack_research.preamble.categories.modules import (
+        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
             ModulesWithChosenFinitePresentation,
+            _presentation_rows,
         )
 
         module = self.module()
         if module not in ModulesWithChosenFinitePresentation(self.algebra()):
             return
-        labels = tuple(module.module_generating_set())
-        for row in module.presentation_matrix().rows():
+        labels = module.module_generating_set()
+        for row in _presentation_rows(module):
             value = self._from_coefficients(
                 {
-                    label: coefficient
-                    for label, coefficient in zip(labels, row, strict=True)
+                    labels.unrank(position): coefficient
+                    for position, coefficient in enumerate(row)
                     if coefficient
                 }
             )
@@ -172,7 +204,7 @@ class Connection(Morphism):
         return morphism
 
     def curvature_target(self):
-        from dzack_research.preamble.categories.abstract_categories import TensorProduct
+        from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
 
         return TensorProduct(self.module(), AlternatingPower(self.one_forms(), 2))
 
@@ -237,10 +269,22 @@ class Connection(Morphism):
         return result
 
     def is_flat(self) -> bool:
+        from dzack_research.preamble.categories.modules.pure.modules import FinitelyGeneratedFreeModules
+        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import ModulesWithChosenFinitePresentation
+
+        module = self.module()
+        ring = module.base_ring()
+        if (
+            module not in FinitelyGeneratedFreeModules(ring)
+            and module not in ModulesWithChosenFinitePresentation(ring)
+        ):
+            raise NotImplementedError(
+                "flatness by generator verification requires a selected finite framing"
+            )
         zero = self.curvature_target().zero()
         return all(
             self.curvature_on_generator(label) == zero
-            for label in self.module().module_generating_set()
+            for label in module.module_generating_set()
         )
 
     def de_rham_module(self):
@@ -248,7 +292,7 @@ class Connection(Morphism):
         return ConnectionDeRhamModule(self)
 
 
-class ConnectionSpace(Homset):
+class ConnectionSpace(OwnedHomset):
     Element = Connection
 
     def __init__(self, module) -> None:
@@ -260,8 +304,9 @@ class ConnectionSpace(Homset):
         self._module = module
         self._algebra = algebra
         self._one_forms = KahlerDifferentials(algebra)
-        from dzack_research.preamble.categories.abstract_categories import TensorProduct
-        from dzack_research.preamble.categories.modules import Modules, restrict_scalars
+        from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
+        from dzack_research.preamble.categories.modules.pure.modules import restrict_scalars
 
         self._target_module = TensorProduct(module, self._one_forms)
         ring_map = algebra.algebra_structure_morphism()
@@ -315,36 +360,28 @@ class ConnectionSpace(Homset):
                 raise ValueError(
                     "an arbitrary R-linear map cannot be certified as a connection by this backend"
                 )
-            return self(
-                {
-                    label: connection.generator_image(label)
-                    for label in self.module().module_generating_set()
-                }
-            )
+            if connection.parent() is self:
+                return connection
+            return self(lambda label: connection.generator_image(label))
         return self.element_class(self, generator_images)
 
     def _repr_(self):
         return f"Connections on {self.module()} over {self.algebra().base_ring()}"
 
 
-_CONNECTION_SPACES = {}
-
-
+@cached_function(key=lambda module: id(module))
 def Connections(module) -> ConnectionSpace:
-    cached = _CONNECTION_SPACES.get(id(module))
-    if cached is not None and cached.module() is module:
-        return cached
     result = ConnectionSpace(module)
-    _CONNECTION_SPACES[id(module)] = result
     return result
 
 
 class ConnectionMorphism(ModuleMorphism):
     r"""An ``A``-linear map horizontal for the selected connections."""
 
-    def __init__(self, parent, images) -> None:
+    def __init__(self, parent, images, *, verify_horizontality=True) -> None:
         ModuleMorphism.__init__(self, parent, images)
-        self._check_connection_square()
+        if verify_horizontality:
+            self._check_connection_square()
 
     def _check_connection_square(self) -> None:
         domain_connection = self.domain().connection()
@@ -363,7 +400,19 @@ class ConnectionMorphism(ModuleMorphism):
             source=domain_connection.target_module(),
             target=codomain_connection.target_module(),
         )
-        for label in self.domain().module_generating_set():
+        from dzack_research.preamble.categories.modules.pure.modules import FinitelyGeneratedFreeModules
+        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import ModulesWithChosenFinitePresentation
+
+        domain = self.domain()
+        ring = domain.base_ring()
+        if (
+            domain not in FinitelyGeneratedFreeModules(ring)
+            and domain not in ModulesWithChosenFinitePresentation(ring)
+        ):
+            raise NotImplementedError(
+                "horizontality by generator verification requires a selected finite framing"
+            )
+        for label in domain.module_generating_set():
             generator = self.domain().module_generator(label)
             if codomain_connection(self(generator)) != induced(domain_connection(generator)):
                 raise ValueError(
@@ -371,13 +420,13 @@ class ConnectionMorphism(ModuleMorphism):
                 )
 
 
-class ConnectionHomset(Homset):
+class ConnectionHomset(OwnedHomset):
     Element = ConnectionMorphism
 
     def __init__(self, domain, codomain) -> None:
         if domain.base_ring() is not codomain.base_ring():
             raise ValueError("connection morphisms require one coefficient algebra")
-        from dzack_research.preamble.categories.modules import Modules
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
 
         Homset.__init__(
             self,
@@ -392,11 +441,10 @@ class ConnectionHomset(Homset):
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError("identity belongs to a connection endomorphism homset")
-        return self(
-            {
-                label: self.domain().module_generator(label)
-                for label in self.domain().module_generating_set()
-            }
+        return self.element_class(
+            self,
+            lambda label: self.domain().module_generator(label),
+            verify_horizontality=False,
         )
 
 
@@ -406,7 +454,7 @@ def connection_homset(domain, codomain):
 
 def ModuleWithConnection(connection):
     r"""Return a fresh finite-free module carrying the selected connection."""
-    from dzack_research.preamble.categories.modules import FinitelyGeneratedFreeModules
+    from dzack_research.preamble.categories.modules.pure.modules import FinitelyGeneratedFreeModules
     from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
         FreshFreeModuleOn,
     )
@@ -420,8 +468,7 @@ def ModuleWithConnection(connection):
     result = FreshFreeModuleOn(algebra, source.module_generating_set())
     transported_target = Connections(result).target_module()
     omega = connection.one_forms()
-    transported_images = {}
-    for label in source.module_generating_set():
+    def transported_image(label):
         image = transported_target.zero()
         for (source_label, form_label), coefficient in module_coefficients(
             connection.generator_image(label),
@@ -434,8 +481,9 @@ def ModuleWithConnection(connection):
                     omega.module_generator(form_label),
                 ),
             )
-        transported_images[label] = image
-    result._preamble_connection = Connections(result)(transported_images)
+        return image
+
+    result._preamble_connection = Connections(result)(transported_image)
     categories = [ModulesWithConnection(algebra)]
     if result._preamble_connection.is_flat():
         categories.append(ModulesWithFlatConnection(algebra))
@@ -472,13 +520,17 @@ class ConnectionDeRhamModule:
         if not connection.is_flat():
             raise ValueError("a DG-module de Rham differential requires a flat connection")
 
-        from dzack_research.preamble.categories.abstract_categories import TensorProduct
-        from dzack_research.preamble.categories.algebras import (
+        from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
+        from dzack_research.preamble.categories.algebras.de_rham_algebras import (
             DeRhamAlgebra,
+        )
+        from dzack_research.preamble.categories.algebras.differential_graded_algebras import (
             DifferentialComponentMorphism,
         )
-        from dzack_research.preamble.categories.modules import (
+        from dzack_research.preamble.categories.modules.dg_modules import (
             DifferentialGradedModules,
+        )
+        from dzack_research.preamble.categories.modules.pure.modules import (
             restrict_scalars,
         )
         from dzack_research.preamble.categories.modules.graded_direct_sums import (

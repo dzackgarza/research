@@ -13,13 +13,13 @@ The implementation uses Sage's finite cosets only to choose coordinates for
 from sage.misc.cachefunc import cached_function
 
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
-from dzack_research.preamble.categories.group.groups import refine_group
+from dzack_research.preamble.categories.group.groups import _owned_group
 from dzack_research.preamble.categories.modules.group_modules.group_modules import (
     FinitelyPresentedGroupModules,
     GroupModule,
     group_module_homset,
 )
-from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import (
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     BasedFreeModule,
 )
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
@@ -30,17 +30,19 @@ from dzack_research.preamble.categories.modules.framed.finitely_generated.finite
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
 )
-from dzack_research.preamble.categories.rings import owned_ring_view
-from dzack_research.preamble.categories.sets import finite_ordered_set
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
+from dzack_research.preamble.categories.sets.set_categories import CartesianProductOfFamily
+from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_image
 
 
 def _subgroup_data(subgroup, supergroup=None):
-    subgroup = refine_group(subgroup)
+    subgroup = _owned_group(subgroup)
     if supergroup is None:
         supergroup = subgroup.supergroup()
     if supergroup is None:
         raise ValueError("change of acting group requires a specified containing group")
-    supergroup = refine_group(supergroup)
+    supergroup = _owned_group(supergroup)
     inclusion = subgroup.inclusion()
     if inclusion.codomain() is not supergroup:
         raise ValueError("the subgroup inclusion has a different containing group")
@@ -56,47 +58,70 @@ def _transport_element(element, source, target):
     return target.linear_combination(module_coefficients(element, source))
 
 
+def _equivariant_hom(domain, codomain, images):
+    r"""Construct a group-module map whose equivariance is structural."""
+    return group_module_homset(domain, codomain)._from_equivariant_images(images)
+
+
+def _coset_sum_labels(representatives, source_labels):
+    return CartesianProductOfFamily(
+        Sets.Δ[1],
+        lambda index: representatives if int(index) == 0 else source_labels,
+    )
+
+
+def _coset_label(labels, representative, source_label):
+    return labels(
+        lambda index: representative if int(index) == 0 else source_label
+    )
+
+
 def _finite_coset_sum(module, representatives):
     r"""Return the finite direct sum of copies of ``module`` indexed by cosets.
 
-    The presentation is block diagonal.  Thus all torsion and non-diagonal
-    relations of the source module are retained exactly rather than replacing
-    the summands by free coordinate modules.
+    The framing is the actual product of the representative set with the source
+    framing.  Presentation rows are generated directly from this product; no
+    Python pair family or block-row list is a mathematical carrier.
     """
-    representatives = tuple(representatives)
-    source_labels = tuple(module.module_generating_set())
-    labels = finite_ordered_set(
-        (representative, label)
-        for representative in representatives
-        for label in source_labels
-    )
+    source_labels = module.module_generating_set()
+    labels = _coset_sum_labels(representatives, source_labels)
     source_relations = _presentation_matrix(module)
-    if source_relations.nrows() == 0:
+    relation_count = int(source_relations.nrows())
+    if relation_count == 0:
         return BasedFreeModule(module.base_ring(), labels)
 
-    from dzack_research.preamble.categories.rings import engine_ring
-    from dzack_research.preamble.tensors import tensor
+    representative_count = int(representatives.cardinality())
+    width = int(labels.cardinality())
+    relation_indices = Sets.Δ[relation_count - 1]
+    relation_labels = _coset_sum_labels(representatives, relation_indices)
+    row_count = representative_count * relation_count
+    ring = module.base_ring()
 
-    engine = engine_ring(module.base_ring())
-    positions = {
-        pair: position
-        for position, pair in enumerate(labels)
-    }
-    rows = []
-    relation_labels = []
-    for representative in representatives:
-        for relation_index, relation in enumerate(source_relations.rows()):
-            row = [engine.zero()] * len(labels)
-            for source_label, coefficient in zip(source_labels, relation, strict=True):
-                if coefficient:
-                    row[positions[(representative, source_label)]] = coefficient
-            rows.append(row)
-            relation_labels.append((representative, relation_index))
-    relations = tensor.matrix(engine, rows)
+    def entry(row_position, column_position):
+        relation_label = relation_labels.unrank(row_position)
+        column_label = labels.unrank(column_position)
+        if relation_label.component(0) != column_label.component(0):
+            return ring.zero()
+        source_position = int(source_labels.rank(column_label.component(1)))
+        relation_position = int(relation_label.component(1))
+        return source_relations[relation_position, source_position]
+
+    from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace
+
+    relations = MatrixSpace(
+        ring,
+        row_count,
+        width,
+    ).from_rows(
+        tuple(
+            tuple(entry(row_position, column_position) for column_position in range(width))
+            for row_position in range(row_count)
+        )
+    )
     presentation = _presentation_from_relation_rows(
-        module.base_ring(),
+        ring,
         labels,
-        finite_ordered_set(relation_labels),
+        relation_labels,
         relations,
     )
     return FinitelyPresentedModule(presentation)
@@ -106,7 +131,7 @@ class RestrictionOfActingGroupFunctor(Functor):
     r"""``Res_H^G : R[G]-Mod_fp -> R[H]-Mod_fp``."""
 
     def __init__(self, base_ring, subgroup, supergroup=None) -> None:
-        self._base_ring = owned_ring_view(base_ring)
+        self._base_ring = _owned_ring(base_ring)
         self._subgroup, self._supergroup, self._inclusion = _subgroup_data(
             subgroup, supergroup
         )
@@ -141,10 +166,12 @@ class RestrictionOfActingGroupFunctor(Functor):
             raise ValueError("the H-module is not an object produced by this restriction functor")
         return source
 
+    chosen_preimage = original_group_module
+
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())
         target = self(morphism.codomain())
-        return group_module_homset(source, target)(
+        return _equivariant_hom(source, target,
             {
                 label: _transport_element(
                     morphism(morphism.domain().module_generator(label)),
@@ -163,15 +190,15 @@ class InductionFunctor(Functor):
     r"""``Ind_H^G : R[H]-Mod_fp -> R[G]-Mod_fp``."""
 
     def __init__(self, base_ring, subgroup, supergroup=None) -> None:
-        self._base_ring = owned_ring_view(base_ring)
+        self._base_ring = _owned_ring(base_ring)
         self._subgroup, self._supergroup, self._inclusion = _subgroup_data(
             subgroup, supergroup
         )
-        self._left_cosets = tuple(
-            self._supergroup.cosets(self._subgroup, side="left")
-        )
-        self._representatives = finite_ordered_set(
-            coset[0] for coset in self._left_cosets
+        self._left_cosets = self._supergroup.left_cosets(self._subgroup)
+        self._representatives = finite_ordered_image(
+            self._left_cosets,
+            lambda coset: coset.unrank(0),
+            name="Left-coset representatives",
         )
         super().__init__(
             FinitelyPresentedGroupModules(self._base_ring, self._subgroup),
@@ -214,9 +241,9 @@ class InductionFunctor(Functor):
 
         def action(group_element, vector):
             output_coefficients = {}
-            for (representative, label), coefficient in module_coefficients(
-                vector, module
-            ).items():
+            for pair, coefficient in module_coefficients(vector, module).items():
+                representative = pair.component(0)
+                label = pair.component(1)
                 target_representative, subgroup_element = self._decompose_left(
                     group_element * representative
                 )
@@ -226,7 +253,11 @@ class InductionFunctor(Functor):
                 for target_label, acted_coefficient in module_coefficients(
                     acted, group_module
                 ).items():
-                    target_label_pair = (target_representative, target_label)
+                    target_label_pair = _coset_label(
+                        module.module_generating_set(),
+                        target_representative,
+                        target_label,
+                    )
                     output_coefficients[target_label_pair] = (
                         output_coefficients.get(
                             target_label_pair, self._base_ring.zero()
@@ -245,6 +276,8 @@ class InductionFunctor(Functor):
             raise ValueError("the G-module is not an object produced by this induction functor")
         return source
 
+    chosen_preimage = source_group_module
+
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())
         target = self(morphism.codomain())
@@ -253,13 +286,19 @@ class InductionFunctor(Functor):
             for label in morphism.domain().module_generating_set():
                 image = morphism(morphism.domain().module_generator(label))
                 coefficients = module_coefficients(image, morphism.codomain())
-                images[(representative, label)] = target.linear_combination(
+                images[_coset_label(
+                    source.module_generating_set(), representative, label
+                )] = target.linear_combination(
                     {
-                        (representative, target_label): coefficient
+                        _coset_label(
+                            target.module_generating_set(),
+                            representative,
+                            target_label,
+                        ): coefficient
                         for target_label, coefficient in coefficients.items()
                     }
                 )
-        return group_module_homset(source, target)(images)
+        return _equivariant_hom(source, target, images)
 
     def _repr_(self):
         return f"Induction from {self.subgroup()} to {self.supergroup()}"
@@ -269,15 +308,15 @@ class CoinductionFunctor(Functor):
     r"""``Coind_H^G : R[H]-Mod_fp -> R[G]-Mod_fp``."""
 
     def __init__(self, base_ring, subgroup, supergroup=None) -> None:
-        self._base_ring = owned_ring_view(base_ring)
+        self._base_ring = _owned_ring(base_ring)
         self._subgroup, self._supergroup, self._inclusion = _subgroup_data(
             subgroup, supergroup
         )
-        self._right_cosets = tuple(
-            self._supergroup.cosets(self._subgroup, side="right")
-        )
-        self._representatives = finite_ordered_set(
-            coset[0] for coset in self._right_cosets
+        self._right_cosets = self._supergroup.right_cosets(self._subgroup)
+        self._representatives = finite_ordered_image(
+            self._right_cosets,
+            lambda coset: coset.unrank(0),
+            name="Right-coset representatives",
         )
         super().__init__(
             FinitelyPresentedGroupModules(self._base_ring, self._subgroup),
@@ -320,11 +359,15 @@ class CoinductionFunctor(Functor):
 
         def value_at(vector, representative):
             coefficients = module_coefficients(vector, module)
+            module_labels = module.module_generating_set()
             return group_module.linear_combination(
                 {
-                    label: coefficients[(representative, label)]
+                    label: coefficients[
+                        _coset_label(module_labels, representative, label)
+                    ]
                     for label in group_module.module_generating_set()
-                    if (representative, label) in coefficients
+                    if _coset_label(module_labels, representative, label)
+                    in coefficients
                 }
             )
 
@@ -341,7 +384,13 @@ class CoinductionFunctor(Functor):
                     acted, group_module
                 ).items():
                     if coefficient:
-                        output_coefficients[(representative, label)] = coefficient
+                        output_coefficients[
+                            _coset_label(
+                                module.module_generating_set(),
+                                representative,
+                                label,
+                            )
+                        ] = coefficient
             return module.linear_combination(output_coefficients)
 
         coinduced = GroupModule(module, self.supergroup(), action)
@@ -354,14 +403,17 @@ class CoinductionFunctor(Functor):
             raise ValueError("the G-module is not an object produced by this coinduction functor")
         return source
 
+    chosen_preimage = source_group_module
+
     def value_at(self, coinduced, vector, representative):
         source = self.source_group_module(coinduced)
         coefficients = module_coefficients(vector, coinduced)
+        labels = coinduced.module_generating_set()
         return source.linear_combination(
             {
-                label: coefficients[(representative, label)]
+                label: coefficients[_coset_label(labels, representative, label)]
                 for label in source.module_generating_set()
-                if (representative, label) in coefficients
+                if _coset_label(labels, representative, label) in coefficients
             }
         )
 
@@ -372,7 +424,13 @@ class CoinductionFunctor(Functor):
             value = value_function(representative)
             for label, coefficient in module_coefficients(value, source).items():
                 if coefficient:
-                    coefficients[(representative, label)] = coefficient
+                    coefficients[
+                        _coset_label(
+                            coinduced.module_generating_set(),
+                            representative,
+                            label,
+                        )
+                    ] = coefficient
         return coinduced.linear_combination(coefficients)
 
     def _apply_morphism(self, morphism):
@@ -382,15 +440,21 @@ class CoinductionFunctor(Functor):
         for representative in self.representatives():
             for label in morphism.domain().module_generating_set():
                 image = morphism(morphism.domain().module_generator(label))
-                images[(representative, label)] = target.linear_combination(
+                images[_coset_label(
+                    source.module_generating_set(), representative, label
+                )] = target.linear_combination(
                     {
-                        (representative, target_label): coefficient
+                        _coset_label(
+                            target.module_generating_set(),
+                            representative,
+                            target_label,
+                        ): coefficient
                         for target_label, coefficient in module_coefficients(
                             image, morphism.codomain()
                         ).items()
                     }
                 )
-        return group_module_homset(source, target)(images)
+        return _equivariant_hom(source, target, images)
 
     def _repr_(self):
         return f"Coinduction from {self.subgroup()} to {self.supergroup()}"
@@ -410,10 +474,10 @@ class InductionRestrictionAdjunction(Adjunction):
         induced = self.left_adjoint()(group_module)
         restricted = self.right_adjoint()(induced)
         representative = self.left_adjoint().identity_representative()
-        return group_module_homset(group_module, restricted)(
+        return _equivariant_hom(group_module, restricted,
             {
                 label: _transport_element(
-                    induced.module_generator((representative, label)),
+                    induced.module_generator(_coset_label(induced.module_generating_set(), representative, label)),
                     induced,
                     restricted,
                 )
@@ -424,9 +488,9 @@ class InductionRestrictionAdjunction(Adjunction):
     def counit(self, group_module):
         restricted = self.right_adjoint()(group_module)
         induced = self.left_adjoint()(restricted)
-        return group_module_homset(induced, group_module)(
+        return _equivariant_hom(induced, group_module,
             {
-                (representative, label): group_module.act(
+                _coset_label(induced.module_generating_set(), representative, label): group_module.act(
                     representative, group_module.module_generator(label)
                 )
                 for representative in self.left_adjoint().representatives()
@@ -434,47 +498,6 @@ class InductionRestrictionAdjunction(Adjunction):
             }
         )
 
-    def hom_set_isomorphism_forward(self, induced_morphism):
-        induced = induced_morphism.domain()
-        source = self.left_adjoint().source_group_module(induced)
-        target = induced_morphism.codomain()
-        restricted_target = self.right_adjoint()(target)
-        representative = self.left_adjoint().identity_representative()
-        return group_module_homset(source, restricted_target)(
-            {
-                label: _transport_element(
-                    induced_morphism(
-                        induced.module_generator((representative, label))
-                    ),
-                    target,
-                    restricted_target,
-                )
-                for label in source.module_generating_set()
-            }
-        )
-
-    def hom_set_isomorphism_inverse(self, restricted_morphism, codomain=None):
-        restricted_target = restricted_morphism.codomain()
-        target = self.right_adjoint().original_group_module(restricted_target)
-        if codomain is not None and codomain is not target:
-            raise ValueError("the stated G-module is not the module being restricted")
-        source = self.left_adjoint()(restricted_morphism.domain())
-        return group_module_homset(source, target)(
-            {
-                (representative, label): target.act(
-                    representative,
-                    _transport_element(
-                        restricted_morphism(
-                            restricted_morphism.domain().module_generator(label)
-                        ),
-                        restricted_target,
-                        target,
-                    ),
-                )
-                for representative in self.left_adjoint().representatives()
-                for label in restricted_morphism.domain().module_generating_set()
-            }
-        )
 
 
 class RestrictionCoinductionAdjunction(Adjunction):
@@ -490,7 +513,7 @@ class RestrictionCoinductionAdjunction(Adjunction):
     def unit(self, group_module):
         restricted = self.left_adjoint()(group_module)
         coinduced = self.right_adjoint()(restricted)
-        return group_module_homset(group_module, coinduced)(
+        return _equivariant_hom(group_module, coinduced,
             {
                 label: self.right_adjoint().element_from_values(
                     coinduced,
@@ -511,7 +534,7 @@ class RestrictionCoinductionAdjunction(Adjunction):
         coinduced = self.right_adjoint()(group_module)
         restricted = self.left_adjoint()(coinduced)
         representative = self.right_adjoint().identity_representative()
-        return group_module_homset(restricted, group_module)(
+        return _equivariant_hom(restricted, group_module,
             {
                 label: self.right_adjoint().value_at(
                     coinduced,
@@ -522,48 +545,6 @@ class RestrictionCoinductionAdjunction(Adjunction):
             }
         )
 
-    def hom_set_isomorphism_forward(self, restricted_morphism):
-        restricted_source = restricted_morphism.domain()
-        source = self.left_adjoint().original_group_module(restricted_source)
-        target = restricted_morphism.codomain()
-        coinduced_target = self.right_adjoint()(target)
-        return group_module_homset(source, coinduced_target)(
-            {
-                label: self.right_adjoint().element_from_values(
-                    coinduced_target,
-                    lambda representative, label=label: restricted_morphism(
-                        _transport_element(
-                            source.act(
-                                representative, source.module_generator(label)
-                            ),
-                            source,
-                            restricted_source,
-                        )
-                    ),
-                )
-                for label in source.module_generating_set()
-            }
-        )
-
-    def hom_set_isomorphism_inverse(self, coinduced_morphism, codomain=None):
-        coinduced_target = coinduced_morphism.codomain()
-        target = self.right_adjoint().source_group_module(coinduced_target)
-        if codomain is not None and codomain is not target:
-            raise ValueError("the stated H-module is not the coinduction source")
-        source = self.left_adjoint()(coinduced_morphism.domain())
-        representative = self.right_adjoint().identity_representative()
-        return group_module_homset(source, target)(
-            {
-                label: self.right_adjoint().value_at(
-                    coinduced_target,
-                    coinduced_morphism(
-                        coinduced_morphism.domain().module_generator(label)
-                    ),
-                    representative,
-                )
-                for label in coinduced_morphism.domain().module_generating_set()
-            }
-        )
 
 
 @cached_function

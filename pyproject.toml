@@ -21,7 +21,7 @@ build-backend = "setuptools.build_meta"
 where = ["src"]
 
 [tool.setuptools.package-data]
-dzack_research = ["py.typed"]
+dzack_research = ["py.typed", "static_types/*.pyi"]
 
 # Fetched from its repository, not a sibling directory. A relative path here
 # is inherited by every consumer that fetches this project from git, where it
@@ -55,5 +55,9 @@ log_file_level = "DEBUG"
 [dependency-groups]
 dev = [
     "ipython>=9.16.1",
+    "pyrefly==1.2.0",
+    "pyrefly-shape-extensions==1.2.0",
+    "pytest-reportlog>=1.0.0",
+    "pytest-timeout>=2.4.0",
     "sage-stubs @ git+https://github.com/dzackgarza/sage-stubs.git",
 ]

@@ -5,6 +5,7 @@ categories remain the domain and codomain; this module adds no parallel
 category graph and no registry of relationships.
 """
 
+from sage.categories.map import Map
 from sage.categories.morphism import Morphism
 from sage.structure.sage_object import SageObject
 
@@ -16,6 +17,7 @@ class Functor(SageObject):
         self._domain = domain
         self._codomain = codomain
         self._object_images: dict[int, tuple[object, object]] = {}
+        self._chosen_preimages: dict[int, tuple[object, list[object]]] = {}
 
     def _cache_key(self):
         r"""Functors have identity semantics as parameters of categorical constructions."""
@@ -46,13 +48,49 @@ class Functor(SageObject):
                 f"the image of {obj} under {self} is not an object of {self.codomain()}"
             )
         self._object_images[key] = (obj, image)
+        image_key = id(image)
+        recorded = self._chosen_preimages.get(image_key)
+        if recorded is None or recorded[0] is not image:
+            self._chosen_preimages[image_key] = (image, [obj])
+        elif all(preimage is not obj for preimage in recorded[1]):
+            recorded[1].append(obj)
+        return image
+
+    def chosen_preimage(self, image):
+        r"""Return the unique source object recorded for this exact functor image."""
+        recorded = self._chosen_preimages.get(id(image))
+        if recorded is None or recorded[0] is not image:
+            raise ValueError(f"{image} has no chosen preimage recorded by {self}")
+        if len(recorded[1]) != 1:
+            raise ValueError(
+                f"{image} has multiple chosen preimages under {self}; state the source explicitly"
+            )
+        return recorded[1][0]
+
+    def adopt_object_image(self, preimage, image):
+        r"""Use a provenance-validated exact image object for ``preimage``."""
+        if preimage not in self.domain() or image not in self.codomain():
+            raise TypeError("an adopted functor image has endpoints outside the functor")
+        key = id(preimage)
+        cached = self._object_images.get(key)
+        if cached is not None and cached[0] is preimage and cached[1] is not image:
+            raise ValueError(
+                "this functor instance already selected a different image for the same object"
+            )
+        self._object_images[key] = (preimage, image)
+        image_key = id(image)
+        recorded = self._chosen_preimages.get(image_key)
+        if recorded is None or recorded[0] is not image:
+            self._chosen_preimages[image_key] = (image, [preimage])
+        elif all(source is not preimage for source in recorded[1]):
+            recorded[1].append(preimage)
         return image
 
     def on_object(self, obj):
         return self.object_image(obj)
 
     def morphism_image(self, morphism):
-        if not isinstance(morphism, Morphism):
+        if not isinstance(morphism, Map):
             raise TypeError("a functor acts on a morphism through its morphism action")
         domain = self.object_image(morphism.domain())
         codomain = self.object_image(morphism.codomain())
@@ -68,7 +106,7 @@ class Functor(SageObject):
         return self.morphism_image(morphism)
 
     def __call__(self, value):
-        return self.morphism_image(value) if isinstance(value, Morphism) else self.object_image(value)
+        return self.morphism_image(value) if isinstance(value, Map) else self.object_image(value)
 
     def then(self, other):
         r"""Return ``other ∘ self``."""
@@ -80,145 +118,6 @@ class Functor(SageObject):
     def is_faithful(self) -> bool:
         return bool(getattr(self, "_faithful", False))
 
-    def Image(self):
-        r"""Return the category of outputs equipped with chosen preimages."""
-        from dzack_research.preamble.categories.abstract_categories.functor_images import (
-            ImageOfFunctor,
-        )
-
-        return ImageOfFunctor(self)
-
-    def on_hom(self, domain_object, codomain_object):
-        r"""Return the induced functor on the fixed-endpoint Hom categories."""
-        from dzack_research.preamble.categories.functors.hom_packets import (
-            induced_hom_functor,
-        )
-
-        return induced_hom_functor(self, domain_object, codomain_object)
-
-    def on_end(self, obj):
-        r"""Return the induced functor on endomorphism categories."""
-        from dzack_research.preamble.categories.functors.hom_packets import (
-            induced_end_functor,
-        )
-
-        return induced_end_functor(self, obj)
-
-    def on_aut(self, obj):
-        r"""Return the induced functor on automorphism categories."""
-        from dzack_research.preamble.categories.functors.hom_packets import (
-            induced_aut_functor,
-        )
-
-        return induced_aut_functor(self, obj)
-
-
-class ContravariantFunctor(SageObject):
-    r"""A contravariant functor ``C -> D``, equivalently ``C^op -> D``."""
-
-    def __init__(self, domain, codomain) -> None:
-        self._domain = domain
-        self._codomain = codomain
-        self._object_images = {}
-
-    def _cache_key(self):
-        return id(self)
-
-    def domain(self):
-        return self._domain
-
-    def codomain(self):
-        return self._codomain
-
-    def _apply_object(self, obj):
-        raise NotImplementedError
-
-    def _apply_morphism(self, morphism):
-        raise NotImplementedError
-
-    def object_image(self, obj):
-        if obj not in self.domain():
-            raise TypeError(f"{obj} is not an object of {self.domain()}")
-        key = id(obj)
-        cached = self._object_images.get(key)
-        if cached is not None and cached[0] is obj:
-            return cached[1]
-        image = self._apply_object(obj)
-        if image not in self.codomain():
-            raise TypeError(f"{image} is not an object of {self.codomain()}")
-        self._object_images[key] = (obj, image)
-        return image
-
-    def morphism_image(self, morphism):
-        if not isinstance(morphism, Morphism):
-            raise TypeError("a contravariant functor acts on morphisms")
-        source_image = self.object_image(morphism.codomain())
-        target_image = self.object_image(morphism.domain())
-        image = self._apply_morphism(morphism)
-        if image.domain() is not source_image or image.codomain() is not target_image:
-            raise ValueError(
-                "a contravariant morphism image must reverse the cached object images"
-            )
-        return image
-
-    def __call__(self, value):
-        return self.morphism_image(value) if isinstance(value, Morphism) else self.object_image(value)
-
-
-class Bifunctor(SageObject):
-    r"""A functor ``C x D -> E`` with a two-argument object/morphism API."""
-
-    def __init__(self, left_domain, right_domain, codomain) -> None:
-        self._left_domain = left_domain
-        self._right_domain = right_domain
-        self._codomain = codomain
-        self._object_images = {}
-
-    def _cache_key(self):
-        return id(self)
-
-    def left_domain(self):
-        return self._left_domain
-
-    def right_domain(self):
-        return self._right_domain
-
-    def codomain(self):
-        return self._codomain
-
-    def _apply_object(self, left, right):
-        raise NotImplementedError
-
-    def _apply_morphism(self, left_morphism, right_morphism):
-        raise NotImplementedError
-
-    def object_image(self, left, right):
-        if left not in self.left_domain() or right not in self.right_domain():
-            raise TypeError("the bifunctor arguments lie outside its product domain")
-        key = (id(left), id(right))
-        cached = self._object_images.get(key)
-        if cached is not None and cached[0] is left and cached[1] is right:
-            return cached[2]
-        image = self._apply_object(left, right)
-        if image not in self.codomain():
-            raise TypeError(f"{image} is not an object of {self.codomain()}")
-        self._object_images[key] = (left, right, image)
-        return image
-
-    def morphism_image(self, left_morphism, right_morphism):
-        if not isinstance(left_morphism, Morphism) or not isinstance(right_morphism, Morphism):
-            raise TypeError("a bifunctor acts on a pair of morphisms")
-        source = self.object_image(left_morphism.domain(), right_morphism.domain())
-        target = self.object_image(left_morphism.codomain(), right_morphism.codomain())
-        image = self._apply_morphism(left_morphism, right_morphism)
-        if image.domain() is not source or image.codomain() is not target:
-            raise ValueError("a bifunctor morphism image has the wrong cached endpoints")
-        return image
-
-    def __call__(self, left, right):
-        if isinstance(left, Morphism) or isinstance(right, Morphism):
-            return self.morphism_image(left, right)
-        return self.object_image(left, right)
 
 
 class IdentityFunctor(Functor):
@@ -230,6 +129,11 @@ class IdentityFunctor(Functor):
 
     def _apply_morphism(self, morphism):
         return morphism
+
+    def chosen_preimage(self, image):
+        if image not in self.domain():
+            raise ValueError(f"{image} is not an object of {self.domain()}")
+        return image
 
     def factors(self):
         return ()
@@ -262,6 +166,11 @@ class CategoryInclusionFunctor(Functor):
     def _apply_morphism(self, morphism):
         return morphism
 
+    def chosen_preimage(self, image):
+        if image not in self.domain():
+            raise ValueError(f"{image} is not in the included subcategory {self.domain()}")
+        return image
+
     def _repr_(self):
         return f"Inclusion {self.domain()} -> {self.codomain()}"
 
@@ -286,6 +195,16 @@ class CompositeFunctor(Functor):
 
     def _apply_morphism(self, morphism):
         return self._second(self._first(morphism))
+
+    def chosen_preimage(self, image):
+        middle = self._second.chosen_preimage(image)
+        return self._first.chosen_preimage(middle)
+
+    def adopt_object_image(self, preimage, image):
+        middle = self._second.chosen_preimage(image)
+        self._first.adopt_object_image(preimage, middle)
+        self._second.adopt_object_image(middle, image)
+        return super().adopt_object_image(preimage, image)
 
     def factors(self):
         return self._first.factors() + self._second.factors()
@@ -351,11 +270,19 @@ class Adjunction(SageObject):
     def counit(self, obj):
         raise NotImplementedError("an adjunction must supply its counit")
 
-    def hom_set_isomorphism_forward(self, morphism):
-        raise NotImplementedError("an adjunction must supply the forward Hom-set bijection")
+    def hom_set_isomorphism_forward(self, morphism, source=None):
+        r"""Transpose ``f:F(A)->B`` to ``U(f) after eta_A``."""
+        if source is None:
+            source = self.left_adjoint().chosen_preimage(morphism.domain())
+        self.left_adjoint().adopt_object_image(source, morphism.domain())
+        return self.right_adjoint()(morphism) * self.unit(source)
 
     def hom_set_isomorphism_inverse(self, morphism, codomain=None):
-        raise NotImplementedError("an adjunction must supply the inverse Hom-set bijection")
+        r"""Transpose ``g:A->U(B)`` to ``epsilon_B after F(g)``."""
+        if codomain is None:
+            codomain = self.right_adjoint().chosen_preimage(morphism.codomain())
+        self.right_adjoint().adopt_object_image(codomain, morphism.codomain())
+        return self.counit(codomain) * self.left_adjoint()(morphism)
 
     def unit_transformation(self) -> NaturalTransformation:
         return NaturalTransformation(
@@ -400,23 +327,6 @@ class CompositeAdjunction(Adjunction):
         first_counit = self.first().counit(self.second().right_adjoint()(obj))
         return self.second().counit(obj) * self.second().left_adjoint()(first_counit)
 
-    def hom_set_isomorphism_forward(self, morphism):
-        return self.first().hom_set_isomorphism_forward(
-            self.second().hom_set_isomorphism_forward(morphism)
-        )
-
-    def hom_set_isomorphism_inverse(self, morphism, codomain=None):
-        if codomain is None:
-            raise TypeError("the composite adjunction transpose requires the final codomain")
-        middle_codomain = self.second().right_adjoint()(codomain)
-        first_transpose = self.first().hom_set_isomorphism_inverse(
-            morphism,
-            codomain=middle_codomain,
-        )
-        return self.second().hom_set_isomorphism_inverse(
-            first_transpose,
-            codomain=codomain,
-        )
 
 
 def compose_adjunctions(first: Adjunction, second: Adjunction) -> CompositeAdjunction:

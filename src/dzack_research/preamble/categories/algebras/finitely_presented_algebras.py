@@ -2,24 +2,25 @@ r"""Finite algebra presentations backed by Sage polynomial quotients."""
 
 from collections.abc import Iterable
 
-from sage.categories.map import Map
-from sage.rings.ideal import Ideal_generic
 from sage.rings.noncommutative_ideals import Ideal_nc
 
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
-    CommutativeAlgebras,
+    AlgebrasWithChosenFinitePresentation,
+    FinitelyPresentedAlgebras,
     FramedAlgebras,
-    OwnedAlgebraView,
+    _OwnedAlgebraParent,
     OwnedAlgebras,
     _default_structure_map,
     algebra_homset,
 )
-from dzack_research.preamble.categories.algebras.free_algebras import SymmetricAlgebras
-from dzack_research.preamble.categories.rings import (
-    OwnedCategoryOverBaseRing,
-    engine_ring,
-    owned_ring_view,
+from dzack_research.preamble.categories.algebras.free_algebras import (
+    FinitelyPresentedAlgebra,
+    SymmetricAlgebraOn,
+)
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _engine_element,
+    _engine_ring,
 )
 from dzack_research.preamble.refine import refine
 
@@ -39,9 +40,19 @@ def _canonical_smith_representative(module, element):
     presented module implementation.
     """
 
-    coordinates = tuple(module.coordinate_vector(element, reduce=False))
-    invariants = tuple(module.invariants())
-    engine = engine_ring(module.base_ring())
+    smith_engine = module._smith_engine()
+    if smith_engine is None:
+        raise NotImplementedError(
+            "a canonical representative is currently chosen from a PID Smith engine"
+        )
+    coordinates = tuple(
+        smith_engine.coordinate_vector(
+            module._to_smith_engine_element(element),
+            reduce=False,
+        )
+    )
+    invariants = tuple(smith_engine.invariants())
+    engine = _engine_ring(module.base_ring())
     reduced = [
         coordinate
         if invariant == 0
@@ -50,7 +61,9 @@ def _canonical_smith_representative(module, element):
     ]
     if not reduced:
         return module.zero()
-    return module.linear_combination_of_smith_form_gens(reduced)
+    return module._from_smith_engine_element(
+        smith_engine.linear_combination_of_smith_form_gens(reduced)
+    )
 
 
 class _LinearPresentationTensorIdeal(Ideal_nc):
@@ -65,10 +78,10 @@ class _LinearPresentationTensorIdeal(Ideal_nc):
     """
 
     def __init__(self, presentation_ring, module, relations) -> None:
-        engine = engine_ring(presentation_ring)
+        engine = _engine_ring(presentation_ring)
         Ideal_nc.__init__(self, engine, relations, side="twosided")
         self._module = module
-        self._labels = tuple(module.module_generating_set())
+        self._labels = module.module_generating_set()
         self._monoid_generator_labels = dict(
             zip(engine.monoid().gens(), self._labels, strict=True)
         )
@@ -78,7 +91,7 @@ class _LinearPresentationTensorIdeal(Ideal_nc):
         power = self._tensor_powers.get(degree)
         if power is not None:
             return power
-        from dzack_research.preamble.categories.abstract_categories import TensorProduct
+        from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
 
         power = TensorProduct(self._tensor_power(degree - 1), self._module)
         self._tensor_powers[degree] = power
@@ -119,10 +132,15 @@ class _LinearPresentationTensorIdeal(Ideal_nc):
                 continue
 
             tensor_power = self._tensor_power(degree)
+            tensor_ring = tensor_power.base_ring()
             tensor_element = sum(
                 (
-                    coefficient
-                    * tensor_power.module_generator(_nested_tensor_label(word))
+                    tensor_ring._from_engine_element(
+                        _engine_ring(tensor_ring)(coefficient)
+                    )
+                    * tensor_power.module_generator(
+                        _nested_tensor_label(self._module, word)
+                    )
                     for word, coefficient in terms
                 ),
                 tensor_power.zero(),
@@ -135,7 +153,9 @@ class _LinearPresentationTensorIdeal(Ideal_nc):
                 representative,
                 tensor_power,
             ).items():
-                result += coefficient * self._free_word(
+                result += _engine_element(
+                    tensor_power.base_ring(), coefficient
+                ) * self._free_word(
                     _flatten_tensor_label(tensor_label, degree)
                 )
         return result
@@ -144,241 +164,62 @@ class _LinearPresentationTensorIdeal(Ideal_nc):
         return self.reduce(element) == self.ring().zero()
 
 
-class FinitelyPresentedAlgebras(OwnedCategoryOverBaseRing):
-    r"""Algebras that admit a finite algebra presentation."""
-
-    @classmethod
-    def _repr_object_names(cls):
-        return "finitely presented algebras"
-
-    def super_categories(self):
-        return [Algebras(self.base_ring())]
-
-    class ParentMethods:
-        def is_finitely_presented(self) -> bool:
-            return True
-
-
-class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
-    r"""Finitely presented algebras carrying one selected finite presentation."""
-
-    @classmethod
-    def _repr_object_names(cls):
-        return "algebras with a chosen finite presentation"
-
-    def super_categories(self):
-        return [
-            FinitelyPresentedAlgebras(self.base_ring()),
-            FramedAlgebras(self.base_ring()),
-        ]
-
-    class ParentMethods:
-        def presentation_ring(self):
-            return self._preamble_presentation_ring
-
-        def relations(self):
-            r"""Return the selected ordered tuple of defining relations."""
-            return self._preamble_presentation_relations
-
-        def presentation_ideal(self):
-            r"""Return the ideal generated by the selected defining relations."""
-            return self._preamble_presentation_ideal
-
-        def presentation(self):
-            r"""Return the selected free algebra and selected relation tuple."""
-            return (self.presentation_ring(), self.relations())
-
-        def algebra_presentation_morphism(self):
-            return self._preamble_algebra_presentation_morphism
-
-        def lift_to_presentation(self, element):
-            r"""Return the selected exact representative in the presentation ring."""
-            return self._preamble_lift_to_presentation(element)
-
-        def base_change(self, ring_map):
-            r"""Transport this selected presentation along ``R -> S``."""
-            if not isinstance(ring_map, Map):
-                raise TypeError("algebra base change is specified by a ring morphism")
-            if engine_ring(ring_map.domain()) is not engine_ring(self.base_ring()):
-                raise ValueError(
-                    f"the scalar map starts at {ring_map.domain()}, not {self.base_ring()}"
-                )
-
-            from dzack_research.preamble.categories.algebras.free_algebras import (
-                TensorAlgebras,
-            )
-
-            if self in TensorAlgebras(self.base_ring()):
-                from dzack_research.preamble.categories.algebras.framed_free_algebras import (
-                    TensorAlgebraOf,
-                )
-
-                return TensorAlgebraOf(
-                    self._preamble_tensor_algebra_source_module.base_change(ring_map)
-                )
-
-            from dzack_research.preamble.categories.algebras.framed_free_algebras import (
-                SymmetricAlgebraOn,
-            )
-
-            target_base = owned_ring_view(ring_map.codomain())
-            target_presentation_ring = SymmetricAlgebraOn(
-                target_base, self.algebra_generating_set()
-            )
-            target_engine = engine_ring(target_presentation_ring)
-            mapped_relations = tuple(
-                target_engine(
-                    relation.map_coefficients(
-                        ring_map,
-                        new_base_ring=engine_ring(target_base),
-                    )
-                )
-                for relation in self.relations()
-            )
-            return FinitelyPresentedAlgebra(
-                target_presentation_ring,
-                mapped_relations,
-            )
-
-
-def _relations_to_ideal(presentation_ring, relations):
-    engine = engine_ring(presentation_ring)
-    if isinstance(relations, Ideal_generic):
-        if relations.ring() is not engine:
-            raise ValueError("the relation ideal belongs to a different presenting algebra")
-        selected_relations = tuple(relations.gens())
-        return relations, selected_relations
-    if not isinstance(relations, Iterable):
-        raise TypeError("relations must be an ideal or a finite iterable of relation elements")
-    selected_relations = tuple(engine(relation) for relation in relations)
-    return engine.ideal(selected_relations), selected_relations
-
-
-def FinitelyPresentedAlgebra(presentation_ring, relations):
-    r"""Return the selected quotient ``R[S] / (relations)``.
-
-    The current native adapter deliberately accepts a symmetric/free
-    commutative presenting algebra.  Sage's free-associative ``quotient``
-    constructor represents a different, finite-dimensional matrix-action
-    problem and is not used as a substitute for a general two-sided ideal
-    quotient.
-    """
-    base = presentation_ring.base_ring()
-    if presentation_ring not in SymmetricAlgebras(base):
-        raise NotImplementedError(
-            "the active native finite-presentation adapter currently handles commutative polynomial presentations"
-        )
-
-    presentation_ideal, selected_relations = _relations_to_ideal(
-        presentation_ring, relations
-    )
-    quotient_engine = engine_ring(presentation_ring).quotient(presentation_ideal)
-    labels = presentation_ring.algebra_generating_set()
-
-    # This view is intentionally not the cached ``refine_algebra`` view:
-    # two selected relation systems may generate the same native quotient
-    # ideal while still being different presentations.
-    presented = OwnedAlgebraView(
-        quotient_engine,
-        base,
-        tuple(labels),
-        quotient_engine.coerce_map_from(engine_ring(base)),
-    )
-    presented._preamble_structure_map = _default_structure_map(base, presented)
-    presented._preamble_presentation_ring = presentation_ring
-    presented._preamble_presentation_relations = selected_relations
-    presented._preamble_presentation_ideal = presentation_ideal
-    presented._preamble_lift_to_presentation = lambda element: engine_ring(
-        presentation_ring
-    )(quotient_engine(element).lift())
-
-    module_categories = []
-    if len(tuple(labels)) == 1 and hasattr(quotient_engine, "modulus"):
-        modulus = quotient_engine.modulus()
-        degree = int(modulus.degree())
-        if degree > 0:
-            from dzack_research.preamble.categories.modules import (
-                FinitelyGeneratedFreeModules,
-            )
-            from dzack_research.preamble.categories.sets import finite_ordered_set
-
-            module_labels = finite_ordered_set(range(degree))
-            quotient_generator = quotient_engine.gen()
-            presented._preamble_base_ring = base
-            presented._preamble_module_generating_set = module_labels
-            presented._preamble_module_generator_values = {
-                exponent: quotient_generator**exponent
-                for exponent in module_labels
-            }
-            presented._preamble_module_coordinate_function = (
-                lambda element: tuple(quotient_engine(element))
-            )
-            module_categories.append(FinitelyGeneratedFreeModules(base))
-
-    presented = refine(
-        presented,
-        [
-            Algebras(base),
-            OwnedAlgebras(base),
-            CommutativeAlgebras(base),
-            FramedAlgebras(base),
-            FinitelyPresentedAlgebras(base),
-            AlgebrasWithChosenFinitePresentation(base),
-        ]
-        + module_categories,
-    )
-    presented._preamble_algebra_presentation_morphism = algebra_homset(
-        presentation_ring,
-        presented,
-    )(
-        lambda label: presented.algebra_generator(label)
-    )
-    return presented
-
-
 def _tensor_algebra_from_module_presentation(presentation_ring, module):
     r"""Quotient a free associative algebra by ``module``'s linear relations."""
     from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
         _presentation_matrix,
     )
+    from dzack_research.preamble.categories.sets.set_categories import Sets
+    from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 
-    engine = engine_ring(presentation_ring)
-    generators = tuple(engine.gens())
-    relation_rows = tuple(_presentation_matrix(module).rows())
-    selected_relations = tuple(
-        sum(
-            (
-                coefficient * generator
-                for coefficient, generator in zip(row, generators, strict=True)
-                if coefficient
-            ),
-            engine.zero(),
-        )
-        for row in relation_rows
+    engine = _engine_ring(presentation_ring)
+    relation_matrix = _presentation_matrix(module)
+    relation_indices = Sets.Δ[relation_matrix.nrows() - 1]
+    base = presentation_ring.base_ring()
+
+    def backend_relation(index):
+        row_position = int(index)
+        result = engine.zero()
+        for position in range(relation_matrix.tensor_shape()[1]):
+            coefficient = relation_matrix[row_position, position]
+            if coefficient:
+                result += _engine_element(base, coefficient) * engine.gen(position)
+        return result
+
+    selected_relations = indexed_family(
+        relation_indices,
+        lambda index: presentation_ring._from_engine_element(
+            backend_relation(index)
+        ),
+        name="Tensor-algebra defining relations",
     )
-    if not any(selected_relations):
+    if all(relation == presentation_ring.zero() for relation in selected_relations):
         return presentation_ring
 
+    # Private serialization for Sage's noncommutative ideal object.
+    backend_relations = [
+        _engine_element(presentation_ring, relation)
+        for relation in selected_relations
+    ]
     presentation_ideal = _LinearPresentationTensorIdeal(
         presentation_ring,
         module,
-        selected_relations,
+        backend_relations,
     )
     quotient_engine = engine.quotient(presentation_ideal)
-    base = presentation_ring.base_ring()
     labels = presentation_ring.algebra_generating_set()
-    presented = OwnedAlgebraView(
+    presented = _OwnedAlgebraParent(
         quotient_engine,
         base,
-        tuple(labels),
-        quotient_engine.coerce_map_from(engine_ring(base)),
+        labels,
+        quotient_engine.coerce_map_from(_engine_ring(base)),
     )
     presented._preamble_structure_map = _default_structure_map(base, presented)
     presented._preamble_presentation_ring = presentation_ring
     presented._preamble_presentation_relations = selected_relations
     presented._preamble_presentation_ideal = presentation_ideal
-    presented._preamble_lift_to_presentation = lambda element: engine(
-        quotient_engine(element).lift()
+    presented._preamble_lift_to_presentation = lambda element: presentation_ring._from_engine_element(
+        quotient_engine(presented._engine_element(element)).lift()
     )
     presented._preamble_tensor_algebra_source_module = module
     presented = refine(
@@ -402,10 +243,6 @@ def _tensor_algebra_from_module_presentation(presentation_ring, module):
 
 def FinitelyPresentedAlgebraOn(base_ring, algebra_generating_set, relations):
     r"""Construct ``R[S] / (relations)`` with the displayed finite presentation."""
-    from dzack_research.preamble.categories.algebras.framed_free_algebras import (
-        SymmetricAlgebraOn,
-    )
-
     return FinitelyPresentedAlgebra(
         SymmetricAlgebraOn(base_ring, algebra_generating_set),
         relations,

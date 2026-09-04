@@ -20,7 +20,7 @@ from dzack_research.preamble.categories.rings.embeddings import (
     order_homset,
 )
 from dzack_research.preamble.categories.rings.number_fields import OwnedNumberFields
-from dzack_research.preamble.categories.rings.rings import OwnedOrders, engine_ring
+from dzack_research.preamble.categories.rings.ring_foundation import OwnedOrders, _engine_ring
 
 
 class FractionFieldFunctor(Functor):
@@ -36,7 +36,7 @@ class FractionFieldFunctor(Functor):
         source = self(embedding.domain())
         target = self(embedding.codomain())
         return number_field_homset(source, target)(
-            embedding.field_embedding().engine_morphism()
+            embedding.field_embedding()._engine_morphism_crossing()
         )
 
     def _repr_(self):
@@ -57,6 +57,11 @@ class RingOfIntegersFunctor(Functor):
         target = self(embedding.codomain())
         return order_homset(source, target)(embedding)
 
+    def chosen_preimage(self, image):
+        if image not in OwnedOrders():
+            raise ValueError("the image is not an owned order")
+        return image.fraction_field()
+
     def _repr_(self):
         return "Ring-of-integers functor"
 
@@ -76,12 +81,12 @@ class OrderNumberFieldAdjunction(Adjunction):
 
     def counit(self, field):
         source = self.left_adjoint()(self.right_adjoint()(field))
-        if engine_ring(source) is engine_ring(field):
+        if _engine_ring(source) is _engine_ring(field):
             if source is field:
                 return number_field_homset(field, field).identity()
-            if engine_ring(source).degree() == 1:
+            if _engine_ring(source).degree() == 1:
                 return number_field_homset(source, field)(
-                    engine_ring(source).hom(engine_ring(field))
+                    _engine_ring(source).hom(_engine_ring(field))
                 )
             return number_field_homset(source, field)(field.primitive_element())
         embeddings = number_field_homset(source, field).embeddings()
@@ -89,25 +94,6 @@ class OrderNumberFieldAdjunction(Adjunction):
             raise ValueError("the counit requires the canonical identification Frac(O_K) = K")
         return embeddings[0]
 
-    def hom_set_isomorphism_forward(
-        self,
-        field_embedding: NumberFieldEmbedding,
-        source_order,
-    ):
-        source_field = self.left_adjoint()(source_order)
-        if source_field is not field_embedding.domain():
-            raise ValueError(
-                "the field embedding must start at the fraction field of the stated "
-                "source order"
-            )
-        target_order = self.right_adjoint()(field_embedding.codomain())
-        return order_homset(source_order, target_order)(field_embedding)
-
-    def hom_set_isomorphism_inverse(self, order_embedding: OrderEmbedding, codomain=None):
-        field_embedding = order_embedding.field_embedding()
-        if codomain is not None and engine_ring(field_embedding.codomain()) is not engine_ring(codomain):
-            raise ValueError("the stated number-field codomain does not match the order embedding")
-        return field_embedding
 
     def _repr_(self):
         return "Fraction-field/ring-of-integers adjunction"

@@ -5,7 +5,7 @@ from sage.structure.element import ModuleElement
 from sage.structure.parent import Parent
 from sage.structure.richcmp import op_EQ, op_NE
 
-from dzack_research.preamble.categories.rings import OwnedCategoryOverBaseRing
+from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
 from dzack_research.preamble.refine import refine
 
 
@@ -124,10 +124,10 @@ class GeneralLocalizedModuleParent(Parent):
         self._preamble_localization_submonoid = localization_ring.localization_submonoid()
         self._preamble_localization_functor = localization_functor
         categories = [LocalizedModules(localization_ring)]
-        from dzack_research.preamble.categories.modules.framed.framed_modules import (
+        from dzack_research.preamble.categories.modules.pure.modules import (
             FramedModules,
         )
-        from dzack_research.preamble.categories.modules.pure.finitely_generated.finitely_generated_modules import (
+        from dzack_research.preamble.categories.modules.pure.modules import (
             FinitelyGeneratedModules,
         )
         from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
@@ -138,6 +138,7 @@ class GeneralLocalizedModuleParent(Parent):
         source_ring = localization_ring.localization_source()
         if source_module in FramedModules(source_ring):
             self._preamble_module_generating_set = source_module.module_generating_set()
+            self._preamble_module_coefficient_function = self._framing_coefficients
             self._preamble_module_generator_function = (
                 lambda label: self.fraction(source_module.module_generator(label))
             )
@@ -145,29 +146,29 @@ class GeneralLocalizedModuleParent(Parent):
             if source_module in FinitelyGeneratedModules(source_ring):
                 categories.append(FinitelyGeneratedModules(localization_ring))
             if source_module in ModulesWithChosenFinitePresentation(source_ring):
-                from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import (
+                from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
                     BasedFreeModule,
                 )
-                from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-                    module_homset,
+                from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
+                from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace
+                from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+                    _presentation_rows,
                 )
-                from dzack_research.preamble.tensors import tensor
 
                 source_presentation = source_module.presentation()
                 relation_labels = source_presentation.domain().module_generating_set()
                 generator_labels = source_module.module_generating_set()
-                relation_rows = tuple(source_module.presentation_matrix().rows())
+                relation_rows = _presentation_rows(source_module)
                 localization_map = localization_ring.localization_map()
                 transported_rows = tuple(
                     tuple(localization_map(coefficient) for coefficient in row)
                     for row in relation_rows
                 )
-                self._preamble_relation_matrix = tensor.matrix(
+                self._preamble_relation_matrix = MatrixSpace(
                     localization_ring,
                     len(transported_rows),
                     int(generator_labels.cardinality()),
-                    [entry for row in transported_rows for entry in row],
-                )
+                ).from_rows(transported_rows)
                 free_relations = BasedFreeModule(localization_ring, relation_labels)
                 free_generators = BasedFreeModule(localization_ring, generator_labels)
                 images = {
@@ -211,6 +212,26 @@ class GeneralLocalizedModuleParent(Parent):
         )
 
         register_module_scalar_action(self)
+
+    def _framing_coefficients(self, element):
+        r"""Return coefficients of a localization fraction in the source framing."""
+        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+            module_coefficients,
+        )
+
+        element = self(element)
+        source_coefficients = module_coefficients(
+            element.numerator(),
+            self.localization_source_module(),
+        )
+        localization_map = self.localization_ring().localization_map()
+        denominator = localization_map(element.denominator())
+        denominator_inverse = denominator.inverse_of_unit()
+        return {
+            label: localization_map(coefficient) * denominator_inverse
+            for label, coefficient in source_coefficients.items()
+            if coefficient != self.source_ring().zero()
+        }
 
     def base_ring(self):
         return self.localization_ring()
@@ -318,8 +339,8 @@ class GeneralLocalizedModuleParent(Parent):
         )
 
     def _build_scalar_action_morphism(self):
-        from dzack_research.preamble.categories.modules import Modules
-        from dzack_research.preamble.categories.rings import ring_morphism
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
+        from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
 
         endomorphisms = Modules(self.base_ring()).End(self)
         return ring_morphism(

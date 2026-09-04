@@ -1,12 +1,14 @@
 r"""Categories of objects equipped with a chosen presentation as a functor image."""
 
+from dzack_research.preamble.categories.abstract_categories.hom_foundation import OwnedHomset
 from sage.misc.cachefunc import cached_method
 from sage.categories.category import Category
 from sage.categories.homset import Homset
 from sage.categories.morphism import Morphism
-from sage.categories.objects import Objects
 from sage.categories.sets_cat import Sets as SageSets
 from sage.structure.parent import Parent
+
+from dzack_research.preamble.categories.abstract_categories.objects import Objects
 
 
 class FunctorImageObject(Parent):
@@ -57,7 +59,7 @@ class FunctorImageMorphism(Morphism):
         )
 
 
-class FunctorImageHomset(Homset):
+class FunctorImageHomset(OwnedHomset):
     Element = FunctorImageMorphism
 
     def __init__(self, image_category, domain, codomain) -> None:

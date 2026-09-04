@@ -1,5 +1,6 @@
 r"""Diagrams, cones, cocones, and selected finite product constructions."""
 
+from dzack_research.preamble.categories.abstract_categories.hom_foundation import OwnedHomset
 from sage.categories.category import Category
 from sage.categories.homset import Homset
 from sage.categories.morphism import Morphism
@@ -8,7 +9,8 @@ from sage.categories.sets_cat import Sets as SageSets
 from sage.structure.parent import Parent
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat, FunctorCategory
-from dzack_research.preamble.categories.sets import finite_ordered_set
+from dzack_research.preamble.categories.abstract_categories.objects import Objects as OwnedObjects
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
 
 class DiagramCategory(FunctorCategory):
@@ -165,7 +167,7 @@ class CoconeMorphism(Morphism):
         )
 
 
-class ConeHomset(Homset):
+class ConeHomset(OwnedHomset):
     Element = ConeMorphism
 
     def __init__(self, cone_category, domain, codomain) -> None:
@@ -179,7 +181,7 @@ class ConeHomset(Homset):
         return ConeMorphism(self, apex_map)
 
 
-class CoconeHomset(Homset):
+class CoconeHomset(OwnedHomset):
     Element = CoconeMorphism
 
     def __init__(self, cocone_category, domain, codomain) -> None:
@@ -210,7 +212,7 @@ class ConeCategory(Category):
         return self.diagram().codomain()
 
     def super_categories(self):
-        return [Objects()]
+        return [OwnedObjects()]
 
     def __contains__(self, candidate) -> bool:
         return isinstance(candidate, ConeObject) and candidate.diagram() is self.diagram()
@@ -248,7 +250,7 @@ class CoconeCategory(Category):
         return self.diagram().codomain()
 
     def super_categories(self):
-        return [Objects()]
+        return [OwnedObjects()]
 
     def __contains__(self, candidate) -> bool:
         return isinstance(candidate, CoconeObject) and candidate.diagram() is self.diagram()
@@ -287,7 +289,7 @@ class LimitsOfCategory(Category):
         return self._index_category, self._ambient_category
 
     def super_categories(self):
-        return [Objects()]
+        return [OwnedObjects()]
 
 
 class ColimitsOfCategory(LimitsOfCategory):
@@ -316,7 +318,7 @@ class BiproductCategory(Category):
         return self._factors
 
     def super_categories(self):
-        return [Objects()]
+        return [OwnedObjects()]
 
     def __contains__(self, candidate) -> bool:
         try:
@@ -342,7 +344,7 @@ class TensorProductCategory(Category):
         return self._factors
 
     def super_categories(self):
-        return [Objects()]
+        return [OwnedObjects()]
 
     def __contains__(self, candidate) -> bool:
         try:

@@ -4,22 +4,26 @@ from typing import Any, ClassVar
 
 from sage.misc.cachefunc import cached_function
 
-from dzack_research.preamble.categories.algebras import (
+from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
-    AlternatingAlgebraOf,
-    AlternatingAlgebras,
     CommutativeAlgebras,
+)
+from dzack_research.preamble.categories.algebras.framed_free_algebras import (
+    AlternatingAlgebraOf,
     DividedPowerAlgebraOf,
-    DividedPowerAlgebras,
     SymmetricAlgebraOf,
     TensorAlgebraOf,
-    power_algebra_homset,
 )
+from dzack_research.preamble.categories.algebras.free_algebras import (
+    AlternatingAlgebras,
+    DividedPowerAlgebras,
+)
+from dzack_research.preamble.categories.algebras.power_algebras import power_algebra_homset
 from dzack_research.preamble.categories.functors.algebra_modules import (
     algebra_underlying_module_functor,
 )
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
-from dzack_research.preamble.categories.modules import Modules
+from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.modules.graded_direct_sums import (
     GradedDirectSumModule,
 )
@@ -27,7 +31,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     module_coefficients,
     module_homset,
 )
-from dzack_research.preamble.categories.rings import owned_ring_view
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
 
 
 class _ModuleAlgebraFunctor(Functor):
@@ -36,7 +40,7 @@ class _ModuleAlgebraFunctor(Functor):
     _name = "free algebra"
 
     def __init__(self, base_ring) -> None:
-        self._base_ring = owned_ring_view(base_ring)
+        self._base_ring = _owned_ring(base_ring)
         super().__init__(
             Modules(self._base_ring),
             self._codomain_category(self._base_ring),
@@ -66,7 +70,9 @@ class _ModuleAlgebraFunctor(Functor):
                 target.zero(),
             )
 
-        return source.hom(image, target)
+        homset = source.Hom(target)
+        structural = getattr(homset, "_from_degree_preserving_generator_map", None)
+        return structural(image) if structural is not None else homset(image)
 
     def _repr_(self):
         return f"{self._name} functor on {self.base_ring()}-modules"
@@ -95,7 +101,7 @@ class AlternatingAlgebraFunctor(Functor):
     """
 
     def __init__(self, base_ring) -> None:
-        self._base_ring = owned_ring_view(base_ring)
+        self._base_ring = _owned_ring(base_ring)
         super().__init__(
             Modules(self._base_ring),
             AlternatingAlgebras(self._base_ring),
@@ -120,7 +126,7 @@ class DividedPowerAlgebraFunctor(Functor):
     r"""The divided-power algebra functor ``Gamma_R : Mod_R -> DPAlg_R``."""
 
     def __init__(self, base_ring) -> None:
-        self._base_ring = owned_ring_view(base_ring)
+        self._base_ring = _owned_ring(base_ring)
         super().__init__(
             Modules(self._base_ring),
             DividedPowerAlgebras(self._base_ring),
@@ -156,7 +162,7 @@ class _ModuleAlgebraAdjunction(Adjunction):
     _name = "module-algebra"
 
     def __init__(self, base_ring) -> None:
-        self._base_ring = owned_ring_view(base_ring)
+        self._base_ring = _owned_ring(base_ring)
         left = self._left_functor_factory(self._base_ring)
         right = algebra_underlying_module_functor(
             self._base_ring,
@@ -183,47 +189,18 @@ class _ModuleAlgebraAdjunction(Adjunction):
         r"""Evaluation \(F(U(A))\to A\) when ``U(A)`` is represented."""
         module = self.right_adjoint()(algebra)
         free_algebra = self.left_adjoint()(module)
-        return free_algebra.hom(
-            lambda label: (
+        homset = free_algebra.Hom(algebra)
+
+        def image(label):
+            return (
                 module.realize_module_generator(label)
                 if isinstance(module, GradedDirectSumModule)
                 else module.module_generator(label)
-            ),
-            algebra,
-        )
-
-    def hom_set_isomorphism_forward(self, morphism):
-        r"""Restrict an algebra map \(F(M)\to A\) to degree one."""
-        free_algebra = morphism.domain()
-        module = free_algebra.free_source_module()
-        return self.right_adjoint()(morphism) * self.unit(module)
-
-    def hom_set_isomorphism_inverse(self, morphism, codomain=None):
-        r"""Extend an \(R\)-linear map \(M\to U(A)\) multiplicatively."""
-        target_module = morphism.codomain()
-        algebra = (
-            target_module.realized_object()
-            if isinstance(target_module, GradedDirectSumModule)
-            else target_module
-        )
-        represented_underlying = self.right_adjoint()(algebra)
-        if represented_underlying is not target_module:
-            if not isinstance(represented_underlying, GradedDirectSumModule):
-                raise ValueError(
-                    "the module map does not land in the represented underlying module"
-                )
-            source_morphism = morphism
-            morphism = module_homset(source_morphism.domain(), represented_underlying)(
-                lambda label: represented_underlying.from_realization(
-                    source_morphism(source_morphism.domain().module_generator(label))
-                )
             )
-            target_module = represented_underlying
-        if codomain is not None and codomain is not algebra:
-            raise ValueError(
-                "the stated algebra codomain differs from the module map codomain"
-            )
-        return self.counit(algebra) * self.left_adjoint()(morphism)
+
+        structural = getattr(homset, "_from_degree_preserving_generator_map", None)
+        return structural(image) if structural is not None else homset(image)
+
 
     def _repr_(self):
         return f"{self._name} adjunction over {self.base_ring()}"

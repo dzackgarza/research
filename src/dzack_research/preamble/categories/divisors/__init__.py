@@ -7,6 +7,7 @@ from dzack_research.preamble.categories.divisors.divisor_groups import (
     DivisorGroup,
     DivisorGroups,
     FormalDivisor,
+    FormalDivisorGroup,
     FormalDivisorGroups,
 )
 from dzack_research.preamble.categories.divisors.picard_groups import PicardGroup, PicardGroups
@@ -23,6 +24,7 @@ __all__ = [
     "DivisorGroup",
     "DivisorGroups",
     "FormalDivisor",
+    "FormalDivisorGroup",
     "FormalDivisorGroups",
     "PicardGroup",
     "PicardGroups",

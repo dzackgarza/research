@@ -1,9 +1,6 @@
 """Modules graded by a monoid."""
 
-from sage.categories.additive_monoids import AdditiveMonoids as SageAdditiveMonoids
-from sage.categories.monoids import Monoids as SageMonoids
-from sage.categories.rings import Rings as SageRings
-from sage.rings.integer_ring import ZZ
+from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.parent import Parent
 from sage.categories.morphism import Morphism
 
@@ -14,29 +11,31 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleHomset,
     ModuleMorphism,
+    _ModuleHomsetCommonMethods,
     _initialize_module_hom_parent,
 )
-from dzack_research.preamble.categories.modules.internal_hom import (
+from dzack_research.preamble.categories.modules.pure.modules import (
     LinearEndCategoryConstruction,
 )
-from dzack_research.preamble.categories.rings import (
+from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
-    engine_ring,
-    owned_ring_view,
+    _own_ring,
+)
+from dzack_research.preamble.categories.group.magmas import (
+    AdditiveMonoids,
+    Monoids,
 )
 
 
 def normalize_grading_monoid(monoid: Parent | None) -> Parent:
-    r"""The interned grading monoid: \(\mathbb{Z}\) when omitted."""
-    if monoid is None:
-        return ZZ
-    return engine_ring(monoid)
+    r"""Return the owned grading monoid, defaulting to \(\mathbb{Z},+\)."""
+    return _own_ring(SageZZ) if monoid is None else monoid
 
 
 def require_grading_monoid(monoid: Parent | None) -> Parent:
     monoid = normalize_grading_monoid(monoid)
-    if monoid not in SageMonoids() and monoid not in SageAdditiveMonoids():
-        raise TypeError(f"{monoid} is not a monoid")
+    if monoid not in Monoids() and monoid not in AdditiveMonoids():
+        raise TypeError(f"{monoid} is not a monoid in the owned category graph")
     return monoid
 
 
@@ -48,7 +47,7 @@ class GradedModuleMorphism(ModuleMorphism):
         self._check_selected_degrees()
 
     def _check_selected_degrees(self) -> None:
-        from dzack_research.preamble.categories.modules.framed.framed_modules import (
+        from dzack_research.preamble.categories.modules.pure.modules import (
             FramedModules,
         )
 
@@ -85,7 +84,7 @@ class GradedModuleMorphism(ModuleMorphism):
         )
 
 
-class GradedModuleHomset(CategoricalHomset):
+class GradedModuleHomset(_ModuleHomsetCommonMethods, CategoricalHomset):
     Element = GradedModuleMorphism
 
     def __init__(self, hom_family, domain, codomain) -> None:
@@ -98,18 +97,6 @@ class GradedModuleHomset(CategoricalHomset):
             raise ValueError("the graded-module Hom packet has the wrong grading monoid")
         _initialize_module_hom_parent(self, hom_family, domain, codomain)
 
-    _element_constructor_ = ModuleHomset._element_constructor_
-    base_ring = ModuleHomset.base_ring
-    scalar_multiple = ModuleHomset.scalar_multiple
-    elementwise = ModuleHomset.elementwise
-    source_module = ModuleHomset.source_module
-    target_module = ModuleHomset.target_module
-    evaluation = ModuleHomset.evaluation
-    as_morphism = ModuleHomset.as_morphism
-    from_morphism = ModuleHomset.from_morphism
-    zero = ModuleHomset.zero
-    identity = ModuleHomset.identity
-    one = ModuleHomset.one
 
 
 class GradedModuleHomCategoryConstruction(HomCategoryConstruction):
@@ -144,7 +131,7 @@ class GradedModules(OwnedCategoryOverBaseRing):
 
     def _repr_object_names(self) -> str:
         monoid = self.grading_monoid()
-        if monoid is ZZ:
+        if monoid is _own_ring(SageZZ):
             names = "graded modules"
         else:
             names = f"modules graded by {monoid}"
@@ -171,8 +158,6 @@ class GradedModules(OwnedCategoryOverBaseRing):
                     monoid = cat.grading_monoid()
                 except AttributeError:
                     continue
-                if monoid in SageRings():
-                    return owned_ring_view(monoid)
                 return monoid
             raise TypeError(f"{self} is not in a graded module category")
 
@@ -186,7 +171,7 @@ class GradedModules(OwnedCategoryOverBaseRing):
             monoid = self.grading_monoid()
             left = monoid(left)
             right = monoid(right)
-            if monoid in SageAdditiveMonoids():
+            if monoid in AdditiveMonoids():
                 return left + right
             return left * right
 

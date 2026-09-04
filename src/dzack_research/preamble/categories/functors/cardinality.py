@@ -2,9 +2,13 @@ r"""The cardinality functor ``# : core(Set) -> Card``."""
 
 from sage.misc.cachefunc import cached_function
 
-from dzack_research.preamble.categories.abstract_categories import Core
+from dzack_research.preamble.categories.abstract_categories.arrow_categories import Core
 from dzack_research.preamble.categories.functors.core import Functor
-from dzack_research.preamble.categories.sets import Cardinalities, Sets, cardinal
+from dzack_research.preamble.categories.sets.cardinals import (
+    Cardinalities,
+    cardinal,
+)
+from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
 class CardinalityFunctor(Functor):

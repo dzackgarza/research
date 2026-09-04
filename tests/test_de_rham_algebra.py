@@ -9,7 +9,10 @@ from dzack_research.preamble.categories.algebras import (
     SymmetricAlgebraOn,
     algebra_homset,
 )
-from dzack_research.preamble.categories.functors import de_rham_adjunction, de_rham_functor
+from dzack_research.preamble.categories.functors.de_rham import (
+    de_rham_adjunction,
+    de_rham_functor,
+)
 from dzack_research.preamble.categories.modules import BasedFreeModule, ring_as_module
 from dzack_research.preamble.categories.modules import InternalHom, ModuleSubobjects, Modules
 from dzack_research.preamble.categories.algebras import AlternatingAlgebraOf, Derivations

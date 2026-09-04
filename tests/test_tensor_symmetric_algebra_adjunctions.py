@@ -124,9 +124,9 @@ def test_tensor_and_symmetric_algebras_impose_presented_module_relations_in_ever
     # A purported universal extension is accepted precisely when the selected
     # module relation is killed by the generator assignment.
     with pytest.raises(ValueError, match="relations"):
-        tensor.hom({0: tensor.one(), 1: tensor.zero()}, tensor)
+        tensor.Hom(tensor)({0: tensor.one(), 1: tensor.zero()})
     with pytest.raises(ValueError, match="relations"):
-        symmetric.hom({0: symmetric.one(), 1: symmetric.zero()}, symmetric)
+        symmetric.Hom(symmetric)({0: symmetric.one(), 1: symmetric.zero()})
 
 
 def test_tensor_and_symmetric_algebras_use_the_actual_nondiagonal_module_presentation() -> (
@@ -332,8 +332,11 @@ def test_iterated_free_algebra_normalizes_relations_in_actual_underlying_pieces(
     first_underlying = underlying(first_free)
     iterated_free = free(first_underlying)
 
-    two_torsion = iterated_free.algebra_generator((1, 0))
-    three_torsion = iterated_free.algebra_generator((1, 1))
+    source_labels = iterated_free.algebra_generating_set()
+    two_source_label = source_labels(1, 0)
+    three_source_label = source_labels(1, 1)
+    two_torsion = iterated_free.algebra_generator(two_source_label)
+    three_torsion = iterated_free.algebra_generator(three_source_label)
     assert 2 * two_torsion == iterated_free.zero()
     assert 3 * three_torsion == iterated_free.zero()
     # Z/2 tensor Z/3 is zero.  This specifically rejects independent raw-label
@@ -342,15 +345,18 @@ def test_iterated_free_algebra_normalizes_relations_in_actual_underlying_pieces(
 
     assert iterated_free.graded_piece(1) is first_underlying
     degree_two = iterated_free.graded_piece(2)
+    degree_two_labels = degree_two.module_generating_set()
     degree_two_label = (
-        ((1, 0), (1, 0))
+        degree_two_labels(lambda _position: two_source_label)
         if iterated_free.flavor() == "tensor"
-        else frozenset((((1, 0), 2),))
+        else degree_two_labels.from_multiplicities({two_source_label: 2})
     )
     degree_two_generator = degree_two.module_generator(degree_two_label)
     assert 2 * degree_two_generator == degree_two.zero()
 
-    invalid = iterated_free.hom(lambda _label: first_free.one(), first_free)
+    invalid = algebra_homset(iterated_free, first_free)(
+        lambda _label: first_free.one()
+    )
     with pytest.raises(ValueError, match="relations"):
         invalid(two_torsion)
 
@@ -397,9 +403,12 @@ def test_iterated_free_algebra_normalizes_relations_in_actual_underlying_pieces(
 
     exterior_module = BasedFreeModule(ZZ, finite_ordered_set(("x",)))
     exterior = AlternatingAlgebraOf(exterior_module)
+    exterior_unit_label = exterior.module_generating_set()(0, 0)
     augmentation = SetMorphism(
         exterior.Hom(iterated_free),
-        lambda element: element.monomial_coefficients().get((0, 0), ZZ.zero())
+        lambda element: element.monomial_coefficients().get(
+            exterior_unit_label, ZZ.zero()
+        )
         * iterated_free.one(),
     )
     algebra_augmentation = algebra_homset(exterior, iterated_free)(augmentation)
@@ -418,6 +427,11 @@ def test_iterated_free_algebra_normalizes_relations_in_actual_underlying_pieces(
         )
     )
     nondiagonal_iterated = free(underlying(free(nondiagonal)))
-    x = nondiagonal_iterated.algebra_generator((1, "x"))
-    y = nondiagonal_iterated.algebra_generator((1, "y"))
+    nondiagonal_source_labels = nondiagonal_iterated.algebra_generating_set()
+    x = nondiagonal_iterated.algebra_generator(
+        nondiagonal_source_labels(1, "x")
+    )
+    y = nondiagonal_iterated.algebra_generator(
+        nondiagonal_source_labels(1, "y")
+    )
     assert 2 * x + 4 * y == nondiagonal_iterated.zero()

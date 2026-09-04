@@ -1,76 +1,24 @@
 r"""Finite-support direct sums of a represented family of graded modules."""
 
-from dzack_research.preamble.categories.rings import engine_ring as _engine_ring
-from itertools import count
+from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring as _engine_ring
 from typing import Any
 
 from sage.categories.category import Category
-from sage.categories.enumerated_sets import EnumeratedSets
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.element import ModuleElement
 from sage.structure.parent import Parent
 from sage.structure.richcmp import op_EQ, op_NE
 
-from dzack_research.preamble.categories.modules.framed.framed_modules import (
+from dzack_research.preamble.categories.modules.pure.modules import (
     FramedModules,
 )
 from dzack_research.preamble.categories.modules.graded_modules import GradedModules
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
 )
-from dzack_research.preamble.categories.rings import owned_ring_view
-from dzack_research.preamble.categories.sets import aleph0
-
-
-class GradedDirectSumIndices(Parent):
-    r"""The disjoint union of the selected generator sets of the summands."""
-
-    def __init__(self, direct_sum) -> None:
-        self._direct_sum = direct_sum
-        Parent.__init__(self, category=EnumeratedSets())
-
-    def direct_sum(self):
-        return self._direct_sum
-
-    def __iter__(self):
-        for degree in count():
-            piece = self.direct_sum().graded_piece(degree)
-            for label in piece.module_generating_set():
-                yield (degree, label)
-
-    def __contains__(self, candidate) -> bool:
-        if not isinstance(candidate, tuple) or len(candidate) != 2:
-            return False
-        degree, label = candidate
-        try:
-            degree = int(degree)
-        except (TypeError, ValueError):
-            return False
-        return (
-            degree >= 0
-            and label in self.direct_sum().graded_piece(degree).module_generating_set()
-        )
-
-    def _element_constructor_(self, candidate):
-        degree, label = candidate
-        normalized = (int(degree), label)
-        if normalized not in self:
-            raise ValueError(f"{candidate!r} is not a graded direct-sum index")
-        return normalized
-
-    def cardinality(self):
-        return aleph0
-
-    def __getitem__(self, position):
-        if position < 0:
-            raise IndexError("graded direct-sum positions are nonnegative")
-        for index, label in enumerate(self):
-            if index == position:
-                return label
-        raise IndexError(position)
-
-    def _repr_(self):
-        return f"Homogeneous generator indices of {self.direct_sum()}"
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
+from dzack_research.preamble.categories.sets.set_categories import CoproductOfFamily
+from dzack_research.preamble.categories.sets.set_categories import NN
 
 
 class GradedDirectSumElement(ModuleElement):
@@ -107,11 +55,12 @@ class GradedDirectSumElement(ModuleElement):
 
     def monomial_coefficients(self):
         coefficients = {}
+        labels = self.parent().module_generating_set()
         for degree, component in self._components.items():
             for label, coefficient in module_coefficients(
                 component, self.parent().graded_piece(degree)
             ).items():
-                coefficients[(degree, label)] = coefficient
+                coefficients[labels(degree, label)] = coefficient
         return coefficients
 
     def _add_(self, other):
@@ -170,17 +119,20 @@ class GradedDirectSumModule(Parent):
         realize_generator=None,
         realized_object=None,
         from_realization=None,
+        degree_index_set=None,
     ) -> None:
-        self._base_ring = owned_ring_view(base_ring)
+        self._base_ring = _owned_ring(base_ring)
+        self._preamble_base_ring = self._base_ring
         self._piece = piece
         self._name = name
         self._realize_generator = realize_generator
         self._realized_object = realized_object
         self._from_realization = from_realization
+        self._degree_index_set = NN if degree_index_set is None else degree_index_set
         self._pieces: dict[int, Any] = {}
         self._indices = None
         categories = [
-            GradedModules(self._base_ring, SageZZ),
+            GradedModules(self._base_ring),
             FramedModules(self._base_ring),
         ]
         Parent.__init__(
@@ -200,30 +152,41 @@ class GradedDirectSumModule(Parent):
         if cached is not None:
             return cached
         piece = self._piece(degree)
-        if owned_ring_view(piece.base_ring()) is not self.base_ring():
+        if _owned_ring(piece.base_ring()) is not self.base_ring():
             raise ValueError("all graded direct-sum pieces require one base ring")
         self._pieces[degree] = piece
         return piece
 
+    def degree_index_set(self):
+        return self._degree_index_set
+
     def module_generating_set(self):
         if self._indices is None:
-            self._indices = GradedDirectSumIndices(self)
+            self._indices = CoproductOfFamily(
+                self.degree_index_set(),
+                lambda degree: self.graded_piece(int(degree)).module_generating_set(),
+            )
         return self._indices
 
     def module_generator(self, label):
-        degree, piece_label = self.module_generating_set()._element_constructor_(label)
+        label = self.module_generating_set()(label)
+        degree = int(label.summand_index())
+        piece_label = label.summand_element()
         return self.from_component(
             degree, self.graded_piece(degree).module_generator(piece_label)
         )
 
     def linear_combination(self, coefficients):
         by_degree = {}
-        for (degree, label), coefficient in coefficients.items():
+        for raw_label, coefficient in coefficients.items():
             if not coefficient:
                 continue
+            label = self.module_generating_set()(raw_label)
+            degree = int(label.summand_index())
+            piece_label = label.summand_element()
             piece = self.graded_piece(degree)
             contribution = piece.scalar_multiple(
-                coefficient, piece.module_generator(label)
+                coefficient, piece.module_generator(piece_label)
             )
             by_degree[degree] = by_degree.get(degree, piece.zero()) + contribution
         return self.from_components(by_degree)
@@ -260,8 +223,11 @@ class GradedDirectSumModule(Parent):
     def realize_module_generator(self, label):
         if self._realize_generator is None:
             raise NotImplementedError("this direct sum has no selected realization")
-        degree, piece_label = self.module_generating_set()._element_constructor_(label)
-        return self._realize_generator(degree, piece_label)
+        label = self.module_generating_set()(label)
+        return self._realize_generator(
+            int(label.summand_index()),
+            label.summand_element(),
+        )
 
     def realized_object(self):
         if self._realized_object is None:
@@ -292,20 +258,17 @@ class GradedDirectSumModule(Parent):
     # component contains a selected generator.  Keeping this protocol here
     # prevents it from falsely treating the component labels as free.
     def module_component_key(self, label):
-        degree, _piece_label = self.module_generating_set()._element_constructor_(label)
-        return degree
+        label = self.module_generating_set()(label)
+        return int(label.summand_index())
 
     def module_component(self, key):
         return self.graded_piece(key)
 
     def module_component_generator_label(self, label):
-        _degree, piece_label = self.module_generating_set()._element_constructor_(label)
-        return piece_label
+        return self.module_generating_set()(label).summand_element()
 
     def module_label_from_component(self, key, component_label):
-        return self.module_generating_set()._element_constructor_(
-            (int(key), component_label)
-        )
+        return self.module_generating_set()(int(key), component_label)
 
     def _repr_(self):
         return self._name or "Graded direct sum module"
@@ -313,6 +276,5 @@ class GradedDirectSumModule(Parent):
 
 __all__ = [
     "GradedDirectSumElement",
-    "GradedDirectSumIndices",
     "GradedDirectSumModule",
 ]

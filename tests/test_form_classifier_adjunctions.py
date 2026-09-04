@@ -18,7 +18,7 @@ from dzack_research.preamble.all import (
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
     _represented_value_module,
 )
-from dzack_research.preamble.categories.rings import engine_ring
+from dzack_research.preamble.categories.rings import ring_homset
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
 
@@ -60,7 +60,7 @@ def test_general_formed_morphism_keeps_value_map_separate_from_strict_form_prese
     # The old strict surface remains genuinely stricter: multiplication by
     # three is not an isometry of the form [2].
     with pytest.raises(ValueError):
-        formed.hom({"e": 3 * generator}, codomain=formed)
+        formed.Hom(formed)({"e": 3 * generator})
 
 
 def test_divided_square_classifies_quadratic_maps_integrally_on_zmod4() -> None:
@@ -69,7 +69,8 @@ def test_divided_square_classifies_quadratic_maps_integrally_on_zmod4() -> None:
     square = DividedSquare(module)
     universal_value = square.quadratic(generator)
 
-    assert square.invariants() == (8,)
+    assert square.invariant_factors().cardinality() == 1
+    assert square.invariant_factors().unrank(0) == ZZ(8)
     assert universal_value.additive_order() == 8
     assert square.quadratic(2 * generator) == 4 * universal_value
 
@@ -85,7 +86,7 @@ def test_fibered_formed_morphisms_compose_after_base_change_in_one_target_fiber(
     source = BilinearForm(module, ZZ, [[2]])
     source_generator = source.module_generator("e")
 
-    zz_to_qq = engine_ring(QQ).coerce_map_from(engine_ring(ZZ))
+    zz_to_qq = ring_homset(ZZ, QQ)(lambda element: QQ(element))
     middle = source.base_change(zz_to_qq)
     first_homset = fibered_formed_module_homset(source, middle, zz_to_qq)
     source_over_qq = first_homset.base_changed_domain()
@@ -101,7 +102,7 @@ def test_fibered_formed_morphisms_compose_after_base_change_in_one_target_fiber(
     first = first_homset((first_module_map, first_value_map))
 
     field = QuadraticField(2, "a")
-    qq_to_field = engine_ring(field).coerce_map_from(engine_ring(QQ))
+    qq_to_field = ring_homset(QQ, field)(lambda element: field(element))
     target = middle.base_change(qq_to_field)
     second_homset = fibered_formed_module_homset(
         middle,
@@ -121,14 +122,14 @@ def test_fibered_formed_morphisms_compose_after_base_change_in_one_target_fiber(
     second = second_homset((second_module_map, second_value_map))
 
     composite = second * first
-    assert engine_ring(composite.ring_map().domain()) is engine_ring(ZZ)
-    assert engine_ring(composite.ring_map().codomain()) is engine_ring(field)
+    assert composite.ring_map().domain() is ZZ
+    assert composite.ring_map().codomain() is field
     assert composite(source_generator) == target.scalar_multiple(6, target_generator)
-    assert composite.map_value(2) == engine_ring(field)(72)
+    assert composite.map_value(2) == field(72)
 
     # Identities are genuine fibered morphisms over identity ring maps, not
     # an unrelated fixed-fiber shortcut.
-    identity_ring_map = engine_ring(QQ).coerce_map_from(engine_ring(QQ))
+    identity_ring_map = ring_homset(QQ, QQ).identity()
     middle_identity = fibered_formed_module_homset(
         middle,
         middle,
@@ -143,8 +144,8 @@ def test_fibered_formed_morphisms_compose_after_base_change_in_one_target_fiber(
 @pytest.mark.parametrize(
     "adjunction_factory, expected_classifier_invariants",
     [
-        (bilinear_free_form_adjunction, (4,)),
-        (quadratic_free_form_adjunction, (8,)),
+        (bilinear_free_form_adjunction, 4),
+        (quadratic_free_form_adjunction, 8),
     ],
 )
 def test_free_form_classifier_adjunctions_have_hom_bijections_naturality_and_triangles(
@@ -163,7 +164,9 @@ def test_free_form_classifier_adjunctions_have_hom_bijections_naturality_and_tri
     free_source = free(source)
     free_quotient = free(quotient)
 
-    assert free_source.value_module().invariants() == expected_classifier_invariants
+    classifier_invariants = free_source.value_module().invariant_factors()
+    assert classifier_invariants.cardinality() == 1
+    assert classifier_invariants.unrank(0) == ZZ(expected_classifier_invariants)
 
     doubling = module_homset(source, source)({0: 2 * source_generator})
     module_map = free_source.equip_form_morphism() * doubling

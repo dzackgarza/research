@@ -1,11 +1,14 @@
 """Small concrete Set-side constructions used by active category code."""
 
-from dzack_research.preamble.categories.sets.owned_sets import (
+from dzack_research.preamble.categories.sets.set_categories import (
     CountableSets,
     CountablyInfiniteSets,
     FiniteSets,
     FinitelySupportedFunctionSets,
     InfiniteSets,
+    NaturalNumber,
+    NaturalNumbers,
+    NN,
     PartiallyOrderedSets,
     Sets,
     TotallyOrderedSets,
@@ -13,7 +16,7 @@ from dzack_research.preamble.categories.sets.owned_sets import (
     placement_of,
     register_set_axioms,
 )
-from dzack_research.preamble.categories.sets.sets import (
+from dzack_research.preamble.categories.sets.set_categories import (
     cartesian_product_of,
     PowerSets,
     ObjectSetsOfDiscreteCategories,
@@ -44,16 +47,14 @@ from dzack_research.preamble.categories.sets.cardinals import (
     Cardinal,
     CardinalComparison,
     Cardinalities,
-    aleph,
-    aleph0,
-    cardinal,
-    continuum,
-)
-from dzack_research.preamble.categories.sets.ordinals import (
     Ordinal,
     OrdinalSemiring,
     OrdinalSemirings,
     Ordinals,
+    aleph,
+    aleph0,
+    cardinal,
+    continuum,
     omega,
     omega0,
     ordinal,
@@ -69,9 +70,26 @@ from dzack_research.preamble.categories.sets.enumerated import (
     LaurentMonomials,
     SincTranslates,
 )
+from dzack_research.preamble.categories.sets.fixed_size_selections import (
+    FixedSizeSelectionElement,
+    FixedSizeSelections,
+    fixed_size_selections,
+    multisets_of_size,
+    ordered_subsets_of_size,
+)
+from dzack_research.preamble.categories.sets.indexed_families import (
+    IndexedFamily,
+    finite_indexed_family,
+    indexed_family,
+)
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+    FiniteFilteredOrderedSet,
     FiniteOrderedSet,
+    OrderedEnumeratedSet,
+    finite_ordered_filter,
+    finite_ordered_image,
     finite_ordered_set,
+    ordered_enumerated_set,
 )
 
 __all__ = [
@@ -94,8 +112,13 @@ __all__ = [
     "TotallyOrderedSets",
     "PartiallyOrderedSets",
     "InfiniteSets",
+    "NaturalNumber",
+    "NaturalNumbers",
+    "NN",
     "FinitelySupportedFunctionSets",
     "FiniteSets",
+    "FixedSizeSelectionElement",
+    "FixedSizeSelections",
     "CountablyInfiniteSets",
     "CountableSets",
     "Sets",
@@ -128,12 +151,23 @@ __all__ = [
     "EnumeratedByIntegers",
     "EnumeratedByNaturals",
     "EnumeratedSets",
+    "FiniteFilteredOrderedSet",
     "FiniteOrderedSet",
+    "OrderedEnumeratedSet",
     "FourierCharacters",
     "FunctionEnumeratedSets",
     "HermitePolynomials",
     "InfiniteEnumeratedSets",
+    "IndexedFamily",
     "LaurentMonomials",
     "SincTranslates",
+    "finite_indexed_family",
+    "fixed_size_selections",
+    "finite_ordered_filter",
+    "finite_ordered_image",
     "finite_ordered_set",
+    "indexed_family",
+    "multisets_of_size",
+    "ordered_subsets_of_size",
+    "ordered_enumerated_set",
 ]

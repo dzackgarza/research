@@ -16,11 +16,9 @@ from sage.arith.misc import factor
 from sage.categories.category import Category
 from sage.categories.enumerated_sets import EnumeratedSets
 from sage.categories.infinite_enumerated_sets import InfiniteEnumeratedSets
-from sage.combinat.free_module import CombinatorialFreeModule
 from sage.combinat.root_system.cartan_type import CartanType, CartanType_abstract
 from sage.misc.latex import latex
 from sage.misc.repr import repr_lincomb
-from sage.modules.free_module import FreeModule_generic
 from sage.modules.free_module_element import FreeModuleElement
 from sage.quadratic_forms.quadratic_form import QuadraticForm
 from sage.misc.cachefunc import cached_function
@@ -28,8 +26,6 @@ from sage.rings.infinity import Infinity
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ
-from sage.rings.semirings.non_negative_integer_semiring import NN
-from sage.sets.finite_enumerated_set import FiniteEnumeratedSet
 from sage.structure.element import Matrix, ModuleElement
 from sage.structure.element import parent as element_parent
 from sage.structure.indexed_generators import IndexedGenerators
@@ -38,8 +34,23 @@ from sage.structure.richcmp import richcmp
 from sage.structure.unique_representation import UniqueRepresentation
 from sage.symbolic.ring import SR
 
-from dzack_research.preamble.categories.rings import engine_ring
-from dzack_research.preamble.tensors import Tensor, TensorModule, tensor
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _engine_ring,
+    _own_ring,
+)
+from dzack_research.preamble.categories.sets.set_categories import (
+    NN,
+    Sets,
+)
+from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+    finite_ordered_image,
+    finite_ordered_set,
+)
+from dzack_research.preamble.tensors.tensor import (
+    Tensor,
+    TensorModule,
+    tensor,
+)
 from dzack_research.preamble.tensors.tensor import _engine_component_matrix
 
 
@@ -101,29 +112,67 @@ class _FormalSymbols(UniqueRepresentation, Parent):
 
 
 def _as_generating_set(keys, rank):
-    r"""Return ``keys`` as an enumerated generating set of cardinality ``rank``."""
+    r"""Return ``keys`` as an owned ordered generating set of cardinality ``rank``."""
+    from dzack_research.preamble.categories.sets.cardinals import cardinal
+
     if keys is None:
         if rank == Infinity:
             return _FormalSymbols()
-        return FiniteEnumeratedSet([_formal_symbol(index) for index in range(int(rank))])
-    if isinstance(keys, (list, tuple)):
-        keys = FiniteEnumeratedSet(keys)
+        positions = Sets.Δ[int(rank) - 1]
+        return finite_ordered_image(
+            positions,
+            lambda position: _formal_symbol(int(position)),
+            rank=lambda symbol: positions.unrank(_formal_symbol_index(symbol)),
+            name="Formal lattice generators",
+        )
+    if isinstance(keys, (list, tuple, range)):
+        keys = finite_ordered_set(keys)
     assert keys in EnumeratedSets()
-    if keys.cardinality() != rank:
-        raise ValueError(f"the generating set has cardinality {keys.cardinality()}, not the free-module rank {rank}")
+    key_cardinality = cardinal(keys.cardinality())
+    if rank == Infinity:
+        if key_cardinality.is_finite():
+            raise ValueError(
+                f"the generating set has finite cardinality {key_cardinality}, not infinite rank"
+            )
+    elif (
+        not key_cardinality.is_finite()
+        or int(key_cardinality.finite_value()) != int(rank)
+    ):
+        raise ValueError(
+            f"the generating set has cardinality {key_cardinality}, not the free-module rank {rank}"
+        )
     return keys
 
 
 def _generating_set_from_names(names, rank):
-    r"""Return SR symbols for ``names`` when they name the whole generating set."""
+    r"""Return an owned ordered family of SR symbols named by ``names``."""
+    from dzack_research.preamble.categories.sets.cardinals import cardinal
+
     if names is None or rank == Infinity:
         return None
     if isinstance(names, str):
-        name_list = tuple(part.strip() for part in names.split(","))
+        raw_names = names.split(",")
+        name_source = finite_ordered_set(raw_names)
+        symbols = finite_ordered_image(
+            name_source,
+            lambda name: SR.var(str(name).strip()),
+            rank=lambda symbol: name_source(str(symbol)),
+            name="Named lattice generators",
+        )
     else:
-        name_list = tuple(names)
-    symbols = FiniteEnumeratedSet([SR.var(name) for name in name_list])
-    if symbols.cardinality() != rank:
+        name_source = (
+            finite_ordered_set(names)
+            if isinstance(names, (list, tuple, range))
+            else names
+        )
+        symbols = finite_ordered_image(
+            name_source,
+            lambda name: SR.var(str(name)),
+            rank=lambda symbol: name_source(str(symbol)),
+            name="Named lattice generators",
+        )
+    size = cardinal(symbols.cardinality())
+    if not size.is_finite() or int(size.finite_value()) != int(rank):
         return None
     return symbols
 
@@ -147,12 +196,7 @@ def _resolve_key(keys, index):
 
 def _vector_coefficients(vector, module):
     r"""The support of an internal module vector, as an indexed family."""
-    # ``CombinatorialFreeModule`` already stores the sparse coefficient
-    # dictionary.  Asking ``vector.coefficient(key)`` for each support key
-    # re-checks membership in the basis index set; for symbolic labels that
-    # can enter Sage's symbolic equality machinery and become catastrophically
-    # expensive.  Reading the sparse dictionary is exact and avoids that
-    # redundant membership test.
+    # The owned free-module element stores its finite support explicitly.
     return dict(vector.monomial_coefficients())
 
 
@@ -167,7 +211,7 @@ def _lattice_vector_from_coefficients(lattice, coefficients):
 class Lattice(Parent, IndexedGenerators):
     r"""A lattice: a free module with a form, as a parent in :class:`Lattices`.
 
-    The internal module is the combinatorial free module on a generating
+    The internal module is an owned free module on a generating
     set stored here.  With no generating set given, that set is the
     formal symbols \(e_i\in\mathrm{SR}\).  An element prints as a linear
     combination of those generators, never as a coordinate tuple.
@@ -178,6 +222,7 @@ class Lattice(Parent, IndexedGenerators):
 
     def __init__(self, module, gram, category: Category, sage_lattice, names=None) -> None:
         self._module = module
+        self._preamble_free_module_constructor = module._fresh_free_module_on
         self._gram = gram
         self._sage_lattice = sage_lattice
         self._index_positions = _finite_basis_positions(module)
@@ -202,7 +247,11 @@ class Lattice(Parent, IndexedGenerators):
             return x
         if isinstance(x, (tuple, list, FreeModuleElement)):
             return sum(
-                (self.module_generator(key) * coefficient for key, coefficient in zip(self._indices, x) if coefficient),
+                (
+                    self.scalar_multiple(coefficient, self.module_generator(key))
+                    for key, coefficient in zip(self._indices, x)
+                    if coefficient
+                ),
                 self.element_class(self, self._module.zero()),
             )
         return self.element_class(self, self._module(x))
@@ -304,16 +353,14 @@ def _lattice_parent(module, gram, category, sage_lattice, names=None):
     constructions naming one module and one Gram name one lattice.  Equal
     Grams hash equally, so this is Sage's own construction cache.
     """
-    from dzack_research.preamble.categories.lattice_properties import (
-        refine_lattice_properties,
-    )
     from dzack_research.preamble.refine import refine
 
     lattice = refine(
         Lattice(module, gram, category, sage_lattice, names),
         category,
     )
-    return refine_lattice_properties(lattice)
+    refiner = getattr(category, "_refine_lattice_object", None)
+    return refiner(lattice) if refiner is not None else lattice
 
 
 class _PairingGram(ModuleElement, Tensor):
@@ -340,7 +387,7 @@ class _PairingGram(ModuleElement, Tensor):
         return (rank, rank)
 
     def index_modules(self):
-        return ((), (self._module, self._module))
+        return self.parent().index_modules()
 
     def tensor_indices(self):
         keys = _basis_keys(self._module)
@@ -757,8 +804,6 @@ def diagonal_gram(module, exceptions, default=1):
         Integral lattice of rank +Infinity and signature (+Infinity, 1)
     """
     resolved = _owned_free_module(module, module.base_ring())
-    if resolved is None:
-        raise TypeError("diagonal_gram takes a free module")
     keys = _basis_keys(resolved)
     stored = {_resolve_key(keys, index): resolved.base_ring()(value) for index, value in exceptions.items()}
     return _DiagonalGram(resolved, stored, resolved.base_ring()(default))
@@ -782,7 +827,9 @@ def orthogonal_sum(left, right, *, category):
         generating_set = _as_generating_set(None, Infinity)
     else:
         generating_set = _as_generating_set(None, split + int(right_rank))
-    module = CombinatorialFreeModule(engine_ring(ring), generating_set)
+    from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreeModuleOn
+
+    module = FreeModuleOn(ring, generating_set)
     gram = _BiproductGram(module, left, right, split)
     return _lattice_parent(module, gram, category, None, names=None)
 
@@ -799,7 +846,9 @@ def colimit_lattice(stage, *, category):
         raise TypeError("stage(n) must be a lattice in this category")
     if probe.rank() != 2:
         raise ValueError(f"stage(n) must have rank n, got stage(2) of rank {probe.rank()}")
-    module = CombinatorialFreeModule(engine_ring(ring), _as_generating_set(None, Infinity))
+    from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreshFreeModuleOn
+
+    module = FreshFreeModuleOn(ring, _as_generating_set(None, Infinity))
     return _lattice_parent(
         module,
         _ColimitGram(module, stage),
@@ -841,7 +890,7 @@ def _rational_fraction_field(ring):
     of that field.
     """
     field = ring.fraction_field()
-    if engine_ring(field) is QQ:
+    if _engine_ring(field) is QQ:
         return QQ
     raise TypeError(f"the signature pair (p, q) is the real signature of a quadratic space over QQ; Frac({ring}) is {field}")
 
@@ -853,7 +902,11 @@ def _sylvester(gram: Tensor):
     positive, negative, _radical = QuadraticForm(
         field, engine_gram
     ).signature_vector()
-    return (positive, negative)
+    integers = _own_ring(SageZZ)
+    return (
+        integers._from_engine_element(SageZZ(positive)),
+        integers._from_engine_element(SageZZ(negative)),
+    )
 
 
 def signature_pair_of_gram(gram: Tensor):
@@ -871,7 +924,10 @@ def discriminant_of_gram(gram: Tensor):
         n = int(rank)
         return (-1) ** (n * (n - 1) // 2)
     n = int(rank)
-    return (-1) ** (n * (n - 1) // 2) * gram.det()
+    from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace
+
+    matrix = MatrixSpace(gram.base_ring(), n).from_rows(gram.rows())
+    return (-1) ** (n * (n - 1) // 2) * matrix.determinant()
 
 
 def _format_disc_latex(disc) -> str:
@@ -902,7 +958,7 @@ def lattice_latex(lattice: Lattice, ring_tex: str) -> str:
     rank = lattice.rank()
     gram_latex = str(latex(lattice.gram_tensor()))
     gram_latex = re.sub(r"\b0\b", lambda _match: r"\cdot", gram_latex)
-    signature_field = engine_ring(lattice.base_ring().fraction_field())
+    signature_field = _engine_ring(lattice.base_ring().fraction_field())
 
     if rank == Infinity:
         if signature_field is QQ:
@@ -973,7 +1029,10 @@ def _root_cartan_gram_tensor(ring, cartan_type) -> Tensor:
     """
     pairings = cartan_type.cartan_matrix()
     rank = int(cartan_type.rank())
-    components = [tuple(-ring(pairings[i, j]) for j in range(rank)) for i in range(rank)]
+    components = [
+        tuple(-ring._from_engine_element(pairings[i, j]) for j in range(rank))
+        for i in range(rank)
+    ]
     gram_tensor = tensor(ring, (), (rank, rank), components)
     assert gram_tensor.tensor_valence() == (0, 2)
     return gram_tensor
@@ -1008,12 +1067,19 @@ def _lattice_from_gram_tensor(
     if rows != columns:
         raise ValueError(f"a Gram tensor is square, got shape {gram_tensor.tensor_shape()}")
     generating_set = _generating_set_for(rows, module_generators, names)
-    module = CombinatorialFreeModule(engine_ring(ring), generating_set)
-    result = _lattice_parent(module, gram_tensor, category, None, names)
-    if root_cartan_type is not None and engine_ring(ring) is SageZZ:
-        from dzack_research.preamble.categories.root_lattices import refine_root_lattice
+    from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+        FreeModuleOn,
+        FreshFreeModuleOn,
+    )
 
-        return refine_root_lattice(result, root_cartan_type)
+    module = (
+        FreeModuleOn(ring, generating_set)
+        if module_generators is None
+        else FreshFreeModuleOn(ring, generating_set)
+    )
+    result = _lattice_parent(module, gram_tensor, category, None, names)
+    if root_cartan_type is not None and _engine_ring(ring) is SageZZ:
+        return category._refine_root_lattice(result, root_cartan_type)
     return result
 
 
@@ -1023,14 +1089,14 @@ def _require_form_tensor(form, ring):
             pass
         case _:
             raise TypeError("form= takes a type-(0,2) tensor")
-    if engine_ring(form.base_ring()) != engine_ring(ring):
+    if _engine_ring(form.base_ring()) != _engine_ring(ring):
         raise TypeError(f"Lattices({ring}) takes an {ring}-valued form, got a form over {form.base_ring()}")
     return form
 
 
 def _basis_keys(module):
     r"""The index set of the distinguished basis of ``module``."""
-    return module.basis().keys()
+    return module.module_generating_set()
 
 
 def _finite_basis_positions(module):
@@ -1047,29 +1113,37 @@ def _basis_position(keys, label, positions=None):
 
 
 def _owned_free_module(data, ring, module_generators=None, names=None):
-    r"""The combinatorial free module on the generating set of ``data``."""
-    computation_ring = engine_ring(ring)
-    match data:
-        case CombinatorialFreeModule():
-            module = data
-        case FreeModule_generic() if data.is_ambient():
-            module = data
-        case FreeModule_generic():
-            raise TypeError(f"Lattices({ring}) takes the ambient free module, not a submodule")
-        case _:
-            raise TypeError(f"Lattices({ring}) takes a free module over {ring}, got {data}")
-    if engine_ring(module.base_ring()) != computation_ring:
-        raise TypeError(f"Lattices({ring}) takes a free module over {ring}, got base ring {module.base_ring()}")
-    match data:
-        case CombinatorialFreeModule() if module_generators is None:
-            keys = data.basis().keys()
-            if keys is not NN:
-                return data
-            generating_set = _generating_set_for(Infinity, None, names)
-            return CombinatorialFreeModule(computation_ring, generating_set)
-        case _:
-            generating_set = _generating_set_for(module.rank(), module_generators, names)
-            return CombinatorialFreeModule(computation_ring, generating_set)
+    r"""The engine free module of a lattice on the generating set of ``data``.
+
+    ``data`` is an owned free module.  Its labels are kept when they were
+    chosen; positional labels (``R^n``, ``R^NN``) name nothing, so the
+    lattice's generators are then ``module_generators``, ``names``, or the
+    formal symbols \(e_i\).
+    """
+    from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules
+
+    if data not in FramedFreeModules(ring):
+        raise TypeError(f"Lattices({ring}) takes a free module over {ring}, got {data}")
+    if _engine_ring(data.base_ring()) != _engine_ring(ring):
+        raise TypeError(f"Lattices({ring}) takes a free module over {ring}, got base ring {data.base_ring()}")
+    labels = data.module_generating_set()
+    rank = data.rank()
+    if rank == Infinity:
+        positional = labels is NN
+    else:
+        positional = int(labels.cardinality()) == int(rank) and all(
+            (label := labels.unrank(position)) == position
+            or (label in NN and int(label) == position)
+            for position in range(int(rank))
+        )
+    from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreshFreeModuleOn
+
+    if module_generators is None and not positional:
+        return FreshFreeModuleOn(ring, labels)
+    return FreshFreeModuleOn(
+        ring,
+        _generating_set_for(rank, module_generators, names),
+    )
 
 
 def _identity_lattice(data, ring, names, module_generators, category) -> Lattice:
@@ -1102,7 +1176,7 @@ def lattice(
     if basis is not None:
         raise TypeError("Lattices(R) does not take a spanning basis; construct the free module and the Gram in this category")
     ring = category.base_ring()
-    from dzack_research.preamble.categories.modules import FramedFreeModules
+    from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules
 
     framed = FramedFreeModules(ring)
 
@@ -1111,8 +1185,6 @@ def lattice(
             case _PairingGram():
                 raise TypeError("a pairing Gram already determines the lattice")
             case _ if data in framed:
-                module = _owned_free_module(data, ring, module_generators=module_generators, names=names)
-            case CombinatorialFreeModule() | FreeModule_generic():
                 module = _owned_free_module(data, ring, module_generators=module_generators, names=names)
             case _:
                 raise TypeError("form= takes a free module as the first argument")
@@ -1127,15 +1199,13 @@ def lattice(
         case _PairingGram():
             if module_generators is not None:
                 raise TypeError("a pairing Gram already determines the generating set")
-            if engine_ring(data.base_ring()) != engine_ring(ring):
+            if _engine_ring(data.base_ring()) != _engine_ring(ring):
                 raise TypeError(f"Lattices({ring}) takes a Gram over {ring}, got base ring {data.base_ring()}")
             return _lattice_parent(data._module, data, category, None, names)
         case _ if data in framed:
             return _identity_lattice(data, ring, names, module_generators, category)
-        case CombinatorialFreeModule() | FreeModule_generic():
-            return _identity_lattice(data, ring, names, module_generators, category)
         case Tensor() if data.tensor_valence() == (0, 2):
-            if engine_ring(data.base_ring()) != engine_ring(ring):
+            if _engine_ring(data.base_ring()) != _engine_ring(ring):
                 raise TypeError(f"Lattices({ring}) takes a Gram over {ring}, got base ring {data.base_ring()}")
             return _lattice_from_gram_tensor(data, ring, names, module_generators, category)
         case Tensor() | Matrix():
@@ -1149,7 +1219,7 @@ def lattice(
                 category,
             )
         case Integer() | int() if int(data) >= 0:
-            from dzack_research.preamble.categories.modules import FreeModule
+            from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreeModule
 
             return _identity_lattice(
                 FreeModule(ring, int(data)),

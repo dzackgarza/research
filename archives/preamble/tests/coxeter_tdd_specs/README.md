@@ -64,72 +64,117 @@ tests/
 ## 🧪 Test Types and Their Purpose
 
 ### Unit Tests (`unit/`) - Test Our Implementation in Isolation
+
 - **Purpose**: Test individual classes and methods in isolation
+
 - **Scope**: Single class or function
+
 - **Dependencies**: Mock external dependencies (including Sage)
+
 - **Speed**: Fast (< 1 second per test)
+
 - **When to Run**: On every code change
 
 **What we test:**
+
 - Individual class constructors and methods
+
 - Edge cases and error handling
+
 - Input validation and type checking
+
 - Mathematical properties of our objects
 
 **What we DON'T test:**
+
 - Sage implementations
+
 - Complex workflows involving multiple components
+
 - Performance characteristics
 
 ### Integration Tests (`integration/`) - Test Component Interaction
+
 - **Purpose**: Test how our components work together
+
 - **Scope**: Multiple classes/modules interacting
+
 - **Dependencies**: Use real implementations, minimal mocking
+
 - **Speed**: Medium (1-10 seconds per test)
+
 - **When to Run**: Before committing changes
 
 **What we test:**
+
 - Constructor chains (RootSystem → CoxeterGroup → WeylGroup)
+
 - Data flow between components
+
 - Compatibility between different object types
+
 - Mathematical consistency across components
 
 ### System Tests (`system/`) - Test Complete Workflows
+
 - **Purpose**: Test complete mathematical workflows end-to-end
+
 - **Scope**: Full user scenarios and mathematical theorems
+
 - **Dependencies**: Real implementations throughout
+
 - **Speed**: Slow (10+ seconds per test)
+
 - **When to Run**: Before releases, nightly builds
 
 **What we test:**
+
 - Complete classification workflows
+
 - Literature examples from start to finish
+
 - Mathematical theorem verification
+
 - Real user scenarios
 
 ### Sage Verification (`sage_verification/`) - Cross-Validation
+
 - **Purpose**: Verify our results match Sage's canonical implementations
+
 - **Scope**: Compare outputs between our code and Sage
+
 - **Dependencies**: Requires Sage installation
+
 - **Speed**: Variable (depends on Sage)
+
 - **When to Run**: After implementation complete, before release
 
 **What we test:**
+
 - Numerical results match Sage exactly
+
 - Mathematical properties are equivalent
+
 - Edge cases produce same results
+
 - Classification results are identical
 
 ### Benchmarks (`benchmarks/`) - Performance Testing
+
 - **Purpose**: Measure and track performance characteristics
+
 - **Scope**: Algorithm complexity and execution time
+
 - **Dependencies**: Real implementations
+
 - **Speed**: Variable (some tests may be very slow)
+
 - **When to Run**: Weekly, before performance-critical releases
 
 ## 🏷️ Test Markers and Organization
 
 ### Test Type Markers
+
 ```python
 @pytest.mark.unit          # Unit tests of our implementation
 @pytest.mark.integration   # Integration tests
@@ -139,6 +184,7 @@ tests/
 ```
 
 ### Speed Markers
+
 ```python
 @pytest.mark.fast          # < 1 second
 @pytest.mark.medium        # 1-10 seconds  
@@ -147,6 +193,7 @@ tests/
 ```
 
 ### Mathematical Content Markers
+
 ```python
 @pytest.mark.gram_matrices    # Gram matrix related
 @pytest.mark.root_systems     # Root system related
@@ -161,6 +208,7 @@ tests/
 ## 🚀 Running Tests
 
 ### By Test Type (Recommended)
+
 ```bash
 # Unit tests only (fast, run frequently)
 python run_tests.py --type unit
@@ -179,6 +227,7 @@ python run_tests.py --type benchmark
 ```
 
 ### By Speed
+
 ```bash
 # Fast tests only (development)
 python run_tests.py --speed fast
@@ -191,6 +240,7 @@ python run_tests.py --all
 ```
 
 ### By Mathematical Content
+
 ```bash
 # All Gram matrix tests
 python run_tests.py --topic gram_matrices
@@ -203,6 +253,7 @@ python run_tests.py --topic finite
 ```
 
 ### Development Workflow
+
 ```bash
 # During development (fast feedback)
 python run_tests.py --type unit --topic gram_matrices
@@ -217,64 +268,101 @@ python run_tests.py --all --exclude benchmark
 ## 🔧 Test Configuration
 
 ### conftest.py Files
+
 - `tests/conftest.py`: Global fixtures available to all tests
+
 - `tests/unit/conftest.py`: Unit test specific fixtures (mocking utilities)
+
 - `tests/integration/conftest.py`: Integration test fixtures (real objects)
+
 - `tests/system/conftest.py`: System test fixtures (complete workflows)
+
 - `tests/sage_verification/conftest.py`: Sage comparison utilities
+
 - `tests/benchmarks/conftest.py`: Performance measurement utilities
 
 ### Fixtures Organization
+
 - **Unit Test Fixtures**: Mock objects, isolated test data
+
 - **Integration Fixtures**: Real objects with controlled interactions
+
 - **System Fixtures**: Complete mathematical examples
+
 - **Sage Fixtures**: Sage object construction and comparison utilities
+
 - **Benchmark Fixtures**: Performance measurement tools
 
 ## 📋 Best Practices Implemented
 
 ### 1. Proper Separation of Concerns
+
 - ✅ Unit tests test our code in isolation (with mocking)
+
 - ✅ Integration tests test component interaction
+
 - ✅ System tests test complete workflows
+
 - ✅ Sage verification is completely separate
 
 ### 2. Fast Feedback Loop
+
 - ✅ Unit tests are fast (< 1 second each)
+
 - ✅ Can run subset of tests during development
+
 - ✅ Clear speed markers for filtering
 
 ### 3. Clear Test Organization
+
 - ✅ Tests mirror source code structure
+
 - ✅ Clear naming conventions
+
 - ✅ Proper use of conftest.py for fixtures
 
 ### 4. Minimal Mocking
+
 - ✅ Mock only external dependencies in unit tests
+
 - ✅ Use real implementations in integration/system tests
+
 - ✅ Sage is treated as external dependency
 
 ### 5. Test Isolation
+
 - ✅ Each test is independent
+
 - ✅ No shared state between tests
+
 - ✅ Clear setup/teardown through fixtures
 
 ## 🎯 Testing Philosophy
 
 ### Test Our Implementation, Not Sage
+
 - **Unit/Integration/System tests**: Test our code behavior
+
 - **Sage verification tests**: Compare our results to Sage's
+
 - **Clear separation**: Never mix these concerns
 
 ### Test Behavior, Not Implementation
+
 - Focus on mathematical properties and contracts
+
 - Test public interfaces, not internal details
+
 - Use mocking sparingly and strategically
 
 ### Follow the Testing Pyramid
+
 - **Many unit tests**: Fast, isolated, comprehensive coverage
+
 - **Some integration tests**: Key component interactions
+
 - **Few system tests**: Critical end-to-end workflows
+
 - **Targeted verification**: Compare key results with Sage
 
 This organization ensures maintainable, fast, and reliable tests that follow established software engineering best practices while serving the mathematical rigor required for the Coxeter group project.

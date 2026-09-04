@@ -1,14 +1,19 @@
 """Divisor groups as framed free modules."""
 
 from sage.categories.category import Category
+from sage.misc.cachefunc import cached_function
 from sage.misc.latex import latex
 
-from dzack_research.preamble.categories.modules import FramedFreeModules, FreeModuleOn
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreshFreeModuleOn
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
 )
-from dzack_research.preamble.categories.rings import OwnedCategoryOverBaseRing, owned_ring_view
-from dzack_research.preamble.categories.sets import finite_ordered_set
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    OwnedCategoryOverBaseRing,
+    _owned_ring,
+)
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.refine import refine
 
 
@@ -20,17 +25,17 @@ class DivisorGroups(Category):
         return "divisor groups"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.rings import own_ring
+        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
         from sage.rings.integer_ring import ZZ as SageZZ
 
-        return [FramedFreeModules(own_ring(SageZZ))]
+        return [FramedFreeModules(_own_ring(SageZZ))]
 
 
 def DivisorGroup(module):
-    from dzack_research.preamble.categories.rings import own_ring
+    from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
     from sage.rings.integer_ring import ZZ as SageZZ
 
-    if module not in FramedFreeModules(own_ring(SageZZ)):
+    if module not in FramedFreeModules(_own_ring(SageZZ)):
         raise TypeError("a divisor group is a free abelian group on specified prime divisors")
     return refine(module, DivisorGroups())
 
@@ -45,45 +50,59 @@ class FormalDivisorGroups(OwnedCategoryOverBaseRing):
     def super_categories(self):
         return [FramedFreeModules(self.base_ring())]
 
-    class ElementMethods:
-        def terms(self):
+    class ParentMethods:
+        # A formal divisor is an element of the free module's engine, so the
+        # group, not the element, answers questions about its terms.
+        def terms(self, divisor):
             return tuple(
                 (coefficient, prime_divisor)
-                for prime_divisor, coefficient in module_coefficients(self).items()
+                for prime_divisor, coefficient in module_coefficients(divisor, self).items()
             )
 
-        def components(self):
-            return tuple(prime_divisor for _, prime_divisor in self.terms())
+        def components(self, divisor):
+            return tuple(prime_divisor for _, prime_divisor in self.terms(divisor))
 
-        def _repr_(self):
-            if not self.terms():
+        def divisor_repr(self, divisor) -> str:
+            terms = self.terms(divisor)
+            if not terms:
                 return "0"
             return " + ".join(
-                f"{coefficient}*{prime_divisor}"
-                for coefficient, prime_divisor in self.terms()
+                f"{coefficient}*{prime_divisor}" for coefficient, prime_divisor in terms
             ).replace("+ -", "- ")
 
-        def _latex_(self):
-            if not self.terms():
+        def divisor_latex(self, divisor) -> str:
+            terms = self.terms(divisor)
+            if not terms:
                 return "0"
             return " + ".join(
-                rf"{latex(coefficient)}\,{latex(prime_divisor)}"
-                for coefficient, prime_divisor in self.terms()
+                rf"{latex(coefficient)}\,{latex(prime_divisor)}" for coefficient, prime_divisor in terms
             ).replace("+ -", "- ")
+
+
+@cached_function
+def FormalDivisorGroup(coefficient_ring, prime_divisors):
+    r"""Return the group of formal divisors on the stated prime divisors, one per ``(R, S)``."""
+    ring = _owned_ring(coefficient_ring)
+    return refine(
+        FreshFreeModuleOn(ring, finite_ordered_set(prime_divisors)),
+        FormalDivisorGroups(ring),
+    )
 
 
 def FormalDivisor(coefficient_ring, terms):
-    r"""Return the formal linear combination of the stated prime divisors."""
-    ring = owned_ring_view(coefficient_ring)
+    r"""Return the formal linear combination of the stated prime divisors.
+
+    The divisor is an element of ``FormalDivisorGroup(R, S)`` for ``S`` the
+    prime divisors in ``terms``, in order of first appearance; that group
+    answers ``terms``, ``components`` and printing for it.
+    """
+    ring = _owned_ring(coefficient_ring)
     terms = tuple(terms)
     prime_divisors = finite_ordered_set(
         prime_divisor
         for _, prime_divisor in terms
     )
-    group = refine(
-        FreeModuleOn(ring, prime_divisors),
-        FormalDivisorGroups(ring),
-    )
+    group = FormalDivisorGroup(ring, tuple(prime_divisors))
     coefficients = {
         prime_divisor: sum(
             (

@@ -8,8 +8,12 @@ from sage.structure.element import ModuleElement
 from sage.structure.parent import Parent
 from sage.structure.richcmp import op_EQ, op_NE
 
-from dzack_research.preamble.categories.rings import engine_ring, owned_ring_view
-from dzack_research.preamble.categories.sets import Set
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _engine_element,
+    _engine_ring,
+    _owned_ring,
+)
+from dzack_research.preamble.categories.sets.set_categories import Set
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -92,7 +96,7 @@ class GeneralModuleParent(Parent):
         if not callable(addition) or not callable(negation):
             raise TypeError("addition and negation must be callable")
 
-        self._preamble_base_ring = owned_ring_view(ring)
+        self._preamble_base_ring = _owned_ring(ring)
         self._preamble_carrier = Set(carrier)
         self._preamble_addition = addition
         self._preamble_zero_value = self._normalize_carrier_value(zero)
@@ -101,10 +105,10 @@ class GeneralModuleParent(Parent):
         self._preamble_scalar_callback = scalar_action
         if rho is not None:
             if isinstance(rho, Map):
-                if engine_ring(rho.domain()) is not engine_ring(self._preamble_base_ring):
+                if _engine_ring(rho.domain()) is not _engine_ring(self._preamble_base_ring):
                     raise ValueError("the supplied scalar-action morphism has the wrong domain ring")
                 self._preamble_raw_scalar_action = (
-                    lambda scalar, value: rho(engine_ring(self._preamble_base_ring)(scalar))(value)
+                    lambda scalar, value: rho(_engine_ring(self._preamble_base_ring)(scalar))(value)
                 )
             elif callable(rho):
                 self._preamble_raw_scalar_action = lambda scalar, value: rho(scalar)(value)
@@ -182,11 +186,14 @@ class GeneralModuleParent(Parent):
             raise NotImplementedError(
                 "annihilator of this general module requires a represented finite carrier or a stronger algebra backend"
             )
-        engine = engine_ring(self.base_ring())
+        engine = _engine_ring(self.base_ring())
         try:
             if not bool(engine.is_finite()):
                 raise NotImplementedError
-            scalars = tuple(engine)
+            scalars = tuple(
+                self.base_ring()._from_engine_element(engine(scalar))
+                for scalar in engine
+            )
         except (AttributeError, NotImplementedError, TypeError, ValueError) as error:
             raise NotImplementedError(
                 "annihilator of this general module requires an enumerable finite scalar ring"
@@ -214,14 +221,14 @@ class GeneralModuleParent(Parent):
 
     def _raw_scalar_multiple(self, scalar, element):
         value = self._preamble_raw_scalar_action(
-            engine_ring(self.base_ring())(scalar),
+            _engine_element(self.base_ring(), self.base_ring()(scalar)),
             self(element).underlying_element(),
         )
         return self(value)
 
     def _build_scalar_action_morphism(self):
         from dzack_research.preamble.categories.modules.pure.modules import Modules
-        from dzack_research.preamble.categories.rings import ring_morphism
+        from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
 
         endomorphisms = Modules(self.base_ring()).End(self)
         return ring_morphism(
@@ -270,11 +277,14 @@ class GeneralModuleParent(Parent):
                     if (left + right) + third != left + (right + third):
                         raise ValueError("the selected addition is not associative")
 
-        engine = engine_ring(self.base_ring())
+        engine = _engine_ring(self.base_ring())
         try:
             if not bool(engine.is_finite()):
                 raise NotImplementedError
-            scalars = tuple(engine)
+            scalars = tuple(
+                self.base_ring()._from_engine_element(engine(scalar))
+                for scalar in engine
+            )
         except (AttributeError, NotImplementedError, TypeError, ValueError):
             _LOGGER.debug(
                 "Additive group laws for finite carrier %s were exhaustively checked, but "
@@ -284,8 +294,8 @@ class GeneralModuleParent(Parent):
             )
             return
 
-        one = engine.one()
-        zero_scalar = engine.zero()
+        one = self.base_ring().one()
+        zero_scalar = self.base_ring().zero()
         for element in elements:
             if self.scalar_multiple(one, element) != element:
                 raise ValueError("1 does not act as the identity on the module")

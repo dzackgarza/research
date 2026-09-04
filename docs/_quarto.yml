@@ -29,6 +29,7 @@ book:
     - part: Forms and lattices
       chapters:
         - framework/Bilinear-and-Quadratic-Forms.md
+        - framework/Bilinear-Forms-on-Algebra-Modules.md
         - framework/Lattices-and-Discriminant-Forms.md
         - framework/Isometries-and-Arithmetic-Invariants.md
     - part: Realizations

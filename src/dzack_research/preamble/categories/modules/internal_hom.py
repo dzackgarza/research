@@ -2,124 +2,99 @@ r"""Internal Hom modules for the exact finitely presented module backend."""
 
 from sage.modules.fg_pid.fgp_morphism import FGP_Homset, FGP_Morphism
 
-from dzack_research.preamble.categories.rings import (
-    OwnedCategoryOverBaseRing,
-    engine_ring,
-    owned_ring_view,
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _engine_ring,
+    _owned_ring,
 )
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    EndCategoryConstruction,
+from dzack_research.preamble.categories.modules.pure.modules import (
+    InternalHomModules,
 )
-from dzack_research.preamble.categories.sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.refine import refine
 
 
-class LinearHomModules(OwnedCategoryOverBaseRing):
-    r"""Represented Hom parents closed under pointwise ``R``-linear operations.
-
-    This is the enrichment shared by the full module Hom and by structured
-    linear sub-Homs such as equivariant, graded, and cochain maps.  It does not
-    claim that the parent contains *all* ``R``-linear maps with its endpoints.
-    """
-
-    @classmethod
-    def _repr_object_names(cls):
-        return "linear Hom modules"
-
-    def super_categories(self):
-        from dzack_research.preamble.categories.modules.pure.modules import Modules
-
-        return [Modules(self.base_ring())]
-
-    class ParentMethods:
-        def source_module(self):
-            return self.domain()
-
-        def target_module(self):
-            return self.codomain()
-
-        def scalar_multiple(self, scalar, morphism):
-            r"""Return the pointwise scalar multiple in this linear Hom."""
-            if morphism.parent() is not self:
-                morphism = self(morphism)
-            scalar = engine_ring(self.base_ring())(scalar)
-            return self.elementwise(
-                lambda element: self.codomain().scalar_multiple(
-                    scalar,
-                    morphism(element),
-                )
-            )
-
-        def as_morphism(self, element):
-            return self(element)
-
-        def from_morphism(self, morphism):
-            return self(morphism)
-
-        def evaluation(self, map_element, source_element):
-            return self(map_element)(source_element)
-
-
-class LinearEndCategoryConstruction(EndCategoryConstruction):
-    r"""Endomorphism rings for categories enriched in ``R``-modules.
-
-    ``End_C(M)`` is the same parent as ``Hom_C(M,M)``.  The End construction
-    only records that equal-endpoint Hom as an End object and adds the ring
-    structure supplied by pointwise addition and composition.
-    """
-
-    def Of(self, obj, codomain=None):
-        if codomain is not None and codomain is not obj:
-            raise ValueError("an endomorphism category has equal endpoints")
-        if obj not in self.base_category():
-            raise TypeError("the endomorphism object must lie in the base category")
-        endomorphisms = super().Of(obj)
-        endomorphisms.attach_end_family(self)
-        from dzack_research.preamble.categories.rings import OwnedRings
-
-        refine(endomorphisms, OwnedRings())
-        return endomorphisms
-
-    def __contains__(self, candidate) -> bool:
-        return hasattr(candidate, "end_family") and candidate.end_family() is self
-
-
-class InternalHomModules(OwnedCategoryOverBaseRing):
-    r"""The canonical full enriched Hom modules ``Hom_R(M,N)``.
-
-    Objects in this category are the actual categorical Hom-sets between
-    ``R``-modules.  Their elements are the actual module morphisms.  A finite
-    presentation, when computable, is additional structure on this same Hom
-    parent rather than a second representation.
-    """
-
-    @classmethod
-    def _repr_object_names(cls):
-        return "internal Hom modules"
-
-    def super_categories(self):
-        return [LinearHomModules(self.base_ring())]
-
-    class ParentMethods:
-        def inclusion_into_generator_maps(self):
-            r"""Return the kernel inclusion into the module of generator assignments."""
-            inclusion = self.__dict__.get("_preamble_internal_hom_inclusion")
-            if inclusion is None:
-                raise NotImplementedError(
-                    "this Hom module has no computed finite-presentation inclusion"
-                )
-            return inclusion
-
-
 def _native_fgp_morphism(morphism):
-    r"""Cross one owned module map to Sage's exact FGP kernel engine."""
+    r"""Cross one owned module map to Sage's exact FGP kernel engine.
+
+    Both endpoints are owned presented modules; their Smith engines are read
+    through the presenting category's protected accessor.
+    """
     domain = morphism.domain()
     codomain = morphism.codomain()
-    optimized, _change = domain.optimized()
-    smith_generators = domain.smith_form_gens()
-    lifted_images = [morphism(generator).lift() for generator in smith_generators]
-    native_linear = optimized.V().hom(lifted_images, codomain.V())
-    return FGP_Morphism(FGP_Homset(domain, codomain), native_linear)
+    domain_engine = domain._smith_engine()
+    codomain_engine = codomain._smith_engine()
+    optimized, _change = domain_engine.optimized()
+    smith_generators = domain_engine.smith_form_gens()
+    lifted_images = [
+        codomain._to_smith_engine_element(
+            morphism(domain._from_smith_engine_element(generator))
+        ).lift()
+        for generator in smith_generators
+    ]
+    native_linear = optimized.V().hom(lifted_images, codomain_engine.V())
+    return FGP_Morphism(FGP_Homset(domain_engine, codomain_engine), native_linear)
+
+
+def _install_internal_hom_model(homset, model, inclusion) -> None:
+    r"""Install one selected finite-presentation model on the canonical Hom parent."""
+    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+        _presentation_from_relation_rows,
+        _presentation_matrix,
+    )
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+        module_coefficients,
+    )
+    from dzack_research.preamble.categories.sets.set_categories import Sets
+
+    relation_matrix = _presentation_matrix(model)
+    presentation = (
+        model.presentation()
+        if hasattr(model, "presentation")
+        else _presentation_from_relation_rows(
+            model.base_ring(),
+            model.module_generating_set(),
+            Sets.Δ[relation_matrix.nrows() - 1],
+            relation_matrix,
+        )
+    )
+
+    def model_from_coordinates(coordinates):
+        if hasattr(model, "_from_coordinates"):
+            return model._from_coordinates(coordinates)
+        values = iter(coordinates)
+        coefficients = {}
+        for label in model.module_generating_set():
+            try:
+                coefficient = next(values)
+            except StopIteration as error:
+                raise ValueError("internal-Hom coordinates are too short") from error
+            if coefficient:
+                coefficients[label] = coefficient
+        try:
+            next(values)
+        except StopIteration:
+            return model.linear_combination(coefficients)
+        raise ValueError("internal-Hom coordinates are too long")
+
+    homset._preamble_internal_hom_model = model
+    homset._preamble_internal_hom_inclusion = inclusion
+    homset._preamble_module_generating_set = model.module_generating_set()
+    homset._preamble_relation_matrix = relation_matrix
+    homset._preamble_presentation = presentation
+    homset._preamble_module_generator_function = (
+        lambda label: homset._morphism_from_internal_model(model.module_generator(label))
+    )
+    homset._preamble_module_coefficient_function = (
+        lambda morphism: module_coefficients(
+            homset._internal_model_from_morphism(homset(morphism)),
+            model,
+        )
+    )
+    homset._preamble_module_from_coordinates_function = (
+        lambda coordinates: homset._morphism_from_internal_model(
+            model_from_coordinates(coordinates)
+        )
+    )
 
 
 def InternalHom(source, target):
@@ -132,8 +107,8 @@ def InternalHom(source, target):
     the same Hom parent.  The temporary quotient module is only a computational
     model for the presentation and never escapes as a second Hom object.
     """
-    ring = owned_ring_view(source.base_ring())
-    if owned_ring_view(target.base_ring()) != ring:
+    ring = _owned_ring(source.base_ring())
+    if _owned_ring(target.base_ring()) != ring:
         raise ValueError("an internal Hom requires one common base ring")
 
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
@@ -144,66 +119,90 @@ def InternalHom(source, target):
     if homset.__dict__.get("_preamble_internal_hom_model") is not None:
         return homset
 
-    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-        FinitelyPresentedModules,
-    )
-    from dzack_research.preamble.categories.modules.framed.framed_modules import (
-        FramedModules,
+    from dzack_research.preamble.categories.modules.pure.modules import (
+        _represented_finite_presentation,
     )
 
     if (
-        source not in FinitelyPresentedModules(ring)
-        or target not in FinitelyPresentedModules(ring)
-        or source not in FramedModules(ring)
-        or target not in FramedModules(ring)
+        not _represented_finite_presentation(source)
+        or not _represented_finite_presentation(target)
     ):
         return homset
 
-    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import (
+    from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
         BasedFreeModule,
     )
     from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
         FinitelyPresentedModule,
+        ModulesWithChosenFinitePresentation,
         _presentation_from_relation_rows,
         _presentation_matrix,
     )
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
         module_embedding,
     )
-    from dzack_research.preamble.categories.abstract_categories import TensorProduct
+    from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
 
-    source_labels = tuple(source.module_generating_set())
-    target_labels = tuple(target.module_generating_set())
+    from dzack_research.preamble.categories.sets.set_categories import Sets
+    from dzack_research.preamble.categories.modules.pure.modules import _tensor_pair
+
+    source_labels = source.module_generating_set()
+    target_labels = target.module_generating_set()
     source_relations = _presentation_matrix(source)
-    relation_labels = finite_ordered_set(range(source_relations.nrows()))
-    generator_free_module = BasedFreeModule(ring, finite_ordered_set(source_labels))
+    relation_labels = Sets.Δ[source_relations.nrows() - 1]
+    generator_free_module = BasedFreeModule(ring, source_labels)
     relation_free_module = BasedFreeModule(ring, relation_labels)
 
     generator_assignments = TensorProduct(generator_free_module, target)
     relation_assignments = TensorProduct(relation_free_module, target)
-    images = {}
-    for source_position, source_label in enumerate(source_labels):
-        for target_label in target_labels:
-            images[(source_label, target_label)] = relation_assignments.linear_combination(
-                {
-                    (relation_label, target_label): source_relations[relation_label, source_position]
-                    for relation_label in relation_labels
-                    if source_relations[relation_label, source_position]
-                }
-            )
+    relation_assignment_labels = relation_assignments.module_generating_set()
+
+    def relation_image(pair):
+        source_label = pair.component(0)
+        target_label = pair.component(1)
+        source_position = int(source_labels.rank(source_label))
+        return relation_assignments.linear_combination(
+            {
+                _tensor_pair(
+                    relation_assignment_labels,
+                    relation_label,
+                    target_label,
+                ): source_relations[relation_label, source_position]
+                for relation_label in relation_labels
+                if source_relations[relation_label, source_position]
+            }
+        )
+
     relation_evaluation = module_homset(
         generator_assignments,
         relation_assignments,
-    )(images)
-    from sage.modules.fg_pid.fgp_module import FGP_Module_class
-
-    if isinstance(generator_assignments, FGP_Module_class) and isinstance(
-        relation_assignments, FGP_Module_class
+    )(relation_image)
+    if (
+        generator_assignments in ModulesWithChosenFinitePresentation(ring)
+        and relation_assignments in ModulesWithChosenFinitePresentation(ring)
+        and generator_assignments._smith_engine() is not None
+        and relation_assignments._smith_engine() is not None
     ):
+        # ``kernel`` is a Sage FGP module over the engine ring; its cover,
+        # relative relation matrix and lifts are read here and re-presented as
+        # the owned module ``model`` before anything is returned.
         kernel = _native_fgp_morphism(relation_evaluation).kernel()
-        kernel_relations = kernel._relative_matrix().change_ring(engine_ring(ring))
-        kernel_labels = finite_ordered_set(range(int(kernel.V().rank())))
-        kernel_relation_labels = finite_ordered_set(range(kernel_relations.nrows()))
+        engine_ring = _engine_ring(ring)
+        engine_kernel_relations = kernel._relative_matrix().change_ring(engine_ring)
+        from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace
+
+        kernel_relations = MatrixSpace(
+            ring,
+            engine_kernel_relations.nrows(),
+            engine_kernel_relations.ncols(),
+        ).from_rows(
+            tuple(
+                tuple(ring._from_engine_element(engine_ring(entry)) for entry in row)
+                for row in engine_kernel_relations.rows()
+            )
+        )
+        kernel_labels = Sets.Δ[int(kernel.V().rank()) - 1]
+        kernel_relation_labels = Sets.Δ[engine_kernel_relations.nrows() - 1]
         kernel_presentation = _presentation_from_relation_rows(
             ring,
             kernel_labels,
@@ -224,11 +223,7 @@ def InternalHom(source, target):
     else:
         model = relation_evaluation.kernel()
         inclusion = model.inclusion()
-    homset._install_internal_hom_model(model, inclusion)
-    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-        ModulesWithChosenFinitePresentation,
-    )
-
+    _install_internal_hom_model(homset, model, inclusion)
     return refine(
         homset,
         [
@@ -271,7 +266,5 @@ def internal_hom_morphism(source_internal_hom, target_internal_hom, source_map, 
 __all__ = [
     "InternalHom",
     "InternalHomModules",
-    "LinearEndCategoryConstruction",
-    "LinearHomModules",
     "internal_hom_morphism",
 ]

@@ -13,18 +13,16 @@ only restricts the scalar ring.
 from sage.misc.cachefunc import cached_function
 
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
-from dzack_research.preamble.categories.modules import (
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    module_coefficients,
     module_homset,
-    restrict_scalars,
 )
+from dzack_research.preamble.categories.modules.pure.modules import restrict_scalars
 from dzack_research.preamble.categories.modules.group_modules.group_modules import (
     GroupModules,
     group_module_homset,
 )
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_coefficients,
-)
-from dzack_research.preamble.categories.rings import owned_ring_view
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
 from dzack_research.preamble.refine import refine
 
 
@@ -55,8 +53,8 @@ class GroupModuleScalarExtensionFunctor(Functor):
     def __init__(self, ring_map, group) -> None:
         self._ring_map = ring_map
         self._group = group
-        self._source_ring = owned_ring_view(ring_map.domain())
-        self._target_ring = owned_ring_view(ring_map.codomain())
+        self._source_ring = _owned_ring(ring_map.domain())
+        self._target_ring = _owned_ring(ring_map.codomain())
         super().__init__(
             GroupModules(self._source_ring, group),
             GroupModules(self._target_ring, group),
@@ -69,66 +67,45 @@ class GroupModuleScalarExtensionFunctor(Functor):
         return self._group
 
     def _apply_object(self, group_module):
-        from dzack_research.preamble.categories.functors.scalar_change import (
-            ScalarExtensionFunctor,
-        )
-        from dzack_research.preamble.categories.modules.group_modules.group_modules import (
-            GroupModule,
-        )
-        from dzack_research.preamble.tensors import tensor
-
-        unacted = _unacted_module(group_module)
-        changed_module = ScalarExtensionFunctor(self.ring_map())(unacted)
-        labels = tuple(changed_module.module_generating_set())
-
-        def action(group_element, vector):
-            coefficients = module_coefficients(vector, changed_module)
-            coordinates = tensor.vector(
-                self._target_ring,
-                [coefficients.get(label, self._target_ring.zero()) for label in labels],
-            )
-            source_tensor = group_module.action_tensor(group_element)
-            action_tensor = tensor.matrix(
-                self._target_ring,
-                [
-                    [self._target_ring(self.ring_map()(entry)) for entry in row]
-                    for row in source_tensor.rows()
-                ],
-            )
-            image = action_tensor * coordinates
-            return changed_module.linear_combination(
-                {
-                    label: image[index]
-                    for index, label in enumerate(labels)
-                    if image[index]
-                }
-            )
-
-        extended = GroupModule(changed_module, self.group(), action)
+        extended = group_module.base_change(self.ring_map())
         extended._preamble_scalar_extension_source_group_module = group_module
-        if group_module.is_trivial_action():
-            extended._preamble_action_is_trivial = True
         return extended
+
+    def chosen_preimage(self, image):
+        source = getattr(
+            image, "_preamble_scalar_extension_source_group_module", None
+        )
+        if source is not None:
+            return source
+        return super().chosen_preimage(image)
 
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())
         target = self(morphism.codomain())
+        from dzack_research.preamble.categories.functors.scalar_change import (
+            ScalarExtensionFunctor,
+        )
 
-        def image(label):
-            original = morphism.domain().module_generator(label)
-            coefficients = module_coefficients(
-                morphism(original), morphism.codomain()
+        underlying = (
+            morphism.codomain().forget_action_morphism()
+            * morphism
+            * morphism.domain().equip_action_morphism()
+        )
+        scalar_extension = ScalarExtensionFunctor(self.ring_map())
+        scalar_extension.adopt_object_image(
+            morphism.domain().unacted_module(), source.unacted_module()
+        )
+        scalar_extension.adopt_object_image(
+            morphism.codomain().unacted_module(), target.unacted_module()
+        )
+        transported = scalar_extension(underlying)
+        return group_module_homset(source, target)(
+            lambda label: target.equip_action_morphism()(
+                transported(
+                    source.forget_action_morphism()(source.module_generator(label))
+                )
             )
-            return target.linear_combination(
-                {
-                    target_label: self._target_ring(
-                        self.ring_map()(coefficient)
-                    )
-                    for target_label, coefficient in coefficients.items()
-                }
-            )
-
-        return group_module_homset(source, target)(image)
+        )
 
     def _repr_(self):
         return f"Scalar extension of {self.group()}-modules along {self.ring_map()}"
@@ -140,8 +117,8 @@ class GroupModuleRestrictionOfScalarsFunctor(Functor):
     def __init__(self, ring_map, group) -> None:
         self._ring_map = ring_map
         self._group = group
-        self._source_ring = owned_ring_view(ring_map.domain())
-        self._target_ring = owned_ring_view(ring_map.codomain())
+        self._source_ring = _owned_ring(ring_map.domain())
+        self._target_ring = _owned_ring(ring_map.codomain())
         super().__init__(
             GroupModules(self._target_ring, group),
             GroupModules(self._source_ring, group),
@@ -193,6 +170,12 @@ class GroupModuleRestrictionOfScalarsFunctor(Functor):
         )
         return refine(restricted, GroupModules(self._source_ring, self.group()))
 
+    def chosen_preimage(self, image):
+        source = getattr(image, "_preamble_restricted_group_module_source", None)
+        if source is not None:
+            return source
+        return super().chosen_preimage(image)
+
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())
         target = self(morphism.codomain())
@@ -225,14 +208,29 @@ class GroupModuleBaseChangeAdjunction(Adjunction):
             GroupModuleRestrictionOfScalarsFunctor(ring_map, group),
         )
 
+    def _underlying_adjunction(self):
+        from dzack_research.preamble.categories.functors.scalar_change import (
+            base_change_adjunction,
+        )
+
+        return base_change_adjunction(self._ring_map)
+
     def unit(self, group_module):
         extended = self.left_adjoint()(group_module)
         restricted = self.right_adjoint()(extended)
+        underlying = self._underlying_adjunction()
+        source_module = group_module.unacted_module()
+        extended_module = extended.unacted_module()
+        restricted_module = restricted.unacted_module()
+        underlying.left_adjoint().adopt_object_image(source_module, extended_module)
+        underlying.right_adjoint().adopt_object_image(extended_module, restricted_module)
+        unit = underlying.unit(source_module)
         return group_module_homset(group_module, restricted)(
-            lambda label: restricted(
-                _forget_action_element(
-                    extended,
-                    extended.module_generator(label),
+            lambda label: restricted.equip_action_morphism()(
+                unit(
+                    group_module.forget_action_morphism()(
+                        group_module.module_generator(label)
+                    )
                 )
             )
         )
@@ -240,52 +238,20 @@ class GroupModuleBaseChangeAdjunction(Adjunction):
     def counit(self, group_module):
         restricted = self.right_adjoint()(group_module)
         extended = self.left_adjoint()(restricted)
+        underlying = self._underlying_adjunction()
+        target_module = group_module.unacted_module()
+        restricted_module = restricted.unacted_module()
+        extended_module = extended.unacted_module()
+        underlying.right_adjoint().adopt_object_image(target_module, restricted_module)
+        underlying.left_adjoint().adopt_object_image(restricted_module, extended_module)
+        counit = underlying.counit(target_module)
         return group_module_homset(extended, group_module)(
-            lambda label: _equip_action_element(
-                group_module,
-                restricted.module_generator(label).underlying_element(),
-            )
-        )
-
-    def hom_set_isomorphism_forward(self, extended_morphism):
-        extended_source = extended_morphism.domain()
-        source = getattr(
-            extended_source,
-            "_preamble_scalar_extension_source_group_module",
-            None,
-        )
-        if source is None:
-            raise ValueError("the extended source was not produced by this scalar-extension functor")
-        target_restricted = self.right_adjoint()(extended_morphism.codomain())
-        return group_module_homset(source, target_restricted)(
-            lambda label: target_restricted(
-                _forget_action_element(
-                    extended_morphism.codomain(),
-                    extended_morphism(extended_source.module_generator(label)),
+            lambda label: group_module.equip_action_morphism()(
+                counit(
+                    extended.forget_action_morphism()(
+                        extended.module_generator(label)
+                    )
                 )
-            )
-        )
-
-    def hom_set_isomorphism_inverse(self, restricted_morphism, codomain=None):
-        restricted_target = restricted_morphism.codomain()
-        target = getattr(
-            restricted_target,
-            "_preamble_restricted_group_module_source",
-            None,
-        )
-        if target is None:
-            raise TypeError(
-                "the inverse transpose must land in a restricted S[G]-module"
-            )
-        if codomain is not None and codomain is not target:
-            raise ValueError("the stated codomain is not the S[G]-module being restricted")
-        source = self.left_adjoint()(restricted_morphism.domain())
-        return group_module_homset(source, target)(
-            lambda label: _equip_action_element(
-                target,
-                restricted_morphism(
-                    restricted_morphism.domain().module_generator(label)
-                ).underlying_element(),
             )
         )
 

@@ -41,6 +41,16 @@ class AbsoluteGaloisGroupsOfFiniteFields(Category_singleton):
         return [AbsoluteGaloisGroups(), OwnedAbelianGroups()]
 
     class ParentMethods:
+        def is_finite(self) -> bool:
+            return False
+
+        def order(self):
+            from sage.rings.infinity import Infinity
+
+            return Infinity
+
+        cardinality = order
+
         def is_abelian(self) -> bool:
             return True
 
@@ -51,33 +61,53 @@ class AbsoluteGaloisGroupsOfFiniteFields(Category_singleton):
             return (self.frobenius(),)
 
 
+class OpenAbsoluteGaloisSubgroups(Category_singleton):
+    r"""Open subgroups (G_E\subseteq G_K) carrying the embedding (E\to\bar K)."""
+
+    @classmethod
+    def _repr_object_names(cls) -> str:
+        return "open subgroups of absolute Galois groups"
+
+    def super_categories(self):
+        return [AbsoluteGaloisGroups()]
+
+    class ParentMethods:
+        def ambient(self):
+            return self._ambient
+
+        def supergroup(self):
+            return self._ambient
+
+        def fixed_field(self):
+            return self._fixed_extension.field()
+
+        def fixed_extension(self):
+            return self._fixed_extension
+
+        def embedding(self):
+            return self._fixed_extension.embedding()
+
+        def index(self):
+            return self._fixed_extension.degree()
+
+        def inclusion(self):
+            return self._inclusion
+
+
 def absolute_galois_group_category(field):
     from sage.categories.finite_fields import FiniteFields
-    from dzack_research.preamble.categories.rings.rings import engine_ring
+    from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
 
     return (
         AbsoluteGaloisGroupsOfFiniteFields()
-        if engine_ring(field) in FiniteFields()
+        if _engine_ring(field) in FiniteFields()
         else AbsoluteGaloisGroups()
     )
 
 
-def AbsoluteGaloisGroup(field, **kwargs):
-    r"""Construct (\operatorname{Aut}_K(\bar K)) with exact realization data."""
-    from dzack_research.preamble.categories.group.profinite.absolute_galois_group import (
-        AbsoluteGaloisGroup as _AbsoluteGaloisGroup,
-    )
-
-    return _AbsoluteGaloisGroup(field, **kwargs)
-
-
-absolute_galois_group = AbsoluteGaloisGroup
-
-
 __all__ = [
-    "AbsoluteGaloisGroup",
     "AbsoluteGaloisGroups",
     "AbsoluteGaloisGroupsOfFiniteFields",
-    "absolute_galois_group",
+    "OpenAbsoluteGaloisSubgroups",
     "absolute_galois_group_category",
 ]

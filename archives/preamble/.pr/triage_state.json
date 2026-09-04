@@ -1,702 +1,702 @@
 {
- "repo": "dzackgarza/tree-sitter-sage",
- "pr": 4,
- "counts": {
-  "NEW": 42,
-  "CLOSED": 12,
-  "OPEN-PENDING": 10
- },
- "converged": false,
- "records": [
-  {
-   "key": "ct:5a42e7c200fc1c6a",
-   "thread_id": "PRRT_kwDOTueeT86Xd_zh",
-   "path": "demo/notation.sage",
-   "line": null,
-   "resolved": false,
-   "outdated": true,
-   "state": "NEW",
-   "disp": null
+  "repo": "dzackgarza/tree-sitter-sage",
+  "pr": 4,
+  "counts": {
+    "NEW": 42,
+    "CLOSED": 12,
+    "OPEN-PENDING": 10
   },
-  {
-   "key": "ct:99f37bca0c331ede",
-   "thread_id": "PRRT_kwDOTueeT86Xd_zk",
-   "path": "src/sageparse/build.py",
-   "line": null,
-   "resolved": true,
-   "outdated": true,
-   "state": "CLOSED",
-   "disp": null
-  },
-  {
-   "key": "fp:a1719577bb6792e117f648ddc9f4268787efb873c32e06afe05a6a864a70866c",
-   "thread_id": "PRRT_kwDOTueeT86Xd_z-",
-   "path": "justfile",
-   "line": 34,
-   "resolved": false,
-   "outdated": false,
-   "state": "OPEN-PENDING",
-   "disp": {
-    "verdict": "rejected",
-    "has_verification": false,
-    "commit": null,
-    "by": "dzackgarza"
-   }
-  },
-  {
-   "key": "fp:6a4d7c56b203604cf9cab33637239869c8c91e3835bcd10e9fb7b2124fc5f165",
-   "thread_id": "PRRT_kwDOTueeT86Xd_z_",
-   "path": "demo/notation.sage",
-   "line": 3,
-   "resolved": false,
-   "outdated": false,
-   "state": "OPEN-PENDING",
-   "disp": {
-    "verdict": "accepted",
-    "has_verification": false,
-    "commit": null,
-    "by": "dzackgarza"
-   }
-  },
-  {
-   "key": "fp:c02a155df8c12665ab036744a6084c6cebea1f847c17543a1d6a48f9451f8062",
-   "thread_id": "PRRT_kwDOTueeT86Xd_0A",
-   "path": "src/sageparse/build.py",
-   "line": 41,
-   "resolved": false,
-   "outdated": false,
-   "state": "OPEN-PENDING",
-   "disp": {
-    "verdict": "accepted as written",
-    "has_verification": false,
-    "commit": null,
-    "by": "dzackgarza"
-   }
-  },
-  {
-   "key": "ct:731a00c390f8ef5e",
-   "thread_id": "PRRT_kwDOTueeT86Xd_8X",
-   "path": ".github/workflows/qc.yml",
-   "line": null,
-   "resolved": true,
-   "outdated": true,
-   "state": "CLOSED",
-   "disp": null
-  },
-  {
-   "key": "ct:dc5cbb39918a3b8b",
-   "thread_id": "PRRT_kwDOTueeT86Xd_8Z",
-   "path": "justfile",
-   "line": 78,
-   "resolved": true,
-   "outdated": true,
-   "state": "CLOSED",
-   "disp": null
-  },
-  {
-   "key": "ct:a4c3e8bfe09684b1",
-   "thread_id": "PRRT_kwDOTueeT86Xd_8b",
-   "path": "pyproject.toml",
-   "line": 25,
-   "resolved": false,
-   "outdated": false,
-   "state": "NEW",
-   "disp": null
-  },
-  {
-   "key": "ct:cb26b2fb880033fd",
-   "thread_id": "PRRT_kwDOTueeT86Xd_8d",
-   "path": "tests/test_sage_modules.py",
-   "line": 6,
-   "resolved": true,
-   "outdated": false,
-   "state": "CLOSED",
-   "disp": null
-  },
-  {
-   "key": "ct:4769db870c566d7a",
-   "thread_id": "PRRT_kwDOTueeT86Xd_8e",
-   "path": "src/sageparse/build.py",
-   "line": null,
-   "resolved": true,
-   "outdated": true,
-   "state": "CLOSED",
-   "disp": null
-  },
-  {
-   "key": "ct:4ba35468aab7e5da",
-   "thread_id": "PRRT_kwDOTueeT86Xd_8f",
-   "path": "src/sageparse/extensions/research.py",
-   "line": 274,
-   "resolved": true,
-   "outdated": false,
-   "state": "CLOSED",
-   "disp": null
-  },
-  {
-   "key": "ct:4f5b8747fd951278",
-   "thread_id": "PRRT_kwDOTueeT86Xd_8k",
-   "path": "src/sageparse/runtime.py",
-   "line": 60,
-   "resolved": false,
-   "outdated": false,
-   "state": "NEW",
-   "disp": null
-  },
-  {
-   "key": "fp:6f8605f07bf0a32c800f4d9cb48047dcce60060483f5591e2e3e554f0a65607f",
-   "thread_id": "PRRT_kwDOTueeT86Xd_8p",
-   "path": ".github/workflows/qc.yml",
-   "line": null,
-   "resolved": false,
-   "outdated": true,
-   "state": "OPEN-PENDING",
-   "disp": {
-    "verdict": "outdated",
-    "has_verification": false,
-    "commit": null,
-    "by": "dzackgarza"
-   }
-  },
-  {
-   "key": "fp:76ccad87cb2daab37cf4f025d2b3e4e566e9305ac63e87962c74e15591ac2700",
-   "thread_id": "PRRT_kwDOTueeT86Xd_8q",
-   "path": "justfile",
-   "line": 55,
-   "resolved": false,
-   "outdated": false,
-   "state": "OPEN-PENDING",
-   "disp": {
-    "verdict": "outdated",
-    "has_verification": false,
-    "commit": null,
-    "by": "dzackgarza"
-   }
-  },
-  {
-   "key": "fp:f2bb9713bfa2554de9060b558297d0ceb49d982bef70395bef2f84766a873fc0",
-   "thread_id": "PRRT_kwDOTueeT86Xd_8r",
-   "path": "tests/test_sage_modules.py",
-   "line": 6,
-   "resolved": false,
-   "outdated": false,
-   "state": "OPEN-PENDING",
-   "disp": {
-    "verdict": "accepted as written",
-    "has_verification": false,
-    "commit": null,
-    "by": "dzackgarza"
-   }
-  },
-  {
-   "key": "fp:d0c8ced8153aa231f91777720984cec3e40f2ae7d2eeb16e81ad1f0d4577c922",
-   "thread_id": "PRRT_kwDOTueeT86Xd_8t",
-   "path": "pyproject.toml",
-   "line": 25,
-   "resolved": false,
-   "outdated": false,
-   "state": "OPEN-PENDING",
-   "disp": {
-    "verdict": "accepted as written",
-    "has_verification": false,
-    "commit": null,
-    "by": "dzackgarza"
-   }
-  },
-  {
-   "key": "fp:e356fa9c62d25dc9385b09b494bd6d54d140704fe2c9e4f0bac5a1221da3f305",
-   "thread_id": "PRRT_kwDOTueeT86Xd_8v",
-   "path": ".github/workflows/ci.yml",
-   "line": 7,
-   "resolved": false,
-   "outdated": false,
-   "state": "OPEN-PENDING",
-   "disp": {
-    "verdict": "rejected",
-    "has_verification": false,
-    "commit": null,
-    "by": "dzackgarza"
-   }
-  },
-  {
-   "key": "fp:507a24896b5d3ed3205c58d60d77a393f31094d1d250e473dc2e3b6b1a51707e",
-   "thread_id": "PRRT_kwDOTueeT86Xd_8x",
-   "path": "src/sageparse/extensions/research.py",
-   "line": 240,
-   "resolved": false,
-   "outdated": false,
-   "state": "OPEN-PENDING",
-   "disp": {
-    "verdict": "accepted",
-    "has_verification": false,
-    "commit": null,
-    "by": "dzackgarza"
-   }
-  },
-  {
-   "key": "fp:35ef64291c28c2a352768b9968a873728512b10e9209580a7bd6e1f3a6961c65",
-   "thread_id": "PRRT_kwDOTueeT86Xd_8z",
-   "path": "src/sageparse/runtime.py",
-   "line": 31,
-   "resolved": false,
-   "outdated": false,
-   "state": "OPEN-PENDING",
-   "disp": {
-    "verdict": "accepted",
-    "has_verification": false,
-    "commit": null,
-    "by": "dzackgarza"
-   }
-  },
-  {
-   "key": "fp:1dbb664cc21cc1175deb80280df1b597cecef05b08b36d423c0e24a8d9f21f73",
-   "thread_id": "PRRT_kwDOTueeT86Xd_81",
-   "path": "src/sageparse/build.py",
-   "line": 41,
-   "resolved": false,
-   "outdated": false,
-   "state": "NEW",
-   "disp": null
-  },
-  {
-   "key": "ct:2f6a1143d3260f7b",
-   "thread_id": "PRRT_kwDOTueeT86XeFlu",
-   "path": "tests/test_sage_free_core.py",
-   "line": 45,
-   "resolved": false,
-   "outdated": false,
-   "state": "NEW",
-   "disp": null
-  },
-  {
-   "key": "ct:16f9fb7d2bb5c5f3",
-   "thread_id": "PRRT_kwDOTueeT86XeFlw",
-   "path": ".envrc",
-   "line": 5,
-   "resolved": false,
-   "outdated": false,
-   "state": "NEW",
-   "disp": null
-  },
-  {
-   "key": "fp:3e0b280178163f798e870590678e71c52783266c78247e6e2830b0b43ed423ad",
-   "thread_id": "PRRT_kwDOTueeT86XeFmu",
-   "path": "tests/test_sage_free_core.py",
-   "line": 36,
-   "resolved": false,
-   "outdated": false,
-   "state": "NEW",
-   "disp": null
-  },
-  {
-   "key": "fp:66c54fe6a5c32a62944ac1dd56088e476eb6ace37456120c905a845317c01088",
-   "thread_id": "PRRT_kwDOTueeT86XeFmw",
-   "path": ".envrc",
-   "line": 3,
-   "resolved": false,
-   "outdated": false,
-   "state": "NEW",
-   "disp": null
-  },
-  {
-   "key": "ct:c8beb6079692cf1e",
-   "thread_id": "PRRT_kwDOTueeT86XeHbN",
-   "path": "demo/notation.sage",
-   "line": null,
-   "resolved": true,
-   "outdated": true,
-   "state": "CLOSED",
-   "disp": null
-  },
-  {
-   "key": "ct:dc5cbb39918a3b8b",
-   "thread_id": "PRRT_kwDOTueeT86XeHbU",
-   "path": "justfile",
-   "line": null,
-   "resolved": true,
-   "outdated": true,
-   "state": "CLOSED",
-   "disp": null
-  },
-  {
-   "key": "ct:4ba35468aab7e5da",
-   "thread_id": "PRRT_kwDOTueeT86XeHbZ",
-   "path": "src/sageparse/extensions/research.py",
-   "line": 273,
-   "resolved": true,
-   "outdated": false,
-   "state": "CLOSED",
-   "disp": null
-  },
-  {
-   "key": "ct:1268cd3c35373297",
-   "thread_id": "PRRT_kwDOTueeT86XeHba",
-   "path": "tests/test_compiler.py",
-   "line": 194,
-   "resolved": false,
-   "outdated": false,
-   "state": "NEW",
-   "disp": null
-  },
-  {
-   "key": "ct:774f1cca20ef21c8",
-   "thread_id": "PRRT_kwDOTueeT86XeHbf",
-   "path": "tests/test_line_geometry.py",
-   "line": 34,
-   "resolved": false,
-   "outdated": false,
-   "state": "NEW",
-   "disp": null
-  },
-  {
-   "key": "fp:04d3e1ab62a3e3b70b7b8f639ed33f42b138136831171e67e000b26686e24ac9",
-   "thread_id": "PRRT_kwDOTueeT86XeHbv",
-   "path": "demo/notation.sage",
-   "line": null,
-   "resolved": false,
-   "outdated": true,
-   "state": "NEW",
-   "disp": null
-  },
-  {
-   "key": "fp:f3418818d25381a93e0a138289837aa0b4175f14de44a06b680f6046d63777ba",
-   "thread_id": "PRRT_kwDOTueeT86XeHby",
-   "path": "tests/test_compiler.py",
-   "line": 181,
-   "resolved": false,
-   "outdated": false,
-   "state": "NEW",
-   "disp": null
-  },
-  {
-   "key": "fp:96958e04d37af3e8e7f3c6307108272c24182b72cbcd75883c490add4ab48ba0",
-   "thread_id": "PRRT_kwDOTueeT86XeHbz",
-   "path": "tests/test_line_geometry.py",
-   "line": 30,
-   "resolved": false,
-   "outdated": false,
-   "state": "NEW",
-   "disp": null
-  },
-  {
-   "key": "fp:211647f026751adeca1ee63f502079508ea7a266d12c918ab26926ce068b3c1c",
-   "thread_id": "PRRT_kwDOTueeT86XeM27",
-   "path": "src/sageparse/__init__.py",
-   "line": 487,
-   "resolved": false,
-   "outdated": false,
-   "state": "NEW",
-   "disp": null
-  },
-  {
-   "key": "fp:8c4116fb4be7aa9e0523007ab1aae656ec5f9000a85bdf6a9827f9bcfdcc0150",
-   "thread_id": "PRRT_kwDOTueeT86XeOEm",
-   "path": ".envrc",
-   "line": 5,
-   "resolved": false,
-   "outdated": false,
-   "state": "NEW",
-   "disp": null
-  },
-  {
-   "key": "fp:c078318fd23117263a28b794e73e746625ab99e061db71a362e0fba3fd039754",
-   "thread_id": "PRRT_kwDOTueeT86XeOSL",
-   "path": "tests/test_sage_modules.py",
-   "line": 259,
-   "resolved": false,
-   "outdated": false,
-   "state": "NEW",
-   "disp": null
-  },
-  {
-   "key": "fp:16220707d4f8c78e83cf029d558dbc2075eff679144e19f3c572cb0058e7c71b",
-   "thread_id": "PRRT_kwDOTueeT86XeOSN",
-   "path": "src/sageparse/preparser/importer.py",
-   "line": 26,
-   "resolved": false,
-   "outdated": false,
-   "state": "NEW",
-   "disp": null
-  },
-  {
-   "key": "ct:c8beb6079692cf1e",
-   "thread_id": "PRRT_kwDOTueeT86XeQWo",
-   "path": "demo/notation.sage",
-   "line": 27,
-   "resolved": true,
-   "outdated": false,
-   "state": "CLOSED",
-   "disp": null
-  },
-  {
-   "key": "ct:dc5cbb39918a3b8b",
-   "thread_id": "PRRT_kwDOTueeT86XeQWw",
-   "path": "justfile",
-   "line": 53,
-   "resolved": false,
-   "outdated": false,
-   "state": "NEW",
-   "disp": null
-  },
-  {
-   "key": "ct:cb26b2fb880033fd",
-   "thread_id": "PRRT_kwDOTueeT86XeQWz",
-   "path": "tests/test_sage_modules.py",
-   "line": 6,
-   "resolved": false,
-   "outdated": false,
-   "state": "NEW",
-   "disp": null
-  },
-  {
-   "key": "ct:4769db870c566d7a",
-   "thread_id": "PRRT_kwDOTueeT86XeQW3",
-   "path": "src/sageparse/build.py",
-   "line": 44,
-   "resolved": false,
-   "outdated": false,
-   "state": "NEW",
-   "disp": null
-  },
-  {
-   "key": "ct:b6b512eba70edd69",
-   "thread_id": "PRRT_kwDOTueeT86XeQW6",
-   "path": "tests/test_span_conformance.py",
-   "line": 61,
-   "resolved": false,
-   "outdated": false,
-   "state": "NEW",
-   "disp": null
-  },
-  {
-   "key": "fp:1ac8d515d8c2155b343fddd2b4a2e4fcf39f764815e2f7148abfe79b7457be51",
-   "thread_id": "PRRT_kwDOTueeT86XeQXZ",
-   "path": "src/sageparse/__init__.py",
-   "line": 475,
-   "resolved": false,
-   "outdated": false,
-   "state": "NEW",
-   "disp": null
-  },
-  {
-   "key": "fp:14d690399d06db6454d0c05284c5fae6970e42da188bfd843e42c4018b096a69",
-   "thread_id": "PRRT_kwDOTueeT86XeQXa",
-   "path": "tests/test_span_conformance.py",
-   "line": 61,
-   "resolved": false,
-   "outdated": false,
-   "state": "NEW",
-   "disp": null
-  },
-  {
-   "key": "ct:99f37bca0c331ede",
-   "thread_id": "PRRT_kwDOTueeT86XeSlm",
-   "path": "src/sageparse/build.py",
-   "line": null,
-   "resolved": false,
-   "outdated": true,
-   "state": "NEW",
-   "disp": null
-  },
-  {
-   "key": "ct:e72e91037f65a9c9",
-   "thread_id": "PRRT_kwDOTueeT86XeSlr",
-   "path": "src/sageparse/preparser/importer.py",
-   "line": 24,
-   "resolved": false,
-   "outdated": false,
-   "state": "NEW",
-   "disp": null
-  },
-  {
-   "key": "fp:be12dafc4e51e5fbf39d6354b3311ec873ef575fc62642f5f1c9af64670a097e",
-   "thread_id": "PRRT_kwDOTueeT86XeSmM",
-   "path": "src/sageparse/preparser/importer.py",
-   "line": 21,
-   "resolved": false,
-   "outdated": false,
-   "state": "NEW",
-   "disp": null
-  },
-  {
-   "key": "ct:d9b73b619dc69108",
-   "thread_id": "PRRT_kwDOTueeT86XeaoT",
-   "path": "src/sageparse/extensions/research.py",
-   "line": 153,
-   "resolved": false,
-   "outdated": false,
-   "state": "NEW",
-   "disp": null
-  },
-  {
-   "key": "ct:c8effaf64a80a051",
-   "thread_id": "PRRT_kwDOTueeT86XeaoU",
-   "path": "src/sageparse/preparser/importer.py",
-   "line": 74,
-   "resolved": false,
-   "outdated": false,
-   "state": "NEW",
-   "disp": null
-  },
-  {
-   "key": "fp:885466268a12ce4e4d6d79ec7eee0d5f9fa82812da3ba84b9bcb543dce4fe99a",
-   "thread_id": "PRRT_kwDOTueeT86Xeapu",
-   "path": "src/sageparse/extensions/research.py",
-   "line": 148,
-   "resolved": false,
-   "outdated": false,
-   "state": "NEW",
-   "disp": null
-  },
-  {
-   "key": "fp:a627eb031b5eab1ffb03d26ec34cc1442dda19e67ce6595a809fc3f162e91f6b",
-   "thread_id": "PRRT_kwDOTueeT86Xeapv",
-   "path": "src/sageparse/preparser/importer.py",
-   "line": 71,
-   "resolved": false,
-   "outdated": false,
-   "state": "NEW",
-   "disp": null
-  },
-  {
-   "key": "ct:09e60481de34b691",
-   "thread_id": "PRRT_kwDOTueeT86XebUu",
-   "path": "src/sageparse/__init__.py",
-   "line": 492,
-   "resolved": true,
-   "outdated": false,
-   "state": "CLOSED",
-   "disp": null
-  },
-  {
-   "key": "ct:f6f22c4d75ab6091",
-   "thread_id": "PRRT_kwDOTueeT86Xeykp",
-   "path": "demo/notation.sage",
-   "line": 27,
-   "resolved": false,
-   "outdated": false,
-   "state": "NEW",
-   "disp": null
-  },
-  {
-   "key": "ct:1515ae337be20ddf",
-   "thread_id": "PRRT_kwDOTueeT86YLRcn",
-   "path": "src/sageparse/__init__.py",
-   "line": 500,
-   "resolved": true,
-   "outdated": false,
-   "state": "CLOSED",
-   "disp": null
-  },
-  {
-   "key": "fp:da96b195c0660954945abdd37d609c578936d6b0762d46b1aeba393a4ab4a932",
-   "thread_id": "PRRT_kwDOTueeT86YLRiQ",
-   "path": "src/sageparse/__init__.py",
-   "line": 487,
-   "resolved": false,
-   "outdated": false,
-   "state": "NEW",
-   "disp": null
-  },
-  {
-   "key": "ct:72ad3e62be2d4d43",
-   "thread_id": "PRRT_kwDOTueeT86Y1fP4",
-   "path": "tests/test_preparser_expression_corpus.py",
-   "line": 401,
-   "resolved": false,
-   "outdated": false,
-   "state": "NEW",
-   "disp": null
-  },
-  {
-   "key": "ct:86b133ebcd846194",
-   "thread_id": "PRRT_kwDOTueeT86Y1fQL",
-   "path": "src/sageparse/__init__.py",
-   "line": 82,
-   "resolved": false,
-   "outdated": false,
-   "state": "NEW",
-   "disp": null
-  },
-  {
-   "key": "ct:cfb47dd835439ff7",
-   "thread_id": "PRRT_kwDOTueeT86Y1fQT",
-   "path": "tests/test_preparser_modes.py",
-   "line": 381,
-   "resolved": false,
-   "outdated": false,
-   "state": "NEW",
-   "disp": null
-  },
-  {
-   "key": "fp:b5e1f6bb7249c3d0b89575e468bec9c19c34c672f913064fc310d12bf1912864",
-   "thread_id": "PRRT_kwDOTueeT86Y1fT2",
-   "path": "tests/test_preparser_expression_corpus.py",
-   "line": 396,
-   "resolved": false,
-   "outdated": false,
-   "state": "NEW",
-   "disp": null
-  },
-  {
-   "key": "fp:dd579dc4e3feb193c5a49cbb0112c10c97e4dda34b987e420817e7fdef1d624f",
-   "thread_id": "PRRT_kwDOTueeT86Y1fT6",
-   "path": "src/sageparse/__init__.py",
-   "line": 80,
-   "resolved": false,
-   "outdated": false,
-   "state": "NEW",
-   "disp": null
-  },
-  {
-   "key": "fp:02e3dc3adcbe8e01663cd2d0b7f4c5947cabc6b9f41954b6ce48af8d239287d4",
-   "thread_id": "PRRT_kwDOTueeT86Y1fT_",
-   "path": "tests/test_preparser_modes.py",
-   "line": 381,
-   "resolved": false,
-   "outdated": false,
-   "state": "NEW",
-   "disp": null
-  },
-  {
-   "key": "ct:5fecb0559ee7e4e0",
-   "thread_id": "PRRT_kwDOTueeT86Y1hW2",
-   "path": "src/sageparse/__init__.py",
-   "line": 94,
-   "resolved": false,
-   "outdated": false,
-   "state": "NEW",
-   "disp": null
-  },
-  {
-   "key": "ct:1515ae337be20ddf",
-   "thread_id": "PRRT_kwDOTueeT86Y1hXC",
-   "path": "src/sageparse/__init__.py",
-   "line": 459,
-   "resolved": false,
-   "outdated": false,
-   "state": "NEW",
-   "disp": null
-  },
-  {
-   "key": "ct:ad1804a0e7899972",
-   "thread_id": "PRRT_kwDOTueeT86Y1hXI",
-   "path": "src/sageparse/preparser/importer.py",
-   "line": 69,
-   "resolved": false,
-   "outdated": false,
-   "state": "NEW",
-   "disp": null
-  },
-  {
-   "key": "fp:6e4f5baba0a5ea2d7e4d4bf3c618f0b7a84efb7786a57850e967cb04a2421673",
-   "thread_id": "PRRT_kwDOTueeT86Y1hbQ",
-   "path": "src/sageparse/preparser/importer.py",
-   "line": 58,
-   "resolved": false,
-   "outdated": false,
-   "state": "NEW",
-   "disp": null
-  }
- ]
+  "converged": false,
+  "records": [
+    {
+      "key": "ct:5a42e7c200fc1c6a",
+      "thread_id": "PRRT_kwDOTueeT86Xd_zh",
+      "path": "demo/notation.sage",
+      "line": null,
+      "resolved": false,
+      "outdated": true,
+      "state": "NEW",
+      "disp": null
+    },
+    {
+      "key": "ct:99f37bca0c331ede",
+      "thread_id": "PRRT_kwDOTueeT86Xd_zk",
+      "path": "src/sageparse/build.py",
+      "line": null,
+      "resolved": true,
+      "outdated": true,
+      "state": "CLOSED",
+      "disp": null
+    },
+    {
+      "key": "fp:a1719577bb6792e117f648ddc9f4268787efb873c32e06afe05a6a864a70866c",
+      "thread_id": "PRRT_kwDOTueeT86Xd_z-",
+      "path": "justfile",
+      "line": 34,
+      "resolved": false,
+      "outdated": false,
+      "state": "OPEN-PENDING",
+      "disp": {
+        "verdict": "rejected",
+        "has_verification": false,
+        "commit": null,
+        "by": "dzackgarza"
+      }
+    },
+    {
+      "key": "fp:6a4d7c56b203604cf9cab33637239869c8c91e3835bcd10e9fb7b2124fc5f165",
+      "thread_id": "PRRT_kwDOTueeT86Xd_z_",
+      "path": "demo/notation.sage",
+      "line": 3,
+      "resolved": false,
+      "outdated": false,
+      "state": "OPEN-PENDING",
+      "disp": {
+        "verdict": "accepted",
+        "has_verification": false,
+        "commit": null,
+        "by": "dzackgarza"
+      }
+    },
+    {
+      "key": "fp:c02a155df8c12665ab036744a6084c6cebea1f847c17543a1d6a48f9451f8062",
+      "thread_id": "PRRT_kwDOTueeT86Xd_0A",
+      "path": "src/sageparse/build.py",
+      "line": 41,
+      "resolved": false,
+      "outdated": false,
+      "state": "OPEN-PENDING",
+      "disp": {
+        "verdict": "accepted as written",
+        "has_verification": false,
+        "commit": null,
+        "by": "dzackgarza"
+      }
+    },
+    {
+      "key": "ct:731a00c390f8ef5e",
+      "thread_id": "PRRT_kwDOTueeT86Xd_8X",
+      "path": ".github/workflows/qc.yml",
+      "line": null,
+      "resolved": true,
+      "outdated": true,
+      "state": "CLOSED",
+      "disp": null
+    },
+    {
+      "key": "ct:dc5cbb39918a3b8b",
+      "thread_id": "PRRT_kwDOTueeT86Xd_8Z",
+      "path": "justfile",
+      "line": 78,
+      "resolved": true,
+      "outdated": true,
+      "state": "CLOSED",
+      "disp": null
+    },
+    {
+      "key": "ct:a4c3e8bfe09684b1",
+      "thread_id": "PRRT_kwDOTueeT86Xd_8b",
+      "path": "pyproject.toml",
+      "line": 25,
+      "resolved": false,
+      "outdated": false,
+      "state": "NEW",
+      "disp": null
+    },
+    {
+      "key": "ct:cb26b2fb880033fd",
+      "thread_id": "PRRT_kwDOTueeT86Xd_8d",
+      "path": "tests/test_sage_modules.py",
+      "line": 6,
+      "resolved": true,
+      "outdated": false,
+      "state": "CLOSED",
+      "disp": null
+    },
+    {
+      "key": "ct:4769db870c566d7a",
+      "thread_id": "PRRT_kwDOTueeT86Xd_8e",
+      "path": "src/sageparse/build.py",
+      "line": null,
+      "resolved": true,
+      "outdated": true,
+      "state": "CLOSED",
+      "disp": null
+    },
+    {
+      "key": "ct:4ba35468aab7e5da",
+      "thread_id": "PRRT_kwDOTueeT86Xd_8f",
+      "path": "src/sageparse/extensions/research.py",
+      "line": 274,
+      "resolved": true,
+      "outdated": false,
+      "state": "CLOSED",
+      "disp": null
+    },
+    {
+      "key": "ct:4f5b8747fd951278",
+      "thread_id": "PRRT_kwDOTueeT86Xd_8k",
+      "path": "src/sageparse/runtime.py",
+      "line": 60,
+      "resolved": false,
+      "outdated": false,
+      "state": "NEW",
+      "disp": null
+    },
+    {
+      "key": "fp:6f8605f07bf0a32c800f4d9cb48047dcce60060483f5591e2e3e554f0a65607f",
+      "thread_id": "PRRT_kwDOTueeT86Xd_8p",
+      "path": ".github/workflows/qc.yml",
+      "line": null,
+      "resolved": false,
+      "outdated": true,
+      "state": "OPEN-PENDING",
+      "disp": {
+        "verdict": "outdated",
+        "has_verification": false,
+        "commit": null,
+        "by": "dzackgarza"
+      }
+    },
+    {
+      "key": "fp:76ccad87cb2daab37cf4f025d2b3e4e566e9305ac63e87962c74e15591ac2700",
+      "thread_id": "PRRT_kwDOTueeT86Xd_8q",
+      "path": "justfile",
+      "line": 55,
+      "resolved": false,
+      "outdated": false,
+      "state": "OPEN-PENDING",
+      "disp": {
+        "verdict": "outdated",
+        "has_verification": false,
+        "commit": null,
+        "by": "dzackgarza"
+      }
+    },
+    {
+      "key": "fp:f2bb9713bfa2554de9060b558297d0ceb49d982bef70395bef2f84766a873fc0",
+      "thread_id": "PRRT_kwDOTueeT86Xd_8r",
+      "path": "tests/test_sage_modules.py",
+      "line": 6,
+      "resolved": false,
+      "outdated": false,
+      "state": "OPEN-PENDING",
+      "disp": {
+        "verdict": "accepted as written",
+        "has_verification": false,
+        "commit": null,
+        "by": "dzackgarza"
+      }
+    },
+    {
+      "key": "fp:d0c8ced8153aa231f91777720984cec3e40f2ae7d2eeb16e81ad1f0d4577c922",
+      "thread_id": "PRRT_kwDOTueeT86Xd_8t",
+      "path": "pyproject.toml",
+      "line": 25,
+      "resolved": false,
+      "outdated": false,
+      "state": "OPEN-PENDING",
+      "disp": {
+        "verdict": "accepted as written",
+        "has_verification": false,
+        "commit": null,
+        "by": "dzackgarza"
+      }
+    },
+    {
+      "key": "fp:e356fa9c62d25dc9385b09b494bd6d54d140704fe2c9e4f0bac5a1221da3f305",
+      "thread_id": "PRRT_kwDOTueeT86Xd_8v",
+      "path": ".github/workflows/ci.yml",
+      "line": 7,
+      "resolved": false,
+      "outdated": false,
+      "state": "OPEN-PENDING",
+      "disp": {
+        "verdict": "rejected",
+        "has_verification": false,
+        "commit": null,
+        "by": "dzackgarza"
+      }
+    },
+    {
+      "key": "fp:507a24896b5d3ed3205c58d60d77a393f31094d1d250e473dc2e3b6b1a51707e",
+      "thread_id": "PRRT_kwDOTueeT86Xd_8x",
+      "path": "src/sageparse/extensions/research.py",
+      "line": 240,
+      "resolved": false,
+      "outdated": false,
+      "state": "OPEN-PENDING",
+      "disp": {
+        "verdict": "accepted",
+        "has_verification": false,
+        "commit": null,
+        "by": "dzackgarza"
+      }
+    },
+    {
+      "key": "fp:35ef64291c28c2a352768b9968a873728512b10e9209580a7bd6e1f3a6961c65",
+      "thread_id": "PRRT_kwDOTueeT86Xd_8z",
+      "path": "src/sageparse/runtime.py",
+      "line": 31,
+      "resolved": false,
+      "outdated": false,
+      "state": "OPEN-PENDING",
+      "disp": {
+        "verdict": "accepted",
+        "has_verification": false,
+        "commit": null,
+        "by": "dzackgarza"
+      }
+    },
+    {
+      "key": "fp:1dbb664cc21cc1175deb80280df1b597cecef05b08b36d423c0e24a8d9f21f73",
+      "thread_id": "PRRT_kwDOTueeT86Xd_81",
+      "path": "src/sageparse/build.py",
+      "line": 41,
+      "resolved": false,
+      "outdated": false,
+      "state": "NEW",
+      "disp": null
+    },
+    {
+      "key": "ct:2f6a1143d3260f7b",
+      "thread_id": "PRRT_kwDOTueeT86XeFlu",
+      "path": "tests/test_sage_free_core.py",
+      "line": 45,
+      "resolved": false,
+      "outdated": false,
+      "state": "NEW",
+      "disp": null
+    },
+    {
+      "key": "ct:16f9fb7d2bb5c5f3",
+      "thread_id": "PRRT_kwDOTueeT86XeFlw",
+      "path": ".envrc",
+      "line": 5,
+      "resolved": false,
+      "outdated": false,
+      "state": "NEW",
+      "disp": null
+    },
+    {
+      "key": "fp:3e0b280178163f798e870590678e71c52783266c78247e6e2830b0b43ed423ad",
+      "thread_id": "PRRT_kwDOTueeT86XeFmu",
+      "path": "tests/test_sage_free_core.py",
+      "line": 36,
+      "resolved": false,
+      "outdated": false,
+      "state": "NEW",
+      "disp": null
+    },
+    {
+      "key": "fp:66c54fe6a5c32a62944ac1dd56088e476eb6ace37456120c905a845317c01088",
+      "thread_id": "PRRT_kwDOTueeT86XeFmw",
+      "path": ".envrc",
+      "line": 3,
+      "resolved": false,
+      "outdated": false,
+      "state": "NEW",
+      "disp": null
+    },
+    {
+      "key": "ct:c8beb6079692cf1e",
+      "thread_id": "PRRT_kwDOTueeT86XeHbN",
+      "path": "demo/notation.sage",
+      "line": null,
+      "resolved": true,
+      "outdated": true,
+      "state": "CLOSED",
+      "disp": null
+    },
+    {
+      "key": "ct:dc5cbb39918a3b8b",
+      "thread_id": "PRRT_kwDOTueeT86XeHbU",
+      "path": "justfile",
+      "line": null,
+      "resolved": true,
+      "outdated": true,
+      "state": "CLOSED",
+      "disp": null
+    },
+    {
+      "key": "ct:4ba35468aab7e5da",
+      "thread_id": "PRRT_kwDOTueeT86XeHbZ",
+      "path": "src/sageparse/extensions/research.py",
+      "line": 273,
+      "resolved": true,
+      "outdated": false,
+      "state": "CLOSED",
+      "disp": null
+    },
+    {
+      "key": "ct:1268cd3c35373297",
+      "thread_id": "PRRT_kwDOTueeT86XeHba",
+      "path": "tests/test_compiler.py",
+      "line": 194,
+      "resolved": false,
+      "outdated": false,
+      "state": "NEW",
+      "disp": null
+    },
+    {
+      "key": "ct:774f1cca20ef21c8",
+      "thread_id": "PRRT_kwDOTueeT86XeHbf",
+      "path": "tests/test_line_geometry.py",
+      "line": 34,
+      "resolved": false,
+      "outdated": false,
+      "state": "NEW",
+      "disp": null
+    },
+    {
+      "key": "fp:04d3e1ab62a3e3b70b7b8f639ed33f42b138136831171e67e000b26686e24ac9",
+      "thread_id": "PRRT_kwDOTueeT86XeHbv",
+      "path": "demo/notation.sage",
+      "line": null,
+      "resolved": false,
+      "outdated": true,
+      "state": "NEW",
+      "disp": null
+    },
+    {
+      "key": "fp:f3418818d25381a93e0a138289837aa0b4175f14de44a06b680f6046d63777ba",
+      "thread_id": "PRRT_kwDOTueeT86XeHby",
+      "path": "tests/test_compiler.py",
+      "line": 181,
+      "resolved": false,
+      "outdated": false,
+      "state": "NEW",
+      "disp": null
+    },
+    {
+      "key": "fp:96958e04d37af3e8e7f3c6307108272c24182b72cbcd75883c490add4ab48ba0",
+      "thread_id": "PRRT_kwDOTueeT86XeHbz",
+      "path": "tests/test_line_geometry.py",
+      "line": 30,
+      "resolved": false,
+      "outdated": false,
+      "state": "NEW",
+      "disp": null
+    },
+    {
+      "key": "fp:211647f026751adeca1ee63f502079508ea7a266d12c918ab26926ce068b3c1c",
+      "thread_id": "PRRT_kwDOTueeT86XeM27",
+      "path": "src/sageparse/__init__.py",
+      "line": 487,
+      "resolved": false,
+      "outdated": false,
+      "state": "NEW",
+      "disp": null
+    },
+    {
+      "key": "fp:8c4116fb4be7aa9e0523007ab1aae656ec5f9000a85bdf6a9827f9bcfdcc0150",
+      "thread_id": "PRRT_kwDOTueeT86XeOEm",
+      "path": ".envrc",
+      "line": 5,
+      "resolved": false,
+      "outdated": false,
+      "state": "NEW",
+      "disp": null
+    },
+    {
+      "key": "fp:c078318fd23117263a28b794e73e746625ab99e061db71a362e0fba3fd039754",
+      "thread_id": "PRRT_kwDOTueeT86XeOSL",
+      "path": "tests/test_sage_modules.py",
+      "line": 259,
+      "resolved": false,
+      "outdated": false,
+      "state": "NEW",
+      "disp": null
+    },
+    {
+      "key": "fp:16220707d4f8c78e83cf029d558dbc2075eff679144e19f3c572cb0058e7c71b",
+      "thread_id": "PRRT_kwDOTueeT86XeOSN",
+      "path": "src/sageparse/preparser/importer.py",
+      "line": 26,
+      "resolved": false,
+      "outdated": false,
+      "state": "NEW",
+      "disp": null
+    },
+    {
+      "key": "ct:c8beb6079692cf1e",
+      "thread_id": "PRRT_kwDOTueeT86XeQWo",
+      "path": "demo/notation.sage",
+      "line": 27,
+      "resolved": true,
+      "outdated": false,
+      "state": "CLOSED",
+      "disp": null
+    },
+    {
+      "key": "ct:dc5cbb39918a3b8b",
+      "thread_id": "PRRT_kwDOTueeT86XeQWw",
+      "path": "justfile",
+      "line": 53,
+      "resolved": false,
+      "outdated": false,
+      "state": "NEW",
+      "disp": null
+    },
+    {
+      "key": "ct:cb26b2fb880033fd",
+      "thread_id": "PRRT_kwDOTueeT86XeQWz",
+      "path": "tests/test_sage_modules.py",
+      "line": 6,
+      "resolved": false,
+      "outdated": false,
+      "state": "NEW",
+      "disp": null
+    },
+    {
+      "key": "ct:4769db870c566d7a",
+      "thread_id": "PRRT_kwDOTueeT86XeQW3",
+      "path": "src/sageparse/build.py",
+      "line": 44,
+      "resolved": false,
+      "outdated": false,
+      "state": "NEW",
+      "disp": null
+    },
+    {
+      "key": "ct:b6b512eba70edd69",
+      "thread_id": "PRRT_kwDOTueeT86XeQW6",
+      "path": "tests/test_span_conformance.py",
+      "line": 61,
+      "resolved": false,
+      "outdated": false,
+      "state": "NEW",
+      "disp": null
+    },
+    {
+      "key": "fp:1ac8d515d8c2155b343fddd2b4a2e4fcf39f764815e2f7148abfe79b7457be51",
+      "thread_id": "PRRT_kwDOTueeT86XeQXZ",
+      "path": "src/sageparse/__init__.py",
+      "line": 475,
+      "resolved": false,
+      "outdated": false,
+      "state": "NEW",
+      "disp": null
+    },
+    {
+      "key": "fp:14d690399d06db6454d0c05284c5fae6970e42da188bfd843e42c4018b096a69",
+      "thread_id": "PRRT_kwDOTueeT86XeQXa",
+      "path": "tests/test_span_conformance.py",
+      "line": 61,
+      "resolved": false,
+      "outdated": false,
+      "state": "NEW",
+      "disp": null
+    },
+    {
+      "key": "ct:99f37bca0c331ede",
+      "thread_id": "PRRT_kwDOTueeT86XeSlm",
+      "path": "src/sageparse/build.py",
+      "line": null,
+      "resolved": false,
+      "outdated": true,
+      "state": "NEW",
+      "disp": null
+    },
+    {
+      "key": "ct:e72e91037f65a9c9",
+      "thread_id": "PRRT_kwDOTueeT86XeSlr",
+      "path": "src/sageparse/preparser/importer.py",
+      "line": 24,
+      "resolved": false,
+      "outdated": false,
+      "state": "NEW",
+      "disp": null
+    },
+    {
+      "key": "fp:be12dafc4e51e5fbf39d6354b3311ec873ef575fc62642f5f1c9af64670a097e",
+      "thread_id": "PRRT_kwDOTueeT86XeSmM",
+      "path": "src/sageparse/preparser/importer.py",
+      "line": 21,
+      "resolved": false,
+      "outdated": false,
+      "state": "NEW",
+      "disp": null
+    },
+    {
+      "key": "ct:d9b73b619dc69108",
+      "thread_id": "PRRT_kwDOTueeT86XeaoT",
+      "path": "src/sageparse/extensions/research.py",
+      "line": 153,
+      "resolved": false,
+      "outdated": false,
+      "state": "NEW",
+      "disp": null
+    },
+    {
+      "key": "ct:c8effaf64a80a051",
+      "thread_id": "PRRT_kwDOTueeT86XeaoU",
+      "path": "src/sageparse/preparser/importer.py",
+      "line": 74,
+      "resolved": false,
+      "outdated": false,
+      "state": "NEW",
+      "disp": null
+    },
+    {
+      "key": "fp:885466268a12ce4e4d6d79ec7eee0d5f9fa82812da3ba84b9bcb543dce4fe99a",
+      "thread_id": "PRRT_kwDOTueeT86Xeapu",
+      "path": "src/sageparse/extensions/research.py",
+      "line": 148,
+      "resolved": false,
+      "outdated": false,
+      "state": "NEW",
+      "disp": null
+    },
+    {
+      "key": "fp:a627eb031b5eab1ffb03d26ec34cc1442dda19e67ce6595a809fc3f162e91f6b",
+      "thread_id": "PRRT_kwDOTueeT86Xeapv",
+      "path": "src/sageparse/preparser/importer.py",
+      "line": 71,
+      "resolved": false,
+      "outdated": false,
+      "state": "NEW",
+      "disp": null
+    },
+    {
+      "key": "ct:09e60481de34b691",
+      "thread_id": "PRRT_kwDOTueeT86XebUu",
+      "path": "src/sageparse/__init__.py",
+      "line": 492,
+      "resolved": true,
+      "outdated": false,
+      "state": "CLOSED",
+      "disp": null
+    },
+    {
+      "key": "ct:f6f22c4d75ab6091",
+      "thread_id": "PRRT_kwDOTueeT86Xeykp",
+      "path": "demo/notation.sage",
+      "line": 27,
+      "resolved": false,
+      "outdated": false,
+      "state": "NEW",
+      "disp": null
+    },
+    {
+      "key": "ct:1515ae337be20ddf",
+      "thread_id": "PRRT_kwDOTueeT86YLRcn",
+      "path": "src/sageparse/__init__.py",
+      "line": 500,
+      "resolved": true,
+      "outdated": false,
+      "state": "CLOSED",
+      "disp": null
+    },
+    {
+      "key": "fp:da96b195c0660954945abdd37d609c578936d6b0762d46b1aeba393a4ab4a932",
+      "thread_id": "PRRT_kwDOTueeT86YLRiQ",
+      "path": "src/sageparse/__init__.py",
+      "line": 487,
+      "resolved": false,
+      "outdated": false,
+      "state": "NEW",
+      "disp": null
+    },
+    {
+      "key": "ct:72ad3e62be2d4d43",
+      "thread_id": "PRRT_kwDOTueeT86Y1fP4",
+      "path": "tests/test_preparser_expression_corpus.py",
+      "line": 401,
+      "resolved": false,
+      "outdated": false,
+      "state": "NEW",
+      "disp": null
+    },
+    {
+      "key": "ct:86b133ebcd846194",
+      "thread_id": "PRRT_kwDOTueeT86Y1fQL",
+      "path": "src/sageparse/__init__.py",
+      "line": 82,
+      "resolved": false,
+      "outdated": false,
+      "state": "NEW",
+      "disp": null
+    },
+    {
+      "key": "ct:cfb47dd835439ff7",
+      "thread_id": "PRRT_kwDOTueeT86Y1fQT",
+      "path": "tests/test_preparser_modes.py",
+      "line": 381,
+      "resolved": false,
+      "outdated": false,
+      "state": "NEW",
+      "disp": null
+    },
+    {
+      "key": "fp:b5e1f6bb7249c3d0b89575e468bec9c19c34c672f913064fc310d12bf1912864",
+      "thread_id": "PRRT_kwDOTueeT86Y1fT2",
+      "path": "tests/test_preparser_expression_corpus.py",
+      "line": 396,
+      "resolved": false,
+      "outdated": false,
+      "state": "NEW",
+      "disp": null
+    },
+    {
+      "key": "fp:dd579dc4e3feb193c5a49cbb0112c10c97e4dda34b987e420817e7fdef1d624f",
+      "thread_id": "PRRT_kwDOTueeT86Y1fT6",
+      "path": "src/sageparse/__init__.py",
+      "line": 80,
+      "resolved": false,
+      "outdated": false,
+      "state": "NEW",
+      "disp": null
+    },
+    {
+      "key": "fp:02e3dc3adcbe8e01663cd2d0b7f4c5947cabc6b9f41954b6ce48af8d239287d4",
+      "thread_id": "PRRT_kwDOTueeT86Y1fT_",
+      "path": "tests/test_preparser_modes.py",
+      "line": 381,
+      "resolved": false,
+      "outdated": false,
+      "state": "NEW",
+      "disp": null
+    },
+    {
+      "key": "ct:5fecb0559ee7e4e0",
+      "thread_id": "PRRT_kwDOTueeT86Y1hW2",
+      "path": "src/sageparse/__init__.py",
+      "line": 94,
+      "resolved": false,
+      "outdated": false,
+      "state": "NEW",
+      "disp": null
+    },
+    {
+      "key": "ct:1515ae337be20ddf",
+      "thread_id": "PRRT_kwDOTueeT86Y1hXC",
+      "path": "src/sageparse/__init__.py",
+      "line": 459,
+      "resolved": false,
+      "outdated": false,
+      "state": "NEW",
+      "disp": null
+    },
+    {
+      "key": "ct:ad1804a0e7899972",
+      "thread_id": "PRRT_kwDOTueeT86Y1hXI",
+      "path": "src/sageparse/preparser/importer.py",
+      "line": 69,
+      "resolved": false,
+      "outdated": false,
+      "state": "NEW",
+      "disp": null
+    },
+    {
+      "key": "fp:6e4f5baba0a5ea2d7e4d4bf3c618f0b7a84efb7786a57850e967cb04a2421673",
+      "thread_id": "PRRT_kwDOTueeT86Y1hbQ",
+      "path": "src/sageparse/preparser/importer.py",
+      "line": 58,
+      "resolved": false,
+      "outdated": false,
+      "state": "NEW",
+      "disp": null
+    }
+  ]
 }

@@ -18,11 +18,11 @@ graded augmentation of the pointwise algebra is the projection onto the
 unit piece \(A\to L^\infty=A_u\).
 """
 
-from dzack_research.preamble.categories.rings import engine_ring as _engine_ring
-from sage.categories.homset import Hom, Homset
+from dzack_research.preamble.categories.abstract_categories.hom_foundation import OwnedHomset
+from sage.categories.homset import Homset
 from sage.categories.map import Map
 from sage.categories.morphism import Morphism, SetMorphism
-from dzack_research.preamble.categories.sets import Sets
+from dzack_research.preamble.categories.sets.set_categories import Sets
 from sage.misc.cachefunc import cached_function
 from sage.rings.infinity import Infinity
 from sage.structure.element import ModuleElement, parent as element_parent
@@ -47,19 +47,19 @@ from dzack_research.preamble.categories.functions.real_functions import (
 )
 from dzack_research.preamble.categories.modules.graded_modules import GradedModules
 from dzack_research.preamble.categories.modules.pure.modules import Modules
-from dzack_research.preamble.categories.rings import (
+from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
-    engine_ring,
-    owned_ring_view,
+    _engine_ring,
+    _owned_ring,
 )
 from dzack_research.preamble.refine import refine
-from dzack_research.preamble.rings import RR
+from dzack_research.preamble.rings.real import RR
 from dzack_research.preamble.rings.nonnegative_reals import NonNegativeReals
 from dzack_research.preamble.rings.unit_interval import UnitInterval
 
 
 def _real_ring():
-    return owned_ring_view(RR)
+    return _owned_ring(RR)
 
 
 def _holder_degree(space):
@@ -116,6 +116,14 @@ class LebesgueGradedModules(OwnedCategoryOverBaseRing):
         return [Modules(self.base_ring())]
 
     class ParentMethods:
+        def algebra_from_multiplication(self, multiplication, *, unital=True):
+            r"""Equip this graded Lebesgue module with its represented product."""
+            return intern_graded_lebesgue_algebra(
+                multiplication,
+                self.base_ring(),
+                unital,
+            )
+
         def degree_projection(self, degree):
             r"""The projection \(\pi_s\colon N\to L^{1/s}\) onto a homogeneous piece."""
             degree = self.grading_monoid()(degree)
@@ -251,7 +259,7 @@ class LebesgueModuleMorphism(Morphism):
         return homset(lambda value, left=self, right=right: left(right(value)))
 
 
-class LebesgueModuleHomset(Homset):
+class LebesgueModuleHomset(OwnedHomset):
     Element = LebesgueModuleMorphism
 
     def __init__(self, domain, codomain) -> None:

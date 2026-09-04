@@ -11,16 +11,14 @@ The Hom-sets on the acted side are the actual equivariant Hom-sets supplied by
 from sage.misc.cachefunc import cached_function
 
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
-from dzack_research.preamble.categories.modules import (
-    FinitelyPresentedModules,
-    module_homset,
-)
+from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModules
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 from dzack_research.preamble.categories.modules.group_modules.group_modules import (
     FinitelyPresentedGroupModules,
     group_module_homset,
     trivial_group_action,
 )
-from dzack_research.preamble.categories.rings import owned_ring_view
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
 
 
 def _invariant_element(group_module, invariant_module, element):
@@ -47,7 +45,7 @@ class TrivialActionFunctor(Functor):
     r"""``Triv_G`` on represented finitely-presented ``R``-modules."""
 
     def __init__(self, base_ring, group) -> None:
-        self._base_ring = owned_ring_view(base_ring)
+        self._base_ring = _owned_ring(base_ring)
         self._group = group
         super().__init__(
             FinitelyPresentedModules(self._base_ring),
@@ -59,6 +57,11 @@ class TrivialActionFunctor(Functor):
 
     def _apply_object(self, module):
         return trivial_group_action(module, self.group())
+
+    def chosen_preimage(self, image):
+        if image.is_trivial_action():
+            return image.unacted_module()
+        return super().chosen_preimage(image)
 
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())
@@ -77,7 +80,7 @@ class InvariantsFunctor(Functor):
     r"""``(-)^G`` on represented finitely-presented ``R[G]``-modules."""
 
     def __init__(self, base_ring, group) -> None:
-        self._base_ring = owned_ring_view(base_ring)
+        self._base_ring = _owned_ring(base_ring)
         self._group = group
         super().__init__(
             FinitelyPresentedGroupModules(self._base_ring, group),
@@ -86,6 +89,12 @@ class InvariantsFunctor(Functor):
 
     def _apply_object(self, group_module):
         return group_module.module_invariants()
+
+    def chosen_preimage(self, image):
+        inclusion = getattr(image, "inclusion", lambda: None)()
+        if inclusion is not None:
+            return inclusion.codomain()
+        return super().chosen_preimage(image)
 
     def _apply_morphism(self, morphism):
         source_invariants = self(morphism.domain())
@@ -113,7 +122,7 @@ class CoinvariantsFunctor(Functor):
     r"""``(-)_G`` on represented finitely-presented ``R[G]``-modules."""
 
     def __init__(self, base_ring, group) -> None:
-        self._base_ring = owned_ring_view(base_ring)
+        self._base_ring = _owned_ring(base_ring)
         self._group = group
         super().__init__(
             FinitelyPresentedGroupModules(self._base_ring, group),
@@ -145,7 +154,7 @@ class TrivialInvariantsAdjunction(Adjunction):
     r"""``Triv_G ⊣ (-)^G``."""
 
     def __init__(self, base_ring, group) -> None:
-        self._base_ring = owned_ring_view(base_ring)
+        self._base_ring = _owned_ring(base_ring)
         self._group = group
         super().__init__(
             TrivialActionFunctor(self._base_ring, group),
@@ -169,43 +178,6 @@ class TrivialInvariantsAdjunction(Adjunction):
             )
         )
 
-    def hom_set_isomorphism_forward(self, equivariant_morphism):
-        trivial_source = equivariant_morphism.domain()
-        if not trivial_source.is_trivial_action():
-            raise TypeError("the left side of this adjunction starts at a trivial G-module")
-        source = trivial_source.unacted_module()
-        invariants = self.right_adjoint()(equivariant_morphism.codomain())
-        return module_homset(source, invariants)(
-            lambda label: _lift_to_invariants(
-                equivariant_morphism.codomain(),
-                invariants,
-                equivariant_morphism(
-                    trivial_source.equip_action_morphism()(
-                        source.module_generator(label)
-                    )
-                ),
-            )
-        )
-
-    def hom_set_isomorphism_inverse(self, module_morphism, codomain=None):
-        if codomain is None:
-            if hasattr(module_morphism.codomain(), "inclusion"):
-                codomain = module_morphism.codomain().inclusion().codomain()
-            else:
-                raise ValueError("the acted codomain is required for a full invariant object")
-        trivial_source = self.left_adjoint()(module_morphism.domain())
-        invariants = self.right_adjoint()(codomain)
-        if module_morphism.codomain() is not invariants:
-            raise ValueError("the module morphism must land in the invariant object")
-        return group_module_homset(trivial_source, codomain)(
-            lambda label: _invariant_element(
-                codomain,
-                invariants,
-                module_morphism(
-                    module_morphism.domain().module_generator(label)
-                ),
-            )
-        )
 
     def _repr_(self):
         return f"Trivial-action/invariants adjunction for {self._group}"
@@ -215,7 +187,7 @@ class CoinvariantsTrivialAdjunction(Adjunction):
     r"""``(-)_G ⊣ Triv_G``."""
 
     def __init__(self, base_ring, group) -> None:
-        self._base_ring = owned_ring_view(base_ring)
+        self._base_ring = _owned_ring(base_ring)
         self._group = group
         super().__init__(
             CoinvariantsFunctor(self._base_ring, group),
@@ -246,49 +218,6 @@ class CoinvariantsTrivialAdjunction(Adjunction):
             raise ValueError("coinvariants of the trivial action must be the original module")
         return module_homset(module, module).identity()
 
-    def hom_set_isomorphism_forward(self, module_morphism, source_group_module=None):
-        if source_group_module is None:
-            raise ValueError(
-                "the acted source is required because a coinvariant module does not determine its source action"
-            )
-        coinvariants = self.left_adjoint()(source_group_module)
-        if module_morphism.domain() is not coinvariants:
-            raise ValueError("the module morphism must start at the stated source coinvariants")
-        trivial_target = self.right_adjoint()(module_morphism.codomain())
-        if source_group_module.is_trivial_action():
-            return group_module_homset(source_group_module, trivial_target)(
-                lambda label: trivial_target.equip_action_morphism()(
-                    module_morphism(
-                        source_group_module.forget_action_morphism()(
-                            source_group_module.module_generator(label)
-                        )
-                    )
-                )
-            )
-        projection = coinvariants.presentation_projection()
-        return group_module_homset(source_group_module, trivial_target)(
-            lambda label: trivial_target.equip_action_morphism()(
-                module_morphism(
-                    projection(source_group_module.module_generator(label))
-                )
-            )
-        )
-
-    def hom_set_isomorphism_inverse(self, equivariant_morphism, codomain=None):
-        trivial_target = equivariant_morphism.codomain()
-        if not trivial_target.is_trivial_action():
-            raise TypeError("the equivariant morphism must land in a trivial G-module")
-        target = trivial_target.unacted_module()
-        if codomain is not None and codomain is not target:
-            raise ValueError("the stated codomain is not the underlying trivial module")
-        coinvariants = self.left_adjoint()(equivariant_morphism.domain())
-        return module_homset(coinvariants, target)(
-            lambda label: trivial_target.forget_action_morphism()(
-                equivariant_morphism(
-                    equivariant_morphism.domain().module_generator(label)
-                )
-            )
-        )
 
     def _repr_(self):
         return f"Coinvariants/trivial-action adjunction for {self._group}"

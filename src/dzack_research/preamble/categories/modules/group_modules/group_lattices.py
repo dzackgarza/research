@@ -1,38 +1,15 @@
 r"""Lattices equipped with a chosen form-preserving group action."""
 
-from sage.categories.category import Category
-
 from dzack_research.preamble.categories.modules.group_modules.group_modules import (
     GroupModule,
     GroupModules,
+    _CategoryOverRingAndActingGroup,
 )
-from dzack_research.preamble.categories.rings import owned_ring_view
 from dzack_research.preamble.refine import refine
 
 
-class GroupLattices(Category):
+class GroupLattices(_CategoryOverRingAndActingGroup):
     r"""Lattices carrying a specified action by lattice isometries."""
-
-    @staticmethod
-    def __classcall__(cls, base_ring, group):
-        from dzack_research.preamble.categories.group.groups import refine_group
-
-        return Category.__classcall__(
-            cls,
-            owned_ring_view(base_ring),
-            refine_group(group),
-        )
-
-    def __init__(self, base_ring, group) -> None:
-        self._base_ring = base_ring
-        self._group = group
-        Category.__init__(self)
-
-    def base_ring(self):
-        return self._base_ring
-
-    def acting_group(self):
-        return self._group
 
     def _repr_object_names(self):
         return f"{self.acting_group()}-lattices over {self.base_ring()}"
@@ -60,15 +37,12 @@ class GroupLattices(Category):
             if vector.parent() is not self:
                 raise TypeError(f"the action is on elements of {self}")
             backing = self._preamble_group_module
-            backing_vector = backing.linear_combination(module_coefficients(vector))
+            backing_vector = backing.linear_combination(module_coefficients(vector, self))
             backing_image = backing.act(group_element, backing_vector)
-            return self.linear_combination(module_coefficients(backing_image))
+            return self.linear_combination(module_coefficients(backing_image, backing))
 
         def action_of(self, group_element):
             return self.Aut()({label: self.act(group_element, self.module_generator(label)) for label in self.module_generating_set()})
-
-        def action_tensor(self, group_element):
-            return self.action_of(group_element).tensor()
 
         def is_invariant(self, vector) -> bool:
             group = self.group()
@@ -91,7 +65,7 @@ class GroupLattices(Category):
                 raise NotImplementedError("constructing an invariant lattice requires a chosen finite group generating set")
             generators = tuple(group.group_generators())
             if not generators:
-                return self.subobject_on(tuple(self.module_generators()))
+                return self.subobject_on(self.module_generators())
             invariants = self.action_of(generators[0]).invariant_lattice()
             for generator in generators[1:]:
                 invariants = invariants.intersection(self.action_of(generator).invariant_lattice())
@@ -115,7 +89,7 @@ class GroupLattices(Category):
 
 def GroupLattice(lattice, group_or_action, action=None):
     r"""Equip ``lattice`` with a selected action preserving its form."""
-    from dzack_research.preamble.categories.lattice_properties import FiniteRankLattices
+    from dzack_research.preamble.categories.lattices import FiniteRankLattices
     from dzack_research.preamble.categories.lattices import Lattices
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
         module_coefficients,
@@ -139,7 +113,7 @@ def GroupLattice(lattice, group_or_action, action=None):
             group_element,
             group_module.module_generator(label),
         )
-        return result.linear_combination(module_coefficients(backing_image))
+        return result.linear_combination(module_coefficients(backing_image, group_module))
 
     result_generators = tuple(result.module_generators())
     for group_generator in group.group_generators():
@@ -151,13 +125,12 @@ def GroupLattice(lattice, group_or_action, action=None):
 
     result = refine(result, GroupLattices(base_ring, group))
 
-    from dzack_research.preamble.categories.root_lattices import (
-        RootLattices,
-        refine_root_lattice,
-    )
+    from dzack_research.preamble.categories.lattices import RootLattices
 
     if lattice in RootLattices():
-        result = refine_root_lattice(result, lattice.cartan_type())
+        result = result.lattice_category()._refine_root_lattice(
+            result, lattice.cartan_type()
+        )
     return result
 
 

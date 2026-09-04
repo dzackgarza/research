@@ -49,6 +49,9 @@ from dzack_research.preamble.categories.abstract_categories.products import (
     CoproductsOfCategory,
     ProductsOfCategory,
 )
+from dzack_research.preamble.categories.abstract_categories.cat import (
+    _CategoricalObject,
+)
 from dzack_research.preamble.owned_category_bases import (
     Category,
     CategoryWithParameters,
@@ -891,7 +894,7 @@ class Sets(Category):
         def __init__(self, parent: SageParent) -> None:
             SageElement.__init__(self, parent)
 
-    class ParentMethods(OwnedParent, SageParent):
+    class ParentMethods(_CategoricalObject, OwnedParent, SageParent):
         _cardinality: Cardinal | None = None
 
         def __init__(
@@ -950,31 +953,6 @@ class Sets(Category):
         def is_uncountable(self) -> bool:
             r"""Whether $|X| > \aleph_0$."""
             return bool(self.cardinality().is_uncountable())
-
-        def Hom(
-            self,
-            target: SageParent,
-            category: SageCategory | None = None,
-        ) -> SageCategory:
-            r"""Return the hom category in the most specific category containing both sets."""
-            if category is None:
-                from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-                    common_category,
-                )
-
-                source_category = common_category((self, target))
-            else:
-                source_category = category
-            assert self in source_category and target in source_category
-            return source_category.Hom(self, target)
-
-        def End(self) -> SageCategory:
-            r"""Return the endomorphism category by delegation to the category."""
-            return self.category().End(self)
-
-        def Aut(self) -> SageCategory:
-            r"""Return the automorphism category by delegation to the category."""
-            return self.category().Aut(self)
 
         def exponential(self, exponent: SageParent) -> SageParent:
             r"""Return the set \(Y^X\) of functions \(X\to Y\)."""

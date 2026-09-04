@@ -3,7 +3,7 @@ from dzack_research.preamble.categories.algebras import (
     AlternatingAlgebraOf,
     DividedPowerAlgebraOf,
 )
-from dzack_research.preamble.categories.functors import (
+from dzack_research.preamble.categories.functors.free_algebras import (
     alternating_algebra_functor,
     divided_power_algebra_functor,
 )
@@ -36,9 +36,11 @@ def test_exterior_algebra_of_a_presented_module_imposes_linear_relations_and_wed
     assert y * y == algebra.zero()
     assert x * y == -(y * x)
     assert 4 * (x * y) == algebra.zero()
-    assert tuple(algebra.graded_piece(2).invariants()) == (4,)
+    assert tuple(algebra.graded_piece(2).invariant_factors()) == (4,)
     degree_one_label = next(
-        label for label in algebra.module_generating_set() if label[0] == 1
+        label
+        for label in algebra.module_generating_set()
+        if int(label.summand_index()) == 1
     )
     assert algebra.module_generator(degree_one_label) == x
 
@@ -98,8 +100,8 @@ def test_exterior_and_divided_power_algebras_are_functorial_on_presented_modules
         identity = functor(module_homset(source, source).identity())
         _assert_power_maps_agree(
             identity,
-            functor(source).hom(
-                module_homset(source, source).identity(), functor(source)
+            functor(source).Hom(functor(source))(
+                module_homset(source, source).identity()
             ),
             probes,
         )

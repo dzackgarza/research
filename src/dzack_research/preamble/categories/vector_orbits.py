@@ -1,11 +1,6 @@
 r"""Exact vector-orbit data for owned lattices."""
 
-from sage.arith.misc import gcd
-from sage.rings.integer_ring import ZZ as SageZZ
-from sage.rings.rational_field import QQ as SageQQ
 from sage.misc.cachefunc import cached_method
-
-from dzack_research.preamble.tensors import tensor
 
 
 class VectorPrimitiveExtension:
@@ -28,7 +23,12 @@ class VectorPrimitiveExtension:
         )
         if vector.q() == 0:
             raise ValueError("VectorPrimitiveExtension requires an anisotropic vector")
-        if gcd(tuple(SageZZ(coordinate) for coordinate in vector.to_tuple())) not in (1, -1):
+        ring = lattice.base_ring()
+        coordinates = tuple(ring(coordinate) for coordinate in vector.to_tuple())
+        divisor = ring.zero()
+        for coordinate in coordinates:
+            divisor = divisor.gcd(coordinate)
+        if abs(divisor) != ring.one():
             raise ValueError("VectorPrimitiveExtension is normalized to a primitive vector")
         if not lattice.is_finite_rank() or not lattice.is_nondegenerate():
             raise ValueError("VectorPrimitiveExtension requires a finite nondegenerate lattice")
@@ -50,8 +50,9 @@ class VectorPrimitiveExtension:
             for generator in complement_lattice.module_generators()
         )
         inclusion = sum_lattice.Emb(lattice)(line_images + complement_images)
-        index = SageZZ(inclusion.index())
-        if index <= 0:
+        ring = lattice.base_ring()
+        index = ring(int(inclusion.index().finite_value()))
+        if index <= ring.zero():
             raise ArithmeticError("the line and complement do not span a finite-index sublattice")
 
         sum_generators = tuple(sum_lattice.module_generators())
@@ -72,14 +73,14 @@ class VectorPrimitiveExtension:
             )
             dual_element = sum_dual.linear_combination(
                 {
-                    label: SageZZ(coefficient)
+                    label: ring(coefficient)
                     for label, coefficient in zip(dual_labels, pairings, strict=True)
                     if coefficient
                 }
             )
             gluing_classes.append(sum_form.projection()(dual_element))
         gluing_subgroup = sum_form.subgroup_on(tuple(gluing_classes))
-        if SageZZ(gluing_subgroup.cardinality()) != index:
+        if int(gluing_subgroup.cardinality()) != int(index):
             raise ArithmeticError("the gluing subgroup does not have order [L:M]")
         gluing_images = tuple(gluing_subgroup.embedded_elements())
         if any(
@@ -95,20 +96,15 @@ class VectorPrimitiveExtension:
             raise ArithmeticError("L/M is not isotropic for the discriminant quadratic form of M")
 
         discriminant_form = lattice.discriminant_group()
-        dual_restriction = inclusion.tensor().dual_tensor()
+        dual_restriction = inclusion.matrix().transpose()
         lattice_rank = int(lattice.rank())
         discriminant_representatives = []
         for position in range(lattice_rank):
-            basis_vector = tensor.vector(
-                lattice.base_ring(),
-                [SageZZ.one() if index_ == position else SageZZ.zero() for index_ in range(lattice_rank)],
-            )
-            restricted = dual_restriction * basis_vector
             dual_element = sum_dual.linear_combination(
                 {
-                    label: SageZZ(coefficient)
-                    for label, coefficient in zip(dual_labels, restricted, strict=True)
-                    if coefficient
+                    dual_labels[row]: dual_restriction[row, position]
+                    for row in range(dual_restriction.parent().nrows())
+                    if dual_restriction[row, position]
                 }
             )
             discriminant_representatives.append(sum_form.projection()(dual_element))
@@ -167,14 +163,14 @@ class VectorPrimitiveExtension:
             representative = self.representative_of(discriminant_class)
             for glued in self.gluing_images:
                 element = representative + glued
-                key = tuple(self.sum_form.coordinate_vector(element, reduce=True))
+                key = self.sum_form(element)
                 previous = table.get(key)
                 if previous is not None and previous != discriminant_class:
                     raise ArithmeticError(
                         "two classes of A_L define the same coset in H^perp/H"
                     )
                 table[key] = discriminant_class
-        expected = SageZZ(self.discriminant_form.cardinality()) * SageZZ(
+        expected = int(self.discriminant_form.cardinality()) * int(
             self.gluing_subgroup.cardinality()
         )
         if len(table) != expected:
@@ -183,9 +179,7 @@ class VectorPrimitiveExtension:
 
     def class_of_representative(self, element):
         r"""Return the class of ``A_L`` represented by an element of ``H^perp``."""
-        if getattr(element, "parent", lambda: None)() is not self.sum_form:
-            element = self.sum_form(element)
-        key = tuple(self.sum_form.coordinate_vector(element, reduce=True))
+        key = self.sum_form(element)
         try:
             return self._representative_table()[key]
         except KeyError as error:
@@ -222,9 +216,9 @@ def definite_complement_extensions(lattice, left, right):
 
     ``A_right * C * A_left^{-1}``.
 
-    Exactly the extensions whose type-``(1,1)`` tensors are integral belong to
-    ``O(L)``.  Since the complement isometry homset is a finite torsor in this
-    regime, the returned tuple is exhaustive.
+    Exactly the rational ambient morphisms preserving the integral lattice
+    belong to ``O(L)``.  Since the complement isometry homset is a finite
+    torsor in this regime, the returned tuple is exhaustive.
     """
     source = VectorPrimitiveExtension(lattice, left)
     target = VectorPrimitiveExtension(lattice, right)
@@ -243,53 +237,65 @@ def definite_complement_extensions(lattice, left, right):
     if source_rank != target_rank:
         return ()
 
-    source_inclusion = source.inclusion.tensor().change_ring(SageQQ)
-    target_inclusion = target.inclusion.tensor().change_ring(SageQQ)
-    source_inverse = source_inclusion.inverse_tensor()
-    ambient_generators = tuple(lattice.module_generators())
+    ring = lattice.base_ring()
+    rationals = ring.fraction_field()
+    from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+        MatrixSpace,
+        matrix_change_ring,
+    )
+
+    source_inclusion = matrix_change_ring(source.inclusion.matrix(), rationals)
+    target_inclusion = matrix_change_ring(target.inclusion.matrix(), rationals)
+    source_inverse = source_inclusion.inverse()
+    ambient_generators = lattice.module_generators()
     source_line_vector = source.line.inclusion().lift(source.vector)
     target_line_vector = target.line.inclusion().lift(target.vector)
-    target_line_generator = target_line.module_generators()[0]
+    target_line_generator = target_line.module_generators().unrank(0)
     source_coefficient = source_line_vector.to_tuple()[0]
     target_coefficient = target_line_vector.to_tuple()[0]
-    if source_coefficient not in (1, -1) or target_coefficient not in (1, -1):
+    if source_coefficient not in (ring.one(), -ring.one()) or target_coefficient not in (ring.one(), -ring.one()):
         raise ArithmeticError("a primitive rank-one line vector must be a signed selected generator")
     line_isometry = source_line.Isom(target_line)(
-        (source_coefficient * target_coefficient * target_line_generator,)
+        (
+            target_line.scalar_multiple(
+                source_coefficient * target_coefficient, target_line_generator
+            ),
+        )
     )
     if line_isometry(source_line_vector) != target_line_vector:
         raise ArithmeticError("the rank-one block does not carry the source vector to the target vector")
-    line_tensor = line_isometry.tensor().change_ring(SageQQ)
+    line_matrix = matrix_change_ring(line_isometry.matrix(), rationals)
     extensions = []
     for restriction in _isometries_between_definite_lattices(
         source_complement,
         target_complement,
     ):
-        restriction_tensor = restriction.tensor().change_ring(SageQQ)
-        block = tensor.matrix(
-            SageQQ,
-            source_rank,
-            source_rank,
-            [
-                    (
-                    line_tensor[0, 0]
-                    if row == column == 0
-                    else restriction_tensor[row - 1, column - 1]
-                    if row > 0 and column > 0
-                    else SageQQ.zero()
-                )
-                for row in range(source_rank)
+        restriction_matrix = matrix_change_ring(restriction.matrix(), rationals)
+        block = MatrixSpace(rationals, source_rank).from_rows(
+            (
+                line_matrix[0, 0]
+                if row == column == 0
+                else restriction_matrix[row - 1, column - 1]
+                if row > 0 and column > 0
+                else rationals.zero()
                 for column in range(source_rank)
-            ],
+            )
+            for row in range(source_rank)
         )
         candidate = target_inclusion * block * source_inverse
-        if any(coefficient not in SageZZ for coefficient in candidate.list()):
+        try:
+            integral = MatrixSpace(ring, source_rank).from_rows(
+                (ring(candidate[row, column]) for column in range(source_rank))
+                for row in range(source_rank)
+            )
+        except (TypeError, ValueError):
             continue
-        integral = candidate.change_ring(SageZZ)
         images = tuple(
             sum(
                 (
-                    integral[row, column] * ambient_generators[row]
+                    lattice.scalar_multiple(
+                        integral[row, column], ambient_generators.unrank(row)
+                    )
                     for row in range(source_rank)
                     if integral[row, column]
                 ),
@@ -400,7 +406,7 @@ def gluing_route_discriminant_classes(lattice, left, right):
 
     source_sum_labels = tuple(source.sum_form.module_generating_set())
     target_glue = {
-        tuple(target.sum_form.coordinate_vector(element, reduce=True))
+        target.sum_form(element)
         for element in target.gluing_images
     }
     discriminant = lattice.discriminant_group()
@@ -432,12 +438,7 @@ def gluing_route_discriminant_classes(lattice, left, right):
                 quadratic=True,
             )
             assembled_glue = {
-                tuple(
-                    target.sum_form.coordinate_vector(
-                        assembled(glued),
-                        reduce=True,
-                    )
-                )
+                target.sum_form(assembled(glued))
                 for glued in source.gluing_images
             }
             if assembled_glue != target_glue:
@@ -454,7 +455,7 @@ def gluing_route_discriminant_classes(lattice, left, right):
             }
             descended = module_homset(discriminant, discriminant)(descended_images)
             automorphism = discriminant.O().from_morphism(descended)
-            classes[tuple(automorphism.tensor().list())] = automorphism
+            classes[automorphism] = automorphism
     return tuple(classes.values())
 
 
@@ -477,7 +478,7 @@ def stable_complement_root_reflections(lattice, element):
     inclusion = extension.complement.inclusion()
     stable = lattice.stable_orthogonal_group()
     reflections = []
-    for square in (SageZZ(2), SageZZ(-2)):
+    for square in (lattice.base_ring()(2), lattice.base_ring()(-2)):
         for root in complement.O().vector_orbit_representatives(square):
             embedded_root = inclusion(root)
             reflection = lattice.reflection(embedded_root)

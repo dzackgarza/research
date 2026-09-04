@@ -1,23 +1,19 @@
 from dzack_research.preamble.categories.group.profinite.absolute_galois_group import (
     AbsoluteGaloisGroup,
-    AbsoluteGaloisSliceAutomorphism,
-    absolute_galois_group,
-)
-from dzack_research.preamble.categories.group.profinite.absolute_galois_group_element import (
     AbsoluteGaloisGroupElement,
+    AbsoluteGaloisSliceAutomorphism,
     ElementConjugacyClass,
     FrobeniusElement,
-)
-from dzack_research.preamble.categories.group.profinite.absolute_galois_group_subgroup import (
     OpenAbsoluteGaloisSubgroup,
-    OpenAbsoluteGaloisSubgroups,
     OpenGaloisSubgroupConjugacyClass,
     OpenSubgroupInclusion,
+    absolute_galois_group,
     open_absolute_galois_subgroup,
 )
 from dzack_research.preamble.categories.group.profinite.absolute_galois_groups import (
     AbsoluteGaloisGroups,
     AbsoluteGaloisGroupsOfFiniteFields,
+    OpenAbsoluteGaloisSubgroups,
     absolute_galois_group_category,
 )
 from dzack_research.preamble.categories.group.profinite.field_morphisms import (
@@ -25,7 +21,6 @@ from dzack_research.preamble.categories.group.profinite.field_morphisms import (
     ExactFieldMorphism,
     exact_embeddings,
     exact_field_homset,
-    exact_field_morphism,
     field_generators,
     first_exact_embedding,
 )
@@ -101,7 +96,6 @@ __all__ = [
     "continuous_group_homset",
     "exact_embeddings",
     "exact_field_homset",
-    "exact_field_morphism",
     "extensions_along",
     "field_generators",
     "finite_decomposition_group",

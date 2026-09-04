@@ -1,13 +1,14 @@
 r"""A represented category ``Cat`` of categories, functors, and natural transformations."""
 
+from dzack_research.preamble.categories.abstract_categories.hom_foundation import OwnedHomset
 from sage.misc.cachefunc import cached_method
 from sage.categories.category import Category
 from sage.categories.homset import Homset
 from sage.categories.morphism import Morphism
-from sage.categories.objects import Objects
 from sage.categories.sets_cat import Sets as SageSets
 from sage.structure.parent import Parent
 
+from dzack_research.preamble.categories.abstract_categories.objects import Objects
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
     ArrowCategory,
 )
@@ -65,7 +66,7 @@ class CategoryFunctorMorphism(Morphism):
         return repr(self.functor())
 
 
-class CategoryFunctorHomset(Homset):
+class CategoryFunctorHomset(OwnedHomset):
     Element = CategoryFunctorMorphism
 
     def __init__(self, category_of_categories, domain, codomain) -> None:
@@ -177,7 +178,7 @@ class NaturalTransformationMorphism(Morphism):
         )
 
 
-class NaturalTransformationHomset(Homset):
+class NaturalTransformationHomset(OwnedHomset):
     Element = NaturalTransformationMorphism
 
     def __init__(self, functor_category, domain, codomain) -> None:

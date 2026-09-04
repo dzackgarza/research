@@ -7,9 +7,10 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     _initialize_module_hom_parent,
     ModuleHomset,
+    _ModuleHomsetCommonMethods,
     ModuleMorphism,
 )
-from dzack_research.preamble.categories.modules.internal_hom import (
+from dzack_research.preamble.categories.modules.pure.modules import (
     LinearEndCategoryConstruction,
 )
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
@@ -18,10 +19,10 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     HomCategoryConstruction,
 )
 
-from dzack_research.preamble.categories.rings import (
-    engine_element,
-    engine_ring,
-    owned_ring_view,
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _engine_element,
+    _engine_ring,
+    _owned_ring,
 )
 from dzack_research.preamble.refine import refine
 
@@ -31,17 +32,17 @@ class GroupModuleHomCategoryConstruction(HomCategoryConstruction):
         return GroupModuleHomset
 
 
-class GroupModules(CategoryPacketMethods, Category):
-    r"""The category of ``R[G]``-modules for a specified ring and group."""
+class _CategoryOverRingAndActingGroup(Category):
+    r"""Shared Python parameter handling for categories indexed by ``(R,G)``."""
 
     @staticmethod
     def __classcall__(cls, base_ring, group):
-        from dzack_research.preamble.categories.group.groups import refine_group
+        from dzack_research.preamble.categories.group.groups import _owned_group
 
         return Category.__classcall__(
             cls,
-            owned_ring_view(base_ring),
-            refine_group(group),
+            _owned_ring(base_ring),
+            _owned_group(group),
         )
 
     def __init__(self, base_ring, group) -> None:
@@ -54,6 +55,10 @@ class GroupModules(CategoryPacketMethods, Category):
 
     def acting_group(self):
         return self._group
+
+
+class GroupModules(CategoryPacketMethods, _CategoryOverRingAndActingGroup):
+    r"""The category of ``R[G]``-modules for a specified ring and group."""
 
     def _repr_object_names(self):
         return f"{self.base_ring()}[{self.acting_group()}]-modules"
@@ -79,7 +84,8 @@ class GroupModules(CategoryPacketMethods, Category):
                 "semisimplicity of the group algebra is not decided here for an infinite group"
             )
         characteristic = ring.characteristic()
-        return characteristic == 0 or group.order() % characteristic != 0
+        zero = characteristic.parent().zero()
+        return characteristic == zero or group.order() % characteristic != zero
 
     class ParentMethods:
         def group(self):
@@ -115,16 +121,6 @@ class GroupModules(CategoryPacketMethods, Category):
                 raise TypeError("an R[G]-module morphism requires the same acting group")
             return group_module_homset(self, codomain)
 
-        def hom(self, images, codomain=None):
-            if codomain is None:
-                if isinstance(images, dict) and images:
-                    codomain = next(iter(images.values())).parent()
-                elif isinstance(images, (tuple, list)) and images:
-                    codomain = images[0].parent()
-                else:
-                    raise TypeError("the codomain is required when it cannot be read from images")
-            return group_module_homset(self, codomain)(images)
-
         def action_of(self, group_element):
             r"""Return the linear automorphism induced by ``group_element``."""
             from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
@@ -138,14 +134,10 @@ class GroupModules(CategoryPacketMethods, Category):
                 }
             )
 
-        def action_tensor(self, group_element):
-            r"""Return the type-``(1,1)`` tensor of the selected action."""
-            return self.action_of(group_element).tensor()
-
         def is_invariant(self, vector) -> bool:
-            from dzack_research.preamble.categories.group.groups import refine_group
+            from dzack_research.preamble.categories.group.groups import _owned_group
 
-            group = refine_group(self.group())
+            group = self.group()
             if group.is_finitely_generated() is not True:
                 raise NotImplementedError(
                     "deciding invariance here requires a chosen finite group generating set"
@@ -159,12 +151,12 @@ class GroupModules(CategoryPacketMethods, Category):
             r"""Return ``M^G`` as the equalizer subobject of the action and identity."""
             if self.is_trivial_action():
                 return self.unacted_module()
-            from dzack_research.preamble.categories.group.groups import refine_group
+            from dzack_research.preamble.categories.group.groups import _owned_group
             from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
                 module_homset,
             )
 
-            group = refine_group(self.group())
+            group = self.group()
             if group.is_finitely_generated() is not True:
                 raise NotImplementedError(
                     "constructing invariants here requires a chosen finite group generating set"
@@ -180,7 +172,7 @@ class GroupModules(CategoryPacketMethods, Category):
                 )
                 fixed_subobjects.append(difference.kernel())
             if not fixed_subobjects:
-                return self.subobject_on(tuple(self.module_generators()))
+                return self.subobject_on(self.module_generators())
             invariants = fixed_subobjects[0]
             for fixed in fixed_subobjects[1:]:
                 invariants = invariants.intersection(fixed)
@@ -214,24 +206,33 @@ class GroupModules(CategoryPacketMethods, Category):
             r"""Return ``M_G = M / <g m - m>`` with the current framing retained."""
             if self.is_trivial_action():
                 return self.unacted_module()
-            from dzack_research.preamble.categories.group.groups import refine_group
-            from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import (
+            from dzack_research.preamble.categories.group.groups import _owned_group
+            from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
                 BasedFreeModule,
             )
             from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
                 module_homset,
             )
-            from dzack_research.preamble.categories.sets import finite_ordered_set
+            from dzack_research.preamble.categories.sets.set_categories import Sets
+            from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_image
 
-            group = refine_group(self.group())
+            group = self.group()
             if group.is_finitely_generated() is not True:
                 raise NotImplementedError(
                     "constructing coinvariants here requires a chosen finite group generating set"
                 )
-            relation_labels = finite_ordered_set(
-                (group_generator, module_label)
-                for group_generator in group.group_generators()
-                for module_label in self.module_generating_set()
+            group_generators = group.group_generators()
+            module_labels = self.module_generating_set()
+            group_count = int(group_generators.cardinality())
+            module_count = int(module_labels.cardinality())
+            positions = Sets.Δ[group_count * module_count - 1]
+            relation_labels = finite_ordered_image(
+                positions,
+                lambda position: (
+                    group_generators.unrank(int(position) // module_count),
+                    module_labels.unrank(int(position) % module_count),
+                ),
+                name="Coinvariant relation indices",
             )
             relation_module = BasedFreeModule(self.base_ring(), relation_labels)
             images = {
@@ -256,16 +257,21 @@ class GroupModules(CategoryPacketMethods, Category):
                 raise TypeError(
                     "ordinary characters are not obtained by treating modular traces as characteristic-zero class functions; use the native Brauer-character machinery when appropriate"
                 )
-            traces = [
-                self.action_tensor(group_element).trace()
-                for group_element in group.conjugacy_classes_representatives()
-            ]
-            try:
-                return group.character(traces)
-            except AttributeError as error:
-                raise NotImplementedError(
-                    "the acting finite group does not expose Sage's character class-function constructor"
-                ) from error
+            representatives = group.conjugacy_classes_representatives()
+            traces = tuple(
+                self.action_of(group_element).trace()
+                for group_element in representatives
+            )
+            from dzack_research.preamble.categories.group.class_functions import (
+                finite_group_class_function,
+            )
+
+            return finite_group_class_function(
+                group,
+                self.base_ring(),
+                traces,
+                representatives=representatives,
+            )
 
         def brauer_character(self):
             r"""Return the Brauer character of a finite-dimensional modular representation."""
@@ -287,110 +293,99 @@ class GroupModules(CategoryPacketMethods, Category):
 
             indices = tuple(range(int(self.rank())))
             computation_module = CombinatorialFreeModule(
-                engine_ring(self.base_ring()),
+                _engine_ring(self.base_ring()),
                 indices,
             )
             basis = computation_module.basis()
 
             def on_basis(group_element, index):
-                action_tensor = self.action_tensor(group_element)
+                action_matrix = self.action_of(group_element).matrix()
                 return computation_module.sum(
-                    action_tensor[index, image_index] * basis[image_index]
+                    _engine_element(
+                        self.base_ring(),
+                        action_matrix[image_index, index],
+                    )
+                    * basis[image_index]
                     for image_index in indices
                 )
 
-            # Sage maintains the Teichmuller-lift computation on its
-            # finite-basis representation object.  This local object is derived
-            # entirely from the stored action matrices and is not retained.
-            return group.representation(
+            # Sage maintains the Teichmuller-lift computation on a private
+            # finite-basis representation.  Only the resulting exact values
+            # cross back into the owned class-function object.
+            from dzack_research.preamble.categories.group.groups import _engine_group
+            from dzack_research.preamble.categories.group.class_functions import (
+                finite_group_class_function,
+            )
+            from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+
+            engine_group = _engine_group(group)
+
+            def engine_on_basis(engine_group_element, index):
+                return on_basis(group._from_engine(engine_group_element), index)
+
+            backend_character = engine_group.representation(
                 computation_module,
-                on_basis,
+                engine_on_basis,
                 side="left",
             ).brauer_character()
+            backend_values = tuple(backend_character)
+            if not backend_values:
+                raise ArithmeticError("a finite group has at least the identity p-regular class")
+            value_ring = _own_ring(backend_values[0].parent())
+            engine_value_ring = _engine_ring(value_ring)
+            values = tuple(
+                value_ring._from_engine_element(engine_value_ring(value))
+                for value in backend_values
+            )
+            characteristic = int(self.base_ring().characteristic())
+            representatives = tuple(
+                representative
+                for representative in group.conjugacy_classes_representatives()
+                if int(representative.order()) % characteristic
+            )
+            if len(representatives) != len(values):
+                raise ArithmeticError(
+                    "the private Brauer-character engine returned the wrong number of p-regular class values"
+                )
+            return finite_group_class_function(
+                group,
+                value_ring,
+                values,
+                representatives=representatives,
+            )
 
         def base_change(self, ring_map):
-            r"""Transport this represented group module along ``R -> S``."""
-            from dzack_research.preamble.categories.modules.base_change import (
-                base_change_codomain,
-                base_change_scalar,
+            r"""Transport this group module along ``R -> S`` functorially."""
+            from dzack_research.preamble.categories.functors.scalar_change import (
+                ScalarExtensionFunctor,
             )
-            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-                module_coefficients,
-            )
-            from dzack_research.preamble.tensors import tensor
 
+            unacted = self.unacted_module()
+            scalar_extension = ScalarExtensionFunctor(ring_map)
+            changed_module = scalar_extension(unacted)
             if self.is_trivial_action():
-                return trivial_group_action(
-                    self.unacted_module().base_change(ring_map),
-                    self.group(),
-                )
-            target_ring = base_change_codomain(self, ring_map)
-            changed_module = self.unacted_module().base_change(ring_map)
-            labels = tuple(changed_module.module_generating_set())
+                return trivial_group_action(changed_module, self.group())
 
             def changed_action(group_element, vector):
-                source_tensor = self.action_tensor(group_element)
-                changed_tensor = tensor.matrix(
-                    engine_ring(target_ring),
-                    [
-                        [
-                            engine_element(
-                                target_ring,
-                                base_change_scalar(ring_map, entry),
-                            )
-                            for entry in row
-                        ]
-                        for row in source_tensor.rows()
-                    ],
+                underlying_action = (
+                    self.forget_action_morphism()
+                    * self.action_of(group_element)
+                    * self.equip_action_morphism()
                 )
-                coordinates = tensor.vector(
-                    engine_ring(target_ring),
-                    [
-                        module_coefficients(vector).get(label, target_ring.zero())
-                        for label in labels
-                    ],
-                )
-                image = changed_tensor * coordinates
-                return changed_module.linear_combination(
-                    {
-                        label: image[i]
-                        for i, label in enumerate(labels)
-                        if image[i]
-                    }
-                )
+                return scalar_extension(underlying_action)(vector)
 
             return GroupModule(changed_module, self.group(), changed_action)
 
 
-class FinitelyGeneratedFreeGroupModules(Category):
+
+class FinitelyGeneratedFreeGroupModules(_CategoryOverRingAndActingGroup):
     r"""Group modules whose underlying module is finite free with a chosen basis."""
-
-    @staticmethod
-    def __classcall__(cls, base_ring, group):
-        from dzack_research.preamble.categories.group.groups import refine_group
-
-        return Category.__classcall__(
-            cls,
-            owned_ring_view(base_ring),
-            refine_group(group),
-        )
-
-    def __init__(self, base_ring, group) -> None:
-        self._base_ring = base_ring
-        self._group = group
-        Category.__init__(self)
-
-    def base_ring(self):
-        return self._base_ring
-
-    def acting_group(self):
-        return self._group
 
     def _repr_object_names(self):
         return f"finitely generated free {self.base_ring()}[{self.acting_group()}]-modules"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import (
+        from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
             FinitelyGeneratedFreeModules,
         )
 
@@ -401,29 +396,8 @@ class FinitelyGeneratedFreeGroupModules(Category):
         ]
 
 
-class FinitelyPresentedGroupModules(Category):
+class FinitelyPresentedGroupModules(_CategoryOverRingAndActingGroup):
     r"""Group modules with a chosen finite presentation of the underlying module."""
-
-    @staticmethod
-    def __classcall__(cls, base_ring, group):
-        from dzack_research.preamble.categories.group.groups import refine_group
-
-        return Category.__classcall__(
-            cls,
-            owned_ring_view(base_ring),
-            refine_group(group),
-        )
-
-    def __init__(self, base_ring, group) -> None:
-        self._base_ring = base_ring
-        self._group = group
-        Category.__init__(self)
-
-    def base_ring(self):
-        return self._base_ring
-
-    def acting_group(self):
-        return self._group
 
     def _repr_object_names(self):
         return f"finitely presented {self.base_ring()}[{self.acting_group()}]-modules"
@@ -455,6 +429,7 @@ class GroupModuleMorphism(ModuleMorphism):
         *,
         elementwise=False,
         verify_linearity=True,
+        verify_equivariance=True,
     ) -> None:
         super().__init__(
             parent,
@@ -462,30 +437,35 @@ class GroupModuleMorphism(ModuleMorphism):
             elementwise=elementwise,
             verify_linearity=verify_linearity,
         )
-        group = self.domain().group()
-        if group.is_finitely_generated() is not True:
-            raise NotImplementedError(
-                "checking equivariance requires a chosen finite group generating set"
-            )
-        for group_generator in group.group_generators():
-            for label in self.domain().module_generating_set():
-                source = self.domain().module_generator(label)
-                if self(self.domain().act(group_generator, source)) != self.codomain().act(
-                    group_generator, self(source)
-                ):
-                    raise ValueError("the stated module map is not G-equivariant")
+        if verify_equivariance:
+            group = self.domain().group()
+            if group.is_finitely_generated() is not True:
+                raise NotImplementedError(
+                    "checking equivariance requires a chosen finite group generating set"
+                )
+            for group_generator in group.group_generators():
+                for label in self.domain().module_generating_set():
+                    source = self.domain().module_generator(label)
+                    if self(self.domain().act(group_generator, source)) != self.codomain().act(
+                        group_generator, self(source)
+                    ):
+                        raise ValueError("the stated module map is not G-equivariant")
 
     def __mul__(self, other):
         if not isinstance(other, GroupModuleMorphism):
             return super().__mul__(other)
         if other.codomain() is not self.domain():
             return NotImplemented
-        return group_module_homset(other.domain(), self.codomain()).elementwise(
-            lambda element: self(other(element))
+        return group_module_homset(
+            other.domain(), self.codomain()
+        )._from_equivariant_images(
+            lambda element: self(other(element)),
+            elementwise=True,
+            verify_linearity=False,
         )
 
 
-class GroupModuleHomset(CategoricalHomset):
+class GroupModuleHomset(_ModuleHomsetCommonMethods, CategoricalHomset):
     Element = GroupModuleMorphism
 
     def __init__(self, hom_family, domain, codomain) -> None:
@@ -493,20 +473,38 @@ class GroupModuleHomset(CategoricalHomset):
             raise ValueError("R[G]-module morphisms require the same acting group")
         _initialize_module_hom_parent(self, hom_family, domain, codomain)
 
-    _element_constructor_ = ModuleHomset._element_constructor_
-    base_ring = ModuleHomset.base_ring
-    scalar_multiple = ModuleHomset.scalar_multiple
-    elementwise = ModuleHomset.elementwise
-    source_module = ModuleHomset.source_module
-    target_module = ModuleHomset.target_module
-    evaluation = ModuleHomset.evaluation
-    as_morphism = ModuleHomset.as_morphism
-    from_morphism = ModuleHomset.from_morphism
-    zero = ModuleHomset.zero
-    identity = ModuleHomset.identity
-    one = ModuleHomset.one
 
-    _element_constructor_ = ModuleHomset._element_constructor_
+    def _from_equivariant_images(
+        self,
+        images,
+        *,
+        elementwise=False,
+        verify_linearity=True,
+    ):
+        r"""Construct a map whose equivariance follows from its construction.
+
+        This protected path is for functorial images, identities, and
+        compositions.  Arbitrary user-supplied maps still use the ordinary
+        constructor and are checked on the selected group/module generators.
+        """
+        return self.element_class(
+            self,
+            images,
+            elementwise=elementwise,
+            verify_linearity=verify_linearity,
+            verify_equivariance=False,
+        )
+
+    def identity(self):
+        if self.domain() is not self.codomain():
+            raise ValueError("identity belongs to an endomorphism Hom-set")
+        return self._from_equivariant_images(
+            lambda element: element,
+            elementwise=True,
+            verify_linearity=False,
+        )
+
+
 
     def _repr_(self):
         return f"Hom_{self.domain().group()}({self.domain()}, {self.codomain()})"
@@ -529,7 +527,7 @@ def GroupModule(module, group_or_action, action=None):
     parent is a distinct structured module; the selected module labels are
     transported unchanged.
     """
-    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import (
+    from dzack_research.preamble.categories.modules.pure.modules import (
         FinitelyGeneratedFreeModules,
     )
     from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
@@ -543,6 +541,7 @@ def GroupModule(module, group_or_action, action=None):
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
         module_homset,
     )
+    from dzack_research.preamble.categories.group.groups import _owned_group
 
     base_ring = module.base_ring()
     if module not in FinitelyPresentedModules(base_ring):
@@ -555,12 +554,13 @@ def GroupModule(module, group_or_action, action=None):
             raise TypeError(
                 "with two arguments, GroupModule expects an action morphism whose domain is the acting group"
             )
-        group = action.domain()
+        group = _owned_group(action.domain())
     else:
-        group = group_or_action
+        group = _owned_group(group_or_action)
 
     labels = module.module_generating_set()
-    if labels.cardinality() not in SageZZ:
+    from dzack_research.preamble.categories.sets.cardinals import cardinal
+    if not cardinal(labels.cardinality()).is_finite():
         raise NotImplementedError(
             "the active native GroupModule constructor currently materializes a finite framing"
         )

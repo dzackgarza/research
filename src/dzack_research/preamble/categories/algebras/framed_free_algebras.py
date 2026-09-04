@@ -1,6 +1,5 @@
 """Free algebra constructions on a chosen set of generators."""
 
-from sage.algebras.free_algebra import FreeAlgebra as _SageFreeAlgebra
 from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.algebras.algebras import (
@@ -8,73 +7,27 @@ from dzack_research.preamble.categories.algebras.algebras import (
     refine_algebra,
 )
 from dzack_research.preamble.categories.algebras.free_algebras import (
+    FreeAlgebraOn,
     FreeAlgebras,
     GradedFreeAlgebras,
+    PolynomialRing,
+    SymmetricAlgebraOn,
     SymmetricAlgebras,
+    TensorAlgebraOn,
     TensorAlgebras,
+    _finite_labels,
+    _variable_names,
 )
-from dzack_research.preamble.categories.rings import engine_ring, owned_ring_view
-from dzack_research.preamble.categories.rings.rings import (
-    PolynomialRing as _OwnedPolynomialRing,
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _engine_element,
+    _engine_ring,
+    _owned_ring,
 )
-from dzack_research.preamble.categories.sets import FiniteOrderedSet, finite_ordered_set
+from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+    FiniteOrderedSet,
+    finite_ordered_set,
+)
 from dzack_research.preamble.refine import refine
-
-
-def _finite_labels(labels) -> FiniteOrderedSet:
-    if isinstance(labels, FiniteOrderedSet):
-        return labels
-    if isinstance(labels, int):
-        return finite_ordered_set(range(labels))
-    return finite_ordered_set(labels)
-
-
-def _variable_names(labels: FiniteOrderedSet) -> tuple[str, ...]:
-    names = []
-    used: set[str] = set()
-    for index, label in enumerate(labels):
-        candidate = str(label)
-        if not candidate.isidentifier() or candidate in used:
-            candidate = f"x{index}"
-        while candidate in used:
-            candidate = f"x{index}_{len(used)}"
-        names.append(candidate)
-        used.add(candidate)
-    return tuple(names)
-
-
-def FreeAlgebraOn(base_ring, algebra_generating_set):
-    r"""Return the free commutative algebra ``R[S] = Sym(F_R(S))``."""
-    return SymmetricAlgebraOn(base_ring, algebra_generating_set)
-
-
-def SymmetricAlgebraOn(base_ring, algebra_generating_set):
-    labels = _finite_labels(algebra_generating_set)
-    base = owned_ring_view(base_ring)
-    algebra = _OwnedPolynomialRing(base, _variable_names(labels))
-    return refine_algebra(
-        algebra,
-        base,
-        labels,
-        FreeAlgebras(base),
-        GradedFreeAlgebras(base),
-        SymmetricAlgebras(base),
-    )
-
-
-def TensorAlgebraOn(base_ring, algebra_generating_set):
-    labels = _finite_labels(algebra_generating_set)
-    base = owned_ring_view(base_ring)
-    names = _variable_names(labels)
-    algebra = _SageFreeAlgebra(engine_ring(base), len(labels), names=names)
-    return refine_algebra(
-        algebra,
-        base,
-        labels,
-        FreeAlgebras(base),
-        GradedFreeAlgebras(base),
-        TensorAlgebras(base),
-    )
 
 
 def AlternatingAlgebraOn(base_ring, algebra_generating_set):
@@ -104,9 +57,25 @@ def polynomial_ring(base_ring, names):
     return SymmetricAlgebraOn(base_ring, labels)
 
 
+
+def _has_represented_finite_framing(module) -> bool:
+    r"""Return whether the selected framing is finite construction data."""
+    ring = module.base_ring()
+    from dzack_research.preamble.categories.modules.pure.modules import (
+        FinitelyGeneratedFreeModules,
+    )
+    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+        ModulesWithChosenFinitePresentation,
+    )
+
+    return (
+        module in FinitelyGeneratedFreeModules(ring)
+        or module in ModulesWithChosenFinitePresentation(ring)
+    )
+
 def TensorAlgebraOf(module):
     r"""Return \(T_R(M)\), including the linear relations of ``M``."""
-    if module.module_generating_set().cardinality() not in SageZZ:
+    if not _has_represented_finite_framing(module):
         from dzack_research.preamble.categories.algebras.sparse_free_algebras import (
             SparseTensorAlgebraOf,
         )
@@ -137,13 +106,13 @@ def TensorAlgebraOf(module):
 
 def SymmetricAlgebraOf(module):
     r"""Return \(\operatorname{Sym}_R(M)\) with ``M``'s linear relations."""
-    if module.module_generating_set().cardinality() not in SageZZ:
+    if not _has_represented_finite_framing(module):
         from dzack_research.preamble.categories.algebras.sparse_free_algebras import (
             SparseSymmetricAlgebraOf,
         )
 
         return SparseSymmetricAlgebraOf(module)
-    from dzack_research.preamble.categories.algebras.finitely_presented_algebras import (
+    from dzack_research.preamble.categories.algebras.free_algebras import (
         FinitelyPresentedAlgebra,
     )
     from dzack_research.preamble.categories.algebras.graded_algebras import (
@@ -155,8 +124,10 @@ def SymmetricAlgebraOf(module):
 
     base = module.base_ring()
     labels = _finite_labels(module.module_generating_set())
-    relation_rows = tuple(_presentation_matrix(module).rows())
-    if not relation_rows or not any(any(row) for row in relation_rows):
+    relation_matrix = _presentation_matrix(module)
+    if relation_matrix.nrows() == 0 or not any(
+        any(row) for row in relation_matrix.rows()
+    ):
         algebra = SymmetricAlgebraOn(base, labels)
         algebra._preamble_free_algebra_source_module = module
         return algebra
@@ -166,7 +137,7 @@ def SymmetricAlgebraOf(module):
     # such as ``2*x`` is instead represented by Sage's one-variable
     # *multivariate* polynomial parent, whose ideal reduction is exact over ZZ.
     if len(labels) == 1:
-        presentation_engine = _OwnedPolynomialRing(
+        presentation_engine = PolynomialRing(
             base,
             1,
             names=_variable_names(labels),
@@ -182,18 +153,25 @@ def SymmetricAlgebraOf(module):
     else:
         presentation_ring = SymmetricAlgebraOn(base, labels)
 
-    engine = engine_ring(presentation_ring)
-    generators = tuple(engine.gens())
-    relations = tuple(
-        sum(
-            (
-                coefficient * generator
-                for coefficient, generator in zip(row, generators, strict=True)
-                if coefficient
-            ),
-            engine.zero(),
-        )
-        for row in relation_rows
+    from dzack_research.preamble.categories.sets.set_categories import Sets
+    from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+
+    engine = _engine_ring(presentation_ring)
+    relation_indices = Sets.Δ[relation_matrix.nrows() - 1]
+
+    def relation_value(index):
+        row_position = int(index)
+        backend = engine.zero()
+        for position in range(relation_matrix.tensor_shape()[1]):
+            coefficient = relation_matrix[row_position, position]
+            if coefficient:
+                backend += _engine_element(base, coefficient) * engine.gen(position)
+        return presentation_ring._from_engine_element(backend)
+
+    relations = indexed_family(
+        relation_indices,
+        relation_value,
+        name="Symmetric-algebra defining relations",
     )
     algebra = FinitelyPresentedAlgebra(presentation_ring, relations)
     algebra._preamble_free_algebra_source_module = module

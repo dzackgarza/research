@@ -16,7 +16,6 @@ from dzack_research.preamble.all import (
     Spec,
     StructureSheaf,
     scheme_product,
-    engine_ring,
 )
 
 
@@ -53,7 +52,7 @@ def test_structure_sheaf_is_an_actual_object_with_exact_supported_global_section
 
     assert isinstance(affine_sheaf, StructureSheaf)
     assert affine_sheaf.scheme() is affine
-    assert engine_ring(affine_sheaf.global_sections()) is affine.coordinate_ring()
+    assert affine_sheaf.global_sections() is affine.coordinate_ring()
     assert projective_sheaf.global_sections() is QQ
 
 
@@ -88,7 +87,7 @@ def test_scheme_point_is_a_morphism_from_an_owned_residue_field_scheme() -> None
 
 def test_equation_defined_closed_subscheme_has_live_inclusion_and_codimension() -> None:
     affine = AffineSpace(2, QQ)
-    x, _y = affine.coordinate_ring().gens()
+    x, _y = tuple(affine.coordinate_ring().algebra_generators())
     divisor = affine.closed_subscheme(x)
 
     assert divisor in Schemes(QQ)
@@ -136,12 +135,14 @@ def test_product_of_projective_spaces_is_the_actual_multiprojective_scheme() -> 
     assert product.relative_dimension() == 2
     assert product.factors() == (first_factor, second_factor)
 
-    point = product([1, 2, 3, 4])
+    point = product.point_morphism([1, 2, 3, 4])
     first, second = product.projections()
     assert first.codomain() is first_factor
     assert second.codomain() is second_factor
-    assert first(point) == first_factor([1, 2])
-    assert second(point) == second_factor([3, 4])
+    first_value = first.evaluate_at(point)
+    second_value = second.evaluate_at(point)
+    assert tuple(first_value.native_morphism()) == (1, 2)
+    assert tuple(second_value.native_morphism()) == (3, 4)
 
 
 def test_general_affine_scheme_product_is_spec_of_algebra_coproduct() -> None:
@@ -185,8 +186,8 @@ def test_affine_fiber_product_is_spec_of_algebra_pushout_with_universal_map() ->
     y = right_algebra.algebra_generator("y")
     t = target_algebra.algebra_generator("t")
 
-    common_to_left = common.hom({"s": x**2}, codomain=left_algebra)
-    common_to_right = common.hom({"s": y**3}, codomain=right_algebra)
+    common_to_left = common.Hom(left_algebra)({"s": x**2})
+    common_to_right = common.Hom(right_algebra)({"s": y**3})
     spec = SpecFunctor(QQ)
     left_map = spec(common_to_left)
     right_map = spec(common_to_right)
@@ -204,8 +205,8 @@ def test_affine_fiber_product_is_spec_of_algebra_pushout_with_universal_map() ->
         == right_square.coordinate_algebra_morphism()(s)
     )
 
-    target_to_left = spec(left_algebra.hom({"x": t**3}, codomain=target_algebra))
-    target_to_right = spec(right_algebra.hom({"y": t**2}, codomain=target_algebra))
+    target_to_left = spec(left_algebra.Hom(target_algebra)({"x": t**3}))
+    target_to_right = spec(right_algebra.Hom(target_algebra)({"y": t**2}))
     induced = pullback.from_pullback_cone(target_to_left, target_to_right)
     assert induced.domain() is spec(target_algebra)
     assert induced.codomain() is pullback

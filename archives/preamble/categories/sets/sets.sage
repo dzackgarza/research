@@ -594,7 +594,7 @@ class SubsetsOfSet(CategoryWithParameters):
     r"""The canonical set-valued subobjects of one set.
 
     This category only fixes the codomain of a Set monomorphism.  The generic
-    subobject structure comes from ``Sets().SubObject(X)``.  Set-specific
+    subobject structure comes from ``Sets().Subobjects(X)``.  Set-specific
     characteristic morphisms and Boolean operations belong to
     ``Sets.MonoArrowType``.
     """
@@ -604,7 +604,7 @@ class SubsetsOfSet(CategoryWithParameters):
         super().__init__()
 
     def super_categories(self) -> list[SageCategory]:
-        return [Sets().SubObject(self._base_set)]
+        return [Sets().Subobjects(self._base_set)]
 
     def _make_named_class_key(self, name: str) -> SageCategory:
         return Sets()
@@ -614,7 +614,7 @@ class SubsetsOfSet(CategoryWithParameters):
 
     def __contains__(self, candidate: "ElementConstructorInput") -> bool:
         return (
-            candidate in Sets().SubObject(self._base_set)
+            candidate in Sets().Subobjects(self._base_set)
             and candidate.parent() in Sets().MonoCategory()
         )
 

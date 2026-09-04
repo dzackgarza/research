@@ -1,290 +1,166 @@
-r"""Exact pairings and bilinear or quadratic forms on framed modules.
+r"""Exact pairings and quadratic forms through their universal module objects.
 
-A pairing is an element of \(\operatorname{Hom}_R(X\otimes_R Y,W)\).  A
-bilinear form is the diagonal \(X=Y\).  The active module layer does not
-materialize a general tensor-product parent yet, so the pairing stores that
-universal datum directly: its left and right modules, value module, and
-either its evaluation or its values on the chosen framings.  Nothing pretends
-that a set product is the tensor product merely to satisfy a Sage ``Homset``
-constructor.
+Whenever the relevant universal object is represented, a pairing is literally an
+element of ``Hom_R(X tensor_R Y, W)`` and a quadratic map is literally an element
+of ``Hom_R(Gamma^2(M), W)``.  Only modules for which those universal objects are
+not represented retain an extensional callable form object; that fallback never
+pretends to be a second Hom implementation and has no coordinate presentation.
 """
 
+from sage.misc.cachefunc import cached_function
 from sage.categories.sets_cat import Sets
-from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.element import Element
 from sage.structure.parent import Parent
 
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_coefficients,
+from dzack_research.preamble.categories.sets.indexed_families import (
+    coerce_family_value as _coerce_value,
+    coordinate_family as _coordinate_family,
+    coordinate_family_from_function as _coordinate_family_from_function,
+    coordinate_pair as _coordinate_pair,
+    finite_framing as _finite_framing,
 )
-from dzack_research.preamble.categories.rings import OwnedRings, engine_ring
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    OwnedCategoryOverBaseRing,
+    OwnedRings,
+)
+from dzack_research.preamble.refine import refine
 
 
-def _finite_framing(module) -> tuple:
-    labels = module.module_generating_set()
-    try:
-        finite = labels.cardinality() in SageZZ
-    except AttributeError:
-        finite = False
-    if not finite:
-        raise TypeError("a coordinate Gram presentation requires a finite module framing")
-    return tuple(labels)
+class BilinearFormHoms(OwnedCategoryOverBaseRing):
+    r"""Diagonal pairing Hom objects carrying the bilinear-form operations."""
 
+    @classmethod
+    def _repr_object_names(cls):
+        return "bilinear-form Hom objects"
 
-def _coerce_value(value_module, value):
-    if value_module in OwnedRings():
-        return engine_ring(value_module)(value)
-    return value_module(value)
-
-
-def _coordinate_values(form, left, right):
-    left_module = form.left_module()
-    right_module = form.right_module()
-    if left.parent() is not left_module or right.parent() is not right_module:
-        raise TypeError(f"the pairing takes an element of {left_module} and an element of {right_module}")
-    left_coefficients = module_coefficients(left, left_module)
-    right_coefficients = module_coefficients(right, right_module)
-    zero = form.codomain().zero()
-    total = zero
-    for left_label, left_coefficient in left_coefficients.items():
-        for right_label, right_coefficient in right_coefficients.items():
-            total += left_coefficient * right_coefficient * form._gram_entry(left_label, right_label)
-    return _coerce_value(form.codomain(), total)
-
-
-class _FormSpace(Parent):
-    Element = Element
-
-    def __init__(self, module, value_module) -> None:
-        self._module = module
-        self._value_module = value_module
-        Parent.__init__(self, category=Sets())
-
-    def module(self):
-        return self._module
-
-    def left_module(self):
-        return self._module
-
-    def right_module(self):
-        return self._module
-
-    def codomain(self):
-        return self._value_module
-
-
-class BilinearFormMorphism(Element):
-    r"""An exact bilinear form ``M x M -> W``.
-
-    This represents the corresponding linear morphism ``M tensor M -> W``;
-    the tensor-product parent itself is intentionally not fabricated.
-    """
-
-    def __init__(self, parent, datum) -> None:
-        Element.__init__(self, parent)
-        self._pairing = None
-        self._labels = None
-        self._label_positions = None
-        self._gram = None
-        if callable(datum) and not hasattr(datum, "rows"):
-            self._pairing = datum
-            return
-        labels = _finite_framing(parent.module())
-        rows = tuple(tuple(row) for row in (datum.rows() if hasattr(datum, "rows") else datum))
-        if len(rows) != len(labels) or any(len(row) != len(labels) for row in rows):
-            raise ValueError(f"the Gram presentation must have shape {len(labels)} x {len(labels)}")
-        self._labels = labels
-        self._label_positions = {label: position for position, label in enumerate(labels)}
-        self._gram = tuple(tuple(_coerce_value(parent.codomain(), entry) for entry in row) for row in rows)
-
-    def module(self):
-        return self.parent().module()
-
-    def left_module(self):
-        return self.parent().left_module()
-
-    def right_module(self):
-        return self.parent().right_module()
-
-    def codomain(self):
-        return self.parent().codomain()
-
-    def _gram_entry(self, left_label, right_label):
-        if self._gram is None:
-            raise TypeError("this form is represented by its pairing, not a Gram array")
-        i = self._label_positions[left_label]
-        j = self._label_positions[right_label]
-        return self._gram[i][j]
-
-    def __call__(self, left, right):
-        if self._pairing is not None:
-            if left.parent() is not self.module() or right.parent() is not self.module():
-                raise TypeError(f"the form pairs elements of {self.module()}")
-            return _coerce_value(self.codomain(), self._pairing(left, right))
-        return _coordinate_values(self, left, right)
-
-    def norm(self, element):
-        return self(element, element)
-
-    def values_matrix(self):
-        if self._gram is None:
-            raise TypeError("a form supplied only by a pairing has no finite values matrix")
-        return self._gram
-
-    def gram_tensor(self):
-        r"""Return the scalar-valued Gram tensor in the selected framing."""
-        if self._gram is None:
-            raise TypeError("a form supplied only by a pairing has no finite Gram tensor")
-        if self.codomain() not in OwnedRings():
-            raise TypeError("a Gram tensor here requires scalar-valued form entries")
-        from dzack_research.preamble.tensors import tensor
-
-        rank = len(self._gram)
-        return tensor(self.codomain(), (), (rank, rank), self._gram)
-
-    def polar_form(self):
-        r"""Return the polar form of ``q(x)=b(x,x)``, namely ``2b``."""
-        return BilinearForms(self.module(), self.codomain())(lambda left, right: 2 * self(left, right))
-
-    def pullback(self, morphism):
-        if morphism.codomain() is not self.module():
-            raise ValueError("the pullback map must land in the form's module")
-        forms = BilinearForms(morphism.domain(), self.codomain())
-        if self._gram is None:
-            return forms(lambda left, right: self(morphism(left), morphism(right)))
-        generators = tuple(morphism.domain().module_generators())
-        return forms([[self(morphism(left), morphism(right)) for right in generators] for left in generators])
-
-    def __eq__(self, other):
-        if self is other:
-            return True
-        if not isinstance(other, BilinearFormMorphism):
-            return False
-        if self.module() is not other.module() or self.codomain() is not other.codomain():
-            return False
-        assert self.module().module_generating_set().cardinality() in SageZZ
-        generators = tuple(self.module().module_generators())
-        return all(self(left, right) == other(left, right) for left in generators for right in generators)
-
-    def _repr_(self):
-        return f"Bilinear form on {self.module()} with values in {self.codomain()}"
-
-
-class BilinearFormSpace(_FormSpace):
-    Element = BilinearFormMorphism
-
-    def _element_constructor_(self, datum):
-        if isinstance(datum, BilinearFormMorphism) and datum.parent() is self:
-            return datum
-        return self.element_class(self, datum)
-
-    def _repr_(self):
-        return f"Bilinear forms on {self.module()} with values in {self.codomain()}"
-
-
-class QuadraticFormMorphism(Element):
-    r"""An exact quadratic form on a framed module."""
-
-    def __init__(self, parent, datum) -> None:
-        Element.__init__(self, parent)
-        self._value_map = None
-        self._lift = None
-        if callable(datum) and not hasattr(datum, "rows"):
-            self._value_map = datum
-            return
-        lift = BilinearForms(parent.module(), parent.codomain())(datum)
-        gram = lift.values_matrix()
-        if any(gram[i][j] != gram[j][i] for i in range(len(gram)) for j in range(len(gram))):
-            raise ValueError("the bilinear lift of a quadratic form must be symmetric")
-        self._lift = lift
-
-    def module(self):
-        return self.parent().module()
-
-    def codomain(self):
-        return self.parent().codomain()
-
-    def __call__(self, element):
-        if element.parent() is not self.module():
-            raise TypeError(f"the quadratic form is defined on {self.module()}")
-        if self._value_map is not None:
-            return _coerce_value(self.codomain(), self._value_map(element))
-        return self._lift(element, element)
-
-    def lift_form(self):
-        if self._lift is None:
-            raise TypeError("a quadratic form supplied by its value map has no chosen bilinear lift")
-        return self._lift
-
-    def polar_form(self):
-        return BilinearForms(self.module(), self.codomain())(lambda left, right: self(left + right) - self(left) - self(right))
-
-    def b(self, left, right):
-        return self.polar_form()(left, right)
-
-    def values_matrix(self):
-        generators = tuple(self.module().module_generators())
-        return tuple(
-            tuple(self(generator_left + generator_right) - self(generator_left) - self(generator_right) for generator_right in generators) for generator_left in generators
+    def super_categories(self):
+        from dzack_research.preamble.categories.modules.pure.modules import (
+            InternalHomModules,
         )
 
-    def pullback(self, morphism):
-        if morphism.codomain() is not self.module():
-            raise ValueError("the pullback map must land in the form's module")
-        forms = QuadraticForms(morphism.domain(), self.codomain())
-        if self._lift is None:
-            return forms(lambda element: self(morphism(element)))
-        generators = tuple(morphism.domain().module_generators())
-        return forms([[self._lift(morphism(left), morphism(right)) for right in generators] for left in generators])
+        return [InternalHomModules(self.base_ring())]
 
-    def __eq__(self, other):
-        if self is other:
-            return True
-        if not isinstance(other, QuadraticFormMorphism):
-            return False
-        if self.module() is not other.module() or self.codomain() is not other.codomain():
-            return False
-        assert self.module().module_generating_set().cardinality() in SageZZ
-        generators = tuple(self.module().module_generators())
-        probes = generators + tuple(left + right for i, left in enumerate(generators) for right in generators[i + 1 :])
-        return all(self(element) == other(element) for element in probes)
+    class ElementMethods:
+        def gram_tensor(self):
+            if self.left_module() is not self.right_module():
+                raise TypeError("a Gram tensor requires a diagonal bilinear form")
+            if self.codomain() not in OwnedRings():
+                raise TypeError("a Gram tensor here requires scalar-valued form entries")
+            from dzack_research.preamble.categories.sets.cardinals import cardinal
+            from dzack_research.preamble.tensors.tensor import tensor
 
-    def _repr_(self):
-        return f"Quadratic form on {self.module()} with values in {self.codomain()}"
+            labels = self.left_module().module_generating_set()
+            size = cardinal(labels.cardinality())
+            if not size.is_finite():
+                raise TypeError("a form supplied only by a pairing has no finite Gram tensor")
+            rank = int(size.finite_value())
+            return tensor(
+                self.codomain(),
+                (),
+                (rank, rank),
+                (
+                    self._gram_entry(labels.unrank(i), labels.unrank(j))
+                    for i in range(rank)
+                    for j in range(rank)
+                ),
+            )
+
+        def pullback(self, morphism):
+            if morphism.codomain() is not self.module():
+                raise ValueError("the pullback map must land in the form's module")
+            from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
+            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+                module_homset,
+            )
+
+            source = TensorProduct(morphism.domain(), morphism.domain())
+            induced = module_homset(source, self.domain())(
+                lambda pair: self.domain().pure_tensor(
+                    morphism(
+                        morphism.domain().module_generator(pair.component(0))
+                    ),
+                    morphism(
+                        morphism.domain().module_generator(pair.component(1))
+                    ),
+                )
+            )
+            return BilinearForms(morphism.domain(), self.codomain())(self * induced)
 
 
-class QuadraticFormSpace(_FormSpace):
-    Element = QuadraticFormMorphism
+def _value_module_over(value_module, ring) -> bool:
+    from dzack_research.preamble.categories.modules.pure.modules import Modules
 
-    def _element_constructor_(self, datum):
-        if isinstance(datum, QuadraticFormMorphism) and datum.parent() is self:
-            return datum
-        return self.element_class(self, datum)
-
-    def _repr_(self):
-        return f"Quadratic forms on {self.module()} with values in {self.codomain()}"
+    return value_module in Modules(ring)
 
 
-class PairingMorphism(Element):
-    r"""An exact pairing \(X\times Y\to W\), i.e. a map \(X\otimes_R Y\to W\)."""
+class _CallableForm(Element):
+    r"""Extensional form data used only when no universal classifier is represented."""
 
     def __init__(self, parent, datum) -> None:
         Element.__init__(self, parent)
-        self._pairing = None
-        self._left_labels = None
-        self._right_labels = None
-        self._gram = None
-        if callable(datum) and not hasattr(datum, "rows"):
-            self._pairing = datum
+        self._evaluation = None
+        self._lift_evaluation = None
+        from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
+
+        coordinate_datum = (
+            isinstance(datum, IndexedFamily)
+            or hasattr(datum, "rows")
+            or (
+                isinstance(datum, (tuple, list))
+                and all(isinstance(row, (tuple, list)) for row in datum)
+            )
+        )
+        if coordinate_datum:
+            left_labels = _finite_framing(parent.left_module())
+            right_labels = _finite_framing(parent.right_module())
+            values = _coordinate_family(
+                left_labels,
+                right_labels,
+                parent.codomain(),
+                datum,
+                name=f"Callable {parent.kind()} coordinate input",
+            )
+
+            def bilinear(left, right):
+                from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+                    module_coefficients,
+                )
+
+                left_coefficients = module_coefficients(left, parent.left_module())
+                right_coefficients = module_coefficients(right, parent.right_module())
+                result = parent.codomain().zero()
+                for left_label, left_coefficient in left_coefficients.items():
+                    for right_label, right_coefficient in right_coefficients.items():
+                        scalar = left_coefficient * right_coefficient
+                        if scalar:
+                            result += scalar * _coordinate_pair(
+                                values, left_label, right_label
+                            )
+                return result
+
+            if parent.kind() == "quadratic":
+                size = int(left_labels.cardinality())
+                for i in range(size):
+                    for j in range(i + 1, size):
+                        left = left_labels.unrank(i)
+                        right = left_labels.unrank(j)
+                        if _coordinate_pair(values, left, right) != _coordinate_pair(
+                            values, right, left
+                        ):
+                            raise ValueError(
+                                "the bilinear lift of a quadratic form must be symmetric"
+                            )
+                self._lift_evaluation = bilinear
+                self._evaluation = lambda element: bilinear(element, element)
+            else:
+                self._evaluation = bilinear
             return
-        left_labels = _finite_framing(parent.left_module())
-        right_labels = _finite_framing(parent.right_module())
-        rows = tuple(tuple(row) for row in (datum.rows() if hasattr(datum, "rows") else datum))
-        if len(rows) != len(left_labels) or any(len(row) != len(right_labels) for row in rows):
-            raise ValueError(f"the pairing presentation must have shape {len(left_labels)} x {len(right_labels)}")
-        self._left_labels = left_labels
-        self._right_labels = right_labels
-        self._gram = tuple(tuple(_coerce_value(parent.codomain(), entry) for entry in row) for row in rows)
+
+        if not callable(datum):
+            raise TypeError(
+                "an unrepresented form is supplied by callable evaluation or finite coordinate ingress"
+            )
+        self._evaluation = datum
 
     def left_module(self):
         return self.parent().left_module()
@@ -292,39 +168,152 @@ class PairingMorphism(Element):
     def right_module(self):
         return self.parent().right_module()
 
+    def module(self):
+        if self.parent().kind() == "quadratic":
+            return self.left_module()
+        if self.left_module() is not self.right_module():
+            raise TypeError("a pairing of distinct modules is not a form on one module")
+        return self.left_module()
+
     def codomain(self):
         return self.parent().codomain()
 
-    def _gram_entry(self, left_label, right_label):
-        if self._gram is None:
-            raise TypeError("this pairing is represented by its evaluation, not a values array")
-        i = self._left_labels.index(left_label)
-        j = self._right_labels.index(right_label)
-        return self._gram[i][j]
+    def __call__(self, *arguments):
+        if self.parent().kind() == "quadratic":
+            if len(arguments) != 1:
+                raise TypeError("a quadratic map takes one module element")
+            element = arguments[0]
+            if element not in self.module():
+                raise TypeError(f"the quadratic form is defined on {self.module()}")
+            return _coerce_value(self.codomain(), self._evaluation(element))
+        if len(arguments) != 2:
+            raise TypeError("a pairing takes two module elements")
+        left, right = arguments
+        if left not in self.left_module() or right not in self.right_module():
+            raise TypeError(
+                f"the pairing takes an element of {self.left_module()} and {self.right_module()}"
+            )
+        return _coerce_value(self.codomain(), self._evaluation(left, right))
 
-    def __call__(self, left, right):
-        if self._pairing is not None:
-            if left.parent() is not self.left_module() or right.parent() is not self.right_module():
-                raise TypeError(f"the pairing takes an element of {self.left_module()} and an element of {self.right_module()}")
-            return _coerce_value(self.codomain(), self._pairing(left, right))
-        return _coordinate_values(self, left, right)
+    def norm(self, element):
+        if self.parent().kind() != "bilinear" or self.left_module() is not self.right_module():
+            raise TypeError("a norm here requires a bilinear form on one module")
+        return self(element, element)
 
-    def values_matrix(self):
-        if self._gram is None:
-            raise TypeError("a pairing supplied only by evaluation has no finite values matrix")
-        return self._gram
+    def coordinate_values(self):
+        if self.parent().kind() != "bilinear":
+            raise TypeError("quadratic forms have lift coordinates, not bilinear coordinates")
+        labels = _finite_framing(self.module())
+        return _coordinate_family_from_function(
+            labels,
+            labels,
+            self.codomain(),
+            lambda left_label, right_label: self(
+                self.module().module_generator(left_label),
+                self.module().module_generator(right_label),
+            ),
+            name="Extensional bilinear coordinate values",
+        )
+
+    def lift_coordinate_values(self):
+        if self.parent().kind() != "quadratic" or self._lift_evaluation is None:
+            raise TypeError(
+                "an extensional callable quadratic form has no chosen bilinear coordinate lift"
+            )
+        labels = _finite_framing(self.module())
+        return _coordinate_family_from_function(
+            labels,
+            labels,
+            self.codomain(),
+            lambda left_label, right_label: self._lift_evaluation(
+                self.module().module_generator(left_label),
+                self.module().module_generator(right_label),
+            ),
+            name="Extensional quadratic-lift coordinate values",
+        )
+
+    def lift_pairing(self, left, right):
+        if self.parent().kind() != "quadratic" or self._lift_evaluation is None:
+            raise TypeError("this quadratic form has no chosen bilinear lift")
+        return _coerce_value(self.codomain(), self._lift_evaluation(left, right))
+
+    def gram_tensor(self):
+        from dzack_research.preamble.categories.rings.ring_foundation import OwnedRings
+        from dzack_research.preamble.tensors.tensor import tensor
+
+        if self.codomain() not in OwnedRings():
+            raise TypeError("a Gram tensor here requires scalar-valued form entries")
+        values = (
+            self.lift_coordinate_values()
+            if self.parent().kind() == "quadratic"
+            else self.coordinate_values()
+        )
+        labels = _finite_framing(self.module())
+        rank = int(labels.cardinality())
+        return tensor(
+            self.codomain(),
+            (),
+            (rank, rank),
+            (
+                _coordinate_pair(values, labels.unrank(i), labels.unrank(j))
+                for i in range(rank)
+                for j in range(rank)
+            ),
+        )
+
+    def polar_form(self):
+        if self.parent().kind() == "quadratic":
+            return BilinearForms(self.module(), self.codomain())(
+                lambda left, right: self(left + right) - self(left) - self(right)
+            )
+        if self.left_module() is not self.right_module():
+            raise TypeError("polar form syntax requires a bilinear form on one module")
+        return BilinearForms(self.module(), self.codomain())(
+            lambda left, right: 2 * self(left, right)
+        )
+
+    def b(self, left, right):
+        if self.parent().kind() == "quadratic":
+            return self.polar_form()(left, right)
+        return self(left, right)
+
+    def pullback(self, morphism):
+        if morphism.codomain() is not self.module():
+            raise ValueError("the pullback map must land in the form's module")
+        if self.parent().kind() == "quadratic":
+            return QuadraticMap(
+                morphism.domain(),
+                self.codomain(),
+                lambda element: self(morphism(element)),
+            )
+        return BilinearForms(morphism.domain(), self.codomain())(
+            lambda left, right: self(morphism(left), morphism(right))
+        )
+
+    def __eq__(self, other):
+        if self is other:
+            return True
+        if not isinstance(other, _CallableForm) or other.parent() is not self.parent():
+            return False
+        if self._evaluation is other._evaluation:
+            return True
+        raise NotImplementedError("equality of arbitrary callable forms is not decidable")
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
 
     def _repr_(self):
-        return f"Pairing {self.left_module()} ⊗ {self.right_module()} -> {self.codomain()}"
+        return f"Extensional {self.parent().kind()} form with values in {self.codomain()}"
 
 
-class PairingSpace(Parent):
-    Element = PairingMorphism
+class _CallableFormSpace(Parent):
+    Element = _CallableForm
 
-    def __init__(self, left_module, right_module, value_module) -> None:
+    def __init__(self, left_module, right_module, value_module, kind) -> None:
         self._left_module = left_module
         self._right_module = right_module
         self._value_module = value_module
+        self._kind = kind
         Parent.__init__(self, category=Sets())
 
     def left_module(self):
@@ -334,111 +323,146 @@ class PairingSpace(Parent):
         return self._right_module
 
     def module(self):
-        if self._left_module is not self._right_module:
-            raise TypeError("a pairing of two modules is not a form on one module")
-        return self._left_module
+        if self.kind() == "quadratic" or self.left_module() is self.right_module():
+            return self.left_module()
+        raise TypeError("a pairing of distinct modules is not a form on one module")
 
     def codomain(self):
         return self._value_module
 
+    def kind(self):
+        return self._kind
+
     def _element_constructor_(self, datum):
-        if isinstance(datum, PairingMorphism) and datum.parent() is self:
+        if isinstance(datum, _CallableForm) and datum.parent() is self:
             return datum
         return self.element_class(self, datum)
 
-    def _repr_(self):
-        return f"Pairings {self.left_module()} ⊗ {self.right_module()} -> {self.codomain()}"
 
-
-_PAIRING_SPACE_CACHE = {}
-_BILINEAR_FORM_SPACE_CACHE = {}
-_QUADRATIC_FORM_SPACE_CACHE = {}
-
-
-def _identity_cached_space(cache, objects, constructor):
-    r"""Cache a typed space only when its argument objects are identical.
-
-    Sage parents that are equal as computational quotients can still carry
-    different selected mathematical structure.  The domain/codomain of a
-    form is part of its type, so equality is not an admissible cache key.
-    Repeated calls on the very same objects should nevertheless return the
-    same Hom/form space, as ordinary category syntax expects.
-    """
-    key = tuple(id(obj) for obj in objects)
-    cached = cache.get(key)
-    if cached is not None and all(cached_object is requested_object for cached_object, requested_object in zip(cached[:-1], objects, strict=True)):
-        return cached[-1]
-    space = constructor(*objects)
-    cache[key] = (*objects, space)
+@cached_function(key=lambda left_module, right_module, value_module, kind: (id(left_module), id(right_module), id(value_module), kind))
+def _callable_form_space(left_module, right_module, value_module, kind):
+    space = _CallableFormSpace(left_module, right_module, value_module, kind)
     return space
 
 
+def is_bilinear_form(form) -> bool:
+    if isinstance(form, _CallableForm):
+        return form.parent().kind() == "bilinear" and form.left_module() is form.right_module()
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+        TensorProductModuleMorphism,
+    )
+
+    return (
+        isinstance(form, TensorProductModuleMorphism)
+        and form.left_module() is form.right_module()
+    )
+
+
+def is_quadratic_form(form) -> bool:
+    if isinstance(form, _CallableForm):
+        return form.parent().kind() == "quadratic"
+    from dzack_research.preamble.categories.modules.powers import (
+        QuadraticModuleMorphism,
+    )
+
+    return isinstance(form, QuadraticModuleMorphism)
+
+
 def Pairings(left_module, right_module, value_module):
-    r"""Return \(\operatorname{Hom}_R(X\otimes_R Y,W)\)."""
+    r"""Return ``Hom_R(X tensor_R Y,W)`` whenever that universal object exists."""
     if left_module is right_module:
         return BilinearForms(left_module, value_module)
-    return _identity_cached_space(
-        _PAIRING_SPACE_CACHE,
-        (left_module, right_module, value_module),
-        PairingSpace,
-    )
+    from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
+
+    if _value_module_over(value_module, left_module.base_ring()):
+        try:
+            tensor_product = TensorProduct(left_module, right_module)
+        except NotImplementedError:
+            pass
+        else:
+            return module_homset(tensor_product, value_module)
+    return _callable_form_space(left_module, right_module, value_module, "bilinear")
 
 
-def BilinearForms(module, value_module) -> BilinearFormSpace:
-    return _identity_cached_space(
-        _BILINEAR_FORM_SPACE_CACHE,
-        (module, value_module),
-        BilinearFormSpace,
-    )
+def BilinearForms(module, value_module):
+    r"""Return ``Hom_R(M tensor_R M,W)`` whenever that universal object exists."""
+    from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
+
+    if _value_module_over(value_module, module.base_ring()):
+        try:
+            tensor_product = TensorProduct(module, module)
+        except NotImplementedError:
+            pass
+        else:
+            return refine(
+                module_homset(tensor_product, value_module),
+                BilinearFormHoms(module.base_ring()),
+            )
+    return _callable_form_space(module, module, value_module, "bilinear")
 
 
-def QuadraticForms(module, value_module) -> QuadraticFormSpace:
-    return _identity_cached_space(
-        _QUADRATIC_FORM_SPACE_CACHE,
-        (module, value_module),
-        QuadraticFormSpace,
-    )
+def QuadraticForms(module, value_module):
+    r"""Return ``Hom_R(Gamma^2(M),W)`` whenever the divided square is represented."""
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
+    from dzack_research.preamble.categories.modules.powers import DividedSquare
+
+    if _value_module_over(value_module, module.base_ring()):
+        try:
+            square = DividedSquare(module)
+        except NotImplementedError:
+            pass
+        else:
+            return module_homset(square, value_module)
+    return _callable_form_space(module, module, value_module, "quadratic")
 
 
-def BilinearForm(module, value_module, datum):
-    r"""Return the module ``module`` equipped with the stated bilinear form."""
-    from dzack_research.preamble.categories.modules.framed.formed import FormModule
-
-    return FormModule(BilinearForms(module, value_module)(datum))
-
-
-def QuadraticForm(module, value_module, datum):
-    r"""Return the module ``module`` equipped with the stated quadratic form."""
-    from dzack_research.preamble.categories.modules.framed.formed import FormModule
-
-    return FormModule(QuadraticForms(module, value_module)(datum))
-
+from dzack_research.preamble.categories.modules.powers import (
+    QuadraticModuleHomset as QuadraticFormHomset,
+    QuadraticModuleMorphism as QuadraticFormMorphism,
+)
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    TensorProductModuleHomset as BilinearFormHomset,
+    TensorProductModuleMorphism as BilinearFormMorphism,
+    TensorProductModuleMorphism as PairingMorphism,
+)
 
 QuadraticMapMorphism = QuadraticFormMorphism
-BilinearFormHomset = BilinearFormSpace
-QuadraticFormHomset = QuadraticFormSpace
 
 
 def QuadraticMap(module, value_module, function):
-    r"""Return the represented quadratic map ``module -> value_module``."""
-    return QuadraticForms(module, value_module)(function)
+    r"""Return the quadratic map ``module -> value_module`` via its classifier."""
+    forms = QuadraticForms(module, value_module)
+    constructor = getattr(forms, "from_quadratic_map", None)
+    return forms(function) if constructor is None else constructor(function)
 
 
 def classifying_morphism(quadratic):
     r"""Return the unique linear map ``Gamma^2(M) -> W`` classifying ``quadratic``."""
-    from dzack_research.preamble.categories.modules.quadratic_square import DividedSquare
+    from dzack_research.preamble.categories.modules.powers import (
+        QuadraticModuleMorphism,
+    )
+    from dzack_research.preamble.categories.modules.powers import DividedSquare
 
+    if isinstance(quadratic, QuadraticModuleMorphism):
+        return quadratic
     square = DividedSquare(quadratic.module())
     return square.from_quadratic(quadratic, quadratic.codomain())
 
 
 def quadratic_map_from_morphism(module, morphism):
     r"""Recover the quadratic map classified by ``morphism: Gamma^2(M) -> W``."""
-    from dzack_research.preamble.categories.modules.quadratic_square import DividedSquare
+    from dzack_research.preamble.categories.modules.powers import DividedSquare
+    from dzack_research.preamble.categories.modules.powers import (
+        QuadraticModuleMorphism,
+    )
 
     square = DividedSquare(module)
     if morphism.domain() is not square:
         raise ValueError("the classifier morphism has the wrong divided-square domain")
+    if isinstance(morphism, QuadraticModuleMorphism):
+        return morphism
     return QuadraticMap(
         module,
         morphism.codomain(),

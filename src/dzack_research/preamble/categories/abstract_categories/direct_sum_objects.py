@@ -1,9 +1,10 @@
 r"""Objects equipped with a chosen finite direct-sum decomposition."""
 
 from sage.categories.category import Category
-from sage.categories.sets_cat import Sets as SageSets
 
-from dzack_research.preamble.categories.sets import Sets, finite_ordered_set
+from dzack_research.preamble.categories.abstract_categories.objects import Objects
+from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.refine import refine
 
 
@@ -11,7 +12,7 @@ class DirectSumObjects(Category):
     r"""Objects carrying a selected ordered family of direct summands."""
 
     def super_categories(self):
-        return [SageSets()]
+        return [Objects()]
 
     class ParentMethods:
         def summands(self):
@@ -50,7 +51,7 @@ def _binary_decomposition_is_valid(underlying_object, summands) -> bool:
     ):
         return False
 
-    from dzack_research.preamble.categories.abstract_categories import Biproduct
+    from dzack_research.preamble.categories.abstract_categories.constructions import Biproduct
 
     biproduct = Biproduct(left, right)
     map_to_object = biproduct.from_summands(left_inclusion, right_inclusion)

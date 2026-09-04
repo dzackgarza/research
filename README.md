@@ -4,8 +4,7 @@ Workspace for mathematical notes, computation experiments, and live research pro
 
 ## Sage research package
 
-The installable `dzack_research` package is the preamble.
-It is a **Sage** package, not a plain Python package: its modules are `.sage` sources that the [sageparse](https://github.com/dzackgarza/tree-sitter-sage) preparser compiles to Python on import.
+The installable `dzack_research` package is a **Sage** package, not a plain Python package: its modules are `.sage` sources that the [sageparse](https://github.com/dzackgarza/tree-sitter-sage) preparser compiles to Python on import.
 `tree-sitter-sage` is therefore a hard runtime dependency, and the package must be imported inside a Sage environment (`SAGE_BIN`; `src/sitecustomize.py` installs the import hook into every process).
 After checkout or after `.envrc` changes, run:
 
@@ -13,7 +12,7 @@ After checkout or after `.envrc` changes, run:
 direnv allow
 ```
 
-The exploratory spikes that preceded the preamble were fully absorbed into it and deleted (2026-08-19); git history is their record. The active code surface is the preamble, `src/dzack_research/preamble/`.
+The live preamble is `src/dzack_research/preamble/`; `from dzack_research.preamble.all import *` is the session import. The previous preamble is archived at `archives/preamble/`.
 
 `just test` runs the repository hygiene sweep and the experiment test gates.
 

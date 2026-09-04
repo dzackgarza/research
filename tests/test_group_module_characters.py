@@ -1,14 +1,12 @@
 import pytest
-from sage.all import GF
-
 from dzack_research.preamble.all import (
     BasedFreeModule,
     FinitelyPresentedTorsionModules,
+    GF,
     GroupModule,
     Groups,
     ZZ,
 )
-from dzack_research.preamble.categories.rings import owned_ring_view
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
 
@@ -17,13 +15,11 @@ def test_ordinary_character_is_the_trace_class_function_of_the_stored_action() -
     module = BasedFreeModule(ZZ, finite_ordered_set(("sign", "trivial")))
     sign_generator = module.module_generator("sign")
     trivial_generator = module.module_generator("trivial")
-    positive = module.hom(
-        {"sign": sign_generator, "trivial": trivial_generator},
-        module,
+    positive = module.Hom(module)(
+        {"sign": sign_generator, "trivial": trivial_generator}
     )
-    negative = module.hom(
-        {"sign": -sign_generator, "trivial": trivial_generator},
-        module,
+    negative = module.Hom(module)(
+        {"sign": -sign_generator, "trivial": trivial_generator}
     )
 
     def action(group_element, vector):
@@ -34,7 +30,7 @@ def test_ordinary_character_is_the_trace_class_function_of_the_stored_action() -
 
     assert character.domain() is group
     for group_element in group:
-        assert character(group_element) == acted.action_tensor(group_element).trace()
+        assert character(group_element) == acted.action_of(group_element).matrix().trace()
 
     transposition = next(element for element in group if element.order() == 2)
     three_cycle = next(element for element in group if element.order() == 3)
@@ -44,12 +40,12 @@ def test_ordinary_character_is_the_trace_class_function_of_the_stored_action() -
 
 
 def test_brauer_character_uses_teichmuller_lifts_not_modular_traces() -> None:
-    base_ring = owned_ring_view(GF(2))
+    base_ring = GF(2)
     group = Groups.C(6)
     module = BasedFreeModule(base_ring, finite_ordered_set(("x", "y")))
     x = module.module_generator("x")
     y = module.module_generator("y")
-    order_three = module.hom({"x": y, "y": x + y}, module)
+    order_three = module.Hom(module)({"x": y, "y": x + y})
     generator = next(iter(group.group_generators()))
 
     def action(group_element, vector):
@@ -74,7 +70,7 @@ def test_brauer_character_uses_teichmuller_lifts_not_modular_traces() -> None:
     )
     assert len(brauer_character) == 3 < len(representatives)
     order_three_element = generator**2
-    assert acted.action_tensor(order_three_element).trace() == GF(2).one()
+    assert acted.action_of(order_three_element).matrix().trace() == GF(2).one()
     order_three_index = regular_representatives.index(order_three_element)
     assert brauer_character[order_three_index] == -1
 

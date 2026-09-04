@@ -14,16 +14,12 @@ def test_session_integer_and_rational_rings_are_owned_views() -> None:
     QQ = session["QQ"]
     OwnedRings = session["OwnedRings"]
     OwnedFields = session["OwnedFields"]
-    engine_ring = session["engine_ring"]
-
     assert ZZ is not SageZZ
     assert QQ is not SageQQ
     assert ZZ in OwnedRings()
     assert QQ in OwnedFields()
-    assert engine_ring(ZZ) is SageZZ
-    assert engine_ring(QQ) is SageQQ
-    assert ZZ(3).parent() is SageZZ
-    assert QQ(3).parent() is SageQQ
+    assert ZZ(3).parent() is ZZ
+    assert QQ(3).parent() is QQ
 
 
 def test_owned_ring_power_constructs_a_free_module_over_the_owned_ring() -> None:
@@ -40,7 +36,6 @@ def test_owned_polynomial_and_matrix_ring_constructors_cross_to_the_engine() -> 
     session = _session()
     QQ = session["QQ"]
     OwnedRings = session["OwnedRings"]
-    engine_ring = session["engine_ring"]
     PolynomialRing = session["PolynomialRing"]
     MatrixSpace = session["MatrixSpace"]
 
@@ -51,21 +46,20 @@ def test_owned_polynomial_and_matrix_ring_constructors_cross_to_the_engine() -> 
     assert matrices in OwnedRings()
     assert polynomials.base_ring() is QQ
     assert matrices.base_ring() is QQ
-    assert engine_ring(polynomials).base_ring() is SageQQ
-    assert engine_ring(matrices).base_ring() is SageQQ
-
+    assert polynomials.algebra_generator("x").parent() is polynomials
+    assert matrices.one().parent() is matrices
     assert QQ["x"] is polynomials
 
 
-def test_owned_polynomial_ring_supports_sage_generator_assignment_hook() -> None:
+def test_owned_polynomial_ring_has_owned_selected_algebra_generators() -> None:
     session = _session()
     QQ = session["QQ"]
     ring = QQ["x, y"]
 
-    x, y = ring._first_ngens(2)
-    assert x.parent() is session["engine_ring"](ring)
-    assert y.parent() is session["engine_ring"](ring)
-    assert ring.variable_names() == ("x", "y")
+    x, y = tuple(ring.algebra_generators())
+    assert x.parent() is ring
+    assert y.parent() is ring
+    assert tuple(ring.algebra_generating_set()) == ("x", "y")
 
 
 def test_fraction_field_returns_the_owned_field() -> None:
@@ -114,7 +108,7 @@ def test_noncommutative_center_is_a_predicate_subring() -> None:
 
     # Centrality is decided on the matrix units, the chosen algebra generators.
     assert matrices.one() in center
-    assert matrices.algebra_generator(1) not in center
+    assert next(iter(matrices.algebra_generators())) not in center
 
 
 def test_owned_ring_constructors_return_owned_rings() -> None:
@@ -128,27 +122,27 @@ def test_owned_ring_constructors_return_owned_rings() -> None:
     assert session["QuadraticField"](2, "a") in OwnedFields()
 
 
-def test_algebraic_adjunction_is_a_number_field_or_order() -> None:
+def test_explicit_algebraic_extensions_are_number_fields_or_orders() -> None:
     session = _session()
     ZZ = session["ZZ"]
     QQ = session["QQ"]
-    I = session["I"]
-    sqrt = session["sqrt"]
+    QuadraticField = session["QuadraticField"]
     OwnedOrders = session["OwnedOrders"]
     OwnedFields = session["OwnedFields"]
     aleph0 = session["aleph0"]
 
-    gaussian = ZZ[I]
-    cyclotomic_field = QQ[I]
-    order = ZZ[sqrt(2)]
+    gaussian_field = QuadraticField(-1, "i")
+    gaussian = gaussian_field.ring_of_integers()
+    real_quadratic = QuadraticField(2, "a")
+    order = real_quadratic.order_generated_by(real_quadratic.primitive_element())
 
     assert gaussian in OwnedOrders()
-    assert cyclotomic_field in OwnedFields()
+    assert gaussian_field in OwnedFields()
     assert order in OwnedOrders()
     assert gaussian.cardinality() == aleph0
     assert order.cardinality() == aleph0
-    assert ZZ["x"].variable_names() == ("x",)
-    assert QQ["x"].variable_names() == ("x",)
+    assert tuple(ZZ["x"].algebra_generating_set()) == ("x",)
+    assert tuple(QQ["x"].algebra_generating_set()) == ("x",)
 
 
 def test_lattices_still_use_the_owned_integer_ring() -> None:
@@ -159,9 +153,6 @@ def test_lattices_still_use_the_owned_integer_ring() -> None:
     assert lattice.base_ring() is ZZ
     assert repr(lattice).startswith("Integral lattice")
 
-    from dzack_research.preamble.categories.lattices import Lattices
-
-    assert Lattices(SageZZ) is Lattices(ZZ)
 
 
 def test_loading_sage_namespace_restores_owned_ring_names(tmp_path) -> None:
@@ -174,7 +165,7 @@ def test_loading_sage_namespace_restores_owned_ring_names(tmp_path) -> None:
 
     assert session["loaded"] is True
     assert session["ZZ"] is ZZ
-    assert session["engine_ring"](session["ZZ"]) is SageZZ
+    assert session["ZZ"](3).parent() is ZZ
 
 
 def test_owned_ring_cardinality_distinguishes_countable_and_uncountable_infinite_rings() -> None:

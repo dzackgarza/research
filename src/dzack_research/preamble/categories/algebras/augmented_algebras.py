@@ -7,15 +7,15 @@ from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
     FramedAlgebras,
     OwnedAlgebras,
-    OwnedAlgebraView,
+    _OwnedAlgebraParent,
     _default_structure_map,
     algebra_homset,
 )
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
-from dzack_research.preamble.categories.rings import (
+from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
-    engine_ring,
-    owned_ring_view,
+    _engine_ring,
+    _owned_ring,
 )
 from dzack_research.preamble.refine import refine
 
@@ -113,18 +113,18 @@ class GradedAugmentedAlgebras(OwnedCategoryOverBaseRing):
                     return unit.algebra_structure_morphism() * to_unit
 
 
-class _AlgebraWithChosenAugmentation(OwnedAlgebraView):
+class _AlgebraWithChosenAugmentation(_OwnedAlgebraParent):
     r"""An algebra interned on a chosen family of generator images."""
 
     def __init__(self, engine, base_ring, labels, augmentation_images, augmentation_codomain) -> None:
         self._preamble_augmentation_images = augmentation_images
         self._preamble_augmentation_codomain = augmentation_codomain
-        engine_map = engine.coerce_map_from(engine_ring(base_ring))
-        OwnedAlgebraView.__init__(self, engine, base_ring, labels, engine_map)
+        engine_map = engine.coerce_map_from(_engine_ring(base_ring))
+        _OwnedAlgebraParent.__init__(self, engine, base_ring, labels, engine_map)
 
 
 def _augmentation_codomain_is_allowed(domain, base, codomain) -> bool:
-    return engine_ring(codomain) is engine_ring(base)
+    return _engine_ring(codomain) is _engine_ring(base)
 
 
 def _graded_algebra_placement(domain, base):
@@ -167,10 +167,10 @@ def augmented_algebra(augmentation):
     if not isinstance(augmentation, Map):
         raise TypeError("an augmentation is an algebra morphism to the base ring")
     domain = augmentation.domain()
-    base = owned_ring_view(domain.base_ring())
+    base = _owned_ring(domain.base_ring())
     if domain not in Algebras(base):
         raise TypeError(f"{domain} is not an algebra over {base}")
-    aug_codomain = owned_ring_view(augmentation.codomain())
+    aug_codomain = _owned_ring(augmentation.codomain())
     if not _augmentation_codomain_is_allowed(domain, base, aug_codomain):
         raise TypeError(
             f"an augmentation of {domain} is a morphism to {base}"
@@ -184,7 +184,7 @@ def augmented_algebra(augmentation):
         (label, augmentation(domain.algebra_generator(label))) for label in labels
     )
     algebra = _AlgebraWithChosenAugmentation(
-        engine_ring(domain),
+        _engine_ring(domain),
         base,
         labels,
         images,

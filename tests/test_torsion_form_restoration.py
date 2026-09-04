@@ -1,19 +1,24 @@
-from sage.matrix.constructor import matrix
-from sage.rings.integer_ring import ZZ
-from sage.rings.rational_field import QQ
-
 from dzack_research.preamble.all import (
     FractionFieldQuotient,
     FiniteGroups,
     Lattices,
+    MatrixSpace,
+    QQ,
+    ZZ,
     TorsionBilinearFormModules,
     TorsionQuadraticFormModules,
 )
 
+def _matrix(ring, rows):
+    rows = tuple(tuple(row) for row in rows)
+    columns = 0 if not rows else len(rows[0])
+    return MatrixSpace(ring, len(rows), columns).from_rows(rows)
+
+
 
 def test_bilinear_torsion_form_descends_from_relations_and_gram() -> None:
     values = FractionFieldQuotient(ZZ, 1)
-    form = TorsionBilinearFormModules(ZZ).from_relations_and_gram(matrix(ZZ, [[2]]), matrix(QQ, [[QQ(1) / 2]]), values)
+    form = TorsionBilinearFormModules(ZZ).from_relations_and_gram(_matrix(ZZ, [[2]]), _matrix(QQ, [[QQ(1) / 2]]), values)
     generator = tuple(form.module_generators())[0]
 
     assert form.cardinality() == 2
@@ -25,7 +30,7 @@ def test_bilinear_torsion_form_descends_from_relations_and_gram() -> None:
 def test_bilinear_torsion_form_rejects_non_descending_gram() -> None:
     values = FractionFieldQuotient(ZZ, 1)
     try:
-        TorsionBilinearFormModules(ZZ).from_relations_and_gram(matrix(ZZ, [[2]]), matrix(QQ, [[QQ(1) / 4]]), values)
+        TorsionBilinearFormModules(ZZ).from_relations_and_gram(_matrix(ZZ, [[2]]), _matrix(QQ, [[QQ(1) / 4]]), values)
     except ValueError as error:
         assert "does not descend" in str(error)
     else:
@@ -34,7 +39,7 @@ def test_bilinear_torsion_form_rejects_non_descending_gram() -> None:
 
 def test_quadratic_torsion_form_and_its_bilinear_polarization() -> None:
     quadratic_values = FractionFieldQuotient(ZZ, 2)
-    form = TorsionQuadraticFormModules(ZZ).from_relations_and_gram(matrix(ZZ, [[2]]), matrix(QQ, [[QQ(1) / 2]]), quadratic_values)
+    form = TorsionQuadraticFormModules(ZZ).from_relations_and_gram(_matrix(ZZ, [[2]]), _matrix(QQ, [[QQ(1) / 2]]), quadratic_values)
     generator = tuple(form.module_generators())[0]
     bilinear = form.associated_bilinear_form()
     bilinear_generator = tuple(bilinear.module_generators())[0]
@@ -48,7 +53,7 @@ def test_quadratic_torsion_form_and_its_bilinear_polarization() -> None:
 def test_quadratic_torsion_form_rejects_relation_with_nonzero_norm() -> None:
     values = FractionFieldQuotient(ZZ, 2)
     try:
-        TorsionQuadraticFormModules(ZZ).from_relations_and_gram(matrix(ZZ, [[2]]), matrix(QQ, [[QQ(1) / 4]]), values)
+        TorsionQuadraticFormModules(ZZ).from_relations_and_gram(_matrix(ZZ, [[2]]), _matrix(QQ, [[QQ(1) / 4]]), values)
     except ValueError as error:
         assert "does not descend" in str(error)
     else:
@@ -58,8 +63,8 @@ def test_quadratic_torsion_form_rejects_relation_with_nonzero_norm() -> None:
 def test_bilinear_invariant_factor_form_is_a_form_preserving_isomorphism() -> None:
     values = FractionFieldQuotient(ZZ, 1)
     form = TorsionBilinearFormModules(ZZ).from_relations_and_gram(
-        matrix(ZZ, [[2, 0], [0, 1]]),
-        matrix(QQ, [[QQ(1) / 2, 0], [0, 0]]),
+        _matrix(ZZ, [[2, 0], [0, 1]]),
+        _matrix(QQ, [[QQ(1) / 2, 0], [0, 0]]),
         values,
     )
     normalization = form.invariant_factor_form()
@@ -80,8 +85,8 @@ def test_bilinear_invariant_factor_form_is_a_form_preserving_isomorphism() -> No
 def test_quadratic_invariant_factor_form_is_a_form_preserving_isomorphism() -> None:
     values = FractionFieldQuotient(ZZ, 2)
     form = TorsionQuadraticFormModules(ZZ).from_relations_and_gram(
-        matrix(ZZ, [[2, 0], [0, 1]]),
-        matrix(QQ, [[QQ(1) / 2, 0], [0, 0]]),
+        _matrix(ZZ, [[2, 0], [0, 1]]),
+        _matrix(QQ, [[QQ(1) / 2, 0], [0, 0]]),
         values,
     )
     normalization = form.invariant_factor_form()
@@ -98,8 +103,8 @@ def test_quadratic_invariant_factor_form_is_a_form_preserving_isomorphism() -> N
 def test_owned_quadratic_orthogonal_group_uses_live_form_automorphisms() -> None:
     values = FractionFieldQuotient(ZZ, 2)
     form = TorsionQuadraticFormModules(ZZ).from_relations_and_gram(
-        matrix(ZZ, [[8]]),
-        matrix(QQ, [[QQ(1) / 8]]),
+        _matrix(ZZ, [[8]]),
+        _matrix(QQ, [[QQ(1) / 8]]),
         values,
     )
     group = form.orthogonal_group()
@@ -124,8 +129,8 @@ def test_owned_quadratic_orthogonal_group_uses_live_form_automorphisms() -> None
 def test_bilinear_and_quadratic_orthogonal_groups_are_not_conflated() -> None:
     values = FractionFieldQuotient(ZZ, 2)
     quadratic = TorsionQuadraticFormModules(ZZ).from_relations_and_gram(
-        matrix(ZZ, [[8]]),
-        matrix(QQ, [[QQ(1) / 8]]),
+        _matrix(ZZ, [[8]]),
+        _matrix(QQ, [[QQ(1) / 8]]),
         values,
     )
     bilinear = quadratic.associated_bilinear_form()
@@ -143,15 +148,15 @@ def test_mixed_prime_jordan_framing_is_distinct_and_has_an_explicit_isometry() -
     jordan = normalization.codomain()
 
     assert tuple(decomposition) == (2, 3)
-    assert tuple(generator.additive_order() for generator in decomposition[2]) == (2,)
-    assert tuple(generator.additive_order() for generator in decomposition[3]) == (3,)
-    assert len(form.invariant_factor_form().codomain().module_generators()) == 1
-    assert len(jordan.module_generators()) == 2
+    assert tuple(generator.additive_order() for generator in decomposition[ZZ(2)]) == (2,)
+    assert tuple(generator.additive_order() for generator in decomposition[ZZ(3)]) == (3,)
+    assert form.invariant_factor_form().codomain().module_generators().cardinality() == 1
+    assert jordan.module_generators().cardinality() == 2
     assert jordan.cardinality() == form.cardinality() == 6
     assert all(
         left.b(right) == form.bilinear_value_module().zero()
-        for left in decomposition[2]
-        for right in decomposition[3]
+        for left in decomposition[ZZ(2)]
+        for right in decomposition[ZZ(3)]
     )
     for generator in form.module_generators():
         assert normalization.inverse()(normalization(generator)) == generator

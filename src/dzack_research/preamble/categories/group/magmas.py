@@ -1,23 +1,24 @@
 """The owned operation spine below groups."""
 
 from sage.categories.category import Category
+from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from sage.categories.homset import Homset
 from sage.categories.morphism import Morphism
 
-from dzack_research.preamble.categories.sets import Sets
+from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
-class Magmas(Category):
+class Magmas(OwnedCategory):
     def super_categories(self):
         return [Sets()]
 
 
-class Semigroups(Category):
+class Semigroups(OwnedCategory):
     def super_categories(self):
         return [Magmas()]
 
 
-class Monoids(Category):
+class Monoids(OwnedCategory):
     def super_categories(self):
         return [Semigroups()]
 
@@ -36,17 +37,17 @@ class Monoids(Category):
     Hom = homset
 
 
-class AdditiveMagmas(Category):
+class AdditiveMagmas(OwnedCategory):
     def super_categories(self):
         return [Sets()]
 
 
-class AdditiveSemigroups(Category):
+class AdditiveSemigroups(OwnedCategory):
     def super_categories(self):
         return [AdditiveMagmas()]
 
 
-class AdditiveMonoids(Category):
+class AdditiveMonoids(OwnedCategory):
     def super_categories(self):
         return [AdditiveSemigroups()]
 
@@ -55,16 +56,25 @@ class AdditiveMonoids(Category):
             return self.zero()
 
 
-class AdditiveGroups(Category):
+class AdditiveGroups(OwnedCategory):
     def super_categories(self):
         return [AdditiveMonoids()]
 
 
-class CommutativeAdditiveGroups(Category):
+class CommutativeAdditiveGroups(OwnedCategory):
     """Additive groups whose addition is commutative."""
 
     def super_categories(self):
         return [AdditiveGroups()]
+
+
+# The canonical natural-number parent is created at the set root, before this
+# operation spine can be imported without a package cycle.  Once the spine is
+# available, place that existing parent in its actual additive-monoid category.
+from dzack_research.preamble.categories.sets.set_categories import NN
+from dzack_research.preamble.refine import refine
+
+refine(NN, AdditiveMonoids())
 
 
 class MonoidMorphism(Morphism):

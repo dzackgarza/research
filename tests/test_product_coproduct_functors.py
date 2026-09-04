@@ -26,8 +26,8 @@ def test_binary_set_product_coproduct_and_diagonal_are_functorial() -> None:
     assert product_xy.cardinality() == 6
     assert coproduct_xy.cardinality() == 5
 
-    fx = SetMorphism(Hom(x, y, SageSets()), lambda value: y(value + 1))
-    fy = SetMorphism(Hom(y, z, SageSets()), lambda value: z(value + 1))
+    fx = SetMorphism(Hom(x, y, SageSets()), lambda value: y(int(value) + 1))
+    fy = SetMorphism(Hom(y, z, SageSets()), lambda value: z(int(value) + 1))
     target_pair = product.domain()(y, z)
     pair_map = product.domain().hom(pair, target_pair)(fx, fy)
     carried = product(pair_map)
@@ -61,3 +61,36 @@ def test_module_product_and_coproduct_reuse_the_same_biproduct_object() -> None:
     assert product_object.left_projection()(
         carried(product_object.left_inclusion()(left.module_generator("x")))
     ) == 2 * left.module_generator("x")
+
+
+def test_infinite_dependent_product_accepts_callable_sections_without_enumeration() -> None:
+    from dzack_research.preamble.categories.sets import CartesianProductOfFamily, NN
+
+    bit = Sets.Δ[1]
+    product = CartesianProductOfFamily(NN, lambda _index: bit)
+    section = product(lambda index: bit(int(index) % 2))
+
+    assert section[NN(0)] == bit(0)
+    assert section[NN(1000)] == bit(0)
+    assert "Section of" in repr(section)
+    try:
+        product((bit(0), bit(1)))
+    except TypeError as error:
+        assert "callable section" in str(error)
+    else:
+        raise AssertionError("an infinite product must not interpret a finite sequence as a total section")
+
+
+def test_infinite_free_module_biproduct_uses_tagged_lazy_framing() -> None:
+    from dzack_research.preamble.categories.abstract_categories import Biproduct
+    from dzack_research.preamble.categories.sets import NN
+
+    left = BasedFreeModule(ZZ, NN)
+    right = BasedFreeModule(ZZ, NN)
+    direct_sum = Biproduct(left, right)
+    e5 = left.module_generator(NN(5))
+    f7 = right.module_generator(NN(7))
+
+    assert direct_sum.left_projection()(direct_sum.left_inclusion()(e5)) == e5
+    assert direct_sum.right_projection()(direct_sum.right_inclusion()(f7)) == f7
+    assert direct_sum.left_projection()(direct_sum.right_inclusion()(f7)) == left.zero()

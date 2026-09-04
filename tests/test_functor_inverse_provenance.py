@@ -1,6 +1,4 @@
-from sage.categories.homset import Hom
 from sage.categories.morphism import SetMorphism
-from sage.categories.sets_cat import Sets
 
 from dzack_research.preamble.all import (
     AbelianizationAdjunction,
@@ -15,11 +13,9 @@ from dzack_research.preamble.all import (
     SymmetricAlgebraOn,
     ZZ,
     group_homset,
-    own_ring,
 )
-from dzack_research.preamble.categories.rings import engine_ring
 from dzack_research.preamble.categories.rings.embeddings import number_field_homset
-from dzack_research.preamble.categories.sets import finite_ordered_set
+from dzack_research.preamble.categories.sets import Sets, finite_ordered_set
 
 
 def test_algebra_transpose_uses_the_scalar_extension_construction_source() -> None:
@@ -40,9 +36,8 @@ def test_algebra_transpose_uses_the_scalar_extension_construction_source() -> No
     )
 
     independently_extended = AlgebraScalarExtensionFunctor(ring_map)(source)
-    morphism = independently_extended.hom(
-        {"x": target.algebra_generator("y")},
-        target,
+    morphism = independently_extended.Hom(target)(
+        {"x": target.algebra_generator("y")}
     )
     adjunction = AlgebraBaseChangeAdjunction(ring_map)
     transpose = adjunction.hom_set_isomorphism_forward(morphism)
@@ -78,8 +73,7 @@ def test_abelianization_transpose_uses_the_quotient_projection_on_its_domain() -
 def test_fraction_field_transpose_is_indexed_by_the_stated_source_order() -> None:
     field = QuadraticField(2, "a")
     maximal_order = field.ring_of_integers()
-    field_engine = engine_ring(field)
-    nonmaximal_order = own_ring(field_engine.order(2 * field_engine.gen()))
+    nonmaximal_order = field.order_generated_by(2 * field.primitive_element())
     adjunction = OrderNumberFieldAdjunction()
     fraction_field = adjunction.left_adjoint()
 
@@ -102,7 +96,7 @@ def test_fraction_field_transpose_is_indexed_by_the_stated_source_order() -> Non
     assert maximal_restriction.codomain() is maximal_order
     assert nonmaximal_restriction.codomain() is maximal_order
     for basis_element in nonmaximal_order.integral_basis():
-        assert nonmaximal_restriction(basis_element) == engine_ring(maximal_order)(
+        assert nonmaximal_restriction(basis_element) == maximal_order(
             basis_element
         )
 
@@ -116,7 +110,7 @@ def test_free_group_transpose_reads_the_intrinsic_index_set() -> None:
     target = Groups.C(3)
     target_generator = tuple(target.group_generators())[0]
     generator_map = SetMorphism(
-        Hom(source, target, Sets()),
+        Sets().hom(source, target),
         lambda point: target_generator if point == 11 else target_generator**2,
     )
     group_morphism = group_homset(free_group, target)(generator_map)

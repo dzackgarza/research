@@ -1,24 +1,37 @@
-r"""Fraction-field quotients ``K / a`` as modules over the base ring."""
+r"""Fraction-field quotients ``K / a`` as modules over the base ring.
 
+The owned quotient is a parent built through the owned module chain; Sage's
+``QmodnZ`` is its private engine and its elements are engine elements, the
+shape of the owned ring views.
+"""
+
+from sage.categories.category import Category
+from sage.categories.morphism import SetMorphism
 from sage.groups.additive_abelian.qmodnz import QmodnZ
-from sage.misc.cachefunc import cached_method
+from sage.misc.cachefunc import cached_function, cached_method
+from sage.misc.latex import latex
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
-from sage.sets.non_negative_integers import NonNegativeIntegers
+from sage.structure.element import ModuleElement
+from sage.structure.parent import Parent
+from sage.structure.richcmp import richcmp
+from sage.structure.sage_object import SageObject
 
-from dzack_research.preamble.categories.rings import (
+from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
-    engine_ring,
-    owned_ring_view,
+    OwnedRings,
+    _engine_element,
+    _engine_ring,
+    _own_ring,
 )
-from dzack_research.preamble.refine import hook_post_init, refine
+from dzack_research.preamble.refine import refine
 
 
 class FractionFieldQuotients(OwnedCategoryOverBaseRing):
     r"""Modules ``Frac(R) / a`` for a fractional ideal ``a`` of ``R``.
 
-    The active computation adapter currently specializes this construction to
-    ``R = ZZ``, where Sage's :class:`QmodnZ` implements ``QQ / n ZZ``.
+    The active computation engine specializes this construction to
+    ``R = ZZ``, where Sage's :class:`QmodnZ` computes ``QQ / n ZZ``.
     """
 
     @classmethod
@@ -26,7 +39,7 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
         return "fraction-field quotients"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.modules.framed.framed_modules import (
+        from dzack_research.preamble.categories.modules.pure.modules import (
             FramedModules,
         )
 
@@ -34,7 +47,7 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
 
     class ParentMethods:
         def base_ring(self):
-            return owned_ring_view(self.base())
+            return self.base()
 
         def fraction_field(self):
             return self.base_ring().fraction_field()
@@ -44,29 +57,33 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
             return self._fraction_field_modulus
 
         def lift(self, element):
-            r"""Return a representative of ``element`` in the fraction field."""
-            if element.parent() is not self:
-                raise ValueError(f"{element} is not an element of {self}")
-            return self.fraction_field()(element.lift())
+            r"""Return the selected representative of ``element`` in the fraction field."""
+            element = self(element)
+            representative = element._backend().lift()
+            return self.fraction_field()._from_engine_element(representative)
 
         def divisibility_chain(self, index):
             r"""Return the chosen cofinal divisibility chain element ``d_index``."""
-            if engine_ring(self.base_ring()) is not SageZZ:
+            if _engine_ring(self.base_ring()) is not SageZZ:
                 raise NotImplementedError(
                     "the active divisibility chain is the factorial chain over ZZ"
                 )
-            return SageZZ(index + 1).factorial()
+            return self.base_ring()(int(index) + 1).factorial()
 
         @cached_method
         def module_generating_set(self):
-            return NonNegativeIntegers()
+            from dzack_research.preamble.categories.sets.set_categories import Sets
+            from dzack_research.preamble.categories.sets.cardinals import aleph0
+
+            return Sets.Δ[aleph0]
 
         def module_generator(self, label):
             labels = self.module_generating_set()
             if label not in labels:
                 raise ValueError(f"{label!r} is not a module-generator label")
             denominator = self.divisibility_chain(label)
-            return self(SageQQ.one() / denominator)
+            field = self.fraction_field()
+            return self(field.one() / field(denominator))
 
         def framing_morphism(self):
             from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
@@ -80,48 +97,179 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
             return framing_morphism(source, self, self.module_generator)
 
         def projection_from_fraction_field(self):
-            r"""Return the native quotient map ``Frac(R) -> Frac(R) / a``."""
-            return self.coerce_map_from(engine_ring(self.fraction_field()))
+            r"""Return the quotient map ``Frac(R) -> Frac(R) / a`` as an owned set map.
+
+            The fraction field currently has no canonical ``R``-module carrier
+            for arbitrary ``R`` at this layer, so the underlying map is stated
+            in the owned category of sets rather than returning Sage's coercion
+            map.  Module-valued consumers should use the scalar-restricted
+            fraction-field module construction.
+            """
+            from dzack_research.preamble.categories.sets.set_categories import Sets
+
+            return SetMorphism(
+                Sets().hom(self.fraction_field(), self),
+                lambda element: self(element),
+            )
 
 
-def refine_fraction_field_quotient(quotient):
-    r"""Adopt a native ``QQ / n ZZ`` parent into the owned module hierarchy."""
-    if not isinstance(quotient, QmodnZ):
-        raise TypeError("the active fraction-field quotient adapter expects Sage QmodnZ")
-    quotient._fraction_field_modulus = quotient.n
-    base_ring = owned_ring_view(SageZZ)
-    categories = [FractionFieldQuotients(base_ring)]
-    if not quotient.n.is_zero():
-        from dzack_research.preamble.categories.modules.pure.torsion_modules import (
-            TorsionModules,
+class _FractionFieldQuotientElement(ModuleElement):
+    r"""A coset in an owned fraction-field quotient."""
+
+    def __init__(self, parent, backend_element) -> None:
+        ModuleElement.__init__(self, parent)
+        self._backend_element = backend_element
+
+    def _backend(self):
+        return self._backend_element
+
+    def _add_(self, other):
+        return self.parent()._from_engine_element(self._backend() + other._backend())
+
+    def _neg_(self):
+        return self.parent()._from_engine_element(-self._backend())
+
+    def _lmul_(self, scalar):
+        return self.parent()._from_engine_element(
+            _engine_element(self.parent().base_ring(), scalar) * self._backend()
         )
 
-        categories.append(TorsionModules(base_ring))
-    return refine(quotient, categories)
+    _rmul_ = _lmul_
+
+    def _richcmp_(self, other, op):
+        if not isinstance(other, _FractionFieldQuotientElement) or other.parent() is not self.parent():
+            return NotImplemented
+        return richcmp(self._backend(), other._backend(), op)
+
+    def __eq__(self, other):
+        return (
+            isinstance(other, _FractionFieldQuotientElement)
+            and other.parent() is self.parent()
+            and self._backend() == other._backend()
+        )
+
+    def __ne__(self, other):
+        return not self == other
+
+    def __hash__(self):
+        return hash((id(self.parent()), self._backend()))
+
+    def additive_order(self):
+        order = SageZZ(self._backend().additive_order())
+        return self.parent().base_ring()._from_engine_element(order)
+
+    def _repr_(self):
+        return repr(self._backend())
+
+    def _latex_(self):
+        return str(latex(self._backend()))
+
+
+class OwnedFractionFieldQuotient(Parent):
+    r"""The preamble module ``QQ / n ZZ`` with a private QmodnZ backend."""
+
+    Element = _FractionFieldQuotientElement
+
+    def __init__(self, engine: QmodnZ) -> None:
+        self._engine = engine
+        base_ring = _own_ring(SageZZ)
+        field = base_ring.fraction_field()
+        self._fraction_field_modulus = field._from_engine_element(SageQQ(engine.n))
+        categories = [FractionFieldQuotients(base_ring)]
+        if not engine.n.is_zero():
+            from dzack_research.preamble.categories.modules.pure.torsion_modules import (
+                TorsionModules,
+            )
+            categories.append(TorsionModules(base_ring))
+        Parent.__init__(
+            self,
+            base=base_ring,
+            category=Category.join(tuple(categories)),
+        )
+        refine(self, self.category())
+        self._preamble_module_coefficient_function = self._framing_coefficients
+
+    def _framing_coefficients(self, element):
+        r"""Return finite support in the chosen factorial divisibility framing."""
+        element = self(element)
+        if element == self.zero():
+            return {}
+        field = self.fraction_field()
+        representative = self.lift(element)
+        denominator = int(representative.denominator())
+        factorial = 1
+        index = 0
+        while factorial % denominator:
+            index += 1
+            factorial *= index + 1
+        coefficient = self.base_ring()(representative * field(factorial))
+        label = self.module_generating_set()(index)
+        return {} if coefficient == self.base_ring().zero() else {label: coefficient}
+
+    def _from_engine_element(self, value):
+        return self.element_class(self, self._engine(value))
+
+    def _engine_element(self, value):
+        value = self(value)
+        return value._backend()
+
+    def _element_constructor_(self, value):
+        if isinstance(value, _FractionFieldQuotientElement) and value.parent() is self:
+            return value
+        parent = getattr(value, "parent", lambda: None)()
+        if parent is not None:
+            if parent in OwnedRings():
+                return self._from_engine_element(_engine_element(parent, value))
+            if isinstance(value, SageObject):
+                raise TypeError(
+                    "raw backend elements are not accepted by the public fraction-field quotient"
+                )
+        if isinstance(value, SageObject):
+            raise TypeError(
+                "raw backend objects are not accepted by the public fraction-field quotient"
+            )
+        return self._from_engine_element(value)
+
+    def __contains__(self, value) -> bool:
+        return isinstance(value, _FractionFieldQuotientElement) and value.parent() is self
+
+    def zero(self):
+        return self._from_engine_element(self._engine.zero())
+
+    def an_element(self):
+        return self.module_generator(1)
+
+    def _repr_(self):
+        return repr(self._engine)
+
+    def _latex_(self):
+        return str(latex(self._engine))
+
+
+@cached_function
+def _owned_fraction_field_quotient(engine: QmodnZ) -> OwnedFractionFieldQuotient:
+    return OwnedFractionFieldQuotient(engine)
+
+
+def _from_qmodnz_backend(quotient):
+    r"""Return the owned ``QQ / n ZZ`` over the Sage parent ``quotient``."""
+    if quotient in FractionFieldQuotients(_own_ring(SageZZ)):
+        return quotient
+    if not isinstance(quotient, QmodnZ):
+        raise TypeError("the active fraction-field quotient engine is Sage's QmodnZ")
+    return _owned_fraction_field_quotient(quotient)
 
 
 def FractionFieldQuotient(base_ring, modulus=1):
     r"""Return ``Frac(base_ring) / modulus*base_ring`` when natively supported."""
-    if engine_ring(base_ring) is not SageZZ:
+    if base_ring not in OwnedRings() or _engine_ring(base_ring) is not SageZZ:
         raise NotImplementedError(
             "the active native fraction-field quotient engine currently implements QQ / n ZZ"
         )
-    return refine_fraction_field_quotient(QmodnZ(modulus))
-
-
-def _finish_qmodnz_initialization(quotient) -> None:
-    refine_fraction_field_quotient(quotient)
-
-
-hook_post_init(
-    QmodnZ,
-    FractionFieldQuotients(SageZZ),
-    after=_finish_qmodnz_initialization,
-)
+    return _from_qmodnz_backend(QmodnZ(_engine_element(base_ring, base_ring(modulus))))
 
 
 __all__ = [
     "FractionFieldQuotient",
     "FractionFieldQuotients",
-    "refine_fraction_field_quotient",
 ]

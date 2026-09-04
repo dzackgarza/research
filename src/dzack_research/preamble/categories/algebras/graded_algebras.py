@@ -2,7 +2,7 @@
 
 from sage.categories.morphism import Morphism
 from sage.categories.sets_cat import Sets
-from sage.rings.integer_ring import ZZ
+from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.parent import Parent
 
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
@@ -12,32 +12,34 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
 from dzack_research.preamble.categories.modules.graded_modules import (
     require_grading_monoid,
 )
-from dzack_research.preamble.categories.rings import OwnedCategoryOverBaseRing
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    OwnedCategoryOverBaseRing,
+    _engine_element,
+    _own_ring,
+)
 
 
 def _homogeneous_degree(element):
-    r"""Return the selected homogeneous degree of ``element`` or raise."""
+    r"""Return the degree owned by ``element.parent()``."""
+    parent = element.parent()
     try:
-        homogeneous = element.is_homogeneous()
-        degree = element.degree()
+        return parent.homogeneous_degree(element)
     except AttributeError as error:
         raise NotImplementedError(
             "this graded carrier does not expose homogeneous element degrees"
         ) from error
-    if not homogeneous:
-        raise ValueError("a selected graded-algebra generator is not homogeneous")
-    return degree
 
 
 class GradedAlgebraMorphism(Morphism):
     r"""An algebra morphism preserving the selected grading."""
 
-    def __init__(self, parent, images) -> None:
+    def __init__(self, parent, images, *, check_degrees=True) -> None:
         Morphism.__init__(self, parent)
         from dzack_research.preamble.categories.algebras.algebras import algebra_homset
 
         self._underlying = algebra_homset(self.domain(), self.codomain())(images)
-        self._check_degrees()
+        if check_degrees:
+            self._check_degrees()
 
     def underlying_algebra_morphism(self):
         return self._underlying
@@ -46,11 +48,21 @@ class GradedAlgebraMorphism(Morphism):
         domain = self.domain()
         codomain = self.codomain()
         try:
-            labels = tuple(domain.algebra_generating_set())
+            labels = domain.algebra_generating_set()
         except AttributeError as error:
             raise NotImplementedError(
                 "a represented graded morphism currently requires a selected algebra framing"
             ) from error
+        from dzack_research.preamble.categories.sets.cardinals import cardinal
+        try:
+            finite = cardinal(labels.cardinality()).is_finite()
+        except (AttributeError, NotImplementedError, TypeError, ValueError):
+            finite = False
+        if not finite:
+            raise NotImplementedError(
+                "an arbitrary graded generator map on an infinite framing cannot be "
+                "verified by exhaustive evaluation"
+            )
         for label in labels:
             generator = domain.algebra_generator(label)
             source_degree = _homogeneous_degree(generator)
@@ -75,7 +87,8 @@ class GradedAlgebraMorphism(Morphism):
             return NotImplemented
         if other.codomain() is not self.domain():
             return NotImplemented
-        return graded_algebra_homset(other.domain(), self.codomain())(
+        homset = graded_algebra_homset(other.domain(), self.codomain())
+        return homset._from_degree_preserving_generator_map(
             lambda label: self(
                 other(other.domain().algebra_generator(label))
             )
@@ -98,7 +111,6 @@ class GradedAlgebraHomset(CategoricalHomset):
             hom_family,
             domain,
             codomain,
-            homset_category=Sets(),
         )
 
     def grading_monoid(self):
@@ -107,10 +119,14 @@ class GradedAlgebraHomset(CategoricalHomset):
     def _element_constructor_(self, images):
         return self.element_class(self, images)
 
+    def _from_degree_preserving_generator_map(self, images):
+        r"""Construct a graded map whose degree preservation is structural."""
+        return self.element_class(self, images, check_degrees=False)
+
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError("identity belongs to a graded algebra endomorphism homset")
-        return self(
+        return self._from_degree_preserving_generator_map(
             lambda label: self.domain().algebra_generator(label)
         )
 
@@ -161,7 +177,7 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
 
     def _repr_object_names(self) -> str:
         monoid = self.grading_monoid()
-        names = "graded algebras" if monoid is ZZ else f"algebras graded by {monoid}"
+        names = "graded algebras" if monoid is _own_ring(SageZZ) else f"algebras graded by {monoid}"
         return f"{names} over {self.base()}"
 
     def _make_named_class_key(self, name):
@@ -177,27 +193,82 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
         algebra = Algebras(self.base_ring())
         return [algebra, graded_modules]
 
+    class ParentMethods:
+        def homogeneous_degree(self, element):
+            r"""Return the selected degree of one nonzero homogeneous element."""
+            element = self(element)
+            if element == self.zero():
+                raise ValueError("zero has no selected homogeneous degree here")
+
+            components = getattr(element, "homogeneous_components", None)
+            if callable(components):
+                nonzero_degrees = {
+                    int(degree)
+                    for degree, component in components().items()
+                    if component != component.parent().zero()
+                }
+                if nonzero_degrees:
+                    if len(nonzero_degrees) != 1:
+                        raise ValueError("the algebra element is not homogeneous")
+                    return self.grading_monoid()(next(iter(nonzero_degrees)))
+
+            coefficients = getattr(element, "monomial_coefficients", None)
+            if callable(coefficients):
+                degrees = set()
+                for label, coefficient in coefficients().items():
+                    if not coefficient:
+                        continue
+                    if hasattr(label, "summand_index"):
+                        degrees.add(int(label.summand_index()))
+                    elif hasattr(label, "degree"):
+                        degrees.add(int(label.degree()))
+                if degrees:
+                    if len(degrees) != 1:
+                        raise ValueError("the algebra element is not homogeneous")
+                    return self.grading_monoid()(next(iter(degrees)))
+
+            presentation = self
+            representative = element
+            if hasattr(self, "lift_to_presentation") and hasattr(
+                self, "presentation_ring"
+            ):
+                presentation = self.presentation_ring()
+                representative = self.lift_to_presentation(element)
+            backend = _engine_element(presentation, representative)
+            try:
+                homogeneous = backend.is_homogeneous()
+                degree = backend.degree()
+            except AttributeError as error:
+                raise NotImplementedError(
+                    "this graded algebra has no represented homogeneous-degree backend"
+                ) from error
+            if not homogeneous:
+                raise ValueError("the algebra element is not homogeneous")
+            return self.grading_monoid()(int(degree))
+
+        def _Hom_(self, codomain, category=None):
+            # Object-level Hom defaults to the underlying algebra category.
+            # Degree-preserving maps are selected explicitly through
+            # ``GradedAlgebras(...).Hom`` / ``graded_algebra_homset``.
+            return super()._Hom_(codomain, category=category)
+
+    class ElementMethods:
+        def is_homogeneous(self):
+            try:
+                self.parent().homogeneous_degree(self)
+            except ValueError:
+                return False
+            return True
+
+        def degree(self):
+            return self.parent().homogeneous_degree(self)
+
     def homset(self, domain, codomain):
         if domain not in self or codomain not in self:
             raise TypeError("a graded-algebra Hom requires two objects of this category")
         return graded_algebra_homset(domain, codomain)
 
     _HomCategory = GradedAlgebraHomCategoryConstruction
-
-    class ParentMethods:
-        def _Hom_(self, codomain, category=None):
-            ring = self.base_ring()
-            graded = GradedAlgebras(ring, self.grading_monoid())
-            if category is not None and category.is_subcategory(graded):
-                return graded_algebra_homset(self, codomain)
-            from dzack_research.preamble.categories.algebras.algebras import (
-                Algebras,
-                algebra_homset,
-            )
-
-            if category is not None and not category.is_subcategory(Algebras(ring)):
-                raise TypeError("this is not an algebra homset category")
-            return algebra_homset(self, codomain)
 
     def _call_(self, multiplication):
         from dzack_research.preamble.categories.algebras.algebras import (

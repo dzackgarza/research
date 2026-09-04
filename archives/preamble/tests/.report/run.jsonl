@@ -1,0 +1,3 @@
+{"pytest_version": "9.0.2", "$report_type": "SessionStart"}
+{"nodeid": "", "outcome": "passed", "longrepr": null, "result": null, "sections": [], "$report_type": "CollectReport"}
+{"exitstatus": 4, "$report_type": "SessionFinish"}

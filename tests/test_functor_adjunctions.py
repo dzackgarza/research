@@ -254,7 +254,7 @@ def test_coinvariants_are_left_adjoint_to_the_trivial_action() -> None:
             "f": target.module_generator("n"),
         }
     )
-    transpose = adjunction.hom_set_isomorphism_forward(quotient_map, acted)
+    transpose = adjunction.hom_set_isomorphism_forward(quotient_map, source=acted)
     recovered = adjunction.hom_set_isomorphism_inverse(transpose)
     for label in coinvariants.module_generating_set():
         assert recovered(coinvariants.module_generator(label)) == quotient_map(
@@ -374,8 +374,8 @@ def test_abelianization_is_left_adjoint_to_the_inclusion_of_abelian_groups() -> 
     left, right = adjunction.counit_transformation().naturality_square(
         target_endomorphism
     )
-    for generator in left.domain().group_generators():
-        assert left(generator) == right(generator)
+    for element in left.domain():
+        assert left(element) == right(element)
 
     first_triangle = adjunction.right_adjoint()(adjunction.counit(target)) * adjunction.unit(
         adjunction.right_adjoint()(target)
@@ -386,8 +386,8 @@ def test_abelianization_is_left_adjoint_to_the_inclusion_of_abelian_groups() -> 
     second_triangle = adjunction.counit(abelianization) * adjunction.left_adjoint()(
         adjunction.unit(group)
     )
-    for generator in abelianization.group_generators():
-        assert second_triangle(generator) == generator
+    for element in abelianization:
+        assert second_triangle(element) == element
 
 
 def test_declared_subcategory_edges_give_canonical_inclusion_functors() -> None:

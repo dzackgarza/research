@@ -1,11 +1,11 @@
 r"""Graded modules and differential graded modules over a represented DGA."""
 
-from sage.categories.category_types import Category_over_base
+from dzack_research.preamble.categories.abstract_categories.objects import OwnedParameterizedCategory
 
 from dzack_research.preamble.refine import refine
 
 
-class GradedAlgebraModules(Category_over_base):
+class GradedAlgebraModules(OwnedParameterizedCategory):
     r"""Right graded modules over one selected graded algebra ``A``."""
 
     @classmethod
@@ -16,7 +16,7 @@ class GradedAlgebraModules(Category_over_base):
         return self.base()
 
     def super_categories(self):
-        from dzack_research.preamble.categories.modules import GradedModules
+        from dzack_research.preamble.categories.modules.graded_modules import GradedModules
 
         algebra = self.graded_algebra()
         return [GradedModules(algebra.base_ring(), algebra.grading_monoid())]
@@ -32,7 +32,7 @@ class GradedAlgebraModules(Category_over_base):
             return self.right_action()(module_element, algebra_element)
 
 
-class DifferentialGradedModules(Category_over_base):
+class DifferentialGradedModules(OwnedParameterizedCategory):
     r"""Right differential graded modules over one selected DGA ``(A,d)``."""
 
     @classmethod
@@ -43,7 +43,7 @@ class DifferentialGradedModules(Category_over_base):
         return self.base()
 
     def super_categories(self):
-        from dzack_research.preamble.categories.modules import CochainComplexes
+        from dzack_research.preamble.categories.modules.cochain_complexes import CochainComplexes
 
         dga = self.dga()
         return [

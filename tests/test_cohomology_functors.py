@@ -5,7 +5,7 @@ from dzack_research.preamble.categories.algebras import (
     SymmetricAlgebraOn,
     algebra_homset,
 )
-from dzack_research.preamble.categories.functors import (
+from dzack_research.preamble.categories.functors.cohomology import (
     de_rham_cohomology_algebra_functor,
     cohomology_functor,
     de_rham_cohomology_functor,

@@ -10,7 +10,6 @@ from dzack_research.preamble.categories.modules.localizations import (
     GeneralLocalizedModuleParent,
     LocalizedModules,
 )
-from dzack_research.preamble.categories.rings import LocalizationRings
 from dzack_research.preamble.refine import refine
 
 
@@ -18,7 +17,9 @@ class ModuleLocalizationFunctor(ScalarExtensionFunctor):
     r"""The functor ``S^{-1}R tensor_R - : Mod_R -> Mod_{S^{-1}R}``."""
 
     def __init__(self, localization_ring) -> None:
-        if localization_ring not in LocalizationRings():
+        if not hasattr(localization_ring, "localization_source") or not hasattr(
+            localization_ring, "localization_map"
+        ):
             raise TypeError("module localization requires a represented ring localization")
         self._localization_ring = localization_ring
         super().__init__(localization_ring.localization_map())
@@ -35,9 +36,9 @@ class ModuleLocalizationFunctor(ScalarExtensionFunctor):
 
     def _apply_object(self, module):
         from sage.categories.rings import Rings as SageRings
-        from dzack_research.preamble.categories.rings import engine_ring
+        from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
 
-        represented_by_sage_ring = engine_ring(self.localization_ring()) in SageRings()
+        represented_by_sage_ring = _engine_ring(self.localization_ring()) in SageRings()
         if represented_by_sage_ring:
             try:
                 localized = super()._apply_object(module)
@@ -85,14 +86,14 @@ class ModuleLocalizationFunctor(ScalarExtensionFunctor):
                     denominator = self.localization_ring().localization_map()(
                         fraction.denominator()
                     )
-                    return target.scalar_multiple(denominator**-1, target_element)
+                    return target.scalar_multiple(denominator.inverse_of_unit(), target_element)
 
             image = module_homset(source, target).elementwise(
                 on_fraction,
                 verify_linearity=False,
             )
         elif isinstance(target, GeneralLocalizedModuleParent):
-            from dzack_research.preamble.categories.modules import FramedModules
+            from dzack_research.preamble.categories.modules.pure.modules import FramedModules
 
             if source not in FramedModules(source.base_ring()):
                 raise NotImplementedError(
@@ -116,7 +117,7 @@ class ModuleLocalizationFunctor(ScalarExtensionFunctor):
             image._preamble_localization_functor = self
             return image
 
-        from dzack_research.preamble.categories.modules import FramedModules
+        from dzack_research.preamble.categories.modules.pure.modules import FramedModules
 
         if source in FramedModules(source.base_ring()):
             embedded = module_embedding(
@@ -142,7 +143,8 @@ class ModuleLocalizationFunctor(ScalarExtensionFunctor):
 
     def unit(self, module, *, localized=None):
         r"""Return ``M -> Res_R(S^{-1}M)``, the localization unit."""
-        from dzack_research.preamble.categories.modules import module_homset, restrict_scalars
+        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
+        from dzack_research.preamble.categories.modules.pure.modules import restrict_scalars
 
         image = self(module) if localized is None else localized
         restricted = restrict_scalars(image, self.ring_map())
@@ -171,10 +173,8 @@ class LocalizationCokernelComparison(SageObject):
     r"""The canonical right-exactness comparison for module localization."""
 
     def __init__(self, functor, morphism) -> None:
-        from dzack_research.preamble.categories.modules import (
-            FramedModules,
-            module_homset,
-        )
+        from dzack_research.preamble.categories.modules.pure.modules import FramedModules
+        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 
         self._functor = functor
         self._morphism = morphism
@@ -261,7 +261,7 @@ class LocalizationKernelComparison(SageObject):
     r"""The canonical left-exactness comparison for module localization."""
 
     def __init__(self, functor, morphism) -> None:
-        from dzack_research.preamble.categories.modules import module_homset
+        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 
         self._functor = functor
         self._morphism = morphism

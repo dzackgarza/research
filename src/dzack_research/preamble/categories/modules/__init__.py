@@ -6,7 +6,7 @@ from dzack_research.preamble.categories.abstract_categories import (
     TensorProduct,
     TensorSquare,
 )
-from dzack_research.preamble.categories.modules.biproducts import (
+from dzack_research.preamble.categories.modules.pure.modules import (
     BiproductModules,
     biproduct_morphism,
 )
@@ -16,23 +16,21 @@ from dzack_research.preamble.categories.modules.fractional_ideals import (
     Ideal,
     Ideals,
 )
-from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import (
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     BasedFreeModule,
     FinitelyGeneratedFreeModules,
+    ring_as_module,
 )
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
     FinitelyPresentedModule,
-    FinitelyPresentedModules,
     ModulesWithChosenFinitePresentation,
 )
-from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_torsion_modules import (
+from dzack_research.preamble.categories.modules.pure.torsion_modules import (
     FinitelyPresentedTorsionModules,
     TorsionModule,
 )
-from dzack_research.preamble.categories.modules.framed.finitely_generated.ring_as_module import (
-    ring_as_module,
-)
 from dzack_research.preamble.categories.modules.framed.formed import (
+    BilinearForm,
     BilinearFormModules,
     DiscriminantBilinearModules,
     DiscriminantModule,
@@ -54,6 +52,7 @@ from dzack_research.preamble.categories.modules.framed.formed import (
     FormMorphism,
     FreeFormModules,
     PairedModules,
+    QuadraticForm,
     QuadraticFormModules,
     SymmetricBilinearFormModules,
     TorsionBilinearFormModules,
@@ -71,10 +70,8 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
     FramedFreeModules,
     FreeModule,
     FreeModuleOn,
-    refine_free_module,
 )
-from dzack_research.preamble.categories.modules.framed.framed_modules import FramedModules
-from dzack_research.preamble.categories.modules.free_resolutions import FreeResolution, free_resolution
+from dzack_research.preamble.categories.modules.pure.modules import FramedModules
 from dzack_research.preamble.categories.modules.graded_modules import GradedModules
 from dzack_research.preamble.categories.modules.cochain_complexes import (
     Boundaries,
@@ -122,8 +119,6 @@ from dzack_research.preamble.categories.modules.group_modules import (
 )
 from dzack_research.preamble.categories.modules.internal_hom import (
     InternalHom,
-    InternalHomModules,
-    LinearHomModules,
     internal_hom_morphism,
 )
 from dzack_research.preamble.categories.modules.general_modules import (
@@ -173,8 +168,11 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 from dzack_research.preamble.categories.modules.powers import (
     AlternatingPower,
     AlternatingPowerModules,
+    DividedSquare,
+    DividedSquareModules,
     DividedPower,
     DividedPowerModules,
+    QuadraticSquare,
     SymmetricPower,
     SymmetricPowerModules,
     TensorPower,
@@ -184,40 +182,44 @@ from dzack_research.preamble.categories.modules.powers import (
     divided_power_invariant_inclusion,
     divided_power_morphism,
     divided_power_product,
+    divided_square_morphism,
     divided_square_invariant_inclusion,
     symmetric_power_morphism,
     tensor_power_permutation,
     tensor_power_polarization,
     tensor_square_polarization,
 )
-from dzack_research.preamble.categories.modules.pure.finitely_generated.finitely_generated_modules import (
+from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedModules,
 )
-from dzack_research.preamble.categories.modules.pure.free_modules import FreeModules
-from dzack_research.preamble.categories.modules.pure.modules import Modules, VectorSpaces
-from dzack_research.preamble.categories.modules.pure.projective_modules import ProjectiveModules
-from dzack_research.preamble.categories.modules.pure.torsion_modules import TorsionModules
-from dzack_research.preamble.categories.modules.quadratic_square import (
-    DividedSquare,
-    DividedSquareModules,
-    QuadraticSquare,
-    divided_square_morphism,
+from dzack_research.preamble.categories.modules.pure.modules import FreeModules
+from dzack_research.preamble.categories.modules.pure.modules import (
+    FinitelyPresentedModules,
+    FreeResolution,
+    InternalHomModules,
+    LinearHomModules,
+    Modules,
+    VectorSpaces,
+    free_resolution,
 )
-from dzack_research.preamble.categories.modules.restricted_scalars import (
+from dzack_research.preamble.categories.modules.pure.modules import ProjectiveModules
+from dzack_research.preamble.categories.modules.pure.torsion_modules import TorsionModules
+from dzack_research.preamble.categories.modules.pure.modules import (
     RestrictedScalarsModules,
     RestrictedScalarsModuleView,
     restrict_scalars,
     twist_scalar_action,
 )
-from dzack_research.preamble.categories.modules.subobjects import ModuleSubobjects
-from dzack_research.preamble.categories.modules.tensor_products import (
+from dzack_research.preamble.categories.modules.pure.modules import ModuleSubobjects
+from dzack_research.preamble.categories.modules.pure.modules import (
     BilinearMap,
     TensorProductModules,
-    tensor_product_morphism,
 )
+from dzack_research.preamble.categories.modules.tensor_products import tensor_product_morphism
 
 __all__ = [
     "BasedFreeModule",
+    "BilinearForm",
     "BilinearMap",
     "Biproduct",
     "BiproductModules",
@@ -248,6 +250,7 @@ __all__ = [
     "FormModules",
     "FormedModules",
     "PairedModules",
+    "QuadraticForm",
     "BilinearFormModules",
     "DiscriminantBilinearModules",
     "DiscriminantModule",
@@ -340,7 +343,6 @@ __all__ = [
     "module_embedding",
     "module_homset",
     "module_from_action",
-    "refine_free_module",
     "ring_as_module",
     "restrict_scalars",
     "trivial_group_action",

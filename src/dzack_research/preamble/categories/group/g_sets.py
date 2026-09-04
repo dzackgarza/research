@@ -1,30 +1,41 @@
 r"""Finite represented ``G``-sets, their actions, and equivariant Hom-sets.
 
-Sage supplies the abstract category :class:`sage.categories.g_sets.GSets`,
-but not a concrete acted-set parent or an equivariant Hom-set.  The live
-construction below fills exactly that representation gap for finite point
-sets.  The action itself remains the mathematical datum: a group morphism
-``G -> Sym(X)``.  The finite point-set presentation is used only to compute
-equivariance, fixed points, orbits, and the standard finite free/cofree
-constructions.
+A ``G``-set is a set with a group morphism ``G -> Sym(X)``; the categories
+below are stated over the owned sets and the owned acting group.  The finite
+point-set presentation is used only to compute equivariance, fixed points,
+orbits, and the standard finite free/cofree constructions.
 """
 
+from dzack_research.preamble.categories.abstract_categories.hom_foundation import OwnedHomset
 from sage.categories.category import Category
 from sage.categories.finite_enumerated_sets import FiniteEnumeratedSets
-from sage.categories.g_sets import GSets as SageGSets
 from sage.categories.homset import Homset
 from sage.categories.morphism import SetMorphism
 from sage.groups.perm_gps.permgroup_named import SymmetricGroup
 from sage.misc.abstract_method import abstract_method
 from sage.misc.unknown import Unknown
-from sage.rings.integer_ring import ZZ
+from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.element import Element
 from sage.structure.parent import Parent
 
-from dzack_research.preamble.categories.sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.set_categories import (
+    FiniteSets,
+    Sets,
+)
+from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
+from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+    finite_ordered_image,
+    finite_ordered_set,
+)
 
 
 class GSets(Category):
+    @staticmethod
+    def __classcall__(cls, group):
+        from dzack_research.preamble.categories.group.groups import _owned_group
+
+        return Category.__classcall__(cls, _owned_group(group))
+
     def __init__(self, group):
         self._group = group
         super().__init__()
@@ -38,7 +49,7 @@ class GSets(Category):
     acting_group = group
 
     def super_categories(self):
-        return [SageGSets(self._group)]
+        return [Sets()]
 
     def _repr_object_names(self):
         return f"{self._group}-sets"
@@ -57,7 +68,10 @@ class GSets(Category):
                 raise TypeError(f"{group_element} is not in {self.acting_group()}")
             if point not in self:
                 raise TypeError(f"{point} is not a point of {self}")
-            return self(self.action()(group_element)(point))
+            permutation_group = self.action().codomain()
+            permutation = self.action()(group_element)
+            backend_permutation = permutation_group._to_engine(permutation)
+            return self(backend_permutation(point))
 
         def _Hom_(self, codomain, category=None):
             if codomain not in GSets(self.acting_group()):
@@ -67,6 +81,12 @@ class GSets(Category):
 
 class FiniteGSets(Category):
     r"""The represented finite objects of ``GSets(G)``."""
+
+    @staticmethod
+    def __classcall__(cls, group):
+        from dzack_research.preamble.categories.group.groups import _owned_group
+
+        return Category.__classcall__(cls, _owned_group(group))
 
     def __init__(self, group):
         self._group = group
@@ -81,7 +101,7 @@ class FiniteGSets(Category):
     acting_group = group
 
     def super_categories(self):
-        return [GSets(self._group), FiniteEnumeratedSets()]
+        return [GSets(self._group), FiniteSets()]
 
     def _repr_object_names(self):
         return f"finite {self._group}-sets"
@@ -105,9 +125,11 @@ class FiniteGSet(Parent):
             )
         self._preamble_g_set_points = point_set
         self._preamble_g_set_action = action
+        permutations = action.codomain()
         for group_generator in group.group_generators():
+            backend_permutation = permutations._to_engine(action(group_generator))
             for point in point_set:
-                if action(group_generator)(point) not in point_set:
+                if backend_permutation(point) not in point_set:
                     raise ValueError("the action morphism does not preserve the stated point set")
         Parent.__init__(self, facade=point_set, category=FiniteGSets(group))
 
@@ -167,7 +189,7 @@ class GSetMorphism(SetMorphism):
         )
 
 
-class GSetHomset(Homset):
+class GSetHomset(OwnedHomset):
     r"""The actual equivariant Hom-set between represented finite ``G``-sets."""
 
     Element = GSetMorphism
@@ -222,19 +244,23 @@ def _finite_g_set_from_action(group, point_set, action):
     ``G -> Sym(X)``; the returned object stores that morphism rather than the
     temporary binary callback.
     """
-    from dzack_research.preamble.categories.group.group_morphisms import group_homset
-    from dzack_research.preamble.categories.group.groups import refine_group
+    from dzack_research.preamble.categories.group.groups import group_homset
+    from dzack_research.preamble.categories.group.groups import _own_group, _owned_group
 
     if isinstance(point_set, (tuple, list)):
         point_set = finite_ordered_set(point_set)
     if point_set not in FiniteEnumeratedSets():
         raise TypeError("the represented G-set constructor requires a finite enumerated point set")
-    group = refine_group(group)
+    group = _owned_group(group)
     if group.is_finitely_generated() is not True:
         raise NotImplementedError(
             "constructing a represented action morphism requires a chosen finite group generating set"
         )
-    permutations = refine_group(SymmetricGroup(point_set))
+    # Private finite backend serialization: Sage's SymmetricGroup constructor
+    # requires a sliceable concrete domain, while the mathematical point set
+    # remains the owned ordered set above.
+    backend_points = list(point_set)
+    permutations = _own_group(SymmetricGroup(backend_points))
     action_morphism = group_homset(group, permutations)(
         {
             group_generator: _permutation_from_point_map(
@@ -248,9 +274,14 @@ def _finite_g_set_from_action(group, point_set, action):
     return FiniteGSet(point_set, action_morphism)
 
 
+def finite_g_set(point_set, group, action):
+    r"""Return the finite owned ``G``-set defined by ``action(g,x)``."""
+    return _finite_g_set_from_action(group, point_set, action)
+
+
 def trivial_g_set(point_set, group):
     r"""Equip a finite set with the trivial ``group``-action."""
-    return _finite_g_set_from_action(group, point_set, lambda _group_element, point: point)
+    return finite_g_set(point_set, group, lambda _group_element, point: point)
 
 
 class OrbitClass(Element):
@@ -261,10 +292,20 @@ class OrbitClass(Element):
         self._index = index
 
     def representative(self):
-        return self.parent().orbit_points(self)[0]
+        return self.parent().orbit_points(self).unrank(0)
 
     def points(self):
         return self.parent().orbit_points(self)
+
+    def __eq__(self, other) -> bool:
+        return (
+            isinstance(other, OrbitClass)
+            and other.parent() is self.parent()
+            and other._index == self._index
+        )
+
+    def __ne__(self, other) -> bool:
+        return not self == other
 
     def __hash__(self):
         return hash((id(self.parent()), self._index))
@@ -279,6 +320,8 @@ class OrbitSet(Parent):
     Element = OrbitClass
 
     def __init__(self, g_set) -> None:
+        from collections import deque
+
         self._g_set = g_set
         group = g_set.acting_group()
         if group.is_finitely_generated() is not True:
@@ -286,26 +329,53 @@ class OrbitSet(Parent):
                 "constructing finite orbits requires a chosen finite group generating set"
             )
 
-        unseen = list(g_set)
-        orbit_points = []
+        point_set = finite_ordered_set(g_set)
+        point_count = int(point_set.cardinality())
+        unseen = {position for position in range(point_count)}
+        orbit_families = {}
+        orbit_count = 0
         while unseen:
-            seed = unseen.pop(0)
-            points = [seed]
-            frontier = [seed]
+            seed_rank = min(unseen)
+            unseen.remove(seed_rank)
+            orbit_ranks = {seed_rank}
+            frontier = deque((seed_rank,))
             while frontier:
-                point = frontier.pop(0)
+                point_rank = frontier.popleft()
+                point = point_set.unrank(point_rank)
                 for group_generator in group.group_generators():
-                    image = g_set.act(group_generator, point)
-                    if image not in points:
-                        points.append(image)
-                        frontier.append(image)
-                        if image in unseen:
-                            unseen.remove(image)
-            orbit_points.append(finite_ordered_set(points))
-        self._orbit_points = tuple(orbit_points)
+                    image_rank = int(
+                        point_set.rank(g_set.act(group_generator, point))
+                    )
+                    if image_rank in orbit_ranks:
+                        continue
+                    orbit_ranks.add(image_rank)
+                    unseen.discard(image_rank)
+                    frontier.append(image_rank)
+
+            rank_by_position = {
+                position: rank
+                for position, rank in enumerate(sorted(orbit_ranks))
+            }
+            orbit_families[orbit_count] = finite_ordered_image(
+                Sets.Δ[len(rank_by_position) - 1],
+                lambda position, rank_by_position=rank_by_position: point_set.unrank(
+                    rank_by_position[int(position)]
+                ),
+                name=f"Orbit {orbit_count}",
+            )
+            orbit_count += 1
+
+        self._orbit_indices = Sets.Δ[orbit_count - 1]
+        self._orbit_points = finite_indexed_family(
+            self._orbit_indices,
+            lambda index: orbit_families[int(index)],
+            name="Orbit point families",
+        )
         Parent.__init__(self, category=FiniteEnumeratedSets())
-        self._orbit_classes = tuple(
-            self.element_class(self, index) for index in range(len(self._orbit_points))
+        self._orbit_classes = finite_ordered_image(
+            self._orbit_indices,
+            lambda index: self.element_class(self, index),
+            name="Orbit classes",
         )
 
     def g_set(self):
@@ -318,7 +388,20 @@ class OrbitSet(Parent):
         return isinstance(orbit, OrbitClass) and orbit.parent() is self
 
     def cardinality(self):
-        return ZZ(len(self._orbit_classes))
+        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+
+        return _own_ring(SageZZ)(self._orbit_classes.cardinality())
+
+    def unrank(self, position):
+        return self._orbit_classes.unrank(position)
+
+    def rank(self, orbit):
+        if orbit not in self:
+            raise ValueError(orbit)
+        return int(orbit._index)
+
+    position = rank
+    index = rank
 
     def orbit_points(self, orbit):
         if orbit not in self:
@@ -344,13 +427,14 @@ def fixed_point_set(g_set):
         raise NotImplementedError(
             "constructing fixed points requires a chosen finite group generating set"
         )
-    return finite_ordered_set(
-        point
-        for point in g_set
-        if all(
+    from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_filter
+
+    return finite_ordered_filter(
+        finite_ordered_set(g_set),
+        lambda point: all(
             g_set.act(group_generator, point) == point
             for group_generator in group.group_generators()
-        )
+        ),
     )
 
 
@@ -393,6 +477,7 @@ __all__ = [
     "OrbitClass",
     "OrbitSet",
     "Torsors",
+    "finite_g_set",
     "fixed_point_set",
     "g_set_homset",
     "trivial_g_set",

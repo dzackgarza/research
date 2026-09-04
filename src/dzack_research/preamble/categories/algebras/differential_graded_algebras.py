@@ -1,8 +1,7 @@
 r"""Differential graded algebra categories and their morphisms."""
 
-from sage.categories.homset import Hom
 from sage.categories.morphism import Morphism
-from dzack_research.preamble.categories.sets import Sets
+from dzack_research.preamble.categories.sets.set_categories import Sets
 
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
@@ -12,7 +11,7 @@ from dzack_research.preamble.categories.algebras.derivations import (
     GradedDerivation,
     GradedDerivations,
 )
-from dzack_research.preamble.categories.rings import OwnedCategoryOverBaseRing
+from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
 
 
 class DegreewiseLinearMorphism(Morphism):
@@ -45,7 +44,8 @@ class DegreewiseLinearMorphism(Morphism):
 
     def represented_module_morphism(self):
         from sage.rings.integer_ring import ZZ as SageZZ
-        from dzack_research.preamble.categories.modules import FramedModules, module_homset
+        from dzack_research.preamble.categories.modules.pure.modules import FramedModules
+        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 
         source = self.domain()
         target = self.codomain()
@@ -55,7 +55,8 @@ class DegreewiseLinearMorphism(Morphism):
                 "this differential component has no selected framed-module backend"
             )
         labels = source.module_generating_set()
-        if labels.cardinality() not in SageZZ:
+        from dzack_research.preamble.categories.sets.cardinals import cardinal
+        if not cardinal(labels.cardinality()).is_finite():
             raise NotImplementedError(
                 "this differential component has no finite framed-module backend"
             )
@@ -80,7 +81,7 @@ class DifferentialGradedAlgebras(OwnedCategoryOverBaseRing):
         return "differential graded algebras"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.algebras import GradedAlgebras
+        from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
         from dzack_research.preamble.categories.modules.cochain_complexes import (
             CochainComplexes,
         )
@@ -95,6 +96,14 @@ class DifferentialGradedAlgebras(OwnedCategoryOverBaseRing):
     _HomCategory = None
 
     class ParentMethods:
+        def _Hom_(self, codomain, category=None):
+            dgas = DifferentialGradedAlgebras(self.base_ring())
+            if codomain in dgas and (
+                category is None or category.is_subcategory(dgas)
+            ):
+                return dga_homset(self, codomain)
+            return super()._Hom_(codomain, category=category)
+
         def differential(self):
             return self._preamble_differential
 
@@ -115,11 +124,6 @@ class DifferentialGradedAlgebras(OwnedCategoryOverBaseRing):
 
             return DifferentialComponentMorphism(source, target, component)
 
-        def hom(self, mapping, codomain=None):
-            if codomain is None:
-                raise TypeError("the target DGA is required")
-            return dga_homset(self, codomain)(mapping)
-
 
 class CommutativeDifferentialGradedAlgebras(OwnedCategoryOverBaseRing):
     @classmethod
@@ -127,7 +131,7 @@ class CommutativeDifferentialGradedAlgebras(OwnedCategoryOverBaseRing):
         return "commutative differential graded algebras"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.algebras import GradedCommutativeAlgebras
+        from dzack_research.preamble.categories.algebras.graded_commutative_algebras import GradedCommutativeAlgebras
 
         return [
             DifferentialGradedAlgebras(self.base_ring()),
@@ -141,9 +145,7 @@ class StrictlyCommutativeDifferentialGradedAlgebras(OwnedCategoryOverBaseRing):
         return "strictly commutative differential graded algebras"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.algebras import (
-            StrictlyGradedCommutativeAlgebras,
-        )
+        from dzack_research.preamble.categories.algebras.graded_commutative_algebras import StrictlyGradedCommutativeAlgebras
 
         return [
             CommutativeDifferentialGradedAlgebras(self.base_ring()),
@@ -239,7 +241,6 @@ class DGAHomset(CategoricalHomset):
             hom_family,
             domain,
             codomain,
-            homset_category=Sets(),
         )
 
     def _element_constructor_(self, function):

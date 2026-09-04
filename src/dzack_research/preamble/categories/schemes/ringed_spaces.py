@@ -7,7 +7,7 @@ from sage.structure.sage_object import SageObject
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoryPacketMethods,
 )
-from dzack_research.preamble.categories.sets import Sets
+from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
 class SchemeUnderlyingSpace(SageObject):
@@ -44,52 +44,36 @@ class StructureSheaf(SageObject):
 
     def global_sections(self):
         r"""Return ``Gamma(X,O_X)`` in the exact cases represented live."""
-        scheme = self.scheme()
-        base_ring = scheme.scheme_base_ring()
-        from dzack_research.preamble.categories.schemes.schemes import (
-            AffineSchemes,
-            ProjectiveSpaces,
-        )
-
-        if scheme in AffineSchemes(base_ring):
-            return scheme.coordinate_algebra()
-        if scheme in ProjectiveSpaces(base_ring):
-            return base_ring
-        raise NotImplementedError(
-            f"global sections of the structure sheaf of {scheme} are not yet represented"
-        )
+        operation = getattr(self.ringed_space(), "_structure_sheaf_global_sections", None)
+        if operation is None:
+            raise NotImplementedError(
+                f"global sections of the structure sheaf of {self.ringed_space()} are not represented"
+            )
+        return operation()
 
     sections = global_sections
 
     def sections_on_distinguished_open(self, distinguished_open):
         r"""Return ``O_X(D(f)) = Gamma(X,O_X)_f`` for an affine scheme."""
-        scheme = self.scheme()
-        base_ring = scheme.scheme_base_ring()
-        from dzack_research.preamble.categories.schemes.schemes import AffineSchemes
-
-        if scheme not in AffineSchemes(base_ring):
+        operation = getattr(
+            self.ringed_space(),
+            "_structure_sheaf_sections_on_distinguished_open",
+            None,
+        )
+        if operation is None:
             raise NotImplementedError(
-                "distinguished-open structure-sheaf sections are represented for affine schemes"
+                "distinguished-open structure-sheaf sections are not represented for this ringed space"
             )
-        spectrum = scheme.underlying_space()
-        if distinguished_open.codomain() is not spectrum:
-            raise ValueError("the distinguished open belongs to a different affine spectrum")
-        return distinguished_open.coordinate_ring()
+        return operation(distinguished_open)
 
     def stalk(self, point):
         r"""Return ``O_{X,p}`` for a represented affine prime point."""
-        scheme = self.scheme()
-        base_ring = scheme.scheme_base_ring()
-        from dzack_research.preamble.categories.schemes.schemes import AffineSchemes
-
-        if scheme not in AffineSchemes(base_ring):
+        operation = getattr(self.ringed_space(), "_structure_sheaf_stalk", None)
+        if operation is None:
             raise NotImplementedError(
-                "the active stalk construction is represented on affine schemes"
+                "structure-sheaf stalks are not represented for this ringed space"
             )
-        spectrum = scheme.underlying_space()
-        if getattr(point, "parent", lambda: None)() is not spectrum:
-            point = spectrum(point)
-        return point.local_ring()
+        return operation(point)
 
     def _repr_(self) -> str:
         return f"Structure sheaf O_{{{self.scheme()}}}"
@@ -118,11 +102,9 @@ class RingedSpaces(CategoryPacketMethods, Category):
 
         @cached_method
         def underlying_space(self):
-            from dzack_research.preamble.categories.schemes.schemes import AffineSchemes
-
-            base_ring = self.scheme_base_ring()
-            if self in AffineSchemes(base_ring):
-                return self.coordinate_algebra().spectrum()
+            specialized = getattr(self, "_scheme_underlying_space", None)
+            if specialized is not None:
+                return specialized()
             return SchemeUnderlyingSpace(self)
 
 

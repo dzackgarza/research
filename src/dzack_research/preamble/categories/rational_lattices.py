@@ -4,11 +4,23 @@ from dzack_research.preamble.categories.modules.framed.formed.form_modules impor
     FinitelyGeneratedFreeFormModules,
     SymmetricBilinearFormModules,
 )
-from dzack_research.preamble.categories.rings import (
+from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
-    engine_ring,
+    _engine_ring,
 )
 from dzack_research.preamble.refine import refine
+
+
+def _rational_lattice_determinant(lattice):
+    r"""Return the Gram determinant in the selected fraction-field value module."""
+    from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace
+
+    rank = int(lattice.module_generating_set().cardinality())
+    gram = lattice.gram_tensor()
+    return MatrixSpace(lattice.value_module(), rank).from_rows(
+        (gram[row, column] for column in range(rank))
+        for row in range(rank)
+    ).determinant()
 
 
 class RationalLattices(OwnedCategoryOverBaseRing):
@@ -28,6 +40,9 @@ class RationalLattices(OwnedCategoryOverBaseRing):
         def fraction_field(self):
             return self.base_ring().fraction_field()
 
+        def determinant(self):
+            return _rational_lattice_determinant(self)
+
         def is_nondegenerate(self) -> bool:
             return True
 
@@ -36,11 +51,11 @@ def refine_rational_lattice(lattice):
     r"""Adopt a finite free ``Frac(R)``-valued nondegenerate form as a rational lattice."""
     base_ring = lattice.base_ring()
     fraction_field = base_ring.fraction_field()
-    if engine_ring(lattice.value_module()) is not engine_ring(fraction_field):
+    if _engine_ring(lattice.value_module()) is not _engine_ring(fraction_field):
         raise TypeError(
             f"a rational lattice over {base_ring} has values in {fraction_field}"
         )
-    if lattice.gram_tensor().det() == 0:
+    if _rational_lattice_determinant(lattice) == 0:
         raise ValueError("a rational lattice has a nondegenerate form")
     return refine(lattice, RationalLattices(base_ring))
 

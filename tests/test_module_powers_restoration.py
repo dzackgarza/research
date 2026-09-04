@@ -17,7 +17,7 @@ from dzack_research.preamble.categories.modules import (
     tensor_power_permutation,
     tensor_power_polarization,
 )
-from dzack_research.preamble.categories.sets import finite_ordered_set
+from dzack_research.preamble.categories.sets import NN, cardinal, finite_ordered_set
 
 
 def _assert_maps_agree(left, right) -> None:
@@ -42,11 +42,11 @@ def test_degree_powers_have_the_expected_free_ranks_and_use_canonical_tensor_pro
 def test_integral_divided_powers_distinguish_gamma_from_symmetric_powers() -> None:
     module = FinitelyPresentedTorsionModules(ZZ).direct_sum_of_cyclics((2,))
 
-    assert tuple(TensorPower(module, 3).invariants()) == (2,)
-    assert tuple(SymmetricPower(module, 3).invariants()) == (2,)
-    assert tuple(DividedPower(module, 2).invariants()) == (4,)
-    assert tuple(DividedPower(module, 3).invariants()) == (2,)
-    assert tuple(DividedPower(module, 4).invariants()) == (8,)
+    assert tuple(TensorPower(module, 3).invariant_factors()) == (2,)
+    assert tuple(SymmetricPower(module, 3).invariant_factors()) == (2,)
+    assert tuple(DividedPower(module, 2).invariant_factors()) == (4,)
+    assert tuple(DividedPower(module, 3).invariant_factors()) == (2,)
+    assert tuple(DividedPower(module, 4).invariant_factors()) == (8,)
 
 
 def test_divided_power_inclusion_and_polarization_are_norm_and_orbit_sum() -> None:
@@ -59,7 +59,7 @@ def test_divided_power_inclusion_and_polarization_are_norm_and_orbit_sum() -> No
 
         for label in divided.module_generating_set():
             generator = divided.module_generator(label)
-            assert polarization(inclusion(generator)) == factorial(degree) * generator
+            assert polarization(inclusion(generator)) == ZZ(int(factorial(degree))) * generator
 
         orbit_sum = tuple(permutations(range(degree)))
         for label in tensor.module_generating_set():
@@ -90,3 +90,26 @@ def test_symmetric_and_divided_powers_are_functorial_on_nontrivial_maps() -> Non
 
         identity = power_morphism(module_homset(module, module).identity(), degree)
         _assert_maps_agree(identity, module_homset(identity.domain(), identity.codomain()).identity())
+
+
+def test_countable_free_module_powers_use_combinatorial_index_sets_lazily() -> None:
+    module = BasedFreeModule(ZZ, NN)
+    symmetric = SymmetricPower(module, 2)
+    alternating = AlternatingPower(module, 2)
+    divided = DividedPower(module, 2)
+
+    symmetric_labels = symmetric.module_generating_set()
+    alternating_labels = alternating.module_generating_set()
+    divided_labels = divided.module_generating_set()
+    pair = {NN(2): 1, NN(5): 1}
+
+    symmetric_label = symmetric_labels.from_multiplicities(pair)
+    alternating_label = alternating_labels.from_multiplicities(pair)
+    divided_label = divided_labels.from_multiplicities(pair)
+
+    assert symmetric.module_generator(symmetric_label).parent() is symmetric
+    assert alternating.module_generator(alternating_label).parent() is alternating
+    assert divided.module_generator(divided_label).parent() is divided
+    assert cardinal(symmetric_labels.cardinality()).is_countably_infinite()
+    assert cardinal(alternating_labels.cardinality()).is_countably_infinite()
+    assert cardinal(divided_labels.cardinality()).is_countably_infinite()

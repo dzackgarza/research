@@ -3,12 +3,12 @@
 from sage.categories.monoids import Monoids as SageMonoids
 from sage.structure.parent import Parent
 
-from dzack_research.preamble.categories.abstract_categories import SubobjectsOf
+from dzack_research.preamble.categories.abstract_categories.arrow_categories import SubobjectsOf
 from dzack_research.preamble.categories.group.magmas import (
     MonoidMorphism,
     Monoids,
 )
-from dzack_research.preamble.categories.sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.refine import refine
 
 

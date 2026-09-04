@@ -1,67 +1,82 @@
 r"""Arrow categories, commuting squares, cores, and slice-style categories."""
 
+from dzack_research.preamble.categories.abstract_categories.hom_foundation import OwnedHomset
 from sage.categories.category import Category
 from sage.categories.finite_enumerated_sets import FiniteEnumeratedSets
 from sage.categories.homset import Hom, Homset
 from sage.categories.morphism import Morphism
 from sage.categories.sets_cat import Sets as SageSets
-from dzack_research.preamble.categories.sets.owned_sets import Sets as _OwnedSets
+from dzack_research.preamble.categories.sets.set_categories import Sets as _OwnedSets
 from sage.structure.parent import Parent
 
 
 def _morphisms_agree(left, right) -> bool:
-    r"""Decide equality on represented domains whose chosen data make it exact."""
+    r"""Decide equality through the morphism/Hom owner when represented."""
     if left.domain() is not right.domain() or left.codomain() is not right.codomain():
         return False
     if left is right:
         return True
 
-    left_native = getattr(left, "native_morphism", None)
-    right_native = getattr(right, "native_morphism", None)
-    if left_native is not None and right_native is not None:
-        left_arrow = left_native()
-        right_arrow = right_native()
-        from sage.schemes.generic.morphism import SchemeMorphism_id
+    if isinstance(left, CommutativeSquare) and isinstance(right, CommutativeSquare):
+        return _morphisms_agree(left.left(), right.left()) and _morphisms_agree(
+            left.right(), right.right()
+        )
 
-        if isinstance(left_arrow, SchemeMorphism_id) and isinstance(
-            right_arrow,
-            SchemeMorphism_id,
-        ):
+    element_decider = getattr(left, "morphisms_agree", None)
+    if callable(element_decider):
+        return bool(element_decider(right))
+
+    left_parent = left.parent()
+    if left_parent is right.parent():
+        parent_decider = getattr(left_parent, "morphisms_agree", None)
+        if callable(parent_decider):
+            return bool(parent_decider(left, right))
+
+    # Ordinary equality may already be exact for the represented morphism
+    # family.  A false result is not enough for generic Sage SetMorphism,
+    # whose equality is intensional, so finite sets retain their extensional
+    # category-level decision below.
+    try:
+        if left == right:
             return True
-        return bool(left_arrow == right_arrow)
+    except NotImplementedError:
+        pass
 
     domain = left.domain()
     if domain in FiniteEnumeratedSets():
         return all(left(element) == right(element) for element in domain)
-
-    from dzack_research.preamble.categories.group.groups import OwnedFinitelyGeneratedGroups
-
-    if domain in OwnedFinitelyGeneratedGroups():
-        return all(left(generator) == right(generator) for generator in domain.group_generators())
-
-    from dzack_research.preamble.categories.modules import FramedModules
-
-    base_ring = domain.base_ring()
-    if base_ring is not None and domain in FramedModules(base_ring):
-        return all(
-            left(domain.module_generator(label)) == right(domain.module_generator(label))
-            for label in domain.module_generating_set()
-        )
 
     raise NotImplementedError(
         f"equality of represented morphisms out of {domain} has no active decision procedure"
     )
 
 
+def _identity_morphism_in_theory(arrow, obj):
+    r"""Return the identity of ``obj`` in the Hom theory containing ``arrow``."""
+    parent = arrow.parent()
+    family = getattr(parent, "hom_family", None)
+    if callable(family):
+        fixed = family().Of(obj, obj)
+        identity = getattr(fixed, "identity", None)
+        if callable(identity):
+            return identity()
+        identity = getattr(fixed, "identity_endomorphism", None)
+        if callable(identity):
+            return identity()
+    return _identity_morphism(obj)
+
+
 def _identity_morphism(obj):
     r"""Return the identity arrow through the object's public Hom surface."""
+    if isinstance(obj, ArrowObject):
+        return obj.arrow_category().hom(obj, obj).identity()
     categorical_identity = getattr(obj, "categorical_identity_morphism", None)
     if categorical_identity is not None:
         return categorical_identity()
     try:
         return Hom(obj, obj).identity()
     except (TypeError, ValueError):
-        return Hom(obj, obj, _OwnedSets()).identity()
+        return _OwnedSets().hom(obj, obj).identity()
 
 
 class ArrowObject(Parent):
@@ -126,7 +141,7 @@ class CommutativeSquare(Morphism):
         return f"Commutative square from {self.domain()} to {self.codomain()}"
 
 
-class ArrowHomset(Homset):
+class ArrowHomset(OwnedHomset):
     Element = CommutativeSquare
 
     def __init__(self, arrow_category, source, target) -> None:
@@ -166,7 +181,7 @@ class ArrowCategory(Category):
         return self._base_category
 
     def super_categories(self):
-        from dzack_research.preamble.categories.sets import Sets
+        from dzack_research.preamble.categories.sets.set_categories import Sets
 
         return [Sets()]
 
@@ -397,7 +412,7 @@ class SubobjectMorphism(Morphism):
         )(self.factor_morphism() * other.factor_morphism())
 
 
-class SubobjectHomset(Homset):
+class SubobjectHomset(OwnedHomset):
     Element = SubobjectMorphism
 
     def __init__(self, subobject_category, domain, codomain) -> None:
@@ -456,7 +471,7 @@ class SubobjectCategory(Category):
         return self._base_object
 
     def super_categories(self):
-        from dzack_research.preamble.categories.sets import Sets
+        from dzack_research.preamble.categories.sets.set_categories import Sets
 
         return [Sets()]
 
@@ -556,16 +571,23 @@ class WideSubcategory(Category):
 class CategoricalIsomorphism(Morphism):
     r"""An isomorphism represented by mutually inverse arrows."""
 
-    def __init__(self, parent, forward, inverse) -> None:
+    def __init__(self, parent, forward, inverse, *, verify=True) -> None:
         Morphism.__init__(self, parent)
         if forward.domain() is not self.domain() or forward.codomain() is not self.codomain():
             raise ValueError("the forward map has the wrong endpoints")
         if inverse.domain() is not self.codomain() or inverse.codomain() is not self.domain():
             raise ValueError("the inverse map has the wrong endpoints")
-        if not _morphisms_agree(inverse * forward, _identity_morphism(self.domain())):
-            raise ValueError("the stated inverse is not a left inverse")
-        if not _morphisms_agree(forward * inverse, _identity_morphism(self.codomain())):
-            raise ValueError("the stated inverse is not a right inverse")
+        if verify:
+            if not _morphisms_agree(
+                inverse * forward,
+                _identity_morphism_in_theory(forward, self.domain()),
+            ):
+                raise ValueError("the stated inverse is not a left inverse")
+            if not _morphisms_agree(
+                forward * inverse,
+                _identity_morphism_in_theory(forward, self.codomain()),
+            ):
+                raise ValueError("the stated inverse is not a right inverse")
         self._forward = forward
         self._inverse = inverse
 
@@ -590,7 +612,7 @@ class CategoricalIsomorphism(Morphism):
         )
 
 
-class CoreHomset(Homset):
+class CoreHomset(OwnedHomset):
     Element = CategoricalIsomorphism
 
     def __init__(self, domain, codomain) -> None:
@@ -600,6 +622,10 @@ class CoreHomset(Homset):
         if inverse is None:
             forward, inverse = forward
         return CategoricalIsomorphism(self, forward, inverse)
+
+    def _from_known_inverse_pair(self, forward, inverse):
+        r"""Construct an isomorphism from an inverse pair proved by its owner."""
+        return CategoricalIsomorphism(self, forward, inverse, verify=False)
 
     def identity(self):
         if self.domain() is not self.codomain():
@@ -659,6 +685,13 @@ def SubobjectsOf(base_category, base_object):
 
 def SuperobjectsOf(base_category, base_object):
     return SuperobjectCategory(base_category, base_object)
+
+
+def _isomorphism_from_known_inverse_pair(forward, inverse):
+    r"""Transport a previously proved inverse pair without re-solving equality."""
+    return CoreHomset(forward.domain(), forward.codomain())._from_known_inverse_pair(
+        forward, inverse
+    )
 
 
 def Isomorphism(forward, inverse):

@@ -3,26 +3,27 @@
 from sage.categories.commutative_algebras import (
     CommutativeAlgebras as SageCommutativeAlgebras,
 )
-from sage.categories.homset import Hom
 from sage.categories.morphism import SetMorphism
 from sage.categories.map import Map
 from sage.categories.morphism import Morphism
 from sage.categories.rings import Rings as SageRings
-from sage.categories.sets_cat import Sets
 from sage.misc.cachefunc import cached_function, cached_method
 
-from dzack_research.preamble.categories.rings import (
+from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
-    OwnedRingView,
+    OwnedCommutativeRings,
     OwnedRings,
-    engine_ring,
-    owned_ring_view,
+    _engine_element,
+    _engine_ring,
+    _owned_ring,
 )
+from dzack_research.preamble.categories.rings.ring_foundation import _OwnedRingElement, _OwnedRingParent
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
     HomCategoryConstruction,
 )
-from dzack_research.preamble.categories.sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.refine import refine
 
 
@@ -76,42 +77,17 @@ class AlgebraHomCategoryConstruction(HomCategoryConstruction):
     def Of(self, domain, codomain):
         if domain not in self.base_category() or codomain not in self.base_category():
             raise TypeError("algebra Hom endpoints must lie in the base algebra category")
-        # Endpoint identity, not a hash: hashing a Hom endpoint re-enters Hom
-        # construction, so Sage's cached_method recurses here.
-        key = id(domain), id(codomain)
-        cached = self._objects.get(key)
-        if (
-            cached is not None
-            and cached.domain_object() is domain
-            and cached.codomain_object() is codomain
-        ):
+        cached = self._cached_between(domain, codomain)
+        if cached is not None:
             return cached
 
-        from dzack_research.preamble.categories.algebras.sparse_free_algebras import (
-            FramedFreeAlgebraHomset,
-            SparseFreeAlgebra,
-            SparseFreeAlgebraHomset,
+        specialized = getattr(domain, "_algebra_homset", None)
+        result = (
+            specialized(self, codomain)
+            if specialized is not None
+            else AlgebraHomset(self, domain, codomain)
         )
-
-        if isinstance(domain, SparseFreeAlgebra):
-            hom_class = SparseFreeAlgebraHomset
-        elif isinstance(codomain, SparseFreeAlgebra):
-            from dzack_research.preamble.categories.algebras.free_algebras import (
-                SymmetricAlgebras,
-                TensorAlgebras,
-            )
-
-            ring = domain.base_ring()
-            hom_class = (
-                FramedFreeAlgebraHomset
-                if domain in TensorAlgebras(ring) or domain in SymmetricAlgebras(ring)
-                else AlgebraHomset
-            )
-        else:
-            hom_class = AlgebraHomset
-        result = hom_class(self, domain, codomain)
-        self._objects[key] = result
-        return result
+        return self._remember_between(domain, codomain, result)
 
 
 class Algebras(OwnedCategoryOverBaseRing):
@@ -129,7 +105,7 @@ class Algebras(OwnedCategoryOverBaseRing):
         return "algebras"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.modules import Modules
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
 
         return [
             OwnedRings(),
@@ -156,19 +132,26 @@ class Algebras(OwnedCategoryOverBaseRing):
             base = self.__dict__.get("_preamble_algebra_base_ring")
             if base is not None:
                 return base
-            return owned_ring_view(engine_ring(self).base_ring())
+            return _owned_ring(_engine_ring(self).base_ring())
 
         @cached_method
         def _ring_morphism_defining_algebra_structure(self):
             base = self.algebra_base_ring()
             center = self.ring_center()
-            from dzack_research.preamble.categories.rings import ring_morphism
+            from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
 
             return ring_morphism(
                 base,
                 center,
-                lambda scalar: self(engine_ring(base)(scalar)),
+                lambda scalar: center(self(scalar)),
             )
+
+        def _owned_scalar_multiple(self, scalar, element):
+            r"""Apply the ``R``-algebra scalar action ``r*a = eta(r)a``."""
+            scalar = self.base_ring()(scalar)
+            element = self(element)
+            scalar_image = self(self.algebra_structure_morphism()(scalar))
+            return scalar_image * element
 
         @cached_method
         def algebra_structure_morphism(self):
@@ -177,7 +160,7 @@ class Algebras(OwnedCategoryOverBaseRing):
             center = self.ring_center()
             if eta.codomain() is center:
                 return eta
-            from dzack_research.preamble.categories.rings import ring_morphism
+            from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
 
             return ring_morphism(eta.domain(), center, eta)
 
@@ -192,32 +175,20 @@ class Algebras(OwnedCategoryOverBaseRing):
             selected = self.__dict__.get("_preamble_multiplication_morphism")
             if selected is not None:
                 return selected
-            from dzack_research.preamble.categories.functors.algebra_modules import (
-                algebra_underlying_module_functor,
-            )
-            from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import (
-                FinitelyGeneratedFreeModules,
-            )
-            from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-                ModulesWithChosenFinitePresentation,
-            )
-            from dzack_research.preamble.categories.abstract_categories import (
-                TensorProduct,
-            )
-            from dzack_research.preamble.categories.modules.tensor_products import (
+            from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
+            from dzack_research.preamble.categories.modules.pure.modules import (
                 BilinearMap,
             )
 
             ring = self.algebra_base_ring()
-            module = algebra_underlying_module_functor(ring)(self)
-            if module not in ModulesWithChosenFinitePresentation(
-                ring
-            ) and module not in FinitelyGeneratedFreeModules(ring):
+            module = self
+            try:
+                tensor = TensorProduct(module, module)
+            except NotImplementedError as error:
                 raise TypeError(
-                    f"the multiplication morphism of {self} factors through "
-                    f"a tensor product of finitely presented {ring}-modules"
-                )
-            tensor = TensorProduct(module, module)
+                    f"the multiplication morphism of {self} has no represented "
+                    f"tensor-product realization by finitely presented {ring}-modules"
+                ) from error
             return tensor.from_bilinear(
                 BilinearMap(
                     module,
@@ -234,24 +205,21 @@ class Algebras(OwnedCategoryOverBaseRing):
                 )
             )
 
+        def Hom(self, codomain, category=None):
+            algebras = Algebras(self.base_ring())
+            if category is None or (
+                hasattr(category, "is_subcategory") and category.is_subcategory(algebras)
+            ):
+                return algebras.Hom(self, codomain)
+            from sage.categories.homset import Hom as SageHom
+            return SageHom(self, codomain, category)
+
         def _Hom_(self, codomain, category=None):
             if category is not None and not category.is_subcategory(
                 Algebras(self.base_ring())
             ):
                 raise TypeError("this is not an algebra homset category")
             return algebra_homset(self, codomain)
-
-        def hom(self, images, codomain=None):
-            if codomain is None:
-                if isinstance(images, dict) and images:
-                    codomain = next(iter(images.values())).parent()
-                elif isinstance(images, (tuple, list)) and images:
-                    codomain = images[0].parent()
-                else:
-                    raise TypeError(
-                        "the codomain is required when it cannot be read from images"
-                    )
-            return algebra_homset(self, codomain)(images)
 
     def _call_(self, multiplication):
         return algebra_from_multiplication(
@@ -279,16 +247,22 @@ class AlgebrasWithChosenMultiplication(OwnedCategoryOverBaseRing):
         def multiplication_morphism(self):
             return self._preamble_multiplication_morphism
 
+        def _owned_scalar_multiple(self, scalar, element):
+            r"""Use the selected underlying module action on an interned algebra."""
+            scalar = self.base_ring()(scalar)
+            element = self(element)
+            return element._lmul_(scalar)
+
         def _ring_morphism_defining_algebra_structure(self):
             base = self.algebra_base_ring()
             center = self.ring_center()
             unit = self.one()
-            from dzack_research.preamble.categories.rings import ring_morphism
+            from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
 
             return ring_morphism(
                 base,
                 center,
-                lambda scalar: self.scalar_multiple(base(scalar), unit),
+                lambda scalar: center(unit._lmul_(base(scalar))),
             )
 
 
@@ -300,9 +274,42 @@ class CommutativeAlgebras(OwnedCategoryOverBaseRing):
         return "commutative algebras"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.rings.rings import OwnedCommutativeRings
+        from dzack_research.preamble.categories.rings.ring_foundation import OwnedCommutativeRings
 
         return [Algebras(self.base_ring()), OwnedCommutativeRings()]
+
+    def _categorical_product(self, left, right):
+        raise NotImplementedError(
+            "the represented categorical product of commutative algebras is not yet implemented"
+        )
+
+    def _categorical_coproduct(self, left, right):
+        operation = getattr(left, "_commutative_algebra_coproduct", None)
+        if operation is None:
+            operation = getattr(right, "_commutative_algebra_coproduct", None)
+        if operation is None:
+            raise NotImplementedError(
+                "neither factor carries a represented commutative-algebra coproduct backend"
+            )
+        return operation(left, right)
+
+    def _categorical_coproduct_morphism(self, left_morphism, right_morphism, source, target):
+        return source.from_cocone(
+            target.left_coproduct_map() * left_morphism,
+            target.right_coproduct_map() * right_morphism,
+        )
+
+    def _categorical_pushout(self, left_morphism, right_morphism):
+        left = left_morphism.codomain()
+        right = right_morphism.codomain()
+        operation = getattr(left, "_commutative_algebra_pushout", None)
+        if operation is None:
+            operation = getattr(right, "_commutative_algebra_pushout", None)
+        if operation is None:
+            raise NotImplementedError(
+                "neither factor carries a represented commutative-algebra pushout backend"
+            )
+        return operation(left_morphism, right_morphism)
 
     class ParentMethods:
         def is_commutative(self) -> bool:
@@ -310,7 +317,7 @@ class CommutativeAlgebras(OwnedCategoryOverBaseRing):
 
 
 class FramedAlgebras(OwnedCategoryOverBaseRing):
-    r"""Algebras carrying a chosen finite algebra generating set."""
+    r"""Algebras carrying a chosen algebra generating set."""
 
     @classmethod
     def _repr_object_names(cls):
@@ -325,9 +332,14 @@ class FramedAlgebras(OwnedCategoryOverBaseRing):
 
         @cached_method
         def algebra_generators(self):
-            return finite_ordered_set(
-                self.algebra_generator(label) for label in self.algebra_generating_set()
+            from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+
+            return indexed_family(
+                self.algebra_generating_set(),
+                self.algebra_generator,
+                name=f"Algebra generators of {self}",
             )
+
 
         def algebra_generator(self, label):
             labels = self.algebra_generating_set()
@@ -342,6 +354,291 @@ class FramedAlgebras(OwnedCategoryOverBaseRing):
             return self.algebra_generator(left) * self.algebra_generator(right)
 
 
+class MatrixAlgebras(OwnedCategoryOverBaseRing):
+    r"""Finite matrix endomorphism Hom objects with their canonical algebra structure."""
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "matrix algebras"
+
+    def super_categories(self):
+        from dzack_research.preamble.categories.modules.pure.modules import MatrixEndomorphismSpaces
+
+        if self.base_ring() not in OwnedCommutativeRings():
+            raise TypeError("the canonical R-algebra structure on End_R(F) needs commutative R")
+        return [
+            MatrixEndomorphismSpaces(self.base_ring()),
+            Algebras(self.base_ring()),
+            FramedAlgebras(self.base_ring()),
+        ]
+
+    class ParentMethods:
+        def algebra_base_ring(self):
+            return self._preamble_base_ring
+
+        @cached_method
+        def _ring_morphism_defining_algebra_structure(self):
+            from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
+
+            ring = self.base_ring()
+            center = self.ring_center()
+            identity = self.identity()
+            return ring_morphism(
+                ring,
+                center,
+                lambda scalar: center(self.scalar_multiple(scalar, identity)),
+            )
+
+        def algebra_generating_set(self):
+            return self._preamble_algebra_generating_set
+
+        def algebra_generator(self, label):
+            label = self.algebra_generating_set()(label)
+            return self.matrix_unit(label[0], label[1])
+
+
+def refine_matrix_algebra(homset):
+    r"""Attach the canonical ``R``-algebra structure to a square matrix Hom object."""
+    from dzack_research.preamble.categories.modules.pure.modules import MatrixEndomorphismSpaces
+
+    ring = homset.base_ring()
+    if homset not in MatrixEndomorphismSpaces(ring):
+        return homset
+    if ring not in OwnedCommutativeRings():
+        return homset
+    homset._preamble_base_ring = ring
+    homset._preamble_algebra_generating_set = homset.module_generating_set()
+    return refine(homset, MatrixAlgebras(ring))
+
+
+class FinitelyPresentedAlgebras(OwnedCategoryOverBaseRing):
+    r"""Algebras that admit a finite algebra presentation."""
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "finitely presented algebras"
+
+    def super_categories(self):
+        return [Algebras(self.base_ring())]
+
+    class ParentMethods:
+        def is_finitely_presented(self) -> bool:
+            return True
+
+
+class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
+    r"""Finitely presented algebras carrying one selected finite presentation."""
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "algebras with a chosen finite presentation"
+
+    def super_categories(self):
+        return [
+            FinitelyPresentedAlgebras(self.base_ring()),
+            FramedAlgebras(self.base_ring()),
+        ]
+
+    class ParentMethods:
+        def _algebra_homset(self, hom_family, codomain):
+            return PresentedAlgebraHomset(hom_family, self, codomain)
+
+        def presentation_ring(self):
+            return self._preamble_presentation_ring
+
+        def _has_selected_exact_coefficient_presentation(self) -> bool:
+            return True
+
+        def _exact_coefficient_presentation_ring(self):
+            return self.presentation_ring()
+
+        def _exact_coefficient_presentation_relations(self):
+            return self.relations()
+
+        def _lift_coefficient_to_presentation(self, value):
+            return self.lift_to_presentation(self(value))
+
+        def _descend_coefficient_from_presentation(self, value):
+            return self(value)
+
+        def relations(self):
+            return self._preamble_presentation_relations
+
+        def presentation_ideal(self):
+            return self._preamble_presentation_ideal
+
+        def presentation(self):
+            return self.presentation_ring(), self.relations()
+
+        def algebra_presentation_morphism(self):
+            return self._preamble_algebra_presentation_morphism
+
+        def lift_to_presentation(self, element):
+            return self._preamble_lift_to_presentation(element)
+
+        def base_change(self, ring_map):
+            operation = getattr(
+                self,
+                "_preamble_base_change_selected_presentation",
+                None,
+            )
+            if operation is None:
+                raise NotImplementedError(
+                    "this selected algebra presentation has no represented base-change backend"
+                )
+            return operation(ring_map)
+
+        def _commutative_algebra_coproduct(self, left, right):
+            operation = getattr(
+                self,
+                "_preamble_commutative_algebra_coproduct_backend",
+                None,
+            )
+            if operation is None:
+                raise NotImplementedError(
+                    "this selected presentation has no represented coproduct backend"
+                )
+            return operation(left, right)
+
+        def _quotient_by_algebra_elements(self, elements):
+            operation = getattr(
+                self,
+                "_preamble_quotient_by_algebra_elements_backend",
+                None,
+            )
+            if operation is None:
+                raise NotImplementedError(
+                    "this selected presentation has no represented quotient backend"
+                )
+            return operation(elements)
+
+        def _commutative_algebra_pushout(self, left_map, right_map):
+            operation = getattr(
+                self,
+                "_preamble_commutative_algebra_pushout_backend",
+                None,
+            )
+            if operation is None:
+                raise NotImplementedError(
+                    "this selected presentation has no represented pushout backend"
+                )
+            return operation(left_map, right_map)
+
+
+class CommutativeAlgebraCoproducts(OwnedCategoryOverBaseRing):
+    r"""Commutative ``R``-algebras equipped as selected binary coproducts."""
+
+    def super_categories(self):
+        return [CommutativeAlgebras(self.base_ring())]
+
+    class ParentMethods:
+        def coproduct_factors(self):
+            return self._preamble_coproduct_factors
+
+        tensor_factors = coproduct_factors
+
+        def coproduct_injection(self, index):
+            return self._preamble_coproduct_injections[index]
+
+        def coproduct_injections(self):
+            return tuple(self.coproduct_injection(index) for index in range(2))
+
+        def left_coproduct_map(self):
+            return self.coproduct_injection(0)
+
+        def right_coproduct_map(self):
+            return self.coproduct_injection(1)
+
+        def from_cocone(self, left_map, right_map):
+            left, right = self.coproduct_factors()
+            if left_map.domain() is not left or right_map.domain() is not right:
+                raise ValueError("the cocone maps have the wrong factor domains")
+            if left_map.codomain() is not right_map.codomain():
+                raise ValueError("the cocone maps must have one common codomain")
+            target = left_map.codomain()
+            images = {
+                **{
+                    ("left", label): left_map(left.algebra_generator(label))
+                    for label in left.algebra_generating_set()
+                },
+                **{
+                    ("right", label): right_map(right.algebra_generator(label))
+                    for label in right.algebra_generating_set()
+                },
+            }
+            return self.Hom(target)(images)
+
+        tensor_map = from_cocone
+
+
+class CommutativeAlgebraPushouts(OwnedCategoryOverBaseRing):
+    r"""Commutative ``R``-algebras equipped as selected pushouts of one span."""
+
+    def super_categories(self):
+        return [CommutativeAlgebras(self.base_ring())]
+
+    class ParentMethods:
+        def pushout_span(self):
+            return self._preamble_pushout_span
+
+        def pushout_maps(self):
+            return self._preamble_pushout_maps
+
+        def left_pushout_map(self):
+            return self.pushout_maps()[0]
+
+        def right_pushout_map(self):
+            return self.pushout_maps()[1]
+
+        def from_pushout_cocone(self, left_map, right_map):
+            source_map, target_map = self.pushout_span()
+            left_factor = source_map.codomain()
+            right_factor = target_map.codomain()
+            if left_map.domain() is not left_factor or right_map.domain() is not right_factor:
+                raise ValueError("the pushout cocone has the wrong factor domains")
+            if left_map.codomain() is not right_map.codomain():
+                raise ValueError("the pushout cocone maps require one common codomain")
+            common_source = source_map.domain()
+            for label in common_source.algebra_generating_set():
+                element = common_source.algebra_generator(label)
+                if left_map(source_map(element)) != right_map(target_map(element)):
+                    raise ValueError("the cocone does not agree on the common algebra")
+            target = left_map.codomain()
+            images = {
+                **{
+                    ("left", label): left_map(left_factor.algebra_generator(label))
+                    for label in left_factor.algebra_generating_set()
+                },
+                **{
+                    ("right", label): right_map(right_factor.algebra_generator(label))
+                    for label in right_factor.algebra_generating_set()
+                },
+            }
+            return self.Hom(target)(images)
+
+
+def algebra_morphisms_agree(left, right) -> bool:
+    r"""Decide equality of represented algebra maps on selected generators."""
+    if left.domain() is not right.domain() or left.codomain() is not right.codomain():
+        return False
+    if left is right:
+        return True
+    domain = left.domain()
+    generating_set = getattr(domain, "algebra_generating_set", None)
+    if generating_set is None:
+        left_engine = getattr(left, "_engine_morphism_crossing", None)
+        right_engine = getattr(right, "_engine_morphism_crossing", None)
+        if callable(left_engine) and callable(right_engine):
+            return bool(left_engine() == right_engine())
+        raise NotImplementedError(
+            f"equality of algebra morphisms out of {domain} has no selected generator family"
+        )
+    return all(
+        left(domain.algebra_generator(label)) == right(domain.algebra_generator(label))
+        for label in generating_set()
+    )
+
+
 class AlgebraMorphism(Morphism):
     r"""An ``R``-algebra morphism specified by the images of algebra generators."""
 
@@ -349,9 +646,11 @@ class AlgebraMorphism(Morphism):
         Morphism.__init__(self, parent)
         domain = self.domain()
         codomain = self.codomain()
-        engine_domain = engine_ring(domain)
-        engine_codomain = engine_ring(codomain)
+        engine_domain = _engine_ring(domain)
+        engine_codomain = _engine_ring(codomain)
         framed_domain = domain in FramedAlgebras(domain.base_ring())
+        self._engine_morphism = None
+        self._element_function = None
         from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
             ModuleMorphism,
         )
@@ -362,17 +661,21 @@ class AlgebraMorphism(Morphism):
                     "an adopted module morphism must have the owned algebra homset's "
                     "exact domain and codomain"
                 )
-            from sage.rings.infinity import Infinity
+            from dzack_research.preamble.categories.sets.cardinals import cardinal
 
             labels = domain.module_generating_set()
-            if labels.cardinality() == Infinity:
+            size = cardinal(labels.cardinality())
+            try:
+                finite = size.is_finite()
+            except NotImplementedError:
+                finite = False
+            if not finite:
                 raise NotImplementedError(
                     "verification that a module morphism is multiplicative currently "
                     "requires a finite module generating set"
                 )
             if images(domain.one()) != codomain.one():
                 raise ValueError("an algebra morphism must preserve the unit")
-            labels = tuple(labels)
             for left_label in labels:
                 left = domain.module_generator(left_label)
                 for right_label in labels:
@@ -382,32 +685,41 @@ class AlgebraMorphism(Morphism):
                             "the adopted module morphism is not multiplicative on "
                             "the selected module generators"
                         )
-            self._engine_morphism = SetMorphism(
-                engine_domain.Hom(engine_codomain),
-                lambda element: engine_codomain(images(domain(element))),
-            )
+            self._element_function = images
             if framed_domain:
                 algebra_labels = tuple(domain.algebra_generating_set())
                 self._generator_images = {
-                    label: engine_codomain(images(domain.algebra_generator(label)))
+                    label: codomain(images(domain.algebra_generator(label)))
                     for label in algebra_labels
                 }
             else:
                 self._generator_images = None
             return
         if isinstance(images, Map):
+            if images.domain() is domain and images.codomain() is codomain:
+                self._element_function = images
+                if framed_domain:
+                    labels = tuple(domain.algebra_generating_set())
+                    self._generator_images = {
+                        label: codomain(images(domain.algebra_generator(label)))
+                        for label in labels
+                    }
+                else:
+                    self._generator_images = None
+                return
             if (
                 images.domain() is not engine_domain
                 or images.codomain() is not engine_codomain
             ):
                 raise ValueError(
-                    "an adopted engine algebra morphism must have the owned homset's engine domain and codomain"
+                    "an algebra morphism datum must have either the owned endpoints "
+                    "or their private engine endpoints"
                 )
             self._engine_morphism = images
             if framed_domain:
                 labels = tuple(domain.algebra_generating_set())
                 self._generator_images = {
-                    label: engine_codomain(
+                    label: codomain(
                         images(engine_domain(domain.algebra_generator(label)))
                     )
                     for label in labels
@@ -440,46 +752,15 @@ class AlgebraMorphism(Morphism):
             )
         self._generator_images = dict(zip(labels, generator_images, strict=True))
 
-        engine_base = engine_ring(domain.base_ring())
-        target_structure = codomain._ring_morphism_defining_algebra_structure()
-        base_map = SetMorphism(
-            engine_base.Hom(engine_codomain),
-            lambda scalar: engine_codomain(
-                target_structure(domain.base_ring()(scalar))
-            ),
-        )
-        from dzack_research.preamble.categories.algebras.restricted_scalars import (
-            RestrictedScalarsAlgebras,
-        )
-
-        if domain in RestrictedScalarsAlgebras(domain.base_ring()):
-            scalar_labels = tuple(domain.restricted_scalar_generator_labels())
-            algebra_labels = tuple(domain.restricted_algebra_generator_labels())
-            extension_engine = engine_ring(domain.extension_ring())
-            extension_map = _engine_morphism_from_generator_images(
-                extension_engine,
-                engine_codomain,
-                [
-                    engine_codomain(self._generator_images[("scalar", label)])
-                    for label in scalar_labels
-                ],
-                base_map,
+        if engine_domain not in SageRings() or engine_codomain not in SageRings():
+            raise NotImplementedError(
+                "generator-defined maps with no Sage ring target are constructed "
+                "through the free or chosen-presentation algebra Hom categories"
             )
-            self._engine_morphism = _engine_morphism_from_generator_images(
-                engine_domain,
-                engine_codomain,
-                [
-                    engine_codomain(self._generator_images[("algebra", label)])
-                    for label in algebra_labels
-                ],
-                extension_map,
-            )
-            return
-        self._engine_morphism = _engine_morphism_from_generator_images(
-            engine_domain,
-            engine_codomain,
-            [engine_codomain(image) for image in generator_images],
-            base_map,
+        self._engine_morphism = _engine_algebra_morphism_from_generator_images(
+            domain,
+            codomain,
+            self._generator_images,
         )
 
     def __call__(self, element):
@@ -487,20 +768,23 @@ class AlgebraMorphism(Morphism):
         return self._call_(element)
 
     def _call_(self, element):
-        r"""Apply the algebra map across the owned/native facade boundary.
+        r"""Apply the algebra map in its represented realization."""
+        if self._element_function is not None:
+            return self.codomain()(self._element_function(self.domain()(element)))
+        engine_morphism = self._engine_morphism_crossing()
+        source = _engine_ring(self.domain())
+        return self.codomain()(engine_morphism(source(element)))
 
-        Owned algebra parents are facades over Sage's concrete algebra
-        parents, so their elements retain the engine parent.  The defining
-        engine homomorphism already has exactly the required source and target;
-        no engine-to-facade coercion is part of the algebra map.
+    def _engine_morphism_crossing(self):
+        r"""Return the private engine morphism when this map has one.
+
+        Protected contract for bridge consumers that must construct a native
+        Sage object.  An algebra morphism represented entirely in the owned
+        universe deliberately has no such engine morphism.
         """
-        source = engine_ring(self.domain())
-        target = engine_ring(self.codomain())
-        return target(self._engine_morphism(source(element)))
-
-    def engine_morphism(self):
-        r"""Return the exact computation-ring morphism represented here."""
-        return self._engine_morphism
+        if self._engine_morphism is not None:
+            return self._engine_morphism
+        return _engine_algebra_morphism(self)
 
     def algebra_generator_morphism(self):
         if self._generator_images is None:
@@ -508,47 +792,161 @@ class AlgebraMorphism(Morphism):
                 "an unframed algebra domain has no selected generator morphism"
             )
         return SetMorphism(
-            Hom(self.domain().algebra_generating_set(), self.codomain(), Sets()),
+            Sets().hom(self.domain().algebra_generating_set(), self.codomain()),
             self._generator_images.__getitem__,
         )
+
+    def morphisms_agree(self, other) -> bool:
+        return algebra_morphisms_agree(self, other)
 
     def _richcmp_(self, other, op):
         from sage.structure.richcmp import op_EQ, op_NE
 
         if op not in (op_EQ, op_NE):
             return NotImplemented
-        if self is other:
-            return op == op_EQ
         if not isinstance(other, AlgebraMorphism) or other.parent() is not self.parent():
             return op == op_NE
-
-        if self._generator_images is not None and other._generator_images is not None:
-            equal = all(
-                self(self.domain().algebra_generator(label))
-                == other(self.domain().algebra_generator(label))
-                for label in self.domain().algebra_generating_set()
-            )
-        else:
-            try:
-                equal = bool(self.engine_morphism() == other.engine_morphism())
-            except (TypeError, ValueError, NotImplementedError):
-                return NotImplemented
+        equal = self.morphisms_agree(other)
         return equal if op == op_EQ else not equal
 
     def __mul__(self, other):
         if other.codomain() is not self.domain():
             return NotImplemented
         if not isinstance(other, AlgebraMorphism):
-            from dzack_research.preamble.categories.algebras.sparse_free_algebras import (
-                compose_with_free_construction,
+            compose = getattr(other, "_postcompose_algebra_morphism", None)
+            return NotImplemented if compose is None else compose(self)
+        if self._engine_morphism is not None and other._engine_morphism is not None:
+            composed_engine = self._engine_morphism * other._engine_morphism
+            return algebra_homset(other.domain(), self.codomain())(composed_engine)
+        if other.domain() in FramedAlgebras(other.domain().base_ring()):
+            return algebra_homset(other.domain(), self.codomain())(
+                {
+                    label: self(other(other.domain().algebra_generator(label)))
+                    for label in other.domain().algebra_generating_set()
+                }
             )
+        from dzack_research.preamble.categories.modules.pure.modules import (
+            FramedModules,
+        )
+        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+            module_homset,
+        )
 
-            return compose_with_free_construction(self, other)
-        composed_engine = self._engine_morphism * other._engine_morphism
-        return algebra_homset(other.domain(), self.codomain())(composed_engine)
+        if other.domain() in FramedModules(other.domain().base_ring()):
+            module_map = module_homset(other.domain(), self.codomain())(
+                {
+                    label: self(other(other.domain().module_generator(label)))
+                    for label in other.domain().module_generating_set()
+                }
+            )
+            return algebra_homset(other.domain(), self.codomain())(module_map)
+        return algebra_homset(other.domain(), self.codomain())(
+            SetMorphism(
+                Sets().hom(other.domain(), self.codomain()),
+                lambda element: self(other(element)),
+            )
+        )
 
 
-class AlgebraHomset(CategoricalHomset):
+class PresentedAlgebraMorphism(Morphism):
+    r"""A map from an algebra with a chosen finite presentation.
+
+    The map is defined on the presentation algebra, its selected relations are
+    checked once, and evaluation descends by the chosen quotient projection.
+    No Sage target-ring protocol is involved.
+    """
+
+    def __init__(self, parent, images) -> None:
+        Morphism.__init__(self, parent)
+        domain = self.domain()
+        labels = tuple(domain.algebra_generating_set())
+        if isinstance(images, dict):
+            missing = [label for label in labels if label not in images]
+            if missing:
+                raise ValueError(f"algebra-generator assignment omits {missing}")
+            selected = {label: self.codomain()(images[label]) for label in labels}
+        elif isinstance(images, (tuple, list)):
+            if len(images) != len(labels):
+                raise ValueError(
+                    "the number of algebra-generator images must equal the framing size"
+                )
+            selected = {
+                label: self.codomain()(image)
+                for label, image in zip(labels, images, strict=True)
+            }
+        elif callable(images):
+            selected = {label: self.codomain()(images(label)) for label in labels}
+        else:
+            raise TypeError(
+                "a presented-algebra morphism is specified on its algebra generators"
+            )
+        self._generator_images = selected
+        self._presentation_map = algebra_homset(
+            domain.presentation_ring(), self.codomain()
+        )(selected)
+        zero = self.codomain().zero()
+        for relation in domain.relations():
+            if self._presentation_map(relation) != zero:
+                raise ValueError(
+                    "relations do not all map to zero under the stated algebra-generator images"
+                )
+
+    def algebra_generator_morphism(self):
+        return SetMorphism(
+            Sets().hom(self.domain().algebra_generating_set(), self.codomain()),
+            self._generator_images.__getitem__,
+        )
+
+    def _call_(self, element):
+        return self._presentation_map(self.domain().lift_to_presentation(element))
+
+    def __call__(self, element):
+        return self._call_(element)
+
+    def morphisms_agree(self, other) -> bool:
+        return algebra_morphisms_agree(self, other)
+
+    def __mul__(self, other):
+        if other.codomain() is not self.domain():
+            return NotImplemented
+        if other.domain() not in FramedAlgebras(other.domain().base_ring()):
+            return NotImplemented
+        return algebra_homset(other.domain(), self.codomain())(
+            {
+                label: self(other(other.domain().algebra_generator(label)))
+                for label in other.domain().algebra_generating_set()
+            }
+        )
+
+
+class _AlgebraHomsetCommonMethods:
+    r"""Shared equality protocol for represented algebra Hom parents."""
+
+    def morphisms_agree(self, left, right) -> bool:
+        return algebra_morphisms_agree(left, right)
+
+
+class PresentedAlgebraHomset(_AlgebraHomsetCommonMethods, CategoricalHomset):
+    Element = PresentedAlgebraMorphism
+
+    def __init__(self, hom_family, domain, codomain) -> None:
+        CategoricalHomset.__init__(
+            self,
+            hom_family,
+            domain,
+            codomain,
+        )
+
+    def _element_constructor_(self, images):
+        return self.element_class(self, images)
+
+    def identity(self):
+        if self.domain() is not self.codomain():
+            raise ValueError("identity is defined on an endomorphism homset")
+        return self(lambda label: self.domain().algebra_generator(label))
+
+
+class AlgebraHomset(_AlgebraHomsetCommonMethods, CategoricalHomset):
     Element = AlgebraMorphism
 
     def __init__(self, hom_family, domain, codomain) -> None:
@@ -559,7 +957,6 @@ class AlgebraHomset(CategoricalHomset):
             hom_family,
             domain,
             codomain,
-            homset_category=Sets(),
         )
 
     def _element_constructor_(self, images):
@@ -581,6 +978,24 @@ def algebra_homset(domain, codomain) -> AlgebraHomset:
     return Algebras(ring).Hom(domain, codomain)
 
 
+@cached_function
+def commutative_algebra_coproduct(left, right):
+    r"""Return ``left tensor_R right``, the coproduct in commutative algebras."""
+    base = left.base_ring()
+    if right.base_ring() is not base:
+        raise ValueError("commutative-algebra coproducts require one scalar base")
+    return CommutativeAlgebras(base)._categorical_coproduct(left, right)
+
+
+@cached_function
+def commutative_algebra_pushout(left_map, right_map):
+    r"""Return the pushout of two commutative-algebra maps with common domain."""
+    return CommutativeAlgebras(left_map.domain().base_ring())._categorical_pushout(
+        left_map,
+        right_map,
+    )
+
+
 class OwnedAlgebras(OwnedCategoryOverBaseRing):
     r"""Algebras carrying their chosen structure map ``R -> Z(A)``."""
 
@@ -596,8 +1011,20 @@ class OwnedAlgebras(OwnedCategoryOverBaseRing):
             return self._preamble_structure_map
 
 
-class OwnedAlgebraView(OwnedRingView):
+class _OwnedAlgebraElement(_OwnedRingElement):
+    r"""Engine-backed owned algebra element with ring multiplication syntax."""
+
+    def __mul__(self, other):
+        return _OwnedRingElement.__mul__(self, other)
+
+    def __rmul__(self, other):
+        return _OwnedRingElement.__rmul__(self, other)
+
+
+class _OwnedAlgebraParent(_OwnedRingParent):
     r"""One ring read as an algebra through one specified scalar map."""
+
+    Element = _OwnedAlgebraElement
 
     def __init__(
         self,
@@ -607,63 +1034,104 @@ class OwnedAlgebraView(OwnedRingView):
         structure_map,
         generator_values=None,
     ) -> None:
-        self._preamble_algebra_base_ring = owned_ring_view(base_ring)
+        self._preamble_algebra_base_ring = _owned_ring(base_ring)
         self._preamble_algebra_generating_set = (
             None if labels is None else finite_ordered_set(labels)
         )
+        self._preamble_structure_map = structure_map
+        _OwnedRingParent.__init__(self, engine)
         if labels is None:
             if generator_values is not None:
                 raise ValueError(
                     "an unframed algebra cannot carry framed generator values"
                 )
             self._preamble_algebra_generator_values = None
+            return
+
+        from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+        from dzack_research.preamble.categories.sets.cardinals import cardinal
+
+        selected_labels = self._preamble_algebra_generating_set
+        label_size = cardinal(selected_labels.cardinality())
+        if not label_size.is_finite():
+            raise TypeError(
+                "an engine-backed framed algebra requires a finite backend generator set"
+            )
+
+        if generator_values is None:
+            def value(label):
+                position = int(selected_labels.rank(label))
+                return self._from_engine_element(engine.gen(position))
         else:
-            selected_labels = tuple(self._preamble_algebra_generating_set)
-            selected_values = (
-                tuple(engine.gen(position) for position in range(len(selected_labels)))
-                if generator_values is None
-                else tuple(generator_values)
-            )
-            if len(selected_values) != len(selected_labels):
-                raise ValueError(
-                    "the number of algebra-generator values must equal the framing size"
+            if hasattr(generator_values, "index_set") and callable(
+                getattr(generator_values, "value", None)
+            ):
+                if cardinal(generator_values.cardinality()) != label_size:
+                    raise ValueError(
+                        "the number of algebra-generator values must equal the framing size"
+                    )
+                value = lambda label: self(
+                    generator_values.value(selected_labels.rank(label))
                 )
-            self._preamble_algebra_generator_values = dict(
-                zip(selected_labels, selected_values, strict=True)
-            )
-        self._preamble_structure_map = structure_map
-        OwnedRingView.__init__(self, engine)
+            elif callable(generator_values):
+                def value(label):
+                    raw = generator_values(label)
+                    return raw if getattr(raw, "parent", lambda: None)() is self else self._from_engine_element(raw)
+            elif isinstance(generator_values, (tuple, list)):
+                if len(generator_values) != int(label_size.finite_value()):
+                    raise ValueError(
+                        "the number of algebra-generator values must equal the framing size"
+                    )
+                # Explicit finite ingress is parsed by position; the Python
+                # sequence is not retained as the mathematical family.
+                by_position = {
+                    position: generator_values[position]
+                    for position in range(len(generator_values))
+                }
+
+                def value(label):
+                    raw = by_position[int(selected_labels.rank(label))]
+                    return raw if getattr(raw, "parent", lambda: None)() is self else self._from_engine_element(raw)
+            else:
+                raise TypeError(
+                    "algebra-generator values are a callable/indexed family or explicit finite ingress"
+                )
+
+        self._preamble_algebra_generator_values = indexed_family(
+            selected_labels,
+            value,
+            name=f"Algebra generator values of {self}",
+        )
 
 
 def _default_structure_map(base, algebra):
     center = algebra.ring_center()
-    from dzack_research.preamble.categories.rings import ring_morphism
+    from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
 
     return ring_morphism(
         base,
         center,
-        lambda scalar: algebra(engine_ring(base)(scalar)),
+        lambda scalar: algebra(scalar),
     )
 
 
 @cached_function
-def _owned_algebra_view(engine, base_ring, labels_tuple=None):
-    base = owned_ring_view(base_ring)
+def _owned_algebra_view(engine, base_ring, labels=None):
+    base = _owned_ring(base_ring)
     # Construct the parent first with a temporary engine-level map argument;
     # the public map is replaced immediately below once the parent exists.
-    engine_map = engine.coerce_map_from(engine_ring(base))
-    view = OwnedAlgebraView(engine, base, labels_tuple, engine_map)
+    engine_map = engine.coerce_map_from(_engine_ring(base))
+    view = _OwnedAlgebraParent(engine, base, labels, engine_map)
     view._preamble_structure_map = _default_structure_map(base, view)
     return view
 
 
 def refine_algebra(algebra, base_ring, labels=None, *categories):
     r"""Place a native algebra in its owned algebra categories."""
-    base = owned_ring_view(base_ring)
-    labels_tuple = None if labels is None else tuple(labels)
-    algebra = _owned_algebra_view(engine_ring(algebra), base, labels_tuple)
+    base = _owned_ring(base_ring)
+    algebra = _owned_algebra_view(_engine_ring(algebra), base, labels)
     placement = [Algebras(base), OwnedAlgebras(base)]
-    if engine_ring(algebra) in SageCommutativeAlgebras(engine_ring(base)):
+    if _engine_ring(algebra) in SageCommutativeAlgebras(_engine_ring(base)):
         placement.append(CommutativeAlgebras(base))
     if labels is not None:
         placement.append(FramedAlgebras(base))
@@ -679,7 +1147,7 @@ def _require_endomorphism_multiplication(multiplication, ring):
             "an algebra is presented by an R-module morphism A tensor_R A -> A"
         )
     module = multiplication.codomain()
-    if owned_ring_view(module.base_ring()) is not ring:
+    if _owned_ring(module.base_ring()) is not ring:
         raise TypeError(f"the multiplication morphism is not a map of {ring}-modules")
     domain = multiplication.domain()
     try:
@@ -694,62 +1162,51 @@ def _require_endomorphism_multiplication(multiplication, ring):
 
 
 def _module_presented_by_multiplication(module):
-    from sage.combinat.free_module import CombinatorialFreeModule
     from sage.rings.infinity import Infinity
 
-    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import (
-        FinitelyGeneratedFreeModules,
-    )
-    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-        FinitelyPresentedModule,
-        ModulesWithChosenFinitePresentation,
-    )
-    from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-        refine_free_module,
-    )
-
-    ring = owned_ring_view(module.base_ring())
+    ring = _owned_ring(module.base_ring())
     labels = module.module_generating_set()
     if labels.cardinality() == Infinity:
         raise TypeError(
             "the multiplication internment requires a finite module generating set"
         )
-    if module in FinitelyGeneratedFreeModules(ring):
-        presented = CombinatorialFreeModule(engine_ring(ring), labels)
-        presented._preamble_module_generating_set = labels
-        return refine_free_module(presented, ring)
-    if module in ModulesWithChosenFinitePresentation(ring):
-        return FinitelyPresentedModule(module.presentation())
-    raise TypeError(
-        "the multiplication internment requires a finite free or chosen finitely presented module"
-    )
+    constructor = getattr(module, "_same_presentation_module", None)
+    if constructor is None:
+        raise TypeError(
+            "the multiplication internment requires a represented finite module presentation"
+        )
+    return constructor(labels)
 
 
 def _unit_from_multiplication(multiplication):
-    from sage.rings.infinity import Infinity
-    from dzack_research.preamble.tensors import tensor
-
+    from sage.matrix.constructor import matrix as sage_matrix
+    from sage.modules.free_module_element import vector as sage_vector
+    from dzack_research.preamble.categories.sets.cardinals import cardinal
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
         module_coefficients,
     )
 
     module = multiplication.codomain()
     tensor_square = multiplication.domain()
-    labels = tuple(module.module_generating_set())
-    if module.module_generating_set().cardinality() == Infinity:
+    labels = module.module_generating_set()
+    size = cardinal(labels.cardinality())
+    if not size.is_finite():
         raise TypeError("a unit is recovered from a finite module generating set")
     ring = module.base_ring()
-    engine = engine_ring(ring)
-    rank = int(module.module_generating_set().cardinality())
-    # A left unit e satisfies e.x = x for every generator x, which is one
-    # linear system in the coordinates of e.
+    engine = _engine_ring(ring)
+    rank = int(size.finite_value())
+
+    # Private finite linear-system serialization.  The mathematical basis stays
+    # the owned ordered framing ``labels``; only this backend array is concrete.
     system_entries = [
         [engine.zero() for _ in range(rank)] for _ in range(rank * rank)
     ]
     target_entries = [engine.zero() for _ in range(rank * rank)]
-    for right_index, right_label in enumerate(labels):
+    for right_index in range(rank):
+        right_label = labels.unrank(right_index)
         target_entries[right_index * rank + right_index] = engine.one()
-        for left_index, left_label in enumerate(labels):
+        for left_index in range(rank):
+            left_label = labels.unrank(left_index)
             product = multiplication(
                 tensor_square.pure_tensor(
                     module.module_generator(left_label),
@@ -757,20 +1214,21 @@ def _unit_from_multiplication(multiplication):
                 )
             )
             coefficients = module_coefficients(product, module)
-            for out_index, out_label in enumerate(labels):
-                system_entries[right_index * rank + out_index][left_index] = engine(
-                    coefficients.get(out_label, ring.zero())
+            for out_index in range(rank):
+                out_label = labels.unrank(out_index)
+                system_entries[right_index * rank + out_index][left_index] = _engine_element(
+                    ring, coefficients.get(out_label, ring.zero())
                 )
-    system = tensor.matrix(engine, rank * rank, rank, system_entries)
-    target = tensor.vector(engine, target_entries)
+    system = sage_matrix(engine, rank * rank, rank, system_entries)
+    target = sage_vector(engine, target_entries)
     try:
         coefficients = system.solve_right(target)
     except (ValueError, ArithmeticError) as error:
         raise TypeError("the multiplication morphism has no left unit") from error
     unit = module.linear_combination(
         {
-            label: ring(coefficients[index])
-            for index, label in enumerate(labels)
+            labels.unrank(index): ring._from_engine_element(engine(coefficients[index]))
+            for index in range(rank)
             if coefficients[index]
         }
     )
@@ -800,40 +1258,31 @@ def algebra_from_multiplication(multiplication, base_ring=None, unital=True):
     r"""Return the algebra presented by an \(R\)-module morphism \(A\otimes_R A\to A\)."""
     from sage.categories.map import Map
 
+    module = multiplication.codomain()
+    ring = _owned_ring(module.base_ring() if base_ring is None else base_ring)
     if not isinstance(multiplication, Map):
-        # The Lebesgue-graded module backend predates the finite-presentation
-        # tensor-product parent and carries its multiplication as its own
-        # exact graded morphism object.  Intern it through the maintained
-        # graded construction rather than pretending that object is already a
-        # ModuleMorphism with a TensorProductModules domain.
-        from dzack_research.preamble.categories.functions.lebesgue_graded import (
-            intern_graded_lebesgue_algebra,
-        )
-
-        ring = owned_ring_view(
-            multiplication.codomain().base_ring() if base_ring is None else base_ring
-        )
-        return intern_graded_lebesgue_algebra(multiplication, ring, unital)
+        specialized = getattr(module, "algebra_from_multiplication", None)
+        if specialized is None:
+            raise TypeError(
+                "a non-module-morphism multiplication requires its module to own the algebra construction"
+            )
+        return specialized(multiplication, unital=unital)
 
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
         module_homset,
     )
-    from dzack_research.preamble.categories.abstract_categories import TensorProduct
-    from dzack_research.preamble.categories.modules.tensor_products import (
-        TensorProductModules,
-        tensor_product_morphism,
-    )
+    from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
+    from dzack_research.preamble.categories.modules.pure.modules import TensorProductModules
+    from dzack_research.preamble.categories.modules.tensor_products import tensor_product_morphism
 
-    ring = owned_ring_view(
-        multiplication.codomain().base_ring() if base_ring is None else base_ring
-    )
     module = _require_endomorphism_multiplication(multiplication, ring)
     if multiplication.domain() not in TensorProductModules(ring):
-        from dzack_research.preamble.categories.functions.lebesgue_graded import (
-            intern_graded_lebesgue_algebra,
-        )
-
-        return intern_graded_lebesgue_algebra(multiplication, ring, unital)
+        specialized = getattr(module, "algebra_from_multiplication", None)
+        if specialized is None:
+            raise TypeError(
+                "a multiplication outside the represented tensor-product category requires its module to own the algebra construction"
+            )
+        return specialized(multiplication, unital=unital)
     algebra = _module_presented_by_multiplication(module)
     labels = module.module_generating_set()
     forget = module_homset(algebra, module)(
@@ -874,34 +1323,104 @@ def own_algebra(structure_map):
     r"""Return the algebra object presented by the supplied ring map."""
     if not isinstance(structure_map, Map):
         raise TypeError("an algebra is presented by a ring map")
-    base = owned_ring_view(structure_map.domain())
-    engine = engine_ring(structure_map.codomain())
-    algebra = OwnedAlgebraView(engine, base, None, structure_map)
+    base = _owned_ring(structure_map.domain())
+    engine = _engine_ring(structure_map.codomain())
+    algebra = _OwnedAlgebraParent(engine, base, None, structure_map)
     return refine(algebra, [Algebras(base), OwnedAlgebras(base)])
 
 
-def _engine_morphism_from_generator_images(engine_domain, engine_codomain, images, base_map):
-    r"""The engine morphism sending the generators of ``engine_domain`` to ``images``.
+def _engine_algebra_morphism_from_generator_images(
+    domain, codomain, generator_images
+):
+    r"""Realize a framed owned algebra map in Sage when both engines exist.
 
-    A Sage ring codomain receives Sage's own image-of-generators morphism.  An
-    owned parent that is its own engine is not a Sage ring, so the morphism is
-    then Sage's element protocol for the same thing, ``_im_gens_``, and the
-    relations of a presented domain are checked against it here.
+    This is a private bridge boundary.  The mathematical datum is the owned
+    generator map; Sage receives only engine endpoints and engine elements.
     """
-    if engine_codomain in SageRings():
-        return engine_domain.hom(images, engine_codomain, base_map=base_map)
+    engine_domain = _engine_ring(domain)
+    engine_codomain = _engine_ring(codomain)
+    if engine_domain not in SageRings() or engine_codomain not in SageRings():
+        raise NotImplementedError(
+            "this algebra morphism has no native Sage ring realization"
+        )
 
-    def image(element):
-        return element._im_gens_(engine_codomain, images, base_map)
+    base = domain.base_ring()
+    engine_base = _engine_ring(base)
+    target_structure = codomain._ring_morphism_defining_algebra_structure()
 
-    if engine_domain in SageRings().Quotients():
-        for relation in engine_domain.defining_ideal().gens():
-            if image(relation) != engine_codomain.zero():
-                raise ValueError(
-                    "relations do not all map to zero under the map determined by "
-                    "the images of the generators"
-                )
-    return SetMorphism(engine_domain.Hom(engine_codomain), image)
+    def engine_base_image(scalar):
+        owned_scalar = base._from_engine_element(engine_base(scalar))
+        return _engine_element(codomain, target_structure(owned_scalar))
+
+    base_map = SetMorphism(
+        engine_base.Hom(engine_codomain),
+        engine_base_image,
+    )
+    engine_generator_images = {
+        label: _engine_element(codomain, codomain(image))
+        for label, image in generator_images.items()
+    }
+
+    scalar_labels_method = getattr(domain, "restricted_scalar_generator_labels", None)
+    algebra_labels_method = getattr(domain, "restricted_algebra_generator_labels", None)
+    if scalar_labels_method is not None and algebra_labels_method is not None:
+        scalar_labels = tuple(domain.restricted_scalar_generator_labels())
+        algebra_labels = tuple(domain.restricted_algebra_generator_labels())
+        extension_engine = _engine_ring(domain.extension_ring())
+        extension_map = _engine_morphism_from_generator_images(
+            extension_engine,
+            engine_codomain,
+            [engine_generator_images[("scalar", label)] for label in scalar_labels],
+            base_map,
+        )
+        return _engine_morphism_from_generator_images(
+            engine_domain,
+            engine_codomain,
+            [engine_generator_images[("algebra", label)] for label in algebra_labels],
+            extension_map,
+        )
+
+    return _engine_morphism_from_generator_images(
+        engine_domain,
+        engine_codomain,
+        [engine_generator_images[label] for label in domain.algebra_generating_set()],
+        base_map,
+    )
+
+
+def _engine_algebra_morphism(morphism):
+    r"""Return a private Sage realization of an owned algebra morphism.
+
+    Bridge consumers such as affine ``Spec`` use this function.  It is not a
+    public method on the mathematical morphism.
+    """
+    if isinstance(morphism, AlgebraMorphism) and morphism._engine_morphism is not None:
+        return morphism._engine_morphism
+    domain = morphism.domain()
+    if domain not in FramedAlgebras(domain.base_ring()):
+        raise NotImplementedError(
+            "a Sage realization of this unframed algebra morphism is not represented"
+        )
+    images = {
+        label: morphism(domain.algebra_generator(label))
+        for label in domain.algebra_generating_set()
+    }
+    return _engine_algebra_morphism_from_generator_images(
+        domain, morphism.codomain(), images
+    )
+
+
+def _engine_morphism_from_generator_images(engine_domain, engine_codomain, images, base_map):
+    r"""Construct a native Sage ring morphism at the engine boundary."""
+    if engine_domain not in SageRings() or engine_codomain not in SageRings():
+        raise NotImplementedError(
+            "a native engine ring morphism requires native Sage ring endpoints"
+        )
+    return engine_domain.hom(
+        [engine_codomain(image) for image in images],
+        engine_codomain,
+        base_map=base_map,
+    )
 
 
 def finite_algebra_generators(algebra):
@@ -917,15 +1436,20 @@ __all__ = [
     "AlgebraHomset",
     "AlgebraMorphism",
     "Algebras",
+    "AlgebrasWithChosenFinitePresentation",
     "AlgebrasWithChosenMultiplication",
     "AssociativeAlgebras",
     "AssociativeAlgebrasWithChosenMultiplication",
+    "CommutativeAlgebraCoproducts",
+    "CommutativeAlgebraPushouts",
     "CommutativeAlgebras",
+    "FinitelyPresentedAlgebras",
     "FramedAlgebras",
-    "OwnedAlgebraView",
     "OwnedAlgebras",
     "algebra_from_multiplication",
     "algebra_homset",
+    "commutative_algebra_coproduct",
+    "commutative_algebra_pushout",
     "finite_algebra_generators",
     "own_algebra",
     "refine_algebra",

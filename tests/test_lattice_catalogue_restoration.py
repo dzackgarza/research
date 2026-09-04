@@ -82,7 +82,9 @@ def test_named_invariant_and_formed_coinvariant_lattices_are_exact() -> None:
         ):
             assert actual.gram_tensor().is_equal_tensor(expected.gram_tensor())
             witness = actual.Isom(expected).an_element()
-            assert expected.gram_tensor().pullback(witness.tensor()).is_equal_tensor(
+            from dzack_research.preamble.tensors import tensor
+
+            assert expected.gram_tensor().pullback(tensor.from_morphism(witness)).is_equal_tensor(
                 actual.gram_tensor()
             )
 

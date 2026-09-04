@@ -368,10 +368,7 @@
         "k": 1,
         "orbit_count": 2,
         "runtime_seconds": 33,
-        "representatives": [
-          [[0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0]],
-          [[-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
-        ],
+        "representatives": [[[0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0]], [[-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]],
         "note": "Two orbits distinguished by div(e) in {1,2} in T_En* (AEGS23 §3.2)"
       },
       "one_cusps": {

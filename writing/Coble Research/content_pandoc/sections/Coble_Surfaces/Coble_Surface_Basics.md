@@ -2,7 +2,7 @@
 
 ::: {.remark title="On defining Cobles"}
 
-For the general theory of Coble surfaces, we refer to [@CDL25; @DK25], along with [@DM20; @DZ99; @DK13; @CD89; @CD12; @Dol17]. Following [@DM20 §5.1], a **Coble surface** is a smooth projective rational surface with $\abs{-K_S} = \emptyset$ but $\abs{-2K_S} \neq \emptyset$.
+For the general theory of Coble surfaces, we refer to [@CDL25; @DK25], along with [@DM20; @DZ99; @DK13; @CD85; @CD12; @Dol17]. Following [@DM20 §5.1], a **Coble surface** is a smooth projective rational surface with $\abs{-K_S} = \emptyset$ but $\abs{-2K_S} \neq \emptyset$.
 Such surfaces were first studied in [@Cob19], [@Cob29], and were ultimately classified in [@DZ99]. We say $S$ is **terminal of K3 type** if $\abs{-2K_S}$ contains a smooth[^1] divisor $C = C_1 + \cdots + C_{n}$, the disjoint union of $n$ reduced smooth rational curves $C_i$ satisfying $C_i^2 = -4$[^2], and thus $C_i C_j = -4\delta_{ij}$.
 We refer to $C$ as the *anti-bicanonical curve* of $S$, and note that $K_S\cdot C_i = -2$.
 The $C_i$ are referred to as the *boundary components* of $S$.
@@ -32,12 +32,9 @@ A point set is called *unnodal* if its blowup does not contain any $(-2)$-curves
 In [@CD12], it is proved that a Cremona special complex rational surface is either an unnodal Halphen surface (with $n=9$) or an unnodal Coble surface (with $n=10$), that unnodal point sets define a Zariski open subset in the moduli space of point sets defining Halphen and Coble surfaces, and that Cremona special Halphen and Coble surfaces are precisely the unnodal ones.
 :::
 
-[^1]:
-    More generally, by [@DK25], this can be relaxed to a reduced simple normal crossings divisor.
+[^1]: More generally, by [@DK25], this can be relaxed to a reduced simple normal crossings divisor.
 
-[^2]:
-    This follows from an application of the genus formula: $$p_{a}(C)=1+\frac{1}{2}\qty{ C^{2} + C \cdot K_S }=1+K_S^{2}=0,$$
-
+[^2]: This follows from an application of the genus formula: $$p_{a}(C)=1+\frac{1}{2}\qty{ C^{2} + C \cdot K_S }=1+K_S^{2}=0,$$
     and so $C$ is a smooth rational curve satisfying $C^2 = 4K_S^2 = -4$ since $K_S^2 = -1$.
     This is [@CD12 §3.1].
 

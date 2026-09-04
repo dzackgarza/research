@@ -2,7 +2,7 @@ r"""Enumerated sets of functions, indexed by \(\mathbb N\) or by \(\mathbb Z\)."
 
 from sage.categories.category import Category
 from sage.rings.integer_ring import ZZ
-from sage.rings.semirings.non_negative_integer_semiring import NN
+from dzack_research.preamble.categories.sets.set_categories import NN
 from sage.symbolic.ring import SR
 
 from dzack_research.preamble.categories.sets.enumerated.enumerated_sets import (
@@ -83,7 +83,7 @@ class EnumeratedByNaturals(Category):
             return NN
 
         def function(self, index):
-            return self.unrank(ZZ(index))
+            return self.unrank(int(index))
 
 
 class EnumeratedByIntegers(Category):

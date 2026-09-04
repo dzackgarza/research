@@ -24,7 +24,11 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     module_homset,
 )
 from dzack_research.preamble.categories.modules.pure.modules import Modules
-from dzack_research.preamble.categories.rings import engine_ring, owned_ring_view
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _engine_element,
+    _engine_ring,
+    _owned_ring,
+)
 
 
 from dzack_research.preamble.categories.modules.tensor_products import (
@@ -36,7 +40,7 @@ from dzack_research.preamble.categories.modules.tensor_products import (
 def _presentation_element(algebra, element):
     if hasattr(algebra, "lift_to_presentation"):
         return algebra.lift_to_presentation(element)
-    return engine_ring(algebra)(element)
+    return _engine_ring(algebra)(element)
 
 
 def _free_algebra_piece(algebra, degree):
@@ -60,13 +64,9 @@ def _free_algebra_underlying_module(algebra, source, flavor):
                 for source_label in _flatten_tensor_label(label, degree)
             )
         else:
-            source_labels = tuple(source.module_generating_set())
             factors = (
                 algebra.algebra_generator(source_label)
-                for source_label, exponent in zip(
-                    source_labels, tuple(label), strict=True
-                )
-                for _ in range(int(exponent))
+                for source_label in label
             )
         result = algebra.one()
         for factor in factors:
@@ -92,48 +92,119 @@ def _free_algebra_underlying_module(algebra, source, flavor):
         return realization_map(degree)(homogeneous_piece.module_generator(label))
 
     def from_realization(element):
-        presented = _presentation_element(algebra, element)
-        source_labels = tuple(source.module_generating_set())
         coefficients_by_degree = {}
+        source_labels = source.module_generating_set()
 
-        if flavor == "tensor":
-            generator_labels = dict(
-                zip(presented.parent().monoid().gens(), source_labels, strict=True)
-            )
-            terms = []
-            for monomial, coefficient in presented.monomial_coefficients().items():
-                word = tuple(
-                    generator_labels[generator]
-                    for generator, exponent in monomial
-                    for _ in range(int(exponent))
+        from dzack_research.preamble.categories.algebras.sparse_free_algebras import (
+            SparseFreeAlgebra,
+        )
+
+        if isinstance(algebra, SparseFreeAlgebra):
+            sparse = algebra(element)
+            raw_terms = sparse.monomial_coefficients().items()
+            if flavor == "tensor":
+                terms = (
+                    (
+                        len(word),
+                        _nested_tensor_label(source, word),
+                        coefficient,
+                    )
+                    for word, coefficient in raw_terms
                 )
-                terms.append((len(word), _nested_tensor_label(word), coefficient))
-        else:
-            terms = []
-            for monomial, coefficient in presented.monomial_coefficients().items():
-                try:
-                    exponents = tuple(int(exponent) for exponent in monomial)
-                except TypeError:
-                    if hasattr(monomial, "exponents"):
-                        exponents = tuple(
-                            int(exponent) for exponent in monomial.exponents()[0]
-                        )
+            else:
+                def symmetric_sparse_term(item):
+                    monomial, coefficient = item
+                    multiplicities = {
+                        label: int(exponent)
+                        for label, exponent in monomial
+                    }
+                    degree = sum(multiplicities.values())
+                    if degree == 0:
+                        label = 0
+                    elif degree == 1:
+                        label = next(iter(multiplicities))
                     else:
-                        exponents = (int(monomial),)
-                degree = sum(exponents)
-                if degree == 0:
-                    label = 0
-                elif degree == 1:
-                    label = source_labels[exponents.index(1)]
-                else:
-                    label = exponents
-                terms.append((degree, label, coefficient))
+                        label = piece(degree).module_generating_set().from_multiplicities(
+                            multiplicities
+                        )
+                    return degree, label, coefficient
+
+                terms = (symmetric_sparse_term(item) for item in raw_terms)
+        else:
+            presentation = (
+                algebra.presentation_ring()
+                if hasattr(algebra, "presentation_ring")
+                else algebra
+            )
+            presented = (
+                algebra.lift_to_presentation(element)
+                if hasattr(algebra, "lift_to_presentation")
+                else algebra(element)
+            )
+            backend = _engine_element(presentation, presented)
+            engine = _engine_ring(presentation)
+
+            if flavor == "tensor":
+                def source_label(generator):
+                    position = next(
+                        index
+                        for index, candidate in enumerate(engine.monoid().gens())
+                        if candidate == generator
+                    )
+                    return source_labels.unrank(position)
+
+                def tensor_term(item):
+                    monomial, coefficient = item
+                    degree = sum(int(exponent) for _generator, exponent in monomial)
+                    word = (
+                        source_label(generator)
+                        for generator, exponent in monomial
+                        for _ in range(int(exponent))
+                    )
+                    return (
+                        degree,
+                        _nested_tensor_label(source, word),
+                        algebra.base_ring()._from_engine_element(
+                            _engine_ring(algebra.base_ring())(coefficient)
+                        ),
+                    )
+
+                terms = (
+                    tensor_term(item)
+                    for item in engine(backend).monomial_coefficients().items()
+                )
+            else:
+                def symmetric_term(item):
+                    exponents, coefficient = item
+                    multiplicities = {
+                        source_labels.unrank(position): int(exponent)
+                        for position, exponent in enumerate(exponents)
+                        if exponent
+                    }
+                    degree = sum(multiplicities.values())
+                    if degree == 0:
+                        label = 0
+                    elif degree == 1:
+                        label = next(iter(multiplicities))
+                    else:
+                        label = piece(degree).module_generating_set().from_multiplicities(
+                            multiplicities
+                        )
+                    return (
+                        degree,
+                        label,
+                        algebra.base_ring()._from_engine_element(
+                            _engine_ring(algebra.base_ring())(coefficient)
+                        ),
+                    )
+
+                terms = (symmetric_term(item) for item in engine(backend).dict().items())
 
         for degree, label, coefficient in terms:
             degree_coefficients = coefficients_by_degree.setdefault(degree, {})
             degree_coefficients[label] = degree_coefficients.get(
                 label, algebra.base_ring().zero()
-            ) + algebra.base_ring()(coefficient)
+            ) + coefficient
         return direct_sum.from_components(
             {
                 degree: piece(degree).linear_combination(coefficients)
@@ -150,9 +221,6 @@ def _free_algebra_underlying_module(algebra, source, flavor):
         from_realization=from_realization,
     )
     return direct_sum
-
-
-_FREE_ALGEBRA_UNDERLYING_CACHE: dict[tuple[int, str], GradedDirectSumModule] = {}
 
 
 class UnderlyingAlgebraModuleMorphism(ModuleMorphism):
@@ -184,7 +252,7 @@ class AlgebraUnderlyingModuleFunctor(Functor):
     r"""\(U\colon\mathbf{Alg}_R\to\mathbf{Mod}_R\)."""
 
     def __init__(self, base_ring, algebra_category=None) -> None:
-        self._base_ring = owned_ring_view(base_ring)
+        self._base_ring = _owned_ring(base_ring)
         domain = (
             Algebras(self._base_ring) if algebra_category is None else algebra_category
         )
@@ -217,13 +285,7 @@ class AlgebraUnderlyingModuleFunctor(Functor):
             source = algebra.free_source_module()
         except (AttributeError, ValueError):
             return algebra
-        key = (id(algebra), flavor)
-        cached = _FREE_ALGEBRA_UNDERLYING_CACHE.get(key)
-        if cached is not None and cached.realized_object() is algebra:
-            return cached
-        module = _free_algebra_underlying_module(algebra, source, flavor)
-        _FREE_ALGEBRA_UNDERLYING_CACHE[key] = module
-        return module
+        return _free_algebra_underlying_module(algebra, source, flavor)
 
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())

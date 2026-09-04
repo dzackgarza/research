@@ -11,10 +11,10 @@ from dzack_research.preamble.categories.lattices import (
     register_indecomposable,
     register_indecomposable_gram,
 )
-from dzack_research.preamble.categories.rings import owned_ring_view
-from dzack_research.preamble.tensors import tensor
+from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+from dzack_research.preamble.tensors.tensor import tensor
 
-ZZ = owned_ring_view(SageZZ)
+ZZ = _own_ring(SageZZ)
 
 
 def _gram_from_engine_matrix(engine_matrix):
@@ -26,7 +26,7 @@ def _gram_from_engine_matrix(engine_matrix):
         (),
         (rows, columns),
         [
-            [SageZZ(engine_matrix[i, j]) for j in range(columns)]
+            [ZZ._from_engine_element(SageZZ(engine_matrix[i, j])) for j in range(columns)]
             for i in range(rows)
         ],
     )
@@ -679,7 +679,7 @@ def _negative_two_elementary_row(key):
                 raise RuntimeError(f"glue vector for {key} has length {len(coefficients)}, not lattice rank {len(labels)}")
             vector = lattice.linear_combination({label: coefficient for label, coefficient in zip(labels, coefficients, strict=True) if coefficient})
             discriminant_class = vector.divided_discriminant_class()
-            if discriminant_class.q() != 0:
+            if lattice.discriminant_module().q(discriminant_class) != 0:
                 raise ValueError(f"the recorded glue class for {key} is not isotropic")
             inclusion = lattice.overlattice(discriminant_class)
             lattice = inclusion.codomain()
@@ -721,13 +721,13 @@ def validate_negative_def_two_elementary_table():
                 index = SageZZ(inclusion.index())
                 if index <= 1:
                     raise AssertionError(f"{key} records a trivial glue inclusion")
-                if abs(source.gram_tensor().det()) != (
-                    index**2 * abs(lattice.gram_tensor().det())
+                if abs(source.determinant()) != (
+                    index**2 * abs(lattice.determinant())
                 ):
                     raise AssertionError(f"{key} violates det(R)=[L:R]^2 det(L)")
                 reduction = lattice.lll_reduction()
                 witness = reduction.isometry
-                if lattice.gram_tensor().pullback(witness.tensor()) != reduction.reduced.gram_tensor():
+                if lattice.gram_tensor().pullback(witness) != reduction.reduced.gram_tensor():
                     raise AssertionError(f"{key} has an invalid isometry witness")
     return True
 

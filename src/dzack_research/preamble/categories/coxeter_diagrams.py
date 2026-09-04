@@ -9,8 +9,9 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ
 from sage.structure.parent import Parent
 
-from dzack_research.preamble.categories.sets import Sets, finite_ordered_set
-from dzack_research.preamble.tensors import tensor
+from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.tensors.tensor import tensor
 
 
 def _coxeter_entry(q1, q2, pairing):
@@ -55,9 +56,9 @@ class CoxeterDiagrams(Category):
         if not rooted:
             return CoxeterDiagram(CoxeterMatrix(cartan_type), names=names, positions=positions)
         from dzack_research.preamble.categories.lattices import Lattices
-        from dzack_research.preamble.categories.rings import owned_ring_view
+        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
-        lattice = Lattices(owned_ring_view(SageZZ))(cartan_type)
+        lattice = Lattices(_own_ring(SageZZ))(cartan_type)
         return self.from_roots(tuple(lattice.module_generators()), names=names, positions=positions)
 
     def from_roots(self, roots, names=None, index_set=None, positions=None):

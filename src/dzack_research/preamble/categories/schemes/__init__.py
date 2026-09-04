@@ -5,10 +5,6 @@ from dzack_research.preamble.categories.schemes.affine_spec import (
     SpecFunctor,
     affine_spec_functor,
 )
-from dzack_research.preamble.categories.schemes.fiber_products import (
-    FiberProductSchemes,
-    scheme_fiber_product,
-)
 from dzack_research.preamble.categories.schemes.ringed_spaces import (
     LocallyRingedSpaces,
     RingedSpaces,
@@ -19,9 +15,13 @@ from dzack_research.preamble.categories.schemes.schemes import (
     AffineSchemes,
     AffineSpace,
     AffineSpaces,
+    ClosedSubschemes,
+    EquationDefinedClosedSubschemes,
+    FiberProductSchemes,
     FiniteTypeSchemes,
     IntegralSchemes,
     NormalSchemes,
+    OpenSubschemes,
     ProjectiveSchemes,
     ProjectiveSpace,
     ProjectiveSpaces,
@@ -36,13 +36,9 @@ from dzack_research.preamble.categories.schemes.schemes import (
     Spec,
     refine_scheme,
     refine_scheme_morphism,
-    scheme_product,
-)
-from dzack_research.preamble.categories.schemes.subschemes import (
-    ClosedSubschemes,
-    EquationDefinedClosedSubschemes,
-    OpenSubschemes,
     refine_closed_subscheme,
+    scheme_fiber_product,
+    scheme_product,
 )
 from dzack_research.preamble.categories.schemes.varieties import (
     Curves,

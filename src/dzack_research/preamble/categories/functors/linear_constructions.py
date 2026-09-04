@@ -1,14 +1,15 @@
 r"""Duality, arrow kernels/cokernels, and additive/form biproduct functors."""
 
-from dzack_research.preamble.categories.functors.core import Bifunctor, ContravariantFunctor, Functor
-from dzack_research.preamble.categories.abstract_categories import (
-    ArrowCategory,
+from dzack_research.preamble.categories.functors.core import Functor
+from dzack_research.preamble.categories.abstract_categories.functors import Bifunctor, ContravariantFunctor
+from dzack_research.preamble.categories.abstract_categories.arrow_categories import ArrowCategory
+from dzack_research.preamble.categories.abstract_categories.constructions import (
     Biproduct,
     Cokernel,
     Kernel,
 )
-from dzack_research.preamble.categories.modules.biproducts import biproduct_morphism
-from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import (
+from dzack_research.preamble.categories.modules.pure.modules import biproduct_morphism
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FinitelyGeneratedFreeModules,
 )
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
@@ -18,20 +19,20 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     module_coefficients,
     module_homset,
 )
-from dzack_research.preamble.categories.rings import owned_ring_view
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
 
 
 class DualizationFunctor(ContravariantFunctor):
     r"""Finite-free duality ``(-)^* : C^op -> C``."""
 
     def __init__(self, base_ring) -> None:
-        category = FinitelyGeneratedFreeModules(owned_ring_view(base_ring))
+        category = FinitelyGeneratedFreeModules(_owned_ring(base_ring))
         super().__init__(category, category)
 
-    def _apply_object(self, module):
+    def _apply_contravariant_object(self, module):
         return module.dual_module()
 
-    def _apply_morphism(self, morphism):
+    def _apply_contravariant_morphism(self, morphism):
         source_dual = self(morphism.codomain())
         target_dual = self(morphism.domain())
         images = {}
@@ -65,13 +66,13 @@ class BiproductBifunctor(Bifunctor):
     r"""The direct-sum/biproduct bifunctor on finitely presented modules."""
 
     def __init__(self, base_ring) -> None:
-        category = FinitelyPresentedModules(owned_ring_view(base_ring))
+        category = FinitelyPresentedModules(_owned_ring(base_ring))
         super().__init__(category, category, category)
 
-    def _apply_object(self, left, right):
+    def _apply_pair_object(self, left, right):
         return Biproduct(left, right)
 
-    def _apply_morphism(self, left_morphism, right_morphism):
+    def _apply_pair_morphism(self, left_morphism, right_morphism):
         return biproduct_morphism(
             left_morphism,
             right_morphism,
@@ -91,7 +92,7 @@ class KernelArrowFunctor(_ArrowConstructionFunctor):
     r"""The kernel functor from the finite-free module arrow category."""
 
     def __init__(self, base_ring) -> None:
-        ring = owned_ring_view(base_ring)
+        ring = _owned_ring(base_ring)
         finite_free = FinitelyGeneratedFreeModules(ring)
         super().__init__(finite_free, finite_free)
 
@@ -117,7 +118,7 @@ class CokernelArrowFunctor(_ArrowConstructionFunctor):
     r"""The cokernel functor from the finite-free module arrow category."""
 
     def __init__(self, base_ring) -> None:
-        ring = owned_ring_view(base_ring)
+        ring = _owned_ring(base_ring)
         category = FinitelyPresentedModules(ring)
         super().__init__(category, category)
 
@@ -146,10 +147,10 @@ class OrthogonalDirectSumBifunctor(Bifunctor):
     def __init__(self, base_ring) -> None:
         from dzack_research.preamble.categories.lattices import Lattices
 
-        category = Lattices(owned_ring_view(base_ring))
+        category = Lattices(_owned_ring(base_ring))
         super().__init__(category, category, category)
 
-    def _apply_object(self, left, right):
+    def _apply_pair_object(self, left, right):
         if not left.is_finite_rank() or not right.is_finite_rank():
             raise NotImplementedError("the active orthogonal-sum bifunctor uses finite concatenated bases")
         return left + right
@@ -157,40 +158,45 @@ class OrthogonalDirectSumBifunctor(Bifunctor):
     @staticmethod
     def _embed_summand(element, summand, target, offset):
         coefficients = module_coefficients(element, summand)
-        summand_labels = tuple(summand.module_generating_set())
-        target_labels = tuple(target.module_generating_set())
+        summand_labels = summand.module_generating_set()
+        target_labels = target.module_generating_set()
         return target.linear_combination(
             {
-                target_labels[offset + summand_labels.index(label)]: coefficient
+                target_labels.unrank(offset + int(summand_labels.rank(label))): coefficient
                 for label, coefficient in coefficients.items()
             }
         )
 
-    def _apply_morphism(self, left_morphism, right_morphism):
+    def _apply_pair_morphism(self, left_morphism, right_morphism):
         from dzack_research.preamble.categories.lattice_morphisms import lattice_homset
 
         source = self(left_morphism.domain(), right_morphism.domain())
         target = self(left_morphism.codomain(), right_morphism.codomain())
-        source_labels = tuple(source.module_generating_set())
-        left_source_labels = tuple(left_morphism.domain().module_generating_set())
-        right_source_labels = tuple(right_morphism.domain().module_generating_set())
-        left_target_rank = len(tuple(left_morphism.codomain().module_generating_set()))
-        images = {}
-        for position, label in enumerate(left_source_labels):
-            images[source_labels[position]] = self._embed_summand(
-                left_morphism(left_morphism.domain().module_generator(label)),
-                left_morphism.codomain(),
-                target,
-                0,
-            )
-        for position, label in enumerate(right_source_labels):
-            images[source_labels[len(left_source_labels) + position]] = self._embed_summand(
+        source_labels = source.module_generating_set()
+        left_source_labels = left_morphism.domain().module_generating_set()
+        right_source_labels = right_morphism.domain().module_generating_set()
+        left_source_rank = int(left_source_labels.cardinality())
+        left_target_rank = int(left_morphism.codomain().module_generating_set().cardinality())
+
+        def image(source_label):
+            position = int(source_labels.rank(source_label))
+            if position < left_source_rank:
+                label = left_source_labels.unrank(position)
+                return self._embed_summand(
+                    left_morphism(left_morphism.domain().module_generator(label)),
+                    left_morphism.codomain(),
+                    target,
+                    0,
+                )
+            label = right_source_labels.unrank(position - left_source_rank)
+            return self._embed_summand(
                 right_morphism(right_morphism.domain().module_generator(label)),
                 right_morphism.codomain(),
                 target,
                 left_target_rank,
             )
-        return lattice_homset(source, target)(images)
+
+        return lattice_homset(source, target)(image)
 
 
 __all__ = [

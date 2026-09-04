@@ -1,8 +1,6 @@
 r"""Restriction of scalar constants for represented graded power algebras."""
 
-from sage.categories.homset import Hom
-from sage.categories.morphism import SetMorphism
-from sage.categories.sets_cat import Sets
+from sage.misc.cachefunc import cached_function
 
 from dzack_research.preamble.categories.modules.graded_direct_sums import (
     GradedDirectSumElement,
@@ -11,9 +9,12 @@ from dzack_research.preamble.categories.modules.graded_direct_sums import (
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
 )
-from dzack_research.preamble.categories.modules.restricted_scalars import restrict_scalars
-from dzack_research.preamble.categories.rings import owned_ring_view
-from dzack_research.preamble.categories.sets import finite_ordered_set
+from dzack_research.preamble.categories.modules.pure.modules import restrict_scalars
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _owned_ring,
+    ring_morphism,
+)
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.refine import refine
 
 
@@ -31,7 +32,7 @@ class RestrictedGradedAlgebra(GradedDirectSumModule):
         self._extension_algebra = extension_algebra
         self._ring_map = ring_map
         self._degree_zero_algebra = extension_algebra.base_ring()
-        base = owned_ring_view(ring_map.domain())
+        base = _owned_ring(ring_map.domain())
         self._preamble_algebra_base_ring = base
         self._restricted_pieces = {}
 
@@ -69,39 +70,46 @@ class RestrictedGradedAlgebra(GradedDirectSumModule):
             from_realization=from_realization,
         )
 
-        from dzack_research.preamble.categories.algebras import (
-            FramedAlgebras,
-            GradedAlgebras,
-            StrictlyGradedCommutativeAlgebras,
-        )
+        from dzack_research.preamble.categories.algebras.algebras import FramedAlgebras
+        from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
+        from dzack_research.preamble.categories.algebras.graded_commutative_algebras import StrictlyGradedCommutativeAlgebras
 
         categories = [
             GradedAlgebras(base),
             StrictlyGradedCommutativeAlgebras(base),
         ]
         try:
-            degree_zero_labels = tuple(self.degree_zero_algebra().algebra_generating_set())
-            degree_one_labels = tuple(extension_algebra.free_source_module().module_generating_set())
+            degree_zero_labels = self.degree_zero_algebra().algebra_generating_set()
+            degree_one_labels = extension_algebra.free_source_module().module_generating_set()
         except (AttributeError, TypeError):
             self._preamble_algebra_generating_set = None
         else:
-            self._preamble_algebra_generating_set = finite_ordered_set(
-                tuple(("degree zero", label) for label in degree_zero_labels)
-                + tuple(("degree one", label) for label in degree_one_labels)
+            from dzack_research.preamble.categories.sets.set_categories import CoproductOfFamily
+            from dzack_research.preamble.categories.sets.set_categories import Sets
+            from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+            framing = CoproductOfFamily(
+                Sets.Δ[1],
+                lambda index: degree_zero_labels if int(index) == 0 else degree_one_labels,
             )
-            self._preamble_algebra_generator_values = {
-                ("degree zero", label): self.from_degree_zero(
-                    self.degree_zero_algebra().algebra_generator(label)
-                )
-                for label in degree_zero_labels
-            }
-            self._preamble_algebra_generator_values.update(
-                {
-                    ("degree one", label): self.from_realization(
-                        self.extension_algebra().algebra_generator(label)
+            self._preamble_algebra_generating_set = framing
+
+            def generator_value(tagged):
+                if int(tagged.summand_index()) == 0:
+                    return self.from_degree_zero(
+                        self.degree_zero_algebra().algebra_generator(
+                            tagged.summand_element()
+                        )
                     )
-                    for label in degree_one_labels
-                }
+                return self.from_realization(
+                    self.extension_algebra().algebra_generator(
+                        tagged.summand_element()
+                    )
+                )
+
+            self._preamble_algebra_generator_values = indexed_family(
+                framing,
+                generator_value,
+                name=f"Algebra generators of {self}",
             )
             categories.append(FramedAlgebras(base))
         refine(self, categories)
@@ -161,8 +169,9 @@ class RestrictedGradedAlgebra(GradedDirectSumModule):
         raise ValueError(f"unknown graded-algebra generator label {label!r}")
 
     def algebra_structure_morphism(self):
-        return SetMorphism(
-            Hom(self.base_ring(), self, Sets()),
+        return ring_morphism(
+            self.base_ring(),
+            self,
             lambda scalar: self.from_degree_zero(
                 self.degree_zero_algebra()(self.ring_map()(scalar))
             ),
@@ -179,16 +188,9 @@ class RestrictedGradedAlgebra(GradedDirectSumModule):
         return self.degree_zero_algebra()(scalar)
 
 
-_RESTRICTED_GRADED_CACHE = {}
-
-
+@cached_function(key=lambda algebra, ring_map: (id(algebra), id(ring_map)))
 def restrict_graded_algebra_scalars(algebra, ring_map):
-    key = (id(algebra), id(ring_map))
-    cached = _RESTRICTED_GRADED_CACHE.get(key)
-    if cached is not None and cached.extension_algebra() is algebra and cached.ring_map() is ring_map:
-        return cached
     result = RestrictedGradedAlgebra(algebra, ring_map)
-    _RESTRICTED_GRADED_CACHE[key] = result
     return result
 
 

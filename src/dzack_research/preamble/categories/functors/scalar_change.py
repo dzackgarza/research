@@ -3,17 +3,20 @@ r"""Scalar extension and restriction along a specified ring morphism."""
 from sage.misc.cachefunc import cached_function
 
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
-from dzack_research.preamble.categories.modules import (
-    FramedModules,
-    Modules,
+from dzack_research.preamble.categories.modules.pure.modules import FramedModules
+from dzack_research.preamble.categories.modules.pure.modules import Modules
+from dzack_research.preamble.categories.modules.pure.modules import (
     RestrictedScalarsModuleView,
-    module_homset,
     restrict_scalars,
 )
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
 )
-from dzack_research.preamble.categories.rings import engine_ring, owned_ring_view
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _engine_ring,
+    _owned_ring,
+)
 
 
 class ScalarExtensionFunctor(Functor):
@@ -26,8 +29,8 @@ class ScalarExtensionFunctor(Functor):
 
     def __init__(self, ring_map) -> None:
         self._ring_map = ring_map
-        self._source_ring = owned_ring_view(ring_map.domain())
-        self._target_ring = owned_ring_view(ring_map.codomain())
+        self._source_ring = _owned_ring(ring_map.domain())
+        self._target_ring = _owned_ring(ring_map.codomain())
         super().__init__(Modules(self._source_ring), Modules(self._target_ring))
 
     def ring_map(self):
@@ -40,8 +43,8 @@ class ScalarExtensionFunctor(Functor):
 
         if isinstance(module, RestrictedScalarsModuleView):
             if (
-                engine_ring(module.ring_map().domain()) is engine_ring(self._source_ring)
-                and engine_ring(module.ring_map().codomain()) is engine_ring(self._target_ring)
+                _engine_ring(module.ring_map().domain()) is _engine_ring(self._source_ring)
+                and _engine_ring(module.ring_map().codomain()) is _engine_ring(self._target_ring)
                 and module in FramedModules(self._source_ring)
             ):
                 image = FreshFreeModuleOn(
@@ -58,6 +61,12 @@ class ScalarExtensionFunctor(Functor):
         image = base_change(self.ring_map())
         image._preamble_scalar_extension_source_module = module
         return image
+
+    def chosen_preimage(self, image):
+        source = getattr(image, "_preamble_scalar_extension_source_module", None)
+        if source is not None:
+            return source
+        return super().chosen_preimage(image)
 
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())
@@ -86,8 +95,8 @@ class RestrictionOfScalarsFunctor(Functor):
 
     def __init__(self, ring_map) -> None:
         self._ring_map = ring_map
-        self._source_ring = owned_ring_view(ring_map.domain())
-        self._target_ring = owned_ring_view(ring_map.codomain())
+        self._source_ring = _owned_ring(ring_map.domain())
+        self._target_ring = _owned_ring(ring_map.codomain())
         super().__init__(Modules(self._target_ring), Modules(self._source_ring))
 
     def ring_map(self):
@@ -95,6 +104,11 @@ class RestrictionOfScalarsFunctor(Functor):
 
     def _apply_object(self, module):
         return restrict_scalars(module, self.ring_map())
+
+    def chosen_preimage(self, image):
+        if isinstance(image, RestrictedScalarsModuleView):
+            return image.module_over_extension()
+        return super().chosen_preimage(image)
 
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())
@@ -143,36 +157,6 @@ class BaseChangeAdjunction(Adjunction):
             lambda label: restricted.module_generator(label).underlying_element()
         )
 
-    def hom_set_isomorphism_forward(self, extended_morphism):
-        source_module = extended_morphism.domain()
-        original = getattr(
-            source_module,
-            "_preamble_scalar_extension_source_module",
-            None,
-        )
-        if original is None:
-            raise ValueError(
-                "the extended source was not produced by this scalar-extension functor"
-            )
-        target_restricted = self.right_adjoint()(extended_morphism.codomain())
-        return module_homset(original, target_restricted)(
-            lambda label: target_restricted(
-                extended_morphism(source_module.module_generator(label))
-            )
-        )
-
-    def hom_set_isomorphism_inverse(self, restricted_morphism, codomain=None):
-        if not isinstance(restricted_morphism.codomain(), RestrictedScalarsModuleView):
-            raise TypeError("the inverse transpose must land in a restriction of scalars")
-        target = restricted_morphism.codomain().module_over_extension()
-        if codomain is not None and codomain is not target:
-            raise ValueError("the stated codomain is not the module being restricted")
-        source = self.left_adjoint()(restricted_morphism.domain())
-        return module_homset(source, target)(
-            lambda label: restricted_morphism(
-                restricted_morphism.domain().module_generator(label)
-            ).underlying_element()
-        )
 
     def _repr_(self):
         return f"Scalar-extension/restriction adjunction along {self._ring_map}"

@@ -45,7 +45,9 @@ def test_noninjective_presentation_is_replaced_by_actual_relation_submodule() ->
     assert resolution.term(1).rank() == 1
     assert resolution.differential(1).is_injective()
     assert resolution.is_exact()
-    assert module.invariants() == (2,)
+    invariants = module.invariant_factors()
+    assert int(invariants.cardinality()) == 1
+    assert invariants.unrank(0) == ZZ(2)
 
 
 def test_free_module_has_trivial_free_resolution() -> None:

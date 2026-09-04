@@ -119,3 +119,5 @@ $$
 $$
 followed by polarization gives the bilinearization functor from $\mathbb Q/2\mathbb Z$-valued quadratic forms to $\mathbb Q/\mathbb Z$-valued symmetric bilinear forms.
 :::
+
+Bilinear forms on the underlying module of an associative unital $R$-algebra are treated in @sec-algebra-module-forms: module bilinear forms are $\operatorname{Hom}_{R\text{-}\mathbf{Mod}}(M\otimes_R M,R)$, and algebra bilinear forms are $\operatorname{Hom}_{R\text{-}\mathbf{Alg}}(A\otimes_R A,R)$ with the tensor product taken in $R\text{-}\mathbf{Alg}$.

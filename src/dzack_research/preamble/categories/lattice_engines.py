@@ -10,7 +10,10 @@ from sage.quadratic_forms.quadratic_form import QuadraticForm
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 
-from dzack_research.preamble.tensors import Tensor, tensor
+from dzack_research.preamble.tensors.tensor import (
+    Tensor,
+    tensor,
+)
 from dzack_research.preamble.tensors.tensor import _engine_component_matrix
 
 
@@ -23,7 +26,7 @@ def rational_positive_vector(gram):
     """
     if not isinstance(gram, Tensor) or gram.tensor_valence() != (0, 2):
         raise TypeError("a positive vector is computed from a bilinear-form tensor")
-    engine_gram = _engine_component_matrix(gram.change_ring(SageQQ))
+    engine_gram = _engine_component_matrix(gram).change_ring(SageQQ)
     diagonal, change = QuadraticForm(
         SageQQ,
         2 * engine_gram,
@@ -39,7 +42,11 @@ def rational_positive_vector(gram):
             "a two-component positive cone requires exactly one positive direction"
         )
     column = change.column(positive[0])
-    return tensor.vector(SageQQ, tuple(column))
+    rationals = gram.base_ring().fraction_field()
+    return tensor.vector(
+        rationals,
+        tuple(rationals._from_engine_element(entry) for entry in column),
+    )
 
 
 def _integer_tensor_rows(value, *, transpose=False):
@@ -349,14 +356,31 @@ def oscar_even_unimodular_primitive_embedding(gram, positive, negative):
     embedding_shape, embedding_rows = sections["embedding"]
     if len(target_rows) != target_shape[0] or len(embedding_rows) != embedding_shape[0]:
         raise RuntimeError("OSCAR returned incomplete primitive-embedding matrices")
+    ring = gram.base_ring()
     target_gram = tensor(
-        SageZZ,
+        ring,
         (),
         target_shape,
-        target_rows,
+        tuple(
+            tuple(ring._from_engine_element(entry) for entry in row)
+            for row in target_rows
+        ),
     )
-    row_embedding = tensor.matrix(SageZZ, embedding_rows)
-    embedding = row_embedding.dual_tensor()
+    from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace
+
+    # OSCAR emits source basis images as rows.  The live Hom matrix acts on
+    # coordinate columns, so transpose those rows into target-by-source shape.
+    embedding = MatrixSpace(
+        ring, target_shape[0], embedding_shape[0]
+    ).from_rows(
+        tuple(
+            tuple(
+                ring._from_engine_element(embedding_rows[source][target])
+                for source in range(embedding_shape[0])
+            )
+            for target in range(target_shape[0])
+        )
+    )
     if not target_gram.pullback(embedding).is_equal_tensor(gram):
         raise ArithmeticError("OSCAR's primitive embedding does not pull back the target form")
     if abs(target_gram.det()) != 1:

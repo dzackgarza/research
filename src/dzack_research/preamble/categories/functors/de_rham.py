@@ -2,18 +2,20 @@ r"""The affine algebraic de Rham functor and its degree-zero adjunction."""
 
 from sage.misc.cachefunc import cached_function
 
-from dzack_research.preamble.categories.algebras import (
+from dzack_research.preamble.categories.algebras.algebras import (
     CommutativeAlgebras,
-    DeRhamAlgebra,
-    StrictlyCommutativeDifferentialGradedAlgebras,
     algebra_homset,
+)
+from dzack_research.preamble.categories.algebras.de_rham_algebras import DeRhamAlgebra
+from dzack_research.preamble.categories.algebras.differential_graded_algebras import (
+    StrictlyCommutativeDifferentialGradedAlgebras,
     dga_homset,
 )
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
 )
-from dzack_research.preamble.categories.rings import owned_ring_view
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
 
 
 def _exterior_word(label, degree):
@@ -70,7 +72,7 @@ class DeRhamFunctor(Functor):
     r"""``DR_R : CAlg_R -> SCDGA_R^{>=0}`` on represented affine algebras."""
 
     def __init__(self, base_ring) -> None:
-        self._base_ring = owned_ring_view(base_ring)
+        self._base_ring = _owned_ring(base_ring)
         super().__init__(
             CommutativeAlgebras(self._base_ring),
             StrictlyCommutativeDifferentialGradedAlgebras(self._base_ring),
@@ -87,6 +89,13 @@ class DeRhamFunctor(Functor):
         target = self(morphism.codomain())
         return _extend_degree_zero_map(source, target, morphism)
 
+    def chosen_preimage(self, image):
+        try:
+            source = image.degree_zero_algebra()
+        except AttributeError:
+            return super().chosen_preimage(image)
+        return source
+
     def _repr_(self):
         return f"Algebraic de Rham functor over {self.base_ring()}"
 
@@ -95,7 +104,7 @@ class DegreeZeroDGAFunctor(Functor):
     r"""Degree zero ``(-)^0 : SCDGA_R^{>=0} -> CAlg_R``."""
 
     def __init__(self, base_ring) -> None:
-        self._base_ring = owned_ring_view(base_ring)
+        self._base_ring = _owned_ring(base_ring)
         super().__init__(
             StrictlyCommutativeDifferentialGradedAlgebras(self._base_ring),
             CommutativeAlgebras(self._base_ring),
@@ -140,7 +149,7 @@ class DeRhamAdjunction(Adjunction):
     """
 
     def __init__(self, base_ring) -> None:
-        self._base_ring = owned_ring_view(base_ring)
+        self._base_ring = _owned_ring(base_ring)
         super().__init__(DeRhamFunctor(self._base_ring), DegreeZeroDGAFunctor(self._base_ring))
 
     def base_ring(self):
@@ -158,16 +167,6 @@ class DeRhamAdjunction(Adjunction):
         identity = algebra_homset(degree_zero, degree_zero).identity()
         return _extend_degree_zero_map(source, dga, identity)
 
-    def hom_set_isomorphism_forward(self, morphism):
-        return self.right_adjoint()(morphism)
-
-    def hom_set_isomorphism_inverse(self, morphism, codomain=None):
-        if codomain is None:
-            raise TypeError("the inverse de Rham transpose requires the target DGA")
-        if self.right_adjoint()(codomain) is not morphism.codomain():
-            raise ValueError("the stated DGA does not have the algebra map's codomain in degree zero")
-        source = self.left_adjoint()(morphism.domain())
-        return _extend_degree_zero_map(source, codomain, morphism)
 
     def _repr_(self):
         return f"Algebraic de Rham/degree-zero adjunction over {self.base_ring()}"

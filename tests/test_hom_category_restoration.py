@@ -26,6 +26,11 @@ from dzack_research.preamble.all import (
     set_injection,
     set_surjection,
 )
+from dzack_research.preamble.categories.functors.hom_packets import (
+    induced_aut_functor,
+    induced_end_functor,
+    induced_hom_functor,
+)
 from dzack_research.preamble.categories.group.groups import OwnedGroups
 
 
@@ -57,7 +62,7 @@ def test_mono_epi_iso_and_aut_hom_families_have_the_expected_arrow_classes() -> 
     assert inclusion in monos
     assert quotient in epis
 
-    swap = SetMorphism(Hom(source, source, SageSets()), lambda value: source(1 - value))
+    swap = SetMorphism(Sets().hom(source, source), lambda value: source(1 - int(value)))
     isomorphism = Isomorphism(swap, swap)
     isos = IsoCategoryOf(Sets()).Of(source, source)
     auts = AutCategoryOf(Sets()).Of(source)
@@ -110,17 +115,17 @@ def test_forgetful_functor_induces_hom_end_and_aut_functors() -> None:
     forget = algebra_underlying_module_functor(QQ)
 
     hom_source = HomCategoryOf(Algebras(QQ)).Of(algebra, algebra)(identity)
-    hom_image = forget.on_hom(algebra, algebra)(hom_source)
+    hom_image = induced_hom_functor(forget, algebra, algebra)(hom_source)
     assert hom_image.parent() is Modules(QQ).Hom(forget(algebra), forget(algebra))
     assert hom_image(forget(algebra).one()) == forget(identity)(forget(algebra).one())
 
     end_source = EndCategoryOf(Algebras(QQ)).Of(algebra)(identity)
-    end_image = forget.on_end(algebra)(end_source)
+    end_image = induced_end_functor(forget, algebra)(end_source)
     assert end_image.parent() is Modules(QQ).End(forget(algebra))
     assert end_image(forget(algebra).one()) == forget(identity)(forget(algebra).one())
 
     aut_source = AutCategoryOf(Algebras(QQ)).Of(algebra)(isomorphism)
-    aut_image = forget.on_aut(algebra)(aut_source)
+    aut_image = induced_aut_functor(forget, algebra)(aut_source)
     underlying_iso = aut_image.arrow()
     assert underlying_iso.forward().domain() is forget(algebra)
     assert underlying_iso.forward().codomain() is forget(algebra)
@@ -154,3 +159,19 @@ def test_group_hom_end_and_aut_are_the_packet_objects() -> None:
     assert group.Aut() is groups.Iso(group, group)
     assert group.Aut().one().parent() is group.Aut()
     assert groups.End(group) in group.Aut().super_categories()
+
+
+def test_ring_hom_packet_reuses_the_canonical_equal_endpoint_hom_object() -> None:
+    from dzack_research.preamble.categories.rings.ring_foundation import (
+        OwnedRings,
+        ring_homset,
+    )
+
+    rings = OwnedRings()
+    hom = ring_homset(ZZ, ZZ)
+    assert hom is rings.Hom(ZZ, ZZ)
+    assert hom is rings.End(ZZ)
+    identity = hom.identity()
+    assert identity.parent() is hom
+    assert (identity * identity).parent() is hom
+    assert (identity * identity)(ZZ(3)) == ZZ(3)

@@ -70,6 +70,90 @@ from dzack_research.preamble.categories.abstract_categories.products import (
 )
 
 
+class _CategoricalObject:
+    r"""Operations shared by objects of a category.
+
+    A concrete root uses this implementation type once.  Every category
+    below that root then receives these methods through ``ObjectType``.
+    """
+
+    def Hom(
+        self: "ObjectOfCategory",
+        target: "ObjectOfCategory",
+        category: Category | None = None,
+    ) -> Category:
+        r"""Return the Hom category in the most specific common category."""
+        if category is None:
+            from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+                common_category,
+            )
+
+            category = common_category((self, target))
+        assert self in category and target in category
+        return category.Hom(self, target)
+
+    def End(self: "ObjectOfCategory") -> Category:
+        r"""Return the endomorphism category of this object."""
+        return self.category().End(self)
+
+    def Aut(self: "ObjectOfCategory") -> Category:
+        r"""Return the automorphism category of this object."""
+        return self.category().Aut(self)
+
+    def Iso(
+        self: "ObjectOfCategory",
+        target: "ObjectOfCategory",
+    ) -> Category:
+        r"""Return the category of isomorphisms to ``target``."""
+        from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+            common_category,
+        )
+
+        return common_category((self, target)).Iso(self, target)
+
+    def Mono(
+        self: "ObjectOfCategory",
+        target: "ObjectOfCategory",
+    ) -> Category:
+        r"""Return the category of monomorphisms to ``target``."""
+        from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+            common_category,
+        )
+
+        return common_category((self, target)).Mono(self, target)
+
+    def Epi(
+        self: "ObjectOfCategory",
+        target: "ObjectOfCategory",
+    ) -> Category:
+        r"""Return the category of epimorphisms to ``target``."""
+        from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+            common_category,
+        )
+
+        return common_category((self, target)).Epi(self, target)
+
+    def identity(self: "ObjectOfCategory") -> "HomCategoryOf.ElementMethods":
+        r"""Return the identity arrow of this object."""
+        return self.category().identity(self)
+
+    def subobjects(self: "ObjectOfCategory") -> Category:
+        r"""Return the category of monomorphisms into this object."""
+        return self.category().Subobjects(self)
+
+    def superobjects(self: "ObjectOfCategory") -> Category:
+        r"""Return the category of monomorphisms from this object."""
+        return self.category().Superobjects(self)
+
+    def covering_objects(self: "ObjectOfCategory") -> Category:
+        r"""Return the category of epimorphisms into this object."""
+        return self.category().CoveringObjects(self)
+
+    def covered_objects(self: "ObjectOfCategory") -> Category:
+        r"""Return the category of epimorphisms from this object."""
+        return self.category().CoveredObjects(self)
+
+
 class Cat(OwnedCategoryMixin, Category):
     r"""The category \(\mathbf{Cat}\), whose objects are categories.
 
@@ -634,22 +718,22 @@ class Cat(OwnedCategoryMixin, Category):
             coslices: Category = CosliceUnderCategory(self, X)
             return coslices
 
-        def SubObject(self, X: "ObjectOfCategory") -> Category:
+        def Subobjects(self, X: "ObjectOfCategory") -> Category:
             r"""Return the category of subobjects of \(X\): the monomorphisms \(A\hookrightarrow X\)."""
             subobjects: Category = SubobjectCategory(self, X)
             return subobjects
 
-        def SuperObject(self, X: "ObjectOfCategory") -> Category:
+        def Superobjects(self, X: "ObjectOfCategory") -> Category:
             r"""Return the category of superobjects of \(X\): the monomorphisms \(X\hookrightarrow B\)."""
             superobjects: Category = SuperobjectCategory(self, X)
             return superobjects
 
-        def CoveringObject(self, X: "ObjectOfCategory") -> Category:
+        def CoveringObjects(self, X: "ObjectOfCategory") -> Category:
             r"""Return the category of covering objects of \(X\): the epimorphisms \(A\twoheadrightarrow X\)."""
             coverings: Category = CoveringObjectCategory(self, X)
             return coverings
 
-        def CoveredObject(self, X: "ObjectOfCategory") -> Category:
+        def CoveredObjects(self, X: "ObjectOfCategory") -> Category:
             r"""Return the category of covered objects of \(X\): the epimorphisms \(X\twoheadrightarrow B\)."""
             covereds: Category = CoveredObjectCategory(self, X)
             return covereds

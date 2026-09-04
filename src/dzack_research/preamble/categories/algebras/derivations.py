@@ -7,27 +7,33 @@ algebra generators and evaluated by the formal chain rule on a selected
 presentation representative.
 """
 
+from dzack_research.preamble.categories.abstract_categories.hom_foundation import OwnedHomset
+from sage.misc.cachefunc import cached_function
 from sage.categories.action import Action
-from sage.categories.homset import Hom, Homset
+from sage.categories.homset import Homset
 from sage.categories.morphism import Morphism, SetMorphism
 from sage.categories.rings import Rings as SageRings
 from sage.categories.sets_cat import Sets
 import operator
 
-from dzack_research.preamble.categories.rings import OwnedRings as _OwnedRings
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
 )
-from dzack_research.preamble.categories.rings import engine_ring
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _engine_element,
+    _engine_ring,
+)
+from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+    finite_ordered_image,
+    finite_ordered_set,
+)
 
 
 def _commutative_presentation_data(algebra):
     r"""Return ``(P, labels, variables, relations, lift)`` for ``A = P/I``."""
-    from dzack_research.preamble.categories.algebras import (
-        AlgebrasWithChosenFinitePresentation,
-        CommutativeAlgebras,
-        SymmetricAlgebras,
-    )
+    from dzack_research.preamble.categories.algebras.finitely_presented_algebras import AlgebrasWithChosenFinitePresentation
+    from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
+    from dzack_research.preamble.categories.algebras.free_algebras import SymmetricAlgebras
 
     base = algebra.base_ring()
     if algebra not in CommutativeAlgebras(base):
@@ -35,21 +41,21 @@ def _commutative_presentation_data(algebra):
 
     if algebra in AlgebrasWithChosenFinitePresentation(base):
         presentation = algebra.presentation_ring()
-        relations = tuple(algebra.relations())
+        relations = algebra.relations()
         lift = algebra.lift_to_presentation
     elif algebra in SymmetricAlgebras(base):
         presentation = algebra
-        relations = ()
-        lift = lambda element: engine_ring(presentation)(element)
+        relations = finite_ordered_set(())
+        lift = presentation
     else:
         raise NotImplementedError(
             "the live derivation backend requires a symmetric algebra or a chosen finite commutative polynomial presentation"
         )
 
-    labels = tuple(presentation.algebra_generating_set())
-    variables = tuple(
-        engine_ring(presentation)(presentation.algebra_generator(label))
-        for label in labels
+    labels = presentation.algebra_generating_set()
+    variables = finite_ordered_image(
+        labels,
+        presentation.algebra_generator,
     )
     return presentation, labels, variables, relations, lift
 
@@ -58,9 +64,16 @@ def _differentiate_representative(algebra, representative, variables):
     presentation, _labels, _variables, _relations, _lift = _commutative_presentation_data(
         algebra
     )
-    source = engine_ring(presentation)(representative)
-    target = engine_ring(algebra)
-    return tuple(target(source.derivative(variable)) for variable in variables)
+    source = _engine_element(presentation, presentation(representative))
+    target = _engine_ring(algebra)
+
+    def derivative(variable):
+        engine_variable = presentation._engine_element(variable)
+        return algebra._from_engine_element(
+            target(source.derivative(engine_variable))
+        )
+
+    return finite_ordered_image(variables, derivative)
 
 
 class Derivation(Morphism):
@@ -126,7 +139,7 @@ class Derivation(Morphism):
         for relation in relations:
             coefficients = _differentiate_representative(
                 algebra,
-                engine_ring(presentation)(relation),
+                relation,
                 variables,
             )
             if self._evaluate_coefficients(coefficients) != self.codomain().zero():
@@ -139,7 +152,7 @@ class Derivation(Morphism):
         presentation, _labels, variables, _relations, lift = _commutative_presentation_data(
             algebra
         )
-        representative = engine_ring(presentation)(lift(element))
+        representative = lift(algebra(element))
         coefficients = _differentiate_representative(
             algebra,
             representative,
@@ -157,6 +170,11 @@ class Derivation(Morphism):
         morphism._preamble_is_derivation = True
         morphism._preamble_derivation = self
         return morphism
+
+    def _lmul_(self, scalar):
+        return self.parent().algebra_multiple(scalar, self)
+
+    _rmul_ = _lmul_
 
     def __add__(self, other):
         if not isinstance(other, Derivation) or other.parent() is not self.parent():
@@ -210,13 +228,13 @@ class Derivation(Morphism):
 class _DerivationAlgebraAction(Action):
     def __init__(self, algebra, derivations, is_left) -> None:
         self._derivations = derivations
-        Action.__init__(self, engine_ring(algebra), derivations, is_left, operator.mul)
+        Action.__init__(self, _engine_ring(algebra), derivations, is_left, operator.mul)
 
     def _act_(self, scalar, derivation):
         return self._derivations.algebra_multiple(scalar, derivation)
 
 
-class DerivationSpace(Homset):
+class DerivationSpace(OwnedHomset):
     r"""The ``A``-module ``Der_R(A,M)`` with its restricted Hom inclusion.
 
     The actual subobject of ``Hom_R(A,Res_R M)`` is
@@ -236,12 +254,10 @@ class DerivationSpace(Homset):
             algebra
         )
         self._generator_labels = labels
-        from dzack_research.preamble.categories.modules import (
-            ModuleSubobjects,
-            Modules,
-            module_embedding,
-            restrict_scalars,
-        )
+        from dzack_research.preamble.categories.modules.pure.modules import ModuleSubobjects
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
+        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_embedding
+        from dzack_research.preamble.categories.modules.pure.modules import restrict_scalars
         from dzack_research.preamble.refine import refine
 
         base = algebra.base_ring()
@@ -330,11 +346,11 @@ class DerivationSpace(Homset):
         return self.algebra_multiple(scalar, derivation)
 
     def algebra_action(self):
-        from dzack_research.preamble.categories.modules import Modules
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
 
         endomorphisms = Modules(self.algebra()).End(self)
         return SetMorphism(
-            Hom(self.algebra(), endomorphisms, _OwnedRings()),
+            self.algebra().Hom(endomorphisms),
             lambda scalar: endomorphisms.elementwise(
                 lambda derivation: self.algebra_multiple(scalar, derivation)
             ),
@@ -346,20 +362,9 @@ class DerivationSpace(Homset):
         return f"Der_{self.algebra().base_ring()}({self.algebra()}, {self.target_module()})"
 
 
-_DERIVATION_SPACES = {}
-
-
+@cached_function(key=lambda algebra, target_module: (id(algebra), id(target_module)))
 def Derivations(algebra, target_module) -> DerivationSpace:
-    key = (id(algebra), id(target_module))
-    cached = _DERIVATION_SPACES.get(key)
-    if (
-        cached is not None
-        and cached.algebra() is algebra
-        and cached.target_module() is target_module
-    ):
-        return cached
     result = DerivationSpace(algebra, target_module)
-    _DERIVATION_SPACES[key] = result
     return result
 
 
@@ -408,9 +413,9 @@ class GradedDerivation(ModuleMorphism):
 
     def check_on_generators(self) -> bool:
         r"""Check degree and graded Leibniz on a selected finite algebra framing."""
-        labels = tuple(self.algebra().algebra_generating_set())
-        generators = tuple(self.algebra().algebra_generator(label) for label in labels)
-        for generator in generators:
+        labels = self.algebra().algebra_generating_set()
+        for label in labels:
+            generator = self.algebra().algebra_generator(label)
             image = self(generator)
             if (
                 generator.is_homogeneous()
@@ -424,10 +429,12 @@ class GradedDerivation(ModuleMorphism):
                 )
             ):
                 return False
-        for left in generators:
+        for left_label in labels:
+            left = self.algebra().algebra_generator(left_label)
             if not left.is_homogeneous():
                 return False
-            for right in generators:
+            for right_label in labels:
+                right = self.algebra().algebra_generator(right_label)
                 signed_second = left * self(right)
                 if (self.degree_shift() * left.degree()) % 2:
                     signed_second = -signed_second
@@ -436,7 +443,7 @@ class GradedDerivation(ModuleMorphism):
         return True
 
 
-class GradedDerivationSpace(Homset):
+class GradedDerivationSpace(OwnedHomset):
     r"""The ``R``-submodule of degree-``r`` graded derivations in ``Hom_R``."""
 
     Element = GradedDerivation
@@ -447,11 +454,9 @@ class GradedDerivationSpace(Homset):
         self._algebra = algebra
         self._target = target
         self._shift = int(shift)
-        from dzack_research.preamble.categories.modules import (
-            ModuleSubobjects,
-            Modules,
-            module_embedding,
-        )
+        from dzack_research.preamble.categories.modules.pure.modules import ModuleSubobjects
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
+        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_embedding
         from dzack_research.preamble.refine import refine
 
         ring = algebra.base_ring()
@@ -525,23 +530,11 @@ class GradedDerivationSpace(Homset):
         )
 
 
-_GRADED_DERIVATION_SPACES = {}
-
-
+@cached_function(key=lambda algebra, target, shift=0: (id(algebra), id(target) if target is not None else None, int(shift)))
 def GradedDerivations(algebra, target=None, shift=0) -> GradedDerivationSpace:
     if target is None:
         target = algebra
-    key = (id(algebra), id(target), int(shift))
-    cached = _GRADED_DERIVATION_SPACES.get(key)
-    if (
-        cached is not None
-        and cached.algebra() is algebra
-        and cached.target() is target
-        and cached.degree_shift() == int(shift)
-    ):
-        return cached
     result = GradedDerivationSpace(algebra, target, shift)
-    _GRADED_DERIVATION_SPACES[key] = result
     return result
 
 

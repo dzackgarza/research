@@ -1,27 +1,23 @@
 import pytest
 
-from sage.categories.homset import Hom
-from sage.categories.sets_cat import Sets
 from sage.misc.unknown import Unknown
 from sage.rings.finite_rings.integer_mod_ring import Integers
 
-from dzack_research.preamble.all import GF, QQ
+from dzack_research.preamble.all import GF, NumberField, PolynomialRing, QQ, QuadraticField
 from dzack_research.preamble.categories.group.groups import OwnedGroups
 from dzack_research.preamble.categories.group.profinite.absolute_galois_group import (
     AbsoluteGaloisGroup,
-)
-from dzack_research.preamble.categories.group.profinite.absolute_galois_group_subgroup import (
     OpenAbsoluteGaloisSubgroup,
-    OpenAbsoluteGaloisSubgroups,
 )
 from dzack_research.preamble.categories.group.profinite.absolute_galois_groups import (
     AbsoluteGaloisGroups,
     AbsoluteGaloisGroupsOfFiniteFields,
+    OpenAbsoluteGaloisSubgroups,
 )
 from dzack_research.preamble.categories.group.profinite.field_morphisms import (
     ExactFieldMorphism,
     exact_embeddings,
-    exact_field_morphism,
+    exact_field_homset,
     field_generators,
 )
 from dzack_research.preamble.categories.group.profinite.galois_decomposition import (
@@ -32,14 +28,11 @@ from dzack_research.preamble.categories.group.profinite.galois_quotient import (
     extensions_along,
     restrict_along,
 )
-from dzack_research.preamble.categories.rings.rings import engine_ring, own_ring
+from dzack_research.preamble.categories.sets import Sets
 
 
 def _quadratic_number_field(radicand, name="a"):
-    base = engine_ring(QQ)
-    polynomial_ring = base["x"]
-    x = polynomial_ring.gen()
-    return own_ring(base.extension(x**2 - base(radicand), name))
+    return QuadraticField(radicand, name)
 
 
 def test_absolute_galois_surface_is_publicly_exported() -> None:
@@ -53,10 +46,9 @@ def test_absolute_galois_surface_is_publicly_exported() -> None:
 
 
 def _cubic_number_field(radicand, name="a"):
-    base = engine_ring(QQ)
-    polynomial_ring = base["x"]
-    x = polynomial_ring.gen()
-    return own_ring(base.extension(x**3 - base(radicand), name))
+    polynomial_ring = PolynomialRing(QQ, "x")
+    x = polynomial_ring.algebra_generator("x")
+    return NumberField(x**3 - QQ(radicand), name)
 
 
 def test_absolute_galois_group_is_the_slice_automorphism_group_with_exact_maps() -> (
@@ -77,9 +69,9 @@ def test_absolute_galois_group_is_the_slice_automorphism_group_with_exact_maps()
     assert extension_object in group.slice_category()
 
     frobenius = group.frobenius()
-    closure = engine_ring(group.algebraic_closure())
-    alpha = closure.gen(4)
-    base_generator = engine_ring(field).gen()
+    degree_four = group.finite_extension(4)
+    alpha = degree_four.embedding()(field_generators(degree_four.field())[0])
+    base_generator = field_generators(field)[0]
     square = group.slice_automorphism(frobenius)
 
     assert frobenius.parent() is group
@@ -106,31 +98,29 @@ def test_exact_closure_maps_do_not_enumerate_infinite_generators_or_admit_set_ma
 ):
     group = AbsoluteGaloisGroup(QQ)
     closure = group.algebraic_closure()
-    engine_closure = engine_ring(closure)
-    identity_backend = engine_closure.hom(engine_closure)
-    separate_identity_backend = engine_closure.hom(engine_closure)
-    identity = exact_field_morphism(closure, closure, identity_backend)
-    same_backend = exact_field_morphism(closure, closure, identity_backend)
-    separate_identity = exact_field_morphism(
-        closure, closure, separate_identity_backend
-    )
+    homset = exact_field_homset(closure, closure)
+    identity = homset.identity()
+    same_identity = homset.identity()
+    separate_identity = exact_field_homset(closure, closure).identity()
 
-    assert identity == same_backend
-    assert hash(identity) == hash(same_backend)
-    assert identity_backend == separate_identity_backend
+    assert identity == same_identity
+    assert hash(identity) == hash(same_identity)
     assert identity == separate_identity
     assert hash(identity) == hash(separate_identity)
     identity_element = group(separate_identity)
     assert identity_element == group.one()
     assert ~identity_element * identity_element == group.one()
 
-    fake_backend = Hom(engine_closure, engine_closure, Sets())(
-        lambda element: engine_closure.one()
-        if element == engine_closure.one()
-        else engine_closure.zero()
+    from sage.categories.morphism import SetMorphism
+
+    fake_map = SetMorphism(
+        Sets().hom(closure, closure),
+        lambda element: closure.one()
+        if element == closure.one()
+        else closure.zero(),
     )
     with pytest.raises(TypeError, match="genuine field-homomorphism"):
-        exact_field_morphism(closure, closure, fake_backend)
+        exact_field_homset(closure, closure)(fake_map)
 
 
 def test_only_known_group_size_and_conjugacy_claims_are_decided() -> None:
@@ -231,17 +221,16 @@ def test_number_field_restriction_fiber_is_a_coset_without_a_false_chosen_lift()
 
 def test_extension_data_extends_a_nondefault_chosen_base_embedding() -> None:
     base_field = _cubic_number_field(2, "a")
-    closure = own_ring(engine_ring(QQ).algebraic_closure())
+    closure = AbsoluteGaloisGroup(QQ).algebraic_closure()
     chosen_base_embedding = exact_embeddings(base_field, closure)[1]
     group = AbsoluteGaloisGroup(
         base_field,
         closure=closure,
         embedding=chosen_base_embedding,
     )
-    base_engine = engine_ring(base_field)
-    polynomial_ring = base_engine["y"]
-    y = polynomial_ring.gen()
-    extension_field = own_ring(base_engine.extension(y**2 - 3, "b"))
+    polynomial_ring = PolynomialRing(base_field, "y")
+    y = polynomial_ring.algebra_generator("y")
+    extension_field = base_field.extension(y**2 - base_field(3), "b")
     stage = group.extension_data(extension_field)
 
     assert stage.degree() == 2
@@ -326,7 +315,7 @@ def test_decomposition_inertia_and_frobenius_project_to_exact_finite_objects() -
     field = _quadratic_number_field(5)
     stage = group.extension_data(field)
     quotient = group.finite_quotient(stage)
-    prime_above_two = engine_ring(field).primes_above(2)[0]
+    prime_above_two = field.primes_above(2)[0]
     prolongation = PrimeProlongation(2, lambda extension: prime_above_two)
 
     decomposition = group.decomposition_group(2, prolongation=prolongation)
@@ -379,4 +368,4 @@ def test_quadratic_kummer_character_does_not_install_a_false_characteristic_two_
 ):
     group = AbsoluteGaloisGroup(GF(4, "u"))
     with pytest.raises(ValueError, match="characteristic different from two"):
-        group.quadratic_character(engine_ring(group.base_field()).gen())
+        group.quadratic_character(field_generators(group.base_field())[0])

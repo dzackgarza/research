@@ -21,6 +21,18 @@ default:
 build: _lock
     uv build
 
+# Experimental Pyrefly semantic contracts for the Sage mathematical API
+semantic-types:
+    uv run pyrefly check -c pyrefly-semantic.toml typing_tests/positive.py
+    @if uv run pyrefly check -c pyrefly-semantic.toml typing_tests/negative.py >/tmp/research-pyrefly-negative.log 2>&1; then \
+        cat /tmp/research-pyrefly-negative.log; \
+        echo "negative semantic typing corpus unexpectedly type-checks" >&2; \
+        rm -f /tmp/research-pyrefly-negative.log; \
+        exit 1; \
+    fi
+    @cat /tmp/research-pyrefly-negative.log
+    @rm -f /tmp/research-pyrefly-negative.log
+
 # Refresh the docs bibliography from the shared ~/.pandoc bib (never frozen in-repo; CI fetches it from the pandoc-config repo)
 docs-bib:
     cp ~/.pandoc/bib/references.bib docs/references.bib
@@ -84,7 +96,11 @@ docs-preview: docs-bib
 
 # Generate the canonical preamble constructions megadoc
 preamble-megadoc:
-    python3 -m dzack_research.preamble.megadoc -o "{{preamble_megadoc_file}}"
+    PYTHONPATH=src python3 -m dzack_research.utilities.megadoc -o "{{preamble_megadoc_file}}"
+
+# Static architecture/complexity inventory for the live preamble
+preamble-complexity:
+    PYTHONPATH=src python3 -m dzack_research.utilities.complexity_analysis src/dzack_research/preamble
 
 # Link sage-init.sage as Sage's startup file (${DOT_SAGE:-~/.sage}/init.sage), giving every Sage process — terminal REPL and every Jupyter kernel — implicit LaTeX rendering of cell results. Idempotent, and refuses to replace anything it did not create.
 sage-init-install:

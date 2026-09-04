@@ -12,7 +12,6 @@ from dzack_research.preamble.all import (
     ProjectiveSpace,
     QQ,
     ZZ,
-    engine_ring,
 )
 
 
@@ -40,7 +39,7 @@ def test_finite_unit_localization_and_prime_localization_are_distinct() -> None:
     assert inverted_two(2).is_unit()
 
     local_at_five = ZZ.localize_at_prime(5)
-    rational = engine_ring(local_at_five.fraction_field())
+    rational = local_at_five.fraction_field()
     assert rational(1) / 2 in local_at_five
     assert rational(1) / 5 not in local_at_five
     assert local_at_five in LocalRings()
@@ -51,9 +50,9 @@ def test_finite_unit_localization_and_prime_localization_are_distinct() -> None:
 def test_polynomial_prime_localization_has_expected_residue_field() -> None:
     field = GF(5)
     polynomial = PolynomialRing(field, "t")
-    t = engine_ring(polynomial).gen()
-    local = polynomial.localize_at_prime(engine_ring(polynomial).ideal(t))
-    fraction = engine_ring(local.fraction_field())
+    t = polynomial.algebra_generator("t")
+    local = polynomial.localize_at_prime(polynomial.ideal(t))
+    fraction = local.fraction_field()
 
     assert fraction((t + 1) / (t**2 + 1)) in local
     assert fraction(1 / t) not in local
@@ -63,7 +62,7 @@ def test_polynomial_prime_localization_has_expected_residue_field() -> None:
 def test_quotient_residue_field_dual_numbers_and_adic_completion() -> None:
     field = GF(5)
     polynomial = PolynomialRing(field, "t")
-    t = engine_ring(polynomial).gen()
+    t = polynomial.algebra_generator("t")
 
     quotient = polynomial.quotient_ring(t**2)
     tbar = quotient.quotient_map()(t)
@@ -82,7 +81,7 @@ def test_quotient_residue_field_dual_numbers_and_adic_completion() -> None:
     assert epsilon**2 == 0
     assert dual.residue_field() is field
 
-    completion = polynomial.adic_completion(engine_ring(polynomial).ideal(t), precision=8)
+    completion = polynomial.adic_completion(polynomial.ideal(t), precision=8)
     assert completion in CompleteLocalRings()
     assert completion.completion_source() is polynomial
     assert completion.computation_precision() == 8
@@ -96,7 +95,7 @@ def test_formal_power_series_ring_is_complete_local_over_a_field() -> None:
     assert power_series in CompleteLocalRings()
     assert power_series.residue_field() is field
     (uniformizer,) = power_series.maximal_ideal().gens()
-    assert uniformizer == engine_ring(power_series).gen()
+    assert uniformizer == power_series.algebra_generator("t")
 
 
 def test_affine_and_projective_space_point_counts_and_zeta_functions() -> None:
@@ -158,8 +157,8 @@ def test_submonoids_are_generic_subobjects_and_localization_retains_inclusion() 
 def test_affine_prime_spectrum_zariski_basis_and_structure_sheaf_stalks() -> None:
     affine_line = AffineSpace(1, QQ, names=("x",))
     spectrum = affine_line.underlying_space()
-    ring = engine_ring(spectrum.ring())
-    x = ring.gen()
+    ring = spectrum.ring()
+    x = ring.algebra_generator("x")
 
     generic = spectrum(ring.ideal(0))
     origin = spectrum(ring.ideal(x))
@@ -199,7 +198,7 @@ def test_polynomial_ideals_are_module_subobjects_with_singular_arithmetic() -> N
     from dzack_research.preamble.categories.modules import Modules, ring_as_module
 
     ring = PolynomialRing(QQ, ("x", "y"))
-    x, y = engine_ring(ring).gens()
+    x, y = tuple(ring.algebra_generators())
     ideal = ring.ideal(x**2, x * y)
     other = ring.ideal(y)
 
@@ -209,10 +208,15 @@ def test_polynomial_ideals_are_module_subobjects_with_singular_arithmetic() -> N
     assert ideal.inclusion().is_injective()
     assert tuple(ideal.gens()) == (ring(x**2), ring(x * y))
 
-    assert ideal.radical()._engine_ideal() == engine_ring(ring).ideal(x)
-    assert ideal.sum(other)._engine_ideal() == engine_ring(ring).ideal(x**2, x * y, y)
-    assert ideal.product(other)._engine_ideal() == engine_ring(ring).ideal(x**2 * y, x * y**2)
-    assert ideal.intersection(other)._engine_ideal() == engine_ring(ring).ideal(x * y)
+    def same_ideal(left, right):
+        return all(generator in right for generator in left.ideal_generators()) and all(
+            generator in left for generator in right.ideal_generators()
+        )
+
+    assert same_ideal(ideal.radical(), ring.ideal(x))
+    assert same_ideal(ideal.sum(other), ring.ideal(x**2, x * y, y))
+    assert same_ideal(ideal.product(other), ring.ideal(x**2 * y, x * y**2))
+    assert same_ideal(ideal.intersection(other), ring.ideal(x * y))
 
 
 def test_affine_spec_is_contravariant_on_commutative_algebra_maps() -> None:
@@ -221,16 +225,16 @@ def test_affine_spec_is_contravariant_on_commutative_algebra_maps() -> None:
     source = PolynomialRing(QQ, "x")
     middle = PolynomialRing(QQ, "t")
     target = PolynomialRing(QQ, "u")
-    x = engine_ring(source).gen()
-    t = engine_ring(middle).gen()
-    u = engine_ring(target).gen()
+    x = source.algebra_generator("x")
+    t = middle.algebra_generator("t")
+    u = target.algebra_generator("u")
 
     assert source in CommutativeAlgebras(QQ)
     assert middle in CommutativeAlgebras(QQ)
     assert target in CommutativeAlgebras(QQ)
 
-    first = source.hom({"x": middle(t**2)}, codomain=middle)
-    second = middle.hom({"t": target(u + 1)}, codomain=target)
+    first = source.Hom(middle)({"x": middle(t**2)})
+    second = middle.Hom(target)({"t": target(u + 1)})
     composite = second * first
 
     spec = SpecFunctor(QQ)
@@ -283,8 +287,8 @@ def test_commutative_algebra_coproduct_is_tensor_product_with_universal_maps() -
 
     target = PolynomialRing(QQ, "t")
     t = target.algebra_generator("t")
-    f = left.hom({"x": t}, codomain=target)
-    g = right.hom({"y": t**2}, codomain=target)
+    f = left.Hom(target)({"x": t})
+    g = right.Hom(target)({"y": t**2})
     induced = coproduct.from_cocone(f, g)
     assert induced(left_map(x)) == t
     assert induced(right_map(y)) == t**2
@@ -317,8 +321,8 @@ def test_commutative_algebra_pushout_imposes_common_source_relations() -> None:
     s = common.algebra_generator("s")
     x = left.algebra_generator("x")
     y = right.algebra_generator("y")
-    left_span = common.hom({"s": x**2}, codomain=left)
-    right_span = common.hom({"s": y**3}, codomain=right)
+    left_span = common.Hom(left)({"s": x**2})
+    right_span = common.Hom(right)({"s": y**3})
 
     pushout = Pushout(left_span, right_span)
     left_map, right_map = pushout.pushout_maps()
@@ -326,8 +330,8 @@ def test_commutative_algebra_pushout_imposes_common_source_relations() -> None:
 
     target = PolynomialRing(QQ, "t")
     t = target.algebra_generator("t")
-    left_cocone = left.hom({"x": t**3}, codomain=target)
-    right_cocone = right.hom({"y": t**2}, codomain=target)
+    left_cocone = left.Hom(target)({"x": t**3})
+    right_cocone = right.Hom(target)({"y": t**2})
     induced = pushout.from_pushout_cocone(left_cocone, right_cocone)
     assert induced(left_map(x)) == t**3
     assert induced(right_map(y)) == t**2
@@ -346,7 +350,7 @@ def test_module_local_fiber_rank_generic_rank_and_fitting_loci() -> None:
     )
 
     ring = PolynomialRing(QQ, "x")
-    x = engine_ring(ring).gen()
+    x = ring.algebra_generator("x")
     free_target = BasedFreeModule(ring, 1)
     free_relations = BasedFreeModule(ring, 1)
     module = FinitelyPresentedModule(
@@ -438,7 +442,7 @@ def test_module_localization_is_first_class_and_fibers_factor_through_it() -> No
             {0: x * polynomial_free.module_generator(0)}
         )
     )
-    origin = polynomial.spectrum()(engine_ring(polynomial).ideal(x))
+    origin = polynomial.spectrum()(polynomial.ideal(x))
     local_quotient = quotient.localize_at_prime(origin)
     fiber = quotient.fiber(origin)
     assert fiber._preamble_fiber_localization is local_quotient
@@ -467,13 +471,17 @@ def test_elementwise_module_morphism_verification_is_regime_sensitive(caplog) ->
     else:
         raise AssertionError("a nonlinear map on a finite module must be rejected")
 
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+        module_coefficients,
+    )
+
     infinite = FreeModule(ZZ, 1)
     with caplog.at_level(
         logging.DEBUG,
         logger="dzack_research.preamble.categories.modules.module_morphisms.module_morphisms",
     ):
         declared = module_homset(infinite, infinite).elementwise(
-            lambda vector: infinite((vector[0] ** 2,))
+            lambda vector: infinite((module_coefficients(vector, infinite).get(0, ZZ.zero()) ** 2,))
         )
     assert declared(infinite.module_generator(0)) == infinite.module_generator(0)
     assert any("without exhaustive linearity verification" in record.message for record in caplog.records)
@@ -526,7 +534,7 @@ def test_ideal_localization_extension_contraction_colon_and_saturation() -> None
     assert tuple(extended_integer_ideal.contraction().gens()) == (ZZ(3),)
 
     ring = PolynomialRing(QQ, ("x", "y"))
-    x, y = engine_ring(ring).gens()
+    x, y = tuple(ring.algebra_generators())
     ideal = ring.ideal(x * y, y**2)
     divisor = ring.ideal(x)
 
@@ -561,7 +569,7 @@ def test_quotient_localization_comparison_is_an_actual_ring_isomorphism() -> Non
     assert tuple(comparison.extended_ideal().contraction().gens()) == (ZZ(3),)
 
     ring = PolynomialRing(QQ, ("x", "y"))
-    x, y = engine_ring(ring).gens()
+    x, y = tuple(ring.algebra_generators())
     polynomial_quotient = ring.quotient_ring(ring.ideal(x * y, y**2))
     polynomial_localization = ring.localization(x)
     polynomial_comparison = polynomial_quotient.localization_comparison(
@@ -632,7 +640,7 @@ def test_nakayama_minimal_generators_and_surjectivity_are_local_module_operation
 
     ring = PolynomialRing(QQ, "x")
     x = ring.algebra_generator("x")
-    origin = ring.spectrum()(engine_ring(ring).ideal(engine_ring(ring).gen()))
+    origin = ring.spectrum()(ring.ideal(ring.algebra_generator("x")))
     local = origin.local_ring()
     free = FreeModule(local, 1)
     generator = free.module_generator(0)
@@ -651,7 +659,8 @@ def test_nakayama_minimal_generators_and_surjectivity_are_local_module_operation
         {0: quotient.module_generator(0)}
     )
     residue_projection = projection.residue_morphism()
-    assert residue_projection.tensor()[0, 0] == residue_projection.base_ring().one()
+    residue_generator = residue_projection.domain().module_generator(0)
+    assert residue_projection(residue_generator) == residue_projection.codomain().module_generator(0)
     assert projection.is_surjective_mod_maximal_ideal()
     assert projection.is_surjective_by_nakayama()
 

@@ -1,7 +1,9 @@
-from sage.all import NN, SR, ZZ
+from sage.all import SR
 from sage.rings.infinity import Infinity
 
 from dzack_research.preamble.all import (
+    NN,
+    ZZ,
     EnumeratedByIntegers,
     EnumeratedByNaturals,
     FourierCharacters,
@@ -44,7 +46,7 @@ def test_integer_indexed_function_sets() -> None:
     assert laurent in EnumeratedByIntegers()
     assert sinc in FunctionEnumeratedSets()
     assert fourier in InfiniteEnumeratedSets()
-    assert laurent.index_set() is ZZ
+    assert repr(laurent.index_set()) == "Integer Ring"
     assert z_m1 in laurent
     assert laurent.function(-1) == laurent.unrank(laurent.rank(z_m1))
     assert str(z_m1) == "z_m1"

@@ -19,7 +19,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 
 def VectorFields(algebra):
     r"""Return ``Der_R(A,A)`` as the existing derivation module."""
-    from dzack_research.preamble.categories.modules import ring_as_module
+    from dzack_research.preamble.categories.modules.framed.framed_free_modules import ring_as_module
 
     return Derivations(algebra, ring_as_module(algebra))
 
@@ -27,11 +27,12 @@ def VectorFields(algebra):
 def _vector_field_scalar(vector_field, element):
     r"""Read the value of a vector field as the underlying scalar of ``A``."""
     target = vector_field.codomain()
-    labels = tuple(target.module_generating_set())
-    if len(labels) != 1:
+    labels = target.module_generating_set()
+    if int(labels.cardinality()) != 1:
         raise TypeError("a vector field here takes values in the rank-one A-module A")
+    label = labels.unrank(0)
     coefficients = module_coefficients(vector_field(element), target)
-    return vector_field.domain()(coefficients.get(labels[0], target.base_ring().zero()))
+    return vector_field.domain()(coefficients.get(label, target.base_ring().zero()))
 
 
 def LieBracket(left, right):
@@ -104,7 +105,7 @@ def InteriorProduct(vector_field):
     if vector_field.parent() is not VectorFields(algebra):
         raise TypeError("contraction requires a derivation with values in A")
 
-    from dzack_research.preamble.categories.algebras import DeRhamAlgebra
+    from dzack_research.preamble.categories.algebras.de_rham_algebras import DeRhamAlgebra
 
     de_rham = DeRhamAlgebra(algebra)
     exterior = de_rham.extension_algebra()

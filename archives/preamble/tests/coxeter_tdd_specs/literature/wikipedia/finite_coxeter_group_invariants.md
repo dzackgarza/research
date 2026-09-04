@@ -1,24 +1,14 @@
 # Invariants of the finite irreducible Coxeter groups
 
-**Source**: https://en.wikipedia.org/wiki/Coxeter_group, section "Properties"
-**Retrieved**: 2025-07-26 (transcribed from the full-article capture made by
-`literature/tools/webpage_to_markdown.py`)
-**Citation Key**: `wikipedia_coxeter_groups_2025`
-**Revision**: oldid 1300325012 (last edited 13 July 2025), permanent link
-https://en.wikipedia.org/w/index.php?title=Coxeter_group&oldid=1300325012
+**Source**: https://en.wikipedia.org/wiki/Coxeter_group, section "Properties" **Retrieved**: 2025-07-26 (transcribed from the full-article capture made by `literature/tools/webpage_to_markdown.py`) **Citation Key**: `wikipedia_coxeter_groups_2025` **Revision**: oldid 1300325012 (last edited 13 July 2025), permanent link https://en.wikipedia.org/w/index.php?title=Coxeter_group&oldid=1300325012
 
-This is the oracle table behind the bracket-notation orders and Weyl-group orders asserted in
-`tests/coxeter_tdd_specs/system/test_literature_examples.py`
-(`test_wikiwand_bracket_notation_examples`, `test_wikipedia_weyl_group_isomorphisms`,
-`test_dynkin_diagram_invariant_recovery`). Every row is a falsifiable claim: each order and
-Coxeter number is computable from Sage's `WeylGroup` / `CoxeterGroup`.
+This is the oracle table behind the bracket-notation orders and Weyl-group orders asserted in `tests/coxeter_tdd_specs/system/test_literature_examples.py` (`test_wikiwand_bracket_notation_examples`, `test_wikipedia_weyl_group_isomorphisms`, `test_dynkin_diagram_invariant_recovery`). Every row is a falsifiable claim: each order and Coxeter number is computable from Sage's `WeylGroup` / `CoxeterGroup`.
 
-Notation: `n` is the rank, `h` the Coxeter number, `m = nh/2` the number of reflections
-(equivalently the number of positive roots). The dihedral group of order `2p` is written
-`D_{2p}`, following the article.
+Notation: `n` is the rank, `h` the Coxeter number, `m = nh/2` the number of reflections (equivalently the number of positive roots).
+The dihedral group of order `2p` is written `D_{2p}`, following the article.
 
 | Rank | Group | Bracket notation | Reflections m = nh/2 | Coxeter number h | Order | Group structure |
-|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- |
 | 1 | A_1 | [ ] | 1 | 2 | 2 | S_2 |
 | 2 | A_2 | [3] | 3 | 3 | 6 | S_3 ≅ D_6 |
 | 3 | A_3 | [3,3] | 6 | 4 | 24 | S_4 |
@@ -45,10 +35,7 @@ Notation: `n` is the rank, `h` the Coxeter number, `m = nh/2` the number of refl
 
 The order of a reducible group is the product of the orders of its irreducible components.
 
-B_n and C_n give the same Coxeter group: the directed Dynkin diagrams differ, the undirected
-Coxeter graphs agree. This is why `[4,3]` (B_3) and `[3,4]` (C_3) both have order 48 in the
-bracket-notation fixture.
+B_n and C_n give the same Coxeter group: the directed Dynkin diagrams differ, the undirected Coxeter graphs agree.
+This is why `[4,3]` (B_3) and `[3,4]` (C_3) both have order 48 in the bracket-notation fixture.
 
-The finite Coxeter groups that are not Weyl groups (not crystallographic) are H_3, H_4, and
-those I_2(p) not isomorphic to a Weyl group; the exceptional isomorphisms are
-I_2(3) ≅ A_2, I_2(4) ≅ B_2, I_2(6) ≅ G_2.
+The finite Coxeter groups that are not Weyl groups (not crystallographic) are H_3, H_4, and those I_2(p) not isomorphic to a Weyl group; the exceptional isomorphisms are I_2(3) ≅ A_2, I_2(4) ≅ B_2, I_2(6) ≅ G_2.

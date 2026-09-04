@@ -7,20 +7,20 @@ from dzack_research.preamble.categories.functors.core import (
     Functor,
     category_inclusion,
 )
-from dzack_research.preamble.categories.modules import (
+from dzack_research.preamble.categories.modules.cochain_complexes import (
     CochainComplexes,
     Cohomology,
-    FinitelyPresentedModules,
-    module_homset,
 )
-from dzack_research.preamble.categories.rings import owned_ring_view
+from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModules
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
 
 
 class CohomologyFunctor(Functor):
     r"""The degree-``p`` cohomology functor ``H^p : Coch_R -> Mod_R``."""
 
     def __init__(self, base_ring, degree) -> None:
-        self._base_ring = owned_ring_view(base_ring)
+        self._base_ring = _owned_ring(base_ring)
         self._degree = int(degree)
         if self._degree < 0:
             raise ValueError("cohomology degree is nonnegative")
@@ -66,12 +66,10 @@ class DeRhamCohomologyFunctor(CompositeFunctor):
     r"""The literal composite ``H^p ∘ U_Coch ∘ DR_R``."""
 
     def __init__(self, base_ring, degree) -> None:
-        from dzack_research.preamble.categories.algebras import (
-            StrictlyCommutativeDifferentialGradedAlgebras,
-        )
+        from dzack_research.preamble.categories.algebras.differential_graded_algebras import StrictlyCommutativeDifferentialGradedAlgebras
         from dzack_research.preamble.categories.functors.de_rham import de_rham_functor
 
-        self._base_ring = owned_ring_view(base_ring)
+        self._base_ring = _owned_ring(base_ring)
         self._degree = int(degree)
         de_rham = de_rham_functor(self._base_ring)
         forget_to_complex = category_inclusion(
@@ -98,12 +96,10 @@ class CohomologyAlgebraFunctor(Functor):
     r"""The graded cohomology-algebra functor ``H^*`` on strict CDGAs."""
 
     def __init__(self, base_ring) -> None:
-        from dzack_research.preamble.categories.algebras import (
-            CohomologyAlgebras,
-            StrictlyCommutativeDifferentialGradedAlgebras,
-        )
+        from dzack_research.preamble.categories.algebras.cohomology_algebras import CohomologyAlgebras
+        from dzack_research.preamble.categories.algebras.differential_graded_algebras import StrictlyCommutativeDifferentialGradedAlgebras
 
-        self._base_ring = owned_ring_view(base_ring)
+        self._base_ring = _owned_ring(base_ring)
         super().__init__(
             StrictlyCommutativeDifferentialGradedAlgebras(self._base_ring),
             CohomologyAlgebras(self._base_ring),
@@ -113,14 +109,12 @@ class CohomologyAlgebraFunctor(Functor):
         return self._base_ring
 
     def _apply_object(self, dga):
-        from dzack_research.preamble.categories.algebras import CohomologyAlgebra
+        from dzack_research.preamble.categories.algebras.cohomology_algebras import CohomologyAlgebra
 
         return CohomologyAlgebra(dga)
 
     def _apply_morphism(self, morphism):
-        from dzack_research.preamble.categories.algebras import (
-            cohomology_algebra_homset,
-        )
+        from dzack_research.preamble.categories.algebras.cohomology_algebras import cohomology_algebra_homset
 
         return cohomology_algebra_homset(
             self(morphism.domain()),
@@ -137,7 +131,7 @@ class DeRhamCohomologyAlgebraFunctor(CompositeFunctor):
     def __init__(self, base_ring) -> None:
         from dzack_research.preamble.categories.functors.de_rham import de_rham_functor
 
-        self._base_ring = owned_ring_view(base_ring)
+        self._base_ring = _owned_ring(base_ring)
         super().__init__(
             de_rham_functor(self._base_ring),
             cohomology_algebra_functor(self._base_ring),

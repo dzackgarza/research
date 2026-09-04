@@ -31,7 +31,7 @@ def test_genus_is_reconstructed_from_signature_and_discriminant_form() -> None:
     assert genus.signature_pair() == (0, 2)
     assert genus.discriminant_form() is lattice.discriminant_quadratic_form()
     assert genus.exists()
-    assert genus.determinant() == lattice.gram_tensor().det() == 3
+    assert genus.determinant() == lattice.determinant() == 3
     assert genus.representative().genus() == genus
 
 

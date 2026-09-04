@@ -10,31 +10,30 @@ scalar-extension/restriction adjunction executable without replacing ``B`` by
 a second authoritative ring implementation.
 """
 
-from sage.categories.homset import Hom
 from sage.categories.map import Map
 from sage.categories.morphism import SetMorphism
 from sage.categories.rings import Rings as SageRings
 
-from dzack_research.preamble.categories.rings import OwnedRings as _OwnedRings
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
-    FramedAlgebras,
-    OwnedAlgebraView,
-    OwnedAlgebras,
-)
-from dzack_research.preamble.categories.algebras.finitely_presented_algebras import (
     AlgebrasWithChosenFinitePresentation,
     FinitelyPresentedAlgebras,
+    FramedAlgebras,
+    _OwnedAlgebraParent,
+    OwnedAlgebras,
 )
-from dzack_research.preamble.categories.algebras.framed_free_algebras import (
+from dzack_research.preamble.categories.algebras.free_algebras import (
     SymmetricAlgebraOn,
 )
-from dzack_research.preamble.categories.rings import (
+from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
-    engine_ring,
-    owned_ring_view,
+    _engine_element,
+    _engine_ring,
+    _owned_ring,
 )
-from dzack_research.preamble.categories.sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.set_categories import CoproductOfFamily
+from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 from dzack_research.preamble.refine import refine
 
 
@@ -69,10 +68,11 @@ class RestrictedScalarsAlgebras(OwnedCategoryOverBaseRing):
 
 def _lift_polynomial(relation, coefficient_lift, target_variables, target_ring):
     r"""Lift a polynomial exactly after lifting each coefficient."""
-    if len(target_variables) == 0:
+    variable_count = int(target_variables.cardinality())
+    if variable_count == 0:
         return target_ring(coefficient_lift(relation))
-    if len(target_variables) == 1:
-        variable = target_variables[0]
+    if variable_count == 1:
+        variable = target_variables.unrank(0)
         return sum(
             (
                 coefficient_lift(coefficient) * variable**exponent
@@ -84,12 +84,8 @@ def _lift_polynomial(relation, coefficient_lift, target_variables, target_ring):
         (
             coefficient_lift(coefficient)
             * target_ring.prod(
-                variable**exponent
-                for variable, exponent in zip(
-                    target_variables,
-                    tuple(exponents),
-                    strict=True,
-                )
+                target_variables.unrank(position) ** int(exponent)
+                for position, exponent in enumerate(exponents)
             )
             for exponents, coefficient in relation.dict().items()
         ),
@@ -99,63 +95,101 @@ def _lift_polynomial(relation, coefficient_lift, target_variables, target_ring):
 
 def _chosen_restriction_presentation(algebra, extension_ring, base_ring):
     r"""Construct the selected polynomial presentation of ``Res(B)`` over ``R``."""
-    extension_labels = tuple(extension_ring.algebra_generating_set())
-    algebra_labels = tuple(algebra.algebra_generating_set())
-    combined_labels = finite_ordered_set(
-        tuple(("scalar", label) for label in extension_labels)
-        + tuple(("algebra", label) for label in algebra_labels)
+    extension_labels = extension_ring.algebra_generating_set()
+    algebra_labels = algebra.algebra_generating_set()
+    tagged_labels = CoproductOfFamily(
+        Sets.Δ[1],
+        lambda index: extension_labels if int(index) == 0 else algebra_labels,
     )
-    presentation_ring = SymmetricAlgebraOn(base_ring, combined_labels)
-    presentation_engine = engine_ring(presentation_ring)
+    presentation_ring = SymmetricAlgebraOn(base_ring, tagged_labels)
+    combined_labels = presentation_ring.algebra_generating_set()
+    presentation_engine = _engine_ring(presentation_ring)
 
-    scalar_variables = tuple(
-        presentation_engine(presentation_ring.algebra_generator(("scalar", label)))
-        for label in extension_labels
+    scalar_variables = indexed_family(
+        extension_labels,
+        lambda label: _engine_element(
+            presentation_ring,
+            presentation_ring.algebra_generator(tagged_labels(0, label)),
+        ),
+        name="Restricted-scalar presentation variables",
     )
-    algebra_variables = tuple(
-        presentation_engine(presentation_ring.algebra_generator(("algebra", label)))
-        for label in algebra_labels
+    algebra_variables = indexed_family(
+        algebra_labels,
+        lambda label: _engine_element(
+            presentation_ring,
+            presentation_ring.algebra_generator(tagged_labels(1, label)),
+        ),
+        name="Restricted-algebra presentation variables",
     )
 
-    extension_presentation_engine = engine_ring(extension_ring.presentation_ring())
+    extension_presentation_engine = _engine_ring(extension_ring.presentation_ring())
+    # Private finite backend serialization required by Sage's polynomial-Hom constructor.
     extension_presentation_map = extension_presentation_engine.hom(
         list(scalar_variables),
         presentation_engine,
     )
-    extension_relations = tuple(
-        presentation_engine(extension_presentation_map(relation))
-        for relation in extension_ring.relations()
+    extension_presentation_ring = extension_ring.presentation_ring()
+    extension_relations = extension_ring.relations()
+    algebra_relations = algebra.relations()
+    relation_indices = CoproductOfFamily(
+        Sets.Δ[1],
+        lambda index: (
+            extension_relations.index_set()
+            if int(index) == 0
+            else algebra_relations.index_set()
+        ),
     )
 
-    extension_engine = engine_ring(extension_ring)
+    extension_engine = _engine_ring(extension_ring)
 
     def coefficient_lift(coefficient):
         representative = extension_engine(coefficient).lift()
         return presentation_engine(extension_presentation_map(representative))
 
-    algebra_relations = tuple(
-        _lift_polynomial(
-            relation,
-            coefficient_lift,
-            algebra_variables,
-            presentation_engine,
-        )
-        for relation in algebra.relations()
-    )
-    selected_relations = extension_relations + algebra_relations
-    presentation_ideal = presentation_engine.ideal(selected_relations)
+    algebra_presentation_ring = algebra.presentation_ring()
 
-    algebra_engine = engine_ring(algebra)
-    structure_map = algebra.algebra_structure_morphism()
-    generator_values = tuple(
-        algebra_engine(structure_map(extension_ring.algebra_generator(label)))
-        for label in extension_labels
-    ) + tuple(
-        algebra_engine(algebra.algebra_generator(label)) for label in algebra_labels
+    def relation_value(tagged):
+        if int(tagged.summand_index()) == 0:
+            relation = extension_relations[tagged.summand_element()]
+            backend = presentation_engine(
+                extension_presentation_map(
+                    _engine_element(extension_presentation_ring, relation)
+                )
+            )
+        else:
+            relation = algebra_relations[tagged.summand_element()]
+            backend = _lift_polynomial(
+                _engine_element(algebra_presentation_ring, relation),
+                coefficient_lift,
+                algebra_variables,
+                presentation_engine,
+            )
+        return presentation_ring._from_engine_element(presentation_engine(backend))
+
+    selected_relations = indexed_family(
+        relation_indices,
+        relation_value,
+        name="Restricted-algebra defining relations",
     )
+    # Private finite backend serialization required by Sage's ideal constructor.
+    presentation_ideal = presentation_engine.ideal(
+        [presentation_ring._engine_element(relation) for relation in selected_relations]
+    )
+
+    structure_map = algebra.algebra_structure_morphism()
+
+    def generator_value(label):
+        tagged = combined_labels(label)
+        if int(tagged.summand_index()) == 0:
+            value = structure_map(
+                extension_ring.algebra_generator(tagged.summand_element())
+            )
+        else:
+            value = algebra.algebra_generator(tagged.summand_element())
+        return _engine_element(algebra, value)
 
     def lift_to_presentation(element):
-        representative = algebra_engine(element).lift()
+        representative = _engine_element(algebra, algebra(element)).lift()
         return _lift_polynomial(
             representative,
             coefficient_lift,
@@ -168,8 +202,10 @@ def _chosen_restriction_presentation(algebra, extension_ring, base_ring):
         presentation_ring,
         selected_relations,
         presentation_ideal,
-        generator_values,
+        generator_value,
         lift_to_presentation,
+        extension_labels,
+        algebra_labels,
     )
 
 
@@ -186,12 +222,12 @@ def restrict_algebra_scalars(algebra, ring_map):
         raise TypeError("algebra scalar restriction is specified by a ring morphism")
 
     extension_ring = algebra.base_ring()
-    if engine_ring(ring_map.codomain()) is not engine_ring(extension_ring):
+    if _engine_ring(ring_map.codomain()) is not _engine_ring(extension_ring):
         raise ValueError(
             f"restriction of scalars for {algebra} requires a map into "
             f"{extension_ring}, got codomain {ring_map.codomain()}"
         )
-    base_ring = owned_ring_view(ring_map.domain())
+    base_ring = _owned_ring(ring_map.domain())
 
     has_selected_presentation = (
         extension_ring in AlgebrasWithChosenFinitePresentation(base_ring)
@@ -206,17 +242,17 @@ def restrict_algebra_scalars(algebra, ring_map):
             presentation_ideal,
             generator_values,
             lift_to_presentation,
+            restricted_scalar_labels,
+            restricted_algebra_labels,
         ) = _chosen_restriction_presentation(algebra, extension_ring, base_ring)
-        restricted_scalar_labels = tuple(extension_ring.algebra_generating_set())
-        restricted_algebra_labels = tuple(algebra.algebra_generating_set())
     else:
         labels = None
         generator_values = None
         restricted_scalar_labels = None
         restricted_algebra_labels = None
 
-    restricted = OwnedAlgebraView(
-        engine_ring(algebra),
+    restricted = _OwnedAlgebraParent(
+        _engine_ring(algebra),
         base_ring,
         labels,
         ring_map,
@@ -227,8 +263,9 @@ def restrict_algebra_scalars(algebra, ring_map):
     restricted._preamble_restricted_scalar_generator_labels = restricted_scalar_labels
     restricted._preamble_restricted_algebra_generator_labels = restricted_algebra_labels
     source_structure = algebra.algebra_structure_morphism()
-    restricted._preamble_structure_map = SetMorphism(
-        Hom(base_ring, restricted, _OwnedRings()),
+    restricted._preamble_structure_map = ring_morphism(
+        base_ring,
+        restricted,
         lambda scalar: restricted(source_structure(ring_map(scalar))),
     )
 
@@ -253,25 +290,35 @@ def restrict_algebra_scalars(algebra, ring_map):
     restricted = refine(restricted, placement)
 
     if has_selected_presentation:
-        presentation_engine = engine_ring(presentation_ring)
-        algebra_engine = engine_ring(algebra)
-        engine_base = engine_ring(base_ring)
+        presentation_engine = _engine_ring(presentation_ring)
+        algebra_engine = _engine_ring(algebra)
+        engine_base = _engine_ring(base_ring)
         source_structure = algebra.algebra_structure_morphism()
+        def engine_base_image(scalar):
+            owned_scalar = base_ring._from_engine_element(engine_base(scalar))
+            return _engine_element(
+                algebra,
+                source_structure(ring_map(owned_scalar)),
+            )
+
         engine_base_map = SetMorphism(
             engine_base.Hom(algebra_engine),
-            lambda scalar: algebra_engine(
-                source_structure(ring_map(engine_base(scalar)))
-            ),
+            engine_base_image,
         )
         presentation_engine_map = presentation_engine.hom(
-            [algebra_engine(value) for value in generator_values],
+            [generator_values(label) for label in labels],
             algebra_engine,
             base_map=engine_base_map,
         )
-        restricted._preamble_algebra_presentation_morphism = SetMorphism(
-            Hom(presentation_ring, restricted, _OwnedRings()),
-            lambda element: restricted(
-                presentation_engine_map(presentation_engine(element))
+        restricted._preamble_algebra_presentation_morphism = ring_morphism(
+            presentation_ring,
+            restricted,
+            lambda element: restricted._from_engine_element(
+                algebra_engine(
+                    presentation_engine_map(
+                        _engine_element(presentation_ring, element)
+                    )
+                )
             ),
         )
 

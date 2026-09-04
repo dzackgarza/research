@@ -1,135 +1,15 @@
-"""Owned categories and constructions of rings."""
+"""Internal ring package.
 
-from dzack_research.preamble.categories.rings.commutative_ideals import (
-    CommutativeIdeal,
-    CommutativeIdeals,
-)
-from dzack_research.preamble.categories.rings.prime_spectrum import (
-    DistinguishedOpenSubobject,
-    PrimeIdealPoint,
-    PrimeSpectrum,
-    ZariskiClosedSubobject,
-)
-from dzack_research.preamble.categories.rings.predicate_subrings import (
-    PredicateSubrings,
-    predicate_subring,
-)
-from dzack_research.preamble.categories.rings.ring_morphisms import (
+The public aggregated ring surface is :mod:`dzack_research.preamble.rings`.
+Keeping this package initializer dependency-light is required because Python
+executes it before every import of a defining module in this package.
+"""
+
+from dzack_research.preamble.categories.rings.ring_foundation import (
     RingHomset,
     RingMorphism,
     ring_homset,
     ring_morphism,
 )
-from dzack_research.preamble.categories.rings.rings import (
-    AdicallyCompleteRings,
-    ArtinianRings,
-    CommutativeRings,
-    CompleteLocalRings,
-    Fields,
-    IntegralDomains,
-    LocalRings,
-    NoetherianRings,
-    OwnedDivisionRings,
-    OwnedAdicallyCompleteRings,
-    OwnedArtinianRings,
-    OwnedCategoryOverBaseRing,
-    OwnedCommutativeRings,
-    OwnedCompleteLocalRings,
-    OwnedFields,
-    OwnedIntegralDomains,
-    OwnedLocalRings,
-    OwnedNoetherianRings,
-    OwnedOrders,
-    OwnedRingView,
-    OwnedRings,
-    OwnedRngs,
-    OwnedSemirings,
-    PrimeField,
-    PrimeFields,
-    Rings,
-    DivisionRings,
-    engine_element,
-    engine_ring,
-    install_session_rings,
-    own_ring,
-    owned_ring_view,
-)
-from dzack_research.preamble.categories.rings.commutative_algebra import (
-    AdicCompletion,
-    AdicCompletions,
-    DualNumbers,
-    GeneratedIdealView,
-    Localization,
-    LocalizationRings,
-    PrimeLocalization,
-    PrimeLocalizations,
-    QuotientRing,
-    QuotientRings,
-    ResidueField,
-)
-from dzack_research.preamble.categories.rings.number_fields import (
-    NumberFieldsWithChosenPrimitiveElement,
-    OwnedNumberFields,
-    refine_number_field,
-)
 
-__all__ = [
-    "AdicCompletion",
-    "AdicCompletions",
-    "AdicallyCompleteRings",
-    "ArtinianRings",
-    "CommutativeRings",
-    "CompleteLocalRings",
-    "CommutativeIdeal",
-    "CommutativeIdeals",
-    "DistinguishedOpenSubobject",
-    "DivisionRings",
-    "DualNumbers",
-    "Fields",
-    "GeneratedIdealView",
-    "IntegralDomains",
-    "Localization",
-    "LocalizationRings",
-    "LocalRings",
-    "NoetherianRings",
-    "OwnedAdicallyCompleteRings",
-    "OwnedArtinianRings",
-    "OwnedCommutativeRings",
-    "OwnedCompleteLocalRings",
-    "OwnedDivisionRings",
-    "OwnedCategoryOverBaseRing",
-    "OwnedFields",
-    "OwnedIntegralDomains",
-    "OwnedLocalRings",
-    "OwnedNoetherianRings",
-    "OwnedNumberFields",
-    "OwnedOrders",
-    "OwnedRingView",
-    "OwnedRings",
-    "OwnedRngs",
-    "OwnedSemirings",
-    "PredicateSubrings",
-    "PrimeIdealPoint",
-    "PrimeField",
-    "PrimeSpectrum",
-    "PrimeFields",
-    "PrimeLocalization",
-    "PrimeLocalizations",
-    "QuotientRing",
-    "QuotientRings",
-    "ResidueField",
-    "RingHomset",
-    "RingMorphism",
-    "NumberFieldsWithChosenPrimitiveElement",
-    "ZariskiClosedSubobject",
-    "Rings",
-    "engine_element",
-    "engine_ring",
-    "install_session_rings",
-    "own_ring",
-    "owned_ring_view",
-    "predicate_subring",
-    "ring_homset",
-    "ring_morphism",
-    "refine_number_field",
-]
+__all__ = ["RingHomset", "RingMorphism", "ring_homset", "ring_morphism"]

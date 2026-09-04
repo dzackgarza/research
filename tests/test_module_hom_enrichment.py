@@ -12,6 +12,9 @@ from dzack_research.preamble.all import (
     SymmetricAlgebraOn,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    module_coefficients,
+)
 
 
 def test_module_hom_is_the_internal_hom_module_not_a_second_carrier() -> None:
@@ -51,7 +54,7 @@ def test_module_hom_is_unique_even_when_objects_have_more_structure() -> None:
     modules = Modules(QQ)
 
     categorical = modules.Hom(algebra, algebra)
-    internal = algebra.internal_hom(algebra)
+    internal = InternalHom(algebra, algebra)
 
     assert categorical is internal
     assert categorical is modules.HomCategory().Of(algebra, algebra)
@@ -86,8 +89,12 @@ def test_general_presented_kernel_uses_polynomial_syzygies_and_has_exact_lift() 
 
     kernel = morphism.kernel()
     inclusion = kernel.inclusion()
+    source_labels = tuple(source.module_generating_set())
     kernel_images = {
-        tuple(inclusion(generator).lift())
+        tuple(
+            module_coefficients(inclusion(generator), source).get(label, algebra.zero())
+            for label in source_labels
+        )
         for generator in kernel.module_generators()
     }
 

@@ -1,14 +1,12 @@
 [Unit]
 Description=JupyterLab dynamic dashboard
-After=network.target
-StartLimitIntervalSec=1800
-StartLimitBurst=3
+After=default.target
 
 [Service]
 Type=simple
-WorkingDirectory=/home/dzack/research/computations/notebooks
+WorkingDirectory=/home/dzack
 ExecStartPre=/home/dzack/.config/systemd/user/check-port-8888.py
-ExecStart=/bin/direnv exec /home/dzack/research /usr/bin/env PATH=/home/dzack/gitclones/sage-dev-allopts/.venv/bin:/home/dzack/.local/bin:/usr/local/bin:/usr/bin:/bin /home/dzack/gitclones/sage-dev-allopts/.venv/bin/jupyter-lab --IdentityProvider.password_required=False --IdentityProvider.hashed_password='' --IdentityProvider.token='' --ServerApp.disable_check_xsrf=True --ip=0.0.0.0 --port=8888 --ServerApp.root_dir=/home/dzack/research/computations/notebooks --no-browser
+ExecStart=/bin/direnv exec /home/dzack /home/dzack/gitclones/sage-dev-allopts/sage --notebook=jupyterlab --IdentityProvider.password_required=False --IdentityProvider.hashed_password='' --IdentityProvider.token='' --ip=0.0.0.0 --port=8888 --no-browser
 Restart=on-failure
 RestartSec=5
 Environment=HOME=/home/dzack

@@ -14,7 +14,9 @@ calling that category.
 """
 
 from sage.arith.misc import gcd
-from sage.misc.cachefunc import cached_method
+from sage.categories.category import Category
+from sage.combinat.root_system.root_system import RootSystem
+from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.latex import latex
 from sage.misc.unknown import Unknown
 from sage.rings.infinity import Infinity
@@ -22,7 +24,7 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.parent import Parent
 
 from collections.abc import Hashable, Sequence
-from typing import TYPE_CHECKING, overload
+from typing import overload
 
 from dzack_research.preamble.categories._lattice import diagonal_gram as diagonal_gram
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
@@ -30,17 +32,16 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     IsoCategoryConstruction,
     MonoCategoryConstruction,
 )
-from dzack_research.preamble.categories.modules import FramedFreeModules
-from dzack_research.preamble.categories.rings import (
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules
+from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     OwnedRings,
-    engine_ring,
-    own_ring,
+    _engine_element,
+    _engine_ring,
+    _own_ring,
 )
-from dzack_research.preamble.tensors import Tensor
-
-if TYPE_CHECKING:
-    from dzack_research.preamble.categories.lattice_properties import FiniteRankLattices
+from dzack_research.preamble.refine import refine
+from dzack_research.preamble.tensors.tensor import Tensor, tensor
 
 _Rings = OwnedRings()
 
@@ -105,7 +106,7 @@ def indecomposable_name(lattice):
     for scale in (content, -content):
         if scale in (0, 1, -1):
             continue
-        from dzack_research.preamble.tensors import tensor
+        from dzack_research.preamble.tensors.tensor import tensor
 
         rank = gram.tensor_shape()[0]
         untwisted = tensor(
@@ -123,20 +124,131 @@ def indecomposable_name(lattice):
     return None
 
 
-class Genus:
-    r"""The genus datum of an even nondegenerate integral lattice.
+@cached_function(key=lambda module, basis: (id(module), basis))
+def _lattice_subobject_spanning(module, basis):
+    r"""Return the canonical lattice subobject on a finite span basis."""
+    from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+        _finalize_module_subobject,
+    )
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+        module_embedding,
+    )
+    from dzack_research.preamble.categories.sets.set_categories import Sets
+    from dzack_research.preamble.tensors.tensor import tensor
 
-    For the supported even case this object is determined by its real
-    signature and finite discriminant quadratic form.  Sage's genus engine is
-    reconstructed from precisely those two data when local symbols,
-    representatives, or the mass are requested; no hidden lattice
-    representative is stored.
+    ring = module.base_ring()
+    rank = int(basis.cardinality())
+    labels = Sets.Δ[rank - 1]
+    if rank == 0:
+        source = module.lattice_category()(0)
+    else:
+        gram = tensor(
+            ring,
+            (),
+            (rank, rank),
+            (
+                module.b(basis.unrank(i), basis.unrank(j))
+                for i in range(rank)
+                for j in range(rank)
+            ),
+        )
+        source = module.lattice_category()(gram, module_generators=labels)
+    module_inclusion = module_embedding(
+        source,
+        module,
+        lambda label: basis.unrank(int(label))
+    )
+    inclusion = source.Emb(module)(module_inclusion)
+    return _finalize_module_subobject(
+        module,
+        basis,
+        source,
+        inclusion=inclusion,
+    )
+
+
+class LocalGenusSymbol:
+    r"""The Conway--Sloane Jordan-block invariants at one finite prime.
+
+    For odd ``p`` each block is ``(m,n,d)``.  At ``p=2`` each block is
+    ``(m,n,s,d,o)``.  These integer tuples are the mathematical local-symbol
+    data; Sage's ``Genus_Symbol_p_adic_ring`` is reconstructed privately when
+    one of its exact algorithms is used.
     """
 
+    def __init__(self, prime, jordan_blocks) -> None:
+        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+
+        integers = _own_ring(SageZZ)
+        self._prime = integers(prime)
+        if not self._prime.is_prime():
+            raise ValueError("a local genus symbol is attached to a prime")
+        self._jordan_blocks = tuple(
+            tuple(integers(entry) for entry in block)
+            for block in jordan_blocks
+        )
+
+    def prime(self):
+        return self._prime
+
+    def jordan_blocks(self):
+        return self._jordan_blocks
+
+    symbol = jordan_blocks
+
+    @cached_method
+    def _engine(self):
+        from sage.quadratic_forms.genera.genus import Genus_Symbol_p_adic_ring
+        from dzack_research.preamble.categories.rings.ring_foundation import _engine_element
+
+        integers = self.prime().parent()
+        return Genus_Symbol_p_adic_ring(
+            _engine_element(integers, self.prime()),
+            [
+                [_engine_element(integers, entry) for entry in block]
+                for block in self.jordan_blocks()
+            ],
+        )
+
+    def excess(self):
+        integers = self.prime().parent()
+        return integers._from_engine_element(SageZZ(self._engine().excess()))
+
+    def level(self):
+        integers = self.prime().parent()
+        return integers._from_engine_element(SageZZ(self._engine().level()))
+
+    def norm(self):
+        integers = self.prime().parent()
+        return integers._from_engine_element(SageZZ(self._engine().norm()))
+
+    def number_of_blocks(self):
+        return self.prime().parent()(len(self.jordan_blocks()))
+
+    def __eq__(self, other):
+        return (
+            isinstance(other, LocalGenusSymbol)
+            and self.prime() == other.prime()
+            and self.jordan_blocks() == other.jordan_blocks()
+        )
+
+    def __ne__(self, other):
+        return not self == other
+
+    def __repr__(self):
+        return repr(self._engine())
+
+
+class Genus:
+    r"""The genus determined by signature and discriminant quadratic form."""
+
     def __init__(self, signature_pair, discriminant_quadratic_form) -> None:
+        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+
+        integers = _own_ring(SageZZ)
         self._signature_pair = (
-            SageZZ(signature_pair[0]),
-            SageZZ(signature_pair[1]),
+            integers(signature_pair[0]),
+            integers(signature_pair[1]),
         )
         self._discriminant_quadratic_form = discriminant_quadratic_form
 
@@ -150,91 +262,125 @@ class Genus:
 
     @cached_method
     def _engine_form(self):
-        r"""Rebuild Sage's finite quadratic form from the owned discriminant form."""
+        r"""Privately rebuild Sage's finite quadratic form from owned data."""
         from sage.modules.torsion_quadratic_module import TorsionQuadraticForm
         from sage.rings.rational_field import QQ as SageQQ
-        from dzack_research.preamble.tensors import tensor
+        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+        from dzack_research.preamble.tensors.tensor import tensor
         from dzack_research.preamble.tensors.tensor import _engine_component_matrix
 
         form = self.discriminant_form()
         generators = tuple(form.module_generators())
+        rationals = _own_ring(SageQQ)
         written = tensor(
-            SageQQ,
+            rationals,
             (),
             (len(generators), len(generators)),
             [
                 [
-                    form.q(left).lift()
+                    form.q(left).parent().lift(form.q(left))
                     if i == j
-                    else form.b(left, right).lift()
+                    else form.b(left, right).parent().lift(form.b(left, right))
                     for j, right in enumerate(generators)
                 ]
                 for i, left in enumerate(generators)
             ],
         )
         engine_form = TorsionQuadraticForm(_engine_component_matrix(written))
-        if engine_form.cardinality() != form.cardinality():
+        if int(engine_form.cardinality()) != int(form.cardinality()):
             raise ArithmeticError(
                 "reconstructing the genus engine changed the discriminant-group cardinality"
             )
         return engine_form
 
+    def _engine_signature_pair(self):
+        from dzack_research.preamble.categories.rings.ring_foundation import _engine_element
+
+        integers = self.signature_pair()[0].parent()
+        return tuple(
+            _engine_element(integers, entry) for entry in self.signature_pair()
+        )
+
     @cached_method
     def _engine(self):
-        r"""Return Sage's global genus symbol for these exact data."""
-        return self._engine_form().genus(self.signature_pair())
+        r"""Return Sage's private global genus realization of these exact data."""
+        return self._engine_form().genus(self._engine_signature_pair())
 
     def exists(self) -> bool:
         r"""Return whether the signature/discriminant-form datum is realizable."""
-        return bool(self._engine_form().is_genus(self.signature_pair(), even=True))
+        return bool(
+            self._engine_form().is_genus(
+                self._engine_signature_pair(), even=True
+            )
+        )
 
     def determinant(self):
         r"""Return the determinant of a representative of this genus."""
-        return SageZZ(self._engine().determinant())
+        integers = self.signature_pair()[0].parent()
+        return integers._from_engine_element(SageZZ(self._engine().determinant()))
 
     def local_symbol(self, prime):
-        r"""Return the exact ``ZZ_p`` genus symbol at ``prime``."""
-        return self._engine().local_symbol(SageZZ(prime))
+        r"""Return the owned exact ``ZZ_p`` genus symbol at ``prime``."""
+        integers = self.signature_pair()[0].parent()
+        prime = integers(prime)
+        from dzack_research.preamble.categories.rings.ring_foundation import _engine_element
+
+        backend = self._engine().local_symbol(_engine_element(integers, prime))
+        return LocalGenusSymbol(prime, backend.symbol_tuple_list())
 
     def excess(self, prime):
-        r"""Return the local p-excess/2-adic oddity invariant at ``prime``."""
-        return SageZZ(self.local_symbol(prime).excess())
+        return self.local_symbol(prime).excess()
 
     def level(self, prime):
-        r"""Return the level of the local genus symbol at ``prime``."""
-        return SageZZ(self.local_symbol(prime).level())
+        return self.local_symbol(prime).level()
 
     def representative(self):
-        r"""Return one live integral lattice representing this genus."""
+        r"""Return one owned integral lattice representing this genus."""
+        integers = self.signature_pair()[0].parent()
         representative = self._engine().representative()
-        return Lattices(SageZZ)([list(row) for row in representative.rows()])
+        rows = [
+            [integers._from_engine_element(entry) for entry in row]
+            for row in representative.rows()
+        ]
+        return Lattices(integers)(rows)
 
     def representatives(self):
-        r"""Return the representatives enumerated by the exact genus backend."""
+        r"""Return the owned representatives enumerated by the exact backend."""
+        integers = self.signature_pair()[0].parent()
         return tuple(
-            Lattices(SageZZ)([list(row) for row in representative.rows()])
+            Lattices(integers)(
+                [
+                    [integers._from_engine_element(entry) for entry in row]
+                    for row in representative.rows()
+                ]
+            )
             for representative in self._engine().representatives()
         )
 
     def class_number(self):
-        r"""Return the number of isometry classes enumerated in this genus."""
-        return SageZZ(len(self._engine().representatives()))
+        integers = self.signature_pair()[0].parent()
+        return integers(len(self._engine().representatives()))
 
     def mass(self):
         r"""Return the Smith--Minkowski--Siegel mass for a definite genus."""
         from sage.rings.rational_field import QQ as SageQQ
+        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
         positive, negative = self.signature_pair()
-        if positive and negative:
-            raise ValueError("the finite orthogonal-group mass is defined here for definite genera")
-        return SageQQ(self._engine().mass())
+        if positive != 0 and negative != 0:
+            raise ValueError(
+                "the finite orthogonal-group mass is defined here for definite genera"
+            )
+        rationals = _own_ring(SageQQ)
+        return rationals._from_engine_element(SageQQ(self._engine().mass()))
 
     def __eq__(self, other):
         if not isinstance(other, Genus):
             return NotImplemented
-        if self.signature_pair() != other.signature_pair():
-            return False
-        return bool(self._engine() == other._engine())
+        return (
+            self.signature_pair() == other.signature_pair()
+            and self.discriminant_form() == other.discriminant_form()
+        )
 
     def __ne__(self, other):
         result = self.__eq__(other)
@@ -328,7 +474,7 @@ class Lattices(OwnedCategoryOverBaseRing):
         if len(args) != 1:
             raise TypeError("Lattices(R) takes a ring R; construct an object as Lattices(R)(data)")
         try:
-            ring = own_ring(args[0])
+            ring = _own_ring(args[0])
         except TypeError as error:
             raise TypeError(
                 "Lattices(R) takes a ring R; construct an object as Lattices(R)(data)"
@@ -418,6 +564,26 @@ class Lattices(OwnedCategoryOverBaseRing):
             category=self,
         )
 
+    def _refine_lattice_object(self, lattice):
+        r"""Attach the lattice-property subcategories decidable from its form."""
+        categories = []
+        if lattice.rank() != Infinity:
+            categories.append(FiniteRankLattices(lattice.base_ring()))
+        if lattice.is_nondegenerate():
+            categories.append(NondegenerateLattices(lattice.base_ring()))
+        try:
+            is_even = lattice.is_even()
+        except NotImplementedError:
+            is_even = False
+        if is_even:
+            categories.append(EvenLattices(lattice.base_ring()))
+        return refine(lattice, categories) if categories else lattice
+
+    def _refine_root_lattice(self, lattice, cartan_type):
+        r"""Attach the selected root-system provenance to ``lattice``."""
+        lattice._cartan_type = cartan_type
+        return refine(lattice, RootLattices())
+
     def colimit(self, stage):
         r"""Return \(\operatorname{colim}_n \mathrm{stage}(n)\) along \(x\mapsto(x,0)\).
 
@@ -498,10 +664,23 @@ class Lattices(OwnedCategoryOverBaseRing):
     class ParentMethods:
         """Operations generic to every lattice."""
 
+        def lattice_category(self):
+            r"""Return the base-ring lattice category owning this object."""
+            return Lattices(self.base_ring())
+
+        def subobject_on(self, module_generating_set):
+            r"""Return the span with the restricted lattice form."""
+            from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+                _span_basis_elements,
+            )
+
+            basis = _span_basis_elements(self, module_generating_set)
+            return _lattice_subobject_spanning(self, basis)
+
         @cached_method
         def form(self):
             r"""Return the existing lattice pairing as a bilinear-form morphism."""
-            from dzack_research.preamble.categories.forms import BilinearForms
+            from dzack_research.preamble.categories.forms.forms import BilinearForms
 
             return BilinearForms(self, self.base_ring())(
                 lambda left, right: self.b(left, right)
@@ -516,13 +695,23 @@ class Lattices(OwnedCategoryOverBaseRing):
 
         @cached_method
         def forget_form_morphism(self):
-            from dzack_research.preamble.categories.modules import module_homset
+            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 
             return module_homset(self, self).identity()
 
         @cached_method
         def equip_form_morphism(self):
             return self.forget_form_morphism()
+
+        def Hom(self, codomain, category=None):
+            lattices = Lattices(self.base_ring())
+            if category is None or (
+                hasattr(category, "is_subcategory") and category.is_subcategory(lattices)
+            ):
+                from dzack_research.preamble.categories.lattice_morphisms import lattice_homset
+                return lattice_homset(self, codomain)
+            from sage.categories.homset import Hom as SageHom
+            return SageHom(self, codomain, category)
 
         def _Hom_(self, codomain, category=None):
             from dzack_research.preamble.categories.lattice_morphisms import (
@@ -535,21 +724,6 @@ class Lattices(OwnedCategoryOverBaseRing):
             ):
                 return lattice_homset(self, codomain)
             return super()._Hom_(codomain, category)
-
-        def hom(self, images, codomain=None):
-            r"""Construct a form-preserving lattice morphism."""
-            if codomain is None:
-                if isinstance(images, dict) and images:
-                    codomain = next(iter(images.values())).parent()
-                elif isinstance(images, (tuple, list)) and images:
-                    codomain = images[0].parent()
-                else:
-                    raise TypeError("the codomain is required when it cannot be read from images")
-            from dzack_research.preamble.categories.lattice_morphisms import (
-                lattice_homset,
-            )
-
-            return lattice_homset(self, codomain)(images)
 
         def Emb(self, codomain):
             r"""Return the set of form-preserving embeddings into ``codomain``."""
@@ -602,21 +776,25 @@ class Lattices(OwnedCategoryOverBaseRing):
                 lambda isometry: isometry.discriminant_morphism(),
             )
 
+        @cached_method
         def discriminant_image(self):
             r"""Return the computed image of ``rho_L`` when ``O(L)`` generators are known."""
             return self.Aut().discriminant_image()
 
+        @cached_method
         def discriminant_representation_is_surjective(self) -> bool:
             r"""Return whether the computed discriminant image equals ``O(A_L)``."""
             image = self.discriminant_image()
             return image.cardinality() == self.discriminant_group().orthogonal_group().cardinality()
 
+        @cached_method
         def stable_orthogonal_group(self):
             r"""Return ``ker(rho_L)`` as the stable orthogonal subgroup."""
             target = self.discriminant_group().orthogonal_group()
             trivial = target.subgroup_on(())
             return self.Aut().discriminant_preimage(trivial)
 
+        @cached_method
         def special_orthogonal_group(self):
             r"""Return ``SO(L)=ker(det:O(L)->{+-1})`` as a predicate subgroup."""
             from dzack_research.preamble.categories.group.predicate_subgroups import (
@@ -648,7 +826,8 @@ class Lattices(OwnedCategoryOverBaseRing):
         def positive_cone_subgroup(self):
             r"""Return the positive-cone-preserving subgroup in signature ``(1,n)``."""
             positive, negative = self.signature_pair()
-            if positive != 1 or negative < 1:
+            integers = positive.parent()
+            if positive != integers.one() or negative < integers.one():
                 raise ValueError(
                     f"positive_cone_subgroup requires signature (1,n); got {(positive, negative)}"
                 )
@@ -798,11 +977,13 @@ class Lattices(OwnedCategoryOverBaseRing):
 
         @cached_method
         def module_generators(self):
-            from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-                FreeModuleGeneratorSet,
-            )
+            from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 
-            return FreeModuleGeneratorSet(self)
+            return indexed_family(
+                self.module_generating_set(),
+                self.module_generator,
+                name="Lattice-generator family",
+            )
 
         def module_generator(self, index):
             r"""Return the module generator indexed by ``index``.
@@ -829,7 +1010,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                     index = keys.unrank(int(index))
             elif index not in keys:
                 index = keys.unrank(int(index))
-            return self.element_class(self, self._module.monomial(index))
+            return self.element_class(self, self._module.module_generator(index))
 
         def b(self, left, right):
             r"""Return the bilinear pairing \(b(v,w)\).
@@ -932,6 +1113,20 @@ class Lattices(OwnedCategoryOverBaseRing):
             """
             return self.rank() != Infinity
 
+        def determinant(self):
+            r"""Return the determinant of a finite-rank lattice form."""
+            if not self.is_finite_rank():
+                raise TypeError("the determinant requires a finite-rank lattice")
+            from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace
+
+            rank = int(self.rank())
+            gram = self.gram_tensor()
+            matrix = MatrixSpace(self.value_module(), rank).from_rows(
+                (gram[row, column] for column in range(rank))
+                for row in range(rank)
+            )
+            return matrix.determinant()
+
         def is_nondegenerate(self) -> bool:
             r"""Return whether the correlation map has zero radical."""
             from dzack_research.preamble.categories._lattice import (
@@ -961,15 +1156,17 @@ class Lattices(OwnedCategoryOverBaseRing):
                 case _:
                     if not self.is_finite_rank():
                         raise NotImplementedError("nondegeneracy of this infinite Gram presentation is not decided")
-                    return self.gram_tensor().det() != 0
+                    return self.determinant() != 0
 
         def is_even(self) -> bool:
             r"""Return whether ``b(x,x)`` lies in ``2R`` for every lattice vector."""
-            ring = engine_ring(self.base_ring())
+            ring = self.base_ring()
             try:
                 twice_ring = ring.ideal(ring(2))
             except (AttributeError, NotImplementedError, TypeError) as error:
-                raise NotImplementedError("membership in the principal ideal 2R is not decidable over this base ring") from error
+                raise NotImplementedError(
+                    "membership in the principal ideal 2R is not decidable over this base ring"
+                ) from error
 
             def is_twice(value) -> bool:
                 return ring(value) in twice_ring
@@ -1000,7 +1197,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             even level need not equal the exponent of ``A_L``: ``<2>`` has
             discriminant group ``ZZ/2`` but level ``4``.
             """
-            if engine_ring(self.base_ring()) is not SageZZ:
+            if _engine_ring(self.base_ring()) is not SageZZ:
                 raise NotImplementedError("lattice level is currently implemented for integral ZZ-lattices")
             if not self.is_finite_rank() or not self.is_nondegenerate():
                 raise ValueError("lattice level requires a finite nondegenerate lattice")
@@ -1029,7 +1226,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             The current owned realization is the even, finite-rank,
             nondegenerate ``ZZ`` case, where these data determine the genus.
             """
-            if engine_ring(self.base_ring()) is not SageZZ:
+            if _engine_ring(self.base_ring()) is not SageZZ:
                 raise NotImplementedError("the live genus object currently implements integral ZZ-lattices")
             if not self.is_finite_rank() or not self.is_nondegenerate():
                 raise ValueError("a genus here requires a finite nondegenerate lattice")
@@ -1050,8 +1247,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             if not self.is_nondegenerate():
                 return False
             if self.is_finite_rank():
-                determinant = engine_ring(self.base_ring())(self.gram_tensor().det())
-                return bool(determinant.is_unit())
+                return bool(self.determinant().is_unit())
             from dzack_research.preamble.categories._lattice import _DiagonalGram, _IdentityGram, _ScaledGram
 
             gram = self.gram_tensor()
@@ -1059,11 +1255,13 @@ class Lattices(OwnedCategoryOverBaseRing):
                 case _IdentityGram():
                     return True
                 case _DiagonalGram():
-                    ring = engine_ring(self.base_ring())
-                    return ring(gram._default).is_unit() and all(ring(value).is_unit() for value in gram._exceptions.values())
+                    ring = self.base_ring()
+                    return ring(gram._default).is_unit() and all(
+                        ring(value).is_unit() for value in gram._exceptions.values()
+                    )
                 case _ScaledGram():
-                    ring = engine_ring(self.base_ring())
-                    return ring(gram._scalar).is_unit() and Lattices(self.base_ring())(gram._gram).is_unimodular()
+                    ring = self.base_ring()
+                    return ring(gram._scalar).is_unit() and Lattices(ring)(gram._gram).is_unimodular()
                 case _:
                     raise NotImplementedError("unimodularity of this infinite Gram presentation is not decided")
 
@@ -1073,15 +1271,24 @@ class Lattices(OwnedCategoryOverBaseRing):
                 raise TypeError("divisibility is defined for an element of this lattice")
             from dzack_research.preamble.categories._lattice import generator_pairings
 
-            if engine_ring(self.base_ring()) is not SageZZ:
+            ring = self.base_ring()
+            if _engine_ring(ring) is not SageZZ:
                 raise NotImplementedError("integer divisibility is the ZZ specialization")
-            pairings = [SageZZ(value) for value in generator_pairings(self, element).values()]
-            return SageZZ.zero() if not pairings else abs(gcd(pairings))
+            pairings = tuple(
+                abs(ring(value))
+                for value in generator_pairings(self, element).values()
+            )
+            if not pairings:
+                return ring.zero()
+            divisor = pairings[0]
+            for value in pairings[1:]:
+                divisor = divisor.gcd(value)
+            return abs(divisor)
 
         @cached_method
         def dual_module(self):
             r"""Return the algebraic dual module ``Hom_R(L,R)`` in the dual framing."""
-            from dzack_research.preamble.categories.modules import BasedFreeModule
+            from dzack_research.preamble.categories.modules.framed.framed_free_modules import BasedFreeModule
 
             return BasedFreeModule(self.base_ring(), self.module_generating_set())
 
@@ -1101,25 +1308,29 @@ class Lattices(OwnedCategoryOverBaseRing):
             if not self.is_finite_rank():
                 raise NotImplementedError("the metric dual of this infinite non-identity Gram presentation is not materialized")
 
-            from dzack_research.preamble.categories.forms import BilinearForm
+            from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
+                BilinearForm,
+            )
             from dzack_research.preamble.categories.rational_lattices import refine_rational_lattice
 
             fraction_field = self.base_ring().fraction_field()
-            fraction_engine = engine_ring(fraction_field)
-            dual_tensor = self.gram_tensor().change_ring(fraction_engine).dual_tensor()
+            dual_tensor = self.gram_tensor().change_ring(fraction_field).dual_tensor()
             inverse_components = dual_tensor.components()
-            base_engine = engine_ring(self.base_ring())
-            if all(entry in base_engine for row in inverse_components for entry in row):
-                from dzack_research.preamble.tensors import tensor
+            try:
+                integral_components = [
+                    [self.base_ring()(entry) for entry in row]
+                    for row in inverse_components
+                ]
+            except (TypeError, ValueError):
+                integral_components = None
+            if integral_components is not None:
+                from dzack_research.preamble.tensors.tensor import tensor
 
                 integral_dual_form = tensor(
                     self.base_ring(),
                     (),
                     (int(self.rank()), int(self.rank())),
-                    [
-                        [base_engine(entry) for entry in row]
-                        for row in inverse_components
-                    ],
+                    integral_components,
                 )
                 return Lattices(self.base_ring())(
                     integral_dual_form,
@@ -1145,7 +1356,7 @@ class Lattices(OwnedCategoryOverBaseRing):
         def correlation_morphism(self):
             r"""Return ``L -> L^#``, ``v |-> b(v,-)``, whose selected-basis matrix is ``G``."""
             from dzack_research.preamble.categories._lattice import generator_pairings
-            from dzack_research.preamble.categories.modules import module_homset
+            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 
             assert self.is_nondegenerate()
             dual_lattice = self.dual_lattice()
@@ -1187,7 +1398,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             )
 
             divided = dual_lattice.linear_combination(
-                {label: SageZZ(coefficient) // divisibility for label, coefficient in module_coefficients(correlation_image).items() if coefficient}
+                {label: coefficient // divisibility for label, coefficient in module_coefficients(correlation_image, dual_lattice).items() if coefficient}
             )
             return self.discriminant_class(divided)
 
@@ -1206,7 +1417,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             they span ``L'`` inside ``L tensor QQ``; the result is accepted
             exactly when the inherited form is integral on that span.
             """
-            assert engine_ring(self.base_ring()) is SageZZ
+            assert _engine_ring(self.base_ring()) is SageZZ
             assert self.is_finite_rank() and self.is_nondegenerate()
 
             from functools import reduce
@@ -1218,65 +1429,129 @@ class Lattices(OwnedCategoryOverBaseRing):
                 _solve_left_integrally,
                 module_coefficients,
             )
-            from dzack_research.preamble.categories.sets import finite_ordered_set
-            from dzack_research.preamble.tensors import tensor
+            from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+            from dzack_research.preamble.tensors.tensor import tensor
 
             discriminant_module = self.discriminant_module()
+            ring = self.base_ring()
+            rationals = ring.fraction_field()
             rank = int(self.rank())
-            dual_gram = self.gram_tensor().change_ring(SageQQ).dual_tensor()
-            rational_rows = [[SageQQ.one() if i == j else SageQQ.zero() for j in range(rank)] for i in range(rank)]
+            dual_gram = self.gram_tensor().change_ring(rationals).dual_tensor()
+            rational_rows = [
+                [rationals.one() if i == j else rationals.zero() for j in range(rank)]
+                for i in range(rank)
+            ]
             dual_labels = tuple(self.dual_lattice().module_generating_set())
             for discriminant_class in discriminant_classes:
-                element = discriminant_class if discriminant_class.parent() is discriminant_module else discriminant_module(discriminant_class)
-                lift = element.dual_lattice_lift()
-                coefficients = module_coefficients(lift)
+                element = (
+                    discriminant_class
+                    if discriminant_class.parent() is discriminant_module
+                    else discriminant_module(discriminant_class)
+                )
+                lift = discriminant_module.dual_lattice_lift(element)
+                coefficients = module_coefficients(
+                    lift, discriminant_module.dual_lattice()
+                )
                 dual_coordinates = tensor(
-                    SageQQ,
+                    rationals,
                     (),
                     (rank,),
-                    [coefficients.get(label, SageQQ.zero()) for label in dual_labels],
+                    [
+                        coefficients.get(label, rationals.zero())
+                        for label in dual_labels
+                    ],
                 )
                 rational_rows.append(tuple(dual_gram * dual_coordinates))
 
             denominator = reduce(
                 lambda current, coordinate: current.lcm(coordinate.denominator()),
                 (coordinate for row in rational_rows for coordinate in row),
-                SageZZ.one(),
+                ring.one(),
             )
-            scaled_rows = [[SageZZ(denominator * coordinate) for coordinate in row] for row in rational_rows]
+
+            # Private HNF/span workspace.  Only backend scalars enter this block.
+            backend_denominator = _engine_element(ring, denominator)
+            scaled_rows = [
+                [
+                    SageZZ(
+                        backend_denominator
+                        * _engine_element(rationals, coordinate)
+                    )
+                    for coordinate in row
+                ]
+                for row in rational_rows
+            ]
             scaled_span = SageFreeModule(SageZZ, rank).submodule(scaled_rows)
-            integral_basis = scaled_span.basis_matrix()
-            basis_rows = (SageQQ.one() / denominator) * tensor.matrix(
-                SageQQ, integral_basis
+            integral_basis_backend = scaled_span.basis_matrix()
+            integral_basis_rows = [
+                [ring._from_engine_element(entry) for entry in row]
+                for row in integral_basis_backend.rows()
+            ]
+            basis_rows = tensor.matrix(
+                rationals,
+                tuple(
+                    tuple(
+                        rationals._from_engine_element(
+                            SageQQ(_engine_element(ring, entry))
+                            / SageQQ(backend_denominator)
+                        )
+                        for entry in row
+                    )
+                    for row in integral_basis_rows
+                ),
             )
-            basis_map = basis_rows.dual_tensor()
-            gram = self.gram_tensor().change_ring(SageQQ).pullback(basis_map)
-            if any(entry not in SageZZ for entry in gram.list()):
-                raise ValueError("the selected discriminant classes do not define an integral overlattice")
+            from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace
+
+            basis_map = MatrixSpace(rationals, rank, rank).from_rows(
+                tuple(
+                    tuple(basis_rows[column, row] for column in range(rank))
+                    for row in range(rank)
+                )
+            )
+            gram = self.gram_tensor().change_ring(rationals).pullback(basis_map)
+            try:
+                integral_entries = [
+                    [ring(gram[i, j]) for j in range(rank)]
+                    for i in range(rank)
+                ]
+            except (TypeError, ValueError) as error:
+                raise ValueError(
+                    "the selected discriminant classes do not define an integral overlattice"
+                ) from error
 
             labels = finite_ordered_set(range(rank))
             integral_gram = tensor(
-                self.base_ring(),
+                ring,
                 (),
                 (rank, rank),
-                [
-                    [SageZZ(gram[i, j]) for j in range(rank)]
-                    for i in range(rank)
-                ],
+                integral_entries,
             )
-            enlarged = Lattices(self.base_ring())(
+            enlarged = Lattices(ring)(
                 integral_gram,
                 module_generators=labels,
             )
             images = {}
-            for source_position, source_label in enumerate(self.module_generating_set()):
-                target = [denominator if index == source_position else SageZZ.zero() for index in range(rank)]
+            for source_position, source_label in enumerate(
+                self.module_generating_set()
+            ):
+                target = [
+                    denominator if index == source_position else ring.zero()
+                    for index in range(rank)
+                ]
                 coefficients = _solve_left_integrally(
-                    integral_basis,
+                    integral_basis_rows,
                     target,
-                    SageZZ,
+                    ring,
                 )
-                images[source_label] = enlarged.linear_combination({label: coefficient for label, coefficient in zip(labels, coefficients, strict=True) if coefficient})
+                images[source_label] = enlarged.linear_combination(
+                    {
+                        label: coefficient
+                        for label, coefficient in zip(
+                            labels, coefficients, strict=True
+                        )
+                        if coefficient
+                    }
+                )
             return self.Emb(enlarged)(images)
 
         def local_modification(self, prime, *discriminant_classes):
@@ -1286,7 +1561,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             along an isotropic subgroup contained in the ``p``-primary part of
             ``A_L``.  The returned value is the actual inclusion ``L -> L'``.
             """
-            prime = SageZZ(prime)
+            prime = self.base_ring()(prime)
             if not prime.is_prime():
                 raise ValueError("a local modification is indexed by a prime")
             form = self.discriminant_group()
@@ -1295,8 +1570,8 @@ class Lattices(OwnedCategoryOverBaseRing):
                 for element in discriminant_classes
             )
             for element in classes:
-                order = SageZZ(element.additive_order())
-                if order != prime ** order.valuation(prime):
+                order = element.additive_order()
+                if order != prime ** int(order.valuation(prime)):
                     raise ValueError(
                         f"local modification at p={prime} requires p-primary glue; "
                         f"the class {element} has order {order}"
@@ -1312,7 +1587,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             discriminant quadratic form.  The zero subgroup is included and
             therefore contributes the identity extension.
             """
-            if engine_ring(self.base_ring()) is not SageZZ:
+            if _engine_ring(self.base_ring()) is not SageZZ:
                 raise NotImplementedError(
                     "even overlattice enumeration is currently implemented for integral ZZ-lattices"
                 )
@@ -1333,9 +1608,10 @@ class Lattices(OwnedCategoryOverBaseRing):
             of the orthogonal complement: its signature is the signature
             difference and its discriminant quadratic form is ``-q_L``.
             """
-            positive = SageZZ(positive)
-            negative = SageZZ(negative)
-            if engine_ring(self.base_ring()) is not SageZZ:
+            ring = self.base_ring()
+            positive = ring(positive)
+            negative = ring(negative)
+            if _engine_ring(ring) is not SageZZ:
                 raise NotImplementedError(
                     "the current Nikulin primitive-embedding criterion is for integral ZZ-lattices"
                 )
@@ -1367,7 +1643,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                 oscar_even_unimodular_primitive_embedding,
             )
 
-            target_gram, embedding_tensor = oscar_even_unimodular_primitive_embedding(
+            target_gram, embedding_matrix = oscar_even_unimodular_primitive_embedding(
                 self.gram_tensor(), positive, negative
             )
             target = Lattices(self.base_ring())(target_gram)
@@ -1375,9 +1651,9 @@ class Lattices(OwnedCategoryOverBaseRing):
             images = tuple(
                 sum(
                     (
-                        embedding_tensor[row, column] * target_generators[row]
+                        target.scalar_multiple(embedding_matrix[row, column], target_generators[row])
                         for row in range(int(target.rank()))
-                        if embedding_tensor[row, column]
+                        if embedding_matrix[row, column]
                     ),
                     target.zero(),
                 )
@@ -1386,7 +1662,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             embedding = self.Emb(target)(images)
             if not embedding.is_primitive():
                 raise ArithmeticError("OSCAR returned a nonprimitive embedding")
-            if target.signature_pair() != (SageZZ(positive), SageZZ(negative)):
+            if target.signature_pair() != (self.base_ring()(positive), self.base_ring()(negative)):
                 raise ArithmeticError("OSCAR's primitive-embedding target has the wrong signature")
             return embedding
 
@@ -1407,7 +1683,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             This is the even-lattice primitive-extension correspondence of
             Nikulin.  The odd bilinear analogue remains separate.
             """
-            if engine_ring(self.base_ring()) is not SageZZ:
+            if _engine_ring(self.base_ring()) is not SageZZ:
                 raise NotImplementedError("primitive-extension glue is currently implemented over ZZ")
             if not self.is_even():
                 raise NotImplementedError(
@@ -1427,8 +1703,8 @@ class Lattices(OwnedCategoryOverBaseRing):
             ):
                 raise ValueError("glue_map requires mutually orthogonal sublattices")
 
-            from dzack_research.preamble.categories.modules import module_homset
-            from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_torsion_modules import (
+            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
+            from dzack_research.preamble.categories.modules.pure.torsion_modules import (
                 _torsion_module_presented_by_matrix,
             )
             from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
@@ -1440,14 +1716,14 @@ class Lattices(OwnedCategoryOverBaseRing):
                 _relations_among_generators,
                 torsion_form_isometry,
             )
-            from dzack_research.preamble.categories.modules.subobjects import ModuleSubobjects
-            from dzack_research.preamble.categories.sets import finite_ordered_set
+            from dzack_research.preamble.categories.modules.pure.modules import ModuleSubobjects
+            from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
             from dzack_research.preamble.refine import refine
 
             first_discriminant = first.discriminant_quadratic_form()
             second_discriminant = second.discriminant_quadratic_form()
-            first_inclusion = first.inclusion().tensor()
-            second_inclusion = second.inclusion().tensor()
+            first_inclusion = tensor.from_morphism(first.inclusion())
+            second_inclusion = tensor.from_morphism(second.inclusion())
             ambient_gram = self.gram_tensor()
 
             graph = {}
@@ -1457,7 +1733,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                 second_covector = ambient_covector * second_inclusion
                 first_class = first_discriminant.linear_combination(
                     {
-                        label: SageZZ(coefficient)
+                        label: self.base_ring()(coefficient)
                         for label, coefficient in zip(
                             first_discriminant.module_generating_set(),
                             first_covector,
@@ -1468,7 +1744,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                 )
                 second_class = second_discriminant.linear_combination(
                     {
-                        label: SageZZ(coefficient)
+                        label: self.base_ring()(coefficient)
                         for label, coefficient in zip(
                             second_discriminant.module_generating_set(),
                             second_covector,
@@ -1590,24 +1866,38 @@ class Lattices(OwnedCategoryOverBaseRing):
 
         def discriminant_group(self):
             r"""Return the ``ZZ`` discriminant group with every form supported by ``L``."""
-            if engine_ring(self.base_ring()) is not SageZZ:
+            if _engine_ring(self.base_ring()) is not SageZZ:
                 raise TypeError("discriminant_group is the ZZ specialization; use discriminant_module")
             return self.discriminant_quadratic_form() if self.is_even() else self.discriminant_bilinear_form()
 
         def discriminant_length(self):
             r"""Return the minimal number of generators of ``A_L`` over ``ZZ``."""
-            if engine_ring(self.base_ring()) is not SageZZ:
+            if _engine_ring(self.base_ring()) is not SageZZ:
                 raise TypeError("discriminant length is currently the integral-lattice invariant")
-            return SageZZ(len(tuple(invariant for invariant in self.discriminant_module().invariants() if abs(SageZZ(invariant)) > 1)))
+            ring = self.base_ring()
+            return ring(
+                len(
+                    tuple(
+                        invariant
+                        for invariant in self.discriminant_module().invariant_factors()
+                        if abs(invariant) > ring.one()
+                    )
+                )
+            )
 
         def is_p_elementary(self, prime) -> bool:
             r"""Return whether ``A_L`` is an elementary abelian ``prime``-group."""
-            if engine_ring(self.base_ring()) is not SageZZ:
+            if _engine_ring(self.base_ring()) is not SageZZ:
                 raise TypeError("p-elementarity is currently the integral-lattice invariant")
-            prime = SageZZ(prime)
+            ring = self.base_ring()
+            prime = ring(prime)
             if not prime.is_prime():
                 raise ValueError("p-elementarity requires a prime p")
-            invariants = tuple(abs(SageZZ(invariant)) for invariant in self.discriminant_module().invariants() if abs(SageZZ(invariant)) > 1)
+            invariants = tuple(
+                abs(invariant)
+                for invariant in self.discriminant_module().invariant_factors()
+                if abs(invariant) > ring.one()
+            )
             return all(invariant == prime for invariant in invariants)
 
         def delta(self):
@@ -1619,18 +1909,35 @@ class Lattices(OwnedCategoryOverBaseRing):
             value lies in ``(1/2)ZZ/ZZ``, so the cross term ``2b(x,y)`` in
             ``q(x+y)`` is integral.
             """
-            if engine_ring(self.base_ring()) is not SageZZ:
+            if _engine_ring(self.base_ring()) is not SageZZ:
                 raise TypeError("Nikulin's delta is an integral-lattice invariant")
-            if not self.is_even() or not self.is_p_elementary(SageZZ(2)):
+            if not self.is_even() or not self.is_p_elementary(self.base_ring()(2)):
                 raise ValueError("Nikulin's delta requires an even 2-elementary lattice")
             discriminant_form = self.discriminant_quadratic_form()
-            return SageZZ(any(discriminant_form.q(element).lift() not in SageZZ for element in discriminant_form.smith_form_module_generators()))
+            ring = self.base_ring()
+
+            def nonintegral(element):
+                lifted = discriminant_form.q(element).lift()
+                try:
+                    ring(lifted)
+                except (TypeError, ValueError):
+                    return True
+                return False
+
+            return ring(
+                int(
+                    any(
+                        nonintegral(element)
+                        for element in discriminant_form.smith_form_module_generators()
+                    )
+                )
+            )
 
         def two_elementary_invariants(self):
             r"""Return Nikulin's ``(r,a,delta)`` for an even 2-elementary lattice."""
-            if not self.is_p_elementary(SageZZ(2)) or not self.is_even():
+            if not self.is_p_elementary(self.base_ring()(2)) or not self.is_even():
                 raise ValueError("the lattice is not even and 2-elementary")
-            return (SageZZ(self.rank()), self.discriminant_length(), self.delta())
+            return (self.base_ring()(int(self.rank())), self.discriminant_length(), self.delta())
 
         def reflection(self, root):
             r"""Return the integral orthogonal reflection in ``root``.
@@ -1651,10 +1958,18 @@ class Lattices(OwnedCategoryOverBaseRing):
                 raise TypeError("the reflecting vector must belong to this lattice")
             if not root.is_root():
                 raise ValueError(f"{root} does not define an integral lattice reflection")
-            ring = engine_ring(self.base_ring())
-            fraction_field = ring if ring.is_field() else ring.fraction_field()
+            ring = self.base_ring()
+            fraction_field = ring.fraction_field()
             norm = fraction_field(root.q())
-            return self.Aut()(lambda label: self.module_generator(label) - ring(fraction_field(2 * self.module_generator(label).b(root)) / norm) * root)
+
+            def image(label):
+                generator = self.module_generator(label)
+                coefficient = ring(
+                    fraction_field(ring(2) * generator.b(root)) / norm
+                )
+                return generator - self.scalar_multiple(coefficient, root)
+
+            return self.Aut()(image)
 
         def is_positive_definite(self) -> bool:
             return bool(self.is_finite_rank() and self.signature_pair() == (self.rank(), 0))
@@ -1936,11 +2251,11 @@ class Lattices(OwnedCategoryOverBaseRing):
             from sage.rings.integer_ring import ZZ
             from sage.rings.rational_field import QQ
 
-            from dzack_research.preamble.categories.rings import engine_ring
+            from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
 
-            kind = "Integral lattice" if engine_ring(self.base_ring()) is ZZ else "Lattice"
+            kind = "Integral lattice" if _engine_ring(self.base_ring()) is ZZ else "Lattice"
             rank = self.rank()
-            if engine_ring(self.base_ring().fraction_field()) is QQ:
+            if _engine_ring(self.base_ring().fraction_field()) is QQ:
                 pos, neg = self.signature_pair()
                 return f"{kind} of rank {rank} and signature ({pos}, {neg})"
             return f"{kind} of rank {rank} over {self.base_ring()}"
@@ -2032,17 +2347,22 @@ class Lattices(OwnedCategoryOverBaseRing):
             from dzack_research.preamble.categories._lattice import generator_pairings
 
             parent = self.parent()
-            ring = engine_ring(parent.base_ring())
-            assert ring.is_integral_domain()
+            ring = parent.base_ring()
+            if not ring.is_integral_domain():
+                raise TypeError("roots are defined here over an integral domain")
             norm = ring(self.q())
-            if norm == 0:
+            if norm == ring.zero():
                 return False
             fraction_field = ring if ring.is_field() else ring.fraction_field()
             norm_in_fraction_field = fraction_field(norm)
             for coefficient in generator_pairings(parent, self).values():
+                quotient = (
+                    fraction_field(ring(2) * coefficient)
+                    / norm_in_fraction_field
+                )
                 try:
-                    ring(fraction_field(2 * coefficient) / norm_in_fraction_field)
-                except TypeError, ValueError:
+                    ring(quotient)
+                except (TypeError, ValueError):
                     return False
             return True
 
@@ -2078,6 +2398,163 @@ class Lattices(OwnedCategoryOverBaseRing):
                 sage: Lattices(ZZ)(ZZ^2).module_generator(0).to_vector()
                 (1, 0)
             """
-            from dzack_research.preamble.tensors import tensor
+            from dzack_research.preamble.tensors.tensor import tensor
 
             return tensor.vector(self.parent().base_ring(), self.to_list())
+
+
+class FiniteRankLattices(OwnedCategoryOverBaseRing):
+    r"""Lattices whose underlying free module has finite rank."""
+
+    @classmethod
+    def _repr_object_names(cls) -> str:
+        return "finite-rank lattices"
+
+    def super_categories(self):
+        from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+            FinitelyGeneratedFreeModules,
+        )
+
+        return [
+            Lattices(self.base_ring()),
+            FinitelyGeneratedFreeModules(self.base_ring()),
+        ]
+
+    class ParentMethods(Lattices.ParentMethods):
+        def is_finite_rank(self) -> bool:
+            return True
+
+
+class NondegenerateLattices(OwnedCategoryOverBaseRing):
+    r"""Lattices whose correlation map has zero kernel."""
+
+    @classmethod
+    def _repr_object_names(cls) -> str:
+        return "nondegenerate lattices"
+
+    def super_categories(self):
+        return [Lattices(self.base_ring())]
+
+
+class EvenLattices(OwnedCategoryOverBaseRing):
+    r"""Lattices satisfying ``b(x,x) in 2R`` for every lattice vector ``x``."""
+
+    @classmethod
+    def _repr_object_names(cls) -> str:
+        return "even lattices"
+
+    def super_categories(self):
+        return [Lattices(self.base_ring())]
+
+
+class RootLattices(Category):
+    r"""Negative-definite ADE root lattices with a chosen simple-root framing."""
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "root lattices"
+
+    def super_categories(self):
+        integers = _own_ring(SageZZ)
+        return [
+            FiniteRankLattices(integers),
+            NondegenerateLattices(integers),
+            EvenLattices(integers),
+        ]
+
+    class ParentMethods:
+        def cartan_type(self):
+            return self._cartan_type
+
+        def simple_roots(self):
+            r"""Return the selected framing, which is the chosen simple system."""
+            return self.module_generators()
+
+        def coxeter_number(self):
+            cartan_type = self.cartan_type()
+            if not cartan_type.is_irreducible():
+                raise ValueError(
+                    "a reducible root system has one Coxeter number per irreducible component"
+                )
+            return cartan_type.coxeter_number()
+
+        def highest_root(self):
+            r"""Return the highest root in the selected simple-root framing."""
+            cartan_type = self.cartan_type()
+            if not cartan_type.is_irreducible():
+                raise ValueError(
+                    "a reducible root system has one highest root per irreducible component"
+                )
+            coefficients = tuple(
+                RootSystem(cartan_type).root_lattice().highest_root().to_vector()
+            )
+            return sum(
+                (
+                    coefficient * root
+                    for coefficient, root in zip(
+                        coefficients, self.simple_roots(), strict=True
+                    )
+                ),
+                self.zero(),
+            )
+
+        def simple_reflections(self):
+            return tuple(self.reflection(root) for root in self.simple_roots())
+
+        def fundamental_weights(self):
+            r"""Return the weights dual to the simple coroots."""
+            from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+                finite_ordered_image,
+            )
+
+            norm = self.simple_roots()[0].norm()
+            if norm not in (2, -2):
+                raise ValueError(
+                    f"a simply-laced root framing has simple-root square +/-2, got {norm}"
+                )
+            sign = SageZZ(norm) // 2
+            return finite_ordered_image(
+                self.dual_basis(),
+                lambda weight: sign * weight,
+            )
+
+    class ElementMethods:
+        def is_positive_root(self) -> bool:
+            return bool(
+                self.is_root()
+                and all(
+                    coefficient >= 0
+                    for coefficient in self.monomial_coefficients().values()
+                )
+            )
+
+        def is_negative_root(self) -> bool:
+            return bool((-self).is_positive_root())
+
+        def height(self):
+            return sum(self.monomial_coefficients().values(), SageZZ.zero())
+
+        def coroot(self):
+            r"""Return ``alpha^vee = 2*b(alpha,-)/b(alpha,alpha)`` in ``L^#``."""
+            parent = self.parent()
+            if not self.is_root():
+                raise ValueError("the coroot in this lattice is defined for an integral root")
+            norm = SageZZ(self.norm())
+            dual_lattice = parent.dual_lattice()
+            return dual_lattice.linear_combination(
+                {
+                    label: SageZZ(2 * parent.module_generator(label).b(self) / norm)
+                    for label in parent.module_generating_set()
+                    if parent.module_generator(label).b(self) != 0
+                }
+            )
+
+
+def refine_root_lattice(lattice, cartan_type):
+    r"""Record the Cartan type whose negative Cartan form built ``lattice``."""
+    return lattice.lattice_category()._refine_root_lattice(lattice, cartan_type)
+
+
+def refine_lattice_properties(lattice):
+    r"""Attach the finite lattice properties directly decidable from the form."""
+    return lattice.lattice_category()._refine_lattice_object(lattice)

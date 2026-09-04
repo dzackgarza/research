@@ -2,7 +2,7 @@
 
 Sage's category framework defines category classes, a global axiom registry, and functorial category constructions.
 Parameterized categories, joins, refinements by axioms, and functorial constructions produce further category instances at runtime.
-The mathematical categories represented here are defined in [Algebraic categories from operations](../framework/Mathematical-Framework.md), [Modules and base change](../framework/Modules-and-Forms.md), [Bilinear and quadratic forms](../framework/Bilinear-and-Quadratic-Forms.md), and [Lattices and discriminant forms](../framework/Lattices-and-Discriminant-Forms.md).
+The mathematical categories represented here are defined in [Algebraic categories from operations](../framework/Mathematical-Framework.md), [Modules and base change](../framework/Modules-and-Forms.md), [Bilinear and quadratic forms](../framework/Bilinear-and-Quadratic-Forms.md), [Bilinear forms on the underlying module of an algebra](../framework/Bilinear-Forms-on-Algebra-Modules.md), and [Lattices and discriminant forms](../framework/Lattices-and-Discriminant-Forms.md).
 
 ## Categories
 

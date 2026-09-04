@@ -37,7 +37,9 @@ def _multiplication_from_structure_constants(module, images):
 def test_algebra_structure_morphism_lands_in_the_center() -> None:
     order = _gaussian_integers()
     eta = order.algebra_structure_morphism()
-    one, imag = tuple(order.module_generators())
+    generators = order.module_generators()
+    one = generators.unrank(0)
+    imag = generators.unrank(1)
 
     assert eta.domain() is ZZ
     assert eta.codomain() is order.ring_center()
@@ -86,13 +88,16 @@ def test_forgetful_functor_sends_an_algebra_to_its_underlying_module() -> None:
 
 def test_multiplication_morphism_is_the_module_map_out_of_the_tensor_product() -> None:
     order = _gaussian_integers()
-    one, imag = tuple(order.module_generators())
+    generators = order.module_generators()
+    one = generators.unrank(0)
+    imag = generators.unrank(1)
     multiplication = order.multiplication_morphism()
     tensor = multiplication.domain()
 
     assert multiplication.codomain() is order
     assert multiplication.parent().Element is ModuleMorphism
-    assert tensor.tensor_factors() == (order, order)
+    assert tensor.tensor_factor(0) is order
+    assert tensor.tensor_factor(1) is order
     assert multiplication(tensor.pure_tensor(one, imag)) == one * imag
     assert multiplication(tensor.pure_tensor(imag, imag)) == imag * imag
     assert multiplication(tensor.pure_tensor(one + imag, one - imag)) == (
@@ -135,13 +140,16 @@ def test_algebras_intern_a_module_from_its_multiplication_morphism() -> None:
     assert eta.codomain() is algebra.ring_center()
     assert eta(ZZ(2)) == 2 * unit
     assert stored.codomain() is algebra
-    assert stored.domain().tensor_factors() == (algebra, algebra)
+    assert stored.domain().tensor_factor(0) is algebra
+    assert stored.domain().tensor_factor(1) is algebra
     assert stored(stored.domain().pure_tensor(unit, generator)) == generator
 
 
 def test_algebras_intern_the_multiplication_of_an_order() -> None:
     order = _gaussian_integers()
-    one, imag = tuple(order.module_generators())
+    generators = order.module_generators()
+    one = generators.unrank(0)
+    imag = generators.unrank(1)
     algebra = Algebras(ZZ)(order.multiplication_morphism())
     unit = algebra.module_generator(0)
     generator = algebra.module_generator(1)

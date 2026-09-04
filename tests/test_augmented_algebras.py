@@ -13,8 +13,8 @@ def test_evaluation_at_a_point_augments_the_polynomial_algebra() -> None:
 
     polynomials = SymmetricAlgebraOn(QQ, ["x"])
     label = next(iter(polynomials.algebra_generating_set()))
-    at_zero = polynomials.hom({label: QQ(0)}, QQ)
-    at_one = polynomials.hom({label: QQ(1)}, QQ)
+    at_zero = polynomials.Hom(QQ)({label: QQ(0)})
+    at_one = polynomials.Hom(QQ)({label: QQ(1)})
 
     augmented_at_zero = AugmentedAlgebras(QQ)(at_zero)
     augmented_at_one = AugmentedAlgebras(QQ)(at_one)
@@ -26,7 +26,7 @@ def test_evaluation_at_a_point_augments_the_polynomial_algebra() -> None:
     assert augmented_at_zero is not polynomials
     assert augmented_at_zero is not augmented_at_one
     assert augmented_at_zero is AugmentedAlgebras(QQ)(
-        polynomials.hom({label: QQ(0)}, QQ)
+        polynomials.Hom(QQ)({label: QQ(0)})
     )
     assert augmented_at_zero.augmentation()(
         augmented_at_zero.algebra_generator(label)
@@ -46,7 +46,7 @@ def test_an_algebra_morphism_to_another_algebra_is_not_an_augmentation() -> None
     target = SymmetricAlgebraOn(QQ, ["y"])
     source_label = next(iter(source.algebra_generating_set()))
     target_label = next(iter(target.algebra_generating_set()))
-    morphism = source.hom({source_label: target.algebra_generator(target_label)}, target)
+    morphism = source.Hom(target)({source_label: target.algebra_generator(target_label)})
 
     try:
         AugmentedAlgebras(QQ)(morphism)

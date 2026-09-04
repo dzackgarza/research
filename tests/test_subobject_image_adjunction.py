@@ -1,5 +1,7 @@
 from dzack_research.preamble.all import (
     BasedFreeModule,
+    FreeModuleOn,
+    NN,
     Subobjects,
     ZZ,
     module_homset,
@@ -87,3 +89,20 @@ def test_fixed_ambient_subobjects_and_direct_inverse_image_form_a_galois_connect
         right_triangle,
         source_subobjects.identity(inverse(b)),
     )
+
+
+def test_finite_subobject_of_countable_free_module_uses_only_finite_support() -> None:
+    ambient = FreeModuleOn(ZZ, NN)
+    e100 = ambient.module_generator(NN(100))
+    e1000 = ambient.module_generator(NN(1000))
+
+    subobject = ambient.subobject_on((e100, e1000))
+    repeated = ambient.subobject_on((e100, e1000))
+    embedded = subobject.embedded_module_generators()
+
+    assert subobject is repeated
+    assert subobject.inclusion().codomain() is ambient
+    assert embedded.cardinality() == 2
+    assert subobject.inclusion().is_in_image(e100)
+    assert subobject.inclusion().is_in_image(e1000)
+    assert not subobject.inclusion().is_in_image(ambient.module_generator(NN(500)))

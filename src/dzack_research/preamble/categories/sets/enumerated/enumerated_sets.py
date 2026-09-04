@@ -1,21 +1,8 @@
-"""Owned enumerated-set spine over Sage's enumerated-set categories."""
+"""Compatibility exports for the owned enumerated-set category spine."""
 
-from sage.categories.category import Category
-from sage.categories.enumerated_sets import EnumeratedSets as SageEnumeratedSets
-from sage.categories.infinite_enumerated_sets import (
-    InfiniteEnumeratedSets as SageInfiniteEnumeratedSets,
+from dzack_research.preamble.categories.sets.set_categories import (
+    EnumeratedSets,
+    InfiniteEnumeratedSets,
 )
 
-
-class EnumeratedSets(Category):
-    r"""Sets equipped with a ranking, as Sage's :class:`EnumeratedSets`."""
-
-    def super_categories(self):
-        return [SageEnumeratedSets()]
-
-
-class InfiniteEnumeratedSets(Category):
-    r"""Countably infinite enumerated sets."""
-
-    def super_categories(self):
-        return [SageInfiniteEnumeratedSets(), EnumeratedSets()]
+__all__ = ["EnumeratedSets", "InfiniteEnumeratedSets"]

@@ -1,26 +1,19 @@
 r"""Direct and inverse image on fixed-ambient module subobject categories."""
 
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
-from dzack_research.preamble.categories.abstract_categories import Subobjects
-from dzack_research.preamble.categories.modules.subobjects import _element_from_row
+from dzack_research.preamble.categories.abstract_categories.constructions import Subobjects
 
 
 def _inverse_image_subobject(morphism, subobject):
-    r"""Construct the pullback/preimage subobject of ``subobject`` along ``morphism``."""
+    r"""Construct the pullback/preimage as the source image of ``ker(f,-i)``."""
     if subobject.inclusion().codomain() is not morphism.codomain():
         raise ValueError("the subobject is not in the morphism codomain")
-    source = morphism.domain()
-    # The preimage is carried by the source half of the left kernel of the
-    # induced map (f, -i) into the direct sum.
-    left = morphism.tensor().dual_tensor()
-    right = subobject.inclusion().tensor().dual_tensor()
-    kernel = left.stack(-right).left_kernel_tensor()
-    source_coefficients = kernel.restricted_to_lower_indices(
-        range(left.upper_ranks()[0])
-    )
-    return source.subobject_on(
-        _element_from_row(source, row) for row in source_coefficients.rows()
-    )
+    from dzack_research.preamble.categories.abstract_categories.constructions import Biproduct
+
+    direct_sum = Biproduct(morphism.domain(), subobject)
+    difference = direct_sum.from_summands(morphism, -subobject.inclusion())
+    kernel = difference.kernel()
+    return (direct_sum.left_projection() * kernel.inclusion()).image()
 
 
 class DirectImageSubobjectFunctor(Functor):
@@ -73,37 +66,6 @@ class SubobjectImageAdjunction(Adjunction):
             InverseImageSubobjectFunctor(morphism),
         )
 
-    def hom_set_isomorphism_forward(self, order_morphism, source_subobject):
-        r"""Transpose ``f_*(A) <= B`` to ``A <= f^{-1}(B)``.
-
-        The indexed source ``A`` is explicit: direct image is not injective on
-        objects, so it cannot be reconstructed from ``f_*(A)``.
-        """
-        direct_source = self.left_adjoint()(source_subobject)
-        if order_morphism.domain() is not direct_source:
-            raise ValueError("the order morphism does not start at the direct image of the stated source")
-        original_target = order_morphism.codomain()
-        inverse_target = self.right_adjoint()(original_target)
-        return self.right_adjoint().codomain().hom(
-            source_subobject, inverse_target
-        ).canonical_morphism()
-
-    def hom_set_isomorphism_inverse(self, order_morphism, codomain=None):
-        r"""Transpose ``A <= f^{-1}(B)`` to ``f_*(A) <= B``.
-
-        The indexed target ``B`` is explicit because inverse image is not
-        injective on objects.
-        """
-        if codomain is None:
-            raise TypeError("the target subobject is required for the inverse Hom-set transpose")
-        original_source = order_morphism.domain()
-        inverse_target = self.right_adjoint()(codomain)
-        if order_morphism.codomain() is not inverse_target:
-            raise ValueError("the order morphism does not land in the inverse image of the stated target")
-        direct_source = self.left_adjoint()(original_source)
-        return self.left_adjoint().codomain().hom(
-            direct_source, codomain
-        ).canonical_morphism()
 
     def unit(self, subobject):
         target = self.right_adjoint()(self.left_adjoint()(subobject))

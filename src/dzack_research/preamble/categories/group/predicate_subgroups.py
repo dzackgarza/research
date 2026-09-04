@@ -1,6 +1,6 @@
 """Subgroups specified by a membership predicate rather than generators."""
 
-from sage.categories.category import CategoryWithParameters
+from dzack_research.preamble.categories.abstract_categories.objects import OwnedParameterizedCategory
 from sage.structure.parent import Parent
 
 from dzack_research.preamble.refine import refine
@@ -24,19 +24,13 @@ class _PredicateSubgroupParent(Parent):
         Parent.__init__(self, facade=True, category=category)
 
 
-class PredicateSubgroups(CategoryWithParameters):
-    def __init__(self, host_category):
-        self._host_category = host_category
-        super().__init__()
-
-    def _make_named_class_key(self, name):
-        return self._host_category
+class PredicateSubgroups(OwnedParameterizedCategory):
 
     def _repr_object_names(self):
         return "predicate subgroups"
 
     def super_categories(self):
-        return [self._host_category]
+        return [self.base()]
 
     class ParentMethods:
         def supergroup(self):
@@ -57,7 +51,10 @@ class PredicateSubgroups(CategoryWithParameters):
             )
 
         def __contains__(self, element):
-            return element in self._containing_group and bool(self._predicate(element))
+            parent = getattr(element, "parent", lambda: None)()
+            if parent is not self._containing_group and element not in self._containing_group:
+                return False
+            return bool(self._predicate(element))
 
         def _element_constructor_(self, datum):
             element = (
@@ -156,8 +153,8 @@ def predicate_subgroup(
     *,
     character_data=None,
 ):
-    from dzack_research.preamble.categories.group.groups import OwnedGroups, refine_group
-    containing_group = refine_group(containing_group)
+    from dzack_research.preamble.categories.group.groups import OwnedGroups, _owned_group
+    containing_group = _owned_group(containing_group)
     if containing_group not in OwnedGroups():
         raise TypeError(f"{containing_group} is not a group")
     category = predicate_subgroup_category()

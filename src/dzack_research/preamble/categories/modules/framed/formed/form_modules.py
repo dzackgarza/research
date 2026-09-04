@@ -1,20 +1,51 @@
 r"""Modules equipped with exact bilinear or quadratic forms."""
 
-from sage.categories.category_types import Category_over_base
+from dzack_research.preamble.categories.abstract_categories.hom_foundation import OwnedHomset
+from dzack_research.preamble.categories.abstract_categories.objects import OwnedParameterizedCategory
 from sage.categories.homset import Homset
 from sage.categories.modules import Modules as SageModules
 from sage.categories.morphism import Morphism
-from sage.categories.sets_cat import Sets
-from sage.misc.cachefunc import cached_method
+from sage.categories.sets_cat import Sets as SageSets
+from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.parent import Parent
 
-from dzack_research.preamble.categories.rings import OwnedCategoryOverBaseRing, engine_ring
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    OwnedCategoryOverBaseRing,
+    OwnedRings,
+    _engine_ring,
+    _owned_ring,
+)
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
     HomCategoryConstruction,
 )
+from dzack_research.preamble.categories.sets.set_categories import Sets as OwnedSets
 from dzack_research.preamble.refine import refine
+
+
+
+def _normalize_value_module(value_module):
+    r"""Normalize a scalar-ring value object without imposing Sage-category membership."""
+    if value_module in OwnedRings() or callable(getattr(value_module, "module_category", None)):
+        return value_module
+    try:
+        return _owned_ring(value_module)
+    except TypeError:
+        return value_module
+
+
+
+def _is_bilinear_form(form) -> bool:
+    from dzack_research.preamble.categories.forms.forms import is_bilinear_form
+
+    return is_bilinear_form(form)
+
+
+def _is_quadratic_form(form) -> bool:
+    from dzack_research.preamble.categories.forms.forms import is_quadratic_form
+
+    return is_quadratic_form(form)
 
 
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
@@ -66,17 +97,13 @@ def form_embedding(domain, codomain, images, *, quadratic: bool | None = None) -
     objects and discriminant-form objects, which intentionally have their own
     structured-category realization rather than being wrappers around one.
     """
-    from dzack_research.preamble.categories.modules import module_homset
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 
     if quadratic is None:
-        from dzack_research.preamble.categories.modules.framed.formed.discriminant_modules import (
-            DiscriminantQuadraticModules,
-        )
-
         ring = domain.base_ring()
         quadratic = bool(
             domain in QuadraticFormModules(ring)
-            or domain in DiscriminantQuadraticModules(ring)
+            or hasattr(domain, "quadratic_value_module")
         )
     return FormEmbedding(
         module_homset(domain, codomain),
@@ -93,7 +120,8 @@ def _represented_value_module(formed_module):
     directly; otherwise :func:`ring_as_module` supplies the canonical rank-one
     realization over itself.  Genuine module-valued forms are unchanged.
     """
-    from dzack_research.preamble.categories.modules import Modules, ring_as_module
+    from dzack_research.preamble.categories.modules.pure.modules import Modules
+    from dzack_research.preamble.categories.modules.framed.framed_free_modules import ring_as_module
 
     value = formed_module.value_module()
     ring = formed_module.base_ring()
@@ -111,7 +139,7 @@ def _value_as_module_element(formed_module, value):
     if represented is formed_module.value_module():
         return represented(value)
     return represented.linear_combination(
-        {0: engine_ring(formed_module.base_ring())(value)}
+        {0: formed_module.base_ring()(value)}
     )
 
 
@@ -124,7 +152,7 @@ def _value_from_module_element(formed_module, element):
     )
 
     coefficients = module_coefficients(element, represented)
-    ring = engine_ring(formed_module.base_ring())
+    ring = formed_module.base_ring()
     return ring(coefficients.get(0, ring.zero()))
 
 
@@ -166,16 +194,11 @@ class FormedModuleMorphism(Morphism):
         )
 
     def _check_form_square(self) -> None:
-        from dzack_research.preamble.categories.forms import (
-            BilinearFormMorphism,
-            QuadraticFormMorphism,
-        )
-
         source_form = self.domain().form()
         target_form = self.codomain().form()
         source_generators = tuple(self.domain().module_generators())
-        if isinstance(source_form, BilinearFormMorphism):
-            if not isinstance(target_form, BilinearFormMorphism):
+        if _is_bilinear_form(source_form):
+            if not _is_bilinear_form(target_form):
                 raise TypeError("bilinear formed modules map to bilinear formed modules")
             commutes = all(
                 self.map_value(source_form(left, right))
@@ -185,8 +208,8 @@ class FormedModuleMorphism(Morphism):
                 for left in source_generators
                 for right in source_generators
             )
-        elif isinstance(source_form, QuadraticFormMorphism):
-            if not isinstance(target_form, QuadraticFormMorphism):
+        elif _is_quadratic_form(source_form):
+            if not _is_quadratic_form(target_form):
                 raise TypeError("quadratic formed modules map to quadratic formed modules")
             probes = source_generators + tuple(
                 left + right
@@ -233,10 +256,23 @@ class FormedModuleHomset(CategoricalHomset):
             hom_family,
             domain,
             codomain,
-            homset_category=Sets(),
         )
 
     def _element_constructor_(self, datum):
+        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
+
+        explicit_pair = (
+            isinstance(datum, tuple)
+            and len(datum) == 2
+            and all(isinstance(part, Morphism) for part in datum)
+        )
+        if (
+            not explicit_pair
+            and not isinstance(datum, FormedModuleMorphism)
+            and not isinstance(datum, ModuleMorphism)
+        ):
+            datum = module_homset(self.domain(), self.codomain())(datum)
+
         if isinstance(datum, FormedModuleMorphism):
             if datum.domain() is not self.domain() or datum.codomain() is not self.codomain():
                 raise ValueError("the formed morphism has the wrong endpoints")
@@ -253,14 +289,12 @@ class FormedModuleHomset(CategoricalHomset):
                     "a bare module morphism determines a formed morphism only "
                     "when the value module is unchanged"
                 )
-            from dzack_research.preamble.categories.modules import module_homset
-
             datum = (datum, module_homset(source_values, target_values).identity())
         module_morphism, value_morphism = datum
         return self.element_class(self, module_morphism, value_morphism)
 
     def identity(self):
-        from dzack_research.preamble.categories.modules import module_homset
+        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 
         values = _represented_value_module(self.domain())
         return self(
@@ -298,7 +332,7 @@ def _base_change_element(module, changed_module, ring_map, element):
     )
 
     coefficients = module_coefficients(element, module)
-    target_ring = engine_ring(changed_module.base_ring())
+    target_ring = changed_module.base_ring()
     return changed_module.linear_combination(
         {
             label: target_ring(ring_map(coefficient))
@@ -359,17 +393,12 @@ class FiberedFormedModuleMorphism(Morphism):
         )
 
     def _check_form_square(self) -> None:
-        from dzack_research.preamble.categories.forms import (
-            BilinearFormMorphism,
-            QuadraticFormMorphism,
-        )
-
         changed = self.base_changed_domain()
         source_form = changed.form()
         target_form = self.codomain().form()
         generators = tuple(changed.module_generators())
-        if isinstance(source_form, BilinearFormMorphism):
-            if not isinstance(target_form, BilinearFormMorphism):
+        if _is_bilinear_form(source_form):
+            if not _is_bilinear_form(target_form):
                 raise TypeError("bilinear formed modules map to bilinear formed modules")
             commutes = all(
                 self.map_value(source_form(left, right))
@@ -379,8 +408,8 @@ class FiberedFormedModuleMorphism(Morphism):
                 for left in generators
                 for right in generators
             )
-        elif isinstance(source_form, QuadraticFormMorphism):
-            if not isinstance(target_form, QuadraticFormMorphism):
+        elif _is_quadratic_form(source_form):
+            if not _is_quadratic_form(target_form):
                 raise TypeError("quadratic formed modules map to quadratic formed modules")
             probes = generators + tuple(
                 left + right
@@ -419,7 +448,7 @@ class FiberedFormedModuleMorphism(Morphism):
         homset = fibered_formed_module_homset(
             other.domain(), self.codomain(), composite_ring_map
         )
-        from dzack_research.preamble.categories.modules import module_homset
+        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 
         direct_changed = homset.base_changed_domain()
         middle_changed = self.base_changed_domain()
@@ -456,7 +485,7 @@ class FiberedFormedModuleMorphism(Morphism):
         return homset((module_map, value_map))
 
 
-class FiberedFormedModuleHomset(Homset):
+class FiberedFormedModuleHomset(OwnedHomset):
     Element = FiberedFormedModuleMorphism
 
     def __init__(self, domain, codomain, ring_map) -> None:
@@ -469,7 +498,7 @@ class FiberedFormedModuleHomset(Homset):
             raise ValueError("the coefficient map does not land at the target base ring")
         self._ring_map = ring_map
         self._base_changed_domain = domain.base_change(ring_map)
-        Homset.__init__(self, domain, codomain, category=Sets())
+        Homset.__init__(self, domain, codomain, category=SageSets())
 
     def ring_map(self):
         return self._ring_map
@@ -486,7 +515,7 @@ class FiberedFormedModuleHomset(Homset):
             raise ValueError("identity is defined on an endomorphism homset")
         if not hasattr(self.ring_map(), "is_identity") or not self.ring_map().is_identity():
             raise ValueError("the fibered identity must lie over the identity ring map")
-        from dzack_research.preamble.categories.modules import module_homset
+        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 
         changed = self.base_changed_domain()
         module_map = module_homset(changed, self.domain())(
@@ -511,7 +540,7 @@ def fibered_formed_module_homset(domain, codomain, ring_map) -> FiberedFormedMod
     return FiberedFormedModuleHomset(domain, codomain, ring_map)
 
 
-class PairedModules(Category_over_base):
+class PairedModules(OwnedParameterizedCategory):
     r"""Pairings \(X\otimes_R Y\to W\).
 
     An object is classified by an element of
@@ -521,27 +550,19 @@ class PairedModules(Category_over_base):
 
     @staticmethod
     def __classcall__(cls, value_module):
-        from sage.categories.rings import Rings as SageRings
-        from dzack_research.preamble.categories.rings import owned_ring_view
-
-        if value_module in SageRings():
-            value_module = owned_ring_view(value_module)
-        return Category_over_base.__classcall__(cls, value_module)
+        return OwnedParameterizedCategory.__classcall__(
+            cls, _normalize_value_module(value_module)
+        )
 
     @classmethod
     def _repr_object_names(cls):
         return "paired modules"
 
     def super_categories(self):
-        return [Sets()]
+        return [OwnedSets()]
 
     def _call_(self, pairing):
-        from sage.categories.rings import Rings as SageRings
-        from dzack_research.preamble.categories.rings import owned_ring_view
-
-        codomain = pairing.codomain()
-        if codomain in SageRings():
-            codomain = owned_ring_view(codomain)
+        codomain = _normalize_value_module(pairing.codomain())
         if codomain is not self.base():
             raise TypeError(
                 f"a pairing in {self} takes values in {self.base()}, not {pairing.codomain()}"
@@ -565,7 +586,7 @@ class PairedModules(Category_over_base):
             return self._pairing.codomain()
 
 
-class FormedModules(Category_over_base):
+class FormedModules(OwnedParameterizedCategory):
     r"""Modules equipped with a bilinear form \(M\otimes_R M\to W\).
 
     This is the diagonal of :class:`PairedModules`: a pairing of a module
@@ -574,12 +595,9 @@ class FormedModules(Category_over_base):
 
     @staticmethod
     def __classcall__(cls, value_module):
-        from sage.categories.rings import Rings as SageRings
-        from dzack_research.preamble.categories.rings import owned_ring_view
-
-        if value_module in SageRings():
-            value_module = owned_ring_view(value_module)
-        return Category_over_base.__classcall__(cls, value_module)
+        return OwnedParameterizedCategory.__classcall__(
+            cls, _normalize_value_module(value_module)
+        )
 
     @classmethod
     def _repr_object_names(cls):
@@ -595,6 +613,15 @@ class FormedModules(Category_over_base):
         def q(self, element):
             return self.b(element, element)
 
+    class ElementMethods:
+        def b(self, other):
+            r"""Return the bilinear value ``b(self, other)``."""
+            return self.parent().b(self, other)
+
+        def q(self):
+            r"""Return the quadratic value ``q(self)=b(self,self)``."""
+            return self.parent().q(self)
+
 
 class FormModules(OwnedCategoryOverBaseRing):
     r"""Modules over ``R`` equipped with a form."""
@@ -604,7 +631,7 @@ class FormModules(OwnedCategoryOverBaseRing):
         return "form modules"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.modules import Modules
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
 
         return [Modules(self.base_ring())]
 
@@ -646,72 +673,77 @@ class FormModules(OwnedCategoryOverBaseRing):
             formed = FormModules(ring)
             if codomain in formed and (category is None or category.is_subcategory(formed)):
                 return formed_module_homset(self, codomain)
-            from dzack_research.preamble.categories.modules import module_homset
+            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 
             return module_homset(self, codomain)
 
         def b(self, left, right):
-            if left.parent() is not self or right.parent() is not self:
+            r"""Evaluate the (polar) bilinear form on two elements of this module."""
+            if left not in self or right not in self:
                 raise TypeError("a form pairs two elements of one formed module")
             form = self.form()
-            from dzack_research.preamble.categories.forms import QuadraticFormMorphism
-
-            if isinstance(form, QuadraticFormMorphism):
+            if _is_quadratic_form(form):
                 return form.b(left, right)
             return form(left, right)
 
+        def norm(self, element):
+            r"""Return ``q(x)`` for a quadratic form, else ``b(x, x)``."""
+            if element not in self:
+                raise TypeError("the norm is defined on elements of this formed module")
+            form = self.form()
+            if _is_quadratic_form(form):
+                return form(element)
+            return form(element, element)
+
         def gram_tensor(self):
             r"""Return the scalar Gram as its intrinsic type-``(0,2)`` tensor."""
-            from dzack_research.preamble.categories.forms import QuadraticFormMorphism
-
             form = self.form()
-            return (
-                form.lift_form().gram_tensor()
-                if isinstance(form, QuadraticFormMorphism)
-                else form.gram_tensor()
-            )
+            return form.gram_tensor()
 
         def twist(self, scalar):
-            from dzack_research.preamble.categories.forms import (
-                BilinearFormMorphism,
+            from dzack_research.preamble.categories.forms.forms import (
                 BilinearForms,
                 QuadraticForms,
+                QuadraticMap,
             )
 
             form = self.form()
-            if isinstance(form, BilinearFormMorphism):
-                if form._gram is not None:
-                    scaled = [
-                        [scalar * value for value in row]
-                        for row in form.values_matrix()
-                    ]
-                    return FormModule(BilinearForms(self, self.value_module())(scaled))
+            if _is_bilinear_form(form):
+                try:
+                    values = form.coordinate_values().map(
+                        lambda value: scalar * value,
+                        name="Twisted bilinear coordinate values",
+                    )
+                except TypeError:
+                    return FormModule(
+                        BilinearForms(self, self.value_module())(
+                            lambda left, right: scalar * form(left, right)
+                        )
+                    )
+                return FormModule(BilinearForms(self, self.value_module())(values))
+            try:
+                values = form.lift_coordinate_values().map(
+                    lambda value: scalar * value,
+                    name="Twisted quadratic-lift coordinate values",
+                )
+            except TypeError:
                 return FormModule(
-                    BilinearForms(self, self.value_module())(
-                        lambda left, right: scalar * form(left, right)
+                    QuadraticMap(
+                        self,
+                        self.value_module(),
+                        lambda element: scalar * form(element),
                     )
                 )
-            if form._lift is not None:
-                scaled = [
-                    [scalar * value for value in row]
-                    for row in form.lift_form().values_matrix()
-                ]
-                return FormModule(QuadraticForms(self, self.value_module())(scaled))
-            return FormModule(
-                QuadraticForms(self, self.value_module())(
-                    lambda element: scalar * form(element)
-                )
-            )
+            return FormModule(QuadraticForms(self, self.value_module())(values))
 
         def base_change(self, ring_map):
             r"""Base-change a scalar-valued finite free form along ``R -> S``."""
-            from dzack_research.preamble.categories.forms import (
-                BilinearFormMorphism,
+            from dzack_research.preamble.categories.forms.forms import (
                 BilinearForms,
-                QuadraticFormMorphism,
                 QuadraticForms,
+                QuadraticMap,
             )
-            from dzack_research.preamble.categories.modules import FreeModuleOn
+            from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreeModuleOn
             from dzack_research.preamble.categories.modules.base_change import (
                 base_change_codomain,
                 base_change_scalar,
@@ -722,117 +754,94 @@ class FormModules(OwnedCategoryOverBaseRing):
 
             assert self.value_module() is self.base_ring()
             target_ring = base_change_codomain(self, ring_map)
-            changed = FreeModuleOn(target_ring, self.module_generating_set())
-            source_generators = tuple(self.module_generators())
+            source = self
+            source_labels = source.module_generating_set()
+            changed = FreeModuleOn(target_ring, source_labels)
             form = self.form()
-            if isinstance(form, BilinearFormMorphism):
-                values = [
-                    [
-                        base_change_scalar(ring_map, form(left, right))
-                        for right in source_generators
-                    ]
-                    for left in source_generators
-                ]
-                return FormModule(BilinearForms(changed, target_ring)(values))
-            if not isinstance(form, QuadraticFormMorphism):
-                raise TypeError(f"{form} is not a bilinear or quadratic form")
-            diagonal = tuple(
-                base_change_scalar(ring_map, form(generator))
-                for generator in source_generators
-            )
-            polar = tuple(
-                tuple(
-                    base_change_scalar(ring_map, form.b(left, right))
-                    for right in source_generators
+
+            if _is_bilinear_form(form):
+                try:
+                    changed_values = form.coordinate_values().map(
+                        lambda value: base_change_scalar(ring_map, value),
+                        name="Base-changed bilinear coordinate values",
+                    )
+                except TypeError:
+                    changed_values = None
+                if changed_values is not None:
+                    return FormModule(BilinearForms(changed, target_ring)(changed_values))
+
+                def changed_bilinear_value(left, right):
+                    left_coefficients = module_coefficients(left, changed)
+                    right_coefficients = module_coefficients(right, changed)
+                    result = target_ring.zero()
+                    for left_label, left_coefficient in left_coefficients.items():
+                        source_left = source.module_generator(left_label)
+                        for right_label, right_coefficient in right_coefficients.items():
+                            source_right = source.module_generator(right_label)
+                            result += (
+                                left_coefficient
+                                * right_coefficient
+                                * base_change_scalar(
+                                    ring_map,
+                                    form(source_left, source_right),
+                                )
+                            )
+                    return result
+
+                return FormModule(
+                    BilinearForms(changed, target_ring)(changed_bilinear_value)
                 )
-                for left in source_generators
-            )
-            labels = tuple(changed.module_generating_set())
+
+            if not _is_quadratic_form(form):
+                raise TypeError(f"{form} is not a bilinear or quadratic form")
+
+            try:
+                changed_lift_values = form.lift_coordinate_values().map(
+                    lambda value: base_change_scalar(ring_map, value),
+                    name="Base-changed quadratic-lift coordinate values",
+                )
+            except TypeError:
+                changed_lift_values = None
+            if changed_lift_values is not None:
+                return FormModule(QuadraticForms(changed, target_ring)(changed_lift_values))
 
             def changed_quadratic_value(element):
-                coefficients = module_coefficients(element)
-                values = tuple(coefficients.get(label, target_ring.zero()) for label in labels)
-                return target_ring(
-                    sum(
-                        (values[i] ** 2) * diagonal[i]
-                        for i in range(len(values))
+                coefficients = module_coefficients(element, changed)
+                result = target_ring.zero()
+                for left_label, left_coefficient in coefficients.items():
+                    source_left = source.module_generator(left_label)
+                    result += (
+                        left_coefficient**2
+                        * base_change_scalar(ring_map, form(source_left))
                     )
-                    + sum(
-                        values[i] * values[j] * polar[i][j]
-                        for i in range(len(values))
-                        for j in range(i + 1, len(values))
-                    )
-                )
+                    left_rank = source_labels.rank(left_label)
+                    for right_label, right_coefficient in coefficients.items():
+                        if source_labels.rank(right_label) <= left_rank:
+                            continue
+                        source_right = source.module_generator(right_label)
+                        result += (
+                            left_coefficient
+                            * right_coefficient
+                            * base_change_scalar(
+                                ring_map,
+                                form.b(source_left, source_right),
+                            )
+                        )
+                return target_ring(result)
 
             return FormModule(
-                QuadraticForms(changed, target_ring)(changed_quadratic_value)
+                QuadraticMap(changed, target_ring, changed_quadratic_value)
             )
 
-        def hom(self, images, codomain=None):
-            from dzack_research.preamble.categories.forms import QuadraticFormMorphism
-            from dzack_research.preamble.categories.modules import module_homset
-
-            if codomain is None:
-                if isinstance(images, dict) and images:
-                    codomain = next(iter(images.values())).parent()
-                elif isinstance(images, (tuple, list)) and images:
-                    codomain = images[0].parent()
-                else:
-                    raise TypeError("the codomain is required when it cannot be read from images")
-            homset = module_homset(self, codomain)
-            morphism = homset(images)
-            if codomain not in FormModules(codomain.base_ring()):
-                return morphism
-            if self.value_module() is not codomain.value_module():
-                raise TypeError("form-preserving maps require the same value module")
-            source_form = self.form()
-            target_form = codomain.form()
-            generators = tuple(self.module_generators())
-            if isinstance(source_form, QuadraticFormMorphism):
-                if not isinstance(target_form, QuadraticFormMorphism):
-                    raise TypeError("a quadratic formed module maps to another quadratic formed module")
-                probes = generators + tuple(
-                    left + right
-                    for i, left in enumerate(generators)
-                    for right in generators[i + 1 :]
-                )
-                preserves = all(
-                    source_form(element) == target_form(morphism(element))
-                    for element in probes
-                )
-            else:
-                if isinstance(target_form, QuadraticFormMorphism):
-                    raise TypeError("a bilinear formed module maps to another bilinear formed module")
-                preserves = all(
-                    source_form(left, right)
-                    == target_form(morphism(left), morphism(right))
-                    for left in generators
-                    for right in generators
-                )
-            if not preserves:
-                raise ValueError("the stated module morphism does not preserve the form")
-            return FormMorphism(homset, images)
 
     class ElementMethods:
         def b(self, other):
+            r"""Return the polar bilinear value ``b(self, other)``."""
             return self.parent().b(self, other)
 
-        def norm(self):
-            from dzack_research.preamble.categories.forms import QuadraticFormMorphism
-
-            form = self.parent().form()
-            if isinstance(form, QuadraticFormMorphism):
-                return form(self)
-            return form(self, self)
-
-        def is_isotropic(self) -> bool:
-            return self.norm() == self.parent().value_module().zero()
-
-        def is_orthogonal_to(self, other) -> bool:
-            return self.b(other) == self.parent().value_module().zero()
-
-        def represents(self, value) -> bool:
-            return self.norm() == self.parent().value_module()(value)
+        def q(self):
+            r"""Return the represented quadratic/norm value of this element."""
+            return self.parent().norm(self)
 
 
 class BilinearFormModules(OwnedCategoryOverBaseRing):
@@ -909,13 +918,9 @@ class QuadraticFormModules(OwnedCategoryOverBaseRing):
     class ParentMethods:
         def q(self, element):
             r"""Evaluate the equipped quadratic form on ``element``."""
-            if element.parent() is not self:
+            if element not in self:
                 raise TypeError("the quadratic form is defined on this module")
             return self.form()(element)
-
-    class ElementMethods:
-        def q(self):
-            return self.norm()
 
 
 class FinitelyPresentedFormModules(OwnedCategoryOverBaseRing):
@@ -924,7 +929,7 @@ class FinitelyPresentedFormModules(OwnedCategoryOverBaseRing):
         return "finitely presented form modules"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.modules import FinitelyPresentedModules
+        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModules
 
         return [FormModules(self.base_ring()), FinitelyPresentedModules(self.base_ring())]
 
@@ -959,9 +964,19 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
         return "free form modules"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.modules import FramedFreeModules
+        from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules
 
         return [FormModules(self.base_ring()), FramedFreeModules(self.base_ring())]
+
+    class ParentMethods:
+        def subobject_on(self, module_generating_set):
+            r"""Return the span equipped with the pulled-back form."""
+            from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+                _span_basis_elements,
+            )
+
+            basis = _span_basis_elements(self, module_generating_set)
+            return _form_subobject_spanning(self, basis)
 
 
 class FinitelyGeneratedFormModules(OwnedCategoryOverBaseRing):
@@ -970,7 +985,7 @@ class FinitelyGeneratedFormModules(OwnedCategoryOverBaseRing):
         return "finitely generated form modules"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.modules import FinitelyGeneratedModules
+        from dzack_research.preamble.categories.modules.pure.modules import FinitelyGeneratedModules
 
         return [FormModules(self.base_ring()), FinitelyGeneratedModules(self.base_ring())]
 
@@ -981,7 +996,7 @@ class FinitelyGeneratedFreeFormModules(OwnedCategoryOverBaseRing):
         return "finitely generated free form modules"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.modules import FinitelyGeneratedFreeModules
+        from dzack_research.preamble.categories.modules.pure.modules import FinitelyGeneratedFreeModules
 
         return [
             FreeFormModules(self.base_ring()),
@@ -992,7 +1007,7 @@ class FinitelyGeneratedFreeFormModules(OwnedCategoryOverBaseRing):
     class ParentMethods:
         @cached_method
         def dual_module(self):
-            from dzack_research.preamble.categories.modules import BasedFreeModule
+            from dzack_research.preamble.categories.modules.framed.framed_free_modules import BasedFreeModule
 
             return BasedFreeModule(self.base_ring(), self.module_generating_set())
 
@@ -1001,48 +1016,48 @@ class FinitelyGeneratedFreeFormModules(OwnedCategoryOverBaseRing):
             if self.value_module() is not self.base_ring():
                 raise TypeError("the correlation morphism to the dual requires a scalar-valued form")
             dual = self.dual_module()
-            rows = self.gram_tensor().rows()
-            images = {
-                label: dual.linear_combination(
+            images = {}
+            for label in self.module_generating_set():
+                source_generator = self.module_generator(label)
+                images[label] = dual.linear_combination(
                     {
                         dual_label: coefficient
-                        for dual_label, coefficient in zip(
-                            dual.module_generating_set(),
-                            row,
-                            strict=True,
+                        for dual_label in dual.module_generating_set()
+                        if (
+                            coefficient := self.b(
+                                source_generator,
+                                self.module_generator(dual_label),
+                            )
                         )
-                        if coefficient != 0
                     }
                 )
-                for label, row in zip(
-                    self.module_generating_set(),
-                    rows,
-                    strict=True,
-                )
-            }
-            from dzack_research.preamble.categories.modules import module_homset
+            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 
             return module_homset(self, dual)(images)
 
+        def determinant(self):
+            r"""Return the determinant of the selected scalar-valued form."""
+            assert self.value_module() is self.base_ring()
+            return self.correlation_morphism().matrix().determinant()
+
         def is_nondegenerate(self) -> bool:
             assert self.value_module() is self.base_ring()
-            from dzack_research.preamble.categories.rings import engine_ring
+            from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
 
-            ring = engine_ring(self.base_ring())
+            ring = _engine_ring(self.base_ring())
             assert ring.is_integral_domain()
-            determinant = self.gram_tensor().det()
-            return determinant != 0
+            return self.determinant() != 0
 
         def is_unimodular(self) -> bool:
             r"""Return whether the correlation morphism is an isomorphism."""
             assert self.value_module() is self.base_ring()
-            return bool(self.gram_tensor().det().is_unit())
+            return bool(self.determinant().is_unit())
 
         def scale_submodule(self):
             assert self.value_module() is self.base_ring()
-            from dzack_research.preamble.categories.rings import engine_ring
+            from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
 
-            return engine_ring(self.base_ring()).ideal(self.gram_tensor().list())
+            return _engine_ring(self.base_ring()).ideal(self.gram_tensor().list())
 
 
 def FormModule(form):
@@ -1053,28 +1068,25 @@ def FormModule(form):
     different selected forms on isomorphic modules remain distinct structured
     objects.
     """
-    from dzack_research.preamble.categories.forms import (
-        BilinearFormMorphism,
-        QuadraticFormMorphism,
-    )
-    from dzack_research.preamble.categories.modules import (
-        FinitelyGeneratedFreeModules,
+    from dzack_research.preamble.categories.modules.pure.modules import FinitelyGeneratedFreeModules
+    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
         FinitelyPresentedModule,
         FinitelyPresentedModules,
-        FramedFreeModules,
         ModulesWithChosenFinitePresentation,
-        module_homset,
     )
+    from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
     from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
         FreshFreeModuleOn,
     )
 
-    if not isinstance(form, (BilinearFormMorphism, QuadraticFormMorphism)):
+    if not (_is_bilinear_form(form) or _is_quadratic_form(form)):
         raise TypeError("a formed module is classified by a bilinear or quadratic form")
     module = form.module()
     base_ring = module.base_ring()
     labels = module.module_generating_set()
-    assert labels.cardinality() in SageZZ
+    from dzack_research.preamble.categories.sets.cardinals import cardinal
+    assert cardinal(labels.cardinality()).is_finite()
     if module in FramedFreeModules(base_ring):
         formed = FreshFreeModuleOn(base_ring, labels)
     elif (
@@ -1103,7 +1115,7 @@ def FormModule(form):
         categories.append(FreeFormModules(base_ring))
     if formed in FinitelyPresentedModules(base_ring):
         categories.append(FinitelyPresentedFormModules(base_ring))
-    if isinstance(form, BilinearFormMorphism):
+    if _is_bilinear_form(form):
         categories.append(BilinearFormModules(base_ring))
         categories.append(FormedModules(formed._form.codomain()))
         if formed in FinitelyPresentedModules(base_ring):
@@ -1128,20 +1140,82 @@ def FormModule(form):
     return refine(formed, categories)
 
 
+@cached_function(key=lambda module, basis: (id(module), basis))
+def _form_subobject_spanning(module, basis):
+    r"""Return the canonical formed subobject on a finite span basis."""
+    from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+        FreeModuleOn,
+    )
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+        module_embedding,
+    )
+    from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+        _finalize_module_subobject,
+    )
+
+    labels = OwnedSets.Δ[int(basis.cardinality()) - 1]
+    free_source = FreeModuleOn(module.base_ring(), labels)
+    preliminary = module_embedding(
+        free_source,
+        module,
+        lambda label: basis.unrank(int(label)),
+    )
+    source = FormModule(module.form().pullback(preliminary))
+    inclusion = form_embedding(
+        source,
+        module,
+        lambda label: basis.unrank(int(label)),
+    )
+    return _finalize_module_subobject(
+        module,
+        basis,
+        source,
+        inclusion=inclusion,
+    )
+
+
+def BilinearForm(module, value_module, datum):
+    r"""Return ``module`` equipped with the stated bilinear form."""
+    from dzack_research.preamble.categories.forms.forms import BilinearForms
+
+    return FormModule(BilinearForms(module, value_module)(datum))
+
+
+def QuadraticForm(module, value_module, datum):
+    r"""Return ``module`` equipped with the stated quadratic form."""
+    from dzack_research.preamble.categories.forms.forms import QuadraticForms, QuadraticMap
+    from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
+
+    coordinate_datum = (
+        isinstance(datum, IndexedFamily)
+        or hasattr(datum, "rows")
+        or (
+            isinstance(datum, (tuple, list))
+            and all(isinstance(row, (tuple, list)) for row in datum)
+        )
+    )
+    form = (
+        QuadraticForms(module, value_module)(datum)
+        if coordinate_datum
+        else QuadraticMap(module, value_module, datum)
+    )
+    return FormModule(form)
+
+
 def _formed_module_from_pairing(pairing):
     r"""Specialize a pairing \(M\otimes_R M\to W\) to a formed module."""
-    from dzack_research.preamble.categories.forms.forms import BilinearFormMorphism
     from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
         FramedFreeModules,
     )
 
-    if not isinstance(pairing, BilinearFormMorphism):
+    if not _is_bilinear_form(pairing):
         raise TypeError("the diagonal of PairedModules is a bilinear form")
     module = pairing.module()
     ring = module.base_ring()
     if module in FramedFreeModules(ring):
         try:
-            finite = module.module_generating_set().cardinality() in SageZZ
+            from dzack_research.preamble.categories.sets.cardinals import cardinal
+            finite = cardinal(module.module_generating_set().cardinality()).is_finite()
         except AttributeError:
             finite = False
         if finite:

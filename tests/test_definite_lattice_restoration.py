@@ -1,7 +1,7 @@
 import pytest
 from sage.misc.unknown import Unknown
 
-from dzack_research.preamble.all import FiniteGroups, QQ, ZZ, Lattices, tensor
+from dzack_research.preamble.all import FiniteGroups, MatrixSpace, MatrixSpaces, QQ, ZZ, Lattices, tensor
 from dzack_research.preamble.tensors import Tensor
 
 
@@ -15,7 +15,7 @@ def test_lll_is_a_change_of_framing_with_actual_isometry_witness() -> None:
     assert reduction.isometry.domain() is reduced
     assert reduction.isometry.codomain() is lattice
     assert reduced.gram_tensor() == lattice.gram_tensor().pullback(
-        reduction.change_of_basis_tensor
+        reduction.change_of_basis_matrix
     )
     for generator in reduced.module_generators():
         assert generator.q() == reduction.isometry(generator).q()
@@ -28,9 +28,9 @@ def test_bkz_and_hkz_are_reframings_with_exact_isometry_witnesses() -> None:
         assert reduction.isometry.domain() is reduction.reduced
         assert reduction.isometry.codomain() is lattice
         assert reduction.reduced.gram_tensor() == lattice.gram_tensor().pullback(
-            reduction.change_of_basis_tensor
+            reduction.change_of_basis_matrix
         )
-        assert abs(reduction.change_of_basis_tensor.det()) == 1
+        assert abs(reduction.change_of_basis_matrix.det()) == 1
 
 
 def test_negative_definite_root_lattice_shortest_vectors_are_actual_roots() -> None:
@@ -50,21 +50,20 @@ def test_square_lattice_minimum_theta_and_packing_radius() -> None:
     theta = lattice.theta_series(5)
     assert theta[0] == 1
     assert theta[1] == 4
-    assert lattice.packing_radius() == 1 / 2
+    assert lattice.packing_radius() == QQ(1) / 2
     assert lattice.kissing_number() == 4
 
 
 def test_definite_isometry_decision_returns_an_actual_odd_lattice_witness() -> None:
     lattice = Lattices(ZZ)([[3, 1], [1, 2]])
-    change = tensor.matrix(ZZ, [[1, 1], [0, 1]])
+    change = MatrixSpace(ZZ, 2, 2).from_rows([[1, 1], [0, 1]])
     reframed_gram = lattice.gram_tensor().pullback(change)
     reframed = Lattices(ZZ)(reframed_gram)
 
     homset = reframed.Isom(lattice)
     assert homset.is_empty() is False
     witness = homset.an_element()
-    assert Tensor in witness.matrix().__class__.__mro__
-    assert witness.matrix().tensor_valence() == (1, 1)
+    assert witness.matrix().parent() in MatrixSpaces(ZZ)
     for left in reframed.module_generators():
         for right in reframed.module_generators():
             assert reframed.b(left, right) == lattice.b(
@@ -113,8 +112,7 @@ def test_owned_lattice_orthogonal_group_uses_sage_only_as_definite_engine() -> N
     assert group.order() == 12
     for automorphism in group.group_generators():
         assert automorphism.parent() is group
-        assert Tensor in automorphism.matrix().__class__.__mro__
-        assert automorphism.matrix().tensor_valence() == (1, 1)
+        assert automorphism.matrix().parent() in MatrixSpaces(ZZ)
         for left in lattice.module_generators():
             for right in lattice.module_generators():
                 assert lattice.b(left, right) == lattice.b(
@@ -170,7 +168,7 @@ def test_nikulin_and_eichler_nonemptiness_do_not_invent_witnesses() -> None:
         nikulin_homset.an_element()
 
     source = Lattices(ZZ)([[0, 1, 0], [1, 0, 0], [0, 0, -6]])
-    change = tensor.matrix(ZZ, [[1, 1, 0], [0, 1, 0], [0, 0, 1]])
+    change = MatrixSpace(ZZ, 3, 3).from_rows([[1, 1, 0], [0, 1, 0], [0, 0, 1]])
     target = Lattices(ZZ)(source.gram_tensor().pullback(change))
     eichler_homset = source.Isom(target)
 
@@ -182,7 +180,7 @@ def test_nikulin_and_eichler_nonemptiness_do_not_invent_witnesses() -> None:
 
 def test_unresolved_odd_indefinite_binary_isometry_remains_unknown() -> None:
     source = Lattices(ZZ)([[1, 0], [0, -1]])
-    change = tensor.matrix(ZZ, [[1, 2], [0, 1]])
+    change = MatrixSpace(ZZ, 2, 2).from_rows([[1, 2], [0, 1]])
     target = Lattices(ZZ)(source.gram_tensor().pullback(change))
 
     assert source.gram_tensor().is_equal_tensor(target.gram_tensor()) is False
@@ -194,7 +192,7 @@ def test_indefinite_isometry_backend_supplies_exact_witness_when_available(monke
     from py_polyhedral import binaries as polyhedral
 
     source = Lattices(ZZ)([[1, 0], [0, -1]])
-    change = tensor.matrix(ZZ, [[1, 2], [0, 1]])
+    change = MatrixSpace(ZZ, 2, 2).from_rows([[1, 2], [0, 1]])
     target = Lattices(ZZ)(source.gram_tensor().pullback(change))
     backend_rows = [[1, 0], [-2, 1]]
 
@@ -213,7 +211,7 @@ def test_indefinite_isometry_backend_supplies_exact_witness_when_available(monke
     assert homset.is_empty() is False
     witness = homset.an_element()
     assert witness.domain() is source and witness.codomain() is target
-    assert target.gram_tensor().pullback(witness.tensor()).is_equal_tensor(
+    assert target.gram_tensor().pullback(witness).is_equal_tensor(
         source.gram_tensor()
     )
 
@@ -272,12 +270,12 @@ def test_explicit_even_unimodular_embedding_crosses_oscar_data_into_live_morphis
     source = Lattices(ZZ)("A1")
     target = Lattices(ZZ)("U")
     target_gram = target.gram_tensor()
-    embedding_tensor = tensor.matrix(ZZ, [[1], [-1]])
+    embedding_matrix = MatrixSpace(ZZ, 2, 1).from_rows([[1], [-1]])
 
     monkeypatch.setattr(
         lattice_engines,
         "oscar_even_unimodular_primitive_embedding",
-        lambda _gram, _positive, _negative: (target_gram, embedding_tensor),
+        lambda _gram, _positive, _negative: (target_gram, embedding_matrix),
     )
 
     primitive = source.embed_in_even_unimodular(1, 1)
@@ -333,7 +331,7 @@ def test_discriminant_functor_and_representation_use_live_form_isometries() -> N
 
 def test_discriminant_functor_acts_on_isometries_between_distinct_lattices() -> None:
     source = Lattices(ZZ)([[3, 1], [1, 2]])
-    change = tensor.matrix(ZZ, [[1, 1], [0, 1]])
+    change = MatrixSpace(ZZ, 2, 2).from_rows([[1, 1], [0, 1]])
     target = Lattices(ZZ)(source.gram_tensor().pullback(change))
     isometry = source.Isom(target).an_element()
     induced = isometry.discriminant_isometry()
@@ -431,7 +429,7 @@ def test_cyclic_subgroup_is_the_literal_subgroup_generated_by_a_live_isometry() 
     assert subgroup.inclusion()(generator) == generator
     assert subgroup.is_abelian()
     assert subgroup.is_finite() is True
-    assert subgroup.order() >= 2
+    assert subgroup.order() >= ZZ(2)
     assert lattice.Aut().order() % subgroup.order() == 0
     elements = tuple(subgroup)
     assert len(elements) == subgroup.order()
@@ -518,11 +516,7 @@ def test_indefinite_complement_gluing_route_uses_full_finite_discriminant_orthog
     discriminant_group = lattice.discriminant_group().O()
     assert len(classes) == discriminant_group.order()
     assert all(automorphism.parent() is discriminant_group for automorphism in classes)
-    assert {
-        tuple(automorphism.tensor().list()) for automorphism in classes
-    } == {
-        tuple(automorphism.tensor().list()) for automorphism in discriminant_group
-    }
+    assert set(classes) == set(discriminant_group)
 
 
 def test_stable_complement_root_reflections_use_indefinite_root_orbit_representatives(monkeypatch) -> None:
@@ -656,7 +650,7 @@ def test_finite_character_quotient_splits_isotropic_line_orbit_under_so_u(monkey
         tuple(abs(entry) for entry in representative.inclusion()(representative.module_generators()[0]).to_tuple())
         for representative in representatives
     }
-    assert lines == {(1, 0), (0, 1)}
+    assert lines == {(ZZ(1), ZZ(0)), (ZZ(0), ZZ(1))}
     assert not special.isotropic_are_equivalent(
         representatives[0], representatives[1]
     )
@@ -725,10 +719,7 @@ def test_definite_vector_orbit_equivalence_stabilizer_and_representatives() -> N
 
     stabilizer_generators = orthogonal_group.vector_stabilizer_generators(left)
     assert all(generator(left) == left for generator in stabilizer_generators)
-    engine_stabilizer = orthogonal_group._engine_group().subgroup(
-        tuple(orthogonal_group._to_engine(generator) for generator in stabilizer_generators)
-    )
-    assert engine_stabilizer.order() == 2
+    assert orthogonal_group.subgroup(stabilizer_generators).cardinality() == 2
 
     representatives = orthogonal_group.vector_orbit_representatives(-2)
     assert len(representatives) == 1
@@ -786,5 +777,7 @@ def test_definite_complement_extensions_exhaust_the_u_vector_cosets() -> None:
     assert len(opposite_coset) == 2
     assert all(isometry(vector) == vector for isometry in stabilizer)
     assert all(isometry(vector) == -vector for isometry in opposite_coset)
-    assert len({tuple(isometry.tensor().list()) for isometry in stabilizer}) == 2
-    assert len({tuple(isometry.tensor().list()) for isometry in opposite_coset}) == 2
+    from dzack_research.preamble.tensors import tensor
+
+    assert len({tuple(tensor.from_morphism(isometry).list()) for isometry in stabilizer}) == 2
+    assert len({tuple(tensor.from_morphism(isometry).list()) for isometry in opposite_coset}) == 2

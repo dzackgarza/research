@@ -1,4 +1,6 @@
-r"""Owned ring implementations used by the research preamble."""
+r"""Owned ring implementations and the public ring-construction surface."""
+
+from sage.misc.cachefunc import cached_function
 
 from dzack_research.preamble.rings.real import (
     ExactRealField,
@@ -9,99 +11,322 @@ from dzack_research.preamble.rings.real import (
 )
 from dzack_research.preamble.rings.nonnegative_reals import NonNegativeReals
 from dzack_research.preamble.rings.unit_interval import UnitInterval
-from dzack_research.preamble.categories.rings import (
-    AdicCompletion,
+
+from dzack_research.preamble.categories.rings.ring_foundation import (
     AdicallyCompleteRings,
     ArtinianRings,
     CommutativeRings,
     CompleteLocalRings,
-    CommutativeIdeal,
-    CommutativeIdeals,
-    DistinguishedOpenSubobject,
+    ComplexField as _ComplexField,
     DivisionRings,
-    DualNumbers,
     Fields,
+    FiniteField as _FiniteField,
+    GF as _GF,
+    IntegerModRing as _IntegerModRing,
+    Integers as _Integers,
     IntegralDomains,
-    Localization,
     LocalRings,
     NoetherianRings,
-    PrimeLocalization,
-    QuotientRing,
-    ResidueField,
-    OwnedDivisionRings,
+    OrderedRings,
+    OwnedAdicallyCompleteRings,
+    OwnedArtinianRings,
     OwnedCategoryOverBaseRing,
+    OwnedCommutativeRings,
+    OwnedCompleteLocalRings,
+    OwnedDivisionRings,
     OwnedFields,
-    OwnedNumberFields,
+    OwnedIntegralDomains,
+    OwnedLocalRings,
+    OwnedNoetherianRings,
     OwnedOrders,
-    OwnedRingView,
+    OwnedOrderedRings,
+    OwnedPrincipalIdealDomains,
     OwnedRings,
     OwnedRngs,
     OwnedSemirings,
     PredicateSubrings,
-    PrimeIdealPoint,
-    PrimeField,
+    PrimeField as _PrimeField,
     PrimeFields,
-    PrimeSpectrum,
-    NumberFieldsWithChosenPrimitiveElement,
+    PrincipalIdealDomains,
+    Qp as _Qp,
+    RealField as _RealField,
+    RingHomset,
+    RingMorphism,
     Rings,
-    ZariskiClosedSubobject,
-    engine_element,
-    engine_ring,
-    install_session_rings,
-    own_ring,
-    owned_ring_view,
+    Zmod as _Zmod,
+    _engine_element,
+    _engine_ring,
+    _own_ring,
+    _owned_ring,
     predicate_subring,
-    refine_number_field,
+    ring_homset,
+    ring_morphism,
 )
+from dzack_research.preamble.categories.rings.rings import (
+    RingConstructions,
+    refine_ring_constructions,
+)
+from dzack_research.preamble.categories.rings.commutative_ideals import (
+    CommutativeIdeal,
+    CommutativeIdeals,
+)
+from dzack_research.preamble.categories.rings.commutative_algebra import (
+    AdicCompletion,
+    AdicCompletions,
+    DistinguishedOpenSubobject,
+    DualNumbers,
+    FormalPowerSeriesRings,
+    GeneratedIdealView,
+    Localization,
+    LocalizationRings,
+    PowerSeriesRing,
+    PrimeIdealPoint,
+    PrimeLocalization,
+    PrimeLocalizations,
+    PrimeSpectrum,
+    QuotientRing,
+    QuotientRings,
+    ResidueField,
+    ZariskiClosedSubobject,
+    Zp,
+    refine_commutative_ring_constructions,
+)
+from dzack_research.preamble.categories.rings.number_fields import (
+    CyclotomicField as _CyclotomicField,
+    NumberField as _NumberField,
+    NumberFieldsWithChosenPrimitiveElement,
+    OwnedNumberFields,
+    QuadraticField as _QuadraticField,
+    _refine_number_field_view,
+    _refine_order_view,
+)
+from dzack_research.preamble.categories.algebras.free_algebras import (
+    LaurentPolynomialRing as _LaurentPolynomialRing,
+    PolynomialRing as _PolynomialRing,
+)
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace as _MatrixSpace
+from dzack_research.preamble.categories.algebras.algebras import refine_matrix_algebra
+
+
+def _public_commutative_ring(ring):
+    return refine_ring_constructions(
+        refine_commutative_ring_constructions(ring)
+    )
+
+
+def GF(*args, **kwargs):
+    return _public_commutative_ring(_GF(*args, **kwargs))
+
+
+FiniteField = GF
+
+
+def PrimeField(characteristic):
+    return GF(characteristic)
+
+
+def Zmod(*args, **kwargs):
+    return _public_commutative_ring(_Zmod(*args, **kwargs))
+
+
+IntegerModRing = Zmod
+Integers = Zmod
+
+
+def Qp(*args, **kwargs):
+    return _public_commutative_ring(_Qp(*args, **kwargs))
+
+
+def RealField(*args, **kwargs):
+    return _public_commutative_ring(_RealField(*args, **kwargs))
+
+
+def ComplexField(*args, **kwargs):
+    return _public_commutative_ring(_ComplexField(*args, **kwargs))
+
+
+def CyclotomicField(*args, **kwargs):
+    return refine_ring_constructions(_CyclotomicField(*args, **kwargs))
+
+
+def QuadraticField(*args, **kwargs):
+    return refine_ring_constructions(_QuadraticField(*args, **kwargs))
+
+
+def NumberField(polynomial, *args, **kwargs):
+    return refine_ring_constructions(_NumberField(polynomial, *args, **kwargs))
+
+
+def PolynomialRing(base_ring, *args, **kwargs):
+    return refine_ring_constructions(_PolynomialRing(base_ring, *args, **kwargs))
+
+
+def LaurentPolynomialRing(base_ring, *args, **kwargs):
+    return refine_ring_constructions(
+        _LaurentPolynomialRing(base_ring, *args, **kwargs)
+    )
+
+
+def FractionField(ring, *args, **kwargs):
+    r"""Return the owned fraction field of ``ring``."""
+    if args or kwargs:
+        raise TypeError("FractionField takes one owned ring")
+    return ring.fraction_field()
+
+
+def MatrixSpace(base_ring, nrows, ncols=None):
+    r"""Return the public finite matrix Hom, with algebra structure when square."""
+    return refine_matrix_algebra(_MatrixSpace(base_ring, nrows, ncols))
+
+
+@cached_function
+def session_ring_objects() -> dict[str, object]:
+    r"""Return the standard session scalar names under their owned parents."""
+    from sage.all import AA as SageAA
+    from sage.all import CC as SageCC
+    from sage.all import CDF as SageCDF
+    from sage.all import QQ as SageQQ
+    from sage.all import QQbar as SageQQbar
+    from sage.all import RDF as SageRDF
+    from sage.all import ZZ as SageZZ
+
+    from dzack_research.preamble.refine import refine
+
+    refine(RR, OwnedFields())
+    _public_commutative_ring(RR)
+    integers = refine_ring_constructions(_refine_order_view(_own_ring(SageZZ)))
+    rationals = refine_ring_constructions(
+        _refine_number_field_view(_own_ring(SageQQ))
+    )
+    return {
+        "ZZ": integers,
+        "QQ": rationals,
+        "AA": _public_commutative_ring(_own_ring(SageAA)),
+        "QQbar": _public_commutative_ring(_own_ring(SageQQbar)),
+        "RR": RR,
+        "RDF": _public_commutative_ring(_own_ring(SageRDF)),
+        "CDF": _public_commutative_ring(_own_ring(SageCDF)),
+        "CC": _public_commutative_ring(_own_ring(SageCC)),
+    }
+
+
+def ring_constructor_surface() -> dict[str, object]:
+    r"""Return the constructors exported into a preamble session."""
+    return {
+        "AdicCompletion": AdicCompletion,
+        "DualNumbers": DualNumbers,
+        "GF": GF,
+        "FiniteField": FiniteField,
+        "PrimeField": PrimeField,
+        "Zmod": Zmod,
+        "IntegerModRing": IntegerModRing,
+        "Integers": Integers,
+        "Zp": Zp,
+        "Qp": Qp,
+        "RealField": RealField,
+        "ComplexField": ComplexField,
+        "CyclotomicField": CyclotomicField,
+        "QuadraticField": QuadraticField,
+        "NumberField": NumberField,
+        "PolynomialRing": PolynomialRing,
+        "LaurentPolynomialRing": LaurentPolynomialRing,
+        "PowerSeriesRing": PowerSeriesRing,
+        "FractionField": FractionField,
+        "Localization": Localization,
+        "PrimeLocalization": PrimeLocalization,
+        "QuotientRing": QuotientRing,
+        "ResidueField": ResidueField,
+        "MatrixSpace": MatrixSpace,
+    }
+
+
+def install_session_rings(scope: dict) -> None:
+    r"""Restore owned scalar objects and public ring constructors in ``scope``."""
+    scope.update(session_ring_objects())
+    scope.update(ring_constructor_surface())
+
 
 __all__ = [
     "AdicCompletion",
+    "AdicCompletions",
     "AdicallyCompleteRings",
     "ArtinianRings",
-    "CommutativeRings",
-    "CompleteLocalRings",
-    "ExactRealField",
-    "ExactRealNumber",
     "CommutativeIdeal",
     "CommutativeIdeals",
+    "CommutativeRings",
+    "CompleteLocalRings",
+    "ComplexField",
+    "CyclotomicField",
     "DistinguishedOpenSubobject",
     "DivisionRings",
     "DualNumbers",
+    "ExactRealField",
+    "ExactRealNumber",
     "Fields",
+    "FiniteField",
+    "FormalPowerSeriesRings",
+    "FractionField",
+    "GF",
+    "GeneratedIdealView",
+    "IntegerModRing",
+    "Integers",
     "IntegralDomains",
+    "LaurentPolynomialRing",
     "Localization",
+    "LocalizationRings",
     "LocalRings",
+    "MatrixSpace",
     "NoetherianRings",
-    "OwnedDivisionRings",
+    "NonNegativeReals",
+    "NumberField",
+    "NumberFieldsWithChosenPrimitiveElement",
+    "OrderedRings",
+    "OwnedAdicallyCompleteRings",
+    "OwnedArtinianRings",
     "OwnedCategoryOverBaseRing",
+    "OwnedCommutativeRings",
+    "OwnedCompleteLocalRings",
+    "OwnedDivisionRings",
     "OwnedFields",
+    "OwnedIntegralDomains",
+    "OwnedLocalRings",
+    "OwnedNoetherianRings",
     "OwnedNumberFields",
     "OwnedOrders",
-    "OwnedRingView",
+    "OwnedOrderedRings",
+    "OwnedPrincipalIdealDomains",
     "OwnedRings",
     "OwnedRngs",
     "OwnedSemirings",
+    "PolynomialRing",
+    "PowerSeriesRing",
     "PredicateSubrings",
-    "PrimeIdealPoint",
     "PrimeField",
     "PrimeFields",
-    "PrimeSpectrum",
+    "PrimeIdealPoint",
     "PrimeLocalization",
+    "PrimeLocalizations",
+    "PrimeSpectrum",
+    "PrincipalIdealDomains",
+    "Qp",
+    "QuadraticField",
     "QuotientRing",
-    "ResidueField",
-    "NumberFieldsWithChosenPrimitiveElement",
-    "NonNegativeReals",
-    "UnitInterval",
+    "QuotientRings",
     "RR",
     "RealApproximation",
+    "RealField",
     "RealNumber",
+    "ResidueField",
+    "RingHomset",
+    "RingMorphism",
     "Rings",
+    "UnitInterval",
     "ZariskiClosedSubobject",
-    "engine_element",
-    "engine_ring",
+    "Zmod",
+    "Zp",
     "install_session_rings",
-    "own_ring",
-    "owned_ring_view",
     "predicate_subring",
-    "refine_number_field",
+    "ring_constructor_surface",
+    "ring_homset",
+    "ring_morphism",
 ]

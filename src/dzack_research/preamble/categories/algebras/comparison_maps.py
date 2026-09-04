@@ -1,5 +1,6 @@
 r"""Canonical comparison morphisms among tensor, symmetric, exterior, and divided powers."""
 
+from dzack_research.preamble.categories.abstract_categories.hom_foundation import OwnedHomset
 from sage.arith.misc import factorial
 from sage.categories.homset import Homset
 from sage.categories.morphism import Morphism
@@ -17,7 +18,10 @@ from dzack_research.preamble.categories.algebras.power_algebras import (
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
 )
-from dzack_research.preamble.categories.rings import engine_ring
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _engine_element,
+    _engine_ring,
+)
 
 
 class ConstructionAlgebraMorphism(Morphism):
@@ -41,7 +45,7 @@ class ConstructionAlgebraMorphism(Morphism):
         )
 
 
-class ConstructionAlgebraHomset(Homset):
+class ConstructionAlgebraHomset(OwnedHomset):
     Element = ConstructionAlgebraMorphism
 
     def __init__(self, domain, codomain) -> None:
@@ -69,6 +73,11 @@ def _presentation_representative(algebra, element):
     return lift(element)
 
 
+def _owned_backend_coefficient(target, coefficient):
+    ring = target.base_ring()
+    return ring._from_engine_element(_engine_ring(ring)(coefficient))
+
+
 def _evaluate_tensor_representative(source, target, element):
     representative = _presentation_representative(source, element)
     presentation = (
@@ -76,17 +85,28 @@ def _evaluate_tensor_representative(source, target, element):
         if hasattr(source, "presentation_ring")
         else source
     )
-    engine = engine_ring(presentation)
-    labels = tuple(source.algebra_generating_set())
-    monoid_labels = dict(zip(engine.monoid().gens(), labels, strict=True))
+    engine = _engine_ring(presentation)
+    backend = _engine_element(presentation, presentation(representative))
+    labels = source.algebra_generating_set()
+
+    def source_label(generator):
+        # Private finite backend serialization: Sage's free-monoid generator
+        # object has no public position.  Search only the backend generator
+        # array required to decode this finitely supported monomial.
+        position = next(
+            index
+            for index, candidate in enumerate(engine.monoid().gens())
+            if candidate == generator
+        )
+        return labels.unrank(position)
+
     result = target.zero()
-    for monomial, coefficient in engine(representative).monomial_coefficients().items():
+    for monomial, coefficient in engine(backend).monomial_coefficients().items():
         value = target.one()
         for generator, exponent in monomial:
-            target_generator = target.algebra_generator(monoid_labels[generator])
-            for _ in range(int(exponent)):
-                value *= target_generator
-        result += coefficient * value
+            target_generator = target.algebra_generator(source_label(generator))
+            value *= target_generator ** int(exponent)
+        result += _owned_backend_coefficient(target, coefficient) * value
     return result
 
 
@@ -97,16 +117,17 @@ def _evaluate_symmetric_representative(source, target, element):
         if hasattr(source, "presentation_ring")
         else source
     )
-    engine = engine_ring(presentation)
-    labels = tuple(source.algebra_generating_set())
+    engine = _engine_ring(presentation)
+    backend = _engine_element(presentation, presentation(representative))
+    labels = source.algebra_generating_set()
     result = target.zero()
-    for exponents, coefficient in engine(representative).dict().items():
+    for exponents, coefficient in engine(backend).dict().items():
         value = target.one()
-        for label, exponent in zip(labels, exponents, strict=True):
-            value *= target.algebra_generator(label) ** int(exponent)
-        result += coefficient * value
+        for position, exponent in enumerate(exponents):
+            if exponent:
+                value *= target.algebra_generator(labels.unrank(position)) ** int(exponent)
+        result += _owned_backend_coefficient(target, coefficient) * value
     return result
-
 
 def tensor_to_symmetric(module):
     r"""Return the quotient morphism ``T(M) -> Sym(M)``."""
@@ -135,37 +156,11 @@ def symmetric_to_divided(module):
     )
 
 
-def _divided_label_exponent(module, degree, label):
-    labels = tuple(module.module_generating_set())
-    if degree == 0:
-        return tuple(0 for _ in labels)
-    if degree == 1:
-        exponent = [0] * len(labels)
-        exponent[labels.index(label)] = 1
-        return tuple(exponent)
-    if degree == 2:
-        exponent = [0] * len(labels)
-        if label[0] == "gamma2":
-            exponent[labels.index(label[1])] = 2
-        else:
-            exponent[labels.index(label[1])] = 1
-            exponent[labels.index(label[2])] = 1
-        return tuple(exponent)
-    return tuple(int(value) for value in label)
-
-
 def divided_to_symmetric(module):
-    r"""Return ``Gamma(M) -> Sym(M)`` when every multi-factorial is invertible.
-
-    On a divided monomial ``gamma_{a_1}(x_1)...gamma_{a_r}(x_r)`` this is
-    ``x_1^{a_1}...x_r^{a_r}/(a_1!...a_r!)``.  Over a characteristic-zero
-    field this is inverse to :func:`symmetric_to_divided`.
-    """
+    r"""Return ``Gamma(M) -> Sym(M)`` when every relevant factorial is invertible."""
     source = DividedPowerAlgebraOf(module)
     target = SymmetricAlgebraOf(module)
     ring = module.base_ring()
-    engine = engine_ring(ring)
-    labels = tuple(module.module_generating_set())
 
     def evaluate(element):
         if not isinstance(element, PowerAlgebraElement) or element.parent() is not source:
@@ -175,19 +170,28 @@ def divided_to_symmetric(module):
             for label, coefficient in module_coefficients(
                 component, source.graded_piece(degree)
             ).items():
-                exponent = _divided_label_exponent(module, degree, label)
                 denominator = 1
                 monomial = target.one()
-                for generator_label, power in zip(labels, exponent, strict=True):
-                    denominator *= factorial(power)
-                    monomial *= target.algebra_generator(generator_label) ** power
+                if degree == 1:
+                    support = ((label, 1),)
+                elif degree == 0:
+                    support = ()
+                else:
+                    support = (
+                        (generator_label, label.multiplicity(generator_label))
+                        for generator_label in label.support()
+                    )
+                for generator_label, power in support:
+                    denominator *= int(factorial(power))
+                    monomial *= target.algebra_generator(generator_label) ** int(power)
+                denominator_scalar = ring(denominator)
                 try:
-                    scalar = engine(coefficient) / engine(denominator)
+                    scalar = coefficient / denominator_scalar
                 except (TypeError, ZeroDivisionError) as error:
                     raise ValueError(
                         "Gamma(M) -> Sym(M) requires all relevant factorials invertible"
                     ) from error
-                if scalar * engine(denominator) != engine(coefficient):
+                if scalar * denominator_scalar != coefficient:
                     raise ValueError(
                         "Gamma(M) -> Sym(M) requires all relevant factorials invertible"
                     )

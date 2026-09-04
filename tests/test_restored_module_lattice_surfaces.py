@@ -3,7 +3,6 @@ import pytest
 from dzack_research.preamble.all import (
     AA,
     BasedFreeModule,
-    CyclicPermutationGroup,
     QQ,
     ZZ,
     FinitelyPresentedAlgebras,
@@ -11,6 +10,7 @@ from dzack_research.preamble.all import (
     FractionalIdeals,
     FramedModules,
     GroupLattice,
+    Groups,
     Ideals,
     Lattices,
     ModuleSubobjects,
@@ -22,10 +22,8 @@ from dzack_research.preamble.all import (
     ProjectiveModules,
     QuadraticField,
     RestrictedScalarsModules,
-    engine_ring,
     tensor,
     module_homset,
-    own_ring,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
@@ -154,7 +152,7 @@ def test_number_field_properties_selected_primitive_element_and_order_are_distin
 
 def test_galois_group_does_not_mean_the_normal_closure_group() -> None:
     polynomial_ring = PolynomialRing(QQ, "x")
-    x = engine_ring(polynomial_ring).gen()
+    x = polynomial_ring.algebra_generator("x")
     field = NumberField(x**3 - 2, "a")
 
     assert not field.is_galois()
@@ -191,22 +189,26 @@ def test_isotropic_reduction_of_a_line_in_u_plus_u_is_u() -> None:
 
 def test_primitive_a1_and_a2_complements_in_e8_have_e7_and_e6_discriminants() -> None:
     e8 = Lattices(ZZ)("E8")
-    module_generators = tuple(e8.module_generators())
+    module_generators = e8.module_generators()
 
-    a1 = e8.subobject_on((module_generators[0],))
+    a1 = e8.subobject_on((module_generators.unrank(0),))
     e7 = a1.orthogonal_complement()
 
     assert a1.is_primitive()
     assert e7.is_primitive()
     assert e7.rank() == 7
-    assert abs(e7.gram_tensor().det()) == 2
-    assert e7.discriminant_module().invariants() == (2,)
+    assert abs(e7.determinant()) == 2
+    e7_factors = e7.discriminant_module().invariant_factors()
+    assert e7_factors.cardinality() == 1
+    assert e7_factors.unrank(0) == 2
 
     adjacent_pair = next(
-        (left, right)
-        for position, left in enumerate(module_generators)
-        for right in module_generators[position + 1 :]
-        if left.b(right) != 0
+        (module_generators.unrank(left_position), module_generators.unrank(right_position))
+        for left_position in range(int(module_generators.cardinality()))
+        for right_position in range(left_position + 1, int(module_generators.cardinality()))
+        if module_generators.unrank(left_position).b(
+            module_generators.unrank(right_position)
+        ) != 0
     )
     a2 = e8.subobject_on(adjacent_pair)
     e6 = a2.orthogonal_complement()
@@ -214,8 +216,10 @@ def test_primitive_a1_and_a2_complements_in_e8_have_e7_and_e6_discriminants() ->
     assert a2.is_primitive()
     assert e6.is_primitive()
     assert e6.rank() == 6
-    assert abs(e6.gram_tensor().det()) == 3
-    assert e6.discriminant_module().invariants() == (3,)
+    assert abs(e6.determinant()) == 3
+    e6_factors = e6.discriminant_module().invariant_factors()
+    assert e6_factors.cardinality() == 1
+    assert e6_factors.unrank(0) == 3
 
 
 def test_diagonal_isotropic_class_glues_a1_four_to_an_index_two_even_overlattice() -> None:
@@ -223,15 +227,13 @@ def test_diagonal_isotropic_class_glues_a1_four_to_an_index_two_even_overlattice
     lattice = a1 + a1 + a1 + a1
     discriminant = lattice.discriminant_module()
 
-    assert discriminant.invariants() == (2, 2, 2, 2)
-    discriminant_generators = tuple(
-        discriminant.module_generator(label)
-        for label in discriminant.module_generating_set()
-    )
-    diagonal_class = sum(discriminant_generators, discriminant.zero())
+    factors = discriminant.invariant_factors()
+    assert factors.cardinality() == 4
+    assert all(factor == 2 for factor in factors)
+    diagonal_class = sum(discriminant.module_generators(), discriminant.zero())
 
     assert diagonal_class.additive_order() == 2
-    assert diagonal_class.q() == 0
+    assert diagonal_class.q() == discriminant.quadratic_value_module().zero()
 
     inclusion = lattice.overlattice(diagonal_class)
     overlattice = inclusion.codomain()
@@ -239,8 +241,10 @@ def test_diagonal_isotropic_class_glues_a1_four_to_an_index_two_even_overlattice
     assert inclusion.index() == 2
     assert overlattice.rank() == 4
     assert overlattice.is_even()
-    assert abs(overlattice.gram_tensor().det()) == 4
-    assert overlattice.discriminant_module().invariants() == (2, 2)
+    assert abs(overlattice.determinant()) == 4
+    overlattice_factors = overlattice.discriminant_module().invariant_factors()
+    assert overlattice_factors.cardinality() == 2
+    assert all(factor == 2 for factor in overlattice_factors)
 
 
 def test_quadratic_integer_ideals_compute_as_order_modules_inside_the_field() -> None:
@@ -257,7 +261,7 @@ def test_quadratic_integer_ideals_compute_as_order_modules_inside_the_field() ->
         for basis_element in order_basis
     )
 
-    half_order = order.fractional_ideal(engine_ring(field)(1) / 2)
+    half_order = order.fractional_ideal(field(QQ(1) / 2))
     inverse = ~half_order
     product = half_order * inverse
 
@@ -298,13 +302,12 @@ def test_nonprincipal_ideal_in_q_sqrt_minus_five_has_a_computable_fractional_inv
 
 def test_fractional_ideal_of_a_nonmaximal_order_uses_that_order_not_the_maximal_order() -> None:
     field = QuadraticField(5, "a")
-    engine_field = engine_ring(field)
-    a = engine_field.gen()
-    order = own_ring(engine_field.order(a))
+    a = field.primitive_element()
+    order = field.order_generated_by(a)
 
-    assert not engine_ring(order).is_maximal()
+    assert not order.is_maximal()
     assert order in OwnedOrders()
-    half_order = order.fractional_ideal(engine_field(1) / 2)
+    half_order = order.fractional_ideal(field(QQ(1) / 2))
 
     assert half_order in FractionalIdeals(order)
     assert half_order in ModuleSubobjects(order)
@@ -325,7 +328,7 @@ def test_fractional_ideal_of_a_nonmaximal_order_uses_that_order_not_the_maximal_
     restricted_generator = underlying_integer_module(selected_generator)
     assert restricted_generator.underlying_element() == selected_generator
 
-    assert engine_field(1) / 2 in half_order
+    assert field(QQ(1) / 2) in half_order
     assert a / 2 in half_order
     assert (1 + a) / 2 in half_order
     assert (1 + a) / 4 not in half_order
@@ -346,7 +349,7 @@ def test_fractional_ideal_of_a_nonmaximal_order_uses_that_order_not_the_maximal_
 
     ideal_sum = half_order + unit_ideal
     assert ideal_sum.is_principal()
-    assert ideal_sum.principal_generator() == engine_field(1) / 2
+    assert ideal_sum.principal_generator() == field(QQ(1) / 2)
 
 
 def test_real_quadratic_field_has_exact_embeddings_and_its_actual_galois_group() -> None:
@@ -356,14 +359,14 @@ def test_real_quadratic_field_has_exact_embeddings_and_its_actual_galois_group()
     assert len(images) == 2
     assert all(image**2 == 5 for image in images)
     assert sum(images) == 0
-    assert tuple(field.ramified_primes()) == (5,)
+    assert tuple(field.ramified_primes()) == (ZZ(5),)
 
     galois_group = field.galois_group()
     assert galois_group.cardinality() == field.degree() == 2
 
 
 def test_swap_involution_on_u_is_an_automorphism_with_rank_one_invariants_and_coinvariants() -> None:
-    group = CyclicPermutationGroup(2)
+    group = Groups.C(2)
     plane = Lattices(ZZ)("U")
 
     def swap(group_element, vector):
@@ -375,10 +378,11 @@ def test_swap_involution_on_u_is_an_automorphism_with_rank_one_invariants_and_co
     group_lattice = GroupLattice(plane, group, swap)
     involution = tuple(group_lattice.group().group_generators())[0]
 
-    assert group_lattice.action_tensor(involution) == tensor.matrix(
-        ZZ, [[0, 1], [1, 0]]
-    )
-    assert group_lattice.action_of(involution).parent() is group_lattice.Aut()
+    action = group_lattice.action_of(involution)
+    assert action.parent() is group_lattice.Aut()
+    left, right = tuple(group_lattice.module_generators())
+    assert action(left) == right
+    assert action(right) == left
     assert group_lattice.is_invariant(group_lattice((1, 1)))
     assert not group_lattice.is_invariant(group_lattice((1, -1)))
 

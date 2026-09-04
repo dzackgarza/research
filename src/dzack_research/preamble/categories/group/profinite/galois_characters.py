@@ -10,15 +10,15 @@ from sage.rings.integer_ring import ZZ
 from sage.misc.functional import cyclotomic_polynomial
 from sage.rings.rational_field import QQ as SageQQ
 
-from dzack_research.preamble.categories.group.groups import refine_group
+from dzack_research.preamble.categories.group.groups import _own_group
 from dzack_research.preamble.categories.group.profinite.field_morphisms import (
-    exact_field_morphism,
+    _exact_field_morphism_from_engine,
 )
 from dzack_research.preamble.categories.group.profinite.galois_quotient import (
     FiniteGaloisExtension,
     continuous_group_homset,
 )
-from dzack_research.preamble.categories.rings.rings import engine_ring, own_ring
+from dzack_research.preamble.categories.rings.ring_foundation import _engine_element, _engine_ring, _own_ring
 
 
 def _unit_group_element(unit_group, residue):
@@ -70,10 +70,10 @@ class ProfiniteCharacter(Morphism):
 
 
 def _finite_root_at_stage(root, stage):
-    total_degree = ZZ(engine_ring(stage.field()).degree())
+    total_degree = ZZ(_engine_ring(stage.field()).degree())
     lifted = root.change_level(total_degree)
     field, value, embedding = lifted.as_finite_field_element()
-    if field is not engine_ring(stage.field()):
+    if field is not _engine_ring(stage.field()):
         raise ValueError(
             "the canonical finite stage does not contain the required root"
         )
@@ -91,31 +91,31 @@ class CyclotomicCharacter(ProfiniteCharacter):
         n = ZZ(n)
         if n < 2:
             raise ValueError("the finite cyclotomic character requires n >= 2")
-        characteristic = ZZ(domain.characteristic())
+        characteristic = ZZ(int(domain.characteristic()))
         if characteristic and gcd(int(n), int(characteristic)) != 1:
             raise ValueError("n must be invertible in the base field")
         self._modulus = n
         target = Integers(n).unit_group()
-        closure = engine_ring(domain.algebraic_closure())
+        closure = _engine_ring(domain.algebraic_closure())
         root = closure.zeta(n)
         self._root = root
 
         if domain._is_finite_field():
-            q_mod_n = Integers(n)(domain.base_field_order())
+            q_mod_n = Integers(n)(int(domain.base_field_order()))
             degree = ZZ(q_mod_n.multiplicative_order())
             stage = domain.finite_extension(degree)
             self._root_at_stage = _finite_root_at_stage(root, stage)
-        elif engine_ring(domain.base_field()) is SageQQ:
+        elif _engine_ring(domain.base_field()) is SageQQ:
             if n == 2:
                 stage = domain.extension_data(domain.base_field())
-                self._root_at_stage = engine_ring(domain.base_field())(-1)
+                self._root_at_stage = _engine_ring(domain.base_field())(-1)
             else:
-                base = cast(Any, engine_ring(domain.base_field()))
+                base = cast(Any, _engine_ring(domain.base_field()))
                 polynomial = cast(Any, cyclotomic_polynomial(n)).change_ring(base)
                 field = base.extension(polynomial, f"zeta_{n}")
-                owned_field = own_ring(field)
+                owned_field = _own_ring(field)
                 backend = field.hom([root], closure)
-                embedding = exact_field_morphism(
+                embedding = _exact_field_morphism_from_engine(
                     owned_field,
                     domain.algebraic_closure(),
                     backend,
@@ -166,34 +166,36 @@ class QuadraticCharacter(ProfiniteCharacter):
     r"""The character attached to (K(\sqrt a)/K) in characteristic not two."""
 
     def __init__(self, domain, a) -> None:
-        characteristic = ZZ(domain.characteristic())
+        characteristic = ZZ(int(domain.characteristic()))
         if characteristic == 2:
             raise ValueError(
                 "quadratic Kummer characters require characteristic different from two"
             )
-        base = engine_ring(domain.base_field())
-        a = base(a)
-        if not a:
+        base_field = domain.base_field()
+        base = _engine_ring(base_field)
+        owned_a = base_field(a)
+        backend_a = base(_engine_element(base_field, owned_a))
+        if not backend_a:
             raise ValueError("a quadratic character requires a nonzero square class")
-        self._square_class = a
-        closure = engine_ring(domain.algebraic_closure())
-        embedded_a = domain.base_embedding()(a)
-        root = embedded_a.sqrt()
-        self._root = root
+        self._square_class = owned_a
+        closure = _engine_ring(domain.algebraic_closure())
+        embedded_a = domain.base_embedding()(owned_a)
+        root = _engine_element(domain.algebraic_closure(), embedded_a).sqrt()
+        self._root = domain.algebraic_closure()._from_engine_element(closure(root))
 
-        if a.is_square():
+        if backend_a.is_square():
             stage = domain.extension_data(domain.base_field())
-            self._root_at_stage = a.sqrt()
+            self._root_at_stage = backend_a.sqrt()
         elif domain._is_finite_field():
             stage = domain.finite_extension(2)
             self._root_at_stage = _finite_root_at_stage(root, stage)
         else:
             polynomial_ring = base["t"]
             t = polynomial_ring.gen()
-            field = base.extension(t**2 - a, "sqrt_a")
-            owned_field = own_ring(field)
+            field = base.extension(t**2 - backend_a, "sqrt_a")
+            owned_field = _own_ring(field)
             backend = field.hom([root], closure)
-            embedding = exact_field_morphism(
+            embedding = _exact_field_morphism_from_engine(
                 owned_field,
                 domain.algebraic_closure(),
                 backend,
@@ -201,7 +203,7 @@ class QuadraticCharacter(ProfiniteCharacter):
             stage = domain.extension_data(owned_field, embedding=embedding)
             self._root_at_stage = field.gen()
 
-        target = refine_group(CyclicPermutationGroup(2))
+        target = _own_group(CyclicPermutationGroup(2))
         super().__init__(domain, target, stage)
 
     def square_class(self):
@@ -221,7 +223,7 @@ class QuadraticCharacter(ProfiniteCharacter):
         if image == self._root:
             return self.codomain().one()
         if image == -self._root:
-            return self.codomain().gen()
+            return self.codomain().group_generators()[0]
         raise ValueError(
             "the represented automorphism does not preserve the quadratic extension"
         )

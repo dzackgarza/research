@@ -1,8 +1,7 @@
 r"""Primitive totally isotropic sublattices, flags, and full-orthogonal-group orbits."""
 
-from sage.rings.integer_ring import ZZ as SageZZ
-
-from dzack_research.preamble.tensors import tensor
+from dzack_research.preamble.tensors.tensor import tensor
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace
 
 
 def _held(lattice, element):
@@ -16,8 +15,10 @@ def primitive_isotropic_subobject(lattice, basis):
         raise ValueError("an isotropic sublattice requires a nonempty basis")
     if any(lattice.b(left, right) != 0 for left in elements for right in elements):
         raise ValueError("the stated basis is not totally isotropic")
-    rows = tensor.matrix(SageZZ, [element.to_list() for element in elements])
-    if rows.rank() != len(elements):
+    rows = MatrixSpace(
+        lattice.base_ring(), len(elements), int(lattice.rank())
+    ).from_rows([element.to_list() for element in elements])
+    if int(rows.rank()) != len(elements):
         raise ValueError("the stated isotropic basis is linearly dependent")
     subobject = lattice.subobject_on(elements)
     if subobject.rank() != len(elements):
@@ -50,7 +51,7 @@ class IsotropicFlag:
         return self._terms
 
     def rank(self):
-        return SageZZ(len(self._terms))
+        return self.lattice().base_ring()(len(self._terms))
 
     def top(self):
         return self._terms[-1]
@@ -66,7 +67,7 @@ def _embedded_basis(subobject):
 
 def _basis_rows(obj):
     basis = obj.basis() if isinstance(obj, IsotropicFlag) else _embedded_basis(obj)
-    return [[SageZZ(entry) for entry in element.to_list()] for element in basis]
+    return [[int(entry) for entry in element.to_list()] for element in basis]
 
 
 def _terms(obj):
@@ -107,7 +108,7 @@ def transport_isotropic_object(isometry, obj):
 def _gram_rows(lattice):
     rank = int(lattice.rank())
     return [
-        [SageZZ(lattice.gram_tensor()[i, j]) for j in range(rank)]
+        [int(lattice.gram_tensor()[i, j]) for j in range(rank)]
         for i in range(rank)
     ]
 
@@ -115,8 +116,8 @@ def _gram_rows(lattice):
 def isotropic_orbit_representatives(orthogonal_group, rank, *, flag=False):
     r"""Return full-``O(L)`` orbit representatives of primitive isotropic subobjects/flags."""
     lattice = orthogonal_group.domain()
-    rank = SageZZ(rank)
-    if rank <= 0:
+    rank = lattice.base_ring()(rank)
+    if rank <= lattice.base_ring().zero():
         raise ValueError("an isotropic orbit rank must be positive")
     from py_polyhedral.binaries import indefinite_form_isotropic_k_stuff
 
@@ -126,7 +127,7 @@ def isotropic_orbit_representatives(orthogonal_group, rank, *, flag=False):
         basis = tuple(
             lattice.linear_combination(
                 {
-                    label: SageZZ(coefficient)
+                    label: lattice.base_ring()(int(coefficient))
                     for label, coefficient in zip(
                         lattice.module_generating_set(), row, strict=True
                     )
@@ -135,7 +136,7 @@ def isotropic_orbit_representatives(orthogonal_group, rank, *, flag=False):
             )
             for row in block
         )
-        if len(basis) != rank:
+        if len(basis) != int(rank):
             raise ArithmeticError("the isotropic-orbit backend returned a basis of the wrong rank")
         result.append(
             IsotropicFlag(lattice, basis)

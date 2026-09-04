@@ -1,10 +1,11 @@
 r"""Basic categorical functors used by the abstract construction layer."""
 
+from dzack_research.preamble.categories.abstract_categories.hom_foundation import OwnedHomset
 from sage.categories.category import Category
 from sage.misc.cachefunc import cached_method
 from sage.categories.homset import Hom, Homset
+from sage.categories.map import Map
 from sage.categories.morphism import Morphism, SetMorphism
-from sage.categories.objects import Objects
 from sage.categories.sets_cat import Sets as SageSets
 from sage.structure.parent import Parent
 
@@ -17,7 +18,107 @@ from dzack_research.preamble.categories.functors.core import (
     IdentityFunctor,
     NaturalTransformation,
 )
-from dzack_research.preamble.categories.sets import Sets
+from dzack_research.preamble.categories.abstract_categories.objects import Objects
+from dzack_research.preamble.categories.sets.set_categories import Sets
+
+
+class ContravariantFunctor(Functor):
+    r"""A functor ``C^op -> D`` with convenience calls on arrows of ``C``."""
+
+    def __init__(self, domain, codomain) -> None:
+        from dzack_research.preamble.categories.abstract_categories.category_constructions import OppositeCategory
+
+        self._base_domain = domain
+        super().__init__(OppositeCategory(domain), codomain)
+
+    def base_domain(self):
+        return self._base_domain
+
+    def _apply_contravariant_object(self, obj):
+        raise NotImplementedError
+
+    def _apply_contravariant_morphism(self, morphism):
+        raise NotImplementedError
+
+    def _apply_object(self, opposite_object):
+        return self._apply_contravariant_object(opposite_object.underlying_object())
+
+    def _apply_morphism(self, opposite_morphism):
+        return self._apply_contravariant_morphism(opposite_morphism.underlying_arrow())
+
+    def object_image(self, obj):
+        if obj in self.base_domain():
+            obj = self.domain()(obj)
+        return super().object_image(obj)
+
+    def morphism_image(self, morphism):
+        from dzack_research.preamble.categories.abstract_categories.category_constructions import OppositeMorphism
+
+        if not isinstance(morphism, Map):
+            raise TypeError("a contravariant functor acts on morphisms")
+        if not isinstance(morphism, OppositeMorphism):
+            source = self.domain()(morphism.codomain())
+            target = self.domain()(morphism.domain())
+            morphism = self.domain().hom(source, target)(morphism)
+        return super().morphism_image(morphism)
+
+    def chosen_preimage(self, image):
+        return super().chosen_preimage(image).underlying_object()
+
+    def adopt_object_image(self, preimage, image):
+        if preimage in self.base_domain():
+            preimage = self.domain()(preimage)
+        return super().adopt_object_image(preimage, image)
+
+
+class Bifunctor(Functor):
+    r"""A functor ``C x D -> E`` with a two-argument convenience API."""
+
+    def __init__(self, left_domain, right_domain, codomain) -> None:
+        from dzack_research.preamble.categories.abstract_categories.category_constructions import ProductCategory
+
+        super().__init__(ProductCategory(left_domain, right_domain), codomain)
+
+    def left_domain(self):
+        return self.domain().first_category()
+
+    def right_domain(self):
+        return self.domain().second_category()
+
+    def _apply_pair_object(self, left, right):
+        raise NotImplementedError
+
+    def _apply_pair_morphism(self, left_morphism, right_morphism):
+        raise NotImplementedError
+
+    def _apply_object(self, pair):
+        return self._apply_pair_object(pair.first(), pair.second())
+
+    def _apply_morphism(self, pair_morphism):
+        return self._apply_pair_morphism(
+            pair_morphism.first(), pair_morphism.second()
+        )
+
+    def object_image(self, left, right=None):
+        pair = left if right is None else self.domain()(left, right)
+        return super().object_image(pair)
+
+    def morphism_image(self, left_morphism, right_morphism=None):
+        if right_morphism is None:
+            return super().morphism_image(left_morphism)
+        if not isinstance(left_morphism, Map) or not isinstance(right_morphism, Map):
+            raise TypeError("a bifunctor acts on a pair of morphisms")
+        source = self.domain()(left_morphism.domain(), right_morphism.domain())
+        target = self.domain()(left_morphism.codomain(), right_morphism.codomain())
+        pair = self.domain().hom(source, target)(left_morphism, right_morphism)
+        return super().morphism_image(pair)
+
+    def __call__(self, left, right=None):
+        if right is None:
+            return super().__call__(left)
+        if isinstance(left, Map) or isinstance(right, Map):
+            return self.morphism_image(left, right)
+        return self.object_image(left, right)
 
 
 def _identity(obj):
@@ -107,7 +208,7 @@ class DiscreteMorphism(Morphism):
         return self.parent().discrete_category().hom(other.domain(), self.codomain()).identity()
 
 
-class DiscreteHomset(Homset):
+class DiscreteHomset(OwnedHomset):
     Element = DiscreteMorphism
 
     def __init__(self, discrete_category, domain, codomain) -> None:
@@ -118,7 +219,7 @@ class DiscreteHomset(Homset):
         return self._discrete_category
 
     def cardinality(self):
-        from dzack_research.preamble.categories.sets import cardinal
+        from dzack_research.preamble.categories.sets.cardinals import cardinal
 
         return cardinal(1 if self.domain() is self.codomain() else 0)
 
@@ -203,7 +304,7 @@ class DiscreteFunctor(Functor):
     def __init__(self, domain, codomain, object_map) -> None:
         if not isinstance(object_map, Morphism):
             object_map = SetMorphism(
-                Hom(domain.object_set(), codomain.object_set(), SageSets()),
+                Sets().hom(domain.object_set(), codomain.object_set()),
                 object_map,
             )
         if object_map.domain() is not domain.object_set() or object_map.codomain() is not codomain.object_set():
@@ -390,20 +491,9 @@ class ProductFunctor(Functor):
     def _apply_morphism(self, pair_morphism):
         source = self(pair_morphism.domain())
         target = self(pair_morphism.codomain())
-        left = pair_morphism.first()
-        right = pair_morphism.second()
-        from dzack_research.preamble.categories.modules.pure.modules import Modules
-
-        first = pair_morphism.domain().first()
-        ring = first.base_ring()
-        if ring is not None and first in Modules(ring):
-            from dzack_research.preamble.categories.modules.biproducts import biproduct_morphism
-
-            return biproduct_morphism(left, right, source=source, target=target)
-        from dzack_research.preamble.categories.sets import CartesianProductMorphism
-
-        return CartesianProductMorphism(
-            source, target, lambda index: left if index == 0 else right
+        from dzack_research.preamble.categories.abstract_categories.constructions import _ProductMorphism
+        return _ProductMorphism(
+            pair_morphism.first(), pair_morphism.second(), source=source, target=target
         )
 
 
@@ -426,20 +516,9 @@ class CoproductFunctor(Functor):
     def _apply_morphism(self, pair_morphism):
         source = self(pair_morphism.domain())
         target = self(pair_morphism.codomain())
-        left = pair_morphism.first()
-        right = pair_morphism.second()
-        from dzack_research.preamble.categories.modules.pure.modules import Modules
-
-        first = pair_morphism.domain().first()
-        ring = first.base_ring()
-        if ring is not None and first in Modules(ring):
-            from dzack_research.preamble.categories.modules.biproducts import biproduct_morphism
-
-            return biproduct_morphism(left, right, source=source, target=target)
-        from dzack_research.preamble.categories.sets import CoproductMorphism
-
-        return CoproductMorphism(
-            source, target, lambda index: left if index == 0 else right
+        from dzack_research.preamble.categories.abstract_categories.constructions import _CoproductMorphism
+        return _CoproductMorphism(
+            pair_morphism.first(), pair_morphism.second(), source=source, target=target
         )
 
 

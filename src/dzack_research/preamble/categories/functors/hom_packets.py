@@ -3,6 +3,7 @@ r"""Functorial transport of Hom/End/Aut category packets."""
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
     CategoricalIsomorphism,
     Isomorphism,
+    _isomorphism_from_known_inverse_pair,
 )
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     HomArrowIdentity,
@@ -124,7 +125,7 @@ class InducedAutFunctor(Functor):
             raise TypeError("an Aut object is represented by a categorical isomorphism")
         forward = self.base_functor().on_morphism(isomorphism.forward())
         inverse = self.base_functor().on_morphism(isomorphism.inverse())
-        return self.codomain()(Isomorphism(forward, inverse))
+        return self.codomain()(_isomorphism_from_known_inverse_pair(forward, inverse))
 
     def morphism_image(self, morphism):
         if not isinstance(morphism, HomArrowIdentity):

@@ -19,16 +19,14 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     ModuleMorphism,
     module_homset,
 )
-from dzack_research.preamble.categories.modules.quadratic_square import (
+from dzack_research.preamble.categories.modules.powers import (
     DividedSquare,
     divided_square_morphism,
 )
-from dzack_research.preamble.categories.abstract_categories import TensorSquare
-from dzack_research.preamble.categories.modules.tensor_products import (
-    BilinearMap,
-    tensor_product_morphism,
-)
-from dzack_research.preamble.categories.rings import owned_ring_view
+from dzack_research.preamble.categories.abstract_categories.constructions import TensorSquare
+from dzack_research.preamble.categories.modules.pure.modules import BilinearMap
+from dzack_research.preamble.categories.modules.tensor_products import tensor_product_morphism
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
 
 
 class _UnderlyingFormModuleFunctor(Functor):
@@ -51,15 +49,15 @@ class ForgetTheFormFunctor(_UnderlyingFormModuleFunctor):
     _faithful = True
 
     def __init__(self, base_ring, formed_category) -> None:
-        ring = owned_ring_view(base_ring)
-        from dzack_research.preamble.categories.modules import Modules
+        ring = _owned_ring(base_ring)
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
 
         super().__init__(formed_category, Modules(ring))
 
 
 class BilinearUnderlyingModuleFunctor(_UnderlyingFormModuleFunctor):
     def __init__(self, base_ring) -> None:
-        ring = owned_ring_view(base_ring)
+        ring = _owned_ring(base_ring)
         super().__init__(
             FinitelyPresentedBilinearFormModules(ring),
             FinitelyPresentedModules(ring),
@@ -68,7 +66,7 @@ class BilinearUnderlyingModuleFunctor(_UnderlyingFormModuleFunctor):
 
 class QuadraticUnderlyingModuleFunctor(_UnderlyingFormModuleFunctor):
     def __init__(self, base_ring) -> None:
-        ring = owned_ring_view(base_ring)
+        ring = _owned_ring(base_ring)
         super().__init__(
             FinitelyPresentedQuadraticFormModules(ring),
             FinitelyPresentedModules(ring),
@@ -79,14 +77,14 @@ class FreeBilinearFormFunctor(Functor):
     r"""Send ``M`` to ``(M, M tensor M, universal pure tensor)``."""
 
     def __init__(self, base_ring) -> None:
-        ring = owned_ring_view(base_ring)
+        ring = _owned_ring(base_ring)
         super().__init__(
             FinitelyPresentedModules(ring),
             FinitelyPresentedBilinearFormModules(ring),
         )
 
     def _apply_object(self, module):
-        from dzack_research.preamble.categories.forms import BilinearForms
+        from dzack_research.preamble.categories.forms.forms import BilinearForms
 
         classifier = TensorSquare(module)
         formed = FormModule(
@@ -118,18 +116,18 @@ class FreeQuadraticFormFunctor(Functor):
     r"""Send ``M`` to ``(M, Gamma^2(M), gamma_2)``."""
 
     def __init__(self, base_ring) -> None:
-        ring = owned_ring_view(base_ring)
+        ring = _owned_ring(base_ring)
         super().__init__(
             FinitelyPresentedModules(ring),
             FinitelyPresentedQuadraticFormModules(ring),
         )
 
     def _apply_object(self, module):
-        from dzack_research.preamble.categories.forms import QuadraticForms
+        from dzack_research.preamble.categories.forms.forms import QuadraticMap
 
         classifier = DividedSquare(module)
         formed = FormModule(
-            QuadraticForms(module, classifier)(classifier.quadratic)
+            QuadraticMap(module, classifier, classifier.quadratic)
         )
         formed._preamble_form_classifier = classifier
         return formed
@@ -165,9 +163,17 @@ class _FreeFormAdjunction(Adjunction):
     def unit(self, module):
         return self.left_adjoint()(module).equip_form_morphism()
 
+    def _counit_value_map(self, free_formed, formed):
+        raise NotImplementedError("a free-form adjunction must classify the target form")
+
     def counit(self, formed):
-        identity = module_homset(formed, formed).identity()
-        return self.hom_set_isomorphism_inverse(identity, formed)
+        free_formed = self.left_adjoint()(self.right_adjoint()(formed))
+        return formed_module_homset(free_formed, formed)(
+            (
+                free_formed.forget_form_morphism(),
+                self._counit_value_map(free_formed, formed),
+            )
+        )
 
 
 FormForgetfulAdjunction = _FreeFormAdjunction
@@ -182,41 +188,23 @@ class BilinearFreeFormAdjunction(_FreeFormAdjunction):
             BilinearUnderlyingModuleFunctor(base_ring),
         )
 
-    def hom_set_isomorphism_forward(self, formed_morphism):
-        if not isinstance(formed_morphism, FormedModuleMorphism):
-            raise TypeError("the bilinear transpose starts from a general formed morphism")
-        source = formed_morphism.domain()
-        return formed_morphism.module_morphism() * source.equip_form_morphism()
-
-    def hom_set_isomorphism_inverse(self, module_morphism, codomain=None):
-        formed_target = module_morphism.codomain()
-        if codomain is not None and codomain is not formed_target:
-            raise ValueError("the stated codomain differs from the formed target")
-        source_module = module_morphism.domain()
-        free_formed = self.left_adjoint()(source_module)
-        target_values = _represented_value_module(formed_target)
-        target_form = formed_target.form()
+    def _counit_value_map(self, free_formed, formed):
+        module = self.right_adjoint()(formed)
+        target_values = _represented_value_module(formed)
+        target_form = formed.form()
         bilinear = BilinearMap(
-            source_module,
-            source_module,
+            module,
+            module,
             target_values,
-            {
-                (left_label, right_label): _value_as_module_element(
-                    formed_target,
-                    target_form(
-                        module_morphism(source_module.module_generator(left_label)),
-                        module_morphism(source_module.module_generator(right_label)),
-                    ),
-                )
-                for left_label in source_module.module_generating_set()
-                for right_label in source_module.module_generating_set()
-            },
+            lambda left_label, right_label: _value_as_module_element(
+                formed,
+                target_form(
+                    module.module_generator(left_label),
+                    module.module_generator(right_label),
+                ),
+            ),
         )
-        value_map = free_formed.value_module().from_bilinear(bilinear)
-        underlying_map = module_morphism * free_formed.forget_form_morphism()
-        return formed_module_homset(free_formed, formed_target)(
-            (underlying_map, value_map)
-        )
+        return free_formed.value_module().from_bilinear(bilinear)
 
 
 class QuadraticFreeFormAdjunction(_FreeFormAdjunction):
@@ -228,30 +216,16 @@ class QuadraticFreeFormAdjunction(_FreeFormAdjunction):
             QuadraticUnderlyingModuleFunctor(base_ring),
         )
 
-    def hom_set_isomorphism_forward(self, formed_morphism):
-        if not isinstance(formed_morphism, FormedModuleMorphism):
-            raise TypeError("the quadratic transpose starts from a general formed morphism")
-        source = formed_morphism.domain()
-        return formed_morphism.module_morphism() * source.equip_form_morphism()
-
-    def hom_set_isomorphism_inverse(self, module_morphism, codomain=None):
-        formed_target = module_morphism.codomain()
-        if codomain is not None and codomain is not formed_target:
-            raise ValueError("the stated codomain differs from the formed target")
-        source_module = module_morphism.domain()
-        free_formed = self.left_adjoint()(source_module)
-        target_values = _represented_value_module(formed_target)
-        target_form = formed_target.form()
-        value_map = free_formed.value_module().from_quadratic(
+    def _counit_value_map(self, free_formed, formed):
+        module = self.right_adjoint()(formed)
+        target_values = _represented_value_module(formed)
+        target_form = formed.form()
+        return free_formed.value_module().from_quadratic(
             lambda element: _value_as_module_element(
-                formed_target,
-                target_form(module_morphism(element)),
+                formed,
+                target_form(element),
             ),
             target_values,
-        )
-        underlying_map = module_morphism * free_formed.forget_form_morphism()
-        return formed_module_homset(free_formed, formed_target)(
-            (underlying_map, value_map)
         )
 
 
