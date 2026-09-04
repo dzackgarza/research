@@ -12,6 +12,7 @@ from dzack_research.preamble.all import (
     FreeModuleOn,
     MatrixSpace,
     QuadraticField,
+    Sets,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
 from dzack_research.preamble.tensors import Tensor, tensor
@@ -59,14 +60,18 @@ def test_matrix_tensor_is_component_data_not_a_module_morphism() -> None:
 
 
 def test_a_matrix_hom_is_taken_between_framed_free_modules() -> None:
-    r"""M_{m x n}(R) = Hom_R(F_R([n]), F_R([m])).
+    r"""M_{m x n}(R) = Hom_R(F_R(S), F_R(T)) for chosen finite sets S and T.
 
-    Not "Hom between some rank-n and some rank-m free module".  A matrix
-    records the images of *chosen* generators, so the endpoints are the free
-    modules on the standard label sets, framed by those labels.  A free module
-    on other labels is isomorphic to F_R([n]) and is not equal to it, and its
-    Hom is a different object -- which is why FreshFreeModuleOn does not intern
-    its parents.
+    The free-module functor takes a *set*, not an integer: there is no
+    canonical set of cardinality n, so "R^n" names no particular object.  What
+    MatrixSpace(R, m, n) does is choose one -- the standard finite ordinal
+    Delta[n-1] = {0, ..., n-1} -- and route it through the same constructor
+    FreeModuleOn uses.  The integer is sugar for that choice, and the choice is
+    what the matrix entries are indexed by.
+
+    So a free module on a different set of the same cardinality is isomorphic
+    to F_R(Delta[n-1]) and is not equal to it, and its Hom is a different
+    object.  That is why FreshFreeModuleOn does not intern its parents.
     """
     with pytest.raises(TypeError):
         tensor.matrix(ZZ, row_keys=("a", "b"), entries=[1, 2])
@@ -75,17 +80,22 @@ def test_a_matrix_hom_is_taken_between_framed_free_modules() -> None:
     maps = MatrixSpace(ZZ, 2, 2)
     f = maps.from_tensor(components)
 
+    # The integer arity resolves to the free module on a named set.
+    assert Sets.Δ[1].cardinality() == 2
+    assert FreeModule(ZZ, 2) is FreeModuleOn(ZZ, Sets.Δ[1])
+
     assert f.parent() is maps
-    assert f.domain() is FreeModule(ZZ, 2)
-    assert f.codomain() is FreeModule(ZZ, 2)
+    assert f.domain() is FreeModuleOn(ZZ, Sets.Δ[1])
+    assert f.codomain() is FreeModuleOn(ZZ, Sets.Δ[1])
     assert maps.identity() * f == f
     assert f * maps.identity() == f
     assert tensor.from_matrix(f) == components
 
-    relabelled = FreeModuleOn(ZZ, finite_ordered_set(("a", "b")))
-    assert relabelled.rank() == FreeModule(ZZ, 2).rank()
-    assert relabelled is not FreeModule(ZZ, 2)
-    assert relabelled.Hom(relabelled) is not maps
+    # Another 2-element set gives an isomorphic module that is not this one.
+    other = FreeModuleOn(ZZ, finite_ordered_set(("a", "b")))
+    assert other.module_generating_set().cardinality() == Sets.Δ[1].cardinality()
+    assert other is not FreeModuleOn(ZZ, Sets.Δ[1])
+    assert other.Hom(other) is not maps
 
 
 def test_matrix_tensor_accepts_rectangular_component_data_or_explicit_shape() -> None:
