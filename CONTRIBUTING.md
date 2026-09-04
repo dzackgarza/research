@@ -3638,6 +3638,16 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Correct Example**: `M_{m x n}(R) = Hom_R(F_R(S), F_R(T))` for chosen finite sets; `FreeModule(R, n)` resolving to `FreeModuleOn(R, Sets.Delta[n-1])` through one constructor; a test asserting `FreeModule(ZZ, 2) is FreeModuleOn(ZZ, Sets.Delta[1])` and that a free module on another two-element set is not it and has a different Hom.
 
+#### `CON-15`: A Tuple Is an Element of a Product; Name the Product
+
+- **Rule**: An operation that yields several values yields **one element of the product** of the objects those values live in.  Before writing a tuple, ask which product it is a point of, and construct it there: a pair of naturals is an element of `Product(NN, NN)`; the two component morphisms of a commutative square are an element of `Product(Hom(A, B), Hom(C, D))`; a family indexed by a set is that indexed family, not a sequence.  A bare Python tuple never appears in a public signature, a return, or an annotation.
+
+- **Rationale**: \((0, 2)\) is not a container holding two integers.  It is a point of \(\mathbb N^2\), and \(\mathbb N^2\) is an object of a category with projections, a universal property, its own equality, and morphisms into and out of it.  Writing the point as a Python tuple discards its parent, so the value arrives with no category and no equality of its own, and every caller must re-derive what it was a point of -- which is why a test given such a return has nothing owned to compare against and is forced out of the universe (`DEV-37`).  The repair needs no new type: `Product` is already an owned construction, so the work is naming the product that was always implied.  Minting a bespoke class per invariant is the wrong repair and the characteristic over-compliance with this rule; the question is never "what type should this be" but "which product is this an element of".
+
+- **Violation Example**: `return (0, 2)` from a valence; `def signature_pair(self) -> tuple[int, int]`; returning `self.left(), self.right()` for a square's components; a shape returned as `(rank, rank)`; a test comparing any of these against a tuple display, which is the same defect observed from the far end.
+
+- **Correct Example**: a valence constructed in `Product(NN, NN)`; a square's components as an element of the product of the two homsets, so that projecting recovers each morphism in its own homset; invariant factors as the indexed family they are, ordered by divisibility, with the divisibility chain a property of the family rather than of a Python sequence.
+
 * * *
 
 ### 4. Category Placement & Capability (`CAT-*`)
