@@ -14,6 +14,10 @@ from sage.schemes.product_projective.space import (
 )
 
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import SliceOver
+from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    CategoricalHomset,
+    HomCategoryConstruction,
+)
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     _engine_element,
@@ -33,11 +37,14 @@ _SCHEME_MORPHISM_WRAPPERS = {}
 class SchemeMorphism(Morphism):
     r"""Categorical wrapper around one native Sage scheme morphism."""
 
-    def __init__(self, native_morphism, *, domain=None, codomain=None) -> None:
+    def __init__(self, native_morphism, *, domain=None, codomain=None, homset=None) -> None:
         self._native_morphism = native_morphism
         self._preamble_domain_override = domain
         self._preamble_codomain_override = codomain
-        Morphism.__init__(self, native_morphism.parent())
+        if homset is None:
+            engine = native_morphism.parent()
+            homset = _scheme_mor_category(engine.domain(), engine.codomain())
+        Morphism.__init__(self, homset)
 
     def native_morphism(self):
         return self._native_morphism
@@ -160,6 +167,48 @@ def categorical_scheme_morphism(native_morphism, *, domain=None, codomain=None):
     return wrapped
 
 
+class SchemeMorCategory(CategoricalHomset):
+    r"""The owned category \(\mathrm{Mor}_{\mathbf{Sch}}(X, Y)\).
+
+    Its objects are the scheme morphisms \(X\to Y\).  Sage's own scheme
+    Homset stays underneath as the computation engine: it is what the native
+    morphisms are built by, and it never reaches a session.
+    """
+
+    Element = SchemeMorphism
+
+    def __init__(self, schemes, domain, codomain) -> None:
+        self._engine_homset = _SageScheme._Hom_(domain, codomain)
+        CategoricalHomset.__init__(
+            self, HomCategoryConstruction(schemes), domain, codomain
+        )
+
+    def _engine_homset_crossing(self):
+        r"""Return the private Sage Homset these morphisms are computed in."""
+        return self._engine_homset
+
+    def _element_constructor_(self, datum):
+        if isinstance(datum, SchemeMorphism):
+            if datum.parent() is self:
+                return datum
+            datum = datum.native_morphism()
+        return SchemeMorphism(datum, homset=self)
+
+    def identity(self):
+        if self.domain() is not self.codomain():
+            raise ValueError("identity is defined only on an endomorphism Hom")
+        # Each owned scheme records its identity when it is constructed, built
+        # from its engine coordinate ring.  Sage's own Homset identity would
+        # ask the owned coordinate algebra for `gens`, which is not a name the
+        # owned surface answers.
+        return self(self.domain().categorical_identity_morphism())
+
+
+def _scheme_mor_category(domain, codomain):
+    schemes = Schemes(_scheme_base_ring(domain))
+    return schemes.Mor(domain, codomain)
+
+
 def _scheme_base_ring(scheme):
     stored = getattr(scheme, "_preamble_scheme_base_ring", None)
     if stored is not None:
@@ -217,18 +266,12 @@ class Schemes(OwnedCategoryOverBaseRing):
             and _has_scheme_placement(candidate, Schemes)
         )
 
+    @cached_method
     def Mor(self, domain, codomain):
         if domain not in self or codomain not in self:
             raise TypeError("a scheme Hom requires two schemes over the stated base")
-        return _native_scheme_homset(domain, codomain)
+        return SchemeMorCategory(self, domain, codomain)
 
-
-    class ParentMethods:
-        def Mor(self, codomain, category=None):
-            schemes = Schemes(self.scheme_base_ring())
-            if category is None or category.is_subcategory(schemes):
-                return _native_scheme_homset(self, codomain)
-            return _SageScheme._Hom_(self, codomain, category=category)
 
     @cached_method
     def base_scheme(self):
@@ -280,6 +323,12 @@ class Schemes(OwnedCategoryOverBaseRing):
         return SmoothSchemes(self.base_ring())
 
     class ParentMethods:
+        def Mor(self, codomain, category=None):
+            schemes = Schemes(self.scheme_base_ring())
+            if category is None or category.is_subcategory(schemes):
+                return schemes.Mor(self, codomain)
+            return _SageScheme._Hom_(self, codomain, category=category)
+
         def scheme_base_ring(self):
             return _scheme_base_ring(self)
 
@@ -821,13 +870,27 @@ def affine_spec_morphism(algebra_morphism):
     return morphism
 
 
+def _engine_dimension(dimension):
+    r"""Cross a stated dimension into the engine.
+
+    A session's numeral is an owned integer, which Sage's ambient-space
+    constructors cannot read.  The dimension of an affine or projective space
+    is a natural number, so this is the same crossing every owned scalar makes
+    before it reaches the engine.
+    """
+    from sage.rings.integer_ring import ZZ as SageZZ
+
+    integers = _own_ring(SageZZ)
+    return int(_engine_element(integers, integers(dimension)))
+
+
 def AffineSpace(dimension, base_ring, names=None):
     r"""Return the owned affine space ``A^n_R``."""
     base = _own_ring(base_ring)
     if names is None:
-        scheme = _SageAffineSpace(dimension, _engine_ring(base))
+        scheme = _SageAffineSpace(_engine_dimension(dimension), _engine_ring(base))
     else:
-        scheme = _SageAffineSpace(dimension, _engine_ring(base), names=names)
+        scheme = _SageAffineSpace(_engine_dimension(dimension), _engine_ring(base), names=names)
     engine_coordinate_ring = getattr(
         scheme, "_preamble_engine_coordinate_ring", None
     )
@@ -879,9 +942,9 @@ def ProjectiveSpace(dimension, base_ring, names=None):
     r"""Return the owned projective space ``P^n_R``."""
     base = _own_ring(base_ring)
     if names is None:
-        scheme = _SageProjectiveSpace(dimension, _engine_ring(base))
+        scheme = _SageProjectiveSpace(_engine_dimension(dimension), _engine_ring(base))
     else:
-        scheme = _SageProjectiveSpace(dimension, _engine_ring(base), names=names)
+        scheme = _SageProjectiveSpace(_engine_dimension(dimension), _engine_ring(base), names=names)
     categories = [ProjectiveSpaces(base)]
     if _integral_placement(base):
         categories.append(IntegralSchemes(base))
