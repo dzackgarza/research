@@ -4080,6 +4080,8 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
   This is not the invention `LEX-10` bans.  That prohibition is on minting a name to satisfy a rule -- `MyCustomClassCreationDatum` -- which has no referent.  `ProductOfNaturalNumbers` denotes \(\mathbb N^k\), which a mathematician recognises.  Naming real mathematics is the welcome case even when the name is currently an alias.
 
+  The trade is explicit and correct: it costs minting one name, it buys zero code guarantees, and it buys mathematical expressiveness.  Do not weigh the zero guarantees against the cost -- the guarantees were never available at that site, and expressiveness is what is being purchased.  What the name additionally buys is set out in `LEX-17` and `LEX-18`: the alias is not a placeholder waiting to be tidied but a staging ground for a refinement whose errors are its yield.
+
 - **Violation Example**: `-> Any` written at the signature; a different ad-hoc alias per file; an alias named for its representation (`IntPair`) rather than its mathematics; an alias with no comment saying what it stands for.
 
 - **Correct Example**: one aliased name per mathematical notion, in the central layer, with its comment; every site using it; the alias replaced by the real type in a single edit when the surface grows to carry it.
@@ -4093,6 +4095,42 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 - **Violation Example**: removing `-> tuple[int, int]` because the return became an owned element; changing it to `-> Any` or `-> Element` for the same reason; leaving the old annotation in place and false.
 
 - **Correct Example**: the annotation updated to name the new codomain in the same edit that changes the return, or the `LEX-15` alias introduced if that codomain is not yet expressible.
+
+#### `LEX-17`: The Central Typing Layer Is an Independently Auditable Artifact
+
+- **Rule**: The typing layer is reviewed, refined and improved **on its own schedule**, as an object of study separate from any call site.  An audit of it asks a mathematical question -- does this name admit a sharper referent than it currently carries -- and answering that question is ordinary maintenance, not a change to the code that uses it.  A `LEX-15` alias is deliberately left in place until such an audit refines it; it is not debt awaiting cleanup.
+
+- **Rationale**: Once the mathematics is named in one place, the collection of names becomes a readable account of what the repository believes its objects are, and it can be improved by reading it alone.  `ProductOfNaturalNumbers` can be recognised as admitting a much better refinement without opening a single consumer, because the name already states the intent that the refinement must respect.  This is only possible when the ignorance was localised: inlined `Any`, ad-hoc per-file aliases, and framework universals leave nothing to audit, since each site must first be reverse-engineered to learn what it meant.
+
+- **Violation Example**: treating the alias file as scaffolding to be minimised; refining a type only when a call site forces it; discovering the intent of a site by reading its body because its annotation records none.
+
+- **Correct Example**: a scheduled read of the typing layer that proposes refinements from the names alone; an alias that survives several releases because no sharper referent has yet been established, and is none the worse for it.
+
+#### `LEX-18`: Narrowing a Type Is a Designed Experiment; Its Errors Are the Result
+
+- **Rule**: When a `LEX-15` alias is refined to a real type, the errors that appear are the **output of the experiment**, not damage to be minimised.  Read every one before changing anything.  Suppressing them, widening the refinement to make them stop, or reverting the narrowing discards the result.
+
+- **Rationale**: Because every consumer already declared its intent by using the name, the checker is doing two things at once when the name narrows: it is checking the new definition, and it is checking each site's declared intent against that definition.  Each error is therefore a specific disagreement between a usage and the refinement, and lights up the complete census of consumers at once.  Three kinds of finding come out of it, and each is worth more than the narrowing itself:
+
+  - a call site needs an operation the refined type does not offer, which names a **missing API** and is a gap discovered rather than guessed;
+  - a call site uses less structure than the refinement supplies, which distinguishes the sites needing only the **set** structure from those needing the **monoid** structure -- a mathematical distinction across the corpus that no reading of individual files would surface;
+  - a call site is simply wrong, and was wrong before, invisibly.
+
+  A narrowing that produces no errors has told you something too, but a narrowing whose errors are suppressed has told you nothing and cost the opportunity.
+
+- **Violation Example**: narrowing an alias and immediately loosening it until the suite is quiet; adding `# type: ignore` at the sites that failed; treating the error count as the cost of the change rather than as its findings.
+
+- **Correct Example**: narrowing, then reading the errors as a census -- these sites want an operation we do not have, these sites only ever needed the underlying set, this one is a real defect -- and letting that reading determine what changes, including possibly the refinement itself.
+
+#### `LEX-19`: Accumulated Usage Is Evidence for the Theorem
+
+- **Rule**: Treat the corpus of call sites of a named mathematical type as **evidence about what the operation actually is**, and consult it when deciding the operation's real definition.  The code is a place to reason about and experiment with a proposed mathematical statement before committing to it.
+
+- **Rationale**: A named type accumulates, at every call site, a record of what consumers needed from the object.  That record answers questions a definition alone cannot settle.  If one later wants to define a valence as an honest morphism into a monoid, or into a product of monoids, the usages say whether the monoid structure is ever used, whether anything relies on more than the underlying set, and whether the proposed morphism would in fact be natural in the ways the callers assume.  A refinement can then be tried against the corpus and the outcome read off, so the theorem is developed with evidence instead of asserted and patched afterwards.
+
+- **Violation Example**: settling an operation's definition from one implementation and one caller; proposing a structural refinement without checking which structure the existing sites use; treating call sites purely as work to update rather than as data about the notion.
+
+- **Correct Example**: before promoting a valence to a morphism of monoids, reading its sites to see which of them use addition of valences at all, and letting the answer decide whether the monoid structure belongs in the definition or is being imported for tidiness.
 
 * * *
 
