@@ -34,7 +34,7 @@ def test_five_sterk_diagrams_retain_the_exact_root_pairings() -> None:
         expected = tensor(
             ZZ,
             (),
-            (len(roots), len(roots)),
+            (roots.cardinality(), roots.cardinality()),
             [[left.b(right) for right in roots] for left in roots],
         )
         assert diagram.root_gram_tensor() == expected

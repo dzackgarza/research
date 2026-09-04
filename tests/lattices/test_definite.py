@@ -431,8 +431,7 @@ def test_cyclic_subgroup_is_the_literal_subgroup_generated_by_a_live_isometry() 
     assert subgroup.is_finite() is True
     assert subgroup.order() >= ZZ(2)
     assert lattice.Aut().order() % subgroup.order() == 0
-    elements = subgroup
-    assert len(elements) == subgroup.order()
+    assert Set(subgroup).cardinality() == subgroup.order()
     assert subgroup.one() in subgroup
     assert generator in subgroup
     assert all(element.parent() is lattice.Aut() for element in elements)
