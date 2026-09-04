@@ -8,9 +8,12 @@ from dzack_research.preamble.all import (
     QQ,
     ZZ,
     DualizationFunctor,
+    FreeModule,
+    FreeModuleOn,
     MatrixSpace,
     QuadraticField,
 )
+from dzack_research.preamble.categories.sets import finite_ordered_set
 from dzack_research.preamble.tensors import Tensor, tensor
 
 
@@ -55,11 +58,15 @@ def test_matrix_tensor_is_component_data_not_a_module_morphism() -> None:
     assert tensor.from_matrix(morphism) == components
 
 
-def test_a_linear_map_is_built_in_its_homset_not_from_component_data() -> None:
-    r"""M_{2x2}(R) = Hom_R(R^2, R^2); the linear-map operations live there.
+def test_a_matrix_hom_is_taken_between_framed_free_modules() -> None:
+    r"""M_{m x n}(R) = Hom_R(F_R([n]), F_R([m])).
 
-    Component data is a tensor.  Turning it into a map is a passage into the
-    homset, and the homset is where composition and the identity are defined.
+    Not "Hom between some rank-n and some rank-m free module".  A matrix
+    records the images of *chosen* generators, so the endpoints are the free
+    modules on the standard label sets, framed by those labels.  A free module
+    on other labels is isomorphic to F_R([n]) and is not equal to it, and its
+    Hom is a different object -- which is why FreshFreeModuleOn does not intern
+    its parents.
     """
     with pytest.raises(TypeError):
         tensor.matrix(ZZ, row_keys=("a", "b"), entries=[1, 2])
@@ -69,11 +76,16 @@ def test_a_linear_map_is_built_in_its_homset_not_from_component_data() -> None:
     f = maps.from_tensor(components)
 
     assert f.parent() is maps
-    assert f.domain() is ZZ**2
-    assert f.codomain() is ZZ**2
+    assert f.domain() is FreeModule(ZZ, 2)
+    assert f.codomain() is FreeModule(ZZ, 2)
     assert maps.identity() * f == f
     assert f * maps.identity() == f
     assert tensor.from_matrix(f) == components
+
+    relabelled = FreeModuleOn(ZZ, finite_ordered_set(("a", "b")))
+    assert relabelled.rank() == FreeModule(ZZ, 2).rank()
+    assert relabelled is not FreeModule(ZZ, 2)
+    assert relabelled.Hom(relabelled) is not maps
 
 
 def test_matrix_tensor_accepts_rectangular_component_data_or_explicit_shape() -> None:
