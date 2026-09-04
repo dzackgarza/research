@@ -20,52 +20,61 @@
 - [ ] Finish scheme/polytope collection ownership (facets/fans and remaining factor collections) and profinite/Galois stage/embedding/conjugacy collections under the same rule.
 - [ ] Final mechanical sweep of every remaining `tuple(...)`/`list(...)` occurrence under `src/dzack_research/preamble`: each survivor must be either syntactic ingress immediately parsed into an owned object or a private finite backend serialization boundary.
 
-## Errors surfaced by the live preamble survey (2026-09-05)
+## Typing and witnesses
 
-`just preamble-megadoc` builds every owned category from a running session and reports
-what refuses to build.  These are its findings, each to be fixed in the preamble, not
-worked around in the survey.
+`just preamble-megadoc` constructs every owned category from a running session.  What it
+cannot construct, it reports.  Both causes below are the same defect seen twice: the code
+does not say, in a form anything can read, what a mathematical parameter *is*.
 
-- [ ] **The preamble is essentially unannotated.**  Of 4931 public functions and methods
-  under `src/dzack_research/preamble`, 2422 take an argument beyond `self`, and 52 of
-  those — 2.1% — annotate every argument.  Only 12.6% carry a return annotation at all.
-  The Sage QC tier reports 7142 mypy errors across 137 preamble files as a consequence.
-  Signatures are where a reader learns which category an operation is about, so an
-  unannotated parameter is missing mathematics, not missing ceremony.  Annotate with the
-  owned mathematical types (`Parent`, the owned category types, the element types), never
-  with `object` or `Any`.
+- [ ] **URGENT — `LEX-12`, `LEX-14`: annotate the preamble.**  Of 4931 public functions
+  and methods under `src/dzack_research/preamble`, 2422 take an argument beyond `self`,
+  and 52 of those — 2.1% — annotate every argument; 12.6% carry a return annotation.  The
+  Sage QC tier reports 7142 mypy errors across 137 preamble files.  An annotation names
+  the codomain and its reader is a mathematician (`LEX-12`), so an unannotated parameter
+  is missing mathematics, not missing ceremony.  Annotate from the owned category graph,
+  never from the framework's class tree (`LEX-14`), and never with `object` or `Any`.
+  Everything below depends on this: a signature is the only place a tool can learn which
+  category an operation takes and returns.
 
-- [ ] **`OwnedParameterizedCategory` erases what its parameter is.**  `Subgroups`,
-  `PredicateSubgroups`, `DifferentialGradedModules` and `GradedAlgebraModules` all
-  declare `(parameter)`, so neither a reader nor a tool can tell that the first two want
-  a group, the third a DGA and the fourth a graded algebra.  Building any of them with a
-  ring fails deep inside — `TypeError: this API expects a preamble group`, or
-  `AttributeError: 'Owned_OwnedRingParent_with_category' object has no attribute
-  'grading_monoid'` — rather than at the signature.  Name each parameter for the
-  structure it is (`supergroup`, `dga`, `graded_algebra`), the way
-  `OwnedCategoryOverBaseRing` names `base_ring`.
-  `src/dzack_research/preamble/categories/group/groups.py:1826`,
-  `categories/group/predicate_subgroups.py:40`,
-  `categories/modules/dg_modules.py:10` and `:36`.
+- [ ] **`LEX-01`, `LEX-12`: `OwnedParameterizedCategory` erases what its parameter is.**
+  Every subclass declares `(parameter)` whatever the mathematics is, and the four in the
+  session want four different structures: `Subgroups` a group, `DifferentialGradedModules`
+  a DGA, `GradedAlgebraModules` a graded algebra, and `PredicateSubgroups` an entire
+  category.  A wrong argument then fails deep inside — `TypeError: this API expects a
+  preamble group`, `AttributeError: 'Owned_OwnedRingParent_with_category' object has no
+  attribute 'grading_monoid'` — naming nothing about what was wanted.  Annotate the
+  parameter with the category its values range over; the family is then constructible as
+  `C(D.an_object())`.
+  `categories/group/groups.py`, `categories/group/predicate_subgroups.py`,
+  `categories/modules/dg_modules.py`.
 
-- [ ] **Graded-commutative algebras exist only over the integer grading.**
-  `GradedCommutativeAlgebras(R, M)` and `StrictlyGradedCommutativeAlgebras(R, M)` raise
-  `NotImplementedError: Koszul graded commutativity is currently represented for the
-  integer grading` for every `M` other than `ZZ`, including `NN`.  Koszul signs are
-  defined for any grading monoid with a parity homomorphism to `ZZ/2`; represent that
-  instead of hard-refusing.
-  `src/dzack_research/preamble/categories/algebras/graded_commutative_algebras.py:21`
-  and `:50`.
+- [ ] **`DEV-11`: give every owned category an `an_object()`.**  `OwnedCategory` now
+  declares it as an `abstract_method`; `OwnedGroups` and `OwnedRings` supply it, which is
+  what makes `Subgroups(OwnedGroups().an_object())` and `Lattices(OwnedRings().an_object())`
+  build.  Every other owned category still has none, so it cannot exhibit an inhabitant and
+  nothing generic can construct over it.  Sage's inherited `Category.example` is not a
+  substitute: it looks for a template under `sage.categories.examples` and returns the
+  `NotImplemented` **singleton** when it finds none — silent where it must be loud, and
+  answering for Sage's graph rather than the owned one.
+  `categories/abstract_categories/objects.py`.
+
+- [ ] **`STY-49`: graded-commutative algebras hard-refuse every grading but `ZZ`.**
+  `GradedCommutativeAlgebras(R, M)` and `StrictlyGradedCommutativeAlgebras(R, M)` compare
+  `M` against `ZZ` by identity and raise `NotImplementedError: Koszul graded commutativity
+  is currently represented for the integer grading` otherwise.  Koszul signs need a parity
+  homomorphism to `ZZ/2`, not the integers: assert the hypothesis the mathematics actually
+  has — `assert M in Monoids()`, then the parity map — instead of an identity test against
+  one monoid.  `categories/algebras/graded_commutative_algebras.py`.
 
 - [ ] **`OwnedCategoryOverBaseRing` is exported into the session but is not a category.**
   `from dzack_research.preamble.all import *` binds it, and building it raises
   `NotImplementedError: <abstract method super_categories>`.  An abstract base belongs to
-  the implementation, not to the session namespace: drop it from the export surface.
-  `src/dzack_research/preamble/categories/rings/ring_foundation.py:668`.
+  the implementation, not to the session surface.
+  `categories/rings/ring_foundation.py`.
 
-- [ ] **Four form functors have no `_repr_`.**  `FreeBilinearFormFunctor`,
+- [ ] **`LEX-01`: four form functors have no `_repr_`.**  `FreeBilinearFormFunctor`,
   `BilinearUnderlyingModuleFunctor`, `FreeQuadraticFormFunctor` and
   `QuadraticUnderlyingModuleFunctor` fall back to Python's default, so
   `BilinearFreeFormAdjunction` and `QuadraticFreeFormAdjunction` print their adjoints as
-  `<... object at 0x...>` — every sibling functor in `categories/functors/` names itself.
-  `src/dzack_research/preamble/categories/functors/free_forms.py`.
+  `<... object at 0x...>`.  Every sibling in `categories/functors/` names itself.
+  `categories/functors/free_forms.py`.

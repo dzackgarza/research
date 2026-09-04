@@ -1,10 +1,33 @@
 """Dependency-light bases for the owned mathematical category graph."""
 
 from sage.categories.category import Category
+from sage.misc.abstract_method import abstract_method
 
 
 class OwnedCategory(Category):
     r"""Base class for categories belonging to the owned mathematical graph."""
+
+    @abstract_method
+    def an_object(self):
+        r"""Return one object of this category.
+
+        A witness that the category is inhabited, and the datum every construction
+        parameterized by a category needs: where ``C`` takes an object of ``D``,
+        ``C(D.an_object())`` builds one without the caller knowing anything else
+        about ``D``.
+
+        Distinct from ``an_element``, which every parent carries and which produces
+        an element *of that object*.  This produces an object *of this category*.
+
+        Sage's ``Category.example`` is not this operation: it looks for a template
+        module under ``sage.categories.examples`` and returns the ``NotImplemented``
+        singleton when it finds none, so it answers for Sage's graph and is silent
+        where it should be loud.
+
+        A contract on every owned category, not a default: exhibiting an inhabitant
+        is per-category mathematics, and a category that cannot is a gap in that
+        category.
+        """
 
 
 class OwnedParameterizedCategory(OwnedCategory):
