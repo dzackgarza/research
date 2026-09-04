@@ -20,7 +20,6 @@ from sage.categories.morphism import Morphism
 from sage.categories.objects import Objects as SageObjects
 from sage.categories.sets_cat import Sets as SageSets
 from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
-from dzack_research.preamble.categories.sets.set_categories import Sets as _OwnedSets
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.classcall_metaclass import typecall
 from sage.structure.sage_object import SageObject
@@ -42,6 +41,11 @@ def _category_homset(category, domain, codomain):
             return constructor(domain, codomain)
         except (TypeError, ValueError):
             pass
+    # Sets is a concrete category built on this machinery, so importing it at
+    # module scope would point an ancestor at a descendant (`STY-03`) and close
+    # a cycle.  It is needed only on these fallback paths.
+    from dzack_research.preamble.categories.sets.set_categories import Sets as _OwnedSets
+
     if isinstance(category, OwnedCategory):
         return _OwnedSets().Mor(domain, codomain)
     try:

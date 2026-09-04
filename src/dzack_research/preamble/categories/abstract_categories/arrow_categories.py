@@ -5,7 +5,6 @@ from sage.categories.category import Category
 from sage.categories.homset import Hom, Homset
 from sage.categories.morphism import Morphism
 from sage.categories.sets_cat import Sets as SageSets
-from dzack_research.preamble.categories.sets.set_categories import Sets as _OwnedSets
 from sage.structure.parent import Parent
 
 

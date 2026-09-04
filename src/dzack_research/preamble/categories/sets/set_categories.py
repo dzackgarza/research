@@ -20,7 +20,10 @@ from sage.structure.parent import Parent
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
-from dzack_research.preamble.categories.abstract_categories.hom_foundation import OwnedHomset
+from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    CategoricalHomset,
+    HomCategoryConstruction,
+)
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 
 
@@ -154,15 +157,18 @@ class OwnedSetMorphism(SetMorphism):
         )
 
 
-class SetHomset(OwnedHomset):
-    r"""The owned set of functions ``X -> Y`` between represented sets.
+class SetMorCategory(CategoricalHomset):
+    r"""The owned category $\mathrm{Mor}_{\mathbf{Set}}(X, Y)$.
 
-    Sage's ``Homset`` is used only as the runtime parent required by
-    ``SetMorphism``; mathematical ownership stays in this class.
+    Its objects are the functions $X \to Y$.  A set is a category -- the
+    discrete one -- so this is a category like every other `Mor`, and not a
+    special set-valued case: `ARC-07` has `Mor` return a category at every
+    level.  Sage's ``Homset``, reached through ``CategoricalHomset``, remains
+    the runtime parent its ``SetMorphism`` elements require.
     """
 
-    def __init__(self, domain, codomain) -> None:
-        Homset.__init__(self, domain, codomain, category=SageSets())
+    def __init__(self, mor_family, domain, codomain) -> None:
+        CategoricalHomset.__init__(self, mor_family, domain, codomain)
 
     def __call__(self, datum):
         if isinstance(datum, SetMorphism):
@@ -199,16 +205,21 @@ class SetHomset(OwnedHomset):
         return f"Mor_Set({self.domain()}, {self.codomain()})"
 
 
-_SET_HOMSETS = {}
+class SetMorCategoryConstruction(HomCategoryConstruction):
+    r"""The owned family $(X, Y) \mapsto \mathrm{Mor}_{\mathbf{Set}}(X, Y)$."""
 
-def _set_homset(domain, codomain):
-    key = (id(domain), id(codomain))
-    cached = _SET_HOMSETS.get(key)
-    if cached is not None and cached.domain() is domain and cached.codomain() is codomain:
-        return cached
-    result = SetHomset(domain, codomain)
-    _SET_HOMSETS[key] = result
-    return result
+    def fixed_category_class(self):
+        return SetMorCategory
+
+
+def _set_mor_category(domain, codomain):
+    r"""Return the canonical $\mathrm{Mor}_{\mathbf{Set}}(X, Y)$.
+
+    The family interns by endpoint identity, so this replaces the local cache
+    the set level kept while it was the one category building its Mor object
+    by hand.
+    """
+    return SetMorCategoryConstruction(Sets()).Of(domain, codomain)
 
 
 class Sets(OwnedCategory):
@@ -243,7 +254,7 @@ class Sets(OwnedCategory):
     def Mor(self, domain, codomain):
         if domain not in self or codomain not in self:
             raise TypeError("a set morphism requires two set objects")
-        return _set_homset(domain, codomain)
+        return _set_mor_category(domain, codomain)
 
 
     def product(self, family):
