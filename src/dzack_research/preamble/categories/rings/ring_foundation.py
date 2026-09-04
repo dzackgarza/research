@@ -307,8 +307,15 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 isinstance(category, OwnedCategory) and category.is_subcategory(rings)
             ):
                 return rings.Hom(self, codomain)
-            from sage.categories.homset import Hom as SageHom
-            return SageHom(self, codomain, category)
+            # A Sage category here is not a mathematical request: it is Sage's
+            # coercion machinery asking for somewhere to keep a conversion map,
+            # naming its own `SetsWithPartialMaps`.  `SageHom` would check that
+            # this owned ring lies in that Sage category, which it does not and
+            # need not (`ARC-00`).  Build the homset directly at the engine
+            # boundary instead, without the membership check.
+            from sage.categories.homset import Homset
+
+            return Homset(self, codomain, category=category, check=False)
 
         def _Hom_(self, codomain, category=None):
             rings = OwnedRings()

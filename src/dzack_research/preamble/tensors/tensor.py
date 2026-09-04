@@ -238,12 +238,25 @@ def _engine_argument(value):
     return _engine_if_ring(value)
 
 
+def _engine_components(value):
+    """Cross a component array of any depth to the engine.
+
+    A component sequence carries owned ring elements, and Sage's constructors
+    convert each entry against their own base ring.  Without crossing the
+    entries the owned elements arrive intact and Sage reports that it cannot
+    coerce them, so the crossing recurses through rows as well as vectors.
+    """
+    if isinstance(value, (list, tuple)):
+        return [_engine_components(entry) for entry in value]
+    return _engine_argument(value)
+
+
 def _engine_vector(*args, **kwds):
-    return _sage_vector(*tuple(_engine_argument(arg) for arg in args), **kwds)
+    return _sage_vector(*tuple(_engine_components(arg) for arg in args), **kwds)
 
 
 def _engine_matrix(*args, **kwds):
-    args = tuple(_engine_argument(arg) for arg in args)
+    args = tuple(_engine_components(arg) for arg in args)
     if "base_ring" in kwds:
         kwds = dict(kwds)
         kwds["base_ring"] = _engine_if_ring(kwds["base_ring"])
