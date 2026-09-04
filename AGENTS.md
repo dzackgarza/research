@@ -55,8 +55,8 @@ These are implementation prerequisites: use them to identify already-planned rem
 
 - For any notebook inspection, execution, or result-checking, use `japi` (from `jupyter-assistant-api`) rather than direct Notebook HTTP API calls.
 - `japi` is the required interface for reading cells, restarting kernels, and verifying rendered results in `computations/notebooks/` during development and debugging.
-- Skip test, QC, build, execution, and rendered-result verification for changes confined to `computations/notebooks/`, `src/dzack_research/preamble/`, or repository prose — the `docs/` book and the root `*.md` policy and TODO files.
-- Commit those changes with verification hooks skipped; do not let unrelated repository failures block that work.  The commit gate is whole-repo, so a red tree anywhere freezes every commit; a change that touches no Python cannot regress it.
+- Skip test, QC, build, execution, and rendered-result verification for changes confined to `computations/notebooks/` or `src/dzack_research/preamble/`.  This exemption holds even though those changes do contain code; it is a scope decision, not the prose rule under *QC integration*.
+- Commit those changes with verification hooks skipped; do not let unrelated repository failures block notebook or preamble work.
 
 # Goal-integrity routing (always-on)
 
@@ -513,6 +513,12 @@ When a discussion has stabilized, the next action is to file the issue, not to k
 When a discussion is still moving, do not manufacture an issue to make it look tracked.
 
 # QC integration
+
+**Hooks check the code you are checking in.  A commit that stages no code is committed with `--no-verify` — always, with no adjudication and no asking.**
+
+`git diff --cached --name-only` is the entire test.  If that list holds no `.py`, `.sage`, or other executable source, then ruff, mypy, vulture and pytest have nothing to say about the commit, and the gate's verdict — pass or fail — carries no information about it.  Documentation, `docs/` book pages, policy files, TODOs, plans, READMEs, and every other prose-only change commit this way.
+
+The gate is whole-repo, so one red tree freezes every commit in every worktree.  Prose never waits for someone else's refactor to go green.
 
 This repo delegates all test/QC to the global QC in `~/ai-review-ci` (`dzackgarza/ai-review-ci`). The root justfile's three gates delegate directly to the Sage tier: `test-commit`/`test-push`/`test-ci` → `just -f ~/ai-review-ci/justfiles/sage.just -d . <gate>` (pre-commit runs `test-commit`, pre-push `test-push`). The Sage tier preparses `.sage` sources into a tempdir via the sageparse lowering (never `sage --preparse` artifacts in-tree) and runs mypy on the lowered Python in an ephemeral CPython 3.14 with the project installed editable — `sage.*` types come from the `sage-stubs` package declared in this repo's `[dependency-groups] dev`, which the QC recipes pass `--with` into the mypy environment. Sage's venv is used only for lowering and for running tests. `computations/experiments/*` justfiles are NOT run by the root gates; each is invoked on its own.
 
