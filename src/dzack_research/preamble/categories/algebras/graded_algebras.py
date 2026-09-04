@@ -23,7 +23,6 @@ from dzack_research.preamble.categories.algebras.algebras import (
     algebra_homset,
 )
 from dzack_research.preamble.categories.modules.graded_modules import GradedModules
-from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.refine import refine
 
 
@@ -61,7 +60,7 @@ class GradedAlgebraMorphism(Morphism):
                 "a represented graded morphism currently requires a selected algebra framing"
             ) from error
         try:
-            finite = cardinal(labels.cardinality()).is_finite()
+            finite = labels.cardinality().is_finite()
         except (AttributeError, NotImplementedError, TypeError, ValueError):
             finite = False
         if not finite:
@@ -168,6 +167,12 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
     case. This is the nLab definition of a graded algebra; Stacks Project
     tag 00JL is the special case \(M = \mathbb{N}\).
     """
+
+    def an_object(self):
+        r"""The de Rham algebra of the polynomial algebra, graded by form degree."""
+        from dzack_research.preamble.categories.algebras.de_rham_algebras import DeRhamAlgebras
+
+        return DeRhamAlgebras(self.base_ring()).an_object()
 
     @staticmethod
     def __classcall__(cls, base_ring, grading_monoid=None):

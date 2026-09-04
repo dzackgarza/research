@@ -53,6 +53,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     ring_morphism,
 )
 from dzack_research.preamble.categories.sets.set_categories import FiniteSets
+from dzack_research.preamble.categories.sets.cardinals import cardinal
 
 
 class CommutativeRingConstructions(Category):
@@ -162,6 +163,22 @@ def _engine_ideal(ring, ideal):
     return engine.ideal(_engine_ring_value(ring, ideal))
 
 
+def _engine_coefficient_ring(engine):
+    r"""Return an optional coefficient ring of a private engine realization."""
+    base_ring = getattr(engine, "base_ring", None)
+    return None if base_ring is None else base_ring()
+
+
+def _selected_localization_engine(localization_ring):
+    r"""Return the selected private realization of a localization ring."""
+    engine = localization_ring.__dict__.get("_preamble_engine_ring")
+    if engine is None:
+        raise NotImplementedError(
+            "this localization has no selected computation realization"
+        )
+    return engine
+
+
 def _owned_ideal(ring, ideal):
     r"""Return the live ideal subobject represented by ``ideal`` when available."""
     source = _own_ring(ring)
@@ -232,7 +249,7 @@ class PrimeIdealPoint(Element):
     def residue_map(self):
         r"""Return the canonical map ``R -> kappa(p)`` attached to this point."""
         local = self.local_ring()
-        selected = getattr(local, "_preamble_source_residue_map", None)
+        selected = local.__dict__.get("_preamble_source_residue_map")
         if selected is not None:
             return selected
         return local.residue_map() * local.localization_map()
@@ -425,7 +442,7 @@ class QuotientRings(Category):
                     SageZZ(generators[0]) if generators else SageZZ.zero()
                 )
                 return generator
-            coefficient_ring = getattr(source_engine, "base_ring", lambda: None)()
+            coefficient_ring = _engine_coefficient_ring(source_engine)
             if coefficient_ring is not None:
                 try:
                     if bool(coefficient_ring.is_field()):
@@ -596,11 +613,12 @@ class GeneralQuotientRingParent(Parent):
         return bool(self._preamble_engine_ring.is_finite())
 
     def cardinality(self):
-        if self._preamble_engine_ring is None:
-            raise NotImplementedError(
-                "this quotient ring has no selected finite-cardinality computation"
-            )
-        return self._preamble_engine_ring.cardinality()
+        if self._preamble_engine_ring is not None:
+            return cardinal(self._preamble_engine_ring.cardinality())
+        assert False, (
+            "cardinality is defined for every quotient ring, but this represented "
+            "quotient has no selected exact-cardinality computation"
+        )
 
     def is_field(self):
         if self._preamble_engine_ring is None:
@@ -723,11 +741,7 @@ class GeneralLocalizationRingElement(CommutativeRingElement):
 
     def inverse_of_unit(self):
         parent = self.parent()
-        engine = getattr(parent, "_preamble_engine_ring", None)
-        if engine is None:
-            raise NotImplementedError(
-                "unit inversion in this localization has no selected computation realization"
-            )
+        engine = _selected_localization_engine(parent)
         source = parent.localization_source()
         represented = engine(
             _engine_element(source, self.numerator())
@@ -743,11 +757,7 @@ class GeneralLocalizationRingElement(CommutativeRingElement):
         )
 
     def is_unit(self):
-        engine = getattr(self.parent(), "_preamble_engine_ring", None)
-        if engine is None:
-            raise NotImplementedError(
-                "unit testing in this localization has no selected computation realization"
-            )
+        engine = _selected_localization_engine(self.parent())
         source = self.parent().localization_source()
         represented = engine(
             _engine_element(source, self.numerator())
@@ -1424,6 +1434,12 @@ def AdicCompletion(ring, ideal, *, precision=20):
 
 class FormalPowerSeriesRings(OwnedCategoryOverBaseRing):
     r"""Formal power-series rings ``R[[t]]`` over the owned ring ``R``."""
+
+    def an_object(self):
+        r"""The formal power series ring in one variable."""
+        from dzack_research.preamble.rings import PowerSeriesRing
+
+        return PowerSeriesRing(self.base_ring(), "t")
 
     @classmethod
     def _repr_object_names(cls):

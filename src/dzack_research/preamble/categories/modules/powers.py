@@ -46,7 +46,6 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     ModulesWithChosenFinitePresentation,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import OwnedRings
-from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_filter,
     finite_ordered_image,
@@ -161,7 +160,7 @@ class QuadraticModuleMorphism(ModuleMorphism):
         if self.codomain() not in OwnedRings():
             raise TypeError("a Gram tensor here requires scalar-valued lift entries")
         labels = self.module().module_generating_set()
-        size = cardinal(labels.cardinality())
+        size = labels.cardinality()
         if not size.is_finite():
             raise TypeError("a finite Gram tensor requires a finite module framing")
         rank = int(size.finite_value())
@@ -309,6 +308,13 @@ class QuadraticModuleHomset(ModuleHomset):
 
 class DividedSquareModules(OwnedCategoryOverBaseRing):
     r"""Degree-two divided powers, classifying quadratic maps."""
+
+    def an_object(self):
+        r"""The divided square of the free module of rank one."""
+        from dzack_research.preamble.categories.modules.powers import DividedSquare
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+        return DividedSquare(Modules(self.base_ring()).an_object())
 
     @classmethod
     def _repr_object_names(cls):
@@ -541,7 +547,7 @@ def _presented_degree_power(module, degree: int, flavor: str):
         )
 
 
-    if not cardinal(source_labels.cardinality()).is_finite():
+    if not source_labels.cardinality().is_finite():
         raise TypeError("a chosen finite presentation must have a finite framing")
 
 

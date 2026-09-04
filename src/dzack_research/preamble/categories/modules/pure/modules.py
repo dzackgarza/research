@@ -500,6 +500,12 @@ class ModuleSubobjects(OwnedCategoryOverBaseRing):
 class VectorSpaces(OwnedCategoryOverBaseRing):
     r"""Vector spaces over a field."""
 
+    def an_object(self):
+        r"""The free module of rank one over the base field."""
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+        return Modules(self.base_ring()).an_object()
+
     @classmethod
     def _repr_object_names(cls):
         return "vector spaces"
@@ -1385,6 +1391,14 @@ class BilinearMap(SageObject):
 class TensorProductModules(OwnedCategoryOverBaseRing):
     r"""Modules carrying a selected tensor-product universal object."""
 
+    def an_object(self):
+        r"""The tensor square of the free module of rank one."""
+        from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+        free = Modules(self.base_ring()).an_object()
+        return TensorProduct(free, free)
+
     @classmethod
     def _repr_object_names(cls):
         return "chosen tensor-product modules"
@@ -1568,6 +1582,14 @@ def _biproduct_factor_family(left, right):
 
 
 class BiproductModules(OwnedCategoryOverBaseRing):
+    def an_object(self):
+        r"""The biproduct of the free module of rank one with itself."""
+        from dzack_research.preamble.categories.abstract_categories.constructions import Biproduct
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+        free = Modules(self.base_ring()).an_object()
+        return Biproduct(free, free)
+
     @classmethod
     def _repr_object_names(cls):
         return "chosen module biproducts"

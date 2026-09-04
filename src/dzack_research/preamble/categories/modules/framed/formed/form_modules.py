@@ -647,6 +647,12 @@ class PairedModules(OwnedParameterizedCategory):
     :class:`FormedModules`.
     """
 
+    def an_object(self):
+        r"""The hyperbolic plane U, paired with itself into the parameter."""
+        from dzack_research.preamble.categories.lattices import Lattices
+
+        return Lattices(self.base())("U")
+
     @staticmethod
     def __classcall__(cls, value_module):
         return OwnedParameterizedCategory.__classcall__(
@@ -691,6 +697,12 @@ class FormedModules(OwnedParameterizedCategory):
     This is the diagonal of :class:`PairedModules`: a pairing of a module
     with itself.
     """
+
+    def an_object(self):
+        r"""The hyperbolic plane U, whose form takes values in the parameter."""
+        from dzack_research.preamble.categories.lattices import Lattices
+
+        return Lattices(self.base())("U")
 
     @staticmethod
     def __classcall__(cls, value_module):
@@ -1074,6 +1086,12 @@ class FinitelyPresentedQuadraticFormModules(OwnedCategoryOverBaseRing):
 
 
 class FreeFormModules(OwnedCategoryOverBaseRing):
+    def an_object(self):
+        r"""The hyperbolic plane U, free and carrying a form."""
+        from dzack_research.preamble.categories.lattices import Lattices
+
+        return Lattices(self.base_ring())("U")
+
     @classmethod
     def _repr_object_names(cls):
         return "free form modules"
@@ -1094,6 +1112,12 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
 
 
 class FinitelyGeneratedFormModules(OwnedCategoryOverBaseRing):
+    def an_object(self):
+        r"""The hyperbolic plane U."""
+        from dzack_research.preamble.categories.lattices import Lattices
+
+        return Lattices(self.base_ring())("U")
+
     @classmethod
     def _repr_object_names(cls):
         return "finitely generated form modules"
@@ -1104,6 +1128,12 @@ class FinitelyGeneratedFormModules(OwnedCategoryOverBaseRing):
 
 
 class FinitelyGeneratedFreeFormModules(OwnedCategoryOverBaseRing):
+    def an_object(self):
+        r"""The hyperbolic plane U."""
+        from dzack_research.preamble.categories.lattices import Lattices
+
+        return Lattices(self.base_ring())("U")
+
     @classmethod
     def _repr_object_names(cls):
         return "finitely generated free form modules"

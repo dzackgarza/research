@@ -19,6 +19,12 @@ from dzack_research.preamble.categories.algebras.graded_algebras import GradedAl
 
 
 class GradedCommutativeAlgebras(OwnedCategoryOverBaseRing):
+    def an_object(self):
+        r"""That de Rham algebra, graded-commutative."""
+        from dzack_research.preamble.categories.algebras.de_rham_algebras import DeRhamAlgebras
+
+        return DeRhamAlgebras(self.base_ring()).an_object()
+
     @staticmethod
     def __classcall__(cls, base_ring, grading_monoid=None):
         monoid = require_grading_monoid(grading_monoid)
@@ -48,6 +54,12 @@ class GradedCommutativeAlgebras(OwnedCategoryOverBaseRing):
 
 
 class StrictlyGradedCommutativeAlgebras(OwnedCategoryOverBaseRing):
+    def an_object(self):
+        r"""That de Rham algebra, strictly graded-commutative."""
+        from dzack_research.preamble.categories.algebras.de_rham_algebras import DeRhamAlgebras
+
+        return DeRhamAlgebras(self.base_ring()).an_object()
+
     @staticmethod
     def __classcall__(cls, base_ring, grading_monoid=None):
         monoid = require_grading_monoid(grading_monoid)
