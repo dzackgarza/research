@@ -391,7 +391,7 @@ class QuotientRings(Category):
             source_engine = _engine_ring(source)
             defining = self.defining_ideal()
             if source_engine is SageZZ:
-                generators = tuple(defining.gens())
+                generators = tuple(defining.ideal_generators())
                 generator = abs(
                     SageZZ(generators[0]) if generators else SageZZ.zero()
                 )
@@ -994,16 +994,14 @@ class GeneratedIdealView(SageObject):
     def ring(self):
         return self._ring
 
-    def gens(self):
+    def ideal_generators(self):
         return self._generators
-
-    generators = gens
 
     def source_ideal(self):
         return self._source_ideal
 
     def _repr_(self):
-        return f"Ideal ({', '.join(map(str, self.gens()))}) of {self.ring()}"
+        return f"Ideal ({', '.join(map(str, self.ideal_generators()))}) of {self.ring()}"
 
 
 class LocalizedMaximalIdeal(GeneratedIdealView):
