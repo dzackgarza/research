@@ -176,19 +176,9 @@ sage-rebuild:
 _lock:
     uv lock
 
-# Run commit-tier SageMath QC through the central implementation.
-# The shared ai-review-ci pre-commit hook calls this recipe, so refreshing and
-# staging `tags` here is what rides the index into the commit being gated.
-# ponytail: the machine-wide hook is the wrong place for a per-repo step, and
-# this recipe is the only repo-local seam it offers; the cost is that a manual
-# `just test-commit` also stages tags.
-# The refresh runs AFTER the central gate because that gate reformats src/ —
-# reflowing an import changes which lines ctags sees, so indexing first would
-# commit an index of the pre-format source.
+# Run commit-tier SageMath QC through the central implementation
 test-commit:
     @just -f ~/ai-review-ci/justfiles/sage.just -d . test-commit
-    @just tags
-    @git add tags
 
 # Run push-tier SageMath QC through the central implementation
 test-push:

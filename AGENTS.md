@@ -473,6 +473,18 @@ Editable installs point at the working tree, so a rebuilt or reinstalled Sage is
 
 - **`archives/`** — retired material (`provenance/`, `preamble/`, `lattice-research/`, `notebooks/`).
 
+## Source index (ctags)
+
+`just tags` writes a Universal Ctags index of `src/` to `tags` at the repo
+root. Use it to find where a class, method, or function is defined, instead of
+searching the tree by name. Every entry carries a `class:` scope field, which
+tells apart the many same-named methods the category tree holds — 403 tags for
+`__init__`, 243 for `super_categories`.
+
+The file is gitignored. It goes stale as soon as a definition in `src/`
+changes, so run `just tags` yourself before you trust it. The run takes about
+0.1 seconds.
+
 ## category_specs and the absorbed spikes (prior attempts at the same substrate)
 
 The goal — a mathematically-semantic, Sage-compatible substrate for exact lattice/surface computation — had three earlier attempts, all finished as separate surfaces:
