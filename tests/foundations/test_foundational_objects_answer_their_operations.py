@@ -118,7 +118,7 @@ def test_the_hyperbolic_plane_answers_its_lattice_operations() -> None:
     U = Lattices(ZZ)("U")
     assert U.rank() == 2
     assert U.determinant() == -1
-    assert U.signature() == (1, 1)
+    assert U.signature_pair() == session["signature_pair"](1, 1)
 
     e, f = U.module_generators()
     assert U.form()(e, e) == ZZ.zero()

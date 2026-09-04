@@ -526,6 +526,8 @@ from dzack_research.preamble.categories.lattices import (  # noqa: F401
     Genus,
     Lattices,
     diagonal_gram,
+    signature_pair,
+    signature_pairs,
 )
 from dzack_research.preamble.categories.modules import (  # noqa: F401
     BasedFreeModule,

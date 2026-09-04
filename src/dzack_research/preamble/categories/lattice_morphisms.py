@@ -424,7 +424,8 @@ class LatticeIsometry(LatticeEmbedding):
         if self.domain() is not self.codomain():
             raise ValueError("positive-cone preservation is a property of a lattice automorphism")
         lattice = self.domain()
-        positive, negative = lattice.signature_pair()
+        _signature = lattice.signature_pair()
+        positive, negative = _signature.first(), _signature.second()
         integers = positive.parent()
         if positive != integers.one() or negative < integers.one():
             raise ValueError(
@@ -613,7 +614,8 @@ class LatticeEmbeddingHomset(CategoricalHomset):
         target = self.codomain()
         if not target.is_finite_rank() or not target.is_nondegenerate():
             return False
-        positive, negative = target.signature_pair()
+        _signature = target.signature_pair()
+        positive, negative = _signature.first(), _signature.second()
         return (
             positive > 0
             and negative > 0
@@ -677,7 +679,8 @@ class LatticeEmbeddingHomset(CategoricalHomset):
             source = self.domain()
             if not source.is_even():
                 return True
-            positive, negative = self.codomain().signature_pair()
+            _signature = self.codomain().signature_pair()
+            positive, negative = _signature.first(), _signature.second()
             return not any(
                 inclusion.codomain().embeds_in_even_unimodular(
                     positive, negative
@@ -694,7 +697,8 @@ class LatticeEmbeddingHomset(CategoricalHomset):
         if self._codomain_is_even_unimodular_indefinite():
             if self.is_empty():
                 raise ValueError("the embedding homset is empty")
-            positive, negative = self.codomain().signature_pair()
+            _signature = self.codomain().signature_pair()
+            positive, negative = _signature.first(), _signature.second()
             for inclusion in self.even_overlattice_inclusions():
                 overlattice = inclusion.codomain()
                 if not overlattice.embeds_in_even_unimodular(positive, negative):
@@ -1215,7 +1219,9 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
         if not domain_discriminant.is_isomorphic(codomain_discriminant):
             return True
 
-        positive, negative = domain.signature_pair()
+        _signature = domain.signature_pair()
+
+        positive, negative = _signature.first(), _signature.second()
         if not (positive and negative):
             sign = SageZZ.one() if negative == 0 else -SageZZ.one()
             transformation = QuadraticForm(

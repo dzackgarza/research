@@ -484,11 +484,11 @@ class _ScaledGram(_PairingGram):
 
     def signature_pair(self):
         if self._scalar == 0:
-            return (0, 0)
-        positive, negative = self._gram.signature_pair()
+            return signature_pair(0, 0)
+        scaled = self._gram.signature_pair()
         if self._scalar > 0:
-            return (positive, negative)
-        return (negative, positive)
+            return scaled
+        return signature_pair(scaled.second(), scaled.first())
 
     def _latex_(self) -> str:
         return rf"{latex(self._scalar)}\,\left({latex(self._gram)}\right)"
@@ -555,10 +555,10 @@ class _DiagonalGram(_PairingGram):
         negative_exceptions = sum(1 for value in self._exceptions.values() if value < 0)
         positive_exceptions = sum(1 for value in self._exceptions.values() if value > 0)
         if default > 0:
-            return (Infinity, negative_exceptions)
+            return signature_pair(Infinity, negative_exceptions)
         if default < 0:
-            return (positive_exceptions, Infinity)
-        return (positive_exceptions, negative_exceptions)
+            return signature_pair(positive_exceptions, Infinity)
+        return signature_pair(positive_exceptions, negative_exceptions)
 
     def _latex_(self) -> str:
         rank = self._module.rank()
@@ -615,7 +615,7 @@ class _IdentityGram(_DiagonalGram):
 
     def signature_pair(self):
         _rational_fraction_field(self.base_ring())
-        return (self._module.rank(), 0)
+        return signature_pair(self._module.rank(), 0)
 
     def _latex_(self) -> str:
         rank = self._module.rank()
@@ -706,11 +706,11 @@ class _BiproductGram(_PairingGram):
         ).b(_lattice_vector_from_coefficients(self._right, right_on_right))
 
     def signature_pair(self):
-        left_positive, left_negative = self._left.signature_pair()
-        right_positive, right_negative = self._right.signature_pair()
-        return (
-            left_positive + right_positive,
-            left_negative + right_negative,
+        left = self._left.signature_pair()
+        right = self._right.signature_pair()
+        return signature_pair(
+            left.first() + right.first(),
+            left.second() + right.second(),
         )
 
     def _latex_(self) -> str:
@@ -773,15 +773,17 @@ class _ColimitGram(_PairingGram):
         return _lattice_vector_from_coefficients(stage, positions_left).b(_lattice_vector_from_coefficients(stage, positions_right))
 
     def signature_pair(self):
-        small_positive, small_negative = self._stage_at(4).signature_pair()
-        large_positive, large_negative = self._stage_at(8).signature_pair()
+        small = self._stage_at(4).signature_pair()
+        large = self._stage_at(8).signature_pair()
+        small_positive, small_negative = small.first(), small.second()
+        large_positive, large_negative = large.first(), large.second()
         if large_negative == small_negative and large_positive > small_positive:
-            return (Infinity, large_negative)
+            return signature_pair(Infinity, large_negative)
         if large_positive == small_positive and large_negative > small_negative:
-            return (large_positive, Infinity)
+            return signature_pair(large_positive, Infinity)
         if large_positive > small_positive and large_negative > small_negative:
-            return (Infinity, Infinity)
-        return (large_positive, large_negative)
+            return signature_pair(Infinity, Infinity)
+        return large
 
     def _latex_(self) -> str:
         return r"\operatorname{colim}_n G_n"
@@ -902,6 +904,28 @@ def _rational_fraction_field(ring):
     raise TypeError(f"the signature pair (p, q) is the real signature of a quadratic space over QQ; Frac({ring}) is {field}")
 
 
+def signature_pairs():
+    r"""Return \(\mathbf{Card}\times\mathbf{Card}\), where a signature pair lives.
+
+    An index of inertia can be infinite -- \(\mathbb Z^{(\mathbb N)}\) with
+    its standard form has \((p,q)=(\aleph_0,0)\) -- so each entry is a
+    cardinal and the pair is an object of the product category.
+    """
+    from dzack_research.preamble.categories.abstract_categories.category_constructions import (
+        ProductCategory,
+    )
+    from dzack_research.preamble.categories.sets.cardinals import Cardinalities
+
+    return ProductCategory(Cardinalities(), Cardinalities())
+
+
+def signature_pair(positive, negative):
+    r"""Return \((p,q)\) as an object of :func:`signature_pairs`."""
+    from dzack_research.preamble.categories.sets.cardinals import cardinal
+
+    return signature_pairs().pair(cardinal(positive), cardinal(negative))
+
+
 def _sylvester(gram: Tensor):
     r"""Return $(p,q)$ by Sylvester's law on \(\operatorname{Frac}(R)=\mathbb{Q}\)."""
     field = _rational_fraction_field(gram.base_ring())
@@ -909,11 +933,7 @@ def _sylvester(gram: Tensor):
     positive, negative, _radical = QuadraticForm(
         field, engine_gram
     ).signature_vector()
-    integers = _own_ring(SageZZ)
-    return (
-        integers._from_engine_element(SageZZ(positive)),
-        integers._from_engine_element(SageZZ(negative)),
-    )
+    return signature_pair(int(positive), int(negative))
 
 
 def signature_pair_of_gram(gram: Tensor):

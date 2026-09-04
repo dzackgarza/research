@@ -229,26 +229,42 @@ class CoxeterDiagram(Parent):
             values.append(row)
         return tensor(AA, (), (len(vertices), len(vertices)), values)
 
-    def signature_pair(self):
+    def _inertia_counts(self):
+        r"""Return \((n_+,n_-,n_0)\) of the Schlaefli form, by Sylvester.
+
+        The Coxeter diagram is classified by the inertia of its Schlaefli
+        form, and that form is allowed to be degenerate, so the zero index
+        \(n_0\) is part of the answer.  This is not a signature *pair*.
+        """
+        from dzack_research.preamble.categories.sets.cardinals import cardinal
         from dzack_research.preamble.tensors.tensor import _engine_component_matrix
 
         eigenvalues = _engine_component_matrix(self.schlafli_tensor()).eigenvalues()
         positive = sum(1 for value in eigenvalues if value > 0)
         negative = sum(1 for value in eigenvalues if value < 0)
         zero = len(eigenvalues) - positive - negative
-        return (SageZZ(positive), SageZZ(negative), SageZZ(zero))
+        return cardinal(positive), cardinal(negative), cardinal(zero)
+
+    def positive_inertia_index(self):
+        r"""Return \(n_+\), the positive index of inertia of the Schlaefli form."""
+        return self._inertia_counts()[0]
+
+    def negative_inertia_index(self):
+        r"""Return \(n_-\), the negative index of inertia of the Schlaefli form."""
+        return self._inertia_counts()[1]
+
+    def zero_inertia_index(self):
+        r"""Return \(n_0\), the dimension of the radical of the Schlaefli form."""
+        return self._inertia_counts()[2]
 
     def is_elliptic(self) -> bool:
-        positive, negative, zero = self.signature_pair()
-        return negative == 0 and zero == 0
+        return self.negative_inertia_index() == 0 and self.zero_inertia_index() == 0
 
     def is_parabolic(self) -> bool:
-        positive, negative, zero = self.signature_pair()
-        return negative == 0 and zero == 1
+        return self.negative_inertia_index() == 0 and self.zero_inertia_index() == 1
 
     def is_hyperbolic(self) -> bool:
-        _positive, negative, _zero = self.signature_pair()
-        return negative == 1
+        return self.negative_inertia_index() == 1
 
     def elliptic_subdiagrams(self, *, connected=False):
         from itertools import combinations

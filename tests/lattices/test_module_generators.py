@@ -1,6 +1,13 @@
 from sage.all import SR
 
-from dzack_research.preamble.all import diagonal_gram, Lattices, QuadraticField, Set, ZZ
+from dzack_research.preamble.all import (
+    diagonal_gram,
+    Lattices,
+    QuadraticField,
+    Set,
+    signature_pair,
+    ZZ,
+)
 from dzack_research.preamble.categories.sets import NN, finite_ordered_set
 from dzack_research.preamble.tensors import Tensor, tensor
 
@@ -144,7 +151,7 @@ def test_signature_pair_uses_the_fraction_field() -> None:
     from dzack_research.preamble.all import tensor
 
     plane = Lattices(ZZ)("U")
-    assert plane.signature_pair() == (1, 1)
+    assert plane.signature_pair() == signature_pair(1, 1)
 
     field = QuadraticField(2, "a")
     a = field.primitive_element()

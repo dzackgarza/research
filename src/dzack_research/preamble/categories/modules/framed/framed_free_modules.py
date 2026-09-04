@@ -367,18 +367,19 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
             return FreeModuleOn(self.base_ring(), labels)
 
         def rank(self):
-            cardinality = self.module_generating_set().cardinality()
-            try:
-                finite_rank = int(cardinality)
-            except (TypeError, ValueError, OverflowError):
-                return cardinality
-            from sage.rings.integer_ring import ZZ as SageZZ
-            from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+            r"""Return the cardinality of the module generating set.
 
-            return _own_ring(SageZZ)(finite_rank)
+            A rank can be infinite -- \(R^{(\mathbb N)}\) has rank
+            \(\aleph_0\) -- so the answer is a cardinal, not a natural
+            number.  The cardinality is the generating set's own, which is
+            where the doctrine puts it.
+            """
+            from dzack_research.preamble.categories.sets.cardinals import cardinal
+
+            return cardinal(self.module_generating_set().cardinality())
 
         def is_finite_rank(self) -> bool:
-            return self.rank() in SageZZ
+            return self.rank().is_finite()
 
         def is_torsion_free(self) -> bool:
             return True

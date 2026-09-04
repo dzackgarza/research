@@ -25,6 +25,7 @@ from dzack_research.preamble.all import (
     Set,
     tensor,
     ZZ,
+    signature_pair,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
@@ -184,7 +185,7 @@ def test_isotropic_reduction_of_a_line_in_u_plus_u_is_u() -> None:
 
     assert reduction.rank() == 2
     assert reduction.gram_tensor() == tensor(ZZ, (), (2, 2), [[0, 1], [1, 0]])
-    assert reduction.signature_pair() == (1, 1)
+    assert reduction.signature_pair() == signature_pair(1, 1)
     assert reduction.is_unimodular()
 
 

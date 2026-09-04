@@ -2,6 +2,7 @@ from dzack_research.preamble.all import (
     NamedLattices,
     NegativeDefTwoElementary,
     TwoElementary,
+    signature_pair,
     two_elementary_orthogonal_sums,
     validate_negative_def_two_elementary_table,
     validate_two_elementary_table,
@@ -26,7 +27,9 @@ def test_block_search_recovers_the_hand_counted_rows() -> None:
         (10, 10, 1): 3,
     }
     for (rank, length, delta), expected in expected_counts.items():
-        candidates = two_elementary_orthogonal_sums((1, rank - 1), length, delta)
+        candidates = two_elementary_orthogonal_sums(
+            signature_pair(1, rank - 1), length, delta
+        )
         assert candidates.cardinality() == expected
         assert all(candidate.two_elementary_invariants() == (rank, length, delta) for candidate in candidates)
 

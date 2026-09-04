@@ -17,6 +17,7 @@ from sage.rings.ideal import Ideal_generic
 
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
+    HomCategoryConstruction,
 )
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
@@ -264,7 +265,7 @@ def _base_change_commutative_presentation(algebra, ring_map):
         return _engine_element(target_base, ring_map(owned_scalar))
 
     backend_base_map = SetMorphism(
-        source_engine.Mor(target_base_engine),
+        source_engine.Hom(target_base_engine),
         map_backend_scalar,
     )
     source_presentation = algebra.presentation_ring()
@@ -473,6 +474,15 @@ class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
             )
 
 
+class PowerAlgebraHomCategoryConstruction(HomCategoryConstruction):
+    def fixed_category_class(self):
+        from dzack_research.preamble.categories.algebras.power_algebras import (
+            PowerAlgebraHomset,
+        )
+
+        return PowerAlgebraHomset
+
+
 class TensorAlgebras(OwnedCategoryOverBaseRing):
     r"""Tensor algebras of represented modules."""
 
@@ -513,6 +523,8 @@ class SymmetricAlgebras(OwnedCategoryOverBaseRing):
             CommutativeAlgebras(self.base_ring()),
         ]
 
+    _HomCategory = PowerAlgebraHomCategoryConstruction
+
     class ParentMethods:
         def free_source_module(self):
             r"""Return the module whose symmetric algebra this object represents."""
@@ -542,6 +554,8 @@ class AlternatingAlgebras(OwnedCategoryOverBaseRing):
 
         return [StrictlyGradedCommutativeAlgebras(self.base_ring())]
 
+    _HomCategory = PowerAlgebraHomCategoryConstruction
+
     class ParentMethods:
         def free_source_module(self):
             return self._preamble_free_algebra_source_module
@@ -552,13 +566,6 @@ class AlternatingAlgebras(OwnedCategoryOverBaseRing):
             )
 
             return AlternatingPower(self.free_source_module(), degree)
-
-        def _Hom_(self, codomain, category=None):
-            if codomain in AlternatingAlgebras(self.algebra_base_ring()):
-                specialized = getattr(self, "_power_algebra_homset", None)
-                if specialized is not None:
-                    return specialized(codomain)
-            return super()._Hom_(codomain, category=category)
 
 
 def _presentation_data(algebra):
@@ -725,13 +732,6 @@ class DividedPowerAlgebras(OwnedCategoryOverBaseRing):
             from dzack_research.preamble.categories.modules.powers import DividedPower
 
             return DividedPower(self.free_source_module(), degree)
-
-        def _Hom_(self, codomain, category=None):
-            if codomain in DividedPowerAlgebras(self.algebra_base_ring()):
-                specialized = getattr(self, "_power_algebra_homset", None)
-                if specialized is not None:
-                    return specialized(codomain)
-            return super()._Hom_(codomain, category=category)
 
 
 def _multiply_in_target(target, factors):

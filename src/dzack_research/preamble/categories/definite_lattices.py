@@ -16,7 +16,8 @@ from dzack_research.preamble.tensors.tensor import _engine_component_matrix
 def _definite_sign(lattice):
     if not lattice.is_finite_rank():
         raise TypeError("definiteness algorithms here require finite rank")
-    positive, negative = lattice.signature_pair()
+    _signature = lattice.signature_pair()
+    positive, negative = _signature.first(), _signature.second()
     rank = lattice.rank()
     ring = lattice.base_ring()
     if positive == rank and negative == 0:

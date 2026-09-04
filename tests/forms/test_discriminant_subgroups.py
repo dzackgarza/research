@@ -1,4 +1,4 @@
-from dzack_research.preamble.all import ZZ, Lattices
+from dzack_research.preamble.all import ZZ, Lattices, signature_pair
 
 
 def test_finite_torsion_enumeration_uses_smith_generators() -> None:
@@ -130,7 +130,8 @@ def test_milgram_compatibility_on_even_lattice_discriminant_forms() -> None:
         Lattices(ZZ)("A2"),
     )
     for lattice in lattices:
-        positive, negative = lattice.signature_pair()
+        signature = lattice.signature_pair()
+        positive, negative = signature.first(), signature.second()
         signature = int(positive - negative)
         assert lattice.discriminant_quadratic_form().brown_invariant() == signature % 8
 

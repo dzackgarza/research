@@ -27,6 +27,7 @@ from collections.abc import Hashable, Sequence
 from typing import overload
 
 from dzack_research.preamble.categories._lattice import diagonal_gram as diagonal_gram
+from dzack_research.preamble.categories._lattice import signature_pair, signature_pairs
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     HomCategoryConstruction,
     IsoCategoryConstruction,
@@ -245,13 +246,7 @@ class Genus:
     r"""The genus determined by signature and discriminant quadratic form."""
 
     def __init__(self, signature_pair, discriminant_quadratic_form) -> None:
-        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
-
-        integers = _own_ring(SageZZ)
-        self._signature_pair = (
-            integers(signature_pair[0]),
-            integers(signature_pair[1]),
-        )
+        self._signature_pair = signature_pair
         self._discriminant_quadratic_form = discriminant_quadratic_form
 
     def signature_pair(self):
@@ -296,11 +291,16 @@ class Genus:
         return engine_form
 
     def _engine_signature_pair(self):
-        from dzack_research.preamble.categories.rings.ring_foundation import _engine_element
+        from dzack_research.preamble.categories.rings.ring_foundation import (
+            _engine_element,
+            _own_ring,
+        )
 
-        integers = self.signature_pair()[0].parent()
-        return tuple(
-            _engine_element(integers, entry) for entry in self.signature_pair()
+        integers = _own_ring(SageZZ)
+        pair = self.signature_pair()
+        return (
+            _engine_element(integers, integers(int(pair.first()))),
+            _engine_element(integers, integers(int(pair.second()))),
         )
 
     @cached_method
@@ -318,12 +318,12 @@ class Genus:
 
     def determinant(self):
         r"""Return the determinant of a representative of this genus."""
-        integers = self.signature_pair()[0].parent()
+        integers = _own_ring(SageZZ)
         return integers._from_engine_element(SageZZ(self._engine().determinant()))
 
     def local_symbol(self, prime):
         r"""Return the owned exact ``ZZ_p`` genus symbol at ``prime``."""
-        integers = self.signature_pair()[0].parent()
+        integers = _own_ring(SageZZ)
         prime = integers(prime)
         from dzack_research.preamble.categories.rings.ring_foundation import _engine_element
 
@@ -338,7 +338,7 @@ class Genus:
 
     def representative(self):
         r"""Return one owned integral lattice representing this genus."""
-        integers = self.signature_pair()[0].parent()
+        integers = _own_ring(SageZZ)
         representative = self._engine().representative()
         rows = [
             [integers._from_engine_element(entry) for entry in row]
@@ -348,7 +348,7 @@ class Genus:
 
     def representatives(self):
         r"""Return the owned representatives enumerated by the exact backend."""
-        integers = self.signature_pair()[0].parent()
+        integers = _own_ring(SageZZ)
         return tuple(
             Lattices(integers)(
                 [
@@ -360,7 +360,7 @@ class Genus:
         )
 
     def class_number(self):
-        integers = self.signature_pair()[0].parent()
+        integers = _own_ring(SageZZ)
         return integers(len(self._engine().representatives()))
 
     def mass(self):
@@ -368,7 +368,9 @@ class Genus:
         from sage.rings.rational_field import QQ as SageQQ
         from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
-        positive, negative = self.signature_pair()
+        _signature = self.signature_pair()
+
+        positive, negative = _signature.first(), _signature.second()
         if positive != 0 and negative != 0:
             raise ValueError(
                 "the finite orthogonal-group mass is defined here for definite genera"
@@ -825,7 +827,8 @@ class Lattices(OwnedCategoryOverBaseRing):
 
         def positive_cone_subgroup(self):
             r"""Return the positive-cone-preserving subgroup in signature ``(1,n)``."""
-            positive, negative = self.signature_pair()
+            _signature = self.signature_pair()
+            positive, negative = _signature.first(), _signature.second()
             integers = positive.parent()
             if positive != integers.one() or negative < integers.one():
                 raise ValueError(
@@ -1408,6 +1411,14 @@ class Lattices(OwnedCategoryOverBaseRing):
             r"""Return ``rad(L)=id_L(L)^perp`` as a subobject of ``L``."""
             return self.identity_morphism().orthogonal_complement()
 
+        def isotropic_reduction(self):
+            r"""Return ``S^perp/S`` when this lattice is represented as a subobject."""
+            from dzack_research.preamble.categories.modules.pure.modules import ModuleSubobjects
+
+            if self not in ModuleSubobjects(self.base_ring()):
+                raise TypeError("isotropic reduction requires a chosen lattice inclusion")
+            return self.inclusion().isotropic_reduction()
+
         def radical_quotient(self):
             r"""Return the nondegenerate quotient ``L/rad(L)``."""
             return self.radical().isotropic_reduction()
@@ -1621,7 +1632,8 @@ class Lattices(OwnedCategoryOverBaseRing):
                 raise ValueError(
                     "Nikulin's primitive-embedding criterion requires a finite nondegenerate even lattice"
                 )
-            source_positive, source_negative = self.signature_pair()
+            _signature = self.signature_pair()
+            source_positive, source_negative = _signature.first(), _signature.second()
             if (positive - negative) % 8 != 0:
                 return False
             if positive < source_positive or negative < source_negative:
@@ -1664,7 +1676,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             embedding = self.Emb(target)(images)
             if not embedding.is_primitive():
                 raise ArithmeticError("OSCAR returned a nonprimitive embedding")
-            if target.signature_pair() != (self.base_ring()(positive), self.base_ring()(negative)):
+            if target.signature_pair() != signature_pair(positive, negative):
                 raise ArithmeticError("OSCAR's primitive-embedding target has the wrong signature")
             return embedding
 
@@ -1974,10 +1986,16 @@ class Lattices(OwnedCategoryOverBaseRing):
             return self.Aut()(image)
 
         def is_positive_definite(self) -> bool:
-            return bool(self.is_finite_rank() and self.signature_pair() == (self.rank(), 0))
+            return bool(
+                self.is_finite_rank()
+                and self.signature_pair() == signature_pair(self.rank(), 0)
+            )
 
         def is_negative_definite(self) -> bool:
-            return bool(self.is_finite_rank() and self.signature_pair() == (0, self.rank()))
+            return bool(
+                self.is_finite_rank()
+                and self.signature_pair() == signature_pair(0, self.rank())
+            )
 
         def is_definite(self) -> bool:
             return self.is_positive_definite() or self.is_negative_definite()
@@ -2258,7 +2276,8 @@ class Lattices(OwnedCategoryOverBaseRing):
             kind = "Integral lattice" if _engine_ring(self.base_ring()) is ZZ else "Lattice"
             rank = self.rank()
             if _engine_ring(self.base_ring().fraction_field()) is QQ:
-                pos, neg = self.signature_pair()
+                _signature = self.signature_pair()
+                pos, neg = _signature.first(), _signature.second()
                 return f"{kind} of rank {rank} and signature ({pos}, {neg})"
             return f"{kind} of rank {rank} over {self.base_ring()}"
 

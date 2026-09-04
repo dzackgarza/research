@@ -1,7 +1,17 @@
 import pytest
 from sage.misc.unknown import Unknown
 
-from dzack_research.preamble.all import FiniteGroups, Lattices, MatrixSpace, MatrixSpaces, QQ, Set, tensor, ZZ
+from dzack_research.preamble.all import (
+    FiniteGroups,
+    Lattices,
+    MatrixSpace,
+    MatrixSpaces,
+    QQ,
+    Set,
+    signature_pair,
+    tensor,
+    ZZ,
+)
 from dzack_research.preamble.tensors import Tensor
 
 
@@ -153,7 +163,7 @@ def test_indefinite_isometry_ladder_uses_parity_as_an_exact_obstruction() -> Non
     even = Lattices(ZZ)("U")
     odd = Lattices(ZZ)([[1, 0], [0, -1]])
 
-    assert even.signature_pair() == odd.signature_pair() == (1, 1)
+    assert even.signature_pair() == odd.signature_pair() == signature_pair(1, 1)
     assert even.Isom(odd).is_empty() is True
     assert even.is_isometric(odd) is False
 
@@ -507,7 +517,7 @@ def test_indefinite_complement_gluing_route_uses_full_finite_discriminant_orthog
     vector = tuple(lattice.module_generators())[-1]
     extension = lattice.vector_primitive_extension(vector)
 
-    assert extension.complement.signature_pair() == (1, 1)
+    assert extension.complement.signature_pair() == signature_pair(1, 1)
     assert extension.index == 1
     assert extension.gluing_subgroup.cardinality() == 1
 

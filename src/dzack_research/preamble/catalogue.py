@@ -10,6 +10,7 @@ from dzack_research.preamble.categories.lattices import (
     Lattices,
     register_indecomposable,
     register_indecomposable_gram,
+    signature_pair,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.categories.sets.set_categories import NN
@@ -712,7 +713,7 @@ def validate_negative_def_two_elementary_table():
     for key in NegativeDefTwoElementary:
         rank, _length, _delta = key
         for lattice in NegativeDefTwoElementary[key]:
-            if lattice.signature_pair() != (0, rank):
+            if lattice.signature_pair() != signature_pair(0, rank):
                 raise AssertionError(f"{key} contains a lattice of signature {lattice.signature_pair()}")
             actual = lattice.two_elementary_invariants()
             if actual != key:
@@ -741,8 +742,11 @@ def validate_two_elementary_table():
     for key in TwoElementary:
         rank, _a, _delta = key
         lattice = TwoElementary[key]
-        if lattice.signature_pair() != (1, rank - 1):
-            raise AssertionError(f"{key} has signature {lattice.signature_pair()}, not {(1, rank - 1)}")
+        if lattice.signature_pair() != signature_pair(1, rank - 1):
+            raise AssertionError(
+                f"{key} has signature {lattice.signature_pair()}, "
+                f"not {signature_pair(1, rank - 1)}"
+            )
         actual = lattice.two_elementary_invariants()
         if actual != key:
             raise AssertionError(f"{key} is represented by a lattice with invariants {actual}")
@@ -766,7 +770,8 @@ def _two_elementary_blocks():
     return tuple(
         (
             block,
-            *block.signature_pair(),
+            block.signature_pair().first(),
+            block.signature_pair().second(),
             block.discriminant_length(),
             block.delta(),
         )
@@ -774,9 +779,10 @@ def _two_elementary_blocks():
     )
 
 
-def two_elementary_orthogonal_sums(signature_pair, a, delta):
+def two_elementary_orthogonal_sums(target_signature, a, delta):
     r"""Return block-orthogonal realizations of the stated 2-elementary invariants."""
-    positive_target, negative_target = map(int, signature_pair)
+    positive_target = int(target_signature.first())
+    negative_target = int(target_signature.second())
     target_a = int(a)
     target_delta = int(delta)
     if min(positive_target, negative_target, target_a) < 0:
@@ -828,14 +834,18 @@ def two_elementary_orthogonal_sums(signature_pair, a, delta):
     return finite_ordered_set(tuple(realizations))
 
 
-def signature_orthogonal_sums(signature_pair, blocks):
+def signature_orthogonal_sums(target_signature, blocks):
     r"""Enumerate multisets of the supplied blocks with the target signature."""
-    positive_target, negative_target = map(int, signature_pair)
+    positive_target = int(target_signature.first())
+    negative_target = int(target_signature.second())
     if min(positive_target, negative_target) < 0:
         raise ValueError("signature indices are nonnegative")
     if positive_target + negative_target == 0:
         raise ValueError("the zero lattice is not a nonempty block sum")
-    block_data = tuple((block, *map(int, block.signature_pair())) for block in blocks)
+    block_data = tuple(
+        (block, int(block.signature_pair().first()), int(block.signature_pair().second()))
+        for block in blocks
+    )
     if any(positive + negative == 0 for _block, positive, negative in block_data):
         raise ValueError("rank-zero blocks make multiset enumeration unbounded")
     realizations = []

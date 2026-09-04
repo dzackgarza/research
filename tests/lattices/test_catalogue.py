@@ -5,18 +5,19 @@ from dzack_research.preamble.all import (
     Lattices,
     NamedLattices,
     signature_orthogonal_sums,
+    signature_pair,
 )
 
 
 def test_named_surface_lattices_have_their_expected_signatures_and_ranks() -> None:
     assert NamedLattices.Tco.rank() == 11
-    assert NamedLattices.Tco.signature_pair() == (2, 9)
+    assert NamedLattices.Tco.signature_pair() == signature_pair(2, 9)
     assert NamedLattices.TEn.rank() == 12
-    assert NamedLattices.TEn.signature_pair() == (2, 10)
+    assert NamedLattices.TEn.signature_pair() == signature_pair(2, 10)
     assert NamedLattices.TdP.rank() == 20
-    assert NamedLattices.TdP.signature_pair() == (2, 18)
+    assert NamedLattices.TdP.signature_pair() == signature_pair(2, 18)
     assert NamedLattices.LK3.rank() == 22
-    assert NamedLattices.LK3.signature_pair() == (3, 19)
+    assert NamedLattices.LK3.signature_pair() == signature_pair(3, 19)
     assert Lattices.TEn is NamedLattices.TEn
     assert Lattices.TdP is NamedLattices.TdP
     assert Lattices.LK3 is NamedLattices.LK3
@@ -99,9 +100,13 @@ def test_remaining_named_embeddings_are_primitive_and_form_preserving() -> None:
 
 
 def test_signature_block_search_enumerates_multisets_not_subsets() -> None:
-    candidates = signature_orthogonal_sums((0, 4), (NamedLattices.A1, NamedLattices.D4))
+    candidates = signature_orthogonal_sums(
+        signature_pair(0, 4), (NamedLattices.A1, NamedLattices.D4)
+    )
     assert candidates.cardinality() == 2
-    assert all(candidate.signature_pair() == (0, 4) for candidate in candidates)
+    assert all(
+        candidate.signature_pair() == signature_pair(0, 4) for candidate in candidates
+    )
 
 
 def test_indecomposable_registry_names_the_live_direct_sum_factors() -> None:
@@ -118,5 +123,9 @@ def test_indecomposable_registry_names_the_live_direct_sum_factors() -> None:
 
 
 def test_bogachev_kolpakov_specimens_are_exact_ternary_lattices() -> None:
-    assert NamedLattices.BogachevKolpakovNonReflective.signature_pair() == (1, 2)
-    assert NamedLattices.BogachevKolpakovWithoutRoots.signature_pair() == (1, 2)
+    assert NamedLattices.BogachevKolpakovNonReflective.signature_pair() == signature_pair(
+        1, 2
+    )
+    assert NamedLattices.BogachevKolpakovWithoutRoots.signature_pair() == signature_pair(
+        1, 2
+    )

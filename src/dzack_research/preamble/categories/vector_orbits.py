@@ -187,7 +187,8 @@ class VectorPrimitiveExtension:
 
     def complement_is_definite(self) -> bool:
         r"""Return whether the orthogonal complement is definite."""
-        positive, negative = self.complement.signature_pair()
+        _signature = self.complement.signature_pair()
+        positive, negative = _signature.first(), _signature.second()
         return positive == 0 or negative == 0
 
 

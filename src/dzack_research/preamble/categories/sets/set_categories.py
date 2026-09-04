@@ -15,7 +15,7 @@ from sage.rings.integer_ring import ZZ
 from sage.sets.condition_set import ConditionSet as SageConditionSet
 from sage.sets.image_set import ImageSet as SageImageSet
 from sage.sets.set import Set as SageSet
-from sage.structure.element import Element
+from sage.structure.element import Element, parent as element_parent
 from sage.structure.parent import Parent
 from sage.structure.sage_object import SageObject
 
@@ -33,6 +33,15 @@ class EnumeratedSets(OwnedCategory):
 
     def super_categories(self):
         return [Sets()]
+
+    class ParentMethods:
+        def rank(self, element):
+            _ = element
+            raise NotImplementedError("this enumerated set has no represented ranking map")
+
+        def unrank(self, position):
+            _ = position
+            raise NotImplementedError("this enumerated set has no represented unranking map")
 
 
 class InfiniteEnumeratedSets(OwnedCategory):
@@ -712,12 +721,13 @@ class FunctionSet(Parent):
         return self._element_constructor_(*args, **kwargs)
 
     def _element_constructor_(self, definition):
-        if definition in self.Mor():
+        homset = self.homset()
+        if definition in homset:
             return definition
-        return SetMorphism(self.Mor(), definition)
+        return homset(definition)
 
     def __contains__(self, function) -> bool:
-        return function in self.Mor()
+        return function in self.homset()
 
     def cardinality(self):
         return cardinal(self.base().cardinality()) ** cardinal(self.exponent().cardinality())
@@ -935,7 +945,7 @@ class CartesianProductOfFamilyParent(Parent):
         except (AttributeError, NotImplementedError, TypeError, ValueError):
             finite_product = False
         if finite_product:
-            categories.append(FiniteEnumeratedSets())
+            categories.extend([EnumeratedSets(), FiniteEnumeratedSets()])
         Parent.__init__(self, category=Category.join(categories))
 
     def index_set(self):
@@ -992,7 +1002,6 @@ class CartesianProductOfFamilyParent(Parent):
 
     def unrank(self, position):
         r"""Return the finite product section in mixed-radix order."""
-        from itertools import islice
         from dzack_research.preamble.categories.sets.cardinals import cardinal
 
         if not self.has_finite_index_set():
@@ -1005,26 +1014,22 @@ class CartesianProductOfFamilyParent(Parent):
         total_size = int(total.finite_value())
         if position < 0 or position >= total_size:
             raise IndexError(position)
+        if self.index_set() not in EnumeratedSets():
+            raise TypeError("finite product unranking requires an enumerated index set")
         assignment = {}
         quotient = position
         for offset in range(index_count - 1, -1, -1):
-            index = (
-                self.index_set().unrank(offset)
-                if hasattr(self.index_set(), "unrank")
-                else next(islice(iter(self.index_set()), offset, offset + 1))
-            )
+            index = self.index_set().unrank(offset)
             factor = self.factor(index)
+            if factor not in EnumeratedSets():
+                raise TypeError("finite product unranking requires enumerated factors")
             factor_size = cardinal(factor.cardinality())
             if not factor_size.is_finite():
                 raise TypeError("this product is not finite")
             radix = int(factor_size.finite_value())
             digit = quotient % radix
             quotient //= radix
-            value = (
-                factor.unrank(digit)
-                if hasattr(factor, "unrank")
-                else next(islice(iter(factor), digit, digit + 1))
-            )
+            value = factor.unrank(digit)
             assignment[index] = value
         frozen = dict(assignment)
         return self(lambda index: frozen[index])
@@ -1042,15 +1047,10 @@ class CartesianProductOfFamilyParent(Parent):
             factor_size = cardinal(factor.cardinality())
             if not factor_size.is_finite():
                 raise TypeError("this product is not finite")
+            if factor not in EnumeratedSets():
+                raise TypeError("finite product ranking requires enumerated factors")
             value = section.component(index)
-            if hasattr(factor, "rank"):
-                digit = int(factor.rank(value))
-            else:
-                digit = next(
-                    offset
-                    for offset, candidate in enumerate(factor)
-                    if candidate == value
-                )
+            digit = int(factor.rank(value))
             position = position * int(factor_size.finite_value()) + digit
         return position
 
@@ -1537,12 +1537,22 @@ class NaturalNumber(Element):
 
     def __init__(self, parent, value) -> None:
         Element.__init__(self, parent)
+        # The element constructor is the one boundary that admits foreign data,
+        # so it decides what the argument is.  A session numeral is an element
+        # of the owned integers; Sage's own integers stay out.  Rings are built
+        # on sets, so naming that ring here is a call-time reference, not a
+        # module-scope edge from an ancestor to a descendant.
+        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+        from sage.rings.integer_ring import ZZ as _SageZZ
+
         if isinstance(value, NaturalNumber):
             value = int(value)
         elif isinstance(value, SageObject):
-            raise TypeError(
-                "raw backend integers are not accepted by the owned natural numbers"
-            )
+            if element_parent(value) is not _own_ring(_SageZZ):
+                raise TypeError(
+                    "raw backend integers are not accepted by the owned natural numbers"
+                )
+            value = int(value)
         value = int(value)
         if value < 0:
             raise ValueError("a natural number is nonnegative")
