@@ -289,6 +289,13 @@ class CommutativeAlgebras(OwnedCategoryOverBaseRing):
 
     _HomCategory = AlgebraHomCategoryConstruction
 
+    def an_object(self):
+        r"""The polynomial algebra on one generator."""
+        from dzack_research.preamble.categories.functors.free_algebras import SymmetricAlgebraFunctor
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+        return SymmetricAlgebraFunctor(self.base_ring())(Modules(self.base_ring()).an_object())
+
     @classmethod
     def _repr_object_names(cls):
         return "commutative algebras"
@@ -337,6 +344,13 @@ class CommutativeAlgebras(OwnedCategoryOverBaseRing):
 
 class FramedAlgebras(OwnedCategoryOverBaseRing):
     r"""Algebras carrying a chosen algebra generating set."""
+
+    def an_object(self):
+        r"""The polynomial algebra on one generator, framed by it."""
+        from dzack_research.preamble.categories.functors.free_algebras import SymmetricAlgebraFunctor
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+        return SymmetricAlgebraFunctor(self.base_ring())(Modules(self.base_ring()).an_object())
 
     @classmethod
     def _repr_object_names(cls):
@@ -1097,6 +1111,13 @@ def commutative_algebra_pushout(left_map, right_map):
 
 class OwnedAlgebras(OwnedCategoryOverBaseRing):
     r"""Algebras carrying their chosen structure map ``R -> Z(A)``."""
+
+    def an_object(self):
+        r"""The polynomial algebra on one generator."""
+        from dzack_research.preamble.categories.functors.free_algebras import SymmetricAlgebraFunctor
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+        return SymmetricAlgebraFunctor(self.base_ring())(Modules(self.base_ring()).an_object())
 
     @classmethod
     def _repr_object_names(cls):

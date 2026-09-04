@@ -55,7 +55,10 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     FiniteOrderedSet,
     finite_ordered_set,
 )
-from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+from dzack_research.preamble.categories.sets.indexed_families import (
+    IndexedFamily,
+    indexed_family,
+)
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.refine import refine
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
@@ -329,7 +332,7 @@ def FinitelyPresentedAlgebra(presentation_ring, relations):
     )
 
     module_categories = []
-    label_size = cardinal(labels.cardinality())
+    label_size = labels.cardinality()
     if (
         label_size.is_finite()
         and int(label_size.finite_value()) == 1
@@ -379,6 +382,13 @@ def FinitelyPresentedAlgebra(presentation_ring, relations):
 
 
 class FreeAlgebras(OwnedCategoryOverBaseRing):
+    def an_object(self):
+        r"""The free algebra on one generator."""
+        from dzack_research.preamble.categories.functors.free_algebras import TensorAlgebraFunctor
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+        return TensorAlgebraFunctor(self.base_ring())(Modules(self.base_ring()).an_object())
+
     @classmethod
     def _repr_object_names(cls):
         return "free algebras"
@@ -391,7 +401,7 @@ class FreeAlgebras(OwnedCategoryOverBaseRing):
         def is_free(self) -> bool:
             return True
 
-        def _algebra_homset(self, hom_family, codomain):
+        def algebra_homset(self, hom_family, codomain):
             return FramedFreeAlgebraHomset(hom_family, self, codomain)
 
 
@@ -464,6 +474,13 @@ class PowerAlgebraHomCategoryConstruction(HomCategoryConstruction):
 class TensorAlgebras(OwnedCategoryOverBaseRing):
     r"""Tensor algebras of represented modules."""
 
+    def an_object(self):
+        r"""The tensor algebra on the free module of rank one."""
+        from dzack_research.preamble.categories.functors.free_algebras import TensorAlgebraFunctor
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+        return TensorAlgebraFunctor(self.base_ring())(Modules(self.base_ring()).an_object())
+
     @classmethod
     def _repr_object_names(cls):
         return "tensor algebras"
@@ -480,6 +497,13 @@ class TensorAlgebras(OwnedCategoryOverBaseRing):
 
 class SymmetricAlgebras(OwnedCategoryOverBaseRing):
     r"""Symmetric algebras of represented modules."""
+
+    def an_object(self):
+        r"""The symmetric algebra on the free module of rank one."""
+        from dzack_research.preamble.categories.functors.free_algebras import SymmetricAlgebraFunctor
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+        return SymmetricAlgebraFunctor(self.base_ring())(Modules(self.base_ring()).an_object())
 
     @classmethod
     def _repr_object_names(cls):
@@ -509,6 +533,13 @@ class SymmetricAlgebras(OwnedCategoryOverBaseRing):
 
 class AlternatingAlgebras(OwnedCategoryOverBaseRing):
     r"""Exterior/alternating algebras."""
+
+    def an_object(self):
+        r"""The exterior algebra on the free module of rank one."""
+        from dzack_research.preamble.categories.functors.free_algebras import AlternatingAlgebraFunctor
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+        return AlternatingAlgebraFunctor(self.base_ring())(Modules(self.base_ring()).an_object())
 
     @classmethod
     def _repr_object_names(cls):
@@ -715,33 +746,65 @@ class FramedFreeAlgebraMorphism(AlgebraMorphism):
     def __init__(self, parent, images) -> None:
         Morphism.__init__(self, parent)
         domain = cast(Any, self.domain())
-        labels = tuple(domain.algebra_generating_set())
-        if isinstance(images, dict):
+        labels = domain.algebra_generating_set()
+        if isinstance(images, IndexedFamily):
+            source_indices = images.index_set()
+            self._images = indexed_family(
+                labels,
+                lambda label: self.codomain()(images[source_indices(label)]),
+                name="Free-algebra morphism generator-image family",
+            )
+        elif isinstance(images, dict):
+            if not labels.cardinality().is_finite():
+                raise TypeError(
+                    "dictionary algebra-generator syntax requires a finite framing; "
+                    "use a callable or indexed family for an infinite framing"
+                )
             missing = [label for label in labels if label not in images]
             if missing:
                 raise ValueError(f"algebra-generator assignment omits {missing}")
-            self._images = {label: images[label] for label in labels}
+            self._images = indexed_family(
+                labels,
+                lambda label: self.codomain()(images[label]),
+                name="Free-algebra morphism generator-image family",
+            )
         elif isinstance(images, (tuple, list)):
-            if len(images) != len(labels):
+            size = labels.cardinality()
+            if not size.is_finite():
+                raise TypeError(
+                    "sequence algebra-generator syntax requires a finite framing; "
+                    "use a callable or indexed family for an infinite framing"
+                )
+            values = tuple(images)
+            if len(values) != int(size.finite_value()):
                 raise ValueError(
                     "the number of algebra-generator images must equal the framing size"
                 )
-            self._images = dict(zip(labels, images, strict=True))
+            self._images = indexed_family(
+                labels,
+                lambda label: self.codomain()(values[int(labels.rank(label))]),
+                name="Free-algebra morphism generator-image family",
+            )
         elif callable(images):
-            self._images = {label: images(label) for label in labels}
+            self._images = indexed_family(
+                labels,
+                lambda label: self.codomain()(images(label)),
+                name="Free-algebra morphism generator-image family",
+            )
         else:
             raise TypeError(
                 "an algebra morphism is specified on its algebra generators"
             )
-        self._generator_images = dict(self._images)
+        self._generator_images = self._images
         self._engine_morphism = None
         self._element_function = None
+        self._preamble_is_identity = False
         try:
             source_module = domain.free_source_module()
         except (AttributeError, ValueError):
             source_module = None
         if source_module is not None:
-            module_homset(source_module, self.codomain())(self._images.__getitem__)
+            module_homset(source_module, self.codomain())(self._images.value)
 
     def _tensor_terms(self, element):
         domain = self.domain()
@@ -758,7 +821,7 @@ class FramedFreeAlgebraMorphism(AlgebraMorphism):
             else:
                 presented = _engine_element(domain, domain(element))
         engine = presented.parent()
-        labels = tuple(domain.algebra_generating_set())
+        labels = self._finite_engine_generator_labels()
         generator_labels = dict(zip(engine.monoid().gens(), labels, strict=True))
         for monomial, coefficient in presented.monomial_coefficients().items():
             word = tuple(
@@ -783,7 +846,7 @@ class FramedFreeAlgebraMorphism(AlgebraMorphism):
                 presented = engine_domain(element)
             else:
                 presented = _engine_element(domain, domain(element))
-        labels = tuple(domain.algebra_generating_set())
+        labels = self._finite_engine_generator_labels()
         for monomial, coefficient in presented.monomial_coefficients().items():
             try:
                 exponents = tuple(int(exponent) for exponent in monomial)
@@ -799,6 +862,14 @@ class FramedFreeAlgebraMorphism(AlgebraMorphism):
             )
             base = domain.base_ring()
             yield factors, base._from_engine_element(_engine_ring(base)(coefficient))
+
+    def _finite_engine_generator_labels(self):
+        labels = self.domain().algebra_generating_set()
+        if not labels.cardinality().is_finite():
+            raise NotImplementedError(
+                "the private free-algebra engine realization requires a finite generator framing"
+            )
+        return tuple(labels)
 
     def _call_(self, element):
         domain = self.domain()
@@ -821,6 +892,18 @@ class FramedFreeAlgebraMorphism(AlgebraMorphism):
     def __call__(self, element):
         return self._call_(element)
 
+    def is_identity(self) -> bool:
+        return self._preamble_is_identity
+
+    def __mul__(self, other):
+        if not isinstance(other, FramedFreeAlgebraMorphism) or other.codomain() is not self.domain():
+            return super().__mul__(other)
+        if self.is_identity():
+            return other
+        if other.is_identity():
+            return self
+        return super().__mul__(other)
+
 
 class FramedFreeAlgebraHomset(_AlgebraHomsetCommonMethods, CategoricalHomset):
     Element = FramedFreeAlgebraMorphism
@@ -839,4 +922,6 @@ class FramedFreeAlgebraHomset(_AlgebraHomsetCommonMethods, CategoricalHomset):
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError("identity belongs to an endomorphism Hom-set")
-        return self(lambda label: self.domain().algebra_generator(label))
+        identity = self(lambda label: self.domain().algebra_generator(label))
+        identity._preamble_is_identity = True
+        return identity

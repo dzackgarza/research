@@ -2,6 +2,7 @@
 
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.categories.morphism import Morphism
+from sage.rings.integer_ring import ZZ as SageZZ
 from sage.schemes.affine.affine_space import AffineSpace as _SageAffineSpace
 from sage.schemes.generic.scheme import AffineScheme as _SageAffineScheme
 from sage.schemes.generic.scheme import Scheme as _SageScheme
@@ -25,6 +26,7 @@ from dzack_research.preamble.categories.rings.commutative_algebra import (
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     _engine_element,
+    _engine_numeral,
     _engine_ring,
     _own_ring,
 )
@@ -307,6 +309,14 @@ def refine_scheme(scheme, base_ring=None, categories=()):
 
 class Schemes(OwnedCategoryOverBaseRing):
     r"""Schemes over ``Spec(R)`` for the represented base ring ``R``."""
+
+    def an_object(self):
+        r"""The affine line over the base ring."""
+        from dzack_research.preamble.categories.schemes.affine_spec import AffineSpecFunctor
+        from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
+
+        ring = self.base_ring()
+        return AffineSpecFunctor(ring)(CommutativeAlgebras(ring).an_object())
 
     def _repr_object_names(self):
         return f"schemes over {self.base_ring()}"
@@ -598,8 +608,21 @@ class SmoothSchemes(_SchemePropertyCategory):
 class AffineSchemes(_SchemePropertyCategory):
     property_name = "affine"
 
+    def an_object(self):
+        r"""The affine line over the base ring."""
+        from dzack_research.preamble.categories.schemes.affine_spec import AffineSpecFunctor
+        from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
+
+        ring = self.base_ring()
+        return AffineSpecFunctor(ring)(CommutativeAlgebras(ring).an_object())
+
     def super_categories(self):
-        return [Schemes(self.base_ring()), SeparatedSchemes(self.base_ring())]
+        # Quasi-affine as well: a scheme is an open subscheme of itself.
+        return [
+            Schemes(self.base_ring()),
+            SeparatedSchemes(self.base_ring()),
+            QuasiAffineSchemes(self.base_ring()),
+        ]
 
     class ParentMethods:
         def is_affine(self):
@@ -659,6 +682,14 @@ class AffineSchemes(_SchemePropertyCategory):
 
 class QuasiAffineSchemes(_SchemePropertyCategory):
     property_name = "quasi-affine"
+
+    def an_object(self):
+        r"""The affine line, which is affine."""
+        from dzack_research.preamble.categories.schemes.affine_spec import AffineSpecFunctor
+        from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
+
+        ring = self.base_ring()
+        return AffineSpecFunctor(ring)(CommutativeAlgebras(ring).an_object())
 
     def super_categories(self):
         return [Schemes(self.base_ring()), SeparatedSchemes(self.base_ring())]
@@ -913,27 +944,14 @@ def affine_spec_morphism(algebra_morphism):
     return morphism
 
 
-def _engine_dimension(dimension):
-    r"""Cross a stated dimension into the engine.
-
-    A session's numeral is an owned integer, which Sage's ambient-space
-    constructors cannot read.  The dimension of an affine or projective space
-    is a natural number, so this is the same crossing every owned scalar makes
-    before it reaches the engine.
-    """
-    from sage.rings.integer_ring import ZZ as SageZZ
-
-    integers = _own_ring(SageZZ)
-    return int(_engine_element(integers, integers(dimension)))
-
-
 def AffineSpace(dimension, base_ring, names=None):
     r"""Return the owned affine space ``A^n_R``."""
     base = _own_ring(base_ring)
+    engine_dimension = int(_engine_numeral(SageZZ, dimension))
     if names is None:
-        scheme = _SageAffineSpace(_engine_dimension(dimension), _engine_ring(base))
+        scheme = _SageAffineSpace(engine_dimension, _engine_ring(base))
     else:
-        scheme = _SageAffineSpace(_engine_dimension(dimension), _engine_ring(base), names=names)
+        scheme = _SageAffineSpace(engine_dimension, _engine_ring(base), names=names)
     engine_coordinate_ring = getattr(
         scheme, "_preamble_engine_coordinate_ring", None
     )
@@ -978,10 +996,11 @@ def AffineSpace(dimension, base_ring, names=None):
 def ProjectiveSpace(dimension, base_ring, names=None):
     r"""Return the owned projective space ``P^n_R``."""
     base = _own_ring(base_ring)
+    engine_dimension = int(_engine_numeral(SageZZ, dimension))
     if names is None:
-        scheme = _SageProjectiveSpace(_engine_dimension(dimension), _engine_ring(base))
+        scheme = _SageProjectiveSpace(engine_dimension, _engine_ring(base))
     else:
-        scheme = _SageProjectiveSpace(_engine_dimension(dimension), _engine_ring(base), names=names)
+        scheme = _SageProjectiveSpace(engine_dimension, _engine_ring(base), names=names)
     categories = [ProjectiveSpaces(base)]
     if _integral_placement(base):
         categories.append(IntegralSchemes(base))
