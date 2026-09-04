@@ -138,8 +138,8 @@ def test_product_of_projective_spaces_is_the_actual_multiprojective_scheme() -> 
     assert second.codomain() is second_factor
     first_value = first.evaluate_at(point)
     second_value = second.evaluate_at(point)
-    assert tuple(first_value.native_morphism()) == (1, 2)
-    assert tuple(second_value.native_morphism()) == (3, 4)
+    assert first_value == first_factor.point_morphism([1, 2])
+    assert second_value == second_factor.point_morphism([3, 4])
 
 
 def test_general_affine_scheme_product_is_spec_of_algebra_coproduct() -> None:

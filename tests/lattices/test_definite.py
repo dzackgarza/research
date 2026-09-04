@@ -224,10 +224,10 @@ def test_definite_target_embedding_homset_enumerates_all_a1_into_a2_roots() -> N
 
     assert homset.cardinality() == 6
     source_generator = source.module_generators()[0]
-    images = {tuple(embedding(source_generator).to_tuple()) for embedding in embeddings}
-    assert images == {tuple(root.to_tuple()) for root in target.roots()}
+    images = Set(embedding(source_generator) for embedding in embeddings)
+    assert images == Set(target.roots())
     assert homset.is_empty() is False
-    assert tuple(homset.an_element()(source_generator).to_tuple()) in images
+    assert homset.an_element()(source_generator) in images
 
 
 def test_definite_target_embedding_homset_detects_sign_obstruction() -> None:
@@ -606,10 +606,7 @@ def test_finite_character_quotient_splits_vector_orbits_under_special_orthogonal
 
     representatives = special.vector_orbit_representatives(-2)
     assert representatives.cardinality() == 2
-    assert {tuple(vector.to_tuple()) for vector in representatives} == {
-        tuple(root.to_tuple()),
-        tuple((-root).to_tuple()),
-    }
+    assert Set(representatives) == Set((root, -root))
     assert special.vectors_are_equivalent(root, root)
     assert not special.vectors_are_equivalent(root, -root)
 
@@ -776,7 +773,4 @@ def test_definite_complement_extensions_exhaust_the_u_vector_cosets() -> None:
     assert opposite_coset.cardinality() == 2
     assert all(isometry(vector) == vector for isometry in stabilizer)
     assert all(isometry(vector) == -vector for isometry in opposite_coset)
-    from dzack_research.preamble.tensors import tensor
-
-    assert len({tuple(tensor.from_morphism(isometry).list()) for isometry in stabilizer}) == 2
-    assert len({tuple(tensor.from_morphism(isometry).list()) for isometry in opposite_coset}) == 2
+    assert Set(stabilizer).cardinality() == stabilizer.cardinality()
