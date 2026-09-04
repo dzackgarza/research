@@ -230,8 +230,20 @@ class Sets(OwnedCategory):
         public route (`STY-02`), and naming the index set rather than an arity
         is what `CON-14` requires; the binary `Product(A, B)` is sugar that
         chooses `Sets.Δ[1]` for the caller.
+
+        Two constructions of the same product are the same object.  Without
+        that, an element of one never equals an element of the other and the
+        product is unusable as a codomain -- a caller could not compare what an
+        operation returned against a value it built.  A family's value map is a
+        callable and cannot key a cache, so a finite index set is resolved to
+        its factors, which can.
         """
-        return CartesianProductOfFamily(family.index_set(), family.value)
+        index_set = family.index_set()
+        if index_set.is_finite():
+            return _cartesian_product_of_tuple(
+                tuple(family.value(index) for index in index_set)
+            )
+        return CartesianProductOfFamily(index_set, family.value)
 
     def _categorical_product(self, left, right):
         return CartesianProductOfSets(left, right)
@@ -275,11 +287,47 @@ class Sets(OwnedCategory):
         return TotallyOrderedSets()
 
     class ParentMethods:
+        def Hom(self, codomain, category=None):
+            if category is None:
+                return Sets().hom(self, codomain)
+            from sage.categories.homset import Hom as SageHom
+
+            return SageHom(self, codomain, category)
+
         def power_set(self):
             return PowerSet(self)
 
         def exponential(self, exponent):
             return ExponentialOfSets(self, exponent)
+
+        def product_with(self, other):
+            r"""Return $X \times Y$, the product asked of the objects.
+
+            `STY-02`: the construction is asked of the objects rather than of a
+            global constructor.  The index set chosen here is `Sets.Δ[1]`; when
+            the index set is part of the mathematics, name it and use
+            `Sets().product(family)` (`CON-14`).
+
+            There is no `X * Y` spelling: `*` on a parent is a C-level slot on
+            Sage's `Parent`, so a category method cannot take it.  `X ** n`
+            below is unobstructed and is the operator form for a power.
+            """
+            from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+
+            assert other in Sets(), "a product is taken between two owned sets"
+            factors = (self, other)
+            return Sets().product(
+                indexed_family(Sets.Δ[1], lambda index: factors[int(index)])
+            )
+
+        def __pow__(self, exponent):
+            r"""Return $X^n$, the product of the constant family over `Sets.Δ[n-1]`."""
+            from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+
+            count = int(exponent)
+            if count < 1:
+                raise ValueError("a set power is indexed by a nonempty finite set")
+            return Sets().product(indexed_family(Sets.Δ[count - 1], lambda index: self))
 
         def subsets_of_size(self, size):
             return SubsetsOfSize(self, size)
