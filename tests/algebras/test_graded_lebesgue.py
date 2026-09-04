@@ -1,5 +1,4 @@
 from sage.all import exp, pi, sqrt
-from sage.categories.map import Map
 from sage.rings.infinity import Infinity
 
 
@@ -107,7 +106,7 @@ def test_lebesgue_spaces_form_a_graded_algebra_under_pointwise_product() -> None
     assert algebra.one().homogeneous_component(algebra.grading_monoid().monoidal_unit()).parent() is Lp(
         Infinity
     )
-    assert isinstance(multiplication, Map)
+    assert multiplication in multiplication.domain().Hom(algebra)
     assert multiplication.codomain() is algebra
     assert multiplication.domain() in GradedTensorProductModules(RR)
     assert multiplication.domain().tensor_factors() == (algebra, algebra)

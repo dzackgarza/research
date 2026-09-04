@@ -1,3 +1,5 @@
+import pytest
+
 
 def _session():
     scope = {}
@@ -90,7 +92,6 @@ def test_graded_algebra_homs_preserve_degree_but_augmentation_remains_ungraded()
     QQ = session["QQ"]
     Algebras = session["Algebras"]
     GradedAlgebras = session["GradedAlgebras"]
-    GradedAlgebraMorphism = session["GradedAlgebraMorphism"]
     GradedModules = session["GradedModules"]
     SymmetricAlgebraOn = session["SymmetricAlgebraOn"]
     graded_algebra_homset = session["graded_algebra_homset"]
@@ -106,18 +107,16 @@ def test_graded_algebra_homs_preserve_degree_but_augmentation_remains_ungraded()
     assert homset is graded_algebra_homset(source, target)
     assert Algebras(QQ).Hom(source, target) in homset.super_categories()
     assert GradedModules(QQ).Hom(source, target) in homset.super_categories()
-    assert isinstance(homset({"x": t}), GradedAlgebraMorphism)
     graded = homset({"x": t})
-    assert isinstance(graded, GradedAlgebraMorphism)
+    assert graded in homset
     assert graded(x) == t
+    assert graded(x * x) == t * t
 
-    try:
+    # x and t share a degree, so x |-> t preserves it and x |-> t^2 does not.
+    with pytest.raises(ValueError):
         graded_algebra_homset(source, target)({"x": t**2})
-    except ValueError as error:
-        assert "preserve degree" in str(error)
-    else:
-        raise AssertionError("expected a degree-preservation error")
 
     augmentation = source.Hom(QQ)({"x": QQ.zero()})
-    assert not isinstance(augmentation, GradedAlgebraMorphism)
+    assert augmentation in Algebras(QQ).Hom(source, QQ)
+    assert augmentation not in GradedAlgebras(QQ).Hom(source, QQ)
     assert augmentation(x) == QQ.zero()

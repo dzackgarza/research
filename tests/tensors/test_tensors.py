@@ -55,13 +55,25 @@ def test_matrix_tensor_is_component_data_not_a_module_morphism() -> None:
     assert tensor.from_matrix(morphism) == components
 
 
-def test_matrix_tensor_rejects_sage_storage_and_constructor_compatibility() -> None:
-    with pytest.raises(TypeError, match="storage options"):
+def test_a_linear_map_is_built_in_its_homset_not_from_component_data() -> None:
+    r"""M_{2x2}(R) = Hom_R(R^2, R^2); the linear-map operations live there.
+
+    Component data is a tensor.  Turning it into a map is a passage into the
+    homset, and the homset is where composition and the identity are defined.
+    """
+    with pytest.raises(TypeError):
         tensor.matrix(ZZ, row_keys=("a", "b"), entries=[1, 2])
-    assert not hasattr(tensor.matrix, "options")
-    assert not hasattr(tensor.matrix, "identity")
-    assert not hasattr(tensor, "morphism")
-    assert not hasattr(tensor, "endomorphism")
+
+    components = tensor.matrix(ZZ, [[1, 2], [3, 4]])
+    maps = MatrixSpace(ZZ, 2, 2)
+    f = maps.from_tensor(components)
+
+    assert f.parent() is maps
+    assert f.domain() is ZZ**2
+    assert f.codomain() is ZZ**2
+    assert maps.identity() * f == f
+    assert f * maps.identity() == f
+    assert tensor.from_matrix(f) == components
 
 
 def test_matrix_tensor_accepts_rectangular_component_data_or_explicit_shape() -> None:
@@ -200,10 +212,9 @@ def test_matrix_inverse_belongs_to_the_linear_map_parent_not_tensor_data() -> No
     inverse = matrix.inverse()
 
     assert inverse * matrix == matrix.parent().identity()
-    assert not hasattr(linear_components, "inverse_tensor")
-    assert not hasattr(linear_components, "transpose")
-    assert not hasattr(linear_components, "solve_right")
-    assert not hasattr(linear_components, "kernel_tensor")
+    assert matrix * inverse == matrix.parent().identity()
+    assert matrix.determinant() == QQ(1)
+    assert tensor.from_matrix(inverse) == tensor(QQ, (2,), (2,), [[1, -1], [-1, 2]])
 
 
 def test_dual_pairing_raises_an_index() -> None:

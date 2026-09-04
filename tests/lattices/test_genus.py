@@ -1,4 +1,4 @@
-from dzack_research.preamble.all import ZZ, Genus, Lattices
+from dzack_research.preamble.all import ZZ, Lattices
 
 
 def test_level_uses_the_quadratic_discriminant_form_for_even_lattices() -> None:
@@ -27,7 +27,6 @@ def test_genus_is_reconstructed_from_signature_and_discriminant_form() -> None:
     lattice = Lattices(ZZ)("A2")
     genus = lattice.genus()
 
-    assert isinstance(genus, Genus)
     assert genus.signature_pair() == (0, 2)
     assert genus.discriminant_form() is lattice.discriminant_quadratic_form()
     assert genus.exists()

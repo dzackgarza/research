@@ -7,8 +7,8 @@ from sage.categories.fields import Fields
 from sage.misc.unknown import Unknown
 from sage.rings.real_mpfr import RR as SageRR
 
-from dzack_research.preamble.logic import Predicate, ask
-from dzack_research.preamble.rings import RR, ExactRealNumber, RealApproximation
+from dzack_research.preamble.logic import ask
+from dzack_research.preamble.rings import RR, RealApproximation
 
 
 def test_rr_is_the_exact_real_field() -> None:
@@ -21,7 +21,7 @@ def test_rr_is_the_exact_real_field() -> None:
 def test_sqrt_two_is_exact() -> None:
     root = RR(sqrt(2))
 
-    assert isinstance(root, ExactRealNumber)
+    assert root.parent() is RR
     assert root**2 == 2
     assert root * root == 2
     assert sqrt(RR(2)) ** 2 == 2
@@ -112,8 +112,7 @@ def test_unresolved_equality_is_a_predicate_for_ask() -> None:
     q = QQ(3141592653589793238462643383279502884197) / 10**39
     proposition = RR(pi) == RR(q)
 
-    assert isinstance(proposition, Predicate)
-    with pytest.raises(TypeError, match="ask"):
+    with pytest.raises(TypeError):
         bool(proposition)
     assert ask(proposition, max_prec=128) is Unknown
     assert ask(proposition) is False

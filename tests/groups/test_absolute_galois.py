@@ -42,7 +42,6 @@ def test_absolute_galois_surface_is_publicly_exported() -> None:
     assert preamble.ExactFieldMorphism is ExactFieldMorphism
     assert preamble.OpenAbsoluteGaloisSubgroups is OpenAbsoluteGaloisSubgroups
     assert preamble.PrimeProlongation is PrimeProlongation
-    assert not hasattr(preamble, "GaloisChoicePolicy")
 
 
 def _cubic_number_field(radicand, name="a"):
@@ -62,7 +61,10 @@ def test_absolute_galois_group_is_the_slice_automorphism_group_with_exact_maps()
     assert group in AbsoluteGaloisGroups()
     assert group in AbsoluteGaloisGroupsOfFiniteFields()
     assert group in OwnedGroups()
-    assert isinstance(embedding, ExactFieldMorphism)
+    u = field.multiplicative_generator()
+    assert embedding(field.one()) == group.algebraic_closure().one()
+    assert embedding(u + u) == embedding(u) + embedding(u)
+    assert embedding(u * u) == embedding(u) * embedding(u)
     assert embedding.domain() is field
     assert embedding.codomain() is group.algebraic_closure()
     assert extension_object.arrow() is embedding

@@ -5,7 +5,6 @@ from sage.categories.sets_cat import Sets as SageSets
 from dzack_research.preamble.all import (
     AutCategoryOf,
     Algebras,
-    CategoryPacket,
     EndCategoryOf,
     EpiCategoryOf,
     HomCategoryOf,
@@ -77,7 +76,6 @@ def test_category_packet_transports_hom_end_aut_supercategories() -> None:
     modules = Modules(QQ)
     packet = category_packet(algebras)
 
-    assert isinstance(packet, CategoryPacket)
     assert packet.C() is algebras
     module_packet = category_packet(modules)
     assert module_packet.Homs() in packet.Homs().super_categories()

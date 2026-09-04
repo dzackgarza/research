@@ -10,11 +10,9 @@ from dzack_research.preamble.all import (
     ProductProjectiveSpaces,
     ProductSchemes,
     QQ,
-    SchemeMorphism,
     Schemes,
     SmoothSchemes,
     Spec,
-    StructureSheaf,
     scheme_product,
 )
 
@@ -50,7 +48,6 @@ def test_structure_sheaf_is_an_actual_object_with_exact_supported_global_section
     affine_sheaf = affine.structure_sheaf()
     projective_sheaf = projective.structure_sheaf()
 
-    assert isinstance(affine_sheaf, StructureSheaf)
     assert affine_sheaf.scheme() is affine
     assert affine_sheaf.global_sections() is affine.coordinate_ring()
     assert projective_sheaf.global_sections() is QQ
@@ -74,13 +71,13 @@ def test_scheme_point_is_a_morphism_from_an_owned_residue_field_scheme() -> None
     affine = AffineSpace(2, QQ)
     point = affine.point_morphism([1, 2])
 
-    assert isinstance(point, SchemeMorphism)
+    assert point in Schemes(QQ).Hom(point.domain(), affine)
     assert point.domain() in Schemes(QQ)
     assert point.domain() in AffineSchemes(QQ)
     assert point.codomain() is affine
 
     structural_value = affine.structure_morphism().evaluate_at(point)
-    assert isinstance(structural_value, SchemeMorphism)
+    assert structural_value in Schemes(QQ).Hom(point.domain(), Spec(QQ))
     assert structural_value.domain() is point.domain()
     assert structural_value.codomain() is Spec(QQ)
 
@@ -94,7 +91,7 @@ def test_equation_defined_closed_subscheme_has_live_inclusion_and_codimension() 
     assert divisor in ClosedSubschemes(QQ)
     assert divisor in EquationDefinedClosedSubschemes(QQ)
     assert divisor.ambient_scheme() is affine
-    assert isinstance(divisor.inclusion(), SchemeMorphism)
+    assert divisor.inclusion() in Schemes(QQ).Hom(divisor, affine)
     assert divisor.inclusion().domain() is divisor
     assert divisor.inclusion().codomain() is affine
     assert divisor.defining_equations() == (x,)

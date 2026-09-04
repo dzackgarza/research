@@ -1,7 +1,6 @@
 from dzack_research.preamble.all import QQ
 from dzack_research.preamble.categories.algebras import (
     DeRhamAlgebra,
-    GradedDerivation,
     SymmetricAlgebraOn,
 )
 from dzack_research.preamble.categories.modules import (
@@ -16,9 +15,10 @@ def test_de_rham_differential_is_a_degree_one_graded_derivation() -> None:
     dga = DeRhamAlgebra(algebra)
     differential = dga.differential()
 
-    assert isinstance(differential, GradedDerivation)
+    x, y = algebra.algebra_generators()
     assert differential.degree_shift() == 1
-    assert differential.check_on_generators()
+    assert differential(x * y) == differential(x) * y + x * differential(y)
+    assert differential(differential(x)) == dga.zero()
 
 
 def test_a_dga_is_canonically_its_regular_dg_module() -> None:

@@ -1,10 +1,12 @@
 from dzack_research.preamble.all import (
     ZZ,
     BasedFreeModule,
+    FormedModules,
     GroupLattice,
     GroupModule,
     Groups,
     Lattices,
+    Modules,
     tensor,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
@@ -78,4 +80,6 @@ def test_group_lattice_invariants_and_formed_coinvariants_keep_the_form() -> Non
     assert invariants.gram_tensor() == tensor(ZZ, (), (1, 1), [[2]])
     assert formed_coinvariants.gram_tensor() == tensor(ZZ, (), (1, 1), [[-2]])
     assert module_coinvariants.rank() == 1
-    assert not hasattr(module_coinvariants, "gram_tensor")
+    assert module_coinvariants in Modules(ZZ)
+    assert module_coinvariants not in FormedModules(ZZ)
+    assert formed_coinvariants in FormedModules(ZZ)
