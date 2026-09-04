@@ -75,6 +75,7 @@ class RingMorphism(Morphism):
             raise TypeError("a ring morphism requires an exact element map")
         self._function = function
         self._engine_morphism = engine_morphism
+        self._preamble_is_identity = False
 
     def __call__(self, element):
         return self._call_(element)
@@ -91,6 +92,10 @@ class RingMorphism(Morphism):
     def __mul__(self, other):
         if not isinstance(other, RingMorphism) or other.codomain() is not self.domain():
             return NotImplemented
+        if self.is_identity():
+            return other
+        if other.is_identity():
+            return self
         return ring_homset(other.domain(), self.codomain()).elementwise(
             lambda element: self(other(element)),
         )
@@ -104,15 +109,18 @@ class RingMorphism(Morphism):
     def is_identity(self) -> bool:
         if self.domain() is not self.codomain():
             return False
-        selected = getattr(self, "_preamble_is_identity", None)
-        if selected is not None:
-            return bool(selected)
-        if self._engine_morphism is not None:
-            try:
-                return bool(self._engine_morphism.is_identity())
-            except (AttributeError, NotImplementedError, TypeError, ValueError):
-                pass
-        return False
+        if self._preamble_is_identity:
+            return True
+        return self._engine_is_identity()
+
+    def _engine_is_identity(self) -> bool:
+        r"""Ask only the selected private engine realization about identity."""
+        if self._engine_morphism is None:
+            return False
+        try:
+            return bool(self._engine_morphism.is_identity())
+        except (AttributeError, NotImplementedError, TypeError, ValueError):
+            return False
 
 
 
@@ -199,6 +207,15 @@ def ring_morphism(domain, codomain, function, *, engine_morphism=None) -> RingMo
     )
 
 class PredicateSubrings(OwnedCategory):
+    def an_object(self):
+        r"""The integers inside the rationals, cut out by integrality."""
+        rationals = _own_ring(SageQQ)
+        return predicate_subring(
+            rationals,
+            lambda element: element.denominator() == 1,
+            "z is an integer",
+        )
+
     def super_categories(self):
         return [OwnedRings()]
 
@@ -274,14 +291,8 @@ class LocalizationRings(OwnedCategory):
         def localization_fraction_data(self, element):
             r"""Return one represented fraction ``(r,s)`` for ``element=r/s``."""
             value = self(element)
-            numerator = getattr(value, "numerator", None)
-            denominator = getattr(value, "denominator", None)
-            if numerator is None or denominator is None:
-                raise NotImplementedError(
-                    f"{self} has no represented numerator/denominator backend"
-                )
             source = self.localization_source()
-            return source(numerator()), source(denominator())
+            return source(value.numerator()), source(value.denominator())
 
 
 class _PredicateSubringParent(Parent):
@@ -342,12 +353,20 @@ def predicate_subring(ambient_ring, predicate, description, category=None):
 class OwnedSemirings(OwnedCategory):
     """Semirings on the owned operation spine."""
 
+    def an_object(self):
+        r"""The integers, which are in particular a semiring."""
+        return _own_ring(SageZZ)
+
     def super_categories(self):
         return [Monoids(), AdditiveMonoids()]
 
 
 class OwnedRngs(OwnedCategory):
     """Rngs on the owned operation spine."""
+
+    def an_object(self):
+        r"""The integers, which happen to be unital."""
+        return _own_ring(SageZZ)
 
     def super_categories(self):
         return [Semigroups(), AdditiveGroups()]
@@ -357,6 +376,10 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
     """Unital rings whose notebook-facing ring interface is owned here."""
 
     _HomCategory = RingHomCategoryConstruction
+
+    def an_object(self):
+        r"""The integers, the initial object of this category."""
+        return _own_ring(SageZZ)
 
     def super_categories(self):
         return [OwnedSemirings(), OwnedRngs()]
@@ -407,8 +430,9 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 return aleph0
             if category.is_subcategory(UncountableSets()):
                 return continuum
-            raise NotImplementedError(
-                f"the exact cardinality of the underlying set of {self} is not represented"
+            assert False, (
+                "cardinality is defined for every ring, but the current exact "
+                f"computation does not cover the represented ring {self}"
             )
 
         def _has_selected_exact_coefficient_presentation(self) -> bool:
@@ -483,6 +507,10 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
 class OwnedCommutativeRings(OwnedCategory):
     r"""Commutative unital rings in the owned mathematical graph."""
 
+    def an_object(self):
+        r"""The integers."""
+        return _own_ring(SageZZ)
+
     def super_categories(self):
         return [OwnedRings()]
 
@@ -493,6 +521,10 @@ class OwnedCommutativeRings(OwnedCategory):
 
 class OwnedOrderedRings(OwnedCategory):
     r"""Totally ordered rings in the owned scalar hierarchy."""
+
+    def an_object(self):
+        r"""The integers with their usual order."""
+        return _own_ring(SageZZ)
 
     def super_categories(self):
         return [OwnedRings()]
@@ -506,6 +538,10 @@ class OwnedOrderedRings(OwnedCategory):
 class OwnedIntegralDomains(OwnedCategory):
     r"""Commutative rings without zero divisors."""
 
+    def an_object(self):
+        r"""The integers."""
+        return _own_ring(SageZZ)
+
     def super_categories(self):
         return [OwnedCommutativeRings()]
 
@@ -516,6 +552,10 @@ class OwnedIntegralDomains(OwnedCategory):
 
 class OwnedPrincipalIdealDomains(OwnedCategory):
     r"""Principal ideal domains in the owned ring hierarchy."""
+
+    def an_object(self):
+        r"""The integers."""
+        return _own_ring(SageZZ)
 
     def super_categories(self):
         return [OwnedIntegralDomains(), OwnedNoetherianRings()]
@@ -532,6 +572,10 @@ def _engine_krull_dimension(ring):
 class OwnedNoetherianRings(OwnedCategory):
     r"""Noetherian commutative rings."""
 
+    def an_object(self):
+        r"""The integers."""
+        return _own_ring(SageZZ)
+
     def super_categories(self):
         return [OwnedCommutativeRings()]
 
@@ -546,6 +590,10 @@ class OwnedNoetherianRings(OwnedCategory):
 class OwnedArtinianRings(OwnedCategory):
     r"""Artinian commutative rings."""
 
+    def an_object(self):
+        r"""The field of two elements: a field is artinian."""
+        return GF(2)
+
     def super_categories(self):
         return [OwnedNoetherianRings()]
 
@@ -556,6 +604,12 @@ class OwnedArtinianRings(OwnedCategory):
 
 class OwnedLocalRings(OwnedCategory):
     r"""Commutative rings equipped with their unique maximal ideal."""
+
+    def an_object(self):
+        r"""The integers localized at the prime (2)."""
+        from dzack_research.preamble.categories.rings.commutative_algebra import PrimeLocalization
+
+        return PrimeLocalization(_own_ring(SageZZ), 2)
 
     def super_categories(self):
         return [OwnedCommutativeRings()]
@@ -572,7 +626,7 @@ class OwnedLocalRings(OwnedCategory):
 
         def residue_map(self):
             r"""Return the represented local quotient map ``R -> kappa(m)``."""
-            morphism = getattr(self, "_preamble_residue_map", None)
+            morphism = self.__dict__.get("_preamble_residue_map")
             if morphism is not None:
                 return morphism
             if self.residue_field() is self:
@@ -580,7 +634,7 @@ class OwnedLocalRings(OwnedCategory):
             raise NotImplementedError(f"the residue map of {self} is not represented")
 
         def fraction_field(self):
-            represented = getattr(self, "_preamble_fraction_field", None)
+            represented = self.__dict__.get("_preamble_fraction_field")
             if represented is not None:
                 return represented
             return super().fraction_field()
@@ -588,6 +642,12 @@ class OwnedLocalRings(OwnedCategory):
 
 class OwnedAdicallyCompleteRings(OwnedCategory):
     r"""Commutative rings represented as complete for a chosen adic topology."""
+
+    def an_object(self):
+        r"""The 2-adic integers: complete, and local because (2) is maximal."""
+        from dzack_research.preamble.categories.rings.commutative_algebra import AdicCompletion
+
+        return AdicCompletion(_own_ring(SageZZ), 2)
 
     def super_categories(self):
         return [OwnedCommutativeRings()]
@@ -603,15 +663,29 @@ class OwnedAdicallyCompleteRings(OwnedCategory):
 class OwnedCompleteLocalRings(OwnedCategory):
     r"""Local rings complete for the represented maximal-ideal/adic topology."""
 
+    def an_object(self):
+        r"""The 2-adic integers: complete, and local because (2) is maximal."""
+        from dzack_research.preamble.categories.rings.commutative_algebra import AdicCompletion
+
+        return AdicCompletion(_own_ring(SageZZ), 2)
+
     def super_categories(self):
         return [OwnedLocalRings(), OwnedAdicallyCompleteRings()]
 
 class OwnedDivisionRings(OwnedCategory):
+    def an_object(self):
+        r"""The field of two elements."""
+        return GF(2)
+
     def super_categories(self):
         return [OwnedRings()]
 
 
 class OwnedFields(OwnedCategory):
+    def an_object(self):
+        r"""The field of two elements."""
+        return GF(2)
+
     def super_categories(self):
         return [
             OwnedDivisionRings(),
@@ -636,6 +710,10 @@ class OwnedFields(OwnedCategory):
 class OwnedOrders(OwnedCategory):
     r"""Orders in number fields as a ring-theoretic property category."""
 
+    def an_object(self):
+        r"""The integers, the ring of integers of the rationals."""
+        return _own_ring(SageZZ)
+
     def super_categories(self):
         return [
             OwnedIntegralDomains(),
@@ -657,6 +735,10 @@ class OwnedOrders(OwnedCategory):
 
 class PrimeFields(OwnedCategory):
     r"""Prime fields \(\mathbf F_p\)."""
+
+    def an_object(self):
+        r"""The field of two elements."""
+        return GF(2)
 
     def super_categories(self):
         return [OwnedFields()]
@@ -683,6 +765,22 @@ class OwnedCategoryOverBaseRing(CategoryPacketMethods, OwnedParameterizedCategor
             return self in candidate.category().all_super_categories(proper=False)
         except (AttributeError, TypeError, ValueError):
             return False
+
+
+def _cross_engine_ring_value(value):
+    r"""Cross a private engine-ring value back into the owned universe when possible."""
+    parent = getattr(value, "parent", lambda: None)()
+    if parent in SageRings():
+        return _own_ring(parent)._from_engine_element(value)
+    return value
+
+
+def _engine_multiplicative_generator(engine):
+    r"""Return the selected engine's multiplicative generator at the private boundary."""
+    generator = getattr(engine, "multiplicative_generator", None)
+    if generator is None:
+        raise AttributeError(f"{engine} has no represented multiplicative generator")
+    return generator()
 
 
 class _OwnedRingElement(RingElement):
@@ -898,11 +996,7 @@ class _OwnedRingElement(RingElement):
         return bool(self._backend().is_square())
 
     def sqrt(self):
-        value = self._backend().sqrt()
-        parent = getattr(value, "parent", lambda: None)()
-        if parent in SageRings():
-            return _own_ring(parent)._from_engine_element(value)
-        return value
+        return _cross_engine_ring_value(self._backend().sqrt())
 
     def numerator(self):
         value = self._backend().numerator()
@@ -927,14 +1021,10 @@ class _OwnedRingElement(RingElement):
         return _own_ring(SageZZ)._from_engine_element(SageZZ(value))
 
     def trace(self):
-        value = self._backend().trace()
-        parent = getattr(value, "parent", lambda: None)()
-        return _own_ring(parent)._from_engine_element(value) if parent in SageRings() else value
+        return _cross_engine_ring_value(self._backend().trace())
 
     def norm(self):
-        value = self._backend().norm()
-        parent = getattr(value, "parent", lambda: None)()
-        return _own_ring(parent)._from_engine_element(value) if parent in SageRings() else value
+        return _cross_engine_ring_value(self._backend().norm())
 
     def minpoly(self):
         polynomial = self._backend().minpoly()
@@ -1003,10 +1093,7 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
         return self._from_engine_element(self._engine.one())
 
     def multiplicative_generator(self):
-        generator = getattr(self._engine, "multiplicative_generator", None)
-        if generator is None:
-            raise AttributeError(f"{self} has no represented multiplicative generator")
-        return self._from_engine_element(generator())
+        return self._from_engine_element(_engine_multiplicative_generator(self._engine))
 
     def an_element(self):
         return self._from_engine_element(self._engine.an_element())
@@ -1165,6 +1252,25 @@ def _engine_element(ring, element):
     if engine is owned:
         return owned(element)
     return engine(element)
+
+
+def _engine_numeral(ring, value):
+    r"""Cross an ingress numeral to the selected private Sage ring.
+
+    Constructor arguments can arrive as Python numerals, owned ring elements,
+    or raw Sage ring elements from backend code.  Public owned-ring coercion
+    deliberately rejects the last case; this private constructor boundary is
+    precisely where all three spellings are normalized before entering Sage.
+    """
+
+    owned = _own_ring(ring)
+    engine = _engine_ring(owned)
+    parent = getattr(value, "parent", lambda: None)()
+    if parent in OwnedRings():
+        value = _engine_element(parent, value)
+    elif parent is not None and parent not in SageRings():
+        raise TypeError("an engine numeral must come from a ring")
+    return engine(value)
 
 
 def _owning_constructor(constructor):

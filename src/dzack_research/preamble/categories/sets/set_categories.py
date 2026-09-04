@@ -9,7 +9,7 @@ from sage.categories.homset import Homset
 from sage.categories.morphism import SetMorphism
 from sage.categories.sets_cat import Sets as SageSets
 from sage.combinat.subset import Subsets as SageSubsets
-from sage.misc.cachefunc import cached_function
+from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.integer import Integer as SageInteger
 from sage.rings.integer_ring import ZZ
 from sage.sets.condition_set import ConditionSet as SageConditionSet
@@ -21,6 +21,7 @@ from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    _category_homset,
     CategoricalHomset,
     HomCategoryConstruction,
 )
@@ -37,6 +38,10 @@ from dzack_research.preamble.categories.sets.indexed_families import indexed_fam
 class EnumeratedSets(OwnedCategory):
     r"""Sets equipped with a represented ranking/enumeration."""
 
+    def an_object(self):
+        r"""The ordinal 2, ranked by its own order."""
+        return finite_ordinal_set(2)
+
     def super_categories(self):
         return [Sets()]
 
@@ -52,6 +57,10 @@ class EnumeratedSets(OwnedCategory):
 
 class InfiniteEnumeratedSets(OwnedCategory):
     r"""Countably infinite enumerated sets."""
+
+    def an_object(self):
+        r"""The natural numbers, enumerated by identity."""
+        return NN
 
     def super_categories(self):
         return [EnumeratedSets()]
@@ -73,7 +82,7 @@ class FiniteOrdinalSet(Parent):
         )
 
     def cardinality(self):
-        return self._size
+        return cardinal(self._size)
 
     def __iter__(self):
         return (NN(index) for index in range(self._size))
@@ -186,9 +195,16 @@ class OwnedSetMorphism(SetMorphism):
     def __hash__(self) -> int:
         return hash((id(self.parent()), id(self)))
 
+    def is_identity(self) -> bool:
+        return self._preamble_is_identity
+
     def __mul__(self, other):
         if not isinstance(other, SetMorphism) or other.codomain() is not self.domain():
             return NotImplemented
+        if self.is_identity():
+            return other
+        if isinstance(other, OwnedSetMorphism) and other.is_identity():
+            return self
         return Sets().Mor(other.domain(), self.codomain())(
             lambda element: self(other(element))
         )
@@ -216,12 +232,17 @@ class SetMorCategory(CategoricalHomset):
             datum = datum._call_
         if not callable(datum):
             raise TypeError("a set morphism is supplied by a callable")
-        return OwnedSetMorphism(self, datum)
+        morphism = OwnedSetMorphism(self, datum)
+        morphism._preamble_is_identity = False
+        return morphism
 
+    @cached_method
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError("identity is defined only for equal set endpoints")
-        return OwnedSetMorphism(self, lambda element: element)
+        identity = OwnedSetMorphism(self, lambda element: element)
+        identity._preamble_is_identity = True
+        return identity
 
     def identity_at(self, obj):
         return Sets().Mor(obj, obj).identity()
@@ -263,6 +284,10 @@ class Sets(OwnedCategory):
     Δ = _Delta()
     ℵ = _Aleph()
     א = ℵ
+
+    def an_object(self):
+        r"""The ordinal 2: two distinct elements, so a map out of it is not forced."""
+        return finite_ordinal_set(2)
 
     def super_categories(self):
         return [Objects()]
@@ -352,9 +377,7 @@ class Sets(OwnedCategory):
         def Mor(self, codomain, category=None):
             if category is None:
                 return Sets().Mor(self, codomain)
-            from sage.categories.homset import Hom as SageHom
-
-            return SageHom(self, codomain, category)
+            return _category_homset(category, self, codomain)
 
         def power_set(self):
             return PowerSet(self)
@@ -395,8 +418,12 @@ class Sets(OwnedCategory):
 
 
 def Set(source):
-    r"""Return ``source`` as a Sage set object."""
-    return source if source in Sets() or source in SageSets() else SageSet(source)
+    r"""Return ``source`` as an owned set whenever this constructor creates it."""
+    if source in Sets() or source in SageSets():
+        return source
+    from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+
+    return finite_ordered_set(tuple(SageSet(source)))
 
 
 def ConditionSet(universe, predicate):
@@ -405,7 +432,15 @@ def ConditionSet(universe, predicate):
 
 
 def ImageSet(map_, domain_subset, *, category=None, is_injective=None, inverse=None):
-    r"""Return the image of ``domain_subset`` under ``map_``."""
+    r"""Return the represented image of ``domain_subset`` under ``map_``."""
+    try:
+        domain_cardinality = domain_subset.cardinality()
+        if domain_cardinality.is_finite():
+            from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+
+            return finite_ordered_set(tuple(map_(element) for element in domain_subset))
+    except (AttributeError, NotImplementedError, TypeError, ValueError):
+        pass
     return SageImageSet(
         map_,
         domain_subset,
@@ -717,7 +752,13 @@ class FunctionSet(Parent):
             raise TypeError("an exponential requires two owned sets")
         self._codomain = codomain
         self._exponent = exponent
-        Parent.__init__(self, category=SageSets())
+        # Owned placement, not Sage's: over a finite exponent every function is
+        # finitely supported, and over an infinite one that is exactly what fails.
+        finite_exponent = exponent in FiniteSets()
+        Parent.__init__(
+            self,
+            category=FinitelySupportedFunctionSets() if finite_exponent else Sets(),
+        )
 
     def base(self):
         return self._codomain
@@ -873,12 +914,20 @@ def FiniteSubsets(source):
 class CartesianProductsOfSets(OwnedCategory):
     r"""Dependent products of families of sets."""
 
+    def an_object(self):
+        r"""The square of the ordinal 2."""
+        return CartesianProductOfSets(finite_ordinal_set(2), finite_ordinal_set(2))
+
     def super_categories(self):
         return [Sets()]
 
 
 class CoproductsOfSets(OwnedCategory):
     r"""Dependent coproducts (disjoint unions) of families of sets."""
+
+    def an_object(self):
+        r"""The disjoint union of the ordinal 2 with itself."""
+        return CoproductOfSets(finite_ordinal_set(2), finite_ordinal_set(2))
 
     def super_categories(self):
         return [Sets()]
@@ -1015,7 +1064,7 @@ class CartesianProductOfFamilyParent(Parent):
         if not self.has_finite_index_set():
             raise TypeError("an infinite-index product has no finite unranking here")
         index_count = int(cardinal(self.index_set().cardinality()).finite_value())
-        total = cardinal(self.cardinality())
+        total = self.cardinality()
         if not total.is_finite():
             raise TypeError("this product is not finite")
         position = int(position)
@@ -1288,7 +1337,7 @@ class CoproductOfFamilyParent(Parent):
 
     def _known_finite_size(self):
         try:
-            size = cardinal(self.cardinality())
+            size = self.cardinality()
             if size.is_finite():
                 return int(size.finite_value())
         except (AttributeError, NotImplementedError, TypeError, ValueError):
@@ -1432,6 +1481,10 @@ class Homsets(OwnedCategory):
 class FiniteSets(OwnedCategory):
     r"""Sets whose cardinality is finite."""
 
+    def an_object(self):
+        r"""The ordinal 2."""
+        return finite_ordinal_set(2)
+
     def super_categories(self):
         return [Sets()]
 
@@ -1447,20 +1500,31 @@ class FiniteSets(OwnedCategory):
 class InfiniteSets(OwnedCategory):
     r"""Sets whose cardinality is infinite."""
 
+    def an_object(self):
+        r"""The natural numbers."""
+        return NN
+
     def super_categories(self):
         return [Sets()]
 
     def __contains__(self, candidate) -> bool:
+        # The cardinality of the underlying set decides this, as it does for
+        # FiniteSets.  Sage's own Infinite() axiom answers for Sage's graph, in
+        # which an owned set is not placed at all (`CAT-12`).
         if candidate not in Sets():
             return False
         try:
-            return candidate in SageSets().Infinite()
-        except (TypeError, ValueError):
+            return not cardinal(candidate.cardinality()).is_finite()
+        except (AttributeError, NotImplementedError, TypeError, ValueError):
             return False
 
 
 class CountableSets(OwnedCategory):
     r"""Sets equipped with a countable enumeration."""
+
+    def an_object(self):
+        r"""The natural numbers."""
+        return NN
 
     def super_categories(self):
         return [Sets()]
@@ -1477,6 +1541,10 @@ class CountableSets(OwnedCategory):
 class CountablyInfiniteSets(OwnedCategory):
     r"""Countably infinite sets."""
 
+    def an_object(self):
+        r"""The natural numbers."""
+        return NN
+
     def super_categories(self):
         return [CountableSets(), InfiniteSets()]
 
@@ -1491,6 +1559,10 @@ class CountablyInfiniteSets(OwnedCategory):
 
 class UncountableSets(OwnedCategory):
     r"""Sets whose represented cardinal is provably uncountable."""
+
+    def an_object(self):
+        r"""The power set of the natural numbers, uncountable by Cantor's theorem."""
+        return PowerSet(NN)
 
     def super_categories(self):
         return [InfiniteSets()]
@@ -1507,12 +1579,20 @@ class UncountableSets(OwnedCategory):
 class PartiallyOrderedSets(OwnedCategory):
     r"""Sets equipped with a partial order."""
 
+    def an_object(self):
+        r"""The natural numbers under their usual order."""
+        return NN
+
     def super_categories(self):
         return [Sets()]
 
 
 class TotallyOrderedSets(OwnedCategory):
     r"""Sets equipped with a total order."""
+
+    def an_object(self):
+        r"""The natural numbers, totally ordered."""
+        return NN
 
     def super_categories(self):
         return [PartiallyOrderedSets()]
@@ -1589,7 +1669,11 @@ class NaturalNumbers(Parent):
     def __init__(self) -> None:
         Parent.__init__(
             self,
-            category=Category.join((CountablyInfiniteSets(), TotallyOrderedSets())),
+            # Enumerated as well as countably infinite: the identity ranking is
+            # the chosen enumeration, and `__iter__` below is it.
+            category=Category.join(
+                (CountablyInfiniteSets(), TotallyOrderedSets(), InfiniteEnumeratedSets())
+            ),
         )
 
     def _element_constructor_(self, value):
@@ -1631,6 +1715,10 @@ NN = NaturalNumbers()
 
 class FinitelySupportedFunctionSets(OwnedCategory):
     r"""Function sets whose elements have finite support."""
+
+    def an_object(self):
+        r"""Functions from the ordinal 2 to itself, all of finite support."""
+        return ExponentialOfSets(finite_ordinal_set(2), finite_ordinal_set(2))
 
     def super_categories(self):
         return [Sets()]
