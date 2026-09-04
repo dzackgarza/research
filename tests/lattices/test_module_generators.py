@@ -84,7 +84,7 @@ def test_countable_identity_form_is_free_on_formal_symbols() -> None:
     assert lattice.rank() == lattice.module_generating_set().cardinality()
     assert e0 in lattice.module_generating_set()
     assert e3 in lattice.module_generating_set()
-    assert repr(lattice((1, 0, 0, 1))) == "e_0 + e_3"
+    assert repr(lattice({e0: 1, e3: 1})) == "e_0 + e_3"
     assert lattice.module_generator(e0) * lattice.module_generator(e3) == 0
 
 
