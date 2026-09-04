@@ -8,6 +8,7 @@ from sage.categories.map import Map
 from sage.categories.morphism import Morphism
 from sage.categories.rings import Rings as SageRings
 from sage.misc.cachefunc import cached_function, cached_method
+from sage.misc.unknown import Unknown
 
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
@@ -19,6 +20,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _OwnedRingElement, _OwnedRingParent
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    _category_homset,
     CategoricalHomset,
     HomCategoryConstruction,
 )
@@ -41,8 +43,11 @@ from dzack_research.preamble.categories.modules.pure.modules import (
 )
 from dzack_research.preamble.categories.modules.tensor_products import tensor_product_morphism
 from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
-from dzack_research.preamble.categories.sets.cardinals import cardinal
-from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+from dzack_research.preamble.categories.sets.cardinals import aleph0
+from dzack_research.preamble.categories.sets.indexed_families import (
+    IndexedFamily,
+    indexed_family,
+)
 
 
 class AssociativeAlgebras(OwnedCategoryOverBaseRing):
@@ -53,6 +58,10 @@ class AssociativeAlgebras(OwnedCategoryOverBaseRing):
     :class:`Algebras`. Convolution \(L^1(\mathbb R)\) is the standard
     non-unital example.
     """
+
+    def an_object(self):
+        r"""The base ring itself, associative over itself."""
+        return self.base_ring()
 
     @classmethod
     def _repr_object_names(cls):
@@ -98,12 +107,7 @@ class AlgebraHomCategoryConstruction(HomCategoryConstruction):
         if cached is not None:
             return cached
 
-        specialized = getattr(domain, "_algebra_homset", None)
-        result = (
-            specialized(self, codomain)
-            if specialized is not None
-            else AlgebraHomset(self, domain, codomain)
-        )
+        result = domain.algebra_homset(self, codomain)
         return self._remember_between(domain, codomain, result)
 
 
@@ -116,6 +120,10 @@ class Algebras(OwnedCategoryOverBaseRing):
     Multiplication is the \(R\)-module morphism
     \(m\colon A\otimes_R A\to A\).
     """
+
+    def an_object(self):
+        r"""The base ring itself, an algebra over itself."""
+        return self.base_ring()
 
     @classmethod
     def _repr_object_names(cls):
@@ -138,6 +146,10 @@ class Algebras(OwnedCategoryOverBaseRing):
     _HomCategory = AlgebraHomCategoryConstruction
 
     class ParentMethods:
+        def algebra_homset(self, hom_family, codomain):
+            r"""Return the fixed-endpoint Hom carrier selected by this algebra category."""
+            return AlgebraHomset(hom_family, self, codomain)
+
         def base_ring(self):
             return self.algebra_base_ring()
 
@@ -219,8 +231,7 @@ class Algebras(OwnedCategoryOverBaseRing):
             algebras = Algebras(self.base_ring())
             if category is None or category.is_subcategory(algebras):
                 return algebras.Mor(self, codomain)
-            from sage.categories.homset import Hom as SageHom
-            return SageHom(self, codomain, category)
+            return _category_homset(category, self, codomain)
 
         def _Hom_(self, codomain, category=None):
             if category is not None and not category.is_subcategory(
@@ -335,6 +346,15 @@ class FramedAlgebras(OwnedCategoryOverBaseRing):
         return [Algebras(self.base_ring())]
 
     class ParentMethods:
+        def cardinality(self):
+            base_cardinality = self.base_ring().cardinality()
+            generator_cardinality = self.algebra_generating_set().cardinality()
+            if generator_cardinality.is_countable():
+                if base_cardinality.is_finite() or base_cardinality.is_countable():
+                    return aleph0
+                return base_cardinality
+            return super().cardinality()
+
         def algebra_generating_set(self):
             return self._preamble_algebra_generating_set
 
@@ -454,7 +474,7 @@ class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
         ]
 
     class ParentMethods:
-        def _algebra_homset(self, hom_family, codomain):
+        def algebra_homset(self, hom_family, codomain):
             return PresentedAlgebraHomset(hom_family, self, codomain)
 
         def presentation_ring(self):
@@ -491,11 +511,7 @@ class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
             return self._preamble_lift_to_presentation(element)
 
         def base_change(self, ring_map):
-            operation = getattr(
-                self,
-                "_preamble_base_change_selected_presentation",
-                None,
-            )
+            operation = self.__dict__.get("_preamble_base_change_selected_presentation")
             if operation is None:
                 raise NotImplementedError(
                     "this selected algebra presentation has no represented base-change backend"
@@ -655,7 +671,7 @@ class AlgebraMorphism(Morphism):
                 )
 
             labels = domain.module_generating_set()
-            size = cardinal(labels.cardinality())
+            size = labels.cardinality()
             try:
                 finite = size.is_finite()
             except NotImplementedError:
@@ -678,11 +694,12 @@ class AlgebraMorphism(Morphism):
                         )
             self._element_function = images
             if framed_domain:
-                algebra_labels = tuple(domain.algebra_generating_set())
-                self._generator_images = {
-                    label: codomain(images(domain.algebra_generator(label)))
-                    for label in algebra_labels
-                }
+                algebra_labels = domain.algebra_generating_set()
+                self._generator_images = indexed_family(
+                    algebra_labels,
+                    lambda label: codomain(images(domain.algebra_generator(label))),
+                    name="Algebra-morphism generator-image family",
+                )
             else:
                 self._generator_images = None
             return
@@ -690,11 +707,12 @@ class AlgebraMorphism(Morphism):
             if images.domain() is domain and images.codomain() is codomain:
                 self._element_function = images
                 if framed_domain:
-                    labels = tuple(domain.algebra_generating_set())
-                    self._generator_images = {
-                        label: codomain(images(domain.algebra_generator(label)))
-                        for label in labels
-                    }
+                    labels = domain.algebra_generating_set()
+                    self._generator_images = indexed_family(
+                        labels,
+                        lambda label: codomain(images(domain.algebra_generator(label))),
+                        name="Algebra-morphism generator-image family",
+                    )
                 else:
                     self._generator_images = None
                 return
@@ -708,13 +726,14 @@ class AlgebraMorphism(Morphism):
                 )
             self._engine_morphism = images
             if framed_domain:
-                labels = tuple(domain.algebra_generating_set())
-                self._generator_images = {
-                    label: codomain(
+                labels = domain.algebra_generating_set()
+                self._generator_images = indexed_family(
+                    labels,
+                    lambda label: codomain(
                         images(engine_domain(domain.algebra_generator(label)))
-                    )
-                    for label in labels
-                }
+                    ),
+                    name="Algebra-morphism generator-image family",
+                )
             else:
                 self._generator_images = None
             return
@@ -723,25 +742,61 @@ class AlgebraMorphism(Morphism):
                 "an algebra morphism from an unframed domain must be supplied "
                 "as an exact engine ring morphism"
             )
-        labels = tuple(domain.algebra_generating_set())
-        if isinstance(images, dict):
+        labels = domain.algebra_generating_set()
+        if isinstance(images, IndexedFamily):
+            source_indices = images.index_set()
+            self._generator_images = indexed_family(
+                labels,
+                lambda label: codomain(images[source_indices(label)]),
+                name="Algebra-morphism generator-image family",
+            )
+        elif isinstance(images, dict):
+            if not labels.cardinality().is_finite():
+                raise TypeError(
+                    "dictionary algebra-generator syntax requires a finite framing; "
+                    "use a callable or indexed family for an infinite framing"
+                )
             missing = [label for label in labels if label not in images]
             if missing:
                 raise ValueError(f"algebra-generator assignment omits {missing}")
-            generator_images = tuple(images[label] for label in labels)
+            self._generator_images = indexed_family(
+                labels,
+                lambda label: codomain(images[label]),
+                name="Algebra-morphism generator-image family",
+            )
         elif isinstance(images, (tuple, list)):
-            generator_images = tuple(images)
-            if len(generator_images) != len(labels):
+            size = labels.cardinality()
+            if not size.is_finite():
+                raise TypeError(
+                    "sequence algebra-generator syntax requires a finite framing; "
+                    "use a callable or indexed family for an infinite framing"
+                )
+            values = tuple(images)
+            if len(values) != int(size.finite_value()):
                 raise ValueError(
                     "the number of algebra-generator images must equal the framing size"
                 )
+            try:
+                labels.rank(labels.unrank(0)) if values else None
+            except AttributeError as error:
+                raise TypeError(
+                    "sequence algebra-generator syntax requires a ranked framing"
+                ) from error
+            self._generator_images = indexed_family(
+                labels,
+                lambda label: codomain(values[int(labels.rank(label))]),
+                name="Algebra-morphism generator-image family",
+            )
         elif callable(images):
-            generator_images = tuple(images(label) for label in labels)
+            self._generator_images = indexed_family(
+                labels,
+                lambda label: codomain(images(label)),
+                name="Algebra-morphism generator-image family",
+            )
         else:
             raise TypeError(
                 "an algebra morphism is specified on the algebra generating set"
             )
-        self._generator_images = dict(zip(labels, generator_images, strict=True))
 
         if engine_domain not in SageRings() or engine_codomain not in SageRings():
             raise NotImplementedError(
@@ -784,8 +839,15 @@ class AlgebraMorphism(Morphism):
             )
         return SetMorphism(
             Sets().Mor(self.domain().algebra_generating_set(), self.codomain()),
-            self._generator_images.__getitem__,
+            self._generator_images.value,
         )
+
+    def algebra_generator_images(self):
+        if self._generator_images is None:
+            raise NotImplementedError(
+                "an unframed algebra domain has no selected generator-image family"
+            )
+        return self._generator_images
 
     def _richcmp_(self, other, op):
         r"""Decide equality from the source's chosen algebra generating set.
@@ -806,11 +868,9 @@ class AlgebraMorphism(Morphism):
             raise NotImplementedError(
                 "algebra-morphism equality requires a chosen algebra generating set"
             )
-        equal = all(
-            self(domain.algebra_generator(label))
-            == other(domain.algebra_generator(label))
-            for label in domain.algebra_generating_set()
-        )
+        equal = self.algebra_generator_images() == other.algebra_generator_images()
+        if equal is Unknown:
+            return Unknown
         return equal if op == op_EQ else not equal
 
     def __mul__(self, other):
@@ -824,18 +884,12 @@ class AlgebraMorphism(Morphism):
             return algebra_homset(other.domain(), self.codomain())(composed_engine)
         if other.domain() in FramedAlgebras(other.domain().base_ring()):
             return algebra_homset(other.domain(), self.codomain())(
-                {
-                    label: self(other(other.domain().algebra_generator(label)))
-                    for label in other.domain().algebra_generating_set()
-                }
+                lambda label: self(other(other.domain().algebra_generator(label)))
             )
 
         if other.domain() in FramedModules(other.domain().base_ring()):
             module_map = module_homset(other.domain(), self.codomain())(
-                {
-                    label: self(other(other.domain().module_generator(label)))
-                    for label in other.domain().module_generating_set()
-                }
+                lambda label: self(other(other.domain().module_generator(label)))
             )
             return algebra_homset(other.domain(), self.codomain())(module_map)
         return algebra_homset(other.domain(), self.codomain())(
@@ -857,23 +911,43 @@ class PresentedAlgebraMorphism(Morphism):
     def __init__(self, parent, images) -> None:
         Morphism.__init__(self, parent)
         domain = self.domain()
-        labels = tuple(domain.algebra_generating_set())
-        if isinstance(images, dict):
+        labels = domain.algebra_generating_set()
+        size = labels.cardinality()
+        if not size.is_finite():
+            raise ValueError("a chosen finite algebra presentation must have a finite framing")
+        if isinstance(images, IndexedFamily):
+            source_indices = images.index_set()
+            selected = indexed_family(
+                labels,
+                lambda label: self.codomain()(images[source_indices(label)]),
+                name="Presented-algebra morphism generator-image family",
+            )
+        elif isinstance(images, dict):
             missing = [label for label in labels if label not in images]
             if missing:
                 raise ValueError(f"algebra-generator assignment omits {missing}")
-            selected = {label: self.codomain()(images[label]) for label in labels}
+            selected = indexed_family(
+                labels,
+                lambda label: self.codomain()(images[label]),
+                name="Presented-algebra morphism generator-image family",
+            )
         elif isinstance(images, (tuple, list)):
-            if len(images) != len(labels):
+            values = tuple(images)
+            if len(values) != int(size.finite_value()):
                 raise ValueError(
                     "the number of algebra-generator images must equal the framing size"
                 )
-            selected = {
-                label: self.codomain()(image)
-                for label, image in zip(labels, images, strict=True)
-            }
+            selected = indexed_family(
+                labels,
+                lambda label: self.codomain()(values[int(labels.rank(label))]),
+                name="Presented-algebra morphism generator-image family",
+            )
         elif callable(images):
-            selected = {label: self.codomain()(images(label)) for label in labels}
+            selected = indexed_family(
+                labels,
+                lambda label: self.codomain()(images(label)),
+                name="Presented-algebra morphism generator-image family",
+            )
         else:
             raise TypeError(
                 "a presented-algebra morphism is specified on its algebra generators"
@@ -892,8 +966,11 @@ class PresentedAlgebraMorphism(Morphism):
     def algebra_generator_morphism(self):
         return SetMorphism(
             Sets().Mor(self.domain().algebra_generating_set(), self.codomain()),
-            self._generator_images.__getitem__,
+            self._generator_images.value,
         )
+
+    def algebra_generator_images(self):
+        return self._generator_images
 
     def _call_(self, element):
         return self._presentation_map(self.domain().lift_to_presentation(element))
@@ -901,16 +978,34 @@ class PresentedAlgebraMorphism(Morphism):
     def __call__(self, element):
         return self._call_(element)
 
+    def _richcmp_(self, other, op):
+        r"""Decide equality on the chosen algebra generators of the source.
+
+        A morphism out of a presented algebra is determined by the images of
+        those generators: its map from the presentation algebra is determined
+        there, and the quotient projection is surjective.
+        """
+        from sage.structure.richcmp import op_EQ, op_NE
+
+        if op not in (op_EQ, op_NE):
+            return NotImplemented
+        if (
+            not isinstance(other, PresentedAlgebraMorphism)
+            or other.parent() is not self.parent()
+        ):
+            return op == op_NE
+        if self is other:
+            return op == op_EQ
+        equal = self._generator_images == other._generator_images
+        return equal if op == op_EQ else not equal
+
     def __mul__(self, other):
         if other.codomain() is not self.domain():
             return NotImplemented
         if other.domain() not in FramedAlgebras(other.domain().base_ring()):
             return NotImplemented
         return algebra_homset(other.domain(), self.codomain())(
-            {
-                label: self(other(other.domain().algebra_generator(label)))
-                for label in other.domain().algebra_generating_set()
-            }
+            lambda label: self(other(other.domain().algebra_generator(label)))
         )
 
 
@@ -1054,7 +1149,7 @@ class _OwnedAlgebraParent(_OwnedRingParent):
 
 
         selected_labels = self._preamble_algebra_generating_set
-        label_size = cardinal(selected_labels.cardinality())
+        label_size = selected_labels.cardinality()
         if not label_size.is_finite():
             raise TypeError(
                 "an engine-backed framed algebra requires a finite backend generator set"
@@ -1068,7 +1163,7 @@ class _OwnedAlgebraParent(_OwnedRingParent):
             if hasattr(generator_values, "index_set") and callable(
                 getattr(generator_values, "value", None)
             ):
-                if cardinal(generator_values.cardinality()) != label_size:
+                if generator_values.cardinality() != label_size:
                     raise ValueError(
                         "the number of algebra-generator values must equal the framing size"
                     )
@@ -1186,7 +1281,7 @@ def _unit_from_multiplication(multiplication):
     module = multiplication.codomain()
     tensor_square = multiplication.domain()
     labels = module.module_generating_set()
-    size = cardinal(labels.cardinality())
+    size = labels.cardinality()
     if not size.is_finite():
         raise TypeError("a unit is recovered from a finite module generating set")
     ring = module.base_ring()
@@ -1334,6 +1429,11 @@ def _engine_algebra_morphism_from_generator_images(
         raise NotImplementedError(
             "this algebra morphism has no native Sage ring realization"
         )
+    labels = domain.algebra_generating_set()
+    if not labels.cardinality().is_finite():
+        raise NotImplementedError(
+            "the private Sage algebra-morphism realization requires a finite generator framing"
+        )
 
     base = domain.base_ring()
     engine_base = _engine_ring(base)
@@ -1374,7 +1474,7 @@ def _engine_algebra_morphism_from_generator_images(
     return _engine_morphism_from_generator_images(
         engine_domain,
         engine_codomain,
-        [engine_generator_images[label] for label in domain.algebra_generating_set()],
+        [engine_generator_images[label] for label in labels],
         base_map,
     )
 
@@ -1419,6 +1519,10 @@ def finite_algebra_generators(algebra):
     if algebra not in FramedAlgebras(algebra.algebra_base_ring()):
         raise NotImplementedError(
             f"{algebra} carries no chosen finite algebra generating set"
+        )
+    if not algebra.algebra_generating_set().cardinality().is_finite():
+        raise NotImplementedError(
+            f"{algebra} has an infinite chosen algebra generating set"
         )
     return tuple(algebra.algebra_generators())
 

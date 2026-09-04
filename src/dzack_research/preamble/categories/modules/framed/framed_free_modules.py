@@ -18,6 +18,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     OwnedRings,
     _engine_element,
+    _engine_numeral,
     _engine_ring,
     _owned_ring,
 )
@@ -56,7 +57,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.sets.cardinals import (
     Cardinalities,
-    cardinal,
 )
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 
@@ -94,7 +94,7 @@ def _finitely_generated_free_placement(ring, module_generating_set):
     r"""Return the owned categories of ``R^(S)``: finitely generated exactly when ``S`` is finite."""
 
     categories = [FramedFreeModules(ring)]
-    if cardinal(module_generating_set.cardinality()).is_finite():
+    if module_generating_set.cardinality().is_finite():
         categories.append(FinitelyGeneratedFreeModules(ring))
     return categories
 
@@ -231,7 +231,7 @@ class _SparseFreeModuleParent(Parent):
                 raise TypeError(
                     "coordinate sequence syntax requires an ordered enumerated framing"
                 )
-            cardinality = cardinal(labels.cardinality())
+            cardinality = labels.cardinality()
             if not cardinality.is_finite():
                 raise TypeError(
                     "coordinate sequence syntax requires a finite framing; "
@@ -245,7 +245,7 @@ class _SparseFreeModuleParent(Parent):
                 if coefficient != 0
             }
             return self.element_class(self, coefficients)
-        if cardinal(labels.cardinality()).is_finite() and int(cardinal(labels.cardinality()).finite_value()) == 1:
+        if labels.cardinality().is_finite() and int(labels.cardinality().finite_value()) == 1:
             try:
                 scalar = self.base_ring()(value)
             except (TypeError, ValueError):
@@ -294,6 +294,12 @@ class _SparseFreeModuleParent(Parent):
 
 class FramedFreeModules(OwnedCategoryOverBaseRing):
     r"""Free modules equipped with the canonical basis map."""
+
+    def an_object(self):
+        r"""The hyperbolic plane U, framed by its standard basis."""
+        from dzack_research.preamble.categories.lattices import Lattices
+
+        return Lattices(self.base_ring())("U")
 
     @classmethod
     def _repr_object_names(cls):
@@ -378,7 +384,7 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
             where the doctrine puts it.
             """
 
-            return cardinal(self.module_generating_set().cardinality())
+            return self.module_generating_set().cardinality()
 
         def is_finite_rank(self) -> bool:
             return self.rank().is_finite()
@@ -389,13 +395,17 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
         def cardinality(self):
             r"""Return ``|R^(S)|``: ``|R|^|S|`` for finite ``S``, else ``max(|R|, |S|)`` by finite support."""
 
-            scalars = cardinal(self.base_ring().cardinality())
-            labels = cardinal(self.module_generating_set().cardinality())
+            scalars = self.base_ring().cardinality()
+            labels = self.module_generating_set().cardinality()
             if labels.is_finite():
                 return scalars**labels
             if scalars == Cardinalities().one():
                 return Cardinalities().one()
             return Cardinalities().supremum(scalars, labels)
+
+        def is_finite(self) -> bool:
+            r"""Return whether the underlying free module is finite."""
+            return self.cardinality().is_finite()
 
         def base_change(self, ring_map):
             r"""Return ``S tensor_R M`` along the specified ring map ``R -> S``."""
@@ -423,7 +433,7 @@ def _known_finite_generator_family(module_generating_set):
     if isinstance(module_generating_set, (tuple, list, range)):
         return finite_ordered_set(module_generating_set)
     try:
-        size = cardinal(module_generating_set.cardinality())
+        size = module_generating_set.cardinality()
         finite = size.is_finite()
     except (AttributeError, NotImplementedError, TypeError, ValueError):
         finite = False
@@ -677,34 +687,17 @@ class FreeModuleGeneratorSet(Parent):
         return "{" + ", ".join(repr(generator) for generator in self) + "}"
 
 
-def _states_a_rank(labels) -> bool:
-    r"""Decide whether a free-module argument gives a rank rather than labels.
-
-    This is ingress: the argument is whatever the caller wrote.  A preamble
-    session's numeral is an owned integer, a ``.py`` caller writes a Python
-    ``int``, and engine code hands back Sage's own integers.  All three state
-    the rank \(n\), from which the construction builds the index set
-    \(\Delta[n-1]\).
-    """
-
-    return isinstance(labels, (int, Integer)) or labels in _own_ring(SageZZ)
-
-
 def _module_generating_set(labels):
-    if _states_a_rank(labels):
-        return Sets.Δ[int(labels) - 1]
+    integers = _own_ring(SageZZ)
+    parent = getattr(labels, "parent", lambda: None)()
+    if isinstance(labels, (int, Integer)) or parent is integers:
+        rank = int(_engine_numeral(SageZZ, labels))
+        if rank < 0:
+            raise ValueError("the rank of a free module is nonnegative")
+        return Sets.Δ[rank - 1]
     if isinstance(labels, (tuple, list, range)):
         return finite_ordered_set(labels)
     return labels
-
-
-@cached_function
-def _owned_finite_free_module(ring, rank):
-    r"""Return the owned rank-``rank`` free module over ``ring``."""
-    return _SparseFreeModuleParent(
-        ring,
-        Sets.Δ[int(rank) - 1],
-    )
 
 
 @cached_function
@@ -719,10 +712,6 @@ def FreeModule(base_ring, rank_or_index_set):
     ring = base_ring
     if ring not in OwnedRings():
         raise TypeError("FreeModule expects a preamble ring")
-    if _states_a_rank(rank_or_index_set):
-        if rank_or_index_set < 0:
-            raise ValueError("the rank of a free module is nonnegative")
-        return _owned_finite_free_module(ring, int(rank_or_index_set))
     return _owned_free_module_on(ring, _module_generating_set(rank_or_index_set))
 
 
@@ -791,9 +780,7 @@ def FreshFreeModuleOn(base_ring, module_generating_set):
 
 def BasedFreeModule(base_ring, rank_or_labels):
     r"""Return the selected based free module on a rank or explicit labels."""
-    if isinstance(rank_or_labels, (int, Integer)):
-        return FreeModule(base_ring, rank_or_labels)
-    return FreeModuleOn(base_ring, rank_or_labels)
+    return FreeModule(base_ring, rank_or_labels)
 
 
 @cached_function

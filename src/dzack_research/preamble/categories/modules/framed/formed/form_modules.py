@@ -16,8 +16,10 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _owned_ring,
 )
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    _category_homset,
     CategoricalHomset,
     HomCategoryConstruction,
+    category_packet,
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets as OwnedSets
 from dzack_research.preamble.refine import refine
@@ -61,8 +63,11 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyPresentedModules,
     Modules,
     ModulesWithChosenFinitePresentation,
+    restrict_scalars,
 )
-from dzack_research.preamble.categories.sets.cardinals import cardinal
+from dzack_research.preamble.categories.modules.pure.torsion_modules import (
+    FinitelyPresentedTorsionModules,
+)
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
 
 
@@ -93,6 +98,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 )
 
 
+@cached_function
 def _represented_value_module(formed_module):
     r"""Return the actual module object underlying a form's public value object.
 
@@ -108,6 +114,12 @@ def _represented_value_module(formed_module):
         return ring_as_module(ring)
     if value in Modules(ring):
         return value
+    if value in OwnedRings():
+        try:
+            scalar_map = OwnedRings().Mor(ring, value)(lambda scalar: value(scalar))
+            return restrict_scalars(ring_as_module(value), scalar_map)
+        except (TypeError, ValueError, NotImplementedError):
+            pass
     raise TypeError(
         f"the form value object {value} has no represented {ring}-module structure"
     )
@@ -117,6 +129,14 @@ def _value_as_module_element(formed_module, value):
     represented = _represented_value_module(formed_module)
     if represented is formed_module.value_module():
         return represented(value)
+    extension = getattr(represented, "module_over_extension", lambda: None)()
+    if extension is not None:
+        unit_label = extension.module_generating_set().unrank(0)
+        return represented.wrap(
+            extension.linear_combination(
+                {unit_label: formed_module.value_module()(value)}
+            )
+        )
     return represented.linear_combination(
         {0: formed_module.base_ring()(value)}
     )
@@ -126,6 +146,16 @@ def _value_from_module_element(formed_module, element):
     represented = _represented_value_module(formed_module)
     if represented is formed_module.value_module():
         return represented(element)
+
+    extension = getattr(represented, "module_over_extension", lambda: None)()
+    if extension is not None:
+        restricted_element = represented(element)
+        coefficients = module_coefficients(
+            restricted_element.underlying_element(), extension
+        )
+        unit_label = extension.module_generating_set().unrank(0)
+        value_ring = formed_module.value_module()
+        return value_ring(coefficients.get(unit_label, value_ring.zero()))
 
     coefficients = module_coefficients(element, represented)
     ring = formed_module.base_ring()
@@ -165,6 +195,34 @@ class FormedModuleMorphism(Morphism):
     def value_morphism(self):
         return self._value_morphism
 
+    def is_injective(self) -> bool:
+        r"""Return whether the underlying module map is injective."""
+        domain = self.domain()
+        codomain = self.codomain()
+        unformed_domain = domain.unformed_module()
+        unformed_codomain = codomain.unformed_module()
+
+        if domain in FinitelyPresentedTorsionModules(domain.base_ring()):
+            images = []
+            for element in domain.elements():
+                image = self.module_morphism()(element)
+                if any(image == previous for previous in images):
+                    return False
+                images.append(image)
+            return True
+
+        if unformed_domain is not domain or unformed_codomain is not codomain:
+            unformed_morphism = (
+                codomain.forget_form_morphism()
+                * self.module_morphism()
+                * domain.equip_form_morphism()
+            )
+            return unformed_morphism.is_injective()
+
+        raise NotImplementedError(
+            "injectivity of this formed morphism has no represented unformed or finite-torsion decision procedure"
+        )
+
     def map_value(self, value):
         source_element = _value_as_module_element(self.domain(), value)
         return _value_from_module_element(
@@ -172,6 +230,13 @@ class FormedModuleMorphism(Morphism):
         )
 
     def _check_form_square(self) -> None:
+        source_values = _represented_value_module(self.domain())
+        if (
+            self.domain() is self.codomain()
+            and self.module_morphism() is module_homset(self.domain(), self.domain()).identity()
+            and self.value_morphism() is module_homset(source_values, source_values).identity()
+        ):
+            return
         source_form = self.domain().form()
         target_form = self.codomain().form()
         source_generators = tuple(self.domain().module_generators())
@@ -243,14 +308,11 @@ class FormedModuleMorphism(Morphism):
 
 
 class FormEmbedding(FormedModuleMorphism):
-    r"""A formed morphism declared to be a monomorphism."""
+    r"""A form-preserving morphism whose module map is a monomorphism."""
 
     def __init__(self, parent, module_morphism, value_morphism, *, quadratic: bool) -> None:
         FormedModuleMorphism.__init__(self, parent, module_morphism, value_morphism)
         self._quadratic = bool(quadratic)
-
-    def is_injective(self) -> bool:
-        return True
 
     def is_quadratic(self) -> bool:
         return self._quadratic
@@ -273,12 +335,16 @@ def form_embedding(domain, codomain, images, *, quadratic: bool | None = None) -
     values = _represented_value_module(domain)
     if _represented_value_module(codomain) is not values:
         raise TypeError("a form embedding keeps the value module")
-    return FormEmbedding(
+    embedding = FormEmbedding(
         formed_module_homset(domain, codomain),
         module_homset(domain, codomain)(images),
         module_homset(values, values).identity(),
         quadratic=quadratic,
     )
+    monos = category_packet(FormModules(domain.base_ring())).Monos().Of(domain, codomain)
+    if embedding not in monos:
+        raise ValueError("a form embedding requires an injective underlying module map")
+    return embedding
 
 
 class FormedModuleHomset(CategoricalHomset):
@@ -659,6 +725,12 @@ class FormedModules(OwnedParameterizedCategory):
 class FormModules(OwnedCategoryOverBaseRing):
     r"""Modules over ``R`` equipped with a form."""
 
+    def an_object(self):
+        r"""The hyperbolic plane U."""
+        from dzack_research.preamble.categories.lattices import Lattices
+
+        return Lattices(self.base_ring())("U")
+
     @classmethod
     def _repr_object_names(cls):
         return "form modules"
@@ -691,8 +763,7 @@ class FormModules(OwnedCategoryOverBaseRing):
         def Mor(self, codomain, category=None):
             if category is None and codomain in FormModules(self.base_ring()):
                 return formed_module_homset(self, codomain)
-            from sage.categories.homset import Hom as SageHom
-            return SageHom(self, codomain, category)
+            return _category_homset(category, self, codomain)
 
         def formed_hom(self, module_morphism, value_morphism):
             r"""Construct the general fixed-fiber formed morphism ``(f,h)``."""
@@ -864,6 +935,12 @@ class FormModules(OwnedCategoryOverBaseRing):
 
 
 class BilinearFormModules(OwnedCategoryOverBaseRing):
+    def an_object(self):
+        r"""The hyperbolic plane U, with its bilinear form."""
+        from dzack_research.preamble.categories.lattices import Lattices
+
+        return Lattices(self.base_ring())("U")
+
     @classmethod
     def _repr_object_names(cls):
         return "modules with a bilinear form"
@@ -875,6 +952,12 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
 
 
 class SymmetricBilinearFormModules(OwnedCategoryOverBaseRing):
+    def an_object(self):
+        r"""The hyperbolic plane U, whose form is symmetric."""
+        from dzack_research.preamble.categories.lattices import Lattices
+
+        return Lattices(self.base_ring())("U")
+
     @classmethod
     def _repr_object_names(cls):
         return "modules with a symmetric bilinear form"
@@ -1078,7 +1161,7 @@ def FormModule(form):
     module = form.module()
     base_ring = module.base_ring()
     labels = module.module_generating_set()
-    assert cardinal(labels.cardinality()).is_finite()
+    assert labels.cardinality().is_finite()
     if module in FramedFreeModules(base_ring):
         formed = FreshFreeModuleOn(base_ring, labels)
     elif module in ModulesWithChosenFinitePresentation(base_ring):
@@ -1188,7 +1271,7 @@ def _formed_module_from_pairing(pairing):
     ring = module.base_ring()
     if module in FramedFreeModules(ring):
         try:
-            finite = cardinal(module.module_generating_set().cardinality()).is_finite()
+            finite = module.module_generating_set().cardinality().is_finite()
         except AttributeError:
             finite = False
         if finite:

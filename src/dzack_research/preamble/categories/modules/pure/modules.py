@@ -666,6 +666,12 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
 class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
     r"""Finitely presented modules carrying one selected finite presentation."""
 
+    def an_object(self):
+        r"""The hyperbolic plane U, presented by its Gram matrix."""
+        from dzack_research.preamble.categories.lattices import Lattices
+
+        return Lattices(self.base_ring())("U")
+
     @classmethod
     def _repr_object_names(cls):
         return "modules with a chosen finite presentation"
@@ -800,6 +806,13 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
 
 
 class ProjectiveModules(OwnedCategoryOverBaseRing):
+    def an_object(self):
+        r"""The free module of rank one, which is projective."""
+        from dzack_research.preamble.categories.functors.free_forgetful import FreeModuleFunctor
+        from dzack_research.preamble.categories.sets.set_categories import finite_ordinal_set
+
+        return FreeModuleFunctor(self.base_ring())(finite_ordinal_set(1))
+
     @classmethod
     def _repr_object_names(cls):
         return "projective modules"
