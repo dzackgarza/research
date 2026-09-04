@@ -230,6 +230,15 @@ class OwnedFractionFieldQuotient(Parent):
             )
         return self._from_engine_element(value)
 
+    def __call__(self, value):
+        r"""Construct a class in ``K/R`` without Sage coercion discovery.
+
+        A session's rational is an element of the owned fraction field, which
+        Sage's coercion graph has never heard of, so asking it for a conversion
+        map fails before this parent's own constructor is reached.
+        """
+        return self._element_constructor_(value)
+
     def __contains__(self, value) -> bool:
         return isinstance(value, _FractionFieldQuotientElement) and value.parent() is self
 

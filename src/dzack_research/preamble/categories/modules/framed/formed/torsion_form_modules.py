@@ -73,10 +73,25 @@ def _linear_combination(value_module, coefficients, values):
     )
 
 
+def _relation_coefficients(relations):
+    r"""Return each chosen relation's coefficients, asked of the matrix itself.
+
+    A row of an owned matrix is an element of the dual module, not a sequence,
+    so the coefficients come from the matrix entries at the chosen labels.
+    """
+    parent = relations.parent()
+    return tuple(
+        tuple(
+            relations.matrix_entry(row_label, column_label)
+            for column_label in parent.column_index_set()
+        )
+        for row_label in parent.row_index_set()
+    )
+
+
 def _bilinear_descends(relations, gram, value_module) -> bool:
     rank = len(gram)
-    for relation in relations.rows():
-        row = tuple(relation)
+    for row in _relation_coefficients(relations):
         for j in range(rank):
             if _linear_combination(value_module, row, tuple(gram[i][j] for i in range(rank))) != value_module.zero():
                 return False
@@ -89,8 +104,7 @@ def _bilinear_descends(relations, gram, value_module) -> bool:
 def _quadratic_descends(relations, gram, value_module) -> bool:
     rank = len(gram)
     two = value_module.base_ring()(2)
-    for relation in relations.rows():
-        row = tuple(relation)
+    for row in _relation_coefficients(relations):
         # q(x+r)-q(x)-q(r) is the polar value 2*x^T G r.
         for j in range(rank):
             pairing = _linear_combination(
@@ -369,6 +383,31 @@ def _regenerate_form_on_generators(form, generators, *, quadratic: bool):
     return torsion_form_isometry(forward, inverse, quadratic=quadratic)
 
 
+def _prime_indexed_generators(generators_by_prime):
+    r"""Return the family \(p\mapsto\) chosen Jordan generators at \(p\).
+
+    The primes are the index set and the chosen generators the value there.
+    Two primes may carry equal-looking generating families, and the generators
+    at one prime are an ordered choice, so both levels are families.
+    """
+    from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+        finite_ordered_set,
+    )
+    from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+    from dzack_research.preamble.categories.sets.set_categories import Sets
+
+    def generators_at(prime):
+        chosen = generators_by_prime[prime]
+        return indexed_family(
+            Sets.Δ[len(chosen) - 1],
+            lambda position, chosen=chosen: chosen[int(position)],
+            name="Jordan generators",
+        )
+
+    primes = finite_ordered_set(tuple(sorted(generators_by_prime)))
+    return indexed_family(primes, generators_at, name="p-adic Jordan generators")
+
+
 def _p_adic_jordan_decomposition(form, *, quadratic: bool):
     r"""Return prime-indexed Jordan generators as elements of ``form``."""
     if not quadratic:
@@ -394,7 +433,7 @@ def _p_adic_jordan_decomposition(form, *, quadratic: bool):
             )
             generators.append(normalization.inverse()(normalized_element))
         result[normalized.base_ring()._from_engine_element(SageZZ(prime))] = tuple(generators)
-    return result
+    return _prime_indexed_generators(result)
 
 
 def _bilinear_p_adic_jordan_decomposition(form):
@@ -498,7 +537,7 @@ def _bilinear_p_adic_jordan_decomposition(form):
             )
             jordan_generators.append(normalization.inverse()(normalized_element))
         result[prime] = tuple(jordan_generators)
-    return result
+    return _prime_indexed_generators(result)
 
 
 def p_adic_jordan_module_generators(form, *, quadratic: bool):
@@ -506,7 +545,7 @@ def p_adic_jordan_module_generators(form, *, quadratic: bool):
     decomposition = _p_adic_jordan_decomposition(form, quadratic=quadratic)
     return tuple(
         generator
-        for prime in sorted(decomposition)
+        for prime in decomposition.index_set()
         for generator in decomposition[prime]
     )
 

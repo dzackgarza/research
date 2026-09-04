@@ -58,7 +58,14 @@ class DiscriminantModules(OwnedCategoryOverBaseRing):
             return _all_discriminant_subgroups(self)
 
         def primary_components(self):
-            r"""Return the canonical ``p``-primary subgroups indexed by primes dividing ``|A|``."""
+            r"""Return the family \(p\mapsto A_p\) over the primes dividing \(|A|\)."""
+            from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+                finite_ordered_set,
+            )
+            from dzack_research.preamble.categories.sets.indexed_families import (
+                indexed_family,
+            )
+
             components = {}
             smith_generators = tuple(self.smith_form_module_generators())
             invariants = tuple(abs(n) for n in self.invariant_factors())
@@ -78,7 +85,15 @@ class DiscriminantModules(OwnedCategoryOverBaseRing):
                             self.scalar_multiple(coefficient, generator)
                         )
                 components[prime] = self.subgroup_on(generators)
-            return components
+            # The primes are the index set, and A_p the value there: two primes
+            # may carry isomorphic subgroups, which a set of subgroups would
+            # collapse.
+            index = finite_ordered_set(tuple(primes))
+            return indexed_family(
+                index,
+                lambda prime: components[prime],
+                name=f"Primary components of {self}",
+            )
 
         def dual_lattice_lift(self, element):
             r"""Return a representative of ``element`` in the selected metric dual ``L^#``.
