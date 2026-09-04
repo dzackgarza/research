@@ -409,10 +409,14 @@ class MatrixAlgebras(OwnedCategoryOverBaseRing):
     r"""Finite matrix endomorphism Hom objects with their canonical algebra structure."""
 
     def an_object(self):
-        r"""The two-by-two matrix algebra over the base ring."""
-        from dzack_research.preamble.rings import MatrixSpace
+        r"""``End_R(Free_R([2]))``, the two-by-two matrix algebra."""
+        from dzack_research.preamble.categories.functors.free_forgetful import FreeModuleFunctor
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
+        from dzack_research.preamble.categories.sets.set_categories import finite_ordinal_set
 
-        return MatrixSpace(self.base_ring(), 2)
+        ring = self.base_ring()
+        plane = FreeModuleFunctor(ring)(finite_ordinal_set(2))
+        return Modules(ring).Mor(plane, plane)
 
     @classmethod
     def _repr_object_names(cls):

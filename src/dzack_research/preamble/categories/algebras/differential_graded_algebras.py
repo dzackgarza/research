@@ -20,7 +20,6 @@ from dzack_research.preamble.categories.algebras.graded_commutative_algebras imp
 from dzack_research.preamble.categories.modules.cochain_complexes import CochainComplexes
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 from dzack_research.preamble.categories.modules.pure.modules import FramedModules
-from dzack_research.preamble.categories.sets.cardinals import cardinal
 
 
 class DegreewiseLinearMorphism(Morphism):
@@ -62,7 +61,7 @@ class DegreewiseLinearMorphism(Morphism):
                 "this differential component has no selected framed-module backend"
             )
         labels = source.module_generating_set()
-        if not cardinal(labels.cardinality()).is_finite():
+        if not labels.cardinality().is_finite():
             raise NotImplementedError(
                 "this differential component has no finite framed-module backend"
             )
@@ -82,6 +81,14 @@ class DifferentialComponentMorphism(DegreewiseLinearMorphism):
 
 
 class DifferentialGradedAlgebras(OwnedCategoryOverBaseRing):
+    def an_object(self):
+        r"""That de Rham algebra, whose differential makes it a DGA."""
+        from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
+        from dzack_research.preamble.categories.algebras.de_rham_algebras import DeRhamAlgebra
+
+        ring = self.base_ring()
+        return DeRhamAlgebra(CommutativeAlgebras(ring).an_object())
+
     @classmethod
     def _repr_object_names(cls):
         return "differential graded algebras"
@@ -128,6 +135,14 @@ class DifferentialGradedAlgebras(OwnedCategoryOverBaseRing):
 
 
 class CommutativeDifferentialGradedAlgebras(OwnedCategoryOverBaseRing):
+    def an_object(self):
+        r"""That de Rham algebra, which is graded-commutative."""
+        from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
+        from dzack_research.preamble.categories.algebras.de_rham_algebras import DeRhamAlgebra
+
+        ring = self.base_ring()
+        return DeRhamAlgebra(CommutativeAlgebras(ring).an_object())
+
     @classmethod
     def _repr_object_names(cls):
         return "commutative differential graded algebras"
@@ -141,6 +156,14 @@ class CommutativeDifferentialGradedAlgebras(OwnedCategoryOverBaseRing):
 
 
 class StrictlyCommutativeDifferentialGradedAlgebras(OwnedCategoryOverBaseRing):
+    def an_object(self):
+        r"""That de Rham algebra, strictly graded-commutative."""
+        from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
+        from dzack_research.preamble.categories.algebras.de_rham_algebras import DeRhamAlgebra
+
+        ring = self.base_ring()
+        return DeRhamAlgebra(CommutativeAlgebras(ring).an_object())
+
     @classmethod
     def _repr_object_names(cls):
         return "strictly commutative differential graded algebras"

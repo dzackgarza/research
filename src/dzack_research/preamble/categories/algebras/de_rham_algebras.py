@@ -21,6 +21,14 @@ from dzack_research.preamble.categories.algebras.framed_free_algebras import Alt
 
 
 class DeRhamAlgebras(OwnedCategoryOverBaseRing):
+    def an_object(self):
+        r"""The algebraic de Rham algebra of the polynomial algebra on one generator."""
+        from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
+        from dzack_research.preamble.categories.algebras.de_rham_algebras import DeRhamAlgebra
+
+        ring = self.base_ring()
+        return DeRhamAlgebra(CommutativeAlgebras(ring).an_object())
+
     @classmethod
     def _repr_object_names(cls):
         return "algebraic de Rham algebras"

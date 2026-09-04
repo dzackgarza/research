@@ -12,6 +12,12 @@ from dzack_research.preamble.categories.schemes.schemes import (
 class Varieties(OwnedCategoryOverBaseRing):
     r"""Integral separated schemes of finite type over the stated base."""
 
+    def an_object(self):
+        r"""The affine line over the base ring."""
+        from dzack_research.preamble.categories.schemes.schemes import AffineSpace, ProjectiveSpace, scheme_product
+
+        return AffineSpace(1, self.base_ring())
+
     def _repr_object_names(self):
         return f"varieties over {self.base_ring()}"
 
@@ -25,6 +31,12 @@ class Varieties(OwnedCategoryOverBaseRing):
 
 
 class Curves(OwnedCategoryOverBaseRing):
+    def an_object(self):
+        r"""The projective line, of relative dimension one."""
+        from dzack_research.preamble.categories.schemes.schemes import AffineSpace, ProjectiveSpace, scheme_product
+
+        return ProjectiveSpace(1, self.base_ring())
+
     def _repr_object_names(self):
         return f"curves over {self.base_ring()}"
 
@@ -37,6 +49,12 @@ class Curves(OwnedCategoryOverBaseRing):
 
 
 class Surfaces(OwnedCategoryOverBaseRing):
+    def an_object(self):
+        r"""The projective plane, of relative dimension two."""
+        from dzack_research.preamble.categories.schemes.schemes import AffineSpace, ProjectiveSpace, scheme_product
+
+        return ProjectiveSpace(2, self.base_ring())
+
     def _repr_object_names(self):
         return f"surfaces over {self.base_ring()}"
 

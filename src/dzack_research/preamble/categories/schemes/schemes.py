@@ -572,6 +572,12 @@ class SeparatedSchemes(_SchemePropertyCategory):
         def is_separated(self):
             return True
 
+    def an_object(self):
+        r"""The affine line, separated because it is affine."""
+        from dzack_research.preamble.categories.schemes.schemes import AffineSpace, ProjectiveSpace, scheme_product
+
+        return AffineSpace(1, self.base_ring())
+
 
 class FiniteTypeSchemes(_SchemePropertyCategory):
     property_name = "finite-type"
@@ -612,6 +618,12 @@ class NormalSchemes(_SchemePropertyCategory):
         def is_normal(self):
             return True
 
+    def an_object(self):
+        r"""The affine line, normal because its coordinate algebra is."""
+        from dzack_research.preamble.categories.schemes.schemes import AffineSpace, ProjectiveSpace, scheme_product
+
+        return AffineSpace(1, self.base_ring())
+
 
 class SmoothSchemes(_SchemePropertyCategory):
     property_name = "smooth"
@@ -619,6 +631,12 @@ class SmoothSchemes(_SchemePropertyCategory):
     class ParentMethods:
         def is_smooth(self):
             return True
+
+    def an_object(self):
+        r"""The affine line, which is smooth over the base ring."""
+        from dzack_research.preamble.categories.schemes.schemes import AffineSpace, ProjectiveSpace, scheme_product
+
+        return AffineSpace(1, self.base_ring())
 
 
 class AffineSchemes(_SchemePropertyCategory):
@@ -718,6 +736,12 @@ class QuasiAffineSchemes(_SchemePropertyCategory):
 class QuasiProjectiveSchemes(_SchemePropertyCategory):
     property_name = "quasi-projective"
 
+    def an_object(self):
+        r"""The projective line, which is projective."""
+        from dzack_research.preamble.categories.schemes.schemes import AffineSpace, ProjectiveSpace, scheme_product
+
+        return ProjectiveSpace(1, self.base_ring())
+
     def super_categories(self):
         return [Schemes(self.base_ring()), SeparatedSchemes(self.base_ring())]
 
@@ -728,6 +752,12 @@ class QuasiProjectiveSchemes(_SchemePropertyCategory):
 
 class ProjectiveSchemes(_SchemePropertyCategory):
     property_name = "projective"
+
+    def an_object(self):
+        r"""The projective line."""
+        from dzack_research.preamble.categories.schemes.schemes import AffineSpace, ProjectiveSpace, scheme_product
+
+        return ProjectiveSpace(1, self.base_ring())
 
     def super_categories(self):
         return [
@@ -751,6 +781,12 @@ class ProjectiveSchemes(_SchemePropertyCategory):
 
 
 class AffineSpaces(OwnedCategoryOverBaseRing):
+    def an_object(self):
+        r"""The affine line over the base ring."""
+        from dzack_research.preamble.categories.schemes.schemes import AffineSpace, ProjectiveSpace, scheme_product
+
+        return AffineSpace(1, self.base_ring())
+
     def _repr_object_names(self):
         return f"affine spaces over {self.base_ring()}"
 
@@ -787,6 +823,12 @@ class AffineSpaces(OwnedCategoryOverBaseRing):
 
 
 class ProjectiveSpaces(OwnedCategoryOverBaseRing):
+    def an_object(self):
+        r"""The projective line over the base ring."""
+        from dzack_research.preamble.categories.schemes.schemes import AffineSpace, ProjectiveSpace, scheme_product
+
+        return ProjectiveSpace(1, self.base_ring())
+
     def _repr_object_names(self):
         return f"projective spaces over {self.base_ring()}"
 
@@ -825,6 +867,13 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
 class ProductSchemes(OwnedCategoryOverBaseRing):
     r"""Scheme products equipped with their stated factors and projections."""
 
+    def an_object(self):
+        r"""The affine plane as a product of two affine lines."""
+        from dzack_research.preamble.categories.schemes.schemes import AffineSpace, ProjectiveSpace, scheme_product
+
+        ring = self.base_ring()
+        return scheme_product(AffineSpace(1, ring), AffineSpace(1, ring))
+
     def _repr_object_names(self):
         return f"scheme products over {self.base_ring()}"
 
@@ -857,6 +906,13 @@ class ProductSchemes(OwnedCategoryOverBaseRing):
 
 class ProductProjectiveSpaces(OwnedCategoryOverBaseRing):
     r"""Finite products of projective spaces over one base ring."""
+
+    def an_object(self):
+        r"""The product of two projective lines."""
+        from dzack_research.preamble.categories.schemes.schemes import AffineSpace, ProjectiveSpace, scheme_product
+
+        ring = self.base_ring()
+        return scheme_product(ProjectiveSpace(1, ring), ProjectiveSpace(1, ring))
 
     def _repr_object_names(self):
         return f"products of projective spaces over {self.base_ring()}"
@@ -1211,6 +1267,15 @@ def scheme_fiber_product(left_map, right_map):
 class ClosedSubschemes(OwnedCategoryOverBaseRing):
     r"""Closed subschemes equipped with their ambient closed immersion."""
 
+    def an_object(self):
+        r"""The coordinate axis cut out of the affine plane."""
+        from dzack_research.preamble.categories.schemes.schemes import AffineSpace, ProjectiveSpace, scheme_product
+
+        ring = self.base_ring()
+        plane = AffineSpace(2, ring)
+        first, _ = plane.coordinate_algebra().algebra_generators()
+        return plane.closed_subscheme(first)
+
     def _repr_object_names(self):
         return f"closed subschemes over {self.base_ring()}"
 
@@ -1269,6 +1334,15 @@ class ClosedSubschemes(OwnedCategoryOverBaseRing):
 
 
 class EquationDefinedClosedSubschemes(OwnedCategoryOverBaseRing):
+    def an_object(self):
+        r"""The coordinate axis, cut out by one equation."""
+        from dzack_research.preamble.categories.schemes.schemes import AffineSpace, ProjectiveSpace, scheme_product
+
+        ring = self.base_ring()
+        plane = AffineSpace(2, ring)
+        first, _ = plane.coordinate_algebra().algebra_generators()
+        return plane.closed_subscheme(first)
+
     def _repr_object_names(self):
         return f"equation-defined closed subschemes over {self.base_ring()}"
 

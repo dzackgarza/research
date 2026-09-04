@@ -34,6 +34,14 @@ from dzack_research.preamble.categories.modules.pure.modules import (
 class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
     r"""Selected modules ``Omega^1_{A/R}`` for the coefficient algebra ``A``."""
 
+    def an_object(self):
+        r"""``Omega^1_{A/R}`` for the coefficient algebra ``A`` this category is over.
+
+        An object here is a module over ``A``, so the differentials are taken of
+        the parameter itself rather than of an algebra built above it.
+        """
+        return KahlerDifferentials(self.base_ring())
+
     @classmethod
     def _repr_object_names(cls):
         return "Kähler differential modules"
@@ -147,7 +155,7 @@ def KahlerDifferentials(algebra):
 
 
     free_differentials = BasedFreeModule(algebra, differential_labels)
-    if relations.cardinality():
+    if relations.cardinality() != 0:
         relation_indices = relations.index_set()
         relation_module = BasedFreeModule(algebra, relation_indices)
         presentation_engine = _engine_ring(presentation)

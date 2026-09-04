@@ -28,6 +28,13 @@ class CohomologyAlgebraHomCategoryConstruction(HomCategoryConstruction):
 class CohomologyAlgebras(OwnedCategoryOverBaseRing):
     r"""Graded algebras ``H^*(B)`` represented from a DGA ``B``."""
 
+    def an_object(self):
+        r"""The cohomology of the de Rham algebra of the polynomial algebra."""
+        from dzack_research.preamble.categories.algebras.cohomology_algebras import CohomologyAlgebra
+        from dzack_research.preamble.categories.algebras.de_rham_algebras import DeRhamAlgebras
+
+        return CohomologyAlgebra(DeRhamAlgebras(self.base_ring()).an_object())
+
     @classmethod
     def _repr_object_names(cls):
         return "cohomology algebras"
