@@ -144,7 +144,7 @@ class ConeMorphism(Morphism):
     def __mul__(self, other):
         if other.codomain() is not self.domain():
             return NotImplemented
-        return self.parent().cone_category().hom(other.domain(), self.codomain())(
+        return self.parent().cone_category().mor(other.domain(), self.codomain())(
             self.apex_map() * other.apex_map()
         )
 
@@ -170,7 +170,7 @@ class CoconeMorphism(Morphism):
     def __mul__(self, other):
         if other.codomain() is not self.domain():
             return NotImplemented
-        return self.parent().cocone_category().hom(other.domain(), self.codomain())(
+        return self.parent().cocone_category().mor(other.domain(), self.codomain())(
             self.apex_map() * other.apex_map()
         )
 
@@ -233,12 +233,12 @@ class ConeCategory(Category):
         transformation = NaturalTransformation(constant, self.diagram(), components)
         return ConeObject(self, apex, transformation)
 
-    def hom(self, domain, codomain):
+    def mor(self, domain, codomain):
         if domain not in self or codomain not in self:
             raise TypeError("a cone Hom requires two cones over the same diagram")
         return ConeHomset(self, domain, codomain)
 
-    Hom = hom
+    Mor = mor
 
 
 class CoconeCategory(Category):
@@ -271,12 +271,12 @@ class CoconeCategory(Category):
         transformation = NaturalTransformation(self.diagram(), constant, components)
         return CoconeObject(self, apex, transformation)
 
-    def hom(self, domain, codomain):
+    def mor(self, domain, codomain):
         if domain not in self or codomain not in self:
             raise TypeError("a cocone Hom requires two cocones under the same diagram")
         return CoconeHomset(self, domain, codomain)
 
-    Hom = hom
+    Mor = mor
 
 
 class ProductConeCategory(ConeCategory):

@@ -886,6 +886,20 @@ class GeneralLocalizationRingParent(Parent):
     def __call__(self, value):
         return self._element_constructor_(value)
 
+    def _from_engine_element(self, value):
+        engine = self._preamble_engine_ring
+        if engine is None:
+            raise NotImplementedError(
+                "this localization has no selected computation realization"
+            )
+        represented = engine(value)
+        source = self.localization_source()
+        return self.fraction(
+            source._from_engine_element(_engine_ring(source)(represented.numerator())),
+            source._from_engine_element(_engine_ring(source)(represented.denominator())),
+            _trusted_denominator=True,
+        )
+
     def _engine_element(self, value):
         engine = self._preamble_engine_ring
         if engine is None:

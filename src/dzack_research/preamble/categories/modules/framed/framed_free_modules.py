@@ -204,6 +204,25 @@ class _SparseFreeModuleParent(Parent):
         labels = self.module_generating_set()
         from dzack_research.preamble.categories.sets.cardinals import cardinal
 
+        if isinstance(value, (tuple, list)):
+            if not hasattr(labels, "unrank"):
+                raise TypeError(
+                    "coordinate sequence syntax requires an ordered enumerated framing"
+                )
+            cardinality = cardinal(labels.cardinality())
+            if not cardinality.is_finite():
+                raise TypeError(
+                    "coordinate sequence syntax requires a finite framing; "
+                    "use label-keyed finite support for an infinite free module"
+                )
+            if len(value) != int(cardinality.finite_value()):
+                raise ValueError("coordinate tuple has the wrong length")
+            coefficients = {
+                labels.unrank(position): coefficient
+                for position, coefficient in enumerate(value)
+                if coefficient != 0
+            }
+            return self.element_class(self, coefficients)
         if cardinal(labels.cardinality()).is_finite() and int(cardinal(labels.cardinality()).finite_value()) == 1:
             try:
                 scalar = self.base_ring()(value)
@@ -214,30 +233,6 @@ class _SparseFreeModuleParent(Parent):
                     self,
                     {labels.unrank(0): scalar} if scalar != self.base_ring().zero() else {},
                 )
-        if isinstance(value, (tuple, list)):
-            if not hasattr(labels, "unrank"):
-                raise TypeError(
-                    "coordinate sequence syntax requires an ordered enumerated framing"
-                )
-            cardinality = cardinal(labels.cardinality())
-            if not cardinality.is_finite():
-                raise TypeError(
-                    "coordinate sequence syntax requires a finite framing; "
-                    "use finitely supported label-keyed coordinates"
-                )
-            if len(value) != int(cardinality.finite_value()):
-                raise ValueError("coordinate tuple has the wrong length")
-            coefficients = {}
-            for position, coefficient in enumerate(value):
-                try:
-                    label = labels.unrank(position)
-                except (IndexError, StopIteration) as error:
-                    raise ValueError(
-                        "coordinate tuple exceeds the displayed generating set"
-                    ) from error
-                if coefficient != 0:
-                    coefficients[label] = coefficient
-            return self.element_class(self, coefficients)
         raise TypeError(f"{value!r} does not describe an element of {self}")
 
     def zero(self):

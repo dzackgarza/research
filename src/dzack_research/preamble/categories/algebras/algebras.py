@@ -113,7 +113,7 @@ class Algebras(OwnedCategoryOverBaseRing):
             Modules(self.base_ring()),
         ]
 
-    def homset(self, domain, codomain):
+    def mor(self, domain, codomain):
         r"""Return the unique Hom-set ``Hom_{R-Alg}(domain,codomain)``."""
         if domain not in self or codomain not in self:
             raise TypeError("an R-algebra Hom requires two R-algebras")
@@ -778,7 +778,7 @@ class AlgebraMorphism(Morphism):
                 "an unframed algebra domain has no selected generator morphism"
             )
         return SetMorphism(
-            Sets().hom(self.domain().algebra_generating_set(), self.codomain()),
+            Sets().mor(self.domain().algebra_generating_set(), self.codomain()),
             self._generator_images.__getitem__,
         )
 
@@ -828,7 +828,7 @@ class AlgebraMorphism(Morphism):
             return algebra_homset(other.domain(), self.codomain())(module_map)
         return algebra_homset(other.domain(), self.codomain())(
             SetMorphism(
-                Sets().hom(other.domain(), self.codomain()),
+                Sets().mor(other.domain(), self.codomain()),
                 lambda element: self(other(element)),
             )
         )
@@ -879,7 +879,7 @@ class PresentedAlgebraMorphism(Morphism):
 
     def algebra_generator_morphism(self):
         return SetMorphism(
-            Sets().hom(self.domain().algebra_generating_set(), self.codomain()),
+            Sets().mor(self.domain().algebra_generating_set(), self.codomain()),
             self._generator_images.__getitem__,
         )
 
@@ -967,7 +967,7 @@ class AlgebraHomset(_AlgebraHomsetCommonMethods, CategoricalHomset):
         return self(lambda label: self.domain().algebra_generator(label))
 
     def _repr_(self):
-        return f"Hom_Alg({self.domain()}, {self.codomain()})"
+        return f"Mor_Alg({self.domain()}, {self.codomain()})"
 
 
 def algebra_homset(domain, codomain) -> AlgebraHomset:

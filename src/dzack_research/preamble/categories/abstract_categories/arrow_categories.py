@@ -28,7 +28,7 @@ def _identity_morphism_in_theory(arrow, obj):
 def _identity_morphism(obj):
     r"""Return the identity arrow through the object's public owned Hom surface."""
     if isinstance(obj, ArrowObject):
-        return obj.arrow_category().hom(obj, obj).identity()
+        return obj.arrow_category().mor(obj, obj).identity()
     return obj.Mor(obj).identity()
 
 
@@ -85,7 +85,7 @@ class CommutativeSquare(Morphism):
         if other.codomain() is not self.domain():
             return NotImplemented
         category = self.parent().arrow_category()
-        return category.hom(other.domain(), self.codomain())(
+        return category.mor(other.domain(), self.codomain())(
             self.left() * other.left(),
             self.right() * other.right(),
         )
@@ -120,7 +120,7 @@ class ArrowHomset(OwnedHomset):
         )
 
     def identity_at(self, obj):
-        return self.arrow_category().hom(obj, obj).identity()
+        return self.arrow_category().mor(obj, obj).identity()
 
     def morphisms_agree(self, left, right) -> bool:
         if left.parent() is not self or right.parent() is not self:
@@ -182,18 +182,18 @@ class ArrowCategory(Category):
         self._homsets[key] = result
         return result
 
-    def hom(self, source, target):
+    def mor(self, source, target):
         if source not in self or target not in self:
             raise TypeError("an arrow-category Hom requires two arrow objects")
         return self._homset(ArrowHomset, source, target)
 
-    Hom = hom
+    Mor = mor
 
     def morphism(self, source, target, left, right):
-        return self.hom(source, target)(left, right)
+        return self.mor(source, target)(left, right)
 
     def identity(self, arrow_object):
-        return self.hom(arrow_object, arrow_object).identity()
+        return self.mor(arrow_object, arrow_object).identity()
 
     def compose(self, second, first):
         if first.codomain() is not second.domain():
@@ -241,12 +241,12 @@ class SliceCategory(ArrowCategory):
     def __contains__(self, candidate) -> bool:
         return super().__contains__(candidate) and candidate.arrow().codomain() is self.base_object()
 
-    def hom(self, source, target):
+    def mor(self, source, target):
         if source not in self or target not in self:
             raise TypeError("a slice Hom requires two arrows into the fixed base object")
         return self._homset(SliceHomset, source, target)
 
-    Hom = hom
+    Mor = mor
 
     def _repr_(self) -> str:
         return f"Slice category {self.base_category()}/{self.base_object()}"
@@ -284,12 +284,12 @@ class CosliceCategory(ArrowCategory):
     def __contains__(self, candidate) -> bool:
         return super().__contains__(candidate) and candidate.arrow().domain() is self.base_object()
 
-    def hom(self, source, target):
+    def mor(self, source, target):
         if source not in self or target not in self:
             raise TypeError("a coslice Hom requires two arrows from the fixed base object")
         return self._homset(CosliceHomset, source, target)
 
-    Hom = hom
+    Mor = mor
 
     def _repr_(self) -> str:
         return f"Coslice category {self.base_object()}/{self.base_category()}"
@@ -385,7 +385,7 @@ class SubobjectMorphism(Morphism):
     def __mul__(self, other):
         if other.codomain() is not self.domain():
             return NotImplemented
-        return self.parent().subobject_category().hom(
+        return self.parent().subobject_category().mor(
             other.domain(), self.codomain()
         )(self.factor_morphism() * other.factor_morphism())
 
@@ -481,7 +481,7 @@ class SubobjectCategory(Category):
             return False
         return slice_object in self.monomorphism_category()
 
-    def hom(self, domain, codomain):
+    def mor(self, domain, codomain):
         if domain not in self or codomain not in self:
             raise TypeError("both objects must be subobjects of the fixed base object")
         key = (id(domain), id(codomain))
@@ -492,13 +492,13 @@ class SubobjectCategory(Category):
         self._homsets[key] = result
         return result
 
-    Hom = hom
+    Mor = mor
 
     def leq(self, left, right) -> bool:
-        return self.hom(left, right).has_morphism()
+        return self.mor(left, right).has_morphism()
 
     def identity(self, subobject):
-        return self.hom(subobject, subobject).identity()
+        return self.mor(subobject, subobject).identity()
 
     def _repr_(self) -> str:
         return f"Subobjects of {self.base_object()}"
@@ -639,7 +639,7 @@ class CoreCategory(Category):
     def __contains__(self, candidate) -> bool:
         return candidate in self.base_category()
 
-    def hom(self, domain, codomain):
+    def mor(self, domain, codomain):
         if domain not in self or codomain not in self:
             raise TypeError("the core Hom requires two base-category objects")
         key = (id(domain), id(codomain))
@@ -650,10 +650,10 @@ class CoreCategory(Category):
         self._homsets[key] = result
         return result
 
-    Hom = hom
+    Mor = mor
 
     def identity(self, obj):
-        return self.hom(obj, obj).identity()
+        return self.mor(obj, obj).identity()
 
     def _repr_(self) -> str:
         return f"Core of {self.base_category()}"

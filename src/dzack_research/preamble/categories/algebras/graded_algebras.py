@@ -263,7 +263,7 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
         def degree(self):
             return self.parent().homogeneous_degree(self)
 
-    def homset(self, domain, codomain):
+    def mor(self, domain, codomain):
         if domain not in self or codomain not in self:
             raise TypeError("a graded-algebra Hom requires two objects of this category")
         return graded_algebra_homset(domain, codomain)

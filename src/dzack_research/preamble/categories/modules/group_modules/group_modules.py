@@ -503,7 +503,7 @@ class GroupModuleHomset(_ModuleHomsetCommonMethods, CategoricalHomset):
 
 
     def _repr_(self):
-        return f"Hom_{self.domain().group()}({self.domain()}, {self.codomain()})"
+        return f"Mor_{self.domain().group()}({self.domain()}, {self.codomain()})"
 
 
 def group_module_homset(domain, codomain) -> GroupModuleHomset:

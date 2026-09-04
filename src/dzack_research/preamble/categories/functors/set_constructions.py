@@ -46,7 +46,7 @@ class ExponentialFunctor(Functor):
         precompose = pair_morphism.first().underlying_arrow()
         postcompose = pair_morphism.second()
         return SetMorphism(
-            _OwnedSets().hom(source, target),
+            _OwnedSets().mor(source, target),
             lambda function: target(
                 lambda element: postcompose(function(precompose(element)))
             ),
@@ -56,8 +56,8 @@ class ExponentialFunctor(Functor):
         r"""Return the product-category morphism induced by ``precompose`` and ``postcompose``."""
         source = self.pair(precompose.codomain(), postcompose.domain())
         target = self.pair(precompose.domain(), postcompose.codomain())
-        opposite = self.opposite_sets().hom(source.first(), target.first())(precompose)
-        return self.domain().hom(source, target)(opposite, postcompose)
+        opposite = self.opposite_sets().mor(source.first(), target.first())(precompose)
+        return self.domain().mor(source, target)(opposite, postcompose)
 
 
 class InverseImagePowerSetFunctor(Functor):
@@ -78,7 +78,7 @@ class InverseImagePowerSetFunctor(Functor):
         return source.inverse_image_morphism(opposite_morphism.underlying_arrow())
 
     def opposite_morphism(self, morphism):
-        return self.domain().hom(
+        return self.domain().mor(
             self.domain()(morphism.codomain()),
             self.domain()(morphism.domain()),
         )(morphism)
@@ -97,7 +97,7 @@ class FinitePowerSetFunctor(Functor):
         source = self(morphism.domain())
         target = self(morphism.codomain())
         return SetMorphism(
-            _OwnedSets().hom(source, target),
+            _OwnedSets().mor(source, target),
             lambda subset: target(tuple(morphism(member) for member in subset)),
         )
 
@@ -126,7 +126,7 @@ class FixedCardinalitySubsetFunctor(Functor):
         source = self(morphism.domain())
         target = self(morphism.codomain())
         return SetMorphism(
-            _OwnedSets().hom(source, target),
+            _OwnedSets().mor(source, target),
             lambda subset: target(tuple(morphism(member) for member in subset)),
         )
 

@@ -235,7 +235,7 @@ class DiscriminantBilinearModules(OwnedCategoryOverBaseRing):
                     }
                 )
 
-            return SetMorphism(Sets().hom(self, characters), character)
+            return SetMorphism(Sets().mor(self, characters), character)
 
         @cached_method
         def invariant_factor_form(self):

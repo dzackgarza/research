@@ -310,7 +310,7 @@ class ConnectionSpace(OwnedHomset):
         self._restricted_target,)
         Homset.__init__(self, module, self._target_module, category=Sets())
         self._inclusion = SetMorphism(
-            Sets().hom(self, self._ambient_hom),
+            Sets().mor(self, self._ambient_hom),
             lambda connection: connection.underlying_linear_morphism(),
         )
 

@@ -85,7 +85,7 @@ def test_orbits_trivial_fixed_gset_adjoints_have_hom_bijections_naturality_and_t
 
     orbit_adjunction = g_set_orbits_trivial_adjunction(group)
     orbits = orbit_adjunction.left_adjoint()(acted)
-    orbit_map = Sets().hom(orbits, target)(lambda orbit: ZZ(10) if orbit.representative() in (0, 1) else ZZ(20))
+    orbit_map = Sets().mor(orbits, target)(lambda orbit: ZZ(10) if orbit.representative() in (0, 1) else ZZ(20))
     equivariant = orbit_adjunction.hom_set_isomorphism_forward(orbit_map)
     recovered_orbit_map = orbit_adjunction.hom_set_isomorphism_inverse(equivariant)
     _assert_maps_agree(orbit_map, recovered_orbit_map, orbits)
@@ -98,7 +98,7 @@ def test_orbits_trivial_fixed_gset_adjoints_have_hom_bijections_naturality_and_t
     )
     _assert_maps_agree(left, right, acted)
 
-    target_map = Sets().hom(target, second_target)(lambda point: ZZ(30) if point == 10 else ZZ(40))
+    target_map = Sets().mor(target, second_target)(lambda point: ZZ(30) if point == 10 else ZZ(40))
     left, right = orbit_adjunction.counit_transformation().naturality_square(
         target_map
     )
@@ -128,7 +128,7 @@ def test_orbits_trivial_fixed_gset_adjoints_have_hom_bijections_naturality_and_t
     _assert_maps_agree(fixed_morphism, recovered, trivial_source)
     assert tuple(fixed_adjunction.right_adjoint()(acted)) == (ZZ(2),)
 
-    source_endomorphism = Sets().hom(source, source)(lambda point: ZZ(60) if point == 50 else ZZ(50))
+    source_endomorphism = Sets().mor(source, source)(lambda point: ZZ(60) if point == 50 else ZZ(50))
     left, right = fixed_adjunction.unit_transformation().naturality_square(
         source_endomorphism
     )
@@ -168,7 +168,7 @@ def test_free_underlying_cofree_gset_adjoints_have_hom_bijections_naturality_and
     recovered = free_adjunction.hom_set_isomorphism_inverse(transpose)
     _assert_maps_agree(equivariant, recovered, free)
 
-    set_map = Sets().hom(source, second_source)(lambda point: ZZ(30) if point == 10 else ZZ(40))
+    set_map = Sets().mor(source, second_source)(lambda point: ZZ(30) if point == 10 else ZZ(40))
     left, right = free_adjunction.unit_transformation().naturality_square(set_map)
     _assert_maps_agree(left, right, source)
 
@@ -193,7 +193,7 @@ def test_free_underlying_cofree_gset_adjoints_have_hom_bijections_naturality_and
         assert second_triangle(point) == point
 
     cofree_adjunction = underlying_cofree_g_set_adjunction(group)
-    arbitrary_set_map = Sets().hom(acted, source)(lambda point: ZZ(10) if point in (0, 2) else ZZ(20))
+    arbitrary_set_map = Sets().mor(acted, source)(lambda point: ZZ(10) if point in (0, 2) else ZZ(20))
     cofree_transpose = cofree_adjunction.hom_set_isomorphism_forward(
         arbitrary_set_map
     )
@@ -232,13 +232,13 @@ def test_free_group_underlying_set_adjunction_uses_indexed_free_group_universal_
     target_generator = target.group_generators().unrank(0)
     free = adjunction.left_adjoint()(source)
 
-    set_morphism = Sets().hom(source, target)(lambda point: target_generator if point == 2 else target_generator**2)
+    set_morphism = Sets().mor(source, target)(lambda point: target_generator if point == 2 else target_generator**2)
     group_morphism = adjunction.hom_set_isomorphism_inverse(set_morphism)
     recovered = adjunction.hom_set_isomorphism_forward(group_morphism)
     _assert_maps_agree(set_morphism, recovered, source)
     assert group_morphism(free.free_generator(2) * free.free_generator(3) ** -1) == target_generator**-1
 
-    source_map = Sets().hom(source, second_source)(lambda point: ZZ(5) if point == 2 else ZZ(7))
+    source_map = Sets().mor(source, second_source)(lambda point: ZZ(5) if point == 2 else ZZ(7))
     left, right = adjunction.unit_transformation().naturality_square(source_map)
     _assert_maps_agree(left, right, source)
 
@@ -265,7 +265,7 @@ def test_free_group_underlying_set_adjunction_uses_indexed_free_group_universal_
         assert second_triangle(free.free_generator(point)) == free.free_generator(point)
 
     infinite_free = adjunction.left_adjoint()(ZZ)
-    infinite_set_morphism = Sets().hom(ZZ, target)(lambda integer: target_generator ** (integer % 3))
+    infinite_set_morphism = Sets().mor(ZZ, target)(lambda integer: target_generator ** (integer % 3))
     infinite_group_morphism = adjunction.hom_set_isomorphism_inverse(
         infinite_set_morphism
     )

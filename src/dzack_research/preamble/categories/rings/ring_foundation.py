@@ -152,7 +152,7 @@ class RingHomset(CategoricalHomset):
         return identity
 
     def _repr_(self):
-        return f"Hom_Ring({self.domain()}, {self.codomain()})"
+        return f"Mor_Ring({self.domain()}, {self.codomain()})"
 
 
 class RingHomCategoryConstruction(HomCategoryConstruction):
@@ -295,7 +295,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
     def super_categories(self):
         return [OwnedSemirings(), OwnedRngs()]
 
-    def homset(self, domain, codomain):
+    def mor(self, domain, codomain):
         if domain not in self or codomain not in self:
             raise TypeError("a ring Hom requires two owned rings")
         return ring_homset(domain, codomain)

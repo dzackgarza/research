@@ -208,7 +208,7 @@ class GSetHomset(OwnedHomset):
         return self(lambda point: point)
 
     def _repr_(self):
-        return f"Hom_{self.domain().acting_group()}({self.domain()}, {self.codomain()})"
+        return f"Mor_{self.domain().acting_group()}({self.domain()}, {self.codomain()})"
 
 
 def g_set_homset(domain, codomain) -> GSetHomset:

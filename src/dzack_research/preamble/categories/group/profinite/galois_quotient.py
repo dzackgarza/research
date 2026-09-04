@@ -471,7 +471,7 @@ def restrict_along(
 def extensions_along(automorphism, embedding, candidates):
     r"""Return exactly the candidate automorphisms satisfying (\sigma j=j\tau)."""
     generators = field_generators(embedding.domain())
-    return [
+    matches = [
         candidate
         for candidate in candidates
         if all(
@@ -479,6 +479,8 @@ def extensions_along(automorphism, embedding, candidates):
             for generator in generators
         )
     ]
+    from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+    return finite_ordered_set(matches)
 
 
 __all__ = [

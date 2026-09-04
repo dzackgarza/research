@@ -85,7 +85,7 @@ class GSetOrbitsFunctor(Functor):
         source = self(morphism.domain())
         target = self(morphism.codomain())
         return SetMorphism(
-            Sets().hom(source, target),
+            Sets().mor(source, target),
             lambda orbit: target.orbit_of(morphism(orbit.representative())),
         )
 
@@ -115,7 +115,7 @@ class GSetFixedPointsFunctor(Functor):
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())
         target = self(morphism.codomain())
-        return SetMorphism(Sets().hom(source, target), morphism)
+        return SetMorphism(Sets().mor(source, target), morphism)
 
     def _repr_(self):
         return f"{self.group()}-fixed-point functor on finite G-sets"
@@ -137,7 +137,7 @@ class GSetOrbitsTrivialAdjunction(Adjunction):
         trivial = self.right_adjoint()(set_object)
         orbit_set = self.left_adjoint()(trivial)
         return SetMorphism(
-            Sets().hom(orbit_set, set_object),
+            Sets().mor(orbit_set, set_object),
             lambda orbit: orbit.representative(),
         )
 
@@ -153,7 +153,7 @@ class GSetTrivialFixedAdjunction(Adjunction):
     def unit(self, set_object):
         trivial = self.left_adjoint()(set_object)
         fixed = self.right_adjoint()(trivial)
-        return SetMorphism(Sets().hom(set_object, fixed), lambda point: point)
+        return SetMorphism(Sets().mor(set_object, fixed), lambda point: point)
 
     def counit(self, g_set):
         fixed = self.right_adjoint()(g_set)
@@ -240,7 +240,7 @@ class UnderlyingFiniteGSetFunctor(Functor):
         return g_set
 
     def _apply_morphism(self, morphism):
-        return SetMorphism(Sets().hom(morphism.domain(), morphism.codomain()), morphism)
+        return SetMorphism(Sets().mor(morphism.domain(), morphism.codomain()), morphism)
 
     def chosen_preimage(self, image):
         if image not in self.domain():
@@ -335,7 +335,7 @@ class FreeGSetUnderlyingAdjunction(Adjunction):
     def unit(self, set_object):
         free = self.left_adjoint()(set_object)
         return SetMorphism(
-            Sets().hom(set_object, free),
+            Sets().mor(set_object, free),
             lambda point: self.left_adjoint().free_point(
                 free, self.left_adjoint().group().one(), point
             ),
@@ -368,7 +368,7 @@ class UnderlyingCofreeGSetAdjunction(Adjunction):
     def counit(self, set_object):
         cofree = self.right_adjoint()(set_object)
         return SetMorphism(
-            Sets().hom(cofree, set_object),
+            Sets().mor(cofree, set_object),
             lambda function_point: self.right_adjoint().function_value(
                 cofree,
                 function_point,

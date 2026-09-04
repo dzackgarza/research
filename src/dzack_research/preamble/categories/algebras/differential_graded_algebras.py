@@ -30,7 +30,7 @@ class DegreewiseLinearMorphism(Morphism):
         self._function = function
         Morphism.__init__(
             self,
-            Sets().hom(domain, codomain),
+            Sets().mor(domain, codomain),
         )
 
     def _call_(self, element):
@@ -88,7 +88,7 @@ class DifferentialGradedAlgebras(OwnedCategoryOverBaseRing):
 
         return [GradedAlgebras(self.base_ring()), CochainComplexes(self.base_ring())]
 
-    def homset(self, domain, codomain):
+    def mor(self, domain, codomain):
         if domain not in self or codomain not in self:
             raise TypeError("a DGA Hom requires two differential graded algebras")
         return dga_homset(domain, codomain)

@@ -114,7 +114,7 @@ def test_exact_closure_maps_do_not_enumerate_infinite_generators_or_admit_set_ma
     assert ~identity_element * identity_element == group.one()
 
 
-    fake_map = Sets().hom(closure, closure)(lambda element: closure.one()
+    fake_map = Sets().mor(closure, closure)(lambda element: closure.one()
         if element == closure.one()
         else closure.zero())
     with pytest.raises(TypeError, match="genuine field-homomorphism"):

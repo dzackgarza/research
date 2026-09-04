@@ -30,7 +30,7 @@ class DirectImageSubobjectFunctor(Functor):
         return (self.morphism() * subobject.inclusion()).image()
 
     def _apply_morphism(self, order_morphism):
-        return self.codomain().hom(
+        return self.codomain().mor(
             self(order_morphism.domain()),
             self(order_morphism.codomain()),
         ).canonical_morphism()
@@ -50,7 +50,7 @@ class InverseImageSubobjectFunctor(Functor):
         return _inverse_image_subobject(self.morphism(), subobject)
 
     def _apply_morphism(self, order_morphism):
-        return self.codomain().hom(
+        return self.codomain().mor(
             self(order_morphism.domain()),
             self(order_morphism.codomain()),
         ).canonical_morphism()
@@ -69,11 +69,11 @@ class SubobjectImageAdjunction(Adjunction):
 
     def unit(self, subobject):
         target = self.right_adjoint()(self.left_adjoint()(subobject))
-        return self.left_adjoint().domain().hom(subobject, target).canonical_morphism()
+        return self.left_adjoint().domain().mor(subobject, target).canonical_morphism()
 
     def counit(self, subobject):
         source = self.left_adjoint()(self.right_adjoint()(subobject))
-        return self.left_adjoint().codomain().hom(source, subobject).canonical_morphism()
+        return self.left_adjoint().codomain().mor(source, subobject).canonical_morphism()
 
 
 def subobject_image_adjunction(morphism) -> SubobjectImageAdjunction:

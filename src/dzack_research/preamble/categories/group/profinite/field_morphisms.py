@@ -188,7 +188,7 @@ def exact_embeddings(domain, codomain) -> tuple[ExactFieldMorphism, ...]:
     backends = tuple(source.embeddings(target))
     if not backends:
         try:
-            backends = (source.hom(target),)
+            backends = (source.mor(target),)
         except (TypeError, ValueError):
             backends = ()
     return tuple(

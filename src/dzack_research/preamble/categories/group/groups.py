@@ -961,7 +961,7 @@ class IndexedFreeGroupHomomorphism(Morphism):
     def __init__(self, parent, images) -> None:
         Morphism.__init__(self, parent)
         indices = self.domain().free_basis()
-        set_homset = Sets().hom(indices, self.codomain())
+        set_homset = Sets().mor(indices, self.codomain())
         if isinstance(images, SetMorphism):
             if images.domain() is not indices or images.codomain() is not self.codomain():
                 raise ValueError("the generator map has the wrong source or target")
@@ -996,7 +996,7 @@ class IndexedFreeGroupHomomorphism(Morphism):
         indices = self.domain().free_basis()
         return group_homset(self.domain(), morphism.codomain())(
             SetMorphism(
-                Sets().hom(indices, morphism.codomain()),
+                Sets().mor(indices, morphism.codomain()),
                 lambda index: morphism(self.generator_morphism()(index)),
             )
         )
@@ -1011,7 +1011,7 @@ class IndexedFreeGroupHomomorphism(Morphism):
         indices = other.domain().free_basis()
         return group_homset(other.domain(), self.codomain())(
             SetMorphism(
-                Sets().hom(indices, self.codomain()),
+                Sets().mor(indices, self.codomain()),
                 lambda index: self(other(other.domain().free_generator(index))),
             )
         )
@@ -1479,7 +1479,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
     Transitive = _owned_group_constructor(_SageTransitive)
     RubiksCube = _owned_group_constructor(_SageRubiksCube)
 
-    def homset(self, domain, codomain):
+    def mor(self, domain, codomain):
         if domain not in self or codomain not in self:
             raise TypeError("a group Hom requires two owned groups")
         return domain.Mor(codomain)

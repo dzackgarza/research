@@ -58,7 +58,7 @@ def test_fixed_ambient_subobjects_and_direct_inverse_image_form_a_galois_connect
     assert target_subobjects.leq(direct(not_a), b) is False
     assert source_subobjects.leq(not_a, preimage_b) is False
 
-    forward_witness = target_subobjects.hom(image_a, b).canonical_morphism()
+    forward_witness = target_subobjects.mor(image_a, b).canonical_morphism()
     transpose = adjunction.hom_set_isomorphism_forward(forward_witness, a)
     recovered = adjunction.hom_set_isomorphism_inverse(transpose, b)
     assert transpose.domain() is a
@@ -69,12 +69,12 @@ def test_fixed_ambient_subobjects_and_direct_inverse_image_form_a_galois_connect
     # Naturality uses genuine commuting-triangle morphisms in the thin
     # fixed-ambient categories.
     a_larger = source.subobject_on((2 * e1, e2))
-    source_order_map = source_subobjects.hom(a, a_larger).canonical_morphism()
+    source_order_map = source_subobjects.mor(a, a_larger).canonical_morphism()
     left, right = adjunction.unit_transformation().naturality_square(source_order_map)
     _assert_order_maps_agree(left, right)
 
     b_larger = target.subobject_on((2 * u, v))
-    target_order_map = target_subobjects.hom(b, b_larger).canonical_morphism()
+    target_order_map = target_subobjects.mor(b, b_larger).canonical_morphism()
     left, right = adjunction.counit_transformation().naturality_square(target_order_map)
     _assert_order_maps_agree(left, right)
 

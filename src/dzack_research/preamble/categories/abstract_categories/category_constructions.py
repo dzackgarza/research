@@ -15,7 +15,7 @@ def _identity(obj):
     try:
         return Hom(obj, obj).identity()
     except (TypeError, ValueError):
-        return _OwnedSets().hom(obj, obj).identity()
+        return _OwnedSets().mor(obj, obj).identity()
 
 
 class OppositeObject(Parent):
@@ -53,7 +53,7 @@ class OppositeMorphism(Morphism):
     def __mul__(self, other):
         if other.codomain() is not self.domain():
             return NotImplemented
-        return self.parent().opposite_category().hom(
+        return self.parent().opposite_category().mor(
             other.domain(), self.codomain()
         )(other.underlying_arrow() * self.underlying_arrow())
 
@@ -107,15 +107,15 @@ class OppositeCategory(Category):
             and candidate.opposite_category().base_category() == self.base_category()
         )
 
-    def hom(self, domain, codomain):
+    def mor(self, domain, codomain):
         if domain not in self or codomain not in self:
             raise TypeError("an opposite Hom requires two opposite objects")
         return OppositeHomset(self, domain, codomain)
 
-    Hom = hom
+    Mor = mor
 
     def identity(self, obj):
-        return self.hom(obj, obj).identity()
+        return self.mor(obj, obj).identity()
 
     def opposite_category(self):
         return self.base_category()
@@ -167,7 +167,7 @@ class ProductMorphism(Morphism):
     def __mul__(self, other):
         if other.codomain() is not self.domain():
             return NotImplemented
-        return self.parent().product_category().hom(
+        return self.parent().product_category().mor(
             other.domain(), self.codomain()
         )(self.first() * other.first(), self.second() * other.second())
 
@@ -228,15 +228,15 @@ class ProductCategory(Category):
             and candidate.second() in self.second_category()
         )
 
-    def hom(self, domain, codomain):
+    def mor(self, domain, codomain):
         if domain not in self or codomain not in self:
             raise TypeError("a product Hom requires two product-category objects")
         return ProductHomset(self, domain, codomain)
 
-    Hom = hom
+    Mor = mor
 
     def identity(self, obj):
-        return self.hom(obj, obj).identity()
+        return self.mor(obj, obj).identity()
 
     def _repr_(self) -> str:
         return f"Product of {self.first_category()} and {self.second_category()}"

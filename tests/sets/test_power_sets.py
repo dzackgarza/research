@@ -46,7 +46,7 @@ def test_power_set_boolean_algebra_and_lattice_laws_hold() -> None:
 def test_inverse_and_direct_image_form_the_set_subobject_galois_connection() -> None:
     source = Sets.Δ[5]
     target = Sets.Δ[2]
-    residue = Sets().hom(source, target)(lambda n: target(int(n) % 3))
+    residue = Sets().mor(source, target)(lambda n: target(int(n) % 3))
     source_subsets = PowerSet(source)
     target_subsets = PowerSet(target)
     selected = source_subsets({0, 1, 3, 4})
