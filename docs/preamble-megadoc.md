@@ -144,7 +144,7 @@ actual ``Homset``, while also making that same parent the discrete category
 the *same object*.
 
 **Category Constructor:**
-- `CategoricalHomset(self, family, domain, codomain, *, homset_category=None) -> None`
+- `CategoricalHomset(self, family, domain, codomain) -> None`
 
 **Category Instance Methods:**
 - `accepts(self, arrow) -> bool`
@@ -3305,6 +3305,7 @@ EXAMPLES::
   > Return the set of form-preserving embeddings into ``codomain``.
 - `HKZ(self)`
   > Return the full-block BKZ (HKZ) reframing.
+- `Hom(self, codomain, category=None)`
 - `Isom(self, codomain)`
   > Return the set of isometries to ``codomain``.
 - `LLL(self)`
@@ -7200,6 +7201,7 @@ Multiplication is the \(R\)-module morphism
 - `Algebras(...)(self, multiplication)`
 
 **ParentMethods (Methods on Category Objects):**
+- `Hom(self, codomain, category=None)`
 - `algebra_base_ring(self)`
 - `@cached_method` `algebra_structure_morphism(self)`
   > The structure morphism \(\eta\colon R\to Z(A)\) of this \(R\)-algebra.
@@ -8034,7 +8036,7 @@ The ``R``-submodule of degree-``r`` graded derivations in ``Hom_R``.
 #### `PowerAlgebraHomset` `[HOMSET]` `[Internal]`
 
 - **Source**: [`src/dzack_research/preamble/categories/algebras/power_algebras.py#L298`](file:///home/dzack/research/src/dzack_research/preamble/categories/algebras/power_algebras.py#L298)
-- **Bases**: `Homset`
+- **Bases**: `OwnedHomset`
 - **Constructor**: `def __init__(self, domain, codomain) -> None`
 - **Constructor**: `def _element_constructor_(self, degree_one_map)`
 
@@ -9016,6 +9018,7 @@ Groups whose notebook-facing group interface is owned by the preamble.
 **ParentMethods (Methods on Category Objects):**
 - `@cached_method` `Aut(self)`
 - `End(self)`
+- `Hom(self, codomain, category=None)`
 - `cardinality(self)`
 - `inclusion(self)`
 - `is_abelian(self)`

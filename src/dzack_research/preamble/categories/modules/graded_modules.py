@@ -183,4 +183,4 @@ def graded_module_homset(domain, codomain) -> GradedModuleHomset:
     monoid = require_grading_monoid(domain.grading_monoid())
     if require_grading_monoid(codomain.grading_monoid()) != monoid:
         raise ValueError("graded-module morphisms require one grading monoid")
-    return GradedModules(ring, monoid).Hom(domain, codomain)
+    return GradedModules(ring, monoid).Mor(domain, codomain)

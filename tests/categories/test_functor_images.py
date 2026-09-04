@@ -23,7 +23,7 @@ def test_cat_reifies_live_functors_and_functor_categories_have_natural_transform
     assert cat_arrow.domain() is cat.object(source)
     assert cat_arrow.codomain() is cat.object(target)
 
-    functor_category = cat.Hom(source, target)
+    functor_category = cat.Mor(source, target)
     functor_object = functor_category(functor)
     identity_transformation = functor_category.identity(functor_object)
     assert source.objects().index_set() is source.object_set()

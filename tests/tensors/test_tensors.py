@@ -95,7 +95,7 @@ def test_a_matrix_hom_is_taken_between_framed_free_modules() -> None:
     other = FreeModuleOn(ZZ, finite_ordered_set(("a", "b")))
     assert other.module_generating_set().cardinality() == Sets.Δ[1].cardinality()
     assert other is not FreeModuleOn(ZZ, Sets.Δ[1])
-    assert other.Hom(other) is not maps
+    assert other.Mor(other) is not maps
 
 
 def test_matrix_tensor_accepts_rectangular_component_data_or_explicit_shape() -> None:

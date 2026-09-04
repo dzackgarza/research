@@ -1168,7 +1168,7 @@ def module_homset(domain, codomain) -> ModuleHomset:
         raise ValueError("module morphisms require a common base ring")
     if codomain.module_category() is not domain.module_category():
         raise ValueError("module morphisms require one owned module category")
-    return domain.module_category().Hom(domain, codomain)
+    return domain.module_category().Mor(domain, codomain)
 
 
 def framing_morphism(domain, codomain, images) -> FramingMorphism:

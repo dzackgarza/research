@@ -95,7 +95,7 @@ class NumberFieldHomset(OwnedHomset):
     Element = NumberFieldEmbedding
 
     def __init__(self, domain, codomain) -> None:
-        Homset.__init__(self, domain, codomain, category=Sets())
+        Homset.__init__(self, domain, codomain, category=SageSets())
 
     def _element_constructor_(self, datum):
         if isinstance(datum, NumberFieldEmbedding):
@@ -199,7 +199,7 @@ class OrderHomset(OwnedHomset):
     Element = OrderEmbedding
 
     def __init__(self, domain, codomain) -> None:
-        Homset.__init__(self, domain, codomain, category=Sets())
+        Homset.__init__(self, domain, codomain, category=SageSets())
 
     def _element_constructor_(self, field_embedding):
         source_field = self.domain().fraction_field()

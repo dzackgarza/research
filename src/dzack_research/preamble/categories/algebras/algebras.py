@@ -566,7 +566,7 @@ class CommutativeAlgebraCoproducts(OwnedCategoryOverBaseRing):
                     for label in right.algebra_generating_set()
                 },
             }
-            return self.Hom(target)(images)
+            return self.Mor(target)(images)
 
         tensor_map = from_cocone
 
@@ -975,7 +975,7 @@ def algebra_homset(domain, codomain) -> AlgebraHomset:
     ring = domain.base_ring()
     if codomain.base_ring() is not ring:
         raise ValueError("algebra morphisms require one common base ring")
-    return Algebras(ring).Hom(domain, codomain)
+    return Algebras(ring).Mor(domain, codomain)
 
 
 @cached_function
@@ -1353,7 +1353,7 @@ def _engine_algebra_morphism_from_generator_images(
         return _engine_element(codomain, target_structure(owned_scalar))
 
     base_map = SetMorphism(
-        engine_base.Hom(engine_codomain),
+        engine_base.Mor(engine_codomain),
         engine_base_image,
     )
     engine_generator_images = {

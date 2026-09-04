@@ -267,7 +267,7 @@ class SliceCategory(ArrowCategory):
     def hom(self, source, target):
         if source not in self or target not in self:
             raise TypeError("a slice Hom requires two arrows into the fixed base object")
-        return SliceHomset(self, source, target)
+        return self._homset(SliceHomset, source, target)
 
     Hom = hom
 
@@ -309,7 +309,7 @@ class CosliceCategory(ArrowCategory):
     def hom(self, source, target):
         if source not in self or target not in self:
             raise TypeError("a coslice Hom requires two arrows from the fixed base object")
-        return CosliceHomset(self, source, target)
+        return self._homset(CosliceHomset, source, target)
 
     Hom = hom
 

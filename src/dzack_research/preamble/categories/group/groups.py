@@ -895,7 +895,7 @@ def _group_inclusion_image(subgroup, containing_group, element):
 def _canonical_subgroup_inclusion(subgroup):
     containing_group = subgroup.supergroup()
     return SubgroupInclusion(
-        subgroup.Hom(containing_group),
+        subgroup.Mor(containing_group),
         lambda element: _group_inclusion_image(subgroup, containing_group, element),
     )
 
@@ -1165,7 +1165,7 @@ class GroupHomset(GroupHomset_libgap, CategoricalHomset):
 
 @cached_function
 def group_homset(domain, codomain):
-    return domain.Hom(codomain)
+    return domain.Mor(codomain)
 
 
 class GroupAutomorphism(GroupHomomorphism):
@@ -1322,7 +1322,7 @@ class GroupEndCategoryConstruction(EndCategoryConstruction):
         cached = self._cached_between(obj, obj)
         if cached is not None:
             return cached
-        endomorphisms = self.base_category().Hom(obj, obj)
+        endomorphisms = self.base_category().Mor(obj, obj)
         endomorphisms.attach_end_family(self)
         refine(endomorphisms, Monoids())
         return self._remember_between(obj, obj, endomorphisms)
@@ -1440,7 +1440,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
     def homset(self, domain, codomain):
         if domain not in self or codomain not in self:
             raise TypeError("a group Hom requires two owned groups")
-        return domain.Hom(codomain)
+        return domain.Mor(codomain)
 
     _HomCategory = GroupHomCategoryConstruction
     _EndCategory = GroupEndCategoryConstruction
@@ -1454,12 +1454,12 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
         return [Monoids()]
 
     class ParentMethods:
-        def Hom(self, codomain, category=None):
+        def Mor(self, codomain, category=None):
             groups = OwnedGroups()
             if category is None or (
                 isinstance(category, OwnedCategory) and category.is_subcategory(groups)
             ):
-                return groups.Hom(self, codomain)
+                return groups.Mor(self, codomain)
             from sage.categories.homset import Hom as SageHom
             return SageHom(self, codomain, category)
 
@@ -1468,7 +1468,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             if codomain in groups and (
                 category is None or category.is_subcategory(groups)
             ):
-                return groups.Hom(self, codomain)
+                return groups.Mor(self, codomain)
             raise TypeError("the requested Hom category is not a group category")
 
         def is_finite(self):
@@ -1601,7 +1601,7 @@ class GroupsWithChosenFiniteGeneratingSet(OwnedCategory):
                 )
                 for generator in self.group_generators()
             }
-            return self.Hom(automorphisms)(images)
+            return self.Mor(automorphisms)(images)
 
 
 class GroupsWithChosenFreeBasis(OwnedCategory):

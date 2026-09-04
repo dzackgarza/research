@@ -71,13 +71,13 @@ def test_scheme_point_is_a_morphism_from_an_owned_residue_field_scheme() -> None
     affine = AffineSpace(2, QQ)
     point = affine.point_morphism([1, 2])
 
-    assert point in Schemes(QQ).Hom(point.domain(), affine)
+    assert point in Schemes(QQ).Mor(point.domain(), affine)
     assert point.domain() in Schemes(QQ)
     assert point.domain() in AffineSchemes(QQ)
     assert point.codomain() is affine
 
     structural_value = affine.structure_morphism().evaluate_at(point)
-    assert structural_value in Schemes(QQ).Hom(point.domain(), Spec(QQ))
+    assert structural_value in Schemes(QQ).Mor(point.domain(), Spec(QQ))
     assert structural_value.domain() is point.domain()
     assert structural_value.codomain() is Spec(QQ)
 
@@ -91,7 +91,7 @@ def test_equation_defined_closed_subscheme_has_live_inclusion_and_codimension() 
     assert divisor in ClosedSubschemes(QQ)
     assert divisor in EquationDefinedClosedSubschemes(QQ)
     assert divisor.ambient_scheme() is affine
-    assert divisor.inclusion() in Schemes(QQ).Hom(divisor, affine)
+    assert divisor.inclusion() in Schemes(QQ).Mor(divisor, affine)
     assert divisor.inclusion().domain() is divisor
     assert divisor.inclusion().codomain() is affine
     assert divisor.defining_equations() == (x,)
@@ -183,8 +183,8 @@ def test_affine_fiber_product_is_spec_of_algebra_pushout_with_universal_map() ->
     y = right_algebra.algebra_generator("y")
     t = target_algebra.algebra_generator("t")
 
-    common_to_left = common.Hom(left_algebra)({"s": x**2})
-    common_to_right = common.Hom(right_algebra)({"s": y**3})
+    common_to_left = common.Mor(left_algebra)({"s": x**2})
+    common_to_right = common.Mor(right_algebra)({"s": y**3})
     spec = SpecFunctor(QQ)
     left_map = spec(common_to_left)
     right_map = spec(common_to_right)
@@ -202,8 +202,8 @@ def test_affine_fiber_product_is_spec_of_algebra_pushout_with_universal_map() ->
         == right_square.coordinate_algebra_morphism()(s)
     )
 
-    target_to_left = spec(left_algebra.Hom(target_algebra)({"x": t**3}))
-    target_to_right = spec(right_algebra.Hom(target_algebra)({"y": t**2}))
+    target_to_left = spec(left_algebra.Mor(target_algebra)({"x": t**3}))
+    target_to_right = spec(right_algebra.Mor(target_algebra)({"y": t**2}))
     induced = pullback.from_pullback_cone(target_to_left, target_to_right)
     assert induced.domain() is spec(target_algebra)
     assert induced.codomain() is pullback

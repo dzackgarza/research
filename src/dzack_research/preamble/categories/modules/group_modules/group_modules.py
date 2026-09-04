@@ -515,7 +515,7 @@ def group_module_homset(domain, codomain) -> GroupModuleHomset:
     group = domain.group()
     if codomain.base_ring() is not ring or codomain.group() != group:
         raise ValueError("R[G]-module morphisms require one coefficient ring and acting group")
-    return GroupModules(ring, group).Hom(domain, codomain)
+    return GroupModules(ring, group).Mor(domain, codomain)
 
 
 def GroupModule(module, group_or_action, action=None):

@@ -264,7 +264,7 @@ def _base_change_commutative_presentation(algebra, ring_map):
         return _engine_element(target_base, ring_map(owned_scalar))
 
     backend_base_map = SetMorphism(
-        source_engine.Hom(target_base_engine),
+        source_engine.Mor(target_base_engine),
         map_backend_scalar,
     )
     source_presentation = algebra.presentation_ring()
@@ -579,7 +579,7 @@ def _presentation_data(algebra):
 def _transport_relations(presentation_ring, relations, target, tag):
     if not relations:
         return ()
-    transport = presentation_ring.Hom(target)(
+    transport = presentation_ring.Mor(target)(
         {
             label: target.algebra_generator((tag, label))
             for label in presentation_ring.algebra_generating_set()
@@ -613,13 +613,13 @@ def _commutative_algebra_coproduct_backend(left, right):
         right_presentation, right_relations, presentation, "right"
     )
     coproduct = FinitelyPresentedAlgebra(presentation, relations) if relations else presentation
-    left_map = left.Hom(coproduct)(
+    left_map = left.Mor(coproduct)(
         {
             label: coproduct.algebra_generator(("left", label))
             for label in left.algebra_generating_set()
         }
     )
-    right_map = right.Hom(coproduct)(
+    right_map = right.Mor(coproduct)(
         {
             label: coproduct.algebra_generator(("right", label))
             for label in right.algebra_generating_set()
@@ -634,7 +634,7 @@ def _quotient_by_algebra_elements_backend(algebra, elements):
     base = algebra.base_ring()
     selected = tuple(elements)
     if not selected:
-        identity = CommutativeAlgebras(base).Hom(algebra, algebra).identity()
+        identity = CommutativeAlgebras(base).Mor(algebra, algebra).identity()
         return algebra, identity
     if hasattr(algebra, "presentation_ring") and hasattr(algebra, "relations"):
         presentation = algebra.presentation_ring()
@@ -649,7 +649,7 @@ def _quotient_by_algebra_elements_backend(algebra, elements):
             "quotienting a commutative algebra requires a selected polynomial presentation"
         )
     quotient = FinitelyPresentedAlgebra(presentation, relations)
-    quotient_map = algebra.Hom(quotient)(
+    quotient_map = algebra.Mor(quotient)(
         {
             label: quotient.algebra_generator(label)
             for label in algebra.algebra_generating_set()

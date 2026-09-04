@@ -21,7 +21,7 @@ def test_module_hom_is_the_internal_hom_module_not_a_second_carrier() -> None:
     source = BasedFreeModule(ZZ, finite_ordered_set(("e",)))
     target = BasedFreeModule(ZZ, finite_ordered_set(("f",)))
 
-    categorical_hom = source.Hom(target)
+    categorical_hom = source.Mor(target)
     direct_hom = module_homset(source, target)
     internal_hom = InternalHom(source, target)
 
@@ -53,7 +53,7 @@ def test_module_hom_is_unique_even_when_objects_have_more_structure() -> None:
     algebra = SymmetricAlgebraOn(QQ, ("x",))
     modules = Modules(QQ)
 
-    categorical = modules.Hom(algebra, algebra)
+    categorical = modules.Mor(algebra, algebra)
     internal = InternalHom(algebra, algebra)
 
     assert categorical is internal

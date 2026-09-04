@@ -60,7 +60,7 @@ def test_general_formed_morphism_keeps_value_map_separate_from_strict_form_prese
     # The old strict surface remains genuinely stricter: multiplication by
     # three is not an isometry of the form [2].
     with pytest.raises(ValueError):
-        formed.Hom(formed)({"e": 3 * generator})
+        formed.Mor(formed)({"e": 3 * generator})
 
 
 def test_divided_square_classifies_quadratic_maps_integrally_on_zmod4() -> None:

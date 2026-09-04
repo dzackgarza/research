@@ -772,7 +772,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             source = self.Aut()
             target = self.discriminant_group().orthogonal_group()
             return SetMorphism(
-                source.Hom(target),
+                source.Mor(target),
                 lambda isometry: isometry.discriminant_morphism(),
             )
 

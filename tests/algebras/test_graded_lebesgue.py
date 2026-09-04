@@ -106,7 +106,7 @@ def test_lebesgue_spaces_form_a_graded_algebra_under_pointwise_product() -> None
     assert algebra.one().homogeneous_component(algebra.grading_monoid().monoidal_unit()).parent() is Lp(
         Infinity
     )
-    assert multiplication in multiplication.domain().Hom(algebra)
+    assert multiplication in multiplication.domain().Mor(algebra)
     assert multiplication.codomain() is algebra
     assert multiplication.domain() in GradedTensorProductModules(RR)
     assert multiplication.domain().tensor_factors() == (algebra, algebra)

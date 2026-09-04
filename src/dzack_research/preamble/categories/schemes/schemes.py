@@ -880,7 +880,7 @@ def _product_projection(product, factor, coordinates):
             target._from_engine_element(engine_target(coordinate))
             for coordinate in coordinates
         )
-        projection._preamble_coordinate_algebra_morphism = source.Hom(target)(
+        projection._preamble_coordinate_algebra_morphism = source.Mor(target)(
             {
                 label: image
                 for label, image in zip(

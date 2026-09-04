@@ -77,7 +77,7 @@ class FunctorImageHomset(OwnedHomset):
             raise ValueError("identity is defined only on an endomorphism Hom-set")
         image = self.domain().image_object()
         try:
-            identity = image.Hom(image).identity()
+            identity = image.Mor(image).identity()
         except (AttributeError, TypeError, ValueError):
             from sage.categories.homset import Hom
 

@@ -15,10 +15,10 @@ def test_ordinary_character_is_the_trace_class_function_of_the_stored_action() -
     module = BasedFreeModule(ZZ, finite_ordered_set(("sign", "trivial")))
     sign_generator = module.module_generator("sign")
     trivial_generator = module.module_generator("trivial")
-    positive = module.Hom(module)(
+    positive = module.Mor(module)(
         {"sign": sign_generator, "trivial": trivial_generator}
     )
-    negative = module.Hom(module)(
+    negative = module.Mor(module)(
         {"sign": -sign_generator, "trivial": trivial_generator}
     )
 
@@ -45,7 +45,7 @@ def test_brauer_character_uses_teichmuller_lifts_not_modular_traces() -> None:
     module = BasedFreeModule(base_ring, finite_ordered_set(("x", "y")))
     x = module.module_generator("x")
     y = module.module_generator("y")
-    order_three = module.Hom(module)({"x": y, "y": x + y})
+    order_three = module.Mor(module)({"x": y, "y": x + y})
     generator = next(iter(group.group_generators()))
 
     def action(group_element, vector):

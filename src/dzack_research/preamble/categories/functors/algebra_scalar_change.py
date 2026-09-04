@@ -46,7 +46,7 @@ def _engine_ring_map(ring_map):
         owned_scalar = owned_source._from_engine_element(source(scalar))
         return _engine_element(owned_target, ring_map(owned_scalar))
 
-    return SetMorphism(source.Hom(target), image)
+    return SetMorphism(source.Mor(target), image)
 
 
 def _base_change_presented_element(algebra, element, target, ring_map):

@@ -100,7 +100,7 @@ def test_exterior_and_divided_power_algebras_are_functorial_on_presented_modules
         identity = functor(module_homset(source, source).identity())
         _assert_power_maps_agree(
             identity,
-            functor(source).Hom(functor(source))(
+            functor(source).Mor(functor(source))(
                 module_homset(source, source).identity()
             ),
             probes,

@@ -16,7 +16,7 @@ def test_c2_integral_isotypic_decomposition_is_the_plus_minus_underlattice() -> 
     group = Groups.C(2)
     module = BasedFreeModule(ZZ, finite_ordered_set(("x", "y")))
     x, y = module.module_generators()
-    swap = module.Hom(module)({"x": y, "y": x})
+    swap = module.Mor(module)({"x": y, "y": x})
 
     def action(group_element, vector):
         return vector if group_element == group.one() else swap(vector)
@@ -37,7 +37,7 @@ def test_c3_integral_characters_are_grouped_into_rational_orbits() -> None:
     module = BasedFreeModule(ZZ, finite_ordered_set(("x", "y", "z")))
     generator = next(iter(group.group_generators()))
     x, y, z = module.module_generators()
-    cycle = module.Hom(module)({"x": y, "y": z, "z": x})
+    cycle = module.Mor(module)({"x": y, "y": z, "z": x})
 
     def action(group_element, vector):
         exponent = next(i for i in range(3) if group_element == generator**i)

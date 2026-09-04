@@ -287,7 +287,7 @@ class Sets(OwnedCategory):
         return TotallyOrderedSets()
 
     class ParentMethods:
-        def Hom(self, codomain, category=None):
+        def Mor(self, codomain, category=None):
             if category is None:
                 return Sets().hom(self, codomain)
             from sage.categories.homset import Hom as SageHom
@@ -361,14 +361,14 @@ def ImageSet(map_, domain_subset, *, category=None, is_injective=None, inverse=N
     )
 
 
-class SetInjection(SetMorphism):
+class SetInjection(OwnedSetMorphism):
     r"""A set morphism supplied with the assertion that it is injective."""
 
     def is_injective(self) -> bool:
         return True
 
 
-class SetSurjection(SetMorphism):
+class SetSurjection(OwnedSetMorphism):
     r"""A set morphism supplied with the assertion that it is surjective."""
 
     def is_surjective(self) -> bool:
@@ -383,7 +383,7 @@ def set_surjection(domain, codomain, function):
     return SetSurjection(Sets().hom(domain, codomain), function)
 
 
-class SetInclusion(SetMorphism):
+class SetInclusion(OwnedSetMorphism):
     r"""A represented subobject inclusion \(A\hookrightarrow X\)."""
 
     def __init__(

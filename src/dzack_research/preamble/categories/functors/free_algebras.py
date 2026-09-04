@@ -70,7 +70,7 @@ class _ModuleAlgebraFunctor(Functor):
                 target.zero(),
             )
 
-        homset = source.Hom(target)
+        homset = source.Mor(target)
         structural = getattr(homset, "_from_degree_preserving_generator_map", None)
         return structural(image) if structural is not None else homset(image)
 
@@ -189,7 +189,7 @@ class _ModuleAlgebraAdjunction(Adjunction):
         r"""Evaluation \(F(U(A))\to A\) when ``U(A)`` is represented."""
         module = self.right_adjoint()(algebra)
         free_algebra = self.left_adjoint()(module)
-        homset = free_algebra.Hom(algebra)
+        homset = free_algebra.Mor(algebra)
 
         def image(label):
             return (

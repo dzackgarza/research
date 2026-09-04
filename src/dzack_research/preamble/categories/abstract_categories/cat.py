@@ -123,7 +123,7 @@ class Cat(Category):
         self._arrows[key] = result
         return result
 
-    def Hom(self, domain, codomain):
+    def Mor(self, domain, codomain):
         return FunctorCategory(self, domain, codomain)
 
     def identity(self, category):

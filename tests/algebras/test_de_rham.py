@@ -74,7 +74,7 @@ def test_kahler_differentials_use_the_jacobian_relation_and_universal_property()
     assert restricted_derivations in ModuleSubobjects(QQ)
     assert derivations.inclusion().domain() is restricted_derivations
     assert derivations.inclusion().codomain() is ambient
-    assert ambient is Modules(QQ).Hom(algebra, derivations.restricted_target_module())
+    assert ambient is Modules(QQ).Mor(algebra, derivations.restricted_target_module())
     assert underlying.parent() is ambient
     assert underlying(xbar).underlying_element() == derivation(xbar)
     action = derivations.algebra_action()

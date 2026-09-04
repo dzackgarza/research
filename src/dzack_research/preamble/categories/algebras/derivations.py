@@ -272,7 +272,7 @@ class DerivationSpace(OwnedHomset):
         self.register_action(_DerivationAlgebraAction(algebra, self, True))
         self.register_action(_DerivationAlgebraAction(algebra, self, False))
         self._restricted_module = restrict_scalars(self, structure_map)
-        self._ambient_hom = Modules(base).Hom(algebra, self._restricted_target)
+        self._ambient_hom = Modules(base).Mor(algebra, self._restricted_target)
         self._preamble_inclusion = module_embedding(
             self._restricted_module,
             self._ambient_hom,
@@ -350,7 +350,7 @@ class DerivationSpace(OwnedHomset):
 
         endomorphisms = Modules(self.algebra()).End(self)
         return SetMorphism(
-            self.algebra().Hom(endomorphisms),
+            self.algebra().Mor(endomorphisms),
             lambda scalar: endomorphisms.elementwise(
                 lambda derivation: self.algebra_multiple(scalar, derivation)
             ),
@@ -460,7 +460,7 @@ class GradedDerivationSpace(OwnedHomset):
         from dzack_research.preamble.refine import refine
 
         ring = algebra.base_ring()
-        self._ambient_hom = Modules(ring).Hom(algebra, target)
+        self._ambient_hom = Modules(ring).Mor(algebra, target)
         Homset.__init__(self, algebra, target, category=Sets())
         self._preamble_base_ring = ring
         refine(self, [Modules(ring), ModuleSubobjects(ring)])

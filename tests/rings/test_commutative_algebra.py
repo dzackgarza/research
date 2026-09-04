@@ -234,8 +234,8 @@ def test_affine_spec_is_contravariant_on_commutative_algebra_maps() -> None:
     assert middle in CommutativeAlgebras(QQ)
     assert target in CommutativeAlgebras(QQ)
 
-    first = source.Hom(middle)({"x": middle(t**2)})
-    second = middle.Hom(target)({"t": target(u + 1)})
+    first = source.Mor(middle)({"x": middle(t**2)})
+    second = middle.Mor(target)({"t": target(u + 1)})
     composite = second * first
 
     spec = SpecFunctor(QQ)
@@ -266,7 +266,7 @@ def test_affine_spec_is_contravariant_on_commutative_algebra_maps() -> None:
     assert composed_scheme.codomain() is spec_source
     assert composite_spec.coordinate_algebra_morphism()(source(x)) == composite(source(x))
 
-    identity = CommutativeAlgebras(QQ).Hom(source, source).identity()
+    identity = CommutativeAlgebras(QQ).Mor(source, source).identity()
     identity_spec = spec(identity)
     assert identity_spec.domain() is spec_source
     assert identity_spec.codomain() is spec_source
@@ -288,8 +288,8 @@ def test_commutative_algebra_coproduct_is_tensor_product_with_universal_maps() -
 
     target = PolynomialRing(QQ, "t")
     t = target.algebra_generator("t")
-    f = left.Hom(target)({"x": t})
-    g = right.Hom(target)({"y": t**2})
+    f = left.Mor(target)({"x": t})
+    g = right.Mor(target)({"y": t**2})
     induced = coproduct.from_cocone(f, g)
     assert induced(left_map(x)) == t
     assert induced(right_map(y)) == t**2
@@ -322,8 +322,8 @@ def test_commutative_algebra_pushout_imposes_common_source_relations() -> None:
     s = common.algebra_generator("s")
     x = left.algebra_generator("x")
     y = right.algebra_generator("y")
-    left_span = common.Hom(left)({"s": x**2})
-    right_span = common.Hom(right)({"s": y**3})
+    left_span = common.Mor(left)({"s": x**2})
+    right_span = common.Mor(right)({"s": y**3})
 
     pushout = Pushout(left_span, right_span)
     left_map, right_map = pushout.pushout_maps()
@@ -331,8 +331,8 @@ def test_commutative_algebra_pushout_imposes_common_source_relations() -> None:
 
     target = PolynomialRing(QQ, "t")
     t = target.algebra_generator("t")
-    left_cocone = left.Hom(target)({"x": t**3})
-    right_cocone = right.Hom(target)({"y": t**2})
+    left_cocone = left.Mor(target)({"x": t**3})
+    right_cocone = right.Mor(target)({"y": t**2})
     induced = pushout.from_pushout_cocone(left_cocone, right_cocone)
     assert induced(left_map(x)) == t**3
     assert induced(right_map(y)) == t**2

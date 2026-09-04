@@ -73,7 +73,7 @@ class CategoryPacketMethods:
     def AutCategory(self):
         return category_packet(self).Auts()
 
-    def Hom(self, source, target):
+    def Mor(self, source, target):
         return self.HomCategory().Of(source, target)
 
     def End(self, obj):

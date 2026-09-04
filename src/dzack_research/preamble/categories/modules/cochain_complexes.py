@@ -399,7 +399,7 @@ def cochain_homset(domain, codomain):
     category = CochainComplexes(ring)
     if domain not in category or codomain not in category:
         raise TypeError("cochain Hom endpoints must lie in one cochain-complex category")
-    return category.Hom(domain, codomain)
+    return category.Mor(domain, codomain)
 
 
 def CochainComplex(base_ring, pieces, differentials, name=None):

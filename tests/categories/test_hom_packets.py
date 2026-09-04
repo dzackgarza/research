@@ -111,7 +111,7 @@ def test_forgetful_functor_induces_hom_end_and_aut_functors() -> None:
 
     hom_source = HomCategoryOf(Algebras(QQ)).Of(algebra, algebra)(identity)
     hom_image = induced_hom_functor(forget, algebra, algebra)(hom_source)
-    assert hom_image.parent() is Modules(QQ).Hom(forget(algebra), forget(algebra))
+    assert hom_image.parent() is Modules(QQ).Mor(forget(algebra), forget(algebra))
     assert hom_image(forget(algebra).one()) == forget(identity)(forget(algebra).one())
 
     end_source = EndCategoryOf(Algebras(QQ)).Of(algebra)(identity)
@@ -136,7 +136,7 @@ def test_lattice_embedding_isometry_and_automorphism_are_packet_objects() -> Non
     assert lattice.Aut() is lattices.Iso(lattice, lattice)
     assert lattice.Aut() in OwnedGroups()
 
-    assert lattices.Hom(lattice, lattice) in lattice.Emb(lattice).super_categories()
+    assert lattices.Mor(lattice, lattice) in lattice.Emb(lattice).super_categories()
     assert lattices.Mono(lattice, lattice) in lattice.Isom(lattice).super_categories()
     assert lattices.Epi(lattice, lattice) in lattice.Isom(lattice).super_categories()
     assert lattices.End(lattice) in lattice.Aut().super_categories()
@@ -147,9 +147,9 @@ def test_group_hom_end_and_aut_are_the_packet_objects() -> None:
     groups = OwnedGroups()
     group = Groups.C(3)
 
-    assert group.Hom(group) is groups.Hom(group, group)
+    assert group.Mor(group) is groups.Mor(group, group)
     assert group.End() is groups.End(group)
-    assert groups.End(group) is groups.Hom(group, group)
+    assert groups.End(group) is groups.Mor(group, group)
     assert group.Aut() is groups.Aut(group)
     assert group.Aut() is groups.Iso(group, group)
     assert group.Aut().one().parent() is group.Aut()
@@ -164,7 +164,7 @@ def test_ring_hom_packet_reuses_the_canonical_equal_endpoint_hom_object() -> Non
 
     rings = OwnedRings()
     hom = ring_homset(ZZ, ZZ)
-    assert hom is rings.Hom(ZZ, ZZ)
+    assert hom is rings.Mor(ZZ, ZZ)
     assert hom is rings.End(ZZ)
     identity = hom.identity()
     assert identity.parent() is hom

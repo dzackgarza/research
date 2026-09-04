@@ -317,7 +317,7 @@ def formed_module_homset(domain, codomain) -> FormedModuleHomset:
     category = FormModules(ring)
     if domain not in category or codomain not in category:
         raise TypeError("formed Hom endpoints must lie in one formed-module category")
-    return category.Hom(domain, codomain)
+    return category.Mor(domain, codomain)
 
 
 def _base_change_element(module, changed_module, ring_map, element):

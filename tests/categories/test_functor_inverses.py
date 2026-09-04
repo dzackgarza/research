@@ -35,7 +35,7 @@ def test_algebra_transpose_uses_the_scalar_extension_construction_source() -> No
     )
 
     independently_extended = AlgebraScalarExtensionFunctor(ring_map)(source)
-    morphism = independently_extended.Hom(target)(
+    morphism = independently_extended.Mor(target)(
         {"x": target.algebra_generator("y")}
     )
     adjunction = AlgebraBaseChangeAdjunction(ring_map)

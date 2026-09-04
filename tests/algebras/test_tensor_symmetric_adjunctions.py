@@ -123,9 +123,9 @@ def test_tensor_and_symmetric_algebras_impose_presented_module_relations_in_ever
     # A purported universal extension is accepted precisely when the selected
     # module relation is killed by the generator assignment.
     with pytest.raises(ValueError, match="relations"):
-        tensor.Hom(tensor)({0: tensor.one(), 1: tensor.zero()})
+        tensor.Mor(tensor)({0: tensor.one(), 1: tensor.zero()})
     with pytest.raises(ValueError, match="relations"):
-        symmetric.Hom(symmetric)({0: symmetric.one(), 1: symmetric.zero()})
+        symmetric.Mor(symmetric)({0: symmetric.one(), 1: symmetric.zero()})
 
 
 def test_tensor_and_symmetric_algebras_use_the_actual_nondiagonal_module_presentation() -> (
@@ -404,7 +404,7 @@ def test_iterated_free_algebra_normalizes_relations_in_actual_underlying_pieces(
     exterior = AlternatingAlgebraOf(exterior_module)
     exterior_unit_label = exterior.module_generating_set()(0, 0)
     augmentation = SetMorphism(
-        exterior.Hom(iterated_free),
+        exterior.Mor(iterated_free),
         lambda element: element.monomial_coefficients().get(
             exterior_unit_label, ZZ.zero()
         )

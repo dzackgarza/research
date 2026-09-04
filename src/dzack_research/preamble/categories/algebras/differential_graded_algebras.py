@@ -267,7 +267,7 @@ def dga_homset(domain, codomain):
     category = DifferentialGradedAlgebras(ring)
     if domain not in category or codomain not in category:
         raise TypeError("DGA Hom endpoints must lie in one differential graded algebra category")
-    return category.Hom(domain, codomain)
+    return category.Mor(domain, codomain)
 
 
 __all__ = [

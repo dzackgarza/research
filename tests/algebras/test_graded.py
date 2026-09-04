@@ -48,7 +48,7 @@ def test_a_graded_free_algebra_is_an_algebra_over_its_unit_graded_piece() -> Non
     unit_piece = algebra.graded_piece(monoid.monoidal_unit())
     label = next(iter(algebra.algebra_generating_set()))
     inclusion = algebra.algebra_structure_morphism()
-    augmentation = algebra.Hom(unit_piece)({label: unit_piece.zero()})
+    augmentation = algebra.Mor(unit_piece)({label: unit_piece.zero()})
 
     assert unit_piece is QQ
     assert monoid.monoidal_unit() == monoid.zero()
@@ -101,12 +101,12 @@ def test_graded_algebra_homs_preserve_degree_but_augmentation_remains_ungraded()
     x = source.algebra_generator("x")
     t = target.algebra_generator("t")
 
-    ordinary_homset = source.Hom(target)
-    assert ordinary_homset is Algebras(QQ).Hom(source, target)
-    homset = GradedAlgebras(QQ).Hom(source, target)
+    ordinary_homset = source.Mor(target)
+    assert ordinary_homset is Algebras(QQ).Mor(source, target)
+    homset = GradedAlgebras(QQ).Mor(source, target)
     assert homset is graded_algebra_homset(source, target)
-    assert Algebras(QQ).Hom(source, target) in homset.super_categories()
-    assert GradedModules(QQ).Hom(source, target) in homset.super_categories()
+    assert Algebras(QQ).Mor(source, target) in homset.super_categories()
+    assert GradedModules(QQ).Mor(source, target) in homset.super_categories()
     graded = homset({"x": t})
     assert graded in homset
     assert graded(x) == t
@@ -116,7 +116,7 @@ def test_graded_algebra_homs_preserve_degree_but_augmentation_remains_ungraded()
     with pytest.raises(ValueError):
         graded_algebra_homset(source, target)({"x": t**2})
 
-    augmentation = source.Hom(QQ)({"x": QQ.zero()})
-    assert augmentation in Algebras(QQ).Hom(source, QQ)
-    assert augmentation not in GradedAlgebras(QQ).Hom(source, QQ)
+    augmentation = source.Mor(QQ)({"x": QQ.zero()})
+    assert augmentation in Algebras(QQ).Mor(source, QQ)
+    assert augmentation not in GradedAlgebras(QQ).Mor(source, QQ)
     assert augmentation(x) == QQ.zero()

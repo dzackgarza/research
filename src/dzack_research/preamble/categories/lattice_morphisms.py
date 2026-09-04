@@ -1321,7 +1321,7 @@ def lattice_homset(domain, codomain) -> LatticeHomset:
     ring = domain.base_ring()
     if codomain.base_ring() != ring:
         raise ValueError("lattice morphisms require one common base ring")
-    return domain.lattice_category().Hom(domain, codomain)
+    return domain.lattice_category().Mor(domain, codomain)
 
 
 @cached_function

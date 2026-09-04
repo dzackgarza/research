@@ -1021,7 +1021,7 @@ class TorsionFormOrthogonalGroup(CategoricalHomset):
     def inclusion(self):
         supergroup = self.supergroup()
         return SetMorphism(
-            self.Hom(supergroup),
+            self.Mor(supergroup),
             lambda element: (
                 element
                 if supergroup is self
@@ -1118,7 +1118,7 @@ def _invariant_factor_form_isomorphism(form, quadratic: bool):
         unformed = form.forget_form_morphism()(source_generator)
         normalized_unformed = module_isomorphism(unformed)
         forward_images[label] = normalized.equip_form_morphism()(normalized_unformed)
-    forward = form.Hom(normalized)(forward_images)
+    forward = form.Mor(normalized)(forward_images)
 
     inverse_images = {}
     for label in normalized.module_generating_set():
@@ -1126,7 +1126,7 @@ def _invariant_factor_form_isomorphism(form, quadratic: bool):
         unformed = normalized.forget_form_morphism()(normalized_generator)
         original_unformed = module_isomorphism.inverse()(unformed)
         inverse_images[label] = form.equip_form_morphism()(original_unformed)
-    inverse = normalized.Hom(form)(inverse_images)
+    inverse = normalized.Mor(form)(inverse_images)
     return torsion_form_isometry(forward, inverse, quadratic=quadratic)
 
 

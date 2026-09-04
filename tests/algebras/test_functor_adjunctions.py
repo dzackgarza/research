@@ -73,7 +73,7 @@ def test_algebra_scalar_extension_restriction_has_the_hom_bijection() -> None:
     # y^4 = s^2 = 2, so x |-> y defines an S-algebra morphism
     # S tensor_QQ A -> B.  Its transpose is the corresponding QQ-algebra map
     # A -> Res(B), and transposing back recovers the original map.
-    phi = extended_source.Hom(target)(
+    phi = extended_source.Mor(target)(
         {"x": target.algebra_generator("y")}
     )
     transpose = adjunction.hom_set_isomorphism_forward(phi)
@@ -85,7 +85,7 @@ def test_algebra_scalar_extension_restriction_has_the_hom_bijection() -> None:
 
     # Check the inverse composite in the other direction as well, using the
     # distinct map x |-> -y.
-    psi = source.Hom(restricted_target)(
+    psi = source.Mor(restricted_target)(
         {"x": -restricted_target.algebra_generator(algebra_label)}
     )
     inverse_transpose = adjunction.hom_set_isomorphism_inverse(psi)
@@ -99,13 +99,13 @@ def test_algebra_scalar_extension_restriction_naturality_and_triangles() -> None
     extension = adjunction.left_adjoint()
     restriction = adjunction.right_adjoint()
 
-    source_involution = source.Hom(source)(
+    source_involution = source.Mor(source)(
         {"x": -source.algebra_generator("x")}
     )
     left, right = adjunction.unit_transformation().naturality_square(source_involution)
     _assert_algebra_maps_agree(left, right)
 
-    target_involution = target.Hom(target)(
+    target_involution = target.Mor(target)(
         {"y": -target.algebra_generator("y")}
     )
     left, right = adjunction.counit_transformation().naturality_square(
@@ -117,7 +117,7 @@ def test_algebra_scalar_extension_restriction_naturality_and_triangles() -> None
     first_triangle = restriction(adjunction.counit(target)) * adjunction.unit(
         restricted_target
     )
-    identity_restricted_target = restricted_target.Hom(restricted_target)(
+    identity_restricted_target = restricted_target.Mor(restricted_target)(
         {
             label: restricted_target.algebra_generator(label)
             for label in restricted_target.algebra_generating_set()
@@ -129,7 +129,7 @@ def test_algebra_scalar_extension_restriction_naturality_and_triangles() -> None
     second_triangle = adjunction.counit(extended_source) * extension(
         adjunction.unit(source)
     )
-    identity_extended_source = extended_source.Hom(extended_source)(
+    identity_extended_source = extended_source.Mor(extended_source)(
         {
             label: extended_source.algebra_generator(label)
             for label in extended_source.algebra_generating_set()
@@ -145,10 +145,10 @@ def test_algebra_restriction_remains_functorial_when_finite_framing_is_lost() ->
     source = SymmetricAlgebraOn(QQ, ["x"])
     middle = SymmetricAlgebraOn(QQ, ["y"])
     target = SymmetricAlgebraOn(QQ, ["z"])
-    first = source.Hom(middle)(
+    first = source.Mor(middle)(
         {"x": middle.algebra_generator("y") + 1}
     )
-    second = middle.Hom(target)(
+    second = middle.Mor(target)(
         {"y": 2 * target.algebra_generator("z")}
     )
 
@@ -157,7 +157,7 @@ def test_algebra_restriction_remains_functorial_when_finite_framing_is_lost() ->
     assert restricted_source(source.algebra_generator("x")) == source.algebra_generator("x")
 
     source_generator = source.algebra_generator("x")
-    carried_identity = restriction(source.Hom(source)({"x": source_generator}))
+    carried_identity = restriction(source.Mor(source)({"x": source_generator}))
     assert carried_identity(source_generator) == source_generator
 
     carried_composite = restriction(second * first)

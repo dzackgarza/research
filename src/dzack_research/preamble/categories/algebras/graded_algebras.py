@@ -146,7 +146,7 @@ def graded_algebra_homset(domain, codomain) -> GradedAlgebraHomset:
     graded = GradedAlgebras(ring, source_monoid)
     if domain not in graded or codomain not in graded:
         raise TypeError("both endpoints must be objects of the same graded algebra category")
-    return graded.Hom(domain, codomain)
+    return graded.Mor(domain, codomain)
 
 
 class GradedAlgebras(OwnedCategoryOverBaseRing):

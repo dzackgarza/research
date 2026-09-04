@@ -164,7 +164,7 @@ class RingHomCategoryConstruction(HomCategoryConstruction):
 
 def ring_homset(domain, codomain) -> RingHomset:
     r"""Return the canonical owned ``Hom_Ring(domain,codomain)`` object."""
-    return OwnedRings().Hom(domain, codomain)
+    return OwnedRings().Mor(domain, codomain)
 
 
 def ring_morphism(domain, codomain, function, *, engine_morphism=None) -> RingMorphism:
@@ -301,12 +301,12 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
         return ring_homset(domain, codomain)
 
     class ParentMethods:
-        def Hom(self, codomain, category=None):
+        def Mor(self, codomain, category=None):
             rings = OwnedRings()
             if category is None or (
                 isinstance(category, OwnedCategory) and category.is_subcategory(rings)
             ):
-                return rings.Hom(self, codomain)
+                return rings.Mor(self, codomain)
             # A Sage category here is not a mathematical request: it is Sage's
             # coercion machinery asking for somewhere to keep a conversion map,
             # naming its own `SetsWithPartialMaps`.  `SageHom` would check that

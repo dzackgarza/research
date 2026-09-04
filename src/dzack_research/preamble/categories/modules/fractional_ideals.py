@@ -497,7 +497,7 @@ def _fraction_field_as_module(base_ring):
     ring = _owned_ring(base_ring)
     field = ring.fraction_field()
     scalar_map = SetMorphism(
-        ring.Hom(field),
+        ring.Mor(field),
         lambda scalar: field(scalar),
     )
     return restrict_scalars(ring_as_module(field), scalar_map)
