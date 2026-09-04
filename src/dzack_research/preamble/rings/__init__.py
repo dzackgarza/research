@@ -212,7 +212,6 @@ def session_ring_objects() -> dict[str, object]:
 def ring_constructor_surface() -> dict[str, object]:
     r"""Return the constructors exported into a preamble session."""
     return {
-        "AdicCompletion": AdicCompletion,
         "DualNumbers": DualNumbers,
         "GF": GF,
         "FiniteField": FiniteField,
@@ -230,10 +229,6 @@ def ring_constructor_surface() -> dict[str, object]:
         "PolynomialRing": PolynomialRing,
         "LaurentPolynomialRing": LaurentPolynomialRing,
         "PowerSeriesRing": PowerSeriesRing,
-        "FractionField": FractionField,
-        "Localization": Localization,
-        "PrimeLocalization": PrimeLocalization,
-        "QuotientRing": QuotientRing,
         "ResidueField": ResidueField,
         "MatrixSpace": MatrixSpace,
     }
