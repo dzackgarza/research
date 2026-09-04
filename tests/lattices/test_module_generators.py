@@ -1,6 +1,6 @@
 from sage.all import SR
 
-from dzack_research.preamble.all import Lattices, QuadraticField, ZZ, diagonal_gram
+from dzack_research.preamble.all import diagonal_gram, Lattices, QuadraticField, Set, ZZ
 from dzack_research.preamble.categories.sets import NN, finite_ordered_set
 from dzack_research.preamble.tensors import Tensor, tensor
 
@@ -250,5 +250,5 @@ def test_distinct_sublattices_are_distinct_objects_at_equal_gram() -> None:
     assert first.gram_tensor() == second.gram_tensor()
     assert first is not second
     assert first is ambient.subobject_on((e0,))
-    assert tuple(first.embedded_module_generators()) == (e0,)
-    assert tuple(second.embedded_module_generators()) == (e1,)
+    assert first == first.ambient_module().submodule(Set((e0,)))
+    assert second == second.ambient_module().submodule(Set((e1,)))

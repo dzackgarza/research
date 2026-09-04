@@ -1,6 +1,8 @@
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 
+from dzack_research.preamble.categories.sets import finite_ordered_set
+
 
 def _session():
     scope = {}
@@ -59,7 +61,7 @@ def test_owned_polynomial_ring_has_owned_selected_algebra_generators() -> None:
     x, y = tuple(ring.algebra_generators())
     assert x.parent() is ring
     assert y.parent() is ring
-    assert tuple(ring.algebra_generating_set()) == ("x", "y")
+    assert ring.algebra_generating_set() == finite_ordered_set(("x", "y"))
 
 
 def test_fraction_field_returns_the_owned_field() -> None:
@@ -141,7 +143,7 @@ def test_explicit_algebraic_extensions_are_number_fields_or_orders() -> None:
     assert order in OwnedOrders()
     assert gaussian.cardinality() == aleph0
     assert order.cardinality() == aleph0
-    assert tuple(ZZ["x"].algebra_generating_set()) == ("x",)
+    assert ZZ["x"].algebra_generating_set() == finite_ordered_set(("x",))
     assert tuple(QQ["x"].algebra_generating_set()) == ("x",)
 
 

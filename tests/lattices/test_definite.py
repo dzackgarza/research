@@ -1,7 +1,7 @@
 import pytest
 from sage.misc.unknown import Unknown
 
-from dzack_research.preamble.all import FiniteGroups, MatrixSpace, MatrixSpaces, QQ, ZZ, Lattices, tensor
+from dzack_research.preamble.all import FiniteGroups, Lattices, MatrixSpace, MatrixSpaces, QQ, Set, tensor, ZZ
 from dzack_research.preamble.tensors import Tensor
 
 
@@ -235,7 +235,7 @@ def test_definite_target_embedding_homset_detects_sign_obstruction() -> None:
     target = Lattices(ZZ)("A2")
     homset = source.Emb(target)
 
-    assert tuple(homset) == ()
+    assert homset.is_empty()
     assert homset.is_empty() is True
     with pytest.raises(ValueError, match="embedding homset is empty"):
         homset.an_element()
@@ -416,7 +416,7 @@ def test_primitive_extension_with_no_glue_returns_the_zero_anti_isometry() -> No
     assert first.sum(second).index() == 1
     assert glue.domain().cardinality() == 1
     assert glue.codomain().cardinality() == 1
-    assert tuple(glue.domain().module_generators()) == ()
+    assert glue.domain().rank() == 0
 
 
 def test_cyclic_subgroup_is_the_literal_subgroup_generated_by_a_live_isometry() -> None:
@@ -446,7 +446,7 @@ def test_cyclic_subgroup_does_not_assume_an_indefinite_isometry_has_finite_order
 
     assert isometry.determinant() == 1
     assert subgroup.supergroup() is lattice.Aut()
-    assert tuple(subgroup.group_generators()) == (isometry,)
+    assert subgroup == subgroup.parent().subgroup_generated_by(Set((isometry,)))
     assert subgroup.is_finite() is Unknown
     assert subgroup.order() is Unknown
     with pytest.raises(NotImplementedError, match="enumerating a cyclic subgroup"):

@@ -3,16 +3,15 @@ import pytest
 from dzack_research.preamble.all import (
     AA,
     BasedFreeModule,
-    QQ,
-    ZZ,
-    FinitelyPresentedAlgebras,
     FinitelyGeneratedModules,
+    FinitelyPresentedAlgebras,
     FractionalIdeals,
     FramedModules,
     GroupLattice,
     Groups,
     Ideals,
     Lattices,
+    module_homset,
     ModuleSubobjects,
     NumberField,
     NumberFieldsWithChosenPrimitiveElement,
@@ -20,10 +19,12 @@ from dzack_research.preamble.all import (
     OwnedOrders,
     PolynomialRing,
     ProjectiveModules,
+    QQ,
     QuadraticField,
     RestrictedScalarsModules,
+    Set,
     tensor,
-    module_homset,
+    ZZ,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
@@ -359,7 +360,7 @@ def test_real_quadratic_field_has_exact_embeddings_and_its_actual_galois_group()
     assert field.embedding_images(AA).cardinality() == 2
     assert all(image**2 == 5 for image in images)
     assert sum(images) == 0
-    assert tuple(field.ramified_primes()) == (ZZ(5),)
+    assert field.ramified_primes() == Set((ZZ(5),))
 
     galois_group = field.galois_group()
     assert galois_group.cardinality() == field.degree() == 2

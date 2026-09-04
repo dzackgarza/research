@@ -11,6 +11,7 @@ from dzack_research.preamble.all import (
     PowerSeriesRing,
     ProjectiveSpace,
     QQ,
+    Set,
     ZZ,
 )
 
@@ -34,7 +35,7 @@ def test_basic_commutative_ring_placements_and_canonical_ZZ_algebra() -> None:
 def test_finite_unit_localization_and_prime_localization_are_distinct() -> None:
     inverted_two = ZZ.localization(2)
     assert inverted_two.localization_source() is ZZ
-    assert tuple(inverted_two.inverted_elements()) == (ZZ(2),)
+    assert inverted_two.inverted_elements() == Set((ZZ(2),))
     assert inverted_two.localization_map()(ZZ(3)) == inverted_two(3)
     assert inverted_two(2).is_unit()
 
@@ -44,7 +45,7 @@ def test_finite_unit_localization_and_prime_localization_are_distinct() -> None:
     assert rational(1) / 5 not in local_at_five
     assert local_at_five in LocalRings()
     assert int(local_at_five.residue_field().cardinality()) == 5
-    assert tuple(local_at_five.maximal_ideal().ideal_generators()) == (local_at_five(5),)
+    assert local_at_five.maximal_ideal() == local_at_five.ideal(local_at_five(5))
 
 
 def test_polynomial_prime_localization_has_expected_residue_field() -> None:
@@ -145,7 +146,7 @@ def test_submonoids_are_generic_subobjects_and_localization_retains_inclusion() 
 
     localization = ZZ.localization(powers_of_two)
     assert localization.localization_submonoid() is powers_of_two
-    assert tuple(localization.inverted_elements()) == (ZZ(2),)
+    assert localization.inverted_elements() == Set((ZZ(2),))
 
     local_at_five = ZZ.localize_at_prime(5)
     prime_complement = local_at_five.localization_submonoid()
@@ -185,7 +186,7 @@ def test_affine_prime_spectrum_zariski_basis_and_structure_sheaf_stalks() -> Non
     sheaf = affine_line.structure_sheaf()
     principal_sections = sheaf.sections_on_distinguished_open(punctured_line)
     assert principal_sections.localization_source() is spectrum.ring()
-    assert tuple(principal_sections.inverted_elements()) == (spectrum.ring()(x),)
+    assert principal_sections.inverted_elements() == Set((spectrum.ring()(x),))
 
     stalk = sheaf.stalk(origin)
     assert stalk is origin.local_ring()
@@ -206,7 +207,7 @@ def test_polynomial_ideals_are_module_subobjects_with_singular_arithmetic() -> N
     assert ideal in subobjects
     assert ideal.inclusion().codomain() is ring_as_module(ring)
     assert ideal.inclusion().is_injective()
-    assert tuple(ideal.ideal_generators()) == (ring(x**2), ring(x * y))
+    assert ideal == ring.ideal(ring(x**2), ring(x * y))
 
     def same_ideal(left, right):
         return all(generator in right for generator in left.ideal_generators()) and all(
@@ -369,14 +370,14 @@ def test_module_local_fiber_rank_generic_rank_and_fitting_loci() -> None:
     assert module.local_number_of_generators(origin) == 1
     localized_at_origin = module.localize_at_prime(origin)
     assert localized_at_origin.minimal_number_of_generators() == 1
-    assert tuple(localized_at_origin.minimal_module_generators()) == (
-        localized_at_origin.module_generator(0),
-    )
+    assert localized_at_origin.submodule(
+        localized_at_origin.minimal_module_generators()
+    ) == localized_at_origin
     assert origin.residue_map()(ring(x)) == origin.residue_field().zero()
 
     fitting_zero = module.fitting_ideal(0)
-    assert tuple(fitting_zero.ideal_generators()) == (ring(x),)
-    assert tuple(module.annihilator().ideal_generators()) == tuple(fitting_zero.ideal_generators())
+    assert fitting_zero == ring.ideal(ring(x))
+    assert module.annihilator() == fitting_zero
     assert generic not in module.support()
     assert origin in module.support()
     assert generic not in module.annihilator_support()
@@ -428,7 +429,7 @@ def test_module_localization_is_first_class_and_fibers_factor_through_it() -> No
     p5 = ZZ.spectrum()(5)
     torsion_at_two = torsion.localize_at_prime(p2)
     torsion_at_five = torsion.localize_at_prime(p5)
-    assert tuple(torsion.annihilator().ideal_generators()) == (ZZ(6),)
+    assert torsion.annihilator() == ZZ.ideal(ZZ(6))
     assert torsion_at_two.localization_source_module() is torsion
     assert torsion_at_five.localization_source_module() is torsion
     assert torsion.rank_at(p2) == 1
@@ -531,22 +532,22 @@ def test_ideal_localization_extension_contraction_colon_and_saturation() -> None
     assert extended_integer_ideal.inclusion().is_injective()
     assert 3 in extended_integer_ideal
     assert 1 not in extended_integer_ideal
-    assert tuple(extended_integer_ideal.contraction().ideal_generators()) == (ZZ(3),)
+    assert extended_integer_ideal.contraction() == ZZ.ideal(ZZ(3))
 
     ring = PolynomialRing(QQ, ("x", "y"))
     x, y = tuple(ring.algebra_generators())
     ideal = ring.ideal(x * y, y**2)
     divisor = ring.ideal(x)
 
-    assert tuple(ideal.colon(divisor).ideal_generators()) == (ring(y),)
-    assert tuple(ideal.saturation(divisor).ideal_generators()) == (ring(y),)
+    assert ideal.colon(divisor) == ring.ideal(ring(y))
+    assert ideal.saturation(divisor) == ring.ideal(ring(y))
 
     localized_ring = ring.localization(x)
     extended = ideal.extension(localized_ring)
     assert extended.inclusion().is_injective()
     assert localized_ring(y) in extended
     assert localized_ring.one() not in extended
-    assert tuple(extended.contraction().ideal_generators()) == (ring(y),)
+    assert extended.contraction() == ring.ideal(ring(y))
 
 
 def test_quotient_localization_comparison_is_an_actual_ring_isomorphism() -> None:
@@ -566,7 +567,7 @@ def test_quotient_localization_comparison_is_an_actual_ring_isomorphism() -> Non
 
     right_half = right(localization(1) / 2)
     assert forward(inverse(right_half)) == right_half
-    assert tuple(comparison.extended_ideal().contraction().ideal_generators()) == (ZZ(3),)
+    assert comparison.extended_ideal().contraction() == ZZ.ideal(ZZ(3))
 
     ring = PolynomialRing(QQ, ("x", "y"))
     x, y = tuple(ring.algebra_generators())
@@ -651,9 +652,7 @@ def test_nakayama_minimal_generators_and_surjectivity_are_local_module_operation
     )
 
     assert quotient.minimal_number_of_generators() == 1
-    assert tuple(quotient.minimal_module_generators()) == (
-        quotient.module_generator(0),
-    )
+    assert quotient.submodule(quotient.minimal_module_generators()) == quotient
 
     projection = module_homset(free, quotient)(
         {0: quotient.module_generator(0)}
