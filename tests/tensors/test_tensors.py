@@ -312,7 +312,7 @@ def test_tensor_space_records_index_modules() -> None:
     assert gram.tensor_type() == (0, 2)
     assert mixed.tensor_type() == (2, 0)
     upper, lower = gram.index_modules()
-    assert not upper and len(lower) == 2
+    assert not upper and lower.cardinality() == 2
     assert int(lower[0].rank()) == 2
 
 

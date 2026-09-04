@@ -68,7 +68,7 @@ def test_brauer_character_uses_teichmuller_lifts_not_modular_traces() -> None:
         2 if representative == group.one() else -1
         for representative in regular_representatives
     )
-    assert len(brauer_character) == 3 < len(representatives)
+    assert brauer_character.cardinality() == 3 < representatives.cardinality()
     order_three_element = generator**2
     assert acted.action_of(order_three_element).matrix().trace() == GF(2).one()
     order_three_index = regular_representatives.index(order_three_element)

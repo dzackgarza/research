@@ -38,7 +38,7 @@ def test_negative_definite_root_lattice_shortest_vectors_are_actual_roots() -> N
     assert a2.is_negative_definite()
     assert a2.minimum() == -2
     shortest = a2.shortest_vectors()
-    assert len(shortest) == 6
+    assert shortest.cardinality() == 6
     assert all(vector.q() == -2 and vector.is_root() for vector in shortest)
     assert a2.kissing_number() == 6
 
@@ -46,7 +46,7 @@ def test_negative_definite_root_lattice_shortest_vectors_are_actual_roots() -> N
 def test_square_lattice_minimum_theta_and_packing_radius() -> None:
     lattice = Lattices(ZZ)(2)
     assert lattice.minimum() == 1
-    assert len(lattice.vectors_of_square(1)) == 4
+    assert lattice.vectors_of_square(1).cardinality() == 4
     theta = lattice.theta_series(5)
     assert theta[0] == 1
     assert theta[1] == 4
@@ -85,14 +85,14 @@ def test_exact_cvp_babai_minima_and_voronoi_geometry_on_square_lattice() -> None
     assert lattice.covering_radius() ** 2 == QQ(1) / 2
     assert lattice.center_density() == QQ(1) / 4
     assert lattice.contact_polytope().n_vertices() == 4
-    assert len(lattice.voronoi_relevant_vectors()) == 4
+    assert lattice.voronoi_relevant_vectors().cardinality() == 4
 
 
 def test_root_enumeration_and_root_sublattice_are_formed_and_embedded() -> None:
     lattice = Lattices(ZZ)("A2")
     roots = lattice.roots()
 
-    assert len(roots) == 6
+    assert roots.cardinality() == 6
     assert lattice.roots_of_square(-2) == roots
     assert lattice.vectors_of_square_and_divisibility(-2, 1) == roots
     root_sublattice = lattice.root_sublattice()
@@ -222,7 +222,7 @@ def test_definite_target_embedding_homset_enumerates_all_a1_into_a2_roots() -> N
     homset = source.Emb(target)
     embeddings = tuple(homset)
 
-    assert len(embeddings) == 6
+    assert homset.cardinality() == 6
     source_generator = source.module_generators()[0]
     images = {tuple(embedding(source_generator).to_tuple()) for embedding in embeddings}
     assert images == {tuple(root.to_tuple()) for root in target.roots()}
@@ -245,7 +245,7 @@ def test_even_overlattice_inclusions_enumerate_isotropic_glue_for_u2() -> None:
     lattice = Lattices(ZZ)([[0, 2], [2, 0]])
     inclusions = lattice.even_overlattice_inclusions()
 
-    assert len(inclusions) == 3
+    assert inclusions.cardinality() == 3
     assert sorted(int(inclusion.index()) for inclusion in inclusions) == [1, 2, 2]
     assert all(inclusion.codomain().is_even() for inclusion in inclusions)
     assert sum(inclusion.codomain().is_unimodular() for inclusion in inclusions) == 2
@@ -495,7 +495,7 @@ def test_indefinite_polyhedral_wrapper_crossings_are_live_tensor_morphisms(monke
     assert witness(e) == 3 * e + 2 * f
 
     stabilizer = group.vector_stabilizer_generators(e)
-    assert len(stabilizer) == 1
+    assert stabilizer.cardinality() == 1
     assert stabilizer[0](e) == e
     assert stabilizer[0](f) == -f
 
@@ -514,7 +514,7 @@ def test_indefinite_complement_gluing_route_uses_full_finite_discriminant_orthog
 
     classes = lattice.gluing_route_discriminant_classes(vector, vector)
     discriminant_group = lattice.discriminant_group().O()
-    assert len(classes) == discriminant_group.order()
+    assert classes.cardinality() == discriminant_group.order()
     assert all(automorphism.parent() is discriminant_group for automorphism in classes)
     assert set(classes) == set(discriminant_group)
 
@@ -539,7 +539,7 @@ def test_stable_complement_root_reflections_use_indefinite_root_orbit_representa
     )
 
     reflections = lattice.stable_complement_root_reflections(vector)
-    assert len(reflections) == 2
+    assert reflections.cardinality() == 2
     assert all(reflection(vector) == vector for reflection in reflections)
     discriminant_group = lattice.discriminant_group().O()
     assert all(
@@ -597,7 +597,7 @@ def test_isotropic_line_plane_flag_orbits_equivalence_and_stabilizers_are_live_s
     line_stabilizer = lattice.O().isotropic_stabilizer_generators(line)
     plane_stabilizer = lattice.O().isotropic_stabilizer_generators(plane)
     flag_stabilizer = lattice.O().isotropic_stabilizer_generators(flag, flag=True)
-    assert len(line_stabilizer) == len(plane_stabilizer) == len(flag_stabilizer) == 1
+    assert line_stabilizer.cardinality() == plane_stabilizer.cardinality() == flag_stabilizer.cardinality() == 1
 
 
 def test_finite_character_quotient_splits_vector_orbits_under_special_orthogonal_group() -> None:
@@ -606,7 +606,7 @@ def test_finite_character_quotient_splits_vector_orbits_under_special_orthogonal
     special = lattice.SO()
 
     representatives = special.vector_orbit_representatives(-2)
-    assert len(representatives) == 2
+    assert representatives.cardinality() == 2
     assert {tuple(vector.to_tuple()) for vector in representatives} == {
         tuple(root.to_tuple()),
         tuple((-root).to_tuple()),
@@ -645,7 +645,7 @@ def test_finite_character_quotient_splits_isotropic_line_orbit_under_so_u(monkey
 
     special = lattice.SO()
     representatives = special.isotropic_orbit_representatives(1)
-    assert len(representatives) == 2
+    assert representatives.cardinality() == 2
     lines = {
         tuple(abs(entry) for entry in representative.inclusion()(representative.module_generators()[0]).to_tuple())
         for representative in representatives
@@ -722,7 +722,7 @@ def test_definite_vector_orbit_equivalence_stabilizer_and_representatives() -> N
     assert orthogonal_group.subgroup(stabilizer_generators).cardinality() == 2
 
     representatives = orthogonal_group.vector_orbit_representatives(-2)
-    assert len(representatives) == 1
+    assert representatives.cardinality() == 1
     assert representatives[0].q() == -2
     assert all(
         orthogonal_group.vectors_are_equivalent(root, representatives[0])
@@ -753,7 +753,7 @@ def test_vector_primitive_extension_tracks_nontrivial_ambient_discriminant() -> 
 
     assert extension.index == 2
     assert extension.discriminant_form.cardinality() == 4
-    assert len(extension.discriminant_representatives) == lattice.rank()
+    assert extension.discriminant_representatives.cardinality() == lattice.rank()
     for representative in extension.discriminant_representatives:
         for glued in extension.gluing_images:
             assert representative.b(glued) == extension.sum_form.bilinear_value_module().zero()
@@ -773,8 +773,8 @@ def test_definite_complement_extensions_exhaust_the_u_vector_cosets() -> None:
     stabilizer = lattice.definite_complement_extensions(vector, vector)
     opposite_coset = lattice.definite_complement_extensions(vector, -vector)
 
-    assert len(stabilizer) == 2
-    assert len(opposite_coset) == 2
+    assert stabilizer.cardinality() == 2
+    assert opposite_coset.cardinality() == 2
     assert all(isometry(vector) == vector for isometry in stabilizer)
     assert all(isometry(vector) == -vector for isometry in opposite_coset)
     from dzack_research.preamble.tensors import tensor

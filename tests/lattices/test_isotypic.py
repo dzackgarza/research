@@ -24,7 +24,7 @@ def test_c2_integral_isotypic_decomposition_is_the_plus_minus_underlattice() -> 
     acted = GroupModule(module, group, action)
     decomposition = acted.isotypic_decomposition()
 
-    assert len(tuple(decomposition.isotypic_characters())) == 2
+    assert decomposition.isotypic_characters().cardinality() == 2
     assert decomposition.trivial_component().rank() == 1
     assert decomposition.nontrivial_components()[0].rank() == 1
     assert decomposition.index() == 2
@@ -50,7 +50,7 @@ def test_c3_integral_characters_are_grouped_into_rational_orbits() -> None:
     characters = acted.isotypic_characters()
     decomposition = acted.isotypic_decomposition()
 
-    assert len(characters) == 2
+    assert characters.cardinality() == 2
     assert sorted(character.degree() for character in characters) == [1, 2]
     assert decomposition.trivial_component().rank() == 1
     assert decomposition.nontrivial_components()[0].rank() == 2

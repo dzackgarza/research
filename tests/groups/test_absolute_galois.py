@@ -181,7 +181,7 @@ def test_finite_coordinates_restriction_maps_and_extension_cosets_obey_their_law
         inclusion,
         [candidate.action() for candidate in quotient_four],
     )
-    assert len(extensions) == 2
+    assert extensions.cardinality() == 2
     assert sigma.action() in extensions
 
     coset = group.lifts(restriction_four(frobenius**3))

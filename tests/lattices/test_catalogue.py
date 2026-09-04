@@ -102,7 +102,7 @@ def test_remaining_named_embeddings_are_primitive_and_form_preserving() -> None:
 
 def test_signature_block_search_enumerates_multisets_not_subsets() -> None:
     candidates = signature_orthogonal_sums((0, 4), (NamedLattices.A1, NamedLattices.D4))
-    assert len(candidates) == 2
+    assert candidates.cardinality() == 2
     assert all(candidate.signature_pair() == (0, 4) for candidate in candidates)
 
 

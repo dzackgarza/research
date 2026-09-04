@@ -9,7 +9,7 @@ from dzack_research.preamble.all import (
 
 
 def test_nikulin_table_has_all_75_rows_with_exact_invariants() -> None:
-    assert len(TwoElementary) == 75
+    assert TwoElementary.cardinality() == 75
     assert validate_two_elementary_table()
 
 
@@ -27,12 +27,12 @@ def test_block_search_recovers_the_hand_counted_rows() -> None:
     }
     for (rank, length, delta), expected in expected_counts.items():
         candidates = two_elementary_orthogonal_sums((1, rank - 1), length, delta)
-        assert len(candidates) == expected
+        assert candidates.cardinality() == expected
         assert all(candidate.two_elementary_invariants() == (rank, length, delta) for candidate in candidates)
 
 
 def test_alexeev_engel_table_rows_have_exact_negative_definite_invariants() -> None:
-    assert len(NegativeDefTwoElementary) == 51
+    assert NegativeDefTwoElementary.cardinality() == 51
     assert validate_negative_def_two_elementary_table()
 
 

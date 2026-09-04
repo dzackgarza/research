@@ -356,7 +356,7 @@ def test_real_quadratic_field_has_exact_embeddings_and_its_actual_galois_group()
     field = QuadraticField(5, "a")
 
     images = tuple(field.embedding_images(AA))
-    assert len(images) == 2
+    assert field.embedding_images(AA).cardinality() == 2
     assert all(image**2 == 5 for image in images)
     assert sum(images) == 0
     assert tuple(field.ramified_primes()) == (ZZ(5),)

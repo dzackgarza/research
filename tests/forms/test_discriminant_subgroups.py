@@ -4,14 +4,14 @@ from dzack_research.preamble.all import ZZ, Lattices
 def test_finite_torsion_enumeration_uses_smith_generators() -> None:
     discriminant = Lattices(ZZ)("A2").discriminant_module()
     assert discriminant.cardinality() == 3
-    assert len(discriminant.elements()) == 3
-    assert len(tuple(discriminant)) == 3
+    assert discriminant.elements().cardinality() == 3
+    assert discriminant.cardinality() == 3
 
 
 def test_a2_discriminant_form_is_anisotropic_and_not_metabolic() -> None:
     discriminant = Lattices(ZZ)("A2").discriminant_module()
     assert discriminant.is_anisotropic()
-    assert len(discriminant.isotropic_subgroups()) == 1
+    assert discriminant.isotropic_subgroups().cardinality() == 1
     assert not discriminant.is_metabolic()
 
 

@@ -49,5 +49,5 @@ def test_definite_genus_mass_and_class_number_are_exact() -> None:
     genus = Lattices(ZZ)("A2").genus()
 
     assert genus.class_number() == 1
-    assert len(genus.representatives()) == 1
+    assert genus.representatives().cardinality() == 1
     assert genus.mass() == ZZ(1) / 12
