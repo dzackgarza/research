@@ -482,17 +482,35 @@ class ModuleMorphism(Morphism):
             return NotImplemented
         return self + (-other)
 
-    def morphisms_agree(self, other) -> bool:
-        return self.parent().morphisms_agree(self, other)
-
     def _richcmp_(self, other, op):
+        r"""Decide equality from the source's chosen finite presentation.
+
+        Two linear maps agree exactly when they agree on a generating set, so
+        this is decidable when the source carries a chosen finite presentation
+        and not otherwise.
+        """
         from sage.structure.richcmp import op_EQ, op_NE
 
         if op not in (op_EQ, op_NE):
             return NotImplemented
         if not isinstance(other, ModuleMorphism) or other.parent() is not self.parent():
             return op == op_NE
-        equal = self.morphisms_agree(other)
+        if self is other:
+            return op == op_EQ
+        from dzack_research.preamble.categories.modules.pure.modules import (
+            ModulesWithChosenFinitePresentation,
+        )
+
+        domain = self.domain()
+        if domain not in ModulesWithChosenFinitePresentation(domain.base_ring()):
+            raise NotImplementedError(
+                "module-morphism equality is not decidable without a chosen finite presentation of the source"
+            )
+        equal = all(
+            self(domain.module_generator(label))
+            == other(domain.module_generator(label))
+            for label in domain.module_generating_set()
+        )
         return equal if op == op_EQ else not equal
 
     def __rmul__(self, scalar):
@@ -999,27 +1017,6 @@ class _ModuleHomsetCommonMethods:
 
     def evaluation(self, morphism, source_element):
         return self(morphism)(source_element)
-
-    def morphisms_agree(self, left, right) -> bool:
-        r"""Decide equality from the source's chosen finite presentation."""
-        if left.parent() is not self or right.parent() is not self:
-            return False
-        if left is right:
-            return True
-        from dzack_research.preamble.categories.modules.pure.modules import (
-            ModulesWithChosenFinitePresentation,
-        )
-
-        domain = self.domain()
-        if domain not in ModulesWithChosenFinitePresentation(self.base_ring()):
-            raise NotImplementedError(
-                "module-morphism equality is not decidable without a chosen finite presentation of the source"
-            )
-        return all(
-            left(domain.module_generator(label))
-            == right(domain.module_generator(label))
-            for label in domain.module_generating_set()
-        )
 
     def as_morphism(self, element):
         r"""Compatibility spelling: Hom elements already are morphisms."""

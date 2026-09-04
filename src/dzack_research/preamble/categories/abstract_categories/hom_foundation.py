@@ -20,18 +20,42 @@ class OwnedHomset(Homset):
             raise ValueError("this Hom parent does not represent endomorphisms of the stated object")
         return self.identity()
 
-    def morphisms_agree(self, left, right) -> bool:
-        r"""Decide equality by the Hom parent's represented equality law."""
-        if left.parent() is not self or right.parent() is not self:
-            return False
-        if left is right:
-            return True
-        try:
-            return bool(left == right)
-        except NotImplementedError as error:
-            raise NotImplementedError(
-                f"equality in {self} has no represented decision procedure"
-            ) from error
+
+__all__ = ["OwnedHomset", "UnderlyingSetHomset", "underlying_set_homset"]
+
+class UnderlyingSetHomset(OwnedHomset):
+    r"""Plain-function Homset used only when an owned category declares no stronger arrows."""
+
+    Element = SetMorphism
+
+    def __init__(self, domain, codomain) -> None:
+        Homset.__init__(self, domain, codomain, category=SageSets())
+
+    def _element_constructor_(self, datum):
+        if isinstance(datum, SetMorphism):
+            if datum.domain() is not self.domain() or datum.codomain() is not self.codomain():
+                raise ValueError("the set morphism has the wrong endpoints")
+            if datum.parent() is self:
+                return datum
+            datum = datum._call_
+        if not callable(datum):
+            raise TypeError("an underlying set map is supplied by a callable")
+        return SetMorphism(self, datum)
+
+    def identity(self):
+        if self.domain() is not self.codomain():
+            raise ValueError("identity requires equal endpoints")
+        return SetMorphism(self, lambda element: element)
 
 
-__all__ = ["OwnedHomset"]
+_underlying_set_homsets = {}
+
+def underlying_set_homset(domain, codomain):
+    r"""Return the identity-cached plain-function Homset on these endpoints."""
+    key = (id(domain), id(codomain))
+    cached = _underlying_set_homsets.get(key)
+    if cached is not None and cached.domain() is domain and cached.codomain() is codomain:
+        return cached
+    result = UnderlyingSetHomset(domain, codomain)
+    _underlying_set_homsets[key] = result
+    return result

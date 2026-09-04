@@ -1048,9 +1048,19 @@ class GroupHomomorphism(GroupMorphism_libgap):
     """A group homomorphism represented by Sage's maintained GAP morphism."""
 
     def __eq__(self, other):
+        r"""Decide equality on a finite generating family of the source."""
         if getattr(other, "parent", lambda: None)() is not self.parent():
             return False
-        return bool(self.parent().morphisms_agree(self, other))
+        if self is other:
+            return True
+        from dzack_research.preamble.categories.group.groups import _gap_model
+
+        source = _gap_model(self.domain())
+        return all(
+            self(_element_from_engine(self.domain(), generator))
+            == other(_element_from_engine(self.domain(), generator))
+            for generator in source.GeneratorsOfGroup()
+        )
 
     def __ne__(self, other):
         return not self == other
@@ -1183,21 +1193,6 @@ class GroupHomset(GroupHomset_libgap, CategoricalHomset):
             list(_gap_model(self.domain()).GeneratorsOfGroup()),
             [_element_to_engine(codomain, codomain(image)) for image in images],
             check=check,
-        )
-
-    def morphisms_agree(self, left, right) -> bool:
-        r"""Decide equality from a finite GAP generating family of the source."""
-        if left.parent() is not self or right.parent() is not self:
-            return False
-        if left is right:
-            return True
-        from dzack_research.preamble.categories.group.groups import _gap_model
-
-        source = _gap_model(self.domain())
-        return all(
-            left(_element_from_engine(self.domain(), generator))
-            == right(_element_from_engine(self.domain(), generator))
-            for generator in source.GeneratorsOfGroup()
         )
 
     def _repr_(self):

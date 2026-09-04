@@ -827,13 +827,6 @@ class SparseFreeAlgebraMorphism(Morphism):
     def __call__(self, element):
         return self._call_(element)
 
-    def morphisms_agree(self, other) -> bool:
-        from dzack_research.preamble.categories.algebras.algebras import (
-            algebra_morphisms_agree,
-        )
-
-        return algebra_morphisms_agree(self, other)
-
     def __mul__(self, other):
         return compose_with_free_construction(self, other)
 

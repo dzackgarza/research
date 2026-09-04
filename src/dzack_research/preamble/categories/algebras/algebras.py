@@ -617,15 +617,6 @@ class CommutativeAlgebraPushouts(OwnedCategoryOverBaseRing):
             return self.Mor(target)(images)
 
 
-def algebra_morphisms_agree(left, right) -> bool:
-    r"""Decide equality through the canonical algebra Hom parent."""
-    if left.domain() is not right.domain() or left.codomain() is not right.codomain():
-        return False
-    if left.parent() is not right.parent():
-        return False
-    return left.parent().morphisms_agree(left, right)
-
-
 
 class AlgebraMorphism(Morphism):
     r"""An ``R``-algebra morphism specified by the images of algebra generators."""
@@ -784,17 +775,30 @@ class AlgebraMorphism(Morphism):
             self._generator_images.__getitem__,
         )
 
-    def morphisms_agree(self, other) -> bool:
-        return self.parent().morphisms_agree(self, other)
-
     def _richcmp_(self, other, op):
+        r"""Decide equality from the source's chosen algebra generating set.
+
+        Two algebra morphisms agree exactly when they agree on generators, so
+        this is decidable when the source is framed and not otherwise.
+        """
         from sage.structure.richcmp import op_EQ, op_NE
 
         if op not in (op_EQ, op_NE):
             return NotImplemented
         if not isinstance(other, AlgebraMorphism) or other.parent() is not self.parent():
             return op == op_NE
-        equal = self.morphisms_agree(other)
+        if self is other:
+            return op == op_EQ
+        domain = self.domain()
+        if domain not in FramedAlgebras(domain.base_ring()):
+            raise NotImplementedError(
+                "algebra-morphism equality requires a chosen algebra generating set"
+            )
+        equal = all(
+            self(domain.algebra_generator(label))
+            == other(domain.algebra_generator(label))
+            for label in domain.algebra_generating_set()
+        )
         return equal if op == op_EQ else not equal
 
     def __mul__(self, other):
@@ -891,9 +895,6 @@ class PresentedAlgebraMorphism(Morphism):
     def __call__(self, element):
         return self._call_(element)
 
-    def morphisms_agree(self, other) -> bool:
-        return self.parent().morphisms_agree(self, other)
-
     def __mul__(self, other):
         if other.codomain() is not self.domain():
             return NotImplemented
@@ -913,22 +914,6 @@ class _AlgebraHomsetCommonMethods:
     def _from_degree_preserving_generator_map(self, images):
         r"""Construct from a structurally degree-preserving generator map."""
         return self(images)
-
-    def morphisms_agree(self, left, right) -> bool:
-        if left.parent() is not self or right.parent() is not self:
-            return False
-        if left is right:
-            return True
-        domain = self.domain()
-        if domain not in FramedAlgebras(domain.base_ring()):
-            raise NotImplementedError(
-                "algebra-morphism equality requires a chosen algebra generating set"
-            )
-        return all(
-            left(domain.algebra_generator(label))
-            == right(domain.algebra_generator(label))
-            for label in domain.algebra_generating_set()
-        )
 
 
 class PresentedAlgebraHomset(_AlgebraHomsetCommonMethods, CategoricalHomset):

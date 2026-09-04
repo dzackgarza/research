@@ -174,6 +174,25 @@ class FormedModuleMorphism(Morphism):
     def _call_(self, element):
         return self.module_morphism()(element)
 
+    def __eq__(self, other) -> bool:
+        r"""A formed morphism is the pair ``(f,h)``; both components decide."""
+        if not isinstance(other, FormedModuleMorphism):
+            return False
+        if self is other:
+            return True
+        if self.parent() is not other.parent():
+            return False
+        return (
+            self.module_morphism() == other.module_morphism()
+            and self.value_morphism() == other.value_morphism()
+        )
+
+    def __ne__(self, other) -> bool:
+        return not self == other
+
+    def __hash__(self) -> int:
+        return hash((id(self.parent()), id(self.module_morphism())))
+
     def __mul__(self, other):
         if not isinstance(other, FormedModuleMorphism):
             return NotImplemented
@@ -286,30 +305,6 @@ class FormedModuleHomset(CategoricalHomset):
                 module_homset(values, values).identity(),
             )
         )
-
-    def morphisms_agree(self, left, right) -> bool:
-        r"""Decide equality of two formed morphisms by their two components.
-
-        A morphism of formed modules is the pair ``(f,h)``, so two of them
-        agree exactly when both components do.  Each component is decided by
-        the Hom object it belongs to, which is where that decision procedure
-        lives.
-        """
-        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
-
-        if left.parent() is not self or right.parent() is not self:
-            return False
-        if left is right:
-            return True
-        modules = module_homset(self.domain(), self.codomain())
-        if not modules.morphisms_agree(left.module_morphism(), right.module_morphism()):
-            return False
-        values = module_homset(
-            _represented_value_module(self.domain()),
-            _represented_value_module(self.codomain()),
-        )
-        return values.morphisms_agree(left.value_morphism(), right.value_morphism())
-
 
 class FormedModuleHomCategoryConstruction(HomCategoryConstruction):
     def fixed_category_class(self):

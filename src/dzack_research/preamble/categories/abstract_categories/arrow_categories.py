@@ -10,17 +10,6 @@ from sage.categories.sets_cat import Sets as SageSets
 from sage.structure.parent import Parent
 
 
-def _morphisms_agree(left, right) -> bool:
-    r"""Decide equality through the unique Hom parent of the two arrows."""
-    if left.domain() is not right.domain() or left.codomain() is not right.codomain():
-        return False
-    if left is right:
-        return True
-    if left.parent() is not right.parent():
-        return False
-    return bool(left.parent().morphisms_agree(left, right))
-
-
 def _identity_morphism_in_theory(arrow, obj):
     r"""Return the identity at ``obj`` from the Hom theory containing ``arrow``."""
     return arrow.parent().identity_at(obj)
@@ -68,7 +57,7 @@ class CommutativeSquare(Morphism):
             raise ValueError("the left edge has the wrong square endpoints")
         if right.domain() is not source.codomain() or right.codomain() is not target.codomain():
             raise ValueError("the right edge has the wrong square endpoints")
-        if not _morphisms_agree(right * source, target * left):
+        if right * source != target * left:
             raise ValueError("the square does not commute")
         self._left = left
         self._right = right
@@ -81,6 +70,22 @@ class CommutativeSquare(Morphism):
 
     def components(self):
         return self.left(), self.right()
+
+    def __eq__(self, other) -> bool:
+        r"""Two commuting squares agree when both of their edges do."""
+        if not isinstance(other, CommutativeSquare):
+            return False
+        if self is other:
+            return True
+        if self.parent() is not other.parent():
+            return False
+        return self.left() == other.left() and self.right() == other.right()
+
+    def __ne__(self, other) -> bool:
+        return not self == other
+
+    def __hash__(self) -> int:
+        return hash((id(self.parent()), id(self.left()), id(self.right())))
 
     def __mul__(self, other):
         if other.codomain() is not self.domain():
@@ -124,15 +129,6 @@ class ArrowHomset(CategoricalHomset):
 
     def identity_at(self, obj):
         return self.arrow_category().Mor(obj, obj).identity()
-
-    def morphisms_agree(self, left, right) -> bool:
-        if left.parent() is not self or right.parent() is not self:
-            return False
-        if left is right:
-            return True
-        return _morphisms_agree(left.left(), right.left()) and _morphisms_agree(
-            left.right(), right.right()
-        )
 
 
 class ArrowCategory(Category):
@@ -215,7 +211,7 @@ class SliceHomset(ArrowHomset):
             raise ValueError("slice objects require one fixed codomain")
         identity = self.arrow_category().base_category().Mor(fixed, fixed).identity()
         if right is not None:
-            if not _morphisms_agree(right, identity):
+            if right != identity:
                 raise ValueError("the fixed edge of a slice morphism is the identity")
         return CommutativeSquare(self, factor, identity)
 
@@ -262,7 +258,7 @@ class CosliceHomset(ArrowHomset):
             raise ValueError("coslice objects require one fixed domain")
         identity = self.arrow_category().base_category().Mor(fixed, fixed).identity()
         if left is not None:
-            if not _morphisms_agree(left, identity):
+            if left != identity:
                 raise ValueError("the fixed edge of a coslice morphism is the identity")
         return CommutativeSquare(self, identity, factor)
 
@@ -369,7 +365,7 @@ class SubobjectMorphism(Morphism):
             raise ValueError("the subobject factor has the wrong codomain")
         left = self.codomain().inclusion() * factor_morphism
         right = self.domain().inclusion()
-        if not _morphisms_agree(left, right):
+        if left != right:
             raise ValueError("the subobject factor does not commute with the inclusions")
         self._factor_morphism = factor_morphism
 
@@ -552,50 +548,6 @@ class WideSubcategory(Category):
 
     def _repr_(self) -> str:
         return f"Wide subcategory of {self.base_category()} with arrows in {self.arrow_category()}"
-
-
-class CategoricalIsomorphism(Morphism):
-    r"""An isomorphism represented by mutually inverse arrows."""
-
-    def __init__(self, parent, forward, inverse, *, verify=True) -> None:
-        Morphism.__init__(self, parent)
-        if forward.domain() is not self.domain() or forward.codomain() is not self.codomain():
-            raise ValueError("the forward map has the wrong endpoints")
-        if inverse.domain() is not self.codomain() or inverse.codomain() is not self.domain():
-            raise ValueError("the inverse map has the wrong endpoints")
-        if verify:
-            if not _morphisms_agree(
-                inverse * forward,
-                _identity_morphism_in_theory(forward, self.domain()),
-            ):
-                raise ValueError("the stated inverse is not a left inverse")
-            if not _morphisms_agree(
-                forward * inverse,
-                _identity_morphism_in_theory(forward, self.codomain()),
-            ):
-                raise ValueError("the stated inverse is not a right inverse")
-        self._forward = forward
-        self._inverse = inverse
-
-    def forward(self):
-        return self._forward
-
-    def inverse(self):
-        return self._inverse
-
-    def __call__(self, element):
-        return self.forward()(element)
-
-    def _call_(self, element):
-        return self.forward()(element)
-
-    def __mul__(self, other):
-        if other.codomain() is not self.domain():
-            return NotImplemented
-        return core_mor(other.domain(), self.codomain())(
-            self.forward() * other.forward(),
-            other.inverse() * self.inverse(),
-        )
 
 
 class CoreHomset(CategoricalHomset):

@@ -109,7 +109,7 @@ class CoconeObject(Parent):
         return f"Cocone with apex {self.apex()} under {self.diagram()}"
 
 
-def _morphisms_agree_on_diagram(source, target, apex_map, cocone=False) -> bool:
+def _commutes_with_diagram(source, target, apex_map, cocone=False) -> bool:
     for index in source.diagram().domain().objects():
         if cocone:
             left = apex_map * source.costructure_morphism(index)
@@ -117,11 +117,7 @@ def _morphisms_agree_on_diagram(source, target, apex_map, cocone=False) -> bool:
         else:
             left = target.structure_morphism(index) * apex_map
             right = source.structure_morphism(index)
-        from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-            _morphisms_agree,
-        )
-
-        if not _morphisms_agree(left, right):
+        if left != right:
             return False
     return True
 
@@ -135,7 +131,7 @@ class ConeMorphism(Morphism):
             raise ValueError("the cone map has the wrong domain apex")
         if apex_map.codomain() is not self.codomain().apex():
             raise ValueError("the cone map has the wrong codomain apex")
-        if not _morphisms_agree_on_diagram(self.domain(), self.codomain(), apex_map):
+        if not _commutes_with_diagram(self.domain(), self.codomain(), apex_map):
             raise ValueError("the apex map does not commute with the cone legs")
         self._apex_map = apex_map
 
@@ -159,7 +155,7 @@ class CoconeMorphism(Morphism):
             raise ValueError("the cocone map has the wrong domain apex")
         if apex_map.codomain() is not self.codomain().apex():
             raise ValueError("the cocone map has the wrong codomain apex")
-        if not _morphisms_agree_on_diagram(
+        if not _commutes_with_diagram(
             self.domain(), self.codomain(), apex_map, cocone=True
         ):
             raise ValueError("the apex map does not commute with the cocone legs")

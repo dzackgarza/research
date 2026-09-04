@@ -158,6 +158,31 @@ class _Aleph:
 class OwnedSetMorphism(SetMorphism):
     r"""A set map whose composition remains in the canonical owned Set Hom."""
 
+    def __eq__(self, other) -> bool:
+        r"""Two set maps agree when they agree at every point.
+
+        That is decidable when the source is a finite enumerated set, and not
+        otherwise.
+        """
+        if not isinstance(other, SetMorphism):
+            return False
+        if self is other:
+            return True
+        if self.parent() is not other.parent():
+            return False
+        domain = self.domain()
+        if domain not in FiniteSets() or domain not in EnumeratedSets():
+            raise NotImplementedError(
+                "extensional equality of set maps is represented here for finite enumerated domains"
+            )
+        return all(self(element) == other(element) for element in domain)
+
+    def __ne__(self, other) -> bool:
+        return not self == other
+
+    def __hash__(self) -> int:
+        return hash((id(self.parent()), id(self)))
+
     def __mul__(self, other):
         if not isinstance(other, SetMorphism) or other.codomain() is not self.domain():
             return NotImplemented
@@ -197,18 +222,6 @@ class SetMorCategory(CategoricalHomset):
 
     def identity_at(self, obj):
         return Sets().Mor(obj, obj).identity()
-
-    def morphisms_agree(self, left, right) -> bool:
-        if left.parent() is not self or right.parent() is not self:
-            return False
-        if left is right:
-            return True
-        domain = self.domain()
-        if domain not in FiniteSets() or domain not in EnumeratedSets():
-            raise NotImplementedError(
-                "extensional equality of set maps is represented here for finite enumerated domains"
-            )
-        return all(left(element) == right(element) for element in domain)
 
     def _repr_(self):
         return f"Mor_Set({self.domain()}, {self.codomain()})"

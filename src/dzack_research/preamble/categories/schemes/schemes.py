@@ -118,7 +118,7 @@ class SchemeMorphism(Morphism):
 
     pullback_on_coordinate_algebras = coordinate_algebra_morphism
 
-    def morphisms_agree(self, other) -> bool:
+    def __eq__(self, other) -> bool:
         r"""Decide equality from represented pullbacks or the native carrier."""
         if not isinstance(other, SchemeMorphism):
             return False
@@ -129,14 +129,7 @@ class SchemeMorphism(Morphism):
         left_pullback = getattr(self, "_preamble_coordinate_algebra_morphism", None)
         right_pullback = getattr(other, "_preamble_coordinate_algebra_morphism", None)
         if left_pullback is not None and right_pullback is not None:
-            decider = getattr(left_pullback, "morphisms_agree", None)
-            if callable(decider):
-                return bool(decider(right_pullback))
-            from dzack_research.preamble.categories.algebras.algebras import (
-                algebra_morphisms_agree,
-            )
-
-            return algebra_morphisms_agree(left_pullback, right_pullback)
+            return bool(left_pullback == right_pullback)
         from sage.schemes.generic.morphism import SchemeMorphism_id
 
         left_native = self.native_morphism()

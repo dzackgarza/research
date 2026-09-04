@@ -506,10 +506,54 @@ class FixedRestrictedHomCategory(FixedHomCategory):
         return [base, *inherited]
 
 
+class CategoricalIsomorphism(Morphism):
+    r"""An isomorphism represented by mutually inverse arrows."""
+
+    def __init__(self, parent, forward, inverse, *, verify=True) -> None:
+        Morphism.__init__(self, parent)
+        if forward.domain() is not self.domain() or forward.codomain() is not self.codomain():
+            raise ValueError("the forward map has the wrong endpoints")
+        if inverse.domain() is not self.codomain() or inverse.codomain() is not self.domain():
+            raise ValueError("the inverse map has the wrong endpoints")
+        if verify:
+            left = inverse * forward
+            right = forward * inverse
+            if left != left.parent().identity():
+                raise ValueError("the stated inverse is not a left inverse")
+            if right != right.parent().identity():
+                raise ValueError("the stated inverse is not a right inverse")
+        self._forward = forward
+        self._inverse = inverse
+
+    def forward(self):
+        return self._forward
+
+    def inverse(self):
+        return self._inverse
+
+    def __call__(self, element):
+        return self.forward()(element)
+
+    def _call_(self, element):
+        return self.forward()(element)
+
+    def __mul__(self, other):
+        if not isinstance(other, CategoricalIsomorphism):
+            return NotImplemented
+        if other.codomain() is not self.domain():
+            return NotImplemented
+        forward = self.forward() * other.forward()
+        inverse = other.inverse() * self.inverse()
+        return CategoricalIsomorphism(
+            forward.parent(),
+            forward,
+            inverse,
+            verify=False,
+        )
+
+
 class FixedIsoCategory(FixedHomCategory):
     def accepts(self, arrow) -> bool:
-        from dzack_research.preamble.categories.abstract_categories.arrow_categories import CategoricalIsomorphism
-
         if not isinstance(arrow, CategoricalIsomorphism):
             return False
         if (
