@@ -2,6 +2,7 @@ r"""Arrow categories, commuting squares, cores, and slice-style categories."""
 
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
+    CategoricalIsomorphism,
     HomCategoryConstruction,
 )
 from sage.categories.category import Category
