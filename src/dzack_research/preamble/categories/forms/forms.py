@@ -12,7 +12,7 @@ from sage.categories.sets_cat import Sets
 from sage.structure.element import Element
 from sage.structure.parent import Parent
 
-from dzack_research.preamble.categories.sets.indexed_families import (
+from dzack_research.preamble.categories.sets.coordinate_families import (
     coerce_family_value as _coerce_value,
     coordinate_family as _coordinate_family,
     coordinate_family_from_function as _coordinate_family_from_function,

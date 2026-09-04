@@ -13,7 +13,10 @@ latter may carry additional enrichment -- for example ``Hom_R(M,N)`` is an
 chosen category and endpoints.
 """
 
-from dzack_research.preamble.categories.abstract_categories.hom_foundation import OwnedHomset
+from dzack_research.preamble.categories.abstract_categories.hom_foundation import (
+    OwnedHomset,
+    underlying_set_homset,
+)
 from sage.categories.category import Category
 from sage.categories.homset import Hom, Homset
 from sage.categories.morphism import Morphism
@@ -37,17 +40,9 @@ def _category_homset(category, domain, codomain):
             return constructor(domain, codomain)
         except (TypeError, ValueError):
             pass
-    # Sets is a concrete category built on this machinery, so importing it at
-    # module scope would point an ancestor at a descendant (`STY-03`) and close
-    # a cycle.  It is needed only on these fallback paths.
-    from dzack_research.preamble.categories.sets.set_categories import Sets as _OwnedSets
-
     if isinstance(category, OwnedCategory):
-        return _OwnedSets().Mor(domain, codomain)
-    try:
-        return Hom(domain, codomain, category)
-    except (AttributeError, TypeError, ValueError):
-        return _OwnedSets().Mor(domain, codomain)
+        return underlying_set_homset(domain, codomain)
+    return Hom(domain, codomain, category)
 
 
 
@@ -599,11 +594,11 @@ class FixedIsoCategory(FixedHomCategory):
         if self.domain_object() is not self.codomain_object():
             raise ValueError("an automorphism category has equal endpoints")
         identity = self.arrow_set().identity()
-        from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-            Isomorphism,
+        return self(
+            CategoricalIsomorphism(
+                identity.parent(), identity, identity, verify=False
+            )
         )
-
-        return self(Isomorphism(identity, identity))
 
     one = identity_automorphism
 
@@ -619,11 +614,11 @@ class FixedIsoCategory(FixedHomCategory):
 class FixedAutCategory(FixedIsoCategory):
     def identity_automorphism(self):
         identity = self.arrow_set().identity()
-        from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-            Isomorphism,
+        return self(
+            CategoricalIsomorphism(
+                identity.parent(), identity, identity, verify=False
+            )
         )
-
-        return self(Isomorphism(identity, identity))
 
     one = identity_automorphism
 
@@ -827,11 +822,18 @@ class HomCategoryOf(Category):
         if domain not in self.base_category() or codomain not in self.base_category():
             raise TypeError("Hom endpoints must lie in the base category")
         # Endpoint identity, not a hash: hashing a Hom endpoint re-enters Hom
-        # construction, so Sage's cached_method recurses here.
+        # construction, so Sage's cached_method recurses here.  Endpoint
+        # refinement may strengthen the represented fixed-Hom carrier, so a
+        # cached parent is reusable only if it still has the selected class.
+        fixed_class = self.fixed_category_class_for(domain, codomain)
         cached = self._cached_between(domain, codomain)
         if cached is not None:
-            return cached
-        fixed_class = self.fixed_category_class_for(domain, codomain)
+            if (
+                self.FixedCategoryClass is FixedHomCategory
+                and fixed_class is FixedHomCategory
+            ) or isinstance(cached, fixed_class):
+                return cached
+            self._objects.pop((id(domain), id(codomain)), None)
         if self.FixedCategoryClass is FixedHomCategory and fixed_class is FixedHomCategory:
             inherited = []
             for supercategory in _packet_supercategories(self.base_category()):
@@ -1037,6 +1039,7 @@ __all__ = [
     "CategoryPacket",
     "CategoryPacketMethods",
     "CategoricalHomset",
+    "CategoricalIsomorphism",
     "EndCategoryConstruction",
     "EndCategoryOf",
     "EpiCategoryConstruction",

@@ -235,6 +235,43 @@ class PredicateSubrings(OwnedCategory):
             return f"{{z in {self._ambient_ring} : {self._description}}}"
 
 
+class LocalizationRings(OwnedCategory):
+    r"""Commutative localizations carrying their selected source and submonoid."""
+
+    def super_categories(self):
+        return [OwnedCommutativeRings()]
+
+    class ParentMethods:
+        def localization_source(self):
+            return self._preamble_localization_source
+
+        def localization_submonoid(self):
+            return self._preamble_localization_submonoid
+
+        def inverted_elements(self):
+            try:
+                return self.localization_submonoid().monoid_generators()
+            except NotImplementedError as error:
+                raise NotImplementedError(
+                    "this localization submonoid has no chosen finite generating set"
+                ) from error
+
+        def localization_map(self):
+            return self._preamble_localization_map
+
+        def localization_fraction_data(self, element):
+            r"""Return one represented fraction ``(r,s)`` for ``element=r/s``."""
+            value = self(element)
+            numerator = getattr(value, "numerator", None)
+            denominator = getattr(value, "denominator", None)
+            if numerator is None or denominator is None:
+                raise NotImplementedError(
+                    f"{self} has no represented numerator/denominator backend"
+                )
+            source = self.localization_source()
+            return source(numerator()), source(denominator())
+
+
 class _PredicateSubringParent(Parent):
     def __init__(self, ambient_ring, predicate, description, category):
         if ambient_ring not in SageRings() and ambient_ring not in OwnedRings():
@@ -399,24 +436,13 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             return self(value)
 
         def is_central(self, element):
-            r"""Return whether ``element`` is central when this is decidable here."""
+            r"""Return whether ``element`` is central in the foundational ring regimes."""
             if element not in self:
                 return False
             if self in OwnedCommutativeRings():
                 return True
-            from dzack_research.preamble.categories.algebras.algebras import (
-                FramedAlgebras,
-            )
-
-            if self not in FramedAlgebras(self.base_ring()):
-                raise NotImplementedError(
-                    f"{self} has no chosen algebra generating set from which "
-                    "centrality can be decided"
-                )
-            return all(
-                element * self.algebra_generator(label)
-                == self.algebra_generator(label) * element
-                for label in self.algebra_generating_set()
+            raise NotImplementedError(
+                f"{self} has no ring-theoretic centrality decision without selected higher structure"
             )
 
         @cached_method
@@ -924,6 +950,8 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
     is implementation state only; raw backend elements enter through
     ``_from_engine_element`` and leave through ``_engine_element``.
     """
+
+    _preamble_owned_ring_parent = True
 
     Element = _OwnedRingElement
 

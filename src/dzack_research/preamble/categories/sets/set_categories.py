@@ -255,6 +255,8 @@ class Sets(OwnedCategory):
     behavior, but the mathematical supercategory edge is entirely owned.
     """
 
+    _HomCategory = SetMorCategoryConstruction
+
     Δ = _Delta()
     ℵ = _Aleph()
     א = ℵ
@@ -1550,18 +1552,19 @@ class NaturalNumber(Element):
 
     def __init__(self, parent, value) -> None:
         Element.__init__(self, parent)
-        # The element constructor is the one boundary that admits foreign data,
-        # so it decides what the argument is.  A session numeral is an element
-        # of the owned integers; Sage's own integers stay out.  Rings are built
-        # on sets, so naming that ring here is a call-time reference, not a
-        # module-scope edge from an ancestor to a descendant.
-        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+        # This constructor is an ingress boundary.  It accepts the owned
+        # integer view without importing the higher ring theory back into Sets;
+        # the ring carrier exposes only this private runtime marker/engine pair.
         from sage.rings.integer_ring import ZZ as _SageZZ
 
         if isinstance(value, NaturalNumber):
             value = int(value)
         elif isinstance(value, SageObject):
-            if element_parent(value) is not _own_ring(_SageZZ):
+            parent = element_parent(value)
+            if not (
+                bool(getattr(parent, "_preamble_owned_ring_parent", False))
+                and getattr(parent, "_engine", None) is _SageZZ
+            ):
                 raise TypeError(
                     "raw backend integers are not accepted by the owned natural numbers"
                 )

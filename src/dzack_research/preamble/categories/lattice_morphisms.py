@@ -45,6 +45,7 @@ class LatticeMorphism(ModuleMorphism):
         )
 
 
+
 class LatticeEmbedding(LatticeMorphism):
     r"""A form-preserving monomorphism of lattices."""
 

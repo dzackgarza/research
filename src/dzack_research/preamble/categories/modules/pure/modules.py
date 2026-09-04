@@ -23,6 +23,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedRings,
     _engine_ring,
     _owned_ring,
+    LocalizationRings,
 )
 from dzack_research.preamble.categories.sets.set_categories import (
     CartesianProductOfSets,
@@ -66,22 +67,7 @@ class ModuleHomCategoryConstruction(HomCategoryConstruction):
         return ModuleHomset
 
     def fixed_category_class_for(self, domain, codomain):
-        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-            ModuleHomset,
-            TensorProductModuleHomset,
-        )
-
-        ring = domain.base_ring()
-        if domain in TensorProductModules(ring):
-            return TensorProductModuleHomset
-        from dzack_research.preamble.categories.modules.powers import (
-            DividedSquareModules,
-            QuadraticModuleHomset,
-        )
-
-        if domain in DividedSquareModules(ring):
-            return QuadraticModuleHomset
-        return ModuleHomset
+        return domain._module_homset_class()
 
 
 class LinearEndCategoryConstruction(EndCategoryConstruction):
@@ -182,6 +168,14 @@ class Modules(OwnedCategoryOverBaseRing):
 
         def module_category(self):
             return Modules(self.base_ring())
+
+        def _module_homset_class(self):
+            r"""Return the canonical fixed-Hom carrier for maps out of this module type."""
+            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+                ModuleHomset,
+            )
+
+            return ModuleHomset
 
         def base_ring(self):
             selected = self.__dict__.get("_preamble_base_ring")
@@ -293,10 +287,6 @@ class Modules(OwnedCategoryOverBaseRing):
             ring-localization convenience API.
             """
             ring = self.base_ring()
-            from dzack_research.preamble.categories.rings.commutative_algebra import (
-                LocalizationRings,
-            )
-
             if len(datum) == 1 and datum[0] in LocalizationRings():
                 localization_ring = datum[0]
                 if localization_ring.localization_source() is not ring:

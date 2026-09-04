@@ -26,6 +26,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedFields,
     OwnedLocalRings,
     OwnedNoetherianRings,
+    LocalizationRings,
     OwnedRings,
     _engine_element,
     _engine_ring,
@@ -666,59 +667,6 @@ class QuotientLocalizationComparison(SageObject):
         )
 
 
-class LocalizationRings(Category):
-    r"""Localizations ``S^{-1}R`` equipped with ``S -> (R,*)`` and ``R -> S^{-1}R``."""
-
-    def super_categories(self):
-        return [OwnedCommutativeRings()]
-
-    class ParentMethods:
-        def localize_module(self, module):
-            r"""Return ``S^{-1}M`` for this represented localization ``S^{-1}R``."""
-            from dzack_research.preamble.categories.functors.module_localization import (
-                module_localization_functor,
-            )
-
-            if module.base_ring() is not self.localization_source():
-                raise ValueError("the module has the wrong source ring for this localization")
-            return module_localization_functor(self)(module)
-
-        def localization_source(self):
-            return self._preamble_localization_source
-
-        def localization_submonoid(self):
-            return self._preamble_localization_submonoid
-
-        def inverted_elements(self):
-            try:
-                return self.localization_submonoid().monoid_generators()
-            except NotImplementedError as error:
-                raise NotImplementedError(
-                    "this localization submonoid has no chosen finite generating set"
-                ) from error
-
-        def localization_map(self):
-            return self._preamble_localization_map
-
-        def localization_fraction_data(self, element):
-            r"""Return one represented fraction ``(r,s)`` for ``element=r/s``.
-
-            This is a private computational presentation of an element of the
-            localization, not additional mathematical structure.  The active
-            Sage localization and fraction-field backends both expose exact
-            numerator/denominator data.
-            """
-            value = self(element)
-            numerator = getattr(value, "numerator", None)
-            denominator = getattr(value, "denominator", None)
-            if numerator is None or denominator is None:
-                raise NotImplementedError(
-                    f"{self} has no represented numerator/denominator backend"
-                )
-            source = self.localization_source()
-            return source(numerator()), source(denominator())
-
-
 class GeneralLocalizationRingElement(CommutativeRingElement):
     r"""A literal fraction ``r/s`` in a represented commutative localization."""
 
@@ -852,6 +800,16 @@ class GeneralLocalizationRingParent(Parent):
             lambda element: self.fraction(element),
         )
 
+    def localize_module(self, module):
+        r"""Return ``S^{-1}M`` through the module-localization theory."""
+        from dzack_research.preamble.categories.functors.module_localization import (
+            module_localization_functor,
+        )
+
+        if module.base_ring() is not self.localization_source():
+            raise ValueError("the module has the wrong source ring for this localization")
+        return module_localization_functor(self)(module)
+
     def _valid_denominator(self, denominator) -> bool:
         try:
             return denominator in self.localization_submonoid()
@@ -983,6 +941,16 @@ class PrimeLocalizations(Category):
         return [OwnedLocalRings(), OwnedIntegralDomains()]
 
     class ParentMethods:
+        def localize_module(self, module):
+            r"""Return ``R_p tensor_R M`` through the module-localization theory."""
+            from dzack_research.preamble.categories.functors.module_localization import (
+                module_localization_functor,
+            )
+
+            if module.base_ring() is not self.localization_source():
+                raise ValueError("the module has the wrong source ring for this localization")
+            return module_localization_functor(self)(module)
+
         def localization_source(self):
             return self._preamble_localization_source
 

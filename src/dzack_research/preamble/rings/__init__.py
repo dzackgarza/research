@@ -1,5 +1,6 @@
 r"""Owned ring implementations and the public ring-construction surface."""
 
+from dzack_research.preamble.categories.rings.ring_foundation import LocalizationRings
 from sage.misc.cachefunc import cached_function
 
 from dzack_research.preamble.rings.real import (
@@ -78,7 +79,6 @@ from dzack_research.preamble.categories.rings.commutative_algebra import (
     FormalPowerSeriesRings,
     GeneratedIdealView,
     Localization,
-    LocalizationRings,
     PowerSeriesRing,
     PrimeIdealPoint,
     PrimeLocalization,
