@@ -29,6 +29,150 @@ Judge progress by `CONTRIBUTING.md` `DEV-36`.  The goal is source a mathematicia
 A measure is usable only as a differential signal beside its upstream Sage comparator, and only when it makes someone open a file and read it.
 Sage itself would fail several measures that look like defects here — its category package runs 154 of 229 modules in one dependency cycle — so an uncalibrated number is not evidence.
 
+## Priority 0.5 — Standing repairs, before the phase order resumes
+
+These are open defects in code that has already landed, plus two mathematical
+questions that must be answered before more code assumes an answer.
+They run ahead of Priorities 1–10 because each one makes the work below it
+unsound: a broken session import blocks every specimen, a sampled invariant
+proves nothing about the objects it does not name, and a duplicated Hom object
+is the defect the Mor conversion exists to remove.
+
+Order within this phase is 0.5.1, then 0.5.2, then 0.5.3, then 0.5.4.
+0.5.5 is answered before anything touches the code it governs, and 0.5.6 gates
+all of it.
+
+### 0.5.1 Four Hom objects claim to be the ambient Mor
+
+`ConnectionSpace` and `ConnectionHomset` (`categories/modules/connections.py`),
+`DerivationSpace` and `GradedDerivationSpace`
+(`categories/algebras/derivations.py`), and `AbsoluteGaloisGroup`
+(`categories/group/profinite/absolute_galois_group.py`) left `OwnedHomset` by
+declaring `HomCategoryConstruction(<ambient category>)` and passing their own
+endpoints.
+
+`Modules(R).Mor(E, E ⊗ Ω)` and `OwnedFields().Mor(K̄, K̄)` already exist and are
+reached through `HomCategory().Of(...)`.
+So each of these is a second object for one category and one pair of endpoints
+— the split `tests/categories/test_mor_is_one_category.py` was written to
+forbid, and the same defect the formed-module Homsets had.
+`ConnectionSpace` and `DerivationSpace` show it in their own bodies: each
+stores an `_ambient_hom` built from `Modules(base).Mor(...)` beside the
+`CategoricalHomset` it declares itself to be.
+
+None of them is a Hom object in its own right.
+Each is a subcategory of its ambient Mor carved by a predicate — Leibniz for
+derivations and connections, fixing the structure map for the absolute Galois
+group — which is the shape `Monos`, `Epis`, `Isos` and `Auts` already have.
+`FixedRestrictedHomCategory` and the `Mono`/`Epi`/`Iso`/`Aut` constructions
+express it; construct these through that machinery rather than declaring a new
+Hom.
+This is the mathematical half of Priority 3 step 10, left undone when the
+mechanical half landed.
+
+### 0.5.2 Make the `Mor` invariant exhaustive rather than sampled
+
+`tests/categories/test_mor_is_one_category.py` asserts that `A.Mor(B)` is one
+interned category on seven hand-picked specimens: a finite ordinal, `ZZ`, a
+free module, `U`, a discriminant form, an affine plane, a polynomial algebra.
+"Every owned object" is unverified, and cannot be verified by adding specimens
+one at a time.
+
+The instrument that would make it exhaustive is the constructor-obligations
+sweep, which does not exist in the live tree:
+`test_constructors_meet_their_obligations.sage` is in
+`archives/preamble/tests/` only.
+`AGENTS.md` states as standing policy that every new constructor adds a row to
+its `_constructions()` table, so that policy is currently unmeetable.
+
+Restore the sweep on the live tree first.
+Then the `Mor` invariant is checked over construction paths instead of seven
+objects, and one table carries both audits.
+
+### 0.5.3 One cardinal sweep for `rank` and `cardinality`
+
+"A rank is a cardinal" and "cardinality is total on `Sets`, valued in
+cardinals" are one statement, and it is applied in one place.
+
+`rank` is a cardinal in `categories/modules/framed/framed_free_modules.py`.
+Elsewhere it is not:
+
+- `categories/modules/framed/finitely_generated/finitely_presented_modules.py`
+  returns `sum(1 for ...)`, a Python `int`;
+
+- `categories/isotropic_orbits.py` returns `lattice().base_ring()(len(...))`,
+  an owned ring element counted with `len`;
+
+- `categories/rings/number_fields.py` returns an owned `ZZ` element;
+
+- `categories/lattices.py` returns whatever the module it stores returns.
+
+`categories/modules/pure/modules.py` `rank()` is the rank of a matrix
+morphism.  That is a different notion and stays where it is; give it a name
+that says so.
+
+`cardinality` has 35 implementations.  `FiniteOrdinalSet.cardinality()`
+(`categories/sets/set_categories.py`) returns the stored Python size, and
+`_FormalSymbols.cardinality()` (`categories/_lattice.py`) returns Sage's
+`Infinity`.  Call sites were normalized with `cardinal(...)` while passing
+through; the sources were not.  Repair the sources and delete the call-site
+normalization.
+
+Two more members of the same sweep:
+
+- `categories/rings/number_fields.py` `signature()` returns a bare pair
+  \((r_1, r_2)\) — the defect `signature_pair` already removed elsewhere.
+
+- `tensors/tensor.py` `tensor_order()` returns `len(...)` as a Python `int`,
+  where the number of index slots is a cardinal.  `upper_ranks` and
+  `lower_ranks` are still public names returning tuples; they were documented
+  as private plumbing and not renamed.
+
+### 0.5.4 One owned crossing for numerals entering Sage constructors
+
+`_engine_scalar` (`categories/rings/number_fields.py`), `_engine_dimension`
+(`categories/schemes/schemes.py`) and `_states_a_rank`
+(`categories/modules/framed/framed_free_modules.py`) are three near-identical
+helpers, each written at the point where the defect was met.
+
+They are one operation: an owned numeral crossing into a private Sage
+constructor that cannot read it.  The operation has no owned home, which is
+why it has three implementations.  `_states_a_rank`'s
+`isinstance(labels, (int, Integer))` is that absence showing through as a type
+probe.
+
+Give the crossing one owner and delete the three helpers.
+
+### 0.5.5 Two questions to answer before more code assumes an answer
+
+- **Equality of indexed families.**  `categories/sets/indexed_families.py`
+  defines no `__eq__`, so sites compare two shapes, two factor families, or
+  two invariant-factor families entrywise by hand.  Equality is decidable for
+  finite index sets and undecidable in general, so the answer is the
+  three-valued one, and nobody has made it.  Decide it before another site
+  hand-rolls its own comparison.
+
+- **Injectivity of a form embedding.**  `FormEmbedding.is_injective()`
+  (`categories/modules/framed/formed/form_modules.py`) returns `True`
+  unconditionally: a monomorphism by fiat.  The repo owns
+  `MonoCategoryConstruction`.  A form embedding should be an element of the
+  `Mono` subcategory carved out of `FormModules(R).Mor(...)`, where membership
+  states injectivity instead of a method asserting it.  This is the same shape
+  as the `is_form_morphism` question, which was answered.
+
+### 0.5.6 The live tree does not import
+
+`from dzack_research.preamble.all import *` fails while `catalogue.py` builds
+`NamedLattices.LK3.Aut()(...)` in its `Involutions` body: the block-dict
+images produce a 0-by-0 backend matrix, which `tensors/tensor.py` `pullback`
+then multiplies against the 22-by-22 form.
+
+Every specimen below depends on the session import, so this is repaired first.
+The working tree is dirty across roughly 126 files.  Commits `a7de990b`,
+`1af9bafb` and the checkpoint commit after them carry another agent's
+in-flight work under unrelated commit messages; the work is in history and
+nothing is lost.
+
 ## Priority 1 — High-confidence deletion and consolidation
 
 Do the large, already-identified reductions first.
@@ -151,7 +295,7 @@ After the preceding owners are stable:
 
 ### 1.8 Collapse the four enumerated symbolic-function parents
 
-**Status: not started.**
+**Status: complete.**
 
 `TODO-ORGANIZATION.md` §16.  `FourierCharacters`, `HermitePolynomials`, `LaurentMonomials`, and `SincTranslates` under `categories/sets/enumerated/` are four copies of one `UniqueRepresentation, Parent` implementation: infinite cardinality, `rank`/`unrank`, membership by attempting `rank`, unbounded enumeration, and symbolic indexed element construction.
 
@@ -230,6 +374,9 @@ The mathematical part is that several are not full Mor categories but **subcateg
 That is the same shape the packet already has for `Monos`, `Epis`, `Isos` and `Auts`: a predicate on a Mor category.
 None of these is a separate kind of object, and treating them as ones outside the Mor tree is what left them extending the Sage adapter.
 
+Those four classes plus `GradedDerivationSpace` have since taken the mechanical half only: each now declares `HomCategoryConstruction(<ambient category>)`, and so claims to *be* the ambient Mor rather than a subcategory of it.
+Priority 0.5.1 owns that repair, and it comes before the remaining conversions so that the rest are not built the same way.
+
 Step 9 must follow step 7: a probe cannot be deleted until the operation it gropes for exists at its owned owner.
 Do not set a target count for it — `DEV-36` and `DEV-32` govern.
 The count is 380 because nothing in this ladder owned the defect, not because a threshold was missed.
@@ -238,6 +385,7 @@ The count is 380 because nothing in this ladder owned the defect, not because a 
 
 The collection spine is already partly implemented.
 Complete the remaining **foundational** items from `TODO.md` before theory-specific collection cleanup.
+Priority 0.5.3 is the cardinal-valued half of this phase and runs ahead of it: `rank` and `cardinality` answer with cardinals before anything below builds on their answers.
 
 ### 4.1 Free framings
 
