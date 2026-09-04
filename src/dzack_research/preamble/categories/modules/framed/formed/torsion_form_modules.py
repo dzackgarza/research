@@ -53,7 +53,7 @@ def _gram_rows(gram, rank):
             )
         else:
             rows = tuple(
-                tuple(row) for row in (gram.rows() if hasattr(gram, "rows") else gram)
+                tuple(row) for row in gram.components()
             )
     else:
         rows = tuple(tuple(row) for row in gram)
@@ -549,7 +549,7 @@ def _engine_normal_form_key(form, *, quadratic: bool):
         SageQQ(engine._modulus),
         SageQQ(engine._modulus_qf),
         tuple(SageZZ(invariant) for invariant in normal.invariants()),
-        tuple(tuple(SageQQ(entry) for entry in row) for row in gram.rows()),
+        tuple(tuple(SageQQ(entry) for entry in row) for row in gram.components()),
     )
 
 

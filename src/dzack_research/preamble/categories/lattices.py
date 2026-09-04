@@ -82,7 +82,7 @@ class LatticeIsoCategoryConstruction(IsoCategoryConstruction):
 
 
 def _gram_key(gram):
-    return tuple(tuple(row) for row in gram.rows())
+    return tuple(tuple(row) for row in gram.components())
 
 
 def register_indecomposable_gram(name, gram):

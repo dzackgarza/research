@@ -1244,8 +1244,8 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
 
         if binary_available("INDEF_FORM_TestEquivalence"):
             witness_rows = indefinite_form_test_equivalence(
-                [list(row) for row in codomain_gram.rows()],
-                [list(row) for row in domain_gram.rows()],
+                [list(row) for row in codomain_gram.components()],
+                [list(row) for row in domain_gram.components()],
             )
             if witness_rows is None:
                 return True

@@ -422,12 +422,6 @@ class Tensor:
             return self is other
         return all(left == right for left, right in zip(self.list(), other.list(), strict=True))
 
-    def rows(self):
-        r"""Return component rows for a finite two-index tensor."""
-        if self.tensor_order() != 2:
-            raise TypeError("rows are defined only for a two-index tensor")
-        return tuple(tuple(row) for row in self.components())
-
     def change_ring(self, ring):
         r"""Change coefficients without changing tensor variance."""
         return tensor(
@@ -884,33 +878,18 @@ class _CoordinateTensor(ModuleElement, Tensor):
         r"""Return flattened components in index order."""
         return list(self._entries)
 
-    def rows(self):
-        r"""Return component rows for a two-index tensor.
-
-        These are component tuples, not row vectors in a module or dual.
-        """
-        if self.tensor_order() != 2:
-            raise TypeError("rows are defined only for a two-index tensor")
-        return tuple(tuple(row) for row in self.components())
-
-    def nrows(self):
-        if self.tensor_order() != 2:
-            raise TypeError("nrows is defined only for a two-index tensor")
-        return self._index_ranks()[0]
-
-    def ncols(self):
-        if self.tensor_order() != 2:
-            raise TypeError("ncols is defined only for a two-index tensor")
-        return self._index_ranks()[1]
-
     def is_symmetric(self) -> bool:
         r"""Return whether a square two-index tensor is symmetric in its slots."""
         if self.tensor_order() != 2:
             raise TypeError("symmetry here is defined for a two-index tensor")
-        rows, columns = self._index_ranks()
-        if rows != columns:
+        first_rank, second_rank = self._index_ranks()
+        if first_rank != second_rank:
             return False
-        return all(self[i, j] == self[j, i] for i in range(rows) for j in range(columns))
+        return all(
+            self[i, j] == self[j, i]
+            for i in range(first_rank)
+            for j in range(second_rank)
+        )
 
     def change_ring(self, ring):
         r"""Change scalar coefficients without changing tensor variance."""

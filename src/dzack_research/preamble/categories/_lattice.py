@@ -953,7 +953,7 @@ def discriminant_of_gram(gram: Tensor):
     n = int(rank)
     from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace
 
-    matrix = MatrixSpace(gram.base_ring(), n).from_rows(gram.rows())
+    matrix = MatrixSpace(gram.base_ring(), n).from_rows(gram.components())
     return (-1) ** (n * (n - 1) // 2) * matrix.determinant()
 
 
