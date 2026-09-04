@@ -25,10 +25,6 @@ from sage.misc.classcall_metaclass import typecall
 from sage.structure.sage_object import SageObject
 from sage.structure.parent import Parent
 
-from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-    CategoricalIsomorphism,
-)
-
 
 def _category_homset(category, domain, codomain):
     r"""Return the one represented Hom-set parent for ``category`` and endpoints."""
@@ -504,6 +500,8 @@ class FixedRestrictedHomCategory(FixedHomCategory):
 
 class FixedIsoCategory(FixedHomCategory):
     def accepts(self, arrow) -> bool:
+        from dzack_research.preamble.categories.abstract_categories.arrow_categories import CategoricalIsomorphism
+
         if not isinstance(arrow, CategoricalIsomorphism):
             return False
         if (

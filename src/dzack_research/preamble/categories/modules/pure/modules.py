@@ -118,7 +118,7 @@ class Modules(OwnedCategoryOverBaseRing):
         r"""Return the unique Hom-set ``Hom_R(domain,codomain)``."""
         if domain not in self or codomain not in self:
             raise TypeError("an R-module Hom requires two R-modules")
-        return module_homset(domain, codomain)
+        return self.HomCategory().Of(domain, codomain)
 
     def _refine_hom_parent(self, parent, *, full_internal_hom=False):
         r"""Install the selected module enrichment on one canonical Hom parent."""
@@ -527,12 +527,13 @@ class FinitelyGeneratedModules(OwnedCategoryOverBaseRing):
 
                 localized = self.localize_at_prime(point)
                 relation_tensor = localized.presentation_matrix()
+                relation_parent = relation_tensor.parent()
                 relation_rows = tuple(
                     tuple(
                         relation_tensor.matrix_entry(row_label, column_label)
-                        for column_label in relation_tensor.column_index_set()
+                        for column_label in relation_parent.column_index_set()
                     )
-                    for row_label in relation_tensor.row_index_set()
+                    for row_label in relation_parent.row_index_set()
                 )
                 residue = point.residue_field()
                 residue_engine = _engine_ring(residue)
@@ -606,7 +607,14 @@ class FinitelyGeneratedModules(OwnedCategoryOverBaseRing):
                 from sage.rings.integer_ring import ZZ as SageZZ
 
                 relation_tensor = presentation_matrix()
-                relation_rows = tuple(relation_tensor.rows())
+                relation_parent = relation_tensor.parent()
+                relation_rows = tuple(
+                    tuple(
+                        relation_tensor.matrix_entry(row_label, column_label)
+                        for column_label in relation_parent.column_index_set()
+                    )
+                    for row_label in relation_parent.row_index_set()
+                )
                 residue = ring.residue_field()
                 residue_engine = _engine_ring(residue)
                 residue_map = ring.residue_map()

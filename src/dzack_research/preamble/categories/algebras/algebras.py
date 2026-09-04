@@ -117,7 +117,7 @@ class Algebras(OwnedCategoryOverBaseRing):
         r"""Return the unique Hom-set ``Hom_{R-Alg}(domain,codomain)``."""
         if domain not in self or codomain not in self:
             raise TypeError("an R-algebra Hom requires two R-algebras")
-        return algebra_homset(domain, codomain)
+        return self.HomCategory().Of(domain, codomain)
 
     _HomCategory = AlgebraHomCategoryConstruction
 
@@ -266,6 +266,8 @@ class AlgebrasWithChosenMultiplication(OwnedCategoryOverBaseRing):
 
 class CommutativeAlgebras(OwnedCategoryOverBaseRing):
     r"""Commutative associative unital algebras over ``R``."""
+
+    _HomCategory = AlgebraHomCategoryConstruction
 
     @classmethod
     def _repr_object_names(cls):

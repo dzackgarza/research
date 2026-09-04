@@ -204,6 +204,8 @@ Order within this phase:
 
 9. Make Hom categories own morphism equality, then delete the capability probes that currently stand in for the owned graph.
 
+10. Convert the remaining 28 `OwnedHomset` subclasses into Mor categories, and carve the predicate-defined ones as subcategories.
+
 Only after the foundational graph is stable should the same purity audit proceed through graded theories, forms, G-sets, divisors, lattices, Coxeter structures, schemes, and profinite groups.
 
 Step 9 owns `TODO-ORGANIZATION.md` §9 and §12, which are one repair.
@@ -214,6 +216,19 @@ What remains there is §12 in miniature — two `getattr`/`callable` capability 
 There are 380 `hasattr`/`getattr`/`callable` sites in the preamble; 178 of them are in **public mathematical methods**, and only 17 are in dunders that genuinely receive an arbitrary argument.
 In a closed universe (`CONTRIBUTING.md` `ARC-00`) a public mathematical method has no ingress to guard, so a probe there is not a check — it is a second, duck-typed type system beside the category graph.
 A public mathematical method asserts categorical membership; capability probing is confined to private engine adapters and to `__eq__`/`__contains__` and their kin.
+
+Step 10 finishes what `ARC-07` started.
+`Sets().Mor` and `OwnedRings().Mor` return categories; 28 classes still extend `OwnedHomset`, the private Sage adapter, and so return bare sets.
+The mechanical part is a Mor family per class -- a `HomCategoryConstruction` subclass whose `fixed_category_class` is that class -- with the category declaring it as `_HomCategory` and building through the family's interning `Of`, which is how `SetMorCategory` was converted in 3eb1c68e.
+
+The mathematical part is that several are not full Mor categories but **subcategories of one, carved by a predicate**, and each should be constructed that way rather than as a Hom object in its own right:
+
+- `DerivationSpace` is $\mathrm{Der}_R(A,M)$, whose own docstring calls it "the actual subobject of $\mathrm{Hom}_R(A, \mathrm{Res}_R M)$" -- the $R$-linear maps satisfying Leibniz.
+- `ConnectionSpace` and `ConnectionHomset`: a connection is a morphism $E \to E \otimes \Omega^1$, again cut out by Leibniz.
+- `AbsoluteGaloisGroup` is $\mathrm{Aut}_{K\text{-Alg}}(\bar K)$, the automorphisms of an object of the coslice $(K/\mathbf{Fields})$ -- stated in its docstring and in the name of its own test.
+
+That is the same shape the packet already has for `Monos`, `Epis`, `Isos` and `Auts`: a predicate on a Mor category.
+None of these is a separate kind of object, and treating them as ones outside the Mor tree is what left them extending the Sage adapter.
 
 Step 9 must follow step 7: a probe cannot be deleted until the operation it gropes for exists at its owned owner.
 Do not set a target count for it — `DEV-36` and `DEV-32` govern.
