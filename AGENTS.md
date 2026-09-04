@@ -55,8 +55,8 @@ These are implementation prerequisites: use them to identify already-planned rem
 
 - For any notebook inspection, execution, or result-checking, use `japi` (from `jupyter-assistant-api`) rather than direct Notebook HTTP API calls.
 - `japi` is the required interface for reading cells, restarting kernels, and verifying rendered results in `computations/notebooks/` during development and debugging.
-- Skip test, QC, build, execution, and rendered-result verification for changes confined to `computations/notebooks/` or `src/dzack_research/preamble/`.
-- Commit those changes with verification hooks skipped; do not let unrelated repository failures block notebook or preamble work.
+- Skip test, QC, build, execution, and rendered-result verification for changes confined to `computations/notebooks/`, `src/dzack_research/preamble/`, or repository prose — the `docs/` book and the root `*.md` policy and TODO files.
+- Commit those changes with verification hooks skipped; do not let unrelated repository failures block that work.  The commit gate is whole-repo, so a red tree anywhere freezes every commit; a change that touches no Python cannot regress it.
 
 # Goal-integrity routing (always-on)
 
