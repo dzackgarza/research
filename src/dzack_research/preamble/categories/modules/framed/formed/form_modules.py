@@ -52,132 +52,6 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 )
 
 
-class FormMorphism(ModuleMorphism):
-    r"""A linear morphism verified to preserve the equipped forms exactly."""
-
-    def __init__(self, parent, images) -> None:
-        if isinstance(images, ModuleMorphism):
-            images = lambda element, morphism=images: morphism(element)
-            elementwise = True
-        else:
-            elementwise = False
-        ModuleMorphism.__init__(
-            self,
-            parent,
-            images,
-            elementwise=elementwise,
-            verify_linearity=not elementwise,
-        )
-        source = self.domain()
-        target = self.codomain()
-        generators = tuple(source.module_generators())
-        source_form = source.form()
-        target_form = target.form()
-        if _is_quadratic_form(source_form):
-            if not _is_quadratic_form(target_form):
-                raise TypeError("a quadratic form morphism requires quadratic endpoints")
-            probes = generators + tuple(
-                left + right
-                for index, left in enumerate(generators)
-                for right in generators[index + 1 :]
-            )
-            if any(source.q(element) != target.q(self(element)) for element in probes):
-                raise ValueError("the stated morphism does not preserve the quadratic form")
-        elif _is_bilinear_form(source_form):
-            if not _is_bilinear_form(target_form):
-                raise TypeError("a bilinear form morphism requires bilinear endpoints")
-            if any(
-                source.b(left, right) != target.b(self(left), self(right))
-                for left in generators
-                for right in generators
-            ):
-                raise ValueError("the stated morphism does not preserve the bilinear form")
-        else:
-            raise TypeError("a strict form morphism requires bilinear or quadratic forms")
-
-
-class StrictFormHomset(CategoricalHomset):
-    r"""The strict form-preserving Hom set on fixed formed endpoints."""
-
-    Element = FormMorphism
-
-    def __init__(self, domain, codomain) -> None:
-        CategoricalHomset.__init__(
-            self,
-            HomCategoryConstruction(FormModules(domain.base_ring())),
-            domain,
-            codomain,
-        )
-
-    def _element_constructor_(self, images):
-        if isinstance(images, FormMorphism) and images.parent() is self:
-            return images
-        return self.element_class(self, images)
-
-    def identity(self):
-        if self.domain() is not self.codomain():
-            raise ValueError("identity belongs to a strict form endomorphism Hom set")
-        return self(lambda element: element)
-
-
-def strict_form_homset(domain, codomain):
-    if domain.base_ring() != codomain.base_ring():
-        raise ValueError("strict form morphisms require one base ring")
-    return StrictFormHomset(domain, codomain)
-
-
-class FormEmbedding(FormMorphism):
-    r"""A form-preserving morphism declared to be a monomorphism."""
-
-    def __init__(self, parent, images, *, quadratic: bool) -> None:
-        FormMorphism.__init__(self, parent, images)
-        self._quadratic = bool(quadratic)
-        source = self.domain()
-        target = self.codomain()
-        generators = tuple(source.module_generators())
-        if self._quadratic:
-            probes = generators + tuple(
-                left + right
-                for index, left in enumerate(generators)
-                for right in generators[index + 1 :]
-            )
-            if any(source.q(element) != target.q(self(element)) for element in probes):
-                raise ValueError("the stated embedding does not preserve the quadratic form")
-        elif any(
-            source.b(left, right) != target.b(self(left), self(right))
-            for left in generators
-            for right in generators
-        ):
-            raise ValueError("the stated embedding does not preserve the bilinear form")
-
-    def is_injective(self) -> bool:
-        return True
-
-    def is_quadratic(self) -> bool:
-        return self._quadratic
-
-
-def form_embedding(domain, codomain, images, *, quadratic: bool | None = None) -> FormEmbedding:
-    r"""Construct a form-preserving monomorphism on a chosen framing.
-
-    The underlying module homset checks linearity and the selected relations.
-    The embedding specialization checks preservation of ``b`` or ``q`` on the
-    finite framing.  This works for both represented :class:`FormModule`
-    objects and discriminant-form objects, which intentionally have their own
-    structured-category realization rather than being wrappers around one.
-    """
-    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
-
-    if quadratic is None:
-        ring = domain.base_ring()
-        quadratic = domain in QuadraticFormModules(ring)
-    return FormEmbedding(
-        module_homset(domain, codomain),
-        images,
-        quadratic=quadratic,
-    )
-
-
 def _represented_value_module(formed_module):
     r"""Return the actual module object underlying a form's public value object.
 
@@ -229,8 +103,8 @@ class FormedModuleMorphism(Morphism):
 
     The datum is a pair ``(f,h)`` with a module map on the underlying modules
     and a module map on the value objects, satisfying the form square.  The
-    stricter :class:`FormMorphism` remains the separate notion where ``h`` is
-    the identity and the form is preserved exactly.
+    form is preserved exactly, and the morphism is an isometry onto its image,
+    exactly when ``h`` is the identity; :func:`is_form_morphism` asks that.
     """
 
     def __init__(self, parent, module_morphism, value_morphism) -> None:
@@ -313,6 +187,46 @@ class FormedModuleMorphism(Morphism):
         )
 
 
+class FormEmbedding(FormedModuleMorphism):
+    r"""A formed morphism declared to be a monomorphism."""
+
+    def __init__(self, parent, module_morphism, value_morphism, *, quadratic: bool) -> None:
+        FormedModuleMorphism.__init__(self, parent, module_morphism, value_morphism)
+        self._quadratic = bool(quadratic)
+
+    def is_injective(self) -> bool:
+        return True
+
+    def is_quadratic(self) -> bool:
+        return self._quadratic
+
+
+def form_embedding(domain, codomain, images, *, quadratic: bool | None = None) -> FormEmbedding:
+    r"""Construct a form-preserving monomorphism on a chosen framing.
+
+    The underlying module homset checks linearity and the selected relations.
+    The form square is checked by :class:`FormedModuleMorphism`, whose value
+    map is the identity here.  This works for both represented
+    :class:`FormModule` objects and discriminant-form objects, which
+    intentionally have their own structured-category realization rather than
+    being wrappers around one.
+    """
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
+
+    if quadratic is None:
+        ring = domain.base_ring()
+        quadratic = domain in QuadraticFormModules(ring)
+    values = _represented_value_module(domain)
+    if _represented_value_module(codomain) is not values:
+        raise TypeError("a form embedding keeps the value module")
+    return FormEmbedding(
+        formed_module_homset(domain, codomain),
+        module_homset(domain, codomain)(images),
+        module_homset(values, values).identity(),
+        quadratic=quadratic,
+    )
+
+
 class FormedModuleHomset(CategoricalHomset):
     Element = FormedModuleMorphism
 
@@ -361,6 +275,7 @@ class FormedModuleHomset(CategoricalHomset):
         module_morphism, value_morphism = datum
         return self.element_class(self, module_morphism, value_morphism)
 
+    @cached_method
     def identity(self):
         from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 
@@ -371,6 +286,29 @@ class FormedModuleHomset(CategoricalHomset):
                 module_homset(values, values).identity(),
             )
         )
+
+    def morphisms_agree(self, left, right) -> bool:
+        r"""Decide equality of two formed morphisms by their two components.
+
+        A morphism of formed modules is the pair ``(f,h)``, so two of them
+        agree exactly when both components do.  Each component is decided by
+        the Hom object it belongs to, which is where that decision procedure
+        lives.
+        """
+        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
+
+        if left.parent() is not self or right.parent() is not self:
+            return False
+        if left is right:
+            return True
+        modules = module_homset(self.domain(), self.codomain())
+        if not modules.morphisms_agree(left.module_morphism(), right.module_morphism()):
+            return False
+        values = module_homset(
+            _represented_value_module(self.domain()),
+            _represented_value_module(self.codomain()),
+        )
+        return values.morphisms_agree(left.value_morphism(), right.value_morphism())
 
 
 class FormedModuleHomCategoryConstruction(HomCategoryConstruction):
@@ -733,7 +671,7 @@ class FormModules(OwnedCategoryOverBaseRing):
 
         def Mor(self, codomain, category=None):
             if category is None and codomain in FormModules(self.base_ring()):
-                return strict_form_homset(self, codomain)
+                return formed_module_homset(self, codomain)
             from sage.categories.homset import Hom as SageHom
             return SageHom(self, codomain, category)
 
@@ -1339,4 +1277,24 @@ def _heterogeneous_pairing(pairing):
 
 
 def is_form_morphism(morphism) -> bool:
-    return isinstance(morphism, FormMorphism)
+    r"""Return whether a formed morphism preserves the form exactly.
+
+    A morphism of formed modules is a pair ``(f,h)``.  It preserves the form
+    exactly -- it is an isometry onto its image -- when ``h`` is the identity
+    of the value module.
+    """
+    if not isinstance(morphism, FormedModuleMorphism):
+        return False
+    value_morphism = morphism.value_morphism()
+    values = value_morphism.domain()
+    if value_morphism.codomain() is not values:
+        return False
+    # A Hom object has one identity, so this is object identity.  Comparing the
+    # two morphisms instead would ask for module-morphism equality, which is
+    # not decidable without a chosen finite presentation of the source, and the
+    # value module here is often Q/Z, which has no finite generating set.
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+        module_homset,
+    )
+
+    return value_morphism is module_homset(values, values).identity()

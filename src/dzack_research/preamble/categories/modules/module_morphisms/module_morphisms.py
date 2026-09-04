@@ -23,12 +23,6 @@ from dzack_research.preamble.categories.sets.set_categories import (
     CartesianProductOfSets,
     Sets,
 )
-from dzack_research.preamble.categories.sets.indexed_families import (
-    coordinate_family as _coordinate_family,  # noqa: F401 -- compatibility import for powers.py
-    coordinate_family_from_function as _coordinate_family_from_function,  # noqa: F401
-    coordinate_pair as _coordinate_pair,  # noqa: F401
-    finite_framing as _finite_framing,  # noqa: F401
-)
 from dzack_research.preamble.refine import refine
 
 
@@ -731,38 +725,31 @@ class ModuleMorphism(Morphism):
             return False
         return True
 
+
     def orthogonal_complement(self):
-        r"""Return ``im(self)^perp`` inside the formed codomain."""
+        r"""Return ``im(self)^perp`` when the codomain carries a scalar-valued pairing."""
         codomain = self.codomain()
         ring = codomain.base_ring()
-        from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
-            FormModules,
-        )
-
-        if codomain not in FormModules(ring):
-            raise TypeError("orthogonal complement requires a formed codomain")
         if codomain.value_module() is not ring:
             raise TypeError("this orthogonal-complement construction requires a scalar-valued form")
 
-        from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+        from dzack_research.preamble.categories.sets.set_categories import Sets
 
         source_generators = tuple(self.domain().module_generators())
-        target_labels = finite_ordered_set(range(len(source_generators)))
-        target = ring._fresh_free_module_on(target_labels)
+        labels = Sets.Δ[len(source_generators) - 1]
+        target = codomain._fresh_free_module_on(labels)
         pairing_map = module_homset(codomain, target)(
             {
                 label: target.linear_combination(
                     {
-                        position: codomain.b(
-                            codomain.module_generator(label),
-                            self(source_generator),
-                        )
+                        labels.unrank(position): coefficient
                         for position, source_generator in enumerate(source_generators)
-                        if codomain.b(
-                            codomain.module_generator(label),
-                            self(source_generator),
-                        )
-                        != ring.zero()
+                        if (
+                            coefficient := codomain.b(
+                                codomain.module_generator(label),
+                                self(source_generator),
+                            )
+                        ) != ring.zero()
                     }
                 )
                 for label in codomain.module_generating_set()
@@ -805,10 +792,23 @@ class ModuleMorphism(Morphism):
             }
         )
 
+    def _is_the_identity(self) -> bool:
+        r"""Return whether this morphism is its Hom object's identity."""
+        if self.domain() is not self.codomain():
+            return False
+        return self is module_homset(self.domain(), self.domain()).identity()
+
     def __mul__(self, other):
         if isinstance(other, ModuleMorphism):
             if other.codomain() is not self.domain():
                 return NotImplemented
+            # The identity is a two-sided unit.  That is a theorem, so the
+            # composite is the other factor itself rather than a fresh morphism
+            # that would then have to be compared with it.
+            if self._is_the_identity():
+                return other
+            if other._is_the_identity():
+                return self
             homset = module_homset(other.domain(), self.codomain())
             # Composition of certified linear maps is linear.  Keep that theorem
             # as construction data instead of rebuilding the composite from all
@@ -1035,7 +1035,14 @@ class _ModuleHomsetCommonMethods:
             verify_linearity=False,
         )
 
+    @cached_method
     def identity(self):
+        r"""Return the identity of this endomorphism Hom.
+
+        A Hom object has one identity.  Returning a fresh morphism on each call
+        makes it incomparable with itself, since module-morphism equality is
+        not decidable without a chosen finite presentation of the source.
+        """
         if self.domain() is not self.codomain():
             raise ValueError("identity is defined on an endomorphism homset")
         return self.elementwise(
