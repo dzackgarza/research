@@ -4643,6 +4643,28 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Correct Example**: close the coordinate constructor, put the operation on its mathematical owner, require the defining morphism/structure in the constructor, and keep one lightweight static inventory/report as a review aid.  Architecture is checked by source inspection and mathematical behavior, not by making the runtime suite prove the repository organization to itself.
 
+#### `DEV-36`: Judge Preamble Health Against Upstream Sage, Never Against Zero
+
+- **Rule**: The goal is source a mathematician can read against a definition.  Every numerical measure is a weak proxy for that goal, so a measure is admissible only as a differential signal naming a site to go and read, and only beside a calibrated comparator.  The comparator is upstream Sage under the same instrument (`python3 -m dzack_research.utilities.complexity_analysis <tree>`), never zero and never the previous run alone.  Report a measure with its comparator or do not report it.  Before treating any measure as a defect signal, establish that the healthy comparator does not exhibit it.
+
+- **Rationale**: A mathematical universe is intrinsically interconnected, so measures borrowed from ordinary software carry assumptions that do not hold here.  Acyclicity is the type case: `sage/categories` runs 154 of its 229 modules in one strongly-connected component and `sage/rings` 116 of 239, and both have been in service for over a decade.  Mutual reference between the set and ring layers is not evidence of a defect.  An uncalibrated measure invites optimizing a number that the field's own reference implementation would fail, which is `DEV-32` and `DEV-34` arriving through the assessment surface instead of the detector surface.
+
+- **Observed comparator** (`sage-dev-allopts` checkout, 2026-09-04):
+
+  | measure | `sage/categories` | `sage/rings` | what it is evidence for |
+  | --- | ---: | ---: | --- |
+  | largest strongly-connected component | 154 / 229 | 116 / 239 | **nothing** — cycles are normal here |
+  | imports through package aggregators | 3 | 63 | real: aggregator routing is avoidable and Sage largely avoids it |
+  | function complexity p90 / p95 / p99 / max | 4 / 7 / 14 / 49 | 7 / 10 / 23 / 70 | real: docstring-immune, counts branches a reader holds |
+  | non-code share of physical lines | 79% | 74% | real: worked mathematical examples per operation |
+
+  Function-length percentiles are **not** comparable across these trees.  Sage carries its doctests inside function bodies, so its lengths measure documentation, not logic.  Use complexity instead.
+
+- **Violation Example**: reporting a strongly-connected-component count as a health result; setting a target such as "reduce probe sites below 217"; treating a falling `tuple(...)` count as evidence that collection ownership improved, without opening a converted site; comparing this quarter's number to last quarter's with no external comparator.
+
+- **Correct Example**: measuring dependency direction against the mathematical dependency order — an import from `categories/rings/` up into `categories/modules/` is a signal, an import from `categories/modules/` down into `categories/rings/` is not — then reading the flagged file to decide whether the edge is a filing error or correct mathematics.  Quoting a complexity percentile beside Sage's.  Naming what a count made you go and read, and what you found there.
+
+
 
 * * *
 

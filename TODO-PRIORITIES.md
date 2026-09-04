@@ -35,6 +35,14 @@ file is scheduled for deletion/consolidation below. The collection spine already
 landed should be used by surviving abstractions; it should not motivate polishing
 code that will disappear.
 
+Judge progress by `CONTRIBUTING.md` `DEV-36`.  The goal is source a
+mathematician can read against a definition; every count is a weak proxy for
+that.  A measure is usable only as a differential signal beside its upstream
+Sage comparator, and only when it makes someone open a file and read it.  Sage
+itself would fail several measures that look like defects here — its category
+package runs 154 of 229 modules in one dependency cycle — so an uncalibrated
+number is not evidence.
+
 ## Priority 1 — High-confidence deletion and consolidation
 
 Do the large, already-identified reductions first. These remove code that would
@@ -63,9 +71,13 @@ usable.
 
 **Status: complete.**
 
-`categories/matrices.py` now owns the mathematical identification
+`categories/modules/pure/modules.py` now owns the mathematical identification
 
-`M_{m x n}(R) = Hom_R(F_R([n]), F_R([m]))`.
+`M_{m x n}(R) = Hom_R(F_R([n]), F_R([m]))`
+
+through the `MatrixSpaces` category.  (This lived in a `categories/matrices.py`
+that the Priority 3 purity pass folded into the module owner; the standalone
+file no longer exists.)
 
 Before auditing `tensors/tensor.py` for collection/style issues, remove the
 legacy second linear-map system from type-(1,1) tensors where the operation is
@@ -157,6 +169,23 @@ After the preceding owners are stable:
 - do not create another cache abstraction if an existing Sage cache or functor
   image cache already expresses the required identity semantics.
 
+### 1.8 Collapse the four enumerated symbolic-function parents
+
+**Status: not started.**
+
+`TODO-ORGANIZATION.md` §16.  `FourierCharacters`, `HermitePolynomials`,
+`LaurentMonomials`, and `SincTranslates` under `categories/sets/enumerated/`
+are four copies of one `UniqueRepresentation, Parent` implementation: infinite
+cardinality, `rank`/`unrank`, membership by attempting `rank`, unbounded
+enumeration, and symbolic indexed element construction.
+
+`function_sets.py` already owns `EnumeratedByNaturals`, `EnumeratedByIntegers`,
+and the index-conversion helpers; the abstraction stops one layer short of the
+shared indexed-symbol-set parent.  Introduce that parent and delete the four
+duplicates.
+
+This has no foundational dependency and may be taken at any point in Priority 1.
+
 ## Priority 2 — Expose the true dependency DAG (`ARC-11`)
 
 Only after the large deletion/consolidation pass should dependency cleanup begin
@@ -197,10 +226,33 @@ Order within this phase:
 7. Restore elementary methods that disappear when Sage supercategory edges are
    removed at their correct owned category owners.
 8. Add graph-purity specimens for the foundational graph.
+9. Make Hom categories own morphism equality, then delete the capability
+   probes that currently stand in for the owned graph.
 
 Only after the foundational graph is stable should the same purity audit proceed
 through graded theories, forms, G-sets, divisors, lattices, Coxeter structures,
 schemes, and profinite groups.
+
+Step 9 owns `TODO-ORGANIZATION.md` §9 and §12, which are one repair.  §9 has
+largely landed: `abstract_categories/arrow_categories.py::_morphisms_agree` is
+down to 42 lines and its scheme, group, and framed-module special cases are
+gone.  What remains there is §12 in miniature — two `getattr`/`callable`
+capability probes and a `FiniteEnumeratedSets()` test standing where dispatch to
+the Hom category belongs.
+
+§12 is the wider case.  There are 380 `hasattr`/`getattr`/`callable` sites in the
+preamble; 178 of them are in **public mathematical methods**, and only 17 are in
+dunders that genuinely receive an arbitrary argument.  In a closed universe
+(`CONTRIBUTING.md` `ARC-00`) a public mathematical method has no ingress to
+guard, so a probe there is not a check — it is a second, duck-typed type system
+beside the category graph.  A public mathematical method asserts categorical
+membership; capability probing is confined to private engine adapters and to
+`__eq__`/`__contains__` and their kin.
+
+Step 9 must follow step 7: a probe cannot be deleted until the operation it
+gropes for exists at its owned owner.  Do not set a target count for it —
+`DEV-36` and `DEV-32` govern.  The count is 380 because nothing in this ladder
+owned the defect, not because a threshold was missed.
 
 ## Priority 4 — Finish common collection/finiteness architecture on survivors
 
