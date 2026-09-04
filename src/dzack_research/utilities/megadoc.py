@@ -1,38 +1,84 @@
-r"""Programmatic megadoc extractor and renderer for preamble constructions.
+r"""The preamble reference, surveyed from a live session.
 
-This module walks the AST of ``dzack_research.preamble`` to extract all public
-classes, constructors, public methods, categories, super-categories,
-ParentMethods, ElementMethods, functors, adjunctions, universal constructions,
-morphisms, objects, and catalogue definitions without importing SageMath or
-incurring runtime overhead.
+Run it::
+
+    just preamble-megadoc
+
+The question this document answers is "what can I build on, and how does it
+fit together".  That is a question about the category graph, and the category
+graph exists only at runtime: ``super_categories`` is a method, the base ring
+is an argument, and which operations an object gets is decided by Sage's
+dynamic ``parent_class``.  A source-text scrape can see none of it, so this
+module imports ``dzack_research.preamble.all`` and interrogates the objects.
+
+Three surfaces come out of one survey:
+
+- ``docs/preamble-megadoc.md``   the reference a contributor reads
+- ``docs/preamble-graph.json``   the category and functor graph, serialized
+- ``docs/preamble-graph.dot``    the same graph for GraphViz, rendered to
+  ``docs/preamble-graph.html`` (pan and zoom) when ``dot`` is installed
+
+Introspection is defensive: a category the survey cannot instantiate, or a
+method whose signature will not resolve, is *recorded with its error*.  A
+reference that quietly omits what it could not read is worse than one that
+says so.
 """
 
 from __future__ import annotations
 
 import argparse
-import ast
+import html
+import inspect
 import json
 import re
+import shutil
+import subprocess
 import sys
-from dataclasses import asdict, dataclass, field
+from collections import defaultdict
+from collections.abc import Callable
+from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Final, Literal
+from types import ModuleType
+from typing import Final, TypeVar
 
-SymbolKind = Literal[
-    "CATEGORY",
-    "SUBCATEGORY",
-    "FUNCTOR",
-    "ADJUNCTION",
-    "CONSTRUCTION",
-    "MORPHISM",
-    "HOMSET",
-    "OBJECT",
-    "ELEMENT",
-    "CATALOGUE",
-    "REGISTRY",
-    "FUNCTION",
-]
+# Imported for real, not only for annotations: `issubclass` against a module
+# name narrows a type, while `issubclass` against an attribute stashed on the
+# survey does not, and the survey's whole job is to sort a namespace by kind.
+from sage.categories.category import Category, JoinCategory
+from sage.categories.morphism import Morphism
+from sage.misc.abstract_method import AbstractMethod
+from sage.misc.cachefunc import CachedMethod
+from sage.structure.element import Element
+from sage.structure.parent import Parent
 
+from dzack_research.preamble.categories.functors.core import Adjunction, Functor
+
+# What a class dictionary holds: a plain function, or one of the descriptors
+# Sage wraps one in.  The survey reads these to report a category's operations.
+type ClassMember = Callable[..., object] | CachedMethod | AbstractMethod | property
+
+# Anything `inspect` can locate source for, and anything it can sign.
+type Inspectable = type | Callable[..., object]
+
+# A mathematical object of the session: a parent, or an element of one.
+type Specimen = Parent | Element
+
+# `inspect` raises TypeError for a value carrying no code object and OSError
+# once the source file is gone; either way there is no source to point at.
+# Named rather than written inline because the formatter unparenthesizes an
+# inline tuple into Python 3.14's `except A, B`, which reads as a syntax error.
+NO_SOURCE: Final = (TypeError, OSError)
+
+# TypeError for something not callable, ValueError for a callable whose
+# signature cannot be recovered -- a Cython builtin, most often.
+NO_SIGNATURE: Final = (TypeError, ValueError)
+
+Built = TypeVar("Built")
+
+REPO_ROOT: Final = Path(__file__).resolve().parents[3]
+GRAPH_TEMPLATE: Final = REPO_ROOT / "docs" / "lean" / "_category-graph-template.html"
+
+# Directory under ``preamble/`` -> chapter title and its one-line scope.
 SUBSYSTEM_ORDER: Final[list[tuple[str, str, str]]] = [
     (
         "abstract_categories",
@@ -115,908 +161,1252 @@ SUBSYSTEM_ORDER: Final[list[tuple[str, str, str]]] = [
         "Coble surfaces, Sterk invariant theory, and Automorphic forms.",
     ),
     (
-        "lexicon",
-        "Mathematical Lexicon & Vocabulary",
-        "Canonical vocabulary across algebra, foundations, geometry, and interop layers.",
-    ),
-    (
         "preamble_root",
         "Preamble Entrypoints & Utilities",
         "Top-level session loaders, environment initializers, and refinement helpers.",
     ),
 ]
+SUBSYSTEM_TITLES: Final = {key: (title, scope) for key, title, scope in SUBSYSTEM_ORDER}
+
+# Above this many nodes an inline diagram is a hairball; the interactive graph
+# is the right surface for that subsystem instead.
+MERMAID_NODE_CAP: Final = 44
+
+# Naming a dozen specimens tells a reader what the category is for; naming
+# forty tells them nothing more and buries the entry.
+SPECIMEN_CAP: Final = 12
+
+
+def summarize(doc: str | None) -> str:
+    r"""The first sentence of a docstring, on one line."""
+    if not doc:
+        return ""
+    text = inspect.cleandoc(doc)
+    text = text.split("\n\n", 1)[0].replace("\n", " ").strip()
+    return re.sub(r"\s+", " ", text)
+
+
+def anchor(name: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")
+
+
+def source_of(obj: Inspectable) -> str:
+    r"""``path:line`` relative to the repository, or an empty string."""
+    try:
+        path = Path(inspect.getsourcefile(obj) or "")
+        line = inspect.getsourcelines(obj)[1]
+    except NO_SOURCE:
+        return ""
+    try:
+        return f"{path.relative_to(REPO_ROOT)}:{line}"
+    except ValueError:
+        return f"{path}:{line}"
+
+
+def subsystem_of(module_name: str) -> str:
+    r"""The chapter a symbol belongs to, from the module that defines it."""
+    prefix = "dzack_research.preamble."
+    if not module_name.startswith(prefix):
+        return "preamble_root"
+    parts = module_name[len(prefix) :].split(".")
+    if parts[0] == "categories" and len(parts) > 1:
+        return parts[1] if parts[1] in SUBSYSTEM_TITLES else "abstract_categories"
+    if parts[0] in SUBSYSTEM_TITLES:
+        return parts[0]
+    if parts[0] in {"coble", "sterk"}:
+        return "geometry_specialized"
+    return "preamble_root"
+
+
+def signature_of(obj: Inspectable, constructor: bool = False) -> str:
+    r"""The call signature, with the receiver dropped: a reader supplies the rest.
+
+    A constructor additionally loses its ``-> None``, which says nothing about
+    what building the thing gives you.
+    """
+    try:
+        signature = inspect.signature(obj)
+    except NO_SIGNATURE:
+        return "(...)"
+    kept = [p for name, p in signature.parameters.items() if name != "self"]
+    signature = signature.replace(
+        parameters=kept,
+        return_annotation=inspect.Signature.empty if constructor else signature.return_annotation,
+    )
+    return str(signature)
 
 
 @dataclass
 class MethodDoc:
     name: str
-    args: str
-    return_type: str
-    doc: str
-    decorators: list[str] = field(default_factory=list)
+    signature: str
+    summary: str
+    mark: str = ""
+
+    def render(self) -> str:
+        head = f"- `{self.name}{self.signature}`"
+        if self.mark:
+            head += f" <sub>{self.mark}</sub>"
+        return f"{head}\n  - {self.summary}" if self.summary else head
 
 
 @dataclass
-class InnerClassDoc:
+class CategoryDoc:
     name: str
-    doc: str
-    methods: list[MethodDoc] = field(default_factory=list)
-
-
-@dataclass
-class SymbolDoc:
-    name: str
-    kind: SymbolKind
+    module: str
     subsystem: str
-    file_path: str
-    line_number: int
+    source: str
     doc: str
-    bases: list[str] = field(default_factory=list)
-    super_categories: list[str] = field(default_factory=list)
-    category_constructors: list[MethodDoc] = field(default_factory=list)
-    object_constructors: list[MethodDoc] = field(default_factory=list)
-    constructors: list[MethodDoc] = field(default_factory=list)
+    exported: bool
+    arity: str  # "nullary" | "parameterized" | "construction"
+    instance_repr: str = ""
+    call_signature: str = ""
+    init_signature: str = ""
+    supers: list[str] = field(default_factory=list)
+    ancestry: list[str] = field(default_factory=list)
+    subcategories: list[str] = field(default_factory=list)
+    own_methods: dict[str, list[MethodDoc]] = field(default_factory=dict)
+    inherited: list[tuple[str, int, int, int]] = field(default_factory=list)
+    specimens: list[str] = field(default_factory=list)
+    specimen_total: int = 0
+    problem: str = ""
+
+    @property
+    def display(self) -> str:
+        return f"{self.name}(R)" if self.arity == "parameterized" else self.name
+
+    @property
+    def own_total(self) -> int:
+        return sum(len(v) for v in self.own_methods.values())
+
+
+@dataclass
+class FunctorDoc:
+    name: str
+    kind: str  # "FUNCTOR" | "ADJUNCTION"
+    subsystem: str
+    source: str
+    doc: str
+    exported: bool
+    domain: str = ""
+    codomain: str = ""
+    init_signature: str = ""
     methods: list[MethodDoc] = field(default_factory=list)
-    parent_methods: list[MethodDoc] = field(default_factory=list)
-    element_methods: list[MethodDoc] = field(default_factory=list)
-    subcategory_methods: list[MethodDoc] = field(default_factory=list)
-    inner_classes: list[InnerClassDoc] = field(default_factory=list)
-    class_vars: list[tuple[str, str]] = field(default_factory=list)
-    is_exported_in_all: bool = False
-    export_module: str = ""
+    problem: str = ""
 
 
-class PreambleExtractor:
-    r"""Extract mathematical constructions from ASTs of preamble python source files."""
+@dataclass
+class SpecimenDoc:
+    name: str
+    repr_text: str
+    invariants: dict[str, str]
+    category: str
 
-    def __init__(self, preamble_root: Path | None = None) -> None:
-        if preamble_root is None:
-            preamble_root = Path(__file__).resolve().parents[1] / "preamble"
-        self.preamble_root: Path = preamble_root
-        self.exported_symbols: dict[str, str] = self._load_all_exports()
 
-    def _load_all_exports(self) -> dict[str, str]:
-        all_py = self.preamble_root / "all.py"
-        exported: dict[str, str] = {}
-        if not all_py.exists():
-            return exported
+@dataclass
+class CatalogueDoc:
+    name: str
+    subsystem: str
+    source: str
+    doc: str
+    specimens: list[SpecimenDoc] = field(default_factory=list)
+
+
+@dataclass
+class PlainDoc:
+    r"""An exported symbol that is not a category, functor or catalogue."""
+
+    name: str
+    kind: str
+    subsystem: str
+    source: str
+    doc: str
+    signature: str = ""
+    category: str = ""
+    methods: list[MethodDoc] = field(default_factory=list)
+
+
+class Survey:
+    r"""Everything the reference reports, read off a live session."""
+
+    def __init__(self) -> None:
+        sys.setrecursionlimit(5000)
+        import dzack_research.preamble.all as session
+        from dzack_research.preamble.categories.sets.set_categories import NN
+        from dzack_research.preamble.rings import session_ring_objects
+
+        self.session: ModuleType = session
+        self.names = [n for n in dir(session) if not n.startswith("_")]
+        self.exported = set(self.names)
+
+        # The probe ring is the session's own ZZ, which a session receives by
+        # rebinding rather than by export, so it is taken from the constructor
+        # that makes it instead of read off the module.
+        ring = session_ring_objects()["ZZ"]
+        assert isinstance(ring, Parent), "the session's ZZ must be an owned parent"
+        self.ring: Parent = ring
+        self.monoid: Parent = NN
+
+        self.categories: dict[str, CategoryDoc] = {}
+        self.functors: list[FunctorDoc] = []
+        self.catalogues: list[CatalogueDoc] = []
+        self.plain: list[PlainDoc] = []
+        self.sage_supers: set[str] = set()
+
+    # ---- naming -------------------------------------------------------
+
+    @staticmethod
+    def family_of(category: Category) -> tuple[str, str]:
+        r"""The defining class of a live category, as ``(name, module)``.
+
+        Sage hands out dynamic ``X_with_category`` subclasses; the family a
+        contributor writes is the class underneath.
+        """
+        for klass in type(category).__mro__:
+            if not klass.__name__.endswith("_with_category"):
+                return klass.__name__, klass.__module__
+        return type(category).__name__, type(category).__module__
+
+    @staticmethod
+    def expand(category: Category) -> list[Category]:
+        r"""A join stands for its components; anything else stands for itself."""
+
+        if isinstance(category, JoinCategory):
+            return list(category.super_categories())
+        return [category]
+
+    @staticmethod
+    def is_owned(module: str) -> bool:
+        return module.startswith("dzack_research.")
+
+    @staticmethod
+    def build(factory: Callable[..., Built], arguments: tuple[Parent, ...]) -> Built | str:
+        r"""Construct one, or report why it would not build.
+
+        Reaching an arbitrary owned constructor reaches GAP, PARI and every
+        category in the tree, so the raise is unbounded.  The failure is
+        returned rather than swallowed: it is printed in the entry.
+        """
         try:
-            with open(all_py, "r", encoding="utf-8") as f:
-                tree = ast.parse(f.read(), filename=str(all_py))
-            for node in tree.body:
-                if isinstance(node, ast.ImportFrom) and node.module:
-                    if "dzack_research.preamble" in node.module:
-                        for alias in node.names:
-                            exported[alias.name] = node.module
-                elif isinstance(node, ast.Assign):
-                    for target in node.targets:
-                        if isinstance(target, ast.Name) and not target.id.startswith("_"):
-                            exported[target.id] = "dzack_research.preamble.all"
-                elif isinstance(node, ast.FunctionDef) and not node.name.startswith("_"):
-                    exported[node.name] = "dzack_research.preamble.all"
-        except Exception:
-            pass
-        return exported
+            return factory(*arguments)
+        except Exception as error:  # noqa: BLE001 - see the docstring
+            return f"{type(error).__name__}: {error}"
 
-    def _determine_subsystem(self, rel_path: str, name: str) -> str:
-        parts = Path(rel_path).parts
-        if not parts:
-            return "preamble_root"
-        if parts[0] == "categories":
-            if len(parts) > 2:
-                # categories/<subsystem_dir>/...
-                return parts[1]
-            if len(parts) == 2:
-                cat_sub = parts[1]
-                if cat_sub.endswith(".py"):
-                    stem = Path(cat_sub).stem
-                    if stem in (
-                        "lattices",
-                        "_lattice",
-                        "definite_lattices",
-                        "rational_lattices",
-                        "root_lattices",
-                        "lattice_morphisms",
-                        "lattice_engines",
-                        "isotropic_orbits",
-                        "vector_orbits",
-                        "orthogonal_quotients",
-                        "coxeter_diagrams",
-                    ):
-                        return "lattices"
-                    if stem in ("free_modules",):
-                        return "modules"
-                    return stem
-                return cat_sub
-        if len(parts) > 1:
-            # <top_dir>/...
-            return parts[0]
-        # Top-level file
-        top = parts[0]
-        if top == "catalogue.py":
-            return "catalogue"
-        if top == "logic.py":
-            return "logic"
-        if top in ("coble.py", "sterk.py"):
-            return "geometry_specialized"
-        if top in ("all.py", "utilities.py", "refine.py", "__init__.py"):
-            return "preamble_root"
-        return Path(top).stem
+    # ---- categories ---------------------------------------------------
 
-    def _classify_class(self, name: str, bases: list[str], body: list[ast.stmt], rel_path: str) -> SymbolKind:
-        bases_str = " ".join(bases)
-        has_parent_m = any(isinstance(n, ast.ClassDef) and n.name == "ParentMethods" for n in body)
-        has_elem_m = any(isinstance(n, ast.ClassDef) and n.name == "ElementMethods" for n in body)
+    def probe_arguments(self, klass: type) -> tuple[tuple[Parent, ...], str] | None:
+        r"""How to build one, or ``None`` when the parameter is not a ring.
 
-        if "catalogue" in rel_path or name in ("NamedLattices", "Involutions", "Embeddings") or "Table" in name:
-            return "CATALOGUE"
-        if "Adjunction" in name or any("Adjunction" in b for b in bases):
-            return "ADJUNCTION"
-        if "Functor" in name or any("Functor" in b for b in bases) or name in ("NaturalTransformation", "NaturalIsomorphism"):
-            return "FUNCTOR"
-        if (
-            any(
-                b in ("Category", "OwnedCategoryOverBaseRing", "Category_over_base_ring", "Category_singleton", "HomCategoryConstruction")
-                for b in bases
-            )
-            or has_parent_m
-            or has_elem_m
-        ):
-            if any(
-                p in name
-                for p in (
-                    "Definite",
-                    "Even",
-                    "Unimodular",
-                    "Finite",
-                    "Countable",
-                    "Infinite",
-                    "Uncountable",
-                    "Commutative",
-                    "Smooth",
-                    "Integral",
-                    "Separated",
-                    "Projective",
-                    "Affine",
-                    "Nondegenerate",
-                )
-            ):
-                return "SUBCATEGORY"
-            return "CATEGORY"
-        if any(k in bases_str for k in ("Morphism", "ArrowObject", "CommutativeSquare", "Homomorphism", "Embedding", "Isometry", "Inclusion", "Map")):
-            return "MORPHISM"
-        if any(k in bases_str for k in ("Homset", "HomCategory")):
-            return "HOMSET"
-        if any(k in bases_str for k in ("Element", "ModuleElement")) or name.endswith("Element"):
-            return "ELEMENT"
-        if any(k in bases_str for k in ("Parent", "UniqueRepresentation", "SageObject", "Tensor", "GradedDirectSumModule")) or name in (
-            "Lattice",
-            "Genus",
-            "Tensor",
-            "Coble",
-            "Sterk",
-            "Predicate",
-        ):
-            return "OBJECT"
-        if (
-            "Category" in name
-            or name.endswith("Categories")
-            or name.endswith("Groups")
-            or name.endswith("Modules")
-            or name.endswith("Algebras")
-            or name.endswith("Schemes")
-            or name.endswith("Sets")
-            or name.endswith("Rings")
-            or name.endswith("Spaces")
-        ):
-            return "CATEGORY"
-        return "OBJECT"
+        A category taking a category, a diagram or an object is a *construction*
+        on categories; it is documented as such rather than guessed at.
+        """
+        try:
+            params = [p for p in inspect.signature(klass).parameters if p != "self"]
+        except NO_SIGNATURE:
+            return None
+        if not params:
+            return (), "nullary"
+        if params == ["parameter"] or params == ["base_ring"]:
+            return (self.ring,), "parameterized"
+        if params == ["base_ring", "grading_monoid"]:
+            return (self.ring, self.monoid), "parameterized"
+        return None
 
-    def _classify_function(self, name: str, rel_path: str) -> SymbolKind:
-        if name in (
-            "TensorProduct",
-            "TensorSquare",
-            "Biproduct",
-            "Product",
-            "Coproduct",
-            "Kernel",
-            "Cokernel",
-            "Subobjects",
-            "Superobjects",
-            "SliceOver",
-            "CosliceUnder",
-            "DirectSumObjects",
-            "DirectSumDecomposition",
-            "common_category",
-            "ambient_category_of",
-            "scheme_product",
-            "cartesian_product_of",
-        ):
-            return "CONSTRUCTION"
-        if "adjunction" in name or "Adjunction" in name:
-            return "ADJUNCTION"
-        if "functor" in name or "Functor" in name:
-            return "FUNCTOR"
-        if name.startswith("register_"):
-            return "REGISTRY"
-        return "FUNCTION"
+    CATEGORY_VALUED: Final = frozenset(
+        {
+            "base_category",
+            "index_category",
+            "ambient_category",
+            "first_category",
+            "second_category",
+            "arrow_category",
+            "subcategory",
+            "supercategory",
+            "image_category",
+            "diagram",
+            "functor",
+            "category_of_categories",
+        }
+    )
 
-    def extract_all(self) -> list[SymbolDoc]:
-        symbols: list[SymbolDoc] = []
-        for path in sorted(self.preamble_root.rglob("*.py")):
-            if path.name.startswith("."):
+    @classmethod
+    def is_construction(cls, klass: type) -> bool:
+        r"""Whether the parameter is itself a category, diagram or functor.
+
+        Such a class is an operation *on* categories, so it has no fixed place
+        in the poset; one parameterized by a ring, a group or a monoid does have
+        a place, and is only missing here because the survey will not choose the
+        parameter on a reader's behalf.
+        """
+        try:
+            params = {p for p in inspect.signature(klass).parameters if p != "self"}
+        except NO_SIGNATURE:
+            return False
+        return bool(params & cls.CATEGORY_VALUED)
+
+    def collect_categories(self) -> None:
+        pending: list[Category] = []
+        for name in self.names:
+            value = getattr(self.session, name)
+            if not (inspect.isclass(value) and issubclass(value, Category)):
                 continue
-            rel_path = str(path.relative_to(self.preamble_root))
-            try:
-                with open(path, "r", encoding="utf-8") as f:
-                    tree = ast.parse(f.read(), filename=str(path))
-            except Exception:
-                continue
-
-            for node in tree.body:
-                if isinstance(node, ast.ClassDef) and not node.name.startswith("_"):
-                    symbol = self._extract_class(node, rel_path, str(path))
-                    symbols.append(symbol)
-                elif isinstance(node, ast.FunctionDef) and not node.name.startswith("_"):
-                    symbol = self._extract_function(node, rel_path, str(path))
-                    symbols.append(symbol)
-
-        return symbols
-
-    def _extract_method(self, node: ast.FunctionDef) -> MethodDoc:
-        args = ast.unparse(node.args)
-        ret = f" -> {ast.unparse(node.returns)}" if node.returns else ""
-        doc = ast.get_docstring(node) or ""
-        decorators = [ast.unparse(d) for d in node.decorator_list]
-        return MethodDoc(
-            name=node.name,
-            args=args,
-            return_type=ret,
-            doc=doc.strip(),
-            decorators=decorators,
-        )
-
-    def _extract_class(self, node: ast.ClassDef, rel_path: str, full_path: str) -> SymbolDoc:
-        name = node.name
-        doc = (ast.get_docstring(node) or "").strip()
-        bases = [ast.unparse(b) for b in node.bases]
-        subsystem = self._determine_subsystem(rel_path, name)
-        kind = self._classify_class(name, bases, node.body, rel_path)
-
-        category_constructors: list[MethodDoc] = []
-        object_constructors: list[MethodDoc] = []
-        constructors: list[MethodDoc] = []
-        methods: list[MethodDoc] = []
-        parent_methods: list[MethodDoc] = []
-        element_methods: list[MethodDoc] = []
-        subcategory_methods: list[MethodDoc] = []
-        inner_classes: list[InnerClassDoc] = []
-        class_vars: list[tuple[str, str]] = []
-        super_categories: list[str] = []
-
-        for item in node.body:
-            if isinstance(item, ast.FunctionDef):
-                if item.name in ("__classcall_private__", "__init__") and kind in ("CATEGORY", "SUBCATEGORY"):
-                    category_constructors.append(self._extract_method(item))
-                elif item.name in ("_call_", "__call__", "_element_constructor_") and kind in ("CATEGORY", "SUBCATEGORY"):
-                    object_constructors.append(self._extract_method(item))
-                elif item.name in ("__init__", "_call_", "__call__", "__classcall_private__", "_element_constructor_"):
-                    constructors.append(self._extract_method(item))
-                elif not item.name.startswith("_"):
-                    methods.append(self._extract_method(item))
-                if item.name == "super_categories":
-                    for stmt in item.body:
-                        if isinstance(stmt, ast.Return) and stmt.value:
-                            super_categories.append(ast.unparse(stmt.value))
-            elif isinstance(item, ast.ClassDef) and not item.name.startswith("_"):
-                inner_m = [
-                    self._extract_method(m) for m in item.body if isinstance(m, ast.FunctionDef) and not m.name.startswith("_")
-                ]
-                inner_doc = (ast.get_docstring(item) or "").strip()
-                if item.name == "ParentMethods":
-                    parent_methods.extend(inner_m)
-                elif item.name == "ElementMethods":
-                    element_methods.extend(inner_m)
-                elif item.name == "SubcategoryMethods":
-                    subcategory_methods.extend(inner_m)
-                else:
-                    inner_classes.append(InnerClassDoc(name=item.name, doc=inner_doc, methods=inner_m))
-            elif isinstance(item, ast.Assign):
-                for target in item.targets:
-                    if isinstance(target, ast.Name) and not target.id.startswith("_"):
-                        try:
-                            val_str = ast.unparse(item.value)
-                            if len(val_str) > 80:
-                                val_str = val_str[:77] + "..."
-                            class_vars.append((target.id, val_str))
-                        except Exception:
-                            pass
-
-        is_exported = name in self.exported_symbols
-        export_mod = self.exported_symbols.get(name, "")
-
-        return SymbolDoc(
-            name=name,
-            kind=kind,
-            subsystem=subsystem,
-            file_path=rel_path,
-            line_number=node.lineno,
-            doc=doc,
-            bases=bases,
-            super_categories=super_categories,
-            category_constructors=category_constructors,
-            object_constructors=object_constructors,
-            constructors=constructors,
-            methods=methods,
-            parent_methods=parent_methods,
-            element_methods=element_methods,
-            subcategory_methods=subcategory_methods,
-            inner_classes=inner_classes,
-            class_vars=class_vars,
-            is_exported_in_all=is_exported,
-            export_module=export_mod,
-        )
-
-    def _extract_function(self, node: ast.FunctionDef, rel_path: str, full_path: str) -> SymbolDoc:
-        name = node.name
-        doc = (ast.get_docstring(node) or "").strip()
-        subsystem = self._determine_subsystem(rel_path, name)
-        kind = self._classify_function(name, rel_path)
-        method = self._extract_method(node)
-
-        is_exported = name in self.exported_symbols
-        export_mod = self.exported_symbols.get(name, "")
-
-        return SymbolDoc(
-            name=name,
-            kind=kind,
-            subsystem=subsystem,
-            file_path=rel_path,
-            line_number=node.lineno,
-            doc=doc,
-            constructors=[method],
-            is_exported_in_all=is_exported,
-            export_module=export_mod,
-        )
-
-
-class PreambleRenderer:
-    r"""Render extracted preamble mathematical constructions to Markdown, Text, or JSON."""
-
-    @staticmethod
-    def _first_sentence(doc: str) -> str:
-        if not doc:
-            return ""
-        lines = [line.strip() for line in doc.splitlines() if line.strip()]
-        if not lines:
-            return ""
-        first = lines[0]
-        match = re.search(r"(.*?\.\s)", first)
-        if match:
-            return match.group(1).strip()
-        return first
-
-    @classmethod
-    def _get_subsystem_sequence(cls, symbols: list[SymbolDoc]) -> list[tuple[str, str, str]]:
-        known_map = {key: (title, desc) for key, title, desc in SUBSYSTEM_ORDER}
-        found_keys = {s.subsystem for s in symbols}
-        result: list[tuple[str, str, str]] = []
-        for key, title, desc in SUBSYSTEM_ORDER:
-            if key in found_keys:
-                result.append((key, title, desc))
-        for key in sorted(found_keys):
-            if key not in known_map:
-                title = key.replace("_", " ").title()
-                desc = f"Constructions defined in subsystem {key}."
-                result.append((key, title, desc))
-        return result
-
-    @classmethod
-    def render_markdown(
-        cls,
-        symbols: list[SymbolDoc],
-        subsystem_filter: str | None = None,
-        kind_filter: str | None = None,
-        search_query: str | None = None,
-        session_only: bool = False,
-        summary_only: bool = False,
-    ) -> str:
-        filtered = cls._filter_symbols(symbols, subsystem_filter, kind_filter, search_query, session_only)
-        subsystems = cls._get_subsystem_sequence(filtered)
-        lines: list[str] = []
-
-        lines.append("# Preamble Mathematical Constructions Megadoc\n")
-        lines.append(
-            "Programmatic catalogue of all reusable mathematical categories, subcategories, "
-            "functors, adjunctions, universal constructions, morphisms, objects, and classification tables "
-            "owned by `dzack_research.preamble`.\n"
-        )
-
-        total_symbols = len(filtered)
-        categories_count = sum(1 for s in filtered if s.kind in ("CATEGORY", "SUBCATEGORY"))
-        functors_count = sum(1 for s in filtered if s.kind in ("FUNCTOR", "ADJUNCTION"))
-        constructions_count = sum(1 for s in filtered if s.kind == "CONSTRUCTION")
-        morphisms_count = sum(1 for s in filtered if s.kind in ("MORPHISM", "HOMSET"))
-        objects_count = sum(1 for s in filtered if s.kind in ("OBJECT", "ELEMENT"))
-        catalogue_count = sum(1 for s in filtered if s.kind in ("CATALOGUE", "REGISTRY"))
-        functions_count = sum(1 for s in filtered if s.kind == "FUNCTION")
-
-        lines.append("## Executive Summary\n")
-        lines.append(f"- **Total Constructions**: {total_symbols}")
-        lines.append(f"- **Categories & Subcategories**: {categories_count}")
-        lines.append(f"- **Functors & Adjunctions**: {functors_count}")
-        lines.append(f"- **Universal Categorical Constructions**: {constructions_count}")
-        lines.append(f"- **Morphisms & Hom-Sets**: {morphisms_count}")
-        lines.append(f"- **Mathematical Objects & Elements**: {objects_count}")
-        lines.append(f"- **Named Catalogues & Registries**: {catalogue_count}")
-        lines.append(f"- **Factory Functions & Constructors**: {functions_count}\n")
-
-        lines.append("## Table of Subsystems\n")
-        lines.append("| Subsystem | Key Domains | Items |")
-        lines.append("| :--- | :--- | :--- |")
-        for key, title, desc in subsystems:
-            sub_count = sum(1 for s in filtered if s.subsystem == key)
-            if sub_count > 0:
-                slug = key.replace("_", "-")
-                lines.append(f"| [{title}](#subsystem-{slug}) | {desc} | **{sub_count}** |")
-        lines.append("\n---\n")
-
-        if summary_only:
-            lines.append("## Complete Index of Public Constructions\n")
-            lines.append("| Symbol | Kind | Subsystem | File Location | Summary |")
-            lines.append("| :--- | :--- | :--- | :--- | :--- |")
-            for s in sorted(filtered, key=lambda x: (x.subsystem, x.kind, x.name)):
-                first = cls._first_sentence(s.doc)
-                export_badge = "★" if s.is_exported_in_all else ""
-                lines.append(f"| `{s.name}` {export_badge} | `{s.kind}` | `{s.subsystem}` | `{s.file_path}:{s.line_number}` | {first} |")
-            return "\n".join(lines)
-
-        for key, title, desc in subsystems:
-            sub_symbols = [s for s in filtered if s.subsystem == key]
-            if not sub_symbols:
-                continue
-
-            slug = key.replace("_", "-")
-            lines.append(f"<a id=\"subsystem-{slug}\"></a>")
-            lines.append(f"## {title}\n")
-            lines.append(f"> {desc}\n")
-
-            cats = [s for s in sub_symbols if s.kind in ("CATEGORY", "SUBCATEGORY")]
-            if cats:
-                lines.append("### 🏛 Categories & Subcategories\n")
-                for s in sorted(cats, key=lambda x: x.name):
-                    lines.extend(cls._render_category_symbol(s))
-
-            functors = [s for s in sub_symbols if s.kind in ("FUNCTOR", "ADJUNCTION")]
-            if functors:
-                lines.append("### 🔄 Functors & Adjunctions\n")
-                for s in sorted(functors, key=lambda x: x.name):
-                    lines.extend(cls._render_functor_symbol(s))
-
-            constructions = [s for s in sub_symbols if s.kind == "CONSTRUCTION"]
-            if constructions:
-                lines.append("### ⚙ Universal Categorical Constructions\n")
-                for s in sorted(constructions, key=lambda x: x.name):
-                    lines.extend(cls._render_construction_symbol(s))
-
-            morphisms = [s for s in sub_symbols if s.kind in ("MORPHISM", "HOMSET")]
-            if morphisms:
-                lines.append("### ↗ Morphisms & Hom-Sets\n")
-                for s in sorted(morphisms, key=lambda x: x.name):
-                    lines.extend(cls._render_morphism_symbol(s))
-
-            objects = [s for s in sub_symbols if s.kind in ("OBJECT", "ELEMENT")]
-            if objects:
-                lines.append("### 📦 Mathematical Objects & Parents\n")
-                for s in sorted(objects, key=lambda x: x.name):
-                    lines.extend(cls._render_object_symbol(s))
-
-            catalogue = [s for s in sub_symbols if s.kind in ("CATALOGUE", "REGISTRY")]
-            if catalogue:
-                lines.append("### 📚 Catalogues & Named Tables\n")
-                for s in sorted(catalogue, key=lambda x: x.name):
-                    lines.extend(cls._render_catalogue_symbol(s))
-
-            functions = [s for s in sub_symbols if s.kind == "FUNCTION"]
-            if functions:
-                lines.append("### 🛠 Helper Functions & Constructors\n")
-                for s in sorted(functions, key=lambda x: x.name):
-                    lines.extend(cls._render_function_symbol(s))
-
-            lines.append("\n---\n")
-
-        return "\n".join(lines)
-
-    @classmethod
-    def _render_category_symbol(cls, s: SymbolDoc) -> list[str]:
-        out: list[str] = []
-        export_badge = "`[Exported Session]`" if s.is_exported_in_all else "`[Internal]`"
-        kind_badge = f"`[{s.kind}]`"
-        out.append(f"#### `{s.name}` {kind_badge} {export_badge}\n")
-        out.append(f"- **Source**: [`src/dzack_research/preamble/{s.file_path}#L{s.line_number}`](file:///home/dzack/research/src/dzack_research/preamble/{s.file_path}#L{s.line_number})")
-        if s.bases:
-            out.append(f"- **Bases**: `{'`, `'.join(s.bases)}`")
-        if s.super_categories:
-            out.append(f"- **Super Categories**: `{'`, `'.join(s.super_categories)}`")
-
-        if s.doc:
-            out.append(f"\n{s.doc}\n")
-
-        if s.category_constructors:
-            out.append("**Category Constructor:**")
-            for c in s.category_constructors:
-                dec = f"`@{', @'.join(c.decorators)}` " if c.decorators else ""
-                out.append(f"- {dec}`{s.name}({c.args}){c.return_type}`")
-                if c.doc:
-                    out.append(f"  > {cls._first_sentence(c.doc)}")
-
-        if s.object_constructors:
-            out.append("\n**Object Constructor (Calling Category on Data):**")
-            for c in s.object_constructors:
-                dec = f"`@{', @'.join(c.decorators)}` " if c.decorators else ""
-                out.append(f"- {dec}`{s.name}(...)({c.args}){c.return_type}`")
-                if c.doc:
-                    out.append(f"  > {cls._first_sentence(c.doc)}")
-
-        if s.parent_methods:
-            out.append("\n**ParentMethods (Methods on Category Objects):**")
-            for m in sorted(s.parent_methods, key=lambda x: x.name):
-                dec = f"`@{', @'.join(m.decorators)}` " if m.decorators else ""
-                out.append(f"- {dec}`{m.name}({m.args}){m.return_type}`")
-                if m.doc:
-                    out.append(f"  > {cls._first_sentence(m.doc)}")
-
-        if s.element_methods:
-            out.append("\n**ElementMethods (Methods on Category Elements):**")
-            for m in sorted(s.element_methods, key=lambda x: x.name):
-                dec = f"`@{', @'.join(m.decorators)}` " if m.decorators else ""
-                out.append(f"- {dec}`{m.name}({m.args}){m.return_type}`")
-                if m.doc:
-                    out.append(f"  > {cls._first_sentence(m.doc)}")
-
-        if s.subcategory_methods:
-            out.append("\n**SubcategoryMethods (Subcategory Refinements):**")
-            for m in sorted(s.subcategory_methods, key=lambda x: x.name):
-                dec = f"`@{', @'.join(m.decorators)}` " if m.decorators else ""
-                out.append(f"- {dec}`{m.name}({m.args}){m.return_type}`")
-                if m.doc:
-                    out.append(f"  > {cls._first_sentence(m.doc)}")
-
-        if s.methods:
-            out.append("\n**Category Instance Methods:**")
-            for m in sorted(s.methods, key=lambda x: x.name):
-                dec = f"`@{', @'.join(m.decorators)}` " if m.decorators else ""
-                out.append(f"- {dec}`{m.name}({m.args}){m.return_type}`")
-                if m.doc:
-                    out.append(f"  > {cls._first_sentence(m.doc)}")
-
-        out.append("")
-        return out
-
-    @classmethod
-    def _render_functor_symbol(cls, s: SymbolDoc) -> list[str]:
-        out: list[str] = []
-        export_badge = "`[Exported Session]`" if s.is_exported_in_all else "`[Internal]`"
-        kind_badge = f"`[{s.kind}]`"
-        out.append(f"#### `{s.name}` {kind_badge} {export_badge}\n")
-        out.append(f"- **Source**: [`src/dzack_research/preamble/{s.file_path}#L{s.line_number}`](file:///home/dzack/research/src/dzack_research/preamble/{s.file_path}#L{s.line_number})")
-        if s.bases:
-            out.append(f"- **Bases**: `{'`, `'.join(s.bases)}`")
-        if s.doc:
-            out.append(f"\n{s.doc}\n")
-        if s.constructors:
-            out.append("**Constructors / Factory Signatures:**")
-            for c in s.constructors:
-                dec = f"`@{', @'.join(c.decorators)}` " if c.decorators else ""
-                out.append(f"- {dec}`def {c.name}({c.args}){c.return_type}`")
-                if c.doc:
-                    out.append(f"  > {cls._first_sentence(c.doc)}")
-        if s.methods:
-            out.append("\n**Functor / Adjunction Methods:**")
-            for m in sorted(s.methods, key=lambda x: x.name):
-                dec = f"`@{', @'.join(m.decorators)}` " if m.decorators else ""
-                out.append(f"- {dec}`{m.name}({m.args}){m.return_type}`")
-                if m.doc:
-                    out.append(f"  > {cls._first_sentence(m.doc)}")
-        out.append("")
-        return out
-
-    @classmethod
-    def _render_construction_symbol(cls, s: SymbolDoc) -> list[str]:
-        out: list[str] = []
-        export_badge = "`[Exported Session]`" if s.is_exported_in_all else "`[Internal]`"
-        out.append(f"#### `{s.name}` `[CONSTRUCTION]` {export_badge}\n")
-        out.append(f"- **Source**: [`src/dzack_research/preamble/{s.file_path}#L{s.line_number}`](file:///home/dzack/research/src/dzack_research/preamble/{s.file_path}#L{s.line_number})")
-        if s.doc:
-            out.append(f"\n{s.doc}\n")
-        if s.constructors:
-            for c in s.constructors:
-                dec = f"`@{', @'.join(c.decorators)}` " if c.decorators else ""
-                out.append(f"- **Signature**: {dec}`def {c.name}({c.args}){c.return_type}`")
-        out.append("")
-        return out
-
-    @classmethod
-    def _render_morphism_symbol(cls, s: SymbolDoc) -> list[str]:
-        out: list[str] = []
-        export_badge = "`[Exported Session]`" if s.is_exported_in_all else "`[Internal]`"
-        out.append(f"#### `{s.name}` `[{s.kind}]` {export_badge}\n")
-        out.append(f"- **Source**: [`src/dzack_research/preamble/{s.file_path}#L{s.line_number}`](file:///home/dzack/research/src/dzack_research/preamble/{s.file_path}#L{s.line_number})")
-        if s.bases:
-            out.append(f"- **Bases**: `{'`, `'.join(s.bases)}`")
-        if s.doc:
-            out.append(f"\n{s.doc}\n")
-        if s.constructors:
-            for c in s.constructors:
-                dec = f"`@{', @'.join(c.decorators)}` " if c.decorators else ""
-                out.append(f"- **Constructor**: {dec}`def {c.name}({c.args}){c.return_type}`")
-        if s.methods:
-            out.append("\n**Public Methods:**")
-            for m in sorted(s.methods, key=lambda x: x.name):
-                dec = f"`@{', @'.join(m.decorators)}` " if m.decorators else ""
-                out.append(f"- {dec}`{m.name}({m.args}){m.return_type}`")
-                if m.doc:
-                    out.append(f"  > {cls._first_sentence(m.doc)}")
-        out.append("")
-        return out
-
-    @classmethod
-    def _render_object_symbol(cls, s: SymbolDoc) -> list[str]:
-        out: list[str] = []
-        export_badge = "`[Exported Session]`" if s.is_exported_in_all else "`[Internal]`"
-        out.append(f"#### `{s.name}` `[{s.kind}]` {export_badge}\n")
-        out.append(f"- **Source**: [`src/dzack_research/preamble/{s.file_path}#L{s.line_number}`](file:///home/dzack/research/src/dzack_research/preamble/{s.file_path}#L{s.line_number})")
-        if s.bases:
-            out.append(f"- **Bases**: `{'`, `'.join(s.bases)}`")
-        if s.doc:
-            out.append(f"\n{s.doc}\n")
-        if s.constructors:
-            for c in s.constructors:
-                dec = f"`@{', @'.join(c.decorators)}` " if c.decorators else ""
-                out.append(f"- **Constructor**: {dec}`def {c.name}({c.args}){c.return_type}`")
-        if s.methods:
-            out.append("\n**Public Methods:**")
-            for m in sorted(s.methods, key=lambda x: x.name):
-                dec = f"`@{', @'.join(m.decorators)}` " if m.decorators else ""
-                out.append(f"- {dec}`{m.name}({m.args}){m.return_type}`")
-                if m.doc:
-                    out.append(f"  > {cls._first_sentence(m.doc)}")
-        out.append("")
-        return out
-
-    @classmethod
-    def _render_catalogue_symbol(cls, s: SymbolDoc) -> list[str]:
-        out: list[str] = []
-        export_badge = "`[Exported Session]`" if s.is_exported_in_all else "`[Internal]`"
-        out.append(f"#### `{s.name}` `[{s.kind}]` {export_badge}\n")
-        out.append(f"- **Source**: [`src/dzack_research/preamble/{s.file_path}#L{s.line_number}`](file:///home/dzack/research/src/dzack_research/preamble/{s.file_path}#L{s.line_number})")
-        if s.doc:
-            out.append(f"\n{s.doc}\n")
-        if s.class_vars:
-            out.append("**Catalogue Entries / Constants:**")
-            for var_name, var_val in s.class_vars:
-                out.append(f"- `{var_name}`: `{var_val}`")
-        if s.methods:
-            out.append("\n**Methods / Registry Functions:**")
-            for m in sorted(s.methods, key=lambda x: x.name):
-                dec = f"`@{', @'.join(m.decorators)}` " if m.decorators else ""
-                out.append(f"- {dec}`{m.name}({m.args}){m.return_type}`")
-                if m.doc:
-                    out.append(f"  > {cls._first_sentence(m.doc)}")
-        out.append("")
-        return out
-
-    @classmethod
-    def _render_function_symbol(cls, s: SymbolDoc) -> list[str]:
-        out: list[str] = []
-        export_badge = "`[Exported Session]`" if s.is_exported_in_all else "`[Internal]`"
-        c = s.constructors[0] if s.constructors else MethodDoc(name=s.name, args="", return_type="", doc="")
-        dec = f"`@{', @'.join(c.decorators)}` " if c.decorators else ""
-        out.append(f"#### `{s.name}` `[FUNCTION]` {export_badge}\n")
-        out.append(f"- **Signature**: {dec}`def {s.name}({c.args}){c.return_type}`")
-        out.append(f"- **Source**: [`src/dzack_research/preamble/{s.file_path}#L{s.line_number}`](file:///home/dzack/research/src/dzack_research/preamble/{s.file_path}#L{s.line_number})")
-        if s.doc:
-            out.append(f"\n{s.doc}\n")
-        out.append("")
-        return out
-
-    @classmethod
-    def render_text(
-        cls,
-        symbols: list[SymbolDoc],
-        subsystem_filter: str | None = None,
-        kind_filter: str | None = None,
-        search_query: str | None = None,
-        session_only: bool = False,
-    ) -> str:
-        filtered = cls._filter_symbols(symbols, subsystem_filter, kind_filter, search_query, session_only)
-        subsystems = cls._get_subsystem_sequence(filtered)
-        lines: list[str] = []
-        lines.append("=" * 80)
-        lines.append(f"PREAMBLE MATHEMATICAL CONSTRUCTIONS ({len(filtered)} items)")
-        lines.append("=" * 80)
-
-        for key, title, _ in subsystems:
-            sub_symbols = [s for s in filtered if s.subsystem == key]
-            if not sub_symbols:
-                continue
-            lines.append(f"\n[{title.upper()}] ({len(sub_symbols)} items)")
-            lines.append("-" * 80)
-            for s in sorted(sub_symbols, key=lambda x: (x.kind, x.name)):
-                exp = "*" if s.is_exported_in_all else " "
-                first = cls._first_sentence(s.doc)
-                lines.append(f"{exp} [{s.kind:12}] {s.name:<32} {s.file_path}:{s.line_number}")
-                if first:
-                    lines.append(f"     {first}")
-                if s.parent_methods:
-                    pm_names = ", ".join(m.name for m in s.parent_methods[:6])
-                    if len(s.parent_methods) > 6:
-                        pm_names += f", ... (+{len(s.parent_methods)-6} more)"
-                    lines.append(f"     ParentMethods: {pm_names}")
-                if s.element_methods:
-                    em_names = ", ".join(m.name for m in s.element_methods[:6])
-                    if len(s.element_methods) > 6:
-                        em_names += f", ... (+{len(s.element_methods)-6} more)"
-                    lines.append(f"     ElementMethods: {em_names}")
-        return "\n".join(lines)
-
-    @classmethod
-    def render_json(
-        cls,
-        symbols: list[SymbolDoc],
-        subsystem_filter: str | None = None,
-        kind_filter: str | None = None,
-        search_query: str | None = None,
-        session_only: bool = False,
-    ) -> str:
-        filtered = cls._filter_symbols(symbols, subsystem_filter, kind_filter, search_query, session_only)
-        raw_list = [asdict(s) for s in filtered]
-        return json.dumps(raw_list, indent=2)
-
-    @staticmethod
-    def _filter_symbols(
-        symbols: list[SymbolDoc],
-        subsystem_filter: str | None = None,
-        kind_filter: str | None = None,
-        search_query: str | None = None,
-        session_only: bool = False,
-    ) -> list[SymbolDoc]:
-        res = symbols
-        if subsystem_filter:
-            sub = subsystem_filter.lower().strip()
-            # If subsystem_filter matches a known subsystem key prefix or name exactly
-            matched_subsystems = [k for k, _, _ in SUBSYSTEM_ORDER if sub == k or sub in k]
-            if matched_subsystems:
-                res = [s for s in res if s.subsystem in matched_subsystems]
+            probe = self.probe_arguments(value)
+            if probe is not None:
+                arity = probe[1]
             else:
-                res = [s for s in res if sub in s.subsystem.lower() or sub in s.file_path.lower()]
-        if kind_filter:
-            kd = kind_filter.upper().strip()
-            res = [s for s in res if kd in s.kind]
-        if search_query:
-            sq = search_query.lower().strip()
-            res = [
-                s
-                for s in res
-                if sq in s.name.lower()
-                or sq in s.doc.lower()
-                or any(sq in m.name.lower() or sq in m.doc.lower() for m in s.methods)
-                or any(sq in m.name.lower() or sq in m.doc.lower() for m in s.parent_methods)
-                or any(sq in m.name.lower() or sq in m.doc.lower() for m in s.element_methods)
-            ]
-        if session_only:
-            res = [s for s in res if s.is_exported_in_all]
-        return res
+                arity = "construction" if self.is_construction(value) else "unplaced"
+            doc = CategoryDoc(
+                name=name,
+                module=value.__module__,
+                subsystem=subsystem_of(value.__module__),
+                source=source_of(value),
+                doc=inspect.getdoc(value) or "",
+                exported=True,
+                arity=arity,
+                init_signature=signature_of(value, constructor=True),
+            )
+            self.categories[name] = doc
+            built = self.build(value, probe[0]) if probe is not None else None
+            if isinstance(built, Category):
+                self.describe(doc, built)
+                pending.append(built)
+                continue
+            if isinstance(built, str):
+                doc.problem = built
+            self.read_declared_methods(doc, value)
 
+        self.close_ancestry(pending)
+        self.invert_edges()
 
-def main() -> None:
-    parser = argparse.ArgumentParser(
-        description="Surface a programmatic megadoc of all reusable constructions in the preamble."
-    )
-    parser.add_argument(
-        "subsystem",
-        nargs="?",
-        default=None,
-        help="Subsystem filter (e.g. lattices, functors, algebras, modules, categories, group, schemes, catalogue).",
-    )
-    parser.add_argument(
-        "-k",
-        "--kind",
-        default=None,
-        help="Filter by kind (category, subcategory, functor, adjunction, construction, morphism, homset, object, element, catalogue, function).",
-    )
-    parser.add_argument(
-        "-s",
-        "--search",
-        default=None,
-        help="Search query matching symbol names, docstrings, or method names.",
-    )
-    parser.add_argument(
-        "-f",
-        "--format",
-        choices=["markdown", "text", "json", "md", "txt"],
-        default="markdown",
-        help="Output format (markdown, text, json). Default: markdown.",
-    )
-    parser.add_argument(
-        "-o",
-        "--output",
-        default="docs/preamble-megadoc.md",
-        help="Write output to specified file path. Default: docs/preamble-megadoc.md.",
-    )
-    parser.add_argument(
-        "--stdout",
-        action="store_true",
-        help="Print output directly to standard output.",
-    )
-    parser.add_argument(
-        "--toc",
-        "--summary",
-        action="store_true",
-        dest="summary",
-        help="Display only the executive summary and index table.",
-    )
-    parser.add_argument(
-        "--session-only",
-        action="store_true",
-        help="Include only symbols exported into the session via preamble.all.",
-    )
+    def describe(self, doc: CategoryDoc, instance: Category) -> None:
+        doc.instance_repr = repr(instance)
+        doc.call_signature = signature_of(type(instance).__call__)
+        for super_category in instance.super_categories():
+            for part in self.expand(super_category):
+                name, module = self.family_of(part)
+                doc.supers.append(name)
+                if not self.is_owned(module):
+                    self.sage_supers.add(name)
+        for ancestor in instance.all_super_categories()[1:]:
+            for part in self.expand(ancestor):
+                name, _ = self.family_of(part)
+                if name not in doc.ancestry:
+                    doc.ancestry.append(name)
+        self.read_methods(doc, instance)
 
-    args = parser.parse_args()
+    def read_methods(self, doc: CategoryDoc, instance: Category) -> None:
+        r"""Split every operation an object of this category answers to by owner.
 
-    extractor = PreambleExtractor()
-    symbols = extractor.extract_all()
-
-    fmt = args.format
-    if fmt == "md":
-        fmt = "markdown"
-    elif fmt == "txt":
-        fmt = "text"
-
-    if fmt == "markdown":
-        output = PreambleRenderer.render_markdown(
-            symbols,
-            subsystem_filter=args.subsystem,
-            kind_filter=args.kind,
-            search_query=args.search,
-            session_only=args.session_only,
-            summary_only=args.summary,
+        Sage builds ``parent_class`` and its siblings from the category graph, so
+        the defining class in that MRO *is* the category that owns the method.
+        """
+        counts: dict[str, list[int]] = defaultdict(lambda: [0, 0, 0])
+        slots = ("parent_class", "element_class", "morphism_class")
+        labels = ("objects", "elements", "morphisms")
+        for index, (slot, label) in enumerate(zip(slots, labels, strict=True)):
+            dynamic = getattr(instance, slot, None)
+            if dynamic is None:
+                continue
+            for klass in dynamic.__mro__:
+                owner = klass.__qualname__.split(".")[0]
+                if owner in {"object", "type"}:
+                    continue
+                members = self.members(klass)
+                if owner == doc.name:
+                    if members:
+                        doc.own_methods.setdefault(label, []).extend(members)
+                elif members:
+                    counts[owner][index] += len(members)
+        doc.inherited = sorted(
+            ((owner, tally[0], tally[1], tally[2]) for owner, tally in counts.items()),
+            key=lambda row: (-(row[1] + row[2] + row[3]), row[0]),
         )
-    elif fmt == "text":
-        output = PreambleRenderer.render_text(
-            symbols,
-            subsystem_filter=args.subsystem,
-            kind_filter=args.kind,
-            search_query=args.search,
-            session_only=args.session_only,
-        )
-    elif fmt == "json":
-        output = PreambleRenderer.render_json(
-            symbols,
-            subsystem_filter=args.subsystem,
-            kind_filter=args.kind,
-            search_query=args.search,
-            session_only=args.session_only,
-        )
-    else:
-        output = ""
 
-    try:
-        if args.stdout:
-            sys.stdout.write(output)
-            sys.stdout.flush()
-        else:
-            out_path = Path(args.output)
-            out_path.parent.mkdir(parents=True, exist_ok=True)
-            with open(out_path, "w", encoding="utf-8") as f:
-                f.write(output)
-            print(f"Preamble megadoc written to {out_path} ({len(output)} bytes)")
-    except BrokenPipeError:
+    # Sage's runtime containers for methods a category installs on its objects,
+    # elements and morphisms.  They are read here only to recover operations
+    # from a category the survey could not build; the public vocabulary is the
+    # mathematical one the report prints.
+    CONTAINERS: Final = (
+        ("parent_class", "objects"),
+        ("element_class", "elements"),
+        ("morphism_class", "morphisms"),
+        ("ParentMethods", "objects"),
+        ("ElementMethods", "elements"),
+        ("MorphismMethods", "morphisms"),
+    )
+
+    def read_declared_methods(self, doc: CategoryDoc, klass: type) -> None:
+        r"""Operations a category declares, for one that will not instantiate.
+
+        No provenance is available without a live object -- there is no MRO to
+        walk -- so this reports what the class body itself introduces, which is
+        the part that would otherwise vanish from the reference entirely.
+        """
+        for attribute, label in self.CONTAINERS[3:]:
+            container = vars(klass).get(attribute)
+            if inspect.isclass(container):
+                found = self.members(container)
+                if found:
+                    doc.own_methods.setdefault(label, []).extend(found)
+
+    @staticmethod
+    def unwrap(klass: type, value: ClassMember) -> tuple[Inspectable, str]:
+        r"""The plain function behind a descriptor, and what the descriptor is.
+
+        Sage's ``cached_method`` and ``abstract_method`` are Cython descriptors
+        that keep the function out of reach until the descriptor protocol runs;
+        an unwrapped one reports its own class docstring as the method's, which
+        is how a reference ends up documenting ``CachedMethod`` 372 times.
+        """
+
+        if isinstance(value, CachedMethod):
+            caller = value.__get__(None, klass)
+            return caller.f, "cached"
+        if isinstance(value, AbstractMethod):
+            return value._f, "abstract, a contract on implementations"  # noqa: SLF001
+        if isinstance(value, property):
+            assert value.fget is not None, "a property the survey reads must be readable"
+            return value.fget, "read as an attribute"
+        return value, ""
+
+    @classmethod
+    def members(cls, klass: type) -> list[MethodDoc]:
+
+        found: list[MethodDoc] = []
+        for name, value in sorted(vars(klass).items()):
+            if name.startswith("_"):
+                continue
+            if not (callable(value) or isinstance(value, (CachedMethod, AbstractMethod, property))):
+                continue
+            target, mark = cls.unwrap(klass, value)
+            found.append(
+                MethodDoc(
+                    name=name,
+                    signature=signature_of(target),
+                    summary=summarize(inspect.getdoc(target)),
+                    mark=mark,
+                )
+            )
+        return found
+
+    def close_ancestry(self, instances: list[Category]) -> None:
+        r"""Add the categories reachable only as ancestors, so the poset closes."""
+        seen = set(self.categories)
+        for instance in instances:
+            for ancestor in instance.all_super_categories():
+                for part in self.expand(ancestor):
+                    name, module = self.family_of(part)
+                    if name in seen:
+                        continue
+                    seen.add(name)
+                    klass = type(part).__mro__[0]
+                    doc = CategoryDoc(
+                        name=name,
+                        module=module,
+                        subsystem=subsystem_of(module),
+                        source=source_of(klass),
+                        doc=inspect.getdoc(part) or "",
+                        exported=False,
+                        arity="nullary",
+                    )
+                    self.describe(doc, part)
+                    self.categories[name] = doc
+
+    def invert_edges(self) -> None:
+        for name, doc in self.categories.items():
+            for super_name in doc.supers:
+                parent = self.categories.get(super_name)
+                if parent is not None and name not in parent.subcategories:
+                    parent.subcategories.append(name)
+        for doc in self.categories.values():
+            doc.subcategories.sort()
+
+    # ---- functors -----------------------------------------------------
+
+    @staticmethod
+    def name_functor(value: Functor) -> str:
+        r"""A functor's own repr, or its class name when it has not got one."""
+        text = repr(value)
+        return type(value).__name__ if text.startswith("<") else text
+
+    def collect_functors(self) -> None:
+        for name in self.names:
+            value = getattr(self.session, name)
+            if not (inspect.isclass(value) and issubclass(value, (Functor, Adjunction))):
+                continue
+            kind = "ADJUNCTION" if issubclass(value, Adjunction) else "FUNCTOR"
+            doc = FunctorDoc(
+                name=name,
+                kind=kind,
+                subsystem=subsystem_of(value.__module__),
+                source=source_of(value),
+                doc=inspect.getdoc(value) or "",
+                exported=True,
+                init_signature=signature_of(value, constructor=True),
+                methods=self.members(value),
+            )
+            self.functors.append(doc)
+            probe = self.probe_arguments(value)
+            if probe is None:
+                doc.problem = "parameterized by data the survey does not choose for you"
+                continue
+            built: Functor | Adjunction | str = self.build(value, probe[0])
+            if isinstance(built, str):
+                doc.problem = built
+            elif isinstance(built, Adjunction):
+                doc.domain = self.name_functor(built.left_adjoint())
+                doc.codomain = self.name_functor(built.right_adjoint())
+            else:
+                doc.domain = repr(built.domain())
+                doc.codomain = repr(built.codomain())
+        self.functors.sort(key=lambda f: f.name)
+
+    # ---- catalogues and specimens --------------------------------------
+
+    INVARIANTS: Final = ("rank", "signature_pair", "discriminant", "degree", "order")
+
+    @staticmethod
+    def ask(value: Specimen, question: str, show: Callable[[object], str] = str) -> str | None:
+        r"""Ask a specimen one question and render the answer.
+
+        ``None`` when the specimen does not answer to it at all.  A specimen
+        that *has* the operation and raises gets the exception name back: a
+        named lattice that cannot state its own rank is a finding, and hiding
+        it would leave a blank cell that reads as "not applicable".
+        """
+        method = getattr(value, question, None)
+        if not callable(method):
+            return None
         try:
-            sys.stdout.close()
-        except Exception:
-            pass
+            return show(method())
+        except Exception as error:  # noqa: BLE001 - a specimen may raise anything
+            return f"!{type(error).__name__}"
+
+    @staticmethod
+    def category_of(value: Specimen) -> Category | None:
+        r"""Where a specimen says it lives, or nothing when it will not say."""
+        try:
+            return value.category()
+        except Exception:  # noqa: BLE001 - an object that will not place itself is unplaced
+            return None
+
+    def invariants_of(self, value: Specimen) -> dict[str, str]:
+        asked: list[tuple[str, Callable[[object], str]]] = [
+            *((name, str) for name in self.INVARIANTS),
+            ("domain", repr),
+            ("codomain", repr),
+        ]
+        answers = ((name, self.ask(value, name, show)) for name, show in asked)
+        return {name: answer for name, answer in answers if answer is not None}
+
+    def collect_catalogues(self) -> None:
+        for name in self.names:
+            value = getattr(self.session, name)
+            if not inspect.isclass(value) or issubclass(value, (Category, Functor)):
+                continue
+            entries = [(key, getattr(value, key)) for key in vars(value) if not key.startswith("_") and isinstance(getattr(value, key), (Parent, Element))]
+            if len(entries) < 2:
+                continue
+            doc = CatalogueDoc(
+                name=name,
+                subsystem=subsystem_of(value.__module__),
+                source=source_of(value),
+                doc=inspect.getdoc(value) or "",
+            )
+            for key, specimen in entries:
+                doc.specimens.append(
+                    SpecimenDoc(
+                        name=key,
+                        repr_text=repr(specimen),
+                        invariants=self.invariants_of(specimen),
+                        category=str(self.category_of(specimen) or ""),
+                    )
+                )
+            self.catalogues.append(doc)
+        self.catalogues.sort(key=lambda c: c.name)
+
+    # ---- everything else -----------------------------------------------
+
+    def collect_plain(self) -> None:
+
+        catalogued = {c.name for c in self.catalogues}
+        for name in self.names:
+            value = getattr(self.session, name)
+            if name in catalogued or inspect.ismodule(value):
+                continue
+            if inspect.isclass(value) and issubclass(value, (Category, Functor, Adjunction)):
+                continue
+            if inspect.isclass(value):
+                if issubclass(value, Morphism):
+                    kind = "MORPHISM"
+                elif issubclass(value, Element):
+                    kind = "ELEMENT"
+                elif issubclass(value, Parent):
+                    kind = "OBJECT"
+                else:
+                    kind = "CLASS"
+                self.plain.append(
+                    PlainDoc(
+                        name=name,
+                        kind=kind,
+                        subsystem=subsystem_of(value.__module__),
+                        source=source_of(value),
+                        doc=inspect.getdoc(value) or "",
+                        signature=signature_of(value, constructor=True),
+                        methods=self.members(value),
+                    )
+                )
+            elif isinstance(value, Parent):
+                self.plain.append(
+                    PlainDoc(
+                        name=name,
+                        kind="LIVE OBJECT",
+                        subsystem=subsystem_of(type(value).__module__),
+                        source=source_of(type(value)),
+                        doc=summarize(inspect.getdoc(value)),
+                        signature=repr(value),
+                        category=str(self.category_of(value) or ""),
+                    )
+                )
+            elif callable(value):
+                # A `cached_function` keeps the real function on `.f`; a callable
+                # instance has no code of its own, so its class carries the source.
+                target = getattr(value, "f", value)
+                located = target if inspect.isroutine(target) else type(target)
+                self.plain.append(
+                    PlainDoc(
+                        name=name,
+                        kind="FUNCTION",
+                        subsystem=subsystem_of(located.__module__),
+                        source=source_of(located),
+                        doc=inspect.getdoc(target) or "",
+                        signature=signature_of(target),
+                    )
+                )
+        self.plain.sort(key=lambda p: p.name)
+
+    def attach_specimens(self) -> None:
+        r"""Name, on each category, objects a session can actually reach."""
+        live: list[tuple[str, Specimen]] = [(p.name, getattr(self.session, p.name)) for p in self.plain if p.kind == "LIVE OBJECT"]
+        for catalogue in self.catalogues:
+            namespace = getattr(self.session, catalogue.name)
+            live.extend((f"{catalogue.name}.{s.name}", getattr(namespace, s.name)) for s in catalogue.specimens)
+        for label, specimen in live:
+            category = self.category_of(specimen)
+            if category is None:
+                continue
+            for part in self.expand(category):
+                name, _ = self.family_of(part)
+                doc = self.categories.get(name)
+                if doc is None or label in doc.specimens:
+                    continue
+                doc.specimen_total += 1
+                if len(doc.specimens) < SPECIMEN_CAP:
+                    doc.specimens.append(label)
+
+    def run(self) -> Survey:
+        self.collect_categories()
+        self.collect_functors()
+        self.collect_catalogues()
+        self.collect_plain()
+        self.attach_specimens()
+        return self
+
+
+class Report:
+    r"""Markdown for the surveyed session."""
+
+    def __init__(self, survey: Survey) -> None:
+        self.survey = survey
+        self.lines: list[str] = []
+
+    def out(self, *lines: str) -> None:
+        self.lines.extend(lines)
+
+    # ---- helpers -------------------------------------------------------
+
+    def link(self, name: str) -> str:
+        doc = self.survey.categories.get(name)
+        if doc is None:
+            return f"`{name}`"
+        return f"[`{doc.display}`](#{anchor('cat-' + name)})"
+
+    def depth(self, doc: CategoryDoc) -> int:
+        return len(doc.ancestry)
+
+    def chapters(self) -> list[tuple[str, str, str]]:
+        present = {d.subsystem for d in self.survey.categories.values()}
+        present |= {f.subsystem for f in self.survey.functors}
+        present |= {c.subsystem for c in self.survey.catalogues}
+        present |= {p.subsystem for p in self.survey.plain}
+        return [row for row in SUBSYSTEM_ORDER if row[0] in present]
+
+    # ---- sections ------------------------------------------------------
+
+    def orientation(self) -> None:
+        functors = [f for f in self.survey.functors if f.kind == "FUNCTOR"]
+        adjunctions = [f for f in self.survey.functors if f.kind == "ADJUNCTION"]
+        counts = {
+            "categories": len(self.survey.categories),
+            "instantiated": sum(1 for d in self.survey.categories.values() if d.instance_repr),
+            "functors": len(functors),
+            "placed": sum(1 for f in functors if f.domain),
+            "adjunctions": len(adjunctions),
+            "operations": sum(d.own_total for d in self.survey.categories.values()),
+        }
+        self.out(
+            "# The preamble, surveyed from a live session",
+            "",
+            "This is the reference for what a session can build on: which categories",
+            "exist, what sits above and below each one, which operations an object of",
+            "each category answers to and where each operation is defined, which",
+            "functors move between categories, and which named specimens are on hand.",
+            "",
+            "Everything here was read from a running session, not from the source text.",
+            "`super_categories` is a method, the base ring is an argument, and the",
+            "operations an object carries are assembled by Sage from the category graph",
+            "at runtime -- so a category's place and its methods are facts only a live",
+            "object can report.",
+            "",
+            "```python",
+            "from dzack_research.preamble.all import *",
+            "```",
+            "",
+            "## How to read an entry",
+            "",
+            "A category parameterized by a ring is written `C(R)` and was probed at",
+            "`R = ZZ`; the relations hold for the parameter generally, and the",
+            "**probed as** line shows the object the survey actually held.",
+            "",
+            "**Above** and **below** are the direct edges of the poset: `super_categories`",
+            "and its inverse. **Refines** is the transitive closure upward.",
+            "",
+            "**Operations introduced here** are the ones this category *defines*.  Every",
+            "operation is written out once, at the category that owns it; a descendant",
+            "lists it under **inherited** with a link, because that is where placement",
+            "lives.  So an object of `C` answers to the union of the operations",
+            "introduced by `C` and by everything in its ancestry.",
+            "",
+            "Operations are split by what they act on: **objects** of the category,",
+            "**elements** of those objects, and **morphisms** between them.",
+            "",
+            "A category the survey could not build, or an operation whose signature",
+            "would not resolve, is recorded with the error rather than dropped.",
+            "",
+            "The same survey is serialized to `docs/preamble-graph.json`, which carries",
+            "every operation name, so a question this prose cannot index is a `jq` away:",
+            "",
+            "```bash",
+            "# which category owns discriminant_group?",
+            "jq -r '.categories | to_entries[]",
+            '      | select(.value.operations.objects[]?.name == "discriminant_group")',
+            "      | .key' docs/preamble-graph.json",
+            "```",
+            "",
+            "The poset is drawn in `docs/preamble-graph.html` (pan and zoom), from",
+            "`docs/preamble-graph.dot`.",
+            "",
+            "| | |",
+            "| :--- | ---: |",
+            f"| categories in the poset | {counts['categories']} |",
+            f"| of those, built and interrogated | {counts['instantiated']} |",
+            f"| operations, each written once at its owner | {counts['operations']} |",
+            f"| functors | {counts['functors']}, {counts['placed']} of them with a domain and codomain resolved here |",
+            f"| adjunctions | {counts['adjunctions']} |",
+            "",
+        )
+
+    def graph_section(self) -> None:
+        roots = sorted(d.name for d in self.survey.categories.values() if not d.supers and d.instance_repr)
+        self.out(
+            "## The category poset",
+            "",
+            "An edge points from a category to a category it refines.  In the drawing the",
+            "arrow runs leftward and the chapters are boxed, so reading left is forgetting",
+            "structure and reading right is adding it; a dashed node is a category Sage",
+            "provides rather than one the preamble owns.",
+            "",
+            "The top of the poset, refining nothing further: " + ", ".join(self.link(name) for name in roots) + ".",
+            "",
+            "The whole graph at once is [`preamble-graph.html`](preamble-graph.html);"
+            " the diagrams below are its restriction to one chapter, together with any"
+            " immediate supercategory that lies outside it.",
+            "",
+        )
+
+    def mermaid(self, subsystem: str) -> None:
+        inside = [d for d in self.survey.categories.values() if d.subsystem == subsystem and d.instance_repr]
+        if not inside:
+            return
+        names = {d.name for d in inside}
+        border = {s for d in inside for s in d.supers if s not in names}
+        if len(names) + len(border) > MERMAID_NODE_CAP:
+            self.out(
+                f"This chapter holds {len(names)} categories, too many to draw legibly here; see [the interactive graph](preamble-graph.html).",
+                "",
+            )
+            return
+        # RL for the same reason the whole-graph DOT uses it: bottom-to-top puts
+        # a chapter's forty categories in one flat row.
+        self.out("```mermaid", "graph RL")
+        for doc in sorted(inside, key=lambda d: d.name):
+            self.out(f'  {doc.name}["{doc.display}"]')
+        for name in sorted(border):
+            other = self.survey.categories.get(name)
+            label = other.display if other else name
+            self.out(f'  {name}("{label}")')
+        for doc in sorted(inside, key=lambda d: d.name):
+            for super_name in sorted(set(doc.supers)):
+                self.out(f"  {doc.name} --> {super_name}")
+        if border:
+            # No space after the colon: mermaid ends the attribute value there,
+            # and the dashes silently do not appear.
+            self.out("  classDef outside stroke-dasharray:6 4,fill:#f8fafc;")
+            self.out(f"  class {','.join(sorted(border))} outside;")
+        self.out("```", "")
+
+    def functor_index(self) -> None:
+        resolved = [f for f in self.survey.functors if f.kind == "FUNCTOR" and f.domain]
+        adjunctions = [f for f in self.survey.functors if f.kind == "ADJUNCTION" and f.domain]
+        self.out(
+            "## Getting from one category to another",
+            "",
+            "Every functor the survey could build, indexed by where it starts.  This is",
+            "the table to read when the object you have and the object you want are in",
+            "different categories.",
+            "",
+            "| from | functor | to |",
+            "| :--- | :--- | :--- |",
+        )
+        for functor in sorted(resolved, key=lambda f: (f.domain, f.name)):
+            target = f"[`{functor.name}`](#{anchor('fun-' + functor.name)})"
+            self.out(f"| {functor.domain} | {target} | {functor.codomain} |")
+        self.out("")
+        if adjunctions:
+            self.out(
+                "### Adjunctions",
+                "",
+                "| adjunction | left adjoint | | right adjoint |",
+                "| :--- | :--- | :---: | :--- |",
+            )
+            for adjunction in sorted(adjunctions, key=lambda f: f.name):
+                target = f"[`{adjunction.name}`](#{anchor('fun-' + adjunction.name)})"
+                self.out(f"| {target} | {adjunction.domain} | ⊣ | {adjunction.codomain} |")
+            self.out("")
+        unresolved = [f for f in self.survey.functors if not f.domain]
+        if unresolved:
+            self.out(
+                f"{len(unresolved)} further functors take data the survey does not choose"
+                " for you (a ring map, a group, a subgroup pair); they are written out in"
+                " their chapters with the arguments they want.",
+                "",
+            )
+
+    def catalogue_section(self) -> None:
+        if not self.survey.catalogues:
+            return
+        self.out(
+            "## Named specimens",
+            "",
+            "Objects the catalogue has already built, with the invariants the survey could compute from them.",
+            "",
+        )
+        for catalogue in self.survey.catalogues:
+            self.out(f"### `{catalogue.name}` {{#{anchor(catalogue.name)}}}", "")
+            if catalogue.doc:
+                self.out(summarize(catalogue.doc), "")
+            self.out(f"`{catalogue.source}`", "")
+            keys: list[str] = []
+            for specimen in catalogue.specimens:
+                for key in specimen.invariants:
+                    if key not in keys:
+                        keys.append(key)
+            header = ["name", "is"] + keys + ["category"]
+            self.out(
+                "| " + " | ".join(header) + " |",
+                "| " + " | ".join([":---"] * len(header)) + " |",
+            )
+            for specimen in catalogue.specimens:
+                cells = [f"`{catalogue.name}.{specimen.name}`", specimen.repr_text]
+                cells += [specimen.invariants.get(key, "") for key in keys]
+                cells.append(specimen.category)
+                self.out("| " + " | ".join(cell.replace("|", "\\|") for cell in cells) + " |")
+            self.out("")
+
+    # ---- entries -------------------------------------------------------
+
+    @staticmethod
+    def prose(text: str) -> str:
+        return text.replace("``", "`")
+
+    def docstring(self, text: str) -> None:
+        r"""The summary as prose, and the rest verbatim so examples survive."""
+        if not text:
+            return
+        cleaned = inspect.cleandoc(text)
+        head, _, rest = cleaned.partition("\n\n")
+        self.out(self.prose(head.replace("\n", " ")), "")
+        if rest.strip():
+            self.out("```text", rest.rstrip(), "```", "")
+
+    def category_entry(self, doc: CategoryDoc) -> None:
+        self.out(f"#### `{doc.display}` {{#{anchor('cat-' + doc.name)}}}", "")
+        self.docstring(doc.doc)
+        facts = [f"- **defined at** `{doc.source}`" if doc.source else ""]
+        if not doc.exported:
+            facts.append("- **not exported**: reachable only as a supercategory")
+        if doc.instance_repr:
+            facts.append(f"- **probed as** `{doc.instance_repr}`")
+        if doc.problem:
+            facts.append(f"- **could not be built**: {doc.problem}")
+        if doc.arity == "construction":
+            facts.append(f"- **an operation on categories**: `{doc.name}{doc.init_signature}`")
+        elif doc.arity == "unplaced":
+            facts.append(
+                f"- **parameterized** by data the survey will not choose for you: `{doc.name}{doc.init_signature}`; supply it and the category takes its place in the poset"
+            )
+        if doc.supers:
+            facts.append("- **above** " + ", ".join(self.link(s) for s in sorted(set(doc.supers))))
+        if doc.subcategories:
+            facts.append("- **below** " + ", ".join(self.link(s) for s in doc.subcategories))
+        if doc.ancestry:
+            facts.append("- **refines**, transitively, in Sage's linearization order: " + " · ".join(self.link(a) for a in doc.ancestry))
+        if doc.call_signature and doc.call_signature != "(...)":
+            facts.append(f"- **build an object** `{doc.display}{doc.call_signature}`")
+        if doc.specimens:
+            shown = ", ".join(f"`{s}`" for s in doc.specimens)
+            more = doc.specimen_total - len(doc.specimens)
+            facts.append(f"- **specimens** {shown}" + (f", and {more} more" if more else ""))
+        self.out(*[line for line in facts if line], "")
+
+        if doc.own_methods:
+            tally = ", ".join(f"{len(v)} on {k}" for k, v in doc.own_methods.items())
+            self.out(f"**Operations introduced here** ({tally})", "")
+            for label in ("objects", "elements", "morphisms"):
+                methods = doc.own_methods.get(label)
+                if not methods:
+                    continue
+                self.out(f"*on {label}*", "")
+                self.out(*[m.render() for m in methods], "")
+        elif doc.instance_repr:
+            self.out(
+                "Introduces no operations of its own: membership is the whole statement, and everything an object here answers to is inherited.",
+                "",
+            )
+        if doc.inherited:
+            self.out(
+                "**Inherited operations**, defined where they are owned:",
+                "",
+                "| from | objects | elements | morphisms |",
+                "| :--- | ---: | ---: | ---: |",
+            )
+            for owner, on_objects, on_elements, on_morphisms in doc.inherited:
+                self.out(f"| {self.link(owner)} | {on_objects or ''} | {on_elements or ''} | {on_morphisms or ''} |")
+            self.out("")
+
+    def functor_entry(self, doc: FunctorDoc) -> None:
+        self.out(f"#### `{doc.name}` {{#{anchor('fun-' + doc.name)}}}", "")
+        self.docstring(doc.doc)
+        facts = [f"- **defined at** `{doc.source}`" if doc.source else ""]
+        if doc.domain and doc.kind == "FUNCTOR":
+            facts.append(f"- **acts** {doc.domain} → {doc.codomain}")
+        elif doc.domain:
+            facts.append(f"- **adjunction** {doc.domain} ⊣ {doc.codomain}")
+        facts.append(f"- **built by** `{doc.name}{doc.init_signature}`")
+        if doc.problem:
+            facts.append(f"- **not resolved here**: {doc.problem}")
+        self.out(*[line for line in facts if line], "")
+        if doc.methods:
+            self.out("**Operations**", "", *[m.render() for m in doc.methods], "")
+
+    def plain_entry(self, doc: PlainDoc) -> None:
+        self.out(f"#### `{doc.name}` <sub>{doc.kind}</sub>", "")
+        self.docstring(doc.doc)
+        facts = [f"- **defined at** `{doc.source}`" if doc.source else ""]
+        if doc.kind == "LIVE OBJECT":
+            facts.append(f"- **is** {doc.signature}")
+            facts.append(f"- **in** {doc.category}")
+        elif doc.signature:
+            facts.append(f"- **built by** `{doc.name}{doc.signature}`")
+        self.out(*[line for line in facts if line], "")
+        if doc.methods:
+            self.out("**Operations**", "", *[m.render() for m in doc.methods], "")
+
+    def chapter(self, key: str, title: str, scope: str) -> None:
+        self.out(f"## {title}", "", f"> {scope}", "")
+        self.mermaid(key)
+
+        categories = [d for d in self.survey.categories.values() if d.subsystem == key]
+        poset = sorted(
+            (d for d in categories if d.arity in {"nullary", "parameterized"}),
+            key=lambda d: (self.depth(d), d.name),
+        )
+        unplaced = sorted((d for d in categories if d.arity == "unplaced"), key=lambda d: d.name)
+        constructions = sorted((d for d in categories if d.arity == "construction"), key=lambda d: d.name)
+        functors = [f for f in self.survey.functors if f.subsystem == key]
+        symbols = [p for p in self.survey.plain if p.subsystem == key]
+
+        if poset:
+            self.out(
+                "### Categories",
+                "",
+                "Ordered by depth: the least structured first.",
+                "",
+            )
+            for doc in poset:
+                self.category_entry(doc)
+        if unplaced:
+            self.out(
+                "### Categories awaiting a parameter",
+                "",
+                "These are ordinary categories of the poset, parameterized by something"
+                " the survey will not pick for a reader: an acting group, a ring map, a"
+                " degree.  Their relations appear once the parameter is supplied; the"
+                " operations they introduce are listed from the declaration.",
+                "",
+            )
+            for doc in unplaced:
+                self.category_entry(doc)
+        if constructions:
+            self.out(
+                "### Operations on categories",
+                "",
+                "These take a category, a diagram or a functor and return a category, so they have no fixed place in the poset.",
+                "",
+            )
+            for doc in constructions:
+                self.category_entry(doc)
+        if functors:
+            self.out("### Functors and adjunctions", "")
+            for functor in functors:
+                self.functor_entry(functor)
+        for kind, heading in (
+            ("OBJECT", "Objects"),
+            ("ELEMENT", "Elements"),
+            ("MORPHISM", "Morphisms and homsets"),
+            ("LIVE OBJECT", "Objects the session already holds"),
+            ("CLASS", "Supporting classes"),
+            ("FUNCTION", "Functions"),
+        ):
+            group = [p for p in symbols if p.kind == kind]
+            if not group:
+                continue
+            self.out(f"### {heading}", "")
+            for symbol in group:
+                self.plain_entry(symbol)
+
+    def locator(self) -> None:
+        rows: list[tuple[str, str, str]] = []
+        for doc in self.survey.categories.values():
+            if doc.exported:
+                rows.append((doc.name, "category", f"#{anchor('cat-' + doc.name)}"))
+        for functor in self.survey.functors:
+            rows.append(
+                (
+                    functor.name,
+                    functor.kind.lower(),
+                    f"#{anchor('fun-' + functor.name)}",
+                )
+            )
+        for catalogue in self.survey.catalogues:
+            rows.append((catalogue.name, "catalogue", f"#{anchor(catalogue.name)}"))
+        for symbol in self.survey.plain:
+            rows.append((symbol.name, symbol.kind.lower(), ""))
+        self.out(
+            "## Every exported name",
+            "",
+            "| name | kind | chapter |",
+            "| :--- | :--- | :--- |",
+        )
+        chapter_of: dict[str, str] = {}
+        for doc in self.survey.categories.values():
+            chapter_of[doc.name] = doc.subsystem
+        for functor in self.survey.functors:
+            chapter_of[functor.name] = functor.subsystem
+        for catalogue in self.survey.catalogues:
+            chapter_of[catalogue.name] = catalogue.subsystem
+        for symbol in self.survey.plain:
+            chapter_of[symbol.name] = symbol.subsystem
+        for name, kind, target in sorted(set(rows)):
+            title = SUBSYSTEM_TITLES.get(chapter_of.get(name, ""), ("", ""))[0]
+            shown = f"[`{name}`]({target})" if target else f"`{name}`"
+            self.out(f"| {shown} | {kind} | {title} |")
+        self.out("")
+
+    def render(self) -> str:
+        self.orientation()
+        self.graph_section()
+        self.functor_index()
+        self.catalogue_section()
+        for key, title, scope in self.chapters():
+            self.chapter(key, title, scope)
+        self.locator()
+        return "\n".join(self.lines).rstrip() + "\n"
+
+
+PALETTE: Final = [
+    "#dbeafe",
+    "#dcfce7",
+    "#fef3c7",
+    "#fae8ff",
+    "#ffe4e6",
+    "#e0e7ff",
+    "#ccfbf1",
+    "#fee2e2",
+    "#ede9fe",
+    "#ecfccb",
+    "#cffafe",
+    "#fce7f3",
+    "#f1f5f9",
+    "#fef9c3",
+    "#e2e8f0",
+    "#d1fae5",
+    "#ffedd5",
+]
+
+
+def graph_json(survey: Survey) -> str:
+    categories = {
+        doc.name: {
+            "display": doc.display,
+            "subsystem": doc.subsystem,
+            "source": doc.source,
+            "summary": summarize(doc.doc),
+            "owned": survey.is_owned(doc.module),
+            "exported": doc.exported,
+            "arity": doc.arity,
+            "probed_as": doc.instance_repr,
+            "supers": sorted(set(doc.supers)),
+            "subcategories": doc.subcategories,
+            "ancestry": doc.ancestry,
+            "operations": {
+                label: [
+                    {
+                        "name": m.name,
+                        "signature": m.signature,
+                        "summary": m.summary,
+                        "mark": m.mark,
+                    }
+                    for m in methods
+                ]
+                for label, methods in doc.own_methods.items()
+            },
+            "inherits": [
+                {
+                    "from": owner,
+                    "objects": on_objects,
+                    "elements": on_elements,
+                    "morphisms": on_morphisms,
+                }
+                for owner, on_objects, on_elements, on_morphisms in doc.inherited
+            ],
+            "specimens": doc.specimens,
+            "problem": doc.problem,
+        }
+        for doc in sorted(survey.categories.values(), key=lambda d: d.name)
+    }
+    functors = [
+        {
+            "name": f.name,
+            "kind": f.kind,
+            "subsystem": f.subsystem,
+            "source": f.source,
+            "summary": summarize(f.doc),
+            "domain": f.domain,
+            "codomain": f.codomain,
+            "problem": f.problem,
+        }
+        for f in survey.functors
+    ]
+    specimens = [
+        {
+            "catalogue": catalogue.name,
+            "name": specimen.name,
+            "is": specimen.repr_text,
+            "category": specimen.category,
+            **specimen.invariants,
+        }
+        for catalogue in survey.catalogues
+        for specimen in catalogue.specimens
+    ]
+    return json.dumps(
+        {"categories": categories, "functors": functors, "specimens": specimens},
+        indent=2,
+        sort_keys=False,
+    )
+
+
+def graph_dot(survey: Survey) -> str:
+    drawn = {name: doc for name, doc in survey.categories.items() if doc.instance_repr}
+    order = [key for key, _, _ in SUBSYSTEM_ORDER]
+    colour = {key: PALETTE[index % len(PALETTE)] for index, key in enumerate(order)}
+    lines = [
+        "// Generated by dzack_research.utilities.megadoc from a live session.",
+        "// An edge points from a category to a category it refines.",
+        "digraph preamble {",
+        # Ranking right-to-left keeps a 200-node poset near A-series proportions.
+        # Stacking it bottom-to-top instead lays the chapters side by side and
+        # the drawing comes out ten times wider than it is tall.
+        "  rankdir=RL;",
+        '  graph [bgcolor="#ffffff", fontname="Helvetica", fontsize=14, nodesep=0.25, ranksep=0.6, pad=0.2];',
+        '  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=11, margin="0.10,0.06"];',
+        '  edge [color="#94a3b8", arrowsize=0.6];',
+    ]
+    grouped: dict[str, list[CategoryDoc]] = defaultdict(list)
+    for doc in drawn.values():
+        grouped[doc.subsystem].append(doc)
+    for index, key in enumerate(order):
+        members = grouped.get(key)
+        if not members:
+            continue
+        title, _ = SUBSYSTEM_TITLES[key]
+        lines.append(f"  subgraph cluster_{index} {{")
+        lines.append(f'    label="{html.escape(title)}"; fontsize=13; color="#cbd5e1"; style=rounded;')
+        for doc in sorted(members, key=lambda d: d.name):
+            shape = "" if survey.is_owned(doc.module) else ', style="rounded,filled,dashed"'
+            lines.append(f'    {doc.name} [label="{doc.display}", fillcolor="{colour[key]}"{shape}];')
+        lines.append("  }")
+    for doc in sorted(drawn.values(), key=lambda d: d.name):
+        for super_name in sorted(set(doc.supers)):
+            if super_name in drawn:
+                lines.append(f"  {doc.name} -> {super_name};")
+    lines.append("}")
+    return "\n".join(lines) + "\n"
+
+
+def render_interactive(dot_path: Path, out_path: Path) -> bool:
+    r"""Rasterize the DOT into the repository's pan-and-zoom viewer."""
+    if shutil.which("dot") is None or not GRAPH_TEMPLATE.exists():
+        return False
+    svg = subprocess.run(["dot", "-Tsvg", str(dot_path)], capture_output=True, text=True, check=True).stdout
+    template = GRAPH_TEMPLATE.read_text()
+    assert template.count("%SVG%") == 1
+    out_path.write_text(template.replace("%SVG%", svg[svg.find("<svg") :]))
+    return True
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("-o", "--output", default="docs/preamble-megadoc.md")
+    arguments = parser.parse_args(argv)
+
+    survey = Survey().run()
+    markdown = Path(arguments.output)
+    markdown.parent.mkdir(parents=True, exist_ok=True)
+    markdown.write_text(Report(survey).render())
+
+    stem = markdown.with_name("preamble-graph")
+    json_path = stem.with_suffix(".json")
+    dot_path = stem.with_suffix(".dot")
+    json_path.write_text(graph_json(survey) + "\n")
+    dot_path.write_text(graph_dot(survey))
+    drawn = render_interactive(dot_path, stem.with_suffix(".html"))
+
+    print(f"{markdown} ({markdown.stat().st_size // 1024} KiB)")
+    print(f"{json_path} ({len(survey.categories)} categories, {len(survey.functors)} functors)")
+    print(f"{dot_path}" + (f" -> {stem.with_suffix('.html')}" if drawn else "  (no `dot`; HTML skipped)"))
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

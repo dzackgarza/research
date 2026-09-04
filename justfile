@@ -94,9 +94,12 @@ docs-preview: docs-bib
     # stale instance first so this always replaces rather than duplicates.
     uvx --from quarto-cli quarto preview docs --no-browser --port 7654
 
-# Generate the canonical preamble constructions megadoc
+# Survey a live session into the preamble reference, its graph JSON, and the interactive graph
 preamble-megadoc:
-    PYTHONPATH=src python3 -m dzack_research.utilities.megadoc -o "{{preamble_megadoc_file}}"
+    # The survey imports the preamble, so it runs under Sage's own interpreter,
+    # which sits beside the `sage` launcher SAGE_BIN names.
+    PYTHONPATH=src "$(dirname "${SAGE_BIN:-$(command -v sage)}")/python3" \
+        -m dzack_research.utilities.megadoc -o "{{preamble_megadoc_file}}"
 
 # Static architecture/complexity inventory for the live preamble
 preamble-complexity:

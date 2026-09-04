@@ -49,6 +49,8 @@ Before writing or editing code under `src/dzack_research/preamble/`, first read 
 
 Also read the generated preamble megadoc output at `docs/preamble-megadoc.md` before writing code. Reading `src/dzack_research/utilities/megadoc.py`, the generator script, does **not** satisfy this requirement. If the generated megadoc may be stale relative to the live source tree, regenerate it with `just preamble-megadoc` and then read the generated `docs/preamble-megadoc.md`.
 
+`just preamble-megadoc` surveys a live session, so it also writes `docs/preamble-graph.json` — every category with its supercategories, subcategories, ancestry and the operations it introduces, plus every functor's domain and codomain — and `docs/preamble-graph.dot` with the rendered `docs/preamble-graph.html`. Query the JSON with `jq` for the questions the prose cannot index, such as which category owns a given operation.
+
 These are implementation prerequisites: use them to identify already-planned remediation, existing mathematical constructions, known architectural failures, and outstanding archive-port work before adding or changing code.
 
 ## Notebook workflow note
