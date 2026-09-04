@@ -92,7 +92,7 @@ class GroupModules(CategoryPacketMethods, _CategoryOverRingAndActingGroup):
             return self._preamble_acting_group
 
         def is_trivial_action(self) -> bool:
-            return bool(getattr(self, "_preamble_action_is_trivial", False))
+            return bool(self.__dict__.get("_preamble_action_is_trivial", False))
 
         def unacted_module(self):
             r"""Return the module from which this chosen action was equipped."""

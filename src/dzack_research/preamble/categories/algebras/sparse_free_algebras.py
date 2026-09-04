@@ -551,9 +551,11 @@ class SparseFreeAlgebra(Parent):
         for key, component_coefficients in grouped.items():
             component = self._component_module(key)
             element = component.linear_combination(component_coefficients)
-            from dzack_research.preamble.categories.modules.pure.modules import ModulesWithChosenFinitePresentation
+            from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+                _SelectedFinitePresentationModules,
+            )
 
-            if component in ModulesWithChosenFinitePresentation(self.base_ring()):
+            if component in _SelectedFinitePresentationModules(self.base_ring()):
                 from dzack_research.preamble.categories.algebras.finitely_presented_algebras import (
                     _canonical_smith_representative,
                 )
@@ -742,7 +744,7 @@ def compose_with_free_construction(left, right):
     engine_source = _engine_ring(source)
     engine_target = _engine_ring(target)
     composite = SetMorphism(
-        engine_source.Mor(engine_target),
+        engine_source.Hom(engine_target),
         lambda element: engine_target(left(right(engine_source(element)))),
     )
     return algebra_homset(source, target)(composite)

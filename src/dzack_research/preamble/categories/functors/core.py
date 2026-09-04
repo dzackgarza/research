@@ -13,6 +13,8 @@ from sage.structure.sage_object import SageObject
 class Functor(SageObject):
     r"""A functor with explicit actions on objects and morphisms."""
 
+    _faithful = False
+
     def __init__(self, domain, codomain) -> None:
         self._domain = domain
         self._codomain = codomain
@@ -116,7 +118,7 @@ class Functor(SageObject):
         return (self,)
 
     def is_faithful(self) -> bool:
-        return bool(getattr(self, "_faithful", False))
+        return bool(self._faithful)
 
 
 

@@ -18,6 +18,11 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 from dzack_research.preamble.refine import refine
 
 
+class CohomologyAlgebraHomCategoryConstruction(HomCategoryConstruction):
+    def fixed_category_class(self):
+        return CohomologyAlgebraHomset
+
+
 class CohomologyAlgebras(OwnedCategoryOverBaseRing):
     r"""Graded algebras ``H^*(B)`` represented from a DGA ``B``."""
 
@@ -29,6 +34,8 @@ class CohomologyAlgebras(OwnedCategoryOverBaseRing):
         from dzack_research.preamble.categories.algebras.graded_commutative_algebras import StrictlyGradedCommutativeAlgebras
 
         return [StrictlyGradedCommutativeAlgebras(self.base_ring())]
+
+    _HomCategory = CohomologyAlgebraHomCategoryConstruction
 
     class ParentMethods:
         def source_dga(self):
@@ -155,13 +162,8 @@ class CohomologyAlgebraMorphism(Morphism):
 class CohomologyAlgebraHomset(CategoricalHomset):
     Element = CohomologyAlgebraMorphism
 
-    def __init__(self, domain, codomain) -> None:
-        CategoricalHomset.__init__(
-            self,
-            HomCategoryConstruction(CohomologyAlgebras(domain.base_ring())),
-            domain,
-            codomain,
-        )
+    def __init__(self, hom_family, domain, codomain) -> None:
+        CategoricalHomset.__init__(self, hom_family, domain, codomain)
 
     def _element_constructor_(self, dga_morphism):
         return self.element_class(self, dga_morphism)
@@ -176,7 +178,7 @@ class CohomologyAlgebraHomset(CategoricalHomset):
 
 
 def cohomology_algebra_homset(domain, codomain):
-    return CohomologyAlgebraHomset(domain, codomain)
+    return CohomologyAlgebras(domain.base_ring()).Mor(domain, codomain)
 
 
 _COHOMOLOGY_ALGEBRA_CACHE = {}

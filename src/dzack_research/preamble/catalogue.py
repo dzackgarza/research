@@ -42,7 +42,12 @@ def _block_gram(*grams):
     values = [[ZZ.zero() for _ in range(total)] for _ in range(total)]
     offset = 0
     for gram, rank in zip(grams, ranks, strict=True):
-        if gram.tensor_valence() != (NN**2)((0, 2)) or gram.tensor_shape() != (rank, rank):
+        shape = gram.tensor_shape()
+        if (
+            gram.tensor_valence() != (NN**2)((0, 2))
+            or shape[0] != rank
+            or shape[1] != rank
+        ):
             raise TypeError("a catalogue Gram block is a square type-(0,2) tensor")
         for i in range(rank):
             for j in range(rank):

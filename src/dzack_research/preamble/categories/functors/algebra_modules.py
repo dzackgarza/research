@@ -10,7 +10,10 @@ from sage.misc.cachefunc import cached_function
 from sage.categories.morphism import Morphism
 from typing import Any, cast
 
-from dzack_research.preamble.categories.algebras.algebras import Algebras
+from dzack_research.preamble.categories.algebras.algebras import (
+    Algebras,
+    AlgebrasWithChosenFinitePresentation,
+)
 from dzack_research.preamble.categories.algebras.free_algebras import (
     SymmetricAlgebras,
     TensorAlgebras,
@@ -131,16 +134,12 @@ def _free_algebra_underlying_module(algebra, source, flavor):
 
                 terms = (symmetric_sparse_term(item) for item in raw_terms)
         else:
-            presentation = (
-                algebra.presentation_ring()
-                if hasattr(algebra, "presentation_ring")
-                else algebra
-            )
-            presented = (
-                algebra.lift_to_presentation(element)
-                if hasattr(algebra, "lift_to_presentation")
-                else algebra(element)
-            )
+            if algebra in AlgebrasWithChosenFinitePresentation(algebra.base_ring()):
+                presentation = algebra.presentation_ring()
+                presented = algebra.lift_to_presentation(element)
+            else:
+                presentation = algebra
+                presented = algebra(element)
             backend = _engine_element(presentation, presented)
             engine = _engine_ring(presentation)
 

@@ -683,6 +683,11 @@ def _group_constructor_argument(value):
     parent = getattr(value, "parent", lambda: None)()
     if parent is not None:
         try:
+            if parent in OwnedGroups():
+                return _element_to_engine(parent, value)
+        except (AttributeError, NameError, NotImplementedError, TypeError, ValueError):
+            pass
+        try:
             if parent in OwnedRings():
                 return _engine_element(parent, value)
         except (AttributeError, TypeError, ValueError):
@@ -1482,7 +1487,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
     def Mor(self, domain, codomain):
         if domain not in self or codomain not in self:
             raise TypeError("a group Hom requires two owned groups")
-        return domain.Mor(codomain)
+        return self.HomCategory().Of(domain, codomain)
 
     _HomCategory = GroupHomCategoryConstruction
     _EndCategory = GroupEndCategoryConstruction

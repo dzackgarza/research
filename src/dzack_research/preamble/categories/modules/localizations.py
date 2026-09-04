@@ -37,7 +37,7 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
             )
 
         def localization_prime_point(self):
-            point = getattr(self, "_preamble_localization_prime_point", None)
+            point = self.__dict__.get("_preamble_localization_prime_point")
             if point is None:
                 raise ValueError("this localization was not selected at a prime point")
             return point
@@ -359,14 +359,8 @@ class GeneralLocalizedModuleParent(Parent):
         return self._preamble_scalar_action_morphism
 
     def is_finite(self):
-        method = getattr(self.localization_source_module(), "is_finite", None)
-        if method is None:
-            return Unknown
-        try:
-            answer = method()
-            return answer if answer is Unknown else bool(answer)
-        except (NotImplementedError, TypeError, ValueError):
-            return Unknown
+        answer = self.localization_source_module().is_finite()
+        return answer if answer is Unknown else bool(answer)
 
     def is_zero(self):
         r"""Decide whether this localization is zero when the source is finite."""

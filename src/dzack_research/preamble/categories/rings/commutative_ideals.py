@@ -47,13 +47,22 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
         def ideal_generators(self):
             return self._preamble_ideal_generators
 
+        def __eq__(self, other):
+            try:
+                return (
+                    other in CommutativeIdeals(self.ring())
+                    and self._engine_ideal() == other._engine_ideal()
+                )
+            except (AttributeError, NotImplementedError, TypeError, ValueError):
+                return False
+
+        def __ne__(self, other):
+            return not self == other
+
         def _richcmp_(self, other, op):
             if op not in (op_EQ, op_NE):
                 return NotImplemented
-            equal = (
-                other in CommutativeIdeals(self.ring())
-                and self._engine_ideal() == other._engine_ideal()
-            )
+            equal = self == other
             return equal if op == op_EQ else not equal
 
         def __eq__(self, other) -> bool:
@@ -363,8 +372,9 @@ def CommutativeIdeal(ring, *generators):
                 "this ideal has no selected exact module-presentation backend"
             )
         from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-            BasedFreeModule,
+            FreshFreeModuleOn,
         )
+        from dzack_research.preamble.categories.sets.set_categories import Sets
         from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
             ring_as_module,
         )
@@ -375,10 +385,10 @@ def CommutativeIdeal(ring, *generators):
         generator = selected[0]
         ambient_module = ring_as_module(source)
         if generator == engine.zero():
-            ideal = BasedFreeModule(source, 0)
+            ideal = FreshFreeModuleOn(source, Sets.Δ[-1])
             inclusion = module_embedding(ideal, ambient_module, {})
         else:
-            ideal = BasedFreeModule(source, 1)
+            ideal = FreshFreeModuleOn(source, Sets.Δ[0])
             inclusion = module_embedding(
                 ideal,
                 ambient_module,

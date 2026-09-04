@@ -102,21 +102,12 @@ class AlgebraScalarExtensionFunctor(Functor):
         return extended
 
     def source_algebra(self, extended_algebra):
-        r"""Return the algebra recorded by this scalar-extension construction."""
-        source = getattr(
-            extended_algebra,
-            "_preamble_scalar_extension_source_algebra",
-            None,
-        )
-        ring_map = getattr(
-            extended_algebra,
-            "_preamble_scalar_extension_ring_map",
-            None,
-        )
+        r"""Return the exact source selected by this scalar-extension construction."""
+        source = extended_algebra.__dict__.get("_preamble_scalar_extension_source_algebra")
+        ring_map = extended_algebra.__dict__.get("_preamble_scalar_extension_ring_map")
         if source is None or ring_map is not self.ring_map():
             raise ValueError(
-                f"{extended_algebra} was not constructed by scalar extension along "
-                f"{self.ring_map()}"
+                f"{extended_algebra} was not constructed by scalar extension along {self.ring_map()}"
             )
         return source
 

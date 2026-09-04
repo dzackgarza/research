@@ -48,11 +48,7 @@ class AbelianizationFunctor(Functor):
         return quotient
 
     def source_group(self, abelianization):
-        projection = getattr(
-            abelianization,
-            "_preamble_abelianization_projection",
-            None,
-        )
+        projection = abelianization.__dict__.get("_preamble_abelianization_projection")
         if projection is None or projection.codomain() is not abelianization:
             raise ValueError(f"{abelianization} is not an abelianization construction")
         return projection.domain()

@@ -67,16 +67,9 @@ class GroupModuleScalarExtensionFunctor(Functor):
         return self._group
 
     def _apply_object(self, group_module):
-        extended = group_module.base_change(self.ring_map())
-        extended._preamble_scalar_extension_source_group_module = group_module
-        return extended
+        return group_module.base_change(self.ring_map())
 
     def chosen_preimage(self, image):
-        source = getattr(
-            image, "_preamble_scalar_extension_source_group_module", None
-        )
-        if source is not None:
-            return source
         return super().chosen_preimage(image)
 
     def _apply_morphism(self, morphism):
@@ -152,7 +145,6 @@ class GroupModuleRestrictionOfScalarsFunctor(Functor):
 
         restricted._preamble_action = action
         restricted._preamble_unacted_module = unacted_restricted
-        restricted._preamble_restricted_group_module_source = group_module
         restricted._preamble_action_is_trivial = group_module.is_trivial_action()
         restricted._preamble_forget_action_morphism = module_homset(
             restricted, unacted_restricted
@@ -171,9 +163,6 @@ class GroupModuleRestrictionOfScalarsFunctor(Functor):
         return refine(restricted, GroupModules(self._source_ring, self.group()))
 
     def chosen_preimage(self, image):
-        source = getattr(image, "_preamble_restricted_group_module_source", None)
-        if source is not None:
-            return source
         return super().chosen_preimage(image)
 
     def _apply_morphism(self, morphism):

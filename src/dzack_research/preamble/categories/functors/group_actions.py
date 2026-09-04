@@ -91,10 +91,7 @@ class InvariantsFunctor(Functor):
         return group_module.module_invariants()
 
     def chosen_preimage(self, image):
-        inclusion = getattr(image, "inclusion", lambda: None)()
-        if inclusion is not None:
-            return inclusion.codomain()
-        return super().chosen_preimage(image)
+        return image.inclusion().codomain()
 
     def _apply_morphism(self, morphism):
         source_invariants = self(morphism.domain())

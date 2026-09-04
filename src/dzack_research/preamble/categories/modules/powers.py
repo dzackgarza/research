@@ -360,10 +360,7 @@ class DividedSquareModules(OwnedCategoryOverBaseRing):
             )
 
             homset = module_homset(self, codomain)
-            constructor = getattr(homset, "from_quadratic_map", None)
-            if constructor is not None:
-                return constructor(quadratic)
-            return homset(generator_image)
+            return homset.from_quadratic_map(quadratic)
 
 
 def _degree(degree) -> int:

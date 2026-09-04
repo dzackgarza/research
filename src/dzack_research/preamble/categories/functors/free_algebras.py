@@ -71,8 +71,7 @@ class _ModuleAlgebraFunctor(Functor):
             )
 
         homset = source.Mor(target)
-        structural = getattr(homset, "_from_degree_preserving_generator_map", None)
-        return structural(image) if structural is not None else homset(image)
+        return homset._from_degree_preserving_generator_map(image)
 
     def _repr_(self):
         return f"{self._name} functor on {self.base_ring()}-modules"
@@ -198,8 +197,7 @@ class _ModuleAlgebraAdjunction(Adjunction):
                 else module.module_generator(label)
             )
 
-        structural = getattr(homset, "_from_degree_preserving_generator_map", None)
-        return structural(image) if structural is not None else homset(image)
+        return homset._from_degree_preserving_generator_map(image)
 
 
     def _repr_(self):

@@ -392,7 +392,7 @@ class _PairingGram(ModuleElement, Tensor):
         r"""A Gram tensor is type $(0, 2)$, a point of $\mathbb N^2$ (`CON-15`)."""
         return (NN**2)((0, 2))
 
-    def tensor_shape(self):
+    def _index_ranks(self):
         rank = self._module.rank()
         return (rank, rank)
 
@@ -970,7 +970,8 @@ def _format_disc_latex(disc) -> str:
 
 def _hyperbolic_plane_name(gram: Tensor) -> str | None:
     r"""Return ``U`` when ``gram`` is the hyperbolic plane in the standard basis."""
-    if gram.tensor_shape() != (2, 2):
+    shape = gram.tensor_shape()
+    if shape[0] != 2 or shape[1] != 2:
         return None
     if gram[0, 0] == 0 and gram[1, 1] == 0 and gram[0, 1] == 1 and gram[1, 0] == 1:
         return "U"

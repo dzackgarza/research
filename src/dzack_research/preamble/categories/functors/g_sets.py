@@ -43,19 +43,10 @@ class TrivialGSetFunctor(Functor):
         return self._group
 
     def _apply_object(self, set_object):
-        image = trivial_g_set(set_object, self.group())
-        image._preamble_trivial_g_set_source_set = set_object
-        return image
+        return trivial_g_set(set_object, self.group())
 
     def source_set(self, trivial_g_set_object):
-        source = getattr(
-            trivial_g_set_object,
-            "_preamble_trivial_g_set_source_set",
-            None,
-        )
-        if source is None:
-            raise ValueError("the G-set is not an object produced by this trivial-action functor")
-        return source
+        return super().chosen_preimage(trivial_g_set_object)
 
     chosen_preimage = source_set
 
@@ -90,10 +81,7 @@ class GSetOrbitsFunctor(Functor):
         )
 
     def chosen_preimage(self, image):
-        g_set = getattr(image, "g_set", lambda: None)()
-        if g_set is None:
-            return super().chosen_preimage(image)
-        return g_set
+        return super().chosen_preimage(image)
 
     def _repr_(self):
         return f"{self.group()}-orbit functor on finite G-sets"
@@ -192,15 +180,10 @@ class FreeGSetFunctor(Functor):
                 )
             )
 
-        image = _finite_g_set_from_action(self.group(), point_set, action)
-        image._preamble_free_g_set_source_set = set_object
-        return image
+        return _finite_g_set_from_action(self.group(), point_set, action)
 
     def source_set(self, free_g_set):
-        source = getattr(free_g_set, "_preamble_free_g_set_source_set", None)
-        if source is None:
-            raise ValueError("the G-set is not an object produced by this free G-set functor")
-        return source
+        return super().chosen_preimage(free_g_set)
 
     chosen_preimage = source_set
 
@@ -289,15 +272,10 @@ class CofreeGSetFunctor(Functor):
                 ),
             )
 
-        image = _finite_g_set_from_action(self.group(), point_set, action)
-        image._preamble_cofree_g_set_source_set = set_object
-        return image
+        return _finite_g_set_from_action(self.group(), point_set, action)
 
     def source_set(self, cofree_g_set):
-        source = getattr(cofree_g_set, "_preamble_cofree_g_set_source_set", None)
-        if source is None:
-            raise ValueError("the G-set is not an object produced by this cofree G-set functor")
-        return source
+        return super().chosen_preimage(cofree_g_set)
 
     chosen_preimage = source_set
 

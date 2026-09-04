@@ -311,7 +311,7 @@ def restrict_algebra_scalars(algebra, ring_map):
             )
 
         engine_base_map = SetMorphism(
-            engine_base.Mor(algebra_engine),
+            engine_base.Hom(algebra_engine),
             engine_base_image,
         )
         presentation_engine_map = presentation_engine.hom(

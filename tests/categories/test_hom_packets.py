@@ -37,12 +37,12 @@ def test_hom_and_end_families_recover_actual_external_homsets() -> None:
     hom_category = hom_family.Of(source, target)
     map_ = Sets().Mor(source, target)(lambda value: target(value % 2))
     assert map_ in hom_category
-    arrow_object = hom_category(map_)
+    arrow_object = hom_category.object(map_)
     assert arrow_object.arrow() is map_
-    assert hom_category.identity(arrow_object).domain() is arrow_object
+    assert hom_category.identity_2(map_).domain() is arrow_object
 
     end = EndCategoryOf(Sets()).Of(source)
-    identity = end.identity_endomorphism().arrow()
+    identity = end.identity_endomorphism()
     for value in source:
         assert identity(value) == value
 

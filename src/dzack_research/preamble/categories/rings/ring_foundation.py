@@ -260,6 +260,12 @@ class _PredicateSubringParent(Parent):
             raise ValueError(f"{candidate} does not satisfy {self._description}")
         return candidate
 
+    def _from_engine_element(self, element):
+        r"""Cross one ambient-engine element into this predicate subring."""
+        converter = getattr(self._ambient_ring, "_from_engine_element", None)
+        candidate = converter(element) if converter is not None else self._ambient_ring(element)
+        return self(candidate)
+
     def __contains__(self, element):
         try:
             candidate = self._ambient_ring(element)

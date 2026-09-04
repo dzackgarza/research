@@ -201,6 +201,9 @@ def module_coefficients(element, module=None) -> dict:
 class ModuleMorphism(Morphism):
     r"""The linear extension of a function on a chosen module framing."""
 
+    _preamble_localization_source_morphism = None
+    _preamble_localization_functor = None
+
     def __init__(
         self,
         parent,
@@ -365,11 +368,20 @@ class ModuleMorphism(Morphism):
         codomain = self.codomain()
         ring = domain.base_ring()
         zero = domain.zero()
-        if function(zero) != codomain.zero():
+
+        def evaluate(element):
+            try:
+                return function(element)
+            except (TypeError, ValueError) as error:
+                raise ValueError(
+                    "the supplied elementwise map is not additive on the represented module"
+                ) from error
+
+        if evaluate(zero) != codomain.zero():
             raise ValueError("an elementwise module morphism must send zero to zero")
         for left in source_elements:
             for right in source_elements:
-                if function(left + right) != function(left) + function(right):
+                if evaluate(left + right) != evaluate(left) + evaluate(right):
                     raise ValueError("the supplied elementwise map is not additive")
 
         from sage.rings.integer_ring import ZZ as SageZZ
@@ -409,8 +421,8 @@ class ModuleMorphism(Morphism):
             return
         for scalar in scalars:
             for element in source_elements:
-                if function(domain.scalar_multiple(scalar, element)) != codomain.scalar_multiple(
-                    scalar, function(element)
+                if evaluate(domain.scalar_multiple(scalar, element)) != codomain.scalar_multiple(
+                    scalar, evaluate(element)
                 ):
                     raise ValueError("the supplied elementwise map is not scalar-linear")
 
@@ -574,16 +586,8 @@ class ModuleMorphism(Morphism):
     @cached_method
     def kernel(self):
         r"""Return ``ker(self)`` as a subobject of the domain."""
-        source_morphism = getattr(
-            self,
-            "_preamble_localization_source_morphism",
-            None,
-        )
-        localization_functor = getattr(
-            self,
-            "_preamble_localization_functor",
-            None,
-        )
+        source_morphism = self._preamble_localization_source_morphism
+        localization_functor = self._preamble_localization_functor
         if source_morphism is not None and localization_functor is not None:
             source_kernel = source_morphism.kernel()
             localized_kernel = localization_functor(source_kernel)

@@ -50,22 +50,10 @@ class ScalarExtensionFunctor(Functor):
                 image = FreshFreeModuleOn(
                     self._target_ring, module.module_generating_set()
                 )
-                image._preamble_scalar_extension_source_module = module
                 return image
-        try:
-            base_change = module.base_change
-        except AttributeError as error:
-            raise NotImplementedError(
-                f"scalar extension of the represented module {module} is not materialized yet"
-            ) from error
-        image = base_change(self.ring_map())
-        image._preamble_scalar_extension_source_module = module
-        return image
+        return module.base_change(self.ring_map())
 
     def chosen_preimage(self, image):
-        source = getattr(image, "_preamble_scalar_extension_source_module", None)
-        if source is not None:
-            return source
         return super().chosen_preimage(image)
 
     def _apply_morphism(self, morphism):

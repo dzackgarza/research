@@ -157,14 +157,10 @@ class RestrictionOfActingGroupFunctor(Functor):
                 self.inclusion()(subgroup_element), vector
             ),
         )
-        restricted._preamble_restriction_source_group_module = group_module
         return restricted
 
     def original_group_module(self, restricted):
-        source = getattr(restricted, "_preamble_restriction_source_group_module", None)
-        if source is None:
-            raise ValueError("the H-module is not an object produced by this restriction functor")
-        return source
+        return super().chosen_preimage(restricted)
 
     chosen_preimage = original_group_module
 
@@ -266,15 +262,10 @@ class InductionFunctor(Functor):
                     )
             return module.linear_combination(output_coefficients)
 
-        induced = GroupModule(module, self.supergroup(), action)
-        induced._preamble_induction_source_group_module = group_module
-        return induced
+        return GroupModule(module, self.supergroup(), action)
 
     def source_group_module(self, induced):
-        source = getattr(induced, "_preamble_induction_source_group_module", None)
-        if source is None:
-            raise ValueError("the G-module is not an object produced by this induction functor")
-        return source
+        return super().chosen_preimage(induced)
 
     chosen_preimage = source_group_module
 
@@ -393,15 +384,10 @@ class CoinductionFunctor(Functor):
                         ] = coefficient
             return module.linear_combination(output_coefficients)
 
-        coinduced = GroupModule(module, self.supergroup(), action)
-        coinduced._preamble_coinduction_source_group_module = group_module
-        return coinduced
+        return GroupModule(module, self.supergroup(), action)
 
     def source_group_module(self, coinduced):
-        source = getattr(coinduced, "_preamble_coinduction_source_group_module", None)
-        if source is None:
-            raise ValueError("the G-module is not an object produced by this coinduction functor")
-        return source
+        return super().chosen_preimage(coinduced)
 
     chosen_preimage = source_group_module
 

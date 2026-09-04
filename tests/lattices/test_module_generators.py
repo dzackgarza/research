@@ -19,7 +19,9 @@ def test_lattice_element_to_vector_is_the_preamble_vector_tensor() -> None:
 
     assert Tensor in coordinates.__class__.__mro__
     assert coordinates.tensor_valence() == (NN**2)((1, 0))
-    assert coordinates.tensor_shape() == (2,)
+    _shape = coordinates.tensor_shape()
+    assert _shape.cardinality() == 1
+    assert _shape[0] == 2
     assert coordinates == expected
 
 

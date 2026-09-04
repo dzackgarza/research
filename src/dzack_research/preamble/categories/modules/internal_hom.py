@@ -46,10 +46,14 @@ def _install_internal_hom_model(homset, model, inclusion) -> None:
     )
     from dzack_research.preamble.categories.sets.set_categories import Sets
 
+    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+        _SelectedFinitePresentationModules,
+    )
+
     relation_matrix = _presentation_matrix(model)
     presentation = (
         model.presentation()
-        if hasattr(model, "presentation")
+        if model in _SelectedFinitePresentationModules(model.base_ring())
         else _presentation_from_relation_rows(
             model.base_ring(),
             model.module_generating_set(),
@@ -59,8 +63,6 @@ def _install_internal_hom_model(homset, model, inclusion) -> None:
     )
 
     def model_from_coordinates(coordinates):
-        if hasattr(model, "_from_coordinates"):
-            return model._from_coordinates(coordinates)
         values = iter(coordinates)
         coefficients = {}
         for label in model.module_generating_set():

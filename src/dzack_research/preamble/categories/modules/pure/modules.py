@@ -198,6 +198,31 @@ class Modules(OwnedCategoryOverBaseRing):
         def is_framed(self) -> bool:
             return False
 
+        def is_finite(self):
+            return Unknown
+
+        def base_change(self, ring_map):
+            _ = ring_map
+            raise NotImplementedError(
+                f"base change of {self} has no represented module construction"
+            )
+
+        def _represented_fiber_dimension(self, point):
+            _ = point
+            return NotImplemented
+
+        def _free_biproduct_with(self, other, labels):
+            _ = (other, labels)
+            return NotImplemented
+
+        def _presented_biproduct_with(self, other, labels):
+            _ = (other, labels)
+            return NotImplemented
+
+        def _presented_module_from_relation_rows(self, labels, rows):
+            _ = (labels, rows)
+            return NotImplemented
+
         def _selected_presentation_rows(self):
             return None
 
@@ -214,8 +239,8 @@ class Modules(OwnedCategoryOverBaseRing):
             return NotImplemented
 
         def _as_module_subobject(self, inclusion):
-            if inclusion.codomain() is not self:
-                raise ValueError("a subobject inclusion has the wrong codomain")
+            if inclusion.domain() is not self:
+                raise ValueError("a subobject inclusion has the wrong domain")
             self._preamble_inclusion = inclusion
             return refine(self, ModuleSubobjects(self.base_ring()))
 
@@ -441,15 +466,6 @@ class ModuleSubobjects(OwnedCategoryOverBaseRing):
             r"""Return the primitive closure by deferring to the inclusion."""
             return self.inclusion().saturation()
 
-        def isotropic_reduction(self):
-            r"""Return the isotropic reduction owned by this chosen inclusion."""
-            operation = getattr(self.inclusion(), "isotropic_reduction", None)
-            if operation is None:
-                raise NotImplementedError(
-                    "isotropic reduction requires a represented lattice embedding"
-                )
-            return operation()
-
 
 
 class VectorSpaces(OwnedCategoryOverBaseRing):
@@ -497,13 +513,7 @@ class FinitelyGeneratedModules(OwnedCategoryOverBaseRing):
             if point.parent().ring() is not ring:
                 raise ValueError("a module fiber requires a point of Spec(base_ring)")
             localized = self.localize_at_prime(point)
-            try:
-                base_change = localized.base_change
-            except AttributeError as error:
-                raise NotImplementedError(
-                    f"scalar extension of {localized} to its residue field is not materialized"
-                ) from error
-            fiber = base_change(point.local_ring().residue_map())
+            fiber = localized.base_change(point.local_ring().residue_map())
             residue = point.residue_field()
             fiber._preamble_fiber_point = point
             fiber._preamble_fiber_localization = localized
@@ -511,55 +521,43 @@ class FinitelyGeneratedModules(OwnedCategoryOverBaseRing):
 
         def fiber_dimension(self, point):
             r"""Return ``dim_{kappa(p)} M(p)`` when the finite fiber is represented."""
-            represented = getattr(self, "_represented_fiber_dimension", None)
-            if represented is not None:
-                return represented(point)
+            represented = self._represented_fiber_dimension(point)
+            if represented is not NotImplemented:
+                return represented
 
-            presentation_matrix = getattr(self, "presentation_matrix", None)
-            number_of_generators = getattr(self, "number_of_module_generators", None)
-            if presentation_matrix is not None and number_of_generators is not None:
-                from sage.matrix.constructor import matrix
-                from sage.rings.integer_ring import ZZ as SageZZ
-
-                from dzack_research.preamble.categories.rings.ring_foundation import (
-                    _engine_element,
-                    _engine_ring,
+            ring = self.base_ring()
+            if self not in ModulesWithChosenFinitePresentation(ring):
+                raise NotImplementedError(
+                    f"the dimension of the fiber of {self} requires selected finite presentation data"
                 )
 
-                localized = self.localize_at_prime(point)
-                relation_tensor = localized.presentation_matrix()
-                relation_parent = relation_tensor.parent()
-                relation_rows = tuple(
-                    tuple(
-                        relation_tensor.matrix_entry(row_label, column_label)
-                        for column_label in relation_parent.column_index_set()
-                    )
-                    for row_label in relation_parent.row_index_set()
-                )
-                residue = point.residue_field()
-                residue_engine = _engine_ring(residue)
-                residue_map = point.local_ring().residue_map()
-                specialized = matrix(
-                    residue_engine,
-                    len(relation_rows),
-                    int(number_of_generators()),
-                    [
-                        _engine_element(residue, residue_map(coefficient))
-                        for row in relation_rows
-                        for coefficient in row
-                    ],
-                )
-                return SageZZ(int(number_of_generators()) - specialized.rank())
-            fiber = self.fiber(point)
-            rank = getattr(fiber, "rank", None)
-            if rank is not None:
-                return rank()
-            dimension = getattr(fiber, "dimension", None)
-            if dimension is not None:
-                return dimension()
-            raise NotImplementedError(
-                f"the dimension of the represented fiber {fiber} is not computable"
+            from sage.matrix.constructor import matrix
+            from sage.rings.integer_ring import ZZ as SageZZ
+            from dzack_research.preamble.categories.rings.ring_foundation import (
+                _engine_element,
+                _engine_ring,
             )
+
+            localized = self.localize_at_prime(point)
+            relation_rows = localized._selected_presentation_rows()
+            if relation_rows is None:
+                raise ArithmeticError(
+                    "localization lost the selected finite presentation"
+                )
+            residue = point.residue_field()
+            residue_engine = _engine_ring(residue)
+            residue_map = point.local_ring().residue_map()
+            specialized = matrix(
+                residue_engine,
+                len(relation_rows),
+                int(self.number_of_module_generators()),
+                [
+                    _engine_element(residue, residue_map(coefficient))
+                    for row in relation_rows
+                    for coefficient in row
+                ],
+            )
+            return SageZZ(int(self.number_of_module_generators()) - specialized.rank())
 
         def rank_at(self, point):
             r"""Return the local fiber rank ``dim_{kappa(p)} M(p)``."""
@@ -580,13 +578,7 @@ class FinitelyGeneratedModules(OwnedCategoryOverBaseRing):
             ring = self.base_ring()
             if ring not in LocalRings():
                 raise TypeError("the residue module is defined here for modules over a local ring")
-            try:
-                base_change = self.base_change
-            except AttributeError as error:
-                raise NotImplementedError(
-                    f"residue-field scalar extension of {self} is not materialized"
-                ) from error
-            return base_change(ring.residue_map())
+            return self.base_change(ring.residue_map())
 
         def minimal_number_of_generators(self):
             r"""Return ``dim_k(M/mM)`` for a finite module over a local ring."""
@@ -601,46 +593,31 @@ class FinitelyGeneratedModules(OwnedCategoryOverBaseRing):
                 raise TypeError(
                     "minimal generator counts via Nakayama require a represented local base ring"
                 )
-            presentation_matrix = getattr(self, "presentation_matrix", None)
-            number_of_generators = getattr(self, "number_of_module_generators", None)
-            if presentation_matrix is not None and number_of_generators is not None:
-                from sage.matrix.constructor import matrix
-                from sage.rings.integer_ring import ZZ as SageZZ
-
-                relation_tensor = presentation_matrix()
-                relation_parent = relation_tensor.parent()
-                relation_rows = tuple(
-                    tuple(
-                        relation_tensor.matrix_entry(row_label, column_label)
-                        for column_label in relation_parent.column_index_set()
-                    )
-                    for row_label in relation_parent.row_index_set()
+            if self not in ModulesWithChosenFinitePresentation(ring):
+                raise NotImplementedError(
+                    "minimal generator counts require selected finite presentation data"
                 )
-                residue = ring.residue_field()
-                residue_engine = _engine_ring(residue)
-                residue_map = ring.residue_map()
-                specialized = matrix(
-                    residue_engine,
-                    len(relation_rows),
-                    int(number_of_generators()),
-                    [
-                        _engine_element(residue, residue_map(coefficient))
-                        for row in relation_rows
-                        for coefficient in row
-                    ],
-                )
-                return SageZZ(int(number_of_generators()) - specialized.rank())
 
-            residue_module = self.residue_module()
-            dimension = getattr(residue_module, "dimension", None)
-            if dimension is not None:
-                return dimension()
-            rank = getattr(residue_module, "rank", None)
-            if rank is not None:
-                return rank()
-            raise NotImplementedError(
-                f"the residue-vector-space dimension of {residue_module} is not represented"
+            from sage.matrix.constructor import matrix
+            from sage.rings.integer_ring import ZZ as SageZZ
+
+            relation_rows = self._selected_presentation_rows()
+            if relation_rows is None:
+                raise ArithmeticError("the chosen presentation has no represented relation rows")
+            residue = ring.residue_field()
+            residue_engine = _engine_ring(residue)
+            residue_map = ring.residue_map()
+            specialized = matrix(
+                residue_engine,
+                len(relation_rows),
+                int(self.number_of_module_generators()),
+                [
+                    _engine_element(residue, residue_map(coefficient))
+                    for row in relation_rows
+                    for coefficient in row
+                ],
             )
+            return SageZZ(int(self.number_of_module_generators()) - specialized.rank())
 
         def generic_rank(self):
             r"""Return ``dim_K(M tensor_R K)`` for an integral-domain base ``R``."""
@@ -1528,22 +1505,18 @@ def _module_tensor_product(left, right):
                     row[tensor_labels.rank(pair)] = coefficient
             rows.append(row)
 
-    presentation_owner = next(
-        (
-            factor
-            for factor in (left, right)
-            if callable(getattr(factor, "_presented_module_from_relation_rows", None))
-        ),
-        None,
-    )
-    if presentation_owner is None:
+    result = NotImplemented
+    for presentation_owner in (left, right):
+        result = presentation_owner._presented_module_from_relation_rows(
+            tensor_labels,
+            rows,
+        )
+        if result is not NotImplemented:
+            break
+    if result is NotImplemented:
         raise NotImplementedError(
             "the selected tensor-product presentation has no represented quotient constructor"
         )
-    result = presentation_owner._presented_module_from_relation_rows(
-        tensor_labels,
-        rows,
-    )
     result._preamble_tensor_factors = tensor_factors
     result = refine(result, TensorProductModules(ring))
     return result
@@ -1699,14 +1672,9 @@ def _module_biproduct(left, right):
 
     labels = _biproduct_label_set(left, right)
     factors = _biproduct_factor_family(left, right)
-    result = NotImplemented
-    free_constructor = getattr(left, "_free_biproduct_with", None)
-    if free_constructor is not None:
-        result = free_constructor(right, labels)
+    result = left._free_biproduct_with(right, labels)
     if result is NotImplemented:
-        presented_constructor = getattr(left, "_presented_biproduct_with", None)
-        if presented_constructor is not None:
-            result = presented_constructor(right, labels)
+        result = left._presented_biproduct_with(right, labels)
     if result is NotImplemented:
         raise NotImplementedError(
             "the represented module factors provide no biproduct realization"
@@ -1838,9 +1806,11 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
                 )
             if coordinate_tensor.base_ring() is not self.base_ring():
                 raise TypeError("the tensor and matrix Hom must have one base ring")
-            if coordinate_tensor.tensor_shape() != self.matrix_shape():
+            shape = coordinate_tensor.tensor_shape()
+            rows, columns = self.matrix_shape()
+            if shape[0] != rows or shape[1] != columns:
                 raise ValueError(
-                    f"tensor shape {coordinate_tensor.tensor_shape()} does not match "
+                    f"tensor shape {shape} does not match "
                     f"matrix shape {self.matrix_shape()}"
                 )
             return self.from_rows(
@@ -1885,7 +1855,7 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
                 column_label = columns(column_label)
             except (TypeError, ValueError):
                 column_label = columns.unrank(int(column_label))
-            generator_image = getattr(self, "_generator_image", None)
+            generator_image = self.__dict__.get("_generator_image")
             image = (
                 generator_image(column_label)
                 if generator_image is not None

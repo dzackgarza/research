@@ -54,7 +54,10 @@ def test_matrix_tensor_is_component_data_not_a_module_morphism() -> None:
     morphism = MatrixSpace(ZZ, 2, 2).from_rows([[1, 2], [3, 4]])
 
     assert components.tensor_valence() == (NN**2)((1, 1))
-    assert components.tensor_shape() == (2, 2)
+    _shape = components.tensor_shape()
+    assert _shape.cardinality() == 2
+    assert _shape[0] == 2
+    assert _shape[1] == 2
     assert morphism.parent() is not components.parent()
     assert tensor.from_matrix(morphism) == components
 
@@ -104,7 +107,10 @@ def test_matrix_tensor_accepts_rectangular_component_data_or_explicit_shape() ->
     zero = tensor.matrix(QQ, 2, 3)
 
     assert rows == flat
-    assert rows.tensor_shape() == (2, 3)
+    _shape = rows.tensor_shape()
+    assert _shape.cardinality() == 2
+    assert _shape[0] == 2
+    assert _shape[1] == 3
     assert zero.components() == [[0, 0, 0], [0, 0, 0]]
 
 
@@ -121,7 +127,11 @@ def test_general_tensor_constructor_encodes_variance_and_higher_rank() -> None:
     assert upper.tensor_valence() == (NN**2)((2, 0))
     assert lower.tensor_valence() == (NN**2)((0, 2))
     assert upper.parent() is not lower.parent()
-    assert higher.tensor_shape() == (2, 2, 2)
+    _shape = higher.tensor_shape()
+    assert _shape.cardinality() == 3
+    assert _shape[0] == 2
+    assert _shape[1] == 2
+    assert _shape[2] == 2
     assert higher.tensor_order() == 3
     assert higher[1, 0, 1] == ZZ(6)
 
@@ -215,7 +225,10 @@ def test_type_one_one_dualization_belongs_to_module_duality() -> None:
     dual = tensor.from_morphism(DualizationFunctor(ZZ)(linear_map))
 
     assert dual.tensor_valence() == (NN**2)((1, 1))
-    assert dual.tensor_shape() == (3, 2)
+    _shape = dual.tensor_shape()
+    assert _shape.cardinality() == 2
+    assert _shape[0] == 3
+    assert _shape[1] == 2
     assert dual.components() == [[1, 4], [2, 5], [3, 6]]
     with pytest.raises(TypeError, match="pairings/copairings"):
         linear_components.dual_tensor()
@@ -266,7 +279,10 @@ def test_matrix_space_is_the_actual_linear_map_parent() -> None:
     vector = tensor.vector(ZZ, [1, 1, 1])
 
     assert morphism.parent() is hom
-    assert tensor.from_matrix(morphism).tensor_shape() == (2, 3)
+    _shape = tensor.from_matrix(morphism).tensor_shape()
+    assert _shape.cardinality() == 2
+    assert _shape[0] == 2
+    assert _shape[1] == 3
     assert (tensor.from_matrix(morphism) * vector).components() == [3, 4]
 
 

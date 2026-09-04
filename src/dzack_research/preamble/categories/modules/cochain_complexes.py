@@ -84,9 +84,11 @@ class CohomologyModules(OwnedCategoryOverBaseRing):
             current_labels = self._preamble_cohomology_current_labels
             closed_basis = self._preamble_cohomology_closed_basis
             coordinate_values = {}
+            closed_parent = closed_basis.parent()
             for closed_label, coefficient in coefficients.items():
-                row = closed_basis.row(int(closed_label))
-                for position, entry in enumerate(row):
+                row_label = closed_parent.row_index_set().unrank(int(closed_label))
+                for position, column_label in enumerate(closed_parent.column_index_set()):
+                    entry = closed_basis.matrix_entry(row_label, column_label)
                     if not entry:
                         continue
                     label = current_labels.unrank(position)
@@ -484,13 +486,11 @@ def Cohomology(complex_, degree):
 
     def represented_differential(index):
         component = complex_.differential_component(index)
-        if isinstance(component, ModuleMorphism):
-            return component
-        if hasattr(component, "represented_module_morphism"):
-            return component.represented_module_morphism()
-        raise NotImplementedError(
-            "this differential component has no selected finite module presentation"
-        )
+        if not isinstance(component, ModuleMorphism):
+            raise TypeError(
+                "a represented cochain differential component must be an owned module morphism"
+            )
+        return component
 
     def private_lift_matrix(morphism):
         r"""Return one backend lift matrix in the selected finite framings.

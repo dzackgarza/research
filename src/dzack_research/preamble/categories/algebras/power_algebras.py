@@ -304,7 +304,7 @@ class PowerAlgebraMorphism(Morphism):
 class PowerAlgebraHomset(CategoricalHomset):
     Element = PowerAlgebraMorphism
 
-    def __init__(self, domain, codomain) -> None:
+    def __init__(self, hom_family, domain, codomain) -> None:
         if not isinstance(domain, PowerAlgebra) or not isinstance(
             codomain, PowerAlgebra
         ):
@@ -315,14 +315,7 @@ class PowerAlgebraHomset(CategoricalHomset):
             raise ValueError("power-algebra morphisms preserve the construction flavor")
         if domain.base_ring() is not codomain.base_ring():
             raise ValueError("power-algebra morphisms require one common base ring")
-        CategoricalHomset.__init__(
-            self,
-            HomCategoryConstruction(
-                Category.join((domain.category(), codomain.category()))
-            ),
-            domain,
-            codomain,
-        )
+        CategoricalHomset.__init__(self, hom_family, domain, codomain)
 
     def _element_constructor_(self, degree_one_map):
         return self.element_class(self, degree_one_map)
@@ -335,7 +328,12 @@ class PowerAlgebraHomset(CategoricalHomset):
 
 
 def power_algebra_homset(domain, codomain):
-    return PowerAlgebraHomset(domain, codomain)
+    category = (
+        AlternatingAlgebras(domain.base_ring())
+        if domain.flavor() == "alternating"
+        else DividedPowerAlgebras(domain.base_ring())
+    )
+    return category.Mor(domain, codomain)
 
 
 @cached_function(key=lambda module, flavor: (id(module), flavor))

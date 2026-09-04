@@ -41,6 +41,20 @@ from dzack_research.preamble.categories.sets.set_categories import NN
 _Rings = OwnedRings()
 
 
+def index_rank_family(ranks):
+    r"""Return the family \(i\mapsto\) rank of slot \(i\), for \(i\in\Delta[k-1]\)."""
+    from dzack_research.preamble.categories.sets.cardinals import cardinal
+    from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
+    from dzack_research.preamble.categories.sets.set_categories import Sets
+
+    entries = tuple(cardinal(rank) for rank in ranks)
+    return IndexedFamily(
+        Sets.Δ[len(entries) - 1],
+        lambda index: entries[int(index)],
+        name=f"Index ranks ({', '.join(str(entry) for entry in entries)})",
+    )
+
+
 def _tensor_richcmp(left, right, op):
     r"""Compare finite tensors by variance, shape, and components.
 
@@ -53,14 +67,17 @@ def _tensor_richcmp(left, right, op):
         if op == op_NE:
             return True
         return NotImplemented
-    left_key = (left.tensor_valence(), left.tensor_shape())
-    right_key = (right.tensor_valence(), right.tensor_shape())
-    if left_key != right_key:
+    if (
+        left.tensor_valence() != right.tensor_valence()
+        or left._index_ranks() != right._index_ranks()
+    ):
         if op == op_EQ:
             return False
         if op == op_NE:
             return True
-        return richcmp(left_key, right_key, op)
+        # Tensors of different variance or shape lie in different spaces, and
+        # there is no order between those spaces to report.
+        return NotImplemented
     return richcmp(tuple(left.list()), tuple(right.list()), op)
 
 _BLACKBOARD_RING_NAMES = {
@@ -225,7 +242,7 @@ def _engine_argument(value):
         if value.tensor_order() == 2:
             return _engine_component_matrix(value)
         raise TypeError(
-            f"a tensor of shape {value.tensor_shape()} is not component data for "
+            f"a tensor of shape {value._index_ranks()} is not component data for "
             "a vector or a matrix"
         )
     parent = getattr(value, "parent", lambda: None)()
@@ -278,19 +295,28 @@ class Tensor:
 
     __slots__ = ()
 
-    def tensor_shape(self) -> tuple[int, ...]:
-        r"""Return the rank of each tensor index."""
+    def _index_ranks(self) -> tuple:
+        r"""Return the index ranks as private plumbing for the slot families."""
         assert False, "a tensor supplies the ranks of its indices"
 
-    def upper_ranks(self) -> tuple[int, ...]:
+    def tensor_shape(self):
+        r"""Return the family assigning each index slot the rank of its module.
+
+        The slots are indexed by \(\Delta[k-1]\) for order \(k\), and a rank
+        is a cardinal, so this is a family and not a Python tuple: two slots
+        of equal rank are two slots, which a set would collapse.
+        """
+        return index_rank_family(self._index_ranks())
+
+    def upper_ranks(self) -> tuple:
         r"""Return the dimensions of the contravariant indices."""
         p, _q = self.tensor_type()
-        return self.tensor_shape()[:p]
+        return self._index_ranks()[:p]
 
-    def lower_ranks(self) -> tuple[int, ...]:
+    def lower_ranks(self) -> tuple:
         r"""Return the dimensions of the covariant indices."""
         p, _q = self.tensor_type()
-        return self.tensor_shape()[p:]
+        return self._index_ranks()[p:]
 
     def tensor_type(self) -> ProductOfNaturalNumbers:
         r"""Return $(p,q)$: $p$ contravariant indices and $q$ covariant indices.
@@ -306,7 +332,7 @@ class Tensor:
 
     def tensor_order(self) -> int:
         r"""Return the number of indices."""
-        return len(self.tensor_shape())
+        return len(self._index_ranks())
 
     def tensor_space(self):
         r"""Return the module of which this tensor is an element.
@@ -340,7 +366,7 @@ class Tensor:
 
     def components(self):
         r"""Return the finite rectangular component array of this tensor."""
-        shape = self.tensor_shape()
+        shape = self._index_ranks()
         if Infinity in shape:
             raise ValueError("an infinite tensor has no finite component array")
         from itertools import product as cartesian_product
@@ -353,7 +379,7 @@ class Tensor:
 
     def list(self):
         r"""Return flattened finite components in tensor-index order."""
-        shape = self.tensor_shape()
+        shape = self._index_ranks()
         if Infinity in shape:
             raise ValueError("an infinite tensor has no finite component list")
         from itertools import product as cartesian_product
@@ -371,10 +397,10 @@ class Tensor:
         rank there is no component list and equality is identity, so the
         identity hash is the honest one.
         """
-        if Infinity in self.tensor_shape():
+        if Infinity in self._index_ranks():
             return object.__hash__(self)
         return hash(
-            (self.tensor_valence(), self.tensor_shape(), tuple(self.list()))
+            (self.tensor_valence(), self._index_ranks(), tuple(self.list()))
         )
 
     def is_equal_tensor(self, other) -> bool:
@@ -388,11 +414,11 @@ class Tensor:
             return False
         if self.tensor_valence() != other.tensor_valence():
             return False
-        if self.tensor_shape() != other.tensor_shape():
+        if self._index_ranks() != other._index_ranks():
             return False
         if _engine_ring(self.base_ring()) != _engine_ring(other.base_ring()):
             return False
-        if Infinity in self.tensor_shape():
+        if Infinity in self._index_ranks():
             return self is other
         return all(left == right for left, right in zip(self.list(), other.list(), strict=True))
 
@@ -415,7 +441,7 @@ class Tensor:
         r"""Return whether a square two-index tensor is symmetric in its slots."""
         if self.tensor_order() != 2:
             raise TypeError("symmetry here is defined for a two-index tensor")
-        rows, columns = self.tensor_shape()
+        rows, columns = self._index_ranks()
         if rows != columns:
             return False
         return all(self[i, j] == self[j, i] for i in range(rows) for j in range(columns))
@@ -458,7 +484,7 @@ class Tensor:
         nondegenerate type-``(2,0)`` tensor dualizes to type ``(0,2)``.
         """
         valence = self.tensor_valence()
-        rows, columns = self.tensor_shape()
+        rows, columns = self._index_ranks()
         if valence in {(NN**2)((0, 2)), (NN**2)((2, 0))}:
             if rows != columns:
                 raise ValueError("dualizing a pairing requires equal index ranks")
@@ -555,7 +581,7 @@ def _engine_component_matrix(value):
     """
     if not isinstance(value, Tensor) or value.tensor_order() != 2:
         raise TypeError("engine matrix materialization requires a two-index tensor")
-    rows, columns = value.tensor_shape()
+    rows, columns = value._index_ranks()
     if rows == Infinity or columns == Infinity:
         raise ValueError("an infinite tensor has no finite engine matrix")
     return _engine_matrix(
@@ -574,7 +600,7 @@ def _engine_component_vector(value):
     r"""Materialize a type-``(1,0)`` tensor as a private Sage vector."""
     if not isinstance(value, Tensor) or value.tensor_valence() != (NN**2)((1, 0)):
         raise TypeError("engine vector materialization requires a type-(1,0) tensor")
-    if value.tensor_shape()[0] == Infinity:
+    if value._index_ranks()[0] == Infinity:
         raise ValueError("an infinite vector tensor has no finite engine vector")
     return _engine_vector(
         value.base_ring(),
@@ -747,8 +773,8 @@ class _CoordinateTensor(ModuleElement, Tensor):
         self._entries = entries
         ModuleElement.__init__(self, parent)
 
-    def tensor_shape(self) -> tuple[int, ...]:
-        return self.parent().tensor_shape()
+    def _index_ranks(self) -> tuple:
+        return self.parent()._index_ranks()
 
     def tensor_valence(self) -> ProductOfNaturalNumbers:
         return self.parent().tensor_valence()
@@ -816,7 +842,7 @@ class _CoordinateTensor(ModuleElement, Tensor):
         from sage.matrix.constructor import matrix as sage_matrix
         from sage.misc.latex import latex as sage_latex
 
-        shape = self.tensor_shape()
+        shape = self._index_ranks()
         if len(shape) == 2:
             rows, columns = shape
             return str(
@@ -843,7 +869,7 @@ class _CoordinateTensor(ModuleElement, Tensor):
 
     def components(self):
         r"""Return the rectangular nested component array."""
-        return _nested(self._entries, self.tensor_shape())
+        return _nested(self._entries, self._index_ranks())
 
     def list(self):
         r"""Return flattened components in index order."""
@@ -861,18 +887,18 @@ class _CoordinateTensor(ModuleElement, Tensor):
     def nrows(self):
         if self.tensor_order() != 2:
             raise TypeError("nrows is defined only for a two-index tensor")
-        return self.tensor_shape()[0]
+        return self._index_ranks()[0]
 
     def ncols(self):
         if self.tensor_order() != 2:
             raise TypeError("ncols is defined only for a two-index tensor")
-        return self.tensor_shape()[1]
+        return self._index_ranks()[1]
 
     def is_symmetric(self) -> bool:
         r"""Return whether a square two-index tensor is symmetric in its slots."""
         if self.tensor_order() != 2:
             raise TypeError("symmetry here is defined for a two-index tensor")
-        rows, columns = self.tensor_shape()
+        rows, columns = self._index_ranks()
         if rows != columns:
             return False
         return all(self[i, j] == self[j, i] for i in range(rows) for j in range(columns))
@@ -886,7 +912,7 @@ class _CoordinateTensor(ModuleElement, Tensor):
             self.lower_ranks(),
             _nested(
                 tuple(target(entry) for entry in self._entries),
-                self.tensor_shape(),
+                self._index_ranks(),
             ),
         )
 
@@ -897,11 +923,11 @@ class _CoordinateTensor(ModuleElement, Tensor):
             index = (index,)
         if len(index) != self.tensor_order():
             raise IndexError(
-                f"a tensor of shape {self.tensor_shape()} takes "
+                f"a tensor of shape {self._index_ranks()} takes "
                 f"{self.tensor_order()} indices, got {len(index)}"
             )
         offset = 0
-        for position, dimension in zip(index, self.tensor_shape()):
+        for position, dimension in zip(index, self._index_ranks()):
             position = int(position)
             if position < 0:
                 position += dimension
@@ -1120,7 +1146,7 @@ class _CoordinateTensor(ModuleElement, Tensor):
 
 def _coordinate_component_repr(tensor_value) -> str:
     r"""Plain-text components: a vector, a matrix, or a nested array."""
-    shape = tensor_value.tensor_shape()
+    shape = tensor_value._index_ranks()
     ring = _engine_if_ring(tensor_value.base_ring())
     if len(shape) == 1:
         return repr(_engine_vector(ring, list(tensor_value.components())))
@@ -1195,8 +1221,12 @@ class TensorModule(UniqueRepresentation, Parent):
         """
         return None
 
-    def tensor_shape(self) -> tuple:
+    def _index_ranks(self) -> tuple:
         return self._upper_ranks + self._lower_ranks
+
+    def tensor_shape(self):
+        r"""Return the family assigning each index slot the rank of its module."""
+        return index_rank_family(self._index_ranks())
 
     def tensor_type(self) -> ProductOfNaturalNumbers:
         r"""Return the type $(p, q)$ as a point of $\mathbb N^2$ (`CON-15`)."""
@@ -1246,7 +1276,7 @@ class TensorModule(UniqueRepresentation, Parent):
         )
 
     def _element_constructor_(self, entries: tuple) -> _CoordinateTensor:
-        shape = self.tensor_shape()
+        shape = self._index_ranks()
         assert Infinity not in shape, (
             "an infinite-rank tensor space has no component array"
         )
@@ -1259,13 +1289,13 @@ class TensorModule(UniqueRepresentation, Parent):
         return self.element_class(self, tuple(ring(entry) for entry in entries))
 
     def zero(self) -> _CoordinateTensor:
-        assert Infinity not in self.tensor_shape(), (
+        assert Infinity not in self._index_ranks(), (
             "an infinite-rank tensor space has no component array"
         )
         zero = self.base_ring().zero()
         return self.element_class(
             self,
-            tuple(zero for _ in range(prod(self.tensor_shape()))),
+            tuple(zero for _ in range(prod(self._index_ranks()))),
         )
 
     def _repr_(self) -> str:

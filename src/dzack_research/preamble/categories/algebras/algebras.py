@@ -910,6 +910,10 @@ class PresentedAlgebraMorphism(Morphism):
 class _AlgebraHomsetCommonMethods:
     r"""Shared equality protocol for represented algebra Hom parents."""
 
+    def _from_degree_preserving_generator_map(self, images):
+        r"""Construct from a structurally degree-preserving generator map."""
+        return self(images)
+
     def morphisms_agree(self, left, right) -> bool:
         if left.parent() is not self or right.parent() is not self:
             return False

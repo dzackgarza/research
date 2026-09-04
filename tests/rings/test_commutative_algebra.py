@@ -481,8 +481,11 @@ def test_elementwise_module_morphism_verification_is_regime_sensitive(caplog) ->
         logging.DEBUG,
         logger="dzack_research.preamble.categories.modules.module_morphisms.module_morphisms",
     ):
+        basis_label = infinite.module_generating_set().unrank(0)
         declared = module_homset(infinite, infinite).elementwise(
-            lambda vector: infinite((module_coefficients(vector, infinite).get(0, ZZ.zero()) ** 2,))
+            lambda vector: infinite(
+                (module_coefficients(vector, infinite).get(basis_label, ZZ.zero()) ** 2,)
+            )
         )
     assert declared(infinite.module_generator(0)) == infinite.module_generator(0)
     assert any("without exhaustive linearity verification" in record.message for record in caplog.records)

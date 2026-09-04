@@ -40,5 +40,8 @@ def test_induced_subdiagrams_preserve_selected_roots() -> None:
     diagram = CoxeterDiagrams().from_roots(lattice.module_generators())
     subdiagram = diagram.induced_subdiagram((0, 1))
     assert subdiagram.is_rooted()
-    assert subdiagram.root_gram_tensor().tensor_shape() == (2, 2)
+    _shape = subdiagram.root_gram_tensor().tensor_shape()
+    assert _shape.cardinality() == 2
+    assert _shape[0] == 2
+    assert _shape[1] == 2
     assert subdiagram.coxeter_matrix()[0, 1] == 3

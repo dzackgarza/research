@@ -8,7 +8,11 @@ orbits, and the standard finite free/cofree constructions.
 
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
+    CategoryPacketMethods,
     HomCategoryConstruction,
+)
+from dzack_research.preamble.categories.abstract_categories.objects import (
+    OwnedParameterizedCategory,
 )
 from sage.categories.category import Category
 from sage.categories.finite_enumerated_sets import FiniteEnumeratedSets
@@ -31,22 +35,26 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
 )
 
 
-class GSets(Category):
+class GSetHomCategoryConstruction(HomCategoryConstruction):
+    def fixed_category_class(self):
+        return GSetHomset
+
+
+class GSets(CategoryPacketMethods, OwnedParameterizedCategory):
     @staticmethod
     def __classcall__(cls, group):
         from dzack_research.preamble.categories.group.groups import _owned_group
 
-        return Category.__classcall__(cls, _owned_group(group))
+        return OwnedParameterizedCategory.__classcall__(cls, _owned_group(group))
 
     def __init__(self, group):
-        self._group = group
-        super().__init__()
+        OwnedParameterizedCategory.__init__(self, group)
 
     def _make_named_class_key(self, name):
-        return self._group
+        return self.group()
 
     def group(self):
-        return self._group
+        return self.parameter()
 
     acting_group = group
 
@@ -54,7 +62,9 @@ class GSets(Category):
         return [Sets()]
 
     def _repr_object_names(self):
-        return f"{self._group}-sets"
+        return f"{self.group()}-sets"
+
+    _HomCategory = GSetHomCategoryConstruction
 
     class ParentMethods:
         @abstract_method
@@ -75,38 +85,32 @@ class GSets(Category):
             backend_permutation = permutation_group._to_engine(permutation)
             return self(backend_permutation(point))
 
-        def _Hom_(self, codomain, category=None):
-            if codomain not in GSets(self.acting_group()):
-                raise TypeError("an equivariant map requires the same acting group")
-            return g_set_homset(self, codomain)
 
-
-class FiniteGSets(Category):
+class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
     r"""The represented finite objects of ``GSets(G)``."""
 
     @staticmethod
     def __classcall__(cls, group):
         from dzack_research.preamble.categories.group.groups import _owned_group
 
-        return Category.__classcall__(cls, _owned_group(group))
+        return OwnedParameterizedCategory.__classcall__(cls, _owned_group(group))
 
     def __init__(self, group):
-        self._group = group
-        super().__init__()
+        OwnedParameterizedCategory.__init__(self, group)
 
     def _make_named_class_key(self, name):
-        return self._group
+        return self.group()
 
     def group(self):
-        return self._group
+        return self.parameter()
 
     acting_group = group
 
     def super_categories(self):
-        return [GSets(self._group), FiniteSets()]
+        return [GSets(self.group()), FiniteSets()]
 
     def _repr_object_names(self):
-        return f"finite {self._group}-sets"
+        return f"finite {self.group()}-sets"
 
     class ParentMethods:
         def point_set(self):
@@ -187,19 +191,14 @@ class GSetMorphism(SetMorphism):
 
 
 class GSetHomset(CategoricalHomset):
-    r"""The actual equivariant Hom-set between represented finite ``G``-sets."""
+    r"""The actual equivariant Mor category between represented finite ``G``-sets."""
 
     Element = GSetMorphism
 
-    def __init__(self, domain, codomain) -> None:
+    def __init__(self, hom_family, domain, codomain) -> None:
         if domain.acting_group() != codomain.acting_group():
             raise ValueError("equivariant maps require a common acting group")
-        CategoricalHomset.__init__(
-            self,
-            HomCategoryConstruction(GSets(domain.acting_group())),
-            domain,
-            codomain,
-        )
+        CategoricalHomset.__init__(self, hom_family, domain, codomain)
 
     def _element_constructor_(self, function):
         return self.element_class(self, function)
@@ -214,7 +213,7 @@ class GSetHomset(CategoricalHomset):
 
 
 def g_set_homset(domain, codomain) -> GSetHomset:
-    return GSetHomset(domain, codomain)
+    return GSets(domain.acting_group()).Mor(domain, codomain)
 
 
 def _permutation_from_point_map(permutation_group, point_set, mapping):

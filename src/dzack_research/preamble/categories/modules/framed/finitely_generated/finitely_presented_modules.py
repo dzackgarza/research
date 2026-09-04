@@ -123,7 +123,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
 
         def cokernel_projection(self):
             r"""Return the canonical quotient map when this object is a selected cokernel."""
-            projection = getattr(self, "_preamble_cokernel_projection", None)
+            projection = self.__dict__.get("_preamble_cokernel_projection")
             if projection is None:
                 raise ValueError("this finitely presented module was not constructed as a cokernel")
             return projection
@@ -242,7 +242,16 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 lambda label: self(generators.unrank(int(label)))
             )
 
-            if spanning.is_surjective():
+            from dzack_research.preamble.categories.rings.ring_foundation import LocalRings
+
+            if self.base_ring() in LocalRings():
+                spans_all = spanning.is_surjective_by_nakayama()
+            else:
+                try:
+                    spans_all = spanning.is_surjective()
+                except NotImplementedError:
+                    spans_all = False
+            if spans_all:
                 identity = ModuleEmbedding(
                     module_homset(self, self),
                     lambda label: self.module_generator(label),
@@ -354,7 +363,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 int(self.number_of_module_generators()),
                 [
                     _engine_element(residue, residue_map(coefficient))
-                    for row in relation_matrix.rows()
+                    for row in _matrix_coordinate_rows(relation_matrix)
                     for coefficient in row
                 ],
             )
@@ -898,7 +907,9 @@ def _module_invariant_factor_form(module):
     full_to_reduced = module_homset(full_normalized, reduced)(
         {
             full_label: (
-                reduced.module_generator(retained_positions.rank(position))
+                reduced.module_generator(
+                    retained_positions.rank(retained_positions(position))
+                )
                 if position in retained_positions
                 else reduced.zero()
             )
@@ -1441,7 +1452,7 @@ def _singular_presentation_kernel(morphism):
                 m,
                 [
                     to_singular(lift_scalar(entry))
-                    for row in target_relations.rows()
+                    for row in _matrix_coordinate_rows(target_relations)
                     for entry in row
                 ],
             )
@@ -1480,7 +1491,7 @@ def _singular_presentation_kernel(morphism):
             n,
             [
                 to_singular(lift_scalar(entry))
-                for row in source_relations.rows()
+                for row in _matrix_coordinate_rows(source_relations)
                 for entry in row
             ],
         )
@@ -1672,10 +1683,9 @@ def FinitelyPresentedModule(presentation):
             CoproductOfFamily,
         )
 
-        presentation_method = getattr(codomain, "presentation", None)
         existing_labels = (
-            presentation_method().domain().module_generating_set()
-            if callable(presentation_method)
+            codomain.presentation().domain().module_generating_set()
+            if codomain in _SelectedFinitePresentationModules(base_ring)
             else Sets.Δ[existing_count - 1]
         )
         added_labels = presentation.domain().module_generating_set()
