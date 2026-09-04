@@ -102,6 +102,10 @@ preamble-megadoc:
 preamble-complexity:
     PYTHONPATH=src python3 -m dzack_research.utilities.complexity_analysis src/dzack_research/preamble
 
+# Generate a ctags index for the installable package source
+tags:
+    ctags -R --languages=Python -f tags src
+
 # Link sage-init.sage as Sage's startup file (${DOT_SAGE:-~/.sage}/init.sage), giving every Sage process — terminal REPL and every Jupyter kernel — implicit LaTeX rendering of cell results. Idempotent, and refuses to replace anything it did not create.
 sage-init-install:
     #!/usr/bin/env bash
