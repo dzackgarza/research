@@ -1,5 +1,4 @@
 import pytest
-from sage.categories.morphism import SetMorphism
 
 from dzack_research.preamble.all import (
     Sets,
@@ -38,7 +37,7 @@ def test_exponential_functor_is_contravariant_in_source_and_covariant_in_target(
 def test_power_set_and_finite_power_set_functors_act_by_inverse_and_direct_image() -> None:
     source = Sets.Δ[3]
     target = Sets.Δ[1]
-    quotient = SetMorphism(Sets().hom(source, target), lambda value: target(int(value) % 2))
+    quotient = Sets().hom(source, target)(lambda value: target(int(value) % 2))
 
     inverse_power = inverse_image_power_set_functor()
     opposite = inverse_power.opposite_morphism(quotient)
@@ -60,9 +59,6 @@ def test_fixed_cardinality_subset_functor_is_defined_exactly_on_injections() -> 
     carried = pairs(inclusion)
     assert carried(pairs(source)({0, 2})) == pairs(target)({1, 3})
 
-    noninjective = SetMorphism(
-        Sets().hom(source, Sets.Δ[1]),
-        lambda value: Sets.Δ[1](int(value) % 2),
-    )
+    noninjective = Sets().hom(source, Sets.Δ[1])(lambda value: Sets.Δ[1](int(value) % 2))
     with pytest.raises(TypeError):
         pairs(noninjective)

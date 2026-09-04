@@ -49,21 +49,12 @@ def test_cardinal_arithmetic_and_order_do_not_assume_continuum_hypothesis() -> N
 
 
 def test_cardinality_is_functorial_on_set_isomorphisms() -> None:
-    from sage.categories.homset import Hom
-    from sage.categories.morphism import SetMorphism
-    from sage.categories.sets_cat import Sets as SageSets
     from dzack_research.preamble.all import Core, Sets, ZZ, cardinality_functor
 
     source = Sets.Δ[2]
     target = __import__("dzack_research.preamble.categories.sets", fromlist=["finite_ordered_set"]).finite_ordered_set((ZZ(10), ZZ(20), ZZ(30)))
-    forward = SetMorphism(
-        Hom(source, target, SageSets()),
-        lambda value: target((ZZ(10), ZZ(20), ZZ(30))[source.position(value)]),
-    )
-    backward = SetMorphism(
-        Hom(target, source, SageSets()),
-        lambda value: source((ZZ(10), ZZ(20), ZZ(30)).index(value)),
-    )
+    forward = Sets().hom( dzack, esearc)(lambda value: target((ZZ(10), ZZ(20), ZZ(30))[source.position(value)]))
+    backward = Sets().hom( dzack, esearc)(lambda value: source((ZZ(10), ZZ(20), ZZ(30)).index(value)))
     core = Core(Sets())
     isomorphism = core.hom(source, target)(forward, backward)
     cardinality = cardinality_functor()

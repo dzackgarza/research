@@ -1,6 +1,3 @@
-from sage.categories.homset import Hom
-from sage.categories.morphism import SetMorphism
-from sage.categories.sets_cat import Sets as SageSets
 
 from dzack_research.preamble.all import BasedFreeModule, Sets, ZZ, module_homset
 from dzack_research.preamble.categories.abstract_categories.functors import (
@@ -26,8 +23,8 @@ def test_binary_set_product_coproduct_and_diagonal_are_functorial() -> None:
     assert product_xy.cardinality() == 6
     assert coproduct_xy.cardinality() == 5
 
-    fx = SetMorphism(Hom(x, y, SageSets()), lambda value: y(int(value) + 1))
-    fy = SetMorphism(Hom(y, z, SageSets()), lambda value: z(int(value) + 1))
+    fx = Sets().hom(x, y)(lambda value: y(int(value) + 1))
+    fy = Sets().hom(y, z)(lambda value: z(int(value) + 1))
     target_pair = product.domain()(y, z)
     pair_map = product.domain().hom(pair, target_pair)(fx, fy)
     carried = product(pair_map)

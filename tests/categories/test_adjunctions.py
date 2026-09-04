@@ -1,5 +1,3 @@
-from sage.categories.homset import Hom
-from sage.categories.morphism import SetMorphism
 from sage.categories.sets_cat import Sets
 
 from dzack_research.preamble.all import (
@@ -79,10 +77,7 @@ def test_free_module_underlying_set_adjunction_has_the_hom_bijection_naturality_
 
     source_set = finite_ordered_set((ZZ(1), ZZ(2)))
     target_set = finite_ordered_set((ZZ(3), ZZ(4)))
-    set_map = SetMorphism(
-        Hom(source_set, target_set, Sets()),
-        lambda value: ZZ(3) if value == 1 else ZZ(4),
-    )
+    set_map = Sets().hom( sage.cate, ries.homse)(lambda value: ZZ(3) if value == 1 else ZZ(4))
     left, right = adjunction.unit_transformation().naturality_square(set_map)
     _assert_maps_agree(left, right, source_set)
 
@@ -480,19 +475,10 @@ def test_free_and_scalar_extension_functors_preserve_identities_and_composition(
     source_set = finite_ordered_set((ZZ(1), ZZ(2)))
     middle_set = finite_ordered_set((ZZ(3), ZZ(4)))
     target_set = finite_ordered_set((ZZ(5), ZZ(6)))
-    identity = SetMorphism(Hom(source_set, source_set, Sets()), lambda value: value)
-    first = SetMorphism(
-        Hom(source_set, middle_set, Sets()),
-        lambda value: ZZ(3) if value == 1 else ZZ(4),
-    )
-    second = SetMorphism(
-        Hom(middle_set, target_set, Sets()),
-        lambda value: ZZ(6) if value == 3 else ZZ(5),
-    )
-    composite = SetMorphism(
-        Hom(source_set, target_set, Sets()),
-        lambda value: second(first(value)),
-    )
+    identity = Sets().hom( sage.cate, ries.homse)(lambda value: value)
+    first = Sets().hom( sage.cate, ries.homse)(lambda value: ZZ(3) if value == 1 else ZZ(4))
+    second = Sets().hom( sage.cate, ries.homse)(lambda value: ZZ(6) if value == 3 else ZZ(5))
+    composite = Sets().hom( sage.cate, ries.homse)(lambda value: second(first(value)))
 
     free_source = free(source_set)
     carried_identity = free(identity)

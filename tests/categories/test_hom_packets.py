@@ -1,6 +1,3 @@
-from sage.categories.homset import Hom
-from sage.categories.morphism import SetMorphism
-from sage.categories.sets_cat import Sets as SageSets
 
 from dzack_research.preamble.all import (
     AutCategoryOf,
@@ -38,7 +35,7 @@ def test_hom_and_end_families_recover_actual_external_homsets() -> None:
     target = Sets.Δ[1]
     hom_family = HomCategoryOf(Sets())
     hom_category = hom_family.Of(source, target)
-    map_ = SetMorphism(Hom(source, target, SageSets()), lambda value: target(value % 2))
+    map_ = Sets().hom(source, target)(lambda value: target(value % 2))
     assert map_ in hom_category
     arrow_object = hom_category(map_)
     assert arrow_object.arrow() is map_
@@ -61,7 +58,7 @@ def test_mono_epi_iso_and_aut_hom_families_have_the_expected_arrow_classes() -> 
     assert inclusion in monos
     assert quotient in epis
 
-    swap = SetMorphism(Sets().hom(source, source), lambda value: source(1 - int(value)))
+    swap = Sets().hom(source, source)(lambda value: source(1 - int(value)))
     isomorphism = Isomorphism(swap, swap)
     isos = IsoCategoryOf(Sets()).Of(source, source)
     auts = AutCategoryOf(Sets()).Of(source)

@@ -1,5 +1,4 @@
 import pytest
-from sage.categories.homset import Hom
 from sage.categories.morphism import SetMorphism
 from sage.categories.rings import Rings as SageRings
 

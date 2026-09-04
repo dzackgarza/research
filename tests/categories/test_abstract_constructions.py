@@ -1,4 +1,3 @@
-from sage.categories.morphism import SetMorphism
 
 from dzack_research.preamble.all import OppositeCategory, ProductCategory, Sets
 
@@ -7,8 +6,8 @@ def test_opposite_category_reverses_arrows_and_composition() -> None:
     a = Sets.Δ[2]
     b = Sets.Δ[1]
     c = Sets.Δ[0]
-    f = SetMorphism(Sets().hom(a, b), lambda x: b(min(int(x), 1)))
-    g = SetMorphism(Sets().hom(b, c), lambda _x: c(0))
+    f = Sets().hom(a, b)(lambda x: b(min(int(x), 1)))
+    g = Sets().hom(b, c)(lambda _x: c(0))
 
     opposite = OppositeCategory(Sets())
     op_a = opposite(a)
@@ -32,10 +31,10 @@ def test_product_category_has_componentwise_homs_identities_and_composition() ->
     middle = category(Sets.Δ[1], Sets.Δ[2])
     right = category(Sets.Δ[0], Sets.Δ[0])
 
-    f1 = SetMorphism(Sets().hom(left.first(), middle.first()), lambda x: middle.first()(min(int(x), 1)))
-    f2 = SetMorphism(Sets().hom(left.second(), middle.second()), lambda x: middle.second()(int(x) + 1))
-    g1 = SetMorphism(Sets().hom(middle.first(), right.first()), lambda _x: right.first()(0))
-    g2 = SetMorphism(Sets().hom(middle.second(), right.second()), lambda _x: right.second()(0))
+    f1 = Sets().hom(left.first(), middle.first())(lambda x: middle.first()(min(int(x), 1)))
+    f2 = Sets().hom(left.second(), middle.second())(lambda x: middle.second()(int(x) + 1))
+    g1 = Sets().hom(middle.first(), right.first())(lambda _x: right.first()(0))
+    g2 = Sets().hom(middle.second(), right.second())(lambda _x: right.second()(0))
 
     f = category.hom(left, middle)(f1, f2)
     g = category.hom(middle, right)(g1, g2)
@@ -71,7 +70,7 @@ def test_arrow_subcategories_and_isomorphism_constructor_have_the_expected_objec
     assert inclusion_object in arrows
     assert common_category(x, y).is_subcategory(Sets())
 
-    end = SetMorphism(Sets().hom(x, x), lambda value: x(2 - int(value)))
+    end = Sets().hom(x, x)(lambda value: x(2 - int(value)))
     end_object = EndArrowCategory(Sets())(end)
     assert end_object in EndArrowCategory(Sets())
 

@@ -113,14 +113,10 @@ def test_exact_closure_maps_do_not_enumerate_infinite_generators_or_admit_set_ma
     assert identity_element == group.one()
     assert ~identity_element * identity_element == group.one()
 
-    from sage.categories.morphism import SetMorphism
 
-    fake_map = SetMorphism(
-        Sets().hom(closure, closure),
-        lambda element: closure.one()
+    fake_map = Sets().hom(closure, closure)(lambda element: closure.one()
         if element == closure.one()
-        else closure.zero(),
-    )
+        else closure.zero())
     with pytest.raises(TypeError, match="genuine field-homomorphism"):
         exact_field_homset(closure, closure)(fake_map)
 
