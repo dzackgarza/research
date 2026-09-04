@@ -49,6 +49,10 @@ from dzack_research.preamble.categories.sets.set_categories import (
     Sets as OwnedSets,
 )
 from dzack_research.preamble.categories.sets.cardinals import aleph0
+from dzack_research.preamble.categories.sets.indexed_families import (
+    IndexedFamily,
+    indexed_family,
+)
 from dzack_research.preamble.categories.sets.fixed_size_selections import multisets_of_size
 from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
 from dzack_research.preamble.categories.algebras.algebras import algebra_homset
@@ -59,7 +63,6 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
     ring_as_module,
 )
 from dzack_research.preamble.categories.modules.powers import SymmetricPower
-from dzack_research.preamble.categories.sets.cardinals import cardinal
 
 
 def _nested_label(labels):
@@ -310,7 +313,7 @@ class SparseFreeAlgebra(Parent):
 
     algebra_base_ring = base_ring
 
-    def _algebra_homset(self, hom_family, codomain):
+    def algebra_homset(self, hom_family, codomain):
         return SparseFreeAlgebraHomset(hom_family, self, codomain)
 
     def free_source_module(self):
@@ -746,22 +749,47 @@ class SparseFreeAlgebraMorphism(Morphism):
         Morphism.__init__(self, parent)
         domain = cast(SparseFreeAlgebra, self.domain())
         labels = domain.algebra_generating_set()
-        if isinstance(images, dict):
-            if not cardinal(labels.cardinality()).is_finite():
+        if isinstance(images, IndexedFamily):
+            source_indices = images.index_set()
+            self._generator_images = indexed_family(
+                labels,
+                lambda label: self.codomain()(images[source_indices(label)]),
+                name="Sparse free-algebra morphism generator-image family",
+            )
+        elif isinstance(images, dict):
+            if not labels.cardinality().is_finite():
                 raise TypeError(
-                    "an infinite generator assignment is specified by a callable"
+                    "an infinite generator assignment is specified by a callable or indexed family"
                 )
             missing = [label for label in labels if label not in images]
             if missing:
                 raise ValueError(f"algebra-generator assignment omits {missing}")
-            self._raw_image = images.__getitem__
+            self._generator_images = indexed_family(
+                labels,
+                lambda label: self.codomain()(images[label]),
+                name="Sparse free-algebra morphism generator-image family",
+            )
         elif callable(images):
-            self._raw_image = images
+            self._generator_images = indexed_family(
+                labels,
+                lambda label: self.codomain()(images(label)),
+                name="Sparse free-algebra morphism generator-image family",
+            )
         else:
             raise TypeError(
                 "an algebra morphism is specified on its algebra generators"
             )
+        self._raw_image = self._generator_images.value
         self._component_maps: dict[Any, Any] = {}
+
+    def algebra_generator_images(self):
+        return self._generator_images
+
+    def algebra_generator_morphism(self):
+        return SetMorphism(
+            OwnedSets().Mor(self.domain().algebra_generating_set(), self.codomain()),
+            self._generator_images.value,
+        )
 
     def _component_map(self, key):
         cached = self._component_maps.get(key)

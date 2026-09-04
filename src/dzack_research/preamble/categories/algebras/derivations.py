@@ -8,17 +8,16 @@ presentation representative.
 """
 
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalHomset,
-    HomCategoryConstruction,
+    RestrictedHomCategoryOf,
+    RestrictedHomCategoryParent,
 )
 from sage.misc.cachefunc import cached_function
+from sage.misc.classcall_metaclass import typecall
 from sage.categories.action import Action
 from sage.categories.morphism import Morphism, SetMorphism
+from sage.structure.element import ModuleElement
 import operator
 
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    ModuleMorphism,
-)
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
     _engine_ring,
@@ -83,7 +82,7 @@ def _differentiate_representative(algebra, representative, variables):
     return finite_ordered_image(variables, derivative)
 
 
-class Derivation(Morphism):
+class Derivation(ModuleElement):
     r"""An actual ``R``-linear arrow ``A -> Res_R(M)`` satisfying Leibniz.
 
     The public codomain of a derivation remains the original ``A``-module
@@ -92,7 +91,7 @@ class Derivation(Morphism):
     """
 
     def __init__(self, parent, generator_images) -> None:
-        Morphism.__init__(self, parent)
+        ModuleElement.__init__(self, parent)
         labels = parent.generator_labels()
         if isinstance(generator_images, dict):
             missing = [label for label in labels if label not in generator_images]
@@ -171,12 +170,18 @@ class Derivation(Morphism):
         return self.__call__(element)
 
     def underlying_linear_morphism(self):
-        morphism = self.parent().ambient_hom().elementwise(
+        cached = self.__dict__.get("_preamble_underlying_linear_morphism")
+        if cached is not None:
+            return cached
+        morphism = self.parent().arrow_set().elementwise(
             lambda element: self.restricted_codomain()(self(element))
         )
         morphism._preamble_is_derivation = True
         morphism._preamble_derivation = self
+        self._preamble_underlying_linear_morphism = morphism
         return morphism
+
+    as_morphism = underlying_linear_morphism
 
     def _lmul_(self, scalar):
         return self.parent().algebra_multiple(scalar, self)
@@ -241,18 +246,30 @@ class _DerivationAlgebraAction(Action):
         return self._derivations.algebra_multiple(scalar, derivation)
 
 
-class DerivationSpace(CategoricalHomset):
+class DerivationSpace(RestrictedHomCategoryParent):
     r"""The ``A``-module ``Der_R(A,M)`` with its restricted Hom inclusion.
 
     The actual subobject of ``Hom_R(A,Res_R M)`` is
     ``Res_R Der_R(A,M)``.  Keeping these two scalar structures distinct is
     essential: the derivation module is canonically an ``A``-module, whereas
-    its inclusion into the ambient Hom is only ``R``-linear.
+    its inclusion into the existing ``R``-linear Hom is only ``R``-linear.
     """
 
     Element = Derivation
 
-    def __init__(self, algebra, target_module) -> None:
+    @staticmethod
+    def __classcall__(cls, family_or_algebra, domain_or_target, codomain=None):
+        if isinstance(family_or_algebra, DerivationCategoryConstruction):
+            return typecall(
+                cls,
+                family_or_algebra,
+                domain_or_target,
+                codomain,
+            )
+        return Derivations(family_or_algebra, domain_or_target)
+
+    def __init__(self, family, algebra, restricted_target) -> None:
+        target_module = restricted_target.module_over_extension()
         if target_module.base_ring() is not algebra:
             raise TypeError("an R-derivation A -> M requires M to be an A-module")
         self._algebra = algebra
@@ -264,27 +281,23 @@ class DerivationSpace(CategoricalHomset):
 
         base = algebra.base_ring()
         structure_map = algebra.algebra_structure_morphism()
-        self._restricted_target = restrict_scalars(
-            target_module,
-            structure_map,
-        )
+        self._restricted_target = restricted_target
         # Der_R(A,M) is the subcategory of Hom_R(A,Res_R M) carved out by the
-        # Leibniz rule, so the ambient R-linear Mor category is the base.
-        CategoricalHomset.__init__(
+        # Leibniz rule, so the existing R-linear Mor category is the base.
+        RestrictedHomCategoryParent.__init__(
             self,
-            HomCategoryConstruction(Modules(base)),
+            family,
             algebra,
-            target_module,
+            restricted_target,
         )
         self._preamble_base_ring = algebra
         refine(self, Modules(algebra))
         self.register_action(_DerivationAlgebraAction(algebra, self, True))
         self.register_action(_DerivationAlgebraAction(algebra, self, False))
         self._restricted_module = restrict_scalars(self, structure_map)
-        self._ambient_hom = Modules(base).Mor(algebra, self._restricted_target)
         self._preamble_inclusion = module_embedding(
             self._restricted_module,
-            self._ambient_hom,
+            self.arrow_set(),
             lambda restricted_derivation: (
                 restricted_derivation.underlying_element().underlying_linear_morphism()
             ),
@@ -307,9 +320,6 @@ class DerivationSpace(CategoricalHomset):
 
     def restricted_module(self):
         return self._restricted_module
-
-    def ambient_hom(self):
-        return self._ambient_hom
 
     def inclusion(self):
         return self._preamble_inclusion
@@ -370,13 +380,32 @@ class DerivationSpace(CategoricalHomset):
         return f"Der_{self.algebra().base_ring()}({self.algebra()}, {self.target_module()})"
 
 
+class DerivationCategoryConstruction(RestrictedHomCategoryOf):
+    _declaration_name = "_DerivationCategory"
+
+    def fixed_category_class(self):
+        return DerivationSpace
+
+    def accepts(self, arrow) -> bool:
+        return getattr(arrow, "_preamble_derivation", None) is not None
+
+
 @cached_function(key=lambda algebra, target_module: (id(algebra), id(target_module)))
 def Derivations(algebra, target_module) -> DerivationSpace:
-    result = DerivationSpace(algebra, target_module)
-    return result
+    if target_module.base_ring() is not algebra:
+        raise TypeError("an R-derivation A -> M requires M to be an A-module")
+    base = algebra.base_ring()
+    restricted_target = restrict_scalars(
+        target_module,
+        algebra.algebra_structure_morphism(),
+    )
+    return DerivationCategoryConstruction(Modules(base)).Of(
+        algebra,
+        restricted_target,
+    )
 
 
-class GradedDerivation(ModuleMorphism):
+class GradedDerivation(ModuleElement):
     r"""A homogeneous graded derivation of a represented graded algebra.
 
     For shift ``r`` this represents a map ``D : A^p -> M^(p+r)`` satisfying
@@ -388,17 +417,18 @@ class GradedDerivation(ModuleMorphism):
     def __init__(self, parent, function) -> None:
         if not callable(function):
             raise TypeError("a graded derivation is specified by an element map")
-        ModuleMorphism.__init__(
-            self,
-            parent,
-            function,
-            elementwise=True,
-            verify_linearity=False,
-        )
+        ModuleElement.__init__(self, parent)
+        self._function = function
         if not self.check_on_generators():
             raise ValueError(
                 f"the proposed map is not a degree-{self.degree_shift()} graded derivation"
             )
+
+    def __call__(self, element):
+        return self.target()(self._function(self.algebra()(element)))
+
+    def _call_(self, element):
+        return self.__call__(element)
 
     def algebra(self):
         return self.parent().algebra()
@@ -410,14 +440,39 @@ class GradedDerivation(ModuleMorphism):
         return self.parent().degree_shift()
 
     def underlying_linear_morphism(self):
-        morphism = self.parent().ambient_hom().elementwise(
+        cached = self.__dict__.get("_preamble_underlying_linear_morphism")
+        if cached is not None:
+            return cached
+        morphism = self.parent().arrow_set().elementwise(
             lambda element: self(element),
             verify_linearity=False,
         )
         morphism._preamble_is_graded_derivation = True
         morphism._preamble_graded_derivation = self
         morphism._preamble_degree_shift = self.degree_shift()
+        self._preamble_underlying_linear_morphism = morphism
         return morphism
+
+    as_morphism = underlying_linear_morphism
+
+    def __add__(self, other):
+        if not isinstance(other, GradedDerivation) or other.parent() is not self.parent():
+            return NotImplemented
+        return self.parent().elementwise(lambda element: self(element) + other(element))
+
+    def __neg__(self):
+        return self.parent().elementwise(lambda element: -self(element))
+
+    def __sub__(self, other):
+        return self + (-other)
+
+    def _lmul_(self, scalar):
+        return self.parent().scalar_multiple(scalar, self)
+
+    _rmul_ = _lmul_
+
+    def __rmul__(self, scalar):
+        return self.parent().scalar_multiple(scalar, self)
 
     def check_on_generators(self) -> bool:
         r"""Check degree and graded Leibniz on a selected finite algebra framing."""
@@ -451,23 +506,37 @@ class GradedDerivation(ModuleMorphism):
         return True
 
 
-class GradedDerivationSpace(CategoricalHomset):
+class GradedDerivationSpace(RestrictedHomCategoryParent):
     r"""The ``R``-submodule of degree-``r`` graded derivations in ``Hom_R``."""
 
     Element = GradedDerivation
 
-    def __init__(self, algebra, target, shift) -> None:
+    @staticmethod
+    def __classcall__(cls, family_or_algebra, domain_or_target, codomain_or_shift=None):
+        if isinstance(family_or_algebra, GradedDerivationCategoryConstruction):
+            return typecall(
+                cls,
+                family_or_algebra,
+                domain_or_target,
+                codomain_or_shift,
+            )
+        return GradedDerivations(
+            family_or_algebra,
+            domain_or_target,
+            codomain_or_shift,
+        )
+
+    def __init__(self, family, algebra, target) -> None:
         if algebra.base_ring() is not target.base_ring():
             raise ValueError("a graded derivation requires one coefficient ring")
         self._algebra = algebra
         self._target = target
-        self._shift = int(shift)
+        self._shift = family.degree_shift()
 
         ring = algebra.base_ring()
-        self._ambient_hom = Modules(ring).Mor(algebra, target)
-        CategoricalHomset.__init__(
+        RestrictedHomCategoryParent.__init__(
             self,
-            HomCategoryConstruction(Modules(ring)),
+            family,
             algebra,
             target,
         )
@@ -475,7 +544,7 @@ class GradedDerivationSpace(CategoricalHomset):
         refine(self, [Modules(ring), ModuleSubobjects(ring)])
         self._preamble_inclusion = module_embedding(
             self,
-            self._ambient_hom,
+            self.arrow_set(),
             lambda derivation: derivation.underlying_linear_morphism(),
             verify_linearity=False,
         )
@@ -509,9 +578,6 @@ class GradedDerivationSpace(CategoricalHomset):
             return self.element_class(self, lambda element: derivation(element))
         return self.element_class(self, function)
 
-    def ambient_hom(self):
-        return self._ambient_hom
-
     def inclusion(self):
         return self._preamble_inclusion
 
@@ -539,12 +605,41 @@ class GradedDerivationSpace(CategoricalHomset):
         )
 
 
+class GradedDerivationCategoryConstruction(RestrictedHomCategoryOf):
+    _declaration_name = "_GradedDerivationCategory"
+
+    @staticmethod
+    def __classcall__(cls, base_category, shift):
+        return typecall(cls, base_category, int(shift))
+
+    def __init__(self, base_category, shift) -> None:
+        self._degree_shift = int(shift)
+        super().__init__(base_category)
+
+    def degree_shift(self):
+        return self._degree_shift
+
+    def fixed_category_class(self):
+        return GradedDerivationSpace
+
+    def accepts(self, arrow) -> bool:
+        return (
+            getattr(arrow, "_preamble_graded_derivation", None) is not None
+            and getattr(arrow, "_preamble_degree_shift", None) == self.degree_shift()
+        )
+
+
 @cached_function(key=lambda algebra, target, shift=0: (id(algebra), id(target) if target is not None else None, int(shift)))
 def GradedDerivations(algebra, target=None, shift=0) -> GradedDerivationSpace:
     if target is None:
         target = algebra
-    result = GradedDerivationSpace(algebra, target, shift)
-    return result
+    if algebra.base_ring() is not target.base_ring():
+        raise ValueError("a graded derivation requires one coefficient ring")
+    ring = algebra.base_ring()
+    return GradedDerivationCategoryConstruction(Modules(ring), shift).Of(
+        algebra,
+        target,
+    )
 
 
 __all__ = [

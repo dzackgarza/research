@@ -78,3 +78,64 @@ does not say, in a form anything can read, what a mathematical parameter *is*.
   `BilinearFreeFormAdjunction` and `QuadraticFreeFormAdjunction` print their adjoints as
   `<... object at 0x...>`.  Every sibling in `categories/functors/` names itself.
   `categories/functors/free_forms.py`.
+
+## Witnesses: what `an_object()` found
+
+`OwnedCategory.an_object()` is the contract (`DEV-11`); 109 of 164 owned categories
+answer it with an object verified to be both **in** the category and **owned**.  Each
+item below is a category whose canonical object fails one of those two tests.  The
+witness is left as the mathematics names it — relaxing it to something that passes
+would delete the finding and leave the defect.
+
+- [ ] **The scheme layer returns Sage objects.**  `AffineSpace`, `ProjectiveSpace`,
+  `Spec` and `scheme_product` all return `sage.schemes.*`, refined into owned
+  categories rather than owned.  Sixteen scheme categories report it; the cause is
+  one.  Every other part of the preamble owns its objects.
+  `categories/schemes/schemes.py`.
+
+- [ ] **`R` is not in `CommutativeAlgebras(R)`**, though it is in `Algebras(R)`.  A
+  commutative ring is a commutative algebra over itself.  The gap stops
+  `KahlerDifferentials(R)`, which raises `Kähler calculus requires a commutative
+  algebra`, and forces `Spec` to be fed a polynomial ring instead of the base.
+  `categories/algebras/algebras.py`.
+
+- [ ] **`MatrixAlgebras(R)` does not contain `End_R(Free_R([2]))`**, which is what a
+  matrix algebra *is* in this preamble.  `MatrixSpace(R, 2)` is in it, so two routes
+  to the same object disagree on placement.
+  `categories/algebras/algebras.py`, `categories/modules/pure/modules.py`.
+
+- [ ] **The form-module joins do not contain their own members.**  U is in
+  `FormModules(R)` and in `FramedFreeModules(R)`, and `FreeFormModules(R)` declares
+  exactly those two as its supercategories, yet U is not in it.  Same for
+  `FormedModules`, `PairedModules`, `FinitelyGeneratedFormModules` and
+  `FinitelyGeneratedFreeFormModules`.  `Lattices` does not refine any of them.
+  `categories/modules/framed/formed/form_modules.py`.
+
+- [ ] **A free module over a field is not in `VectorSpaces(K)`**, whose only
+  supercategory is `Modules(K)`.  `categories/modules/pure/modules.py`.
+
+- [ ] **`A^1` is not normal and nothing is a variety.**  `NormalSchemes`,
+  `Varieties`, `Curves` and `Surfaces` do not contain affine or projective space of
+  the matching dimension, which are the standard objects of each.
+  `categories/schemes/schemes.py`, `categories/schemes/varieties.py`.
+
+- [ ] **`scheme_product` cannot square a projective space**: two copies of `P^1`
+  raise `variable name 'x0' appears more than once`; the second factor's coordinates
+  are not renamed.  `categories/schemes/schemes.py`.
+
+- [ ] **`closed_subscheme` requires a field.**  Cutting a hypersurface out of `A^2`
+  over `ZZ` reaches Singular syzygies, which refuse a non-field coefficient ring, so
+  no closed subscheme over `ZZ` can be built at all.
+  `categories/schemes/schemes.py`.
+
+- [ ] **26 categories still have no witness.**  The chosen-structure ones
+  (`AlgebrasWithChosenMultiplication`, `AlgebrasWithChosenFinitePresentation`,
+  `AugmentedAlgebras`, `GradedAugmentedAlgebras`, the algebra coproducts and
+  pushouts) need an object carrying the chosen datum, and no reachable constructor
+  produces one; `LieAlgebras`, `CommutatorLieAlgebras`, `ModulesWithConnection`,
+  `ModulesWithFlatConnection`, `GSets`, `FiniteGSets`, `PredicateSubgroups`,
+  `RationalLattices`, `LocalizedModules`, `FractionFieldQuotients`,
+  `RestrictedScalars*`, `FormalDivisorGroups`, `LebesgueGradedModules`,
+  `GradedTensorProductModules`, `OpenSubschemes` and `FiberProductSchemes` are the
+  rest.  `OwnedCategoryOverBaseRing` is on that list only because it is an abstract
+  base exported as though it were a category.

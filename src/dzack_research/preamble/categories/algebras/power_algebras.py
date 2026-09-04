@@ -294,12 +294,19 @@ class PowerAlgebraMorphism(Morphism):
     def __call__(self, element):
         return self._call_(element)
 
+    def is_identity(self) -> bool:
+        return bool(getattr(self, "_preamble_is_identity", False))
+
     def __mul__(self, other):
         if (
             not isinstance(other, PowerAlgebraMorphism)
             or other.codomain() is not self.domain()
         ):
             return NotImplemented
+        if self.is_identity():
+            return other
+        if other.is_identity():
+            return self
         return power_algebra_homset(other.domain(), self.codomain())(
             self.degree_one_map() * other.degree_one_map()
         )
@@ -328,7 +335,9 @@ class PowerAlgebraHomset(CategoricalHomset):
         if self.domain() is not self.codomain():
             raise ValueError("identity belongs to an endomorphism Hom-set")
         module = self.domain().free_source_module()
-        return self(module_homset(module, module).identity())
+        identity = self(module_homset(module, module).identity())
+        identity._preamble_is_identity = True
+        return identity
 
 
 def power_algebra_homset(domain, codomain):

@@ -1,14 +1,15 @@
 r"""Algebraic connections on represented modules over commutative algebras."""
 
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalHomset,
-    HomCategoryConstruction,
+    RestrictedHomCategoryOf,
+    RestrictedHomCategoryParent,
 )
 from sage.misc.cachefunc import cached_function
+from sage.misc.classcall_metaclass import typecall
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedParameterizedCategory
 from sage.categories.morphism import Morphism, SetMorphism
+from sage.structure.element import Element
 from dzack_research.preamble.categories.sets.set_categories import Sets
-from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 
 from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
@@ -16,7 +17,6 @@ from dzack_research.preamble.categories.algebras.kahler_differentials import (
     KahlerDifferentials,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    ModuleMorphism,
     module_coefficients,
     module_homset,
 )
@@ -61,8 +61,6 @@ class ModulesWithConnection(OwnedParameterizedCategory):
             return self._preamble_connection
 
         def _Hom_(self, codomain, category=None):
-            if codomain in ModulesWithConnection(self.base_ring()):
-                return connection_homset(self, codomain)
             return module_homset(self, codomain)
 
 
@@ -84,16 +82,16 @@ class ModulesWithFlatConnection(OwnedParameterizedCategory):
             return True
 
 
-class Connection(Morphism):
+class Connection(Element):
     r"""An ``R``-connection ``E -> E tensor_A Omega^1_{A/R}``."""
 
     def __init__(self, parent, generator_images) -> None:
-        Morphism.__init__(self, parent)
+        Element.__init__(self, parent)
         labels = self.module().module_generating_set()
         target = self.target_module()
 
         if isinstance(generator_images, dict):
-            size = cardinal(labels.cardinality())
+            size = labels.cardinality()
             try:
                 finite = size.is_finite()
             except NotImplementedError:
@@ -110,7 +108,7 @@ class Connection(Morphism):
         elif callable(generator_images):
             raw_image = generator_images
         elif isinstance(generator_images, (tuple, list)):
-            size = cardinal(labels.cardinality())
+            size = labels.cardinality()
             try:
                 finite_size = int(size.finite_value()) if size.is_finite() else None
             except NotImplementedError:
@@ -205,14 +203,20 @@ class Connection(Morphism):
         return self.__call__(element)
 
     def underlying_linear_morphism(self):
+        cached = self.__dict__.get("_preamble_underlying_linear_morphism")
+        if cached is not None:
+            return cached
         source = self.parent().restricted_source_module()
         target = self.parent().restricted_target_module()
-        morphism = self.parent().ambient_hom().elementwise(
+        morphism = self.parent().arrow_set().elementwise(
             lambda element: target(self(element.underlying_element()))
         )
         morphism._preamble_is_connection = True
         morphism._preamble_connection = self
+        self._preamble_underlying_linear_morphism = morphism
         return morphism
+
+    as_morphism = underlying_linear_morphism
 
     def curvature_target(self):
 
@@ -297,10 +301,22 @@ class Connection(Morphism):
         return ConnectionDeRhamModule(self)
 
 
-class ConnectionSpace(CategoricalHomset):
+class ConnectionSpace(RestrictedHomCategoryParent):
     Element = Connection
 
-    def __init__(self, module) -> None:
+    @staticmethod
+    def __classcall__(cls, family_or_module, restricted_source=None, restricted_target=None):
+        if isinstance(family_or_module, ConnectionCategoryConstruction):
+            return typecall(
+                cls,
+                family_or_module,
+                restricted_source,
+                restricted_target,
+            )
+        return Connections(family_or_module)
+
+    def __init__(self, family, restricted_source, restricted_target) -> None:
+        module = restricted_source.module_over_extension()
         algebra = module.base_ring()
         if algebra not in CommutativeAlgebras(algebra.base_ring()):
             raise TypeError(
@@ -310,23 +326,22 @@ class ConnectionSpace(CategoricalHomset):
         self._algebra = algebra
         self._one_forms = KahlerDifferentials(algebra)
 
-        self._target_module = TensorProduct(module, self._one_forms)
-        ring_map = algebra.algebra_structure_morphism()
-        self._restricted_source = restrict_scalars(module, ring_map)
-        self._restricted_target = restrict_scalars(self._target_module, ring_map)
-        self._ambient_hom = Modules(algebra.base_ring()).Mor(self._restricted_source,
-        self._restricted_target,)
+        self._target_module = restricted_target.module_over_extension()
+        if self._target_module is not TensorProduct(module, self._one_forms):
+            raise ValueError("the restricted connection target is not E tensor_A Omega^1")
+        self._restricted_source = restricted_source
+        self._restricted_target = restricted_target
         # A connection is an R-linear map E -> E (x) Omega satisfying Leibniz,
-        # so this is the subcategory of the ambient R-linear Mor category cut
+        # so this is the subcategory of the existing R-linear Mor category cut
         # out by that rule.
-        CategoricalHomset.__init__(
+        RestrictedHomCategoryParent.__init__(
             self,
-            HomCategoryConstruction(Modules(algebra.base_ring())),
-            module,
-            self._target_module,
+            family,
+            restricted_source,
+            restricted_target,
         )
         self._inclusion = SetMorphism(
-            Sets().Mor(self, self._ambient_hom),
+            Sets().Mor(self, self.arrow_set()),
             lambda connection: connection.underlying_linear_morphism(),
         )
 
@@ -347,9 +362,6 @@ class ConnectionSpace(CategoricalHomset):
 
     def restricted_target_module(self):
         return self._restricted_target
-
-    def ambient_hom(self):
-        return self._ambient_hom
 
     def inclusion(self):
         return self._inclusion
@@ -377,19 +389,60 @@ class ConnectionSpace(CategoricalHomset):
         return f"Connections on {self.module()} over {self.algebra().base_ring()}"
 
 
+class ConnectionCategoryConstruction(RestrictedHomCategoryOf):
+    _declaration_name = "_ConnectionCategory"
+
+    def fixed_category_class(self):
+        return ConnectionSpace
+
+    def accepts(self, arrow) -> bool:
+        return getattr(arrow, "_preamble_connection", None) is not None
+
+
 @cached_function(key=lambda module: id(module))
 def Connections(module) -> ConnectionSpace:
-    result = ConnectionSpace(module)
-    return result
+    algebra = module.base_ring()
+    if algebra not in CommutativeAlgebras(algebra.base_ring()):
+        raise TypeError(
+            "an algebraic connection here requires a module over a commutative algebra"
+        )
+    one_forms = KahlerDifferentials(algebra)
+    target = TensorProduct(module, one_forms)
+    ring_map = algebra.algebra_structure_morphism()
+    restricted_source = restrict_scalars(module, ring_map)
+    restricted_target = restrict_scalars(target, ring_map)
+    return ConnectionCategoryConstruction(Modules(algebra.base_ring())).Of(
+        restricted_source,
+        restricted_target,
+    )
 
 
-class ConnectionMorphism(ModuleMorphism):
+class ConnectionMorphism(Element):
     r"""An ``A``-linear map horizontal for the selected connections."""
 
     def __init__(self, parent, images, *, verify_horizontality=True) -> None:
-        ModuleMorphism.__init__(self, parent, images)
+        Element.__init__(self, parent)
+        self._underlying_morphism = parent.arrow_set()(images)
         if verify_horizontality:
             self._check_connection_square()
+        self._underlying_morphism._preamble_connection_morphism = self
+
+    def domain(self):
+        return self.parent().domain_object()
+
+    def codomain(self):
+        return self.parent().codomain_object()
+
+    def __call__(self, element):
+        return self._underlying_morphism(element)
+
+    def _call_(self, element):
+        return self.__call__(element)
+
+    def underlying_linear_morphism(self):
+        return self._underlying_morphism
+
+    as_morphism = underlying_linear_morphism
 
     def _check_connection_square(self) -> None:
         domain_connection = self.domain().connection()
@@ -420,34 +473,66 @@ class ConnectionMorphism(ModuleMorphism):
                 )
 
 
-class ConnectionHomset(CategoricalHomset):
+class ConnectionHomset(RestrictedHomCategoryParent):
     Element = ConnectionMorphism
 
-    def __init__(self, domain, codomain) -> None:
+    @staticmethod
+    def __classcall__(cls, family_or_domain, domain_or_codomain, codomain=None):
+        if isinstance(family_or_domain, ConnectionMorphismCategoryConstruction):
+            return typecall(
+                cls,
+                family_or_domain,
+                domain_or_codomain,
+                codomain,
+            )
+        return connection_homset(family_or_domain, domain_or_codomain)
+
+    def __init__(self, family, domain, codomain) -> None:
         if domain.base_ring() is not codomain.base_ring():
             raise ValueError("connection morphisms require one coefficient algebra")
-        CategoricalHomset.__init__(
+        RestrictedHomCategoryParent.__init__(
             self,
-            HomCategoryConstruction(ModulesWithConnection(domain.base_ring())),
+            family,
             domain,
             codomain,
         )
 
     def _element_constructor_(self, images):
+        if isinstance(images, ConnectionMorphism) and images.parent() is self:
+            return images
+        if isinstance(images, Morphism):
+            tagged = getattr(images, "_preamble_connection_morphism", None)
+            if tagged is not None and tagged.parent() is self:
+                return tagged
         return self.element_class(self, images)
 
     def identity(self):
-        if self.domain() is not self.codomain():
+        if self.domain_object() is not self.codomain_object():
             raise ValueError("identity belongs to a connection endomorphism homset")
         return self.element_class(
             self,
-            lambda label: self.domain().module_generator(label),
+            self.arrow_set().identity(),
             verify_horizontality=False,
         )
 
 
+class ConnectionMorphismCategoryConstruction(RestrictedHomCategoryOf):
+    _declaration_name = "_ConnectionMorphismCategory"
+
+    def fixed_category_class(self):
+        return ConnectionHomset
+
+    def accepts(self, arrow) -> bool:
+        return getattr(arrow, "_preamble_connection_morphism", None) is not None
+
+
 def connection_homset(domain, codomain):
-    return ConnectionHomset(domain, codomain)
+    if domain.base_ring() is not codomain.base_ring():
+        raise ValueError("connection morphisms require one coefficient algebra")
+    return ConnectionMorphismCategoryConstruction(Modules(domain.base_ring())).Of(
+        domain,
+        codomain,
+    )
 
 
 def ModuleWithConnection(connection):

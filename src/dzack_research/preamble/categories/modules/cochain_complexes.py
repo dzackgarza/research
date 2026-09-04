@@ -68,6 +68,15 @@ class CochainComplexes(OwnedCategoryOverBaseRing):
 class CohomologyModules(OwnedCategoryOverBaseRing):
     r"""Cohomology modules retaining their represented cycle quotient."""
 
+    def an_object(self):
+        r"""The degree-zero cohomology of a one-term complex."""
+        from dzack_research.preamble.categories.modules.cochain_complexes import (
+            CochainComplexes,
+            Cohomology,
+        )
+
+        return Cohomology(CochainComplexes(self.base_ring()).an_object(), 0)
+
     @classmethod
     def _repr_object_names(cls):
         return "cohomology modules"

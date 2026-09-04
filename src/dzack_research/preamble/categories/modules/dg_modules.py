@@ -10,6 +10,10 @@ from dzack_research.preamble.categories.modules.graded_modules import GradedModu
 class GradedAlgebraModules(OwnedParameterizedCategory):
     r"""Right graded modules over one selected graded algebra ``A``."""
 
+    def an_object(self):
+        r"""The graded algebra this category is over, as a module over itself."""
+        return self.base()
+
     @classmethod
     def _repr_object_names(cls):
         return "graded modules over a graded algebra"
@@ -35,6 +39,10 @@ class GradedAlgebraModules(OwnedParameterizedCategory):
 
 class DifferentialGradedModules(OwnedParameterizedCategory):
     r"""Right differential graded modules over one selected DGA ``(A,d)``."""
+
+    def an_object(self):
+        r"""The DGA this category is over, as a module over itself."""
+        return self.base()
 
     @classmethod
     def _repr_object_names(cls):
