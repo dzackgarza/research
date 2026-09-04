@@ -7,6 +7,7 @@ from sage.categories.action import Action
 from sage.categories.category import Category
 from sage.categories.morphism import SetMorphism
 from sage.misc.cachefunc import cached_function, cached_method
+from sage.misc.unknown import Unknown
 from sage.structure.element import ModuleElement
 from sage.structure.parent import Parent
 from sage.structure.richcmp import richcmp
