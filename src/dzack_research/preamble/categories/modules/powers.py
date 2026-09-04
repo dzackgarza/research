@@ -17,12 +17,14 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleHomset,
     ModuleMorphism,
-    _coordinate_family,
-    _coordinate_family_from_function,
-    _coordinate_pair,
-    _finite_framing,
     module_coefficients,
     module_homset,
+)
+from dzack_research.preamble.categories.sets.coordinate_families import (
+    coordinate_family as _coordinate_family,
+    coordinate_family_from_function as _coordinate_family_from_function,
+    coordinate_pair as _coordinate_pair,
+    finite_framing as _finite_framing,
 )
 from dzack_research.preamble.refine import refine
 from dzack_research.preamble.tensors.tensor import tensor
