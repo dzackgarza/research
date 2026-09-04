@@ -690,10 +690,15 @@ class _TensorMatrixConstructor:
             if isinstance(components, Tensor):
                 if components.tensor_order() != 2:
                     raise TypeError("a matrix tensor has two indices")
+                # Reinterpretation: the two index ranks are read off, and the
+                # result is the type-(1,1) tensor this constructor makes.  The
+                # input's own variance does not survive, which is the whole
+                # content of reading its components as a matrix.
+                rows, columns = components._index_ranks()
                 return tensor(
                     base,
-                    components.upper_ranks(),
-                    components.lower_ranks(),
+                    (rows,),
+                    (columns,),
                     components.components(),
                 )
             shape = _component_shape(components)

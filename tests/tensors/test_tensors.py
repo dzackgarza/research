@@ -41,8 +41,12 @@ def test_tensor_constructors_require_owned_base_rings() -> None:
 
 
 def test_vector_and_covector_constructors_accept_only_ring_and_components() -> None:
-    assert tensor.vector(ZZ, [1, 2]).components() == [1, 2]
-    assert tensor.covector(ZZ, [1, 2]).components() == [1, 2]
+    contravariant = tensor.vector(ZZ, [1, 2])
+    covariant = tensor.covector(ZZ, [1, 2])
+    assert contravariant.tensor_valence() == (NN**2)((1, 0))
+    assert covariant.tensor_valence() == (NN**2)((0, 1))
+    assert contravariant[0] == ZZ(1) and contravariant[1] == ZZ(2)
+    assert covariant[0] == ZZ(1) and covariant[1] == ZZ(2)
     with pytest.raises(TypeError, match="one component family"):
         tensor.vector(ZZ, 2, [1, 2])
     with pytest.raises(TypeError, match="one component family"):
@@ -111,7 +115,7 @@ def test_matrix_tensor_accepts_rectangular_component_data_or_explicit_shape() ->
     assert _shape.cardinality() == 2
     assert _shape[0] == 2
     assert _shape[1] == 3
-    assert zero.components() == [[0, 0, 0], [0, 0, 0]]
+    assert zero == tensor.matrix(QQ, [[0, 0, 0], [0, 0, 0]])
 
 
 def test_general_tensor_constructor_encodes_variance_and_higher_rank() -> None:
@@ -188,7 +192,7 @@ def test_bilinear_form_lowers_an_index() -> None:
     covector = form * vector
 
     assert covector.tensor_valence() == (NN**2)((0, 1))
-    assert covector.components() == [13, 19]
+    assert covector == tensor.covector(ZZ, [13, 19])
     assert covector(vector) == ZZ(147)
     with pytest.raises(TypeError):
         vector * form
@@ -204,8 +208,8 @@ def test_type_one_one_tensor_adjacent_contraction_and_vector_contraction() -> No
     contracted = left * right
     image = left * vector
 
-    assert contracted.components() == [[11, 14], [18, 22]]
-    assert image.components() == [25, 35]
+    assert contracted == tensor(ZZ, (2,), (2,), [[11, 14], [18, 22]])
+    assert image == tensor.vector(ZZ, [25, 35])
     assert contracted.tensor_valence() == (NN**2)((1, 1))
     assert image.tensor_valence() == (NN**2)((1, 0))
 
@@ -216,7 +220,7 @@ def test_covector_type_one_one_adjacent_contraction() -> None:
 
     contracted = covector * linear_components
     assert contracted.tensor_valence() == (NN**2)((0, 1))
-    assert contracted.components() == [-2, -1, 0]
+    assert contracted == tensor.covector(ZZ, [-2, -1, 0])
 
 
 def test_type_one_one_dualization_belongs_to_module_duality() -> None:
@@ -229,7 +233,7 @@ def test_type_one_one_dualization_belongs_to_module_duality() -> None:
     assert _shape.cardinality() == 2
     assert _shape[0] == 3
     assert _shape[1] == 2
-    assert dual.components() == [[1, 4], [2, 5], [3, 6]]
+    assert dual == tensor(ZZ, (3,), (2,), [[1, 4], [2, 5], [3, 6]])
     with pytest.raises(TypeError, match="pairings/copairings"):
         linear_components.dual_tensor()
 
@@ -238,7 +242,7 @@ def test_dual_tensor_preserves_pairing_variance_information() -> None:
     bilinear = tensor(QQ, (), (2, 2), [[2, 1], [1, 1]])
     bilinear_dual = bilinear.dual_tensor()
     assert bilinear_dual.tensor_valence() == (NN**2)((2, 0))
-    assert bilinear_dual.components() == [[1, -1], [-1, 2]]
+    assert bilinear_dual == tensor(QQ, (2, 2), (), [[1, -1], [-1, 2]])
 
 
 def test_matrix_inverse_belongs_to_the_linear_map_parent_not_tensor_data() -> None:
@@ -259,7 +263,7 @@ def test_dual_pairing_raises_an_index() -> None:
     vector = dual * covector
 
     assert vector.tensor_valence() == (NN**2)((1, 0))
-    assert vector.components() == [-2, 7]
+    assert vector == tensor.vector(QQ, [-2, 7])
     assert pairing * vector == covector
 
 
@@ -268,7 +272,7 @@ def test_tensor_pullback_requires_an_actual_linear_morphism() -> None:
     change = MatrixSpace(ZZ, 2, 2).from_rows([[1, 1], [0, 1]])
     pulled = form.pullback(change)
 
-    assert pulled.components() == [[2, 3], [3, 7]]
+    assert pulled == tensor(ZZ, (), (2, 2), [[2, 3], [3, 7]])
     with pytest.raises(TypeError, match="owned linear morphism"):
         form.pullback(tensor.from_matrix(change))
 
@@ -283,7 +287,7 @@ def test_matrix_space_is_the_actual_linear_map_parent() -> None:
     assert _shape.cardinality() == 2
     assert _shape[0] == 2
     assert _shape[1] == 3
-    assert (tensor.from_matrix(morphism) * vector).components() == [3, 4]
+    assert tensor.from_matrix(morphism) * vector == tensor.vector(ZZ, [3, 4])
 
 
 def test_tensor_operations_remain_owned_over_a_finite_field() -> None:
@@ -301,7 +305,7 @@ def test_tensor_vector_accepts_an_owned_number_field() -> None:
 
     assert value.base_ring() is field
     assert value.tensor_valence() == (NN**2)((1, 0))
-    assert value.components() == [field.one(), field.zero()]
+    assert value == tensor.vector(field, [field.one(), field.zero()])
 
 
 def test_tensor_identity_survives_pickling() -> None:
@@ -337,7 +341,7 @@ def test_tensor_matrix_can_reinterpret_two_index_tensor_components_only() -> Non
     two_index = tensor(ZZ, (), (2, 2), [[1, 2], [3, 4]])
     higher = tensor(ZZ, (2, 2), (2,), range(8))
 
-    assert tensor.matrix(ZZ, two_index).components() == [[1, 2], [3, 4]]
+    assert tensor.matrix(ZZ, two_index) == tensor.matrix(ZZ, [[1, 2], [3, 4]])
     with pytest.raises(TypeError, match="two indices"):
         tensor.matrix(ZZ, covector)
     with pytest.raises(TypeError, match="two indices"):

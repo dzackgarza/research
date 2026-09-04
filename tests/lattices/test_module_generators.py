@@ -43,7 +43,7 @@ def test_gram_tensor_contracts_a_lattice_vector_to_its_dual_covector() -> None:
     covector = lattice.gram_tensor() * vector_value
 
     assert covector.tensor_valence() == (NN**2)((0, 1))
-    assert covector.components() == [3, 2]
+    assert covector == tensor.covector(ZZ, [3, 2])
     assert covector * e.to_vector() == lattice.b(e, 2 * e + 3 * f)
     assert covector * f.to_vector() == lattice.b(f, 2 * e + 3 * f)
 
