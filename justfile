@@ -184,6 +184,24 @@ test-push:
 test-ci:
     @just -f ~/ai-review-ci/justfiles/sage.just -d . test-ci
 
+# Check that the proof surface stays inside the mathematical universe:
+# no tuple/list/set/sorted/len of an owned object, and no to_tuple/to_list/list
+# extraction accessor, in any test that claims mathematics.
+# Policies: CONTRIBUTING.md DEV-37 (a test stays inside the universe) and
+# DEV-38 (assert the object, not a chosen presentation).
+#
+# tests/engineering/ is the cordon for tests that prove no mathematics and is
+# excluded.  The file list comes from git rather than a directory target:
+# semgrep's built-in ignore list excludes `tests/` outright, so a directory
+# scan silently finds nothing.
+test-universe:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    files=$(git ls-files 'tests/*.py' 'tests/**/*.py' | grep -v '^tests/engineering/')
+    if [ -z "$files" ]; then echo "No mathematical tests to check."; exit 0; fi
+    echo "$files" | xargs uvx semgrep \
+        --config .semgrep/tests-stay-owned.yml --metrics=off --error
+
 # Review calibration (submodule) — delegate to review-calibration/justfile.
 # Requires the submodule: git submodule update --init review-calibration
 review-calibration-packet:

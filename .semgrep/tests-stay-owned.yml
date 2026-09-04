@@ -1,0 +1,65 @@
+# Domain-specific check: the proof surface stays inside the mathematical
+# universe.  Rules cite CONTRIBUTING.md policies; run with `just test-universe`.
+#
+# tests/engineering/ is the sanctioned cordon for tests that prove no
+# mathematics.  The recipe excludes it on the command line rather than in each
+# rule: a rule-level `paths.exclude` of a directory with a trailing slash
+# silently reduces the target set to nothing.
+#
+# Exclusions are written against list literals only.  A pattern-not of the form
+# `tuple((...))` matches any single-argument call, because `(...)` is semgrep's
+# argument ellipsis rather than a tuple display -- it silently disables the rule.
+rules:
+  - id: extraction-constructor-in-a-test
+    languages: [python]
+    severity: ERROR
+    message: >-
+      Extraction leaves the mathematical universe (CONTRIBUTING.md DEV-37).
+      tuple/list/set/sorted of an owned object yields a value with no parent,
+      no category, no cardinality and no homs, so the assertion becomes a
+      statement about Python data structures -- and the test is the proof
+      surface.  Comparing after extraction is also strictly weaker: it passes
+      whether or not the objects' own equality is implemented, and whether or
+      not it is correct, so it declines to exercise the operation the preamble
+      owns.  Ask the object instead: cardinality(), equality between owned
+      objects, Set(...) or finite_ordered_set(...) on the right-hand side.
+    patterns:
+      - pattern-either:
+          - pattern: tuple($X)
+          - pattern: list($X)
+          - pattern: set($X)
+          - pattern: frozenset($X)
+          - pattern: sorted($X)
+      - pattern-not: tuple([...])
+      - pattern-not: list([...])
+      - pattern-not: set([...])
+      - pattern-not: frozenset([...])
+      - pattern-not: sorted([...])
+
+  - id: len-in-a-test
+    languages: [python]
+    severity: ERROR
+    message: >-
+      len() is the Python container protocol where cardinality() is the
+      mathematical operation (CONTRIBUTING.md DEV-37).  A length is an int and
+      asserts finiteness at a site that never stated it; a cardinality is a
+      cardinal and does not.  Legitimate only on a Python container this test
+      itself built as syntactic ingress.
+    patterns:
+      - pattern: len($X)
+      - pattern-not: len([...])
+
+  - id: extraction-method-in-a-test
+    languages: [python]
+    severity: ERROR
+    message: >-
+      An extraction accessor hands back coordinates or a Python sequence, and
+      the assertion then compares those (CONTRIBUTING.md DEV-37, DEV-38).
+      State the claim about the owned elements -- their equality, their parent,
+      the defining property -- not about their materialised representation.
+    patterns:
+      - pattern-either:
+          - pattern: $X.to_tuple()
+          - pattern: $X.to_list()
+          - pattern: $X.tolist()
+          - pattern: $X.list()
