@@ -179,6 +179,11 @@ def _has_scheme_placement(scheme, category_class) -> bool:
     )
 
 
+def _native_scheme_homset(domain, codomain):
+    r"""Return Sage's private scheme-Hom runtime carrier for owned schemes."""
+    return _SageScheme._Hom_(domain, codomain)
+
+
 def refine_scheme_morphism(morphism, base_ring):
     r"""Return a categorical wrapper of the native computational morphism."""
     _ = base_ring
@@ -216,9 +221,16 @@ class Schemes(OwnedCategoryOverBaseRing):
     def homset(self, domain, codomain):
         if domain not in self or codomain not in self:
             raise TypeError("a scheme Hom requires two schemes over the stated base")
-        return domain.Hom(codomain)
+        return _native_scheme_homset(domain, codomain)
 
     Hom = homset
+
+    class ParentMethods:
+        def Mor(self, codomain, category=None):
+            schemes = Schemes(self.scheme_base_ring())
+            if category is None or category.is_subcategory(schemes):
+                return _native_scheme_homset(self, codomain)
+            return _SageScheme._Hom_(self, codomain, category=category)
 
     @cached_method
     def base_scheme(self):
@@ -614,11 +626,17 @@ class AffineSpaces(OwnedCategoryOverBaseRing):
             base = _engine_ring(self.scheme_base_ring())
             if not bool(base.is_finite()) or not bool(base.is_field()):
                 raise TypeError("the arithmetic zeta function here requires a finite field")
-            from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+            from dzack_research.preamble.rings import PolynomialRing
+            from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
             from sage.rings.rational_field import QQ as SageQQ
 
-            rational_functions = PolynomialRing(SageQQ, "T").fraction_field()
-            T = rational_functions.gen()
+            rationals = _own_ring(SageQQ)
+            polynomial = PolynomialRing(rationals, "T")
+            from dzack_research.preamble.categories.algebras.algebras import refine_algebra
+            rational_functions = refine_algebra(
+                polynomial.fraction_field(), rationals, ("T",)
+            )
+            T = rational_functions.algebra_generator("T")
             q = int(base.cardinality())
             d = int(self.relative_dimension())
             return 1 / (1 - q**d * T)
@@ -647,11 +665,17 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
             if not bool(base.is_finite()) or not bool(base.is_field()):
                 raise TypeError("the arithmetic zeta function here requires a finite field")
             from sage.misc.misc_c import prod
-            from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+            from dzack_research.preamble.rings import PolynomialRing
+            from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
             from sage.rings.rational_field import QQ as SageQQ
 
-            rational_functions = PolynomialRing(SageQQ, "T").fraction_field()
-            T = rational_functions.gen()
+            rationals = _own_ring(SageQQ)
+            polynomial = PolynomialRing(rationals, "T")
+            from dzack_research.preamble.categories.algebras.algebras import refine_algebra
+            rational_functions = refine_algebra(
+                polynomial.fraction_field(), rationals, ("T",)
+            )
+            T = rational_functions.algebra_generator("T")
             q = int(base.cardinality())
             d = int(self.relative_dimension())
             return prod(1 / (1 - q**i * T) for i in range(d + 1))
@@ -746,14 +770,14 @@ def Spec(ring_or_algebra):
     scheme._preamble_coordinate_algebra = algebra
     engine_identity = _engine_ring(algebra).hom(_engine_ring(algebra))
     scheme._preamble_identity_morphism = refine_scheme_morphism(
-        scheme.Hom(scheme)(engine_identity, check=False), base
+        _native_scheme_homset(scheme, scheme)(engine_identity, check=False), base
     )
     if algebra is base:
         from dzack_research.preamble.categories.rings.ring_foundation import ring_homset
 
         coordinate_identity = ring_homset(base, base).identity()
     else:
-        coordinate_identity = algebra.Hom(algebra).identity()
+        coordinate_identity = algebra.Mor(algebra).identity()
     scheme._preamble_identity_morphism._preamble_coordinate_algebra_morphism = (
         coordinate_identity
     )
@@ -767,7 +791,7 @@ def Spec(ring_or_algebra):
             raise NotImplementedError(
                 "the affine Spec structure morphism currently requires an exact engine realization of the algebra structure map"
             )
-        native = scheme.Hom(base_scheme)(engine_map, check=False)
+        native = _native_scheme_homset(scheme, base_scheme)(engine_map, check=False)
         scheme._preamble_structure_morphism = refine_scheme_morphism(native, base)
         scheme._preamble_structure_morphism._preamble_coordinate_algebra_morphism = (
             algebra.algebra_structure_morphism()
@@ -791,7 +815,7 @@ def affine_spec_morphism(algebra_morphism):
         raise ValueError("affine Spec requires an algebra morphism over one scalar base")
     source_scheme = Spec(target_algebra)
     target_scheme = Spec(source_algebra)
-    native = source_scheme.Hom(target_scheme)(
+    native = _native_scheme_homset(source_scheme, target_scheme)(
         _engine_algebra_morphism(algebra_morphism), check=False
     )
     morphism = refine_scheme_morphism(native, source_algebra.base_ring())
@@ -833,10 +857,10 @@ def AffineSpace(dimension, base_ring, names=None):
         SymmetricAlgebras(base),
     )
     scheme._preamble_identity_morphism = refine_scheme_morphism(
-        scheme.Hom(scheme)(list(engine_coordinate_ring.gens()), check=False), base
+        _native_scheme_homset(scheme, scheme)(list(engine_coordinate_ring.gens()), check=False), base
     )
     scheme._preamble_identity_morphism._preamble_coordinate_algebra_morphism = (
-        scheme.coordinate_algebra().Hom(scheme.coordinate_algebra()).identity()
+        scheme.coordinate_algebra().Mor(scheme.coordinate_algebra()).identity()
     )
     base_scheme = Spec(base)
     engine_map = engine_coordinate_ring.coerce_map_from(_engine_ring(base))
@@ -845,7 +869,7 @@ def AffineSpace(dimension, base_ring, names=None):
             "the affine-space structure morphism requires the scalar base injection"
         )
     scheme._preamble_structure_morphism = refine_scheme_morphism(
-        scheme.Hom(base_scheme)(engine_map, check=False), base
+        _native_scheme_homset(scheme, base_scheme)(engine_map, check=False), base
     )
     scheme._preamble_structure_morphism._preamble_coordinate_algebra_morphism = (
         scheme.coordinate_algebra().algebra_structure_morphism()
@@ -867,7 +891,7 @@ def ProjectiveSpace(dimension, base_ring, names=None):
 
 
 def _product_projection(product, factor, coordinates):
-    native = product.Hom(factor)(list(coordinates), check=False)
+    native = _native_scheme_homset(product, factor)(list(coordinates), check=False)
     projection = categorical_scheme_morphism(native)
     if (
         product in AffineSchemes(product.scheme_base_ring())

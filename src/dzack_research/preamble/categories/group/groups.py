@@ -530,18 +530,33 @@ class OwnedGroup(Parent):
         return self._engine
 
     def _to_engine(self, element):
-        if not isinstance(element, _OwnedGroupElement) or element.parent() is not self:
+        if getattr(element, "parent", lambda: None)() is not self:
             raise TypeError("the backend crossing requires an element of this preamble group")
-        return element._backend()
+        backend = getattr(element, "_backend", None)
+        if not callable(backend):
+            raise TypeError("the preamble group element has no represented backend value")
+        return backend()
 
     def _from_engine(self, element):
         if getattr(element, "parent", lambda: None)() is not self._engine:
             element = self._engine(element)
         return self.element_class(self, element)
 
+    def __call__(self, value):
+        r"""Construct an owned group element without Sage coercion discovery."""
+        return self._element_constructor_(value)
+
     def _element_constructor_(self, value):
-        if isinstance(value, _OwnedGroupElement) and value.parent() is self:
+        parent = getattr(value, "parent", lambda: None)()
+        if parent is self:
             return value
+        if parent is not None and parent in OwnedGroups():
+            to_engine = getattr(parent, "_to_engine", None)
+            if callable(to_engine):
+                try:
+                    return self._from_engine(self._engine(to_engine(value)))
+                except (TypeError, ValueError):
+                    pass
         if isinstance(value, SageObject):
             raise TypeError(
                 "raw backend group elements are not accepted by the public preamble API"
@@ -587,6 +602,10 @@ class _TransportedGroupSubobject(Parent):
 
     def _from_engine(self, element):
         return self._supergroup._from_engine(element)
+
+    def __call__(self, value):
+        r"""Construct a subgroup element without Sage coercion discovery."""
+        return self._element_constructor_(value)
 
     def _element_constructor_(self, value):
         if value not in self._supergroup:
@@ -1023,10 +1042,27 @@ class IndexedFreeGroupHomset(CategoricalHomset):
 class GroupHomomorphism(GroupMorphism_libgap):
     """A group homomorphism represented by Sage's maintained GAP morphism."""
 
+    def __eq__(self, other):
+        if getattr(other, "parent", lambda: None)() is not self.parent():
+            return False
+        return bool(self.parent().morphisms_agree(self, other))
+
+    def __ne__(self, other):
+        return not self == other
+
     def __mul__(self, other):
         if isinstance(other, IndexedFreeGroupHomomorphism):
             return other.postcompose(self)
-        return super().__mul__(other)
+        if not isinstance(other, GroupHomomorphism) or other.codomain() is not self.domain():
+            return NotImplemented
+        source = other.domain()
+        backend_generators = _gap_model(source).GeneratorsOfGroup()
+        return group_homset(source, self.codomain())(
+            tuple(
+                self(other(_element_from_engine(source, generator)))
+                for generator in backend_generators
+            )
+        )
 
     def _call_(self, element):
         image = self.gap().Image(_element_to_engine(self.domain(), element))
@@ -1195,9 +1231,15 @@ class GroupAutomorphismGroups(OwnedCategory):
 
         @cached_method
         def group_generators(self):
-            return finite_ordered_set(
-                self(generator, check=False)
-                for generator in self._libgap_().GeneratorsOfGroup()
+            backend_generators = self._libgap_().GeneratorsOfGroup()
+            positions = Sets.Δ[len(backend_generators) - 1]
+            return finite_ordered_image(
+                positions,
+                lambda position: self(
+                    backend_generators[int(position)],
+                    check=False,
+                ),
+                name=f"Group generators of {self}",
             )
 
         def number_of_group_generators(self):
@@ -1727,6 +1769,10 @@ class AbelianGroupEndomorphismRings(OwnedCategory):
 class _AbelianEndomorphismRingParent(Parent):
     Element = _AbelianEndomorphismElement
 
+    def __call__(self, mapping):
+        r"""Construct an endomorphism without Sage coercion discovery."""
+        return self._element_constructor_(mapping)
+
     def __init__(self, group):
         self._group = group
         self._additive = group.category().is_subcategory(CommutativeAdditiveGroups())
@@ -1752,16 +1798,21 @@ class OwnedAbelianGroups(OwnedCategory):
 
         @cached_method
         def scalar_action(self):
-            from dzack_research.preamble.categories.rings.ring_foundation import OwnedRings, _own_ring
+            from dzack_research.preamble.categories.rings.ring_foundation import (
+                _own_ring,
+                ring_morphism,
+            )
 
+            integers = _own_ring(ZZ)
             endomorphisms = self.endomorphism_ring()
             additive = self.category().is_subcategory(CommutativeAdditiveGroups())
 
             def multiple(exponent, element):
-                return exponent * element if additive else element ** exponent
+                return exponent * element if additive else element ** int(exponent)
 
-            return SetMorphism(
-                _own_ring(ZZ).Hom(endomorphisms),
+            return ring_morphism(
+                integers,
+                endomorphisms,
                 lambda exponent: endomorphisms(
                     lambda element: multiple(exponent, element)
                 ),

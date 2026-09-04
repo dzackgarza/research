@@ -27,6 +27,7 @@ from dzack_research.preamble.categories.algebras.free_algebras import (
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
+    ring_morphism,
     _engine_element,
     _engine_ring,
     _owned_ring,
@@ -279,6 +280,14 @@ def restrict_algebra_scalars(algebra, ring_map):
         restricted._preamble_presentation_relations = selected_relations
         restricted._preamble_presentation_ideal = presentation_ideal
         restricted._preamble_lift_to_presentation = lift_to_presentation
+        from dzack_research.preamble.categories.algebras.free_algebras import (
+            _base_change_commutative_presentation,
+        )
+        restricted._preamble_base_change_selected_presentation = (
+            lambda target_map: _base_change_commutative_presentation(
+                restricted, target_map
+            )
+        )
         placement.extend(
             (
                 FramedAlgebras(base_ring),

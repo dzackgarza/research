@@ -163,10 +163,8 @@ class Connection(Morphism):
         return result
 
     def _check_relations(self) -> None:
-        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-            ModulesWithChosenFinitePresentation,
-            _presentation_rows,
-        )
+        from dzack_research.preamble.categories.modules.pure.modules import ModulesWithChosenFinitePresentation
+        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import _presentation_rows
 
         module = self.module()
         if module not in ModulesWithChosenFinitePresentation(self.algebra()):
@@ -269,15 +267,11 @@ class Connection(Morphism):
         return result
 
     def is_flat(self) -> bool:
-        from dzack_research.preamble.categories.modules.pure.modules import FinitelyGeneratedFreeModules
-        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import ModulesWithChosenFinitePresentation
+        from dzack_research.preamble.categories.modules.pure.modules import ModulesWithChosenFinitePresentation
 
         module = self.module()
         ring = module.base_ring()
-        if (
-            module not in FinitelyGeneratedFreeModules(ring)
-            and module not in ModulesWithChosenFinitePresentation(ring)
-        ):
+        if module not in ModulesWithChosenFinitePresentation(ring):
             raise NotImplementedError(
                 "flatness by generator verification requires a selected finite framing"
             )
@@ -312,10 +306,8 @@ class ConnectionSpace(OwnedHomset):
         ring_map = algebra.algebra_structure_morphism()
         self._restricted_source = restrict_scalars(module, ring_map)
         self._restricted_target = restrict_scalars(self._target_module, ring_map)
-        self._ambient_hom = Modules(algebra.base_ring()).Hom(
-            self._restricted_source,
-            self._restricted_target,
-        )
+        self._ambient_hom = Modules(algebra.base_ring()).Mor(self._restricted_source,
+        self._restricted_target,)
         Homset.__init__(self, module, self._target_module, category=Sets())
         self._inclusion = SetMorphism(
             Sets().hom(self, self._ambient_hom),
@@ -400,15 +392,11 @@ class ConnectionMorphism(ModuleMorphism):
             source=domain_connection.target_module(),
             target=codomain_connection.target_module(),
         )
-        from dzack_research.preamble.categories.modules.pure.modules import FinitelyGeneratedFreeModules
-        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import ModulesWithChosenFinitePresentation
+        from dzack_research.preamble.categories.modules.pure.modules import ModulesWithChosenFinitePresentation
 
         domain = self.domain()
         ring = domain.base_ring()
-        if (
-            domain not in FinitelyGeneratedFreeModules(ring)
-            and domain not in ModulesWithChosenFinitePresentation(ring)
-        ):
+        if domain not in ModulesWithChosenFinitePresentation(ring):
             raise NotImplementedError(
                 "horizontality by generator verification requires a selected finite framing"
             )
@@ -426,13 +414,13 @@ class ConnectionHomset(OwnedHomset):
     def __init__(self, domain, codomain) -> None:
         if domain.base_ring() is not codomain.base_ring():
             raise ValueError("connection morphisms require one coefficient algebra")
-        from dzack_research.preamble.categories.modules.pure.modules import Modules
+        from sage.categories.sets_cat import Sets as SageSets
 
         Homset.__init__(
             self,
             domain,
             codomain,
-            category=Modules(domain.base_ring()),
+            category=SageSets(),
         )
 
     def _element_constructor_(self, images):

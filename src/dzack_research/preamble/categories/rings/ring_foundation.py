@@ -387,17 +387,19 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 return False
             if self in OwnedCommutativeRings():
                 return True
-            labels = getattr(self, "algebra_generating_set", None)
-            generator = getattr(self, "algebra_generator", None)
-            if labels is None or generator is None:
+            from dzack_research.preamble.categories.algebras.algebras import (
+                FramedAlgebras,
+            )
+
+            if self not in FramedAlgebras(self.base_ring()):
                 raise NotImplementedError(
-                    f"{self} supplies no finite algebra generating set from which "
+                    f"{self} has no chosen algebra generating set from which "
                     "centrality can be decided"
                 )
-            labels = labels()
             return all(
-                element * generator(label) == generator(label) * element
-                for label in labels
+                element * self.algebra_generator(label)
+                == self.algebra_generator(label) * element
+                for label in self.algebra_generating_set()
             )
 
         @cached_method
@@ -477,6 +479,14 @@ class OwnedPrincipalIdealDomains(OwnedCategory):
         return [OwnedIntegralDomains(), OwnedNoetherianRings()]
 
 
+def _engine_krull_dimension(ring):
+    engine = _engine_ring(ring)
+    method = getattr(engine, "krull_dimension", None)
+    if method is None:
+        raise NotImplementedError(f"Krull dimension of {ring} has no active backend")
+    return method()
+
+
 class OwnedNoetherianRings(OwnedCategory):
     r"""Noetherian commutative rings."""
 
@@ -488,11 +498,7 @@ class OwnedNoetherianRings(OwnedCategory):
             return True
 
         def krull_dimension(self):
-            engine = _engine_ring(self)
-            method = getattr(engine, "krull_dimension", None)
-            if method is None:
-                raise NotImplementedError(f"Krull dimension of {self} has no active backend")
-            return method()
+            return _engine_krull_dimension(self)
 
 
 class OwnedArtinianRings(OwnedCategory):
@@ -517,16 +523,10 @@ class OwnedLocalRings(OwnedCategory):
             return True
 
         def maximal_ideal(self):
-            ideal = getattr(self, "_preamble_maximal_ideal", None)
-            if ideal is None:
-                raise NotImplementedError(f"the maximal ideal of {self} is not represented")
-            return ideal
+            return self._preamble_maximal_ideal
 
         def residue_field(self):
-            residue = getattr(self, "_preamble_residue_field", None)
-            if residue is None:
-                raise NotImplementedError(f"the residue field of {self} is not represented")
-            return residue
+            return self._preamble_residue_field
 
         def residue_map(self):
             r"""Return the represented local quotient map ``R -> kappa(m)``."""
@@ -555,16 +555,7 @@ class OwnedAdicallyCompleteRings(OwnedCategory):
             return True
 
         def ideal_of_definition(self):
-            ideal = getattr(self, "_preamble_ideal_of_definition", None)
-            if ideal is None:
-                raise NotImplementedError(f"the ideal of definition of {self} is not represented")
-            return ideal
-
-        def completion_source(self):
-            source = getattr(self, "_preamble_completion_source", None)
-            if source is None:
-                raise NotImplementedError(f"{self} is not represented as a completion of a source ring")
-            return source
+            return self._preamble_ideal_of_definition
 
 
 class OwnedCompleteLocalRings(OwnedCategory):
@@ -938,9 +929,9 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
         return self._element_constructor_(value)
 
     def _element_constructor_(self, value):
-        if isinstance(value, self.element_class) and value.parent() is self:
-            return value
         parent = getattr(value, "parent", lambda: None)()
+        if parent is self:
+            return value
         if parent is not None:
             try:
                 if parent in OwnedRings():
@@ -967,6 +958,12 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
 
     def one(self):
         return self._from_engine_element(self._engine.one())
+
+    def multiplicative_generator(self):
+        generator = getattr(self._engine, "multiplicative_generator", None)
+        if generator is None:
+            raise AttributeError(f"{self} has no represented multiplicative generator")
+        return self._from_engine_element(generator())
 
     def an_element(self):
         return self._from_engine_element(self._engine.an_element())
@@ -1097,9 +1094,14 @@ def _engine_ring(ring):
     # ring view, say.  One unwrap would then still hand back an owned parent,
     # which is not an engine object at all, so the descent continues to the
     # Sage parent underneath.
-    while isinstance(ring, _OwnedRingParent):
-        ring = ring._engine
-    return ring
+    while True:
+        if isinstance(ring, _OwnedRingParent):
+            ring = ring._engine
+            continue
+        if isinstance(ring, _PredicateSubringParent):
+            ring = ring._ambient_ring
+            continue
+        return ring
 
 
 def _engine_element(ring, element):
@@ -1113,6 +1115,12 @@ def _engine_element(ring, element):
     parent while changing computational realizations independently.
     """
     owned = _own_ring(ring)
+    if isinstance(owned, _PredicateSubringParent):
+        return _engine_element(owned._ambient_ring, owned(element))
+    if getattr(element, "parent", lambda: None)() is owned:
+        backend = getattr(element, "_backend", None)
+        if callable(backend):
+            return backend()
     converter = getattr(owned, "_engine_element", None)
     if converter is not None:
         return converter(element)

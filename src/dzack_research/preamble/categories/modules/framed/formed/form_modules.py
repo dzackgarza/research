@@ -54,7 +54,72 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 
 
 class FormMorphism(ModuleMorphism):
-    r"""A linear morphism verified to preserve the equipped forms."""
+    r"""A linear morphism verified to preserve the equipped forms exactly."""
+
+    def __init__(self, parent, images) -> None:
+        if isinstance(images, ModuleMorphism):
+            images = lambda element, morphism=images: morphism(element)
+            elementwise = True
+        else:
+            elementwise = False
+        ModuleMorphism.__init__(
+            self,
+            parent,
+            images,
+            elementwise=elementwise,
+            verify_linearity=not elementwise,
+        )
+        source = self.domain()
+        target = self.codomain()
+        generators = tuple(source.module_generators())
+        source_form = source.form()
+        target_form = target.form()
+        if _is_quadratic_form(source_form):
+            if not _is_quadratic_form(target_form):
+                raise TypeError("a quadratic form morphism requires quadratic endpoints")
+            probes = generators + tuple(
+                left + right
+                for index, left in enumerate(generators)
+                for right in generators[index + 1 :]
+            )
+            if any(source.q(element) != target.q(self(element)) for element in probes):
+                raise ValueError("the stated morphism does not preserve the quadratic form")
+        elif _is_bilinear_form(source_form):
+            if not _is_bilinear_form(target_form):
+                raise TypeError("a bilinear form morphism requires bilinear endpoints")
+            if any(
+                source.b(left, right) != target.b(self(left), self(right))
+                for left in generators
+                for right in generators
+            ):
+                raise ValueError("the stated morphism does not preserve the bilinear form")
+        else:
+            raise TypeError("a strict form morphism requires bilinear or quadratic forms")
+
+
+class StrictFormHomset(OwnedHomset):
+    r"""The strict form-preserving Hom set on fixed formed endpoints."""
+
+    Element = FormMorphism
+
+    def __init__(self, domain, codomain) -> None:
+        Homset.__init__(self, domain, codomain, category=SageSets())
+
+    def _element_constructor_(self, images):
+        if isinstance(images, FormMorphism) and images.parent() is self:
+            return images
+        return self.element_class(self, images)
+
+    def identity(self):
+        if self.domain() is not self.codomain():
+            raise ValueError("identity belongs to a strict form endomorphism Hom set")
+        return self(lambda element: element)
+
+
+def strict_form_homset(domain, codomain):
+    if domain.base_ring() != codomain.base_ring():
+        raise ValueError("strict form morphisms require one base ring")
+    return StrictFormHomset(domain, codomain)
 
 
 class FormEmbedding(FormMorphism):
@@ -153,7 +218,9 @@ def _value_from_module_element(formed_module, element):
 
     coefficients = module_coefficients(element, represented)
     ring = formed_module.base_ring()
-    return ring(coefficients.get(0, ring.zero()))
+    labels = represented.module_generating_set()
+    unit_label = labels.unrank(0)
+    return ring(coefficients.get(unit_label, ring.zero()))
 
 
 class FormedModuleMorphism(Morphism):
@@ -656,6 +723,12 @@ class FormModules(OwnedCategoryOverBaseRing):
         def value_module(self):
             return self.form().codomain()
 
+        def Mor(self, codomain, category=None):
+            if category is None and codomain in FormModules(self.base_ring()):
+                return strict_form_homset(self, codomain)
+            from sage.categories.homset import Hom as SageHom
+            return SageHom(self, codomain, category)
+
         def formed_hom(self, module_morphism, value_morphism):
             r"""Construct the general fixed-fiber formed morphism ``(f,h)``."""
             return formed_module_homset(self, module_morphism.codomain())(
@@ -924,12 +997,16 @@ class QuadraticFormModules(OwnedCategoryOverBaseRing):
 
 
 class FinitelyPresentedFormModules(OwnedCategoryOverBaseRing):
+    class ParentMethods:
+        Mor = FormModules.ParentMethods.Mor
+        base_change = FormModules.ParentMethods.base_change
+
     @classmethod
     def _repr_object_names(cls):
         return "finitely presented form modules"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModules
+        from dzack_research.preamble.categories.modules.pure.modules import FinitelyPresentedModules
 
         return [FormModules(self.base_ring()), FinitelyPresentedModules(self.base_ring())]
 
@@ -969,6 +1046,9 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
         return [FormModules(self.base_ring()), FramedFreeModules(self.base_ring())]
 
     class ParentMethods:
+        Mor = FormModules.ParentMethods.Mor
+        base_change = FormModules.ParentMethods.base_change
+
         def subobject_on(self, module_generating_set):
             r"""Return the span equipped with the pulled-back form."""
             from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
@@ -1005,6 +1085,9 @@ class FinitelyGeneratedFreeFormModules(OwnedCategoryOverBaseRing):
         ]
 
     class ParentMethods:
+        Mor = FormModules.ParentMethods.Mor
+        base_change = FormModules.ParentMethods.base_change
+
         @cached_method
         def dual_module(self):
             from dzack_research.preamble.categories.modules.framed.framed_free_modules import BasedFreeModule
@@ -1069,11 +1152,9 @@ def FormModule(form):
     objects.
     """
     from dzack_research.preamble.categories.modules.pure.modules import FinitelyGeneratedFreeModules
-    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-        FinitelyPresentedModule,
-        FinitelyPresentedModules,
-        ModulesWithChosenFinitePresentation,
-    )
+    from dzack_research.preamble.categories.modules.pure.modules import FinitelyPresentedModules
+    from dzack_research.preamble.categories.modules.pure.modules import ModulesWithChosenFinitePresentation
+    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModule
     from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
     from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
@@ -1089,10 +1170,7 @@ def FormModule(form):
     assert cardinal(labels.cardinality()).is_finite()
     if module in FramedFreeModules(base_ring):
         formed = FreshFreeModuleOn(base_ring, labels)
-    elif (
-        module in FinitelyPresentedModules(base_ring)
-        and module in ModulesWithChosenFinitePresentation(base_ring)
-    ):
+    elif module in ModulesWithChosenFinitePresentation(base_ring):
         formed = FinitelyPresentedModule(module.presentation())
     else:
         raise TypeError(

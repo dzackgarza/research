@@ -232,11 +232,15 @@ class ModuleMorphism(Morphism):
             from sage.rings.infinity import Infinity
 
             assert labels.cardinality() != Infinity
-            missing = [label for label in labels if label not in images]
+            normalized_images = {}
+            for label, value in images.items():
+                normalized_label = labels(label)
+                normalized_images[normalized_label] = value
+            missing = [label for label in labels if label not in normalized_images]
             if missing:
                 raise ValueError(f"generator assignment omits {missing}")
-            self._generator_image = images.__getitem__
-            self._generator_morphism = SetMorphism(set_homset, images.__getitem__)
+            self._generator_image = normalized_images.__getitem__
+            self._generator_morphism = set_homset(normalized_images.__getitem__)
         elif isinstance(images, (tuple, list)):
             from sage.rings.infinity import Infinity
 
@@ -247,10 +251,10 @@ class ModuleMorphism(Morphism):
                 raise ValueError("the number of generator images must equal the framing size")
             assignment = dict(zip(labels_tuple, values, strict=True))
             self._generator_image = assignment.__getitem__
-            self._generator_morphism = SetMorphism(set_homset, assignment.__getitem__)
+            self._generator_morphism = set_homset(assignment.__getitem__)
         elif callable(images):
             self._generator_image = images
-            self._generator_morphism = SetMorphism(set_homset, images)
+            self._generator_morphism = set_homset(images)
         else:
             raise TypeError("a module morphism is specified on the domain framing")
         self._check_selected_domain_relations()
@@ -312,11 +316,17 @@ class ModuleMorphism(Morphism):
         ring = domain.base_ring()
         from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
 
-        if not domain.is_framed():
+        generating_set = getattr(domain, "module_generating_set", None)
+        if not callable(generating_set):
             return None
         try:
-            labels = tuple(domain.module_generating_set())
-        except (AttributeError, TypeError):
+            label_set = generating_set()
+            from dzack_research.preamble.categories.sets.cardinals import cardinal
+
+            if not cardinal(label_set.cardinality()).is_finite():
+                return None
+            labels = tuple(label_set)
+        except (AttributeError, NotImplementedError, TypeError, ValueError):
             return None
         engine = _engine_ring(ring)
         try:
@@ -467,35 +477,7 @@ class ModuleMorphism(Morphism):
         return self + (-other)
 
     def morphisms_agree(self, other) -> bool:
-        r"""Decide equality from this source module's selected finite framing."""
-        if not isinstance(other, ModuleMorphism):
-            return False
-        if self.domain() is not other.domain() or self.codomain() is not other.codomain():
-            return False
-        if self is other:
-            return True
-        from dzack_research.preamble.categories.sets.cardinals import cardinal
-
-        domain = self.domain()
-        generating_set = getattr(domain, "module_generating_set", None)
-        if not callable(generating_set):
-            raise NotImplementedError(
-                "equality of morphisms without a selected module framing is not decidable"
-            )
-        labels = generating_set()
-        try:
-            finite = cardinal(labels.cardinality()).is_finite()
-        except (AttributeError, NotImplementedError, TypeError, ValueError):
-            finite = False
-        if not finite:
-            raise NotImplementedError(
-                "equality of morphisms from an infinite framing is not decidable"
-            )
-        return all(
-            self(domain.module_generator(label))
-            == other(domain.module_generator(label))
-            for label in labels
-        )
+        return self.parent().morphisms_agree(self, other)
 
     def _richcmp_(self, other, op):
         from sage.structure.richcmp import op_EQ, op_NE
@@ -574,7 +556,9 @@ class ModuleMorphism(Morphism):
                 "a coordinate matrix requires finitely generated framed free endpoints"
             )
         homset = module_homset(self.domain(), self.codomain())
-        if not callable(getattr(homset, "matrix_shape", None)):
+        from dzack_research.preamble.categories.modules.pure.modules import MatrixSpaces
+
+        if homset not in MatrixSpaces(ring):
             raise ArithmeticError("the full finite-free Hom did not acquire matrix structure")
         return self if self.parent() is homset else homset(self)
 
@@ -651,10 +635,12 @@ class ModuleMorphism(Morphism):
             raise ValueError("a residue morphism requires one common base ring")
         if ring not in LocalRings():
             raise TypeError("reduction modulo the maximal ideal requires a represented local ring")
-        if not (
-            bool(getattr(self.domain(), "is_finitely_generated", lambda: False)())
-            and bool(getattr(self.codomain(), "is_finitely_generated", lambda: False)())
-        ):
+        from dzack_research.preamble.categories.modules.pure.modules import (
+            FinitelyGeneratedModules,
+        )
+
+        finite_modules = FinitelyGeneratedModules(ring)
+        if self.domain() not in finite_modules or self.codomain() not in finite_modules:
             raise TypeError(
                 "the active Nakayama interface requires finitely generated source and target"
             )
@@ -745,10 +731,13 @@ class ModuleMorphism(Morphism):
         r"""Return ``im(self)^perp`` inside the formed codomain."""
         codomain = self.codomain()
         ring = codomain.base_ring()
-        if not callable(getattr(codomain, "b", None)):
+        from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
+            FormModules,
+        )
+
+        if codomain not in FormModules(ring):
             raise TypeError("orthogonal complement requires a formed codomain")
-        value_module = getattr(codomain, "value_module", None)
-        if value_module is not None and value_module() is not ring:
+        if codomain.value_module() is not ring:
             raise TypeError("this orthogonal-complement construction requires a scalar-valued form")
 
         from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
@@ -1008,10 +997,25 @@ class _ModuleHomsetCommonMethods:
         return self(morphism)(source_element)
 
     def morphisms_agree(self, left, right) -> bool:
-        r"""Decide equality through the module Hom's selected framing data."""
+        r"""Decide equality from the source's chosen finite presentation."""
         if left.parent() is not self or right.parent() is not self:
             return False
-        return bool(left == right)
+        if left is right:
+            return True
+        from dzack_research.preamble.categories.modules.pure.modules import (
+            ModulesWithChosenFinitePresentation,
+        )
+
+        domain = self.domain()
+        if domain not in ModulesWithChosenFinitePresentation(self.base_ring()):
+            raise NotImplementedError(
+                "module-morphism equality is not decidable without a chosen finite presentation of the source"
+            )
+        return all(
+            left(domain.module_generator(label))
+            == right(domain.module_generator(label))
+            for label in domain.module_generating_set()
+        )
 
     def as_morphism(self, element):
         r"""Compatibility spelling: Hom elements already are morphisms."""
@@ -1030,24 +1034,6 @@ class _ModuleHomsetCommonMethods:
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError("identity is defined on an endomorphism homset")
-        if not callable(getattr(self.domain(), "module_generating_set", None)):
-            return self.elementwise(
-                lambda element: element,
-                verify_linearity=False,
-            )
-        labels = self.domain().module_generating_set()
-        try:
-            from dzack_research.preamble.categories.sets.cardinals import cardinal
-            finite = cardinal(labels.cardinality()).is_finite()
-        except AttributeError:
-            finite = False
-        if finite:
-            return self(
-                {
-                    label: self.domain().module_generator(label)
-                    for label in labels
-                }
-            )
         return self.elementwise(
             lambda element: element,
             verify_linearity=False,

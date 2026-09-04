@@ -158,11 +158,17 @@ class FiniteOrderedSet(OrderedEnumeratedSet):
     def __eq__(self, other) -> bool:
         if self is other:
             return True
-        if not isinstance(other, FiniteOrderedSet):
+        try:
+            if int(self.cardinality()) != int(other.cardinality()):
+                return False
+        except (AttributeError, TypeError, ValueError):
             return False
-        if self.cardinality() != other.cardinality():
+        if isinstance(other, FiniteOrderedSet):
+            return all(left == right for left, right in zip(self, other, strict=True))
+        try:
+            return all(element in other for element in self)
+        except (TypeError, ValueError):
             return False
-        return all(left == right for left, right in zip(self, other, strict=True))
 
     def __ne__(self, other) -> bool:
         return not self == other

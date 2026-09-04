@@ -282,9 +282,7 @@ class OrdersWithChosenIntegralBasis(Category):
 
     def super_categories(self):
         from dzack_research.preamble.categories.algebras.algebras import Algebras
-        from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-            FinitelyGeneratedFreeModules,
-        )
+        from dzack_research.preamble.categories.modules.pure.modules import FinitelyGeneratedFreeModules
         from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
             FreeModuleBaseRings,
         )

@@ -9,12 +9,8 @@ from dzack_research.preamble.categories.abstract_categories.constructions import
     Kernel,
 )
 from dzack_research.preamble.categories.modules.pure.modules import biproduct_morphism
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-    FinitelyGeneratedFreeModules,
-)
-from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-    FinitelyPresentedModules,
-)
+from dzack_research.preamble.categories.modules.pure.modules import FinitelyGeneratedFreeModules
+from dzack_research.preamble.categories.modules.pure.modules import FinitelyPresentedModules
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
     module_homset,

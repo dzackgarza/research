@@ -181,21 +181,51 @@ class _SparseFreeModuleParent(Parent):
             raise ValueError(f"{label!r} is not a module-generator label")
         return self.element_class(self, {labels(label): self.base_ring().one()})
 
+    def __call__(self, value):
+        r"""Construct a free-module element through the owned coordinate syntax."""
+        return self._element_constructor_(value)
+
     def _element_constructor_(self, value):
         if isinstance(value, _SparseFreeModuleElement) and value.parent() is self:
             return value
         if isinstance(value, dict):
-            return self.element_class(self, value)
-        if isinstance(value, (tuple, list)):
             labels = self.module_generating_set()
+            ring = self.base_ring()
+            coefficients = {}
+            for label, coefficient in value.items():
+                if label not in labels:
+                    raise ValueError(f"{label!r} is not a module-generator label")
+                selected_label = labels(label) if callable(labels) else label
+                coefficient = ring(coefficient)
+                coefficients[selected_label] = (
+                    coefficients.get(selected_label, ring.zero()) + coefficient
+                )
+            return self.element_class(self, coefficients)
+        labels = self.module_generating_set()
+        from dzack_research.preamble.categories.sets.cardinals import cardinal
+
+        if cardinal(labels.cardinality()).is_finite() and int(cardinal(labels.cardinality()).finite_value()) == 1:
+            try:
+                scalar = self.base_ring()(value)
+            except (TypeError, ValueError):
+                pass
+            else:
+                return self.element_class(
+                    self,
+                    {labels.unrank(0): scalar} if scalar != self.base_ring().zero() else {},
+                )
+        if isinstance(value, (tuple, list)):
             if not hasattr(labels, "unrank"):
                 raise TypeError(
                     "coordinate sequence syntax requires an ordered enumerated framing"
                 )
-            from dzack_research.preamble.categories.sets.cardinals import cardinal
-
             cardinality = cardinal(labels.cardinality())
-            if cardinality.is_finite() and len(value) != int(cardinality.finite_value()):
+            if not cardinality.is_finite():
+                raise TypeError(
+                    "coordinate sequence syntax requires a finite framing; "
+                    "use finitely supported label-keyed coordinates"
+                )
+            if len(value) != int(cardinality.finite_value()):
                 raise ValueError("coordinate tuple has the wrong length")
             coefficients = {}
             for position, coefficient in enumerate(value):
@@ -261,6 +291,14 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
         return [FreeModules(self.base_ring()), FramedModules(self.base_ring())]
 
     class ParentMethods:
+        def _fresh_free_module_on(self, labels):
+            constructor = self.__dict__.get("_preamble_free_module_constructor")
+            if constructor is None:
+                raise NotImplementedError(
+                    "this free module has no selected fresh-parent constructor"
+                )
+            return constructor(labels)
+
         def _represented_cokernel_of_morphism(self, morphism):
             if morphism.codomain() is not self:
                 return NotImplemented
@@ -666,7 +704,7 @@ class FreeModuleGeneratorSet(Parent):
 
 def _module_generating_set(labels):
     if isinstance(labels, (int, Integer)):
-        return finite_ordered_set(range(int(labels)))
+        return Sets.Δ[int(labels) - 1]
     if isinstance(labels, (tuple, list, range)):
         return finite_ordered_set(labels)
     return labels
@@ -677,7 +715,7 @@ def _owned_finite_free_module(ring, rank):
     r"""Return the owned rank-``rank`` free module over ``ring``."""
     return _SparseFreeModuleParent(
         ring,
-        finite_ordered_set(range(int(rank))),
+        Sets.Δ[int(rank) - 1],
     )
 
 
@@ -714,7 +752,7 @@ def MatrixSpace(base_ring, nrows, ncols=None):
     def dimension(value):
         if isinstance(value, int):
             result = value
-        elif getattr(value, "parent", lambda: None)() is integers:
+        elif value in integers:
             result = int(value)
         else:
             raise TypeError("a matrix dimension is a nonnegative preamble integer")

@@ -265,6 +265,9 @@ class FiniteGaloisQuotient(Parent):
     def automorphisms(self) -> tuple[ExactFieldMorphism, ...]:
         return self._automorphisms
 
+    def __call__(self, datum):
+        return self._element_constructor_(datum)
+
     def _element_constructor_(self, datum):
         if isinstance(datum, FiniteGaloisAutomorphism):
             if datum.parent() is self:

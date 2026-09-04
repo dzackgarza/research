@@ -205,12 +205,10 @@ class Algebras(OwnedCategoryOverBaseRing):
                 )
             )
 
-        def Hom(self, codomain, category=None):
+        def Mor(self, codomain, category=None):
             algebras = Algebras(self.base_ring())
-            if category is None or (
-                hasattr(category, "is_subcategory") and category.is_subcategory(algebras)
-            ):
-                return algebras.Hom(self, codomain)
+            if category is None or category.is_subcategory(algebras):
+                return algebras.Mor(self, codomain)
             from sage.categories.homset import Hom as SageHom
             return SageHom(self, codomain, category)
 
@@ -614,29 +612,17 @@ class CommutativeAlgebraPushouts(OwnedCategoryOverBaseRing):
                     for label in right_factor.algebra_generating_set()
                 },
             }
-            return self.Hom(target)(images)
+            return self.Mor(target)(images)
 
 
 def algebra_morphisms_agree(left, right) -> bool:
-    r"""Decide equality of represented algebra maps on selected generators."""
+    r"""Decide equality through the canonical algebra Hom parent."""
     if left.domain() is not right.domain() or left.codomain() is not right.codomain():
         return False
-    if left is right:
-        return True
-    domain = left.domain()
-    generating_set = getattr(domain, "algebra_generating_set", None)
-    if generating_set is None:
-        left_engine = getattr(left, "_engine_morphism_crossing", None)
-        right_engine = getattr(right, "_engine_morphism_crossing", None)
-        if callable(left_engine) and callable(right_engine):
-            return bool(left_engine() == right_engine())
-        raise NotImplementedError(
-            f"equality of algebra morphisms out of {domain} has no selected generator family"
-        )
-    return all(
-        left(domain.algebra_generator(label)) == right(domain.algebra_generator(label))
-        for label in generating_set()
-    )
+    if left.parent() is not right.parent():
+        return False
+    return left.parent().morphisms_agree(left, right)
+
 
 
 class AlgebraMorphism(Morphism):
@@ -797,7 +783,7 @@ class AlgebraMorphism(Morphism):
         )
 
     def morphisms_agree(self, other) -> bool:
-        return algebra_morphisms_agree(self, other)
+        return self.parent().morphisms_agree(self, other)
 
     def _richcmp_(self, other, op):
         from sage.structure.richcmp import op_EQ, op_NE
@@ -904,7 +890,7 @@ class PresentedAlgebraMorphism(Morphism):
         return self._call_(element)
 
     def morphisms_agree(self, other) -> bool:
-        return algebra_morphisms_agree(self, other)
+        return self.parent().morphisms_agree(self, other)
 
     def __mul__(self, other):
         if other.codomain() is not self.domain():
@@ -923,7 +909,20 @@ class _AlgebraHomsetCommonMethods:
     r"""Shared equality protocol for represented algebra Hom parents."""
 
     def morphisms_agree(self, left, right) -> bool:
-        return algebra_morphisms_agree(left, right)
+        if left.parent() is not self or right.parent() is not self:
+            return False
+        if left is right:
+            return True
+        domain = self.domain()
+        if domain not in FramedAlgebras(domain.base_ring()):
+            raise NotImplementedError(
+                "algebra-morphism equality requires a chosen algebra generating set"
+            )
+        return all(
+            left(domain.algebra_generator(label))
+            == right(domain.algebra_generator(label))
+            for label in domain.algebra_generating_set()
+        )
 
 
 class PresentedAlgebraHomset(_AlgebraHomsetCommonMethods, CategoricalHomset):
@@ -1133,6 +1132,10 @@ def refine_algebra(algebra, base_ring, labels=None, *categories):
     placement = [Algebras(base), OwnedAlgebras(base)]
     if _engine_ring(algebra) in SageCommutativeAlgebras(_engine_ring(base)):
         placement.append(CommutativeAlgebras(base))
+        from dzack_research.preamble.categories.rings.commutative_algebra import (
+            CommutativeRingConstructions,
+        )
+        placement.append(CommutativeRingConstructions())
     if labels is not None:
         placement.append(FramedAlgebras(base))
     placement.extend(categories)
@@ -1353,7 +1356,7 @@ def _engine_algebra_morphism_from_generator_images(
         return _engine_element(codomain, target_structure(owned_scalar))
 
     base_map = SetMorphism(
-        engine_base.Mor(engine_codomain),
+        engine_base.Hom(engine_codomain),
         engine_base_image,
     )
     engine_generator_images = {

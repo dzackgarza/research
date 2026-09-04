@@ -12,9 +12,7 @@ from dzack_research.preamble.categories.modules.framed.formed.form_modules impor
     _value_as_module_element,
     formed_module_homset,
 )
-from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-    FinitelyPresentedModules,
-)
+from dzack_research.preamble.categories.modules.pure.modules import FinitelyPresentedModules
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
     module_homset,

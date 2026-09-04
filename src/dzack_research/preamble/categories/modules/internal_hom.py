@@ -132,9 +132,10 @@ def InternalHom(source, target):
     from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
         BasedFreeModule,
     )
+    from dzack_research.preamble.categories.modules.pure.modules import ModulesWithChosenFinitePresentation
     from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
         FinitelyPresentedModule,
-        ModulesWithChosenFinitePresentation,
+        _SelectedFinitePresentationModules,
         _presentation_from_relation_rows,
         _presentation_matrix,
     )
@@ -178,8 +179,8 @@ def InternalHom(source, target):
         relation_assignments,
     )(relation_image)
     if (
-        generator_assignments in ModulesWithChosenFinitePresentation(ring)
-        and relation_assignments in ModulesWithChosenFinitePresentation(ring)
+        generator_assignments in _SelectedFinitePresentationModules(ring)
+        and relation_assignments in _SelectedFinitePresentationModules(ring)
         and generator_assignments._smith_engine() is not None
         and relation_assignments._smith_engine() is not None
     ):
@@ -228,7 +229,7 @@ def InternalHom(source, target):
         homset,
         [
             InternalHomModules(ring),
-            ModulesWithChosenFinitePresentation(ring),
+            _SelectedFinitePresentationModules(ring),
         ],
     )
 

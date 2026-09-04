@@ -143,6 +143,17 @@ class _Aleph:
         return "ℵ"
 
 
+class OwnedSetMorphism(SetMorphism):
+    r"""A set map whose composition remains in the canonical owned Set Hom."""
+
+    def __mul__(self, other):
+        if not isinstance(other, SetMorphism) or other.codomain() is not self.domain():
+            return NotImplemented
+        return Sets().hom(other.domain(), self.codomain())(
+            lambda element: self(other(element))
+        )
+
+
 class SetHomset(OwnedHomset):
     r"""The owned set of functions ``X -> Y`` between represented sets.
 
@@ -162,12 +173,27 @@ class SetHomset(OwnedHomset):
             datum = datum._call_
         if not callable(datum):
             raise TypeError("a set morphism is supplied by a callable")
-        return SetMorphism(self, datum)
+        return OwnedSetMorphism(self, datum)
 
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError("identity is defined only for equal set endpoints")
-        return SetMorphism(self, lambda element: element)
+        return OwnedSetMorphism(self, lambda element: element)
+
+    def identity_at(self, obj):
+        return Sets().hom(obj, obj).identity()
+
+    def morphisms_agree(self, left, right) -> bool:
+        if left.parent() is not self or right.parent() is not self:
+            return False
+        if left is right:
+            return True
+        domain = self.domain()
+        if domain not in FiniteSets() or domain not in EnumeratedSets():
+            raise NotImplementedError(
+                "extensional equality of set maps is represented here for finite enumerated domains"
+            )
+        return all(left(element) == right(element) for element in domain)
 
     def _repr_(self):
         return f"Hom_Set({self.domain()}, {self.codomain()})"
@@ -311,10 +337,6 @@ class Sets(OwnedCategory):
             global constructor.  The index set chosen here is `Sets.Δ[1]`; when
             the index set is part of the mathematics, name it and use
             `Sets().product(family)` (`CON-14`).
-
-            There is no `X * Y` spelling: `*` on a parent is a C-level slot on
-            Sage's `Parent`, so a category method cannot take it.  `X ** n`
-            below is unobstructed and is the operator form for a power.
             """
             from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 

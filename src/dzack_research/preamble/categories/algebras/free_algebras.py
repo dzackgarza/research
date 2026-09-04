@@ -331,11 +331,11 @@ def FinitelyPresentedAlgebra(presentation_ring, relations):
         modulus = quotient_engine.modulus()
         degree = int(modulus.degree())
         if degree > 0:
-            from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+            from dzack_research.preamble.categories.modules.pure.modules import (
                 FinitelyGeneratedFreeModules,
             )
 
-            module_labels = finite_ordered_set(range(degree))
+            module_labels = Sets.Δ[degree - 1]
             quotient_generator = presented._from_engine_element(quotient_engine.gen())
             presented._preamble_base_ring = base
             presented._preamble_module_generating_set = module_labels

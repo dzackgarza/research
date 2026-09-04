@@ -25,9 +25,7 @@ class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
         return "Kähler differential modules"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-            FinitelyPresentedModules,
-        )
+        from dzack_research.preamble.categories.modules.pure.modules import FinitelyPresentedModules
         from dzack_research.preamble.categories.modules.pure.modules import (
             FramedModules,
         )
@@ -71,9 +69,7 @@ class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
             from dzack_research.preamble.categories.algebras.derivations import Derivations
             from dzack_research.preamble.categories.modules.internal_hom import InternalHom
             from dzack_research.preamble.categories.modules.pure.modules import Modules
-            from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-                ModulesWithChosenFinitePresentation,
-            )
+            from dzack_research.preamble.categories.modules.pure.modules import ModulesWithChosenFinitePresentation
             from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
                 module_homset,
             )

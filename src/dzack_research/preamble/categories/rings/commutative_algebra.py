@@ -65,6 +65,22 @@ class CommutativeRingConstructions(Category):
             return self.as_algebra_over(_own_ring(SageZZ))
 
         def ideal(self, *generators):
+            if self in PrimeLocalizations():
+                normalized = tuple(self(generator) for generator in generators)
+                source = self.localization_source()
+                fraction_engine = _engine_ring(self.fraction_field())
+                numerators = tuple(
+                    source._from_engine_element(
+                        _engine_ring(source)(
+                            fraction_engine(_engine_element(self, generator)).numerator()
+                        )
+                    )
+                    for generator in normalized
+                )
+                source_ideal = source.ideal(*numerators)
+                return LocalizedMaximalIdeal(
+                    self, normalized, source_ideal=source_ideal
+                )
             from dzack_research.preamble.categories.rings.commutative_ideals import (
                 CommutativeIdeal,
             )
@@ -283,7 +299,7 @@ class DistinguishedOpenSubobject(SetInclusion):
 
         domain = ConditionSet(
             spectrum,
-            lambda point: _engine_ring(spectrum.ring())(self.function())
+            lambda point: _engine_element(spectrum.ring(), self.function())
             not in _engine_ideal(spectrum.ring(), point.ideal()),
         )
         SetInclusion.__init__(self, domain, spectrum)
@@ -297,7 +313,7 @@ class DistinguishedOpenSubobject(SetInclusion):
         except (TypeError, ValueError):
             return False
         ring = self.codomain().ring()
-        return _engine_ring(ring)(self.function()) not in _engine_ideal(ring, point.ideal())
+        return _engine_element(ring, self.function()) not in _engine_ideal(ring, point.ideal())
 
     def coordinate_ring(self):
         return self.codomain().ring().localization(self.function())
@@ -976,6 +992,9 @@ class AdicCompletions(Category):
         return [OwnedAdicallyCompleteRings()]
 
     class ParentMethods:
+        def completion_source(self):
+            return self._preamble_completion_source
+
         def completion_map(self):
             return self._preamble_completion_map
 
@@ -999,6 +1018,24 @@ class GeneratedIdealView(SageObject):
 
     def source_ideal(self):
         return self._source_ideal
+
+    def __eq__(self, other) -> bool:
+        if self is other:
+            return True
+        if not isinstance(other, GeneratedIdealView) or other.ring() is not self.ring():
+            return False
+        if self.source_ideal() is not None and other.source_ideal() is not None:
+            source = getattr(self.ring(), "localization_source", lambda: None)()
+            if source is not None:
+                return bool(
+                    _engine_ideal(source, self.source_ideal())
+                    == _engine_ideal(source, other.source_ideal())
+                )
+            return bool(self.source_ideal() == other.source_ideal())
+        return self.ideal_generators() == other.ideal_generators()
+
+    def __ne__(self, other) -> bool:
+        return not self == other
 
     def _repr_(self):
         return f"Ideal ({', '.join(map(str, self.ideal_generators()))}) of {self.ring()}"
@@ -1485,6 +1522,7 @@ def Zp(*args, **kwargs):
         [
             OwnedNoetherianRings(),
             OwnedCompleteLocalRings(),
+            AdicCompletions(),
             CommutativeRingConstructions(),
         ],
     )
@@ -1496,6 +1534,10 @@ def Zp(*args, **kwargs):
     )
     result._preamble_residue_field = _own_ring(SageZZ.residue_field(prime))
     result._preamble_completion_source = _own_ring(SageZZ)
+    result._preamble_completion_map = _canonical_map(
+        result._preamble_completion_source,
+        result,
+    )
     return result
 
 

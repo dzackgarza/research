@@ -1,11 +1,9 @@
-r"""The tensor--internal-Hom adjunction for finitely presented modules."""
+r"""The tensor--internal-Hom adjunction on modules with chosen finite presentations."""
 
 from sage.misc.cachefunc import cached_function
 
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
-from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-    FinitelyPresentedModules,
-)
+from dzack_research.preamble.categories.modules.pure.modules import ModulesWithChosenFinitePresentation
 from dzack_research.preamble.categories.modules.internal_hom import (
     InternalHom,
     internal_hom_morphism,
@@ -20,14 +18,14 @@ from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
 
 
 class TensorByFunctor(Functor):
-    r"""The endofunctor ``- tensor_R M`` on finitely presented modules."""
+    r"""The endofunctor ``- tensor_R M`` on chosen finite presentations."""
 
     def __init__(self, fixed_module) -> None:
         self._fixed_module = fixed_module
         ring = _owned_ring(fixed_module.base_ring())
-        category = FinitelyPresentedModules(ring)
+        category = ModulesWithChosenFinitePresentation(ring)
         if fixed_module not in category:
-            raise TypeError("the fixed tensor factor must be finitely presented")
+            raise TypeError("the fixed tensor factor must carry a chosen finite presentation")
         super().__init__(category, category)
 
     def fixed_module(self):
@@ -57,9 +55,9 @@ class InternalHomFromFunctor(Functor):
     def __init__(self, fixed_source) -> None:
         self._fixed_source = fixed_source
         ring = _owned_ring(fixed_source.base_ring())
-        category = FinitelyPresentedModules(ring)
+        category = ModulesWithChosenFinitePresentation(ring)
         if fixed_source not in category:
-            raise TypeError("the fixed internal-Hom source must be finitely presented")
+            raise TypeError("the fixed internal-Hom source must carry a chosen finite presentation")
         super().__init__(category, category)
 
     def fixed_source(self):

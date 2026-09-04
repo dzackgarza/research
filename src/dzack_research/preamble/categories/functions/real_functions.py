@@ -504,6 +504,10 @@ class _FunctionSpace(UniqueRepresentation, Parent):
         self._indeterminate = SR.var("x") if indeterminate is None else SR(indeterminate)
         Parent.__init__(self, base=RR, category=category)
 
+    def __call__(self, value):
+        r"""Construct a represented function without Sage coercion discovery."""
+        return self._element_constructor_(value)
+
     def domain(self):
         return self._map_domain
 

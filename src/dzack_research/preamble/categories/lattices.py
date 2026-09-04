@@ -98,7 +98,7 @@ def register_indecomposable(name, lattice):
 
 def indecomposable_name(lattice):
     r"""Return the registered exact or scalar-twist name, if one exists."""
-    gram = lattice.gram_tensor().change_ring(SageZZ)
+    gram = lattice.gram_tensor().change_ring(_own_ring(SageZZ))
     exact = _INDECOMPOSABLE_NAMES.get(_gram_key(gram))
     if exact is not None:
         return exact
@@ -109,12 +109,14 @@ def indecomposable_name(lattice):
         from dzack_research.preamble.tensors.tensor import tensor
 
         rank = gram.tensor_shape()[0]
+        integers = gram.base_ring()
+        divisor = int(scale)
         untwisted = tensor(
-            SageZZ,
+            integers,
             (),
             (rank, rank),
             [
-                [SageZZ(gram[i, j] / scale) for j in range(rank)]
+                [integers(int(gram[i, j]) // divisor) for j in range(rank)]
                 for i in range(rank)
             ],
         )
@@ -703,11 +705,9 @@ class Lattices(OwnedCategoryOverBaseRing):
         def equip_form_morphism(self):
             return self.forget_form_morphism()
 
-        def Hom(self, codomain, category=None):
+        def Mor(self, codomain, category=None):
             lattices = Lattices(self.base_ring())
-            if category is None or (
-                hasattr(category, "is_subcategory") and category.is_subcategory(lattices)
-            ):
+            if category is None or category.is_subcategory(lattices):
                 from dzack_research.preamble.categories.lattice_morphisms import lattice_homset
                 return lattice_homset(self, codomain)
             from sage.categories.homset import Hom as SageHom
@@ -841,14 +841,22 @@ class Lattices(OwnedCategoryOverBaseRing):
                 "g preserves the positive cone",
             )
 
+        @cached_method
         def biproduct_factors(self):
-            r"""Return the two actual factors when this lattice was built by ``+``."""
+            r"""Return the indexed family of factors when this lattice was built by ``+``."""
             from dzack_research.preamble.categories._lattice import _BiproductGram
 
             gram = self.gram_tensor()
             if not isinstance(gram, _BiproductGram):
                 raise ValueError("this lattice has no represented biproduct factors")
-            return (gram._left, gram._right)
+            from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+            from dzack_research.preamble.categories.sets.set_categories import Sets
+
+            return indexed_family(
+                Sets.Δ[1],
+                lambda index: gram._left if int(index) == 0 else gram._right,
+                name=f"Biproduct factors of {self}",
+            )
 
         @cached_method
         def decomposition(self):
@@ -1002,13 +1010,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                 (1, 0)
             """
             keys = self.module_generating_set()
-            positions = getattr(self, "_index_positions", None)
-            if positions is not None:
-                try:
-                    positions[index]
-                except KeyError, TypeError:
-                    index = keys.unrank(int(index))
-            elif index not in keys:
+            if index not in keys:
                 index = keys.unrank(int(index))
             return self.element_class(self, self._module.module_generator(index))
 
@@ -2411,9 +2413,7 @@ class FiniteRankLattices(OwnedCategoryOverBaseRing):
         return "finite-rank lattices"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-            FinitelyGeneratedFreeModules,
-        )
+        from dzack_research.preamble.categories.modules.pure.modules import FinitelyGeneratedFreeModules
 
         return [
             Lattices(self.base_ring()),

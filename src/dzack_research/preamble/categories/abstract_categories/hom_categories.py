@@ -209,6 +209,9 @@ class CategoricalHomset(OwnedHomset, Category):
     def hom_family(self):
         return self._family
 
+    def identity_at(self, obj):
+        return self.hom_family().Of(obj, obj).identity()
+
     def attach_end_family(self, family) -> None:
         if self.domain_object() is not self.codomain_object():
             raise ValueError("only an endomorphism Hom category can carry an End-family role")
@@ -415,9 +418,13 @@ class FixedHomCategory(Category):
 
     def objects(self):
         arrows = self.arrow_set()
-        if not hasattr(arrows, "__iter__"):
-            raise TypeError("this Hom category has no chosen enumeration of its arrows")
-        return tuple(self(arrow) for arrow in arrows)
+        from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+
+        return indexed_family(
+            arrows,
+            self,
+            name=f"Arrow objects of {self}",
+        )
 
     def hom(self, domain, codomain):
         if not isinstance(domain, HomArrowObject):
@@ -835,9 +842,7 @@ class EndCategoryOf(HomCategoryOf):
         if cached is not None:
             return cached
         endomorphisms = category_packet(self.base_category()).Homs().Of(obj, obj)
-        attach = getattr(endomorphisms, "attach_end_family", None)
-        if attach is not None:
-            attach(self)
+        endomorphisms.attach_end_family(self)
         return self._remember_between(obj, obj, endomorphisms)
 
     def Between(self, domain, codomain):
@@ -937,10 +942,7 @@ class AutCategoryOf(IsoCategoryOf):
         if cached is not None:
             return cached
         automorphisms = category_packet(self.base_category()).Isos().Of(obj, obj)
-        attach = getattr(automorphisms, "attach_aut_family", None)
-        if attach is None:
-            raise TypeError("the represented equal-endpoint Iso object cannot carry an Aut-family role")
-        attach(self)
+        automorphisms.attach_aut_family(self)
         return self._remember_between(obj, obj, automorphisms)
 
     def Between(self, domain, codomain):

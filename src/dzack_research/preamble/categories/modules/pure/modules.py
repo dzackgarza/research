@@ -67,11 +67,19 @@ class ModuleHomCategoryConstruction(HomCategoryConstruction):
     def fixed_category_class_for(self, domain, codomain):
         from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
             ModuleHomset,
+            TensorProductModuleHomset,
         )
 
-        specialized = getattr(domain, "_module_homset_class", None)
-        if specialized is not None:
-            return specialized()
+        ring = domain.base_ring()
+        if domain in TensorProductModules(ring):
+            return TensorProductModuleHomset
+        from dzack_research.preamble.categories.modules.powers import (
+            DividedSquareModules,
+            QuadraticModuleHomset,
+        )
+
+        if domain in DividedSquareModules(ring):
+            return QuadraticModuleHomset
         return ModuleHomset
 
 
@@ -163,6 +171,14 @@ class Modules(OwnedCategoryOverBaseRing):
             return self.parent().scalar_multiple(scalar, self)
 
     class ParentMethods:
+        def Mor(self, codomain, category=None):
+            modules = Modules(self.base_ring())
+            if category is None:
+                return modules.Mor(self, codomain)
+            from sage.categories.homset import Hom as SageHom
+
+            return SageHom(self, codomain, category)
+
         def module_category(self):
             return Modules(self.base_ring())
 
@@ -251,16 +267,17 @@ class Modules(OwnedCategoryOverBaseRing):
             ring-localization convenience API.
             """
             ring = self.base_ring()
-            if len(datum) == 1 and hasattr(datum[0], "localization_source"):
+            from dzack_research.preamble.categories.rings.commutative_algebra import (
+                LocalizationRings,
+            )
+
+            if len(datum) == 1 and datum[0] in LocalizationRings():
                 localization_ring = datum[0]
                 if localization_ring.localization_source() is not ring:
                     raise ValueError("the localization ring has the wrong source ring")
             else:
                 localization_ring = ring.localization(*datum)
-            localize_module = getattr(localization_ring, "localize_module", None)
-            if localize_module is None:
-                raise TypeError("the represented target ring is not a ring localization")
-            return localize_module(self)
+            return localization_ring.localize_module(self)
 
         localization = localize
 
@@ -352,6 +369,10 @@ class ModuleSubobjects(OwnedCategoryOverBaseRing):
         def inclusion(self):
             r"""Return the chosen monomorphism representing this subobject."""
             return self._preamble_inclusion
+
+        def ambient_module(self):
+            r"""Return the ambient module, i.e. the codomain of the inclusion."""
+            return self.inclusion().codomain()
 
         def embedded_module_generators(self):
             r"""Return the indexed family of selected generator images."""
@@ -631,6 +652,20 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
             return True
 
 
+class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
+    r"""Finitely presented modules carrying one selected finite presentation."""
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "modules with a chosen finite presentation"
+
+    def super_categories(self):
+        return [
+            FinitelyPresentedModules(self.base_ring()),
+            FramedModules(self.base_ring()),
+        ]
+
+
 @dataclass(frozen=True)
 class FreeResolution:
     r"""The exact resolution ``0 -> F_1 -> F_0 -> M -> 0`` over a PID."""
@@ -697,12 +732,7 @@ class FreeResolution:
 
 
 def free_resolution(module):
-    construction = getattr(module, "free_resolution", None)
-    if construction is None:
-        raise NotImplementedError(
-            "a free resolution requires a represented module class owning such a construction"
-        )
-    return construction()
+    return module.free_resolution()
 
 
 class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
@@ -717,7 +747,7 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
             FreeModules(self.base_ring()),
             FramedModules(self.base_ring()),
             FinitelyGeneratedModules(self.base_ring()),
-            FinitelyPresentedModules(self.base_ring()),
+            ModulesWithChosenFinitePresentation(self.base_ring()),
             ProjectiveModules(self.base_ring()),
         ]
 
@@ -974,6 +1004,10 @@ class RestrictedScalarsModuleView(Parent):
             category=Category.join(tuple(categories)),
         )
         refine(self, categories)
+
+    def __call__(self, value):
+        r"""Construct through the owned restriction-of-scalars element parser."""
+        return self._element_constructor_(value)
 
     def _element_constructor_(self, value):
         if isinstance(value, self.element_class) and value.parent() is self:
@@ -1402,10 +1436,8 @@ class TensorProductModules(OwnedCategoryOverBaseRing):
 
 
 def _represented_finite_presentation(module) -> bool:
-    return (
-        module in FinitelyGeneratedFreeModules(module.base_ring())
-        or module._selected_presentation_rows() is not None
-    )
+    r"""Return whether ``module`` carries selected finite presentation data."""
+    return module._selected_presentation_rows() is not None
 
 
 @cached_function(key=lambda left, right: (id(left), id(right)))
@@ -1481,9 +1513,18 @@ def _module_tensor_product(left, right):
                     row[tensor_labels.rank(pair)] = coefficient
             rows.append(row)
 
-    presentation_owner = (
-        left if left._selected_presentation_rows() is not None else right
+    presentation_owner = next(
+        (
+            factor
+            for factor in (left, right)
+            if callable(getattr(factor, "_presented_module_from_relation_rows", None))
+        ),
+        None,
     )
+    if presentation_owner is None:
+        raise NotImplementedError(
+            "the selected tensor-product presentation has no represented quotient constructor"
+        )
     result = presentation_owner._presented_module_from_relation_rows(
         tensor_labels,
         rows,
@@ -1776,7 +1817,7 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
             This is an explicit interpretation, not a second matrix carrier:
             the returned object is an element of this Hom object.
             """
-            if coordinate_tensor.tensor_valence() != (1, 1):
+            if coordinate_tensor.tensor_valence() != (NN**2)((1, 1)):
                 raise TypeError(
                     "a matrix morphism is represented here by a type-(1,1) tensor"
                 )

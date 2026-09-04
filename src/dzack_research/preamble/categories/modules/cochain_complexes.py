@@ -58,7 +58,7 @@ class CohomologyModules(OwnedCategoryOverBaseRing):
         return "cohomology modules"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModules
+        from dzack_research.preamble.categories.modules.pure.modules import FinitelyPresentedModules
 
         return [FinitelyPresentedModules(self.base_ring())]
 

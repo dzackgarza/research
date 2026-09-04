@@ -226,7 +226,6 @@ class Lattice(Parent, IndexedGenerators):
         self._preamble_free_module_constructor = module._fresh_free_module_on
         self._gram = gram
         self._sage_lattice = sage_lattice
-        self._index_positions = _finite_basis_positions(module)
         IndexedGenerators.__init__(
             self,
             _basis_keys(module),
@@ -242,19 +241,28 @@ class Lattice(Parent, IndexedGenerators):
             parent_arguments["names"] = names
         Parent.__init__(self, **parent_arguments)
 
+    def __call__(self, x):
+        r"""Construct a lattice vector through the owned module representation."""
+        return self._element_constructor_(x)
+
     def _element_constructor_(self, x):
-        r"""Return \(\sum v_i e_i\) from a tuple, list, or vector of coefficients."""
+        r"""Return a lattice vector from finite coordinates or keyed support."""
         if isinstance(x, self.element_class) and x.parent() is self:
             return x
-        if isinstance(x, (tuple, list, FreeModuleElement)):
-            return sum(
-                (
-                    self.scalar_multiple(coefficient, self.module_generator(key))
-                    for key, coefficient in zip(self._indices, x)
-                    if coefficient
-                ),
-                self.element_class(self, self._module.zero()),
-            )
+        if isinstance(x, (tuple, list)):
+            from dzack_research.preamble.categories.sets.cardinals import cardinal
+
+            size = cardinal(self.module_generating_set().cardinality())
+            if not size.is_finite():
+                raise TypeError(
+                    "coordinate sequence syntax requires a finite lattice framing; "
+                    "use finitely supported label-keyed coordinates"
+                )
+            if len(x) != int(size.finite_value()):
+                raise ValueError("coordinate sequence has the wrong finite length")
+            return self.element_class(self, self._module(x))
+        if isinstance(x, FreeModuleElement):
+            return self.element_class(self, self._module(x))
         return self.element_class(self, self._module(x))
 
     def zero(self):
@@ -634,9 +642,6 @@ class _BiproductGram(_PairingGram):
         self._left = left
         self._right = right
         self._split = split
-        self._positions = _finite_basis_positions(module)
-        self._left_positions = _finite_basis_positions(left._module)
-        self._right_positions = _finite_basis_positions(right._module)
         self._become_tensor_on(module)
 
     def __getitem__(self, index):
@@ -655,7 +660,7 @@ class _BiproductGram(_PairingGram):
         left_part = {}
         right_part = {}
         for key, value in coefficients.items():
-            position = _basis_position(keys, key, self._positions)
+            position = _basis_position(keys, key)
             if position < n:
                 left_part[position] = value
             else:
@@ -666,14 +671,14 @@ class _BiproductGram(_PairingGram):
             _lattice_vector_from_coefficients(self._left, left_part),
         ).items():
             left_keys = _basis_keys(self._left._module)
-            position = _basis_position(left_keys, label, self._left_positions)
+            position = _basis_position(left_keys, label)
             result[keys.unrank(position)] = value
         for label, value in generator_pairings(
             self._right,
             _lattice_vector_from_coefficients(self._right, right_part),
         ).items():
             right_keys = _basis_keys(self._right._module)
-            position = _basis_position(right_keys, label, self._right_positions)
+            position = _basis_position(right_keys, label)
             result[keys.unrank(n + position)] = value
         return result
 
@@ -687,7 +692,7 @@ class _BiproductGram(_PairingGram):
             left_part = {}
             right_part = {}
             for key, value in coefficients.items():
-                position = _basis_position(keys, key, self._positions)
+                position = _basis_position(keys, key)
                 if position < n:
                     left_part[position] = value
                 else:
@@ -1101,16 +1106,8 @@ def _basis_keys(module):
     return module.module_generating_set()
 
 
-def _finite_basis_positions(module):
-    r"""Index finite basis labels without symbolic equality searches."""
-    if module.rank() == Infinity:
-        return None
-    return {label: position for position, label in enumerate(_basis_keys(module))}
-
-
-def _basis_position(keys, label, positions=None):
-    if positions is not None:
-        return positions[label]
+def _basis_position(keys, label):
+    r"""Return the owned framing rank of ``label``."""
     return int(keys.rank(label))
 
 

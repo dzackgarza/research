@@ -20,9 +20,7 @@ from dzack_research.preamble.categories.algebras.free_algebras import (
     FreeAlgebras,
     GradedFreeAlgebras,
 )
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-    FinitelyGeneratedFreeModules,
-)
+from dzack_research.preamble.categories.modules.pure.modules import FinitelyGeneratedFreeModules
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
     module_coefficients,
@@ -126,6 +124,10 @@ class PowerAlgebra(GradedDirectSumModule):
 
     _from_component = GradedDirectSumModule.from_component
     _from_components = GradedDirectSumModule.from_components
+
+    def __call__(self, value):
+        r"""Construct an element through the owned graded-algebra parser."""
+        return self._element_constructor_(value)
 
     def _element_constructor_(self, value):
         if isinstance(value, GradedDirectSumElement):

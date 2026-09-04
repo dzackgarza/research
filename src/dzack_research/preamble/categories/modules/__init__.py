@@ -16,15 +16,13 @@ from dzack_research.preamble.categories.modules.fractional_ideals import (
     Ideal,
     Ideals,
 )
+from dzack_research.preamble.categories.modules.pure.modules import FinitelyGeneratedFreeModules
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     BasedFreeModule,
-    FinitelyGeneratedFreeModules,
     ring_as_module,
 )
-from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-    FinitelyPresentedModule,
-    ModulesWithChosenFinitePresentation,
-)
+from dzack_research.preamble.categories.modules.pure.modules import ModulesWithChosenFinitePresentation
+from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModule
 from dzack_research.preamble.categories.modules.pure.torsion_modules import (
     FinitelyPresentedTorsionModules,
     TorsionModule,

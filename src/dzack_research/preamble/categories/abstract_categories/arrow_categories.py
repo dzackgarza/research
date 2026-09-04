@@ -2,7 +2,6 @@ r"""Arrow categories, commuting squares, cores, and slice-style categories."""
 
 from dzack_research.preamble.categories.abstract_categories.hom_foundation import OwnedHomset
 from sage.categories.category import Category
-from sage.categories.finite_enumerated_sets import FiniteEnumeratedSets
 from sage.categories.homset import Hom, Homset
 from sage.categories.morphism import Morphism
 from sage.categories.sets_cat import Sets as SageSets
@@ -11,72 +10,26 @@ from sage.structure.parent import Parent
 
 
 def _morphisms_agree(left, right) -> bool:
-    r"""Decide equality through the morphism/Hom owner when represented."""
+    r"""Decide equality through the unique Hom parent of the two arrows."""
     if left.domain() is not right.domain() or left.codomain() is not right.codomain():
         return False
     if left is right:
         return True
-
-    if isinstance(left, CommutativeSquare) and isinstance(right, CommutativeSquare):
-        return _morphisms_agree(left.left(), right.left()) and _morphisms_agree(
-            left.right(), right.right()
-        )
-
-    element_decider = getattr(left, "morphisms_agree", None)
-    if callable(element_decider):
-        return bool(element_decider(right))
-
-    left_parent = left.parent()
-    if left_parent is right.parent():
-        parent_decider = getattr(left_parent, "morphisms_agree", None)
-        if callable(parent_decider):
-            return bool(parent_decider(left, right))
-
-    # Ordinary equality may already be exact for the represented morphism
-    # family.  A false result is not enough for generic Sage SetMorphism,
-    # whose equality is intensional, so finite sets retain their extensional
-    # category-level decision below.
-    try:
-        if left == right:
-            return True
-    except NotImplementedError:
-        pass
-
-    domain = left.domain()
-    if domain in FiniteEnumeratedSets():
-        return all(left(element) == right(element) for element in domain)
-
-    raise NotImplementedError(
-        f"equality of represented morphisms out of {domain} has no active decision procedure"
-    )
+    if left.parent() is not right.parent():
+        return False
+    return bool(left.parent().morphisms_agree(left, right))
 
 
 def _identity_morphism_in_theory(arrow, obj):
-    r"""Return the identity of ``obj`` in the Hom theory containing ``arrow``."""
-    parent = arrow.parent()
-    family = getattr(parent, "hom_family", None)
-    if callable(family):
-        fixed = family().Of(obj, obj)
-        identity = getattr(fixed, "identity", None)
-        if callable(identity):
-            return identity()
-        identity = getattr(fixed, "identity_endomorphism", None)
-        if callable(identity):
-            return identity()
-    return _identity_morphism(obj)
+    r"""Return the identity at ``obj`` from the Hom theory containing ``arrow``."""
+    return arrow.parent().identity_at(obj)
 
 
 def _identity_morphism(obj):
-    r"""Return the identity arrow through the object's public Hom surface."""
+    r"""Return the identity arrow through the object's public owned Hom surface."""
     if isinstance(obj, ArrowObject):
         return obj.arrow_category().hom(obj, obj).identity()
-    categorical_identity = getattr(obj, "categorical_identity_morphism", None)
-    if categorical_identity is not None:
-        return categorical_identity()
-    try:
-        return Hom(obj, obj).identity()
-    except (TypeError, ValueError):
-        return _OwnedSets().hom(obj, obj).identity()
+    return obj.Mor(obj).identity()
 
 
 class ArrowObject(Parent):
@@ -160,9 +113,22 @@ class ArrowHomset(OwnedHomset):
         if self.domain() is not self.codomain():
             raise ValueError("identity is defined only on an endomorphism Hom-set")
         arrow = self.domain().arrow()
+        category = self.arrow_category().base_category()
         return self(
-            _identity_morphism(arrow.domain()),
-            _identity_morphism(arrow.codomain()),
+            category.Mor(arrow.domain(), arrow.domain()).identity(),
+            category.Mor(arrow.codomain(), arrow.codomain()).identity(),
+        )
+
+    def identity_at(self, obj):
+        return self.arrow_category().hom(obj, obj).identity()
+
+    def morphisms_agree(self, left, right) -> bool:
+        if left.parent() is not self or right.parent() is not self:
+            return False
+        if left is right:
+            return True
+        return _morphisms_agree(left.left(), right.left()) and _morphisms_agree(
+            left.right(), right.right()
         )
 
 
@@ -172,6 +138,7 @@ class ArrowCategory(Category):
     def __init__(self, base_category) -> None:
         self._base_category = base_category
         self._arrow_objects = {}
+        self._homsets = {}
         super().__init__()
 
     def _make_named_class_key(self, name):
@@ -206,10 +173,19 @@ class ArrowCategory(Category):
 
     __call__ = object
 
+    def _homset(self, homset_class, source, target):
+        key = (homset_class, id(source), id(target))
+        cached = self._homsets.get(key)
+        if cached is not None and cached.domain() is source and cached.codomain() is target:
+            return cached
+        result = homset_class(self, source, target)
+        self._homsets[key] = result
+        return result
+
     def hom(self, source, target):
         if source not in self or target not in self:
             raise TypeError("an arrow-category Hom requires two arrow objects")
-        return ArrowHomset(self, source, target)
+        return self._homset(ArrowHomset, source, target)
 
     Hom = hom
 
@@ -235,10 +211,11 @@ class SliceHomset(ArrowHomset):
         fixed = self.domain().arrow().codomain()
         if self.codomain().arrow().codomain() is not fixed:
             raise ValueError("slice objects require one fixed codomain")
+        identity = self.arrow_category().base_category().Mor(fixed, fixed).identity()
         if right is not None:
-            if not _morphisms_agree(right, _identity_morphism(fixed)):
+            if not _morphisms_agree(right, identity):
                 raise ValueError("the fixed edge of a slice morphism is the identity")
-        return CommutativeSquare(self, factor, _identity_morphism(fixed))
+        return CommutativeSquare(self, factor, identity)
 
     def canonical_morphism(self):
         inclusion = self.domain()
@@ -282,10 +259,11 @@ class CosliceHomset(ArrowHomset):
         fixed = self.domain().arrow().domain()
         if self.codomain().arrow().domain() is not fixed:
             raise ValueError("coslice objects require one fixed domain")
+        identity = self.arrow_category().base_category().Mor(fixed, fixed).identity()
         if left is not None:
-            if not _morphisms_agree(left, _identity_morphism(fixed)):
+            if not _morphisms_agree(left, identity):
                 raise ValueError("the fixed edge of a coslice morphism is the identity")
-        return CommutativeSquare(self, _identity_morphism(fixed), factor)
+        return CommutativeSquare(self, identity, factor)
 
 
 class CosliceCategory(ArrowCategory):
@@ -459,6 +437,7 @@ class SubobjectCategory(Category):
             raise TypeError("the subobject base must lie in its base category")
         self._base_category = base_category
         self._base_object = base_object
+        self._homsets = {}
         super().__init__()
 
     def _make_named_class_key(self, name):
@@ -505,7 +484,13 @@ class SubobjectCategory(Category):
     def hom(self, domain, codomain):
         if domain not in self or codomain not in self:
             raise TypeError("both objects must be subobjects of the fixed base object")
-        return SubobjectHomset(self, domain, codomain)
+        key = (id(domain), id(codomain))
+        cached = self._homsets.get(key)
+        if cached is not None and cached.domain() is domain and cached.codomain() is codomain:
+            return cached
+        result = SubobjectHomset(self, domain, codomain)
+        self._homsets[key] = result
+        return result
 
     Hom = hom
 
@@ -639,6 +624,7 @@ class CoreCategory(Category):
 
     def __init__(self, base_category) -> None:
         self._base_category = base_category
+        self._homsets = {}
         super().__init__()
 
     def _make_named_class_key(self, name):
@@ -656,7 +642,13 @@ class CoreCategory(Category):
     def hom(self, domain, codomain):
         if domain not in self or codomain not in self:
             raise TypeError("the core Hom requires two base-category objects")
-        return CoreHomset(domain, codomain)
+        key = (id(domain), id(codomain))
+        cached = self._homsets.get(key)
+        if cached is not None and cached.domain() is domain and cached.codomain() is codomain:
+            return cached
+        result = CoreHomset(domain, codomain)
+        self._homsets[key] = result
+        return result
 
     Hom = hom
 

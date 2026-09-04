@@ -551,9 +551,7 @@ class SparseFreeAlgebra(Parent):
         for key, component_coefficients in grouped.items():
             component = self._component_module(key)
             element = component.linear_combination(component_coefficients)
-            from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-                ModulesWithChosenFinitePresentation,
-            )
+            from dzack_research.preamble.categories.modules.pure.modules import ModulesWithChosenFinitePresentation
 
             if component in ModulesWithChosenFinitePresentation(self.base_ring()):
                 from dzack_research.preamble.categories.algebras.finitely_presented_algebras import (
@@ -605,6 +603,10 @@ class SparseFreeAlgebra(Parent):
         if component_label != 0:
             raise ValueError("a rank-one free component has generator label 0")
         return self.module_generating_set()._element_constructor_(key)
+
+    def __call__(self, value):
+        r"""Construct an element through the owned sparse-algebra parser."""
+        return self._element_constructor_(value)
 
     def _element_constructor_(self, value):
         if isinstance(value, SparseFreeAlgebraElement):

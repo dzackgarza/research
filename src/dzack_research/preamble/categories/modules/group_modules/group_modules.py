@@ -385,9 +385,7 @@ class FinitelyGeneratedFreeGroupModules(_CategoryOverRingAndActingGroup):
         return f"finitely generated free {self.base_ring()}[{self.acting_group()}]-modules"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-            FinitelyGeneratedFreeModules,
-        )
+        from dzack_research.preamble.categories.modules.pure.modules import FinitelyGeneratedFreeModules
 
         return [
             GroupModules(self.base_ring(), self.acting_group()),
@@ -403,9 +401,7 @@ class FinitelyPresentedGroupModules(_CategoryOverRingAndActingGroup):
         return f"finitely presented {self.base_ring()}[{self.acting_group()}]-modules"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-            FinitelyPresentedModules,
-        )
+        from dzack_research.preamble.categories.modules.pure.modules import FinitelyPresentedModules
 
         return [
             GroupModules(self.base_ring(), self.acting_group()),
@@ -533,11 +529,9 @@ def GroupModule(module, group_or_action, action=None):
     from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
         FreshFreeModuleOn,
     )
-    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-        FinitelyPresentedModule,
-        FinitelyPresentedModules,
-        ModulesWithChosenFinitePresentation,
-    )
+    from dzack_research.preamble.categories.modules.pure.modules import FinitelyPresentedModules
+    from dzack_research.preamble.categories.modules.pure.modules import ModulesWithChosenFinitePresentation
+    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModule
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
         module_homset,
     )

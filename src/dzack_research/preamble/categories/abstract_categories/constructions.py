@@ -85,17 +85,11 @@ def FiberProduct(left_morphism, right_morphism):
 
 
 def Kernel(morphism):
-    kernel = getattr(morphism, "kernel", None)
-    if kernel is None:
-        raise NotImplementedError(f"{morphism} has no represented categorical kernel")
-    return kernel()
+    return morphism.kernel()
 
 
 def Cokernel(morphism):
-    cokernel = getattr(morphism, "cokernel", None)
-    if cokernel is None:
-        raise NotImplementedError(f"{morphism} has no represented categorical cokernel")
-    return cokernel()
+    return morphism.cokernel()
 
 
 def Subobjects(base_object, category=None):

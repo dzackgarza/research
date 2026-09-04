@@ -180,7 +180,7 @@ def _tensor_algebra_from_module_presentation(presentation_ring, module):
     def backend_relation(index):
         row_position = int(index)
         result = engine.zero()
-        for position in range(relation_matrix.tensor_shape()[1]):
+        for position in range(relation_matrix.ncols()):
             coefficient = relation_matrix[row_position, position]
             if coefficient:
                 result += _engine_element(base, coefficient) * engine.gen(position)

@@ -61,17 +61,9 @@ def polynomial_ring(base_ring, names):
 def _has_represented_finite_framing(module) -> bool:
     r"""Return whether the selected framing is finite construction data."""
     ring = module.base_ring()
-    from dzack_research.preamble.categories.modules.pure.modules import (
-        FinitelyGeneratedFreeModules,
-    )
-    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-        ModulesWithChosenFinitePresentation,
-    )
+    from dzack_research.preamble.categories.modules.pure.modules import ModulesWithChosenFinitePresentation
 
-    return (
-        module in FinitelyGeneratedFreeModules(ring)
-        or module in ModulesWithChosenFinitePresentation(ring)
-    )
+    return module in ModulesWithChosenFinitePresentation(ring)
 
 def TensorAlgebraOf(module):
     r"""Return \(T_R(M)\), including the linear relations of ``M``."""
@@ -126,7 +118,9 @@ def SymmetricAlgebraOf(module):
     labels = _finite_labels(module.module_generating_set())
     relation_matrix = _presentation_matrix(module)
     if relation_matrix.nrows() == 0 or not any(
-        any(row) for row in relation_matrix.rows()
+        relation_matrix[row, column] != base.zero()
+        for row in range(relation_matrix.nrows())
+        for column in range(relation_matrix.ncols())
     ):
         algebra = SymmetricAlgebraOn(base, labels)
         algebra._preamble_free_algebra_source_module = module
@@ -162,7 +156,7 @@ def SymmetricAlgebraOf(module):
     def relation_value(index):
         row_position = int(index)
         backend = engine.zero()
-        for position in range(relation_matrix.tensor_shape()[1]):
+        for position in range(relation_matrix.ncols()):
             coefficient = relation_matrix[row_position, position]
             if coefficient:
                 backend += _engine_element(base, coefficient) * engine.gen(position)

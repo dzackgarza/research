@@ -1,5 +1,7 @@
 """Finitely generated commutative ideals as module subobjects of the ring."""
 
+from sage.structure.richcmp import op_EQ, op_NE
+
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import SubobjectsOf
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedIntegralDomains,
@@ -45,6 +47,26 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
         def ideal_generators(self):
             return self._preamble_ideal_generators
 
+        def _richcmp_(self, other, op):
+            if op not in (op_EQ, op_NE):
+                return NotImplemented
+            equal = (
+                other in CommutativeIdeals(self.ring())
+                and self._engine_ideal() == other._engine_ideal()
+            )
+            return equal if op == op_EQ else not equal
+
+        def __eq__(self, other) -> bool:
+            try:
+                return bool(
+                    other in CommutativeIdeals(self.ring())
+                    and self._engine_ideal() == other._engine_ideal()
+                )
+            except (AttributeError, NotImplementedError, TypeError, ValueError):
+                return False
+
+        def __ne__(self, other) -> bool:
+            return not self == other
 
         def _engine_ideal(self):
             represented = getattr(self, "_preamble_engine_ideal", None)
@@ -317,7 +339,11 @@ def _engine_ring_value(ring, value):
 def _owned_engine_value(ring, value):
     r"""Cross one private engine value back into the owned ring."""
     source = _own_ring(ring)
-    return source._from_engine_element(_engine_ring(source)(value))
+    engine_value = _engine_ring(source)(value)
+    ambient = getattr(source, "_ambient_ring", None)
+    if ambient is not None:
+        return source(ambient._from_engine_element(engine_value))
+    return source._from_engine_element(engine_value)
 
 
 def CommutativeIdeal(ring, *generators):

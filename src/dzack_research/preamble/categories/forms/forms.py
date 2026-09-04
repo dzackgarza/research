@@ -333,10 +333,18 @@ class _CallableFormSpace(Parent):
     def kind(self):
         return self._kind
 
+    def __call__(self, datum):
+        return self._element_constructor_(datum)
+
     def _element_constructor_(self, datum):
         if isinstance(datum, _CallableForm) and datum.parent() is self:
             return datum
         return self.element_class(self, datum)
+
+    def from_quadratic_map(self, quadratic, **_options):
+        if self.kind() != "quadratic":
+            raise TypeError("quadratic-map construction belongs to a quadratic form space")
+        return self(quadratic)
 
 
 @cached_function(key=lambda left_module, right_module, value_module, kind: (id(left_module), id(right_module), id(value_module), kind))
@@ -434,8 +442,7 @@ QuadraticMapMorphism = QuadraticFormMorphism
 def QuadraticMap(module, value_module, function):
     r"""Return the quadratic map ``module -> value_module`` via its classifier."""
     forms = QuadraticForms(module, value_module)
-    constructor = getattr(forms, "from_quadratic_map", None)
-    return forms(function) if constructor is None else constructor(function)
+    return forms.from_quadratic_map(function)
 
 
 def classifying_morphism(quadratic):

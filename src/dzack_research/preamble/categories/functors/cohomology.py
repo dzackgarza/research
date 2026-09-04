@@ -11,7 +11,7 @@ from dzack_research.preamble.categories.modules.cochain_complexes import (
     CochainComplexes,
     Cohomology,
 )
-from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModules
+from dzack_research.preamble.categories.modules.pure.modules import FinitelyPresentedModules
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
 

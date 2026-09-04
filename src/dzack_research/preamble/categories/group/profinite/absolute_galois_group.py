@@ -348,11 +348,12 @@ class AbsoluteGaloisGroup(OwnedHomset):
         self._quotient_cache: dict[int, FiniteGaloisQuotient] = {}
         self._one_element = None
         category = absolute_galois_group_category(self._field)
+        from sage.categories.sets_cat import Sets as SageSets
         Homset.__init__(
             self,
             self._closure,
             self._closure,
-            category=category,
+            category=SageSets(),
             check=False,
         )
         refine(self, category)

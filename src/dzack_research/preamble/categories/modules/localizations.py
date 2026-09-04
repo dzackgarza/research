@@ -130,10 +130,8 @@ class GeneralLocalizedModuleParent(Parent):
         from dzack_research.preamble.categories.modules.pure.modules import (
             FinitelyGeneratedModules,
         )
-        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-            FinitelyPresentedModules,
-            ModulesWithChosenFinitePresentation,
-        )
+        from dzack_research.preamble.categories.modules.pure.modules import FinitelyPresentedModules
+        from dzack_research.preamble.categories.modules.pure.modules import ModulesWithChosenFinitePresentation
 
         source_ring = localization_ring.localization_source()
         if source_module in FramedModules(source_ring):
@@ -152,13 +150,17 @@ class GeneralLocalizedModuleParent(Parent):
                 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
                 from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace
                 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+                    _SelectedFinitePresentationModules,
                     _presentation_rows,
                 )
+                from dzack_research.preamble.categories.sets.set_categories import Sets
 
-                source_presentation = source_module.presentation()
-                relation_labels = source_presentation.domain().module_generating_set()
-                generator_labels = source_module.module_generating_set()
                 relation_rows = _presentation_rows(source_module)
+                if source_module in _SelectedFinitePresentationModules(source_ring):
+                    relation_labels = source_module.presentation().domain().module_generating_set()
+                else:
+                    relation_labels = Sets.Δ[len(relation_rows) - 1]
+                generator_labels = source_module.module_generating_set()
                 localization_map = localization_ring.localization_map()
                 transported_rows = tuple(
                     tuple(localization_map(coefficient) for coefficient in row)
@@ -197,6 +199,7 @@ class GeneralLocalizedModuleParent(Parent):
                     [
                         FinitelyPresentedModules(localization_ring),
                         ModulesWithChosenFinitePresentation(localization_ring),
+                        _SelectedFinitePresentationModules(localization_ring),
                     ]
                 )
         else:

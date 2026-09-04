@@ -513,9 +513,9 @@ def _presented_degree_power(module, degree: int, flavor: str):
         FramedFreeModules,
         FreeModuleOn,
     )
+    from dzack_research.preamble.categories.modules.pure.modules import ModulesWithChosenFinitePresentation
     from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
         FinitelyPresentedModule,
-        ModulesWithChosenFinitePresentation,
         _presentation_from_relation_rows,
         _presentation_matrix,
     )

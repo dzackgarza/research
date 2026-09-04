@@ -266,9 +266,13 @@ class DiscreteCategory(Category):
         )
 
     def objects(self):
-        if hasattr(self.object_set(), "__iter__"):
-            return tuple(self(value) for value in self.object_set())
-        raise TypeError("this discrete category has no chosen enumeration of its objects")
+        from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+
+        return indexed_family(
+            self.object_set(),
+            self,
+            name=f"Objects of {self}",
+        )
 
     def hom(self, domain, codomain):
         if domain not in self or codomain not in self:

@@ -4,6 +4,7 @@ from dzack_research.preamble.categories.abstract_categories.hom_foundation impor
 from sage.categories.homset import Homset
 from sage.categories.morphism import Morphism
 from sage.categories.rings import Rings as SageRings
+from sage.categories.sets_cat import Sets as SageSets
 from sage.categories.map import Map
 from sage.misc.cachefunc import cached_function
 from sage.rings.rational_field import QQ as SageQQ

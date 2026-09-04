@@ -35,7 +35,7 @@ def test_basic_commutative_ring_placements_and_canonical_ZZ_algebra() -> None:
 def test_finite_unit_localization_and_prime_localization_are_distinct() -> None:
     inverted_two = ZZ.localization(2)
     assert inverted_two.localization_source() is ZZ
-    assert inverted_two.inverted_elements() == Set((ZZ(2),))
+    assert tuple(inverted_two.inverted_elements()) == (ZZ(2),)
     assert inverted_two.localization_map()(ZZ(3)) == inverted_two(3)
     assert inverted_two(2).is_unit()
 
@@ -146,7 +146,7 @@ def test_submonoids_are_generic_subobjects_and_localization_retains_inclusion() 
 
     localization = ZZ.localization(powers_of_two)
     assert localization.localization_submonoid() is powers_of_two
-    assert localization.inverted_elements() == Set((ZZ(2),))
+    assert tuple(localization.inverted_elements()) == (ZZ(2),)
 
     local_at_five = ZZ.localize_at_prime(5)
     prime_complement = local_at_five.localization_submonoid()
@@ -340,7 +340,7 @@ def test_commutative_algebra_pushout_imposes_common_source_relations() -> None:
 
 
 def test_module_local_fiber_rank_generic_rank_and_fitting_loci() -> None:
-    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_generated_free_modules import (
+    from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
         BasedFreeModule,
     )
     from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
@@ -461,7 +461,7 @@ def test_elementwise_module_morphism_verification_is_regime_sensitive(caplog) ->
     linear = finite_hom.elementwise(
         lambda element: finite.scalar_multiple(field(2), element)
     )
-    assert linear(field.one()) == field(2)
+    assert linear(field.one()) == finite(field(2))
 
     try:
         finite_hom.elementwise(

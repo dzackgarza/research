@@ -4,7 +4,7 @@ A presented module is an owned parent.  Over a PID with a Smith form its
 engine is Sage's FGP module over the engine ring; over another Sage ring it
 holds a Sage free cover and relation submodule; over a ring with no Sage
 engine it holds the owned free cover alone and cannot decide equality.  The
-engine is read through :meth:`ModulesWithChosenFinitePresentation.ParentMethods._smith_engine`
+engine is read through the selected-presentation backend method ``_smith_engine``
 and every Smith-form computation is an explicit crossing into it.
 """
 
@@ -22,9 +22,11 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _owned_ring,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyPresentedModules,
     FreeResolution,
+    ModulesWithChosenFinitePresentation,
 )
 from dzack_research.preamble.refine import refine
 
@@ -43,8 +45,8 @@ def _free_cover_owner(module):
 def _matrix_space_like(module, nrows, ncols):
     r"""Return one finite matrix Hom using ``module``'s selected free cover."""
     owner = _free_cover_owner(module)
-    source = owner._fresh_free_module_on(finite_ordered_set(range(int(ncols))))
-    target = owner._fresh_free_module_on(finite_ordered_set(range(int(nrows))))
+    source = owner._fresh_free_module_on(Sets.Δ[int(ncols) - 1])
+    target = owner._fresh_free_module_on(Sets.Δ[int(nrows) - 1])
     from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
         module_homset,
     )
@@ -52,22 +54,15 @@ def _matrix_space_like(module, nrows, ncols):
     return module_homset(source, target)
 
 
-class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
-    r"""Finitely presented modules carrying a selected relation morphism."""
+class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
+    r"""Implementation refinement for modules with a selected finite presentation."""
 
     @classmethod
     def _repr_object_names(cls):
-        return "modules with a chosen finite presentation"
+        return "modules with a represented selected finite-presentation backend"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.modules.pure.modules import (
-            FramedModules,
-        )
-
-        return [
-            FinitelyPresentedModules(self.base_ring()),
-            FramedModules(self.base_ring()),
-        ]
+        return [ModulesWithChosenFinitePresentation(self.base_ring())]
 
     class ParentMethods:
         def base_ring(self):
@@ -151,9 +146,9 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
             ring = self.base_ring()
             degree_zero = self.presentation().codomain()
             relation_matrix = _engine_matrix(self.presentation_matrix()).row_module().basis_matrix()
-            relation_labels = finite_ordered_set(range(relation_matrix.nrows()))
+            relation_labels = Sets.Δ[int(relation_matrix.nrows()) - 1]
             degree_one = degree_zero._fresh_free_module_on(relation_labels)
-            zero = degree_zero._fresh_free_module_on(finite_ordered_set(()))
+            zero = degree_zero._fresh_free_module_on(Sets.Δ[-1])
             target_labels = degree_zero.module_generating_set()
 
             def image(label):
@@ -187,7 +182,7 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
             return self._preamble_relation_matrix
 
         def _selected_presentation_rows(self):
-            return _presentation_rows(self)
+            return _matrix_coordinate_rows(self.presentation_matrix())
 
         def _selected_module_coefficients(self, element):
             coordinates = self._framing_coordinates(element)
@@ -646,7 +641,7 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
             )
 
             invariants = self._invariants_with_units()
-            positions = finite_ordered_set(range(len(invariants)))
+            positions = Sets.Δ[len(invariants) - 1]
             retained = finite_ordered_filter(
                 positions,
                 lambda position: not invariants[int(position)].is_unit(),
@@ -709,7 +704,7 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
 
             from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_filter
 
-            positions = finite_ordered_set(range(len(invariants)))
+            positions = Sets.Δ[len(invariants) - 1]
             free_positions = finite_ordered_filter(
                 positions,
                 lambda position: invariants[int(position)] == self.base_ring().zero(),
@@ -775,9 +770,12 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
             )
 
             target_ring = base_change_codomain(self, ring_map)
-            target = target_ring._fresh_free_module_on(self.module_generating_set())
+            from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+                FreshFreeModuleOn,
+            )
+            target = FreshFreeModuleOn(target_ring, self.module_generating_set())
             relation_labels = self.presentation().domain().module_generating_set()
-            source = target_ring._fresh_free_module_on(relation_labels)
+            source = FreshFreeModuleOn(target_ring, relation_labels)
             images = {
                 relation_label: sum(
                     (
@@ -825,7 +823,7 @@ def _module_invariant_factor_form(module):
     invariants = module._invariants_with_units()
     from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_filter
 
-    invariant_positions = finite_ordered_set(range(len(invariants)))
+    invariant_positions = Sets.Δ[len(invariants) - 1]
     retained_positions = finite_ordered_filter(
         invariant_positions,
         lambda position: not invariants[int(position)].is_unit(),
@@ -840,7 +838,7 @@ def _module_invariant_factor_form(module):
 
     ring = module.base_ring()
     free_owner = module.presentation().codomain()
-    reduced_labels = finite_ordered_set(range(int(retained_positions.cardinality())))
+    reduced_labels = Sets.Δ[int(retained_positions.cardinality()) - 1]
     reduced_target = free_owner._fresh_free_module_on(reduced_labels)
     relation_labels = finite_ordered_filter(
         reduced_labels,
@@ -1210,33 +1208,29 @@ class _PresentedModule(_GeneralPresentedModule):
 
 
 def _presentation_matrix(module):
-    r"""Return the selected relation morphism as its matrix Hom element."""
-    if module in ModulesWithChosenFinitePresentation(module.base_ring()):
+    r"""Materialize the selected finite relation family as one matrix Hom element.
+
+    The chosen-presentation category owns only the mathematical datum.  A
+    concrete presented-module backend may already store its matrix; otherwise
+    (notably for a finite free module) the matrix is synthesized from the
+    selected relation rows only at this finite coordinate boundary.
+    """
+    ring = module.base_ring()
+    if module not in ModulesWithChosenFinitePresentation(ring):
+        raise TypeError("a presentation matrix requires selected finite presentation data")
+
+    if module in _SelectedFinitePresentationModules(ring):
         return module.presentation_matrix()
 
-    from dzack_research.preamble.categories.modules.pure.modules import (
-        RestrictedScalarsModules,
-    )
-
-    if module in RestrictedScalarsModules(module.base_ring()):
-        try:
-            return module.presentation_matrix()
-        except NotImplementedError:
-            pass
-
-    from dzack_research.preamble.categories.modules.pure.modules import (
-        FinitelyGeneratedFreeModules,
-    )
-
-    if module not in FinitelyGeneratedFreeModules(module.base_ring()):
-        raise TypeError(
-            "a finite presentation requires a finitely presented or finite free target module"
-        )
+    rows = module._selected_presentation_rows()
+    if rows is None:
+        raise TypeError("the selected finite presentation has no represented relation rows")
+    rows = tuple(tuple(row) for row in rows)
     return _matrix_space_like(
         module,
-        0,
+        len(rows),
         int(module.module_generating_set().cardinality()),
-    ).from_rows(())
+    ).from_rows(rows)
 
 
 def _matrix_coordinate_rows(matrix):
@@ -1252,8 +1246,13 @@ def _matrix_coordinate_rows(matrix):
 
 
 def _presentation_rows(module):
-    r"""Return finite coordinate rows of ``module``'s selected presentation."""
-    return _matrix_coordinate_rows(_presentation_matrix(module))
+    r"""Return the selected finite relation rows without forcing matrix realization."""
+    if module not in ModulesWithChosenFinitePresentation(module.base_ring()):
+        raise TypeError("relation rows require selected finite presentation data")
+    rows = module._selected_presentation_rows()
+    if rows is None:
+        raise TypeError("the selected finite presentation has no represented relation rows")
+    return tuple(tuple(row) for row in rows)
 
 
 def _relation_element(module, row):
@@ -1423,7 +1422,7 @@ def _singular_presentation_kernel(morphism):
         ]
 
     kernel_count = len(kernel_lifts)
-    kernel_labels = finite_ordered_set(range(kernel_count))
+    kernel_labels = Sets.Δ[kernel_count - 1]
     if kernel_count:
         kernel_columns = matrix(
             singular_ring,
@@ -1467,7 +1466,7 @@ def _singular_presentation_kernel(morphism):
             for row in second_syzygies.rows()
             if any(row[position] != 0 for position in range(kernel_count))
         ]
-    relation_labels = finite_ordered_set(range(len(kernel_relation_rows)))
+    relation_labels = Sets.Δ[len(kernel_relation_rows) - 1]
     relation_matrix = _matrix_space_like(
         domain,
         len(kernel_relation_rows),
@@ -1631,14 +1630,23 @@ def FinitelyPresentedModule(presentation):
         width,
     ).from_rows(chain(existing_rows, added_rows))
     relations = relations_matrix
-    if codomain in ModulesWithChosenFinitePresentation(base_ring):
-        existing_labels = tuple(
-            codomain.presentation().domain().module_generating_set()
+    if existing_count == 0:
+        selected_presentation = presentation
+    else:
+        from dzack_research.preamble.categories.sets.set_categories import (
+            CoproductOfFamily,
         )
-        added_labels = tuple(presentation.domain().module_generating_set())
-        relation_labels = finite_ordered_set(
-            [("existing relation", label) for label in existing_labels]
-            + [("cokernel relation", label) for label in added_labels]
+
+        presentation_method = getattr(codomain, "presentation", None)
+        existing_labels = (
+            presentation_method().domain().module_generating_set()
+            if callable(presentation_method)
+            else Sets.Δ[existing_count - 1]
+        )
+        added_labels = presentation.domain().module_generating_set()
+        relation_labels = CoproductOfFamily(
+            Sets.Δ[1],
+            lambda index: existing_labels if int(index) == 0 else added_labels,
         )
         selected_presentation = _presentation_from_relation_rows(
             base_ring,
@@ -1646,8 +1654,6 @@ def FinitelyPresentedModule(presentation):
             relation_labels,
             relations,
         )
-    else:
-        selected_presentation = presentation
 
     from sage.categories.rings import Rings as SageRings
 
@@ -1713,8 +1719,7 @@ def FinitelyPresentedModule(presentation):
     refine(
         quotient,
         [
-            FinitelyPresentedModules(base_ring),
-            ModulesWithChosenFinitePresentation(base_ring),
+            _SelectedFinitePresentationModules(base_ring),
         ],
     )
 
@@ -1723,7 +1728,5 @@ def FinitelyPresentedModule(presentation):
 
 __all__ = [
     "FinitelyPresentedModule",
-    "FinitelyPresentedModules",
-    "ModulesWithChosenFinitePresentation",
     "_presentation_matrix",
 ]

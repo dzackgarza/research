@@ -10,7 +10,9 @@ from sage.structure.parent import Parent
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat, FunctorCategory
 from dzack_research.preamble.categories.abstract_categories.objects import Objects as OwnedObjects
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
+from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.categories.sets.cardinals import cardinal
 
 
 class DiagramCategory(FunctorCategory):
@@ -59,8 +61,11 @@ class ConeObject(Parent):
         return self.transformation().component(index)
 
     def structure_morphisms(self):
-        return tuple(
-            self.structure_morphism(index) for index in self.diagram().domain().objects()
+        domain = self.diagram().domain()
+        return indexed_family(
+            domain.object_set(),
+            lambda label: self.structure_morphism(domain(label)),
+            name=f"Structure morphisms of {self}",
         )
 
     def _repr_(self) -> str:
@@ -92,8 +97,11 @@ class CoconeObject(Parent):
         return self.transformation().component(index)
 
     def costructure_morphisms(self):
-        return tuple(
-            self.costructure_morphism(index) for index in self.diagram().domain().objects()
+        domain = self.diagram().domain()
+        return indexed_family(
+            domain.object_set(),
+            lambda label: self.costructure_morphism(domain(label)),
+            name=f"Costructure morphisms of {self}",
         )
 
     def _repr_(self) -> str:
@@ -304,11 +312,36 @@ class CoproductsOfCategory(ColimitsOfCategory):
     pass
 
 
+def _finite_factor_family(factors, *, name="Selected factors"):
+    if isinstance(factors, IndexedFamily):
+        family = factors
+    else:
+        values = tuple(factors)
+        labels = Sets.Δ[len(values) - 1]
+        family = indexed_family(
+            labels,
+            lambda label: values[int(labels.rank(label))],
+            name=name,
+        )
+    if not cardinal(family.cardinality()).is_finite():
+        raise TypeError("the current product/coproduct construction requires finitely many factors")
+    return family
+
+
+def _finite_families_agree(left, right) -> bool:
+    if cardinal(left.cardinality()) != cardinal(right.cardinality()):
+        return False
+    return all(
+        left.unrank(position) is right.unrank(position)
+        for position in range(int(cardinal(left.cardinality()).finite_value()))
+    )
+
+
 class BiproductCategory(Category):
     r"""Objects equipped with the selected finite biproduct structure."""
 
     def __init__(self, factors) -> None:
-        self._factors = tuple(factors)
+        self._factors = _finite_factor_family(factors, name="Biproduct factors")
         super().__init__()
 
     def _make_named_class_key(self, name):
@@ -322,8 +355,8 @@ class BiproductCategory(Category):
 
     def __contains__(self, candidate) -> bool:
         try:
-            return tuple(candidate.biproduct_factors()) == self.factors()
-        except AttributeError:
+            return _finite_families_agree(candidate.biproduct_factors(), self.factors())
+        except (AttributeError, TypeError, ValueError):
             return False
 
 
@@ -334,7 +367,7 @@ class TensorProductCategory(Category):
     r"""Objects equipped with a chosen tensor-product universal bilinear map."""
 
     def __init__(self, factors) -> None:
-        self._factors = tuple(factors)
+        self._factors = _finite_factor_family(factors, name="Tensor factors")
         super().__init__()
 
     def _make_named_class_key(self, name):
@@ -348,16 +381,16 @@ class TensorProductCategory(Category):
 
     def __contains__(self, candidate) -> bool:
         try:
-            return tuple(candidate.tensor_factors()) == self.tensor_factors()
-        except AttributeError:
+            return _finite_families_agree(candidate.tensor_factors(), self.tensor_factors())
+        except (AttributeError, TypeError, ValueError):
             return False
 
 
 def ambient_category_of(objects):
-    objects = tuple(objects)
-    if not objects:
+    family = _finite_factor_family(objects)
+    if cardinal(family.cardinality()) == cardinal(0):
         raise ValueError("a common category requires at least one object")
-    return Category.meet([obj.category() for obj in objects])
+    return Category.meet([obj.category() for obj in family])
 
 
 def Cone(diagram, apex, components):
@@ -369,18 +402,17 @@ def Cocone(diagram, apex, components):
 
 
 def _discrete_diagram(factors, ambient_category=None):
-    factors = tuple(factors)
-    if not factors:
+    family = _finite_factor_family(factors)
+    if cardinal(family.cardinality()) == cardinal(0):
         raise ValueError("the current selected finite product requires at least one factor")
-    ambient = ambient_category_of(factors) if ambient_category is None else ambient_category
+    ambient = ambient_category_of(family) if ambient_category is None else ambient_category
     from dzack_research.preamble.categories.abstract_categories.functors import (
         DiscreteCategory,
         DiscreteDiagram,
     )
 
-    labels = finite_ordered_set(range(len(factors)))
-    index = DiscreteCategory(labels)
-    return DiscreteDiagram(index, ambient, lambda position: factors[int(position)])
+    index = DiscreteCategory(family.index_set())
+    return DiscreteDiagram(index, ambient, family)
 
 
 def product_cone_category(factors, ambient_category=None):

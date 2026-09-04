@@ -31,9 +31,7 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
         return "finitely presented torsion modules"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-            FinitelyPresentedModules,
-        )
+        from dzack_research.preamble.categories.modules.pure.modules import FinitelyPresentedModules
 
         return [
             FinitelyPresentedModules(self.base_ring()),
@@ -178,9 +176,7 @@ def TorsionModule(presentation):
 
 def refine_finitely_presented_torsion_module(module):
     r"""Attach the torsion intersection after verifying the represented property."""
-    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-        FinitelyPresentedModules,
-    )
+    from dzack_research.preamble.categories.modules.pure.modules import FinitelyPresentedModules
     from dzack_research.preamble.refine import refine
 
     ring = module.base_ring()

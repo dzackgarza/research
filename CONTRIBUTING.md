@@ -3101,14 +3101,17 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 #### `ARC-07`: A Morphism Is Asked of Its Endpoints
 
-- **Rule**: A Hom object is obtained from its endpoints, `A.Hom(B)`, so the owned `_Hom_` hook of their category chooses the homset.
-  A category is named at the call site only when the morphism deliberately lives in a coarser owned category, `Sets().hom(A, B)` for a map of underlying sets.
-  A Sage category is never named at a Hom site.
+- **Rule**: The morphisms from `A` to `B` are asked of the endpoints, `A.Mor(B)`, so the owned hook of their category chooses the object.
+  A category is named at the call site only when the morphism deliberately lives in a coarser owned category, for a map of underlying sets.
+  **`Mor` is the only spelling the preamble universe ever uses.**  `Hom` names Sage's construction, which is a backend engine if it is used at all: it may appear inside a private adapter and nowhere else.
 
-- **Rationale**: Naming a category at the call site restates what the endpoints already know and, when the name is Sage's, asks Sage to admit owned objects it does not hold.
-  The endpoints' own category is the single place the choice of homset is made.
+- **Rationale**: `Mor(A, B)` is a category, not a set.  Its objects are the morphisms $A \to B$, and every set is a category -- the discrete one -- so the set case is an instance rather than a competing kind of answer, and enrichment is structure carried by the same object rather than a different return.  Naming a category at the call site restates what the endpoints already know, and when the name is Sage's it asks Sage to admit owned objects it does not hold.
 
-- **Violation Example**: `Hom(source, target, Groups())` with owned groups as endpoints; `Hom(base_ring, self, Rings())` inside an owned algebra.
+  Reserving `Hom` for Sage is what makes the boundary hold by construction rather than by vigilance.  Sage's coercion machinery calls `X.Hom(Y, category)` internally, naming its own `SetsWithPartialMaps`; while `Hom` was the owned spelling, those internal calls landed in owned code and failed there.  With `Mor` owned and `Hom` left to Sage, an engine call reaches the engine and an owned call reaches the owned category, and neither can be mistaken for the other.
+
+- **Violation Example**: defining or calling `A.Hom(B)` anywhere in the preamble; `Hom(source, target, Groups())` with owned groups as endpoints; `Hom(base_ring, self, Rings())` inside an owned algebra; a category carrying `Hom` as an alias for its own morphism construction.
+
+- **Correct Example**: `A.Mor(B)` for the morphisms between two owned objects; `Hom` appearing only where a private adapter hands objects to Sage.
 
 #### `ARC-08`: Engine Availability Does Not Define Mathematical Existence
 

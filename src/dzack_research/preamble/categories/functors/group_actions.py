@@ -11,7 +11,7 @@ The Hom-sets on the acted side are the actual equivariant Hom-sets supplied by
 from sage.misc.cachefunc import cached_function
 
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
-from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModules
+from dzack_research.preamble.categories.modules.pure.modules import FinitelyPresentedModules
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 from dzack_research.preamble.categories.modules.group_modules.group_modules import (
     FinitelyPresentedGroupModules,

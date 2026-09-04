@@ -61,10 +61,10 @@ class GroupUnderlyingSetFunctor(Functor):
         return group
 
     def _apply_morphism(self, group_morphism):
-        return SetMorphism(
-            Sets().hom(group_morphism.domain(), group_morphism.codomain()),
-            group_morphism,
-        )
+        return Sets().hom(
+            group_morphism.domain(),
+            group_morphism.codomain(),
+        )(group_morphism)
 
     def chosen_preimage(self, image):
         if image not in self.domain():
@@ -83,10 +83,7 @@ class FreeGroupUnderlyingSetAdjunction(Adjunction):
 
     def unit(self, set_object):
         free_group = self.left_adjoint()(set_object)
-        return SetMorphism(
-            Sets().hom(set_object, free_group),
-            free_group.free_generator,
-        )
+        return Sets().hom(set_object, free_group)(free_group.free_generator)
 
     def counit(self, group):
         free_group = self.left_adjoint()(self.right_adjoint()(group))
