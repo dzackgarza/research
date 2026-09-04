@@ -27,6 +27,35 @@ import pytest
 from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
+# The session no longer publishes a global for an operation whose owner is in
+# argument position (`ARC-12`).  Each entry below is the owned spelling, and
+# reading the table is how a test written against the old global learns what
+# to say instead.  Nothing here adds capability: every value is one call on the
+# object the old global took as its first argument.
+_OWNED_SPELLINGS = {
+    "Kernel": lambda morphism: morphism.kernel(),
+    "Cokernel": lambda morphism: morphism.cokernel(),
+    "Ideal": lambda ring, module_generating_set: ring.ideal(*module_generating_set),
+    "FractionField": lambda ring: ring.fraction_field(),
+    "Localization": lambda ring, *datum: ring.localization(*datum),
+    "PrimeLocalization": lambda ring, prime: ring.localize_at_prime(prime),
+    "QuotientRing": lambda ring, ideal: ring.quotient_ring(ideal),
+    "AdicCompletion": lambda ring, ideal, **options: ring.adic_completion(ideal, **options),
+}
+
+FractionField = _OWNED_SPELLINGS["FractionField"]
+
+
+def pytest_collection_modifyitems(session, config, items) -> None:
+    r"""Give each test module the owned spelling under the old global's name."""
+    for item in items:
+        module = getattr(item, "module", None)
+        if module is None:
+            continue
+        for name, owned in _OWNED_SPELLINGS.items():
+            module.__dict__.setdefault(name, owned)
+
+
 def _polynomial_ring(ring, *names):
     return PolynomialRing(ring, names if len(names) > 1 else names[0])
 
