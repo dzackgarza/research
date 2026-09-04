@@ -4950,6 +4950,34 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 - **Correct Example**: a value from a cited source against a value the repository computed; two independent constructions of one object asserted equal; a theorem's prediction against an enumeration.
 
 
+
+#### `DEV-48`: A Refactor Is Finished Before It Is Measured
+
+- **Rule**: Commit to the refactor, carry it through the whole tree, and review it **by hand**.  Until the conceptual change is completely applied, do not run the suite, the gates, or any other aggregate signal, and do not treat their output as work.  An isolated syntax or type check on a file you just edited is fine, and so is a one-off script written to answer a specific question; a whole-suite run is not, because during a refactor its output is a function of how far through you are rather than of what is wrong.  The primary job is **rewriting**.  Getting the code to run again is what happens *after* the rewrite is complete, not the activity you are engaged in.  A refactor breaks things along the way, and that is the expected state, not a defect to repair as it appears.
+
+- **Rationale**: Mid-refactor errors arrive because the change is half-applied: a call site still expects the shape you are replacing.  Fixing one therefore means writing code to reconcile the new shape with a caller that has not been converted yet -- an adapter for a state that will not exist once the refactor lands, which must itself be removed later.  Such work is not merely orthogonal to the goal; it is negative, because it entrenches the intermediate state and adds to what must be undone.
+
+  The queue is also self-replenishing and self-directing, which is what makes the drift unbounded.  Each fix exposes the next error, so the list never empties and never hands control back.  The refactor's remaining work lives in a plan or in your head; the error list is on the screen, concrete and immediately actionable, and the screen wins every time.  Because each error is *locally* falsifiable -- real, reproducible, and verifiably fixed -- the loop supplies a continuous sense of gradient while the direction is orthogonal.  Local verifiability is not direction, and this is the standing mechanism behind `DEV-32` and `DEV-34`: a number that moves, taken for progress.
+
+  The loop has no completion condition, only exhaustion or interruption.  So it ends with the architecture half-applied *and* a layer of adapters written for the intermediate state -- strictly worse than either the old design or the new one, and the reason a repository accumulates perpetual half-finished refactors.  Observed here: a `Hom`-to-`Mor` conversion was interrupted after the first suite run and became a day of unrelated repairs -- scalar ingress, natural-number construction, a quotient lift, relation coefficients, glue classes -- each a genuine defect that the conversion was always going to surface, none of them the conversion.
+
+- **Violation Example**: running the suite while a rename is half-applied and working the failure list; fixing a caller that the same refactor is about to rewrite; adding a compatibility branch so an unconverted site keeps working; reporting a mid-refactor failure count as status.
+
+- **Correct Example**: converting every site, reading the diff end to end, then running the suite once and diagnosing what remains against a settled architecture; writing a throwaway script to answer one question about an object's behaviour while the rewrite continues.
+
+#### `DEV-49`: Architecture Is Decided by Analysis, Never by a Tool
+
+- **Rule**: The design comes first, and it comes from reading the code and the mathematics and reasoning about them.  No checker, type error, finding count, coverage figure or failing test decides what the architecture should be.  Those instruments report on the code that exists; the question of what should exist is not one they can answer.  Metrics are consulted after the design is settled and applied, to find out whether the applied design is correct -- never to discover what it is.
+
+- **Rationale**: An automated signal ranges over the current implementation, so any design read off it is a description of what is already there.  That is the wrong direction: a refactor exists precisely because what is already there is wrong, and the instrument cannot see the object that does not exist yet.  Deferring to it therefore converts a design decision into a repair of the present design, which is how a rewrite silently becomes maintenance.
+
+  The failure is seductive because the instrument's output is specific and the analysis is not yet written down.  Observed here across one session: a `just test-universe` count taken as the objective and driven from 118 to 58 while the proof surface was unchanged; a detector's ten findings taken as evidence of its value when all ten were the author's own work from that afternoon; a mutation score that would have reported the motivating defect as well tested.  In each case a real number stood in for a judgement nobody had made.
+
+- **Violation Example**: choosing a return type because it silences a type error; deciding a Hom belongs in one place because a checker complains about another; letting a failing test dictate the shape of the operation it tests; treating a finding count as the definition of done.
+
+- **Correct Example**: deciding that a rank is a cardinal because ranks can be infinite and the repository owns cardinals, then applying that and using the type checker to find the sites; settling the design in discussion, then measuring.
+
+
 * * *
 
 ### 13. Notebook, REPL & Mathematical Example Style (`NB-*`)
