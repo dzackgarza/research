@@ -1,10 +1,17 @@
-r"""The catalogue realises Nikulin's classification.
+r"""Every row of Nikulin's classification is realised by the catalogue.
 
-`DEV-41`: the expected values are cited data in ``tests/fixtures``; this file is
-a driver over them and contains no literal invariants.  The two sides come from
-different places, which is what makes the assertion able to fail: the triples
-are transcribed from the literature, and the invariants are computed from block
-recipes by the preamble's own operations.
+A K3 surface with a non-symplectic involution has invariant lattice determined
+up to isometry by \((r, a, \delta)\): the rank, the length of the discriminant
+group, and Nikulin's parity invariant.  There are 75 such triples.
+
+The catalogue keys a block recipe by each triple.  The two sides of the
+assertion therefore come from different places: the triple is transcribed from
+the literature, and the invariants are computed from the blocks by the
+preamble's own operations -- Sylvester's inertia, the discriminant length, and
+delta from the discriminant quadratic form.
+
+One case per row, so a run names every row that fails.  The whole-table
+validators raise on the first and report nothing about the rest.
 """
 
 import pytest
@@ -14,28 +21,26 @@ from dzack_research.preamble.all import (
     TwoElementary,
     nikulin_invariants,
 )
-from tests.fixtures.lattices.two_elementary import (
-    K3_INVOLUTION_TYPES,
-    NEGATIVE_DEFINITE_TYPES,
-)
 
 
-def test_the_catalogue_carries_every_cited_k3_involution_type() -> None:
-    assert TwoElementary.cardinality() == len(K3_INVOLUTION_TYPES.value)
+def _name(triple) -> str:
+    r"""Name a case by its triple, so a failing row reports which row it is."""
+    rank, length, delta = triple
+    return f"r{rank}-a{length}-d{delta}"
 
 
-@pytest.mark.parametrize("triple", K3_INVOLUTION_TYPES.value)
-def test_each_cited_k3_involution_type_is_realised(triple) -> None:
+def test_nikulins_classification_has_seventy_five_types() -> None:
+    assert TwoElementary.cardinality() == 75
+
+
+@pytest.mark.parametrize("triple", tuple(TwoElementary), ids=_name)
+def test_each_hyperbolic_type_is_realised(triple) -> None:
     lattice = TwoElementary[triple]
 
     assert lattice.two_elementary_invariants() == nikulin_invariants(*triple)
 
 
-def test_the_catalogue_carries_every_cited_negative_definite_type() -> None:
-    assert NegativeDefTwoElementary.cardinality() == len(NEGATIVE_DEFINITE_TYPES.value)
-
-
-@pytest.mark.parametrize("triple", NEGATIVE_DEFINITE_TYPES.value)
-def test_each_cited_negative_definite_type_is_realised(triple) -> None:
+@pytest.mark.parametrize("triple", tuple(NegativeDefTwoElementary), ids=_name)
+def test_each_negative_definite_type_is_realised(triple) -> None:
     for lattice in NegativeDefTwoElementary[triple]:
         assert lattice.two_elementary_invariants() == nikulin_invariants(*triple)

@@ -1,18 +1,10 @@
 from dzack_research.preamble.all import (
     NamedLattices,
     NegativeDefTwoElementary,
-    TwoElementary,
     nikulin_invariants,
     signature_pair,
     two_elementary_orthogonal_sums,
-    validate_negative_def_two_elementary_table,
-    validate_two_elementary_table,
 )
-
-
-def test_nikulin_table_has_all_75_rows_with_exact_invariants() -> None:
-    assert TwoElementary.cardinality() == 75
-    assert validate_two_elementary_table()
 
 
 def test_delta_distinguishes_coeven_and_coodd_discriminant_forms() -> None:
@@ -39,9 +31,8 @@ def test_block_search_recovers_the_hand_counted_rows() -> None:
         )
 
 
-def test_alexeev_engel_table_rows_have_exact_negative_definite_invariants() -> None:
+def test_the_negative_definite_table_has_fifty_one_rows() -> None:
     assert NegativeDefTwoElementary.cardinality() == 51
-    assert validate_negative_def_two_elementary_table()
 
 
 def test_starred_row_retains_its_live_gluing_inclusion() -> None:

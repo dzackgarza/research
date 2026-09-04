@@ -38,7 +38,11 @@ def test_ehrhart_polynomial_and_h_star_are_computed_without_latte() -> None:
     polynomial = square.ehrhart_polynomial()
     t = polynomial.parent().algebra_generator("t")
     assert polynomial == 4 * t**2 + 4 * t + 1
-    assert square.h_star_vector() == (1, 6, 1)
+    _values = square.h_star_vector()
+    assert _values.cardinality() == 3
+    assert _values[0] == 1
+    assert _values[1] == 6
+    assert _values[2] == 1
     assert square.is_reflexive()
     polar = square.polar_dual()
     assert polar in LatticePolygons()

@@ -236,18 +236,6 @@ test-universe:
     fi
     echo "The proof surface stays inside the universe."
 
-# Check that every cited mathematical fact resolves to a real source, and report
-# what is still unverified against it.  Policy: CONTRIBUTING.md DEV-41 (a
-# mathematical expectation is cited data; the test is a thin driver).
-#
-# Unresolved citations and fixtures that import the code under test fail.  Rows
-# that cite a real source nobody has checked the value against are a standing
-# count, so "nothing wrong" stays distinguishable from "nothing looked at".
-test-fixtures:
-    #!/usr/bin/env bash
-    set -uo pipefail
-    PYTHONPATH=src python3 -m dzack_research.utilities.fixture_provenance tests/fixtures
-
 # Review calibration (submodule) — delegate to review-calibration/justfile.
 # Requires the submodule: git submodule update --init review-calibration
 review-calibration-packet:

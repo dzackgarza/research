@@ -1,3 +1,4 @@
+import pytest
 from sage.all import SR
 from sage.rings.infinity import Infinity
 
@@ -10,10 +11,24 @@ from dzack_research.preamble.all import (
     FunctionEnumeratedSets,
     HermitePolynomials,
     InfiniteEnumeratedSets,
-    LaurentMonomials,
     Lattices,
+    LaurentMonomials,
     SincTranslates,
 )
+from dzack_research.preamble.categories.sets.enumerated.function_sets import (
+    IndexedSymbolicFunctionSet,
+    indexed_symbol,
+)
+
+
+def test_symbolic_function_sets_share_one_indexed_parent() -> None:
+    for function_set in (
+        FourierCharacters(),
+        HermitePolynomials(),
+        LaurentMonomials(),
+        SincTranslates(),
+    ):
+        assert isinstance(function_set, IndexedSymbolicFunctionSet)
 
 
 def test_hermite_polynomials_are_enumerated_by_naturals() -> None:
@@ -33,6 +48,9 @@ def test_hermite_polynomials_are_enumerated_by_naturals() -> None:
     assert H0 in SR
     assert str(H0) == "H_0"
     assert 1 not in hermite
+    assert indexed_symbol("H", -1, "H") not in hermite
+    with pytest.raises(IndexError):
+        hermite.unrank(-1)
 
 
 def test_integer_indexed_function_sets() -> None:
@@ -55,6 +73,8 @@ def test_integer_indexed_function_sets() -> None:
     assert str(F0) == "F_0"
     assert F0 in fourier
     assert 1 not in fourier
+    with pytest.raises(IndexError):
+        laurent.unrank(-1)
 
 
 def test_a_lattice_may_be_free_on_hermite_polynomials() -> None:

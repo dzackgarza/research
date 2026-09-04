@@ -90,7 +90,10 @@ def test_exact_cvp_babai_minima_and_voronoi_geometry_on_square_lattice() -> None
 
     assert lattice.closest_vector(target) == e1
     assert lattice.babai(target) == e1
-    assert lattice.successive_minima() == (1, 1)
+    _values = lattice.successive_minima()
+    assert _values.cardinality() == 2
+    assert _values[0] == 1
+    assert _values[1] == 1
     assert lattice.hadamard_ratio() == 1
     assert lattice.covering_radius() ** 2 == QQ(1) / 2
     assert lattice.center_density() == QQ(1) / 4
