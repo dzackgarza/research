@@ -3628,6 +3628,16 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 
 
+#### `CON-14`: A Free Object Is Built on a Set; an Arity Is a Chosen Set
+
+- **Rule**: The free functor takes a set.  There is no canonical set of cardinality \(n\), so `R^n` names no object on its own, and an integer arity is sugar for *choosing* one -- it must resolve to a named set and route through the set-taking constructor.  Any construction indexed by an arity states the chosen set in its docstring, and its endpoints are the free objects on those sets.  Where the choice is what the construction records -- matrix entries indexed by row and column labels, a framing, a chosen presentation -- name the sets, never the integers.
+
+- **Rationale**: Two free modules of the same rank on different label sets are isomorphic and not equal, and the owned parents are deliberately not interned so that two structures on isomorphic underlying objects stay distinct.  A construction that identifies free objects by rank has thrown away the labels its own data is indexed by, and every downstream operation that reads a matrix entry, a coordinate, or a generator by name is then reading from an object the caller cannot name.
+
+- **Violation Example**: `M_{m x n}(R) = Hom_R(R^m, R^n)` in a docstring; a matrix constructor that builds a rank-\(n\) parent directly instead of through the set-taking one; a test asserting `f.domain() is ZZ**2`, which passes for an implementation that identified free modules by rank alone.
+
+- **Correct Example**: `M_{m x n}(R) = Hom_R(F_R(S), F_R(T))` for chosen finite sets; `FreeModule(R, n)` resolving to `FreeModuleOn(R, Sets.Delta[n-1])` through one constructor; a test asserting `FreeModule(ZZ, 2) is FreeModuleOn(ZZ, Sets.Delta[1])` and that a free module on another two-element set is not it and has a different Hom.
+
 * * *
 
 ### 4. Category Placement & Capability (`CAT-*`)
@@ -3978,6 +3988,16 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Correct Example**: `Groups` is the standard public name of the one owned category whose definition is the corresponding classifier/category expression; aliases and backend names resolve to that identity.
 
+
+#### `LEX-10`: Every Generator, Dual and Basis Names Its Structure -- and No Alias Omits It
+
+- **Rule**: Public accessors for generated or derived structure state which structure they mean: `module_generators`, `group_generators`, `algebra_generators`, `ideal_generators`, `monoid_generators`, `dual_module`, `dual_lattice`, `dual_group`.  A bare `gens`, `generators`, `dual`, `basis` or `ngens` is not a public method, **and not a permitted alias for one**.
+
+- **Rationale**: Every object here sits in several categories at once, so an unqualified request names no operation.  `ZZ` is at once a ring, a rank-one \(\mathbb Z\)-module, a rank-one \(\mathbb Z\)-algebra, a group and a monoid; its module generators are \(\{1\}\) and its multiplicative monoid generators are the primes together with \(-1\).  An ideal of \(R\) is both an ideal and an \(R\)-submodule of \(R\), with different generating sets.  The question has no answer until the structure is named.  An alias is worse than a bad name: it makes an ill-posed question answerable, and whatever it returns is a silent choice of one structure among several, made by the implementer and invisible at the call site.  Sage can afford `gens()` because a Sage object usually has one privileged structure baked into its class; the preamble cannot, because multi-category placement is the design.
+
+- **Violation Example**: `gens = ideal_generators` or `generators = gens` on an owned class; `def basis(self)` on an object that is a module and a formed module at once; a caller reaching for `.gens()` because the class offers it.
+
+- **Correct Example**: `ideal_generators()` as the only accessor, with callers renamed; Sage's `.gens()` retained only on an engine handle inside a private adapter, where the receiver is a Sage object with one structure.
 
 * * *
 
@@ -4665,6 +4685,27 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 - **Correct Example**: measuring dependency direction against the mathematical dependency order — an import from `categories/rings/` up into `categories/modules/` is a signal, an import from `categories/modules/` down into `categories/rings/` is not — then reading the flagged file to decide whether the edge is a filing error or correct mathematics.  Quoting a complexity percentile beside Sage's.  Naming what a count made you go and read, and what you found there.
 
 
+
+#### `DEV-37`: A Test Stays Inside the Mathematical Universe
+
+- **Rule**: `ARC-00` governs the proof surface.  Do not apply `tuple`, `list`, `sorted`, `len` or a comprehension to an owned object in order to make an assertion.  Ask the object: `cardinality()` rather than `len`; equality of owned objects rather than equality of materialised sequences; `Set(...)`, `finite_ordered_set(...)` or the relevant family on the right-hand side.  `len` remains correct on a Python container the test itself constructed as syntactic ingress, and on nothing else.
+
+- **Rationale**: `tuple(X)` yields a value with no parent, no category, no cardinality and no homs -- an object of no category in this repository.  The assertion that follows is a statement about Python data structures, and because the test *is* the proof surface, that is what has been proved.  `len` carries the same exit one level down, and additionally asserts finiteness at a site that never stated it: a length is an `int`, a cardinality is a cardinal, and the roots of an indefinite lattice are infinite.  The order underlying a materialisation being genuine -- a framing is ordered, invariant factors are ordered by divisibility -- does not license the exit; order is not what is at issue.
+
+- **Violation Example**: `assert tuple(m.module_generators()) == (x, y)`; `assert len(lattice.roots()) == 6`; `assert len(tuple(pairs)) == 10`; reading the collection class to find out which accessor exists, then asserting against that.
+
+- **Correct Example**: `assert lattice.roots().cardinality() == 6`; `assert L.inverted_elements() == Set((ZZ(2),))`; `assert R.algebra_generating_set() == finite_ordered_set(("x", "y"))`; `assert homset.is_empty()`.  If two families should be equal, write `==` between them; whether the equality is implemented is the implementation's obligation to meet, not the test's to work around.
+
+
+#### `DEV-38`: Assert the Object, Not a Chosen Presentation
+
+- **Rule**: Assert the mathematical entity and its defining property.  Do not assert a presentation, a chosen datum that is not unique, or an implementation class.  An ideal is compared to an ideal, a subobject to a subobject, a morphism through its defining law.  Where a datum is a choice -- a minimal generating set, a basis, a set of orbit representatives -- assert what the choice must satisfy, never which choice was made.
+
+- **Rationale**: A presentation-pinned assertion fails on an equal object presented differently and passes for reasons unrelated to the claim, so it discriminates against correct implementations while admitting wrong ones.  A minimal generating set is not unique: an implementation that legitimately selects another generator fails a test that named one.  An `isinstance` check asserts an implementation accident, and one mathematical notion is realised here by several unrelated classes; the category is the type, so membership is the statement and the defining property is the proof.
+
+- **Violation Example**: `assert tuple(I.ideal_generators()) == (ring(y),)`; `assert tuple(M.minimal_module_generators()) == (M.module_generator(0),)`; `assert isinstance(genus, Genus)`; `assert not hasattr(tensor, "morphism")`, which records a deletion and keeps the removed name alive for every later reader.
+
+- **Correct Example**: `assert I.colon(divisor) == ring.ideal(ring(y))`; `assert M.submodule(M.minimal_module_generators()) == M` beside the asserted number of generators; `assert genus.signature_pair() == (0, 2)` and `genus.representative().genus() == genus`; for a derivation, the graded Leibniz rule and `d^2 = 0` rather than its class.
 
 * * *
 
