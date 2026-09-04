@@ -8,6 +8,7 @@ engine is read through the selected-presentation backend method ``_smith_engine`
 and every Smith-form computation is an explicit crossing into it.
 """
 
+from sage.categories.category import Category
 from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.element import ModuleElement
@@ -1006,6 +1007,11 @@ class _GeneralPresentedModule(Parent):
         module_generating_set,
         relation_matrix,
         presentation,
+        subobject_ambient=None,
+        subobject_generator_images=None,
+        subobject_lift=None,
+        subobject_inclusion_factory=None,
+        subobject_verify_linearity=True,
     ) -> None:
         self._free_module = free_module
         self._relation_submodule = relation_submodule
@@ -1016,11 +1022,21 @@ class _GeneralPresentedModule(Parent):
         self._lifted_relation_free_module = None
         self._lifted_relation_submodule = None
 
+        categories = [_SelectedFinitePresentationModules(base_ring)]
+        if subobject_ambient is not None or subobject_inclusion_factory is not None:
+            self._preamble_subobject_ambient = subobject_ambient
+            self._preamble_subobject_generator_images = subobject_generator_images
+            self._preamble_subobject_lift = subobject_lift
+            self._preamble_subobject_inclusion_factory = subobject_inclusion_factory
+            self._preamble_subobject_verify_linearity = subobject_verify_linearity
+            categories.append(ModuleSubobjects(base_ring))
+
         Parent.__init__(
             self,
             base=base_ring,
-            category=Modules(base_ring),
+            category=Category.join(tuple(categories)),
         )
+        refine(self, categories)
 
     def _scale_representative(self, scalar, representative):
         r"""Scale a private cover representative by an owned scalar."""
@@ -1172,6 +1188,11 @@ class _PresentedModule(_GeneralPresentedModule):
         module_generating_set,
         relation_matrix,
         presentation,
+        subobject_ambient=None,
+        subobject_generator_images=None,
+        subobject_lift=None,
+        subobject_inclusion_factory=None,
+        subobject_verify_linearity=True,
     ) -> None:
         self._preamble_pid_engine = engine
         super().__init__(
@@ -1181,6 +1202,11 @@ class _PresentedModule(_GeneralPresentedModule):
             module_generating_set=module_generating_set,
             relation_matrix=relation_matrix,
             presentation=presentation,
+            subobject_ambient=subobject_ambient,
+            subobject_generator_images=subobject_generator_images,
+            subobject_lift=subobject_lift,
+            subobject_inclusion_factory=subobject_inclusion_factory,
+            subobject_verify_linearity=subobject_verify_linearity,
         )
 
     def _to_smith_engine_element(self, element):
@@ -1735,7 +1761,15 @@ def _presentation_from_relation_rows(
     return module_homset(source, target)(images)
 
 
-def FinitelyPresentedModule(presentation):
+def FinitelyPresentedModule(
+    presentation,
+    *,
+    _subobject_ambient=None,
+    _subobject_generator_images=None,
+    _subobject_lift=None,
+    _subobject_inclusion_factory=None,
+    _subobject_verify_linearity=True,
+):
     r"""Return ``coker(presentation)`` in ``R-Mod`` with its selected module presentation."""
     # The cokernel here is taken in the module category.  A stricter structured
     # morphism (lattice/form/equivariant/etc.) must first be read as its
@@ -1833,6 +1867,11 @@ def FinitelyPresentedModule(presentation):
             module_generating_set=labels,
             relation_matrix=relations,
             presentation=selected_presentation,
+            subobject_ambient=_subobject_ambient,
+            subobject_generator_images=_subobject_generator_images,
+            subobject_lift=_subobject_lift,
+            subobject_inclusion_factory=_subobject_inclusion_factory,
+            subobject_verify_linearity=_subobject_verify_linearity,
         )
     elif engine in SageRings():
         quotient = _GeneralPresentedModule(
@@ -1842,6 +1881,11 @@ def FinitelyPresentedModule(presentation):
             module_generating_set=labels,
             relation_matrix=relations,
             presentation=selected_presentation,
+            subobject_ambient=_subobject_ambient,
+            subobject_generator_images=_subobject_generator_images,
+            subobject_lift=_subobject_lift,
+            subobject_inclusion_factory=_subobject_inclusion_factory,
+            subobject_verify_linearity=_subobject_verify_linearity,
         )
     else:
         # The base ring has no Sage computation ring behind it, so the
@@ -1854,14 +1898,12 @@ def FinitelyPresentedModule(presentation):
             module_generating_set=labels,
             relation_matrix=relations,
             presentation=selected_presentation,
+            subobject_ambient=_subobject_ambient,
+            subobject_generator_images=_subobject_generator_images,
+            subobject_lift=_subobject_lift,
+            subobject_inclusion_factory=_subobject_inclusion_factory,
+            subobject_verify_linearity=_subobject_verify_linearity,
         )
-
-    refine(
-        quotient,
-        [
-            _SelectedFinitePresentationModules(base_ring),
-        ],
-    )
 
     return quotient
 

@@ -356,12 +356,6 @@ class Schemes(OwnedCategoryOverBaseRing):
         def _categorical_pullback(self, left_morphism, right_morphism):
             return scheme_fiber_product(left_morphism, right_morphism)
 
-        def Subobjects(self, ambient):
-            r"""Return the category of subobjects of ``ambient``."""
-            if ambient not in self:
-                raise TypeError("a subobject category is taken of a scheme in this category")
-            return Subobjects(ambient, Schemes(ambient.scheme_base_ring()))
-
 
     @cached_method
     def base_scheme(self):
@@ -1322,7 +1316,7 @@ class _SchemeSubobjectsOf(OwnedParameterizedCategory):
 
     def super_categories(self):
         ambient = self.ambient_scheme()
-        return [Subobjects(ambient, Schemes(ambient.scheme_base_ring()))]
+        return [Schemes(ambient.scheme_base_ring()).Subobjects(ambient)]
 
     class ParentMethods:
         def inclusion(self):

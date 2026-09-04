@@ -49,6 +49,18 @@ _OWNED_SPELLINGS = {
     "Biproduct": lambda left, right: _common_owned_category(left, right).biproduct([left, right]),
     "TensorProduct": lambda left, right: _common_owned_category(left, right).tensor_product([left, right]),
     "TensorSquare": lambda obj: _common_owned_category(obj, obj).tensor_product([obj, obj]),
+    # A construction on a category is reached from that category; one whose
+    # inputs are several categories is a construction in Cat.
+    "Core": lambda category: category.Core(),
+    "OppositeCategory": lambda category: category.opposite(),
+    "SliceOver": lambda category, base_object: category.SliceOver(base_object),
+    "CosliceUnder": lambda category, base_object: category.CosliceUnder(base_object),
+    "SubobjectsOf": lambda category, base_object: category.Subobjects(base_object),
+    "SuperobjectsOf": lambda category, base_object: category.Superobjects(base_object),
+    "Subobjects": lambda base_object, category=None: (
+        base_object.category() if category is None else category
+    ).Subobjects(base_object),
+    "ProductCategory": lambda left, right: Cat().product([left, right]),
 }
 
 

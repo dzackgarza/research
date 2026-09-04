@@ -10,7 +10,7 @@ from sage.categories.morphism import Morphism
 from sage.categories.sets_cat import Sets as SageSets
 from sage.structure.parent import Parent
 
-from dzack_research.preamble.categories.abstract_categories.objects import Objects
+from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
     ArrowCategory,
 )
@@ -94,7 +94,7 @@ class CategoryFunctorHomset(CategoricalHomset):
         return self(IdentityFunctor(self.domain().represented_category()))
 
 
-class Cat(Category):
+class Cat(OwnedCategory):
     r"""The represented category of categories."""
 
     def __init__(self) -> None:
@@ -141,8 +141,29 @@ class Cat(Category):
             raise ValueError("functors are not composable in Cat")
         return second * first
 
-    def ArrowCategory(self):
-        return ArrowCategory(self)
+    def an_object(self):
+        r"""The category of sets, as an object of ``Cat``."""
+        from dzack_research.preamble.categories.sets.set_categories import Sets
+
+        return self.object(Sets())
+
+    def product(self, factors):
+        r"""Return the product of a finite family of categories.
+
+        This is the same word as ``Modules(R).product``: ``Cat`` is a category
+        with products, and its objects happen to be categories.  ``C * D`` is
+        the operator notation that delegates here.
+        """
+        return self._fold_construction(
+            self._categorical_product, factors, name="Product factors"
+        )
+
+    def _categorical_product(self, left, right):
+        from dzack_research.preamble.categories.abstract_categories.category_constructions import (
+            ProductCategory,
+        )
+
+        return ProductCategory(left, right)
 
     def _repr_(self) -> str:
         return "Category of categories"
