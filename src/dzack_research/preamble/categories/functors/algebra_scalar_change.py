@@ -14,6 +14,7 @@ bijection, unit, and counit on that executable subdomain.
 
 from sage.categories.morphism import SetMorphism
 from sage.categories.rings import Rings as SageRings
+from sage.categories.homset import Hom as _SageHom
 from sage.misc.cachefunc import cached_function
 
 from dzack_research.preamble.categories.rings.ring_foundation import OwnedRings as _OwnedRings
@@ -22,10 +23,7 @@ from dzack_research.preamble.categories.algebras.algebras import (
     algebra_homset,
 )
 from dzack_research.preamble.categories.algebras.finitely_presented_algebras import AlgebrasWithChosenFinitePresentation
-from dzack_research.preamble.categories.algebras.restricted_scalars import (
-    RestrictedScalarsAlgebras,
-    restrict_algebra_scalars,
-)
+from dzack_research.preamble.categories.algebras.restricted_scalars import restrict_algebra_scalars
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
@@ -47,7 +45,7 @@ def _engine_ring_map(ring_map):
         owned_scalar = owned_source._from_engine_element(source(scalar))
         return _engine_element(owned_target, ring_map(owned_scalar))
 
-    return SetMorphism(source.Mor(target), image)
+    return SetMorphism(_SageHom(source, target, SageRings()), image)
 
 
 def _base_change_presented_element(algebra, element, target, ring_map):
@@ -98,21 +96,7 @@ class AlgebraScalarExtensionFunctor(Functor):
                 "with a chosen finite commutative polynomial presentation"
             )
         extended = algebra.base_change(self.ring_map())
-        extended._preamble_scalar_extension_source_algebra = algebra
-        extended._preamble_scalar_extension_ring_map = self.ring_map()
         return extended
-
-    def source_algebra(self, extended_algebra):
-        r"""Return the exact source selected by this scalar-extension construction."""
-        source = extended_algebra.__dict__.get("_preamble_scalar_extension_source_algebra")
-        ring_map = extended_algebra.__dict__.get("_preamble_scalar_extension_ring_map")
-        if source is None or ring_map is not self.ring_map():
-            raise ValueError(
-                f"{extended_algebra} was not constructed by scalar extension along {self.ring_map()}"
-            )
-        return source
-
-    chosen_preimage = source_algebra
 
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())
@@ -144,12 +128,6 @@ class AlgebraRestrictionOfScalarsFunctor(Functor):
 
     def _apply_object(self, algebra):
         return restrict_algebra_scalars(algebra, self.ring_map())
-
-    def chosen_preimage(self, image):
-        if image in RestrictedScalarsAlgebras(self._source_ring):
-            if image.ring_map() is self.ring_map():
-                return image.algebra_over_extension()
-        return super().chosen_preimage(image)
 
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())

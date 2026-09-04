@@ -33,17 +33,12 @@ class VectorPrimitiveExtension:
         )
         if vector.q() == 0:
             raise ValueError("VectorPrimitiveExtension requires an anisotropic vector")
-        ring = lattice.base_ring()
-        coordinates = tuple(ring(coordinate) for coordinate in vector.to_tuple())
-        divisor = ring.zero()
-        for coordinate in coordinates:
-            divisor = divisor.gcd(coordinate)
-        if abs(divisor) != ring.one():
-            raise ValueError("VectorPrimitiveExtension is normalized to a primitive vector")
         if not lattice.is_finite_rank() or not lattice.is_nondegenerate():
             raise ValueError("VectorPrimitiveExtension requires a finite nondegenerate lattice")
 
         line = lattice.subobject_on((vector,))
+        if not line.is_primitive():
+            raise ValueError("VectorPrimitiveExtension is normalized to a primitive vector")
         complement = line.orthogonal_complement()
         if line.rank() + complement.rank() != lattice.rank():
             raise ArithmeticError("the anisotropic line does not have complementary orthogonal rank")

@@ -99,18 +99,12 @@ class TensorHomAdjunction(Adjunction):
         tensor = self.left_adjoint()(module)
         internal_hom = self.right_adjoint()(tensor)
         return module_homset(module, internal_hom)(
-            {
-                module_label: module_homset(self.fixed_module(), tensor)(
-                    {
-                        fixed_label: tensor.pure_tensor(
-                            module.module_generator(module_label),
-                            self.fixed_module().module_generator(fixed_label),
-                        )
-                        for fixed_label in self.fixed_module().module_generating_set()
-                    }
+            lambda module_label: module_homset(self.fixed_module(), tensor)(
+                lambda fixed_label: tensor.pure_tensor(
+                    module.module_generator(module_label),
+                    self.fixed_module().module_generator(fixed_label),
                 )
-                for module_label in module.module_generating_set()
-            }
+            )
         )
 
     def counit(self, module):
@@ -120,13 +114,9 @@ class TensorHomAdjunction(Adjunction):
             internal_hom,
             self.fixed_module(),
             module,
-            {
-                (hom_label, fixed_label): internal_hom.module_generator(hom_label)(
-                    self.fixed_module().module_generator(fixed_label)
-                )
-                for hom_label in internal_hom.module_generating_set()
-                for fixed_label in self.fixed_module().module_generating_set()
-            },
+            lambda hom_label, fixed_label: internal_hom.module_generator(hom_label)(
+                self.fixed_module().module_generator(fixed_label)
+            ),
         )
         return tensor.from_bilinear(evaluation)
 

@@ -38,7 +38,6 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     InternalHomModules,
     Modules,
 )
-from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
 from dzack_research.preamble.tensors.tensor import tensor
 
@@ -62,7 +61,7 @@ class BilinearFormHoms(OwnedCategoryOverBaseRing):
                 raise TypeError("a Gram tensor here requires scalar-valued form entries")
 
             labels = self.left_module().module_generating_set()
-            size = cardinal(labels.cardinality())
+            size = labels.cardinality()
             if not size.is_finite():
                 raise TypeError("a form supplied only by a pairing has no finite Gram tensor")
             rank = int(size.finite_value())

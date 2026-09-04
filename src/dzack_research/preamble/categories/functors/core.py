@@ -18,8 +18,12 @@ class Functor(SageObject):
     def __init__(self, domain, codomain) -> None:
         self._domain = domain
         self._codomain = codomain
-        self._object_images: dict[int, tuple[object, object]] = {}
-        self._chosen_preimages: dict[int, tuple[object, list[object]]] = {}
+        # One identity-based provenance store for everything this functor
+        # actually maps.  Keeping the source object/morphism alive in the
+        # record also makes ``id`` reuse impossible while the provenance is
+        # live.  Reverse lookup is intentionally derived from this same store
+        # rather than maintained by a second cache.
+        self._provenance: dict[int, tuple[object, object]] = {}
 
     def _cache_key(self):
         r"""Functors have identity semantics as parameters of categorical constructions."""
@@ -37,56 +41,55 @@ class Functor(SageObject):
     def _apply_morphism(self, morphism):
         raise NotImplementedError("a functor must specify its action on morphisms")
 
+    def _cached_image(self, preimage):
+        recorded = self._provenance.get(id(preimage))
+        if recorded is not None and recorded[0] is preimage:
+            return recorded[1]
+        return None
+
+    def _record_image(self, preimage, image):
+        key = id(preimage)
+        recorded = self._provenance.get(key)
+        if recorded is not None and recorded[0] is preimage and recorded[1] is not image:
+            raise ValueError(
+                "this functor instance already selected a different image for the same preimage"
+            )
+        self._provenance[key] = (preimage, image)
+        return image
+
     def object_image(self, obj):
         if obj not in self.domain():
             raise TypeError(f"{obj} is not an object of {self.domain()}")
-        key = id(obj)
-        cached = self._object_images.get(key)
-        if cached is not None and cached[0] is obj:
-            return cached[1]
+        cached = self._cached_image(obj)
+        if cached is not None:
+            return cached
         image = self._apply_object(obj)
         if image not in self.codomain():
             raise TypeError(
                 f"the image of {obj} under {self} is not an object of {self.codomain()}"
             )
-        self._object_images[key] = (obj, image)
-        image_key = id(image)
-        recorded = self._chosen_preimages.get(image_key)
-        if recorded is None or recorded[0] is not image:
-            self._chosen_preimages[image_key] = (image, [obj])
-        elif all(preimage is not obj for preimage in recorded[1]):
-            recorded[1].append(obj)
-        return image
+        return self._record_image(obj, image)
 
     def chosen_preimage(self, image):
         r"""Return the unique source object recorded for this exact functor image."""
-        recorded = self._chosen_preimages.get(id(image))
-        if recorded is None or recorded[0] is not image:
+        matches = [
+            preimage
+            for preimage, recorded_image in self._provenance.values()
+            if recorded_image is image
+        ]
+        if not matches:
             raise ValueError(f"{image} has no chosen preimage recorded by {self}")
-        if len(recorded[1]) != 1:
+        if len(matches) != 1:
             raise ValueError(
                 f"{image} has multiple chosen preimages under {self}; state the source explicitly"
             )
-        return recorded[1][0]
+        return matches[0]
 
     def adopt_object_image(self, preimage, image):
         r"""Use a provenance-validated exact image object for ``preimage``."""
         if preimage not in self.domain() or image not in self.codomain():
             raise TypeError("an adopted functor image has endpoints outside the functor")
-        key = id(preimage)
-        cached = self._object_images.get(key)
-        if cached is not None and cached[0] is preimage and cached[1] is not image:
-            raise ValueError(
-                "this functor instance already selected a different image for the same object"
-            )
-        self._object_images[key] = (preimage, image)
-        image_key = id(image)
-        recorded = self._chosen_preimages.get(image_key)
-        if recorded is None or recorded[0] is not image:
-            self._chosen_preimages[image_key] = (image, [preimage])
-        elif all(source is not preimage for source in recorded[1]):
-            recorded[1].append(preimage)
-        return image
+        return self._record_image(preimage, image)
 
     def on_object(self, obj):
         return self.object_image(obj)
@@ -94,6 +97,9 @@ class Functor(SageObject):
     def morphism_image(self, morphism):
         if not isinstance(morphism, Map):
             raise TypeError("a functor acts on a morphism through its morphism action")
+        cached = self._cached_image(morphism)
+        if cached is not None:
+            return cached
         domain = self.object_image(morphism.domain())
         codomain = self.object_image(morphism.codomain())
         image = self._apply_morphism(morphism)
@@ -102,7 +108,7 @@ class Functor(SageObject):
                 "a functor's morphism image must run between the cached images "
                 "of the original domain and codomain"
             )
-        return image
+        return self._record_image(morphism, image)
 
     def on_morphism(self, morphism):
         return self.morphism_image(morphism)

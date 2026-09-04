@@ -73,9 +73,6 @@ class GroupModuleScalarExtensionFunctor(Functor):
     def _apply_object(self, group_module):
         return group_module.base_change(self.ring_map())
 
-    def chosen_preimage(self, image):
-        return super().chosen_preimage(image)
-
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())
         target = self(morphism.codomain())
@@ -162,9 +159,6 @@ class GroupModuleRestrictionOfScalarsFunctor(Functor):
             )
         )
         return refine(restricted, GroupModules(self._source_ring, self.group()))
-
-    def chosen_preimage(self, image):
-        return super().chosen_preimage(image)
 
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())

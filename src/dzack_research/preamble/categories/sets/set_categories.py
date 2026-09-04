@@ -309,48 +309,68 @@ class Sets(OwnedCategory):
         return _set_mor_category(domain, codomain)
 
 
-    def product(self, family):
-        r"""Return $\prod_{i \in I} X_i$ for an indexed family of objects.
 
-        A product is taken over an index set, so the family carries both the
-        index set and the factor at each index.  Asking the category is the
-        public route (`STY-02`), and naming the index set rather than an arity
-        is what `CON-14` requires; the binary `Product(A, B)` is sugar that
-        chooses `Sets.Δ[1]` for the caller.
 
-        Two constructions of the same product are the same object.  Without
-        that, an element of one never equals an element of the other and the
-        product is unusable as a codomain -- a caller could not compare what an
-        operation returned against a value it built.  A family's value map is a
-        callable and cannot key a cache, so a finite index set is resolved to
-        its factors, which can.
-        """
-        index_set = family.index_set()
-        if index_set.is_finite():
-            return _cartesian_product_of_tuple(
-                tuple(family.value(index) for index in index_set)
-            )
-        return CartesianProductOfFamily(index_set, family.value)
 
-    def _categorical_product(self, left, right):
-        return CartesianProductOfSets(left, right)
 
-    def _categorical_coproduct(self, left, right):
-        return CoproductOfSets(left, right)
 
-    def _categorical_product_morphism(self, left_morphism, right_morphism, source, target):
-        return CartesianProductMorphism(
-            source, target,
-            lambda index: left_morphism if int(index) == 0 else right_morphism,
-        )
-
-    def _categorical_coproduct_morphism(self, left_morphism, right_morphism, source, target):
-        return CoproductMorphism(
-            source, target,
-            lambda index: left_morphism if int(index) == 0 else right_morphism,
-        )
 
     class SubcategoryMethods:
+        def product(self, family):
+            r"""Return $\prod_{i \in I} X_i$ for an indexed family of objects.
+
+            A product is taken over an index set, so the family carries both the
+            index set and the factor at each index.  Asking the category is the
+            public route (`STY-02`), and naming the index set rather than an arity
+            is what `CON-14` requires; the binary `Product(A, B)` is sugar that
+            chooses `Sets.Δ[1]` for the caller.
+
+            Two constructions of the same product are the same object.  Without
+            that, an element of one never equals an element of the other and the
+            product is unusable as a codomain -- a caller could not compare what an
+            operation returned against a value it built.  A family's value map is a
+            callable and cannot key a cache, so a finite index set is resolved to
+            its factors, which can.
+
+            A bare sequence of factors is the family on the canonical labels, so
+            the caller may hand over either.
+            """
+            from dzack_research.preamble.categories.abstract_categories.products import (
+                _finite_factor_family,
+            )
+
+            family = _finite_factor_family(family, name="Product factors")
+            index_set = family.index_set()
+            if index_set.is_finite():
+                return _cartesian_product_of_tuple(
+                    tuple(family.value(index) for index in index_set)
+                )
+            return CartesianProductOfFamily(index_set, family.value)
+
+        def _categorical_product(self, left, right):
+            return CartesianProductOfSets(left, right)
+
+        def coproduct(self, factors):
+            r"""Return the coproduct of a finite family of objects of this category."""
+            return self._fold_construction(
+                self._categorical_coproduct, factors, name="Coproduct factors"
+            )
+
+        def _categorical_coproduct(self, left, right):
+            return CoproductOfSets(left, right)
+
+        def _categorical_product_morphism(self, left_morphism, right_morphism, source, target):
+            return CartesianProductMorphism(
+                source, target,
+                lambda index: left_morphism if int(index) == 0 else right_morphism,
+            )
+
+        def _categorical_coproduct_morphism(self, left_morphism, right_morphism, source, target):
+            return CoproductMorphism(
+                source, target,
+                lambda index: left_morphism if int(index) == 0 else right_morphism,
+            )
+
         def Homsets(self):
             r"""A Hom object of any owned category is a set."""
             return Homsets()

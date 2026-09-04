@@ -6,7 +6,6 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
 )
 from sage.categories.category import Category
 from sage.misc.cachefunc import cached_method
-from sage.categories.homset import Hom
 from sage.categories.map import Map
 from sage.categories.morphism import Morphism, SetMorphism
 from sage.categories.sets_cat import Sets as SageSets
@@ -133,35 +132,6 @@ class Bifunctor(Functor):
         if isinstance(left, Map) or isinstance(right, Map):
             return self.morphism_image(left, right)
         return self.object_image(left, right)
-
-
-def _identity(obj):
-    try:
-        return Hom(obj, obj).identity()
-    except (TypeError, ValueError):
-        return Sets().Mor(obj, obj).identity()
-
-
-class ImageInclusionFunctor(Functor):
-    r"""Forget the chosen preimage of a presented functor-image object."""
-
-    _faithful = True
-
-    def __init__(self, image_category) -> None:
-        self._image_category = image_category
-        super().__init__(image_category, image_category.functor().codomain())
-
-    def image_category(self):
-        return self._image_category
-
-    def _apply_object(self, presented):
-        return presented.image_object()
-
-    def _apply_morphism(self, morphism):
-        return morphism.codomain_arrow()
-
-    def _repr_(self):
-        return f"Inclusion of {self.image_category()} into {self.codomain()}"
 
 
 class DomainFunctor(Functor):
@@ -370,7 +340,8 @@ class DiscreteDiagram(Functor):
         return self._values(index.value())
 
     def _apply_morphism(self, morphism):
-        return _identity(self(morphism.domain()))
+        image = self(morphism.domain())
+        return self.codomain().Mor(image, image).identity()
 
 
 class ConstantDiagram(Functor):
@@ -389,7 +360,8 @@ class ConstantDiagram(Functor):
         return self.constant_value()
 
     def _apply_morphism(self, morphism):
-        return _identity(self.constant_value())
+        value = self.constant_value()
+        return self.codomain().Mor(value, value).identity()
 
 
 def compose_functors(second, first):
@@ -448,7 +420,6 @@ __all__ = [
     "DiscreteDiagram",
     "DiscreteFunctor",
     "DomainFunctor",
-    "ImageInclusionFunctor",
     "NaturalIsomorphism",
     "NaturalTransformationSpace",
     "NaturalTransformations",

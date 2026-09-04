@@ -57,11 +57,6 @@ class RingOfIntegersFunctor(Functor):
         target = self(embedding.codomain())
         return order_homset(source, target)(embedding)
 
-    def chosen_preimage(self, image):
-        if image not in OwnedOrders():
-            raise ValueError("the image is not an owned order")
-        return image.fraction_field()
-
     def _repr_(self):
         return "Ring-of-integers functor"
 

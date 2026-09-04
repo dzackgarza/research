@@ -51,9 +51,6 @@ class ScalarExtensionFunctor(Functor):
                 return image
         return module.base_change(self.ring_map())
 
-    def chosen_preimage(self, image):
-        return super().chosen_preimage(image)
-
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())
         target = self(morphism.codomain())
@@ -90,11 +87,6 @@ class RestrictionOfScalarsFunctor(Functor):
 
     def _apply_object(self, module):
         return restrict_scalars(module, self.ring_map())
-
-    def chosen_preimage(self, image):
-        if isinstance(image, RestrictedScalarsModuleView):
-            return image.module_over_extension()
-        return super().chosen_preimage(image)
 
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())

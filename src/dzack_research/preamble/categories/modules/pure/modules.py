@@ -114,6 +114,112 @@ class ModuleEndCategoryConstruction(LinearEndCategoryConstruction):
 class Modules(OwnedCategoryOverBaseRing):
     r"""Modules over a ring, on the owned additive and scalar spines."""
 
+    class SubcategoryMethods:
+        r"""Constructions this category owns, reachable from any subcategory."""
+
+        def tensor_product(self, factors):
+            r"""Return the tensor product of a finite family of objects of this category."""
+            return self._fold_construction(
+                self._categorical_tensor_product, factors, name="Tensor product factors"
+            )
+
+        def _categorical_tensor_product(self, left, right):
+            if left not in self or right not in self:
+                raise TypeError("a module tensor product requires two modules over one ring")
+            return _module_tensor_product(left, right)
+
+        def biproduct(self, factors):
+            r"""Return the biproduct of a finite family of objects of this category."""
+            return self._fold_construction(
+                self._categorical_biproduct, factors, name="Biproduct factors"
+            )
+
+        def _categorical_biproduct(self, left, right):
+            if left not in self or right not in self:
+                raise TypeError("a module biproduct requires two modules over one ring")
+            return _module_biproduct(left, right)
+
+        def product(self, factors):
+            r"""Return the product of a finite family of objects of this category."""
+            return self._fold_construction(
+                self._categorical_product, factors, name="Product factors"
+            )
+
+        def _categorical_product(self, left, right):
+            return self._categorical_biproduct(left, right)
+
+        def coproduct(self, factors):
+            r"""Return the coproduct of a finite family of objects of this category."""
+            return self._fold_construction(
+                self._categorical_coproduct, factors, name="Coproduct factors"
+            )
+
+        def _categorical_coproduct(self, left, right):
+            return self._categorical_biproduct(left, right)
+
+        def _categorical_equalizer(self, left_morphism, right_morphism):
+            r"""Realize an equalizer in ``R-Mod`` as ``ker(left-right)``."""
+            if (
+                left_morphism.domain() not in self
+                or left_morphism.codomain() not in self
+                or left_morphism.domain() is not right_morphism.domain()
+                or left_morphism.codomain() is not right_morphism.codomain()
+            ):
+                raise ValueError("module equalizer arrows must be parallel R-linear maps")
+            return (left_morphism - right_morphism).kernel()
+
+        def _categorical_coequalizer(self, left_morphism, right_morphism):
+            r"""Realize a coequalizer in ``R-Mod`` as ``coker(left-right)``."""
+            if (
+                left_morphism.domain() not in self
+                or left_morphism.codomain() not in self
+                or left_morphism.domain() is not right_morphism.domain()
+                or left_morphism.codomain() is not right_morphism.codomain()
+            ):
+                raise ValueError("module coequalizer arrows must be parallel R-linear maps")
+            return (left_morphism - right_morphism).cokernel()
+
+        def _categorical_equalizer_family(self, morphisms):
+            r"""Realize a finite wide equalizer through kernels/intersections."""
+            size = morphisms.cardinality()
+            if not size.is_finite():
+                raise NotImplementedError(
+                    "the represented module wide-equalizer backend requires a finite arrow family"
+                )
+            count = int(size.finite_value())
+            if count == 0:
+                raise ValueError("a wide equalizer family must be nonempty")
+            reference = morphisms.unrank(0)
+            equalizer = self._categorical_equalizer(reference, reference)
+            for position in range(1, count):
+                equalizer = equalizer.intersection(
+                    self._categorical_equalizer(morphisms.unrank(position), reference)
+                )
+            return equalizer
+
+        def _categorical_coequalizer_family(self, morphisms):
+            r"""Realize a finite wide coequalizer through images/sums/cokernels."""
+            size = morphisms.cardinality()
+            if not size.is_finite():
+                raise NotImplementedError(
+                    "the represented module wide-coequalizer backend requires a finite arrow family"
+                )
+            count = int(size.finite_value())
+            if count == 0:
+                raise ValueError("a wide coequalizer family must be nonempty")
+            reference = morphisms.unrank(0)
+            relations = (reference - reference).image()
+            for position in range(1, count):
+                relations = relations.sum((morphisms.unrank(position) - reference).image())
+            return relations.inclusion().cokernel()
+
+        def _categorical_product_morphism(self, left_morphism, right_morphism, source, target):
+            return biproduct_morphism(
+                left_morphism, right_morphism, source=source, target=target
+            )
+
+        _categorical_coproduct_morphism = _categorical_product_morphism
+
     @classmethod
     def _repr_object_names(cls):
         return "modules"
@@ -142,84 +248,18 @@ class Modules(OwnedCategoryOverBaseRing):
         refine(parent, placement)
         return _refine_matrix_hom(parent)
 
-    def _categorical_tensor_product(self, left, right):
-        if left not in self or right not in self:
-            raise TypeError("a module tensor product requires two modules over one ring")
-        return _module_tensor_product(left, right)
 
-    def _categorical_biproduct(self, left, right):
-        if left not in self or right not in self:
-            raise TypeError("a module biproduct requires two modules over one ring")
-        return _module_biproduct(left, right)
 
-    def _categorical_product(self, left, right):
-        return self._categorical_biproduct(left, right)
 
-    def _categorical_coproduct(self, left, right):
-        return self._categorical_biproduct(left, right)
 
-    def _categorical_equalizer(self, left_morphism, right_morphism):
-        r"""Realize an equalizer in ``R-Mod`` as ``ker(left-right)``."""
-        if (
-            left_morphism.domain() not in self
-            or left_morphism.codomain() not in self
-            or left_morphism.domain() is not right_morphism.domain()
-            or left_morphism.codomain() is not right_morphism.codomain()
-        ):
-            raise ValueError("module equalizer arrows must be parallel R-linear maps")
-        return (left_morphism - right_morphism).kernel()
 
-    def _categorical_coequalizer(self, left_morphism, right_morphism):
-        r"""Realize a coequalizer in ``R-Mod`` as ``coker(left-right)``."""
-        if (
-            left_morphism.domain() not in self
-            or left_morphism.codomain() not in self
-            or left_morphism.domain() is not right_morphism.domain()
-            or left_morphism.codomain() is not right_morphism.codomain()
-        ):
-            raise ValueError("module coequalizer arrows must be parallel R-linear maps")
-        return (left_morphism - right_morphism).cokernel()
 
-    def _categorical_equalizer_family(self, morphisms):
-        r"""Realize a finite wide equalizer through kernels/intersections."""
-        size = morphisms.cardinality()
-        if not size.is_finite():
-            raise NotImplementedError(
-                "the represented module wide-equalizer backend requires a finite arrow family"
-            )
-        count = int(size.finite_value())
-        if count == 0:
-            raise ValueError("a wide equalizer family must be nonempty")
-        reference = morphisms.unrank(0)
-        equalizer = self._categorical_equalizer(reference, reference)
-        for position in range(1, count):
-            equalizer = equalizer.intersection(
-                self._categorical_equalizer(morphisms.unrank(position), reference)
-            )
-        return equalizer
 
-    def _categorical_coequalizer_family(self, morphisms):
-        r"""Realize a finite wide coequalizer through images/sums/cokernels."""
-        size = morphisms.cardinality()
-        if not size.is_finite():
-            raise NotImplementedError(
-                "the represented module wide-coequalizer backend requires a finite arrow family"
-            )
-        count = int(size.finite_value())
-        if count == 0:
-            raise ValueError("a wide coequalizer family must be nonempty")
-        reference = morphisms.unrank(0)
-        relations = (reference - reference).image()
-        for position in range(1, count):
-            relations = relations.sum((morphisms.unrank(position) - reference).image())
-        return relations.inclusion().cokernel()
 
-    def _categorical_product_morphism(self, left_morphism, right_morphism, source, target):
-        return biproduct_morphism(
-            left_morphism, right_morphism, source=source, target=target
-        )
 
-    _categorical_coproduct_morphism = _categorical_product_morphism
+
+
+
 
     _HomCategory = ModuleHomCategoryConstruction
     _EndCategory = ModuleEndCategoryConstruction
@@ -320,12 +360,6 @@ class Modules(OwnedCategoryOverBaseRing):
 
         def _represented_vector_space_basis_generator_labels(self):
             return NotImplemented
-
-        def _as_module_subobject(self, inclusion):
-            if inclusion.domain() is not self:
-                raise ValueError("a subobject inclusion has the wrong domain")
-            self._preamble_inclusion = inclusion
-            return refine(self, ModuleSubobjects(self.base_ring()))
 
         def _owned_scalar_multiple(self, scalar, element):
             r"""Apply the owned scalar action to an owned module element."""

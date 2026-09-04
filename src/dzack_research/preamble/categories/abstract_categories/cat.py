@@ -14,7 +14,6 @@ from dzack_research.preamble.categories.abstract_categories.objects import Objec
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
     ArrowCategory,
 )
-from dzack_research.preamble.categories.abstract_categories.arrow_categories import _identity_morphism
 from dzack_research.preamble.categories.functors.core import (
     CompositeFunctor,
     IdentityFunctor,
@@ -215,7 +214,9 @@ class NaturalTransformationHomset(CategoricalHomset):
             NaturalTransformation(
                 functor,
                 functor,
-                lambda obj: _identity_morphism(functor(obj)),
+                lambda obj: functor.codomain().Mor(
+                    functor(obj), functor(obj)
+                ).identity(),
             )
         )
 

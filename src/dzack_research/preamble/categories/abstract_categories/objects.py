@@ -29,6 +29,36 @@ class OwnedCategory(Category):
         category.
         """
 
+    class SubcategoryMethods:
+        r"""Helpers every owned subcategory needs, a join included."""
+
+        def _fold_construction(self, binary_construction, factors, *, name):
+            r"""Return the construction over a finite family, from the binary one.
+
+            A construction is taken over an index set, so the argument is an
+            indexed family and never an arity (`CON-14`); a bare sequence of
+            factors is normalized to the family on the canonical labels.  The
+            binary construction the category supplies is folded over the family's
+            values in index order, which is what associativity of these
+            constructions entitles the caller to.
+            """
+            from dzack_research.preamble.categories.abstract_categories.products import (
+                _finite_factor_family,
+            )
+
+            family = _finite_factor_family(factors, name=name)
+            index_set = family.index_set()
+            assert index_set.cardinality().is_finite(), (
+                f"{name} over an infinite index set is defined, but the represented "
+                "construction currently folds a finite family"
+            )
+            values = [family.value(index) for index in index_set]
+            assert values, f"{name} requires at least one factor"
+            result = values[0]
+            for factor in values[1:]:
+                result = binary_construction(result, factor)
+            return result
+
 
 class OwnedParameterizedCategory(OwnedCategory):
     r"""An owned category parameterized by one arbitrary mathematical object.

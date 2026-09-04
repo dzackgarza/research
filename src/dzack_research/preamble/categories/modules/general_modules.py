@@ -14,6 +14,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _owned_ring,
 )
 from dzack_research.preamble.categories.sets.set_categories import Set
+from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,
     register_module_scalar_action,
@@ -165,7 +166,7 @@ class GeneralModuleParent(Parent):
         return (self(value) for value in self.carrier())
 
     def cardinality(self):
-        return self.carrier().cardinality()
+        return cardinal(self.carrier().cardinality())
 
     def is_finite(self):
         try:
@@ -176,12 +177,11 @@ class GeneralModuleParent(Parent):
             except (AttributeError, NotImplementedError):
                 return Unknown
 
-    def annihilator(self):
-        r"""Return ``Ann_R(M)`` when the carrier and scalar ring are finite.
+    def _represented_annihilator_ideal(self):
+        r"""Represent the scalar-action kernel by exhaustive finite enumeration.
 
-        This is deliberately exhaustive rather than heuristic: outside an
-        enumerable finite regime the annihilator remains an algebra problem
-        for a stronger backend/representation.
+        This is a private backend for ``scalar_action().kernel()``.  Outside an
+        enumerable finite regime a stronger algebra backend is required.
         """
         if self.is_finite() is not True:
             raise NotImplementedError(

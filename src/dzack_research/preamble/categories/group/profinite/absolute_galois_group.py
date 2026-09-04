@@ -1,8 +1,9 @@
 r"""The realized parent (G_K=\operatorname{Aut}_K(\bar K))."""
 
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalHomset,
-    HomCategoryConstruction,
+    RestrictedHomCategoryOf,
+    RestrictedHomCategoryParent,
+    category_packet,
 )
 from typing import cast
 
@@ -12,6 +13,8 @@ from sage.categories.morphism import Morphism
 from sage.misc.unknown import Unknown
 from sage.rings.infinity import Infinity
 from sage.rings.integer_ring import ZZ
+from sage.misc.classcall_metaclass import typecall
+from sage.structure.element import Element
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
@@ -57,7 +60,7 @@ from dzack_research.preamble.categories.group.profinite.galois_decomposition imp
 from dzack_research.preamble.categories.group.profinite.galois_quotient import _relative_degree
 
 
-class AbsoluteGaloisGroupElement(Morphism):
+class AbsoluteGaloisGroupElement(Element):
     r"""A coherent, progressively realized automorphism of the chosen closure.
 
     A global exact map may be supplied directly.  A lift from a finite
@@ -73,7 +76,7 @@ class AbsoluteGaloisGroupElement(Morphism):
         coordinates=(),
         frobenius_exponent=None,
     ) -> None:
-        Morphism.__init__(self, parent)
+        Element.__init__(self, parent)
         self._exact_action = exact_action
         self._coordinates = list(coordinates)
         self._frobenius_exponent = (
@@ -85,7 +88,25 @@ class AbsoluteGaloisGroupElement(Morphism):
             )
 
     def as_morphism(self):
-        return self
+        cached = self.__dict__.get("_preamble_underlying_field_morphism")
+        if cached is not None:
+            return cached
+        field_endomorphisms = self.parent().arrow_set()
+        if self._exact_action is not None:
+            morphism = field_endomorphisms(self._exact_action._engine_morphism_crossing())
+        else:
+            morphism = field_endomorphisms.elementwise(lambda element: self(element))
+        morphism._preamble_absolute_galois_element = self
+        self._preamble_underlying_field_morphism = morphism
+        return morphism
+
+    underlying_field_morphism = as_morphism
+
+    def domain(self):
+        return self.parent().algebraic_closure()
+
+    def codomain(self):
+        return self.parent().algebraic_closure()
 
     def exact_action(self):
         return self._exact_action
@@ -157,7 +178,7 @@ class AbsoluteGaloisGroupElement(Morphism):
             if other.parent() is not self.parent():
                 return NotImplemented
             return self.parent()._compose_elements(self, other)
-        return Morphism.__mul__(self, other)
+        return NotImplemented
 
     def __invert__(self):
         return self.inverse()
@@ -293,11 +314,10 @@ class AbsoluteGaloisSliceAutomorphism(Morphism):
         Morphism.__init__(self, parent)
         if not element.fixes_base_field():
             raise ValueError("the closure automorphism does not commute with K -> Kbar")
-        self._left = exact_field_homset(
-            element.parent().base_field(),
-            element.parent().base_field(),
-        ).identity()
-        self._right = element
+        self._element = element
+        base = element.parent().base_field()
+        self._left = category_packet(OwnedFields()).Homs().Of(base, base).identity()
+        self._right = element.as_morphism()
 
     def left(self):
         return self._left
@@ -311,12 +331,13 @@ class AbsoluteGaloisSliceAutomorphism(Morphism):
     def __mul__(self, other):
         if not isinstance(other, AbsoluteGaloisSliceAutomorphism):
             return NotImplemented
-        if other._right.parent() is not self._right.parent():
+        if other._element.parent() is not self._element.parent():
             return NotImplemented
-        return self._right.parent().slice_automorphism(self._right * other._right)
+        group = self._element.parent()
+        return group.slice_automorphism(self._element * other._element)
 
     def inverse(self):
-        return self._right.parent().slice_automorphism(self._right.inverse())
+        return self._element.parent().slice_automorphism(self._element.inverse())
 
     def __invert__(self):
         return self.inverse()
@@ -324,21 +345,49 @@ class AbsoluteGaloisSliceAutomorphism(Morphism):
     def __eq__(self, other) -> bool:
         return (
             isinstance(other, AbsoluteGaloisSliceAutomorphism)
-            and other._right.parent() is self._right.parent()
-            and other._right == self._right
+            and other._element.parent() is self._element.parent()
+            and other._element == self._element
         )
 
     def __ne__(self, other) -> bool:
         return not self == other
 
     def __hash__(self) -> int:
-        return hash((id(self._right.parent()), self._right))
+        return hash((id(self._element.parent()), self._element))
 
     def _repr_(self) -> str:
-        return f"Slice automorphism induced by {self._right}"
+        return f"Slice automorphism induced by {self._element}"
 
 
-class AbsoluteGaloisGroup(CategoricalHomset):
+class AbsoluteGaloisCategoryConstruction(RestrictedHomCategoryOf):
+    r"""Closure endomorphisms fixing one chosen embedded base field."""
+
+    _declaration_name = "_AbsoluteGaloisCategory"
+
+    @staticmethod
+    def __classcall__(cls, base_category, base_field, base_embedding):
+        return typecall(cls, base_category, base_field, base_embedding)
+
+    def __init__(self, base_category, base_field, base_embedding) -> None:
+        self._base_field = base_field
+        self._base_embedding = base_embedding
+        super().__init__(base_category)
+
+    def fixed_category_class(self):
+        return AbsoluteGaloisGroup
+
+    def accepts(self, arrow) -> bool:
+        try:
+            return all(
+                arrow(self._base_embedding(generator))
+                == self._base_embedding(generator)
+                for generator in field_generators(self._base_field)
+            )
+        except (TypeError, ValueError, NotImplementedError):
+            return False
+
+
+class AbsoluteGaloisGroup(RestrictedHomCategoryParent):
     r"""The automorphism group of one exact extension object (K\to\bar K).
 
     The extension is an object of the coslice category (K/\mathbf{Fields}),
@@ -364,9 +413,13 @@ class AbsoluteGaloisGroup(CategoricalHomset):
         category = absolute_galois_group_category(self._field)
         # The elements are field automorphisms of the closure, so this is the
         # subcategory of Aut_Fields(closure) fixing the structure map from K.
-        CategoricalHomset.__init__(
+        RestrictedHomCategoryParent.__init__(
             self,
-            HomCategoryConstruction(OwnedFields()),
+            AbsoluteGaloisCategoryConstruction(
+                OwnedFields(),
+                self._field,
+                self._embedding,
+            ),
             self._closure,
             self._closure,
         )
@@ -452,15 +505,7 @@ class AbsoluteGaloisGroup(CategoricalHomset):
         return element
 
     def __contains__(self, element) -> bool:
-        if isinstance(element, AbsoluteGaloisGroupElement):
-            return element.parent() is self
-        if isinstance(element, ExactFieldMorphism):
-            try:
-                realized = cast(AbsoluteGaloisGroupElement, self(element))
-                return realized.fixes_base_field()
-            except (TypeError, ValueError):
-                return False
-        return False
+        return RestrictedHomCategoryParent.__contains__(self, element)
 
     def __eq__(self, other) -> bool:
         return self is other

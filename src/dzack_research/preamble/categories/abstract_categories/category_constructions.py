@@ -6,19 +6,10 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
 )
 from sage.misc.cachefunc import cached_method
 from sage.categories.category import Category
-from sage.categories.homset import Hom
 from sage.categories.morphism import Morphism
 from sage.categories.sets_cat import Sets as SageSets
 from dzack_research.preamble.categories.abstract_categories.objects import Objects
-from dzack_research.preamble.categories.sets.set_categories import Sets as _OwnedSets
 from sage.structure.parent import Parent
-
-
-def _identity(obj):
-    try:
-        return Hom(obj, obj).identity()
-    except (TypeError, ValueError):
-        return _OwnedSets().Mor(obj, obj).identity()
 
 
 class OppositeObject(Parent):
@@ -79,7 +70,9 @@ class OppositeHomset(CategoricalHomset):
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError("identity is defined only on an endomorphism Hom-set")
-        return self(_identity(self.domain().underlying_object()))
+        underlying = self.domain().underlying_object()
+        base = self.opposite_category().base_category()
+        return self(base.Mor(underlying, underlying).identity())
 
 
 class OppositeCategory(Category):
@@ -196,7 +189,13 @@ class ProductHomset(CategoricalHomset):
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError("identity is defined only on an endomorphism Hom-set")
-        return self(_identity(self.domain().first()), _identity(self.domain().second()))
+        first = self.domain().first()
+        second = self.domain().second()
+        product = self.product_category()
+        return self(
+            product.first_category().Mor(first, first).identity(),
+            product.second_category().Mor(second, second).identity(),
+        )
 
 
 class ProductCategory(Category):

@@ -18,6 +18,10 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     CategoryPacketMethods,
     HomCategoryConstruction,
 )
+from dzack_research.preamble.categories.abstract_categories.constructions import (
+    CoequalizerOfFamily,
+    EqualizerOfFamily,
+)
 
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
@@ -33,7 +37,6 @@ from dzack_research.preamble.categories.group.groups import (
 )
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModule
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-    BasedFreeModule,
     FreshFreeModuleOn,
 )
 from dzack_research.preamble.categories.modules.group_modules.isotypic import (
@@ -49,9 +52,8 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     ModulesWithChosenFinitePresentation,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
-from dzack_research.preamble.categories.sets.cardinals import cardinal
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_image
-from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
+from dzack_research.preamble.categories.sets.set_categories import CoproductOfFamily, Sets
 
 
 class GroupModuleHomCategoryConstruction(HomCategoryConstruction):
@@ -172,28 +174,7 @@ class GroupModules(CategoryPacketMethods, _CategoryOverRingAndActingGroup):
             r"""Return ``M^G`` as the equalizer subobject of the action and identity."""
             if self.is_trivial_action():
                 return self.unacted_module()
-
-            group = self.group()
-            if group.is_finitely_generated() is not True:
-                raise NotImplementedError(
-                    "constructing invariants here requires a chosen finite group generating set"
-                )
-            fixed_subobjects = []
-            for group_generator in group.group_generators():
-                difference = module_homset(self, self)(
-                    {
-                        label: self.act(group_generator, self.module_generator(label))
-                        - self.module_generator(label)
-                        for label in self.module_generating_set()
-                    }
-                )
-                fixed_subobjects.append(difference.kernel())
-            if not fixed_subobjects:
-                return self.subobject_on(self.module_generators())
-            invariants = fixed_subobjects[0]
-            for fixed in fixed_subobjects[1:]:
-                invariants = invariants.intersection(fixed)
-            return invariants
+            return self._represented_action_equalizer()
 
         def isotypic_characters(self):
             r"""Return the irreducible-character indices appropriate to the coefficient ring."""
@@ -211,37 +192,10 @@ class GroupModules(CategoryPacketMethods, _CategoryOverRingAndActingGroup):
             return isotypic_decomposition(self)
 
         def module_coinvariants(self):
-            r"""Return ``M_G = M / <g m - m>`` with the current framing retained."""
+            r"""Return ``M_G`` as the coequalizer of the action and identity."""
             if self.is_trivial_action():
                 return self.unacted_module()
-
-            group = self.group()
-            if group.is_finitely_generated() is not True:
-                raise NotImplementedError(
-                    "constructing coinvariants here requires a chosen finite group generating set"
-                )
-            group_generators = group.group_generators()
-            module_labels = self.module_generating_set()
-            group_count = int(group_generators.cardinality())
-            module_count = int(module_labels.cardinality())
-            positions = Sets.Δ[group_count * module_count - 1]
-            relation_labels = finite_ordered_image(
-                positions,
-                lambda position: (
-                    group_generators.unrank(int(position) // module_count),
-                    module_labels.unrank(int(position) % module_count),
-                ),
-                name="Coinvariant relation indices",
-            )
-            relation_module = BasedFreeModule(self.base_ring(), relation_labels)
-            images = {
-                relation_label: self.act(
-                    relation_label[0], self.module_generator(relation_label[1])
-                )
-                - self.module_generator(relation_label[1])
-                for relation_label in relation_labels
-            }
-            return module_homset(relation_module, self)(images).cokernel()
+            return self._represented_action_coequalizer()
 
         def character(self):
             r"""Return the ordinary trace character in characteristic zero."""
@@ -394,6 +348,41 @@ class FinitelyPresentedGroupModules(_CategoryOverRingAndActingGroup):
             FinitelyPresentedModules(self.base_ring()),
         ]
 
+    class ParentMethods:
+        def _finite_action_endomorphism_family(self):
+            r"""Return ``{id_M} union {rho(s) : s in S}`` for a chosen finite ``S``.
+
+            Choosing a finite group generating set is a represented backend for
+            the wide equalizer/coequalizer of the full action; callers retain
+            the universal-construction spelling.
+            """
+            group = self.group()
+            if group.is_finitely_generated() is not True:
+                raise NotImplementedError(
+                    "the represented action equalizer/coequalizer requires a chosen finite group generating set"
+                )
+            generators = group.group_generators()
+            indices = CoproductOfFamily(
+                Sets.Δ[1],
+                lambda side: Sets.Δ[0] if int(side) == 0 else generators,
+            )
+            identity = module_homset(self, self).identity()
+            return finite_indexed_family(
+                indices,
+                lambda tagged: (
+                    identity
+                    if int(tagged.summand_index()) == 0
+                    else self.action_of(tagged.summand_element())
+                ),
+                name=f"Identity and chosen action generators on {self}",
+            )
+
+        def _represented_action_equalizer(self):
+            return EqualizerOfFamily(self._finite_action_endomorphism_family())
+
+        def _represented_action_coequalizer(self):
+            return CoequalizerOfFamily(self._finite_action_endomorphism_family())
+
 
 def _apply_action(action, group_element, vector):
     if isinstance(action, Map):
@@ -526,7 +515,7 @@ def GroupModule(module, group_or_action, action=None):
         group = _owned_group(group_or_action)
 
     labels = module.module_generating_set()
-    if not cardinal(labels.cardinality()).is_finite():
+    if not labels.cardinality().is_finite():
         raise NotImplementedError(
             "the active native GroupModule constructor currently materializes a finite framing"
         )

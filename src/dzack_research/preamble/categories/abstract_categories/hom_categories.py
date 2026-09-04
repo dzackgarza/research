@@ -185,6 +185,15 @@ class CategoricalHomset(OwnedHomset, Category):
     def hom_family(self):
         return self._family
 
+    def homset_category(self):
+        r"""Return the owned mathematical category whose Hom object this is.
+
+        Sage's ``Homset`` initialization still uses ``Sets()`` only as the
+        private runtime method spine.  The semantic Hom category is the base
+        category of the owned Hom family.
+        """
+        return self.hom_family().base_category()
+
     def identity_at(self, obj):
         return self.hom_family().Of(obj, obj).identity()
 
@@ -249,6 +258,10 @@ class CategoricalHomset(OwnedHomset, Category):
         if not self.accepts(arrow):
             arrow = self(arrow)
         return _arrow_object(arrow)
+
+    def __contains__(self, candidate) -> bool:
+        arrow = candidate.arrow() if isinstance(candidate, HomArrowObject) else candidate
+        return self.accepts(arrow)
 
     def super_categories(self):
         supers = []
@@ -482,6 +495,20 @@ class FixedEndCategory(FixedHomCategory):
 
 
 class FixedRestrictedHomCategory(FixedHomCategory):
+    def arrow_set(self):
+        r"""Return the existing ``Mor`` parent for these endpoints.
+
+        A restricted Hom category classifies some arrows in the base
+        category's already-existing Hom object.  It therefore reuses the
+        endpoint Homset owned by the base category packet.
+        """
+        morphisms = category_packet(self.base_category()).Homs().Of(
+            self.domain_object(), self.codomain_object()
+        )
+        return morphisms if isinstance(morphisms, Parent) else morphisms.arrow_set()
+
+    underlying_homset = arrow_set
+
     def accepts(self, arrow) -> bool:
         return super().accepts(arrow) and self.hom_family().accepts(arrow)
 
@@ -498,6 +525,43 @@ class FixedRestrictedHomCategory(FixedHomCategory):
             and self.codomain_object() in supercategory
         ]
         return [base, *inherited]
+
+
+class RestrictedHomCategoryParent(Parent, FixedRestrictedHomCategory):
+    r"""A restricted Hom category that also carries independent enrichment.
+
+    Its elements may be structured witnesses (for example derivations) whose
+    actual categorical arrows live in :meth:`arrow_set`.  Unlike
+    :class:`CategoricalHomset`, this parent is therefore not itself a Homset
+    and cannot become a second Homset for the same fixed endpoints.
+    """
+
+    @staticmethod
+    def __classcall__(cls, *arguments, **options):
+        return typecall(cls, *arguments, **options)
+
+    def __init__(self, family, domain, codomain, *, category=None) -> None:
+        FixedRestrictedHomCategory.__init__(self, family, domain, codomain)
+        Parent.__init__(
+            self,
+            category=SageSets() if category is None else category,
+        )
+
+    def _underlying_arrow(self, candidate):
+        if isinstance(candidate, HomArrowObject):
+            return candidate.arrow()
+        try:
+            if candidate.parent() is self:
+                return candidate.as_morphism()
+        except AttributeError:
+            pass
+        return candidate
+
+    def __contains__(self, candidate) -> bool:
+        return FixedRestrictedHomCategory.accepts(
+            self,
+            self._underlying_arrow(candidate),
+        )
 
 
 class CategoricalIsomorphism(Morphism):
@@ -908,7 +972,9 @@ class EndCategoryOf(HomCategoryOf):
         return f"End-category packet of {self.base_category()}"
 
 
-class _RestrictedCategoryOf(HomCategoryOf):
+class RestrictedHomCategoryOf(HomCategoryOf):
+    r"""A family of fixed-endpoint subcategories of an existing ``Mor``."""
+
     FixedCategoryClass = FixedRestrictedHomCategory
 
     def accepts(self, arrow) -> bool:
@@ -922,7 +988,10 @@ class _RestrictedCategoryOf(HomCategoryOf):
         return [category_packet(self.base_category()).Homs(), *inherited, HomCategories()]
 
 
-class MonoCategoryOf(_RestrictedCategoryOf):
+_RestrictedCategoryOf = RestrictedHomCategoryOf
+
+
+class MonoCategoryOf(RestrictedHomCategoryOf):
     _declaration_name = "_MonoCategory"
 
     def family_over(self, category):
@@ -935,7 +1004,7 @@ class MonoCategoryOf(_RestrictedCategoryOf):
             return False
 
 
-class EpiCategoryOf(_RestrictedCategoryOf):
+class EpiCategoryOf(RestrictedHomCategoryOf):
     _declaration_name = "_EpiCategory"
 
     def family_over(self, category):
@@ -1055,5 +1124,7 @@ __all__ = [
     "IsoCategoryOf",
     "MonoCategoryConstruction",
     "MonoCategoryOf",
+    "RestrictedHomCategoryOf",
+    "RestrictedHomCategoryParent",
     "category_packet",
 ]

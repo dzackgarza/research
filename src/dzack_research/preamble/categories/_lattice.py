@@ -63,6 +63,7 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
 )
 from dzack_research.preamble.categories.sets.cardinals import (
     Cardinalities,
+    aleph0,
     cardinal,
 )
 from dzack_research.preamble.refine import refine
@@ -104,7 +105,7 @@ class _FormalSymbols(UniqueRepresentation, Parent):
         Parent.__init__(self, facade=SR, category=InfiniteEnumeratedSets())
 
     def cardinality(self):
-        return Infinity
+        return aleph0
 
     def unrank(self, index):
         return _formal_symbol(index)
@@ -145,7 +146,7 @@ def _as_generating_set(keys, rank):
     if isinstance(keys, (list, tuple, range)):
         keys = finite_ordered_set(keys)
     assert keys in EnumeratedSets()
-    key_cardinality = cardinal(keys.cardinality())
+    key_cardinality = keys.cardinality()
     if rank == Infinity:
         if key_cardinality.is_finite():
             raise ValueError(
@@ -187,7 +188,7 @@ def _generating_set_from_names(names, rank):
             rank=lambda symbol: name_source(str(symbol)),
             name="Named lattice generators",
         )
-    size = cardinal(symbols.cardinality())
+    size = symbols.cardinality()
     if not size.is_finite() or int(size.finite_value()) != int(rank):
         return None
     return symbols
@@ -266,7 +267,7 @@ class Lattice(Parent, IndexedGenerators):
             return x
         if isinstance(x, (tuple, list)):
 
-            size = cardinal(self.module_generating_set().cardinality())
+            size = self.module_generating_set().cardinality()
             if not size.is_finite():
                 raise TypeError(
                     "coordinate sequence syntax requires a finite lattice framing; "
@@ -452,9 +453,9 @@ class _PairingGram(ModuleElement, Tensor):
                     "contraction of a lazy infinite-rank Gram tensor requires a represented dual covector"
                 )
             rank = int(rank)
-            if other.upper_ranks() != (rank,):
+            if other._upper_index_ranks() != (rank,):
                 raise ValueError(
-                    f"cannot contract Gram rank {rank} with vector ranks {other.upper_ranks()}"
+                    f"cannot contract Gram rank {rank} with vector ranks {other._upper_index_ranks()}"
                 )
             return tensor(
                 self.base_ring(),

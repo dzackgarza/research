@@ -10,6 +10,7 @@ from sage.all import (
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 
+from dzack_research.preamble.categories._lattice import signature_pair
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoryPacketMethods,
     HomCategoryConstruction,
@@ -23,6 +24,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedOrders,
     OwnedRings,
     _engine_element,
+    _engine_numeral,
     _engine_ring,
 )
 from dzack_research.preamble.refine import refine
@@ -48,6 +50,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_image,
     finite_ordered_set,
 )
+from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 
 
@@ -56,29 +59,15 @@ def _own_number_field(engine):
     return _refine_number_field_view(_own_ring(engine))
 
 
-def _engine_scalar(engine_ring, value):
-    r"""Cross a scalar argument of an owned constructor into the engine.
-
-    A preamble session's numerals are owned ring elements, and the private
-    Sage constructors below reject them: their coercion graph has never heard
-    of the owned parent.  Crossing here keeps the owned scalar out of Sage's
-    coercion discovery, which is the same boundary ``NumberField`` observes
-    for its defining polynomial.
-    """
-
-    owned = _own_ring(engine_ring)
-    return _engine_element(owned, owned(value))
-
-
 def CyclotomicField(order, *args, **kwargs):
     return _own_number_field(
-        _SageCyclotomicField(_engine_scalar(SageZZ, order), *args, **kwargs)
+        _SageCyclotomicField(_engine_numeral(SageZZ, order), *args, **kwargs)
     )
 
 
 def QuadraticField(discriminant, *args, **kwargs):
     return _own_number_field(
-        _SageQuadraticField(_engine_scalar(SageQQ, discriminant), *args, **kwargs)
+        _SageQuadraticField(_engine_numeral(SageQQ, discriminant), *args, **kwargs)
     )
 
 
@@ -136,17 +125,13 @@ class OwnedNumberFields(CategoryPacketMethods, Category):
             return integers._from_engine_element(value)
 
         def signature(self):
-            r"""Return ``(r_1,r_2)`` with ``r_1+2r_2=[K:QQ]``."""
+            r"""Return the signature pair ``(r_1,r_2)`` with ``r_1+2r_2=[K:QQ]``."""
 
-            integers = _own_ring(SageZZ)
             engine = _engine_ring(self)
             if engine is SageQQ:
-                return (integers.one(), integers.zero())
+                return signature_pair(1, 0)
             real, complex_pairs = engine.signature()
-            return (
-                integers._from_engine_element(SageZZ(real)),
-                integers._from_engine_element(SageZZ(complex_pairs)),
-            )
+            return signature_pair(real, complex_pairs)
 
         def class_number(self):
             r"""Return the class number of the ring of integers."""
@@ -395,13 +380,8 @@ class OrdersWithChosenIntegralBasis(Category):
             return framing_morphism(source, self, self.module_generator)
 
         def rank(self):
-            integers = self.base_ring()
             engine = _engine_ring(self)
-            return (
-                integers.one()
-                if engine is SageZZ
-                else integers._from_engine_element(SageZZ(engine.rank()))
-            )
+            return cardinal(1 if engine is SageZZ else engine.rank())
 
 
 def _refine_order_view(order):

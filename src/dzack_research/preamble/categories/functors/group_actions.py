@@ -58,11 +58,6 @@ class TrivialActionFunctor(Functor):
     def _apply_object(self, module):
         return trivial_group_action(module, self.group())
 
-    def chosen_preimage(self, image):
-        if image.is_trivial_action():
-            return image.unacted_module()
-        return super().chosen_preimage(image)
-
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())
         target = self(morphism.codomain())
@@ -89,9 +84,6 @@ class InvariantsFunctor(Functor):
 
     def _apply_object(self, group_module):
         return group_module.module_invariants()
-
-    def chosen_preimage(self, image):
-        return image.inclusion().codomain()
 
     def _apply_morphism(self, morphism):
         source_invariants = self(morphism.domain())

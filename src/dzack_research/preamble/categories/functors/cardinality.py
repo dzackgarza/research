@@ -6,7 +6,6 @@ from dzack_research.preamble.categories.abstract_categories.arrow_categories imp
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.sets.cardinals import (
     Cardinalities,
-    cardinal,
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
@@ -18,7 +17,7 @@ class CardinalityFunctor(Functor):
         super().__init__(Core(Sets()), Cardinalities())
 
     def _apply_object(self, set_object):
-        return cardinal(set_object.cardinality())
+        return set_object.cardinality()
 
     def _apply_morphism(self, isomorphism):
         source = self(isomorphism.domain())

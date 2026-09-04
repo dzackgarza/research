@@ -43,7 +43,10 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     _engine_matrix as _engine_module_matrix,
 )
 from dzack_research.preamble.categories.sets.cardinals import cardinal
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+    finite_ordered_image,
+    finite_ordered_set,
+)
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
@@ -76,7 +79,7 @@ def _tensor_richcmp(left, right, op):
         return NotImplemented
     if (
         left.tensor_valence() != right.tensor_valence()
-        or left._index_ranks() != right._index_ranks()
+        or left.tensor_shape() != right.tensor_shape()
     ):
         if op == op_EQ:
             return False
@@ -315,12 +318,12 @@ class Tensor:
         """
         return index_rank_family(self._index_ranks())
 
-    def upper_ranks(self) -> tuple:
+    def _upper_index_ranks(self) -> tuple:
         r"""Return the dimensions of the contravariant indices."""
         p, _q = self.tensor_type()
         return self._index_ranks()[:p]
 
-    def lower_ranks(self) -> tuple:
+    def _lower_index_ranks(self) -> tuple:
         r"""Return the dimensions of the covariant indices."""
         p, _q = self.tensor_type()
         return self._index_ranks()[p:]
@@ -337,9 +340,9 @@ class Tensor:
         r"""Return the type $(p,q)$; synonym of :meth:`tensor_type`."""
         assert False, "a tensor supplies its type (p, q)"
 
-    def tensor_order(self) -> int:
-        r"""Return the number of indices."""
-        return len(self._index_ranks())
+    def tensor_order(self):
+        r"""Return the cardinal number of tensor indices."""
+        return cardinal(len(self._index_ranks()))
 
     def tensor_space(self):
         r"""Return the module of which this tensor is an element.
@@ -347,7 +350,7 @@ class Tensor:
         For type $(p,q)$ on \(R^n\) this is
         \((R^n)^{\otimes p}\otimes((R^n)^*)^{\otimes q}\).
         """
-        return TensorModule(self.base_ring(), self.upper_ranks(), self.lower_ranks())
+        return TensorModule(self.base_ring(), self._upper_index_ranks(), self._lower_index_ranks())
 
     def index_modules(self):
         r"""Return the contravariant and covariant index modules.
@@ -357,7 +360,7 @@ class Tensor:
         \(M_1\otimes\cdots\otimes M_p\otimes N_1^*\otimes\cdots\otimes N_q^*\).
         """
         return TensorModule(
-            self.base_ring(), self.upper_ranks(), self.lower_ranks()
+            self.base_ring(), self._upper_index_ranks(), self._lower_index_ranks()
         ).index_modules()
 
     def tensor_indices(self):
@@ -368,7 +371,7 @@ class Tensor:
         set, including \(\{e_i:i\in\mathbb N\}\) at infinite rank.
         """
         return TensorModule(
-            self.base_ring(), self.upper_ranks(), self.lower_ranks()
+            self.base_ring(), self._upper_index_ranks(), self._lower_index_ranks()
         ).tensor_indices()
 
     def components(self):
@@ -421,7 +424,7 @@ class Tensor:
             return False
         if self.tensor_valence() != other.tensor_valence():
             return False
-        if self._index_ranks() != other._index_ranks():
+        if self.tensor_shape() != other.tensor_shape():
             return False
         if _engine_ring(self.base_ring()) != _engine_ring(other.base_ring()):
             return False
@@ -433,8 +436,8 @@ class Tensor:
         r"""Change coefficients without changing tensor variance."""
         return tensor(
             ring,
-            self.upper_ranks(),
-            self.lower_ranks(),
+            self._upper_index_ranks(),
+            self._lower_index_ranks(),
             self.components(),
         )
 
@@ -453,19 +456,19 @@ class Tensor:
 
     def contract(self, *vectors):
         r"""Fully contract a purely covariant tensor with contravariant vectors."""
-        if self.upper_ranks():
+        if self._upper_index_ranks():
             raise TypeError("full contraction here requires a purely covariant tensor")
-        if len(vectors) != len(self.lower_ranks()):
+        if len(vectors) != len(self._lower_index_ranks()):
             raise TypeError(
                 f"a type-{self.tensor_valence()} tensor takes "
-                f"{len(self.lower_ranks())} vector arguments, got {len(vectors)}"
+                f"{len(self._lower_index_ranks())} vector arguments, got {len(vectors)}"
             )
-        for rank, vector in zip(self.lower_ranks(), vectors, strict=True):
+        for rank, vector in zip(self._lower_index_ranks(), vectors, strict=True):
             if not isinstance(vector, Tensor) or vector.tensor_valence() != (NN**2)((1, 0)):
                 raise TypeError("covariant tensor contraction takes contravariant vectors")
-            if vector.upper_ranks() != (rank,):
+            if vector._upper_index_ranks() != (rank,):
                 raise ValueError(
-                    f"cannot contract covariant rank {rank} with vector ranks {vector.upper_ranks()}"
+                    f"cannot contract covariant rank {rank} with vector ranks {vector._upper_index_ranks()}"
                 )
             if _engine_ring(vector.base_ring()) != _engine_ring(self.base_ring()):
                 raise TypeError("tensor contraction requires one base ring")
@@ -475,7 +478,7 @@ class Tensor:
             (
                 self[position]
                 * prod(vector[index] for vector, index in zip(vectors, position, strict=True))
-                for position in cartesian_product(*(range(rank) for rank in self.lower_ranks()))
+                for position in cartesian_product(*(range(rank) for rank in self._lower_index_ranks()))
             ),
             self.base_ring().zero(),
         )
@@ -511,7 +514,7 @@ class Tensor:
         ``f^*T`` on ``V``.  The public datum is the morphism.  Finite coordinate
         matrices are only an implementation of this transport.
         """
-        if self.upper_ranks():
+        if self._upper_index_ranks():
             raise TypeError("pullback is defined here for a covariant tensor")
         try:
             matrix = morphism.matrix()
@@ -523,11 +526,11 @@ class Tensor:
         if matrix.parent() not in MatrixSpaces(self.base_ring()):
             raise TypeError("tensor pullback requires one coefficient ring")
         target_rank, source_rank = matrix.parent().matrix_shape()
-        if any(rank != target_rank for rank in self.lower_ranks()):
+        if any(rank != target_rank for rank in self._lower_index_ranks()):
             raise ValueError(
                 "the linear-map codomain rank must match every covariant tensor index"
             )
-        q = len(self.lower_ranks())
+        q = len(self._lower_index_ranks())
         if q == 0:
             return self
 
@@ -667,7 +670,7 @@ class _TensorCovectorConstructor:
         return tensor(
             contravariant.base_ring(),
             (),
-            contravariant.upper_ranks(),
+            contravariant._upper_index_ranks(),
             contravariant.list(),
         )
 
@@ -814,8 +817,8 @@ class _CoordinateTensor(ModuleElement, Tensor):
                 f"{covariant} vector arguments, got {len(args)}"
             )
         ring = self.base_ring()
-        upper = self.upper_ranks()
-        lower = self.lower_ranks()
+        upper = self._upper_index_ranks()
+        lower = self._lower_index_ranks()
         for position, vector in enumerate(args):
             slot = TensorModule(ring, (lower[position],), ())
             if vector not in slot:
@@ -901,8 +904,8 @@ class _CoordinateTensor(ModuleElement, Tensor):
         target = ring
         return tensor(
             target,
-            self.upper_ranks(),
-            self.lower_ranks(),
+            self._upper_index_ranks(),
+            self._lower_index_ranks(),
             _nested(
                 tuple(target(entry) for entry in self._entries),
                 self._index_ranks(),
@@ -960,21 +963,21 @@ class _CoordinateTensor(ModuleElement, Tensor):
         if other in self.base_ring():
             return self._lmul_(self.base_ring()(other))
         if (
-            len(self.upper_ranks()) >= 2
-            and not self.lower_ranks()
+            len(self._upper_index_ranks()) >= 2
+            and not self._lower_index_ranks()
             and isinstance(other, Tensor)
             and other.tensor_valence() == (NN**2)((0, 1))
         ):
             if _engine_ring(other.base_ring()) != _engine_ring(self.base_ring()):
                 raise TypeError("tensor contraction requires one base ring")
-            if self.upper_ranks()[-1] != other.lower_ranks()[0]:
+            if self._upper_index_ranks()[-1] != other._lower_index_ranks()[0]:
                 raise ValueError(
-                    f"cannot contract ranks {self.upper_ranks()[-1]} and "
-                    f"{other.lower_ranks()[0]}"
+                    f"cannot contract ranks {self._upper_index_ranks()[-1]} and "
+                    f"{other._lower_index_ranks()[0]}"
                 )
-            output_upper = self.upper_ranks()[:-1]
+            output_upper = self._upper_index_ranks()[:-1]
             output_shape = output_upper
-            contracted_rank = self.upper_ranks()[-1]
+            contracted_rank = self._upper_index_ranks()[-1]
 
             from itertools import product as cartesian_product
 
@@ -1004,22 +1007,22 @@ class _CoordinateTensor(ModuleElement, Tensor):
         if isinstance(other, Tensor) and other.tensor_valence() == (NN**2)((1, 0)):
             if _engine_ring(other.base_ring()) != _engine_ring(self.base_ring()):
                 raise TypeError("tensor contraction requires one base ring")
-            if not self.lower_ranks():
+            if not self._lower_index_ranks():
                 raise TypeError("a tensor with no covariant index cannot act on a vector")
-            if self.lower_ranks()[-1] != other.upper_ranks()[0]:
+            if self._lower_index_ranks()[-1] != other._upper_index_ranks()[0]:
                 raise ValueError(
-                    f"cannot contract ranks {self.lower_ranks()[-1]} and "
-                    f"{other.upper_ranks()[0]}"
+                    f"cannot contract ranks {self._lower_index_ranks()[-1]} and "
+                    f"{other._upper_index_ranks()[0]}"
                 )
 
             # Multiplication contracts the rightmost covariant index.  Thus a
             # bilinear form G in M* tensor M* acts on v in M as G*v in M*,
             # with components (G*v)_i = sum_j G_{ij} v_j.  No row-vector or
             # transpose convention enters the public tensor calculus.
-            output_upper = self.upper_ranks()
-            output_lower = self.lower_ranks()[:-1]
+            output_upper = self._upper_index_ranks()
+            output_lower = self._lower_index_ranks()[:-1]
             output_shape = output_upper + output_lower
-            contracted_rank = self.lower_ranks()[-1]
+            contracted_rank = self._lower_index_ranks()[-1]
 
             from itertools import product as cartesian_product
 
@@ -1051,17 +1054,17 @@ class _CoordinateTensor(ModuleElement, Tensor):
         ):
             if _engine_ring(other.base_ring()) != _engine_ring(self.base_ring()):
                 raise TypeError("tensor contraction requires one base ring")
-            if self.lower_ranks() != other.upper_ranks():
+            if self._lower_index_ranks() != other._upper_index_ranks():
                 raise ValueError(
-                    f"cannot contract ranks {self.lower_ranks()} and "
-                    f"{other.upper_ranks()}"
+                    f"cannot contract ranks {self._lower_index_ranks()} and "
+                    f"{other._upper_index_ranks()}"
                 )
             # In U tensor V* tensor V tensor W*, contract the adjacent V*, V
             # factors.  Under Hom(V,U) = U tensor V* this agrees with map
             # composition, but its owner here is tensor evaluation.
-            rows = self.upper_ranks()[0]
-            inner = other.upper_ranks()[0]
-            columns = other.lower_ranks()[0]
+            rows = self._upper_index_ranks()[0]
+            inner = other._upper_index_ranks()[0]
+            columns = other._lower_index_ranks()[0]
             entries = tuple(
                 sum(
                     (self[i, k] * other[k, j] for k in range(inner)),
@@ -1084,13 +1087,13 @@ class _CoordinateTensor(ModuleElement, Tensor):
                 return self(other)
             if other.tensor_valence() == (NN**2)((1, 1)):
                 # In V* tensor V tensor W*, evaluate the adjacent V*, V pair.
-                if self.lower_ranks() != other.upper_ranks():
+                if self._lower_index_ranks() != other._upper_index_ranks():
                     raise ValueError(
-                        f"cannot contract ranks {self.lower_ranks()} and "
-                        f"{other.upper_ranks()}"
+                        f"cannot contract ranks {self._lower_index_ranks()} and "
+                        f"{other._upper_index_ranks()}"
                     )
-                rows = self.lower_ranks()[0]
-                columns = other.lower_ranks()[0]
+                rows = self._lower_index_ranks()[0]
+                columns = other._lower_index_ranks()[0]
                 entries = tuple(
                     sum(
                         (self[i] * other[i, j] for i in range(rows)),
@@ -1130,8 +1133,8 @@ class _CoordinateTensor(ModuleElement, Tensor):
             _restore_tensor,
             (
                 self.base_ring(),
-                self.upper_ranks(),
-                self.lower_ranks(),
+                self._upper_index_ranks(),
+                self._lower_index_ranks(),
                 self.components(),
             ),
         )
@@ -1228,10 +1231,10 @@ class TensorModule(UniqueRepresentation, Parent):
     def tensor_valence(self) -> ProductOfNaturalNumbers:
         return self.tensor_type()
 
-    def upper_ranks(self) -> tuple:
+    def _upper_index_ranks(self) -> tuple:
         return self._upper_ranks
 
-    def lower_ranks(self) -> tuple:
+    def _lower_index_ranks(self) -> tuple:
         return self._lower_ranks
 
     def index_modules(self):
@@ -1243,10 +1246,14 @@ class TensorModule(UniqueRepresentation, Parent):
                 return FreeModule(self.base_ring(), NN)
             return FreeModule(self.base_ring(), int(rank))
 
-        return (
-            tuple(free_of_rank(rank) for rank in self._upper_ranks),
-            tuple(free_of_rank(rank) for rank in self._lower_ranks),
-        )
+        def modules_for(ranks):
+            slots = Sets.Δ[len(ranks) - 1]
+            return finite_ordered_image(
+                slots,
+                lambda slot: free_of_rank(ranks[int(slot)]),
+            )
+
+        return modules_for(self._upper_ranks), modules_for(self._lower_ranks)
 
     def tensor_indices(self):
         r"""Return the standard generating set of each finite index module."""

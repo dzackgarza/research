@@ -325,6 +325,54 @@ class AlgebrasWithChosenMultiplication(OwnedCategoryOverBaseRing):
 class CommutativeAlgebras(OwnedCategoryOverBaseRing):
     r"""Commutative associative unital algebras over ``R``."""
 
+    class SubcategoryMethods:
+        r"""Constructions this category owns, reachable from any subcategory."""
+
+        def product(self, factors):
+            r"""Return the product of a finite family of objects of this category."""
+            return self._fold_construction(
+                self._categorical_product, factors, name="Product factors"
+            )
+
+        def _categorical_product(self, left, right):
+            raise NotImplementedError(
+                "the represented categorical product of commutative algebras is not yet implemented"
+            )
+
+        def coproduct(self, factors):
+            r"""Return the coproduct of a finite family of objects of this category."""
+            return self._fold_construction(
+                self._categorical_coproduct, factors, name="Coproduct factors"
+            )
+
+        def _categorical_coproduct(self, left, right):
+            operation = getattr(left, "_commutative_algebra_coproduct", None)
+            if operation is None:
+                operation = getattr(right, "_commutative_algebra_coproduct", None)
+            if operation is None:
+                raise NotImplementedError(
+                    "neither factor carries a represented commutative-algebra coproduct backend"
+                )
+            return operation(left, right)
+
+        def _categorical_coproduct_morphism(self, left_morphism, right_morphism, source, target):
+            return source.from_cocone(
+                target.left_coproduct_map() * left_morphism,
+                target.right_coproduct_map() * right_morphism,
+            )
+
+        def _categorical_pushout(self, left_morphism, right_morphism):
+            left = left_morphism.codomain()
+            right = right_morphism.codomain()
+            operation = getattr(left, "_commutative_algebra_pushout", None)
+            if operation is None:
+                operation = getattr(right, "_commutative_algebra_pushout", None)
+            if operation is None:
+                raise NotImplementedError(
+                    "neither factor carries a represented commutative-algebra pushout backend"
+                )
+            return operation(left_morphism, right_morphism)
+
     _HomCategory = AlgebraHomCategoryConstruction
 
     def an_object(self):
@@ -342,38 +390,11 @@ class CommutativeAlgebras(OwnedCategoryOverBaseRing):
 
         return [Algebras(self.base_ring()), OwnedCommutativeRings()]
 
-    def _categorical_product(self, left, right):
-        raise NotImplementedError(
-            "the represented categorical product of commutative algebras is not yet implemented"
-        )
 
-    def _categorical_coproduct(self, left, right):
-        operation = getattr(left, "_commutative_algebra_coproduct", None)
-        if operation is None:
-            operation = getattr(right, "_commutative_algebra_coproduct", None)
-        if operation is None:
-            raise NotImplementedError(
-                "neither factor carries a represented commutative-algebra coproduct backend"
-            )
-        return operation(left, right)
 
-    def _categorical_coproduct_morphism(self, left_morphism, right_morphism, source, target):
-        return source.from_cocone(
-            target.left_coproduct_map() * left_morphism,
-            target.right_coproduct_map() * right_morphism,
-        )
 
-    def _categorical_pushout(self, left_morphism, right_morphism):
-        left = left_morphism.codomain()
-        right = right_morphism.codomain()
-        operation = getattr(left, "_commutative_algebra_pushout", None)
-        if operation is None:
-            operation = getattr(right, "_commutative_algebra_pushout", None)
-        if operation is None:
-            raise NotImplementedError(
-                "neither factor carries a represented commutative-algebra pushout backend"
-            )
-        return operation(left_morphism, right_morphism)
+
+
 
     class ParentMethods:
         def is_commutative(self) -> bool:

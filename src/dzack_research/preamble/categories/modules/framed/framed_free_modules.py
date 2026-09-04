@@ -323,6 +323,12 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
                 return NotImplemented
             return FinitelyPresentedModule(morphism)
 
+        def _represented_annihilator_ideal(self):
+            r"""Return the kernel ideal of the scalar action on a free module."""
+            ring = self.base_ring()
+            generator = ring.one() if self.rank() == 0 else ring.zero()
+            return ring.ideal(generator)
+
         def _Hom_(self, codomain, category=None):
 
             if category is not None and not category.is_subcategory(Modules(self.base_ring())):
@@ -444,6 +450,22 @@ def _known_finite_generator_family(module_generating_set):
     return module_generating_set
 
 
+def _finite_support_labels(module, elements):
+    r"""Return the finite union of supports without ranking the ambient framing.
+
+    This is a private finite-coordinate boundary.  The ambient framing may be
+    infinite and need not admit a ranking map; only labels that actually occur
+    in the supplied finite family are retained.
+    """
+    support = []
+    for candidate in elements:
+        element = candidate if candidate.parent() is module else module(candidate)
+        for label in module_coefficients(element, module):
+            if not any(label == known for known in support):
+                support.append(label)
+    return finite_ordered_set(support)
+
+
 def _span_basis_elements(module, module_generating_set):
     r"""Return the canonical span basis using only the finite union of supports."""
 
@@ -458,22 +480,13 @@ def _span_basis_elements(module, module_generating_set):
         )
 
     generators = _known_finite_generator_family(module_generating_set)
-    ambient_labels = module.module_generating_set()
-    if not hasattr(ambient_labels, "rank") or not hasattr(ambient_labels, "unrank"):
-        raise TypeError("submodule basis reduction requires a ranked ambient framing")
-
-    # Determine the finite coordinate window from the supplied finite supports.
-    support_by_rank = {}
-    for candidate in generators:
-        element = candidate if candidate.parent() is module else module(candidate)
-        for label in module_coefficients(element, module):
-            support_by_rank[int(ambient_labels.rank(label))] = label
+    support_labels = _finite_support_labels(module, generators)
 
     # Private finite backend serialization.  Only the finite support window is
     # materialized; the ambient framing itself is never enumerated.
-    support_ranks = sorted(support_by_rank)
     engine = _engine_ring(ring)
-    free = _SageFreeModule(engine, len(support_ranks))
+    support_count = int(support_labels.cardinality())
+    free = _SageFreeModule(engine, support_count)
     engine_rows = []
     for candidate in generators:
         element = candidate if candidate.parent() is module else module(candidate)
@@ -482,9 +495,9 @@ def _span_basis_elements(module, module_generating_set):
             [
                 _engine_element(
                     ring,
-                    coefficients.get(support_by_rank[rank], ring.zero()),
+                    coefficients.get(support_labels.unrank(position), ring.zero()),
                 )
-                for rank in support_ranks
+                for position in range(support_count)
             ]
         )
     basis = (
@@ -498,8 +511,8 @@ def _span_basis_elements(module, module_generating_set):
         row = basis.row(int(position))
         return module.linear_combination(
             {
-                support_by_rank[rank]: ring._from_engine_element(row[column])
-                for column, rank in enumerate(support_ranks)
+                support_labels.unrank(column): ring._from_engine_element(row[column])
+                for column in range(support_count)
                 if row[column]
             }
         )
@@ -566,25 +579,7 @@ def _finalize_module_subobject(module, basis, source, *, inclusion=None):
     # routing through the generic finite-ambient coordinate solver.
 
 
-    ambient_labels = module.module_generating_set()
-    support_by_rank = {}
-    for basis_element in basis:
-        for ambient_label in module_coefficients(basis_element, module):
-            support_by_rank[int(ambient_labels.rank(ambient_label))] = ambient_label
-    support_positions = Sets.Δ[len(support_by_rank) - 1]
-
-    def support_rank(position):
-        requested = int(position)
-        for offset, rank in enumerate(sorted(support_by_rank)):
-            if offset == requested:
-                return rank
-        raise IndexError(position)
-
-    support_labels = finite_ordered_image(
-        support_positions,
-        lambda position: support_by_rank[support_rank(position)],
-        name=f"Finite support of {source} in {module}",
-    )
+    support_labels = _finite_support_labels(module, basis)
     source_rank = int(basis.cardinality())
     support_rank_count = int(support_labels.cardinality())
     if source_rank:

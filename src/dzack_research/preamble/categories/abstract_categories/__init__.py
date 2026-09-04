@@ -29,10 +29,6 @@ _EXPORTS = {
     'ambient_category_of': ('dzack_research.preamble.categories.abstract_categories.products', 'ambient_category_of'),
     'coproduct_cocone_category': ('dzack_research.preamble.categories.abstract_categories.products', 'coproduct_cocone_category'),
     'product_cone_category': ('dzack_research.preamble.categories.abstract_categories.products', 'product_cone_category'),
-    'FunctorImageCategories': ('dzack_research.preamble.categories.abstract_categories.functor_images', 'FunctorImageCategories'),
-    'FunctorImageObject': ('dzack_research.preamble.categories.abstract_categories.functor_images', 'FunctorImageObject'),
-    'FunctorImageMorphism': ('dzack_research.preamble.categories.abstract_categories.functor_images', 'FunctorImageMorphism'),
-    'ImageOfFunctor': ('dzack_research.preamble.categories.abstract_categories.functor_images', 'ImageOfFunctor'),
     'Cat': ('dzack_research.preamble.categories.abstract_categories.cat', 'Cat'),
     'CategoryFunctorMorphism': ('dzack_research.preamble.categories.abstract_categories.cat', 'CategoryFunctorMorphism'),
     'CategoryObject': ('dzack_research.preamble.categories.abstract_categories.cat', 'CategoryObject'),
@@ -85,8 +81,12 @@ _EXPORTS = {
     'SuperobjectsOf': ('dzack_research.preamble.categories.abstract_categories.arrow_categories', 'SuperobjectsOf'),
     'WideSubcategory': ('dzack_research.preamble.categories.abstract_categories.arrow_categories', 'WideSubcategory'),
     'Biproduct': ('dzack_research.preamble.categories.abstract_categories.constructions', 'Biproduct'),
+    'Coequalizer': ('dzack_research.preamble.categories.abstract_categories.constructions', 'Coequalizer'),
+    'CoequalizerOfFamily': ('dzack_research.preamble.categories.abstract_categories.constructions', 'CoequalizerOfFamily'),
     'Cokernel': ('dzack_research.preamble.categories.abstract_categories.constructions', 'Cokernel'),
     'Coproduct': ('dzack_research.preamble.categories.abstract_categories.constructions', 'Coproduct'),
+    'Equalizer': ('dzack_research.preamble.categories.abstract_categories.constructions', 'Equalizer'),
+    'EqualizerOfFamily': ('dzack_research.preamble.categories.abstract_categories.constructions', 'EqualizerOfFamily'),
     'FiberProduct': ('dzack_research.preamble.categories.abstract_categories.constructions', 'FiberProduct'),
     'Kernel': ('dzack_research.preamble.categories.abstract_categories.constructions', 'Kernel'),
     'Product': ('dzack_research.preamble.categories.abstract_categories.constructions', 'Product'),
@@ -96,7 +96,7 @@ _EXPORTS = {
     'TensorSquare': ('dzack_research.preamble.categories.abstract_categories.constructions', 'TensorSquare'),
 }
 
-__all__ = ['DirectSumDecomposition', 'DirectSumObjects', 'BiproductCategory', 'Cocone', 'CoconeCategory', 'ColimitsOfCategory', 'Cone', 'ConeCategory', 'CoproductCoconeCategory', 'CoproductsOfCategory', 'DiagramCategory', 'DirectSumCategory', 'DirectedSystem', 'InverseSystem', 'LimitsOfCategory', 'ProductConeCategory', 'ProductsOfCategory', 'TensorProductCategory', 'ambient_category_of', 'coproduct_cocone_category', 'product_cone_category', 'FunctorImageCategories', 'FunctorImageObject', 'FunctorImageMorphism', 'ImageOfFunctor', 'Cat', 'CategoryFunctorMorphism', 'CategoryObject', 'FunctorCategory', 'NaturalTransformationMorphism', 'AutCategoryConstruction', 'AutCategoryOf', 'CategoricalHomset', 'CategoryPacket', 'CategoryPacketMethods', 'EndCategoryConstruction', 'EndCategoryOf', 'EpiCategoryConstruction', 'EpiCategoryOf', 'HomCategories', 'HomCategoryConstruction', 'HomCategoryOf', 'IsoCategoryConstruction', 'IsoCategoryOf', 'MonoCategoryConstruction', 'MonoCategoryOf', 'category_packet', 'common_category', 'Isomorphism', 'IsoArrowCategory', 'EndArrowCategory', 'AutomorphismArrowCategory', 'OppositeCategory', 'OppositeMorphism', 'OppositeObject', 'ProductCategory', 'ProductMorphism', 'ProductObject', 'ArrowCategory', 'CategoricalIsomorphism', 'CommutativeSquare', 'Core', 'CoreCategory', 'CosliceCategory', 'CosliceUnder', 'EpimorphismArrowCategory', 'MonomorphismArrowCategory', 'SliceCategory', 'SliceOver', 'SubobjectCategory', 'SubobjectHomset', 'SubobjectMorphism', 'SubobjectsOf', 'SuperobjectCategory', 'SuperobjectsOf', 'WideSubcategory', 'Biproduct', 'Cokernel', 'Coproduct', 'FiberProduct', 'Kernel', 'Product', 'Pushout', 'Subobjects', 'TensorProduct', 'TensorSquare']
+__all__ = ['DirectSumDecomposition', 'DirectSumObjects', 'BiproductCategory', 'Cocone', 'CoconeCategory', 'ColimitsOfCategory', 'Cone', 'ConeCategory', 'CoproductCoconeCategory', 'CoproductsOfCategory', 'DiagramCategory', 'DirectSumCategory', 'DirectedSystem', 'InverseSystem', 'LimitsOfCategory', 'ProductConeCategory', 'ProductsOfCategory', 'TensorProductCategory', 'ambient_category_of', 'coproduct_cocone_category', 'product_cone_category', 'Cat', 'CategoryFunctorMorphism', 'CategoryObject', 'FunctorCategory', 'NaturalTransformationMorphism', 'AutCategoryConstruction', 'AutCategoryOf', 'CategoricalHomset', 'CategoryPacket', 'CategoryPacketMethods', 'EndCategoryConstruction', 'EndCategoryOf', 'EpiCategoryConstruction', 'EpiCategoryOf', 'HomCategories', 'HomCategoryConstruction', 'HomCategoryOf', 'IsoCategoryConstruction', 'IsoCategoryOf', 'MonoCategoryConstruction', 'MonoCategoryOf', 'category_packet', 'common_category', 'Isomorphism', 'IsoArrowCategory', 'EndArrowCategory', 'AutomorphismArrowCategory', 'OppositeCategory', 'OppositeMorphism', 'OppositeObject', 'ProductCategory', 'ProductMorphism', 'ProductObject', 'ArrowCategory', 'CategoricalIsomorphism', 'CommutativeSquare', 'Core', 'CoreCategory', 'CosliceCategory', 'CosliceUnder', 'EpimorphismArrowCategory', 'MonomorphismArrowCategory', 'SliceCategory', 'SliceOver', 'SubobjectCategory', 'SubobjectHomset', 'SubobjectMorphism', 'SubobjectsOf', 'SuperobjectCategory', 'SuperobjectsOf', 'WideSubcategory', 'Biproduct', 'Coequalizer', 'CoequalizerOfFamily', 'Cokernel', 'Coproduct', 'Equalizer', 'EqualizerOfFamily', 'FiberProduct', 'Kernel', 'Product', 'Pushout', 'Subobjects', 'TensorProduct', 'TensorSquare']
 
 def __getattr__(name):
     try:

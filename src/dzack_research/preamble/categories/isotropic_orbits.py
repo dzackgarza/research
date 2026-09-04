@@ -1,7 +1,8 @@
 r"""Primitive totally isotropic sublattices, flags, and full-orthogonal-group orbits."""
 
 from dzack_research.preamble.tensors.tensor import tensor
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace
+from dzack_research.preamble.categories.sets.cardinals import cardinal
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
 
 def _held(lattice, element):
@@ -15,14 +16,9 @@ def primitive_isotropic_subobject(lattice, basis):
         raise ValueError("an isotropic sublattice requires a nonempty basis")
     if any(lattice.b(left, right) != 0 for left in elements for right in elements):
         raise ValueError("the stated basis is not totally isotropic")
-    rows = MatrixSpace(
-        lattice.base_ring(), len(elements), int(lattice.rank())
-    ).from_rows([element.to_list() for element in elements])
-    if int(rows.rank()) != len(elements):
-        raise ValueError("the stated isotropic basis is linearly dependent")
     subobject = lattice.subobject_on(elements)
     if subobject.rank() != len(elements):
-        raise ArithmeticError("the represented isotropic subobject has the wrong rank")
+        raise ValueError("the stated isotropic basis is linearly dependent")
     if not subobject.is_primitive():
         raise ValueError("the isotropic sublattice must be primitive")
     return subobject
@@ -51,7 +47,7 @@ class IsotropicFlag:
         return self._terms
 
     def rank(self):
-        return self.lattice().base_ring()(len(self._terms))
+        return cardinal(len(self._terms))
 
     def top(self):
         return self._terms[-1]
@@ -85,13 +81,8 @@ def _same_subobject(left, right) -> bool:
     return True
 
 
-def _image_subobject(lattice, isometry, subobject):
-    return lattice.subobject_on(
-        tuple(
-            isometry(subobject.inclusion()(generator))
-            for generator in subobject.module_generators()
-        )
-    )
+def _image_subobject(isometry, subobject):
+    return (isometry * subobject.inclusion()).image()
 
 
 def transport_isotropic_object(isometry, obj):
@@ -99,10 +90,7 @@ def transport_isotropic_object(isometry, obj):
     lattice = isometry.codomain()
     if isinstance(obj, IsotropicFlag):
         return IsotropicFlag(lattice, tuple(isometry(element) for element in obj.basis()))
-    return primitive_isotropic_subobject(
-        lattice,
-        tuple(isometry(element) for element in _embedded_basis(obj)),
-    )
+    return _image_subobject(isometry, obj)
 
 
 def _gram_rows(lattice):
@@ -169,7 +157,7 @@ def isotropic_equivalence_witness(orthogonal_group, left, right, *, flag=False):
     checked_left = left_terms if flag else left_terms[-1:]
     checked_right = right_terms if flag else right_terms[-1:]
     if any(
-        not _same_subobject(_image_subobject(lattice, isometry, source), target)
+        not _same_subobject(_image_subobject(isometry, source), target)
         for source, target in zip(checked_left, checked_right, strict=True)
     ):
         raise ArithmeticError("the isotropic-equivalence backend returned a witness with the wrong subobject action")
@@ -182,21 +170,23 @@ def isotropic_stabilizer_generators(orthogonal_group, obj, *, flag=False):
     from py_polyhedral.binaries import indefinite_form_stabilizer_isotropic_subspace
 
     nature = "flag" if flag else "plane"
-    generators = tuple(
-        orthogonal_group._from_backend_row_action(rows)
-        for rows in indefinite_form_stabilizer_isotropic_subspace(
-            _gram_rows(lattice), _basis_rows(obj), choice=nature
+    isometries = finite_ordered_set(
+        tuple(
+            orthogonal_group._from_backend_row_action(rows)
+            for rows in indefinite_form_stabilizer_isotropic_subspace(
+                _gram_rows(lattice), _basis_rows(obj), choice=nature
+            )
         )
     )
     terms = _terms(obj)
     checked = terms if flag else terms[-1:]
     if any(
-        not _same_subobject(_image_subobject(lattice, generator, term), term)
-        for generator in generators
+        not _same_subobject(_image_subobject(isometry, term), term)
+        for isometry in isometries
         for term in checked
     ):
-        raise ArithmeticError("an isotropic-stabilizer backend generator moves a subobject it must preserve")
-    return generators
+        raise ArithmeticError("an isotropic-stabilizer backend isometry moves a subobject it must preserve")
+    return isometries
 
 
 __all__ = [

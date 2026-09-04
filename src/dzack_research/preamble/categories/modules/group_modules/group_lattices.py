@@ -1,5 +1,7 @@
 r"""Lattices equipped with a chosen form-preserving group action."""
 
+from sage.categories.morphism import SetMorphism
+
 from dzack_research.preamble.categories.modules.group_modules.group_modules import (
     GroupModule,
     GroupModules,
@@ -12,6 +14,7 @@ from dzack_research.preamble.categories.lattices import (
     RootLattices,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_coefficients
+from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
 class GroupLattices(_CategoryOverRingAndActingGroup):
@@ -32,19 +35,16 @@ class GroupLattices(_CategoryOverRingAndActingGroup):
             return self._preamble_group_module.group()
 
         def action(self):
-            return self._preamble_group_module.action()
+            return self._preamble_lattice_action
 
         def act(self, group_element, vector):
 
             if vector.parent() is not self:
                 raise TypeError(f"the action is on elements of {self}")
-            backing = self._preamble_group_module
-            backing_vector = backing.linear_combination(module_coefficients(vector, self))
-            backing_image = backing.act(group_element, backing_vector)
-            return self.linear_combination(module_coefficients(backing_image, backing))
+            return self.action()(group_element)(vector)
 
         def action_of(self, group_element):
-            return self.Aut()({label: self.act(group_element, self.module_generator(label)) for label in self.module_generating_set()})
+            return self.action()(group_element)
 
         def is_invariant(self, vector) -> bool:
             group = self.group()
@@ -94,31 +94,43 @@ def GroupLattice(lattice, group_or_action, action=None):
 
     base_ring = lattice.base_ring()
     assert lattice in FiniteRankLattices(base_ring)
-    group_module = GroupModule(lattice, group_or_action, action)
-    group = group_module.group()
+    source_group_module = GroupModule(lattice, group_or_action, action)
+    group = source_group_module.group()
 
     result = Lattices(base_ring)(
         lattice.gram_tensor(),
         module_generators=lattice.module_generating_set(),
     )
-    result._preamble_group_module = group_module
 
     assert group.is_finitely_generated() is True
 
     def transported_image(group_element, label):
-        backing_image = group_module.act(
+        backing_image = source_group_module.act(
             group_element,
-            group_module.module_generator(label),
+            source_group_module.module_generator(label),
         )
-        return result.linear_combination(module_coefficients(backing_image, group_module))
+        return result.linear_combination(
+            module_coefficients(backing_image, source_group_module)
+        )
 
-    result_generators = tuple(result.module_generators())
+    orthogonal_group = result.Aut()
+    lattice_action = SetMorphism(
+        Sets().Mor(group, orthogonal_group),
+        lambda group_element: orthogonal_group(
+            lambda label: transported_image(group_element, label)
+        ),
+    )
+
+    # The selected action is represented by a map into Aut(L).  For a chosen
+    # finite group presentation it suffices to force the generator images
+    # through that Hom here; form preservation and invertibility are owned by
+    # the lattice-isometry constructor.
     for group_generator in group.group_generators():
-        images = tuple(transported_image(group_generator, label) for label in lattice.module_generating_set())
-        if any(
-            result.b(images[i], images[j]) != result.b(result_generators[i], result_generators[j]) for i in range(len(result_generators)) for j in range(len(result_generators))
-        ):
-            raise ValueError(f"the stated action of {group_generator} does not preserve the lattice form")
+        lattice_action(group_generator)
+
+    group_module = GroupModule(result, lattice_action)
+    result._preamble_group_module = group_module
+    result._preamble_lattice_action = lattice_action
 
     result = refine(result, GroupLattices(base_ring, group))
 

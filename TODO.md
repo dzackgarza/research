@@ -170,3 +170,16 @@ and leave the defect.
   are interned, so the discipline exists and these four are outside it.  Every
   `is` check and every coercion between two "equal" localizations is affected.
   `categories/rings/commutative_algebra.py`.
+
+- [ ] **A folded construction is not the construction over the index set.**
+  `C.product(factors)` folds the category's binary construction, so three
+  factors give `(M_0 x M_1) x M_2` rather than the object over the three-element
+  index set.  Both satisfy the universal property, and they are not the same
+  object; `Sets.product` already builds the n-ary one directly, so the other
+  categories are the ones to bring up to it.
+  `categories/abstract_categories/objects.py`.
+
+- [ ] **`Schemes.ParentMethods.product(self, *others)` still takes an arity.**
+  A construction is taken over an index set (`CON-14`), so this reads a family
+  like the category methods do, or it is operator notation.
+  `categories/schemes/schemes.py`.

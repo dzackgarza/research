@@ -8,6 +8,7 @@ from dzack_research.preamble.categories.group.profinite.profinite_groups import 
     ProfiniteGroups,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
+from dzack_research.preamble.categories.sets.cardinals import continuum
 
 
 class AbsoluteGaloisGroups(Category_singleton):
@@ -50,7 +51,8 @@ class AbsoluteGaloisGroupsOfFiniteFields(Category_singleton):
 
             return Infinity
 
-        cardinality = order
+        def cardinality(self):
+            return continuum
 
         def is_abelian(self) -> bool:
             return True

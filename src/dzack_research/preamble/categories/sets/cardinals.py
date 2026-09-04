@@ -15,7 +15,7 @@ from sage.categories.category import Category
 from sage.categories.morphism import Morphism
 from sage.categories.semirings import Semirings
 from sage.categories.sets_cat import Sets as SageSets
-from sage.misc.cachefunc import cached_function
+from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.infinity import Infinity
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ
@@ -72,6 +72,14 @@ class CardinalityMorphism(Morphism):
     def __init__(self, parent) -> None:
         Morphism.__init__(self, parent)
 
+    def is_identity(self) -> bool:
+        return self.domain() is self.codomain()
+
+    def __mul__(self, other):
+        if not isinstance(other, CardinalityMorphism) or other.codomain() is not self.domain():
+            return NotImplemented
+        return Cardinalities().Mor(other.domain(), self.codomain()).unique_morphism()
+
     def _repr_(self) -> str:
         return f"{self.domain()} <= {self.codomain()}"
 
@@ -79,14 +87,13 @@ class CardinalityMorphism(Morphism):
 class CardinalityHomset(CategoricalHomset):
     Element = CardinalityMorphism
 
-    def __init__(self, cardinalities, domain, codomain) -> None:
-        CategoricalHomset.__init__(
-            self, HomCategoryConstruction(cardinalities), domain, codomain
-        )
+    def __init__(self, hom_family, domain, codomain) -> None:
+        CategoricalHomset.__init__(self, hom_family, domain, codomain)
 
     def cardinality(self):
         return cardinal(1 if Cardinalities().le(self.domain(), self.codomain()) else 0)
 
+    @cached_method
     def unique_morphism(self):
         if not Cardinalities().le(self.domain(), self.codomain()):
             raise ValueError(f"there is no cardinality morphism {self.domain()} -> {self.codomain()}")
@@ -103,8 +110,15 @@ class CardinalityHomset(CategoricalHomset):
         return self.unique_morphism()
 
 
+class CardinalityHomCategoryConstruction(HomCategoryConstruction):
+    def fixed_category_class(self):
+        return CardinalityHomset
+
+
 class Cardinalities(Category):
     r"""The thin category associated to the represented cardinal order."""
+
+    _HomCategory = CardinalityHomCategoryConstruction
 
     def super_categories(self):
         return [Objects()]
@@ -113,8 +127,15 @@ class Cardinalities(Category):
         return "Category of cardinalities"
 
     def Mor(self, domain, codomain) -> CardinalityHomset:
-        return CardinalityHomset(self, cardinal(domain), cardinal(codomain))
+        return CardinalityHomCategoryConstruction(self).Of(
+            cardinal(domain), cardinal(codomain)
+        )
 
+    class ParentMethods:
+        def Mor(self, codomain, category=None):
+            if category is not None and category is not Cardinalities():
+                raise TypeError("a cardinal morphism lies in Cardinalities")
+            return Cardinalities().Mor(self, codomain)
 
     def zero(self):
         return cardinal(0)
@@ -517,8 +538,69 @@ class _OrdinalPower:
     exponent: "Ordinal"
 
 
+class OrdinalSemiringMorphism(Morphism):
+    r"""A declared homomorphism between represented ordinal semirings."""
+
+    def __init__(self, parent, function) -> None:
+        Morphism.__init__(self, parent)
+        if not callable(function):
+            raise TypeError("an ordinal-semiring morphism requires an exact map")
+        self._function = function
+        self._preamble_is_identity = False
+
+    def _call_(self, element):
+        return self.codomain()(self._function(self.domain()(element)))
+
+    def __call__(self, element):
+        return self._call_(element)
+
+    def __mul__(self, other):
+        if not isinstance(other, OrdinalSemiringMorphism) or other.codomain() is not self.domain():
+            return NotImplemented
+        if self.is_identity():
+            return other
+        if other.is_identity():
+            return self
+        return OrdinalSemirings().Mor(other.domain(), self.codomain())(
+            lambda element: self(other(element))
+        )
+
+    def is_identity(self) -> bool:
+        return self._preamble_is_identity
+
+
+class OrdinalSemiringHomset(CategoricalHomset):
+    Element = OrdinalSemiringMorphism
+
+    def __init__(self, hom_family, domain, codomain) -> None:
+        CategoricalHomset.__init__(self, hom_family, domain, codomain)
+
+    def _element_constructor_(self, function):
+        if isinstance(function, OrdinalSemiringMorphism):
+            if function.domain() is not self.domain() or function.codomain() is not self.codomain():
+                raise ValueError("the ordinal-semiring morphism has the wrong endpoints")
+            if function.parent() is self:
+                return function
+            function = lambda element, morphism=function: morphism(element)
+        return self.element_class(self, function)
+
+    def identity(self):
+        if self.domain() is not self.codomain():
+            raise ValueError("identity is defined only on an endomorphism Hom-set")
+        identity = self(lambda element: element)
+        identity._preamble_is_identity = True
+        return identity
+
+
+class OrdinalSemiringHomCategoryConstruction(HomCategoryConstruction):
+    def fixed_category_class(self):
+        return OrdinalSemiringHomset
+
+
 class OrdinalSemirings(Category):
     r"""The category containing the ordinal semiring under natural operations."""
+
+    _HomCategory = OrdinalSemiringHomCategoryConstruction
 
     def __init__(self) -> None:
         # Sage semiring classes provide Python arithmetic plumbing only; they
@@ -528,6 +610,17 @@ class OrdinalSemirings(Category):
 
     def super_categories(self):
         return [Objects()]
+
+    def Mor(self, domain, codomain) -> OrdinalSemiringHomset:
+        if domain not in self or codomain not in self:
+            raise TypeError("an ordinal-semiring morphism requires two ordinal semirings")
+        return OrdinalSemiringHomCategoryConstruction(self).Of(domain, codomain)
+
+    class ParentMethods:
+        def Mor(self, codomain, category=None):
+            if category is not None and category is not OrdinalSemirings():
+                raise TypeError("an ordinal-semiring morphism lies in OrdinalSemirings")
+            return OrdinalSemirings().Mor(self, codomain)
 
 
 class Ordinal(Element):

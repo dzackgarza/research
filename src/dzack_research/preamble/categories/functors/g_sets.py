@@ -45,11 +45,6 @@ class TrivialGSetFunctor(Functor):
     def _apply_object(self, set_object):
         return trivial_g_set(set_object, self.group())
 
-    def source_set(self, trivial_g_set_object):
-        return super().chosen_preimage(trivial_g_set_object)
-
-    chosen_preimage = source_set
-
     def _apply_morphism(self, set_morphism):
         source = self(set_morphism.domain())
         target = self(set_morphism.codomain())
@@ -79,9 +74,6 @@ class GSetOrbitsFunctor(Functor):
             Sets().Mor(source, target),
             lambda orbit: target.orbit_of(morphism(orbit.representative())),
         )
-
-    def chosen_preimage(self, image):
-        return super().chosen_preimage(image)
 
     def _repr_(self):
         return f"{self.group()}-orbit functor on finite G-sets"
@@ -182,11 +174,6 @@ class FreeGSetFunctor(Functor):
 
         return _finite_g_set_from_action(self.group(), point_set, action)
 
-    def source_set(self, free_g_set):
-        return super().chosen_preimage(free_g_set)
-
-    chosen_preimage = source_set
-
     def free_point(self, free_g_set, group_element, point):
         return free_g_set.point_set()(
             lambda index: group_element if int(index) == 0 else point
@@ -224,11 +211,6 @@ class UnderlyingFiniteGSetFunctor(Functor):
 
     def _apply_morphism(self, morphism):
         return SetMorphism(Sets().Mor(morphism.domain(), morphism.codomain()), morphism)
-
-    def chosen_preimage(self, image):
-        if image not in self.domain():
-            raise ValueError("the underlying finite set is not a G-set for this group")
-        return image
 
     def _repr_(self):
         return f"Underlying finite-set functor on {self.group()}-sets"
@@ -273,11 +255,6 @@ class CofreeGSetFunctor(Functor):
             )
 
         return _finite_g_set_from_action(self.group(), point_set, action)
-
-    def source_set(self, cofree_g_set):
-        return super().chosen_preimage(cofree_g_set)
-
-    chosen_preimage = source_set
 
     def function_value(self, cofree_g_set, function_point, group_element):
         if function_point not in cofree_g_set:

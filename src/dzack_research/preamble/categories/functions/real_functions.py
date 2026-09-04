@@ -51,6 +51,7 @@ from sage.symbolic.expression import Expression
 from sage.symbolic.function import Function as SymbolicMap
 from sage.symbolic.ring import SR
 
+from dzack_research.preamble.categories.sets.cardinals import continuum
 from dzack_research.preamble.categories.sets.set_categories import Sets as OwnedSets
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
@@ -632,8 +633,13 @@ class _C(_FunctionSpace):
         return self._regularity
 
     def cardinality(self):
-        r"""The set of \(C^k\) maps \(X\to Y\) is infinite for \(Y=\mathbb R\)."""
-        return Infinity
+        r"""Return the exact represented cardinality for \(C^k(\mathbb R,\mathbb R)\)."""
+        if self.domain() is RR and self.codomain() is RR:
+            return continuum
+        assert False, (
+            "cardinality is defined for every mapping space, but the current exact "
+            "computation covers only represented C^k(R,R)"
+        )
 
     def is_integral_domain(self, proof=True):
         r"""Pointwise product has zero-divisors: bump functions."""

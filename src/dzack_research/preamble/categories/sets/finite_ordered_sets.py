@@ -50,7 +50,7 @@ class OrderedEnumeratedSet(Parent):
         return self._index_set
 
     def cardinality(self):
-        return self.index_set().cardinality()
+        return cardinal(self.index_set().cardinality())
 
     def unrank(self, position):
         try:
@@ -283,7 +283,7 @@ class FiniteFilteredOrderedSet(OrderedEnumeratedSet):
         return (element for element in self.source() if self.predicate()(element))
 
     def cardinality(self):
-        return sum(1 for _element in self)
+        return cardinal(sum(1 for _element in self))
 
     def unrank(self, position):
         try:

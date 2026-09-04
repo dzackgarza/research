@@ -271,7 +271,7 @@ class FixedSizeSelections(Parent):
         position = int(position)
         if position < 0:
             raise IndexError(position)
-        size = cardinal(self.cardinality())
+        size = self.cardinality()
         try:
             finite_size = int(size.finite_value()) if size.is_finite() else None
         except NotImplementedError:
@@ -292,7 +292,7 @@ class FixedSizeSelections(Parent):
 
     def __iter__(self):
 
-        size = cardinal(self.cardinality())
+        size = self.cardinality()
         try:
             finite_size = int(size.finite_value()) if size.is_finite() else None
         except NotImplementedError:

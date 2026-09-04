@@ -78,7 +78,7 @@ from dzack_research.preamble.categories.isotropic_orbits import (
     IsotropicFlag,
     primitive_isotropic_subobject,
 )
-from dzack_research.preamble.categories.lattice_engines import oscar_even_unimodular_primitive_embedding
+from dzack_research.preamble.categories import lattice_engines
 from dzack_research.preamble.categories.lattice_morphisms import (
     LatticeEmbeddingHomset,
     LatticeHomset,
@@ -1689,7 +1689,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                     f"no primitive embedding into II_{{{positive},{negative}}} exists"
                 )
 
-            target_gram, embedding_matrix = oscar_even_unimodular_primitive_embedding(
+            target_gram, embedding_matrix = lattice_engines.even_unimodular_primitive_embedding(
                 self.gram_tensor(), positive, negative
             )
             target = Lattices(self.base_ring())(target_gram)

@@ -96,9 +96,25 @@ def _rebuild_morphism_class(morphism: Morphism, category: Category) -> None:
     morphism.__class__ = new_class
 
 
+def _assert_certifying_predicates_hold(obj: SageObject, category: Category) -> None:
+    """Require every owned certified property before category admission."""
+    for candidate_category in category.all_super_categories(proper=False):
+        category_type = type(candidate_category)
+        if not category_type.__module__.startswith(_PREAMBLE_PACKAGE):
+            continue
+        predicate_name = getattr(category_type, "_certifying_predicate", None)
+        if predicate_name is None:
+            continue
+        assert getattr(obj, predicate_name)() is True, (
+            f"refining {obj} into {candidate_category} requires "
+            f"{predicate_name}() to hold"
+        )
+
+
 def refine(obj: SageObject, category: Category | Iterable[Category]):
     """Join ``category`` into ``obj`` and give owned methods precedence."""
     target = category if isinstance(category, Category) else Category.join(tuple(category))
+    _assert_certifying_predicates_hold(obj, target)
     if isinstance(obj, Morphism):
         _rebuild_morphism_class(obj, target)
         return obj

@@ -59,7 +59,10 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
 
     class ParentMethods:
         def localization_source_module(self):
-            return self._preamble_localization_source_module
+            source = self.__dict__.get("_source_module")
+            if source is not None:
+                return source
+            return self.localization_functor().chosen_preimage(self)
 
         def localization_ring(self):
             return self._preamble_localization_ring
@@ -159,7 +162,7 @@ class GeneralLocalizedModuleParent(Parent):
 
     def __init__(self, source_module, localization_ring, localization_functor) -> None:
         self._preamble_base_ring = localization_ring
-        self._preamble_localization_source_module = source_module
+        self._source_module = source_module
         self._preamble_localization_ring = localization_ring
         self._preamble_localization_submonoid = localization_ring.localization_submonoid()
         self._preamble_localization_functor = localization_functor

@@ -13,15 +13,16 @@ from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.tensors.tensor import tensor
 from dzack_research.preamble.categories.lattices import Lattices
-from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+from dzack_research.preamble.categories.rings.ring_foundation import _engine_element, _own_ring
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.tensors.tensor import _engine_component_matrix
 
 
 def _coxeter_entry(q1, q2, pairing):
-    q1 = SageZZ(q1)
-    q2 = SageZZ(q2)
-    pairing = SageZZ(pairing)
+    integers = _own_ring(SageZZ)
+    q1 = _engine_element(integers, q1)
+    q2 = _engine_element(integers, q2)
+    pairing = _engine_element(integers, pairing)
     if q1 == 0 or q2 == 0:
         raise ValueError("a Coxeter root has nonzero square")
     if pairing == 0:

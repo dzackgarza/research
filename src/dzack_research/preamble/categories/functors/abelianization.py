@@ -47,16 +47,8 @@ class AbelianizationFunctor(Functor):
         )
         return quotient
 
-    def source_group(self, abelianization):
-        projection = abelianization.__dict__.get("_preamble_abelianization_projection")
-        if projection is None or projection.codomain() is not abelianization:
-            raise ValueError(f"{abelianization} is not an abelianization construction")
-        return projection.domain()
-
-    chosen_preimage = source_group
-
     def quotient_projection_from_image(self, abelianization):
-        self.source_group(abelianization)
+        self.chosen_preimage(abelianization)
         return abelianization._preamble_abelianization_projection
 
     def quotient_projection(self, group):
@@ -108,11 +100,6 @@ class AbelianGroupInclusionFunctor(Functor):
 
     def _apply_morphism(self, morphism):
         return morphism
-
-    def chosen_preimage(self, image):
-        if image not in self.domain():
-            raise ValueError("the image is not an abelian group")
-        return image
 
     def _repr_(self):
         return "Inclusion of abelian groups into groups"

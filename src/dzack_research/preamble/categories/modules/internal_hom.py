@@ -241,13 +241,8 @@ def internal_hom_morphism(source_internal_hom, target_internal_hom, source_map, 
         raise ValueError("the target internal Hom has the wrong target")
 
 
-    return module_homset(source_internal_hom, target_internal_hom)(
-        {
-            label: target_map
-            * source_internal_hom.module_generator(label)
-            * source_map
-            for label in source_internal_hom.module_generating_set()
-        }
+    return module_homset(source_internal_hom, target_internal_hom).elementwise(
+        lambda morphism: target_map * morphism * source_map
     )
 
 

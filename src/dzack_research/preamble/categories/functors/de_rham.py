@@ -89,13 +89,6 @@ class DeRhamFunctor(Functor):
         target = self(morphism.codomain())
         return _extend_degree_zero_map(source, target, morphism)
 
-    def chosen_preimage(self, image):
-        try:
-            source = image.degree_zero_algebra()
-        except AttributeError:
-            return super().chosen_preimage(image)
-        return source
-
     def _repr_(self):
         return f"Algebraic de Rham functor over {self.base_ring()}"
 

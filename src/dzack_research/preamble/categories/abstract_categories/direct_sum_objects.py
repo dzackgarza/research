@@ -35,7 +35,7 @@ class DirectSumObjects(Category):
 
 
 def _binary_decomposition_is_valid(underlying_object, summands) -> bool:
-    if cardinal(summands.cardinality()) != cardinal(2):
+    if summands.cardinality() != cardinal(2):
         return False
     left = summands.unrank(0)
     right = summands.unrank(1)
@@ -84,7 +84,7 @@ def DirectSumDecomposition(underlying_object, summands, summand_index_set=None):
             if summand_index_set is None
             else finite_ordered_set(summand_index_set)
         )
-        if cardinal(labels.cardinality()) != cardinal(len(values)):
+        if labels.cardinality() != cardinal(len(values)):
             raise ValueError("the summand family and its index set have different cardinalities")
         family = indexed_family(
             labels,
@@ -92,7 +92,7 @@ def DirectSumDecomposition(underlying_object, summands, summand_index_set=None):
             name=f"Direct summands of {underlying_object}",
         )
 
-    size = cardinal(family.cardinality())
+    size = family.cardinality()
     if size == cardinal(2) and not _binary_decomposition_is_valid(underlying_object, family):
         raise ValueError(
             "the represented backend cannot verify that the stated family is a direct-sum decomposition"

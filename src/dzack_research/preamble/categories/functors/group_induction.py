@@ -159,11 +159,6 @@ class RestrictionOfActingGroupFunctor(Functor):
         )
         return restricted
 
-    def original_group_module(self, restricted):
-        return super().chosen_preimage(restricted)
-
-    chosen_preimage = original_group_module
-
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())
         target = self(morphism.codomain())
@@ -263,11 +258,6 @@ class InductionFunctor(Functor):
             return module.linear_combination(output_coefficients)
 
         return GroupModule(module, self.supergroup(), action)
-
-    def source_group_module(self, induced):
-        return super().chosen_preimage(induced)
-
-    chosen_preimage = source_group_module
 
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())
@@ -386,13 +376,8 @@ class CoinductionFunctor(Functor):
 
         return GroupModule(module, self.supergroup(), action)
 
-    def source_group_module(self, coinduced):
-        return super().chosen_preimage(coinduced)
-
-    chosen_preimage = source_group_module
-
     def value_at(self, coinduced, vector, representative):
-        source = self.source_group_module(coinduced)
+        source = self.chosen_preimage(coinduced)
         coefficients = module_coefficients(vector, coinduced)
         labels = coinduced.module_generating_set()
         return source.linear_combination(
@@ -404,7 +389,7 @@ class CoinductionFunctor(Functor):
         )
 
     def element_from_values(self, coinduced, value_function):
-        source = self.source_group_module(coinduced)
+        source = self.chosen_preimage(coinduced)
         coefficients = {}
         for representative in self.representatives():
             value = value_function(representative)

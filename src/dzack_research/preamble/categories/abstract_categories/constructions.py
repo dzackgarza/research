@@ -93,6 +93,66 @@ def Cokernel(morphism):
     return morphism.cokernel()
 
 
+def Equalizer(left_morphism, right_morphism):
+    r"""Return the represented equalizer of two parallel arrows."""
+    if (
+        left_morphism.domain() is not right_morphism.domain()
+        or left_morphism.codomain() is not right_morphism.codomain()
+    ):
+        raise ValueError("equalizer arrows must be parallel")
+    return _category_operation(
+        "equalizer",
+        left_morphism.domain(),
+        left_morphism.codomain(),
+        arguments=(left_morphism, right_morphism),
+    )
+
+
+def Coequalizer(left_morphism, right_morphism):
+    r"""Return the represented coequalizer of two parallel arrows."""
+    if (
+        left_morphism.domain() is not right_morphism.domain()
+        or left_morphism.codomain() is not right_morphism.codomain()
+    ):
+        raise ValueError("coequalizer arrows must be parallel")
+    return _category_operation(
+        "coequalizer",
+        left_morphism.domain(),
+        left_morphism.codomain(),
+        arguments=(left_morphism, right_morphism),
+    )
+
+
+def _nonempty_parallel_family(morphisms, construction):
+    try:
+        reference = morphisms.unrank(0)
+    except (AttributeError, IndexError) as error:
+        raise ValueError(f"a {construction} family must be nonempty") from error
+    return reference
+
+
+def EqualizerOfFamily(morphisms):
+    r"""Return the represented wide equalizer of a nonempty arrow family."""
+    reference = _nonempty_parallel_family(morphisms, "wide equalizer")
+    return _category_operation(
+        "equalizer_family",
+        reference.domain(),
+        reference.codomain(),
+        arguments=(morphisms,),
+    )
+
+
+def CoequalizerOfFamily(morphisms):
+    r"""Return the represented wide coequalizer of a nonempty arrow family."""
+    reference = _nonempty_parallel_family(morphisms, "wide coequalizer")
+    return _category_operation(
+        "coequalizer_family",
+        reference.domain(),
+        reference.codomain(),
+        arguments=(morphisms,),
+    )
+
+
 def Subobjects(base_object, category=None):
     base_category = base_object.category() if category is None else category
     if base_object not in base_category:
@@ -101,6 +161,7 @@ def Subobjects(base_object, category=None):
 
 
 __all__ = [
-    "Biproduct", "Cokernel", "Coproduct", "FiberProduct", "Kernel",
-    "Product", "Pushout", "Subobjects", "TensorProduct", "TensorSquare",
+    "Biproduct", "Coequalizer", "CoequalizerOfFamily", "Cokernel", "Coproduct",
+    "Equalizer", "EqualizerOfFamily", "FiberProduct", "Kernel", "Product",
+    "Pushout", "Subobjects", "TensorProduct", "TensorSquare",
 ]

@@ -25,19 +25,19 @@ from dzack_research.preamble.categories.isotropic_orbits import (
     isotropic_orbit_representatives,
     isotropic_stabilizer_generators,
 )
-from dzack_research.preamble.categories.lattice_engines import (
-    oscar_centralizer_discriminant_image,
-    oscar_rational_spinor_norm_sign,
-    rational_positive_vector,
-)
+from dzack_research.preamble.categories import lattice_engines
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import form_embedding
 from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import torsion_form_isometry
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
+    module_embedding,
     module_homset,
 )
 from dzack_research.preamble.categories.modules.pure.modules import _engine_matrix
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_image
+from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+    finite_ordered_image,
+    finite_ordered_set,
+)
 from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.refine import refine
@@ -92,6 +92,19 @@ class LatticeEmbedding(LatticeMorphism):
     def is_injective(self) -> bool:
         return True
 
+    def factor_through(self, target_embedding):
+        r"""Factor this lattice embedding through a module embedding when possible."""
+        if target_embedding.codomain() is not self.codomain():
+            raise ValueError("subobject factorization requires one common codomain")
+        images = {}
+        for label in self.domain().module_generating_set():
+            image = self(self.domain().module_generator(label))
+            try:
+                images[label] = target_embedding.lift(image)
+            except (TypeError, ValueError) as error:
+                raise ValueError("the first subobject is not contained in the second") from error
+        return module_homset(self.domain(), target_embedding.domain())(images)
+
     def __mul__(self, other):
         if not isinstance(other, LatticeEmbedding):
             return super().__mul__(other)
@@ -117,15 +130,18 @@ class LatticeEmbedding(LatticeMorphism):
         perpendicular = self.orthogonal_complement()
         perpendicular_inclusion = perpendicular.inclusion()
 
-        quotient = module_homset(source, perpendicular)(
+        into_perpendicular = module_embedding(
+            source,
+            perpendicular,
             lambda label: perpendicular_inclusion.lift(
                 self(source.module_generator(label))
-            )
-        ).cokernel()
-        if not quotient.is_torsion_free():
+            ),
+        )
+        if not into_perpendicular.is_primitive():
             raise ValueError(
                 "the isotropic quotient is not free over the base ring; the selected isotropic sublattice is not primitive in its orthogonal complement"
             )
+        quotient = into_perpendicular.cokernel()
         quotient_module_generators = quotient.smith_form_module_generators()
         rank = int(quotient_module_generators.cardinality())
         lattice_category = target.lattice_category()
@@ -411,8 +427,12 @@ class LatticeIsometry(LatticeEmbedding):
             raise ValueError("the real spinor norm requires a finite nondegenerate lattice")
 
         ring = lattice.base_ring()
+        if lattice.is_positive_definite():
+            return self.determinant()
+        if lattice.is_negative_definite():
+            return ring.one()
         backend_sign = SageZZ(
-            oscar_rational_spinor_norm_sign(
+            lattice_engines.rational_spinor_norm_sign(
                 lattice.gram_tensor(), _tensor_view(self)
             )
         )
@@ -439,7 +459,7 @@ class LatticeIsometry(LatticeEmbedding):
 
         rationals = lattice.base_ring().fraction_field()
         gram = lattice.gram_tensor().change_ring(rationals)
-        vector = rational_positive_vector(gram)
+        vector = lattice_engines.rational_positive_vector(gram)
         image = _tensor_view(self).change_ring(rationals) * vector
         pairing = gram.contract(vector, image)
         if pairing == rationals.zero():
@@ -476,7 +496,7 @@ class LatticeIsometry(LatticeEmbedding):
 
 
         engine_generators, expected_order, invariant_rank, coinvariant_rank = (
-            oscar_centralizer_discriminant_image(
+            lattice_engines.centralizer_discriminant_image(
                 lattice.gram_tensor(),
                 _tensor_view(self),
             )
@@ -539,7 +559,7 @@ class LatticeHomset(CategoricalHomset):
             return self.elementwise(lambda element: images(element))
         return self.element_class(self, images)
 
-    def elementwise(self, function):
+    def elementwise(self, function, *, verify_linearity=True):
         if not callable(function):
             raise TypeError("an elementwise lattice map must be callable")
         source = self.domain()
@@ -593,6 +613,15 @@ class LatticeEmbeddingHomset(CategoricalHomset):
                 lambda label: images(source.module_generator(label)),
             )
         return self.element_class(self, images)
+
+    def elementwise(self, function, *, verify_linearity=True):
+        if not callable(function):
+            raise TypeError("an elementwise lattice embedding must be callable")
+        source = self.domain()
+        return self.element_class(
+            self,
+            lambda label: function(source.module_generator(label)),
+        )
 
     def super_categories(self):
         packet = category_packet(self.base_category())
@@ -1034,18 +1063,20 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
                 [int(lattice.gram_tensor()[i, j]) for j in range(int(lattice.rank()))]
                 for i in range(int(lattice.rank()))
             ]
-            generators = tuple(
-                self._from_backend_row_action(generator)
-                for generator in indefinite_form_stabilizer_vector(
-                    gram,
-                    [int(entry) for entry in element.to_list()],
+            isometries = finite_ordered_set(
+                tuple(
+                    self._from_backend_row_action(engine_isometry)
+                    for engine_isometry in indefinite_form_stabilizer_vector(
+                        gram,
+                        [int(entry) for entry in element.to_list()],
+                    )
                 )
             )
-            if any(generator(element) != element for generator in generators):
+            if any(isometry(element) != element for isometry in isometries):
                 raise ArithmeticError(
-                    "an indefinite vector-stabilizer generator does not fix the vector"
+                    "an indefinite vector-stabilizer isometry does not fix the vector"
                 )
-            return generators
+            return isometries
         stabilizer_elements = tuple(
             automorphism
             for automorphism in self
@@ -1054,7 +1085,9 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
         engine_subgroup = self._engine_group().subgroup(
             tuple(self._to_engine(automorphism) for automorphism in stabilizer_elements)
         )
-        return tuple(self._from_engine(generator) for generator in engine_subgroup.gens())
+        return finite_ordered_set(
+            tuple(self._from_engine(engine_isometry) for engine_isometry in engine_subgroup.gens())
+        )
 
     def vector_orbit_representatives(self, square):
         r"""Return one representative of each ``O(L)``-orbit of square ``square``.
@@ -1164,8 +1197,9 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
             return True
         if domain.discriminant() != codomain.discriminant():
             return True
-        if tuple(domain.discriminant_module().invariant_factors()) != tuple(
-            codomain.discriminant_module().invariant_factors()
+        if (
+            domain.discriminant_module().invariant_factors()
+            != codomain.discriminant_module().invariant_factors()
         ):
             return True
 

@@ -321,7 +321,6 @@ class FractionalIdealModule(Parent):
     _preamble_fraction_field = None
     _preamble_module_generating_set = None
     _preamble_module_generator_values = None
-    _preamble_inclusion = None
 
     def __init__(
         self,
@@ -333,6 +332,7 @@ class FractionalIdealModule(Parent):
     ) -> None:
         ring = _owned_ring(base_ring)
         self._preamble_fraction_field = _owned_ring(fraction_field)
+        self._preamble_integral = bool(integral)
         self._preamble_module_generator_values = tuple(module_generator_values)
         self._preamble_module_generating_set = finite_ordered_set(
             range(len(self._preamble_module_generator_values))
@@ -367,6 +367,11 @@ class FractionalIdealModule(Parent):
         categories.extend([FramedModules(ring), FinitelyGeneratedModules(ring)])
         Parent.__init__(self, base=ring, category=Category.join(tuple(categories)))
         refine(self, categories)
+
+    @cached_method
+    def inclusion(self):
+        r"""Return the inclusion determined by this fractional-ideal construction."""
+        return _fractional_ideal_inclusion(self, self._preamble_integral)
 
     def _element_constructor_(self, value):
         if isinstance(value, self.element_class) and value.parent() is self:
@@ -629,7 +634,6 @@ def _fractional_ideal_from_order_values(
         values,
         integral=integral,
     )
-    ideal._preamble_inclusion = _fractional_ideal_inclusion(ideal, integral)
     if bool(order.is_maximal()) or ideal.is_principal():
 
         refine(ideal, ProjectiveModules(ring))
@@ -727,7 +731,6 @@ def _fractional_ideal_from_backend(base_ring, backend, *, integral=False):
         values,
         integral=integral,
     )
-    ideal._preamble_inclusion = _fractional_ideal_inclusion(ideal, integral)
 
     refine(ideal, ProjectiveModules(ring))
     return ideal
@@ -773,7 +776,6 @@ def Ideal(base_ring, module_generating_set):
             tuple(backend.gens()),
             integral=True,
         )
-        ideal._preamble_inclusion = _fractional_ideal_inclusion(ideal, True)
 
         refine(ideal, ProjectiveModules(ring))
         return ideal

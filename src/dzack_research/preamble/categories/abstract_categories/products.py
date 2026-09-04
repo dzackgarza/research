@@ -324,18 +324,9 @@ def _finite_factor_family(factors, *, name="Selected factors"):
             lambda label: values[int(labels.rank(label))],
             name=name,
         )
-    if not cardinal(family.cardinality()).is_finite():
+    if not family.cardinality().is_finite():
         raise TypeError("the current product/coproduct construction requires finitely many factors")
     return family
-
-
-def _finite_families_agree(left, right) -> bool:
-    if cardinal(left.cardinality()) != cardinal(right.cardinality()):
-        return False
-    return all(
-        left.unrank(position) is right.unrank(position)
-        for position in range(int(cardinal(left.cardinality()).finite_value()))
-    )
 
 
 class BiproductCategory(Category):
@@ -356,7 +347,7 @@ class BiproductCategory(Category):
 
     def __contains__(self, candidate) -> bool:
         try:
-            return _finite_families_agree(candidate.biproduct_factors(), self.factors())
+            return candidate.biproduct_factors() == self.factors()
         except (AttributeError, TypeError, ValueError):
             return False
 
@@ -382,14 +373,14 @@ class TensorProductCategory(Category):
 
     def __contains__(self, candidate) -> bool:
         try:
-            return _finite_families_agree(candidate.tensor_factors(), self.tensor_factors())
+            return candidate.tensor_factors() == self.tensor_factors()
         except (AttributeError, TypeError, ValueError):
             return False
 
 
 def ambient_category_of(objects):
     family = _finite_factor_family(objects)
-    if cardinal(family.cardinality()) == cardinal(0):
+    if family.cardinality() == cardinal(0):
         raise ValueError("a common category requires at least one object")
     return Category.meet([obj.category() for obj in family])
 
@@ -404,7 +395,7 @@ def Cocone(diagram, apex, components):
 
 def _discrete_diagram(factors, ambient_category=None):
     family = _finite_factor_family(factors)
-    if cardinal(family.cardinality()) == cardinal(0):
+    if family.cardinality() == cardinal(0):
         raise ValueError("the current selected finite product requires at least one factor")
     ambient = ambient_category_of(family) if ambient_category is None else ambient_category
 

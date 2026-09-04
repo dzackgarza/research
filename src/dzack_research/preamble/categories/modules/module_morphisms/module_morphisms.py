@@ -32,7 +32,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalRings,
     OwnedOrders,
 )
-from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.indexed_families import (
     IndexedFamily,
     finite_indexed_family,
@@ -51,7 +50,7 @@ def _has_finite_free_framing(module) -> bool:
     if labels is None:
         return False
 
-    return cardinal(labels.cardinality()).is_finite()
+    return labels.cardinality().is_finite()
 
 
 def _solve_left_integrally_element(system, target, ring):
@@ -206,7 +205,6 @@ def module_coefficients(element, module=None) -> dict:
 class ModuleMorphism(Morphism):
     r"""The linear extension of a function on a chosen module framing."""
 
-    _preamble_localization_source_morphism = None
     _preamble_localization_functor = None
 
     def __init__(
@@ -234,12 +232,34 @@ class ModuleMorphism(Morphism):
         labels = self.domain().module_generating_set()
         set_homset = Sets().Mor(labels, self.codomain())
         if isinstance(images, SetMorphism):
-            self._generator_image = images._call_
+            if images.domain() is not labels or images.codomain() is not self.codomain():
+                raise ValueError("the generator map has the wrong framing or codomain")
+            self._generator_images = indexed_family(
+                labels,
+                images,
+                name="Module-morphism generator-image family",
+            )
+            self._generator_image = self._generator_images.value
             self._generator_morphism = images
-        elif isinstance(images, dict):
-            from sage.rings.infinity import Infinity
+        elif isinstance(images, IndexedFamily):
+            source_indices = images.index_set()
 
-            assert labels.cardinality() != Infinity
+            def image_at(label):
+                return images[source_indices(label)]
+
+            self._generator_images = indexed_family(
+                labels,
+                image_at,
+                name="Module-morphism generator-image family",
+            )
+            self._generator_image = self._generator_images.value
+            self._generator_morphism = set_homset(self._generator_image)
+        elif isinstance(images, dict):
+            if not labels.cardinality().is_finite():
+                raise TypeError(
+                    "dictionary generator-image syntax requires a finite framing; "
+                    "use a callable or indexed family for an infinite framing"
+                )
             normalized_images = {}
             for label, value in images.items():
                 normalized_label = labels(label)
@@ -247,22 +267,44 @@ class ModuleMorphism(Morphism):
             missing = [label for label in labels if label not in normalized_images]
             if missing:
                 raise ValueError(f"generator assignment omits {missing}")
-            self._generator_image = normalized_images.__getitem__
-            self._generator_morphism = set_homset(normalized_images.__getitem__)
+            self._generator_images = indexed_family(
+                labels,
+                normalized_images.__getitem__,
+                name="Module-morphism generator-image family",
+            )
+            self._generator_image = self._generator_images.value
+            self._generator_morphism = set_homset(self._generator_image)
         elif isinstance(images, (tuple, list)):
-            from sage.rings.infinity import Infinity
-
-            assert labels.cardinality() != Infinity
             values = tuple(images)
-            labels_tuple = tuple(labels)
-            if len(values) != len(labels_tuple):
+            size = labels.cardinality()
+            if not size.is_finite():
+                raise TypeError(
+                    "sequence generator-image syntax requires a finite framing; "
+                    "use a callable or indexed family for an infinite framing"
+                )
+            if len(values) != int(size.finite_value()):
                 raise ValueError("the number of generator images must equal the framing size")
-            assignment = dict(zip(labels_tuple, values, strict=True))
-            self._generator_image = assignment.__getitem__
-            self._generator_morphism = set_homset(assignment.__getitem__)
+            try:
+                labels.rank(labels.unrank(0)) if values else None
+            except AttributeError as error:
+                raise TypeError(
+                    "sequence generator-image syntax requires a ranked framing"
+                ) from error
+            self._generator_images = indexed_family(
+                labels,
+                lambda label: values[int(labels.rank(label))],
+                name="Module-morphism generator-image family",
+            )
+            self._generator_image = self._generator_images.value
+            self._generator_morphism = set_homset(self._generator_image)
         elif callable(images):
-            self._generator_image = images
-            self._generator_morphism = set_homset(images)
+            self._generator_images = indexed_family(
+                labels,
+                images,
+                name="Module-morphism generator-image family",
+            )
+            self._generator_image = self._generator_images.value
+            self._generator_morphism = set_homset(self._generator_image)
         else:
             raise TypeError("a module morphism is specified on the domain framing")
         self._check_selected_domain_relations()
@@ -329,7 +371,7 @@ class ModuleMorphism(Morphism):
         try:
             label_set = generating_set()
 
-            if not cardinal(label_set.cardinality()).is_finite():
+            if not label_set.cardinality().is_finite():
                 return None
             labels = tuple(label_set)
         except (AttributeError, NotImplementedError, TypeError, ValueError):
@@ -467,6 +509,13 @@ class ModuleMorphism(Morphism):
             )
         return self._generator_morphism
 
+    def module_generator_images(self):
+        if self._generator_morphism is None:
+            raise NotImplementedError(
+                "an unframed morphism has no selected generator-image family"
+            )
+        return self._generator_images
+
     def __add__(self, other):
         if not isinstance(other, ModuleMorphism):
             return NotImplemented
@@ -597,17 +646,16 @@ class ModuleMorphism(Morphism):
     @cached_method
     def kernel(self):
         r"""Return ``ker(self)`` as a subobject of the domain."""
-        source_morphism = self._preamble_localization_source_morphism
         localization_functor = self._preamble_localization_functor
-        if source_morphism is not None and localization_functor is not None:
+        if localization_functor is not None:
+            source_morphism = localization_functor.chosen_preimage(self)
             source_kernel = source_morphism.kernel()
-            localized_kernel = localization_functor(source_kernel)
             localized_inclusion = localization_functor(source_kernel.inclusion())
             if localized_inclusion.codomain() is not self.domain():
                 raise ArithmeticError(
                     "localized kernel inclusion does not land in the cached localized domain"
                 )
-            return localized_kernel._as_module_subobject(localized_inclusion)
+            return localized_inclusion.image()
 
         for owner in (self.domain(), self.codomain()):
             represented = owner._represented_kernel_of_morphism(self)
@@ -619,11 +667,11 @@ class ModuleMorphism(Morphism):
 
     def image(self):
         r"""Return ``im(self)`` as a subobject of the codomain."""
-        from sage.rings.infinity import Infinity
-
-        assert self.domain().rank() != Infinity
-
         labels = self.domain().module_generating_set()
+        if not labels.cardinality().is_finite():
+            raise NotImplementedError(
+                "the represented image-subobject backend requires a finite domain framing"
+            )
         return self.codomain().subobject_on(
             finite_indexed_family(
                 labels,
@@ -1304,8 +1352,8 @@ class TensorProductModuleHomset(ModuleHomset):
             and all(isinstance(row, (tuple, list)) for row in images)
         ):
 
-            left_size = cardinal(left_labels.cardinality())
-            right_size = cardinal(right_labels.cardinality())
+            left_size = left_labels.cardinality()
+            right_size = right_labels.cardinality()
             if not left_size.is_finite() or not right_size.is_finite():
                 raise TypeError("coordinate-array pairing syntax requires finite framings")
             if len(images) != int(left_size.finite_value()) or any(

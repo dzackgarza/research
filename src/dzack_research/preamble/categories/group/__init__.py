@@ -248,8 +248,16 @@ def __getattr__(name):
         module_name, attribute = _EXPORTS[name]
     except KeyError as error:
         raise AttributeError(name) from error
-    value = getattr(_import_module(module_name), attribute)
+    module = _import_module(module_name)
+    value = getattr(module, attribute)
     globals()[name] = value
+    # Importing a direct child installs the child module under its basename on
+    # this package.  Restore any public alias that deliberately uses that same
+    # name (notably ``groups = OwnedGroups``) instead of leaking the module.
+    basename = module_name.rsplit(".", 1)[-1]
+    exported_alias = _EXPORTS.get(basename)
+    if exported_alias is not None and exported_alias[0] == module_name:
+        globals()[basename] = getattr(module, exported_alias[1])
     return value
 
 def __dir__():

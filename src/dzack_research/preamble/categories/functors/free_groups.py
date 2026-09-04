@@ -14,7 +14,6 @@ from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 from dzack_research.preamble.categories.group.groups import group_homset
 from dzack_research.preamble.categories.group.groups import (
     Groups,
-    GroupsWithChosenFreeBasis,
     OwnedGroups,
 )
 
@@ -27,13 +26,6 @@ class FreeGroupFunctor(Functor):
 
     def _apply_object(self, set_object):
         return Groups.Free(index_set=set_object)
-
-    def source_set(self, free_group):
-        if free_group not in GroupsWithChosenFreeBasis():
-            raise TypeError("a free-group transpose requires a free group with a chosen basis")
-        return free_group.free_basis()
-
-    chosen_preimage = source_set
 
     def _apply_morphism(self, set_morphism):
         source = self(set_morphism.domain())
@@ -65,11 +57,6 @@ class GroupUnderlyingSetFunctor(Functor):
             group_morphism.domain(),
             group_morphism.codomain(),
         )(group_morphism)
-
-    def chosen_preimage(self, image):
-        if image not in self.domain():
-            raise ValueError("the underlying set is not an owned group")
-        return image
 
     def _repr_(self):
         return "Underlying-set functor on groups"

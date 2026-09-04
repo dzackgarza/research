@@ -104,7 +104,10 @@ class CyclicSubgroup(Parent):
     def cardinality(self):
         if self.is_finite() is True:
             return cardinal(self.order())
-        return Unknown
+        assert False, (
+            "cardinality is defined for every cyclic subgroup, but this represented "
+            "subgroup does not decide whether its order is finite"
+        )
 
     def __iter__(self):
         return iter(self._finite_elements())

@@ -63,7 +63,6 @@ class ModuleLocalizationFunctor(ScalarExtensionFunctor):
                 self.localization_ring(),
                 self,
             )
-        localized._preamble_localization_source_module = module
         localized._preamble_localization_ring = self.localization_ring()
         localized._preamble_localization_submonoid = self.localization_submonoid()
         localized._preamble_localization_functor = self
@@ -116,7 +115,6 @@ class ModuleLocalizationFunctor(ScalarExtensionFunctor):
             image = super()._apply_morphism(morphism)
 
         if not isinstance(morphism, ModuleEmbedding):
-            image._preamble_localization_source_morphism = morphism
             image._preamble_localization_functor = self
             return image
 
@@ -130,7 +128,6 @@ class ModuleLocalizationFunctor(ScalarExtensionFunctor):
                     for label in source.module_generating_set()
                 },
             )
-            embedded._preamble_localization_source_morphism = morphism
             embedded._preamble_localization_functor = self
             return embedded
         embedded = ModuleEmbedding(
@@ -139,7 +136,6 @@ class ModuleLocalizationFunctor(ScalarExtensionFunctor):
             elementwise=True,
             verify_linearity=False,
         )
-        embedded._preamble_localization_source_morphism = morphism
         embedded._preamble_localization_functor = self
         return embedded
 
@@ -264,11 +260,11 @@ class LocalizationKernelComparison(SageObject):
         self._morphism = morphism
         self._localized_morphism = functor(morphism)
         self._source_kernel = morphism.kernel()
-        self._localized_source_kernel = functor(self._source_kernel)
+        self._localized_source_kernel = functor(self._source_kernel.inclusion()).image()
         self._target_kernel = self._localized_morphism.kernel()
         if self._target_kernel is not self._localized_source_kernel:
             raise ArithmeticError(
-                "the selected kernel of a localized morphism is not the cached localized source kernel"
+                "the image of the localized kernel inclusion is not the selected kernel of the localized morphism"
             )
         identity = module_homset(
             self._localized_source_kernel,

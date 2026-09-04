@@ -3,7 +3,6 @@ r"""Enumerated sets of functions, indexed by \(\mathbb N\) or by \(\mathbb Z\)."
 from operator import index as integer_index
 
 from sage.categories.category import Category
-from sage.rings.infinity import Infinity
 from sage.rings.integer_ring import ZZ
 from sage.structure.parent import Parent
 from sage.structure.unique_representation import UniqueRepresentation
@@ -13,6 +12,7 @@ from dzack_research.preamble.categories.sets.enumerated.enumerated_sets import (
     EnumeratedSets,
     InfiniteEnumeratedSets,
 )
+from dzack_research.preamble.categories.sets.cardinals import aleph0
 from dzack_research.preamble.categories.sets.set_categories import NN
 
 
@@ -148,7 +148,7 @@ class IndexedSymbolicFunctionSet(UniqueRepresentation, Parent):
         )
 
     def cardinality(self):
-        return Infinity
+        return aleph0
 
     def _symbol_at_index(self, index):
         latex_prefix = (
@@ -170,6 +170,9 @@ class IndexedSymbolicFunctionSet(UniqueRepresentation, Parent):
 
     def rank(self, element):
         return self._rank_from_index(self._index_of_element(element))
+
+    def __getitem__(self, position):
+        return self.unrank(position)
 
     def __contains__(self, element):
         try:

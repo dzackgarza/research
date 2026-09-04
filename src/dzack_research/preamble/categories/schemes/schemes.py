@@ -344,6 +344,18 @@ class Schemes(OwnedCategoryOverBaseRing):
     _MonoCategory = None  # set below, once SchemeMonomorphisms is defined
 
     class SubcategoryMethods:
+        def product(self, factors):
+            r"""Return the product of a finite family of objects of this category."""
+            return self._fold_construction(
+                self._categorical_product, factors, name="Product factors"
+            )
+
+        def _categorical_product(self, left, right):
+            return scheme_product(left, right)
+
+        def _categorical_pullback(self, left_morphism, right_morphism):
+            return scheme_fiber_product(left_morphism, right_morphism)
+
         def Subobjects(self, ambient):
             r"""Return the category of subobjects of ``ambient``."""
             if ambient not in self:
@@ -364,14 +376,8 @@ class Schemes(OwnedCategoryOverBaseRing):
             raise TypeError(f"{scheme} is not an object of {self}")
         return self.slice_category()(scheme.structure_morphism())
 
-    def product(self, *schemes):
-        return scheme_product(*schemes)
 
-    def _categorical_product(self, left, right):
-        return scheme_product(left, right)
 
-    def _categorical_pullback(self, left_morphism, right_morphism):
-        return scheme_fiber_product(left_morphism, right_morphism)
 
     def Affine(self):
         return AffineSchemes(self.base_ring())

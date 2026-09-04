@@ -11,7 +11,7 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     RestrictedHomCategoryOf,
     RestrictedHomCategoryParent,
 )
-from sage.misc.cachefunc import cached_function
+from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.classcall_metaclass import typecall
 from sage.categories.action import Action
 from sage.categories.morphism import Morphism, SetMorphism
@@ -542,7 +542,11 @@ class GradedDerivationSpace(RestrictedHomCategoryParent):
         )
         self._preamble_base_ring = ring
         refine(self, [Modules(ring), ModuleSubobjects(ring)])
-        self._preamble_inclusion = module_embedding(
+
+    @cached_method
+    def inclusion(self):
+        r"""Return the canonical inclusion into the underlying graded linear Hom."""
+        return module_embedding(
             self,
             self.arrow_set(),
             lambda derivation: derivation.underlying_linear_morphism(),

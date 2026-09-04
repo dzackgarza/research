@@ -122,6 +122,17 @@ class RingMorphism(Morphism):
         except (AttributeError, NotImplementedError, TypeError, ValueError):
             return False
 
+    def kernel(self):
+        r"""Return the represented kernel ideal of this ring morphism."""
+        provider = self.__dict__.get("_preamble_kernel_ideal_provider")
+        if provider is not None:
+            represented = provider._represented_annihilator_ideal()
+            if represented is not NotImplemented:
+                return represented
+        raise NotImplementedError(
+            "the kernel ideal of this ring morphism has no represented backend"
+        )
+
 
 
 class RingHomset(CategoricalHomset):

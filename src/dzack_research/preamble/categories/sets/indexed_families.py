@@ -1,5 +1,6 @@
 """Owned indexed families of mathematical values."""
 
+from sage.misc.unknown import Unknown
 from sage.structure.sage_object import SageObject
 
 
@@ -23,7 +24,9 @@ class IndexedFamily(SageObject):
         return self._index_set
 
     def cardinality(self):
-        return self.index_set().cardinality()
+        from dzack_research.preamble.categories.sets.cardinals import cardinal
+
+        return cardinal(self.index_set().cardinality())
 
     def value(self, index):
         normalized = self.index_set()(index)
@@ -73,6 +76,47 @@ class IndexedFamily(SageObject):
             self.index_set(),
             lambda index: function(self.value(index)),
             name=name,
+        )
+
+    def __eq__(self, other):
+        r"""Return extensional equality, or ``Unknown`` when undecidable."""
+        if self is other:
+            return True
+        if not isinstance(other, IndexedFamily):
+            return False
+
+        same_indices = self.index_set() == other.index_set()
+        if same_indices is False:
+            return False
+        if same_indices is not True:
+            return Unknown
+        if self.cardinality().is_finite() is not True:
+            return Unknown
+
+        answer = True
+        for index in self.index_set():
+            same_value = self.value(index) == other.value(index)
+            if same_value is False:
+                return False
+            if same_value is not True:
+                answer = Unknown
+        return answer
+
+    def __ne__(self, other):
+        equal = self == other
+        if equal is Unknown:
+            return Unknown
+        return not equal
+
+    def __hash__(self):
+        r"""Hash finite extensional data and infinite families by identity."""
+        if self.cardinality().is_finite() is not True:
+            return object.__hash__(self)
+        return hash(
+            (
+                self.index_set(),
+                frozenset((index, self.value(index)) for index in self.index_set()),
+            )
         )
 
     def _repr_(self):
