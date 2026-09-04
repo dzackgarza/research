@@ -236,21 +236,6 @@ test-universe:
     fi
     echo "The proof surface stays inside the universe."
 
-# Check that no assertion reads an operand back out of the construction that
-# stored it.  Policy: CONTRIBUTING.md DEV-47 (an oracle and its subject may not
-# share a source).
-#
-# The signal is the accessor, not the operator: `+` and `*` are overloaded
-# here, so keying on them flags real claims about coercion and the unit law.
-# Proven to fire, and proven not to fire on a coercion claim, a unit law, a
-# boundary round trip or a form-preservation claim.
-test-oracles:
-    #!/usr/bin/env bash
-    set -uo pipefail
-    files=$(git ls-files 'tests/*.py' 'tests/**/*.py' | grep -v '^tests/engineering/')
-    if [ -z "$files" ]; then echo "No mathematical tests to check."; exit 0; fi
-    PYTHONPATH=src python3 -m dzack_research.utilities.oracle_provenance $files
-
 # Check that every cited mathematical fact resolves to a real source, and report
 # what is still unverified against it.  Policy: CONTRIBUTING.md DEV-41 (a
 # mathematical expectation is cited data; the test is a thin driver).

@@ -4927,18 +4927,6 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Correct Example**: naming what actually governs the work -- here, whether a name denotes one operation, and how many definitions and call-site shapes exist -- then choosing a tool that answers *that*.  A name-based structural rewrite was the right instrument all along, and the type-inference failure was irrelevant to it.
 
-#### `DEV-46`: A Test's Subject Is an Owned Operation; A Catalogue Is Its Input
-
-- **Rule**: The subject of a test is an **operation this repository computes**.  Transcribed data -- a catalogue Gram matrix, a table row, a named specimen, a fixture -- is **input** to such a test and is never itself the thing asserted.  Before writing an assertion about a named object, name the operation whose defect the assertion would expose.  If the answer is "none, it would expose a typo in the transcription", the test does not belong in the suite.
-
-- **Rationale**: A catalogue entry is a transcription from the literature, and an assertion about its invariants compares one thing that was typed in against another thing that was typed in.  `NamedLattices.Tco.signature_pair() == (2, 9)` reads a Gram matrix transcribed from a paper and a signature transcribed from the same paper; a failure reports that the transcription is internally inconsistent, which is proofreading, not mathematics.  This is the trivial shape `test-guidelines` names -- fields round-tripping through the framework -- arriving with mathematical clothing on, which is why it survives review that would reject `assert L.rank() == L.rank()`.
-
-  What is genuinely owned, and therefore genuinely testable, is the operation the catalogue is fed to: Sylvester inertia computing the signature, the decomposition recovering indecomposables, primitivity through a cokernel, the discriminant form, an embedding preserving `b`.  `test-guidelines`' Representative-Input Rule is exactly this division: the catalogue is the representative input at the boundary, and the claim is about the code the input flows through.  Where a catalogue entry does earn an assertion, the shape is cross-verification (`DEV-39`): construct the same object a second, independent way and assert the two agree, so that the transcription is checked against a construction rather than against itself.
-
-- **Violation Example**: `assert NamedLattices.Tco.signature_pair() == signature_pair(2, 9)`; `assert NamedLattices.U_2.two_elementary_invariants() == nikulin_invariants(2, 2, 0)`; a test file whose every assertion reads a named specimen and compares it to a literal from the same source.
-
-- **Correct Example**: building `U + E8(-1)` from blocks and asserting it is isometric to the transcribed `LK3` summand; feeding a catalogue lattice to `decomposition()` and asserting the summands reconstruct it; asserting that an embedding preserves `b` on generators, where the embedding is what the repository computed.
-
 #### `DEV-47`: An Oracle and Its Subject May Not Share a Source
 
 - **Rule**: The expected value in an assertion must come from somewhere the code under test did not.  A test may not construct an object from ingredients and then assert that the object yields those ingredients back, and it may not compare two accessors that read the same stored datum.  State, for each assertion, where the expectation came from and where the actual value came from; if the answer is the same place, the assertion cannot fail.
