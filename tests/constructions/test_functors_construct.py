@@ -8,46 +8,7 @@ are taken over every commutative ring in the catalogue.
 
 import pytest
 
-from dzack_research.preamble.all import (
-    QQ,
-    ZZ,
-    AbelianGroups,
-    AbelianizationFunctor,
-    AffineSchemes,
-    AffineSpecFunctor,
-    Algebras,
-    AlternatingAlgebraFunctor,
-    CardinalityFunctor,
-    CommutativeAlgebras,
-    DeRhamFunctor,
-    DualizationFunctor,
-    Fields,
-    FinitePowerSetFunctor,
-    FreeGroupFunctor,
-    FreeModule,
-    FreeModuleFunctor,
-    FreeModules,
-    Groups,
-    GroupUnderlyingSetFunctor,
-    Modules,
-    OwnedNumberFields,
-    OwnedOrders,
-    PolynomialRing,
-    RingOfIntegersFunctor,
-    FractionFieldFunctor,
-    Sets,
-    StrictlyCommutativeDifferentialGradedAlgebras,
-    SymmetricAlgebraFunctor,
-    TensorAlgebraFunctor,
-    UnderlyingSetFunctor,
-    abelianization_adjunction,
-    de_rham_adjunction,
-    free_forgetful_adjunction,
-    free_group_underlying_set_adjunction,
-    order_number_field_adjunction,
-    symmetric_algebra_adjunction,
-    tensor_algebra_adjunction,
-)
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 NULLARY_FUNCTORS = {
     "AbelianizationFunctor": (AbelianizationFunctor, lambda: Groups.S(3), AbelianGroups),
@@ -84,8 +45,6 @@ def test_known_values_of_the_nullary_functors() -> None:
     assert GroupUnderlyingSetFunctor()(Groups.S(3)).cardinality() == 6
     assert RingOfIntegersFunctor()(QQ) is ZZ
     assert FractionFieldFunctor()(ZZ) is QQ
-    from dzack_research.preamble.all import QuadraticField
-
     gaussian = RingOfIntegersFunctor()(QuadraticField(-1, "i"))
     assert gaussian in OwnedOrders()
     assert gaussian.is_maximal()

@@ -11,29 +11,7 @@ import math
 import pytest
 from sage.misc.latex import latex
 
-from dzack_research.preamble.all import (
-    AA,
-    QQ,
-    RR,
-    ZZ,
-    AbelianGroups,
-    ArtinianRings,
-    ConditionSet,
-    Fields,
-    FinitelyPresentedTorsionModules,
-    Groups,
-    IntegralDomains,
-    Lattices,
-    LocalRings,
-    PrincipalIdealDomains,
-    QuadraticField,
-    Set,
-    Sets,
-    Spec,
-    Zmod,
-    cardinal,
-    ordinal,
-)
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
 def rendered(obj) -> str:

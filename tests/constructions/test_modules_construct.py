@@ -8,41 +8,7 @@ claims are the ones that hold for that class of rings.
 
 import pytest
 
-from dzack_research.preamble.all import (
-    NN,
-    QQ,
-    ZZ,
-    Biproduct,
-    Cokernel,
-    DividedSquare,
-    Fields,
-    FinitelyGeneratedFreeModules,
-    FinitelyGeneratedModules,
-    FinitelyPresentedModule,
-    FinitelyPresentedModules,
-    FinitelyPresentedTorsionModules,
-    FractionalIdeal,
-    FreeModule,
-    FreeModuleOn,
-    FreeModules,
-    Ideal,
-    IntegralDomains,
-    InternalHom,
-    Kernel,
-    LocalizedModules,
-    Modules,
-    ModuleSubobjects,
-    ProjectiveModules,
-    TensorProduct,
-    TensorProductModules,
-    TensorSquare,
-    TorsionModules,
-    VectorSpaces,
-    aleph0,
-    continuum,
-    free_resolution,
-    ring_as_module,
-)
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
 def _free(ring, rank):

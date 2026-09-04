@@ -8,39 +8,7 @@ derivations, and de Rham cohomology of the punctured line.
 
 import pytest
 
-from dzack_research.preamble.all import (
-    GF,
-    QQ,
-    ZZ,
-    Boundaries,
-    CochainComplex,
-    CochainComplexes,
-    CochainUnderlyingGradedModuleFunctor,
-    Cohomology,
-    CohomologyAlgebra,
-    CohomologyAlgebras,
-    Connections,
-    Cycles,
-    DeRhamAlgebra,
-    Derivations,
-    DifferentialGradedModules,
-    FreeModule,
-    GradedModules,
-    InteriorProduct,
-    KahlerDifferentials,
-    LaurentPolynomialRing,
-    LieBracket,
-    LieDerivative,
-    ModuleWithConnection,
-    ModulesWithConnection,
-    ModulesWithFlatConnection,
-    PolynomialRing,
-    VectorFields,
-    cochain_homset,
-    cohomology_functor,
-    regular_dg_module,
-    ring_as_module,
-)
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
 def _koszul_complex(ring):

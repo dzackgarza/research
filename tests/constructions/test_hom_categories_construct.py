@@ -7,22 +7,7 @@ The same three questions are asked of each.
 
 import pytest
 
-from dzack_research.preamble.all import (
-    GF,
-    QQ,
-    ZZ,
-    AffineSpace,
-    Cat,
-    FreeModule,
-    Groups,
-    InternalHom,
-    Lattices,
-    Modules,
-    PolynomialRing,
-    Sets,
-    aleph0,
-    continuum,
-)
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 OBJECTS = {
     # name: (constructor, |Aut| or None if infinite, |End| or None if infinite)

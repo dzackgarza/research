@@ -8,31 +8,7 @@ local rings, Kähler differentials and de Rham complex.
 import pytest
 from sage.misc.latex import latex
 
-from dzack_research.preamble.all import (
-    GF,
-    QQ,
-    AffineSchemes,
-    AffineSpace,
-    CommutativeAlgebras,
-    CommutativeIdeals,
-    CompleteLocalRings,
-    Curves,
-    DeRhamAlgebra,
-    Fields,
-    FinitelyPresentedAlgebra,
-    IntegralDomains,
-    IntegralSchemes,
-    KahlerDifferentials,
-    LocalRings,
-    NoetherianRings,
-    NormalSchemes,
-    PolynomialRing,
-    PrincipalIdealDomains,
-    QuadraticField,
-    SmoothSchemes,
-    Spec,
-    aleph0,
-)
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
 def rendered(obj) -> str:

@@ -53,6 +53,12 @@ Also read the generated preamble megadoc output at `docs/preamble-megadoc.md` be
 
 These are implementation prerequisites: use them to identify already-planned remediation, existing mathematical constructions, known architectural failures, and outstanding archive-port work before adding or changing code.
 
+## The expectation subtrees are never edited to match an implementation (always-on)
+
+`tests/constructions/` and `tests/user_simulations/`, with their shared catalogue `tests/conftest.py`, record what a mathematician expects of a session, written with zero knowledge of the implementation. They measure the preamble; the preamble never measures them. **Never change a test in these subtrees to match an implementation. Not ever.** Not when a category is renamed, not when a constructor's signature changes, not when a spelling the test uses does not exist, not when a red row is inconvenient, not when a refactor touches every caller. If the implementation moves, the test stays and reports the move; if a name the test uses is missing, that absence is the finding. The files are read-only on disk for this reason, and a red suite there is the expected state until the preamble meets it.
+
+The only edit these subtrees admit is one that changes the mathematics an expectation states, because the mathematics was wrong, recorded as such in its commit. Everything else about them, including that they are written blind, take every name from the session's star import, and are never run in order to shape them, is in `tests/constructions/CONTRIBUTING.md`.
+
 ## Notebook workflow note
 
 - For any notebook inspection, execution, or result-checking, use `japi` (from `jupyter-assistant-api`) rather than direct Notebook HTTP API calls.

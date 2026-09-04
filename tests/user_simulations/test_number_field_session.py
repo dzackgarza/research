@@ -9,27 +9,7 @@ the assertions are the values a textbook table gives.
 import pytest
 from sage.misc.latex import latex
 
-from dzack_research.preamble.all import (
-    CC,
-    QQ,
-    RR,
-    ZZ,
-    AffineSchemes,
-    CompleteLocalRings,
-    Fields,
-    IntegralDomains,
-    KahlerDifferentials,
-    LocalRings,
-    NoetherianRings,
-    NumberField,
-    OwnedNumberFields,
-    OwnedOrders,
-    PolynomialRing,
-    PrincipalIdealDomains,
-    Spec,
-    aleph0,
-    signature_pair,
-)
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
 def rendered(obj) -> str:

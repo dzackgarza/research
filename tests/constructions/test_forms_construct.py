@@ -8,38 +8,7 @@ embeddings.
 
 import pytest
 
-from dzack_research.preamble.all import (
-    QQ,
-    ZZ,
-    BilinearForm,
-    BilinearFormModules,
-    BilinearForms,
-    DeterminantLine,
-    DividedSquare,
-    ExteriorForms,
-    FormModule,
-    FormModules,
-    FractionFieldQuotient,
-    FractionFieldQuotients,
-    FreeModule,
-    GF,
-    Lattices,
-    Modules,
-    Pairings,
-    PolynomialRing,
-    QuadraticForm,
-    QuadraticFormModules,
-    QuadraticForms,
-    SymmetricBilinearFormModules,
-    TensorSquare,
-    TorsionBilinearFormModules,
-    TorsionQuadraticFormModules,
-    aleph0,
-    bilinear_free_form_adjunction,
-    form_embedding,
-    quadratic_free_form_adjunction,
-    ring_as_module,
-)
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 A2_GRAM = [[2, 1], [1, 2]]
 

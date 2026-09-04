@@ -7,47 +7,7 @@ asked for the values its definition determines.
 import pytest
 from sage.all import Infinity
 
-from dzack_research.preamble.all import (
-    AA,
-    QQ,
-    RR,
-    ZZ,
-    Algebras,
-    C,
-    ClassGroup,
-    ClassGroups,
-    ConvexPolygon,
-    ConvexPolygons,
-    ConvexPolytope,
-    ConvexPolytopes,
-    CoxeterDiagrams,
-    DivisorGroup,
-    DivisorGroups,
-    FiniteGroups,
-    FormalDivisor,
-    FormalDivisorGroups,
-    FourierCharacters,
-    FreeModuleOn,
-    Groups,
-    HermitePolynomials,
-    LatticePolygon,
-    LatticePolytope,
-    LatticePolytopes,
-    Lattices,
-    Lp,
-    Modules,
-    NonNegativeReals,
-    PicardGroup,
-    PicardGroups,
-    QQbar,
-    RealApproximation,
-    RootLattices,
-    Set,
-    UnitInterval,
-    aleph0,
-    ell,
-    tensor,
-)
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
 # ---------------------------------------------------------------------------

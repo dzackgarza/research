@@ -192,6 +192,8 @@ object.
 
 ## The files are locked
 
+Every test file in this subtree takes its names from the session by the star import `from dzack_research.preamble.all import *` and never imports a preamble name individually, so a test can only ever speak the session's vocabulary or fail for lacking a word.
+
 Every test file in this subtree, in `tests/user_simulations/`, and the
 shared `tests/conftest.py` is read-only on disk.  An expectation, once
 written, is not edited to follow the implementation: not when a category is

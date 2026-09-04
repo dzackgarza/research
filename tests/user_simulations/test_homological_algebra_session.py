@@ -9,21 +9,7 @@ into a notebook with only complexes, Homs and tensor products.
 import pytest
 from sage.misc.latex import latex
 
-from dzack_research.preamble.all import (
-    GF,
-    QQ,
-    ZZ,
-    CochainComplex,
-    DualizationFunctor,
-    FinitelyPresentedTorsionModules,
-    FreeModule,
-    InternalHom,
-    PolynomialRing,
-    QuadraticField,
-    TensorProduct,
-    free_resolution,
-    ring_as_module,
-)
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
 def rendered(obj) -> str:

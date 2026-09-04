@@ -9,49 +9,7 @@ and Iso constructions.
 
 import pytest
 
-from dzack_research.preamble.all import (
-    QQ,
-    ZZ,
-    AbelianGroups,
-    AutCategoryOf,
-    Biproduct,
-    Cat,
-    CommutativeRings,
-    Coproduct,
-    Core,
-    CosliceUnder,
-    DirectSumObjects,
-    EndCategoryOf,
-    EpiCategoryOf,
-    Fields,
-    FiberProduct,
-    FiniteGroups,
-    FreeModule,
-    FunctorCategory,
-    Groups,
-    HomCategoryOf,
-    IdentityFunctor,
-    IsoCategoryOf,
-    Isomorphism,
-    Kernel,
-    Lattices,
-    Modules,
-    MonoCategoryOf,
-    NaturalTransformations,
-    OppositeCategory,
-    OwnedRings,
-    Product,
-    ProductCategory,
-    Pushout,
-    Sets,
-    SliceOver,
-    Subobjects,
-    SubobjectsOf,
-    TensorProduct,
-    category_inclusion,
-    Cokernel,
-    aleph0,
-)
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
 # ---------------------------------------------------------------------------

@@ -9,26 +9,7 @@ punctured plane, over several fields.
 import pytest
 from sage.misc.latex import latex
 
-from dzack_research.preamble.all import (
-    GF,
-    QQ,
-    Connections,
-    DeRhamAlgebra,
-    Derivations,
-    FreeModule,
-    InteriorProduct,
-    KahlerDifferentials,
-    LaurentPolynomialRing,
-    LieBracket,
-    LieDerivative,
-    ModuleWithConnection,
-    ModulesWithFlatConnection,
-    PolynomialRing,
-    QuadraticField,
-    StrictlyCommutativeDifferentialGradedAlgebras,
-    VectorFields,
-    ring_as_module,
-)
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
 def rendered(obj) -> str:

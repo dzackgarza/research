@@ -9,19 +9,7 @@ invariants.
 import pytest
 from sage.misc.latex import latex
 
-from dzack_research.preamble.all import (
-    ZZ,
-    Embeddings,
-    EvenLattices,
-    GroupLattice,
-    Groups,
-    Involutions,
-    Lattices,
-    NamedLattices,
-    nikulin_invariants,
-    signature_pair,
-    two_elementary_orthogonal_sums,
-)
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
 def rendered(obj) -> str:

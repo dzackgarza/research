@@ -8,46 +8,7 @@ decompositions, group lattices, and subgroups cut out by predicates.
 
 import pytest
 
-from dzack_research.preamble.all import (
-    GF,
-    QQ,
-    ZZ,
-    CoinductionFunctor,
-    CoinvariantsFunctor,
-    FiniteGSets,
-    FreeGSetFunctor,
-    FreeModule,
-    GroupLattice,
-    GroupLattices,
-    GroupModule,
-    GroupModules,
-    Groups,
-    GSetFixedPointsFunctor,
-    GSetOrbitsFunctor,
-    InductionFunctor,
-    InvariantsFunctor,
-    Lattices,
-    Modules,
-    NN,
-    RestrictionOfActingGroupFunctor,
-    Sets,
-    Subgroups,
-    Torsors,
-    TrivialActionFunctor,
-    TrivialGSetFunctor,
-    finite_g_set,
-    fixed_point_set,
-    free_g_set_underlying_adjunction,
-    g_set_orbits_trivial_adjunction,
-    g_set_trivial_fixed_adjunction,
-    generated_submonoid,
-    induction_restriction_adjunction,
-    predicate_subgroup,
-    predicate_submonoid,
-    restriction_coinduction_adjunction,
-    trivial_group_action,
-    trivial_invariants_adjunction,
-)
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
 def _symmetric_three():

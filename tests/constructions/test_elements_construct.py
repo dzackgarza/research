@@ -7,16 +7,7 @@ elements; and the elements every witness object exhibits.
 
 import pytest
 
-from dzack_research.preamble.all import (
-    QQ,
-    ZZ,
-    FreeModule,
-    Groups,
-    Lattices,
-    Set,
-    Sets,
-    aleph0,
-)
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
 def test_ring_axioms_on_the_witnesses_of_every_ring(ring) -> None:
@@ -179,8 +170,6 @@ def test_elements_of_finite_and_infinite_sets() -> None:
     named = Set(("a", "b"))
     assert "a" in named
     assert named.an_element() in named
-    from dzack_research.preamble.all import NN
-
     assert NN.an_element() in NN
     assert NN(5) + NN(7) == NN(12)
     assert NN(3) in ZZ

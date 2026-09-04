@@ -8,16 +8,7 @@ a notebook.
 import pytest
 from sage.misc.latex import latex
 
-from dzack_research.preamble.all import (
-    ZZ,
-    CoxeterDiagrams,
-    EvenLattices,
-    FiniteGroups,
-    Groups,
-    Lattices,
-    RootLattices,
-    signature_pair,
-)
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
 def rendered(obj) -> str:

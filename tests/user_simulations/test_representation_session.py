@@ -8,21 +8,7 @@ same objects over the integers and over a field of positive characteristic.
 import pytest
 from sage.misc.latex import latex
 
-from dzack_research.preamble.all import (
-    GF,
-    QQ,
-    ZZ,
-    CoinductionFunctor,
-    FreeModule,
-    GroupModule,
-    GroupModules,
-    Groups,
-    InductionFunctor,
-    Modules,
-    RestrictionOfActingGroupFunctor,
-    induction_restriction_adjunction,
-    trivial_group_action,
-)
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
 def rendered(obj) -> str:

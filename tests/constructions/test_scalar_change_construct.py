@@ -8,35 +8,7 @@ adjunction over every commutative ring.
 
 import pytest
 
-from dzack_research.preamble.all import (
-    GF,
-    QQ,
-    ZZ,
-    AlgebraScalarExtensionFunctor,
-    BilinearFormModules,
-    CommutativeAlgebras,
-    Fields,
-    FinitelyGeneratedModules,
-    FinitelyPresentedTorsionModules,
-    FreeModule,
-    IntegralDomains,
-    Lattices,
-    Modules,
-    PolynomialRing,
-    QuadraticField,
-    RestrictionOfScalarsFunctor,
-    ScalarExtensionFunctor,
-    TensorProduct,
-    InternalHom,
-    VectorSpaces,
-    Zp,
-    algebra_base_change_adjunction,
-    base_change_adjunction,
-    module_localization_functor,
-    restrict_scalars,
-    tensor_hom_adjunction,
-    twist_scalar_action,
-)
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 RING_MAPS = {
     "ZZ->QQ": (lambda: ZZ, lambda: QQ, True, 0),

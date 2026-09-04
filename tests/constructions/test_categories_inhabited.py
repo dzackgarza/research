@@ -1,40 +1,36 @@
-r"""Every owned category exhibits an object, over every ring it can be taken over.
+r"""Every category in the session exhibits an object, over every ring it can be taken over.
 
-``OwnedCategory.an_object`` is the contract that a category is inhabited.  A
-category over a base ring is inhabited over every ring in the catalogue, not
-only over the integers: modules over a principal ideal domain must exist over
-every named principal ideal domain, and a category that answers only over
-$\mathbb Z$ has not stated what its parameter is.
+A category is inhabited: it answers ``an_object()`` with something that is in
+it.  A category over a base ring is inhabited over every ring in the
+catalogue, not only over the integers: modules over a principal ideal domain
+must exist over every named principal ideal domain, and a category that
+answers only over $\mathbb Z$ has not stated what its parameter is.
 
-The category list is read from the live session surface: every exported
-subclass of ``OwnedCategory``.  Nullary ones are built bare; ones over a base
-ring are built over each ring in the catalogue.
+The category list is read from the session itself: every name the star
+import brings in that is a category class.  Nullary ones are built bare;
+ones over a base ring are built over each ring in the catalogue.  Sage's
+own categories that the session exports are held to the same expectation.
 """
 
 import inspect
 
 import pytest
+from sage.categories.category import Category
 
-import dzack_research.preamble.all as session
-from dzack_research.preamble.categories.abstract_categories.objects import (
-    OwnedCategory,
-    OwnedParameterizedCategory,
-)
-from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
-def _exported_categories():
-    r"""Every exported category class, split by how it is constructed."""
+def _session_categories():
+    r"""Every category class the session exports, split by how it is constructed."""
     nullary, over_ring = [], []
-    for name in sorted(dir(session)):
-        candidate = getattr(session, name)
-        if not (inspect.isclass(candidate) and issubclass(candidate, OwnedCategory)):
+    for name, candidate in sorted(globals().items()):
+        if not (inspect.isclass(candidate) and issubclass(candidate, Category)):
             continue
-        if candidate in (OwnedCategory, OwnedParameterizedCategory, OwnedCategoryOverBaseRing):
+        if candidate is OwnedCategoryOverBaseRing:
             continue
         if issubclass(candidate, OwnedCategoryOverBaseRing):
             over_ring.append(name)
-        elif not issubclass(candidate, OwnedParameterizedCategory) and _is_nullary(candidate):
+        elif _is_nullary(candidate):
             nullary.append(name)
     return nullary, over_ring
 
@@ -50,26 +46,43 @@ def _is_nullary(category_class) -> bool:
     return not parameters
 
 
-NULLARY, OVER_RING = _exported_categories()
+NULLARY, OVER_RING = _session_categories()
 
 
 @pytest.mark.parametrize("name", NULLARY)
 def test_a_nullary_category_is_inhabited(name) -> None:
-    category = getattr(session, name)()
+    category = globals()[name]()
     witness = category.an_object()
     assert witness in category, f"{name}.an_object() is not in {name}"
 
 
+@pytest.mark.parametrize("name", NULLARY)
+def test_the_witness_of_a_nullary_category_has_elements(name) -> None:
+    witness = globals()[name]().an_object()
+    element = witness.an_element()
+    assert element.parent() is witness
+    assert element in witness
+
+
 @pytest.mark.parametrize("name", OVER_RING)
 def test_a_category_over_a_ring_is_inhabited_over_every_ring(name, commutative_ring) -> None:
-    category = getattr(session, name)(commutative_ring)
+    category = globals()[name](commutative_ring)
     witness = category.an_object()
     assert witness in category, f"{name}({commutative_ring}).an_object() is not in it"
     assert witness.base_ring() is commutative_ring
 
 
 @pytest.mark.parametrize("name", OVER_RING)
+def test_the_witness_of_a_category_over_a_ring_has_elements(name, pid) -> None:
+    witness = globals()[name](pid).an_object()
+    element = witness.an_element()
+    assert element.parent() is witness
+    assert element in witness
+    assert element + witness.zero() == element
+
+
+@pytest.mark.parametrize("name", OVER_RING)
 def test_a_category_over_a_ring_remembers_its_ring(name, field) -> None:
-    category = getattr(session, name)(field)
+    category = globals()[name](field)
     assert category.base_ring() is field
-    assert category is getattr(session, name)(field)
+    assert category is globals()[name](field)

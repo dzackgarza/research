@@ -7,33 +7,7 @@ and on modules, and absolute Galois groups.
 
 import pytest
 
-from dzack_research.preamble.all import (
-    GF,
-    QQ,
-    ZZ,
-    AbelianGroups,
-    AbelianizationFunctor,
-    AbsoluteGaloisGroup,
-    FiniteAbelianGroups,
-    FiniteGroups,
-    FiniteGSets,
-    FinitelyGeneratedGroups,
-    FinitelyPresentedGroups,
-    FreeModule,
-    GroupModule,
-    Groups,
-    GroupsWithChosenFinitePresentation,
-    Modules,
-    ProfiniteGroups,
-    QuadraticField,
-    Subgroups,
-    aleph0,
-    centralizer,
-    cyclic_subgroup,
-    finite_g_set,
-    fixed_point_set,
-    trivial_g_set,
-)
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 FINITE = {
     "S3": (lambda: Groups.S(3), 6),

@@ -6,32 +6,7 @@ One long session per base ring, typed as into a notebook.
 import pytest
 from sage.misc.latex import latex
 
-from dzack_research.preamble.all import (
-    GF,
-    QQ,
-    ZZ,
-    AffineSchemes,
-    AffineSpace,
-    ClosedSubschemes,
-    Curves,
-    Fields,
-    IntegralSchemes,
-    LocalRings,
-    NormalSchemes,
-    PolynomialRing,
-    ProductSchemes,
-    ProjectiveSchemes,
-    ProjectiveSpace,
-    QuadraticField,
-    Schemes,
-    SmoothSchemes,
-    Spec,
-    SpecFunctor,
-    Surfaces,
-    Varieties,
-    scheme_fiber_product,
-    scheme_product,
-)
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
 def rendered(obj) -> str:

@@ -8,38 +8,7 @@ defines it, with the values the definitions determine.
 
 import pytest
 
-from dzack_research.preamble.all import (
-    GF,
-    QQ,
-    ZZ,
-    Algebras,
-    AlternatingAlgebraOf,
-    AlternatingAlgebras,
-    CommutativeAlgebras,
-    CommutativeRings,
-    CommutatorLieAlgebras,
-    DeRhamAlgebra,
-    FinitelyPresentedAlgebra,
-    FinitelyPresentedAlgebras,
-    FreeAlgebraOn,
-    FreeAlgebras,
-    FreeModule,
-    GradedAlgebras,
-    KahlerDifferentialModules,
-    KahlerDifferentials,
-    LieAlgebras,
-    MatrixSpace,
-    Modules,
-    PolynomialRing,
-    StrictlyCommutativeDifferentialGradedAlgebras,
-    StrictlyGradedCommutativeAlgebras,
-    SymmetricAlgebraOf,
-    SymmetricAlgebraOn,
-    SymmetricAlgebras,
-    TensorAlgebraOf,
-    TensorAlgebras,
-    aleph0,
-)
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
 # ---------------------------------------------------------------------------

@@ -6,20 +6,7 @@ One long session per lattice, typed as into a notebook.
 import pytest
 from sage.misc.latex import latex
 
-from dzack_research.preamble.all import (
-    QQ,
-    RR,
-    ZZ,
-    EvenLattices,
-    FinitelyGeneratedFreeModules,
-    Involutions,
-    Lattices,
-    Modules,
-    NamedLattices,
-    NondegenerateLattices,
-    VectorSpaces,
-    signature_pair,
-)
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
 def rendered(obj) -> str:

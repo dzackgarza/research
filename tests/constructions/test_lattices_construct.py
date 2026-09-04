@@ -8,22 +8,7 @@ determines over any of them.
 
 import pytest
 
-from dzack_research.preamble.all import (
-    QQ,
-    ZZ,
-    EvenLattices,
-    FiniteRankLattices,
-    FormModules,
-    FramedFreeModules,
-    FreeModules,
-    Lattices,
-    Modules,
-    NamedLattices,
-    NondegenerateLattices,
-    RootLattices,
-    SymmetricBilinearFormModules,
-    signature_pair,
-)
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 LATTICE_RINGS = ["ZZ", "QQ", "RR", "CC", "AA", "QQ_3", "ZZ_3", "GF(3)", "GF(5)", "ZZ[i]", "ZZ[phi]", "QQ[x]", "ZZ_(5)"]
 
@@ -33,8 +18,6 @@ A2_GRAM = [[2, 1], [1, 2]]
 @pytest.fixture(params=LATTICE_RINGS, ids=str)
 def lattice_ring(request, build):
     if request.param == "GF(3)":
-        from dzack_research.preamble.all import GF
-
         return GF(3)
     return build(request.param)
 

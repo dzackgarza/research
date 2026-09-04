@@ -8,31 +8,7 @@ short cochain complex with its cohomology, typed as into a notebook.
 import pytest
 from sage.misc.latex import latex
 
-from dzack_research.preamble.all import (
-    QQ,
-    ZZ,
-    CochainComplex,
-    CochainComplexes,
-    Cokernel,
-    FinitelyGeneratedFreeModules,
-    FinitelyPresentedModule,
-    FinitelyPresentedModules,
-    FreeModule,
-    FreeModules,
-    GF,
-    InternalHom,
-    Kernel,
-    Modules,
-    ModuleSubobjects,
-    PolynomialRing,
-    TensorProduct,
-    TorsionModules,
-    VectorSpaces,
-    Zp,
-    QuadraticField,
-    free_resolution,
-    ring_as_module,
-)
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
 def rendered(obj) -> str:

@@ -8,47 +8,7 @@ mathematician would hit in a notebook.
 
 import pytest
 
-from dzack_research.preamble.all import (
-    AA,
-    CC,
-    QQ,
-    RR,
-    ZZ,
-    Algebras,
-    ArtinianRings,
-    CommutativeAlgebras,
-    CommutativeIdeals,
-    CommutativeRings,
-    CompleteLocalRings,
-    CountablyInfiniteSets,
-    DualNumbers,
-    Fields,
-    FiniteSets,
-    FormalPowerSeriesRings,
-    GF,
-    IntegralDomains,
-    LaurentPolynomialRing,
-    LocalRings,
-    Localization,
-    MatrixAlgebras,
-    MatrixSpace,
-    NoetherianRings,
-    OwnedOrders,
-    OwnedRings,
-    PolynomialRing,
-    PowerSeriesRing,
-    PrimeFields,
-    PrincipalIdealDomains,
-    Qp,
-    Rings,
-    UncountableSets,
-    Zp,
-    aleph0,
-    cardinal,
-    continuum,
-    predicate_subring,
-    signature_pair,
-)
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
 # ---------------------------------------------------------------------------

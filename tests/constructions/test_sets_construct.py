@@ -7,37 +7,7 @@ those constructions realize.
 
 import pytest
 
-from dzack_research.preamble.all import (
-    NN,
-    QQ,
-    RR,
-    ZZ,
-    Cardinalities,
-    CartesianProductOfSets,
-    ConditionSet,
-    CoproductOfSets,
-    CountableSets,
-    CountablyInfiniteSets,
-    ExponentialOfSets,
-    FiniteSets,
-    FiniteSubsets,
-    ImageSet,
-    IsoCategoryOf,
-    MonoCategoryOf,
-    Ordinals,
-    PowerSet,
-    Set,
-    Sets,
-    SubsetsOfSize,
-    TotallyOrderedSets,
-    UncountableSets,
-    aleph,
-    aleph0,
-    cardinal,
-    continuum,
-    omega,
-    ordinal,
-)
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
 def _three():
@@ -178,8 +148,6 @@ def test_sets_of_sets() -> None:
 
 
 def test_a_set_of_rings_and_a_set_of_lattices_are_sets() -> None:
-    from dzack_research.preamble.all import GF, Lattices
-
     rings = Set((ZZ, QQ, GF(5)))
     lattices = Set((Lattices(ZZ)("U"), Lattices(ZZ)("A2")))
     assert rings.cardinality() == 3

@@ -8,26 +8,7 @@ evaluated at Frobenius, and embeddings between number fields.
 
 import pytest
 
-from dzack_research.preamble.all import (
-    GF,
-    QQ,
-    AbsoluteGaloisGroup,
-    AbsoluteGaloisGroups,
-    AbsoluteGaloisGroupsOfFiniteFields,
-    CyclotomicCharacter,
-    NumberField,
-    OpenAbsoluteGaloisSubgroups,
-    PolynomialRing,
-    ProfiniteGroups,
-    QuadraticCharacter,
-    QuadraticField,
-    exact_embeddings,
-    finite_decomposition_group,
-    finite_frobenius_class,
-    finite_inertia_group,
-    first_exact_embedding,
-    open_absolute_galois_subgroup,
-)
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 SPLITTING = {
     # (field, prime): (number of primes above, e, f)

@@ -9,42 +9,7 @@ number field as a lattice, and morphisms as matrices.
 
 import pytest
 
-from dzack_research.preamble.all import (
-    GF,
-    QQ,
-    ZZ,
-    AffineSchemes,
-    AffineSpace,
-    CommutativeAlgebraCoproducts,
-    CommutativeAlgebraPushouts,
-    CommutativeAlgebras,
-    CompleteLocalRings,
-    Fields,
-    FinitelyPresentedTorsionModules,
-    FreeModule,
-    FractionFieldQuotient,
-    IntegralDomains,
-    InternalHom,
-    KahlerDifferentials,
-    Lattices,
-    LocalRings,
-    MatrixSpace,
-    Modules,
-    NoetherianRings,
-    OwnedNumberFields,
-    PolynomialRing,
-    PrincipalIdealDomains,
-    ProjectiveSpace,
-    QuadraticField,
-    Spec,
-    TorsionBilinearFormModules,
-    Zmod,
-    Zp,
-    aleph0,
-    commutative_algebra_coproduct,
-    commutative_algebra_pushout,
-    scheme_fiber_product,
-)
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
 def test_lattices_over_orders_and_over_p_adics(build) -> None:

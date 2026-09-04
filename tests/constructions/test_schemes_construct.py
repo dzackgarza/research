@@ -7,36 +7,7 @@ point counts and placements the definitions determine.
 
 import pytest
 
-from dzack_research.preamble.all import (
-    GF,
-    QQ,
-    ZZ,
-    AffineSchemes,
-    AffineSpace,
-    AffineSpaces,
-    ClosedSubschemes,
-    CommutativeAlgebras,
-    Curves,
-    FiberProductSchemes,
-    Fields,
-    IntegralDomains,
-    IntegralSchemes,
-    LocalRings,
-    NormalSchemes,
-    PolynomialRing,
-    ProductSchemes,
-    ProjectiveSchemes,
-    ProjectiveSpace,
-    ProjectiveSpaces,
-    Schemes,
-    SmoothSchemes,
-    Spec,
-    SpecFunctor,
-    Surfaces,
-    Varieties,
-    scheme_fiber_product,
-    scheme_product,
-)
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
 NORMAL = {"ZZ", "QQ", "GF(5)", "ZZ[i]", "ZZ[sqrt-5]", "ZZ[x]", "QQ[x,y]", "QQ[x]", "ZZ_3", "QQ[[t]]"}

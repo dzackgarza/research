@@ -24,27 +24,7 @@ import functools
 
 import pytest
 
-from dzack_research.preamble.all import (
-    AA,
-    CC,
-    QQ,
-    RR,
-    ZZ,
-    CyclotomicField,
-    DualNumbers,
-    FractionField,
-    FreeAlgebraOn,
-    GF,
-    MatrixSpace,
-    NumberField,
-    PolynomialRing,
-    PowerSeriesRing,
-    QQbar,
-    Qp,
-    QuadraticField,
-    Zmod,
-    Zp,
-)
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
 def _polynomial_ring(ring, *names):

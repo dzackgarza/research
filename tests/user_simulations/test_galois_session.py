@@ -6,23 +6,7 @@ One long session per Galois number field, typed as into a notebook.
 import pytest
 from sage.misc.latex import latex
 
-from dzack_research.preamble.all import (
-    GF,
-    QQ,
-    AbelianGroups,
-    AbsoluteGaloisGroup,
-    CyclotomicCharacter,
-    CyclotomicField,
-    Fields,
-    FiniteGroups,
-    ProfiniteGroups,
-    QuadraticCharacter,
-    QuadraticField,
-    finite_decomposition_group,
-    finite_frobenius_class,
-    finite_inertia_group,
-    open_absolute_galois_subgroup,
-)
+from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
 def rendered(obj) -> str:
