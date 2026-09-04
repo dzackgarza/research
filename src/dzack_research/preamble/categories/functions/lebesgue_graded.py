@@ -18,8 +18,10 @@ graded augmentation of the pointwise algebra is the projection onto the
 unit piece \(A\to L^\infty=A_u\).
 """
 
-from dzack_research.preamble.categories.abstract_categories.hom_foundation import OwnedHomset
-from sage.categories.homset import Homset
+from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    CategoricalHomset,
+    HomCategoryConstruction,
+)
 from sage.categories.map import Map
 from sage.categories.morphism import Morphism, SetMorphism
 from dzack_research.preamble.categories.sets.set_categories import Sets
@@ -259,15 +261,15 @@ class LebesgueModuleMorphism(Morphism):
         return homset(lambda value, left=self, right=right: left(right(value)))
 
 
-class LebesgueModuleHomset(OwnedHomset):
+class LebesgueModuleHomset(CategoricalHomset):
     Element = LebesgueModuleMorphism
 
     def __init__(self, domain, codomain) -> None:
-        Homset.__init__(
+        CategoricalHomset.__init__(
             self,
+            HomCategoryConstruction(Modules(domain.base_ring())),
             domain,
             codomain,
-            category=Modules(domain.base_ring()),
         )
 
     def _element_constructor_(self, evaluate):

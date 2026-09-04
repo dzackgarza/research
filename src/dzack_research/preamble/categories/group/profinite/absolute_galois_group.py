@@ -1,10 +1,12 @@
 r"""The realized parent (G_K=\operatorname{Aut}_K(\bar K))."""
 
-from dzack_research.preamble.categories.abstract_categories.hom_foundation import OwnedHomset
+from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    CategoricalHomset,
+    HomCategoryConstruction,
+)
 from typing import cast
 
 from sage.categories.finite_fields import FiniteFields
-from sage.categories.homset import Homset
 from sage.categories.map import Map
 from sage.categories.morphism import Morphism
 from sage.misc.unknown import Unknown
@@ -324,7 +326,7 @@ class AbsoluteGaloisSliceAutomorphism(Morphism):
         return f"Slice automorphism induced by {self._right}"
 
 
-class AbsoluteGaloisGroup(OwnedHomset):
+class AbsoluteGaloisGroup(CategoricalHomset):
     r"""The automorphism group of one exact extension object (K\to\bar K).
 
     The extension is an object of the coslice category (K/\mathbf{Fields}),
@@ -348,13 +350,13 @@ class AbsoluteGaloisGroup(OwnedHomset):
         self._quotient_cache: dict[int, FiniteGaloisQuotient] = {}
         self._one_element = None
         category = absolute_galois_group_category(self._field)
-        from sage.categories.sets_cat import Sets as SageSets
-        Homset.__init__(
+        # The elements are field automorphisms of the closure, so this is the
+        # subcategory of Aut_Fields(closure) fixing the structure map from K.
+        CategoricalHomset.__init__(
             self,
+            HomCategoryConstruction(OwnedFields()),
             self._closure,
             self._closure,
-            category=SageSets(),
-            check=False,
         )
         refine(self, category)
         self._slice_category = CosliceCategory(OwnedFields(), self._field)

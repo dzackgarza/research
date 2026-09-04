@@ -1,13 +1,11 @@
 r"""Categories of objects equipped with a chosen presentation as a functor image."""
 
-from dzack_research.preamble.categories.abstract_categories.hom_foundation import OwnedHomset
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
     HomCategoryConstruction,
 )
 from sage.misc.cachefunc import cached_method
 from sage.categories.category import Category
-from sage.categories.homset import Homset
 from sage.categories.morphism import Morphism
 from sage.categories.sets_cat import Sets as SageSets
 from sage.structure.parent import Parent

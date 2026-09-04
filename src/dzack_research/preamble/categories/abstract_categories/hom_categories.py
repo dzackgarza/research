@@ -145,27 +145,6 @@ class HomArrowIdentity(Morphism):
         return value
 
 
-class HomArrowDiscreteHomset(OwnedHomset):
-    r"""The discrete 2-Hom between two arrow objects."""
-
-    Element = HomArrowIdentity
-
-    def __init__(self, hom_category, domain, codomain) -> None:
-        self._hom_category = hom_category
-        Homset.__init__(self, domain, codomain, category=SageSets())
-
-    def hom_category(self):
-        return self._hom_category
-
-    def _element_constructor_(self, value=None):
-        if self.domain() is not self.codomain():
-            raise ValueError("distinct arrows have no represented 2-morphism")
-        return self.element_class(self)
-
-    def identity(self):
-        return self()
-
-
 class CategoricalHomset(OwnedHomset, Category):
     r"""A represented Hom object which is both a Sage Homset and a category.
 
@@ -305,6 +284,34 @@ class CategoricalHomset(OwnedHomset, Category):
     def identity_2(self, arrow):
         arrow_object = self.object(arrow)
         return self.two_hom(arrow_object, arrow_object).identity()
+
+
+class HomArrowDiscreteHomset(CategoricalHomset):
+    r"""The discrete 2-Hom between two arrow objects.
+
+    The objects of a fixed Hom category are the arrows themselves, so this is
+    the Hom object of that category: it is discrete because no 2-morphisms are
+    represented.
+    """
+
+    Element = HomArrowIdentity
+
+    def __init__(self, hom_category, domain, codomain) -> None:
+        self._hom_category = hom_category
+        CategoricalHomset.__init__(
+            self, HomCategoryConstruction(hom_category), domain, codomain
+        )
+
+    def hom_category(self):
+        return self._hom_category
+
+    def _element_constructor_(self, value=None):
+        if self.domain() is not self.codomain():
+            raise ValueError("distinct arrows have no represented 2-morphism")
+        return self.element_class(self)
+
+    def identity(self):
+        return self()
 
 
 class FixedHomCategory(Category):

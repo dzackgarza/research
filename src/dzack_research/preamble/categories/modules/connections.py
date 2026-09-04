@@ -1,9 +1,11 @@
 r"""Algebraic connections on represented modules over commutative algebras."""
 
-from dzack_research.preamble.categories.abstract_categories.hom_foundation import OwnedHomset
+from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    CategoricalHomset,
+    HomCategoryConstruction,
+)
 from sage.misc.cachefunc import cached_function
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedParameterizedCategory
-from sage.categories.homset import Homset
 from sage.categories.morphism import Morphism, SetMorphism
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.categories.sets.cardinals import cardinal
@@ -286,7 +288,7 @@ class Connection(Morphism):
         return ConnectionDeRhamModule(self)
 
 
-class ConnectionSpace(OwnedHomset):
+class ConnectionSpace(CategoricalHomset):
     Element = Connection
 
     def __init__(self, module) -> None:
@@ -308,7 +310,15 @@ class ConnectionSpace(OwnedHomset):
         self._restricted_target = restrict_scalars(self._target_module, ring_map)
         self._ambient_hom = Modules(algebra.base_ring()).Mor(self._restricted_source,
         self._restricted_target,)
-        Homset.__init__(self, module, self._target_module, category=Sets())
+        # A connection is an R-linear map E -> E (x) Omega satisfying Leibniz,
+        # so this is the subcategory of the ambient R-linear Mor category cut
+        # out by that rule.
+        CategoricalHomset.__init__(
+            self,
+            HomCategoryConstruction(Modules(algebra.base_ring())),
+            module,
+            self._target_module,
+        )
         self._inclusion = SetMorphism(
             Sets().Mor(self, self._ambient_hom),
             lambda connection: connection.underlying_linear_morphism(),
@@ -408,19 +418,17 @@ class ConnectionMorphism(ModuleMorphism):
                 )
 
 
-class ConnectionHomset(OwnedHomset):
+class ConnectionHomset(CategoricalHomset):
     Element = ConnectionMorphism
 
     def __init__(self, domain, codomain) -> None:
         if domain.base_ring() is not codomain.base_ring():
             raise ValueError("connection morphisms require one coefficient algebra")
-        from sage.categories.sets_cat import Sets as SageSets
-
-        Homset.__init__(
+        CategoricalHomset.__init__(
             self,
+            HomCategoryConstruction(ModulesWithConnection(domain.base_ring())),
             domain,
             codomain,
-            category=SageSets(),
         )
 
     def _element_constructor_(self, images):

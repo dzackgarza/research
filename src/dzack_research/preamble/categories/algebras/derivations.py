@@ -7,13 +7,13 @@ algebra generators and evaluated by the formal chain rule on a selected
 presentation representative.
 """
 
-from dzack_research.preamble.categories.abstract_categories.hom_foundation import OwnedHomset
+from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    CategoricalHomset,
+    HomCategoryConstruction,
+)
 from sage.misc.cachefunc import cached_function
 from sage.categories.action import Action
-from sage.categories.homset import Homset
 from sage.categories.morphism import Morphism, SetMorphism
-from sage.categories.rings import Rings as SageRings
-from sage.categories.sets_cat import Sets
 import operator
 
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
@@ -234,7 +234,7 @@ class _DerivationAlgebraAction(Action):
         return self._derivations.algebra_multiple(scalar, derivation)
 
 
-class DerivationSpace(OwnedHomset):
+class DerivationSpace(CategoricalHomset):
     r"""The ``A``-module ``Der_R(A,M)`` with its restricted Hom inclusion.
 
     The actual subobject of ``Hom_R(A,Res_R M)`` is
@@ -266,7 +266,14 @@ class DerivationSpace(OwnedHomset):
             target_module,
             structure_map,
         )
-        Homset.__init__(self, algebra, target_module, category=Sets())
+        # Der_R(A,M) is the subcategory of Hom_R(A,Res_R M) carved out by the
+        # Leibniz rule, so the ambient R-linear Mor category is the base.
+        CategoricalHomset.__init__(
+            self,
+            HomCategoryConstruction(Modules(base)),
+            algebra,
+            target_module,
+        )
         self._preamble_base_ring = algebra
         refine(self, Modules(algebra))
         self.register_action(_DerivationAlgebraAction(algebra, self, True))
@@ -443,7 +450,7 @@ class GradedDerivation(ModuleMorphism):
         return True
 
 
-class GradedDerivationSpace(OwnedHomset):
+class GradedDerivationSpace(CategoricalHomset):
     r"""The ``R``-submodule of degree-``r`` graded derivations in ``Hom_R``."""
 
     Element = GradedDerivation
@@ -461,7 +468,12 @@ class GradedDerivationSpace(OwnedHomset):
 
         ring = algebra.base_ring()
         self._ambient_hom = Modules(ring).Mor(algebra, target)
-        Homset.__init__(self, algebra, target, category=Sets())
+        CategoricalHomset.__init__(
+            self,
+            HomCategoryConstruction(Modules(ring)),
+            algebra,
+            target,
+        )
         self._preamble_base_ring = ring
         refine(self, [Modules(ring), ModuleSubobjects(ring)])
         self._preamble_inclusion = module_embedding(

@@ -1,14 +1,11 @@
 r"""Diagrams, cones, cocones, and selected finite product constructions."""
 
-from dzack_research.preamble.categories.abstract_categories.hom_foundation import OwnedHomset
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
     HomCategoryConstruction,
 )
 from sage.categories.category import Category
-from sage.categories.homset import Homset
 from sage.categories.morphism import Morphism
-from sage.categories.objects import Objects
 from sage.categories.sets_cat import Sets as SageSets
 from sage.structure.parent import Parent
 

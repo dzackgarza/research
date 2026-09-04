@@ -7,18 +7,20 @@ cross precisely that boundary without replacing an embedding by a numerical
 approximation or by descriptive metadata.
 """
 
-from dzack_research.preamble.categories.abstract_categories.hom_foundation import OwnedHomset
+from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    CategoricalHomset,
+    HomCategoryConstruction,
+)
 from typing import Any, cast
 
 from sage.categories.fields import Fields as SageFields
-from sage.categories.homset import Homset
 from sage.categories.map import Map
 from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_function
 from sage.rings.infinity import Infinity
 from sage.rings.qqbar import AlgebraicField_common
 
-from dzack_research.preamble.categories.rings.ring_foundation import _engine_element, _engine_ring, _own_ring
+from dzack_research.preamble.categories.rings.ring_foundation import OwnedFields, _engine_element, _engine_ring, _own_ring
 
 
 def field_generators(field) -> tuple:
@@ -144,11 +146,13 @@ class ExactFieldMorphism(Morphism):
         return repr(self._engine_morphism_crossing())
 
 
-class ExactFieldHomset(OwnedHomset):
+class ExactFieldHomset(CategoricalHomset):
     Element = ExactFieldMorphism
 
     def __init__(self, domain, codomain) -> None:
-        Homset.__init__(self, domain, codomain, category=SageFields())
+        CategoricalHomset.__init__(
+            self, HomCategoryConstruction(OwnedFields()), domain, codomain
+        )
 
     def _element_constructor_(self, datum):
         if isinstance(datum, ExactFieldMorphism):

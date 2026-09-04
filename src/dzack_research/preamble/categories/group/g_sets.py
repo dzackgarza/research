@@ -6,10 +6,12 @@ point-set presentation is used only to compute equivariance, fixed points,
 orbits, and the standard finite free/cofree constructions.
 """
 
-from dzack_research.preamble.categories.abstract_categories.hom_foundation import OwnedHomset
+from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    CategoricalHomset,
+    HomCategoryConstruction,
+)
 from sage.categories.category import Category
 from sage.categories.finite_enumerated_sets import FiniteEnumeratedSets
-from sage.categories.homset import Homset
 from sage.categories.morphism import SetMorphism
 from sage.groups.perm_gps.permgroup_named import SymmetricGroup
 from sage.misc.abstract_method import abstract_method
@@ -145,12 +147,7 @@ class FiniteGSet(Parent):
     is_parent_of = __contains__
 
     def __call__(self, point):
-        if not isinstance(point, Element):
-            return self._element_constructor_(point)
-        try:
-            return Parent.__call__(self, point)
-        except TypeError:
-            return self._element_constructor_(point)
+        return self._element_constructor_(point)
 
     def _element_constructor_(self, point):
         if point not in self.point_set():
@@ -189,7 +186,7 @@ class GSetMorphism(SetMorphism):
         )
 
 
-class GSetHomset(OwnedHomset):
+class GSetHomset(CategoricalHomset):
     r"""The actual equivariant Hom-set between represented finite ``G``-sets."""
 
     Element = GSetMorphism
@@ -197,7 +194,12 @@ class GSetHomset(OwnedHomset):
     def __init__(self, domain, codomain) -> None:
         if domain.acting_group() != codomain.acting_group():
             raise ValueError("equivariant maps require a common acting group")
-        Homset.__init__(self, domain, codomain, category=GSets(domain.acting_group()))
+        CategoricalHomset.__init__(
+            self,
+            HomCategoryConstruction(GSets(domain.acting_group())),
+            domain,
+            codomain,
+        )
 
     def _element_constructor_(self, function):
         return self.element_class(self, function)

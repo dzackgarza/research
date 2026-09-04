@@ -1,13 +1,12 @@
 r"""Basic categorical functors used by the abstract construction layer."""
 
-from dzack_research.preamble.categories.abstract_categories.hom_foundation import OwnedHomset
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
     HomCategoryConstruction,
 )
 from sage.categories.category import Category
 from sage.misc.cachefunc import cached_method
-from sage.categories.homset import Hom, Homset
+from sage.categories.homset import Hom
 from sage.categories.map import Map
 from sage.categories.morphism import Morphism, SetMorphism
 from sage.categories.sets_cat import Sets as SageSets

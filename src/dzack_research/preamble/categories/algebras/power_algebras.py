@@ -5,12 +5,14 @@ module constructions ``Lambda^n(M)`` and ``Gamma^n(M)``.  This module forms
 their direct sum as an algebra; no second quotient-ring presentation is kept.
 """
 
-from dzack_research.preamble.categories.abstract_categories.hom_foundation import OwnedHomset
+from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    CategoricalHomset,
+    HomCategoryConstruction,
+)
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring as _engine_ring
 
 from sage.misc.cachefunc import cached_function
 from sage.categories.category import Category
-from sage.categories.homset import Homset
 from sage.categories.morphism import Morphism, SetMorphism
 
 from dzack_research.preamble.categories.algebras.algebras import FramedAlgebras
@@ -299,7 +301,7 @@ class PowerAlgebraMorphism(Morphism):
         )
 
 
-class PowerAlgebraHomset(OwnedHomset):
+class PowerAlgebraHomset(CategoricalHomset):
     Element = PowerAlgebraMorphism
 
     def __init__(self, domain, codomain) -> None:
@@ -313,11 +315,13 @@ class PowerAlgebraHomset(OwnedHomset):
             raise ValueError("power-algebra morphisms preserve the construction flavor")
         if domain.base_ring() is not codomain.base_ring():
             raise ValueError("power-algebra morphisms require one common base ring")
-        Homset.__init__(
+        CategoricalHomset.__init__(
             self,
+            HomCategoryConstruction(
+                Category.join((domain.category(), codomain.category()))
+            ),
             domain,
             codomain,
-            category=Category.join((domain.category(), codomain.category())),
         )
 
     def _element_constructor_(self, degree_one_map):

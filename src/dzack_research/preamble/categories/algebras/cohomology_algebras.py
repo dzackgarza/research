@@ -1,7 +1,9 @@
 r"""Graded cohomology algebras of represented differential graded algebras."""
 
-from dzack_research.preamble.categories.abstract_categories.hom_foundation import OwnedHomset
-from sage.categories.homset import Homset
+from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    CategoricalHomset,
+    HomCategoryConstruction,
+)
 from sage.categories.morphism import Morphism
 
 from dzack_research.preamble.categories.modules.cochain_complexes import Cohomology
@@ -150,8 +152,16 @@ class CohomologyAlgebraMorphism(Morphism):
         )
 
 
-class CohomologyAlgebraHomset(OwnedHomset):
+class CohomologyAlgebraHomset(CategoricalHomset):
     Element = CohomologyAlgebraMorphism
+
+    def __init__(self, domain, codomain) -> None:
+        CategoricalHomset.__init__(
+            self,
+            HomCategoryConstruction(CohomologyAlgebras(domain.base_ring())),
+            domain,
+            codomain,
+        )
 
     def _element_constructor_(self, dga_morphism):
         return self.element_class(self, dga_morphism)

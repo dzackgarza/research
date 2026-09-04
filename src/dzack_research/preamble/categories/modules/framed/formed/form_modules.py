@@ -1,6 +1,5 @@
 r"""Modules equipped with exact bilinear or quadratic forms."""
 
-from dzack_research.preamble.categories.abstract_categories.hom_foundation import OwnedHomset
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedParameterizedCategory
 from sage.categories.homset import Homset
 from sage.categories.modules import Modules as SageModules
@@ -97,13 +96,18 @@ class FormMorphism(ModuleMorphism):
             raise TypeError("a strict form morphism requires bilinear or quadratic forms")
 
 
-class StrictFormHomset(OwnedHomset):
+class StrictFormHomset(CategoricalHomset):
     r"""The strict form-preserving Hom set on fixed formed endpoints."""
 
     Element = FormMorphism
 
     def __init__(self, domain, codomain) -> None:
-        Homset.__init__(self, domain, codomain, category=SageSets())
+        CategoricalHomset.__init__(
+            self,
+            HomCategoryConstruction(FormModules(domain.base_ring())),
+            domain,
+            codomain,
+        )
 
     def _element_constructor_(self, images):
         if isinstance(images, FormMorphism) and images.parent() is self:
@@ -166,10 +170,7 @@ def form_embedding(domain, codomain, images, *, quadratic: bool | None = None) -
 
     if quadratic is None:
         ring = domain.base_ring()
-        quadratic = bool(
-            domain in QuadraticFormModules(ring)
-            or hasattr(domain, "quadratic_value_module")
-        )
+        quadratic = domain in QuadraticFormModules(ring)
     return FormEmbedding(
         module_homset(domain, codomain),
         images,
@@ -552,7 +553,7 @@ class FiberedFormedModuleMorphism(Morphism):
         return homset((module_map, value_map))
 
 
-class FiberedFormedModuleHomset(OwnedHomset):
+class FiberedFormedModuleHomset(CategoricalHomset):
     Element = FiberedFormedModuleMorphism
 
     def __init__(self, domain, codomain, ring_map) -> None:
@@ -565,7 +566,14 @@ class FiberedFormedModuleHomset(OwnedHomset):
             raise ValueError("the coefficient map does not land at the target base ring")
         self._ring_map = ring_map
         self._base_changed_domain = domain.base_change(ring_map)
-        Homset.__init__(self, domain, codomain, category=SageSets())
+        # The endpoints sit over different base rings, so the Hom lives in the
+        # total category of the formed-module fibration, not in one fibre.
+        CategoricalHomset.__init__(
+            self,
+            HomCategoryConstruction(FormedModules(domain.value_module())),
+            domain,
+            codomain,
+        )
 
     def ring_map(self):
         return self._ring_map
@@ -580,7 +588,7 @@ class FiberedFormedModuleHomset(OwnedHomset):
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError("identity is defined on an endomorphism homset")
-        if not hasattr(self.ring_map(), "is_identity") or not self.ring_map().is_identity():
+        if not self.ring_map().is_identity():
             raise ValueError("the fibered identity must lie over the identity ring map")
         from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 
