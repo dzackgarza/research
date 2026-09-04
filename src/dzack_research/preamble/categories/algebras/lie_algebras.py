@@ -11,6 +11,12 @@ from dzack_research.preamble.categories.modules.pure.modules import Modules
 class LieAlgebras(OwnedCategoryOverBaseRing):
     r"""Lie algebras over a commutative owned base ring."""
 
+    def an_object(self):
+        r"""``End_R(Free_R([2]))`` with the commutator bracket."""
+        from dzack_research.preamble.categories.algebras.algebras import MatrixAlgebras
+
+        return MatrixAlgebras(self.base_ring()).an_object()
+
     @classmethod
     def _repr_object_names(cls):
         return "Lie algebras"

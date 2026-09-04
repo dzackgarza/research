@@ -34,6 +34,25 @@ from dzack_research.preamble.categories.sets.set_categories import Sets
 class LocalizedModules(OwnedCategoryOverBaseRing):
     r"""Modules represented as ``S^{-1}M`` for a chosen localization ``S^{-1}R``."""
 
+    def an_object(self):
+        r"""``S^{-1}(R^2)`` for ``S^{-1}R`` this category's ring."""
+        from dzack_research.preamble.categories.functors.module_localization import (
+            ModuleLocalizationFunctor,
+        )
+        from dzack_research.preamble.categories.rings.commutative_algebra import LocalizationRings
+        from dzack_research.preamble.categories.modules.framed.framed_free_modules import BasedFreeModule
+        from dzack_research.preamble.categories.sets.set_categories import finite_ordinal_set
+
+        localization_ring = self.base_ring()
+        assert localization_ring in LocalizationRings(), (
+            f"{localization_ring} is not a represented localization, so no module "
+            "over it is a localization of a module over its source"
+        )
+        source = BasedFreeModule(
+            localization_ring.localization_source(), finite_ordinal_set(2)
+        )
+        return ModuleLocalizationFunctor(localization_ring)(source)
+
     def super_categories(self):
 
         return [Modules(self.base_ring())]

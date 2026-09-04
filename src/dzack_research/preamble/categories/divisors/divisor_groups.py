@@ -42,6 +42,10 @@ def DivisorGroup(module):
 class FormalDivisorGroups(OwnedCategoryOverBaseRing):
     r"""Formal divisors with coefficients in a specified ring."""
 
+    def an_object(self):
+        r"""The free ``R``-module on two prime divisors."""
+        return FormalDivisorGroup(self.base_ring(), ("P", "Q"))
+
     @classmethod
     def _repr_object_names(cls):
         return "formal divisor groups"

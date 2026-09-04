@@ -111,6 +111,10 @@ def _compose_morphisms(left, right):
 class LebesgueGradedModules(OwnedCategoryOverBaseRing):
     r"""Graded modules whose homogeneous pieces are Lebesgue spaces \(L^{1/s}\)."""
 
+    def an_object(self):
+        r"""The Lebesgue spaces graded by the non-negative reals."""
+        return GradedLebesgueModule(NonNegativeReals)
+
     @classmethod
     def _repr_object_names(cls):
         return "Lebesgue graded modules"
@@ -204,6 +208,10 @@ class GradedTensorProductModules(OwnedCategoryOverBaseRing):
     finitely presented tensor product: the summands \(L^{1/s}\) are not
     finitely presented \(\mathbb R\)-modules.
     """
+
+    def an_object(self):
+        r"""The domain of the graded Lebesgue algebra's multiplication."""
+        return graded_lebesgue_algebra().multiplication_morphism().domain()
 
     @classmethod
     def _repr_object_names(cls):

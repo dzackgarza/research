@@ -26,6 +26,12 @@ def _rational_lattice_determinant(lattice):
 class RationalLattices(OwnedCategoryOverBaseRing):
     r"""Nondegenerate finite free ``R``-modules with ``Frac(R)``-valued form."""
 
+    def an_object(self):
+        r"""``A_2^\vee``, whose form takes values in ``Frac(R)`` and not in ``R``."""
+        from dzack_research.preamble.categories.lattices import Lattices
+
+        return Lattices(self.base_ring())("A2").dual_lattice()
+
     @classmethod
     def _repr_object_names(cls):
         return "rational lattices"

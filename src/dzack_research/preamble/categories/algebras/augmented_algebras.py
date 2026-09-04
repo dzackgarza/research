@@ -41,6 +41,20 @@ class AugmentedAlgebras(OwnedCategoryOverBaseRing):
     algebra (Cartan–Eilenberg: a supplemented algebra).
     """
 
+    def an_object(self):
+        r"""``R[x]`` augmented by evaluation at zero.
+
+        The augmentation is the algebra morphism \(R[x]\to R\) sending the
+        generator to \(0\); the augmented algebra is its domain, interned on
+        that choice.
+        """
+        from dzack_research.preamble.categories.algebras.free_algebras import SymmetricAlgebraOn
+
+        ring = self.base_ring()
+        polynomials = SymmetricAlgebraOn(ring, ("x",))
+        label = next(iter(polynomials.algebra_generating_set()))
+        return augmented_algebra(polynomials.Mor(ring)({label: ring.zero()}))
+
     @classmethod
     def _repr_object_names(cls):
         return "augmented algebras"
@@ -75,6 +89,20 @@ class GradedAugmentedAlgebras(OwnedCategoryOverBaseRing):
     identity. This is the nLab graded-plus-augmented situation
     (Cartan–Eilenberg: a supplemented graded algebra).
     """
+
+    def an_object(self):
+        r"""``R[x]`` augmented by evaluation at zero.
+
+        The augmentation is the algebra morphism \(R[x]\to R\) sending the
+        generator to \(0\); the augmented algebra is its domain, interned on
+        that choice.
+        """
+        from dzack_research.preamble.categories.algebras.free_algebras import SymmetricAlgebraOn
+
+        ring = self.base_ring()
+        polynomials = SymmetricAlgebraOn(ring, ("x",))
+        label = next(iter(polynomials.algebra_generating_set()))
+        return augmented_algebra(polynomials.Mor(ring)({label: ring.zero()}))
 
     @staticmethod
     def __classcall__(cls, base_ring, grading_monoid=None):

@@ -45,14 +45,12 @@ digraph preamble {
     FinitelyPresentedQuadraticFormModules [label="FinitelyPresentedQuadraticFormModules(R)", fillcolor="#fae8ff"];
     FinitelyPresentedTorsionModules [label="FinitelyPresentedTorsionModules(R)", fillcolor="#fae8ff"];
     FormModules [label="FormModules(R)", fillcolor="#fae8ff"];
-    FormedModules [label="FormedModules(R)", fillcolor="#fae8ff"];
     FractionFieldQuotients [label="FractionFieldQuotients(R)", fillcolor="#fae8ff"];
     FractionalIdeals [label="FractionalIdeals(R)", fillcolor="#fae8ff"];
     FramedFreeModules [label="FramedFreeModules(R)", fillcolor="#fae8ff"];
     FramedModules [label="FramedModules(R)", fillcolor="#fae8ff"];
     FreeFormModules [label="FreeFormModules(R)", fillcolor="#fae8ff"];
     FreeModules [label="FreeModules(R)", fillcolor="#fae8ff"];
-    GradedModules [label="GradedModules(R)", fillcolor="#fae8ff"];
     Ideals [label="Ideals(R)", fillcolor="#fae8ff"];
     InternalHomModules [label="InternalHomModules(R)", fillcolor="#fae8ff"];
     LinearHomModules [label="LinearHomModules(R)", fillcolor="#fae8ff"];
@@ -62,9 +60,6 @@ digraph preamble {
     ModuleSubobjects [label="ModuleSubobjects(R)", fillcolor="#fae8ff"];
     Modules [label="Modules(R)", fillcolor="#fae8ff"];
     ModulesWithChosenFinitePresentation [label="ModulesWithChosenFinitePresentation(R)", fillcolor="#fae8ff"];
-    ModulesWithConnection [label="ModulesWithConnection(R)", fillcolor="#fae8ff"];
-    ModulesWithFlatConnection [label="ModulesWithFlatConnection(R)", fillcolor="#fae8ff"];
-    PairedModules [label="PairedModules(R)", fillcolor="#fae8ff"];
     ProjectiveModules [label="ProjectiveModules(R)", fillcolor="#fae8ff"];
     QuadraticFormModules [label="QuadraticFormModules(R)", fillcolor="#fae8ff"];
     RestrictedScalarsModules [label="RestrictedScalarsModules(R)", fillcolor="#fae8ff"];
@@ -95,8 +90,6 @@ digraph preamble {
     FinitelyPresentedAlgebras [label="FinitelyPresentedAlgebras(R)", fillcolor="#ffe4e6"];
     FramedAlgebras [label="FramedAlgebras(R)", fillcolor="#ffe4e6"];
     FreeAlgebras [label="FreeAlgebras(R)", fillcolor="#ffe4e6"];
-    GradedAlgebras [label="GradedAlgebras(R)", fillcolor="#ffe4e6"];
-    GradedAugmentedAlgebras [label="GradedAugmentedAlgebras(R)", fillcolor="#ffe4e6"];
     GradedFreeAlgebras [label="GradedFreeAlgebras(R)", fillcolor="#ffe4e6"];
     KahlerDifferentialModules [label="KahlerDifferentialModules(R)", fillcolor="#ffe4e6"];
     LieAlgebras [label="LieAlgebras(R)", fillcolor="#ffe4e6"];
@@ -136,6 +129,7 @@ digraph preamble {
     ProfiniteGroups [label="ProfiniteGroups", fillcolor="#e0e7ff"];
     Semigroups [label="Semigroups", fillcolor="#e0e7ff"];
     TopologicalGroups [label="TopologicalGroups", fillcolor="#e0e7ff"];
+    groups [label="groups", fillcolor="#e0e7ff"];
   }
   subgraph cluster_6 {
     label="Rings, Fields &amp; Commutative Algebra"; fontsize=13; color="#cbd5e1"; style=rounded;
@@ -253,6 +247,7 @@ digraph preamble {
   AdditiveMonoids -> AdditiveSemigroups;
   AdditiveSemigroups -> AdditiveMagmas;
   AdicallyCompleteRings -> OwnedCommutativeRings;
+  AffineSchemes -> QuasiAffineSchemes;
   AffineSchemes -> Schemes;
   AffineSchemes -> SeparatedSchemes;
   AffineSpaces -> AffineSchemes;
@@ -277,7 +272,6 @@ digraph preamble {
   Cat -> Objects;
   ClassGroups -> FramedModules;
   ClosedSubschemes -> Schemes;
-  CochainComplexes -> GradedModules;
   CohomologyModules -> FinitelyPresentedModules;
   CommutativeAdditiveGroups -> AdditiveGroups;
   CommutativeAlgebraCoproducts -> CommutativeAlgebras;
@@ -301,7 +295,6 @@ digraph preamble {
   Curves -> Varieties;
   DeRhamAlgebras -> StrictlyCommutativeDifferentialGradedAlgebras;
   DifferentialGradedAlgebras -> CochainComplexes;
-  DifferentialGradedAlgebras -> GradedAlgebras;
   DirectSumObjects -> Objects;
   DiscreteCategories -> Objects;
   DiscriminantBilinearModules -> DiscriminantModules;
@@ -361,7 +354,6 @@ digraph preamble {
   FormalDivisorGroups -> FramedFreeModules;
   FormalPowerSeriesRings -> CommutativeAlgebras;
   FormalPowerSeriesRings -> OwnedAdicallyCompleteRings;
-  FormedModules -> PairedModules;
   FractionFieldQuotients -> FramedModules;
   FractionalIdeals -> ModuleSubobjects;
   FractionalIdeals -> Modules;
@@ -375,13 +367,7 @@ digraph preamble {
   FreeModules -> Modules;
   FunctionEnumeratedSets -> EnumeratedSets;
   FunctorImageCategories -> Objects;
-  GradedAlgebras -> Algebras;
-  GradedAlgebras -> GradedModules;
-  GradedAugmentedAlgebras -> AugmentedAlgebras;
-  GradedAugmentedAlgebras -> GradedAlgebras;
   GradedFreeAlgebras -> FreeAlgebras;
-  GradedFreeAlgebras -> GradedAlgebras;
-  GradedModules -> Modules;
   GradedTensorProductModules -> Modules;
   Groups -> Monoids;
   GroupsWithChosenFiniteGeneratingSet -> OwnedFinitelyGeneratedGroups;
@@ -420,8 +406,6 @@ digraph preamble {
   Modules -> CommutativeAdditiveGroups;
   ModulesWithChosenFinitePresentation -> FinitelyPresentedModules;
   ModulesWithChosenFinitePresentation -> FramedModules;
-  ModulesWithConnection -> Modules;
-  ModulesWithFlatConnection -> ModulesWithConnection;
   Monoids -> Semigroups;
   NoetherianRings -> OwnedCommutativeRings;
   NondegenerateLattices -> Lattices;
@@ -467,7 +451,6 @@ digraph preamble {
   OwnedRngs -> Semigroups;
   OwnedSemirings -> AdditiveMonoids;
   OwnedSemirings -> Monoids;
-  PairedModules -> Sets;
   PartiallyOrderedSets -> Sets;
   PicardGroups -> FramedModules;
   PredicateSubrings -> OwnedRings;
@@ -510,9 +493,7 @@ digraph preamble {
   StrictlyCommutativeDifferentialGradedAlgebras -> CommutativeDifferentialGradedAlgebras;
   Surfaces -> Varieties;
   SymmetricAlgebras -> CommutativeAlgebras;
-  SymmetricAlgebras -> GradedAlgebras;
   SymmetricBilinearFormModules -> BilinearFormModules;
-  TensorAlgebras -> GradedAlgebras;
   TensorProductModules -> Modules;
   TopologicalGroups -> OwnedGroups;
   TorsionBilinearFormModules -> FinitelyPresentedBilinearFormModules;
@@ -528,4 +509,5 @@ digraph preamble {
   Varieties -> SeparatedSchemes;
   VectorSpaces -> Modules;
   WeilDivisorGroups -> DivisorGroups;
+  groups -> Monoids;
 }

@@ -45,6 +45,21 @@ from dzack_research.preamble.categories.modules.tensor_products import tensor_pr
 class ModulesWithConnection(OwnedParameterizedCategory):
     r"""Modules over ``A`` equipped with an ``A/R``-connection."""
 
+    def an_object(self):
+        r"""A free rank-one module over the algebra, with the zero connection.
+
+        The zero connection is flat, so this object is a specimen of both this
+        category and its flat refinement.
+        """
+        from dzack_research.preamble.categories.modules.framed.framed_free_modules import BasedFreeModule
+        from dzack_research.preamble.categories.sets.set_categories import finite_ordinal_set
+
+        module = BasedFreeModule(self.algebra(), finite_ordinal_set(1))
+        connections = Connections(module)
+        return ModuleWithConnection(
+            connections(lambda _label: connections.target_module().zero())
+        )
+
     @classmethod
     def _repr_object_names(cls):
         return "modules with connection"
@@ -66,6 +81,21 @@ class ModulesWithConnection(OwnedParameterizedCategory):
 
 class ModulesWithFlatConnection(OwnedParameterizedCategory):
     r"""Modules whose selected connection has zero curvature."""
+
+    def an_object(self):
+        r"""A free rank-one module over the algebra, with the zero connection.
+
+        The zero connection is flat, so this object is a specimen of both this
+        category and its flat refinement.
+        """
+        from dzack_research.preamble.categories.modules.framed.framed_free_modules import BasedFreeModule
+        from dzack_research.preamble.categories.sets.set_categories import finite_ordinal_set
+
+        module = BasedFreeModule(self.algebra(), finite_ordinal_set(1))
+        connections = Connections(module)
+        return ModuleWithConnection(
+            connections(lambda _label: connections.target_module().zero())
+        )
 
     @classmethod
     def _repr_object_names(cls):

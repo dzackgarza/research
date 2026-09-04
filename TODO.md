@@ -81,27 +81,36 @@ does not say, in a form anything can read, what a mathematical parameter *is*.
 
 ## Witnesses: what `an_object()` found
 
-`OwnedCategory.an_object()` is the contract (`DEV-11`); 109 of 164 owned categories
-answer it with an object verified to be both **in** the category and **owned**.  Each
-item below is a category whose canonical object fails one of those two tests.  The
-witness is left as the mathematics names it — relaxing it to something that passes
-would delete the finding and leave the defect.
+`OwnedCategory.an_object()` is the contract (`DEV-11`); 121 of 153 owned categories
+answer it with an object verified on both counts — the object is **in** the category,
+and it is **owned**, not a Sage object refined into place.  Each item below is a
+category whose canonical object fails one of those.  The witness is left as the
+mathematics names it: relaxing it to something that passes would delete the finding
+and leave the defect.
+
+- [ ] **An object is not a module or an algebra over itself.**  `ZZ` is in
+  `Algebras(ZZ)`, but `QQ`, `RR` and `GF(2)` are not in `Algebras` of themselves, and
+  **no** ring is in `CommutativeAlgebras` of itself.  The same gap one level up: a
+  graded algebra `A` is not in `GradedAlgebraModules(A)`, and a differential graded
+  algebra is not in `DifferentialGradedModules` of itself.  Consequences reach far —
+  `KahlerDifferentials(R)` raises `Kähler calculus requires a commutative algebra`,
+  `Spec` must be fed a polynomial ring instead of the base, an `R[x]`-connection
+  cannot be built over most `R`, and `tests/algebras/test_augmented.py` — a committed
+  test — is red for this reason alone.  The obligations sweep's row
+  `a ring as an algebra over itself` passes only because its specimen is `ZZ`.
+  `categories/algebras/algebras.py`.
 
 - [ ] **The scheme layer returns Sage objects.**  `AffineSpace`, `ProjectiveSpace`,
   `Spec` and `scheme_product` all return `sage.schemes.*`, refined into owned
-  categories rather than owned.  Sixteen scheme categories report it; the cause is
+  categories rather than owned.  Fourteen scheme categories report it; the cause is
   one.  Every other part of the preamble owns its objects.
   `categories/schemes/schemes.py`.
 
-- [ ] **`R` is not in `CommutativeAlgebras(R)`**, though it is in `Algebras(R)`.  A
-  commutative ring is a commutative algebra over itself.  The gap stops
-  `KahlerDifferentials(R)`, which raises `Kähler calculus requires a commutative
-  algebra`, and forces `Spec` to be fed a polynomial ring instead of the base.
-  `categories/algebras/algebras.py`.
-
-- [ ] **`MatrixAlgebras(R)` does not contain `End_R(Free_R([2]))`**, which is what a
-  matrix algebra *is* in this preamble.  `MatrixSpace(R, 2)` is in it, so two routes
-  to the same object disagree on placement.
+- [ ] **`End_R(Free_R([2]))` is placed in none of the categories a matrix algebra
+  belongs to.**  It is what a matrix algebra *is* here — `MatrixSpace(R, 2)` returns
+  exactly that Hom — yet it is in neither `MatrixAlgebras(R)`, `LieAlgebras(R)` nor
+  `CommutatorLieAlgebras(R)`, over any of `ZZ`, `QQ`, `RR`.  So the endomorphism
+  algebra of a free module reaches no algebra placement at all.
   `categories/algebras/algebras.py`, `categories/modules/pure/modules.py`.
 
 - [ ] **The form-module joins do not contain their own members.**  U is in
@@ -119,6 +128,12 @@ would delete the finding and leave the defect.
   the matching dimension, which are the standard objects of each.
   `categories/schemes/schemes.py`, `categories/schemes/varieties.py`.
 
+- [ ] **A fiber product of schemes cannot be built.**
+  `A^1 \times_{Spec R} A^1` fails with `no represented pushout is owned by a common
+  category of R, R[x], R[x]`, over `ZZ` and over `QQ` alike — although `Pushout` of
+  two commutative algebras over the same base does build.  So the scheme layer is not
+  reaching the owned algebra pushout.  `categories/schemes/schemes.py`.
+
 - [ ] **`scheme_product` cannot square a projective space**: two copies of `P^1`
   raise `variable name 'x0' appears more than once`; the second factor's coordinates
   are not renamed.  `categories/schemes/schemes.py`.
@@ -128,14 +143,15 @@ would delete the finding and leave the defect.
   no closed subscheme over `ZZ` can be built at all.
   `categories/schemes/schemes.py`.
 
-- [ ] **26 categories still have no witness.**  The chosen-structure ones
-  (`AlgebrasWithChosenMultiplication`, `AlgebrasWithChosenFinitePresentation`,
-  `AugmentedAlgebras`, `GradedAugmentedAlgebras`, the algebra coproducts and
-  pushouts) need an object carrying the chosen datum, and no reachable constructor
-  produces one; `LieAlgebras`, `CommutatorLieAlgebras`, `ModulesWithConnection`,
-  `ModulesWithFlatConnection`, `GSets`, `FiniteGSets`, `PredicateSubgroups`,
-  `RationalLattices`, `LocalizedModules`, `FractionFieldQuotients`,
-  `RestrictedScalars*`, `FormalDivisorGroups`, `LebesgueGradedModules`,
-  `GradedTensorProductModules`, `OpenSubschemes` and `FiberProductSchemes` are the
-  rest.  `OwnedCategoryOverBaseRing` is on that list only because it is an abstract
-  base exported as though it were a category.
+- [ ] **`OpenSubschemes` has no constructor.**  It is the one owned category with no
+  witness, because nothing in the preamble builds an open subscheme: no route
+  produces the complement of a closed subscheme, and the name appears at no
+  construction site.  The distinguished open `D(x) \subset A^1` is the smallest thing
+  missing.  `categories/schemes/schemes.py`.
+
+- [ ] **A parameterized category does not declare what its parameter is.**  `GSets`
+  takes a group, `PredicateSubgroups` a category, `ModulesWithConnection` an algebra,
+  `LocalizedModules` a localization ring — and none of that is in a type, so nothing
+  can compute the parameter's own `an_object()` to instantiate the family.  This is
+  the `LEX-14` item above, measured: the witness audit has to carry a hand-written
+  table of ten specimens for exactly these categories.

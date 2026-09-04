@@ -42,6 +42,22 @@ from dzack_research.preamble.categories.algebras.free_algebras import _base_chan
 class RestrictedScalarsAlgebras(OwnedCategoryOverBaseRing):
     r"""``R``-algebras obtained by restricting an algebra along ``R -> S``."""
 
+    def an_object(self):
+        r"""``Res_{id}(R[x])``: the polynomial algebra along the identity of ``R``.
+
+        Restriction of scalars along \(\mathrm{id}: R\to R\) is the smallest
+        specimen that still carries the chosen structure map the category is
+        about.
+        """
+        from dzack_research.preamble.categories.algebras.free_algebras import SymmetricAlgebraOn
+        from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
+
+        ring = self.base_ring()
+        return restrict_algebra_scalars(
+            SymmetricAlgebraOn(ring, ("x",)),
+            ring_morphism(ring, ring, lambda element: element),
+        )
+
     @classmethod
     def _repr_object_names(cls):
         return "restricted-scalars algebras"

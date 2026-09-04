@@ -80,6 +80,25 @@ class AssociativeAlgebras(OwnedCategoryOverBaseRing):
 class AssociativeAlgebrasWithChosenMultiplication(OwnedCategoryOverBaseRing):
     r"""Associative algebras interned on a chosen morphism \(A\otimes_R A\to A\)."""
 
+    def an_object(self):
+        r"""``R`` itself, presented by a chosen multiplication.
+
+        The rank-one free module on one label, with the multiplication
+        \(e\otimes e\mapsto e\): the smallest object whose algebra structure is
+        a chosen morphism rather than one inherited from a construction.
+        """
+        from dzack_research.preamble.categories.abstract_categories.constructions import TensorSquare
+        from dzack_research.preamble.categories.modules.framed.framed_free_modules import BasedFreeModule
+        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
+        from dzack_research.preamble.categories.sets.set_categories import finite_ordinal_set
+
+        line = BasedFreeModule(self.base_ring(), finite_ordinal_set(1))
+        label = next(iter(line.module_generating_set()))
+        multiplication = module_homset(TensorSquare(line), line)(
+            {(label, label): line.module_generator(label)}
+        )
+        return algebra_from_multiplication(multiplication)
+
     @classmethod
     def _repr_object_names(cls):
         return "associative algebras with chosen multiplication"
@@ -248,6 +267,25 @@ class Algebras(OwnedCategoryOverBaseRing):
 
 class AlgebrasWithChosenMultiplication(OwnedCategoryOverBaseRing):
     r"""Unital algebras interned on a chosen morphism \(A\otimes_R A\to A\)."""
+
+    def an_object(self):
+        r"""``R`` itself, presented by a chosen multiplication.
+
+        The rank-one free module on one label, with the multiplication
+        \(e\otimes e\mapsto e\): the smallest object whose algebra structure is
+        a chosen morphism rather than one inherited from a construction.
+        """
+        from dzack_research.preamble.categories.abstract_categories.constructions import TensorSquare
+        from dzack_research.preamble.categories.modules.framed.framed_free_modules import BasedFreeModule
+        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
+        from dzack_research.preamble.categories.sets.set_categories import finite_ordinal_set
+
+        line = BasedFreeModule(self.base_ring(), finite_ordinal_set(1))
+        label = next(iter(line.module_generating_set()))
+        multiplication = module_homset(TensorSquare(line), line)(
+            {(label, label): line.module_generator(label)}
+        )
+        return algebra_from_multiplication(multiplication)
 
     @classmethod
     def _repr_object_names(cls):
@@ -472,6 +510,14 @@ def refine_matrix_algebra(homset):
 class FinitelyPresentedAlgebras(OwnedCategoryOverBaseRing):
     r"""Algebras that admit a finite algebra presentation."""
 
+    def an_object(self):
+        r"""``R[x]/(x^2)``, the dual numbers: one generator and one relation."""
+        from dzack_research.preamble.categories.algebras.finitely_presented_algebras import (
+            FinitelyPresentedAlgebraOn,
+        )
+
+        return FinitelyPresentedAlgebraOn(self.base_ring(), ("x",), ("x^2",))
+
     @classmethod
     def _repr_object_names(cls):
         return "finitely presented algebras"
@@ -486,6 +532,14 @@ class FinitelyPresentedAlgebras(OwnedCategoryOverBaseRing):
 
 class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
     r"""Finitely presented algebras carrying one selected finite presentation."""
+
+    def an_object(self):
+        r"""``R[x]/(x^2)``, the dual numbers: one generator and one relation."""
+        from dzack_research.preamble.categories.algebras.finitely_presented_algebras import (
+            FinitelyPresentedAlgebraOn,
+        )
+
+        return FinitelyPresentedAlgebraOn(self.base_ring(), ("x",), ("x^2",))
 
     @classmethod
     def _repr_object_names(cls):
@@ -582,6 +636,14 @@ class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
 class CommutativeAlgebraCoproducts(OwnedCategoryOverBaseRing):
     r"""Commutative ``R``-algebras equipped as selected binary coproducts."""
 
+    def an_object(self):
+        r"""``R[x] \otimes_R R[y]``, the coproduct of two polynomial algebras."""
+        from dzack_research.preamble.categories.abstract_categories.constructions import Coproduct
+        from dzack_research.preamble.categories.algebras.free_algebras import SymmetricAlgebraOn
+
+        ring = self.base_ring()
+        return Coproduct(SymmetricAlgebraOn(ring, ("x",)), SymmetricAlgebraOn(ring, ("y",)))
+
     def super_categories(self):
         return [CommutativeAlgebras(self.base_ring())]
 
@@ -629,6 +691,24 @@ class CommutativeAlgebraCoproducts(OwnedCategoryOverBaseRing):
 
 class CommutativeAlgebraPushouts(OwnedCategoryOverBaseRing):
     r"""Commutative ``R``-algebras equipped as selected pushouts of one span."""
+
+    def an_object(self):
+        r"""``R[x] \otimes_{R[t]} R[y]`` for ``t`` sent to ``x`` and to ``y``.
+
+        The pushout of the span whose legs are the two isomorphisms
+        \(R[t]\to R[x]\) and \(R[t]\to R[y]\).
+        """
+        from dzack_research.preamble.categories.abstract_categories.constructions import Pushout
+        from dzack_research.preamble.categories.algebras.free_algebras import SymmetricAlgebraOn
+
+        ring = self.base_ring()
+        common = SymmetricAlgebraOn(ring, ("t",))
+        left = SymmetricAlgebraOn(ring, ("x",))
+        right = SymmetricAlgebraOn(ring, ("y",))
+        return Pushout(
+            common.Mor(left)({"t": left.algebra_generator("x")}),
+            common.Mor(right)({"t": right.algebra_generator("y")}),
+        )
 
     def super_categories(self):
         return [CommutativeAlgebras(self.base_ring())]

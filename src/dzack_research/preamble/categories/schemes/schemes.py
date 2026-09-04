@@ -1193,6 +1193,11 @@ def scheme_product(*schemes):
 class FiberProductSchemes(OwnedCategoryOverBaseRing):
     r"""Affine schemes equipped as selected pullbacks of one cospan."""
 
+    def an_object(self):
+        r"""``A^1 \times_{Spec R} A^1``, the affine plane as a fiber product."""
+        line = AffineSpace(1, self.base_ring())
+        return scheme_fiber_product(line.structure_morphism(), line.structure_morphism())
+
     def super_categories(self):
         return [AffineSchemes(self.base_ring())]
 

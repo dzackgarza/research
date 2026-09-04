@@ -40,6 +40,10 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
     ``R = ZZ``, where Sage's :class:`QmodnZ` computes ``QQ / n ZZ``.
     """
 
+    def an_object(self):
+        r"""``Frac(R)/R``."""
+        return FractionFieldQuotient(self.base_ring())
+
     @classmethod
     def _repr_object_names(cls):
         return "fraction-field quotients"
