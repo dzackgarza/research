@@ -4035,6 +4035,65 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Correct Example**: the inertia named as the inertia, distinct from the signature pair; `tensor_valence`, whose four definitions are a contract, a computation, a delegation and a constant, all answering the same question in the same place.
 
+#### `LEX-12`: An Annotation Names the Codomain, and Its Reader Is a Mathematician
+
+- **Rule**: A return annotation states **which mathematical object the value belongs to**, so that a reader can check the method against the definition it implements without executing anything.  Write the annotation for that reader first.  Whether a checker accepts it is a second, weaker requirement, and an annotation chosen to satisfy the checker rather than the reader has been chosen against its purpose.
+
+- **Rationale**: In this repository the type surface is a mathematical claim: `-> tuple[int, int]` on a valence says the answer is a pair of integers, and a mathematician auditing the method compares that claim with the definition of the operation.  Optimising instead for "will this typecheck" reliably produces the annotations that convey least, because the easiest way to be accepted is to say nothing.  The checker is a machine that will accept the empty statement; the reader is the one who can tell that the empty statement is empty.
+
+- **Violation Example**: choosing an annotation by trying candidates until the checker stops complaining; annotating a mathematical operation with the most general thing that fits; leaving the signature uninformative because the body is short and "obvious".
+
+- **Correct Example**: an annotation a mathematician can read off against the operation's stated codomain, and which they would notice was wrong if the operation changed.
+
+#### `LEX-13`: A Type That Excludes Nothing Asserts Nothing
+
+- **Rule**: Before writing an annotation, answer: **which wrong implementation does this reject?**  If no plausible wrong return is excluded, the annotation is empty and does not count as typed.  `object`, `Any`, and framework universals used as returns -- `Element`, `Parent`, `SageObject`, `CategoryObject` -- are all in this class.
+
+- **Rationale**: `object` is banned because a function annotated with it "passes on literally anything, which means it asserts nothing".  A framework universal fails the same test and hides it better.  Every element of every parent in Sage is an `Element`: an integer, a matrix, a polynomial, a group automorphism, a scheme point, a lattice vector.  So `-> Element` admits every value the preamble produces, catches no wrong return ever, and reads to a reviewer like a real type.  The class-tree ancestry is irrelevant; the discrimination is what matters, and there is none.
+
+- **Violation Example**: `-> Element`, `-> Parent`, `-> SageObject` on a mathematical operation; a union so wide that every plausible return satisfies it; a bound so loose that the checker could not fail.
+
+- **Correct Example**: an annotation naming the codomain, or -- where that is not yet expressible -- the named alias of `LEX-15`, which is honest about asserting nothing instead of disguising it.
+
+#### `LEX-14`: Do Not Annotate From the Framework's Class Tree
+
+- **Rule**: When the mathematical type is hard to name, do not walk up the implementation's class hierarchy until something fits.  Sage's class tree is a taxonomy of *representation*; a return annotation is a claim about a *codomain*.  The two are different questions, and an answer to the first is not an answer to the second.
+
+- **Rationale**: This is the characteristic engineering-brained substitution, and it feels like diligence because the result is a real class that really is an ancestor.  But `Element` records that the value participates in Sage's coercion system, which is an implementation fact true of everything, while the question was which object the value is a point of.  The obstacle that prompts the walk -- "the parent is constructed at runtime, so there is no static name" -- is an implementation obstacle, and the mathematics does not move to accommodate one.  A codomain that cannot be named statically is a finding about the type surface, never a licence to write the universal base class.
+
+- **Violation Example**: reaching for `Element` because the concrete element class is generated at runtime; annotating with a Sage abstract base because it is the nearest common ancestor of the observed returns; picking the ancestor that makes `mypy` quiet.
+
+- **Correct Example**: naming the mathematical object -- the product, the homset, the module -- and, where the static surface cannot yet express it, recording that as a gap under `LEX-15` rather than papering it with an ancestor.
+
+#### `LEX-15`: An Inexpressible Mathematical Type Aliases `Any` Once, Under Its Own Name
+
+- **Rule**: When a value's mathematical type is known but not yet statically expressible, declare **one** alias in the central typing layer, named for the mathematics and carrying a comment stating what it stands for, and use that name in every signature:
+
+  ```python
+  # (n_1, ..., n_k) in the product monoid NN^k
+  ProductOfNaturalNumbers = Any
+  ```
+
+  Never inline `Any` at the signature, never substitute a framework universal, and never leave the annotation off.
+
+- **Rationale**: The alias and the base class both check nothing, so the alias costs nothing the universal was buying -- and on every other axis it dominates.  It names the codomain, so the reader learns it.  It is falsifiable by a human: change the return to a triple or to a pair of rationals and the name is visibly wrong in review, where `Element` could never become wrong and so could never flag anything.  It quarantines the ignorance to one site, which is what this repository already requires of a genuine `Any`.  It provides a single upgrade point, so that when the type becomes expressible one line improves every signature at once, instead of a hunt in which each site's intent must be re-derived because the annotation destroyed it.  And it makes the gap countable: `grep ProductOfNaturalNumbers` measures exactly how much of the surface is deficient and where, while a base class is indistinguishable from correct code and so cannot be paid down deliberately.
+
+  This is not the invention `LEX-10` bans.  That prohibition is on minting a name to satisfy a rule -- `MyCustomClassCreationDatum` -- which has no referent.  `ProductOfNaturalNumbers` denotes \(\mathbb N^k\), which a mathematician recognises.  Naming real mathematics is the welcome case even when the name is currently an alias.
+
+- **Violation Example**: `-> Any` written at the signature; a different ad-hoc alias per file; an alias named for its representation (`IntPair`) rather than its mathematics; an alias with no comment saying what it stands for.
+
+- **Correct Example**: one aliased name per mathematical notion, in the central layer, with its comment; every site using it; the alias replaced by the real type in a single edit when the surface grows to carry it.
+
+#### `LEX-16`: An Annotation Falsified by a Change Is Corrected, Never Deleted
+
+- **Rule**: When a change makes an existing annotation false, correct it to the new codomain.  Deleting it, widening it to a universal, or replacing it with `Any` are all prohibited, and deleting is the worst of the three because it leaves no trace that a claim was ever made.
+
+- **Rationale**: A falsified annotation is a signal that the change is incomplete -- it is the type surface reporting that the codomain moved -- and the three prohibited responses all discard the signal instead of acting on it.  `AGENTS.md` names deleted annotations alongside `Any` and `# type: ignore` for exactly this reason.  A false annotation is at least a falsifiable claim that review can catch; an absent one asserts nothing and looks deliberate.  The observed sequence, which is the one to recognise: a correct annotation, made false by an edit, deleted to make the edit go through, then replaced with a base class to look typed again -- three moves, each worse than the last, two of them explicitly banned.
+
+- **Violation Example**: removing `-> tuple[int, int]` because the return became an owned element; changing it to `-> Any` or `-> Element` for the same reason; leaving the old annotation in place and false.
+
+- **Correct Example**: the annotation updated to name the new codomain in the same edit that changes the return, or the `LEX-15` alias introduced if that codomain is not yet expressible.
+
 * * *
 
 ### 7. Sets, Collections & Cardinality (`SET-*`)
