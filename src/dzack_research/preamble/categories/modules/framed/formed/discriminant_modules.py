@@ -55,6 +55,12 @@ from dzack_research.preamble.categories.sets.set_categories import Sets
 class DiscriminantModules(OwnedCategoryOverBaseRing):
     r"""Cokernels ``A_L = coker(L -> L^#)`` of nondegenerate finite lattices."""
 
+    def an_object(self):
+        r"""The discriminant group of U with its induced form."""
+        from dzack_research.preamble.categories.lattices import Lattices
+
+        return Lattices(self.base_ring())("U").discriminant_group()
+
     @classmethod
     def _repr_object_names(cls):
         return "discriminant modules"
@@ -138,6 +144,12 @@ class DiscriminantModules(OwnedCategoryOverBaseRing):
 
 class DiscriminantBilinearModules(OwnedCategoryOverBaseRing):
     r"""Discriminant modules with ``K/R``-valued bilinear form."""
+
+    def an_object(self):
+        r"""The discriminant group of U, bilinear."""
+        from dzack_research.preamble.categories.lattices import Lattices
+
+        return Lattices(self.base_ring())("U").discriminant_group()
 
     @classmethod
     def _repr_object_names(cls):
@@ -347,6 +359,12 @@ class DiscriminantBilinearModules(OwnedCategoryOverBaseRing):
 
 class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
     r"""Even-lattice discriminant modules with quadratic form in ``K/2R``."""
+
+    def an_object(self):
+        r"""The discriminant group of U, quadratic."""
+        from dzack_research.preamble.categories.lattices import Lattices
+
+        return Lattices(self.base_ring())("U").discriminant_group()
 
     @classmethod
     def _repr_object_names(cls):

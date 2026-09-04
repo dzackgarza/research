@@ -406,6 +406,13 @@ class FreeAlgebras(OwnedCategoryOverBaseRing):
 
 
 class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
+    def an_object(self):
+        r"""The polynomial algebra on one generator, graded by degree."""
+        from dzack_research.preamble.categories.functors.free_algebras import SymmetricAlgebraFunctor
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+        return SymmetricAlgebraFunctor(self.base_ring())(Modules(self.base_ring()).an_object())
+
     @classmethod
     def _repr_object_names(cls):
         return "graded free algebras"

@@ -994,6 +994,12 @@ class SymmetricBilinearFormModules(OwnedCategoryOverBaseRing):
 
 
 class QuadraticFormModules(OwnedCategoryOverBaseRing):
+    def an_object(self):
+        r"""The discriminant group of U, which carries a quadratic form."""
+        from dzack_research.preamble.categories.lattices import Lattices
+
+        return Lattices(self.base_ring())("U").discriminant_group()
+
     @classmethod
     def _repr_object_names(cls):
         return "modules with a quadratic form"
@@ -1016,6 +1022,12 @@ class FinitelyPresentedFormModules(OwnedCategoryOverBaseRing):
         Mor = FormModules.ParentMethods.Mor
         base_change = FormModules.ParentMethods.base_change
 
+    def an_object(self):
+        r"""The discriminant group of U."""
+        from dzack_research.preamble.categories.lattices import Lattices
+
+        return Lattices(self.base_ring())("U").discriminant_group()
+
     @classmethod
     def _repr_object_names(cls):
         return "finitely presented form modules"
@@ -1026,6 +1038,12 @@ class FinitelyPresentedFormModules(OwnedCategoryOverBaseRing):
 
 
 class FinitelyPresentedBilinearFormModules(OwnedCategoryOverBaseRing):
+    def an_object(self):
+        r"""The discriminant group of U."""
+        from dzack_research.preamble.categories.lattices import Lattices
+
+        return Lattices(self.base_ring())("U").discriminant_group()
+
     @classmethod
     def _repr_object_names(cls):
         return "finitely presented modules with a bilinear form"
@@ -1038,6 +1056,12 @@ class FinitelyPresentedBilinearFormModules(OwnedCategoryOverBaseRing):
 
 
 class FinitelyPresentedQuadraticFormModules(OwnedCategoryOverBaseRing):
+    def an_object(self):
+        r"""The discriminant group of U."""
+        from dzack_research.preamble.categories.lattices import Lattices
+
+        return Lattices(self.base_ring())("U").discriminant_group()
+
     @classmethod
     def _repr_object_names(cls):
         return "finitely presented modules with a quadratic form"

@@ -929,16 +929,20 @@ class TorsionFormOrthogonalGroup(CategoricalHomset):
         cover = self._engine_module.V()
         lifted = sum(
             (
-                SageZZ(coefficients.get(label, 0)) * basis
+                _engine_element(
+                    self._normalized_form.base_ring(),
+                    coefficients.get(label, self._normalized_form.base_ring().zero()),
+                )
+                * basis
                 for label, basis in zip(labels, cover.basis(), strict=True)
             ),
             cover.zero(),
         )
-        _engine_element = self._engine_module(lifted)
+        engine_module_element = self._engine_module(lifted)
         abelian_group = self._engine_group_parent.domain()
         result = abelian_group.one()
         for exponent, generator in zip(
-            _engine_element.vector(),
+            engine_module_element.vector(),
             abelian_group.gens(),
             strict=True,
         ):
@@ -1153,6 +1157,12 @@ def _invariant_factor_form_isomorphism(form, quadratic: bool):
 class TorsionBilinearFormModules(OwnedCategoryOverBaseRing):
     r"""Finitely presented torsion modules with a bilinear form."""
 
+    def an_object(self):
+        r"""The discriminant group of U, a torsion module with a form."""
+        from dzack_research.preamble.categories.lattices import Lattices
+
+        return Lattices(self.base_ring())("U").discriminant_group()
+
     @classmethod
     def _repr_object_names(cls):
         return "finitely presented torsion modules with a bilinear form"
@@ -1274,6 +1284,12 @@ class TorsionBilinearFormModules(OwnedCategoryOverBaseRing):
 
 class TorsionQuadraticFormModules(OwnedCategoryOverBaseRing):
     r"""Finitely presented torsion modules with a quadratic form."""
+
+    def an_object(self):
+        r"""The discriminant group of U."""
+        from dzack_research.preamble.categories.lattices import Lattices
+
+        return Lattices(self.base_ring())("U").discriminant_group()
 
     @classmethod
     def _repr_object_names(cls):

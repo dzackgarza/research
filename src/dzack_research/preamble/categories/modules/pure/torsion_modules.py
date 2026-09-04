@@ -26,6 +26,12 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.refine import refine
 class TorsionModules(OwnedCategoryOverBaseRing):
+    def an_object(self):
+        r"""The discriminant group of U, which is torsion."""
+        from dzack_research.preamble.categories.lattices import Lattices
+
+        return Lattices(self.base_ring())("U").discriminant_group()
+
     @classmethod
     def _repr_object_names(cls):
         return "torsion modules"
@@ -41,6 +47,12 @@ class TorsionModules(OwnedCategoryOverBaseRing):
 
 class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
     r"""Finitely presented torsion modules over a PID."""
+
+    def an_object(self):
+        r"""The discriminant group of U."""
+        from dzack_research.preamble.categories.lattices import Lattices
+
+        return Lattices(self.base_ring())("U").discriminant_group()
 
     @classmethod
     def _repr_object_names(cls):

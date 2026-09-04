@@ -4,6 +4,7 @@ from sage.structure.richcmp import op_EQ, op_NE
 
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import SubobjectsOf
 from dzack_research.preamble.categories.rings.ring_foundation import (
+    LocalizationRings,
     OwnedIntegralDomains,
     OwnedCategoryOverBaseRing,
     _engine_element,
@@ -32,6 +33,10 @@ from dzack_research.preamble.categories.sets.set_categories import Sets
 
 class CommutativeIdeals(OwnedCategoryOverBaseRing):
     r"""Ideals of ``R``: subobjects of the rank-one ``R``-module ``R``."""
+
+    def an_object(self):
+        r"""The ideal (2)."""
+        return self.base_ring().ideal(2)
 
     def super_categories(self):
 
@@ -113,10 +118,7 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
 
         def extension_to_localization(self, localization_ring):
             r"""Return ``S^{-1}I <= S^{-1}R`` by localizing the inclusion."""
-            if not (
-                hasattr(localization_ring, "localization_source")
-                and hasattr(localization_ring, "localization_map")
-            ):
+            if localization_ring not in LocalizationRings():
                 raise TypeError("ideal localization requires a represented ring localization")
             if localization_ring.localization_source() is not self.ring():
                 raise ValueError("the localization has the wrong source ring")
@@ -175,9 +177,11 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
         def colon(self, other):
             r"""Return the ideal quotient ``(self : other)`` when the backend supports it."""
             _require_same_ring(self, other)
-            method = getattr(self._engine_ideal(), "quotient", None)
-            if method is None:
-                raise NotImplementedError("this ideal backend has no colon/ideal-quotient operation")
+            method = _engine_ideal_method(
+                self,
+                "quotient",
+                "this ideal backend has no colon/ideal-quotient operation",
+            )
             return _from_engine_ideal(self.ring(), method(other._engine_ideal()))
 
         ideal_quotient = colon
@@ -185,16 +189,18 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
         def saturation(self, other):
             r"""Return ``(self : other^infinity)`` when the backend supports it."""
             _require_same_ring(self, other)
-            method = getattr(self._engine_ideal(), "saturation", None)
-            if method is None:
-                raise NotImplementedError("this ideal backend has no saturation operation")
+            method = _engine_ideal_method(
+                self,
+                "saturation",
+                "this ideal backend has no saturation operation",
+            )
             result = method(other._engine_ideal())
             saturated = result[0] if isinstance(result, tuple) else result
             return _from_engine_ideal(self.ring(), saturated)
 
         def contraction_from_localization(self):
             r"""Contract this selected localized extension back to its source ring."""
-            source_ideal = getattr(self, "_preamble_localization_source_ideal", None)
+            source_ideal = self.__dict__.get("_preamble_localization_source_ideal")
             if source_ideal is None:
                 raise NotImplementedError(
                     "contraction is currently represented for ideals selected as localization extensions"
@@ -213,7 +219,7 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             source_ring = localization_ring.localization_source()
             engine = _engine_ring(source_ring)
             source_backend = source_ideal._engine_ideal()
-            saturation_method = getattr(source_backend, "saturation", None)
+            saturation_method = _optional_engine_method(source_backend, "saturation")
             if saturation_method is not None:
                 product = engine.one()
                 for generator in generators:
@@ -252,8 +258,9 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             r"""Return whether an ambient ring element lies in this ideal."""
             ring = self.ring()
             value = ring(element)
-            if hasattr(ring, "localization_fraction_data") and hasattr(
-                self, "_preamble_localization_source_ideal"
+            if (
+                ring in LocalizationRings()
+                and self.__dict__.get("_preamble_localization_source_ideal") is not None
             ):
                 numerator, _denominator = ring.localization_fraction_data(value)
                 contracted = self.contraction_from_localization()
@@ -304,15 +311,19 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             return self._engine_ideal().syzygy_module()
 
         def primary_decomposition(self):
-            method = getattr(self._engine_ideal(), "primary_decomposition", None)
-            if method is None:
-                raise NotImplementedError("this ideal backend has no primary decomposition")
+            method = _engine_ideal_method(
+                self,
+                "primary_decomposition",
+                "this ideal backend has no primary decomposition",
+            )
             return tuple(_from_engine_ideal(self.ring(), ideal) for ideal in method())
 
         def associated_primes(self):
-            method = getattr(self._engine_ideal(), "associated_primes", None)
-            if method is None:
-                raise NotImplementedError("this ideal backend has no associated-prime computation")
+            method = _engine_ideal_method(
+                self,
+                "associated_primes",
+                "this ideal backend has no associated-prime computation",
+            )
             return tuple(_from_engine_ideal(self.ring(), ideal) for ideal in method())
 
         def _repr_(self):
@@ -323,6 +334,19 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
 def _require_same_ring(left, right):
     if left.ring() is not right.ring():
         raise ValueError("ideal arithmetic requires one ambient ring")
+
+
+def _optional_engine_method(engine, name):
+    r"""Return one optional operation of a private computational realization."""
+    return getattr(engine, name, None)
+
+
+def _engine_ideal_method(ideal, name, unavailable_message):
+    r"""Resolve an optional ideal-engine operation only at the private boundary."""
+    method = _optional_engine_method(ideal._engine_ideal(), name)
+    if method is None:
+        raise NotImplementedError(unavailable_message)
+    return method
 
 
 def _relation_element(free_module, row):

@@ -57,6 +57,10 @@ from dzack_research.preamble.tensors.tensor import (
 class FractionalIdeals(OwnedCategoryOverBaseRing):
     r"""Fractional ideals of an integral domain, as modules in its fraction field."""
 
+    def an_object(self):
+        r"""The ideal (2), a fractional ideal of the base ring."""
+        return self.base_ring().ideal(2)
+
     @classmethod
     def _repr_object_names(cls):
         return "fractional ideals"
@@ -246,6 +250,10 @@ class FractionalIdeals(OwnedCategoryOverBaseRing):
 
 class Ideals(OwnedCategoryOverBaseRing):
     r"""Integral ideals ``I <= R``."""
+
+    def an_object(self):
+        r"""The ideal (2)."""
+        return self.base_ring().ideal(2)
 
     @classmethod
     def _repr_object_names(cls):
@@ -487,10 +495,7 @@ def _fraction_field_as_module(base_ring):
 
     ring = _owned_ring(base_ring)
     field = ring.fraction_field()
-    scalar_map = SetMorphism(
-        ring.Mor(field),
-        lambda scalar: field(scalar),
-    )
+    scalar_map = OwnedRings().Mor(ring, field)(lambda scalar: field(scalar))
     return restrict_scalars(ring_as_module(field), scalar_map)
 
 

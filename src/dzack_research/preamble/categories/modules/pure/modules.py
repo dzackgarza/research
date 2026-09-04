@@ -334,6 +334,14 @@ class Modules(OwnedCategoryOverBaseRing):
 class LinearHomModules(OwnedCategoryOverBaseRing):
     r"""Represented Hom parents closed under pointwise ``R``-linear operations."""
 
+    def an_object(self):
+        r"""The endomorphisms of the free module of rank one."""
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+        modules = Modules(self.base_ring())
+        free = modules.an_object()
+        return modules.Mor(free, free)
+
     @classmethod
     def _repr_object_names(cls):
         return "linear Hom modules"
@@ -373,6 +381,14 @@ class LinearHomModules(OwnedCategoryOverBaseRing):
 class InternalHomModules(OwnedCategoryOverBaseRing):
     r"""The canonical full enriched Hom modules ``Hom_R(M,N)``."""
 
+    def an_object(self):
+        r"""The endomorphisms of the free module of rank one."""
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+        modules = Modules(self.base_ring())
+        free = modules.an_object()
+        return modules.Mor(free, free)
+
     @classmethod
     def _repr_object_names(cls):
         return "internal Hom modules"
@@ -393,6 +409,10 @@ class InternalHomModules(OwnedCategoryOverBaseRing):
 
 class ModuleSubobjects(OwnedCategoryOverBaseRing):
     r"""Modules carrying a chosen monomorphism into another module."""
+
+    def an_object(self):
+        r"""The ideal (2), a submodule of the base ring."""
+        return self.base_ring().ideal(2)
 
     @classmethod
     def _repr_object_names(cls):
@@ -1701,6 +1721,14 @@ def biproduct_morphism(left_morphism, right_morphism, source=None, target=None):
 class MatrixSpaces(OwnedCategoryOverBaseRing):
     r"""Hom objects between finitely generated framed free ``R``-modules."""
 
+    def an_object(self):
+        r"""The one-by-one matrices over the base ring."""
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+        modules = Modules(self.base_ring())
+        free = modules.an_object()
+        return modules.Mor(free, free)
+
     @classmethod
     def _repr_object_names(cls):
         return "matrix Hom objects"
@@ -2048,6 +2076,14 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
 
 class MatrixEndomorphismSpaces(OwnedCategoryOverBaseRing):
     r"""The matrix realization of ``End_R(F)`` for a finite framed free module ``F``."""
+
+    def an_object(self):
+        r"""The endomorphisms of the free module of rank one."""
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+        modules = Modules(self.base_ring())
+        free = modules.an_object()
+        return modules.Mor(free, free)
 
     @classmethod
     def _repr_object_names(cls):

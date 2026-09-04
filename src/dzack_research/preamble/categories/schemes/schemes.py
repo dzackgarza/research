@@ -580,6 +580,14 @@ class FiniteTypeSchemes(_SchemePropertyCategory):
         def is_finite_type(self):
             return True
 
+    def an_object(self):
+        r"""The affine line, of finite type over the base ring."""
+        from dzack_research.preamble.categories.schemes.affine_spec import AffineSpecFunctor
+        from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
+
+        ring = self.base_ring()
+        return AffineSpecFunctor(ring)(CommutativeAlgebras(ring).an_object())
+
 
 class IntegralSchemes(_SchemePropertyCategory):
     property_name = "integral"
@@ -587,6 +595,14 @@ class IntegralSchemes(_SchemePropertyCategory):
     class ParentMethods:
         def is_integral(self):
             return True
+
+    def an_object(self):
+        r"""The affine line, integral because its coordinate algebra is a domain."""
+        from dzack_research.preamble.categories.schemes.affine_spec import AffineSpecFunctor
+        from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
+
+        ring = self.base_ring()
+        return AffineSpecFunctor(ring)(CommutativeAlgebras(ring).an_object())
 
 
 class NormalSchemes(_SchemePropertyCategory):

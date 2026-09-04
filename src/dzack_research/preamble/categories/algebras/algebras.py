@@ -408,6 +408,12 @@ class FramedAlgebras(OwnedCategoryOverBaseRing):
 class MatrixAlgebras(OwnedCategoryOverBaseRing):
     r"""Finite matrix endomorphism Hom objects with their canonical algebra structure."""
 
+    def an_object(self):
+        r"""The two-by-two matrix algebra over the base ring."""
+        from dzack_research.preamble.rings import MatrixSpace
+
+        return MatrixSpace(self.base_ring(), 2)
+
     @classmethod
     def _repr_object_names(cls):
         return "matrix algebras"
