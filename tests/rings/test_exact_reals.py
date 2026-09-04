@@ -39,7 +39,7 @@ def test_transcendental_constants_are_exact_real_elements() -> None:
 def test_nonreal_numbers_are_not_in_rr() -> None:
     assert QQbar(sqrt(2)) in RR
     assert QQbar(-sqrt(2)) in RR
-    assert QQbar.gen() not in RR
+    assert QQbar(sqrt(-1)) not in RR
     assert SR(-1).sqrt() not in RR
 
 

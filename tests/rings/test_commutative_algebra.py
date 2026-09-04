@@ -44,7 +44,7 @@ def test_finite_unit_localization_and_prime_localization_are_distinct() -> None:
     assert rational(1) / 5 not in local_at_five
     assert local_at_five in LocalRings()
     assert int(local_at_five.residue_field().cardinality()) == 5
-    assert tuple(local_at_five.maximal_ideal().gens()) == (local_at_five(5),)
+    assert tuple(local_at_five.maximal_ideal().ideal_generators()) == (local_at_five(5),)
 
 
 def test_polynomial_prime_localization_has_expected_residue_field() -> None:
@@ -94,7 +94,7 @@ def test_formal_power_series_ring_is_complete_local_over_a_field() -> None:
 
     assert power_series in CompleteLocalRings()
     assert power_series.residue_field() is field
-    (uniformizer,) = power_series.maximal_ideal().gens()
+    (uniformizer,) = power_series.maximal_ideal().ideal_generators()
     assert uniformizer == power_series.algebra_generator("t")
 
 
@@ -107,11 +107,11 @@ def test_affine_and_projective_space_point_counts_and_zeta_functions() -> None:
     assert projective_plane.point_counts(3) == (31, 651, 15751)
 
     affine_zeta = affine_plane.zeta_function()
-    T = affine_zeta.parent().gen()
+    (T,) = affine_zeta.parent().algebra_generators()
     assert affine_zeta == 1 / (1 - 25 * T)
 
     projective_zeta = projective_plane.zeta_function()
-    T = projective_zeta.parent().gen()
+    (T,) = projective_zeta.parent().algebra_generators()
     assert projective_zeta == 1 / ((1 - T) * (1 - 5 * T) * (1 - 25 * T))
 
 
@@ -206,7 +206,7 @@ def test_polynomial_ideals_are_module_subobjects_with_singular_arithmetic() -> N
     assert ideal in subobjects
     assert ideal.inclusion().codomain() is ring_as_module(ring)
     assert ideal.inclusion().is_injective()
-    assert tuple(ideal.gens()) == (ring(x**2), ring(x * y))
+    assert tuple(ideal.ideal_generators()) == (ring(x**2), ring(x * y))
 
     def same_ideal(left, right):
         return all(generator in right for generator in left.ideal_generators()) and all(
@@ -375,8 +375,8 @@ def test_module_local_fiber_rank_generic_rank_and_fitting_loci() -> None:
     assert origin.residue_map()(ring(x)) == origin.residue_field().zero()
 
     fitting_zero = module.fitting_ideal(0)
-    assert tuple(fitting_zero.gens()) == (ring(x),)
-    assert tuple(module.annihilator().gens()) == tuple(fitting_zero.gens())
+    assert tuple(fitting_zero.ideal_generators()) == (ring(x),)
+    assert tuple(module.annihilator().ideal_generators()) == tuple(fitting_zero.ideal_generators())
     assert generic not in module.support()
     assert origin in module.support()
     assert generic not in module.annihilator_support()
@@ -428,7 +428,7 @@ def test_module_localization_is_first_class_and_fibers_factor_through_it() -> No
     p5 = ZZ.spectrum()(5)
     torsion_at_two = torsion.localize_at_prime(p2)
     torsion_at_five = torsion.localize_at_prime(p5)
-    assert tuple(torsion.annihilator().gens()) == (ZZ(6),)
+    assert tuple(torsion.annihilator().ideal_generators()) == (ZZ(6),)
     assert torsion_at_two.localization_source_module() is torsion
     assert torsion_at_five.localization_source_module() is torsion
     assert torsion.rank_at(p2) == 1
@@ -531,22 +531,22 @@ def test_ideal_localization_extension_contraction_colon_and_saturation() -> None
     assert extended_integer_ideal.inclusion().is_injective()
     assert 3 in extended_integer_ideal
     assert 1 not in extended_integer_ideal
-    assert tuple(extended_integer_ideal.contraction().gens()) == (ZZ(3),)
+    assert tuple(extended_integer_ideal.contraction().ideal_generators()) == (ZZ(3),)
 
     ring = PolynomialRing(QQ, ("x", "y"))
     x, y = tuple(ring.algebra_generators())
     ideal = ring.ideal(x * y, y**2)
     divisor = ring.ideal(x)
 
-    assert tuple(ideal.colon(divisor).gens()) == (ring(y),)
-    assert tuple(ideal.saturation(divisor).gens()) == (ring(y),)
+    assert tuple(ideal.colon(divisor).ideal_generators()) == (ring(y),)
+    assert tuple(ideal.saturation(divisor).ideal_generators()) == (ring(y),)
 
     localized_ring = ring.localization(x)
     extended = ideal.extension(localized_ring)
     assert extended.inclusion().is_injective()
     assert localized_ring(y) in extended
     assert localized_ring.one() not in extended
-    assert tuple(extended.contraction().gens()) == (ring(y),)
+    assert tuple(extended.contraction().ideal_generators()) == (ring(y),)
 
 
 def test_quotient_localization_comparison_is_an_actual_ring_isomorphism() -> None:
@@ -566,7 +566,7 @@ def test_quotient_localization_comparison_is_an_actual_ring_isomorphism() -> Non
 
     right_half = right(localization(1) / 2)
     assert forward(inverse(right_half)) == right_half
-    assert tuple(comparison.extended_ideal().contraction().gens()) == (ZZ(3),)
+    assert tuple(comparison.extended_ideal().contraction().ideal_generators()) == (ZZ(3),)
 
     ring = PolynomialRing(QQ, ("x", "y"))
     x, y = tuple(ring.algebra_generators())
