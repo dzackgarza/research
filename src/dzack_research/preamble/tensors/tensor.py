@@ -441,10 +441,14 @@ class Tensor:
         r"""Return whether a square two-index tensor is symmetric in its slots."""
         if self.tensor_order() != 2:
             raise TypeError("symmetry here is defined for a two-index tensor")
-        rows, columns = self._index_ranks()
-        if rows != columns:
+        first_rank, second_rank = self._index_ranks()
+        if first_rank != second_rank:
             return False
-        return all(self[i, j] == self[j, i] for i in range(rows) for j in range(columns))
+        return all(
+            self[i, j] == self[j, i]
+            for i in range(first_rank)
+            for j in range(second_rank)
+        )
 
     def contract(self, *vectors):
         r"""Fully contract a purely covariant tensor with contravariant vectors."""
@@ -484,9 +488,9 @@ class Tensor:
         nondegenerate type-``(2,0)`` tensor dualizes to type ``(0,2)``.
         """
         valence = self.tensor_valence()
-        rows, columns = self._index_ranks()
+        first_rank, second_rank = self._index_ranks()
         if valence in {(NN**2)((0, 2)), (NN**2)((2, 0))}:
-            if rows != columns:
+            if first_rank != second_rank:
                 raise ValueError("dualizing a pairing requires equal index ranks")
             inverse = _engine_component_matrix(self).inverse()
             ring = self.base_ring()
@@ -495,8 +499,8 @@ class Tensor:
                 for row in inverse.rows()
             ]
             if valence == (NN**2)((0, 2)):
-                return tensor(ring, (rows, columns), (), components)
-            return tensor(ring, (), (rows, columns), components)
+                return tensor(ring, (first_rank, second_rank), (), components)
+            return tensor(ring, (), (first_rank, second_rank), components)
         raise TypeError("dual_tensor is defined for nondegenerate pairings/copairings")
 
     def pullback(self, morphism):
@@ -694,11 +698,11 @@ class _TensorMatrixConstructor:
                 # result is the type-(1,1) tensor this constructor makes.  The
                 # input's own variance does not survive, which is the whole
                 # content of reading its components as a matrix.
-                rows, columns = components._index_ranks()
+                contravariant_rank, covariant_rank = components._index_ranks()
                 return tensor(
                     base,
-                    (rows,),
-                    (columns,),
+                    (contravariant_rank,),
+                    (covariant_rank,),
                     components.components(),
                 )
             shape = _component_shape(components)

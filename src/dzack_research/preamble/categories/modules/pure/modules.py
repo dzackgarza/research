@@ -1806,9 +1806,11 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
                 )
             if coordinate_tensor.base_ring() is not self.base_ring():
                 raise TypeError("the tensor and matrix Hom must have one base ring")
+            # A type-(1,1) tensor represents a morphism here when its
+            # contravariant index has the codomain's rank and its covariant
+            # index the domain's rank.
             shape = coordinate_tensor.tensor_shape()
-            rows, columns = self.matrix_shape()
-            if shape[0] != rows or shape[1] != columns:
+            if shape[0] != self.nrows() or shape[1] != self.ncols():
                 raise ValueError(
                     f"tensor shape {shape} does not match "
                     f"matrix shape {self.matrix_shape()}"
