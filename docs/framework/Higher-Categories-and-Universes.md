@@ -10,6 +10,7 @@ $$
 p_{\mathcal U}\colon\widetilde{\mathcal U}\longrightarrow\mathcal U.
 $$
 A morphism $q\colon E\to B$ in $\mathcal K$ is *$\mathcal U$-small* if there is an arrow $\chi_q\colon B\to\mathcal U$ and a cartesian square
+
 \begin{tikzcd}
 E
   \arrow[r, "\widetilde\chi_q"]
@@ -24,6 +25,7 @@ B
 &
 \mathcal U.
 \end{tikzcd}
+
 The universe fibration classifies these morphisms: base change induces an equivalence of higher categories
 $$
 [B,\mathcal U]_{\mathcal K}
@@ -33,6 +35,7 @@ $$
 where the right-hand side is the replete full higher subcategory of $\mathcal K_{/B}$ on the $\mathcal U$-small morphisms.
 
 For a point $h_A\colon *\to\mathcal U$, define its decoded object by the cartesian square
+
 \begin{tikzcd}
 A:=\displaystyle\int_*h_A
   \arrow[r, "\widetilde h_A"]
@@ -47,6 +50,7 @@ A:=\displaystyle\int_*h_A
 &
 \mathcal U.
 \end{tikzcd}
+
 Assume that these pullbacks extend to a decoding functor
 $$
 \operatorname{Dec}_{\mathcal U}\colon\mathcal U\longrightarrow\mathcal K,
@@ -62,6 +66,7 @@ $$
 h_{[x,y]_{\mathcal U}}:=[-,-]_{\mathcal U}(x,y)\colon *\longrightarrow\mathcal U.
 $$
 Its external decoding, denoted $[x,y]_{\mathcal U}$, is defined by the cartesian square
+
 \begin{tikzcd}
 {\displaystyle [x,y]_{\mathcal U}:=\int_*h_{[x,y]_{\mathcal U}}}
   \arrow[r, "\widetilde h_{[x,y]_{\mathcal U}}"]
@@ -76,6 +81,7 @@ Its external decoding, denoted $[x,y]_{\mathcal U}$, is defined by the cartesian
 &
 \mathcal U.
 \end{tikzcd}
+
 The size convention, the universe fibration, and the decoding functor are interpreted in the fixed external category $\mathcal K$.
 :::
 
@@ -108,6 +114,7 @@ $$
 $$
 naturally in $b$.
 Explicitly, an $\mathcal M$-family $G\colon c\to b$ corresponds to a classifying $1$-cell $F\colon b\to b_{\mathcal M}$ and a cartesian square in $\mathcal U$
+
 \begin{tikzcd}
 c
   \arrow[r, "\widetilde F"]
@@ -122,6 +129,7 @@ b
 &
 b_{\mathcal M}.
 \end{tikzcd}
+
 The representing equivalence includes arrows and all higher cells between families, not only the existence of $F$.
 :::
 
@@ -153,6 +161,7 @@ $$
 :=\operatorname{Dec}_{\mathcal U}(e_{\mathcal M_{\mathrm{cocart}}}).
 $$
 These decodings are exhibited by the cartesian squares
+
 \begin{tikzcd}
 \mathbf{Cat}_{\infty,\infty}
   \arrow[r, "\widetilde h_{\mathbf{Cat}_{\infty,\infty}}"]
@@ -167,7 +176,9 @@ These decodings are exhibited by the cartesian squares
 &
 \mathcal U
 \end{tikzcd}
+
 and
+
 \begin{tikzcd}
 \widetilde{\mathbf{Cat}}_{\infty,\infty}
   \arrow[r, "\widetilde h_{\widetilde{\mathbf{Cat}}_{\infty,\infty}}"]
@@ -182,6 +193,7 @@ and
 &
 \mathcal U.
 \end{tikzcd}
+
 Decode the universal classifier to obtain
 $$
 p_{\mathcal V}
@@ -199,6 +211,7 @@ $$
 h_C\colon *\longrightarrow\mathbf{Cat}_{\infty,\infty}.
 $$
 Its decoded higher category is defined by the cartesian square
+
 \begin{tikzcd}
 C:=\displaystyle\int_*h_C
   \arrow[r, "\widetilde h_C"]
@@ -213,6 +226,7 @@ C:=\displaystyle\int_*h_C
 &
 \mathbf{Cat}_{\infty,\infty}.
 \end{tikzcd}
+
 An object of $C$ is a point $x\colon *\to C$.
 When $C=\mathbf{Cat}_{\infty,\infty}$, such a point is itself the classifying point of a higher category, which is decoded by the same pullback.
 More generally, a functor $R\colon C\to\mathbf{Cat}_{\infty,\infty}$ sends a point $x\colon *\to C$ to the classifying point $R\circ x$ of a higher category.
@@ -239,6 +253,7 @@ F^{\sharp}:=\operatorname{Dec}_{\mathcal U}(F)
 \colon B\longrightarrow\mathbf{Cat}_{\infty,\infty}.
 $$
 Define its category of elements by the cartesian square
+
 \begin{tikzcd}
 \displaystyle\int_BF^{\sharp}
   \arrow[r, "\widetilde F^{\sharp}"]
@@ -253,6 +268,7 @@ B
 &
 \mathbf{Cat}_{\infty,\infty}.
 \end{tikzcd}
+
 Decoding the classifier square identifies $G^{\sharp}$ with $q_{F^{\sharp}}$ over $B$, and hence identifies
 $$
 C\simeq_B\int_BF^{\sharp}.
@@ -412,6 +428,7 @@ $$
 \Omega_xX:=*\times_X*.
 $$
 For a higher category $A$, define its suspension by the pushout
+
 \begin{tikzcd}
 A
   \arrow[r]
@@ -426,6 +443,7 @@ A
 &
 \Sigma A.
 \end{tikzcd}
+
 The two coprojections $*\to\Sigma A$ make $\Sigma A$ bipointed.
 :::
 
@@ -453,6 +471,7 @@ $$
 B_{01}\dashv\Omega_{01}.
 $$
 For a higher category $A=\int_*h_A$, the bipointed higher category $B_{01}A$ has distinguished objects $0,1$ and hom-objects displayed by
+
 \begin{tikzcd}[column sep=huge]
 0
   \arrow[r, bend left=18, "A"]
@@ -462,6 +481,7 @@ For a higher category $A=\int_*h_A$, the bipointed higher category $B_{01}A$ has
   \arrow[l, bend left=18, "\varnothing"]
   \arrow[loop right, "*"] .
 \end{tikzcd}
+
 Composition is given by the identity actions on $A$ and the unique morphisms from $\varnothing$.
 The suspension $\Sigma A$ is the pushout in @def-bicomplete-cat-infinity. The object $B_{01}A$ is characterized by the adjunction $B_{01}\dashv\Omega_{01}$.
 :::
@@ -504,6 +524,7 @@ $$
 C\times C.
 $$
 For points $x,y\colon*\to C$, the local hom-object $[x,y]_C$ is the cartesian fiber
+
 \begin{tikzcd}
 {[x,y]_C}
   \arrow[r]
@@ -518,6 +539,7 @@ For points $x,y\colon*\to C$, the local hom-object $[x,y]_C$ is the cartesian fi
 &
 C\times C.
 \end{tikzcd}
+
 Its underlying mapping type is
 $$
 \operatorname{Map}_C(x,y):=\Pi_\infty[x,y]_C.
@@ -617,6 +639,7 @@ $$
 \mathbf{Cat}_{\infty,\infty}.
 $$
 An *$n$-category structure* on a higher category $C=\int_*h_C$ is a lift
+
 \begin{tikzcd}
 &
 \mathbf{Cat}_n
@@ -628,6 +651,7 @@ An *$n$-category structure* on a higher category $C=\int_*h_C$ is a lift
 &
 \mathbf{Cat}_{\infty,\infty}
 \end{tikzcd}
+
 together with a specified equivalence $\iota_n\circ\widetilde h_C\simeq h_C$.
 
 For $n\geq0$, a second construction begins with the full replete subcategory
