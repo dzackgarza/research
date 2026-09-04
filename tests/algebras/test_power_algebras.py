@@ -36,7 +36,9 @@ def test_exterior_algebra_of_a_presented_module_imposes_linear_relations_and_wed
     assert y * y == algebra.zero()
     assert x * y == -(y * x)
     assert 4 * (x * y) == algebra.zero()
-    assert tuple(algebra.graded_piece(2).invariant_factors()) == (4,)
+    _factors = algebra.graded_piece(2).invariant_factors()
+    assert _factors.cardinality() == 1
+    assert _factors[0] == 4
     degree_one_label = next(
         label
         for label in algebra.module_generating_set()

@@ -140,11 +140,17 @@ def test_elementary_two_adic_u_k_and_v_one_examples() -> None:
     for exponent in (1, 2, 3):
         scale = 2**exponent
         u_k = Lattices(ZZ)([[0, scale], [scale, 0]]).discriminant_quadratic_form()
-        assert tuple(u_k.invariant_factors()) == (scale, scale)
+        _factors = u_k.invariant_factors()
+        assert _factors.cardinality() == 2
+        assert _factors[0] == scale
+        assert _factors[1] == scale
         assert u_k.brown_invariant() == 0
         assert not u_k.is_anisotropic()
 
     v_one = Lattices(ZZ)("D4").discriminant_quadratic_form()
-    assert tuple(v_one.invariant_factors()) == (2, 2)
+    _factors = v_one.invariant_factors()
+    assert _factors.cardinality() == 2
+    assert _factors[0] == 2
+    assert _factors[1] == 2
     assert v_one.brown_invariant() == 4
     assert v_one.is_anisotropic()

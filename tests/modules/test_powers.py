@@ -42,11 +42,22 @@ def test_degree_powers_have_the_expected_free_ranks_and_use_canonical_tensor_pro
 def test_integral_divided_powers_distinguish_gamma_from_symmetric_powers() -> None:
     module = FinitelyPresentedTorsionModules(ZZ).direct_sum_of_cyclics((2,))
 
-    assert tuple(TensorPower(module, 3).invariant_factors()) == (2,)
-    assert tuple(SymmetricPower(module, 3).invariant_factors()) == (2,)
-    assert tuple(DividedPower(module, 2).invariant_factors()) == (4,)
-    assert tuple(DividedPower(module, 3).invariant_factors()) == (2,)
-    assert tuple(DividedPower(module, 4).invariant_factors()) == (8,)
+    _factors = TensorPower(module, 3).invariant_factors()
+    assert _factors.cardinality() == 1
+    assert _factors[0] == 2
+
+    _factors = SymmetricPower(module, 3).invariant_factors()
+    assert _factors.cardinality() == 1
+    assert _factors[0] == 2
+    _factors = DividedPower(module, 2).invariant_factors()
+    assert _factors.cardinality() == 1
+    assert _factors[0] == 4
+    _factors = DividedPower(module, 3).invariant_factors()
+    assert _factors.cardinality() == 1
+    assert _factors[0] == 2
+    _factors = DividedPower(module, 4).invariant_factors()
+    assert _factors.cardinality() == 1
+    assert _factors[0] == 8
 
 
 def test_divided_power_inclusion_and_polarization_are_norm_and_orbit_sum() -> None:

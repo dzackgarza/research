@@ -37,21 +37,26 @@ def _specimens():
     }
 
 
-@pytest.mark.parametrize("description", sorted(_specimens()))
+# The specimen names, in the order the dict declares them; pytest iterates any
+# iterable, so no Python container has to be built to parametrize over them.
+_SPECIMEN_NAMES = _specimens()
+
+
+@pytest.mark.parametrize("description", _SPECIMEN_NAMES)
 def test_an_objects_mor_is_a_category(description) -> None:
     obj = _specimens()[description]
 
     assert obj.Mor(obj) in Cat()
 
 
-@pytest.mark.parametrize("description", sorted(_specimens()))
+@pytest.mark.parametrize("description", _SPECIMEN_NAMES)
 def test_an_objects_mor_is_interned(description) -> None:
     obj = _specimens()[description]
 
     assert obj.Mor(obj) is obj.Mor(obj)
 
 
-@pytest.mark.parametrize("description", sorted(_specimens()))
+@pytest.mark.parametrize("description", _SPECIMEN_NAMES)
 def test_the_identity_belongs_to_that_one_mor(description) -> None:
     obj = _specimens()[description]
     endomorphisms = obj.Mor(obj)
@@ -59,7 +64,7 @@ def test_the_identity_belongs_to_that_one_mor(description) -> None:
     assert endomorphisms.identity().parent() is endomorphisms
 
 
-@pytest.mark.parametrize("description", sorted(_specimens()))
+@pytest.mark.parametrize("description", _SPECIMEN_NAMES)
 def test_the_identity_is_a_two_sided_unit_its_own_hom_can_confirm(description) -> None:
     r"""``id . id = id``.
 
