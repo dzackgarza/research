@@ -67,18 +67,17 @@ class SchemeMorphism(Morphism):
     def __mul__(self, other):
         if other.codomain() is not self.domain():
             return NotImplemented
+        if isinstance(other, SchemeMorphism):
+            left_pullback = getattr(self, "_preamble_coordinate_algebra_morphism", None)
+            right_pullback = getattr(other, "_preamble_coordinate_algebra_morphism", None)
+            if left_pullback is not None and right_pullback is not None:
+                return affine_spec_morphism(right_pullback * left_pullback)
         other_native = (
             other.native_morphism()
             if isinstance(other, SchemeMorphism)
             else other
         )
-        result = categorical_scheme_morphism(self.native_morphism() * other_native)
-        if isinstance(other, SchemeMorphism):
-            left_pullback = getattr(self, "_preamble_coordinate_algebra_morphism", None)
-            right_pullback = getattr(other, "_preamble_coordinate_algebra_morphism", None)
-            if left_pullback is not None and right_pullback is not None:
-                result._preamble_coordinate_algebra_morphism = right_pullback * left_pullback
-        return result
+        return categorical_scheme_morphism(self.native_morphism() * other_native)
 
     def compose(self, before):
         result = self * before
