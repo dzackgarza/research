@@ -26,6 +26,7 @@ def test_cat_reifies_live_functors_and_functor_categories_have_natural_transform
     functor_category = cat.Hom(source, target)
     functor_object = functor_category(functor)
     identity_transformation = functor_category.identity(functor_object)
+    assert source.objects().index_set() is source.object_set()
     for index in source.objects():
         component = identity_transformation.component(index)
         image = functor(index)

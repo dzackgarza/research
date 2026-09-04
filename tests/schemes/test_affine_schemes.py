@@ -84,7 +84,7 @@ def test_scheme_point_is_a_morphism_from_an_owned_residue_field_scheme() -> None
 
 def test_equation_defined_closed_subscheme_has_live_inclusion_and_codimension() -> None:
     affine = AffineSpace(2, QQ)
-    x, _y = tuple(affine.coordinate_ring().algebra_generators())
+    x, _y = affine.coordinate_ring().algebra_generators()
     divisor = affine.closed_subscheme(x)
 
     assert divisor in Schemes(QQ)

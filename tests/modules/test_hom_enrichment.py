@@ -89,7 +89,7 @@ def test_general_presented_kernel_uses_polynomial_syzygies_and_has_exact_lift() 
 
     kernel = morphism.kernel()
     inclusion = kernel.inclusion()
-    source_labels = tuple(source.module_generating_set())
+    source_labels = source.module_generating_set()
     kernel_images = {
         tuple(
             module_coefficients(inclusion(generator), source).get(label, algebra.zero())

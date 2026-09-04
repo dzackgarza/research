@@ -36,20 +36,20 @@ def test_named_embedding_chain_is_form_preserving_and_injective() -> None:
 
 
 def test_tco_generator_maps_diagonally_into_the_first_hyperbolic_plane() -> None:
-    source = tuple(NamedLattices.Tco.module_generators())
-    target = tuple(NamedLattices.TEn.module_generators())
+    source = NamedLattices.Tco.module_generators()
+    target = NamedLattices.TEn.module_generators()
     assert Embeddings.TCo_into_TEn(source[0]) == target[0] + target[1]
 
 
 def test_e8_2_maps_diagonally_into_the_two_e8_blocks_of_tdp() -> None:
-    source = tuple(NamedLattices.TEn.module_generators())
-    target = tuple(NamedLattices.TdP.module_generators())
+    source = NamedLattices.TEn.module_generators()
+    target = NamedLattices.TdP.module_generators()
     for index in range(8):
         assert Embeddings.TEn_into_TdP(source[4 + index]) == target[4 + index] + target[12 + index]
 
 
 def test_named_k3_automorphisms_are_nontrivial_involutions() -> None:
-    generators = tuple(NamedLattices.LK3.module_generators())
+    generators = NamedLattices.LK3.module_generators()
     for involution in (Involutions.I_dP, Involutions.I_En, Involutions.I_Nik):
         assert all(involution(involution(generator)).to_tuple() == generator.to_tuple() for generator in generators)
         assert any(involution(generator).to_tuple() != generator.to_tuple() for generator in generators)
@@ -82,9 +82,7 @@ def test_named_invariant_and_formed_coinvariant_lattices_are_exact() -> None:
         ):
             assert actual.gram_tensor().is_equal_tensor(expected.gram_tensor())
             witness = actual.Isom(expected).an_element()
-            from dzack_research.preamble.tensors import tensor
-
-            assert expected.gram_tensor().pullback(tensor.from_morphism(witness)).is_equal_tensor(
+            assert expected.gram_tensor().pullback(witness).is_equal_tensor(
                 actual.gram_tensor()
             )
 
@@ -109,7 +107,13 @@ def test_signature_block_search_enumerates_multisets_not_subsets() -> None:
 def test_indecomposable_registry_names_the_live_direct_sum_factors() -> None:
     lattice = NamedLattices.A1 + Lattices(ZZ)("A2") + NamedLattices.U_2
     assert lattice.is_decomposable()
-    assert lattice.decomposition().summands() == lattice.biproduct_factors()
+    summands = lattice.decomposition().summands()
+    factors = lattice.biproduct_factors()
+    assert summands.cardinality() == factors.cardinality()
+    assert all(
+        summands.unrank(position) is factors.unrank(position)
+        for position in range(int(summands.cardinality()))
+    )
     assert lattice.decomposition_names() == ("I_{0,1}(2)", "A_{2}", "U(2)")
 
 

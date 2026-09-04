@@ -18,7 +18,7 @@ def test_a2_discriminant_form_is_anisotropic_and_not_metabolic() -> None:
 def test_a1_four_has_diagonal_lagrangian_and_primary_component() -> None:
     a1 = Lattices(ZZ)("A1")
     discriminant = (a1 + a1 + a1 + a1).discriminant_module()
-    generators = tuple(discriminant.smith_form_module_generators())
+    generators = discriminant.smith_form_module_generators()
     diagonal = sum(generators, discriminant.zero())
     subgroup = discriminant.subgroup_on((diagonal,))
 
@@ -44,7 +44,7 @@ def test_orthogonal_quotient_and_overlattice_are_the_nikulin_pair() -> None:
     a1 = Lattices(ZZ)("A1")
     lattice = a1 + a1 + a1 + a1
     discriminant = lattice.discriminant_quadratic_form()
-    generators = tuple(discriminant.smith_form_module_generators())
+    generators = discriminant.smith_form_module_generators()
     diagonal = sum(generators, discriminant.zero())
     subgroup = discriminant.subgroup_on((diagonal,))
 
@@ -65,7 +65,7 @@ def test_local_modification_is_exactly_p_primary_isotropic_glue() -> None:
     lattice = a1 + a1 + a1 + a1
     discriminant = lattice.discriminant_quadratic_form()
     diagonal = sum(
-        tuple(discriminant.smith_form_module_generators()),
+        discriminant.smith_form_module_generators(),
         discriminant.zero(),
     )
 
@@ -84,7 +84,7 @@ def test_local_modification_is_exactly_p_primary_isotropic_glue() -> None:
 
 def test_nonisotropic_glue_is_rejected_before_overlattice_construction() -> None:
     discriminant = Lattices(ZZ)("A1").discriminant_quadratic_form()
-    generator = tuple(discriminant.smith_form_module_generators())[0]
+    generator = discriminant.smith_form_module_generators().unrank(0)
     subgroup = discriminant.subgroup_on((generator,))
 
     assert not subgroup.is_isotropic()
@@ -99,7 +99,7 @@ def test_nonisotropic_glue_is_rejected_before_overlattice_construction() -> None
 def test_discriminant_pairing_identifies_the_group_with_its_pontryagin_dual() -> None:
     discriminant = Lattices(ZZ)("A2").discriminant_bilinear_form()
     identification = discriminant.pontryagin_dual_identification()
-    generators = tuple(discriminant.module_generators())
+    generators = discriminant.module_generators()
 
     character_values = set()
     for element in discriminant.elements():

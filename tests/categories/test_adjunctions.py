@@ -150,14 +150,14 @@ def test_scalar_extension_restriction_adjunction_over_a_quadratic_order_satisfie
         }
     )
     left, right = adjunction.unit_transformation().naturality_square(source_map)
-    _assert_maps_agree(left, right, tuple(source.module_generators()))
+    _assert_maps_agree(left, right, source.module_generators())
 
     second_target = BasedFreeModule(order, finite_ordered_set(("q",)))
     target_map = module_homset(target, second_target)(
         {"p": order(3) * second_target.module_generator("q")}
     )
     left, right = adjunction.counit_transformation().naturality_square(target_map)
-    _assert_maps_agree(left, right, tuple(left.domain().module_generators()))
+    _assert_maps_agree(left, right, left.domain().module_generators())
 
     first_triangle = restriction(adjunction.counit(target)) * adjunction.unit(
         restricted_target
@@ -208,7 +208,7 @@ def test_trivial_action_is_left_adjoint_to_invariants_using_equivariant_homsets(
     left, right = adjunction.unit_transformation().naturality_square(
         source_endomorphism
     )
-    _assert_maps_agree(left, right, tuple(source.module_generators()))
+    _assert_maps_agree(left, right, source.module_generators())
 
     acted_endomorphism = group_module_homset(acted, acted)(
         {"e": 2 * e, "f": 2 * f}
@@ -216,7 +216,7 @@ def test_trivial_action_is_left_adjoint_to_invariants_using_equivariant_homsets(
     left, right = adjunction.counit_transformation().naturality_square(
         acted_endomorphism
     )
-    _assert_maps_agree(left, right, tuple(left.domain().module_generators()))
+    _assert_maps_agree(left, right, left.domain().module_generators())
 
     first_triangle = adjunction.right_adjoint()(adjunction.counit(acted)) * adjunction.unit(
         invariants
@@ -262,7 +262,7 @@ def test_coinvariants_are_left_adjoint_to_the_trivial_action() -> None:
     left, right = adjunction.unit_transformation().naturality_square(
         acted_endomorphism
     )
-    _assert_maps_agree(left, right, tuple(acted.module_generators()))
+    _assert_maps_agree(left, right, acted.module_generators())
 
     target_endomorphism = module_homset(target, target)(
         {"n": 3 * target.module_generator("n")}
@@ -270,7 +270,7 @@ def test_coinvariants_are_left_adjoint_to_the_trivial_action() -> None:
     left, right = adjunction.counit_transformation().naturality_square(
         target_endomorphism
     )
-    _assert_maps_agree(left, right, tuple(left.domain().module_generators()))
+    _assert_maps_agree(left, right, left.domain().module_generators())
 
     trivial_target = adjunction.right_adjoint()(target)
     first_triangle = adjunction.right_adjoint()(adjunction.counit(target)) * adjunction.unit(
@@ -340,11 +340,11 @@ def test_abelianization_is_left_adjoint_to_the_inclusion_of_abelian_groups() -> 
     assert abelianization.is_abelian()
 
     unit = adjunction.unit(group)
-    group_generators = tuple(group.group_generators())
+    group_generators = group.group_generators()
     assert unit(group_generators[0]) == abelianization.one()
     assert unit(group_generators[1]) != abelianization.one()
 
-    target_generator = tuple(target.group_generators())[0]
+    target_generator = target.group_generators().unrank(0)
     from dzack_research.preamble.categories.group import group_homset
 
     sign_to_six = group_homset(group, target)(
@@ -446,7 +446,7 @@ def test_scalar_extension_restriction_lifts_to_group_modules_with_equivariance_a
     left, right = adjunction.unit_transformation().naturality_square(
         source_endomorphism
     )
-    _assert_maps_agree(left, right, tuple(acted.module_generators()))
+    _assert_maps_agree(left, right, acted.module_generators())
 
     target_endomorphism = group_module_homset(extended, extended)(
         {
@@ -457,7 +457,7 @@ def test_scalar_extension_restriction_lifts_to_group_modules_with_equivariance_a
     left, right = adjunction.counit_transformation().naturality_square(
         target_endomorphism
     )
-    _assert_maps_agree(left, right, tuple(left.domain().module_generators()))
+    _assert_maps_agree(left, right, left.domain().module_generators())
 
     first_triangle = restriction(adjunction.counit(extended)) * adjunction.unit(
         restricted

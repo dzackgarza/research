@@ -60,7 +60,7 @@ def test_c3_integral_characters_are_grouped_into_rational_orbits() -> None:
 def test_group_lattice_invariants_and_formed_coinvariants_keep_the_form() -> None:
     group = Groups.C(2)
     lattice = Lattices(ZZ)("U")
-    labels = tuple(lattice.module_generating_set())
+    labels = lattice.module_generating_set()
     x, y = lattice.module_generators()
     swap = lattice.Aut()({labels[0]: y, labels[1]: x})
 

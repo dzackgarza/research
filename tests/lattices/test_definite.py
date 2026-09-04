@@ -220,7 +220,7 @@ def test_definite_target_embedding_homset_enumerates_all_a1_into_a2_roots() -> N
     source = Lattices(ZZ)("A1")
     target = Lattices(ZZ)("A2")
     homset = source.Emb(target)
-    embeddings = tuple(homset)
+    embeddings = homset
 
     assert homset.cardinality() == 6
     source_generator = source.module_generators()[0]
@@ -346,7 +346,7 @@ def test_discriminant_inclusion_is_extension_by_zero_for_an_orthogonal_summand()
     summand = Lattices(ZZ)("A1")
     complement = Lattices(ZZ)("A2")
     ambient = summand + complement
-    ambient_generators = tuple(ambient.module_generators())
+    ambient_generators = ambient.module_generators()
     inclusion = summand.Emb(ambient)((ambient_generators[0],))
     discriminant_inclusion = inclusion.discriminant_inclusion()
 
@@ -387,7 +387,7 @@ def test_discriminant_inclusion_forgets_quadratic_refinement_in_an_odd_ambient()
 
 def test_primitive_complement_glue_map_is_the_discriminant_anti_isometry() -> None:
     ambient = Lattices(ZZ)("U")
-    e, f = tuple(ambient.module_generators())
+    e, f = ambient.module_generators()
     first = ambient.subobject_on((e + f,))
     second = ambient.subobject_on((e - f,))
     glue = ambient.glue_map(first, second)
@@ -408,7 +408,7 @@ def test_primitive_extension_with_no_glue_returns_the_zero_anti_isometry() -> No
     left = Lattices(ZZ)("A1")
     right = Lattices(ZZ)("A2")
     ambient = left + right
-    generators = tuple(ambient.module_generators())
+    generators = ambient.module_generators()
     first = ambient.subobject_on((generators[0],))
     second = ambient.subobject_on(generators[1:])
     glue = ambient.glue_map(first, second)
@@ -431,7 +431,7 @@ def test_cyclic_subgroup_is_the_literal_subgroup_generated_by_a_live_isometry() 
     assert subgroup.is_finite() is True
     assert subgroup.order() >= ZZ(2)
     assert lattice.Aut().order() % subgroup.order() == 0
-    elements = tuple(subgroup)
+    elements = subgroup
     assert len(elements) == subgroup.order()
     assert subgroup.one() in subgroup
     assert generator in subgroup
@@ -440,7 +440,7 @@ def test_cyclic_subgroup_is_the_literal_subgroup_generated_by_a_live_isometry() 
 
 def test_cyclic_subgroup_does_not_assume_an_indefinite_isometry_has_finite_order() -> None:
     lattice = Lattices(ZZ)([[1, 0], [0, -2]])
-    e, f = tuple(lattice.module_generators())
+    e, f = lattice.module_generators()
     isometry = lattice.Aut()((3 * e + 2 * f, 4 * e + 3 * f))
     subgroup = isometry.cyclic_subgroup()
 
@@ -457,7 +457,7 @@ def test_indefinite_polyhedral_wrapper_crossings_are_live_tensor_morphisms(monke
     from py_polyhedral import binaries as polyhedral
 
     lattice = Lattices(ZZ)([[1, 0], [0, -2]])
-    e, f = tuple(lattice.module_generators())
+    e, f = lattice.module_generators()
 
     # py_polyhedral/polyhedral_common uses right action on coordinate rows.
     # This is the transpose of the live column-action matrix sending
@@ -487,7 +487,7 @@ def test_indefinite_polyhedral_wrapper_crossings_are_live_tensor_morphisms(monke
     )
 
     group = lattice.O()
-    generator = tuple(group.group_generators())[0]
+    generator = group.group_generators().unrank(0)
     assert generator(e) == 3 * e + 2 * f
     assert generator(f) == 4 * e + 3 * f
 
@@ -602,7 +602,7 @@ def test_isotropic_line_plane_flag_orbits_equivalence_and_stabilizers_are_live_s
 
 def test_finite_character_quotient_splits_vector_orbits_under_special_orthogonal_group() -> None:
     lattice = Lattices(ZZ)("A1")
-    root = tuple(lattice.module_generators())[0]
+    root = lattice.module_generators().unrank(0)
     special = lattice.SO()
 
     representatives = special.vector_orbit_representatives(-2)
@@ -658,7 +658,7 @@ def test_finite_character_quotient_splits_isotropic_line_orbit_under_so_u(monkey
 
 def test_positive_cone_character_and_real_spinor_norm_are_independent_computations() -> None:
     lattice = Lattices(ZZ)("U")
-    e, f = tuple(lattice.module_generators())
+    e, f = lattice.module_generators()
     positive_reflection = lattice.reflection(e + f)
     negative_reflection = lattice.reflection(e - f)
 
@@ -686,7 +686,7 @@ def test_centralizer_discriminant_image_matches_finite_a2_centralizer(monkeypatc
         lambda _gram, _isometry: ((tensor.matrix(ZZ, [[2]]),), ZZ(2), ZZ(1), ZZ(1)),
     )
     lattice = Lattices(ZZ)("A2")
-    e, _f = tuple(lattice.module_generators())
+    e, _f = lattice.module_generators()
     isometry = lattice.reflection(e)
     image = isometry.centralizer_discriminant_image()
 
@@ -732,7 +732,7 @@ def test_definite_vector_orbit_equivalence_stabilizer_and_representatives() -> N
 
 def test_vector_primitive_extension_recovers_index_two_glue_in_u() -> None:
     lattice = Lattices(ZZ)("U")
-    e, f = tuple(lattice.module_generators())
+    e, f = lattice.module_generators()
     extension = lattice.vector_primitive_extension(e + f)
 
     assert extension.vector.q() == 2
@@ -748,7 +748,7 @@ def test_vector_primitive_extension_recovers_index_two_glue_in_u() -> None:
 
 def test_vector_primitive_extension_tracks_nontrivial_ambient_discriminant() -> None:
     lattice = Lattices(ZZ)([[0, 2], [2, 0]])
-    e, f = tuple(lattice.module_generators())
+    e, f = lattice.module_generators()
     extension = lattice.vector_primitive_extension(e + f)
 
     assert extension.index == 2
@@ -767,7 +767,7 @@ def test_vector_primitive_extension_tracks_nontrivial_ambient_discriminant() -> 
 
 def test_definite_complement_extensions_exhaust_the_u_vector_cosets() -> None:
     lattice = Lattices(ZZ)("U")
-    e, f = tuple(lattice.module_generators())
+    e, f = lattice.module_generators()
     vector = e + f
 
     stabilizer = lattice.definite_complement_extensions(vector, vector)

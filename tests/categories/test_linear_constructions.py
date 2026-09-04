@@ -206,8 +206,8 @@ def test_kernel_and_cokernel_are_functorial_on_commutative_module_squares() -> N
 def test_orthogonal_direct_sum_is_a_bifunctor_on_lattice_morphisms() -> None:
     left = Lattices(ZZ)("A1")
     right = Lattices(ZZ)("A2")
-    left_label = tuple(left.module_generating_set())[0]
-    right_labels = tuple(right.module_generating_set())
+    left_label = left.module_generating_set().unrank(0)
+    right_labels = right.module_generating_set()
     left_negation = left.Isom(left)(
         {left_label: -left.module_generator(left_label)}
     )
@@ -220,7 +220,7 @@ def test_orthogonal_direct_sum_is_a_bifunctor_on_lattice_morphisms() -> None:
     orthogonal_sum = OrthogonalDirectSumBifunctor(ZZ)
     summed = orthogonal_sum(left, right)
     image = orthogonal_sum(left_negation, right_identity)
-    source_labels = tuple(summed.module_generating_set())
+    source_labels = summed.module_generating_set()
     assert image(summed.module_generator(source_labels[0])) == -summed.module_generator(
         source_labels[0]
     )

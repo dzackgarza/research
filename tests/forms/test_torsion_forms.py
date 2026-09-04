@@ -19,7 +19,7 @@ def _matrix(ring, rows):
 def test_bilinear_torsion_form_descends_from_relations_and_gram() -> None:
     values = FractionFieldQuotient(ZZ, 1)
     form = TorsionBilinearFormModules(ZZ).from_relations_and_gram(_matrix(ZZ, [[2]]), _matrix(QQ, [[QQ(1) / 2]]), values)
-    generator = tuple(form.module_generators())[0]
+    generator = form.module_generators().unrank(0)
 
     assert form.cardinality() == 2
     assert form.value_module() is values
@@ -40,9 +40,9 @@ def test_bilinear_torsion_form_rejects_non_descending_gram() -> None:
 def test_quadratic_torsion_form_and_its_bilinear_polarization() -> None:
     quadratic_values = FractionFieldQuotient(ZZ, 2)
     form = TorsionQuadraticFormModules(ZZ).from_relations_and_gram(_matrix(ZZ, [[2]]), _matrix(QQ, [[QQ(1) / 2]]), quadratic_values)
-    generator = tuple(form.module_generators())[0]
+    generator = form.module_generators().unrank(0)
     bilinear = form.associated_bilinear_form()
-    bilinear_generator = tuple(bilinear.module_generators())[0]
+    bilinear_generator = bilinear.module_generators().unrank(0)
 
     assert form.q(generator) == quadratic_values(QQ(1) / 2)
     assert form.q(2 * generator) == quadratic_values.zero()

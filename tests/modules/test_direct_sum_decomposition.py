@@ -18,6 +18,7 @@ def test_direct_sum_decomposition_is_structure_on_the_existing_biproduct() -> No
     assert equipped is direct_sum
     assert equipped.summand(0) is left
     assert equipped.summand(1) is right
+    assert equipped.summands().index_set() is equipped.summand_index_set()
     assert equipped.number_of_summands() == 2
 
 

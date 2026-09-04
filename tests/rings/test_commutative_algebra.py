@@ -199,7 +199,7 @@ def test_polynomial_ideals_are_module_subobjects_with_singular_arithmetic() -> N
     from dzack_research.preamble.categories.modules import Modules, ring_as_module
 
     ring = PolynomialRing(QQ, ("x", "y"))
-    x, y = tuple(ring.algebra_generators())
+    x, y = ring.algebra_generators()
     ideal = ring.ideal(x**2, x * y)
     other = ring.ideal(y)
 
@@ -535,7 +535,7 @@ def test_ideal_localization_extension_contraction_colon_and_saturation() -> None
     assert extended_integer_ideal.contraction() == ZZ.ideal(ZZ(3))
 
     ring = PolynomialRing(QQ, ("x", "y"))
-    x, y = tuple(ring.algebra_generators())
+    x, y = ring.algebra_generators()
     ideal = ring.ideal(x * y, y**2)
     divisor = ring.ideal(x)
 
@@ -570,7 +570,7 @@ def test_quotient_localization_comparison_is_an_actual_ring_isomorphism() -> Non
     assert comparison.extended_ideal().contraction() == ZZ.ideal(ZZ(3))
 
     ring = PolynomialRing(QQ, ("x", "y"))
-    x, y = tuple(ring.algebra_generators())
+    x, y = ring.algebra_generators()
     polynomial_quotient = ring.quotient_ring(ring.ideal(x * y, y**2))
     polynomial_localization = ring.localization(x)
     polynomial_comparison = polynomial_quotient.localization_comparison(

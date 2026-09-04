@@ -177,7 +177,7 @@ def test_orthogonal_complement_uses_the_image_of_an_arbitrary_morphism() -> None
 
 def test_isotropic_reduction_of_a_line_in_u_plus_u_is_u() -> None:
     lattice = Lattices(ZZ)("U") + Lattices(ZZ)("U")
-    isotropic_vector = tuple(lattice.module_generators())[0]
+    isotropic_vector = lattice.module_generators().unrank(0)
     isotropic_line = lattice.subobject_on((isotropic_vector,))
 
     reduction = isotropic_line.isotropic_reduction()
@@ -377,11 +377,11 @@ def test_swap_involution_on_u_is_an_automorphism_with_rank_one_invariants_and_co
         return plane((right, left))
 
     group_lattice = GroupLattice(plane, group, swap)
-    involution = tuple(group_lattice.group().group_generators())[0]
+    involution = group_lattice.group().group_generators().unrank(0)
 
     action = group_lattice.action_of(involution)
     assert action.parent() is group_lattice.Aut()
-    left, right = tuple(group_lattice.module_generators())
+    left, right = group_lattice.module_generators()
     assert action(left) == right
     assert action(right) == left
     assert group_lattice.is_invariant(group_lattice((1, 1)))

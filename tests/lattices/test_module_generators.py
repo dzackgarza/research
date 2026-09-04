@@ -181,7 +181,8 @@ def test_twist_rescales_the_form_at_every_rank() -> None:
 
     infinite = Lattices(ZZ)(ZZ**NN).twist(2)
     f0, f1 = infinite.module_generator(0), infinite.module_generator(1)
-    support = infinite((1, 0, 0, 1))
+    f3 = infinite.module_generator(3)
+    support = f0 + f3
     assert infinite.rank() == Infinity
     assert f0 * f0 == 2
     assert f0 * f1 == 0
@@ -205,7 +206,8 @@ def test_infinite_rank_form_predicates_and_finite_support_operations() -> None:
 
     infinite = Lattices(ZZ)(ZZ**NN)
     e0 = infinite.module_generator(0)
-    support = infinite((1, 0, 0, 1))
+    e3 = infinite.module_generator(3)
+    support = e0 + e3
 
     assert infinite.is_nondegenerate()
     assert infinite.is_unimodular()
@@ -213,7 +215,7 @@ def test_infinite_rank_form_predicates_and_finite_support_operations() -> None:
     assert e0.div() == 1
     assert support.div() == 1
     assert e0.is_root()
-    assert not infinite((2, 1)).is_root()
+    assert not (2 * e0 + infinite.module_generator(1)).is_root()
     assert infinite.identity_morphism()(e0) == e0
 
     doubled = infinite.twist(2)
@@ -221,7 +223,7 @@ def test_infinite_rank_form_predicates_and_finite_support_operations() -> None:
     assert doubled.is_even()
     assert not doubled.is_unimodular()
     assert doubled.module_generator(0).div() == 2
-    assert not doubled((2, 1)).is_root()
+    assert not (2 * doubled.module_generator(0) + doubled.module_generator(1)).is_root()
 
     plane = Lattices(ZZ)("U")
     assert plane.is_even()
@@ -250,5 +252,5 @@ def test_distinct_sublattices_are_distinct_objects_at_equal_gram() -> None:
     assert first.gram_tensor() == second.gram_tensor()
     assert first is not second
     assert first is ambient.subobject_on((e0,))
-    assert first == first.ambient_module().submodule(Set((e0,)))
-    assert second == second.ambient_module().submodule(Set((e1,)))
+    assert first == first.ambient_module().subobject_on((e0,))
+    assert second == second.ambient_module().subobject_on((e1,))

@@ -52,8 +52,8 @@ def test_algebra_transpose_uses_the_scalar_extension_construction_source() -> No
 def test_abelianization_transpose_uses_the_quotient_projection_on_its_domain() -> None:
     group = Groups.S(3)
     target = Groups.C(6)
-    target_generator = tuple(target.group_generators())[0]
-    group_generators = tuple(group.group_generators())
+    target_generator = target.group_generators().unrank(0)
+    group_generators = group.group_generators()
     group_morphism = group_homset(group, target)(
         {
             group_generators[0]: target.one(),
@@ -107,7 +107,7 @@ def test_free_group_transpose_reads_the_intrinsic_index_set() -> None:
     source = finite_ordered_set((ZZ(11), ZZ(13)))
     free_group = Groups.Free(index_set=source)
     target = Groups.C(3)
-    target_generator = tuple(target.group_generators())[0]
+    target_generator = target.group_generators().unrank(0)
     generator_map = Sets().hom(source, target)(lambda point: target_generator if point == 11 else target_generator**2)
     group_morphism = group_homset(free_group, target)(generator_map)
 

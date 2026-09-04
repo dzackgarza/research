@@ -302,7 +302,7 @@ def test_counit_naturality_and_right_triangle_on_a_nonfree_presented_algebra(
     for label in left.domain().algebra_generating_set():
         probes.append(left.domain().algebra_generator(label))
     probes.append(probes[0] * probes[1] + probes[1] * probes[1])
-    _assert_algebra_maps_agree(left, right, tuple(probes))
+    _assert_algebra_maps_agree(left, right, probes)
 
     # The literal right triangle U(epsilon_A) o eta_{U(A)} = id_{U(A)}.
     underlying = adjunction.right_adjoint()

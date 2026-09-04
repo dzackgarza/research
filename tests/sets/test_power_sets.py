@@ -83,5 +83,5 @@ def test_fixed_and_finite_subsets_have_the_expected_universal_membership() -> No
     assert pair.cardinality() == cardinal(2)
     assert pairs.cardinality() == cardinal(10)
     assert finite_subsets.cardinality() == cardinal(32)
-    assert len(tuple(pairs)) == pairs.cardinality()
+    assert len(pairs) == pairs.cardinality()
     assert Set((1, 4)) in PowerSet(source)

@@ -58,7 +58,7 @@ def test_owned_polynomial_ring_has_owned_selected_algebra_generators() -> None:
     QQ = session["QQ"]
     ring = QQ["x, y"]
 
-    x, y = tuple(ring.algebra_generators())
+    x, y = ring.algebra_generators()
     assert x.parent() is ring
     assert y.parent() is ring
     assert ring.algebra_generating_set() == finite_ordered_set(("x", "y"))
