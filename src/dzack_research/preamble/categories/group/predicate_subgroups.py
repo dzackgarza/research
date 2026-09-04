@@ -9,6 +9,7 @@ from dzack_research.preamble.categories.group.groups import (
     _canonical_subgroup_inclusion,
     _owned_group,
 )
+from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.orthogonal_quotients import (
     OrthogonalCharacterQuotient,
     subgroup_isotropic_are_equivalent,
@@ -38,6 +39,15 @@ class _PredicateSubgroupParent(Parent):
 
 class PredicateSubgroups(OwnedParameterizedCategory):
 
+    def an_object(self):
+        r"""The centralizer of the identity in an object of the parameter category.
+
+        Every element commutes with the identity, so this is the whole group --
+        cut out by a predicate, which is what membership here states.
+        """
+        group = self.base().an_object()
+        return centralizer(group, group.one())
+
     def _repr_object_names(self):
         return "predicate subgroups"
 
@@ -60,6 +70,23 @@ class PredicateSubgroups(OwnedParameterizedCategory):
                 data.get("determinant_kernel", False)
                 or data.get("spinor_kernel", False)
                 or data.get("discriminant_preimages", ())
+            )
+
+        def cardinality(self):
+            supergroup_cardinality = self.supergroup().cardinality()
+            if self.contains_character_kernel():
+                quotient = self.finite_character_quotient()
+                image_size = len(quotient.image_keys())
+                subgroup_image_size = len(quotient.subgroup_image_keys())
+                if supergroup_cardinality.is_finite():
+                    order = int(supergroup_cardinality.finite_value())
+                    return cardinal(order * subgroup_image_size // image_size)
+                if supergroup_cardinality.is_countably_infinite():
+                    return supergroup_cardinality
+            assert False, (
+                "cardinality is defined for every predicate subgroup, but the current "
+                "exact computation requires represented finite-character data over a "
+                "finite or countably infinite supergroup"
             )
 
         def __contains__(self, element):

@@ -20,7 +20,6 @@ from sage.categories.morphism import SetMorphism
 from sage.groups.perm_gps.permgroup_named import SymmetricGroup
 from sage.misc.abstract_method import abstract_method
 from sage.misc.unknown import Unknown
-from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.element import Element
 from sage.structure.parent import Parent
 
@@ -38,8 +37,8 @@ from dzack_research.preamble.categories.group.groups import (
     _owned_group,
     group_homset,
 )
-from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_filter
+from dzack_research.preamble.categories.sets.cardinals import cardinal
 
 
 class GSetHomCategoryConstruction(HomCategoryConstruction):
@@ -48,6 +47,12 @@ class GSetHomCategoryConstruction(HomCategoryConstruction):
 
 
 class GSets(CategoryPacketMethods, OwnedParameterizedCategory):
+    def an_object(self):
+        r"""The three-point set with the trivial action of the group."""
+        from dzack_research.preamble.categories.sets.set_categories import finite_ordinal_set
+
+        return trivial_g_set(finite_ordinal_set(3), self.group())
+
     @staticmethod
     def __classcall__(cls, group):
 
@@ -94,6 +99,12 @@ class GSets(CategoryPacketMethods, OwnedParameterizedCategory):
 
 class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
     r"""The represented finite objects of ``GSets(G)``."""
+
+    def an_object(self):
+        r"""The three-point set with the trivial action of the group."""
+        from dzack_research.preamble.categories.sets.set_categories import finite_ordinal_set
+
+        return trivial_g_set(finite_ordinal_set(3), self.group())
 
     @staticmethod
     def __classcall__(cls, group):
@@ -164,7 +175,7 @@ class FiniteGSet(Parent):
         return self.point_set()(point)
 
     def cardinality(self):
-        return self.point_set().cardinality()
+        return cardinal(self.point_set().cardinality())
 
     def _repr_(self):
         return f"{self.point_set()} with {self.acting_group()}-action"
@@ -392,8 +403,7 @@ class OrbitSet(Parent):
         return isinstance(orbit, OrbitClass) and orbit.parent() is self
 
     def cardinality(self):
-
-        return _own_ring(SageZZ)(self._orbit_classes.cardinality())
+        return self._orbit_classes.cardinality()
 
     def unrank(self, position):
         return self._orbit_classes.unrank(position)

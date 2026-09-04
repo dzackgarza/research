@@ -158,6 +158,62 @@ class Modules(OwnedCategoryOverBaseRing):
     def _categorical_coproduct(self, left, right):
         return self._categorical_biproduct(left, right)
 
+    def _categorical_equalizer(self, left_morphism, right_morphism):
+        r"""Realize an equalizer in ``R-Mod`` as ``ker(left-right)``."""
+        if (
+            left_morphism.domain() not in self
+            or left_morphism.codomain() not in self
+            or left_morphism.domain() is not right_morphism.domain()
+            or left_morphism.codomain() is not right_morphism.codomain()
+        ):
+            raise ValueError("module equalizer arrows must be parallel R-linear maps")
+        return (left_morphism - right_morphism).kernel()
+
+    def _categorical_coequalizer(self, left_morphism, right_morphism):
+        r"""Realize a coequalizer in ``R-Mod`` as ``coker(left-right)``."""
+        if (
+            left_morphism.domain() not in self
+            or left_morphism.codomain() not in self
+            or left_morphism.domain() is not right_morphism.domain()
+            or left_morphism.codomain() is not right_morphism.codomain()
+        ):
+            raise ValueError("module coequalizer arrows must be parallel R-linear maps")
+        return (left_morphism - right_morphism).cokernel()
+
+    def _categorical_equalizer_family(self, morphisms):
+        r"""Realize a finite wide equalizer through kernels/intersections."""
+        size = morphisms.cardinality()
+        if not size.is_finite():
+            raise NotImplementedError(
+                "the represented module wide-equalizer backend requires a finite arrow family"
+            )
+        count = int(size.finite_value())
+        if count == 0:
+            raise ValueError("a wide equalizer family must be nonempty")
+        reference = morphisms.unrank(0)
+        equalizer = self._categorical_equalizer(reference, reference)
+        for position in range(1, count):
+            equalizer = equalizer.intersection(
+                self._categorical_equalizer(morphisms.unrank(position), reference)
+            )
+        return equalizer
+
+    def _categorical_coequalizer_family(self, morphisms):
+        r"""Realize a finite wide coequalizer through images/sums/cokernels."""
+        size = morphisms.cardinality()
+        if not size.is_finite():
+            raise NotImplementedError(
+                "the represented module wide-coequalizer backend requires a finite arrow family"
+            )
+        count = int(size.finite_value())
+        if count == 0:
+            raise ValueError("a wide coequalizer family must be nonempty")
+        reference = morphisms.unrank(0)
+        relations = (reference - reference).image()
+        for position in range(1, count):
+            relations = relations.sum((morphisms.unrank(position) - reference).image())
+        return relations.inclusion().cokernel()
+
     def _categorical_product_morphism(self, left_morphism, right_morphism, source, target):
         return biproduct_morphism(
             left_morphism, right_morphism, source=source, target=target
@@ -256,6 +312,15 @@ class Modules(OwnedCategoryOverBaseRing):
             _ = morphism
             return NotImplemented
 
+        def _represented_annihilator_ideal(self):
+            return NotImplemented
+
+        def _represented_vector_space_dimension(self):
+            return NotImplemented
+
+        def _represented_vector_space_basis_generator_labels(self):
+            return NotImplemented
+
         def _as_module_subobject(self, inclusion):
             if inclusion.domain() is not self:
                 raise ValueError("a subobject inclusion has the wrong domain")
@@ -288,7 +353,13 @@ class Modules(OwnedCategoryOverBaseRing):
             )
 
         def scalar_action(self):
-            return self._ring_morphism_defining_module_action()
+            action = self._ring_morphism_defining_module_action()
+            action._preamble_kernel_ideal_provider = self
+            return action
+
+        def annihilator(self):
+            r"""Return ``Ann_R(M)=ker(R -> End_R(M))``."""
+            return self.scalar_action().kernel()
 
         def scalar_multiple(self, scalar, element):
             r"""Return ``r*m = rho_M(r)(m)``."""
@@ -513,6 +584,25 @@ class VectorSpaces(OwnedCategoryOverBaseRing):
     def super_categories(self):
         return [Modules(self.base_ring())]
 
+    class ParentMethods:
+        def dimension(self):
+            r"""Return the dimension from this vector space's represented backend."""
+            represented = self._represented_vector_space_dimension()
+            if represented is NotImplemented:
+                raise NotImplementedError(
+                    f"the dimension of {self} has no represented vector-space backend"
+                )
+            return represented
+
+        def basis_generator_labels(self):
+            r"""Return selected framing labels whose classes form a basis."""
+            represented = self._represented_vector_space_basis_generator_labels()
+            if represented is NotImplemented:
+                raise NotImplementedError(
+                    f"{self} has no represented basis subfamily of its selected generators"
+                )
+            return represented
+
 
 class FreeModules(OwnedCategoryOverBaseRing):
     r"""Modules admitting a basis."""
@@ -570,39 +660,7 @@ class FinitelyGeneratedModules(OwnedCategoryOverBaseRing):
 
         def fiber_dimension(self, point):
             r"""Return ``dim_{kappa(p)} M(p)`` when the finite fiber is represented."""
-            represented = self._represented_fiber_dimension(point)
-            if represented is not NotImplemented:
-                return represented
-
-            ring = self.base_ring()
-            if self not in ModulesWithChosenFinitePresentation(ring):
-                raise NotImplementedError(
-                    f"the dimension of the fiber of {self} requires selected finite presentation data"
-                )
-
-            from sage.matrix.constructor import matrix
-            from sage.rings.integer_ring import ZZ as SageZZ
-
-            localized = self.localize_at_prime(point)
-            relation_rows = localized._selected_presentation_rows()
-            if relation_rows is None:
-                raise ArithmeticError(
-                    "localization lost the selected finite presentation"
-                )
-            residue = point.residue_field()
-            residue_engine = _engine_ring(residue)
-            residue_map = point.local_ring().residue_map()
-            specialized = matrix(
-                residue_engine,
-                len(relation_rows),
-                int(self.number_of_module_generators()),
-                [
-                    _engine_element(residue, residue_map(coefficient))
-                    for row in relation_rows
-                    for coefficient in row
-                ],
-            )
-            return SageZZ(int(self.number_of_module_generators()) - specialized.rank())
+            return self.fiber(point).dimension()
 
         def rank_at(self, point):
             r"""Return the local fiber rank ``dim_{kappa(p)} M(p)``."""
@@ -622,7 +680,8 @@ class FinitelyGeneratedModules(OwnedCategoryOverBaseRing):
             ring = self.base_ring()
             if ring not in LocalRings():
                 raise TypeError("the residue module is defined here for modules over a local ring")
-            return self.base_change(ring.residue_map())
+            residue = ring.residue_field()
+            return refine(self.base_change(ring.residue_map()), VectorSpaces(residue))
 
         def minimal_number_of_generators(self):
             r"""Return ``dim_k(M/mM)`` for a finite module over a local ring."""
@@ -632,31 +691,7 @@ class FinitelyGeneratedModules(OwnedCategoryOverBaseRing):
                 raise TypeError(
                     "minimal generator counts via Nakayama require a represented local base ring"
                 )
-            if self not in ModulesWithChosenFinitePresentation(ring):
-                raise NotImplementedError(
-                    "minimal generator counts require selected finite presentation data"
-                )
-
-            from sage.matrix.constructor import matrix
-            from sage.rings.integer_ring import ZZ as SageZZ
-
-            relation_rows = self._selected_presentation_rows()
-            if relation_rows is None:
-                raise ArithmeticError("the chosen presentation has no represented relation rows")
-            residue = ring.residue_field()
-            residue_engine = _engine_ring(residue)
-            residue_map = ring.residue_map()
-            specialized = matrix(
-                residue_engine,
-                len(relation_rows),
-                int(self.number_of_module_generators()),
-                [
-                    _engine_element(residue, residue_map(coefficient))
-                    for row in relation_rows
-                    for coefficient in row
-                ],
-            )
-            return SageZZ(int(self.number_of_module_generators()) - specialized.rank())
+            return self.residue_module().dimension()
 
         def generic_rank(self):
             r"""Return ``dim_K(M tensor_R K)`` for an integral-domain base ``R``."""
@@ -794,9 +829,11 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
                 )
             return constructor(labels)
 
-        def _represented_fiber_dimension(self, point):
-            _ = point
+        def _represented_vector_space_dimension(self):
             return self.rank()
+
+        def _represented_vector_space_basis_generator_labels(self):
+            return self.module_generating_set()
 
         def _selected_presentation_rows(self):
             return ()
@@ -932,6 +969,18 @@ class FramedModules(OwnedCategoryOverBaseRing):
 
 class RestrictedScalarsModules(OwnedCategoryOverBaseRing):
     r"""Modules obtained by reading an ``S``-module over ``R`` along ``R -> S``."""
+
+    def an_object(self):
+        r"""``Res_{id}(R^2)``: a free module along the identity of ``R``."""
+        from dzack_research.preamble.categories.modules.framed.framed_free_modules import BasedFreeModule
+        from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
+        from dzack_research.preamble.categories.sets.set_categories import finite_ordinal_set
+
+        ring = self.base_ring()
+        return restrict_scalars(
+            BasedFreeModule(ring, finite_ordinal_set(2)),
+            ring_morphism(ring, ring, lambda element: element),
+        )
 
     @classmethod
     def _repr_object_names(cls):
