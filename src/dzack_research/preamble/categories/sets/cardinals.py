@@ -109,10 +109,9 @@ class Cardinalities(Category):
     def _repr_(self) -> str:
         return "Category of cardinalities"
 
-    def mor(self, domain, codomain) -> CardinalityHomset:
+    def Mor(self, domain, codomain) -> CardinalityHomset:
         return CardinalityHomset(cardinal(domain), cardinal(codomain))
 
-    Mor = mor
 
     def zero(self):
         return cardinal(0)

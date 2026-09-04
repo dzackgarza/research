@@ -114,7 +114,7 @@ class Modules(OwnedCategoryOverBaseRing):
     def super_categories(self):
         return [CommutativeAdditiveGroups()]
 
-    def mor(self, domain, codomain):
+    def Mor(self, domain, codomain):
         r"""Return the unique Hom-set ``Hom_R(domain,codomain)``."""
         if domain not in self or codomain not in self:
             raise TypeError("an R-module Hom requires two R-modules")
@@ -853,7 +853,7 @@ class FramedModules(OwnedCategoryOverBaseRing):
 
         def module_generator_morphism(self):
             return SetMorphism(
-                Sets().mor(self.module_generating_set(), self),
+                Sets().Mor(self.module_generating_set(), self),
                 self.module_generator,
             )
 

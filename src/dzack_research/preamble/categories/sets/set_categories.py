@@ -149,7 +149,7 @@ class OwnedSetMorphism(SetMorphism):
     def __mul__(self, other):
         if not isinstance(other, SetMorphism) or other.codomain() is not self.domain():
             return NotImplemented
-        return Sets().mor(other.domain(), self.codomain())(
+        return Sets().Mor(other.domain(), self.codomain())(
             lambda element: self(other(element))
         )
 
@@ -181,7 +181,7 @@ class SetHomset(OwnedHomset):
         return OwnedSetMorphism(self, lambda element: element)
 
     def identity_at(self, obj):
-        return Sets().mor(obj, obj).identity()
+        return Sets().Mor(obj, obj).identity()
 
     def morphisms_agree(self, left, right) -> bool:
         if left.parent() is not self or right.parent() is not self:
@@ -240,12 +240,11 @@ class Sets(OwnedCategory):
         except (TypeError, ValueError):
             return False
 
-    def mor(self, domain, codomain):
+    def Mor(self, domain, codomain):
         if domain not in self or codomain not in self:
             raise TypeError("a set morphism requires two set objects")
         return _set_homset(domain, codomain)
 
-    Mor = mor
 
     def product(self, family):
         r"""Return $\prod_{i \in I} X_i$ for an indexed family of objects.
@@ -294,7 +293,7 @@ class Sets(OwnedCategory):
             return Homsets()
 
     def identity(self, set_object):
-        return self.mor(set_object, set_object).identity()
+        return self.Mor(set_object, set_object).identity()
 
     def Countable(self):
         return CountableSets()
@@ -314,7 +313,7 @@ class Sets(OwnedCategory):
     class ParentMethods:
         def Mor(self, codomain, category=None):
             if category is None:
-                return Sets().mor(self, codomain)
+                return Sets().Mor(self, codomain)
             from sage.categories.homset import Hom as SageHom
 
             return SageHom(self, codomain, category)
@@ -397,11 +396,11 @@ class SetSurjection(OwnedSetMorphism):
 
 
 def set_injection(domain, codomain, function):
-    return SetInjection(Sets().mor(domain, codomain), function)
+    return SetInjection(Sets().Mor(domain, codomain), function)
 
 
 def set_surjection(domain, codomain, function):
-    return SetSurjection(Sets().mor(domain, codomain), function)
+    return SetSurjection(Sets().Mor(domain, codomain), function)
 
 
 class SetInclusion(OwnedSetMorphism):
@@ -414,7 +413,7 @@ class SetInclusion(OwnedSetMorphism):
         characteristic_morphism=None,
         finite_members=None,
     ) -> None:
-        parent = Sets().mor(domain, codomain)
+        parent = Sets().Mor(domain, codomain)
         SetMorphism.__init__(self, parent, lambda member: codomain(member))
         self._characteristic_morphism = characteristic_morphism
         self._finite_members = finite_members
@@ -432,7 +431,7 @@ class SetInclusion(OwnedSetMorphism):
         if not self <= target_inclusion:
             raise ValueError("the first subset is not contained in the second")
         return SetMorphism(
-            Sets().mor(self.domain(), target_inclusion.domain()),
+            Sets().Mor(self.domain(), target_inclusion.domain()),
             lambda member: target_inclusion.domain()(self(member)),
         )
 
@@ -553,7 +552,7 @@ class PowerSetParent(Parent):
         return Sets.Δ[1]
 
     def characteristic_homset(self):
-        return Sets().mor(self.base_set(), self.truth_values())
+        return Sets().Mor(self.base_set(), self.truth_values())
 
     characteristic_hom_category = characteristic_homset
 
@@ -637,7 +636,7 @@ class PowerSetParent(Parent):
             raise ValueError("inverse image requires the morphism codomain to be the base set")
         target = PowerSet(morphism.domain())
         return SetMorphism(
-            Sets().mor(self, target),
+            Sets().Mor(self, target),
             lambda subset: target.from_predicate(lambda member: morphism(member) in subset),
         )
 
@@ -653,7 +652,7 @@ class PowerSetParent(Parent):
                 return SetInclusion(image_domain, morphism.codomain())
             return target(tuple(morphism(member) for member in subset))
 
-        return SetMorphism(Sets().mor(self, target), direct_image)
+        return SetMorphism(Sets().Mor(self, target), direct_image)
 
     def __iter__(self):
         if self.base_set() not in FiniteEnumeratedSets():
@@ -667,7 +666,7 @@ class PowerSetParent(Parent):
         from dzack_research.preamble.categories.sets.cardinals import Cardinalities
 
         size = self.cardinality()
-        return Cardinalities().mor(size, size).identity()
+        return Cardinalities().Mor(size, size).identity()
 
     def _repr_(self) -> str:
         return f"Power set of {self.base_set()}"
@@ -695,19 +694,19 @@ class FunctionSet(Parent):
         return self._exponent
 
     def homset(self):
-        return Sets().mor(self.exponent(), self.base())
+        return Sets().Mor(self.exponent(), self.base())
 
     def __call__(self, *args, **kwargs):
         r"""Construct through the owned set representation directly."""
         return self._element_constructor_(*args, **kwargs)
 
     def _element_constructor_(self, definition):
-        if definition in self.mor():
+        if definition in self.Mor():
             return definition
-        return SetMorphism(self.mor(), definition)
+        return SetMorphism(self.Mor(), definition)
 
     def __contains__(self, function) -> bool:
-        return function in self.mor()
+        return function in self.Mor()
 
     def cardinality(self):
         return cardinal(self.base().cardinality()) ** cardinal(self.exponent().cardinality())
@@ -1047,14 +1046,14 @@ class CartesianProductOfFamilyParent(Parent):
     def projection(self, index):
         normalized = self.index_set()(index)
         return SetMorphism(
-            Sets().mor(self, self.factor(normalized)),
+            Sets().Mor(self, self.factor(normalized)),
             lambda element: element.component(normalized),
         )
 
     def from_maps(self, source, maps):
         r"""Return the unique map into the product with the stated components."""
         return SetMorphism(
-            Sets().mor(source, self),
+            Sets().Mor(source, self),
             lambda element: self(lambda index: maps(index)(element)),
         )
 
@@ -1132,7 +1131,7 @@ def CartesianProductMorphism(source, target, component_morphisms):
     if source.index_set() != target.index_set():
         raise ValueError("componentwise product maps require one index set")
     return SetMorphism(
-        Sets().mor(source, target),
+        Sets().Mor(source, target),
         lambda element: target(
             lambda index: component_morphisms(index)(element.component(index))
         ),
@@ -1213,14 +1212,14 @@ class CoproductOfFamilyParent(Parent):
     def injection(self, index):
         normalized = self.index_set()(index)
         return SetMorphism(
-            Sets().mor(self.cofactor(normalized), self),
+            Sets().Mor(self.cofactor(normalized), self),
             lambda element: self(normalized, element),
         )
 
     def from_maps(self, target, maps):
         r"""Return the unique map out of the coproduct extending the stated maps."""
         return SetMorphism(
-            Sets().mor(self, target),
+            Sets().Mor(self, target),
             lambda element: maps(element.summand_index())(element.summand_element()),
         )
 
@@ -1400,7 +1399,7 @@ def CoproductMorphism(source, target, component_morphisms):
     if source.index_set() != target.index_set():
         raise ValueError("componentwise coproduct maps require one index set")
     return SetMorphism(
-        Sets().mor(source, target),
+        Sets().Mor(source, target),
         lambda element: target(
             element.summand_index(),
             component_morphisms(element.summand_index())(element.summand_element()),

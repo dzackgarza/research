@@ -54,7 +54,7 @@ class FunctorImageMorphism(Morphism):
         if other.codomain() is not self.domain():
             return NotImplemented
         category = self.parent().image_category()
-        return category.mor(other.domain(), self.codomain())(
+        return category.Mor(other.domain(), self.codomain())(
             self.codomain_arrow() * other.codomain_arrow()
         )
 
@@ -130,15 +130,14 @@ class ImageOfFunctor(Category):
             and candidate.image_category().functor() is self.functor()
         )
 
-    def mor(self, domain, codomain):
+    def Mor(self, domain, codomain):
         if domain not in self or codomain not in self:
             raise TypeError("an image-category Hom requires two presented image objects")
         return FunctorImageHomset(self, domain, codomain)
 
-    Mor = mor
 
     def identity(self, obj):
-        return self.mor(obj, obj).identity()
+        return self.Mor(obj, obj).identity()
 
     def inclusion(self):
         from dzack_research.preamble.categories.abstract_categories.functors import (

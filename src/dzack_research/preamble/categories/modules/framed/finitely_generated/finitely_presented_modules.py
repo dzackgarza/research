@@ -620,11 +620,11 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             arrows = ArrowCategory(Modules(ring))
             original_object = arrows(presentation)
             normalized_object = arrows(normalized_presentation)
-            forward = arrows.mor(original_object, normalized_object)(
+            forward = arrows.Mor(original_object, normalized_object)(
                 source_forward,
                 target_forward,
             )
-            inverse = arrows.mor(normalized_object, original_object)(
+            inverse = arrows.Mor(normalized_object, original_object)(
                 source_inverse,
                 target_inverse,
             )

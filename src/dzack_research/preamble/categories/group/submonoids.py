@@ -22,7 +22,7 @@ class SubmonoidInclusion(MonoidMorphism):
         if target_inclusion.codomain() is not self.codomain():
             raise ValueError("submonoid factorization requires one ambient monoid")
         if target_inclusion is self:
-            return Monoids().mor(self.domain(), self.domain()).identity()
+            return Monoids().Mor(self.domain(), self.domain()).identity()
         source = self.domain()
         target = target_inclusion.domain()
         try:
@@ -33,7 +33,7 @@ class SubmonoidInclusion(MonoidMorphism):
             ) from error
         if not all(generator in target for generator in generators):
             raise ValueError("the source submonoid is not contained in the target")
-        return Monoids().mor(source, target)(
+        return Monoids().Mor(source, target)(
             lambda element: target(element)
         )
 
@@ -63,7 +63,7 @@ class _SubmonoidParent(Parent):
         )
         Parent.__init__(self, facade=ambient, category=Monoids())
         self._preamble_inclusion = SubmonoidInclusion(
-            Monoids().mor(self, ambient),
+            Monoids().Mor(self, ambient),
             lambda element: element,
         )
         refine(self, Submonoids(ambient))

@@ -23,10 +23,10 @@ def test_binary_set_product_coproduct_and_diagonal_are_functorial() -> None:
     assert product_xy.cardinality() == 6
     assert coproduct_xy.cardinality() == 5
 
-    fx = Sets().mor(x, y)(lambda value: y(int(value) + 1))
-    fy = Sets().mor(y, z)(lambda value: z(int(value) + 1))
+    fx = Sets().Mor(x, y)(lambda value: y(int(value) + 1))
+    fy = Sets().Mor(y, z)(lambda value: z(int(value) + 1))
     target_pair = product.domain()(y, z)
-    pair_map = product.domain().mor(pair, target_pair)(fx, fy)
+    pair_map = product.domain().Mor(pair, target_pair)(fx, fy)
     carried = product(pair_map)
     element = product_xy((x(0), y(1)))
     assert carried(element)[0] == y(1)
@@ -53,7 +53,7 @@ def test_module_product_and_coproduct_reuse_the_same_biproduct_object() -> None:
 
     left_map = module_homset(left, left)({"x": 2 * left.module_generator("x")})
     right_map = module_homset(right, right)({"y": 3 * right.module_generator("y")})
-    pair_map = product.domain().mor(pair, pair)(left_map, right_map)
+    pair_map = product.domain().Mor(pair, pair)(left_map, right_map)
     carried = product(pair_map)
     assert product_object.left_projection()(
         carried(product_object.left_inclusion()(left.module_generator("x")))

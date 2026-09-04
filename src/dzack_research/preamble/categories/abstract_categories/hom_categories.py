@@ -43,11 +43,11 @@ def _category_homset(category, domain, codomain):
         except (TypeError, ValueError):
             pass
     if isinstance(category, OwnedCategory):
-        return _OwnedSets().mor(domain, codomain)
+        return _OwnedSets().Mor(domain, codomain)
     try:
         return Hom(domain, codomain, category)
     except (AttributeError, TypeError, ValueError):
-        return _OwnedSets().mor(domain, codomain)
+        return _OwnedSets().Mor(domain, codomain)
 
 
 
@@ -426,7 +426,7 @@ class FixedHomCategory(Category):
             name=f"Arrow objects of {self}",
         )
 
-    def mor(self, domain, codomain):
+    def Mor(self, domain, codomain):
         if not isinstance(domain, HomArrowObject):
             domain = self(domain)
         if not isinstance(codomain, HomArrowObject):
@@ -435,10 +435,9 @@ class FixedHomCategory(Category):
             raise TypeError("a 2-Hom requires two arrow objects in this Hom category")
         return HomArrowDiscreteHomset(self, domain, codomain)
 
-    Mor = mor
 
     def identity(self, arrow_object):
-        return self.mor(arrow_object, arrow_object).identity()
+        return self.Mor(arrow_object, arrow_object).identity()
 
     def super_categories(self):
         supers = []

@@ -519,7 +519,7 @@ class _FunctionSpace(UniqueRepresentation, Parent):
 
     def set_homset(self):
         r"""\(\operatorname{Hom}_{\mathbf{Set}}(X,Y)\)."""
-        return OwnedSets().mor(self.domain(), self.codomain())
+        return OwnedSets().Mor(self.domain(), self.codomain())
 
     def zero(self):
         return self._element_constructor_(ZZ.zero())

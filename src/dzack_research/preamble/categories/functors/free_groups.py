@@ -40,7 +40,7 @@ class FreeGroupFunctor(Functor):
         target = self(set_morphism.codomain())
         return group_homset(source, target)(
             SetMorphism(
-                Sets().mor(source.free_basis(), target),
+                Sets().Mor(source.free_basis(), target),
                 lambda index: target.free_generator(set_morphism(index)),
             )
         )
@@ -61,7 +61,7 @@ class GroupUnderlyingSetFunctor(Functor):
         return group
 
     def _apply_morphism(self, group_morphism):
-        return Sets().mor(
+        return Sets().Mor(
             group_morphism.domain(),
             group_morphism.codomain(),
         )(group_morphism)
@@ -83,13 +83,13 @@ class FreeGroupUnderlyingSetAdjunction(Adjunction):
 
     def unit(self, set_object):
         free_group = self.left_adjoint()(set_object)
-        return Sets().mor(set_object, free_group)(free_group.free_generator)
+        return Sets().Mor(set_object, free_group)(free_group.free_generator)
 
     def counit(self, group):
         free_group = self.left_adjoint()(self.right_adjoint()(group))
         return group_homset(free_group, group)(
             SetMorphism(
-                Sets().mor(free_group.free_basis(), group),
+                Sets().Mor(free_group.free_basis(), group),
                 lambda group_element: group_element,
             )
         )

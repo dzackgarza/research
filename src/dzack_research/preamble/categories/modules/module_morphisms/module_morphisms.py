@@ -224,7 +224,7 @@ class ModuleMorphism(Morphism):
                 self._verify_elementwise_linearity_when_decidable()
             return
         labels = self.domain().module_generating_set()
-        set_homset = Sets().mor(labels, self.codomain())
+        set_homset = Sets().Mor(labels, self.codomain())
         if isinstance(images, SetMorphism):
             self._generator_image = images._call_
             self._generator_morphism = images

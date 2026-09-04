@@ -217,12 +217,11 @@ class Schemes(OwnedCategoryOverBaseRing):
             and _has_scheme_placement(candidate, Schemes)
         )
 
-    def mor(self, domain, codomain):
+    def Mor(self, domain, codomain):
         if domain not in self or codomain not in self:
             raise TypeError("a scheme Hom requires two schemes over the stated base")
         return _native_scheme_homset(domain, codomain)
 
-    Mor = mor
 
     class ParentMethods:
         def Mor(self, codomain, category=None):

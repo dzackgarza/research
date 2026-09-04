@@ -35,7 +35,7 @@ def test_hom_and_end_families_recover_actual_external_homsets() -> None:
     target = Sets.Δ[1]
     hom_family = HomCategoryOf(Sets())
     hom_category = hom_family.Of(source, target)
-    map_ = Sets().mor(source, target)(lambda value: target(value % 2))
+    map_ = Sets().Mor(source, target)(lambda value: target(value % 2))
     assert map_ in hom_category
     arrow_object = hom_category(map_)
     assert arrow_object.arrow() is map_
@@ -58,7 +58,7 @@ def test_mono_epi_iso_and_aut_hom_families_have_the_expected_arrow_classes() -> 
     assert inclusion in monos
     assert quotient in epis
 
-    swap = Sets().mor(source, source)(lambda value: source(1 - int(value)))
+    swap = Sets().Mor(source, source)(lambda value: source(1 - int(value)))
     isomorphism = Isomorphism(swap, swap)
     isos = IsoCategoryOf(Sets()).Of(source, source)
     auts = AutCategoryOf(Sets()).Of(source)

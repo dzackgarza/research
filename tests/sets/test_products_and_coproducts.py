@@ -17,15 +17,15 @@ def test_set_product_has_projection_and_pairing_universal_property() -> None:
     assert product.cardinality() == cardinal(6)
 
     source = Sets.Δ[2]
-    f = Sets().mor(source, x)(lambda value: x(value % 2))
-    g = Sets().mor(source, y)(lambda value: y(value))
+    f = Sets().Mor(source, x)(lambda value: x(value % 2))
+    g = Sets().Mor(source, y)(lambda value: y(value))
     paired = product.from_maps(source, lambda index: f if index == 0 else g)
     for value in source:
         assert product.projection(0)(paired(value)) == f(value)
         assert product.projection(1)(paired(value)) == g(value)
 
     # Uniqueness: a map into a Set product is determined by every projection.
-    competing = Sets().mor(source, product)(lambda value: product((f(value), g(value))))
+    competing = Sets().Mor(source, product)(lambda value: product((f(value), g(value))))
     for value in source:
         assert competing(value) == paired(value)
 
@@ -38,8 +38,8 @@ def test_set_coproduct_has_injection_and_copairing_universal_property() -> None:
     assert coproduct.cardinality() == cardinal(5)
 
     target = Sets.Δ[3]
-    f = Sets().mor(x, target)(lambda value: target(value))
-    g = Sets().mor(y, target)(lambda value: target(value + 1))
+    f = Sets().Mor(x, target)(lambda value: target(value))
+    g = Sets().Mor(y, target)(lambda value: target(value + 1))
     copaired = coproduct.from_maps(target, lambda index: f if index == 0 else g)
     for value in x:
         assert copaired(coproduct.injection(0)(value)) == f(value)
@@ -52,8 +52,8 @@ def test_product_and_coproduct_morphisms_act_componentwise() -> None:
     y = Sets.Δ[2]
     xx = CartesianProductOfSets(x, y)
     yy = CartesianProductOfSets(y, y)
-    left = Sets().mor(x, y)(lambda value: y(value + 1))
-    right = Sets().mor(y, y)(lambda value: y(2 - value))
+    left = Sets().Mor(x, y)(lambda value: y(value + 1))
+    right = Sets().Mor(y, y)(lambda value: y(2 - value))
     carried = CartesianProductMorphism(xx, yy, lambda index: left if index == 0 else right)
     element = xx((x(0), y(1)))
     assert carried(element)[0] == y(1)

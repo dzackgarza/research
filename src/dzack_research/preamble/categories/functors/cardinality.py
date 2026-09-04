@@ -25,7 +25,7 @@ class CardinalityFunctor(Functor):
         target = self(isomorphism.codomain())
         if source != target:
             raise ValueError("isomorphic sets must have equal cardinality")
-        return self.codomain().mor(source, target).unique_morphism()
+        return self.codomain().Mor(source, target).unique_morphism()
 
     def _repr_(self):
         return "Cardinality functor # : core(Set) -> Card"

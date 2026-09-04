@@ -62,7 +62,7 @@ def test_scheme_over_base_is_realized_in_the_generic_slice_category() -> None:
     assert slice_object in slice_category
     assert slice_object.arrow().domain() is affine
     assert slice_object.arrow().codomain() is base
-    identity_square = slice_category.mor(slice_object, slice_object).identity()
+    identity_square = slice_category.Mor(slice_object, slice_object).identity()
     assert identity_square.domain() is slice_object
     assert identity_square.codomain() is slice_object
 

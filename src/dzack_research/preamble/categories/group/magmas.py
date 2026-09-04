@@ -29,12 +29,11 @@ class Monoids(OwnedCategory):
 
             return generic_power(self, exponent)
 
-    def mor(self, domain, codomain):
+    def Mor(self, domain, codomain):
         if domain not in self or codomain not in self:
             raise TypeError("a monoid Hom requires two monoids")
         return MonoidHomset(domain, codomain)
 
-    Mor = mor
 
 
 class AdditiveMagmas(OwnedCategory):

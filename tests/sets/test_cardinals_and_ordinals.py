@@ -40,12 +40,12 @@ def test_cardinal_arithmetic_and_order_do_not_assume_continuum_hypothesis() -> N
     assert aleph0 ** aleph0 == continuum
 
     assert cardinals.compare(aleph(1), continuum) is CardinalComparison.LESS_OR_EQUAL
-    assert cardinals.mor(aleph(1), continuum).cardinality() == 1
-    assert cardinals.mor(continuum, aleph(1)).cardinality() == 0
+    assert cardinals.Mor(aleph(1), continuum).cardinality() == 1
+    assert cardinals.Mor(continuum, aleph(1)).cardinality() == 0
     assert cardinals.compare(aleph(2), continuum) is CardinalComparison.INCOMPARABLE
-    assert cardinals.mor(aleph(2), continuum).cardinality() == 0
-    assert cardinals.mor(continuum, aleph(2)).cardinality() == 0
-    assert cardinals.mor(aleph0, continuum).unique_morphism().domain() == aleph0
+    assert cardinals.Mor(aleph(2), continuum).cardinality() == 0
+    assert cardinals.Mor(continuum, aleph(2)).cardinality() == 0
+    assert cardinals.Mor(aleph0, continuum).unique_morphism().domain() == aleph0
 
 
 def test_cardinality_is_functorial_on_set_isomorphisms() -> None:
@@ -53,10 +53,10 @@ def test_cardinality_is_functorial_on_set_isomorphisms() -> None:
 
     source = Sets.Δ[2]
     target = __import__("dzack_research.preamble.categories.sets", fromlist=["finite_ordered_set"]).finite_ordered_set((ZZ(10), ZZ(20), ZZ(30)))
-    forward = Sets().mor( dzack, esearc)(lambda value: target((ZZ(10), ZZ(20), ZZ(30))[source.position(value)]))
-    backward = Sets().mor( dzack, esearc)(lambda value: source((ZZ(10), ZZ(20), ZZ(30)).index(value)))
+    forward = Sets().Mor( dzack, esearc)(lambda value: target((ZZ(10), ZZ(20), ZZ(30))[source.position(value)]))
+    backward = Sets().Mor( dzack, esearc)(lambda value: source((ZZ(10), ZZ(20), ZZ(30)).index(value)))
     core = Core(Sets())
-    isomorphism = core.mor(source, target)(forward, backward)
+    isomorphism = core.Mor(source, target)(forward, backward)
     cardinality = cardinality_functor()
 
     assert cardinality(source) == cardinal(3)

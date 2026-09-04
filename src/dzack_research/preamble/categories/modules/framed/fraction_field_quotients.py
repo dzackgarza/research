@@ -108,7 +108,7 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
             from dzack_research.preamble.categories.sets.set_categories import Sets
 
             return SetMorphism(
-                Sets().mor(self.fraction_field(), self),
+                Sets().Mor(self.fraction_field(), self),
                 lambda element: self(element),
             )
 

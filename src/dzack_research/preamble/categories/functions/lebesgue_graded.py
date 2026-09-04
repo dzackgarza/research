@@ -100,7 +100,7 @@ def _compose_morphisms(left, right):
             f"cannot compose: the codomain of {right} is not the domain of {left}"
         )
     return SetMorphism(
-        Sets().mor(right.domain(), left.codomain()),
+        Sets().Mor(right.domain(), left.codomain()),
         lambda value, left=left, right=right: left(right(value)),
     )
 
@@ -129,7 +129,7 @@ class LebesgueGradedModules(OwnedCategoryOverBaseRing):
             degree = self.grading_monoid()(degree)
             piece = self.graded_piece(degree)
             return SetMorphism(
-                Sets().mor(self, piece),
+                Sets().Mor(self, piece),
                 lambda element, parent=self, degree=degree: parent(
                     element
                 ).homogeneous_component(degree),
@@ -290,7 +290,7 @@ def integration_morphism(space):
             return RR.zero()
         return RR(_l2_pairing(function, space.one()))
 
-    return SetMorphism(Sets().mor(space, RR), evaluate)
+    return SetMorphism(Sets().Mor(space, RR), evaluate)
 
 
 class _GradedLebesgueElement(ModuleElement):

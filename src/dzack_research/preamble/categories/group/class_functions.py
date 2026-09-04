@@ -44,7 +44,7 @@ class FiniteGroupClassFunction(SetMorphism):
         self._value_table = self._expand_conjugacy_table(group)
         SetMorphism.__init__(
             self,
-            Sets().mor(group, codomain),
+            Sets().Mor(group, codomain),
             self._value_at,
         )
 

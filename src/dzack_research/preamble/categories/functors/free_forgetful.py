@@ -47,7 +47,7 @@ class UnderlyingSetFunctor(Functor):
 
     def _apply_morphism(self, module_morphism):
         return SetMorphism(
-            Sets().mor(module_morphism.domain(), module_morphism.codomain()),
+            Sets().Mor(module_morphism.domain(), module_morphism.codomain()),
             module_morphism,
         )
 
@@ -68,7 +68,7 @@ class FreeForgetfulAdjunction(Adjunction):
     def unit(self, set_object):
         free = self.left_adjoint()(set_object)
         return SetMorphism(
-            Sets().mor(set_object, free),
+            Sets().Mor(set_object, free),
             lambda element: free.module_generator(element),
         )
 

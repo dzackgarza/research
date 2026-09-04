@@ -59,7 +59,7 @@ class ContravariantFunctor(Functor):
         if not isinstance(morphism, OppositeMorphism):
             source = self.domain()(morphism.codomain())
             target = self.domain()(morphism.domain())
-            morphism = self.domain().mor(source, target)(morphism)
+            morphism = self.domain().Mor(source, target)(morphism)
         return super().morphism_image(morphism)
 
     def chosen_preimage(self, image):
@@ -110,7 +110,7 @@ class Bifunctor(Functor):
             raise TypeError("a bifunctor acts on a pair of morphisms")
         source = self.domain()(left_morphism.domain(), right_morphism.domain())
         target = self.domain()(left_morphism.codomain(), right_morphism.codomain())
-        pair = self.domain().mor(source, target)(left_morphism, right_morphism)
+        pair = self.domain().Mor(source, target)(left_morphism, right_morphism)
         return super().morphism_image(pair)
 
     def __call__(self, left, right=None):
@@ -125,7 +125,7 @@ def _identity(obj):
     try:
         return Hom(obj, obj).identity()
     except (TypeError, ValueError):
-        return Sets().mor(obj, obj).identity()
+        return Sets().Mor(obj, obj).identity()
 
 
 class ImageInclusionFunctor(Functor):
@@ -205,7 +205,7 @@ class DiscreteMorphism(Morphism):
     def __mul__(self, other):
         if other.codomain() is not self.domain():
             return NotImplemented
-        return self.parent().discrete_category().mor(other.domain(), self.codomain()).identity()
+        return self.parent().discrete_category().Mor(other.domain(), self.codomain()).identity()
 
 
 class DiscreteHomset(OwnedHomset):
@@ -274,15 +274,14 @@ class DiscreteCategory(Category):
             name=f"Objects of {self}",
         )
 
-    def mor(self, domain, codomain):
+    def Mor(self, domain, codomain):
         if domain not in self or codomain not in self:
             raise TypeError("a discrete Hom requires two objects of the discrete category")
         return DiscreteHomset(self, domain, codomain)
 
-    Mor = mor
 
     def identity(self, obj):
-        return self.mor(obj, obj).identity()
+        return self.Mor(obj, obj).identity()
 
     def _repr_(self) -> str:
         return f"Discrete category on {self.object_set()}"
@@ -308,7 +307,7 @@ class DiscreteFunctor(Functor):
     def __init__(self, domain, codomain, object_map) -> None:
         if not isinstance(object_map, Morphism):
             object_map = SetMorphism(
-                Sets().mor(domain.object_set(), codomain.object_set()),
+                Sets().Mor(domain.object_set(), codomain.object_set()),
                 object_map,
             )
         if object_map.domain() is not domain.object_set() or object_map.codomain() is not codomain.object_set():
@@ -471,7 +470,7 @@ class DiagonalFunctor(Functor):
         return self.product_category()(obj, obj)
 
     def _apply_morphism(self, morphism):
-        return self.product_category().mor(
+        return self.product_category().Mor(
             self(morphism.domain()), self(morphism.codomain())
         )(morphism, morphism)
 

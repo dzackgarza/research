@@ -384,7 +384,7 @@ class AbsoluteGaloisGroup(OwnedHomset):
         element = element if element in self else self(element)
         extension = self.extension_object()
         return AbsoluteGaloisSliceAutomorphism(
-            self.slice_category().mor(extension, extension),
+            self.slice_category().Mor(extension, extension),
             element,
         )
 

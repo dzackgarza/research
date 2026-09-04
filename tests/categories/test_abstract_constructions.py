@@ -6,15 +6,15 @@ def test_opposite_category_reverses_arrows_and_composition() -> None:
     a = Sets.Δ[2]
     b = Sets.Δ[1]
     c = Sets.Δ[0]
-    f = Sets().mor(a, b)(lambda x: b(min(int(x), 1)))
-    g = Sets().mor(b, c)(lambda _x: c(0))
+    f = Sets().Mor(a, b)(lambda x: b(min(int(x), 1)))
+    g = Sets().Mor(b, c)(lambda _x: c(0))
 
     opposite = OppositeCategory(Sets())
     op_a = opposite(a)
     op_b = opposite(b)
     op_c = opposite(c)
-    op_f = opposite.mor(op_b, op_a)(f)
-    op_g = opposite.mor(op_c, op_b)(g)
+    op_f = opposite.Mor(op_b, op_a)(f)
+    op_g = opposite.Mor(op_c, op_b)(g)
 
     composite = op_f * op_g
     assert composite.domain() is op_c
@@ -31,13 +31,13 @@ def test_product_category_has_componentwise_homs_identities_and_composition() ->
     middle = category(Sets.Δ[1], Sets.Δ[2])
     right = category(Sets.Δ[0], Sets.Δ[0])
 
-    f1 = Sets().mor(left.first(), middle.first())(lambda x: middle.first()(min(int(x), 1)))
-    f2 = Sets().mor(left.second(), middle.second())(lambda x: middle.second()(int(x) + 1))
-    g1 = Sets().mor(middle.first(), right.first())(lambda _x: right.first()(0))
-    g2 = Sets().mor(middle.second(), right.second())(lambda _x: right.second()(0))
+    f1 = Sets().Mor(left.first(), middle.first())(lambda x: middle.first()(min(int(x), 1)))
+    f2 = Sets().Mor(left.second(), middle.second())(lambda x: middle.second()(int(x) + 1))
+    g1 = Sets().Mor(middle.first(), right.first())(lambda _x: right.first()(0))
+    g2 = Sets().Mor(middle.second(), right.second())(lambda _x: right.second()(0))
 
-    f = category.mor(left, middle)(f1, f2)
-    g = category.mor(middle, right)(g1, g2)
+    f = category.Mor(left, middle)(f1, f2)
+    g = category.Mor(middle, right)(g1, g2)
     composite = g * f
     assert composite.domain() is left
     assert composite.codomain() is right
@@ -70,14 +70,14 @@ def test_arrow_subcategories_and_isomorphism_constructor_have_the_expected_objec
     assert inclusion_object in arrows
     assert common_category(x, y).is_subcategory(Sets())
 
-    end = Sets().mor(x, x)(lambda value: x(2 - int(value)))
+    end = Sets().Mor(x, x)(lambda value: x(2 - int(value)))
     end_object = EndArrowCategory(Sets())(end)
     assert end_object in EndArrowCategory(Sets())
 
     inverse = end
     isomorphism = Isomorphism(end, inverse)
     core = Core(Sets())
-    assert isomorphism in core.mor(x, x)
+    assert isomorphism in core.Mor(x, x)
     iso_object = IsoArrowCategory(Sets())(isomorphism)
     aut_object = AutomorphismArrowCategory(Sets())(isomorphism)
     assert iso_object in IsoArrowCategory(Sets())

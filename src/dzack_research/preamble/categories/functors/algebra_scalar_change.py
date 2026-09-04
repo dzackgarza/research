@@ -181,7 +181,7 @@ class AlgebraRestrictionOfScalarsFunctor(Functor):
             )
         return algebra_homset(source, target)(
             SetMorphism(
-                Sets().mor(source, target),
+                Sets().Mor(source, target),
                 lambda element: target(morphism(morphism.domain()(element))),
             )
         )

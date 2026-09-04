@@ -173,7 +173,7 @@ class NaturalTransformationMorphism(Morphism):
             target,
             lambda obj: self.component(obj) * other.component(obj),
         )
-        return self.parent().functor_category().mor(other.domain(), self.codomain())(
+        return self.parent().functor_category().Mor(other.domain(), self.codomain())(
             composite
         )
 
@@ -259,15 +259,14 @@ class FunctorCategory(Category):
             and arrow.functor().codomain() == self.codomain_category()
         )
 
-    def mor(self, domain, codomain):
+    def Mor(self, domain, codomain):
         if domain not in self or codomain not in self:
             raise TypeError("a natural-transformation Hom requires two parallel functors")
         return NaturalTransformationHomset(self, domain, codomain)
 
-    Mor = mor
 
     def identity(self, functor_object):
-        return self.mor(functor_object, functor_object).identity()
+        return self.Mor(functor_object, functor_object).identity()
 
     def _repr_(self) -> str:
         return f"Functor category [{self.domain_category()}, {self.codomain_category()}]"

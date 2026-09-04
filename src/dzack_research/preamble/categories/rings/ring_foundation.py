@@ -163,8 +163,19 @@ class RingHomCategoryConstruction(HomCategoryConstruction):
 
 
 def ring_homset(domain, codomain) -> RingHomset:
-    r"""Return the canonical owned ``Hom_Ring(domain,codomain)`` object."""
+    r"""Return the canonical owned ``Mor_Ring(domain, codomain)`` object."""
     return OwnedRings().Mor(domain, codomain)
+
+
+def _ring_mor_category(domain, codomain) -> RingHomset:
+    r"""Build ``Mor_Ring(domain, codomain)`` from its owned family.
+
+    `OwnedRings.Mor` is the public route and delegates here.  It must not call
+    `ring_homset`, which is that same public route under another name: while
+    the category method and the module function had different names the cycle
+    was invisible, and naming both `Mor` made it a self-call.
+    """
+    return RingHomCategoryConstruction(OwnedRings()).Of(domain, codomain)
 
 
 def ring_morphism(domain, codomain, function, *, engine_morphism=None) -> RingMorphism:
@@ -295,10 +306,10 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
     def super_categories(self):
         return [OwnedSemirings(), OwnedRngs()]
 
-    def mor(self, domain, codomain):
+    def Mor(self, domain, codomain):
         if domain not in self or codomain not in self:
-            raise TypeError("a ring Hom requires two owned rings")
-        return ring_homset(domain, codomain)
+            raise TypeError("a ring morphism object requires two owned rings")
+        return _ring_mor_category(domain, codomain)
 
     class ParentMethods:
         def Mor(self, codomain, category=None):

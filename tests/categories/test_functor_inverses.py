@@ -108,7 +108,7 @@ def test_free_group_transpose_reads_the_intrinsic_index_set() -> None:
     free_group = Groups.Free(index_set=source)
     target = Groups.C(3)
     target_generator = target.group_generators().unrank(0)
-    generator_map = Sets().mor(source, target)(lambda point: target_generator if point == 11 else target_generator**2)
+    generator_map = Sets().Mor(source, target)(lambda point: target_generator if point == 11 else target_generator**2)
     group_morphism = group_homset(free_group, target)(generator_map)
 
     transpose = FreeGroupUnderlyingSetAdjunction().hom_set_isomorphism_forward(

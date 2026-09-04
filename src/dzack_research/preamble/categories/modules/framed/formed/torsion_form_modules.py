@@ -1253,7 +1253,7 @@ class TorsionBilinearFormModules(OwnedCategoryOverBaseRing):
                     }
                 )
 
-            return SetMorphism(OwnedSets().mor(self, characters), character)
+            return SetMorphism(OwnedSets().Mor(self, characters), character)
 
         @cached_method
         def automorphism_group(self):
