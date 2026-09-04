@@ -15,6 +15,7 @@ from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.group.magmas import CommutativeAdditiveGroups
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    _category_homset,
     EndCategoryConstruction,
     HomCategoryConstruction,
 )
@@ -29,6 +30,7 @@ from dzack_research.preamble.categories.sets.set_categories import (
     CartesianProductOfSets,
     CartesianProductOfFamily,
     CoproductOfFamily,
+    NN,
     Sets,
 )
 from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
@@ -38,7 +40,10 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     module_homset,
 )
 from dzack_research.preamble.refine import refine
-from dzack_research.preamble.categories.abstract_categories.constructions import Biproduct
+from dzack_research.preamble.categories.abstract_categories.constructions import (
+    Biproduct,
+    Subobjects,
+)
 from dzack_research.preamble.categories.abstract_categories.products import _finite_factor_family
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleHomset,
@@ -54,7 +59,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
     ring_morphism,
 )
-from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 
@@ -113,6 +117,13 @@ class Modules(OwnedCategoryOverBaseRing):
     @classmethod
     def _repr_object_names(cls):
         return "modules"
+
+    def an_object(self):
+        r"""The free module of rank one, which is the base ring itself."""
+        from dzack_research.preamble.categories.functors.free_forgetful import FreeModuleFunctor
+        from dzack_research.preamble.categories.sets.set_categories import finite_ordinal_set
+
+        return FreeModuleFunctor(self.base_ring())(finite_ordinal_set(1))
 
     def super_categories(self):
         return [CommutativeAdditiveGroups()]
@@ -177,9 +188,7 @@ class Modules(OwnedCategoryOverBaseRing):
             modules = Modules(self.base_ring())
             if category is None:
                 return modules.Mor(self, codomain)
-            from sage.categories.homset import Hom as SageHom
-
-            return SageHom(self, codomain, category)
+            return _category_homset(category, self, codomain)
 
         def module_category(self):
             return Modules(self.base_ring())
@@ -314,10 +323,7 @@ class Modules(OwnedCategoryOverBaseRing):
         def localize_at_prime(self, prime):
             r"""Return the localized module ``M_p`` at a represented prime."""
             ring = self.base_ring()
-            if getattr(prime, "parent", lambda: None)() is ring.spectrum():
-                point = prime
-            else:
-                point = ring.spectrum()(prime)
+            point = ring.spectrum()(prime)
             localization_ring = point.local_ring()
             localized = self.localize(localization_ring)
             localized._preamble_localization_prime_point = point
@@ -489,6 +495,13 @@ class FreeModules(OwnedCategoryOverBaseRing):
     def _repr_object_names(cls):
         return "free modules"
 
+    def an_object(self):
+        r"""The free module of rank one."""
+        from dzack_research.preamble.categories.functors.free_forgetful import FreeModuleFunctor
+        from dzack_research.preamble.categories.sets.set_categories import finite_ordinal_set
+
+        return FreeModuleFunctor(self.base_ring())(finite_ordinal_set(1))
+
     def super_categories(self):
         return [Modules(self.base_ring())]
 
@@ -501,6 +514,13 @@ class FinitelyGeneratedModules(OwnedCategoryOverBaseRing):
     @classmethod
     def _repr_object_names(cls):
         return "finitely generated modules"
+
+    def an_object(self):
+        r"""The free module of rank one."""
+        from dzack_research.preamble.categories.functors.free_forgetful import FreeModuleFunctor
+        from dzack_research.preamble.categories.sets.set_categories import finite_ordinal_set
+
+        return FreeModuleFunctor(self.base_ring())(finite_ordinal_set(1))
 
     def super_categories(self):
         return [Modules(self.base_ring())]
@@ -628,6 +648,13 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
     def _repr_object_names(cls):
         return "finitely presented modules"
 
+    def an_object(self):
+        r"""The free module of rank one, presented by no relations."""
+        from dzack_research.preamble.categories.functors.free_forgetful import FreeModuleFunctor
+        from dzack_research.preamble.categories.sets.set_categories import finite_ordinal_set
+
+        return FreeModuleFunctor(self.base_ring())(finite_ordinal_set(1))
+
     def super_categories(self):
         return [FinitelyGeneratedModules(self.base_ring())]
 
@@ -660,7 +687,6 @@ class FreeResolution:
     _differential_one: object
     _augmentation: object
     _zero_term: object
-    _relation_matrix: object | None = None
 
     def module(self):
         return self._module
@@ -694,22 +720,10 @@ class FreeResolution:
         d1 = self.differential(1)
         if not d1.is_injective() or not self.augmentation().is_surjective():
             return False
-        if any(
-            self.augmentation()(d1(generator)) != self._module.zero()
-            for generator in self._degree_one.module_generators()
-        ):
-            return False
-        if self._relation_matrix is not None:
-            return (
-                _engine_matrix(d1.matrix().transpose()).row_module()
-                == _engine_matrix(self._relation_matrix).row_module()
-            )
-        if self._degree_one.rank() != 0:
-            return False
-        return all(
-            self.augmentation()(generator) == generator
-            for generator in self._degree_zero.module_generators()
-        )
+        image = d1.image()
+        kernel = self.augmentation().kernel()
+        subobjects = Subobjects(self._degree_zero, Modules(self._degree_zero.base_ring()))
+        return subobjects.leq(image, kernel) and subobjects.leq(kernel, image)
 
 
 def free_resolution(module):
@@ -722,6 +736,13 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
     @classmethod
     def _repr_object_names(cls):
         return "finitely generated free modules"
+
+    def an_object(self):
+        r"""The free module of rank one."""
+        from dzack_research.preamble.categories.functors.free_forgetful import FreeModuleFunctor
+        from dzack_research.preamble.categories.sets.set_categories import finite_ordinal_set
+
+        return FreeModuleFunctor(self.base_ring())(finite_ordinal_set(1))
 
     def super_categories(self):
         return [
@@ -804,6 +825,13 @@ class FramedModules(OwnedCategoryOverBaseRing):
     def _repr_object_names(cls):
         return "framed modules"
 
+    def an_object(self):
+        r"""The free module of rank one, framed by its one generator."""
+        from dzack_research.preamble.categories.functors.free_forgetful import FreeModuleFunctor
+        from dzack_research.preamble.categories.sets.set_categories import finite_ordinal_set
+
+        return FreeModuleFunctor(self.base_ring())(finite_ordinal_set(1))
+
     def super_categories(self):
         return [Modules(self.base_ring())]
 
@@ -846,6 +874,10 @@ class FramedModules(OwnedCategoryOverBaseRing):
         def inject_variables(self, scope=None, verbose=True):
             if not isinstance(scope, dict):
                 raise TypeError("scope is required when injecting module generators")
+            if not self.module_generating_set().cardinality().is_finite():
+                raise NotImplementedError(
+                    "inject_variables requires a finite module framing"
+                )
             names = tuple(self.variable_names())
             generators = tuple(self.module_generators())
             if len(names) != len(generators):
@@ -948,8 +980,8 @@ class RestrictedScalarsModuleView(Parent):
             scalar_labels = extension_ring.module_generating_set()
             module_labels = module.module_generating_set()
             if (
-                cardinal(scalar_labels.cardinality()).is_finite()
-                and cardinal(module_labels.cardinality()).is_finite()
+                scalar_labels.cardinality().is_finite()
+                and module_labels.cardinality().is_finite()
             ):
                 self._preamble_module_generating_set = CartesianProductOfFamily(
                     Sets.Δ[1],
@@ -993,8 +1025,7 @@ class RestrictedScalarsModuleView(Parent):
     def wrap(self, underlying_element):
         r"""Read an element of the extension module in this restricted module."""
         extension_module = self._preamble_extension_module
-        if getattr(underlying_element, "parent", lambda: None)() is not extension_module:
-            underlying_element = extension_module(underlying_element)
+        underlying_element = extension_module(underlying_element)
         return self.element_class(self, underlying_element)
 
     def _coerce_map_from_(self, source):
@@ -1200,7 +1231,7 @@ class BilinearMap(SageObject):
 
 
         if isinstance(generator_images, dict):
-            size = cardinal(self._generator_indices.cardinality())
+            size = self._generator_indices.cardinality()
             if not size.is_finite():
                 raise TypeError(
                     "an infinite bilinear generator assignment is specified by a callable"
@@ -1387,7 +1418,7 @@ class TensorProductModules(OwnedCategoryOverBaseRing):
 
 def _represented_finite_presentation(module) -> bool:
     r"""Return whether ``module`` carries selected finite presentation data."""
-    return module._selected_presentation_rows() is not None
+    return module in ModulesWithChosenFinitePresentation(module.base_ring())
 
 
 @cached_function(key=lambda left, right: (id(left), id(right)))
@@ -1430,12 +1461,12 @@ def _module_tensor_product(left, right):
     left_labels = left.module_generating_set()
     right_labels = right.module_generating_set()
     if (
-        not cardinal(left_labels.cardinality()).is_finite()
-        or not cardinal(right_labels.cardinality()).is_finite()
+        not left_labels.cardinality().is_finite()
+        or not right_labels.cardinality().is_finite()
     ):
         raise TypeError("the selected presentation backend requires finite framings")
 
-    width = int(cardinal(tensor_labels.cardinality()).finite_value())
+    width = int(tensor_labels.cardinality().finite_value())
     rows = []
     left_relations = left._selected_presentation_rows() or ()
     right_relations = right._selected_presentation_rows() or ()
@@ -1845,9 +1876,6 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
                 column_label = columns(column_label)
             except (TypeError, ValueError):
                 column_label = columns.unrank(int(column_label))
-            generator_image = getattr(self, "_generator_image", None)
-            if generator_image is not None:
-                return generator_image(column_label)
             return self(self.domain().module_generator(column_label))
 
         def rows(self):
@@ -1866,7 +1894,7 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
 
         det = determinant
 
-        def rank(self):
+        def matrix_rank(self):
             from sage.rings.integer_ring import ZZ as SageZZ
 
             integers = _own_ring(SageZZ)

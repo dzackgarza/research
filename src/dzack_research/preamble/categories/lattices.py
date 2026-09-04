@@ -693,6 +693,10 @@ class Lattices(OwnedCategoryOverBaseRing):
 
         return colimit_lattice(stage, category=self)
 
+    def an_object(self):
+        r"""The hyperbolic plane U."""
+        return self("U")
+
     @cached_method
     def super_categories(self):
         r"""
@@ -1219,13 +1223,19 @@ class Lattices(OwnedCategoryOverBaseRing):
             ring = self.base_ring()
             try:
                 twice_ring = ring.ideal(ring(2))
-            except (AttributeError, NotImplementedError, TypeError) as error:
-                raise NotImplementedError(
-                    "membership in the principal ideal 2R is not decidable over this base ring"
-                ) from error
+                def is_twice(value) -> bool:
+                    return ring(value) in twice_ring
+            except (AttributeError, NotImplementedError, TypeError):
+                try:
+                    engine = _engine_ring(ring)
+                    twice_ring = engine.ideal(_engine_element(ring, ring(2)))
+                except (AttributeError, NotImplementedError, TypeError) as error:
+                    raise NotImplementedError(
+                        "membership in the principal ideal 2R is not decidable over this base ring"
+                    ) from error
 
-            def is_twice(value) -> bool:
-                return ring(value) in twice_ring
+                def is_twice(value) -> bool:
+                    return _engine_element(ring, ring(value)) in twice_ring
 
             if self.is_finite_rank():
                 gram = self.gram_tensor()
@@ -2379,9 +2389,15 @@ class Lattices(OwnedCategoryOverBaseRing):
 class FiniteRankLattices(OwnedCategoryOverBaseRing):
     r"""Lattices whose underlying free module has finite rank."""
 
+    _certifying_predicate = "is_finite_rank"
+
     @classmethod
     def _repr_object_names(cls) -> str:
         return "finite-rank lattices"
+
+    def an_object(self):
+        r"""The hyperbolic plane U, of rank two."""
+        return Lattices(self.base_ring())("U")
 
     def super_categories(self):
 
@@ -2398,9 +2414,15 @@ class FiniteRankLattices(OwnedCategoryOverBaseRing):
 class NondegenerateLattices(OwnedCategoryOverBaseRing):
     r"""Lattices whose correlation map has zero kernel."""
 
+    _certifying_predicate = "is_nondegenerate"
+
     @classmethod
     def _repr_object_names(cls) -> str:
         return "nondegenerate lattices"
+
+    def an_object(self):
+        r"""The hyperbolic plane U, whose form is unimodular."""
+        return Lattices(self.base_ring())("U")
 
     def super_categories(self):
         return [Lattices(self.base_ring())]
@@ -2409,9 +2431,15 @@ class NondegenerateLattices(OwnedCategoryOverBaseRing):
 class EvenLattices(OwnedCategoryOverBaseRing):
     r"""Lattices satisfying ``b(x,x) in 2R`` for every lattice vector ``x``."""
 
+    _certifying_predicate = "is_even"
+
     @classmethod
     def _repr_object_names(cls) -> str:
         return "even lattices"
+
+    def an_object(self):
+        r"""The hyperbolic plane U, on which every square is even."""
+        return Lattices(self.base_ring())("U")
 
     def super_categories(self):
         return [Lattices(self.base_ring())]
