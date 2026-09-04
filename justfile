@@ -188,38 +188,37 @@ test-ci:
 # Policies: CONTRIBUTING.md DEV-37 (a test stays inside the universe) and
 # DEV-38 (assert the object, not a chosen presentation).
 #
-# tests/engineering/ is the cordon for tests that prove no mathematics and is
-# excluded.  Plain grep rather than a syntax-aware scanner: the shapes banned
-# here are textual, and a scanner that silently reports zero findings over zero
-# targets -- which semgrep does under its built-in `tests/` ignore -- fails in
-# the one direction a check must not.
+# tests/engineering/ is the cordon for tests that prove no mathematics.
+# ast-grep matches the syntax tree, so `== (0, 2)` is found wherever it is
+# written -- across line breaks, and never inside a string or a docstring.
 test-universe:
     #!/usr/bin/env bash
     set -uo pipefail
     files=$(git ls-files 'tests/*.py' 'tests/**/*.py' | grep -v '^tests/engineering/')
     if [ -z "$files" ]; then echo "No mathematical tests to check."; exit 0; fi
     total=0
+    count() { ast-grep run --lang python --pattern "$1" --json $files 2>/dev/null \
+        | python3 -c 'import json,sys; print(len(json.load(sys.stdin)))'; }
+    show()  { ast-grep run --lang python --pattern "$1" $files 2>/dev/null | head -"$2"; }
     check() {
-        local pattern="$1" policy="$2" why="$3"
-        local hits
-        hits=$(echo "$files" | xargs grep -nE "$pattern" 2>/dev/null)
-        local n=0
-        [ -n "$hits" ] && n=$(echo "$hits" | wc -l)
+        local policy="$1" why="$2"; shift 2
+        local n=0 p
+        for p in "$@"; do n=$((n + $(count "$p"))); done
         total=$((total + n))
-        printf '%-6s %4d  %s\n' "$policy" "$n" "$why"
-        [ -n "$hits" ] && echo "$hits" | sed 's/^/         /'
+        printf '%-7s %4d  %s\n' "$policy" "$n" "$why"
+        [ "$n" -gt 0 ] && for p in "$@"; do show "$p" 4; done
         return 0
     }
     echo "Checking $(echo "$files" | wc -l) mathematical test files."
     echo
-    check '\b(tuple|list|set|frozenset|sorted)\(' DEV-37 \
-        'extraction constructor: ask the object, not a Python container'
-    check '\blen\(' DEV-37 \
-        'len() where cardinality() is the mathematical operation'
-    check '\.(to_tuple|to_list|tolist|list)\(\)' DEV-37 \
-        'extraction accessor: state the claim about the owned elements'
-    check '==\s*[\(\[][^)\]]*,' DEV-37 \
-        'compared against a Python tuple/list display'
+    check DEV-37 'extraction constructor: ask the object, not a Python container' \
+        'tuple($$$A)' 'list($$$A)' 'set($$$A)' 'frozenset($$$A)' 'sorted($$$A)'
+    check DEV-37 'len() where cardinality() is the mathematical operation' \
+        'len($$$A)'
+    check DEV-37 'compared against a Python tuple or list display' \
+        '$X == ($A, $$$B)' '$X == [$$$B]' '$X != ($A, $$$B)' '$X != [$$$B]'
+    check DEV-40 'extraction accessor: state the claim about the owned elements' \
+        '$X.to_tuple()' '$X.to_list()' '$X.tolist()' '$X.list()'
     echo
     if [ "$total" -gt 0 ]; then
         echo "$total findings.  Extraction is strictly weaker than comparing the"
