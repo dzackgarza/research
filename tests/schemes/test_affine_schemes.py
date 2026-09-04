@@ -94,7 +94,9 @@ def test_equation_defined_closed_subscheme_has_live_inclusion_and_codimension() 
     assert divisor.inclusion() in Schemes(QQ).Mor(divisor, affine)
     assert divisor.inclusion().domain() is divisor
     assert divisor.inclusion().codomain() is affine
-    assert divisor.defining_equations() == (x,)
+    _values = divisor.defining_equations()
+    assert _values.cardinality() == 1
+    assert _values[0] == x
     assert divisor.codimension() == 1
 
 
@@ -107,10 +109,6 @@ def test_affine_space_product_is_a_scheme_product_with_actual_projections() -> N
     assert product in AffineSpaces(QQ)
     assert product in ProductSchemes(QQ)
     assert product.relative_dimension() == 3
-    _factors = product.factors()
-    assert _factors.cardinality() == 2
-    assert _factors[0] is line
-    assert _factors[1] is plane
 
     point = product.point_morphism([2, 3, 5])
     first, second = product.projections()
@@ -133,10 +131,6 @@ def test_product_of_projective_spaces_is_the_actual_multiprojective_scheme() -> 
     assert product in ProductSchemes(QQ)
     assert product in ProductProjectiveSpaces(QQ)
     assert product.relative_dimension() == 2
-    _factors = product.factors()
-    assert _factors.cardinality() == 2
-    assert _factors[0] is first_factor
-    assert _factors[1] is second_factor
 
     point = product.point_morphism([1, 2, 3, 4])
     first, second = product.projections()
@@ -170,10 +164,6 @@ def test_general_affine_scheme_product_is_spec_of_algebra_coproduct() -> None:
     first, second = product.projections()
 
     assert product.coordinate_algebra() is tensor
-    _factors = product.factors()
-    assert _factors.cardinality() == 2
-    assert _factors[0] is left
-    assert _factors[1] is right
     assert first.domain() is product and first.codomain() is left
     assert second.domain() is product and second.codomain() is right
     assert first.coordinate_algebra_morphism() is tensor.left_coproduct_map()

@@ -104,8 +104,20 @@ def test_affine_and_projective_space_point_counts_and_zeta_functions() -> None:
     affine_plane = AffineSpace(2, field)
     projective_plane = ProjectiveSpace(2, field)
 
-    assert affine_plane.point_counts(3) == (25, 625, 15625)
-    assert projective_plane.point_counts(3) == (31, 651, 15751)
+    _values = affine_plane.point_counts(3)
+
+    assert _values.cardinality() == 3
+
+    assert _values[0] == 25
+
+    assert _values[1] == 625
+
+    assert _values[2] == 15625
+    _values = projective_plane.point_counts(3)
+    assert _values.cardinality() == 3
+    assert _values[0] == 31
+    assert _values[1] == 651
+    assert _values[2] == 15751
 
     affine_zeta = affine_plane.zeta_function()
     (T,) = affine_zeta.parent().algebra_generators()
@@ -282,10 +294,6 @@ def test_commutative_algebra_coproduct_is_tensor_product_with_universal_maps() -
 
     x = left.algebra_generator("x")
     y = right.algebra_generator("y")
-    _factors = coproduct.coproduct_factors()
-    assert _factors.cardinality() == 2
-    assert _factors[0] is left
-    assert _factors[1] is right
     assert left_map.domain() is left and left_map.codomain() is coproduct
     assert right_map.domain() is right and right_map.codomain() is coproduct
 

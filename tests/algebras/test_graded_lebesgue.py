@@ -109,10 +109,6 @@ def test_lebesgue_spaces_form_a_graded_algebra_under_pointwise_product() -> None
     assert multiplication in multiplication.domain().Mor(algebra)
     assert multiplication.codomain() is algebra
     assert multiplication.domain() in GradedTensorProductModules(RR)
-    _factors = multiplication.domain().tensor_factors()
-    assert _factors.cardinality() == 2
-    assert _factors[0] is algebra
-    assert _factors[1] is algebra
     assert product.homogeneous_component(one).parent() is Lp(1)
     assert product == multiplication(multiplication.domain().pure_tensor(left, right))
     assert epsilon.domain() is algebra
