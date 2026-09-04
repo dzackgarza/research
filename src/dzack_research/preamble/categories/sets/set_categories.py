@@ -300,6 +300,10 @@ class Sets(OwnedCategory):
         def exponential(self, exponent):
             return ExponentialOfSets(self, exponent)
 
+        def __mul__(self, other):
+            r"""Return $X \times Y$.  A product of sets is a set."""
+            return self.product_with(other)
+
         def product_with(self, other):
             r"""Return $X \times Y$, the product asked of the objects.
 
