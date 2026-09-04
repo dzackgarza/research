@@ -1,5 +1,10 @@
 from shape_extensions import Int, IntVar
-from typing import overload
+from typing import Any, overload
+
+# A point $(n_1, \ldots, n_k)$ of the product monoid $\mathbb N^k$.  Aliases
+# `Any` under `LEX-15` until the product's parent has a static name; see the
+# runtime module for the full note.
+ProductOfNaturalNumbers = Any
 
 
 class RelativeContext[Eta, R, A]: ...

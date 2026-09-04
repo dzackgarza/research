@@ -15,6 +15,7 @@ from dzack_research.preamble.tensors.tensor import (
     tensor,
 )
 from dzack_research.preamble.tensors.tensor import _engine_component_matrix
+from dzack_research.preamble.categories.sets.set_categories import NN
 
 
 def rational_positive_vector(gram):
@@ -24,7 +25,7 @@ def rational_positive_vector(gram):
     is immediately re-entered into the preamble as a type-``(1,0)`` tensor;
     the transformation matrix itself is never public API.
     """
-    if not isinstance(gram, Tensor) or gram.tensor_valence() != (0, 2):
+    if not isinstance(gram, Tensor) or gram.tensor_valence() != (NN**2)((0, 2)):
         raise TypeError("a positive vector is computed from a bilinear-form tensor")
     engine_gram = _engine_component_matrix(gram).change_ring(SageQQ)
     diagonal, change = QuadraticForm(

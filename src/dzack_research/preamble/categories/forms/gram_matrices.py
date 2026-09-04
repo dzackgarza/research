@@ -4,10 +4,12 @@ from itertools import accumulate
 
 import networkx as nx
 
+from dzack_research.preamble.categories.sets.set_categories import NN
+
 
 def gram_tensor_graph(gram):
     r"""Return the weighted undirected graph presented by a symmetric Gram tensor."""
-    if gram.tensor_valence() != (0, 2):
+    if gram.tensor_valence() != (NN**2)((0, 2)):
         raise TypeError("a Gram object is a type-(0,2) tensor")
     n, m = gram.tensor_shape()
     if n != m:

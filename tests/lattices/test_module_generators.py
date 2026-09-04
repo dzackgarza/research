@@ -11,7 +11,7 @@ def test_lattice_element_to_vector_is_the_preamble_vector_tensor() -> None:
     expected = tensor.vector(ZZ, [1, 0])
 
     assert Tensor in coordinates.__class__.__mro__
-    assert coordinates.tensor_valence() == (1, 0)
+    assert coordinates.tensor_valence() == (NN**2)((1, 0))
     assert coordinates.tensor_shape() == (2,)
     assert coordinates == expected
 
@@ -33,7 +33,7 @@ def test_gram_tensor_contracts_a_lattice_vector_to_its_dual_covector() -> None:
     vector_value = (2 * e + 3 * f).to_vector()
     covector = lattice.gram_tensor() * vector_value
 
-    assert covector.tensor_valence() == (0, 1)
+    assert covector.tensor_valence() == (NN**2)((0, 1))
     assert covector.components() == [3, 2]
     assert covector * e.to_vector() == lattice.b(e, 2 * e + 3 * f)
     assert covector * f.to_vector() == lattice.b(f, 2 * e + 3 * f)
@@ -121,7 +121,7 @@ def test_named_catalogue_uses_owned_gram_tensors() -> None:
     assert euclidean.module_generator(0) * euclidean.module_generator(1) == 0
     for lattice in (plane, a2, euclidean):
         gram_tensor = lattice.gram_tensor()
-        assert gram_tensor.tensor_valence() == (0, 2)
+        assert gram_tensor.tensor_valence() == (NN**2)((0, 2))
         assert Tensor in gram_tensor.__class__.__mro__
         assert Matrix not in gram_tensor.__class__.__mro__
 

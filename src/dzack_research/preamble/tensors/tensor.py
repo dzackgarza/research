@@ -23,6 +23,7 @@ from sage.matrix.constructor import matrix as _sage_matrix
 from sage.misc.latex import latex
 from sage.modules.free_module_element import vector as _sage_vector
 from sage.rings.infinity import Infinity
+from dzack_research.static_types import ProductOfNaturalNumbers
 from sage.structure.element import ModuleElement
 from sage.structure.parent import Parent
 from sage.structure.richcmp import op_EQ, op_NE, richcmp
@@ -34,6 +35,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _own_ring,
 )
+from dzack_research.preamble.categories.sets.set_categories import NN
 
 
 _Rings = OwnedRings()
@@ -277,7 +279,7 @@ class Tensor:
         p, _q = self.tensor_type()
         return self.tensor_shape()[p:]
 
-    def tensor_type(self) -> tuple[int, int]:
+    def tensor_type(self) -> ProductOfNaturalNumbers:
         r"""Return $(p,q)$: $p$ contravariant indices and $q$ covariant indices.
 
         A vector is type $(1,0)$.  A matrix, as a linear map, is type
@@ -285,7 +287,7 @@ class Tensor:
         """
         return self.tensor_valence()
 
-    def tensor_valence(self) -> tuple[int, int]:
+    def tensor_valence(self) -> ProductOfNaturalNumbers:
         r"""Return the type $(p,q)$; synonym of :meth:`tensor_type`."""
         assert False, "a tensor supplies its type (p, q)"
 
@@ -415,7 +417,7 @@ class Tensor:
                 f"{len(self.lower_ranks())} vector arguments, got {len(vectors)}"
             )
         for rank, vector in zip(self.lower_ranks(), vectors, strict=True):
-            if not isinstance(vector, Tensor) or vector.tensor_valence() != (1, 0):
+            if not isinstance(vector, Tensor) or vector.tensor_valence() != (NN**2)((1, 0)):
                 raise TypeError("covariant tensor contraction takes contravariant vectors")
             if vector.upper_ranks() != (rank,):
                 raise ValueError(
@@ -442,9 +444,9 @@ class Tensor:
         ``g^vee`` of type ``(2,0)`` on the dual module.  Conversely a
         nondegenerate type-``(2,0)`` tensor dualizes to type ``(0,2)``.
         """
-        p, q = self.tensor_valence()
+        valence = self.tensor_valence()
         rows, columns = self.tensor_shape()
-        if (p, q) in {(0, 2), (2, 0)}:
+        if valence in {(NN**2)((0, 2)), (NN**2)((2, 0))}:
             if rows != columns:
                 raise ValueError("dualizing a pairing requires equal index ranks")
             inverse = _engine_component_matrix(self).inverse()
@@ -453,7 +455,7 @@ class Tensor:
                 tuple(ring._from_engine_element(entry) for entry in row)
                 for row in inverse.rows()
             ]
-            if (p, q) == (0, 2):
+            if valence == (NN**2)((0, 2)):
                 return tensor(ring, (rows, columns), (), components)
             return tensor(ring, (), (rows, columns), components)
         raise TypeError("dual_tensor is defined for nondegenerate pairings/copairings")
@@ -557,7 +559,7 @@ def _engine_component_matrix(value):
 
 def _engine_component_vector(value):
     r"""Materialize a type-``(1,0)`` tensor as a private Sage vector."""
-    if not isinstance(value, Tensor) or value.tensor_valence() != (1, 0):
+    if not isinstance(value, Tensor) or value.tensor_valence() != (NN**2)((1, 0)):
         raise TypeError("engine vector materialization requires a type-(1,0) tensor")
     if value.tensor_shape()[0] == Infinity:
         raise ValueError("an infinite vector tensor has no finite engine vector")
@@ -735,21 +737,23 @@ class _CoordinateTensor(ModuleElement, Tensor):
     def tensor_shape(self) -> tuple[int, ...]:
         return self.parent().tensor_shape()
 
-    def tensor_valence(self) -> tuple[int, int]:
+    def tensor_valence(self) -> ProductOfNaturalNumbers:
         return self.parent().tensor_valence()
 
     def __call__(self, *args):
         r"""Contract covariant slots with the given vectors."""
         _contravariant, covariant = self.tensor_valence()
-        if len(args) != covariant:
+        # `args` is a Python tuple from `*args`, so its length is a Python
+        # count; lift it into NN once rather than crossing the slot count out.
+        if NN(len(args)) != covariant:
             raise TypeError(
                 f"a type-{self.tensor_valence()} tensor takes "
                 f"{covariant} vector arguments, got {len(args)}"
             )
         shape = self.tensor_shape()
-        if self.tensor_valence() == (0, 1):
+        if self.tensor_valence() == (NN**2)((0, 1)):
             vector = args[0]
-            if vector.tensor_valence() != (1, 0):
+            if vector.tensor_valence() != (NN**2)((1, 0)):
                 raise TypeError("a covector evaluates on a contravariant vector")
             if vector.upper_ranks() != self.lower_ranks():
                 raise ValueError(
@@ -759,7 +763,7 @@ class _CoordinateTensor(ModuleElement, Tensor):
                 (self[i] * vector[i] for i in range(shape[0])),
                 self.base_ring().zero(),
             )
-        if covariant == 2 and len(shape) == 2:
+        if covariant == NN(2) and len(shape) == 2:
             left, right = args
             return sum(
                 (
@@ -905,7 +909,7 @@ class _CoordinateTensor(ModuleElement, Tensor):
             len(self.upper_ranks()) >= 2
             and not self.lower_ranks()
             and isinstance(other, Tensor)
-            and other.tensor_valence() == (0, 1)
+            and other.tensor_valence() == (NN**2)((0, 1))
         ):
             if _engine_ring(other.base_ring()) != _engine_ring(self.base_ring()):
                 raise TypeError("tensor contraction requires one base ring")
@@ -943,7 +947,7 @@ class _CoordinateTensor(ModuleElement, Tensor):
                 (),
                 _nested(entries, output_shape),
             )
-        if isinstance(other, Tensor) and other.tensor_valence() == (1, 0):
+        if isinstance(other, Tensor) and other.tensor_valence() == (NN**2)((1, 0)):
             if _engine_ring(other.base_ring()) != _engine_ring(self.base_ring()):
                 raise TypeError("tensor contraction requires one base ring")
             if not self.lower_ranks():
@@ -987,9 +991,9 @@ class _CoordinateTensor(ModuleElement, Tensor):
                 _nested(entries, output_shape),
             )
         if (
-            self.tensor_valence() == (1, 1)
+            self.tensor_valence() == (NN**2)((1, 1))
             and isinstance(other, Tensor)
-            and other.tensor_valence() == (1, 1)
+            and other.tensor_valence() == (NN**2)((1, 1))
         ):
             if _engine_ring(other.base_ring()) != _engine_ring(self.base_ring()):
                 raise TypeError("tensor contraction requires one base ring")
@@ -1019,12 +1023,12 @@ class _CoordinateTensor(ModuleElement, Tensor):
                 _nested(entries, (rows, columns)),
             )
 
-        if self.tensor_valence() == (0, 1):
+        if self.tensor_valence() == (NN**2)((0, 1)):
             if _engine_ring(other.base_ring()) != _engine_ring(self.base_ring()):
                 raise TypeError("tensor contraction requires one base ring")
-            if other.tensor_valence() == (1, 0):
+            if other.tensor_valence() == (NN**2)((1, 0)):
                 return self(other)
-            if other.tensor_valence() == (1, 1):
+            if other.tensor_valence() == (NN**2)((1, 1)):
                 # In V* tensor V tensor W*, evaluate the adjacent V*, V pair.
                 if self.lower_ranks() != other.upper_ranks():
                     raise ValueError(
@@ -1159,10 +1163,13 @@ class TensorModule(UniqueRepresentation, Parent):
     def tensor_shape(self) -> tuple:
         return self._upper_ranks + self._lower_ranks
 
-    def tensor_type(self) -> tuple[int, int]:
-        return (len(self._upper_ranks), len(self._lower_ranks))
+    def tensor_type(self) -> ProductOfNaturalNumbers:
+        r"""Return the type $(p, q)$ as a point of $\mathbb N^2$ (`CON-15`)."""
+        from dzack_research.preamble.categories.sets.set_categories import NN
 
-    def tensor_valence(self) -> tuple[int, int]:
+        return (NN**2)((len(self._upper_ranks), len(self._lower_ranks)))
+
+    def tensor_valence(self) -> ProductOfNaturalNumbers:
         return self.tensor_type()
 
     def upper_ranks(self) -> tuple:

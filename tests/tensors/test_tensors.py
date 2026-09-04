@@ -14,7 +14,7 @@ from dzack_research.preamble.all import (
     QuadraticField,
     Sets,
 )
-from dzack_research.preamble.categories.sets import finite_ordered_set
+from dzack_research.preamble.categories.sets import NN, finite_ordered_set
 from dzack_research.preamble.tensors import Tensor, tensor
 
 
@@ -25,8 +25,8 @@ def test_vector_and_covector_are_distinct_owned_tensor_types() -> None:
     assert Tensor in vector.__class__.__mro__
     assert Tensor in covector.__class__.__mro__
     assert vector.base_ring() is ZZ is covector.base_ring()
-    assert vector.tensor_valence() == (1, 0)
-    assert covector.tensor_valence() == (0, 1)
+    assert vector.tensor_valence() == (NN**2)((1, 0))
+    assert covector.tensor_valence() == (NN**2)((0, 1))
     assert vector.parent() is not covector.parent()
     assert vector != covector
 
@@ -53,7 +53,7 @@ def test_matrix_tensor_is_component_data_not_a_module_morphism() -> None:
     components = tensor.matrix(ZZ, [[1, 2], [3, 4]])
     morphism = MatrixSpace(ZZ, 2, 2).from_rows([[1, 2], [3, 4]])
 
-    assert components.tensor_valence() == (1, 1)
+    assert components.tensor_valence() == (NN**2)((1, 1))
     assert components.tensor_shape() == (2, 2)
     assert morphism.parent() is not components.parent()
     assert tensor.from_matrix(morphism) == components
@@ -118,8 +118,8 @@ def test_general_tensor_constructor_encodes_variance_and_higher_rank() -> None:
         [[[1, 2], [3, 4]], [[5, 6], [7, 8]]],
     )
 
-    assert upper.tensor_valence() == (2, 0)
-    assert lower.tensor_valence() == (0, 2)
+    assert upper.tensor_valence() == (NN**2)((2, 0))
+    assert lower.tensor_valence() == (NN**2)((0, 2))
     assert upper.parent() is not lower.parent()
     assert higher.tensor_shape() == (2, 2, 2)
     assert higher.tensor_order() == 3
@@ -177,7 +177,7 @@ def test_bilinear_form_lowers_an_index() -> None:
     vector = tensor.vector(ZZ, [4, 5])
     covector = form * vector
 
-    assert covector.tensor_valence() == (0, 1)
+    assert covector.tensor_valence() == (NN**2)((0, 1))
     assert covector.components() == [13, 19]
     assert covector(vector) == ZZ(147)
     with pytest.raises(TypeError):
@@ -196,8 +196,8 @@ def test_type_one_one_tensor_adjacent_contraction_and_vector_contraction() -> No
 
     assert contracted.components() == [[11, 14], [18, 22]]
     assert image.components() == [25, 35]
-    assert contracted.tensor_valence() == (1, 1)
-    assert image.tensor_valence() == (1, 0)
+    assert contracted.tensor_valence() == (NN**2)((1, 1))
+    assert image.tensor_valence() == (NN**2)((1, 0))
 
 
 def test_covector_type_one_one_adjacent_contraction() -> None:
@@ -205,7 +205,7 @@ def test_covector_type_one_one_adjacent_contraction() -> None:
     linear_components = tensor(ZZ, (2,), (3,), [[1, 2, 3], [4, 5, 6]])
 
     contracted = covector * linear_components
-    assert contracted.tensor_valence() == (0, 1)
+    assert contracted.tensor_valence() == (NN**2)((0, 1))
     assert contracted.components() == [-2, -1, 0]
 
 
@@ -214,7 +214,7 @@ def test_type_one_one_dualization_belongs_to_module_duality() -> None:
     linear_map = MatrixSpace(ZZ, 2, 3).from_tensor(linear_components)
     dual = tensor.from_morphism(DualizationFunctor(ZZ)(linear_map))
 
-    assert dual.tensor_valence() == (1, 1)
+    assert dual.tensor_valence() == (NN**2)((1, 1))
     assert dual.tensor_shape() == (3, 2)
     assert dual.components() == [[1, 4], [2, 5], [3, 6]]
     with pytest.raises(TypeError, match="pairings/copairings"):
@@ -224,7 +224,7 @@ def test_type_one_one_dualization_belongs_to_module_duality() -> None:
 def test_dual_tensor_preserves_pairing_variance_information() -> None:
     bilinear = tensor(QQ, (), (2, 2), [[2, 1], [1, 1]])
     bilinear_dual = bilinear.dual_tensor()
-    assert bilinear_dual.tensor_valence() == (2, 0)
+    assert bilinear_dual.tensor_valence() == (NN**2)((2, 0))
     assert bilinear_dual.components() == [[1, -1], [-1, 2]]
 
 
@@ -245,7 +245,7 @@ def test_dual_pairing_raises_an_index() -> None:
     covector = tensor.covector(QQ, [3, 5])
     vector = dual * covector
 
-    assert vector.tensor_valence() == (1, 0)
+    assert vector.tensor_valence() == (NN**2)((1, 0))
     assert vector.components() == [-2, 7]
     assert pairing * vector == covector
 
@@ -284,7 +284,7 @@ def test_tensor_vector_accepts_an_owned_number_field() -> None:
     value = tensor.vector(field, [1, 0])
 
     assert value.base_ring() is field
-    assert value.tensor_valence() == (1, 0)
+    assert value.tensor_valence() == (NN**2)((1, 0))
     assert value.components() == [field.one(), field.zero()]
 
 
@@ -307,10 +307,10 @@ def test_tensor_space_records_index_modules() -> None:
     gram = tensor(ZZ, (), (2, 2), [[0, 1], [1, 0]])
     mixed = tensor(ZZ, (2, 3), (), range(6))
 
-    assert covector.tensor_type() == (0, 1)
+    assert covector.tensor_type() == (NN**2)((0, 1))
     assert covector.tensor_space() is covector.parent()
-    assert gram.tensor_type() == (0, 2)
-    assert mixed.tensor_type() == (2, 0)
+    assert gram.tensor_type() == (NN**2)((0, 2))
+    assert mixed.tensor_type() == (NN**2)((2, 0))
     upper, lower = gram.index_modules()
     assert not upper and lower.cardinality() == 2
     assert int(lower[0].rank()) == 2

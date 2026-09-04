@@ -6,6 +6,9 @@ not wrap or replace the authoritative Sage objects.
 """
 
 
+from typing import Any
+
+
 class _StaticMarker:
     @classmethod
     def __class_getitem__(cls, _parameters):
@@ -1117,7 +1120,18 @@ def pullback_de_rham_class(morphism, degree, cohomology_class):
     return de_rham_cohomology_map(morphism, degree)(cohomology_class)
 
 
+# A point $(n_1, \ldots, n_k)$ of the product monoid $\mathbb N^k$: an element
+# of `Sets().product` of the constant family $\mathbb N$ over a finite index
+# set.  The parent is built at runtime, so the referent has no static name yet
+# and this aliases `Any` under `LEX-15`.  It checks nothing and is not intended
+# to; it names the codomain so a reader can audit a signature against the
+# operation's definition, and it is the single point at which a sharper
+# refinement will later apply to every consumer at once (`LEX-17`, `LEX-18`).
+ProductOfNaturalNumbers = Any
+
+
 __all__ = [
+    "ProductOfNaturalNumbers",
     "AutObject",
     "AlgebraBaseChangeAdjunction",
     "AlgebraCategory",

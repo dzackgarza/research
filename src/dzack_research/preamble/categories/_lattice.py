@@ -38,6 +38,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _own_ring,
 )
+from dzack_research.static_types import ProductOfNaturalNumbers
 from dzack_research.preamble.categories.sets.set_categories import (
     NN,
     Sets,
@@ -379,8 +380,9 @@ class _PairingGram(ModuleElement, Tensor):
         rank = module.rank()
         ModuleElement.__init__(self, TensorModule(module.base_ring(), (), (rank, rank)))
 
-    def tensor_valence(self) -> tuple[int, int]:
-        return (0, 2)
+    def tensor_valence(self) -> ProductOfNaturalNumbers:
+        r"""A Gram tensor is type $(0, 2)$, a point of $\mathbb N^2$ (`CON-15`)."""
+        return (NN**2)((0, 2))
 
     def tensor_shape(self):
         rank = self._module.rank()
@@ -423,7 +425,7 @@ class _PairingGram(ModuleElement, Tensor):
     def __mul__(self, other):
         if other in self.base_ring():
             return self.scaled_by(other)
-        if isinstance(other, Tensor) and other.tensor_valence() == (1, 0):
+        if isinstance(other, Tensor) and other.tensor_valence() == (NN**2)((1, 0)):
             rank = self.tensor_shape()[0]
             if rank == Infinity:
                 raise NotImplementedError(
@@ -864,7 +866,7 @@ def scale_gram_tensor(gram, scalar):
     match gram:
         case _PairingGram():
             return gram.scaled_by(scalar)
-        case Tensor() if gram.tensor_valence() == (0, 2):
+        case Tensor() if gram.tensor_valence() == (NN**2)((0, 2)):
             return scalar * gram
         case _:
             raise TypeError("scale_gram_tensor takes a type-(0,2) Gram tensor")
@@ -1016,7 +1018,7 @@ def _hyperbolic_plane_gram_tensor(ring) -> Tensor:
     zero = ring.zero()
     one = ring.one()
     gram_tensor = tensor(ring, (), (2, 2), ((zero, one), (one, zero)))
-    assert gram_tensor.tensor_valence() == (0, 2)
+    assert gram_tensor.tensor_valence() == (NN**2)((0, 2))
     return gram_tensor
 
 
@@ -1034,7 +1036,7 @@ def _root_cartan_gram_tensor(ring, cartan_type) -> Tensor:
         for i in range(rank)
     ]
     gram_tensor = tensor(ring, (), (rank, rank), components)
-    assert gram_tensor.tensor_valence() == (0, 2)
+    assert gram_tensor.tensor_valence() == (NN**2)((0, 2))
     return gram_tensor
 
 
@@ -1044,7 +1046,7 @@ def _nested_gram_tensor(data, ring) -> Tensor:
     match _component_shape(data):
         case (rows, columns):
             gram_tensor = tensor(ring, (), (rows, columns), data)
-            assert gram_tensor.tensor_valence() == (0, 2)
+            assert gram_tensor.tensor_valence() == (NN**2)((0, 2))
             return gram_tensor
         case shape:
             raise TypeError(f"a Gram tensor is type (0,2), got nested shape {shape}")
@@ -1059,7 +1061,7 @@ def _lattice_from_gram_tensor(
     root_cartan_type=None,
 ) -> Lattice:
     match gram_tensor:
-        case Tensor() if gram_tensor.tensor_valence() == (0, 2):
+        case Tensor() if gram_tensor.tensor_valence() == (NN**2)((0, 2)):
             pass
         case _:
             raise TypeError("a named lattice is built from a type-(0,2) Gram tensor")
@@ -1085,7 +1087,7 @@ def _lattice_from_gram_tensor(
 
 def _require_form_tensor(form, ring):
     match form:
-        case Tensor() if form.tensor_valence() == (0, 2):
+        case Tensor() if form.tensor_valence() == (NN**2)((0, 2)):
             pass
         case _:
             raise TypeError("form= takes a type-(0,2) tensor")
@@ -1204,7 +1206,7 @@ def lattice(
             return _lattice_parent(data._module, data, category, None, names)
         case _ if data in framed:
             return _identity_lattice(data, ring, names, module_generators, category)
-        case Tensor() if data.tensor_valence() == (0, 2):
+        case Tensor() if data.tensor_valence() == (NN**2)((0, 2)):
             if _engine_ring(data.base_ring()) != _engine_ring(ring):
                 raise TypeError(f"Lattices({ring}) takes a Gram over {ring}, got base ring {data.base_ring()}")
             return _lattice_from_gram_tensor(data, ring, names, module_generators, category)

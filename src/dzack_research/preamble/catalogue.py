@@ -12,6 +12,8 @@ from dzack_research.preamble.categories.lattices import (
     register_indecomposable_gram,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+from dzack_research.preamble.categories.sets.set_categories import NN
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.tensors.tensor import tensor
 
 ZZ = _own_ring(SageZZ)
@@ -39,7 +41,7 @@ def _block_gram(*grams):
     values = [[ZZ.zero() for _ in range(total)] for _ in range(total)]
     offset = 0
     for gram, rank in zip(grams, ranks, strict=True):
-        if gram.tensor_valence() != (0, 2) or gram.tensor_shape() != (rank, rank):
+        if gram.tensor_valence() != (NN**2)((0, 2)) or gram.tensor_shape() != (rank, rank):
             raise TypeError("a catalogue Gram block is a square type-(0,2) tensor")
         for i in range(rank):
             for j in range(rank):
@@ -774,9 +776,9 @@ def _two_elementary_blocks():
 
 def two_elementary_orthogonal_sums(signature_pair, a, delta):
     r"""Return block-orthogonal realizations of the stated 2-elementary invariants."""
-    positive_target, negative_target = map(SageZZ, signature_pair)
-    target_a = SageZZ(a)
-    target_delta = SageZZ(delta)
+    positive_target, negative_target = map(int, signature_pair)
+    target_a = int(a)
+    target_delta = int(delta)
     if min(positive_target, negative_target, target_a) < 0:
         raise ValueError("signature indices and discriminant length are nonnegative")
     if positive_target + negative_target == 0:
@@ -820,20 +822,20 @@ def two_elementary_orthogonal_sums(signature_pair, a, delta):
         positive_target,
         negative_target,
         target_a,
-        SageZZ(0),
+        0,
         (),
     )
-    return tuple(realizations)
+    return finite_ordered_set(tuple(realizations))
 
 
 def signature_orthogonal_sums(signature_pair, blocks):
     r"""Enumerate multisets of the supplied blocks with the target signature."""
-    positive_target, negative_target = map(SageZZ, signature_pair)
+    positive_target, negative_target = map(int, signature_pair)
     if min(positive_target, negative_target) < 0:
         raise ValueError("signature indices are nonnegative")
     if positive_target + negative_target == 0:
         raise ValueError("the zero lattice is not a nonempty block sum")
-    block_data = tuple((block, *map(SageZZ, block.signature_pair())) for block in blocks)
+    block_data = tuple((block, *map(int, block.signature_pair())) for block in blocks)
     if any(positive + negative == 0 for _block, positive, negative in block_data):
         raise ValueError("rank-zero blocks make multiset enumeration unbounded")
     realizations = []
@@ -859,7 +861,7 @@ def signature_orthogonal_sums(signature_pair, blocks):
             count += 1
 
     extend(0, positive_target, negative_target, ())
-    return tuple(realizations)
+    return finite_ordered_set(tuple(realizations))
 
 
 _TCO_GENS = tuple(NamedLattices.Tco.module_generators())
