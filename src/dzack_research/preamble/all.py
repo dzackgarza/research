@@ -528,6 +528,7 @@ from dzack_research.preamble.categories.lattices import (  # noqa: F401
     diagonal_gram,
     signature_pair,
     signature_pairs,
+    nikulin_invariants,
 )
 from dzack_research.preamble.categories.modules import (  # noqa: F401
     BasedFreeModule,

@@ -28,6 +28,13 @@ from typing import overload
 
 from dzack_research.preamble.categories._lattice import diagonal_gram as diagonal_gram
 from dzack_research.preamble.categories._lattice import signature_pair, signature_pairs
+
+
+def nikulin_invariants(rank, discriminant_length, delta):
+    r"""Return \((r,a,\delta)\) as a point of \(\mathbb N^3\)."""
+    from dzack_research.preamble.categories.sets.set_categories import NN
+
+    return (NN**3)((int(rank), int(discriminant_length), int(delta)))
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     HomCategoryConstruction,
     IsoCategoryConstruction,
@@ -1948,10 +1955,17 @@ class Lattices(OwnedCategoryOverBaseRing):
             )
 
         def two_elementary_invariants(self):
-            r"""Return Nikulin's ``(r,a,delta)`` for an even 2-elementary lattice."""
+            r"""Return Nikulin's \((r,a,\delta)\) for an even 2-elementary lattice.
+
+            The rank, the length of the discriminant group and \(\delta\) are
+            three natural numbers, so the triple is a point of
+            \(\mathbb N^3\).
+            """
             if not self.is_p_elementary(self.base_ring()(2)) or not self.is_even():
                 raise ValueError("the lattice is not even and 2-elementary")
-            return (self.base_ring()(int(self.rank())), self.discriminant_length(), self.delta())
+            return nikulin_invariants(
+                self.rank(), self.discriminant_length(), self.delta()
+            )
 
         def reflection(self, root):
             r"""Return the integral orthogonal reflection in ``root``.

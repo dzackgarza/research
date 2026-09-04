@@ -8,6 +8,7 @@ from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.lattices import (
     Lattices,
+    nikulin_invariants,
     register_indecomposable,
     register_indecomposable_gram,
     signature_pair,
@@ -721,7 +722,7 @@ def validate_negative_def_two_elementary_table():
             if lattice.signature_pair() != signature_pair(0, rank):
                 raise AssertionError(f"{key} contains a lattice of signature {lattice.signature_pair()}")
             actual = lattice.two_elementary_invariants()
-            if actual != key:
+            if actual != nikulin_invariants(*key):
                 raise AssertionError(f"{key} contains a lattice with invariants {actual}")
             inclusion = getattr(lattice, "_catalogue_glue_inclusion", None)
             if inclusion is not None:
@@ -753,7 +754,7 @@ def validate_two_elementary_table():
                 f"not {signature_pair(1, rank - 1)}"
             )
         actual = lattice.two_elementary_invariants()
-        if actual != key:
+        if actual != nikulin_invariants(*key):
             raise AssertionError(f"{key} is represented by a lattice with invariants {actual}")
     return True
 

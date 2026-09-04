@@ -154,6 +154,18 @@ class _FractionFieldQuotientElement(ModuleElement):
     def __hash__(self):
         return hash((id(self.parent()), self._backend()))
 
+    def lift(self):
+        r"""Return this class's representative in \(K\) under the chosen section.
+
+        A coset of \(K/R\) has no canonical element.  The section this quotient
+        selects is the representative in \([0,n)\), and every caller that lifts
+        a discriminant value uses that one.
+        """
+        fraction_field = self.parent().base_ring().fraction_field()
+        return fraction_field._from_engine_element(
+            _engine_ring(fraction_field)(self._backend().lift())
+        )
+
     def additive_order(self):
         order = SageZZ(self._backend().additive_order())
         return self.parent().base_ring()._from_engine_element(order)
