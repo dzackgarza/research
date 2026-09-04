@@ -253,7 +253,6 @@ class Ideals(OwnedCategoryOverBaseRing):
                 for value in self._preamble_module_generator_values
             )
 
-        gens = ideal_generators
 
         def _engine_ideal(self):
             engine = _engine_ring(self.base_ring())

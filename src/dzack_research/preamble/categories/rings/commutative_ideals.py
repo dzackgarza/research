@@ -45,7 +45,6 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
         def ideal_generators(self):
             return self._preamble_ideal_generators
 
-        gens = ideal_generators
 
         def _engine_ideal(self):
             represented = getattr(self, "_preamble_engine_ideal", None)

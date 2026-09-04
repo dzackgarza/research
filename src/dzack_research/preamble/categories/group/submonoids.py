@@ -93,7 +93,6 @@ class _SubmonoidParent(Parent):
             raise NotImplementedError("this submonoid has no chosen generating set")
         return self._preamble_monoid_generators
 
-    gens = monoid_generators
 
     def one(self):
         return self.ambient_monoid().one()
