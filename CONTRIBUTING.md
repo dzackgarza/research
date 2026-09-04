@@ -3882,6 +3882,16 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 - **Correct Example**: `is_nondegenerate()` computes known cases and assertion-gates the current frontier.  A distinct `generators_are_computable()` or `has_computed_group_generators()` may return Sage's `Unknown` when that explicitly three-valued knowledge question has not been decided.
 
 
+#### `DEF-07`: An Operation's Codomain Is the Union Over Its Implementations
+
+- **Rule**: Before naming the object an operation lands in, read every implementation and take the codomain that covers all of them.  The typical case is not the codomain; it is a specialisation of it.  State the general object, then let the categories that guarantee more say so.
+
+- **Rationale**: An operation is usually written first for the case at hand, so its apparent codomain is the one the author had in view, and the general one is discovered later by a caller who gets a value that does not fit.  `signature_pair` looks \(\mathbb N^2\)-valued from eight of its implementations, and `_ColimitGram` returns `(Infinity, large_negative)`, `(large_positive, Infinity)`, or `(Infinity, Infinity)`.  Its values are therefore extended naturals, and a design that had committed to \(\mathbb N \times \mathbb N\) on the strength of the common case would have had to be undone or, worse, would have pushed the colimit case out of the operation.
+
+- **Violation Example**: choosing a return object from the implementation in front of you; annotating from the first case; a general operation whose type excludes an implementation that already exists in the tree.
+
+- **Correct Example**: reading all implementations first, siting the operation in the object that admits every value they produce, and recovering the finite case as an axiom-gated refinement rather than as the definition.  See `CON-15` for naming the product once the codomain is known.
+
 * * *
 
 #### `CAT-08`: Mathematical Enumeration Is Lazy; Materialization Is Backend-Only
@@ -4008,6 +4018,18 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 - **Violation Example**: `gens = ideal_generators` or `generators = gens` on an owned class; `def basis(self)` on an object that is a module and a formed module at once; a caller reaching for `.gens()` because the class offers it.
 
 - **Correct Example**: `ideal_generators()` as the only accessor, with callers renamed; Sage's `.gens()` retained only on an engine handle inside a private adapter, where the receiver is a Sage object with one structure.
+
+#### `LEX-11`: One Name, One Operation -- a Different Codomain Is a Different Operation
+
+- **Rule**: Every definition sharing a name implements the **same** operation: the same mathematical question, answered in the same codomain.  Specialisation is welcome -- a concrete representation may answer faster, and a category may answer generically -- but a definition that lands somewhere else is not an override of that operation, it is a different operation, and it takes its own name.  When adding a definition of an existing name, read the others and confirm the codomain agrees.
+
+- **Rationale**: Overriding is how specialisation is supposed to look here, so a long list of definitions is not itself a smell and the real defect hides among them.  `signature_pair` had ten definitions: six per-Gram shortcuts, a category-level owner, a stored value on a genus -- all returning a pair -- and one on `CoxeterDiagram` returning `(positive, negative, zero)`, the inertia including the degenerate part.  Nine implementations of one operation and one of another, indistinguishable at every call site, and a rename or a return-type change applied across the name would silently corrupt the tenth.  The shared name also concealed that the two answers live in different objects, \(\mathbb N^2\) against \(\mathbb N^3\), which is the same defect `CON-15` names from the other side.
+
+- **Diagnostic**: count the definitions of a name and compare their codomains before touching any of them.  Divergence in arity, in value type, or in what the answer is *of* means the name covers more than one operation.
+
+- **Violation Example**: `signature_pair` returning a pair on nine owners and a triple on a tenth; a predicate that answers `bool` on one class and a three-valued unknown on another; an accessor returning an element on one owner and a family on another.
+
+- **Correct Example**: the inertia named as the inertia, distinct from the signature pair; `tensor_valence`, whose four definitions are a contract, a computation, a delegation and a constant, all answering the same question in the same place.
 
 * * *
 
@@ -4788,6 +4810,16 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 - **Violation Example**: an execution order derived only from the items marked severe; a defect whose absence from the plan is discovered by re-reading the assessment months later.
 
 - **Correct Example**: a plan whose items and the assessment's rows are in correspondence, deferrals included, so that a reader can check the mapping in both directions.
+
+#### `DEV-45`: A Tool's Failure Is a Fact About the Tool, Not About the Task
+
+- **Rule**: When a tool cannot answer a question, that establishes the tool's limits.  It establishes nothing about the difficulty, size, or riskiness of the underlying work.  Before concluding that a task is hard, state the property of the *task* that makes it so, in terms that do not mention the tool.
+
+- **Rationale**: A failed measurement is evidence, and the temptation is to promote it into evidence about the thing measured, because the failure is concrete and the alternative is thinking about the task directly.  Observed: jedi resolved 1 of 53 call sites for `tensor_valence`, and that measurement became "changing this return type touches every caller" as though the work were correspondingly large.  It does not follow.  Refactoring edits text on disk; for a duck-typed call the safety of a rewrite depends on whether the name denotes one operation, not on whether an inference engine can type the receiver -- and the real job was 21 definitions and three syntactic call-site shapes, all mechanical.  The same move in the other direction is equally wrong: a scanner that silently reported nothing became a reason to abandon syntax awareness entirely, when the failures were that scanner's alone.
+
+- **Violation Example**: "the type checker cannot verify this, so the design is wrong"; "the language server cannot rename it, so the refactor is large"; "the linter has no rule for this, so it is not checkable"; concluding from one tool's silence that a class of tools does not apply.
+
+- **Correct Example**: naming what actually governs the work -- here, whether a name denotes one operation, and how many definitions and call-site shapes exist -- then choosing a tool that answers *that*.  A name-based structural rewrite was the right instrument all along, and the type-inference failure was irrelevant to it.
 
 * * *
 
