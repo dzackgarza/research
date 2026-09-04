@@ -741,7 +741,23 @@ class _CoordinateTensor(ModuleElement, Tensor):
         return self.parent().tensor_valence()
 
     def __call__(self, *args):
-        r"""Contract covariant slots with the given vectors."""
+        r"""Contract every covariant slot against the given vectors.
+
+        For $T$ of type $(p, q)$ and $q$ vectors $v_1, \ldots, v_q$, the value
+        is the type-$(p, 0)$ tensor
+
+        .. math::
+
+            T(v_1, \ldots, v_q)^{i_1 \ldots i_p}
+                = \sum_{j_1 \ldots j_q} T^{i_1 \ldots i_p}{}_{j_1 \ldots j_q}
+                  (v_1)^{j_1} \cdots (v_q)^{j_q}.
+
+        When $p = 0$ no index remains and the value is an element of the base
+        ring; that special case is the pairing of a covector with a vector and
+        the evaluation of a bilinear form on two vectors.
+        """
+        from itertools import product as _index_tuples
+
         _contravariant, covariant = self.tensor_valence()
         # `args` is a Python tuple from `*args`, so its length is a Python
         # count; lift it into NN once rather than crossing the slot count out.
@@ -750,32 +766,38 @@ class _CoordinateTensor(ModuleElement, Tensor):
                 f"a type-{self.tensor_valence()} tensor takes "
                 f"{covariant} vector arguments, got {len(args)}"
             )
-        shape = self.tensor_shape()
-        if self.tensor_valence() == (NN**2)((0, 1)):
-            vector = args[0]
-            if vector.tensor_valence() != (NN**2)((1, 0)):
-                raise TypeError("a covector evaluates on a contravariant vector")
-            if vector.upper_ranks() != self.lower_ranks():
-                raise ValueError(
-                    f"cannot pair ranks {self.lower_ranks()} and {vector.upper_ranks()}"
+        ring = self.base_ring()
+        upper = self.upper_ranks()
+        lower = self.lower_ranks()
+        for position, vector in enumerate(args):
+            slot = TensorModule(ring, (lower[position],), ())
+            if vector not in slot:
+                raise TypeError(
+                    f"argument {position} must be an owned vector in {slot}, "
+                    f"the contravariant module paired with covariant slot {position}"
                 )
-            return sum(
-                (self[i] * vector[i] for i in range(shape[0])),
-                self.base_ring().zero(),
-            )
-        if covariant == NN(2) and len(shape) == 2:
-            left, right = args
-            return sum(
-                (
-                    self[i, j] * left[i] * right[j]
-                    for i in range(shape[0])
-                    for j in range(shape[1])
-                ),
-                self.base_ring().zero(),
-            )
-        raise TypeError(
-            f"contraction is not implemented for valence {self.tensor_valence()}"
-        )
+
+        def contracted(upper_index):
+            total = ring.zero()
+            for lower_index in _index_tuples(*(range(int(rank)) for rank in lower)):
+                term = self[upper_index + lower_index]
+                for position, index in enumerate(lower_index):
+                    term = term * args[position][index]
+                total = total + term
+            return total
+
+        if not upper:
+            return contracted(())
+
+        def components(prefix):
+            if len(prefix) == len(upper):
+                return contracted(prefix)
+            return [
+                components(prefix + (index,))
+                for index in range(int(upper[len(prefix)]))
+            ]
+
+        return tensor(ring, upper, (), components(()))
 
     def _latex_(self) -> str:
         from sage.matrix.constructor import matrix as sage_matrix
